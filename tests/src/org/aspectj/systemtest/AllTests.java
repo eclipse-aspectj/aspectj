@@ -36,7 +36,6 @@ public class AllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.3");
 		//$JUnit-BEGIN$
-		suite.addTest(AllTestsAspectJ150.suite());
 		suite.addTest(Ajc121Tests.suite());
 		suite.addTest(Ajc120Tests.suite());
 		suite.addTest(Ajc11Tests.suite());

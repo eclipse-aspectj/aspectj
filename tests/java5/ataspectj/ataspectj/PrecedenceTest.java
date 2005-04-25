@@ -50,7 +50,7 @@ public class PrecedenceTest extends TestCase {
     @Aspect()
     public static class TestAspect_1 {
         @Before("execution(* ataspectj.PrecedenceTest.hello())")
-        void before() {
+        public void before() {
             log("TestAspect_1");
         }
     }
@@ -59,7 +59,7 @@ public class PrecedenceTest extends TestCase {
     @DeclarePrecedence("ataspectj.PrecedenceTest.TestAspect_3, ataspectj.PrecedenceTest.TestAspect_1")
     public static class TestAspect_2 {
         @Before("execution(* ataspectj.PrecedenceTest.hello())")
-        void before() {
+        public void before() {
             log("TestAspect_2");
         }
     }
@@ -67,7 +67,7 @@ public class PrecedenceTest extends TestCase {
     @Aspect()
     public static class TestAspect_3 {
         @Before("execution(* ataspectj.PrecedenceTest.hello())")
-        void before() {
+        public void before() {
             log("TestAspect_3");
         }
     }

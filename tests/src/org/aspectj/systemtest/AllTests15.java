@@ -7,6 +7,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.aspectj.systemtest.ajc150.AllTestsAspectJ150;
+import org.aspectj.systemtest.ajc150.ataspectj.AtAjAnnotationGenTests;
 
 public class AllTests15 {
 
@@ -15,6 +16,7 @@ public class AllTests15 {
 		//$JUnit-BEGIN$
 		suite.addTest(AllTests14.suite());
 		suite.addTest(AllTestsAspectJ150.suite());
+		suite.addTest(AtAjAnnotationGenTests.suite());
 		//$JUnit-END$
 		return suite;
 	}

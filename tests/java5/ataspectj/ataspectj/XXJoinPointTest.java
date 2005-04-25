@@ -57,33 +57,33 @@ public class XXJoinPointTest extends TestCase {
         void pc() {}
 
         @Before("pc()")
-        void before(JoinPoint jp) {
+        public void before(JoinPoint jp) {
             assertEquals("hello", jp.getSignature().getName());
             log("jp");
         }
 
         @Before("pc()")
-        void before(JoinPoint.StaticPart sjp) {
+        public void before(JoinPoint.StaticPart sjp) {
             assertEquals("hello", sjp.getSignature().getName());
             log("sjp");
         }
 
         @Before("pc()")
-        void beforeEnclosing(JoinPoint.EnclosingStaticPart esjp) {
+        public void beforeEnclosing(JoinPoint.EnclosingStaticPart esjp) {
             assertEquals("testJoinPointsInAdviceSignature", esjp.getSignature().getName());
             log("esjp");
         }
 
         //weird order
         @Before("pc()")
-        void beforeWEIRD1(JoinPoint jp, JoinPoint.StaticPart sjp) {
+        public void beforeWEIRD1(JoinPoint jp, JoinPoint.StaticPart sjp) {
             assertEquals("hello", jp.getSignature().getName());
             assertEquals("hello", sjp.getSignature().getName());
             log("jp-sjp");
         }
 
         @Before("pc()")
-        void before(JoinPoint.StaticPart sjp, JoinPoint.EnclosingStaticPart esjp) {
+        public void before(JoinPoint.StaticPart sjp, JoinPoint.EnclosingStaticPart esjp) {
             assertEquals("hello", sjp.getSignature().getName());
             assertEquals("testJoinPointsInAdviceSignature", esjp.getSignature().getName());
             log("sjp-esjp");
@@ -91,7 +91,7 @@ public class XXJoinPointTest extends TestCase {
 
         // conventional order
         @Before("pc()")
-        void before(JoinPoint.StaticPart sjp, JoinPoint jp, JoinPoint.EnclosingStaticPart esjp) {
+        public void before(JoinPoint.StaticPart sjp, JoinPoint jp, JoinPoint.EnclosingStaticPart esjp) {
             assertEquals("hello", sjp.getSignature().getName());
             assertEquals("hello", jp.getSignature().getName());
             assertEquals("testJoinPointsInAdviceSignature", esjp.getSignature().getName());
@@ -100,7 +100,7 @@ public class XXJoinPointTest extends TestCase {
 
         // weird order
         @Before("pc()")
-        void beforeWEIRD2(JoinPoint.EnclosingStaticPart esjp, JoinPoint jp, JoinPoint.StaticPart sjp) {
+        public void beforeWEIRD2(JoinPoint.EnclosingStaticPart esjp, JoinPoint jp, JoinPoint.StaticPart sjp) {
             assertEquals("testJoinPointsInAdviceSignature", esjp.getSignature().getName());
             assertEquals("hello", jp.getSignature().getName());
             assertEquals("hello", sjp.getSignature().getName());

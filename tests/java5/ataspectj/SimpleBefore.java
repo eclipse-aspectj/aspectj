@@ -14,7 +14,7 @@ public class SimpleBefore {
   	X.s.append("2");
   }
 
-    @Aspect("issingleton")
+    @Aspect("issingleton()")
     public static class X {
 
         public static StringBuffer s = new StringBuffer("");
