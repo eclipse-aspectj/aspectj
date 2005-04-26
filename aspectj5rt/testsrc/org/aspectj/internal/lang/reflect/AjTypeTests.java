@@ -116,8 +116,10 @@ public class AjTypeTests extends TestCase {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
 		AjType[] fooTypes = foo.getDeclaredAjTypes();
 		assertEquals(2,fooTypes.length);
-		assertEquals("org.aspectj.internal.lang.reflect.Foo$Z",fooTypes[0].getName());
-		assertEquals("org.aspectj.internal.lang.reflect.Foo$XX",fooTypes[1].getName());
+        // Alex -> Adrian: looks like you can not make assumption on the ordering
+        String s = " " + fooTypes[0].getName() + " " + fooTypes[1].getName();
+        assertTrue(s.indexOf(" org.aspectj.internal.lang.reflect.Foo$Z") >= 0);
+		assertTrue(s.indexOf(" org.aspectj.internal.lang.reflect.Foo$XX") >= 0);
 	}
 	
 	public void testGetConstructor() throws Exception {
