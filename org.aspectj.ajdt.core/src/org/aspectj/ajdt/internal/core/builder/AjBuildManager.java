@@ -13,9 +13,24 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.*;
-import java.util.*;
-import java.util.jar.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
@@ -23,26 +38,47 @@ import org.aspectj.ajdt.internal.compiler.IBinarySourceProvider;
 import org.aspectj.ajdt.internal.compiler.IIntermediateResultsRequestor;
 import org.aspectj.ajdt.internal.compiler.IOutputClassFileNameProvider;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
-import org.aspectj.ajdt.internal.compiler.lookup.*;
+import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
-import org.aspectj.asm.*;
-//import org.aspectj.asm.internal.*;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.ProgramElement;
-import org.aspectj.bridge.*;
-import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.Dump;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.*;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.aspectj.org.eclipse.jdt.core.compiler.*;
-import org.aspectj.org.eclipse.jdt.internal.compiler.*;
-import org.aspectj.org.eclipse.jdt.internal.compiler.batch.*;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.CountingMessageHandler;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IProgressListener;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.SourceLocation;
+import org.aspectj.bridge.Version;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapter;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerRequestor;
+import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathDirectory;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
+import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.Dump;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.eclipse.core.runtime.OperationCanceledException;
 //import org.aspectj.org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
 public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourceProvider,ICompilerAdapterFactory {
@@ -75,13 +111,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	
 	private Map /* String -> List<UCF>*/ binarySourcesForTheNextCompile = new HashMap();
 	
+	// FIXME asc should this really be in here?
 	private IHierarchy structureModel;
 	public AjBuildConfig buildConfig;
 	
 	AjState state = new AjState(this);
     
-	BcelWeaver bcelWeaver;
-	public BcelWorld bcelWorld;
+	
+	public BcelWeaver getWeaver() { return state.getWeaver();}
+	public BcelWorld getBcelWorld() { return state.getBcelWorld();}
 	
 	public CountingMessageHandler handler;
 
@@ -161,7 +199,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             if (batch) {
                 // System.err.println("XXXX batch: " + buildConfig.getFiles());
                 if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {  
-                    bcelWorld.setModel(AsmManager.getDefault().getHierarchy());
+                    getWorld().setModel(AsmManager.getDefault().getHierarchy());
                     // in incremental build, only get updated model?
                 }
                 binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
@@ -218,7 +256,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel();
             }
             // have to tell state we succeeded or next is not incremental
-            state.successfulCompile(buildConfig);
+            state.successfulCompile(buildConfig,batch);
 
             copyResourcesToDestination();
             /*boolean weaved = *///weaveAndGenerateClassFiles();
@@ -233,7 +271,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         		closeOutputStream(buildConfig.getOutputJar());
         	}
             ret = !handler.hasErrors();
-            bcelWorld.tidyUp();
+            getBcelWorld().tidyUp();
             // bug 59895, don't release reference to handler as may be needed by a nested call
             //handler = null;
         }
@@ -244,7 +282,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	private boolean openOutputStream(File outJar)  {
 		try {
 			OutputStream os = FileUtil.makeOutputStream(buildConfig.getOutputJar());
-			zos = new JarOutputStream(os,bcelWeaver.getManifest(true));
+			zos = new JarOutputStream(os,getWeaver().getManifest(true));
 		} catch (IOException ex) {
 			IMessage message = 
 				new Message("Unable to open outjar " 
@@ -394,7 +432,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	 * if we already have one
 	 */    
 	private void writeManifest () throws IOException {
-		Manifest manifest = bcelWeaver.getManifest(false);
+		Manifest manifest = getWeaver().getManifest(false);
 		if (manifest != null && zos == null) {
 			OutputStream fos = 
 				FileUtil.makeOutputStream(new File(buildConfig.getOutputDir(),MANIFEST_NAME));
@@ -444,27 +482,31 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
      * Responsible for managing the ASM model between builds.  Contains the policy for
      * maintaining the persistance of elements in the model.
      * 
+     * This code is driven before each 'fresh' (batch) build to create
+     * a new model.
      */
      private void setupModel(AjBuildConfig config) {
      	AsmManager.setCreatingModel(config.isEmacsSymMode() || config.isGenerateModelMode());
      	if (!AsmManager.isCreatingModel()) return;
+
+		AsmManager.getDefault().createNewASM();
+		// AsmManager.getDefault().getRelationshipMap().clear();
 		IHierarchy model = AsmManager.getDefault().getHierarchy();
-        	String rootLabel = "<root>";
+        String rootLabel = "<root>";
         	
-			AsmManager.getDefault().getRelationshipMap().clear();
 		
-        	IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
-        	if (buildConfig.getConfigFile() != null) {
-            	rootLabel = buildConfig.getConfigFile().getName();
-            	model.setConfigFile(
-                	buildConfig.getConfigFile().getAbsolutePath()
-            	);
-            	kind = IProgramElement.Kind.FILE_LST;  
-        	}
-        	model.setRoot(new ProgramElement(rootLabel, kind, new ArrayList()));
+        IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
+        if (buildConfig.getConfigFile() != null) {
+           	rootLabel = buildConfig.getConfigFile().getName();
+           	model.setConfigFile(buildConfig.getConfigFile().getAbsolutePath());
+           	kind = IProgramElement.Kind.FILE_LST;  
+        }
+        model.setRoot(new ProgramElement(rootLabel, kind, new ArrayList()));
                 
-        	model.setFileMap(new HashMap());
-        	setStructureModel(model);
+        model.setFileMap(new HashMap());
+        setStructureModel(model);
+		state.setStructureModel(model);
+		state.setRelationshipMap(AsmManager.getDefault().getRelationshipMap());
     }
     
 //    
@@ -489,11 +531,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
 		List cp = buildConfig.getBootclasspath();
 		cp.addAll(buildConfig.getClasspath());
-		bcelWorld = new BcelWorld(cp, handler, null);
+		BcelWorld bcelWorld = new BcelWorld(cp, handler, null);
 		bcelWorld.setBehaveInJava5Way(buildConfig.getBehaveInJava5Way());
 		bcelWorld.setXnoInline(buildConfig.isXnoInline());
 		bcelWorld.setXlazyTjp(buildConfig.isXlazyTjp());
-		bcelWeaver = new BcelWeaver(bcelWorld);
+		BcelWeaver bcelWeaver = new BcelWeaver(bcelWorld);
+		state.setWorld(bcelWorld);
+		state.setWeaver(bcelWeaver);
 		state.binarySourceFiles = new HashMap();
 		
 		for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext();) {
@@ -550,13 +594,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
 	
 	public World getWorld() {
-		return bcelWorld;
+		return getBcelWorld();
 	}
 	
 	void addAspectClassFilesToWeaver(List addedClassFiles) throws IOException {
 		for (Iterator i = addedClassFiles.iterator(); i.hasNext(); ) {
 			UnwovenClassFile classFile = (UnwovenClassFile) i.next();
-			bcelWeaver.addClassFile(classFile);
+			getWeaver().addClassFile(classFile);
 		}
 	}
 
@@ -641,7 +685,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
     
 	public void performCompilation(List files) {
 		if (progressListener != null) {
-			compiledCount = 0;
+			compiledCount=0;
 			sourceFileCount = files.size();
 			progressListener.setText("compiling source files");
 		}
@@ -965,7 +1009,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				pr, 
 				forCompiler.options.parseLiteralExpressionsAsConstants);
 		
-		return new AjCompilerAdapter(forCompiler,batchCompile,bcelWorld,bcelWeaver,
+		return new AjCompilerAdapter(forCompiler,batchCompile,getBcelWorld(),getWeaver(),
 						factory,
 						getInterimResultRequestor(),
 						progressListener,
@@ -999,5 +1043,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
     public AjState getState() {
         return state;
     }
-}   // class AjBuildManager
+
+	public void setState(AjState buildState) {
+		state = buildState;
+	}
+}
 
