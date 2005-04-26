@@ -1,0 +1,72 @@
+/* *******************************************************************
+ * Copyright (c) 2005 Contributors.
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Eclipse Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://eclipse.org/legal/epl-v10.html 
+ *  
+ * Contributors: 
+ * Andy Clement          initial implementation
+ * ******************************************************************/
+package org.aspectj.ajdt.internal.core.builder;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+
+
+/**
+ * Central point for all things incremental...
+ * - keeps track of the state recorded for each different config file
+ * - allows limited interaction with these states
+ *
+ * - records dependency/change info for particular classpaths
+ *   > this will become what JDT keeps in its 'State' object when its finished
+ */
+public class IncrementalStateManager {
+
+	// FIXME asc needs an API through Ajde for trashing its contents
+	// FIXME asc needs some memory mgmt (softrefs?) to recover memory
+	// SECRETAPI will consume more memory, so turn on at your own risk ;)  Set to 'true' when memory usage is understood
+	public  static boolean recordIncrementalStates = false;
+	private static Hashtable incrementalStates = new Hashtable();
+	
+	public static void recordSuccessfulBuild(String buildConfig, AjState state) {
+		if (!recordIncrementalStates) return;
+		incrementalStates.put(buildConfig,state);
+	}
+	
+	public static boolean removeIncrementalStateInformationFor(String buildConfig) {
+		return incrementalStates.remove(buildConfig)!=null;
+	}
+	
+	public static void clearIncrementalStates() {
+		incrementalStates.clear();
+	}
+	
+	public static Set getConfigFilesKnown() {
+		return incrementalStates.keySet();
+	}
+
+	public static AjState retrieveStateFor(String configFile) {
+		return (AjState)incrementalStates.get(configFile);
+	}
+	
+	// now, managing changes to entries on a classpath
+	
+	public static AjState findStateManagingOutputLocation(File location) {
+		Collection allStates = incrementalStates.values();
+		for (Iterator iter = allStates.iterator(); iter.hasNext();) {
+			AjState element = (AjState) iter.next();
+			File outputDir = element.buildConfig.getOutputDir();
+			if (outputDir.equals(location)) return element;
+		}
+		return null;
+	}
+	
+	// FIXME asc needs a persistence mechanism for storing/loading all state info
+	// FIXME asc needs to understand two config files might point at the same output dir... what to do about this?
+}
