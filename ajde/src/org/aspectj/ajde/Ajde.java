@@ -170,6 +170,10 @@ public class Ajde {
 		this.logPrintStream = null;	
 	}
 	
+	public boolean isLogging() {
+		return (this.logPrintStream!=null);
+	}
+	
 	/**
 	 * The structure manager is not a part of the public API and its
 	 * use should be avoided.  Used <CODE>getStructureViewManager()</CODE>
