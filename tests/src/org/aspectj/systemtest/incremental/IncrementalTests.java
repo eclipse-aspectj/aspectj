@@ -117,6 +117,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		public void pathChangeDetected() {pathChange = true;}
 		public void aboutToCompareClasspaths(List oldClasspath, List newClasspath) {}
 		public void detectedClassChangeInThisDir(File f) {}
+		public void buildSuccessful(boolean wasFullBuild) {}
 	  };
 	  MyStateListener sl = new MyStateListener();
 	  AjState.stateListener = sl;
