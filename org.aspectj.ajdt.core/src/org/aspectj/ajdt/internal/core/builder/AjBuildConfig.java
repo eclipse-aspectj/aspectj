@@ -64,6 +64,12 @@ public class AjBuildConfig {
     // incremental variants handled by the compiler client, but parsed here
     private boolean incrementalMode;
     private File incrementalFile;
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("BuildConfig["+(configFile==null?"null":configFile.getAbsoluteFile().toString())+"] #Files="+files.size());
+		return sb.toString();
+	}
     
 	public static class BinarySourceFile {
 		public BinarySourceFile(File dir, File src) {
