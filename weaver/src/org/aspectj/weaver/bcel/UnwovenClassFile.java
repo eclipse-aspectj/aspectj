@@ -167,8 +167,10 @@ public class UnwovenClassFile {
 				public boolean accept(File dir, String name) {
 					return name.startsWith(targetPrefix);
 				}});
-			for (int i = 0; i < weaverGenerated.length; i++) {
-				weaverGenerated[i].delete();
+			if (weaverGenerated!=null) {
+				for (int i = 0; i < weaverGenerated.length; i++) {
+					weaverGenerated[i].delete();
+				}
 			}
 		}
 		victim.delete();
