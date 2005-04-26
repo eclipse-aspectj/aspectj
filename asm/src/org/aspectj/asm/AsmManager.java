@@ -34,17 +34,27 @@ public class AsmManager {
 	 * @deprecated	use getDefault() method instead
 	 */  
 	private static AsmManager INSTANCE = new AsmManager();
-    private IElementHandleProvider handleProvider;
-	private boolean shouldSaveModel = true;
-    protected IHierarchy hierarchy;
-    private List structureListeners = new ArrayList();
-	private IRelationshipMap mapper;
-	private static boolean creatingModel = false;
 	
 
-	public static boolean dumpModelPostBuild = false; // Dumping the model is expensive
-	public static boolean attemptIncrementalModelRepairs = false;
-//	for debugging ...	
+    private IElementHandleProvider handleProvider;
+    private List structureListeners = new ArrayList();
+	private boolean shouldSaveModel = true;
+
+	
+	public void setRelationshipMap(IRelationshipMap irm) { mapper = irm;}
+	public void setHierarchy(IHierarchy ih) { hierarchy=ih;}
+	
+	// The model is 'manipulated' by the AjBuildManager.setupModel() code which trashes all the
+	// fields when setting up a new model for a batch build.
+	// Due to the requirements of incremental compilation we need to tie some of the info
+	// below to the AjState for a compilation and recover it if switching between projects.
+	protected IHierarchy hierarchy;
+	private IRelationshipMap mapper;
+	
+	private static boolean creatingModel = false;
+	public static  boolean dumpModelPostBuild = false; // Dumping the model is expensive
+	// SECRETAPI asc pull the secret options together into a system API you lazy fool
+	public static  boolean attemptIncrementalModelRepairs = false;
 
     // For offline debugging, you can now ask for the AsmManager to
     // dump the model - see the method setReporting()
@@ -64,6 +74,13 @@ public class AsmManager {
 		mapper = new RelationshipMap(hierarchy);
         handleProvider = new FullPathHandleProvider(); 
     }
+	
+	public void createNewASM() {
+		hierarchy = new AspectJElementHierarchy();
+		mapper = new RelationshipMap(hierarchy);
+	}
+	
+	
 
     public IHierarchy getHierarchy() {
         return hierarchy;	
@@ -350,7 +367,9 @@ public class AsmManager {
 		}
 	}
 
-	public static void setReporting(String filename,boolean dModel,boolean dRels,boolean dDeltaProcessing,boolean deletefile) {
+	// SECRETAPI
+	public static void setReporting(String filename,boolean dModel,boolean dRels,boolean dDeltaProcessing,
+			                          boolean deletefile) {
 		reporting         = true;
 		dumpModel         = dModel;
 		dumpRelationships = dRels;
@@ -408,6 +427,20 @@ public class AsmManager {
 		if (node!=null) 
 		for (Iterator i = node.getChildren().iterator();i.hasNext();) {
 			dumptree(w,(IProgramElement)i.next(),indent+2);
+		}
+	}
+	
+	public static void dumptree(IProgramElement node,int indent) throws IOException {
+		for (int i =0 ;i<indent;i++) System.out.print(" ");
+		String loc = "";
+		if (node!=null) { 
+			if (node.getSourceLocation()!=null) 
+				loc = node.getSourceLocation().toString();
+		}
+		System.out.println(node+"  ["+(node==null?"null":node.getKind().toString())+"] "+loc);
+		if (node!=null) 
+		for (Iterator i = node.getChildren().iterator();i.hasNext();) {
+			dumptree((IProgramElement)i.next(),indent+2);
 		}
 	}
 	
@@ -811,7 +844,6 @@ public class AsmManager {
      * guarding of expensive operations on an empty/null model.
      */
 	public static boolean isCreatingModel() { return creatingModel;}
-	
 	
 }
 
