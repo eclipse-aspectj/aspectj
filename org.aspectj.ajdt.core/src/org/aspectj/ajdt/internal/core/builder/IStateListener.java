@@ -33,4 +33,6 @@ public interface IStateListener {
 
 	public void pathChangeDetected();
 
+	public void buildSuccessful(boolean wasFullBuild);
+
 }
