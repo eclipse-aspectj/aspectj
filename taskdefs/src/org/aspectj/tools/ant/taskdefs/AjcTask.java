@@ -1142,7 +1142,8 @@ public class AjcTask extends MatchingTask {
                 sb.append("inpathDirCopyFilter");
             } else {
                 sb.append("sourceRootCopyFilter and inpathDirCopyFilter");
-            }            sb.append(REQ);
+            }
+            sb.append(REQ);
         }
         if (0 < sb.length()) {
             throw new BuildException(sb.toString());
@@ -1378,7 +1379,7 @@ public class AjcTask extends MatchingTask {
 // replace above two lines with what follows as an aid to debugging when running the unit tests....
 //            LogStreamHandler handler = new LogStreamHandler(this,
 //                                 Project.MSG_INFO, Project.MSG_WARN) {
-//            	
+//
 //            	ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //            	/* (non-Javadoc)
 //				 * @see org.apache.tools.ant.taskdefs.PumpStreamHandler#createProcessOutputPump(java.io.InputStream, java.io.OutputStream)
@@ -1387,7 +1388,7 @@ public class AjcTask extends MatchingTask {
 //						OutputStream os) {
 //					super.createProcessErrorPump(is, baos);
 //				}
-//				
+//
 //				/* (non-Javadoc)
 //				 * @see org.apache.tools.ant.taskdefs.LogStreamHandler#stop()
 //				 */

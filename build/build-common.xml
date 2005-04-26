@@ -107,17 +107,25 @@
                 </classpath>
                 <test name="@{suite}"/>
             </junit>
-            <!-- TODO AV - using java to invoke JUnit since the junit task is hidding errors - don't know why -->
-            <!--<java classname="@{suite}" fork="on" dir="../@{project}">
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testrun2">
+        <attribute name="project"/>
+        <attribute name="path"/>
+        <attribute name="suite"/>
+        <sequential>
+            <java classname="@{suite}" fork="on" dir="../@{project}">
                 <jvmarg line=""/>
                 <classpath>
                     <pathelement path="../@{project}/${build.dir}"/>
                     <pathelement path="../@{project}/${test.build.dir}"/>
                     <path refid="@{path}"/>
                 </classpath>
-            </java>-->
+            </java>
         </sequential>
     </macrodef>
+
 
     <target name="all" depends="init, compile, test:compile"/>
 

@@ -16,10 +16,12 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import junit.framework.TestCase;
 
 import org.apache.commons.digester.Digester;
 import org.aspectj.tools.ajc.AjcTestCase;
@@ -85,7 +87,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	/*
 	 * Return a map from (String) test title -> AjcTest
 	 */
-	private Map getSuiteTests() {
+	protected Map getSuiteTests() {
 		return testMap;
 	}
 	
@@ -125,7 +127,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 * in the XML document to properties in the associated classes, so this simple implementation should
 	 * be very easy to maintain and extend should you ever need to.
 	 */
-	private Digester getDigester() {
+	protected Digester getDigester() {
 		Digester digester = new Digester();
 		digester.push(this);
 		digester.addObjectCreate("suite/ajc-test",AjcTest.class);
@@ -173,7 +175,6 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 			suiteLoaded = true;
 		}
 	}
-	
 
 	  protected long nextIncrement(boolean doWait) {
 	  	long time = System.currentTimeMillis();

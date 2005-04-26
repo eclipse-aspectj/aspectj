@@ -37,7 +37,7 @@ public class Message implements IMessage {
     /**
      * Create a (compiler) error or warning message
      * @param message the String used as the underlying message
-     * @param sourceLocation the ISourceLocation, if any, associated with this message
+     * @param location the ISourceLocation, if any, associated with this message
      * @param isError if true, use IMessage.ERROR; else use IMessage.WARNING
      */
     public Message(String message, ISourceLocation location, boolean isError) {

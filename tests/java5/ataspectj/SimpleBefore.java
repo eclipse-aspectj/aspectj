@@ -1,8 +1,18 @@
 import org.aspectj.lang.annotation.*;
 
+import java.lang.annotation.Annotation;
+
 public class SimpleBefore {
 
   public static void main(String []argv) {
+
+      Class x = X.class;
+      Aspect ann = (Aspect) x.getAnnotation(Aspect.class);
+      if (ann == null) {
+          throw new RuntimeException("could not see runtime visible annotation");
+      }
+
+
     SimpleBefore instance = new SimpleBefore();
     X.s.append("1");
     instance.m();

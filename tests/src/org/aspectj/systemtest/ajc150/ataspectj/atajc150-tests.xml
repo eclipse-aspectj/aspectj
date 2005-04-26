@@ -2,11 +2,11 @@
 
     <ajc-test dir="java5/ataspectj" title="SimpleBefore">
         <compile files="SimpleBefore.java" options="-1.5 -showWeaveInfo -XnoInline">
-            <message kind="weave" text="(SimpleBefore.java:13) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:1)"/>
+            <message kind="weave" text="(SimpleBefore.java:23) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:1)"/>
         </compile>
         <run class="SimpleBefore"/>
         <compile files="SimpleBefore.java" options="-1.5 -showWeaveInfo -XnoInline -Xdev:NoAtAspectJProcessing">
-            <message kind="weave" text="(SimpleBefore.java:13) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:1)"/>
+            <message kind="weave" text="(SimpleBefore.java:23) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:1)"/>
         </compile>
         <run class="SimpleBefore"/>
     </ajc-test>

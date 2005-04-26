@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2005 Contributors
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * Copyright (c) 2005 Contributors.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *  initial implementation      Jonas Bonér, Alexandre Vasseur
+ * initial implementation              Alexandre Vasseur
  *******************************************************************************/
 package org.aspectj.weaver.ataspectj;
 
@@ -25,9 +26,11 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.weaver.Advice;
@@ -50,6 +53,7 @@ import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.PerTypeWithin;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
+import org.aspectj.weaver.patterns.ParserException;
 
 /**
  * Annotation defined aspect reader.
@@ -124,13 +128,13 @@ public class Aj5Attributes {
     }
 
     /**
-     * Annotations are RV or RIV for now we don't care
+     * Annotations are RuntimeVisible only. This allow us to not visit RuntimeInvisible ones.
      *
      * @param attribute
      * @return
      */
     public static boolean acceptAttribute(Attribute attribute) {
-        return (attribute instanceof RuntimeAnnotations);
+        return (attribute instanceof RuntimeVisibleAnnotations);
     }
 
     /**
@@ -145,13 +149,56 @@ public class Aj5Attributes {
     public static List readAj5ClassAttributes(JavaClass javaClass, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler, boolean isCodeStyleAspect) {
         AjAttributeStruct struct = new AjAttributeStruct(type, context, msgHandler);
         Attribute[] attributes = javaClass.getAttributes();
+        boolean hasAtAspectAnnotation = false;
+        boolean hasAtPrecedenceAnnotation = false;
+
         for (int i = 0; i < attributes.length; i++) {
             Attribute attribute = attributes[i];
             if (acceptAttribute(attribute)) {
                 RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-                if (!isCodeStyleAspect) handleAspectAnnotation(rvs, struct);
-                handlePrecedenceAnnotation(rvs, struct);
+                // we don't need to look for several attribute occurence since it cannot happen as per JSR175
+                if (!isCodeStyleAspect) {
+                    hasAtAspectAnnotation = handleAspectAnnotation(rvs, struct);
+                }
+                //TODO: below means mix style for @DeclarePrecedence - are we sure we want that ?
+                hasAtPrecedenceAnnotation = handlePrecedenceAnnotation(rvs, struct);
+                // there can only be one RuntimeVisible bytecode attribute
+                break;
             }
+        }
+
+        // basic semantic check
+        //FIXME AV TBD could be skipped and silently ignore - TBD with Andy
+        if (hasAtPrecedenceAnnotation && !hasAtAspectAnnotation) {
+            msgHandler.handleMessage(
+                    new Message(
+                            "Found @DeclarePrecedence on a non @Aspect type '" + type.getName() + "'",
+                            IMessage.WARNING,
+                            null,
+                            type.getSourceLocation()
+                    )
+            );
+            // bypass what we have read
+            return EMPTY_LIST;
+        }
+        //FIXME turn on when ajcMightHaveAspect fixed
+//        if (hasAtAspectAnnotation && type.isInterface()) {
+//            msgHandler.handleMessage(
+//                    new Message(
+//                            "Found @Aspect on an interface type '" + type.getName() + "'",
+//                            IMessage.WARNING,
+//                            null,
+//                            type.getSourceLocation()
+//                    )
+//            );
+//            // bypass what we have read
+//            return EMPTY_LIST;
+//        }
+
+        // the following block will not detect @Pointcut in non @Aspect types for optimization purpose
+        // FIXME AV TBD with Andy
+        if (!hasAtAspectAnnotation) {
+            return EMPTY_LIST;
         }
 
         // code style pointcuts are class attributes
@@ -171,11 +218,12 @@ public class Aj5Attributes {
                 if (acceptAttribute(mattribute)) {
                     RuntimeAnnotations mrvs = (RuntimeAnnotations) mattribute;
                     handlePointcutAnnotation(mrvs, mstruct);
+                    // there can only be one RuntimeVisible bytecode attribute
+                    break;
                 }
             }
             struct.ajAttributes.addAll(mstruct.ajAttributes);
         }
-
         return struct.ajAttributes;
     }
 
@@ -194,17 +242,66 @@ public class Aj5Attributes {
 		AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, type, context, msgHandler);
         Attribute[] attributes = method.getAttributes();
 
+        // we remember if we found one @AJ annotation for minimal semantic error reporting
+        // the real reporting beeing done thru AJDT and the compiler mapping @AJ to AjAtttribute
+        // or thru APT
+        // FIXME AV we could actually skip the whole thing if type is not itself an @Aspect
+        // but then we would not see any warning. TBD with Andy
+        boolean hasAtAspectJAnnotation = false;
+        boolean hasAtAspectJAnnotationMustReturnVoid = false;
         for (int i = 0; i < attributes.length; i++) {
             Attribute attribute = attributes[i];
             if (acceptAttribute(attribute)) {
                 RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-                handleBeforeAnnotation(rvs, struct, preResolvedPointcut);
-                handleAfterAnnotation(rvs, struct, preResolvedPointcut);
-                handleAfterReturningAnnotation(rvs, struct, preResolvedPointcut);
-                handleAfterThrowingAnnotation(rvs, struct, preResolvedPointcut);
-                handleAroundAnnotation(rvs, struct, preResolvedPointcut);
+                hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleBeforeAnnotation(rvs, struct, preResolvedPointcut);
+                hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterAnnotation(rvs, struct, preResolvedPointcut);
+                hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterReturningAnnotation(rvs, struct, preResolvedPointcut);
+                hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterThrowingAnnotation(rvs, struct, preResolvedPointcut);
+                hasAtAspectJAnnotation = hasAtAspectJAnnotation || handleAroundAnnotation(rvs, struct, preResolvedPointcut);
+                // there can only be one RuntimeVisible bytecode attribute
+                break;
             }
         }
+        hasAtAspectJAnnotation = hasAtAspectJAnnotation || hasAtAspectJAnnotationMustReturnVoid;
+
+        // semantic check - must be in an @Aspect [remove if previous block bypassed in advance]
+        if (hasAtAspectJAnnotation && !type.isAnnotationStyleAspect()) {
+            msgHandler.handleMessage(
+                    new Message(
+                            "Found @AspectJ annotations in a non @Aspect type '" + type.getName() + "'",
+                            IMessage.WARNING,
+                            null,
+                            type.getSourceLocation()
+                    )
+            );
+            ;// go ahead
+        }
+        // semantic check - advice must be public
+        if (hasAtAspectJAnnotation && !struct.method.isPublic()) {
+            msgHandler.handleMessage(
+                    new Message(
+                            "Found @AspectJ annotation on a non public advice '" + methodToString(struct.method) + "'",
+                            IMessage.ERROR,
+                            null,
+                            type.getSourceLocation()
+                    )
+            );
+            ;// go ahead
+        }
+        // semantic check for non around advice must return void
+        if (hasAtAspectJAnnotationMustReturnVoid && !Type.VOID.equals(struct.method.getReturnType())) {
+            msgHandler.handleMessage(
+                    new Message(
+                            "Found @AspectJ annotation on a non around advice not returning void '" + methodToString(struct.method) + "'",
+                            IMessage.ERROR,
+                            null,
+                            type.getSourceLocation()
+                    )
+            );
+            ;// go ahead
+        }
+
+
         return struct.ajAttributes;
     }
 
@@ -227,8 +324,9 @@ public class Aj5Attributes {
      *
      * @param runtimeAnnotations
      * @param struct
+     * @return true if found
      */
-    private static void handleAspectAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeStruct struct) {
+    private static boolean handleAspectAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeStruct struct) {
         Annotation aspect = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.Aspect");
         if (aspect != null) {
             ElementNameValuePair aspectPerClause = getAnnotationElement(aspect, "value");
@@ -237,6 +335,7 @@ public class Aj5Attributes {
                 PerClause clause = new PerSingleton();
                 clause.setLocation(struct.context, -1, -1);
                 struct.ajAttributes.add(new AjAttribute.Aspect(clause));
+                return true;
             } else {
                 String perX = aspectPerClause.getValue().stringifyValue();
                 final PerClause clause;
@@ -247,8 +346,10 @@ public class Aj5Attributes {
                 }
                 clause.setLocation(struct.context, -1, -1);
                 struct.ajAttributes.add(new AjAttribute.Aspect(clause));
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -282,7 +383,7 @@ public class Aj5Attributes {
         struct.handler.handleMessage(
                 new Message(
                         "cannot read per clause from @Aspect: " + perClause,
-                        null,//TODO
+                        struct.enclosingType.getSourceLocation(),
                         true
                 )
         );
@@ -294,8 +395,9 @@ public class Aj5Attributes {
      *
      * @param runtimeAnnotations
      * @param struct
+     * @return true if found
      */
-    private static void handlePrecedenceAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeStruct struct) {
+    private static boolean handlePrecedenceAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeStruct struct) {
         Annotation aspect = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.DeclarePrecedence");
         if (aspect != null) {
             ElementNameValuePair precedence = getAnnotationElement(aspect, "value");
@@ -304,8 +406,10 @@ public class Aj5Attributes {
                 PatternParser parser = new PatternParser(precedencePattern);
                 DeclarePrecedence ajPrecedence = parser.parseDominates();
                 struct.ajAttributes.add(new AjAttribute.DeclareAttribute(ajPrecedence));
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -313,8 +417,9 @@ public class Aj5Attributes {
      *
      * @param runtimeAnnotations
      * @param struct
+     * @return true if found
      */
-    private static void handleBeforeAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
+    private static boolean handleBeforeAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation before = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.Before");
         if (before != null) {
             ElementNameValuePair beforeAdvice = getAnnotationElement(before, "value");
@@ -346,8 +451,10 @@ public class Aj5Attributes {
                         struct.context
                         )
                 );
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -355,8 +462,9 @@ public class Aj5Attributes {
      *
      * @param runtimeAnnotations
      * @param struct
+     * @return true if found
      */
-    private static void handleAfterAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
+    private static boolean handleAfterAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation after = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.After");
         if (after != null) {
             ElementNameValuePair afterAdvice = getAnnotationElement(after, "value");
@@ -388,8 +496,10 @@ public class Aj5Attributes {
                         struct.context
                         )
                 );
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -397,8 +507,9 @@ public class Aj5Attributes {
      *
      * @param runtimeAnnotations
      * @param struct
+     * @return true if found
      */
-    private static void handleAfterReturningAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
+    private static boolean handleAfterReturningAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation after = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.AfterReturning");
         if (after != null) {
             ElementNameValuePair annValue = getAnnotationElement(after, "value");
@@ -448,6 +559,7 @@ public class Aj5Attributes {
               pc = Pointcut.fromString(pointcut).resolve(binding);
 			}
             setIgnoreUnboundBindingNames(pc, bindings);
+            pc.setLocation(struct.enclosingType.getSourceContext(), 0, 0);//TODO method location ?
 
             struct.ajAttributes.add(new AjAttribute.AdviceAttribute(
                     AdviceKind.AfterReturning,
@@ -458,7 +570,9 @@ public class Aj5Attributes {
                     struct.context
                     )
             );
+            return true;
         }
+        return false;
     }
 
     /**
@@ -466,8 +580,9 @@ public class Aj5Attributes {
      *
      * @param runtimeAnnotations
      * @param struct
+     * @return true if found
      */
-    private static void handleAfterThrowingAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
+    private static boolean handleAfterThrowingAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation after = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.AfterThrowing");
         if (after != null) {
             ElementNameValuePair annValue = getAnnotationElement(after, "value");
@@ -527,7 +642,9 @@ public class Aj5Attributes {
                     struct.context
                     )
             );
+            return true;
         }
+        return false;
     }
 
     /**
@@ -535,8 +652,9 @@ public class Aj5Attributes {
      *
      * @param runtimeAnnotations
      * @param struct
+     * @return true if found
      */
-    private static void handleAroundAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
+    private static boolean handleAroundAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
         Annotation around = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.Around");
         if (around != null) {
             ElementNameValuePair aroundAdvice = getAnnotationElement(around, "value");
@@ -568,8 +686,10 @@ public class Aj5Attributes {
                         struct.context
                         )
                 );
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -583,6 +703,34 @@ public class Aj5Attributes {
         if (pointcut != null) {
             ElementNameValuePair pointcutExpr = getAnnotationElement(pointcut, "value");
             if (pointcutExpr != null) {
+
+                // semantic check: the method must return void
+                if (!Type.VOID.equals(struct.method.getReturnType())) {
+                    struct.handler.handleMessage(
+                            new Message(
+                                    "Found @Pointcut on a method not returning void '" + methodToString(struct.method) + "'",
+                                    IMessage.WARNING,
+                                    null,
+                                    struct.enclosingType.getSourceLocation()//TODO method loc instead how ?
+                            )
+                    );
+                    //TODO AV : Andy - should we stop ?
+                    return;
+                }
+                // semantic check: the method must not throw anything
+                if (struct.method.getExceptionTable() != null) {
+                    struct.handler.handleMessage(
+                            new Message(
+                                    "Found @Pointcut on a method throwing exception '" + methodToString(struct.method) + "'",
+                                    IMessage.WARNING,
+                                    null,
+                                    struct.enclosingType.getSourceLocation()//TODO method loc instead how ?
+                            )
+                    );
+                    //TODO AV : Andy - should we stop ?
+                    return;
+                }
+
                 // this/target/args binding
                 IScope binding = new BindingScope(
                         struct.enclosingType,
@@ -596,18 +744,44 @@ public class Aj5Attributes {
 
                 // use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
                 // since for it to be resolved, we will need other pointcuts to be registered as well
-                struct.ajAttributes.add(new AjAttribute.PointcutDeclarationAttribute(
-                        new LazyResolvedPointcutDefinition(
-                                struct.enclosingType,
-                                struct.method.getModifiers(),
-                                struct.method.getName(),
-                                argumentTypes,
-                                Pointcut.fromString(pointcutExpr.getValue().stringifyValue()),
-                                binding
-                        )
-                ));
+                try {
+                    struct.ajAttributes.add(new AjAttribute.PointcutDeclarationAttribute(
+                            new LazyResolvedPointcutDefinition(
+                                    struct.enclosingType,
+                                    struct.method.getModifiers(),
+                                    struct.method.getName(),
+                                    argumentTypes,
+                                    Pointcut.fromString(pointcutExpr.getValue().stringifyValue()),
+                                    binding
+                            )
+                    ));
+                } catch (ParserException e) {
+                    struct.handler.handleMessage(
+                            new Message(
+                                    "Cannot parse @Pointcut '" + pointcutExpr.getValue().stringifyValue() + "'",
+                                    IMessage.ERROR,
+                                    e,
+                                    struct.enclosingType.getSourceLocation()//TODO method loc instead how ?
+                            )
+                    );
+                    return;
+                }
             }
         }
+    }
+
+    /**
+     * Returns a readable representation of a method.
+     * Method.toString() is not suitable.
+     *
+     * @param method
+     * @return
+     */
+    private static String methodToString(Method method) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(method.getName());
+        sb.append(method.getSignature());
+        return sb.toString();
     }
 
     /**
@@ -723,14 +897,13 @@ public class Aj5Attributes {
 
     /**
      * Returns the value of a given element of an annotation or null if not found
-     * Does not handles default value
+     * Caution: Does not handles default value.
      *
      * @param annotation
      * @param elementName
      * @return
      */
     private static ElementNameValuePair getAnnotationElement(Annotation annotation, String elementName) {
-        //FIXME alex does not handles default values which are annotation of elements in the annotation class
         for (Iterator iterator1 = annotation.getValues().iterator(); iterator1.hasNext();) {
             ElementNameValuePair element = (ElementNameValuePair) iterator1.next();
             if (elementName.equals(element.getNameString())) {
@@ -838,16 +1011,18 @@ public class Aj5Attributes {
 
         private Pointcut m_lazyPointcut = null;
 
-        public LazyResolvedPointcutDefinition(TypeX declaringType, int modifiers, String name, TypeX[] parameterTypes,
+        public LazyResolvedPointcutDefinition(ResolvedTypeX declaringType, int modifiers, String name, TypeX[] parameterTypes,
                                               Pointcut pointcut, IScope binding) {
             super(declaringType, modifiers, name, parameterTypes, null);
             m_pointcutUnresolved = pointcut;
             m_binding = binding;
+            m_pointcutUnresolved.setLocation(declaringType.getSourceContext(), 0, 0);
         }
 
         public Pointcut getPointcut() {
             if (m_lazyPointcut == null) {
                 m_lazyPointcut = m_pointcutUnresolved.resolve(m_binding);
+                m_lazyPointcut.copyLocationFrom(m_pointcutUnresolved);
             }
             return m_lazyPointcut;
         }

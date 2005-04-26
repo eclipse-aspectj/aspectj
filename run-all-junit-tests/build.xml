@@ -5,6 +5,7 @@
     <import file="../ajbrowser/build.xml"/>
     <import file="../ajde/build.xml"/>
     <import file="../asm/build.xml"/>
+    <import file="../aspectj5rt/build.xml"/>
     <import file="../bridge/build.xml"/>
     <import file="../org.aspectj.ajdt.core/build.xml"/>
     <import file="../runtime/build.xml"/>
@@ -26,6 +27,8 @@
         <pathelement path="../ajbrowser/bin"/>
         <pathelement path="../asm/bintest"/>
         <pathelement path="../asm/bin"/>
+        <pathelement path="../aspectj5rt/bintest"/>
+        <pathelement path="../aspectj5rt/bin"/>
         <pathelement path="../bridge/bintest"/>
         <pathelement path="../bridge/bin"/>
         <pathelement path="../org.aspectj.ajdt.core/bintest"/>
@@ -71,6 +74,7 @@
                                          ajde.test:compile,
                                          asm.compile,
                                          asm.test:compile,
+                                         aspectj5rt.compile,
                                          bridge.compile,
                                          bridge.test:compile,
                                          org.aspectj.ajdt.core.compile,
@@ -90,6 +94,7 @@
                                          util.test:compile,
                                          weaver.compile,
                                          weaver.test:compile">
+        <ant antfile="../aspectj5rt/build.xml" target="test:compile"/>
         <testcompile project="run-all-junit-tests" path="run-all-junit-tests.test.src.path"/>
     </target>
 

@@ -35,23 +35,23 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
     public void testSimpleBefore() {
         runTest("SimpleBefore");
     }
-	
+
     public void testSimpleAfter() {
         runTest("SimpleAfter");
     }
-	
+
     public void testSingletonAspectBinding() {
         runTest("singletonAspectBindings");
     }
-	
+
     public void testCflow() {
         runTest("CflowTest");
     }
-	
+
     public void testPointcutReference() {
         runTest("PointcutReferenceTest");
     }
-	
+
     public void testXXJoinPoint() {
         runTest("XXJoinPointTest");
     }

@@ -18,6 +18,8 @@ import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 
+import java.lang.annotation.Annotation;
+
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -38,6 +40,11 @@ public class PrecedenceTest extends TestCase {
 
     public void hello() {
         log("hello");
+    }
+
+    public void testRuntimeVisible() {
+        Annotation annotation = TestAspect_Order.class.getAnnotation(DeclarePrecedence.class);
+        assertNotNull(annotation);
     }
 
     public void testPrecedence() {

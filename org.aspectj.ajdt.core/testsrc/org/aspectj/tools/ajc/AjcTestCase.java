@@ -68,6 +68,14 @@ public class AjcTestCase extends TestCase {
 		File.pathSeparator +
 		".." + File.separator + "util" + File.separator + "bin" +
 		File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator + "bin" +
+        //Alex: adding "_IDE" since there is no "bin" output when working within IDEA.
+        // my convention is thus to have a "modules/_IDE" folder where IDEA will write
+        // Since modules/* have circular dependancies, there is no way to have multiple "modules"
+        // (like Eclipse projects in one workspace) in IDEA, so all will be build there.
+        // Note: adding it last means that a change in the IDE aspectj5rt module f.e. without
+        // "ant compile" to rebuild "aspect5rt/bin" will not expose the IDE changes...
+        // but I don't want to have it first to avoid side effects when running from Ant.
+        File.pathSeparator + ".." + File.separator + "_IDE" +
 		File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar";
 
 	/**
