@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150.ataspectj;
 
-import org.aspectj.testing.AutowiredXMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCase;
-
 import java.io.File;
 
 import junit.framework.Test;
+
+import org.aspectj.testing.AutowiredXMLBasedAjcTestCase;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

@@ -12,8 +12,6 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
