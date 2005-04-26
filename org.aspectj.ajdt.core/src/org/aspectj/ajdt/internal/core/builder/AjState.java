@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
@@ -35,6 +38,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatExcepti
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 
@@ -44,11 +49,18 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
 public class AjState {
 	AjBuildManager buildManager;
 	
-	// static so beware of multi-threading bugs...
+	// SECRETAPI static so beware of multi-threading bugs...
 	public static IStateListener stateListener = null;
+
+	private IHierarchy structureModel;
+	private IRelationshipMap relmap;
 	
-	long lastSuccessfulBuildTime = -1;
-	long currentBuildTime = -1;
+	private long lastSuccessfulFullBuildTime = -1;
+	private Hashtable /* File, long */ structuralChangesSinceLastFullBuild = new Hashtable();
+	
+	private long lastSuccessfulBuildTime = -1;
+	private long currentBuildTime = -1;
+	
 	AjBuildConfig buildConfig;
 	AjBuildConfig newBuildConfig;
 	
@@ -68,15 +80,20 @@ public class AjState {
 	Set /*BinarySourceFile*/addedBinaryFiles;
 	Set /*BinarySourceFile*/deletedBinaryFiles;
 	
+	private BcelWeaver weaver;
+	private BcelWorld world;
+	
 	List addedClassFiles;
 	
 	public AjState(AjBuildManager buildManager) {
 		this.buildManager = buildManager;
 	}
 	
-	void successfulCompile(AjBuildConfig config) {
+	void successfulCompile(AjBuildConfig config,boolean wasFullBuild) {
 		buildConfig = config;
 		lastSuccessfulBuildTime = currentBuildTime;
+		if (stateListener!=null) stateListener.buildSuccessful(wasFullBuild);
+		if (wasFullBuild) lastSuccessfulFullBuildTime = currentBuildTime;
 	}
 	
 	/**
@@ -88,11 +105,15 @@ public class AjState {
 		addedClassFiles = new ArrayList();
 		
 		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
+			structuralChangesSinceLastFullBuild.clear();
 			return false;
 		}
 		
 		// we don't support incremental with an outjar yet
-		if (newBuildConfig.getOutputJar() != null) return false;
+		if (newBuildConfig.getOutputJar() != null) {
+			structuralChangesSinceLastFullBuild.clear();
+			return false;
+		}
 		
 		// we can't do an incremental build if one of our paths
 		// has changed, or a jar on a path has been modified
@@ -104,6 +125,7 @@ public class AjState {
 		    // since the last build will not be deleted from the output directory.
 		    removeAllResultsOfLastBuild();
 			if (stateListener!=null) stateListener.pathChangeDetected();
+			structuralChangesSinceLastFullBuild.clear();
 		    return false;
 		}
 		
@@ -175,22 +197,53 @@ public class AjState {
 	}
 	
 	private boolean classFileChangedInDirSinceLastBuild(File dir) {
-		File[] classFiles = FileUtil.listFiles(dir, new FileFilter(){
-		
+		// Is another process building into that directory?
+		AjState state = IncrementalStateManager.findStateManagingOutputLocation(dir);
+
+		File[] classFiles = FileUtil.listFiles(dir, new FileFilter() {
 			public boolean accept(File pathname) {
 				return pathname.getName().endsWith(".class");
 			}
-		
 		});
+		
 		for (int i = 0; i < classFiles.length; i++) {
 			long modTime = classFiles[i].lastModified();
-			if (modTime + 1000 >= lastSuccessfulBuildTime) {
-				return true;
+			if ((modTime+1000)>=lastSuccessfulBuildTime) {
+				// so the class on disk has changed since our last successful build
+				
+				// To work out if it is a real change we should ask any state
+				// object managing this output location whether the file has
+				// structurally changed or not
+				if (state!=null) {
+					boolean realChange = state.hasStructuralChangedSince(classFiles[i],lastSuccessfulBuildTime);
+					if (realChange) return true;
+				} else {
+					// FIXME asc you should ask Eclipse project state here...
+					return true; // no state object to ask so it must have changed
+				}
 			}
 		}
 		return false;
 	}
 	
+	/**
+	 * Determine if a file has changed since a given time, using the local information
+	 * recorded in the structural changes data structure.
+	 * 
+	 * file is the file we are wondering about
+	 * lastSBT is the last build time for the state asking the question
+	 */
+	private boolean hasStructuralChangedSince(File file,long lastSuccessfulBuildTime) {
+		long lastModTime = file.lastModified();
+		Long l = (Long)structuralChangesSinceLastFullBuild.get(file.getAbsolutePath());
+		long strucModTime = -1;
+		if (l!=null) strucModTime = l.longValue();
+		else         strucModTime = this.lastSuccessfulFullBuildTime;
+		// we now have:
+		// 'strucModTime'-> the last time the class was structurally changed
+		return (strucModTime>lastSuccessfulBuildTime);
+	}
+
 	private boolean pathChange(AjBuildConfig oldConfig, AjBuildConfig newConfig) {
 		boolean changed = false;
 		List oldClasspath = oldConfig.getClasspath();
@@ -408,7 +461,7 @@ public class AjState {
 	private void deleteClassFile(UnwovenClassFile classFile) {		
 		classesFromName.remove(classFile.getClassName());
 		
-		buildManager.bcelWeaver.deleteClassFile(classFile.getClassName());
+		weaver.deleteClassFile(classFile.getClassName());
 		try {
 			classFile.deleteRealFile();
 		} catch (IOException e) {
@@ -419,7 +472,7 @@ public class AjState {
 	private UnwovenClassFile createUnwovenClassFile(AjBuildConfig.BinarySourceFile bsf) {
 		UnwovenClassFile ucf = null;
 		try {
-			ucf = buildManager.bcelWeaver.addClassFile(bsf.binSrc, bsf.fromInPathDirectory, buildConfig.getOutputDir());
+			ucf = weaver.addClassFile(bsf.binSrc, bsf.fromInPathDirectory, buildConfig.getOutputDir());
 		} catch(IOException ex) {
 			IMessage msg = new Message("can't read class file " + bsf.binSrc.getPath(),
 									   new SourceLocation(bsf.binSrc,0),false);
@@ -486,7 +539,9 @@ public class AjState {
 			try {
 				ClassFileReader reader = new ClassFileReader(oldBytes, lastTime.getFilename().toCharArray());
 				// ignore local types since they're only visible inside a single method
-				if (!(reader.isLocal() || reader.isAnonymous()) && reader.hasStructuralChanges(newBytes)) {
+				if (!(reader.isLocal() || reader.isAnonymous()) && 
+						reader.hasStructuralChanges(newBytes)) {
+					structuralChangesSinceLastFullBuild.put(thisTime.getFilename(),new Long(currentBuildTime));
 					addDependentsOf(lastTime.getClassName());
 				}
 			} catch (ClassFormatException e) {
@@ -647,6 +702,37 @@ public class AjState {
 		for (int i = 0; i < intRes.unwovenClassFiles().length; i++) {
 			addDependentsOf(intRes.unwovenClassFiles()[i].getClassName());
 		}
+	}
+
+	public void setStructureModel(IHierarchy model) {
+		structureModel = model;
+	}
+
+	public IHierarchy getStructureModel() {
+        return structureModel;
+	}
+
+	public void setWeaver(BcelWeaver bw) { weaver=bw;}
+	public BcelWeaver getWeaver()  {return weaver;}
+
+	public void setWorld(BcelWorld bw) {world=bw;}
+	public BcelWorld getBcelWorld() {return world;	}
+	
+	public void setRelationshipMap(IRelationshipMap irm) { relmap = irm;}
+	public IRelationshipMap getRelationshipMap() { return relmap;}
+
+	public int getNumberOfStructuralChangesSinceLastFullBuild() {
+		return structuralChangesSinceLastFullBuild.size();
+	}
+	
+	/** Returns last time we did a full or incremental build. */
+	public long getLastBuildTime() {
+		return lastSuccessfulBuildTime;
+	}
+	
+	/** Returns last time we did a full build */
+	public long getLastFullBuildTime() {
+		return lastSuccessfulFullBuildTime;
 	}
 
 }
