@@ -88,9 +88,7 @@ public class CompilerAdapter {
 
 	public boolean compile(String configFile, BuildProgressMonitor progressMonitor, boolean buildModel) {
 		if (configFile == null) {
-			Ajde.getDefault().getErrorHandler().handleError(
-				"Tried to build null config file."
-			);
+			Ajde.getDefault().getErrorHandler().handleError("Tried to build null config file.");
 		}
 		init();
 		try { 
@@ -113,14 +111,17 @@ public class CompilerAdapter {
 			boolean incrementalEnabled = 
                 buildConfig.isIncrementalMode()
                 || buildConfig.isIncrementalFileMode();
+			boolean successfulBuild;
             if (incrementalEnabled && nextBuild) {
-                return buildManager.incrementalBuild(buildConfig, messageHandler);
+				successfulBuild = buildManager.incrementalBuild(buildConfig, messageHandler);
             } else {
                 if (incrementalEnabled) {
                     nextBuild = incrementalEnabled;
                 } 
-                return buildManager.batchBuild(buildConfig, messageHandler); 
+				successfulBuild = buildManager.batchBuild(buildConfig, messageHandler); 
             }
+			IncrementalStateManager.recordSuccessfulBuild(configFile,buildManager.getState());
+			return successfulBuild;
 //        } catch (OperationCanceledException ce) {
 //			Ajde.getDefault().getErrorHandler().handleWarning(
 //				"build cancelled by user");
@@ -628,5 +629,10 @@ public class CompilerAdapter {
 		public void setBuildNotifierAdapter(BuildNotifierAdapter buildNotifierAdapter) {
 			this.buildNotifierAdapter = buildNotifierAdapter;
 		}
+	}
+
+	public void setState(AjState buildState) {
+		buildManager.setState(buildState);	
+		buildManager.setStructureModel(buildState.getStructureModel());
 	}
 } 

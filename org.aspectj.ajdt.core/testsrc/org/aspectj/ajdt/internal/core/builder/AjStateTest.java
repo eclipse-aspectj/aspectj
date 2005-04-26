@@ -120,6 +120,6 @@ public class AjStateTest extends TestCase {
         oldConfig.setInJars(ij);
         newConfig.setInJars(new ArrayList(ij));
         aRightState.prepareForNextBuild(oldConfig);
-        aRightState.successfulCompile(oldConfig);
+        aRightState.successfulCompile(oldConfig,true);
     }
 }
