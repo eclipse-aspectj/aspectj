@@ -14,9 +14,20 @@
 
 package org.aspectj.ajde.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
-import org.aspectj.ajde.*;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.BuildListener;
+import org.aspectj.ajde.BuildManager;
+import org.aspectj.ajde.BuildOptionsAdapter;
+import org.aspectj.ajde.BuildProgressMonitor;
+import org.aspectj.ajde.ProjectPropertiesAdapter;
+import org.aspectj.ajde.TaskListManager;
+import org.aspectj.ajdt.internal.core.builder.AjState;
+import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.util.ConfigParser;
 
 /**
@@ -72,6 +83,11 @@ public class AspectJBuildManager implements BuildManager {
     public void build(String configFile) {
     	dobuild(configFile, false);
     }
+	
+//	public void setReportInfoMessages(boolean b) {
+//		if (compilerAdapter!=null) compilerAdapter.showInfoMessages(b);
+//	}
+	
 
     protected void dobuild(String configFile, boolean fresh) {
         if (configFile == null) {
@@ -81,8 +97,17 @@ public class AspectJBuildManager implements BuildManager {
             // even in incremental mode
             lastConfigFile = this.configFile;
             this.configFile = configFile;
-            if (!fresh && !configFile.equals(lastConfigFile)) {
-                fresh = true;
+            if (!fresh) {
+				// Check if we need to dig out an old incremental state
+				if (!configFile.equals(lastConfigFile)) {
+					AjState correctStateForConfig = IncrementalStateManager.retrieveStateFor(configFile);
+					if (correctStateForConfig==null)  fresh = true; // have to full build
+					else {
+						compilerAdapter.setState(correctStateForConfig);
+						AsmManager.getDefault().setRelationshipMap(correctStateForConfig.getRelationshipMap());
+						AsmManager.getDefault().setHierarchy(correctStateForConfig.getStructureModel());
+					}
+				}
             }
             if (fresh) {
                 this.compilerAdapter.nextBuildFresh();
@@ -159,7 +184,8 @@ public class AspectJBuildManager implements BuildManager {
                 progressMonitor.start(configFile);
                 compilerMessages.clearTasks();
   
-       			Ajde.getDefault().logEvent("building with options: " 
+				if (Ajde.getDefault().isLogging())
+       			  Ajde.getDefault().logEvent("building with options: " 
        				+ getFormattedOptionsString(buildOptions, Ajde.getDefault().getProjectProperties()));
                 
                 succeeded = compilerAdapter.compile(configFile, progressMonitor, buildModelMode);
