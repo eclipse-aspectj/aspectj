@@ -384,6 +384,7 @@ public class AsmRelationshipProvider {
 	  if (method.getName().startsWith("<init>")) {
 	    // its a ctor
 	  	methodElem = AsmManager.getDefault().getHierarchy().findElementForSignature(typeElem,IProgramElement.Kind.CONSTRUCTOR,type+parmString);
+		if (methodElem == null && args.length==0) methodElem = typeElem; // assume default ctor
 	  } else {
 	    // its a method
 	  	methodElem = AsmManager.getDefault().getHierarchy().findElementForSignature(typeElem,IProgramElement.Kind.METHOD,method.getName()+parmString);
