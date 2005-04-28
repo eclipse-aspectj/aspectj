@@ -28,7 +28,7 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/atajc150.xml");
+	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/annotationgen.xml");
 	}
 	
 	public void testSimpleAspect() {

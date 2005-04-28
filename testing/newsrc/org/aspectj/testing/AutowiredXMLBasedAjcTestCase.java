@@ -135,5 +135,20 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
         super.setUp();
     }
 
+    /**
+     * This helper method runs the test with the given title in the
+     * suite spec file. All tests steps in given ajc-test execute
+     * in the same sandbox.
+     */
+    protected void runTest(String title) {
+        AjcTest currentTest = (AjcTest) testMap.get(title);
+        if (currentTest == null) {
+            fail("No test '" + title + "' in suite.");
+        }
+        ajc.setShouldEmptySandbox(true);
+        currentTest.runTest(this);
+    }
+
+
 
 }
