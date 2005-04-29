@@ -32,6 +32,7 @@ public class IncrementalStateManager {
 	// FIXME asc needs some memory mgmt (softrefs?) to recover memory
 	// SECRETAPI will consume more memory, so turn on at your own risk ;)  Set to 'true' when memory usage is understood
 	public  static boolean recordIncrementalStates = false;
+	public  static boolean debugIncrementalStates = false;
 	private static Hashtable incrementalStates = new Hashtable();
 	
 	public static void recordSuccessfulBuild(String buildConfig, AjState state) {
@@ -59,11 +60,27 @@ public class IncrementalStateManager {
 	
 	public static AjState findStateManagingOutputLocation(File location) {
 		Collection allStates = incrementalStates.values();
+		if (debugIncrementalStates) System.err.println("> findStateManagingOutputLocation("+location+") has "+allStates.size()+" states to look through");
 		for (Iterator iter = allStates.iterator(); iter.hasNext();) {
 			AjState element = (AjState) iter.next();
-			File outputDir = element.buildConfig.getOutputDir();
-			if (outputDir.equals(location)) return element;
+			AjBuildConfig ajbc = element.buildConfig;
+			if (ajbc==null) {
+				// FIXME asc why can it ever be null?
+				if (debugIncrementalStates) System.err.println("  No build configuration for state "+element);
+				continue;
+			}
+			File outputDir = ajbc.getOutputDir();
+			if (outputDir == null) {
+				// FIXME why can it ever be null? due to using outjar?
+				if (debugIncrementalStates) System.err.println("  output directory for "+ajbc+" is null");
+				continue;
+			}
+			if (outputDir.equals(location)) {
+				if (debugIncrementalStates) System.err.println("< findStateManagingOutputLocation("+location+") returning "+element);
+				return element;
+			}
 		}
+		if (debugIncrementalStates) System.err.println("< findStateManagingOutputLocation("+location+") returning null");
 		return null;
 	}
 	
