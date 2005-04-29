@@ -20,6 +20,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -56,6 +57,9 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		}
 	}
 	
+	protected char[] getPrefix() {
+		return (NameMangler.ITD_PREFIX + "interMethod$").toCharArray();
+	}
 
 	public void analyseCode(
 		ClassScope currentScope,

@@ -22,6 +22,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
  * Root class for all MethodDeclaration objects created by the parser.
  * Enables us to generate extra attributes in the method_info attribute
  * to support aspectj.
+ *
  */
 public class AjMethodDeclaration extends MethodDeclaration {
 

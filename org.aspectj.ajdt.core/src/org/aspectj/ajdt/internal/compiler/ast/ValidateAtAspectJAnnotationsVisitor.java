@@ -66,6 +66,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	private CompilationUnitDeclaration unit;
 	private Stack typeStack = new Stack();
+	private AspectJAnnotations ajAnnotations;
 	
 	public ValidateAtAspectJAnnotationsVisitor(CompilationUnitDeclaration unit) {
 		this.unit = unit;
@@ -73,6 +74,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
 		typeStack.push(localTypeDeclaration);
+		ajAnnotations = new AspectJAnnotations(localTypeDeclaration.annotations);
 		checkTypeDeclaration(localTypeDeclaration);
 		return true;
 	}
@@ -83,6 +85,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	public boolean visit(TypeDeclaration memberTypeDeclaration,ClassScope scope) {
 		typeStack.push(memberTypeDeclaration);
+		ajAnnotations = new AspectJAnnotations(memberTypeDeclaration.annotations);
 		checkTypeDeclaration(memberTypeDeclaration);
 		return true;
 	}
@@ -93,6 +96,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		typeStack.push(typeDeclaration);
+		ajAnnotations = new AspectJAnnotations(typeDeclaration.annotations);
 		checkTypeDeclaration(typeDeclaration);
 		return true;
 	}
@@ -103,7 +107,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	private void checkTypeDeclaration(TypeDeclaration typeDecl) {
 		if (!(typeDecl instanceof AspectDeclaration)) {
-			if (insideAspect()) {
+			if (ajAnnotations.hasAspectAnnotation) {
 				validateAspectDeclaration(typeDecl);
 			} else {
 				// check that class doesn't extend aspect
@@ -122,65 +126,42 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 				}
 			}
 		} else {
-			// check that aspect doesn't have @Aspect annotation
-			boolean foundAspectAnnotation = false;
-			for (int i = 0; i < typeDecl.annotations.length; i++) {
-				if (typeDecl.annotations[i].resolvedType == null) continue;
-				char[] sig = typeDecl.annotations[i].resolvedType.signature();
-				if (CharOperation.equals(aspectSig,sig)) {
-					if (!foundAspectAnnotation) {
-						foundAspectAnnotation = true; // this is the one we added in the first visitor pass
-					} else {
-						//a second @Aspect annotation, user must have declared one...
-						typeDecl.scope.problemReporter().signalError(
-								typeDecl.sourceStart,
-								typeDecl.sourceEnd,
-								"aspects cannot have @Aspect annotation"
-								);
-					}
-				}
+			// check that aspect doesn't have @Aspect annotation, we've already added on ourselves.
+			if (ajAnnotations.hasMultipleAspectAnnotations) {
+					typeDecl.scope.problemReporter().signalError(
+							typeDecl.sourceStart,
+							typeDecl.sourceEnd,
+							"aspects cannot have @Aspect annotation"
+							);
 			}
 		}
 	}
 	
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
+		ajAnnotations = new AspectJAnnotations(methodDeclaration.annotations);
 		if (!methodDeclaration.getClass().equals(AjMethodDeclaration.class)) {
 			// simply test for innapropriate use of annotations on code-style members
-			if (!hasAspectJAnnotation(methodDeclaration)) return false;
-			int numPointcutAnnotations = 0;
-			int numAdviceAnnotations = 0;
-			int numAdviceNameAnnotations = 0;
-			for (int i=0; i < methodDeclaration.annotations.length; i++) {
-				if (isAspectJAnnotation(methodDeclaration.annotations[i])) {
-					if (CharOperation.equals(adviceNameSig,methodDeclaration.annotations[i].resolvedType.signature())) {
-						numAdviceNameAnnotations++;
-					} else if (CharOperation.equals(pointcutSig,methodDeclaration.annotations[i].resolvedType.signature())) {
-						numPointcutAnnotations++;
-					} else {
-						for (int j = 0; j < adviceSigs.length; j++) { 
-							if (CharOperation.equals(adviceSigs[j],methodDeclaration.annotations[i].resolvedType.signature())) {
-								numAdviceAnnotations++;								
-							}
-						}
-					}
-				}
-			}
 			if (methodDeclaration instanceof PointcutDeclaration) {
-				if (numPointcutAnnotations > 1 || numAdviceAnnotations > 0 || numAdviceNameAnnotations > 0) {
+				if (ajAnnotations.hasMultiplePointcutAnnotations ||
+				    ajAnnotations.hasAdviceAnnotation ||
+				    ajAnnotations.hasAspectAnnotation ||
+				    ajAnnotations.hasAdviceNameAnnotation) {
 					methodDeclaration.scope.problemReporter().signalError(
 							methodDeclaration.sourceStart,
 							methodDeclaration.sourceEnd,
 							"@AspectJ annotations cannot be declared on this aspect member");
 				}
 			} else if (methodDeclaration instanceof AdviceDeclaration) {
-				if (numPointcutAnnotations > 0 || numAdviceAnnotations > 1) {
+				if (ajAnnotations.hasMultipleAdviceAnnotations ||
+					ajAnnotations.hasAspectAnnotation ||
+					ajAnnotations.hasPointcutAnnotation) {
 					methodDeclaration.scope.problemReporter().signalError(
 										methodDeclaration.sourceStart,
 										methodDeclaration.sourceEnd,
 										"Only @AdviceName AspectJ annotation allowed on advice");
 				}				
 			} else {
-				if (numPointcutAnnotations > 0 || numAdviceAnnotations > 0 || numAdviceNameAnnotations > 0) {
+				if (ajAnnotations.hasAspectJAnnotations()) {
 					methodDeclaration.scope.problemReporter().signalError(
 							methodDeclaration.sourceStart,
 							methodDeclaration.sourceEnd,
@@ -189,48 +170,11 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			}
 			return false;
 		}
-		if (isAnnotationStyleAdvice(methodDeclaration.annotations)) {
+		
+		if (ajAnnotations.hasAdviceAnnotation) {
 			validateAdvice(methodDeclaration);
-		} else if (isAnnotationStylePointcut(methodDeclaration.annotations)) {
+		} else if (ajAnnotations.hasPointcutAnnotation) {
 			convertToPointcutDeclaration(methodDeclaration,scope);
-		}
-		return false;
-	}
-	
-	
-
-	private boolean isAnnotationStyleAdvice(Annotation[] annotations) {
-		if (annotations == null) return false;
-		for (int i = 0; i < annotations.length; i++) {
-			if (annotations[i].resolvedType == null) continue;
-			char[] sig = annotations[i].resolvedType.signature();
-			if (CharOperation.equals(beforeAdviceSig,sig) ||
-				CharOperation.equals(afterAdviceSig,sig) ||
-				CharOperation.equals(afterReturningAdviceSig,sig) ||
-				CharOperation.equals(aroundAdviceSig,sig) ||
-				CharOperation.equals(afterThrowingAdviceSig,sig)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private boolean isAnnotationStylePointcut(Annotation[] annotations) {
-		if (annotations == null) return false;
-		for (int i = 0; i < annotations.length; i++) {
-			if (annotations[i].resolvedType == null) continue;
-			char[] sig = annotations[i].resolvedType.signature();
-			if (CharOperation.equals(pointcutSig,sig)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean hasAspectJAnnotation(MethodDeclaration methodDecl) {
-		if (methodDecl.annotations == null) return false;
-		for (int i=0; i < methodDecl.annotations.length; i++) {
-			if (isAspectJAnnotation(methodDecl.annotations[i])) return true;
 		}
 		return false;
 	}
@@ -249,19 +193,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	private boolean isAspect(TypeDeclaration typeDecl) {
 		if (typeDecl instanceof AspectDeclaration) return true;
-		return hasAspectAnnotation(typeDecl);			
-	}
-
-	private boolean hasAspectAnnotation(TypeDeclaration typeDecl) {
-		if (typeDecl.annotations == null) return false;
-		for (int i = 0; i < typeDecl.annotations.length; i++) {
-			if (typeDecl.annotations[i].resolvedType == null) continue;
-			char[] sig = typeDecl.annotations[i].resolvedType.signature();
-			if (CharOperation.equals(aspectSig,sig)) {
-				return true;
-			}
-		}
-		return false;
+		return new AspectJAnnotations(typeDecl.annotations).hasAspectAnnotation;
 	}
 	
 	/**
@@ -297,15 +229,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			}
 		}
 
-		Annotation aspectAnnotation = null;
-		for (int i = 0; i < typeDecl.annotations.length; i++) {
-			if (typeDecl.annotations[i].resolvedType == null) continue;
-			char[] sig = typeDecl.annotations[i].resolvedType.signature();
-			if (CharOperation.equals(aspectSig,sig)) {
-				aspectAnnotation = typeDecl.annotations[i];
-				break;
-			}
-		}
+		Annotation aspectAnnotation = ajAnnotations.aspectAnnotation;
 
 		int[] pcLoc = new int[2];
 		String perClause = getStringLiteralFor("value", aspectAnnotation, pcLoc);
@@ -347,47 +271,24 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 				.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"advice must be public");
 		}
 				
-		AdviceKind kind = null;
-		Annotation adviceAnn = null;
-		Annotation duplicateAnn = null;
-		for(int i = 0; i < methodDeclaration.annotations.length; i++) {
-			Annotation ann = methodDeclaration.annotations[i];
-			if (isAspectJAnnotation(ann)) {
-				if (adviceAnn != null) {
-					duplicateAnn = ann;
-					break;
-				}
-				if (CharOperation.equals(afterAdviceSig,ann.resolvedType.signature())) {
-					kind = AdviceKind.After;
-					adviceAnn = ann;
-				} else if (CharOperation.equals(afterReturningAdviceSig,ann.resolvedType.signature())) {
-					kind = AdviceKind.AfterReturning;
-					adviceAnn = ann;
-				} else if (CharOperation.equals(afterThrowingAdviceSig,ann.resolvedType.signature())) {
-					kind = AdviceKind.AfterThrowing;
-					adviceAnn = ann;
-				} else if (CharOperation.equals(beforeAdviceSig,ann.resolvedType.signature())) {
-					kind = AdviceKind.Before;
-					adviceAnn = ann;
-				} else if (CharOperation.equals(aroundAdviceSig,ann.resolvedType.signature())) {
-					kind = AdviceKind.Around;
-					adviceAnn = ann;
-				} else if (CharOperation.equals(adviceNameSig,ann.resolvedType.signature())) {
-					methodDeclaration.scope.problemReporter().signalError(
-							ann.sourceStart,ann.sourceEnd, "AdviceName annotation cannot be used for advice defined using annotation style");
-				}
-			}
+		if (ajAnnotations.hasMultipleAdviceAnnotations) {
+			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.duplicateAdviceAnnotation);
+		}
+		if (ajAnnotations.hasPointcutAnnotation) {
+			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.pointcutAnnotation);			
+		}
+		if (ajAnnotations.hasAspectAnnotation) {
+			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.aspectAnnotation);			
+		}
+		if (ajAnnotations.hasAdviceNameAnnotation) {
+			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.adviceNameAnnotation);			
 		}
 
-		if (duplicateAnn != null) {
-			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(duplicateAnn);
-		}
-
-		if (kind != AdviceKind.Around) {
+		if (ajAnnotations.adviceKind != AdviceKind.Around) {
 			ensureVoidReturnType(methodDeclaration);
 		}	  
 
-		resolveAndSetPointcut(methodDeclaration, adviceAnn);
+		resolveAndSetPointcut(methodDeclaration, ajAnnotations.adviceAnnotation);
 		
 	}
 
@@ -505,25 +406,16 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		PointcutDeclaration pcDecl = new PointcutDeclaration(unit.compilationResult);
 		copyAllFields(methodDeclaration,pcDecl);
 
-		Annotation pcutAnn = null;
-		Annotation duplicateAnn = null;
-		for(int i = 0; i < methodDeclaration.annotations.length; i++) {
-			Annotation ann = methodDeclaration.annotations[i];
-			if (isAspectJAnnotation(ann)) {
-				if (pcutAnn != null) {
-					duplicateAnn = ann;
-					break;
-				}
-				if (CharOperation.equals(pointcutSig,ann.resolvedType.signature())) {
-					pcutAnn = ann;
-				} 
-			}
+		if (ajAnnotations.hasAdviceAnnotation) {
+			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.adviceAnnotation);			
 		}
-
-		if (duplicateAnn != null && !CharOperation.equals(pointcutSig,duplicateAnn.resolvedType.signature())) {
-			// (duplicate annotations of same type are already reported)
-			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(duplicateAnn);
+		if (ajAnnotations.hasAspectAnnotation) {
+			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.aspectAnnotation);			
 		}
+		if (ajAnnotations.hasAdviceNameAnnotation) {
+			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.adviceNameAnnotation);			
+		}
+	
 
 		boolean returnsVoid = true;
 		if ((methodDeclaration.returnType instanceof SingleTypeReference)) {
@@ -547,7 +439,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		}
 		
 		int[] pcLocation = new int[2];
-		String pointcutExpression = getStringLiteralFor("value",pcutAnn,pcLocation);
+		String pointcutExpression = getStringLiteralFor("value",ajAnnotations.pointcutAnnotation,pcLocation);
 		try {
 			ISourceContext context = new EclipseSourceContext(unit.compilationResult,pcLocation[0]);
 			Pointcut pc = new PatternParser(pointcutExpression,context).parsePointcut();
@@ -607,6 +499,85 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			if (inType.methods[i]  == thisDeclaration) {
 				inType.methods[i] = forThatDeclaration;
 				break;
+			}
+		}
+	}
+	
+	private static class AspectJAnnotations {
+		boolean hasAdviceAnnotation = false;
+		boolean hasPointcutAnnotation = false;
+		boolean hasAspectAnnotation = false;
+		boolean hasAdviceNameAnnotation = false;
+		
+		boolean hasMultipleAdviceAnnotations = false;
+		boolean hasMultiplePointcutAnnotations = false;
+		boolean hasMultipleAspectAnnotations = false;
+		
+		AdviceKind adviceKind = null;
+		Annotation adviceAnnotation = null;
+		Annotation pointcutAnnotation = null;
+		Annotation aspectAnnotation = null;
+		Annotation adviceNameAnnotation = null;
+
+		Annotation duplicateAdviceAnnotation = null;
+		Annotation duplicatePointcutAnnotation = null;
+		Annotation duplicateAspectAnnotation = null;
+		
+		public AspectJAnnotations(Annotation[] annotations) {
+			if (annotations == null) return;
+			for (int i = 0; i < annotations.length; i++) {
+				if (annotations[i].resolvedType == null) continue; // user messed up annotation declaration
+				char[] sig = annotations[i].resolvedType.signature();
+				if (CharOperation.equals(afterAdviceSig,sig)) {
+					adviceKind = AdviceKind.After;
+					addAdviceAnnotation(annotations[i]);
+				} else if (CharOperation.equals(afterReturningAdviceSig,sig)) {
+					adviceKind = AdviceKind.AfterReturning;
+					addAdviceAnnotation(annotations[i]);
+				} else if (CharOperation.equals(afterThrowingAdviceSig,sig)) {
+					adviceKind = AdviceKind.AfterThrowing;
+					addAdviceAnnotation(annotations[i]);
+				} else if (CharOperation.equals(beforeAdviceSig,sig)) {
+					adviceKind = AdviceKind.Before;
+					addAdviceAnnotation(annotations[i]);
+				} else if (CharOperation.equals(aroundAdviceSig,sig)) {
+					adviceKind = AdviceKind.Around;
+					addAdviceAnnotation(annotations[i]);
+				} else if (CharOperation.equals(adviceNameSig,sig)) {
+					hasAdviceNameAnnotation = true;
+					adviceNameAnnotation = annotations[i];
+				} else if (CharOperation.equals(aspectSig,sig)) {
+					if (hasAspectAnnotation) {
+						hasMultipleAspectAnnotations = true;
+						duplicateAspectAnnotation = annotations[i];
+					} else {
+						hasAspectAnnotation = true;
+						aspectAnnotation = annotations[i];
+					}
+				} else if (CharOperation.equals(pointcutSig,sig)) {
+					if (hasPointcutAnnotation) {
+						hasMultiplePointcutAnnotations = true;
+						duplicatePointcutAnnotation = annotations[i];
+					} else {
+						hasPointcutAnnotation = true;
+						pointcutAnnotation = annotations[i];
+					}
+					
+				}
+			}
+		}
+		
+		public boolean hasAspectJAnnotations() {
+			return hasAdviceAnnotation || hasPointcutAnnotation || hasAdviceNameAnnotation || hasAspectAnnotation;
+		}
+
+		private void addAdviceAnnotation(Annotation annotation) {
+			if (!hasAdviceAnnotation) {
+				hasAdviceAnnotation = true;
+				adviceAnnotation = annotation;
+			} else {
+				hasMultipleAdviceAnnotations = true;
+				duplicateAdviceAnnotation = annotation;
 			}
 		}
 	}

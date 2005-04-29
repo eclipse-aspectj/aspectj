@@ -43,6 +43,10 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			return;
 	    parser.parse(this, unit); 
 	}
+	
+	protected char[] getPrefix() {
+		return (NameMangler.ITD_PREFIX + "interConstructor$").toCharArray();
+	}
 
 	public void resolve(ClassScope upperScope) {
 		if (munger == null || binding == null) ignoreFurtherInvestigation = true;

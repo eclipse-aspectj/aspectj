@@ -19,6 +19,19 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 
+/**
+ * Adds runtime visible annotations to code-style aspect declarations so that the
+ * MAP can provide aspect information at runtime.
+ * 
+ * Done:
+ *  - AspectDeclaration
+ *  - AdviceDeclaration
+ *  - PointcutDeclaration
+ *  
+ *  To Do:
+ *  - DeclareDeclaration
+ *  - Inter-Type Declaration
+ */
 public class AddAtAspectJAnnotationsVisitor extends ASTVisitor {
 
 	private CompilationUnitDeclaration unit;
@@ -33,8 +46,7 @@ public class AddAtAspectJAnnotationsVisitor extends ASTVisitor {
 		}
 		return true;
 	}
-	
-	
+		
 	public boolean visit(TypeDeclaration memberTypeDeclaration,ClassScope scope) {
 		if (memberTypeDeclaration instanceof AspectDeclaration) {
 			((AspectDeclaration) memberTypeDeclaration).addAtAspectJAnnotations();
@@ -53,7 +65,9 @@ public class AddAtAspectJAnnotationsVisitor extends ASTVisitor {
 			((AdviceDeclaration)methodDeclaration).addAtAspectJAnnotations();
 		} else if (methodDeclaration instanceof PointcutDeclaration) {
 			((PointcutDeclaration)methodDeclaration).addAtAspectJAnnotations();
-		} 
+		} else if (methodDeclaration instanceof DeclareDeclaration) {
+			((DeclareDeclaration)methodDeclaration).addAtAspectJAnnotations();
+		}
 		return false;
 	}
 	

@@ -18,6 +18,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -25,6 +26,11 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
+import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.DeclarePrecedence;
+import org.aspectj.weaver.patterns.DeclareSoft;
 import org.aspectj.weaver.patterns.FormalBinding;
 
 public class DeclareDeclaration extends AjMethodDeclaration {
@@ -48,6 +54,24 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 		this.returnType = TypeReference.baseTypeReference(T_void, 0);       
 	}
 
+	
+	public void addAtAspectJAnnotations() {
+		Annotation annotation = null;
+		if (declareDecl instanceof DeclareAnnotation) {
+			
+		} else if (declareDecl instanceof DeclareErrorOrWarning) {
+			DeclareErrorOrWarning dd = (DeclareErrorOrWarning) declareDecl;
+			annotation = AtAspectJAnnotationFactory
+									.createDeclareErrorOrWarningAnnotation(dd.getPointcut().toString(),dd.getMessage(),dd.isError(),declarationSourceStart);
+		} else if (declareDecl instanceof DeclareParents) {
+			
+		} else if (declareDecl instanceof DeclarePrecedence) {
+			
+		} else if (declareDecl instanceof DeclareSoft) {
+			
+		}
+		if (annotation != null) AtAspectJAnnotationFactory.addAnnotation(this,annotation);
+	}
 
 	/**
 	 * A declare declaration exists in a classfile only as an attibute on the
@@ -65,7 +89,7 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 	}
 	
 	protected boolean shouldDelegateCodeGeneration() {
-		return false;
+		return true;
 	}
 
 	public void parseStatements(

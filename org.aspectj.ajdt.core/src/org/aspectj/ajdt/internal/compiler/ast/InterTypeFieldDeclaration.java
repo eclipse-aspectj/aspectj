@@ -48,6 +48,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		//we don't have a body to parse
 	}
 	
+	protected char[] getPrefix() {
+		return (NameMangler.ITD_PREFIX + "interField$").toCharArray(); 
+	}
 	
 	public void resolveOnType(ClassScope classScope) {
 		super.resolveOnType(classScope);

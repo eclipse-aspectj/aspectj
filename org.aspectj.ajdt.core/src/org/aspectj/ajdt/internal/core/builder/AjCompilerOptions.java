@@ -15,6 +15,7 @@ package org.aspectj.ajdt.internal.core.builder;
 
 import java.util.Map;
 
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 
@@ -49,15 +50,15 @@ public class AjCompilerOptions extends CompilerOptions {
     public static final String OPTION_Emacssym                = "org.aspectj.ajdt.core.compiler.model.Emacssym";
 	
 	// constants for irritant levels
-	public static final long InvalidAbsoluteTypeName    = 0x20000000000L;
-	public static final long InvalidWildCardTypeName    = 0x40000000000L;
-	public static final long UnresolvableMember         = 0x80000000000L;
-	public static final long TypeNotExposedToWeaver     = 0x100000000000L;
-	public static final long ShadowNotInStructure       = 0x200000000000L;
-	public static final long UnmatchedSuperTypeInCall   = 0x400000000000L;
-	public static final long CannotImplementLazyTJP     = 0x800000000000L;
-	public static final long NeedSerialVersionUIDField  = 0x1000000000000L;
-	public static final long IncompatibleSerialVersion  = 0x2000000000000L;
+	public static final long InvalidAbsoluteTypeName    = ASTNode.Bit45L;
+	public static final long InvalidWildCardTypeName    = ASTNode.Bit46L;
+	public static final long UnresolvableMember           = ASTNode.Bit47L;
+	public static final long TypeNotExposedToWeaver   = ASTNode.Bit48L;
+	public static final long ShadowNotInStructure       = ASTNode.Bit49L;
+	public static final long UnmatchedSuperTypeInCall   = ASTNode.Bit50L;
+	public static final long CannotImplementLazyTJP     = ASTNode.Bit51L;
+	public static final long NeedSerialVersionUIDField  = ASTNode.Bit52L;
+	public static final long IncompatibleSerialVersion  = ASTNode.Bit53L;
 
 	public boolean noWeave = false;
 	public boolean xSerializableAspects = false;

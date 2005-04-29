@@ -1011,7 +1011,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		
 		checkSpec(classScope);
 		if (ignoreFurtherInvestigation) return;
-		
+
 		buildPerClause(scope);
 		
 		if (methods != null) {

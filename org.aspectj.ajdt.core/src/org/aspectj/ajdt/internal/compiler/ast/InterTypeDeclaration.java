@@ -59,7 +59,11 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	public void setSelector(char[] selector) {
 		declaredSelector = selector;
 		this.selector = CharOperation.concat(selector, Integer.toHexString(sourceStart).toCharArray());
+		this.selector = CharOperation.concat(getPrefix(),this.selector);
 	}
+	
+	// return the selector prefix for this itd that is to be used before resolution replaces it with a "proper" name
+	protected abstract char[] getPrefix();
 	
 	/**
 	 * Checks that the target for the ITD is not an annotation.  If it is, an error message

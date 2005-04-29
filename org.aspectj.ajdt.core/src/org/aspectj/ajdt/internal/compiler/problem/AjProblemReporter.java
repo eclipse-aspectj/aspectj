@@ -231,7 +231,7 @@ public class AjProblemReporter extends ProblemReporter {
 				long metaTagBits = annotation.resolvedType.getAnnotationTagBits(); // could be forward reference
 				if (name.indexOf("interField") != -1) {
 					if ((metaTagBits & TagBits.AnnotationForField) != 0) return;
-				} else if (name.indexOf("InterConstructor") != -1) { // ??? Should that be Upper case 'I'?
+				} else if (name.indexOf("interConstructor") != -1) { 
 					if ((metaTagBits & TagBits.AnnotationForConstructor) != 0) return;
 				} else if (name.indexOf("interMethod") != -1) {
 					if ((metaTagBits & TagBits.AnnotationForMethod) != 0) return;
@@ -242,6 +242,8 @@ public class AjProblemReporter extends ProblemReporter {
 					if ((metaTagBits & TagBits.AnnotationForField)!=0) return;
 				} else if (name.indexOf("declare_"+DeclareAnnotation.AT_CONSTRUCTOR+"_")!=-1) {
 					if ((metaTagBits & TagBits.AnnotationForConstructor)!=0) return;
+				} else if (name.indexOf("declare_eow") != -1) {
+					if ((metaTagBits & TagBits.AnnotationForField) != 0) return;
 				}
 			}
 		}

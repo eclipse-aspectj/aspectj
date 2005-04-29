@@ -49,11 +49,11 @@ public class BuildArgParser extends Main {
 
     /** @return multi-line String usage for the compiler */    
     public static String getUsage() {   
-        return Main.bind("misc.usage");
+        return Main.bind("misc.usage",Main.bind("compiler.name"));
     }
     
     public static String getXOptionUsage() {
-    	return Main.bind("xoption.usage");
+    	return Main.bind("xoption.usage",Main.bind("compiler.name"));
     }
     
     /** 

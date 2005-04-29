@@ -13,6 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -534,8 +535,12 @@ public class AjLookupEnvironment extends LookupEnvironment {
 										onType + ": " + dangerousInterfaces.get(parent),
 										onType.getSourceLocation(), null);
 				}
-				AsmRelationshipProvider.getDefault().addDeclareParentsRelationship(declareParents.getSourceLocation(),factory.fromEclipse(sourceType), newParents);
-				addParent(sourceType, parent);
+				if (Modifier.isFinal(parent.getModifiers())) {
+					factory.showMessage(IMessage.ERROR,"cannot extend final class " + parent.getClassName(),declareParents.getSourceLocation(),null);
+				} else {
+					AsmRelationshipProvider.getDefault().addDeclareParentsRelationship(declareParents.getSourceLocation(),factory.fromEclipse(sourceType), newParents);
+					addParent(sourceType, parent);
+				}
 			}
 			return true;
 		}

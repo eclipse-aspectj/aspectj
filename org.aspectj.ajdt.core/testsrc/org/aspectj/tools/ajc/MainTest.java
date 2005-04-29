@@ -34,7 +34,7 @@ public class MainTest extends AjcTestCase {
     
     public void testDashX() {
     	String xoptionText = ResourceBundle.getBundle("org.aspectj.ajdt.ajc.messages").getString("xoption.usage");
-        xoptionText = xoptionText.substring("{compiler.name}".length());
+        xoptionText = "non-standard options:"; //xoptionText.substring("{0}".length());
 		CompilationResult result = ajc(null,new String[] {"-X"});
 		assertMessages(result,"Expecting xoptions usage message",
 				new MessageSpec(null,null,null,newMessageList(new Message(xoptionText)),null));

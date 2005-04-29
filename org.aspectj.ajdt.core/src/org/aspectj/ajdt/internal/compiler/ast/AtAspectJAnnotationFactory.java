@@ -17,7 +17,10 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 
 /**
  * @author colyer
@@ -40,6 +43,7 @@ public class AtAspectJAnnotationFactory {
 	static final char[] afterThrowing = "AfterThrowing".toCharArray();
 	static final char[] around = "Around".toCharArray();
     static final char[] pointcut = "Pointcut".toCharArray(); 
+	static final char[] declareErrorOrWarning = "ajcDeclareEoW".toCharArray();
 
 	/**
 	 * Create an @Aspect annotation for a code style aspect declaration starting at
@@ -70,26 +74,12 @@ public class AtAspectJAnnotationFactory {
 
 	public static Annotation createBeforeAnnotation(String pointcutExpression, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,lang,annotation,before};
-		long[] positions = new long[] {pos,pos,pos,pos,pos};
-		TypeReference annType = new QualifiedTypeReference(typeName,positions);
-		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
-		MemberValuePair[] mvps = new MemberValuePair[1];
-		mvps[0] = new MemberValuePair(value,pos,pos,pcExpr);
-		ann.memberValuePairs = mvps;
-		return ann;
+		return makeSingleStringMemberAnnotation(typeName, pos, pointcutExpression);
 	}
 
 	public static Annotation createAfterAnnotation(String pointcutExpression, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,lang,annotation,after};
-		long[] positions = new long[] {pos,pos,pos,pos,pos};
-		TypeReference annType = new QualifiedTypeReference(typeName,positions);
-		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
-		MemberValuePair[] mvps = new MemberValuePair[1];
-		mvps[0] = new MemberValuePair(value,pos,pos,pcExpr);
-		ann.memberValuePairs = mvps;
-		return ann;
+		return makeSingleStringMemberAnnotation(typeName, pos, pointcutExpression);
 	}
 
 	public static Annotation createAfterReturningAnnotation(String pointcutExpression, String extraArgumentName, int pos) {
@@ -122,25 +112,60 @@ public class AtAspectJAnnotationFactory {
 
 	public static Annotation createAroundAnnotation(String pointcutExpression, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,lang,annotation,around};
-		long[] positions = new long[] {pos,pos,pos,pos,pos};
-		TypeReference annType = new QualifiedTypeReference(typeName,positions);
-		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
-		MemberValuePair[] mvps = new MemberValuePair[1];
-		mvps[0] = new MemberValuePair(value,pos,pos,pcExpr);
-		ann.memberValuePairs = mvps;
-		return ann;
+		return makeSingleStringMemberAnnotation(typeName, pos, pointcutExpression);
 	}
 
 	public static Annotation createPointcutAnnotation(String pointcutExpression, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,lang,annotation,pointcut};
-		long[] positions = new long[] {pos,pos,pos,pos,pos};
+		return makeSingleStringMemberAnnotation(typeName, pos, pointcutExpression);
+	}
+
+	public static Annotation createDeclareErrorOrWarningAnnotation(String pointcutExpression, String message, boolean isError, int pos) {
+		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declareErrorOrWarning};
+		long[] positions = new long[typeName.length];
+		for (int i = 0; i < positions.length; i++) positions[i] = pos;
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
-		MemberValuePair[] mvps = new MemberValuePair[1];
-		mvps[0] = new MemberValuePair(value,pos,pos,pcExpr);
+		Expression pcutExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		Expression msgExpr = new StringLiteral(message.toCharArray(),pos,pos);
+		Expression isErrorExpr;
+		if (isError) {
+			isErrorExpr = new TrueLiteral(pos,pos);
+		} else {
+			isErrorExpr =  new FalseLiteral(pos,pos);
+		}
+		MemberValuePair[] mvps = new MemberValuePair[3];
+		mvps[0] = new MemberValuePair("pointcut".toCharArray(),pos,pos,pcutExpr);
+		mvps[1] = new MemberValuePair("message".toCharArray(),pos,pos,msgExpr);
+		mvps[2] = new MemberValuePair("isError".toCharArray(),pos,pos,isErrorExpr);
 		ann.memberValuePairs = mvps;
 		return ann;
 	}
+	
+	private static Annotation makeSingleStringMemberAnnotation(char[][] name, int pos, String annValue) {
+		long[] positions = new long[name.length];
+		for (int i = 0; i < positions.length; i++) positions[i] = pos;
+		TypeReference annType = new QualifiedTypeReference(name,positions);
+		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+		Expression valueExpr = new StringLiteral(annValue.toCharArray(),pos,pos);
+		MemberValuePair[] mvps = new MemberValuePair[1];
+		mvps[0] = new MemberValuePair(value,pos,pos,valueExpr);
+		ann.memberValuePairs = mvps;
+		return ann;		
+	}
+
+	public static void addAnnotation(AjMethodDeclaration decl, Annotation annotation) {
+		if (decl.annotations == null) {
+			decl.annotations = new Annotation[] { annotation };
+		} else {
+			Annotation[] old = decl.annotations;
+			decl.annotations = new Annotation[old.length +1];
+			System.arraycopy(old,0,decl.annotations,0,old.length);
+			decl.annotations[old.length] = annotation;
+		}
+		if (decl.binding!= null) {
+			decl.binding.tagBits -= TagBits.AnnotationResolved;
+		}
+	}
+
 }

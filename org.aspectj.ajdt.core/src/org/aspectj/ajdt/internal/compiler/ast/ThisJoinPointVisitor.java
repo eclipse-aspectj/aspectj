@@ -179,7 +179,7 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 	
 	private MethodBinding getEquivalentStaticBinding(MethodBinding template) {
 		ReferenceBinding b = (ReferenceBinding)thisJoinPointStaticPartDec.type;
-		return b.getExactMethod(template.selector, template.parameters);
+		return b.getExactMethod(template.selector, template.parameters,null);
 	}
 
 	public int removeUnusedExtraArguments() {
