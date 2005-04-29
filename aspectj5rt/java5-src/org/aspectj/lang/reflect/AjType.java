@@ -143,15 +143,15 @@ public interface AjType<T> extends Type {
 		
 	// declare statements
 	
-	public DeclareErrorOrWarning getDeclareErrorOrWarnings();
+	public DeclareErrorOrWarning[] getDeclareErrorOrWarnings();
 	
-	public DeclareParents getDeclareParents();
+	public DeclareParents[] getDeclareParents();
 	
-	public DeclareSoft getDeclareSofts();
+	public DeclareSoft[] getDeclareSofts();
 	
-	public DeclareAnnotation getDeclareAnnotations();
+	public DeclareAnnotation[] getDeclareAnnotations();
 	
-	public DeclarePrecedence getDeclarePrecedence();
+	public DeclarePrecedence[] getDeclarePrecedence();
 	
 	// misc
 	

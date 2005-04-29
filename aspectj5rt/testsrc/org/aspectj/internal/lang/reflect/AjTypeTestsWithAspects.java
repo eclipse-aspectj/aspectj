@@ -8,14 +8,15 @@
  *  
  * Contributors: 
  *     Adrian Colyer       initial implementation 
- * ******************************************************************/package org.aspectj.internal.lang.reflect;
-
+ * ******************************************************************/
+package org.aspectj.internal.lang.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import junit.framework.TestCase;
 
+import org.aspectj.internal.lang.annotation.ajcDeclareEoW;
 import org.aspectj.internal.lang.annotation.ajcPrivileged;
 import org.aspectj.lang.annotation.AdviceName;
 import org.aspectj.lang.annotation.After;
@@ -24,10 +25,13 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.DeclareError;
+import org.aspectj.lang.annotation.DeclareWarning;
 import org.aspectj.lang.reflect.Advice;
 import org.aspectj.lang.reflect.AdviceType;
 import org.aspectj.lang.reflect.AjType;
 import org.aspectj.lang.reflect.AjTypeSystem;
+import org.aspectj.lang.reflect.DeclareErrorOrWarning;
 import org.aspectj.lang.reflect.NoSuchAdviceException;
 import org.aspectj.lang.reflect.NoSuchPointcutException;
 import org.aspectj.lang.reflect.PerClause;
@@ -288,6 +292,28 @@ public class AjTypeTestsWithAspects extends TestCase {
 		assertTrue(AjTypeSystem.getAjType(SimplePrivilegedAspect.MemberAspect.class).isMemberAspect());
 
 	}
+	
+	public void testGetDeclareEoWarnings() {
+		DeclareErrorOrWarning[] deows = sa.getDeclareErrorOrWarnings();
+		assertEquals(4,deows.length);
+		boolean foundCodeWarning = false;
+		boolean foundCodeError = false;
+		boolean foundAnnWarning = false;
+		boolean foundAnnError = false;
+		for (DeclareErrorOrWarning deow : deows) {
+			if (deow.isError()) {
+				if (deow.getMessage().equals("dont call this method code")) foundCodeError = true;
+				if (deow.getMessage().equals("dont call this method ann")) foundAnnError = true;
+				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression());
+			} else {
+				if (deow.getMessage().equals("dont call this method code")) foundCodeWarning = true;
+				if (deow.getMessage().equals("dont call this method ann")) foundAnnWarning = true;
+				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression());				
+			}
+		}
+		assertTrue(foundCodeWarning && foundAnnWarning && foundCodeError && foundAnnError);
+	}
+	
 }
 
 
@@ -352,6 +378,21 @@ class SimpleAspect {
   @org.aspectj.lang.annotation.Pointcut("call(* SimpleAspect.*(..))")
   private void ajc$pointcut$$simpleAspectCall$123(SimpleAspect target) {};
   
+  // decw, ann style
+  @DeclareWarning("call(* DontDoIt.*(..))")
+  public static final String dontDoIt = "dont call this method ann";
+  
+  // decw, code style
+  @ajcDeclareEoW(pointcut="call(* DontDoIt.*(..))",message="dont call this method code",isError=false)
+  private void ajc$declare_eow$123() {}
+
+  // dec., ann style
+  @DeclareError("call(* DontDoIt.*(..))")
+  public static final String dontDoItISaid = "dont call this method ann";
+  
+  // decw, code style
+  @ajcDeclareEoW(pointcut="call(* DontDoIt.*(..))",message="dont call this method code",isError=true)
+  private void ajc$declare_eow$124() {}
 }
 
 @Aspect

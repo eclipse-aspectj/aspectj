@@ -9,15 +9,23 @@
  * Contributors: 
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
-package org.aspectj.lang.reflect;
+package org.aspectj.lang.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author colyer
- *
+ * Annotation for declare error...
+ * 
+ * usage:
+ * @DeclareError("somePcut()")
+ * private static final String "a message";
  */
-public interface DeclareErrorOrWarning {
-	String getPointcutExpression();
-	String getMessage();
-	boolean isError();
-	
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface DeclareError {
+	String value();
 }

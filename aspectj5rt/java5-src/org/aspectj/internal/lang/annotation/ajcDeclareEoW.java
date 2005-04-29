@@ -9,15 +9,23 @@
  * Contributors: 
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
-package org.aspectj.lang.reflect;
+package org.aspectj.internal.lang.annotation;
+
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 
 /**
  * @author colyer
- *
+ * Marker annotation for declare soft declarations
+ * ajc prefix used to indicate that this annotation is *internal*
  */
-public interface DeclareErrorOrWarning {
-	String getPointcutExpression();
-	String getMessage();
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ajcDeclareEoW {
+	String message();
+	String pointcut();
 	boolean isError();
-	
 }

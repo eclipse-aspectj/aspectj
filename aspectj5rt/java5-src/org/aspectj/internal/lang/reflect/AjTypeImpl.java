@@ -15,6 +15,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.internal.lang.annotation.ajcDeclareEoW;
 import org.aspectj.internal.lang.annotation.ajcPrivileged;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -30,6 +32,8 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.DeclareError;
+import org.aspectj.lang.annotation.DeclareWarning;
 import org.aspectj.lang.reflect.Advice;
 import org.aspectj.lang.reflect.AdviceType;
 import org.aspectj.lang.reflect.AjType;
@@ -255,8 +259,12 @@ public class AjTypeImpl<T> implements AjType {
 	public Field[] getDeclaredFields() {
 		Field[] fields = clazz.getDeclaredFields();
 		List<Field> filteredFields = new ArrayList<Field>();
-		for (Field field : fields)
-			if (!field.getName().startsWith(ajcMagic)) filteredFields.add(field);
+		for (Field field : fields) 
+			if (!field.getName().startsWith(ajcMagic) 
+				&& !field.isAnnotationPresent(DeclareWarning.class)
+				&& !field.isAnnotationPresent(DeclareError.class)) {
+				filteredFields.add(field);
+			}
 		Field[] ret = new Field[filteredFields.size()];
 		filteredFields.toArray(ret);
 		return ret;
@@ -278,7 +286,11 @@ public class AjTypeImpl<T> implements AjType {
 		Field[] fields = clazz.getFields();
 		List<Field> filteredFields = new ArrayList<Field>();
 		for (Field field : fields)
-			if (!field.getName().startsWith(ajcMagic)) filteredFields.add(field);
+			if (!field.getName().startsWith(ajcMagic) 
+					&& !field.isAnnotationPresent(DeclareWarning.class)
+					&& !field.isAnnotationPresent(DeclareError.class)) {
+					filteredFields.add(field);
+				}
 		Field[] ret = new Field[filteredFields.size()];
 		filteredFields.toArray(ret);
 		return ret;
@@ -631,15 +643,47 @@ public class AjTypeImpl<T> implements AjType {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclareErrorOrWarnings()
 	 */
-	public DeclareErrorOrWarning getDeclareErrorOrWarnings() {
-		// TODO Auto-generated method stub
-		return null;
+	public DeclareErrorOrWarning[] getDeclareErrorOrWarnings() {
+		List<DeclareErrorOrWarning> deows = new ArrayList<DeclareErrorOrWarning>();
+		for (Field field : clazz.getDeclaredFields()) {
+			try {
+				if (field.isAnnotationPresent(DeclareWarning.class)) {
+					 DeclareWarning dw = field.getAnnotation(DeclareWarning.class);
+					 if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
+						 String message = (String) field.get(null);
+						 DeclareErrorOrWarningImpl deow = new DeclareErrorOrWarningImpl(dw.value(),message,false);
+						 deows.add(deow);
+					 } 
+				} else if (field.isAnnotationPresent(DeclareError.class)) {
+					 DeclareError de = field.getAnnotation(DeclareError.class);
+					 if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
+						 String message = (String) field.get(null);
+						 DeclareErrorOrWarningImpl deow = new DeclareErrorOrWarningImpl(de.value(),message,true);
+						 deows.add(deow);
+					 } 				
+				}
+			} catch (IllegalArgumentException e) {
+				// just move on to the next field
+			} catch (IllegalAccessException e) {
+				// just move on to the next field
+			}
+		}
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (method.isAnnotationPresent(ajcDeclareEoW.class)) {
+				ajcDeclareEoW deowAnn = method.getAnnotation(ajcDeclareEoW.class);
+				DeclareErrorOrWarning deow = new DeclareErrorOrWarningImpl(deowAnn.pointcut(),deowAnn.message(),deowAnn.isError());
+				deows.add(deow);
+			}
+		}
+		DeclareErrorOrWarning[] ret = new DeclareErrorOrWarning[deows.size()];
+		deows.toArray(ret);
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclareParents()
 	 */
-	public DeclareParents getDeclareParents() {
+	public DeclareParents[] getDeclareParents() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -647,15 +691,14 @@ public class AjTypeImpl<T> implements AjType {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclareSofts()
 	 */
-	public DeclareSoft getDeclareSofts() {
-		// TODO Auto-generated method stub
+	public DeclareSoft[] getDeclareSofts() {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclareAnnotations()
 	 */
-	public DeclareAnnotation getDeclareAnnotations() {
+	public DeclareAnnotation[] getDeclareAnnotations() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -663,7 +706,7 @@ public class AjTypeImpl<T> implements AjType {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclarePrecedence()
 	 */
-	public DeclarePrecedence getDeclarePrecedence() {
+	public DeclarePrecedence[] getDeclarePrecedence() {
 		// TODO Auto-generated method stub
 		return null;
 	}
