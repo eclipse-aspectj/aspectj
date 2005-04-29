@@ -137,4 +137,10 @@
         </compile>
     </ajc-test>
 
+   <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for deows">
+        <compile files="Deow.aj" options="-1.5">
+        </compile>
+        <run class="Deow"/>
+    </ajc-test>          
+    
 </suite>

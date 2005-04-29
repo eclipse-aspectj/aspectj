@@ -205,4 +205,4 @@
             <message kind="error" line="6" text="Advice must be declared inside an aspect type"/>
         </compile>
     </ajc-test>          
-    
+

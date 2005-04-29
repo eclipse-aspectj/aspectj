@@ -122,5 +122,9 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 	public void testAdviceDeclaredInClass() {
 		runTest("advice in a class");
 	}
+	
+	public void testDeows() {
+		runTest("ann gen for deows");
+	}
 }
 

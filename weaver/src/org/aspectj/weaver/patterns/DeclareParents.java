@@ -245,4 +245,7 @@ public class DeclareParents extends Declare {
 		return ret;
 	}
 
+	public String getNameSuffix() {
+		return "parents";
+	}
 }

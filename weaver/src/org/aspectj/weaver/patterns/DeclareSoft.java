@@ -109,4 +109,8 @@ public class DeclareSoft extends Declare {
     public boolean isAdviceLike() {
 		return true;
 	}
+	
+	public String getNameSuffix() {
+		return "soft";
+	}
 }

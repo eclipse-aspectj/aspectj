@@ -22,7 +22,7 @@ public class NameMangler {
 	}
 	
 	public static final String PREFIX = "ajc$";
-	
+	public static final String ITD_PREFIX = PREFIX + "interType$";
 	
 	public static final String CFLOW_STACK_TYPE = "org.aspectj.runtime.internal.CFlowStack";
 	public static final String CFLOW_COUNTER_TYPE="org.aspectj.runtime.internal.CFlowCounter";

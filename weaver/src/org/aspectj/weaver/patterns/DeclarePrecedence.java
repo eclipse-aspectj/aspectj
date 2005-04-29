@@ -148,4 +148,7 @@ public class DeclarePrecedence extends Declare {
 		return false;
 	}
 
+	public String getNameSuffix() {
+		return "precedence";
+	}
 }

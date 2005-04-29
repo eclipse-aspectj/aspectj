@@ -63,7 +63,5 @@ public abstract class Declare extends PatternNode {
 	 * this 'getNameSuffix()' method - depending on whether, at weave time, we
 	 * want to easily differentiate between the declare methods.
 	 */
-	public String getNameSuffix() {
-	  return "";
-	}
+	public abstract String getNameSuffix();
 }

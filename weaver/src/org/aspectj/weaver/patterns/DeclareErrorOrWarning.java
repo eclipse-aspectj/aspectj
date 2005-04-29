@@ -98,4 +98,7 @@ public class DeclareErrorOrWarning extends Declare {
 		return true;
 	}
 
+	public String getNameSuffix() {
+		return "eow";
+	}
 }

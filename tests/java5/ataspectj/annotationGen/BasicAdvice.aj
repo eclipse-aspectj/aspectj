@@ -67,19 +67,19 @@ public aspect BasicAdvice {
 	}
 	
 	private static void checkBefore(Method method) {
-		assertTrue("expecting 2 annotations",method.getAnnotations().length == 2);
+		assertTrue("expecting 2 annotations on before",method.getAnnotations().length == 2);
 		Before beforeAnnotation = method.getAnnotation(Before.class);
 		assertTrue("expecting  execution(* *.*(..))",beforeAnnotation.value().equals("execution(* *.*(..))"));
 	}
 
 	private static void checkAfter(Method method) {
-		assertTrue("expecting 2 annotations",method.getAnnotations().length == 2);
+		assertTrue("expecting 2 annotations on after",method.getAnnotations().length == 2);
 		After afterAnnotation = method.getAnnotation(After.class);
 		assertTrue("expecting  call(* Integer.*(..))",afterAnnotation.value().equals("call(* Integer.*(..))"));
 	}
 	
 	private static void checkAfterReturning(Method method) {
-		assertTrue("expecting 2 annotations",method.getAnnotations().length == 2);
+		assertTrue("expecting 2 annotations on after returning",method.getAnnotations().length == 2);
 		AfterReturning afterAnnotation = method.getAnnotation(AfterReturning.class);
 		if (method.getParameterTypes().length == 1) {
 			// form with returning arg
@@ -95,7 +95,7 @@ public aspect BasicAdvice {
 	}
 
 	private static void checkAfterThrowing(Method method) {
-		assertTrue("expecting 2 annotations",method.getAnnotations().length == 2);
+		assertTrue("expecting 2 annotations on after throwing",method.getAnnotations().length == 2);
 		AfterThrowing afterAnnotation = method.getAnnotation(AfterThrowing.class);
 		if (method.getParameterTypes().length == 1) {
 			// form with returning arg
@@ -111,7 +111,7 @@ public aspect BasicAdvice {
 	}
 
 	private static void checkAround(Method method) {
-		assertTrue("expecting 2 annotations",method.getAnnotations().length == 2);
+		assertTrue("expecting 2 annotations on around",method.getAnnotations().length == 2);
 		Around aroundAnnotation = method.getAnnotation(Around.class);
 		assertTrue("expecting  set(* foo)",aroundAnnotation.value().equals("set(* foo)"));
 	}
