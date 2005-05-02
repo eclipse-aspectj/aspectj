@@ -79,4 +79,12 @@
         <compile files="ataspectj/BindingTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
         <run class="ataspectj.BindingTest"/>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="PerClause">
+        <compile files="ataspectj/PerClauseTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.PerClauseTest"/>
+        <compile files="ataspectj/PerClauseTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.PerClauseTest"/>
+    </ajc-test>
+
 </suite>

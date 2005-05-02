@@ -223,8 +223,14 @@ public class AjdeInteractionTestbed extends TestCase {
 		// AMC - I did this rather than use the JDK default as I hate having to go look 
 		// in c:\documents and settings\......... for the results of a failed test.
 		if (os.startsWith("Windows")) {
-			tempDir = new File("C:\\temp");
-			if (!tempDir.exists()) {tempDir.mkdir();}
+            //Alex: try D first since NTFS on mine while FAT leads to failure..
+			tempDir = new File("D:\\temp");
+			if (!tempDir.exists()) {
+                tempDir = new File("C:\\temp");
+                if (!tempDir.exists()) {
+                    tempDir.mkdir();
+                }
+            }
 		} else {
 		 	tempDir = new File("/tmp");
 		}

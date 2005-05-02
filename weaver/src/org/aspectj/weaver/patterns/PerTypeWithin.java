@@ -145,6 +145,14 @@ public class PerTypeWithin extends PerClause {
 		
 		ResolvedTypeMunger munger = new PerTypeWithinTargetTypeMunger(inAspect, ret);
 		inAspect.crosscuttingMembers.addTypeMunger(world.concreteTypeMunger(munger, inAspect));
+
+        //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
+        if (inAspect.isAnnotationStyleAspect()) {
+            inAspect.crosscuttingMembers.addTypeMunger(
+                    inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
+            );
+        }
+
 		return ret;
 		
 	}

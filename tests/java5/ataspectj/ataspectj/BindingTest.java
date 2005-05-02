@@ -90,6 +90,10 @@ public class BindingTest extends TestCase {
         //assertEquals(2, aspect.m_count);
     }
 
+    public void testTryCatch() {
+        assertEquals(6, echo(3));
+    }
+
     private static void callWithinStatic() {
         int res = dup((3+1));
         assertEquals(6, res);
@@ -177,10 +181,18 @@ public class BindingTest extends TestCase {
 
         @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testAccessAspectState()) && args(i)")
         public Object aaround7(int i, final ProceedingJoinPoint jp) throws Throwable {
-            //m_count++;// what if inlined ?
+            //m_count++;// what if inlined ?//FIXME
             return jp.proceed();
         }
 
+        @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testTryCatch()) && args(i)")
+        public Object aaround8(int i, final ProceedingJoinPoint jp) throws Throwable {
+            try {
+                return 2*((Integer)jp.proceed()).intValue();
+            } catch (Throwable t) {
+                throw t;
+            }
+        }
     }
 
 }
