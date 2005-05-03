@@ -19,7 +19,7 @@
 ]>
 <project name="build" default="all" basedir=".">
 
-    <target name="all"     depends="aspectj,eclipse.plugins"/>
+    <target name="all"     depends="aspectj"/> <!-- used to also depend on "eclipse.plugins"/-->
     <target name="rebuild" depends="clean,all"/>
     <target name="clean"   depends="clean-directories"/>
 
