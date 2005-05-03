@@ -1,61 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB">
-		<attributes>
-			<attribute value="http://java.sun.com/j2se/1.5.0/docs/api/" name="javadoc_location"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/bridge">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/weaver">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/asm">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/util">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/runtime">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="testsrc">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/lib/bcel/bcel-src.zip" kind="lib" path="/lib/bcel/bcel.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/testing-util">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/testing-client">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/aspectj5rt">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.jdt.core">
-		<attributes>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
+	<classpathentry kind="src" path="/bridge"/>
+	<classpathentry kind="src" path="/weaver"/>
+	<classpathentry kind="src" path="/asm"/>
+	<classpathentry kind="src" path="/util"/>
+	<classpathentry kind="src" path="/runtime"/>
+	<classpathentry kind="src" path="testsrc"/>
+	<classpathentry sourcepath="/lib/bcel/bcel-src.zip" kind="lib" path="/lib/bcel/bcel.jar"/>
+	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry kind="src" path="/testing-util"/>
+	<classpathentry kind="src" path="/testing-client"/>
+	<classpathentry kind="src" path="/org.eclipse.jdt.core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
