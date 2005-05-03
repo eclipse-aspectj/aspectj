@@ -18,7 +18,7 @@ import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.testing.AutowiredXMLBasedAjcTestCase;
 
-/**
+/**                              
  * A suite for @AspectJ aspects located in java5/ataspectj
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

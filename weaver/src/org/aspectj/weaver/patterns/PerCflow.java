@@ -34,6 +34,8 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
+import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
 
@@ -101,6 +103,11 @@ public class PerCflow extends PerClause {
             inAspect.crosscuttingMembers.addTypeMunger(
                     inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
             );
+        }
+
+        //ATAJ inline around advice support
+        if (Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
+            inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 
 		return ret;

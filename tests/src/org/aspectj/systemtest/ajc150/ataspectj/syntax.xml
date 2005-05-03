@@ -87,4 +87,10 @@
         <run class="ataspectj.PerClauseTest"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="AroundInlineMunger">
+        <compile files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+        <run class="ataspectj.AroundInlineMungerTest"/>
+        <compile files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+        <run class="ataspectj.AroundInlineMungerTest"/>
+    </ajc-test>
 </suite>

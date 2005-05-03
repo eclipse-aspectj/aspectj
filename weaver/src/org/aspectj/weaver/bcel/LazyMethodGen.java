@@ -1354,4 +1354,15 @@ public final class LazyMethodGen {
 	public void setCanInline(boolean canInline) {
 		this.canInline = canInline;
 	}
+
+    /**
+     * Adds an attribute to the method
+     * @param attr
+     */
+    public void addAttribute(Attribute attr) {
+        Attribute[] newAttributes = new Attribute[attributes.length + 1];
+        System.arraycopy(attributes, 0, newAttributes, 0, attributes.length);
+        newAttributes[attributes.length] = attr;
+        attributes = newAttributes;
+    }
 }

@@ -119,25 +119,24 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
             generatePerTWGetInstanceMethod(gen);
             generatePerTWCreateAspectInstanceMethod(gen);
         } else {
-            throw new RuntimeException("TODO not yet implemented perClause " + kind.getName());
+            throw new Error("should not happen - not such kind " + kind.getName());
         }
         return true;
     }
 
 
     public ResolvedMember getMatchingSyntheticMember(Member member) {
-        //TODO is that ok ?
         return null;
     }
 
     public ResolvedMember getSignature() {
-        // TODO what to do here ?
         return null;
-        //throw new RuntimeException("not implemented - BcelPerClauseAspectAdder");
     }
 
     public boolean matches(ResolvedTypeX onType) {
-        return true;//onType.equals(aspectType);
+        //we cannot return onType.equals(aspectType)
+        //since we need to eagerly create the nested ajcMighHaveAspect interface on LTW
+        return true;
     }
 
     private void generatePerClauseMembers(LazyClassGen classGen) {

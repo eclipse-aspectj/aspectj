@@ -4,20 +4,20 @@
 
 <suite>
 
-<!--    <comment>this one is ok - too simple - could be removed..</comment>-->
-<!--    <ajc-test dir="java5/ataspectj"-->
-<!--        pr="" title="@Aspect class extending @Aspect class">-->
-<!--        <compile files="ataspectj/misuse/Test005.java" options="-1.5 -Xdev:NoAtAspectJProcessing">-->
-<!--        </compile>-->
-<!--    </ajc-test>-->
-<!---->
-<!--    <comment>just a warning - might be skept if further optimized in Aj5Attributes..</comment>-->
-<!--    <ajc-test dir="java5/ataspectj"-->
-<!--        pr="" title="class with @Before extending @Aspect class">-->
-<!--        <compile files="ataspectj/misuse/Test006.java" options="-1.5 -Xdev:NoAtAspectJProcessing">-->
-<!--            <message kind="warning" line="11" text="Found @AspectJ annotations in a non @Aspect type 'ataspectj.misuse.Test006B'"/>-->
-<!--        </compile>-->
-<!--    </ajc-test>-->
+    <comment>this one is ok - too simple - could be removed..</comment>
+    <ajc-test dir="java5/ataspectj"
+        pr="" title="@Aspect class extending @Aspect class">
+        <compile files="ataspectj/misuse/Test005.java" options="-1.5 -Xdev:NoAtAspectJProcessing">
+        </compile>
+    </ajc-test>
+
+    <comment>just a warning - might be skept if further optimized in Aj5Attributes..</comment>
+    <ajc-test dir="java5/ataspectj"
+        pr="" title="class with @Before extending @Aspect class">
+        <compile files="ataspectj/misuse/Test006.java" options="-1.5 -Xdev:NoAtAspectJProcessing">
+            <message kind="warning" line="11" text="Found @AspectJ annotations in a non @Aspect type 'ataspectj.misuse.Test006B'"/>
+        </compile>
+    </ajc-test>
 
     <comment>a warning. We ignore the pointcut (TBD) - line is enclosing class (TBD Andy do better ?)</comment>
     <ajc-test dir="java5/ataspectj"
@@ -27,7 +27,6 @@
         </compile>
     </ajc-test>
 
-
 <!--    <ajc-test dir="java5/ataspectj"-->
 <!--        pr="" title="@Aspect on interface">-->
 <!--        <compile files="ataspectj/misuse/Test010.java" options="-1.5 -Xdev:NoAtAspectJProcessing">-->
@@ -35,46 +34,46 @@
 <!--        </compile>-->
 <!--    </ajc-test>-->
 
-<!--    <comment>line is enclosing class - TBD</comment>-->
-<!--    <ajc-test dir="java5/ataspectj"-->
-<!--        pr="" title="@Pointcut with garbage string">-->
-<!--        <compile files="ataspectj/misuse/Test014.java" options="-1.5 -Xdev:NoAtAspectJProcessing">-->
-<!--            <message kind="error" line="7" text="Cannot parse @Pointcut 'call%dddd"/>-->
-<!--        </compile>-->
-<!--    </ajc-test>-->
-<!---->
-<!--        <comment>line is enclosing class - TBD</comment>-->
-<!--    <ajc-test dir="java5/ataspectj"-->
-<!--        pr="" title="@Pointcut with throws clause">-->
-<!--        <compile files="ataspectj/misuse/Test016.java" options="-1.5 -Xdev:NoAtAspectJProcessing">-->
-<!--            <message kind="warning" line="7" text="Found @Pointcut on a method throwing exception 'someCall()V'"/>-->
-<!--        </compile>-->
-<!--    </ajc-test>-->
-<!---->
-<!--    <comment>very dirty hack - can't get this location to work properly so added match all error..</comment>-->
-<!--    <ajc-test dir="java5/ataspectj"-->
-<!--        pr="" title="@AfterReturning with wrong number of args">-->
-<!--        <compile files="ataspectj/misuse/Test019.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">-->
-<!--            <message kind="error" line="1" text="the parameter x is not bound"/>-->
-<!--            <message kind="error"/>-->
-<!--        </compile>-->
-<!--    </ajc-test>-->
-<!---->
-<!--    <comment>line number is enclosing type</comment>-->
-<!--    <ajc-test dir="java5/ataspectj"-->
-<!--        pr="" title="@Before on non-public method">-->
-<!--        <compile files="ataspectj/misuse/Test020.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">-->
-<!--            <message kind="error" line="7" text="Found @AspectJ annotation on a non public advice 'someCall()V'"/>-->
-<!--        </compile>-->
-<!--    </ajc-test>-->
-<!---->
-<!--    <comment>line number is enclosing type</comment>-->
-<!--    <ajc-test dir="java5/ataspectj"-->
-<!--        pr="" title="@Before on method not returning void">-->
-<!--        <compile files="ataspectj/misuse/Test021.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">-->
-<!--            <message kind="error" line="7" text="Found @AspectJ annotation on a non around advice not returning void 'someCall()I'"/>-->
-<!--        </compile>-->
-<!--    </ajc-test>-->
+    <comment>line is enclosing class - TBD</comment>
+    <ajc-test dir="java5/ataspectj"
+        pr="" title="@Pointcut with garbage string">
+        <compile files="ataspectj/misuse/Test014.java" options="-1.5 -Xdev:NoAtAspectJProcessing">
+            <message kind="error" line="7" text="Cannot parse @Pointcut 'call%dddd"/>
+        </compile>
+    </ajc-test>
+
+        <comment>line is enclosing class - TBD</comment>
+    <ajc-test dir="java5/ataspectj"
+        pr="" title="@Pointcut with throws clause">
+        <compile files="ataspectj/misuse/Test016.java" options="-1.5 -Xdev:NoAtAspectJProcessing">
+            <message kind="warning" line="7" text="Found @Pointcut on a method throwing exception 'someCall()V'"/>
+        </compile>
+    </ajc-test>
+
+    <comment>very dirty hack - can't get this location to work properly so added match all error..</comment>
+    <ajc-test dir="java5/ataspectj"
+        pr="" title="@AfterReturning with wrong number of args">
+        <compile files="ataspectj/misuse/Test019.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
+            <message kind="error" line="1" text="the parameter x is not bound"/>
+            <message kind="error"/>
+        </compile>
+    </ajc-test>
+
+    <comment>line number is enclosing type</comment>
+    <ajc-test dir="java5/ataspectj"
+        pr="" title="@Before on non-public method">
+        <compile files="ataspectj/misuse/Test020.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
+            <message kind="error" line="7" text="Found @AspectJ annotation on a non public advice 'someCall()V'"/>
+        </compile>
+    </ajc-test>
+
+    <comment>line number is enclosing type</comment>
+    <ajc-test dir="java5/ataspectj"
+        pr="" title="@Before on method not returning void">
+        <compile files="ataspectj/misuse/Test021.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
+            <message kind="error" line="7" text="Found @AspectJ annotation on a non around advice not returning void 'someCall()I'"/>
+        </compile>
+    </ajc-test>
 
 <!--
 ALEX: todo

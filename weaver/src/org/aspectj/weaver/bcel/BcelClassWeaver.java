@@ -1505,7 +1505,7 @@ class BcelClassWeaver implements IClassWeaver {
 					annotations = resolvedDooberry.getAnnotationTypes();
 				}
 			} else if (rm.getKind()==Member.METHOD && !rm.isAbstract()) {
-				if (methodName.startsWith("ajc$inlineAccessMethod")) {
+				if (methodName.startsWith("ajc$inlineAccessMethod") || methodName.startsWith("ajc$superDispatch")) {
 					ResolvedMember resolvedDooberry = world.resolve(declaredSig);
 					annotations = resolvedDooberry.getAnnotationTypes();
 				} else {
