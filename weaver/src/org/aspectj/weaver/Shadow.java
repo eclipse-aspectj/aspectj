@@ -447,7 +447,7 @@ public abstract class Shadow {
 
 	public IRelationship.Kind determineRelKind(ShadowMunger munger) {
 		AdviceKind ak = ((Advice)munger).getKind();
-		if (ak.getKey()==AdviceKind.Before.getKey()) 
+		if (ak.getKey()==AdviceKind.Before.getKey())
 				return IRelationship.Kind.ADVICE_BEFORE;
 		else if (ak.getKey()==AdviceKind.After.getKey())
 				return IRelationship.Kind.ADVICE_AFTER;
@@ -464,8 +464,9 @@ public abstract class Shadow {
 		ak.getKey()==AdviceKind.PerCflowBelowEntry.getKey() ||
 		ak.getKey()==AdviceKind.PerThisEntry.getKey() ||
 		ak.getKey()==AdviceKind.PerTargetEntry.getKey() ||
-		ak.getKey()==AdviceKind.Softener.getKey()) {
-        //FIXME: Alex: why this System.err was there ?? It prints nasty thing in my LTW. 
+		ak.getKey()==AdviceKind.Softener.getKey() ||
+        ak.getKey()==AdviceKind.PerTypeWithinEntry.getKey()) {
+        //FIXME: Alex: why this System.err was there ?? It prints nasty thing in my LTW.
           System.err.println("Dont want a message about this: "+ak);
 			  return null;
 		}
