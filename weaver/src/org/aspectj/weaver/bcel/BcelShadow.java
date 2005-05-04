@@ -1942,14 +1942,10 @@ public class BcelShadow extends Shadow {
 
         // specific test for @AJ proceedInInners
         if (munger.getConcreteAspect().isAnnotationStyleAspect()) {
-            //FIXME
             // if we can't find one proceed()
             // we suspect that the call is happening in an inner class
             // so we don't inline it.
             // Note: for code style, this is done at Aspect compilation time.
-            // Limitation: if there is two calls and one is done in an inner class, inlining will happen
-            // since we will see the non proceed in inner one as if it was the sole one.
-            // The one made in the inner class will never be madeXXX. Should be documented.
             boolean canSeeProceedPassedToOther = false;
             InstructionHandle curr = adviceMethod.getBody().getStart();
             InstructionHandle end = adviceMethod.getBody().getEnd();
@@ -1957,11 +1953,7 @@ public class BcelShadow extends Shadow {
             while (curr != end) {
                 InstructionHandle next = curr.getNext();
                 Instruction inst = curr.getInstruction();
-                /*if ((inst instanceof INVOKEINTERFACE)
-                    && "proceed".equals(((INVOKEINTERFACE) inst).getMethodName(cpg))) {
-                    canSeeProceed = true;
-                    //continue since we may have a proceed in inner or pjp as arg
-                } else*/ if ((inst instanceof InvokeInstruction)
+                if ((inst instanceof InvokeInstruction)
                     && ((InvokeInstruction)inst).getSignature(cpg).indexOf("Lorg/aspectj/lang/ProceedingJoinPoint;") > 0) {
                     // we may want to refine to exclude stuff returning jp ?
                     // does code style skip inline if i write dump(thisJoinPoint) ?

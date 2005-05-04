@@ -82,12 +82,12 @@ public class BindingTest extends TestCase {
     }
 
     public void testAccessAspectState() {
-        //TestAspect_1 aspect = (TestAspect_1) Aspects.aspectOf(TestAspect_1.class);
-        //aspect.m_count = 0;
+        TestAspect_1 aspect = (TestAspect_1) Aspects.aspectOf(TestAspect_1.class);
+        aspect.m_count = 0;
         int res = echo(3);
         res += echo(3);
         assertEquals(6, res);
-        //assertEquals(2, aspect.m_count);
+        assertEquals(2, aspect.m_count);
     }
 
     public void testTryCatch() {
@@ -181,7 +181,7 @@ public class BindingTest extends TestCase {
 
         @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testAccessAspectState()) && args(i)")
         public Object aaround7(int i, final ProceedingJoinPoint jp) throws Throwable {
-            //m_count++;// what if inlined ?//FIXME
+            m_count++;// will be wrapped for inlining support
             return jp.proceed();
         }
 

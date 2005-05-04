@@ -425,7 +425,12 @@ public class Aj5Attributes {
             ElementNameValuePair beforeAdvice = getAnnotationElement(before, "value");
             if (beforeAdvice != null) {
                 // this/target/args binding
-                FormalBinding[] bindings = extractBindings(struct);
+                FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+                try {
+                    bindings = extractBindings(struct);
+                } catch (UnreadableDebugInfo unreadableDebugInfo) {
+                    return false;
+                }
                 IScope binding = new BindingScope(
                         struct.enclosingType,
                         bindings
@@ -470,7 +475,12 @@ public class Aj5Attributes {
             ElementNameValuePair afterAdvice = getAnnotationElement(after, "value");
             if (afterAdvice != null) {
                 // this/target/args binding
-                FormalBinding[] bindings = extractBindings(struct);
+                FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+                try {
+                    bindings = extractBindings(struct);
+                } catch (UnreadableDebugInfo unreadableDebugInfo) {
+                    return false;
+                }
                 IScope binding = new BindingScope(
                         struct.enclosingType,
                         bindings
@@ -538,7 +548,12 @@ public class Aj5Attributes {
 
             // this/target/args binding
             // exclude the return binding from the pointcut binding since it is an extraArg binding
-            FormalBinding[] bindings = (returned==null?extractBindings(struct):extractBindings(struct, returned));
+            FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+            try {
+                bindings = (returned==null?extractBindings(struct):extractBindings(struct, returned));
+            } catch (UnreadableDebugInfo unreadableDebugInfo) {
+                return false;
+            }
             IScope binding = new BindingScope(
                     struct.enclosingType,
                     bindings
@@ -611,7 +626,12 @@ public class Aj5Attributes {
 
             // this/target/args binding
             // exclude the throwned binding from the pointcut binding since it is an extraArg binding
-            FormalBinding[] bindings = (throwned==null?extractBindings(struct):extractBindings(struct, throwned));
+            FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+            try {
+                bindings = (throwned==null?extractBindings(struct):extractBindings(struct, throwned));
+            } catch (UnreadableDebugInfo unreadableDebugInfo) {
+                return false;
+            }
             IScope binding = new BindingScope(
                     struct.enclosingType,
                     bindings
@@ -660,7 +680,12 @@ public class Aj5Attributes {
             ElementNameValuePair aroundAdvice = getAnnotationElement(around, "value");
             if (aroundAdvice != null) {
                 // this/target/args binding
-                FormalBinding[] bindings = extractBindings(struct);
+                FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+                try {
+                    bindings = extractBindings(struct);
+                } catch (UnreadableDebugInfo unreadableDebugInfo) {
+                    return false;
+                }
                 IScope binding = new BindingScope(
                         struct.enclosingType,
                         bindings
@@ -732,10 +757,15 @@ public class Aj5Attributes {
                 }
 
                 // this/target/args binding
-                IScope binding = new BindingScope(
-                        struct.enclosingType,
-                        extractBindings(struct)
-                );
+                final IScope binding;
+                try {
+                    binding = new BindingScope(
+                            struct.enclosingType,
+                            extractBindings(struct)
+                    );
+                } catch(UnreadableDebugInfo e) {
+                    return;
+                }
 
                 TypeX[] argumentTypes = new TypeX[struct.method.getArgumentTypes().length];
                 for (int i = 0; i < argumentTypes.length; i++) {
@@ -788,15 +818,25 @@ public class Aj5Attributes {
      * Build the bindings for a given method (pointcut / advice)
      *
      * @param struct
-     * @return
+     * @return null if no debug info is available
      */
-    private static FormalBinding[] extractBindings(AjAttributeMethodStruct struct) {
+    private static FormalBinding[] extractBindings(AjAttributeMethodStruct struct)
+    throws UnreadableDebugInfo {
         Method method = struct.method;
         String[] argumentNames = struct.getArgumentNames();
 
         // assert debug info was here
         if (argumentNames.length != method.getArgumentTypes().length) {
-            throw new RuntimeException("cannot access debug info " + method);
+            struct.handler.handleMessage(
+                    new Message(
+                            "Cannot read debug info for @Aspect '" + struct.enclosingType.getName() + "'"
+                            + " (please compile with 'javac -g' or '<javac debug='true'.../>' in Ant)",
+                            IMessage.FAIL,
+                            null,
+                            struct.enclosingType.getSourceLocation()
+                    )
+            );
+            throw new UnreadableDebugInfo();
         }
 
         List bindings = new ArrayList();
@@ -823,7 +863,8 @@ public class Aj5Attributes {
     }
 
     //FIXME alex deal with exclude index
-    private static FormalBinding[] extractBindings(AjAttributeMethodStruct struct, String excludeFormal) {
+    private static FormalBinding[] extractBindings(AjAttributeMethodStruct struct, String excludeFormal)
+    throws UnreadableDebugInfo {
         FormalBinding[] bindings = extractBindings(struct);
         int excludeIndex = -1;
         for (int i = 0; i < bindings.length; i++) {
@@ -1055,5 +1096,11 @@ public class Aj5Attributes {
             }
         }
         pointcut.m_ignoreUnboundBindingForNames = (String[])ignores.toArray(new String[ignores.size()]);
+    }
+
+    /**
+     * A check exception when we cannot read debug info (needed for formal binding)
+     */
+    private static class UnreadableDebugInfo extends Exception {
     }
 }

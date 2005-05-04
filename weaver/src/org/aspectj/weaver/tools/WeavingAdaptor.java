@@ -174,6 +174,7 @@ public class WeavingAdaptor {
 	 */
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
 		if (shouldWeave(name)) {
+            System.out.println("WeavingAdaptor.weaveClass " + name);
 			info("weaving '" + name + "'");
 			bytes = getWovenBytes(name, bytes);
 		}
@@ -192,7 +193,11 @@ public class WeavingAdaptor {
     }
 
 	private boolean shouldWeaveName (String name) {
-		return !((name.startsWith("org.apache.bcel.") || name.startsWith("org.aspectj.") || name.startsWith("java.") || name.startsWith("javax.")));
+		return !((name.startsWith("org.apache.bcel.")//FIXME AV why ? bcel is wrapped in org.aspectj.
+                || name.startsWith("org.aspectj.")
+                || name.startsWith("java.")
+                || name.startsWith("javax."))
+                || name.startsWith("$Proxy"));//JDK proxies
 	}
 
     /**
@@ -213,7 +218,6 @@ public class WeavingAdaptor {
 	 * @param bytes the bytes that define the class
 	 * @return byte[] the woven bytes for the class
 	 * @throws IOException
-	 * @throws FileNotFoundException
 	 */
 	private byte[] getWovenBytes(String name, byte[] bytes) throws IOException {
 		WeavingClassFileProvider wcp = new WeavingClassFileProvider(name,bytes);

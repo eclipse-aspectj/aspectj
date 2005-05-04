@@ -534,8 +534,17 @@ public class Main {
         public boolean isIgnoring(IMessage.Kind kind) {
 			return (null != getStreamFor(kind));
 		}
-        
-        /** @return System.err for FAIL, ABORT, ERROR, and WARNING, 
+
+        /**
+         * No-op
+         * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
+         * @param kind
+         */
+        public void dontIgnore(IMessage.Kind kind) {
+            ;
+        }
+
+        /** @return System.err for FAIL, ABORT, ERROR, and WARNING,
          *           System.out for INFO if -verbose and WEAVEINFO if -showWeaveInfo.
          */
         protected PrintStream getStreamFor(IMessage.Kind kind) {

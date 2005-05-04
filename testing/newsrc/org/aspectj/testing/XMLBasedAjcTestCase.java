@@ -145,6 +145,17 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		digester.addObjectCreate("suite/ajc-test/weave",WeaveSpec.class);
 		digester.addSetProperties("suite/ajc-test/weave");
 		digester.addSetNext("suite/ajc-test/weave","addTestStep","org.aspectj.testing.ITestStep");
+
+        digester.addObjectCreate("suite/ajc-test/ant",AntSpec.class);
+        digester.addSetProperties("suite/ajc-test/ant");
+        digester.addSetNext("suite/ajc-test/ant","addTestStep","org.aspectj.testing.ITestStep");
+        digester.addObjectCreate("suite/ajc-test/ant/stderr",OutputSpec.class);
+        digester.addSetProperties("suite/ajc-test/ant/stderr");
+        digester.addSetNext("suite/ajc-test/ant/stderr","addStdErrSpec","org.aspectj.testing.OutputSpec");
+        digester.addObjectCreate("suite/ajc-test/ant/stdout",OutputSpec.class);
+        digester.addSetProperties("suite/ajc-test/ant/stdout");
+        digester.addSetNext("suite/ajc-test/ant/stdout","addStdOutSpec","org.aspectj.testing.OutputSpec");
+
 		digester.addObjectCreate("suite/ajc-test/run/stderr",OutputSpec.class);
 		digester.addSetProperties("suite/ajc-test/run/stderr");
 		digester.addSetNext("suite/ajc-test/run/stderr","addStdErrSpec","org.aspectj.testing.OutputSpec");

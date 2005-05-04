@@ -1,0 +1,20 @@
+<!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
+<project name="foo" default="all">
+
+    <target name="compile:javac">
+        <!-- compile only javac compilable stuff -->
+        <javac destdir="${aj.sandbox}" classpathref="aj.path"
+            srcdir="${basedir}"
+            includes="ataspectj/*"
+            debug="true">
+        </javac>
+    </target>
+
+    <target name="all" depends="compile:javac">
+        <java fork="yes" classname="ataspectj.AllLTWTests" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop.xml"/>
+        </java>
+    </target>
+</project>

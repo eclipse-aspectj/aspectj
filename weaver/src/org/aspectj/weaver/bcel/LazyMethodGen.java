@@ -88,7 +88,7 @@ public final class LazyMethodGen {
     private  Attribute[]     attributes;
    // private AnnotationGen[]  annotations;
     /* private */ final LazyClassGen    enclosingClass;   
-    private final BcelMethod      memberView;
+    private /*final*/ BcelMethod      memberView;//FIXME AV LTW
     int highestLineNumber = 0;
 
 	/** This is nonnull if this method is the result of an "inlining".  We currently
@@ -194,8 +194,10 @@ public final class LazyMethodGen {
 	public boolean hasAnnotation(TypeX annotationTypeX) {
 		initialize();
 		if (memberView==null) {
-			System.err.println("REPORT THIS! 02: Can't determine if "+this+" has annotation "+annotationTypeX);
-			return false;
+            memberView = new BcelMethod(getEnclosingClass().getBcelObjectType(), getMethod());//FIXME AV LTW
+			//System.err.println("REPORT THIS! 02: Can't determine if "+getEnclosingClass().getName() + "." + this.getName() + this.getSignature()+" has annotation "+annotationTypeX);
+			//return false
+            return memberView.hasAnnotation(annotationTypeX);
 		}
 		return memberView.hasAnnotation(annotationTypeX);
 	}

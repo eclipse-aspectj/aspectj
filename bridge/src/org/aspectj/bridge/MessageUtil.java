@@ -358,6 +358,9 @@ public class MessageUtil {
             public boolean isIgnoring(Kind kind) {
                 return false;
             }
+            public void dontIgnore(IMessage.Kind kind) {
+                ;
+            }
         };
         return visitMessages(holder, selector, true, false);
     }
@@ -576,7 +579,11 @@ public class MessageUtil {
                 return (0 < IMessage.Kind.COMPARATOR.compare(sought, kind));
             }
         }
-        
+
+        public void dontIgnore(IMessage.Kind kind) {
+            ;
+        }
+
         private boolean textIn(IMessage message) {
             if (null == infix) {
                 return true;

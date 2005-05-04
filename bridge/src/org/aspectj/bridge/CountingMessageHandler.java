@@ -65,7 +65,16 @@ public class CountingMessageHandler implements IMessageHandler {
     public boolean isIgnoring(IMessage.Kind kind) {
         return delegate.isIgnoring(kind);
     }
-    
+
+    /**
+     * Delegate
+     * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
+     * @param kind
+     */
+    public void dontIgnore(IMessage.Kind kind) {
+        delegate.dontIgnore(kind);
+    }
+
     /** @return delegate.toString() */
     public String toString() {
         return delegate.toString();

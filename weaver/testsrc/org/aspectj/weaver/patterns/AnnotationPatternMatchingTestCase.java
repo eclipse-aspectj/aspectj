@@ -113,6 +113,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 			return false;
 		}
 		public boolean isIgnoring(Kind kind) {return false;}
+        public void dontIgnore(IMessage.Kind kind) {;}
 	}
 	
 	public void testReferenceToNonAnnotationType() {

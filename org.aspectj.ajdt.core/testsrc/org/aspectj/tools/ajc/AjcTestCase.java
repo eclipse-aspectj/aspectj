@@ -58,7 +58,7 @@ public class AjcTestCase extends TestCase {
 	 */
 	protected Ajc ajc;
 	
-	private static final String DEFAULT_CLASSPATH_ENTRIES = 
+	public static final String DEFAULT_CLASSPATH_ENTRIES = 
         File.pathSeparator + 
 		".." + File.separator + "runtime" + File.separator + "bin" + 
 		File.pathSeparator +

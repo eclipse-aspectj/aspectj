@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<aspectj>
+    <aspects>
+        <!-- see here nested class with ".", "$" is accepted as well -->
+        <aspect name="ataspectj.SingletonAspectBindingsTest.TestAspect"/>
+        <aspect name="ataspectj.CflowTest.TestAspect"/>
+        <aspect name="ataspectj.PointcutReferenceTest.TestAspect"/>
+        <aspect name="ataspectj.AfterXTest.TestAspect"/>
+<!--        <aspect name="ataspectj.IfPointcutTest.TestAspect"/>-->
+        <aspect name="ataspectj.XXJoinPointTest.TestAspect"/>
+        <aspect name="ataspectj.PrecedenceTest.TestAspect_2"/>
+        <aspect name="ataspectj.PrecedenceTest.TestAspect_1"/>
+        <aspect name="ataspectj.PrecedenceTest.TestAspect_3"/>
+        <aspect name="ataspectj.PrecedenceTest.TestAspect_Order"/>
+
+        <aspect name="ataspectj.BindingTest.TestAspect_1"/>
+
+        <aspect name="ataspectj.PerClauseTest.TestAspectPerSingleton"/>
+        <aspect name="ataspectj.PerClauseTest.TestAspectPerTarget"/>
+        <aspect name="ataspectj.PerClauseTest.TestAspectPerCflow"/>
+        <aspect name="ataspectj.PerClauseTest.TestAspectPTW"/>
+
+        <aspect name="ataspectj.AroundInlineMungerTest.Open"/>
+    </aspects>
+</aspectj>

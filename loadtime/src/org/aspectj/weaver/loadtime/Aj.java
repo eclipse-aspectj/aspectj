@@ -128,6 +128,7 @@ public class Aj implements ClassPreProcessor {
      * @throws Throwable
      */
     static void __dump(String name, byte[] b) throws Throwable {
+        if (true) return;//FIXME AV have an option
         String className = name.replace('.', '/');
         final File dir;
         if (className.indexOf('/') > 0) {

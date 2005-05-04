@@ -458,17 +458,16 @@ public abstract class Shadow {
 		else if (ak.getKey()==AdviceKind.Around.getKey())
 				return IRelationship.Kind.ADVICE_AROUND;
 		else if (ak.getKey()==AdviceKind.CflowEntry.getKey() ||
-		ak.getKey()==AdviceKind.CflowBelowEntry.getKey() ||
-		ak.getKey()==AdviceKind.InterInitializer.getKey() ||
-		ak.getKey()==AdviceKind.PerCflowEntry.getKey() ||
-		ak.getKey()==AdviceKind.PerCflowBelowEntry.getKey() ||
-		ak.getKey()==AdviceKind.PerThisEntry.getKey() ||
-		ak.getKey()==AdviceKind.PerTargetEntry.getKey() ||
-		ak.getKey()==AdviceKind.Softener.getKey() ||
-        ak.getKey()==AdviceKind.PerTypeWithinEntry.getKey()) {
-        //FIXME: Alex: why this System.err was there ?? It prints nasty thing in my LTW.
-          System.err.println("Dont want a message about this: "+ak);
-			  return null;
+                ak.getKey()==AdviceKind.CflowBelowEntry.getKey() ||
+                ak.getKey()==AdviceKind.InterInitializer.getKey() ||
+                ak.getKey()==AdviceKind.PerCflowEntry.getKey() ||
+                ak.getKey()==AdviceKind.PerCflowBelowEntry.getKey() ||
+                ak.getKey()==AdviceKind.PerThisEntry.getKey() ||
+                ak.getKey()==AdviceKind.PerTargetEntry.getKey() ||
+                ak.getKey()==AdviceKind.Softener.getKey() ||
+                ak.getKey()==AdviceKind.PerTypeWithinEntry.getKey()) {
+            //System.err.println("Dont want a message about this: "+ak);
+            return null;
 		}
 		throw new RuntimeException("Shadow.determineRelKind: What the hell is it? "+ak);
 	}

@@ -150,11 +150,17 @@ public class BcelAdvice extends Advice {
         } else if (getKind() == AdviceKind.After) {   
             shadow.weaveAfter(this);
         } else if (getKind() == AdviceKind.Around) {
+            // Note: under regular LTW the aspect is usually loaded after the first use of any class affecteted by it
+            // This means that as long as the aspect has not been thru the LTW, it's woven state is unknown
+            // and thus canInline(s) will return false.
+            // To force inlining (test), ones can do Class aspect = FQNAspect.class in the clinit of the target class
+            // FIXME AV : for AJC compiled @AJ aspect (or any code style aspect), the woven state can never be known
+            // if the aspect belongs to a parent classloader. In that case the aspect will never be inlined.
+            // It might be dangerous to change that especially for @AJ aspect non compiled with AJC since if those
+            // are not weaved (f.e. use of some limiteed LTW etc) then they cannot be prepared for inlining.
+            // One solution would be to flag @AJ aspect with an annotation as "prepared" and query that one.
         	if (!canInline(s)) {
         		shadow.weaveAroundClosure(this, hasDynamicTests());
-                //FIXME : check Inlining and LTW
-                //ALEX : uncomment to force inlining for LTW - else inlining does not seems to happen.
-                //shadow.weaveAroundInline(this, hasDynamicTests());
         	} else {
             	shadow.weaveAroundInline(this, hasDynamicTests());
         	}
@@ -231,7 +237,7 @@ public class BcelAdvice extends Advice {
      */
     public boolean mustCheckExceptions() {
         if (getConcreteAspect() == null) {
-            //FIXME Alex: not sure this is good to default to that.
+            //FIXME AV: not sure this is good to default to that.
             // dig when do we reach that ie not yet concretized
             return true;
         }
@@ -357,7 +363,7 @@ public class BcelAdvice extends Advice {
 	                        fact,
 	                        getExtraParameterType().resolve(world));
 	                } else {
-                        //FIXME this code  will throw an error if ProceedingJP is used in a before advice f.e. ok ??
+                        //FIXME AV test for that - this code  will throw an error if ProceedingJP is used in a before advice f.e. ok ??
                         throw new Error("Should not happen - unbound advice argument at index " + i + " in [" +
                                 toString() + "]");
 	                }

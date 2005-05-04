@@ -120,7 +120,16 @@ public class WeaverMessageHandler implements IMessageHandler {
 	public boolean isIgnoring(Kind kind) {
 		return sink.isIgnoring(kind);
 	}
-	
+
+    /**
+     * No-op
+     * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
+     * @param kind
+     */
+    public void dontIgnore(IMessage.Kind kind) {
+        ;
+    }
+
 	private int getStartPos(ISourceLocation sLoc,CompilationResult result) {
 		int pos = 0;
 		if (sLoc == null) return 0;

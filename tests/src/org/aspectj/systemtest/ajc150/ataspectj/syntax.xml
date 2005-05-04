@@ -93,4 +93,8 @@
         <compile files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
         <run class="ataspectj.AroundInlineMungerTest"/>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="RunThemAllWithJavacCompiledAndLTW">
+        <ant file="ajc-ant.xml" target="all"/>
+    </ajc-test>
 </suite>

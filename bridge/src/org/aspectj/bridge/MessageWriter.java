@@ -52,12 +52,21 @@ public class MessageWriter implements IMessageHandler {
 	}
     
     /**
-	 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(Kind)
+	 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
 	 */
 	public boolean isIgnoring(IMessage.Kind kind) { 
         // XXX share MessageHandler implementation in superclass
 		return false;
 	}
+
+    /**
+     * No-op
+     * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
+     * @param kind
+     */
+    public void dontIgnore(IMessage.Kind kind) {
+        ;
+    }
 
     /** @return null to not print, or message rendering (including newlines) */
     protected String render(IMessage message) {

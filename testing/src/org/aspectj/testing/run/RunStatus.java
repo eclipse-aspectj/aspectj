@@ -224,7 +224,7 @@ public class RunStatus implements IRunStatus {
 	 * @return true if completed, not aborted, no thrown, no
 	 * messages of kind ERROR, FAIL or ABORT, and
 	 * result object is not IRunStatus.FAIL.
-	 * @see org.aspectj.testing.harness.newbridge.IRunStatus#runResult()
+	 * @see org.aspectj.testing.run.IRunStatus#runResult()
 	 */
 	public boolean runResult() {
 		return validator.runPassed(this);
@@ -277,23 +277,27 @@ public class RunStatus implements IRunStatus {
 	public boolean isIgnoring(IMessage.Kind kind) {
 		return messageHolder.isIgnoring(kind);
 	}
-    
+
+    public void dontIgnore(IMessage.Kind kind) {
+        messageHolder.dontIgnore(kind);
+    }
+
     /**
-	 * @see org.aspectj.bridge.IMessageHolder#hasAnyMessage(Kind, boolean)
+	 * @see org.aspectj.bridge.IMessageHolder#hasAnyMessage(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public boolean hasAnyMessage(IMessage.Kind kind, boolean orGreater) {
         return messageHolder.hasAnyMessage(kind, orGreater);
 	}
 
     /**
-	 * @see org.aspectj.bridge.IMessageHolder#getMessages(Kind)
+	 * @see org.aspectj.bridge.IMessageHolder#getMessages(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public IMessage[] getMessages(IMessage.Kind kind, boolean orGreater) {
 		return messageHolder.getMessages(kind, orGreater);
 	}
     
     /**
-	 * @see org.aspectj.bridge.IMessageHolder#numMessages(Kind)
+	 * @see org.aspectj.bridge.IMessageHolder#numMessages(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public int numMessages(IMessage.Kind kind, boolean orGreater) {
 		return messageHolder.numMessages(kind, orGreater);
