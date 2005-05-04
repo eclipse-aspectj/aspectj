@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project name="loadtime5" default="all" basedir=".">
+
+    <import file="../build/build-common.xml"/>
+    <import file="../asm/build.xml"/>
+    <import file="../bridge/build.xml"/>
+    <import file="../loadtime/build.xml"/>
+    <import file="../weaver/build.xml"/>
+    <import file="../util/build.xml"/>
+    <import file="../runtime/build.xml/"/>
+    <import file="../aspectj5rt/build.xml"/>
+
+    <path id="loadtime5.src.path">
+        <pathelement path="../asm/bin"/>
+        <pathelement path="../bridge/bin"/>
+        <pathelement path="../loadtime/bin"/>
+        <pathelement path="../weaver/bin"/>
+        <fileset dir="${basedir}/../lib">
+            <include name="bcel/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile" depends="init,
+                                    asm.compile,
+                                    bridge.compile,
+                                    loadtime.compile,
+                                    weaver.compile" if="jdk15">
+        <!-- FIXME: we override compile due to use of 1.5 -->
+        <mkdir dir="${basedir}/bin"/>
+        <javac debug="on" destdir="${basedir}/bin" source="1.5" target="1.5">
+            <src path="${basedir}/src"/>
+            <classpath refid="loadtime5.src.path"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <delete file="${build.ajdir}/jars/loadtime5.jar"/>
+        <copy file="loadtime5.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
+        <jar destfile="${build.ajdir}/jars/loadtime5.jar" manifest="${build.ajdir}/temp/loadtime5.mf.txt">
+            <fileset dir="bin">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+        <!-- FIXME AV we can push it to lib/test as well for the AntSpec need -->
+    </target>
+
+</project>
+

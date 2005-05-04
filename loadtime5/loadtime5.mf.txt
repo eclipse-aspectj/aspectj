@@ -1,0 +1,2 @@
+Premain-Class: org.aspectj.weaver.loadtime.Agent
+Can-Redefine-Classes: true
