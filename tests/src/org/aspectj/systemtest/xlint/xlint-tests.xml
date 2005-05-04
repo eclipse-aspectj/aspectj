@@ -158,4 +158,23 @@
 		</compile>
 	</ajc-test>
 	
+   <ajc-test dir="bugs/seven/lint" title="7 lint warnings" pr="91719">
+  <compile options="-1.5" files="Main.java">
+   <message kind="warning" line="31"  text="no match for this type name: java.xxx.Object [Xlint:invalidAbsoluteTypeName]">
+   </message> 
+   <message kind="warning" line="34"  text="no match for this type name: java.lang.Xxx [Xlint:invalidAbsoluteTypeName]">
+   </message>
+   <message kind="warning" line="41"  text="no match for this type name: java.lang.Xxx [Xlint:invalidAbsoluteTypeName]">
+   </message>
+   <message kind="warning" line="69"  text="this affected type is not exposed to the weaver: java.lang.Object [Xlint:typeNotExposedToWeaver]">
+   </message>
+   <message kind="warning" line="87"  text="does not match because declaring type is java.lang.Object, if match desired use target(Car) [Xlint:unmatchedSuperTypeInCall]">
+   </message>
+   <message kind="warning" line="92"  text="advice defined in XlintTest has not been applied [Xlint:adviceDidNotMatch]">
+   </message>
+   <message kind="warning" line="157"  text="no interface constructor-execution join point - use java.util.List+ for implementing classes [Xlint:noInterfaceCtorJoinpoint]">
+   </message>
+  </compile>
+  </ajc-test>
+	
  
