@@ -160,15 +160,6 @@ public class AjcMemberMaker {
 			TypeX.forSignature("Ljava/lang/String;"), NameMangler.PERTYPEWITHIN_WITHINTYPEFIELD, TypeX.NONE);
 	}
 
-    public static ResolvedMember perTypeWithinPerClassMapField(ResolvedTypeX aspectType) {
-        int modifiers = Modifier.PRIVATE;
-        if (!TypeX.SERIALIZABLE.isAssignableFrom(aspectType, aspectType.getWorld())) {
-            modifiers |= Modifier.TRANSIENT;
-        }
-        return new ResolvedMember(Member.FIELD, aspectType, modifiers,
-            TypeX.forSignature("Ljava/util/Map;"), "instances", TypeX.NONE);
-    }
-
 	public static ResolvedMember perObjectBind(TypeX declaringType) {
 		return new ResolvedMember(
 			Member.METHOD, 
@@ -192,21 +183,6 @@ public class AjcMemberMaker {
 			);	
 		return rm;
 	}
-
-    // PTWIMPL ResolvedMember for "Set getInstances()" method, declared in aspect
-    public static ResolvedMember perTypeWithinGetInstancesSet(TypeX declaringType) {
-//		public Set getInstances()
-        ResolvedMember rm = new ResolvedMember(
-            Member.METHOD,
-            declaringType,
-            Modifier.PUBLIC,
-            TypeX.forSignature("Ljava/util/Set;"),
-            "getInstances",
-            TypeX.NONE,
-            TypeX.NONE
-            );
-        return rm;
-    }
 
 	public static ResolvedMember perTypeWithinCreateAspectInstance(TypeX declaringType) {
 		// public static a.X ajc$createAspectInstance(java.lang.String)

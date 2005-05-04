@@ -40,6 +40,7 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.patterns.PerClause;
 
 import java.util.Iterator;
@@ -58,7 +59,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     public BcelPerClauseAspectAdder(ResolvedTypeX aspect, PerClause.Kind kind) {
         super(null,aspect);
         this.kind = kind;
-        if (kind == PerClause.SINGLETON) {
+        if (kind == PerClause.SINGLETON || kind == PerClause.PERTYPEWITHIN || kind == PerClause.PERCFLOW) {
             // no inner needed
             hasGeneratedInner = true;
         }
@@ -68,12 +69,11 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         LazyClassGen gen = weaver.getLazyClassGen();
 
         // agressively generate the inner interface if any
-        // Note: we do so because of the bug that leads to have this interface implemented by all classes and not
+        // Note: we do so because of the bug #75442 that leads to have this interface implemented by all classes and not
         // only those matched by the per clause, which fails under LTW since the very first class
         // gets weaved and impl this interface that is still not defined.
         if (!hasGeneratedInner) {
-            //FIXME AV - restore test below or ?? + add test to detect such side effect
-            //if (kind == PerClause.PEROBJECT || kind == PerClause.PERCFLOW) {
+            if (kind == PerClause.PEROBJECT) {//redundant test - see constructor, but safer
                 //inner class
                 TypeX interfaceTypeX = AjcMemberMaker.perObjectInterfaceType(aspectType);
                 LazyClassGen interfaceGen = new LazyClassGen(
@@ -87,8 +87,8 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
                 interfaceGen.addMethodGen(makeMethodGen(interfaceGen, AjcMemberMaker.perObjectInterfaceSet(aspectType)));
                 //not really an inner class of it but that does not matter, we pass back to the LTW
                 gen.addGeneratedInner(interfaceGen);
-
-                hasGeneratedInner = true;
+            }
+            hasGeneratedInner = true;
         }
 
         // Only munge the aspect type
@@ -113,7 +113,6 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
             generatePerCflowPushMethod(gen);
             generatePerCflowAjcClinitMethod(gen);
         } else if (kind == PerClause.PERTYPEWITHIN) {
-            generatePerTWGetInstancesMethod(gen);
             generatePerTWAspectOfMethod(gen);
             generatePerTWHasAspectMethod(gen);
             generatePerTWGetInstanceMethod(gen);
@@ -161,34 +160,6 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         } else if (kind == PerClause.PERTYPEWITHIN) {
             ResolvedMember perTypeWithinForField = AjcMemberMaker.perTypeWithinWithinTypeField(aspectType, aspectType);
             classGen.addField(makeFieldGen(classGen, perTypeWithinForField).getField(), null);
-            ResolvedMember perTypeWithinPerClassMapField = AjcMemberMaker.perTypeWithinPerClassMapField(aspectType);
-            classGen.addField(makeFieldGen(classGen, perTypeWithinPerClassMapField).getField(), null);
-            // we need to initialize this map as a WeakHashMap in the aspect constructor(s)
-            InstructionFactory factory = classGen.getFactory();
-            for (Iterator iterator = classGen.getMethodGens().iterator(); iterator.hasNext();) {
-                LazyMethodGen methodGen = (LazyMethodGen) iterator.next();
-                if ("<init>".equals(methodGen.getName())) {
-                    InstructionList il = new InstructionList();
-                    il.append(InstructionConstants.ALOAD_0);
-                    il.append(Utility.createGet(factory, perTypeWithinPerClassMapField));
-                    BranchInstruction ifNotNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
-                    il.append(ifNotNull);
-                    il.append(InstructionConstants.ALOAD_0);
-                    il.append(factory.createNew("java/util/WeakHashMap"));
-                    il.append(new DUP());
-                    il.append(factory.createInvoke(
-                            "java/util/WeakHashMap",
-                            "<init>",
-                            Type.VOID,
-                            Type.NO_ARGS,
-                            Constants.INVOKESPECIAL
-                    ));
-                    il.append(Utility.createSet(factory, perTypeWithinPerClassMapField));
-                    InstructionHandle currentEnd = methodGen.getBody().getEnd();
-                    ifNotNull.setTarget(currentEnd);
-                    methodGen.getBody().insert(currentEnd, il);
-                }
-            }
         } else {
             throw new Error("Should not happen - no such kind " + kind.toString());
         }
@@ -197,6 +168,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerSingletonAspectOfMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perSingletonAspectOfMethod(aspectType));
+        flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -217,6 +189,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerSingletonHasAspectMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perSingletonHasAspectMethod(aspectType));
+        flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -234,6 +207,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerSingletonAjcClinitMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.ajcPostClinitMethod(aspectType));
+        flagAsSynthetic(method, true);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -268,6 +242,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         InstructionFactory factory = classGen.getFactory();
         ReferenceType interfaceType = (ReferenceType) BcelWorld.makeBcelType(AjcMemberMaker.perObjectInterfaceType(aspectType));
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perObjectAspectOfMethod(aspectType));
+        flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -295,6 +270,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         InstructionFactory factory = classGen.getFactory();
         ReferenceType interfaceType = (ReferenceType) BcelWorld.makeBcelType(AjcMemberMaker.perObjectInterfaceType(aspectType));
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perObjectHasAspectMethod(aspectType));
+        flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -311,7 +287,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         il.append(InstructionFactory.createReturn(Type.INT));
         InstructionHandle ifEqElse = il.append(InstructionConstants.ICONST_0);
         ifEq.setTarget(ifEqElse);
-        ifNull.setTarget(ifEqElse);//??//FIXME AV - ok or what ?
+        ifNull.setTarget(ifEqElse);
         il.append(InstructionFactory.createReturn(Type.INT));
     }
 
@@ -319,6 +295,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         InstructionFactory factory = classGen.getFactory();
         ReferenceType interfaceType = (ReferenceType) BcelWorld.makeBcelType(AjcMemberMaker.perObjectInterfaceType(aspectType));
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perObjectBind(aspectType));
+        flagAsSynthetic(method, true);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -346,6 +323,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         InstructionFactory factory = classGen.getFactory();
 
         LazyMethodGen methodGet = makeMethodGen(classGen, AjcMemberMaker.perObjectInterfaceGet(aspectType));
+        flagAsSynthetic(methodGet, true);
         classGen.addMethodGen(methodGet);
         InstructionList ilGet = methodGet.getBody();
         ilGet = new InstructionList();
@@ -354,6 +332,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         ilGet.append(InstructionFactory.createReturn(Type.OBJECT));
 
         LazyMethodGen methodSet = makeMethodGen(classGen, AjcMemberMaker.perObjectInterfaceSet(aspectType));
+        flagAsSynthetic(methodSet, true);
         classGen.addMethodGen(methodSet);
         InstructionList ilSet = methodSet.getBody();
         ilSet = new InstructionList();
@@ -366,6 +345,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerCflowAspectOfMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perCflowAspectOfMethod(aspectType));
+        flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -378,6 +358,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerCflowHasAspectMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perCflowHasAspectMethod(aspectType));
+        flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -389,6 +370,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerCflowPushMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perCflowPush(aspectType));
+        flagAsSynthetic(method, true);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -403,6 +385,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerCflowAjcClinitMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.ajcPreClinitMethod(aspectType));
+        flagAsSynthetic(method, true);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -419,23 +402,10 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         clinit.getBody().insert(il);
     }
 
-    private void generatePerTWGetInstancesMethod(LazyClassGen classGen) {
-        InstructionFactory factory = classGen.getFactory();
-        LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinGetInstancesSet(aspectType));
-        classGen.addMethodGen(method);
-
-        InstructionList il = method.getBody();
-        il.append(InstructionConstants.ALOAD_0);
-        il.append(Utility.createGet(factory, AjcMemberMaker.perTypeWithinPerClassMapField(aspectType)));
-        il.append(factory.createInvoke(
-                "java/util/Map", "keySet", Type.getType("Ljava/util/Set;"), Type.NO_ARGS, Constants.INVOKEINTERFACE
-        ));
-        il.append(InstructionFactory.createReturn(Type.OBJECT));
-    }
-
     private void generatePerTWAspectOfMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinAspectOfMethod(aspectType));
+        flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -474,6 +444,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerTWHasAspectMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinHasAspectMethod(aspectType));
+        flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -503,6 +474,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerTWGetInstanceMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinGetInstance(aspectType));
+        flagAsSynthetic(method, true);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -540,6 +512,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     private void generatePerTWCreateAspectInstanceMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
         LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinCreateAspectInstance(aspectType));
+        flagAsSynthetic(method, true);
         classGen.addMethodGen(method);
 
         InstructionList il = method.getBody();
@@ -557,6 +530,23 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         ));
         il.append(InstructionConstants.ALOAD_1);
         il.append(InstructionConstants.ARETURN);
+    }
+
+    /**
+     * Add standard Synthetic (if wished) and AjSynthetic (always) attributes
+     * @param methodGen
+     * @param makeJavaSynthetic true if standard Synthetic attribute must be set as well (invisible to user)
+     */
+    private static void flagAsSynthetic(LazyMethodGen methodGen, boolean makeJavaSynthetic) {
+        if (makeJavaSynthetic) {
+            methodGen.makeSynthetic();
+        }
+        methodGen.addAttribute(
+                BcelAttributes.bcelAttribute(
+                        new AjAttribute.AjSynthetic(),
+                        methodGen.getEnclosingClass().getConstantPoolGen()
+                )
+        );
     }
 
 }
