@@ -24,18 +24,12 @@
                                  testing-drivers/build.xml,
                                  ajdoc/build.xml,
                                  ajbrowser/build.xml,
-                                 tests/build.xml"/>
-<!--FIXME AV when LTW modules are there                -->
-<!--                                 loadtime/build.xml,-->
-<!--                                 loadtime5/build.xml"-->
+                                 tests/build.xml,
+                                 loadtime/build.xml,
+                                 loadtime5/build.xml"/>
             </subant>
         </sequential>
     </macrodef>
-
-<!--
-loadtime/build.xml
-loadtime5/build.xml
--->
 
     <target name="all">
         <targets name="all"/>
@@ -71,10 +65,9 @@ loadtime5/build.xml
                              ajde/build.xml,
                              taskdefs/build.xml,
                              ajdoc/build.xml,
-                             ajbrowser/build.xml"/>
-<!--FIXME AV when LTW modules are there                -->
-<!--                             loadtime/build.xml,-->
-<!--                             loadtime5/build.xml-->
+                             ajbrowser/build.xml,
+                             loadtime/build.xml,
+                             loadtime5/build.xml"/>
             <!-- TODO av org.aspectj.lib -->
         </subant>
         <!-- FIXME av bcel-builder -->
