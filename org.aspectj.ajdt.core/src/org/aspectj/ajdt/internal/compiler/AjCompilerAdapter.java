@@ -22,14 +22,12 @@ import java.util.Map;
 import org.aspectj.ajdt.internal.compiler.ast.AddAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.ast.ValidateAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
-import org.aspectj.ajdt.internal.core.builder.AjCompilerOptions;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -114,10 +112,48 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		weaverMessageHandler = new WeaverMessageHandler(msgHandler, compiler);
 		world.setMessageHandler(weaverMessageHandler);
 	}
+
+	// the compilation lifecycle methods below are called in order as compilation progresses...
 	
 	public void beforeCompiling(ICompilationUnit[] sourceUnits) {
 		resultsPendingWeave = new ArrayList();
 		reportedErrors = false;		
+	}
+
+	public void beforeProcessing(CompilationUnitDeclaration unit) {
+		eWorld.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
+		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
+			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit);
+			unit.traverse(atAspectJVisitor, unit.scope);
+		}		
+	}
+
+	public void beforeResolving(CompilationUnitDeclaration unit) {
+		// no-op
+	}
+
+	public void afterResolving(CompilationUnitDeclaration unit) {
+		// no-op
+		
+	}
+
+	public void beforeAnalysing(CompilationUnitDeclaration unit) {
+		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
+			ValidateAtAspectJAnnotationsVisitor atAspectJVisitor = new ValidateAtAspectJAnnotationsVisitor(unit);
+			unit.traverse(atAspectJVisitor, unit.scope);
+		}		
+	}
+
+	public void afterAnalysing(CompilationUnitDeclaration unit) {
+		// no-op
+	}
+
+	public void beforeGenerating(CompilationUnitDeclaration unit) {
+		// no-op		
+	}
+
+	public void afterGenerating(CompilationUnitDeclaration unit) {
+		// no-op		
 	}
 
 	public void afterCompiling(CompilationUnitDeclaration[] units) {
@@ -141,21 +177,6 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		}
 	}
 
-	public void beforeProcessing(CompilationUnitDeclaration unit) {
-		eWorld.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
-		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
-			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit);
-			unit.traverse(atAspectJVisitor, unit.scope);
-		}		
-	}
-	
-	public void beforeAnalysing(CompilationUnitDeclaration unit) {
-		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
-			ValidateAtAspectJAnnotationsVisitor atAspectJVisitor = new ValidateAtAspectJAnnotationsVisitor(unit);
-			unit.traverse(atAspectJVisitor, unit.scope);
-		}		
-	}
-
 	public void afterProcessing(CompilationUnitDeclaration unit, int unitIndex) {
 		eWorld.finishedCompilationUnit(unit);
 		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult,outputFileNameProvider);
@@ -172,26 +193,26 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		}
 	}
 	
-	public void beforeResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean analyzeCode, boolean generateCode) {
-		resultsPendingWeave = new ArrayList();
-		reportedErrors = false;		
-	}
-
-	public void afterResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean analyzeCode, boolean generateCode) {
-		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult,outputFileNameProvider);
-		if (unit.compilationResult.hasErrors()) reportedErrors = true;
-		if (isXNoWeave || !generateCode) {
-			acceptResult(unit.compilationResult);
-		} else if (generateCode){
-			resultsPendingWeave.add(intRes);
-			try {
-			  weave();
-			} catch (IOException ex) {
-				AbortCompilation ac = new AbortCompilation(null,ex);
-				throw ac;
-			} 
-		}
-	}
+//	public void beforeResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean analyzeCode, boolean generateCode) {
+//		resultsPendingWeave = new ArrayList();
+//		reportedErrors = false;		
+//	}
+//
+//	public void afterResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean analyzeCode, boolean generateCode) {
+//		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult,outputFileNameProvider);
+//		if (unit.compilationResult.hasErrors()) reportedErrors = true;
+//		if (isXNoWeave || !generateCode) {
+//			acceptResult(unit.compilationResult);
+//		} else if (generateCode){
+//			resultsPendingWeave.add(intRes);
+//			try {
+//			  weave();
+//			} catch (IOException ex) {
+//				AbortCompilation ac = new AbortCompilation(null,ex);
+//				throw ac;
+//			} 
+//		}
+//	}
 	
 	// helper methods...
 	// ==================================================================================
@@ -288,4 +309,5 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			}			
 		}
 	}
+
 }

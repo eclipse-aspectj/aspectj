@@ -20,12 +20,15 @@ import java.util.Properties;
 import org.aspectj.ajdt.core.AspectJCore;
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.IBinarySourceProvider;
+import org.aspectj.ajdt.internal.compiler.ICompilerAdapter;
+import org.aspectj.ajdt.internal.compiler.ICompilerAdapterFactory;
 import org.aspectj.ajdt.internal.compiler.IIntermediateResultsRequestor;
 import org.aspectj.ajdt.internal.compiler.IOutputClassFileNameProvider;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
+import org.aspectj.ajdt.internal.compiler.CompilerAdapter;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -45,8 +48,6 @@ import org.aspectj.org.eclipse.jdt.core.JavaModelException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapter;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.BuildNotifier;
@@ -80,7 +81,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		// super method always causes construction of a new XXXImageBuilder, which
 		// causes construction of a new Compiler, so we will be detected as the 
 		// adapter.
-		Compiler.setCompilerAdapterFactory(this);
+		CompilerAdapter.setCompilerAdapterFactory(this);
 		return super.build(kind, ignored, monitor);
 	}
 
@@ -228,7 +229,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 			if (kind == IMessage.DEBUG || kind == IMessage.INFO) return true;
 			return false;
 		}
-        
+		
         /**
          * No-op
          * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
@@ -236,10 +237,9 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
          */
         public void dontIgnore(IMessage.Kind kind) {
             ;
-        }
-
 	}
 	
+	}
 	
 	private static class OutputFileNameProvider implements IOutputClassFileNameProvider {
 

@@ -35,6 +35,8 @@ import java.util.zip.ZipEntry;
 
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.IBinarySourceProvider;
+import org.aspectj.ajdt.internal.compiler.ICompilerAdapter;
+import org.aspectj.ajdt.internal.compiler.ICompilerAdapterFactory;
 import org.aspectj.ajdt.internal.compiler.IIntermediateResultsRequestor;
 import org.aspectj.ajdt.internal.compiler.IOutputClassFileNameProvider;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
@@ -59,8 +61,6 @@ import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapter;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathDirectory;
@@ -711,7 +711,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			environment = new StatefulNameEnvironment(environment, state.classesFromName);
 		}
 		
-		org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.setCompilerAdapterFactory(this);
+		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);
 		org.aspectj.org.eclipse.jdt.internal.compiler.Compiler compiler = 
 			new org.aspectj.org.eclipse.jdt.internal.compiler.Compiler(environment,
 					DefaultErrorHandlingPolicies.proceedWithAllProblems(),

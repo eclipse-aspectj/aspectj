@@ -344,6 +344,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	private FormalBinding[] buildFormalAdviceBindingsFrom(MethodDeclaration mDecl) {
 		if (mDecl.arguments == null) return new FormalBinding[0];
+		String extraArgName = maybeGetExtraArgName();
+		if (extraArgName == null) extraArgName = "";
 		FormalBinding[] ret = new FormalBinding[mDecl.arguments.length];
 		for (int i = 0; i < mDecl.arguments.length; i++) {
             Argument arg = mDecl.arguments[i];
@@ -353,13 +355,24 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			if  (CharOperation.equals(joinPoint,argTypeBinding.signature()) ||
 				 CharOperation.equals(joinPointStaticPart,argTypeBinding.signature()) ||
 				 CharOperation.equals(joinPointEnclosingStaticPart,argTypeBinding.signature()) ||
-				 CharOperation.equals(proceedingJoinPoint,argTypeBinding.signature())) {
+				 CharOperation.equals(proceedingJoinPoint,argTypeBinding.signature()) ||
+				 name.equals(extraArgName)) {
 				ret[i] = new FormalBinding.ImplicitFormalBinding(type,name,i);
 			} else {
 	            ret[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");						
 			}
 		}
 		return ret;
+	}
+	
+	private String maybeGetExtraArgName() {
+		String argName = null;
+		if (ajAnnotations.adviceKind == AdviceKind.AfterReturning) {
+			argName = getStringLiteralFor("returning",ajAnnotations.adviceAnnotation,new int[2]);
+		} else if (ajAnnotations.adviceKind == AdviceKind.AfterThrowing) {
+			argName = getStringLiteralFor("throwing",ajAnnotations.adviceAnnotation,new int[2]);
+		}
+		return argName;
 	}
 
 	private String getStringLiteralFor(String memberName, Annotation inAnnotation, int[] location) {
