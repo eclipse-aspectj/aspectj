@@ -44,7 +44,8 @@ public class Aspects {
         try {
             return getSingletonOrThreadAspectOf(aspectClass).invoke(null, EMPTY_OBJECT_ARRAY);
         } catch (InvocationTargetException e) {
-            throw new NoAspectBoundException(aspectClass.getName(), e.getCause());
+        	//FIXME asc Highly temporary change to see what the build makes of it - dont use 1.4 APIs
+            throw new NoAspectBoundException(aspectClass.getName(), e);//e.getCause());
         } catch (Exception e) {
             throw new NoAspectBoundException(aspectClass.getName(), e);
         }
@@ -61,7 +62,8 @@ public class Aspects {
         try {
             return getPerObjectAspectOf(aspectClass).invoke(null, new Object[]{perObject});
         } catch (InvocationTargetException e) {
-            throw new NoAspectBoundException(aspectClass.getName(), e.getCause());
+        	//FIXME asc Highly temporary change to see what the build makes of it - dont use 1.4 APIs
+            throw new NoAspectBoundException(aspectClass.getName(), e);//e.getCause());
         } catch (Exception e) {
             throw new NoAspectBoundException(aspectClass.getName(), e);
         }
@@ -78,7 +80,8 @@ public class Aspects {
         try {
             return getPerTypeWithinAspectOf(aspectClass).invoke(null, new Object[]{perTypeWithin});
         } catch (InvocationTargetException e) {
-            throw new NoAspectBoundException(aspectClass.getName(), e.getCause());
+//        	FIXME asc Highly temporary change to see what the build makes of it - dont use 1.4 APIs
+            throw new NoAspectBoundException(aspectClass.getName(), e);//e.getCause());
         } catch (Exception e) {
             throw new NoAspectBoundException(aspectClass.getName(), e);
         }
