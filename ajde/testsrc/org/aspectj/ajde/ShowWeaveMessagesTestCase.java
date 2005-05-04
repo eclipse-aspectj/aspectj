@@ -95,8 +95,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		if (rogueSymFile.exists()) rogueSymFile.delete();
 	}
 
-
-
+	
 
 	/**
 	 * Weave all the possible kinds of advice and verify the messages that come out.
@@ -156,6 +155,28 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Five.lst").getAbsolutePath(),new BPM(),false);
 		verifyWeavingMessages("declare.soft",true);		
+	}
+	
+	/**
+	 * Weave 'declare @type, @constructor, @method and @field' and check the weave messages that come out.
+	 */
+	public void testWeaveMessagesDeclareAnnotation() {
+		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareAnnotation: Building with Six.lst");
+		compilerAdapter = new CompilerAdapter();
+		compilerAdapter.showInfoMessages(true);
+		compilerAdapter.compile((String) openFile("Six.lst").getAbsolutePath(),new BPM(),false);
+		verifyWeavingMessages("declare.annotation",true);		
+	}
+	
+	/**
+	 * Weave 'declare @type, @constructor, @method and @field' and check the weave messages don't come out without the -showWeaveInfo arg.
+	 */
+	public void testWeaveMessagesDeclareAnnotationWeaveInfoOff() {
+		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareAnnotation: Building with Seven.lst");
+		compilerAdapter = new CompilerAdapter();
+		compilerAdapter.showInfoMessages(true);
+		compilerAdapter.compile((String) openFile("Seven.lst").getAbsolutePath(),new BPM(),false);
+		verifyWeavingMessages("declare.annotationNoWeaveInfo",true);		
 	}
 	
 	
@@ -328,6 +349,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 			List l = ideManager.getCompilationSourceLineTasks();
 			for (Iterator iter = l.iterator(); iter.hasNext();) {
 				IMessage msg = ((NullIdeTaskListManager.SourceLineTask) iter.next()).message;
+				if (debugTests) System.out.println("Looking at ["+msg+"]");
 				if (msg.getKind().equals(IMessage.WEAVEINFO)) {
 					if (!fileContents.contains(msg.getMessage())) {
 						fail("Could not find message '"+msg.getMessage()+"' in the expected results\n"+

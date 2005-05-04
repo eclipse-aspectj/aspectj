@@ -1,0 +1,4 @@
+'Test' (AspectDeclareAnnotations.aj:14) is annotated with @anInterface type annotation from 'AspectDeclareAnnotations' (AspectDeclareAnnotations.aj:7)
+'public void Test.new(String,int)' (AspectDeclareAnnotations.aj:16) is annotated with @anInterface constructor annotation from 'AspectDeclareAnnotations' (AspectDeclareAnnotations.aj:8)
+'public int Test.fac(int)' (AspectDeclareAnnotations.aj:20) is annotated with @anInterface method annotation from 'AspectDeclareAnnotations' (AspectDeclareAnnotations.aj:9)
+'public int a' of type 'Test' (AspectDeclareAnnotations.aj) is annotated with @anInterface field annotation from 'AspectDeclareAnnotations' (AspectDeclareAnnotations.aj:10)

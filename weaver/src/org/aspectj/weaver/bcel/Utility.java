@@ -49,6 +49,7 @@ import org.aspectj.apache.bcel.generic.SWITCH;
 import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
@@ -60,6 +61,26 @@ public class Utility {
     private Utility() {
         super();
     }
+	
+	/*
+	 * Ensure we report a nice source location - particular in the case
+	 * where the source info is missing (binary weave).
+	 */
+	public static String beautifyLocation(ISourceLocation isl) {
+		StringBuffer nice = new StringBuffer();
+		if (isl==null || isl.getSourceFile()==null || isl.getSourceFile().getName().indexOf("no debug info available")!=-1) {
+			nice.append("no debug info available");
+	    } else {
+	    	// can't use File.getName() as this fails when a Linux box encounters a path created on Windows and vice-versa
+	    	int takeFrom = isl.getSourceFile().getPath().lastIndexOf('/');
+	    	if (takeFrom == -1) {
+	    		takeFrom = isl.getSourceFile().getPath().lastIndexOf('\\');
+	    	}    			
+	    	nice.append(isl.getSourceFile().getPath().substring(takeFrom +1));
+	    	if (isl.getLine()!=0) nice.append(":").append(isl.getLine());
+		}
+		return nice.toString();
+	}
     
     
     public static Instruction createSuperInvoke(

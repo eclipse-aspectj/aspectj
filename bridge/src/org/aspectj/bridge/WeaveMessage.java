@@ -33,8 +33,7 @@ public class WeaveMessage extends Message {
 	  new WeaveMessageKind(5,"Softening exceptions in type '%1' (%2) as defined by aspect '%3' (%4)");
 	  
 	public static WeaveMessageKind WEAVEMESSAGE_ANNOTATES =
-		new WeaveMessageKind(6,"'%1' (%2) is annoted with %3 from '%4' (%5)");
-
+		new WeaveMessageKind(6,"'%1' (%2) is annotated with %3 %4 annotation from '%5' (%6)");
 
 	private String affectedtypename;
 	private String aspectname;

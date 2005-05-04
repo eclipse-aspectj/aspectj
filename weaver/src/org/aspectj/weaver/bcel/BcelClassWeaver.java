@@ -51,6 +51,7 @@ import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.AjAttribute;
@@ -457,6 +458,8 @@ class BcelClassWeaver implements IClassWeaver {
 	  				if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
 					mg.addAnnotation(decaM.getAnnotationX());
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
+                    
+					reportMethodCtorWeavingMessage(clazz, mg, decaM);
 					isChanged = true;
 					modificationOccured = true;
 				} else {
@@ -488,6 +491,52 @@ class BcelClassWeaver implements IClassWeaver {
         }
 		return isChanged;
     }
+
+	// TAG: WeavingMessage
+	private void reportMethodCtorWeavingMessage(LazyClassGen clazz, LazyMethodGen mg, DeclareAnnotation decaM) {
+		if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)){
+			StringBuffer parmString = new StringBuffer("(");
+			Type[] args = mg.getMethod().getArgumentTypes();
+			for (int i = 0; i < args.length; i++) {
+				Type type2 = args[i];
+				String s = org.aspectj.apache.bcel.classfile.Utility.signatureToString(type2.getSignature());
+				if (s.lastIndexOf(".")!=-1) s =s.substring(s.lastIndexOf(".")+1);
+				parmString.append(s);
+				if ((i+1)<args.length) parmString.append(",");
+			}
+			parmString.append(")");
+			String methodName = mg.getMethod().getName();
+			StringBuffer sig = new StringBuffer();
+			sig.append(org.aspectj.apache.bcel.classfile.Utility.accessToString(mg.getMethod().getAccessFlags()) );
+			sig.append(" ");
+			sig.append(mg.getMethod().getReturnType().toString());
+			sig.append(" ");
+			sig.append(clazz.getName());
+			sig.append(".");
+			sig.append(methodName.equals("<init>")?"new":methodName);
+			sig.append(parmString);
+			
+			StringBuffer loc = new StringBuffer();
+			if (clazz.getFileName()==null) {
+				loc.append("no debug info available");
+			} else {
+				loc.append(clazz.getFileName());
+				if (mg.getDeclarationLineNumber()!=-1) {
+					loc.append(":"+mg.getDeclarationLineNumber());
+				}
+			}
+			getWorld().getMessageHandler().handleMessage(
+					WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ANNOTATES,
+							new String[]{
+							sig.toString(),
+							loc.toString(),
+							decaM.getAnnotationString(),
+							methodName.startsWith("<init>")?"constructor":"method",
+							decaM.getAspect().toString(),
+							Utility.beautifyLocation(decaM.getSourceLocation())
+							}));	
+		}
+	}
     
 	/**
 	 * Looks through a list of declare annotation statements and only returns
@@ -710,6 +759,7 @@ class BcelClassWeaver implements IClassWeaver {
 					if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)) continue; // skip this one...
 					aBcelField.addAnnotation(decaF.getAnnotationX());
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);		
 					isChanged = true;
 					modificationOccured = true;
 				} else {
@@ -740,6 +790,22 @@ class BcelClassWeaver implements IClassWeaver {
           }
         }
 		return isChanged;
+	}
+
+	// TAG: WeavingMessage
+	private void reportFieldAnnotationWeavingMessage(LazyClassGen clazz, Field[] fields, int fieldCounter, DeclareAnnotation decaF) {
+		if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)){
+		  Field theField = fields[fieldCounter];
+		  world.getMessageHandler().handleMessage(
+		          WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ANNOTATES,
+		              new String[]{
+						  theField.toString() + "' of type '" + clazz.getName(),
+						  clazz.getFileName(),
+						  decaF.getAnnotationString(),
+						  "field",
+						  decaF.getAspect().toString(),
+						  Utility.beautifyLocation(decaF.getSourceLocation())}));
+		}
 	}
     
     /**

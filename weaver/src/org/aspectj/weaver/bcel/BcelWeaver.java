@@ -51,6 +51,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
@@ -1199,6 +1200,7 @@ public class BcelWeaver implements IWeaver {
 		}
     }
 
+	
 	/**
 	 * Apply a declare @type - return true if we change the type
 	 */
@@ -1206,8 +1208,24 @@ public class BcelWeaver implements IWeaver {
 		boolean didSomething = false;
 		if (decA.matches(onType)) {
 			
-			//FIXME asc important this should be guarded by the 'already has annotation' check below but isn't since the compiler is producing classfiles with deca affected things in...
+			// FIXME asc important this should be guarded by the 'already has annotation' check below but isn't since the compiler is producing classfiles with deca affected things in...
 			AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decA.getSourceLocation(),onType.getSourceLocation());
+			
+			// FIXME asc same comment above applies here
+			// TAG: WeavingMessage 
+			if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)){
+			  getWorld().getMessageHandler().handleMessage(
+		              WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ANNOTATES,
+			                  new String[]{
+							    onType.toString(),
+							    Utility.beautifyLocation(onType.getSourceLocation()),
+							    decA.getAnnotationString(),
+							    "type",
+							    decA.getAspect().toString(),
+							    Utility.beautifyLocation(decA.getSourceLocation())
+							    }));
+			}
+			
 			
 		    if (onType.hasAnnotation(decA.getAnnotationX().getSignature())) {
 // FIXME asc Could put out a lint here for an already annotated type - the problem is that it may have
