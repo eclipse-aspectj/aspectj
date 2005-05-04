@@ -11,11 +11,8 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.definition;
 
-import org.aspectj.weaver.patterns.PatternParser;
-
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * A POJO that contains raw strings from the XML (sort of XMLBean for our simple LTW DTD)

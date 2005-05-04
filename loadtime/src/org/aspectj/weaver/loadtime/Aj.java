@@ -11,31 +11,13 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import org.aspectj.asm.IRelationship;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
-import org.aspectj.weaver.ICrossReferenceHandler;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.loadtime.definition.Definition;
-import org.aspectj.weaver.loadtime.definition.DocumentParser;
-import org.aspectj.weaver.tools.GeneratedClassHandler;
-import org.aspectj.weaver.tools.WeavingAdaptor;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
  * Adapter between the generic class pre processor interface and the AspectJ weaver

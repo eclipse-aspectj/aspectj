@@ -11,30 +11,29 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import org.aspectj.weaver.tools.WeavingAdaptor;
-import org.aspectj.weaver.tools.GeneratedClassHandler;
-import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.ICrossReferenceHandler;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.loadtime.definition.DocumentParser;
-import org.aspectj.weaver.loadtime.definition.Definition;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.asm.IRelationship;
-
-import java.util.List;
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.util.List;
+
+import org.aspectj.asm.IRelationship;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.weaver.ICrossReferenceHandler;
+import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.loadtime.definition.Definition;
+import org.aspectj.weaver.loadtime.definition.DocumentParser;
+import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.weaver.tools.GeneratedClassHandler;
+import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
