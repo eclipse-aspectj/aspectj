@@ -12,7 +12,6 @@
  *  Oliver Boehm               initial implementation
  */
 
-
 import java.io.Serializable;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
 
