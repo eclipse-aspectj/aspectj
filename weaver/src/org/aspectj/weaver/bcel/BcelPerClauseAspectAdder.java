@@ -12,11 +12,8 @@
 package org.aspectj.weaver.bcel;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.ALOAD;
 import org.aspectj.apache.bcel.generic.ATHROW;
 import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.DUP;
-import org.aspectj.apache.bcel.generic.ICONST;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
@@ -27,23 +24,14 @@ import org.aspectj.apache.bcel.generic.POP;
 import org.aspectj.apache.bcel.generic.PUSH;
 import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.generic.MethodGen;
-import org.aspectj.apache.bcel.generic.RETURN;
-import org.aspectj.apache.bcel.generic.NEW;
-import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
-import org.aspectj.apache.bcel.generic.ASTORE;
-import org.aspectj.apache.bcel.generic.ACONST_NULL;
-import org.aspectj.apache.bcel.generic.IRETURN;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.patterns.PerClause;
-
-import java.util.Iterator;
 
 /**
  * Adds aspectOf, hasAspect etc to the annotation defined aspects

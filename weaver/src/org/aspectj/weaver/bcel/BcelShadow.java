@@ -46,7 +46,6 @@ import org.aspectj.apache.bcel.generic.LoadInstruction;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.NEW;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.POP;
 import org.aspectj.apache.bcel.generic.PUSH;
 import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.SWAP;
