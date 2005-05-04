@@ -69,6 +69,20 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		regenerate = false;
 	}
 	
+	private static boolean is13VMOrGreater = true;
+	private static boolean is14VMOrGreater = true;
+	private static boolean is15VMOrGreater = false;
+	
+	static {
+		String vm = System.getProperty("java.vm.version");
+		if (vm.startsWith("1.3")) {
+			is14VMOrGreater = false;
+		} else if (vm.startsWith("1.5")) {
+			is15VMOrGreater = true;
+		}
+	}
+
+	
 	private CompilerAdapter compilerAdapter;
 	public static final String PROJECT_DIR = "WeaveInfoMessagesTest";
 
@@ -161,6 +175,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	 * Weave 'declare @type, @constructor, @method and @field' and check the weave messages that come out.
 	 */
 	public void testWeaveMessagesDeclareAnnotation() {
+		if (!is15VMOrGreater) return; // annotation classes won't be about pre 15
 		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareAnnotation: Building with Six.lst");
 		compilerAdapter = new CompilerAdapter();
 		compilerAdapter.showInfoMessages(true);
