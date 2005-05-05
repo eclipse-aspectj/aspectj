@@ -3,8 +3,7 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "../../lib/docbook/docbook-dtd/docbookx.dtd">
 
-<?xml-stylesheet type="text/css"
-    href="../../style.css"?>
+<!-- set style sheet in build.xml using xml-html-stylesheet variable -->
 <!-- `copy-to-register' (C-x r s) then `insert-register' (C-x r i).
       <qandaentry>
         <question id="q:XX" xreflabel="Q:XX">

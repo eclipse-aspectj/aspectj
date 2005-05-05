@@ -78,8 +78,9 @@
         />
         <!-- default value for xml-html copying (copy all graphics) -->
         <property name="xml-html-copy" value="*.gif,*.png" />
+        <property name="xml-html-stylesheet" value="aspectj-docs.css" />
         <property name="binary.pattern"
-                  value="**/*.gif,**/*.png,**/*.doc,**/*.pdf,**/*.jpg,**/*.JPG"
+                  value="**/*.gif,**/*.png,**/*.doc,**/*.pdf,**/*.jpg,**/*.JPG,**/*.css"
         />
         <uptodate property="local.dist.uptodate"
                   targetfile="${docs.dist.dir}/doc/faq.html"
@@ -262,6 +263,7 @@
             <param name="xml-target-file"
                    value="${docs.dist.dir}/doc/faq.html"
             />
+           <param name="xml-html-stylesheet" value="aspectj-faq.css" />
         </antcall>
     </target>
 
@@ -461,7 +463,8 @@
      xsl-source-file # xsl transform to apply (use chunk.xsl.source by default) 
      xml-target-dir  # target directory for output (used as xsl param base.dir)
      xml-target-file # full path to output file in xml-source-dir, ignored when chunking
-     xml-html-copy   # copy files to target (defaults to *.gif,*.png"
+     xml-html-copy   # copy files to target (defaults to *.gif,*.png)
+     xml-html-stylesheet   # style sheet to use (defaults to ${xml-html-stylesheet})"
     >
 
         <mkdir dir="${xml-target-dir}" />
@@ -482,6 +485,7 @@
             <arg value="${xsl-source-file}" />
             <arg value="base.dir=${xml-target-dir}/" />
             <arg value="use.id.as.filename=1" />
+            <arg value="html.stylesheet=${xml-html-stylesheet}" />
         </java>
     </target>
 
