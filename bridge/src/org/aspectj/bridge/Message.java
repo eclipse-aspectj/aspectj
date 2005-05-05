@@ -129,6 +129,10 @@ public class Message implements IMessage {
     public boolean isDebug() {
         return kind == IMessage.DEBUG;
     }
+	
+	public boolean isTaskTag() {
+		return kind == IMessage.TASKTAG;
+	}
 
     /** 
      * @return true if kind == IMessage.INFO  

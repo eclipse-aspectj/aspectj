@@ -30,6 +30,7 @@ public interface IMessage {
 	public static final Kind WEAVEINFO = new Kind("weaveinfo",5);
 	public static final Kind INFO = new Kind("info", 10);
 	public static final Kind DEBUG = new Kind("debug", 20);
+	public static final Kind TASKTAG = new Kind("task",25); // represents a 'TODO' from eclipse - producted by the compiler and consumed by AJDT
 	public static final Kind WARNING = new Kind("warning", 30);
 	public static final Kind ERROR = new Kind("error", 40);
 	public static final Kind FAIL = new Kind("fail", 50);
@@ -44,7 +45,7 @@ public interface IMessage {
 	public static final List KINDS =
 		Collections.unmodifiableList(
 			Arrays.asList(
-				new Kind[] { WEAVEINFO, INFO, DEBUG, WARNING, ERROR, FAIL, ABORT }));
+				new Kind[] { WEAVEINFO, INFO, DEBUG, TASKTAG, WARNING, ERROR, FAIL, ABORT }));
 
 	/** @return non-null String with simple message */
 	String getMessage();
@@ -67,6 +68,9 @@ public interface IMessage {
 	/** @return true if the process is aborting  */
 	boolean isAbort(); // XXX ambiguous
 
+	/** @return true if this is a task tag message */
+	boolean isTaskTag();
+	
 	/** @return true if something failed   */
 	boolean isFailed();
 
