@@ -1,5 +1,5 @@
-<refentry>
-  <refnamediv>
+<refentry id="ajdoc-ref" xreflabel="The ajdoc Command-line Reference">  
+<refnamediv>
     <refname>ajdoc</refname>
     <refpurpose>generate HTML API documentation, including crosscutting structure (early-access)
     </refpurpose>
