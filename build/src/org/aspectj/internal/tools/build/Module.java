@@ -489,10 +489,12 @@ public class Module {
                 File srcDir = (File) iter.next();
                 String lcname = srcDir.getName().toLowerCase();
                 if (trimTesting 
-                        && Util.Constants.TESTSRC.equals(lcname)) { 
+                        && (Util.Constants.TESTSRC.equals(lcname)
+                           || Util.Constants.JAVA5_TESTSRC.equals(lcname))) { 
                     iter.remove();
                 } else if (!Util.JAVA5_VM 
-                        && Util.Constants.JAVA5_SRC.equals(lcname)) {
+                        && (Util.Constants.JAVA5_SRC.equals(lcname)
+                            || Util.Constants.JAVA5_TESTSRC.equals(lcname))) {
                     // assume optional for pre-1.5 builds
                     iter.remove();
                 }

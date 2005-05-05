@@ -29,6 +29,7 @@ public class Util {
     public static class Constants {
         public static final String TESTSRC = "testsrc";
         public static final String JAVA5_SRC = "java5-src";
+        public static final String JAVA5_TESTSRC = "java5-testsrc";
     }
     // XXX quick hack for Java 5 support
     public static final boolean JAVA5_VM;

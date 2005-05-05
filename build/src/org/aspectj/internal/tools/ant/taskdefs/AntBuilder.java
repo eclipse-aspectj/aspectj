@@ -223,7 +223,8 @@ public class AntBuilder extends Builder {
             File file = (File) iter.next();
             path.createPathElement().setLocation(file);
             if (!isJava5Compile 
-                    && Util.Constants.JAVA5_SRC.equals(file.getName())) {
+                    && (Util.Constants.JAVA5_SRC.equals(file.getName())
+                        || Util.Constants.JAVA5_TESTSRC.equals(file.getName()))) {
                 isJava5Compile = true;
             }
             if (!hasSourceDirectories) {
@@ -284,12 +285,13 @@ public class AntBuilder extends Builder {
             javac.setSource("1.3");
         } else {
             javac.setSource("1.5");
-            javac.setTarget("1.5"); 
+            javac.setTarget("1.5");
+            // TODO allow modules to mix 1.5 and prior code by omitting 1.5
             // gack if non-java5 and non-testsrc in this build
             for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
                 String name = ((File) iter.next()).getName();
                 if (!Util.Constants.JAVA5_SRC.equals(name)
-                    && !Util.Constants.TESTSRC.equals(name)) {
+                    && !Util.Constants.JAVA5_TESTSRC.equals(name)) {
                     String m = "modules mixing pre-15 and 15 source are built with -target 1.5";
                     throw new BuildException(m + ": " + name);
                 }
