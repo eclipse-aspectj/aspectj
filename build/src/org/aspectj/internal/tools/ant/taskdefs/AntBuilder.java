@@ -616,7 +616,9 @@ public class AntBuilder extends Builder {
             String url = null;
             try {
                 url = "file:" + toolsJar.toString().replace('\\', '/');
-                ClassLoader loader = new URLClassLoader(new URL[] {new URL(url)});
+                URL[] cp = new URL[] {new URL(url)};
+                ClassLoader parent = Task.class.getClassLoader();
+                ClassLoader loader = new URLClassLoader(cp, parent);
                 Class c = loader.loadClass(AJCTASK);
                 task = c.newInstance();
                 Project project = javac.getProject();
