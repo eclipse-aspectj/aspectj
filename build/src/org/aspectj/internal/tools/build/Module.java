@@ -113,33 +113,6 @@ public class Module {
         }
     }
     
-//    /** XXX gack explicitly skip Ant, sun tools.jar except for testing... modules */
-//    private static boolean skipLibraryJarAntecedant(Module module, File libJar) {
-//        if (null == libJar) {
-//            return true;
-//        }
-//        if (!module.name.startsWith("testing")) {
-//            String path = libJar.getPath().replace('\\', '/');
-//            path = path.replace(File.separatorChar, '/');
-//            if (-1 != path.indexOf("/lib/ant/lib/")) {
-//                return true;
-//            } else if (-1 != path.indexOf("/tools.jar")) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-//    /** XXX gack explicitly skip runtime */
-//    private static boolean skipModuleJarAntecedant(File requiredJar) {
-//        if (null == requiredJar) {
-//            return true;
-//        } else {
-//            //return "runtime.jar".equals(requiredJar.getName());
-//        	return false;
-//        }
-//    }
-
     /**@return true if this is a source file */
     private static boolean isSourceFile(File file) {
         String path = file.getPath();
@@ -376,7 +349,6 @@ public class Module {
             String line;
             
             XMLEntry entry = new XMLEntry("classpathentry", ATTS);
-//            String lastKind = null;
             while (null != (line = reader.readLine())) {
                 // we assume no internal spaces...
                 entry.acceptTokens(line);
@@ -429,11 +401,11 @@ public class Module {
                 path = path.substring(JAVA_HOME.length());
                 String home = System.getProperty("java.home");
                 if (null != home) {
-                    libPath = home + File.separator + path;
+                    libPath = Util.path(home, path);
                     File f = new File(libPath);
                     if (!f.exists() && home.endsWith("jre")) {
                         f = new File(home).getParentFile();
-                        libPath = f.getPath() + File.separator + path;
+                        libPath = Util.path(f.getPath(), path);
                     }
                 }
             }

@@ -136,6 +136,23 @@ public class Util {
         return (null != dir) && dir.canWrite() && dir.isDirectory();
     }
     
+    public static String path(String first, String second) {
+        return first + File.separator + second;
+    }
+
+    public static String path(String[] segments) {
+        StringBuffer sb = new StringBuffer();
+        if ((null != segments)) {
+            for (int i = 0; i < segments.length; i++) {
+                if (0 < i) {
+                    sb.append(File.separator);
+                }
+                sb.append(segments[i]);
+            }
+        }
+        return sb.toString();
+    }
+    
     /** @return true if dir is a readable directory */
     public static boolean canReadDir(File dir) {
         return (null != dir) && dir.canRead() && dir.isDirectory();

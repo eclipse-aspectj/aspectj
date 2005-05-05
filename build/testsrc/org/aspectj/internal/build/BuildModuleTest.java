@@ -200,7 +200,7 @@ public class BuildModuleTest extends TestCase {
         File jarDir = getJarDir();
         assertTrue(jarDir.canWrite() || jarDir.mkdirs());
         tempFiles.add(jarDir);
-        File moduleDir = new File("../" + module);
+        File moduleDir = new File(Util.path("..", module));
         assertTrue(moduleDir.canRead());
         task.setModuledir(new Path(project, moduleDir.getAbsolutePath()));
         task.setJardir(new Path(project, jarDir.getAbsolutePath()));

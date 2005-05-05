@@ -16,6 +16,7 @@
 
 import org.aspectj.internal.tools.ant.taskdefs.Checklics;
 import org.aspectj.internal.tools.build.Builder;
+import org.aspectj.internal.tools.build.Util;
 import org.aspectj.internal.build.BuildModuleTest;
 import org.aspectj.internal.build.ModulesTest;
 
@@ -42,7 +43,7 @@ public class BuildModuleTests extends TestCase {
     /** replace commented out below - if any replace failed, halt all */
     private static boolean replaceFailed = false;
     
-    private static final String BASE_DIR = "../";
+    private static final String BASE_DIR = ".." + File.separator;
     private static final String[] JDT_SOURCE_DIRS = new String[] {};
 
     public static Test suite() { 
@@ -111,7 +112,7 @@ public class BuildModuleTests extends TestCase {
     }
     public void testLicense_org_eclipse_jdt_core() {
         final String mod = "org.eclipse.jdt.core";
-        final String pre = BASE_DIR + mod + "/";
+        final String pre = BASE_DIR + mod + File.separator;
         for (int i = 0; i < JDT_SOURCE_DIRS.length; i++) {
             checkSourceDirectory(new File(pre + JDT_SOURCE_DIRS[i]), mod);    
 		}
@@ -140,12 +141,12 @@ public class BuildModuleTests extends TestCase {
     }
     public void testLicense_weaver() {
         String module = "weaver";
-        checkSourceDirectory(new File("../" + module + "/src"), module);
-        checkSourceDirectory(new File("../" + module + "/testsrc/org"), module);
+        checkSourceDirectory(new File(Util.path(new String[] {"..", module, "src"})), module);
+        checkSourceDirectory(new File(Util.path(new String[] {"..", module, "testsrc", "org"})), module);
     }
     
     void checkLicense(String module) {
-        File moduleDir = new File(".." + File.separator + module);
+        File moduleDir = new File(Util.path("..", module));
         File[] srcDirs = findSourceRoots(moduleDir);
         for (int i = 0; i < srcDirs.length; i++) {
             checkSourceDirectory(srcDirs[i], module);

@@ -587,8 +587,8 @@ public class AntBuilder extends Builder {
                     libDirs[i] = project.getProperty(libDirNames[i]);
                 }
                 if (null != libDirs[i]) {
-                    libDirs[i] += File.separator + "lib";
-                    result = new Path(project, libDirs[i] + File.separator + name);
+                    libDirs[i] = Util.path(libDirs[i], "lib");
+                    result = new Path(project, Util.path(libDirs[i], name));
                     String path = result.toString();
                     if (new File(path).canRead()) {
                         return result;
@@ -705,13 +705,12 @@ class ProductBuilder extends AntBuilder {
     private static String getProductInstallResourcesSrc(BuildSpec buildSpec) {
         final String resourcesName = "installer-resources";  // XXXFileLiteral
         File dir = buildSpec.productDir.getParentFile();
-//        String result = null;
         if (null == dir) {
-            return "../../" + resourcesName;
+            return Util.path(new String[] {"..", "..", resourcesName});
         } 
         dir = dir.getParentFile();
         if (null == dir) {
-            return "../" + resourcesName;
+            return Util.path("..", resourcesName);
         } else {
             dir = new File(dir, resourcesName);
             return dir.getPath();
@@ -842,7 +841,7 @@ class ProductBuilder extends AntBuilder {
         // copy binaries associated with module flag files
         for (int i = 0; i < productModules.length; i++) {
             ProductModule product = productModules[i];
-            String targPath = targDirPath + "/" + product.relativePath;
+            String targPath = Util.path(targDirPath, product.relativePath);
             File jarFile = (product.assembleAll 
                 ? product.module.getAssembledJar()
                 : product.module.getModuleJar() );

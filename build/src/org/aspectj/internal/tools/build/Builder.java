@@ -466,11 +466,11 @@ public abstract class Builder {
 			FILTER_OFF)) {
 			return false;
 		}
-
+        // duplicate code?
 		// copy binaries associated with module flag files
 		for (int i = 0; i < productModules.length; i++) {
 			ProductModule product = productModules[i];
-			String targPath = targDirPath + "/" + product.relativePath;
+			String targPath = Util.path(targDirPath, product.relativePath);
 			File jarFile =
 				(product.assembleAll
 					? product.module.getAssembledJar()

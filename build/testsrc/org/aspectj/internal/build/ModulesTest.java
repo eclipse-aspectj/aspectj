@@ -31,6 +31,7 @@ import org.aspectj.internal.tools.ant.taskdefs.BuildModule;
 import org.aspectj.internal.tools.build.Messager;
 import org.aspectj.internal.tools.build.Module;
 import org.aspectj.internal.tools.build.Modules;
+import org.aspectj.internal.tools.build.Util;
 /**
  * 
  */
@@ -183,7 +184,8 @@ public class ModulesTest extends TestCase {
         File buildDir = new File(modulesDir, "aj-build");
         File distDir = new File(buildDir, "dist");
         File jarDir = new File(buildDir, "jars");
-        File productDir = new File(modulesDir, "build/products/" + productName);
+        File productDir = new File(modulesDir, 
+                Util.path(new String[] {"build", "products", productName}));
 
         jarDir.mkdirs();
         distDir.mkdirs();
