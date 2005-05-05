@@ -212,6 +212,10 @@ public class SoftMessage implements IMessage {
 	public boolean isInfo() {
 		return kind == IMessage.INFO;
 	}
+	
+	public boolean isTaskTag() {
+		return kind == IMessage.TASKTAG;
+	}
 
 	/** @return true if  kind == IMessage.ABORT  */
 	public boolean isAbort() {

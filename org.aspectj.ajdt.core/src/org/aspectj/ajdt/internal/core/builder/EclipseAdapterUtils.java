@@ -146,9 +146,18 @@ public class EclipseAdapterUtils {
 			extraDetails = extraDetails.substring(0,extraDetails.length()-"[deow=true]".length());
 		}
 		
+		// If the 'problem' represents a TO DO kind of thing then use the message kind that
+		// represents this so AJDT sees it correctly.
+		IMessage.Kind kind;
+		if (problem.getID()==IProblem.Task) {
+		  kind=IMessage.TASKTAG;
+		} else {
+		  if (problem.isError()) { kind = IMessage.ERROR; }
+		  else                   { kind = IMessage.WARNING; }
+		}
         IMessage msg = new Message(problem.getMessage(), 
         						   extraDetails,
-								   problem.isError() ? IMessage.ERROR : IMessage.WARNING,
+								   kind,
 								   sourceLocation, 
 								   null,
 								   seeAlsoLocations,
