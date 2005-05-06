@@ -31,4 +31,13 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testPR91053() {
 		runTest("Generics problem with Set");
 	}
+	
+	public void testPR87282() {
+		runTest("Compilation error on generic member introduction");
+	}
+	
+	public void testPR88606() {
+		runTest("Parameterized types on introduced fields not correctly recognized");
+	}
+	
 }

@@ -2169,5 +2169,13 @@
       <compile files="PR91053.aj" options="-1.5"/>
       <run class="PR91053"/>
    </ajc-test>
+   
+   <ajc-test dir="java5/generics/bugs" title="Compilation error on generic member introduction" vm="1.5">
+      <compile files="PR87282.aj" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/bugs" title="Parameterized types on introduced fields not correctly recognized" vm="1.5">
+      <compile files="PR88606.aj" options="-1.5"/>
+   </ajc-test>
  
 </suite>
