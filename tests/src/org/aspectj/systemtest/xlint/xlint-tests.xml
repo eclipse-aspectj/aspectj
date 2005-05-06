@@ -157,7 +157,8 @@
 			files="DeclaringTypeWarning.java" >
 		</compile>
 	</ajc-test>
-	
+
+<!--	
    <ajc-test dir="bugs/seven/lint" title="7 lint warnings" pr="91719">
   <compile options="-1.5" files="Main.java">
    <message kind="warning" line="31"  text="no match for this type name: java.xxx.Object [Xlint:invalidAbsoluteTypeName]">
@@ -176,5 +177,6 @@
    </message>
   </compile>
   </ajc-test>
+-->
 	
  
