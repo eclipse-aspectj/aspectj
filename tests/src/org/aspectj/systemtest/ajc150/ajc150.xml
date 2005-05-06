@@ -2154,5 +2154,15 @@
         <compile files="Test3.java" options="-1.5"/>
         <run class="Test3"/>
     </ajc-test>
+    
+    <ajc-test dir="java5/generics/bugs/pr91267" title="NPE using generic methods in aspects 1" vm="1.5">
+        <compile files="TestBug1.aj" options="-1.5"/>
+        <run class="TestBug1"/>
+    </ajc-test>
+    
+     <ajc-test dir="java5/generics/bugs/pr91267" title="NPE using generic methods in aspects 2" vm="1.5">
+        <compile files="TestBug2.aj" options="-1.5"/>
+        <run class="TestBug2"/>
+    </ajc-test>
  
 </suite>

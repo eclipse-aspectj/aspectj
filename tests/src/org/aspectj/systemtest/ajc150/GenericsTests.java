@@ -19,4 +19,12 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testITDReturningParameterizedType() {
 		runTest("ITD with parameterized type");
 	}
+	
+	public void testPR91267_1() {
+		runTest("NPE using generic methods in aspects 1");
+	}
+
+	public void testPR91267_2() {
+		runTest("NPE using generic methods in aspects 2");
+	}
 }

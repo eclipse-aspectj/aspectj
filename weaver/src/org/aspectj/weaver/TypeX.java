@@ -92,6 +92,7 @@ public class TypeX implements AnnotatedElement {
     public static TypeX forName(String name) {
         return forSignature(nameToSignature(name));
     }
+	
 
     /** Constructs a TypeX for each java language type name in an incoming array.
      * 
@@ -121,10 +122,10 @@ public class TypeX implements AnnotatedElement {
 		StringBuffer sigAddition = new StringBuffer();
 		sigAddition.append("<");
 		for (int i = 0; i < ret.typeParameters.length; i++) {
-			sigAddition.append(ret.typeParameters[i].signature);
-			sigAddition.append(">");
-			sigAddition.append(";");
+			sigAddition.append(ret.typeParameters[i].signature);			
 		}
+		sigAddition.append(">");
+		sigAddition.append(";");
 		ret.signature = ret.signature + sigAddition.toString();
 		return ret;
     }

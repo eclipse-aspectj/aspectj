@@ -136,8 +136,17 @@ public class EclipseFactory {
 		return ret;
 	}	
 	
-	
 	private static String getName(TypeBinding binding) {
+		if (binding instanceof TypeVariableBinding) {
+			// The first bound may be null - so default to object?
+			TypeVariableBinding tvb = (TypeVariableBinding)binding;
+			if (tvb.firstBound!=null) {
+				return getName(tvb.firstBound);
+			} else {
+				return getName(tvb.superclass);
+			}
+		}
+		
 		if (binding instanceof ReferenceBinding) {
 			return new String(
 				CharOperation.concatWith(((ReferenceBinding)binding).compoundName, '.'));
@@ -154,6 +163,16 @@ public class EclipseFactory {
 
 
 
+	/**
+	 * Some generics notes:
+	 * 
+	 * Andy 6-May-05
+	 * We were having trouble with parameterized types in a couple of places - due to TypeVariableBindings.  When we
+	 * see a TypeVariableBinding now we default to either the firstBound if it is specified or java.lang.Object.  Not
+	 * sure when/if this gets us unstuck?  It does mean we forget that it is a type variable when going back
+	 * the other way from the TypeX and that would seem a bad thing - but I've yet to see the reason we need to
+	 * remember the type variable.
+	 */
 	//??? going back and forth between strings and bindings is a waste of cycles
 	public static TypeX fromBinding(TypeBinding binding) {
 		if (binding instanceof HelperInterfaceBinding) {
@@ -166,7 +185,12 @@ public class EclipseFactory {
 		if (binding instanceof TypeVariableBinding) {
 			// this is a type variable...
 			TypeVariableBinding tvb = (TypeVariableBinding) binding;
-			return TypeX.forName(getName(tvb.firstBound)); // XXX needs more investigation as to whether this is correct in all cases
+			// This code causes us to forget its a TVB which we will need when going back the other way...
+			if (tvb.firstBound!=null) {
+			  return TypeX.forName(getName(tvb.firstBound)); // XXX needs more investigation as to whether this is correct in all cases
+			} else {
+			  return TypeX.forName(getName(tvb.superclass));
+			}
 		}
 		// FIXME asc/amc cope properly with RawTypeBindings
 		if (binding instanceof ParameterizedTypeBinding && !(binding instanceof RawTypeBinding)) {
