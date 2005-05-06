@@ -27,4 +27,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testPR91267_2() {
 		runTest("NPE using generic methods in aspects 2");
 	}
+	
+	public void testPR91053() {
+		runTest("Generics problem with Set");
+	}
 }

@@ -192,8 +192,12 @@ public class EclipseFactory {
 			  return TypeX.forName(getName(tvb.superclass));
 			}
 		}
-		// FIXME asc/amc cope properly with RawTypeBindings
-		if (binding instanceof ParameterizedTypeBinding && !(binding instanceof RawTypeBinding)) {
+		
+		if (binding instanceof ParameterizedTypeBinding) {
+			if (binding instanceof RawTypeBinding) {
+				// special case where no parameters are specified!
+				return TypeX.forRawTypeNames(getName(binding));
+			}
 			ParameterizedTypeBinding ptb = (ParameterizedTypeBinding) binding;
 			String[] arguments = new String[ptb.arguments.length];
 			for (int i = 0; i < arguments.length; i++) {
@@ -348,16 +352,22 @@ public class EclipseFactory {
 				typeX = typeX.getComponentType();
 			}
 			return lookupEnvironment.createArrayType(makeTypeBinding(typeX), dim);
-		} else if (typeX.isParameterized()){
-			TypeX[] typeParameters = typeX.getTypeParameters();
-			ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
-			ReferenceBinding[] argumentBindings = new ReferenceBinding[typeParameters.length];
-			for (int i = 0; i < argumentBindings.length; i++) {
-				argumentBindings[i] = lookupBinding(typeParameters[i].getName());
+		} else if (typeX.isParameterized()) {
+			if (typeX.isRawType()) {
+				ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
+				RawTypeBinding rtb = lookupEnvironment.createRawType(baseTypeBinding,baseTypeBinding.enclosingType());
+				return rtb;
+			} else {
+			    TypeX[] typeParameters = typeX.getTypeParameters();
+				ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
+				ReferenceBinding[] argumentBindings = new ReferenceBinding[typeParameters.length];
+				for (int i = 0; i < argumentBindings.length; i++) {
+					argumentBindings[i] = lookupBinding(typeParameters[i].getName());
+				}
+				ParameterizedTypeBinding ptb = 
+					lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
+				return ptb;
 			}
-			ParameterizedTypeBinding ptb = 
-				lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
-			return ptb;
 		} else {
 			return lookupBinding(typeX.getName());
 		}

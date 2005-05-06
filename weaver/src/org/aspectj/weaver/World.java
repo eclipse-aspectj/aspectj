@@ -137,7 +137,7 @@ public abstract class World implements Dump.INode {
                 dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type "+ty.getName()));
             }
         }
-		if (ty.isParameterized()) {
+		if (ty.isParameterized() && !ty.isRawType()) {
 			for (int i = 0; i < ty.typeParameters.length; i++) {
 				ty.typeParameters[i] = resolve(ty.typeParameters[i],allowMissing);
 			}

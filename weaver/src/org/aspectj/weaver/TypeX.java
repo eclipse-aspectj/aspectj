@@ -28,6 +28,8 @@ public class TypeX implements AnnotatedElement {
 	 * If this is a parameterized type, these are its parameters
 	 */
 	protected TypeX[] typeParameters;
+	
+	protected boolean isParameterized = false;
 
 	/**
 	 * @param      signature   the bytecode string representation of this Type
@@ -114,6 +116,7 @@ public class TypeX implements AnnotatedElement {
 	 */
     public static TypeX forParameterizedTypeNames(String name, String[] paramTypeNames) {
 		TypeX ret = TypeX.forName(name);
+		ret.setParameterized(true);
 		ret.typeParameters = new TypeX[paramTypeNames.length];
 		for (int i = 0; i < paramTypeNames.length; i++) {
 			ret.typeParameters[i] = TypeX.forName(paramTypeNames[i]);
@@ -129,6 +132,14 @@ public class TypeX implements AnnotatedElement {
 		ret.signature = ret.signature + sigAddition.toString();
 		return ret;
     }
+	
+	public static TypeX forRawTypeNames(String name) {
+		TypeX ret = TypeX.forName(name);
+		ret.setParameterized(true);
+		// FIXME asc  no need to mess up the signature is there?
+		// ret.signature = ret.signature+"#RAW";
+		return ret;
+	}
 	
 	/**
 	 * Creates a new type array with a fresh type appended to the end.
@@ -237,7 +248,8 @@ public class TypeX implements AnnotatedElement {
 	public String getBaseName() {
 		String name = getName();
 		if (isParameterized()) {
-			return name.substring(0,name.indexOf("<"));
+			if (isRawType()) return name;
+			else             return name.substring(0,name.indexOf("<"));
 		} else {
 			return name;
 		}
@@ -292,9 +304,17 @@ public class TypeX implements AnnotatedElement {
 	 * Determines if this represents a parameterized type.
 	 */
 	public final boolean isParameterized() {
-		return signature.indexOf("<") != -1; 
-		//(typeParameters != null) && (typeParameters.length > 0);
+		return isParameterized;
+//		return signature.indexOf("<") != -1; 
+//		//(typeParameters != null) && (typeParameters.length > 0);
 	}
+	
+	public final boolean isRawType() { 
+	    return isParameterized && typeParameters==null;
+	}
+	
+	private final void setParameterized(boolean b) { isParameterized=b;}
+	
     
     /**
      * Returns a TypeX object representing the effective outermost enclosing type

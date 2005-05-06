@@ -2164,5 +2164,10 @@
         <compile files="TestBug2.aj" options="-1.5"/>
         <run class="TestBug2"/>
     </ajc-test>
+    
+    <ajc-test dir="java5/generics/bugs" title="Generics problem with Set" vm="1.5">
+      <compile files="PR91053.aj" options="-1.5"/>
+      <run class="PR91053"/>
+   </ajc-test>
  
 </suite>
