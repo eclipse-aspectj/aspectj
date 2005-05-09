@@ -995,6 +995,7 @@ public class BcelWeaver implements IWeaver {
 		deletedTypenames = new ArrayList();
 		
         
+		// FIXME asc Should be factored out into Xlint code and done automatically for all xlint messages, ideally.
         // if a piece of advice hasn't matched anywhere and we are in -1.5 mode, put out a warning
         if (world.behaveInJava5Way && 
             world.getLint().adviceDidNotMatch.isEnabled()) {
@@ -1003,15 +1004,15 @@ public class BcelWeaver implements IWeaver {
         		ShadowMunger element = (ShadowMunger) iter.next();
         		if (element instanceof BcelAdvice) { // This will stop us incorrectly reporting deow Checkers
                   BcelAdvice ba = (BcelAdvice)element;
-                  if (!ba.hasMatchedSomething()) {
-                    BcelMethod meth = (BcelMethod)ba.getSignature();
-                    if (meth!=null) {
-                      AnnotationX[] anns = (AnnotationX[])meth.getAnnotations();
-                      // Check if they want to suppress the warning on this piece of advice
-               	      if (!Utility.isSuppressing(anns,"adviceDidNotMatch")) {
-                        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().toString(),element.getSourceLocation());
-                      }
-                    }
+                  if (!ba.hasMatchedSomething()) { 
+					 // Because we implement some features of AJ itself by creating our own kind of mungers, you sometimes
+ 				     // find that ba.getSignature() is not a BcelMethod - for example it might be a cflow entry munger.
+	                 if (ba.getSignature()!=null) {
+					   if (!(ba.getSignature() instanceof BcelMethod)
+					       || !Utility.isSuppressing((AnnotationX[])ba.getSignature().getAnnotations(),"adviceDidNotMatch")) {
+					        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().toString(),element.getSourceLocation());
+					   }							  
+                     }
                   }
         		}
         	}

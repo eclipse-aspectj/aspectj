@@ -34,6 +34,7 @@ public class AllTestsAspectJ150 {
 		suite.addTest(AnnotationsBinaryWeaving.suite());
 		suite.addTest(AnnotationPointcutsTests.suite());
 		suite.addTestSuite(VarargsTests.class);
+		suite.addTestSuite(StaticImports.class);
 		suite.addTest(AnnotationRuntimeTests.suite());
 		suite.addTestSuite(PerTypeWithinTests.class);
 		

@@ -5,6 +5,10 @@
 
 <suite>
 
+    <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
+        <compile files="StaticImport.aj" options="-1.5"/>
+    </ajc-test>
+
     <ajc-test dir="java5/bridgeMethods" pr="72766" title="Ignore bridge methods">
         <compile files="AspectX.aj" inpath="testcode.jar" options="-showWeaveInfo">
           <message kind="warning" line="7" text="pointcut did not match on the method call to a bridge method."/>
@@ -1054,6 +1058,12 @@
          <message kind="warning" line="11" file="A3.aj"/>
        </compile>
    </ajc-test>
+   
+   <ajc-test dir="bugs150" title="XLint warning for advice not applied with cflow(execution)" pr="93345">
+     <compile options="-Xlint,-1.5" files="PR93345.aj" >
+       <message kind="warning" line="7" text="advice defined in AnAspect has not been applied [Xlint:adviceDidNotMatch]"/>
+     </compile>
+  </ajc-test>
 
    <!-- ======================================================================================= -->
    <!--               annotated aspect members                                                  -->

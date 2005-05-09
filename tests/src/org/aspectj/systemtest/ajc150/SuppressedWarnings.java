@@ -42,5 +42,8 @@ public class SuppressedWarnings extends XMLBasedAjcTestCase {
   public void testSuppression2() {
   	runTest("suppressing non-matching advice warnings when multiple source files involved");
   }
-
+  
+  public void testSuppressionWithCflow_pr93345() {
+    runTest("XLint warning for advice not applied with cflow(execution)");
+  }
 }
