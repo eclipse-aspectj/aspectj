@@ -226,7 +226,7 @@ public abstract class Advice extends ShadowMunger {
 	// ----
  
     /** @param fromType is guaranteed to be a non-abstract aspect
-     *  @param perClause has been concretized at a higher level
+     *  @param clause has been concretized at a higher level
      */
     public ShadowMunger concretize(ResolvedTypeX fromType, World world, PerClause clause) {
     	// assert !fromType.isAbstract();

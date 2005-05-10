@@ -106,18 +106,18 @@ public class PerObject extends PerClause {
 				Advice.makePerObjectEntry(world, concreteEntry, isThis, inAspect));
 		ResolvedTypeMunger munger =
 			new PerObjectInterfaceTypeMunger(inAspect, concreteEntry);
-		inAspect.crosscuttingMembers.addTypeMunger(world.concreteTypeMunger(munger, inAspect));
+		inAspect.crosscuttingMembers.addLateTypeMunger(world.concreteTypeMunger(munger, inAspect));
 
         //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
         if (inAspect.isAnnotationStyleAspect()) {
-            inAspect.crosscuttingMembers.addTypeMunger(
+            inAspect.crosscuttingMembers.addLateTypeMunger(
                     inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
             );
         }
 
         //ATAJ inline around advice support
         if (Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
-            inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
+            inAspect.crosscuttingMembers.addLateTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 
 		return ret;
@@ -139,7 +139,11 @@ public class PerObject extends PerClause {
 	public PerClause.Kind getKind() {
 		return PEROBJECT;
 	}
-	
+
+    public boolean isThis() {
+        return isThis;
+    }
+
 	public String toString() {
 		return "per" + (isThis ? "this" : "target") +
 			"(" + entry + ")";

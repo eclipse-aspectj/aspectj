@@ -70,6 +70,8 @@ public abstract class World implements Dump.INode {
 		visitor.visitList(crosscuttingMembersSet.getShadowMungers());
 		visitor.visitString("Type mungers:");
 		visitor.visitList(crosscuttingMembersSet.getTypeMungers());
+        visitor.visitString("Late Type mungers:");
+        visitor.visitList(crosscuttingMembersSet.getLateTypeMungers());
         if (dumpState_cantFindTypeExceptions!=null) {
           visitor.visitString("Cant find type problems:");
           visitor.visitList(dumpState_cantFindTypeExceptions);

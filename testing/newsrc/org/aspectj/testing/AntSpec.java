@@ -79,6 +79,12 @@ public class AntSpec implements ITestStep {
             p.setUserProperty("aj.sandbox", inTestCase.getSandboxDirectory().getAbsolutePath());
             // setup aj.dir "modules" folder
             p.setUserProperty("aj.root", new File("..").getAbsolutePath());
+			
+            // create the test implicit path aj.path that contains the sandbox + regular test infra path
+            Path path = new Path(p, inTestCase.getSandboxDirectory().getAbsolutePath());
+            populatePath(path, DEFAULT_LTW_CLASSPATH_ENTRIES);
+            populatePath(path, AjcTestCase.DEFAULT_CLASSPATH_ENTRIES);
+            p.addReference("aj.path", path);
 
             ProjectHelper helper = ProjectHelper.getProjectHelper();
             helper.parse(p, buildFile);
@@ -90,6 +96,12 @@ public class AntSpec implements ITestStep {
 
             // make sure we listen for failure
             DefaultLogger consoleLogger = new DefaultLogger() {
+                public void buildFinished(BuildEvent event) {
+                    super.buildFinished(event);
+                    if (event.getException() != null) {
+                        AjcTestCase.fail(failMessage + "failure " + event.getException());
+                    }
+                }
                 public void targetFinished(BuildEvent event) {
                     super.targetFinished(event);
                     if (event.getException() != null) {
@@ -111,12 +123,6 @@ public class AntSpec implements ITestStep {
             consoleLogger.setOutputPrintStream(System.out);
             consoleLogger.setMessageOutputLevel(m_verbose?Project.MSG_VERBOSE:Project.MSG_ERR);
             p.addBuildListener(consoleLogger);
-
-            // create the test implicit path aj.path that contains the sandbox + regular test infra path
-            Path path = new Path(p, inTestCase.getSandboxDirectory().getAbsolutePath());
-            populatePath(path, DEFAULT_LTW_CLASSPATH_ENTRIES);
-            populatePath(path, AjcTestCase.DEFAULT_CLASSPATH_ENTRIES);
-            p.addReference("aj.path", path);
         } catch (Throwable t) {
             AjcTestCase.fail(failMessage + "invalid Ant script :" + t.toString());
         }

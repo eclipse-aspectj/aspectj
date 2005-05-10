@@ -81,9 +81,9 @@
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="PerClause">
-        <compile files="ataspectj/PerClauseTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <compile files="ataspectj/PerClauseTest.java,ataspectj/PerClauseTestAspects.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
         <run class="ataspectj.PerClauseTest"/>
-        <compile files="ataspectj/PerClauseTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <compile files="ataspectj/PerClauseTest.java,ataspectj/PerClauseTestAspects.java,ataspectj/TestHelper.java" options="-1.5"/>
         <run class="ataspectj.PerClauseTest"/>
     </ajc-test>
 
@@ -94,7 +94,4 @@
         <run class="ataspectj.AroundInlineMungerTest"/>
     </ajc-test>
 
-    <ajc-test dir="java5/ataspectj" title="RunThemAllWithJavacCompiledAndLTW">
-        <ant file="ajc-ant.xml" target="all"/>
-    </ajc-test>
 </suite>

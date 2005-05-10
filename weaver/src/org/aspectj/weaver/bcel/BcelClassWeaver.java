@@ -75,6 +75,7 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.Shadow.Kind;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.FastMatchInfo;
@@ -88,9 +89,10 @@ class BcelClassWeaver implements IClassWeaver {
 		BcelWorld world,
 		LazyClassGen clazz,
 		List shadowMungers,
-		List typeMungers) 
+		List typeMungers,
+        List lateTypeMungers)
 	{
-		boolean b =  new BcelClassWeaver(world, clazz, shadowMungers, typeMungers).weave();
+		boolean b =  new BcelClassWeaver(world, clazz, shadowMungers, typeMungers, lateTypeMungers).weave();
 		//System.out.println(clazz.getClassName() + ", " + clazz.getType().getWeaverState());
 		//clazz.print();
 		return b;
@@ -101,6 +103,7 @@ class BcelClassWeaver implements IClassWeaver {
     private final LazyClassGen clazz;
     private final List         shadowMungers;
     private final List         typeMungers;
+    private final List         lateTypeMungers;
 
     private final BcelObjectType  ty;    // alias of clazz.getType()
     private final BcelWorld       world; // alias of ty.getWorld()
@@ -137,7 +140,8 @@ class BcelClassWeaver implements IClassWeaver {
 		BcelWorld world,
 		LazyClassGen clazz,
 		List shadowMungers,
-		List typeMungers) 
+		List typeMungers,
+        List lateTypeMungers)
 	{
 		super();
 		// assert world == clazz.getType().getWorld()
@@ -145,6 +149,7 @@ class BcelClassWeaver implements IClassWeaver {
 		this.clazz = clazz;
 		this.shadowMungers = shadowMungers;
 		this.typeMungers = typeMungers;
+        this.lateTypeMungers = lateTypeMungers;
 		this.ty = clazz.getBcelObjectType();
 		this.cpg = clazz.getConstantPoolGen();
 		this.fact = clazz.getFactory();
@@ -328,7 +333,7 @@ class BcelClassWeaver implements IClassWeaver {
         
         // we want to "touch" all aspects
         if (clazz.getType().isAspect()) isChanged = true;
-                
+
         // start by munging all typeMungers
         for (Iterator i = typeMungers.iterator(); i.hasNext(); ) {
         	Object o = i.next();
@@ -369,7 +374,6 @@ class BcelClassWeaver implements IClassWeaver {
         List methodGens = new ArrayList(clazz.getMethodGens());
         for (Iterator i = methodGens.iterator(); i.hasNext();) {
             LazyMethodGen mg = (LazyMethodGen)i.next();
-            //mg.getBody();
 			if (! mg.hasBody()) continue;
 			boolean shadowMungerMatched = match(mg);
 			if (shadowMungerMatched) {
@@ -378,7 +382,7 @@ class BcelClassWeaver implements IClassWeaver {
               isChanged = true;
 			}
         }
-        if (! isChanged) return false;
+        //if (! isChanged) return false;//FIXME AV - was active, WHY ?? I need to reach the lateTypeMunger
         
         // now we weave all but the initialization shadows
 		for (Iterator i = methodGens.iterator(); i.hasNext();) {
@@ -397,7 +401,28 @@ class BcelClassWeaver implements IClassWeaver {
 			positionAndImplement(initializationShadows);
 		}
 		
-		
+        // now proceed with late type mungers
+        if (lateTypeMungers != null) {
+            for (Iterator i = lateTypeMungers.iterator(); i.hasNext(); ) {
+                Object o = i.next();
+                if ( !(o instanceof BcelTypeMunger) ) {
+                    throw new Error("should not happen or what ?");//FIXME AV ??was System.err.println("surprising: " + o);
+                    //continue;
+                }
+                BcelTypeMunger munger = (BcelTypeMunger)o;
+                if (munger.matches(clazz.getType())) {
+                    //FIXME AV - Andy must track change by this lateMunging only and deal with a reweavable thing
+                    boolean typeMungerAffectedType = munger.munge(this);
+                    if (typeMungerAffectedType) {
+                        isChanged = true;
+                        if (inReweavableMode) aspectsAffectingType.add(munger.getAspectType().getName());
+                    }
+                }
+            }
+        }
+        // flush to save some memory - FIXME AV - extract in a better way ?
+        PerObjectInterfaceTypeMunger.unregisterFromAsAdvisedBy(clazz.getType());
+
 		// finally, if we changed, we add in the introduced methods.
         if (isChanged) {
         	clazz.getOrCreateWeaverStateInfo();

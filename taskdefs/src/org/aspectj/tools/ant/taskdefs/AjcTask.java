@@ -472,6 +472,10 @@ public class AjcTask extends MatchingTask {
     	cmd.addFlag("-Xreweavable",reweavable);
     }
     
+    public void setXNoInline(boolean noInline) {
+    	cmd.addFlag("-XnoInline",noInline);
+    }
+
     public void setShowWeaveInfo(boolean showweaveinfo) {
     	cmd.addFlag("-showWeaveInfo",showweaveinfo);
     }

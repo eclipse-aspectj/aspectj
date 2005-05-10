@@ -1,5 +1,9 @@
 <!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
-<project name="foo" default="all">
+<project name="foo" default="javac.ltw">
+
+    <property
+        name="jdwp"
+        value=""/>
 
     <target name="compile:javac">
         <!-- compile only javac compilable stuff -->
@@ -10,11 +14,29 @@
         </javac>
     </target>
 
-    <target name="all" depends="compile:javac">
+    <target name="ltw">
         <java fork="yes" classname="ataspectj.AllLTWTests" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj5.def=ataspectj/aop.xml"/>
         </java>
     </target>
+
+    <target name="ltw.PerClauseTest">
+        <java fork="yes" classname="ataspectj.PerClauseTest" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop.xml"/>
+        </java>
+    </target>
+
+    <target name="ltw.AroundInlineMungerTest">
+        <java fork="yes" classname="ataspectj.AroundInlineMungerTest" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop.xml"/>
+        </java>
+    </target>
+
+    <target name="javac.ltw" depends="compile:javac, ltw"/>
 </project>

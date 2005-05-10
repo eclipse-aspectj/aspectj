@@ -100,14 +100,14 @@ public class PerSingleton extends PerClause {
         if (!inAspect.isAbstract() && Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
             //TODO will those change be ok if we add a serializable aspect ?
             // dig: "can't be Serializable/Cloneable unless -XserializableAspects"
-            inAspect.crosscuttingMembers.addTypeMunger(
+            inAspect.crosscuttingMembers.addLateTypeMunger(
                     inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
             );
         }
 
         //ATAJ inline around advice support
         if (Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
-            inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
+            inAspect.crosscuttingMembers.addLateTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 
         return ret;

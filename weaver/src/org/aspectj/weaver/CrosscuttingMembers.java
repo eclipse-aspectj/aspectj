@@ -48,7 +48,8 @@ public class CrosscuttingMembers {
 	
 	private List shadowMungers = new ArrayList(4);
 	private List typeMungers = new ArrayList(4);
-	
+    private List lateTypeMungers = new ArrayList(0);
+
 	private List declareParents = new ArrayList(4);
 	private List declareSofts = new ArrayList(0);
 	private List declareDominates = new ArrayList(4);
@@ -88,17 +89,23 @@ public class CrosscuttingMembers {
 	}
 	
 	public void addTypeMunger(ConcreteTypeMunger m) {
-		if (m == null) return; //???
+		if (m == null) throw new Error("FIXME AV - should not happen or what ?");//return; //???
 		typeMungers.add(m);
 	}
-	
+
+    public void addLateTypeMungers(Collection c) {
+        lateTypeMungers.addAll(c);
+    }
+
+    public void addLateTypeMunger(ConcreteTypeMunger m) {
+        lateTypeMungers.add(m);
+    }
+
 	public void addDeclares(Collection c) {
 		for (Iterator i = c.iterator(); i.hasNext(); ) {
 			addDeclare( (Declare)i.next() );
 		}
 	}
-		
-		
 		
 	public void addDeclare(Declare declare) {
 		// this is not extensible, oh well
@@ -196,7 +203,12 @@ public class CrosscuttingMembers {
 			changed = true;
 			typeMungers = other.typeMungers;
 		}
-		
+
+        if (!lateTypeMungers.equals(other.lateTypeMungers)) {
+            changed = true;
+            lateTypeMungers = other.lateTypeMungers;
+        }
+
 		if (!declareDominates.equals(other.declareDominates)) {
 			changed = true;
 			declareDominates = other.declareDominates;
@@ -258,7 +270,11 @@ public class CrosscuttingMembers {
 	public List getTypeMungers() {
 		return typeMungers;
 	}
-	
+
+    public List getLateTypeMungers() {
+        return lateTypeMungers;
+    }
+
 	public List getDeclareAnnotationOnTypes() {
 		return declareAnnotationsOnType;
 	}

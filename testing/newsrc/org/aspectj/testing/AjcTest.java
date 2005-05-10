@@ -30,7 +30,10 @@ public class AjcTest {
 	private static boolean is15VMOrGreater = false;
 	
 	static {
-		String vm = System.getProperty("java.vm.version");
+		String vm = System.getProperty("java.runtime.version");
+        if (vm == null) {
+            vm = System.getProperty("java.vm.version");
+        }
 		if (vm.startsWith("1.3")) {
 			is14VMOrGreater = false;
 		} else if (vm.startsWith("1.5")) {

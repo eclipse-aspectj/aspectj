@@ -124,6 +124,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         //we cannot return onType.equals(aspectType)
         //since we need to eagerly create the nested ajcMighHaveAspect interface on LTW
         return true;
+        //return aspectType.equals(onType);
     }
 
     private void generatePerClauseMembers(LazyClassGen classGen) {
@@ -218,6 +219,10 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         tryEnd.setTarget(il.getEnd());
 
         // replace the original "return" with a "nop"
+        //TODO AV - a bit odd, looks like Bcel alters bytecode and has a IMPDEP1 in its representation
+        if (clinit.getBody().getEnd().getInstruction().getOpcode() == Constants.IMPDEP1) {
+            clinit.getBody().getEnd().getPrev().setInstruction(new NOP());
+        }
         clinit.getBody().getEnd().setInstruction(new NOP());
         clinit.getBody().append(il);
 

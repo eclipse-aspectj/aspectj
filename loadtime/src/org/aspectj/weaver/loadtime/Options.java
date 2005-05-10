@@ -30,37 +30,6 @@ import java.util.List;
  */
 public class Options {
 
-    private static class DefaultMessageHandler implements IMessageHandler {
-
-        boolean isVerbose = false;
-        boolean showWeaveInfo = false;
-        boolean showWarn = true;
-
-        public boolean handleMessage(IMessage message) throws AbortException {
-            return SYSTEM_OUT.handleMessage(message);
-        }
-
-        public boolean isIgnoring(IMessage.Kind kind) {
-            if (kind.equals(IMessage.WEAVEINFO)) {
-                return !showWeaveInfo;
-            }
-            if (kind.isSameOrLessThan(IMessage.INFO)) {
-                return !isVerbose;
-            }
-            return !showWarn;
-        }
-
-        public void dontIgnore(IMessage.Kind kind) {
-            if (kind.equals(IMessage.WEAVEINFO)) {
-                showWeaveInfo = true;
-            } else if (kind.equals(IMessage.DEBUG)) {
-                isVerbose = true;
-            } else if (kind.equals(IMessage.WARNING)) {
-                showWarn = false;
-            }
-        }
-    }
-
     private final static String OPTION_15 = "-1.5";
     private final static String OPTION_lazyTjp = "-XlazyTjp";
     private final static String OPTION_noWarn = "-nowarn";
@@ -125,6 +94,8 @@ public class Options {
                 weaverOption.showWeaveInfo = true;
             } else if (arg.equalsIgnoreCase(OPTION_verbose)) {
                 weaverOption.verbose = true;
+            } else if (arg.startsWith(OPTIONVALUED_messageHolder)) {
+                ;// handled in first round
             } else {
                 weaverOption.messageHandler.handleMessage(
                         new Message(

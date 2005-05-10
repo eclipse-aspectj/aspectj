@@ -15,7 +15,8 @@
     <ajc-test dir="java5/ataspectj"
         pr="" title="class with @Before extending @Aspect class">
         <compile files="ataspectj/misuse/Test006.java" options="-1.5 -Xdev:NoAtAspectJProcessing">
-            <message kind="warning" line="11" text="Found @AspectJ annotations in a non @Aspect type 'ataspectj.misuse.Test006B'"/>
+            <!-- FIXME AV - optim in place. Check and remove useless test -->
+            <!--<message kind="warning" line="11" text="Found @AspectJ annotations in a non @Aspect type 'ataspectj.misuse.Test006B'"/>-->
         </compile>
     </ajc-test>
 

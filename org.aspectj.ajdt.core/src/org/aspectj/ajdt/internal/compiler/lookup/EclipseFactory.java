@@ -252,8 +252,9 @@ public class EclipseFactory {
 	public void finishTypeMungers() {
 		// make sure that type mungers are
 		Collection ret = new ArrayList();
-		Collection baseTypeMungers = 
-			getWorld().getCrosscuttingMembersSet().getTypeMungers();
+		Collection baseTypeMungers = getWorld().getCrosscuttingMembersSet().getTypeMungers();
+        baseTypeMungers.addAll(getWorld().getCrosscuttingMembersSet().getLateTypeMungers());
+
 		for (Iterator i = baseTypeMungers.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger munger = (ConcreteTypeMunger) i.next();
 			EclipseTypeMunger etm = makeEclipseTypeMunger(munger);

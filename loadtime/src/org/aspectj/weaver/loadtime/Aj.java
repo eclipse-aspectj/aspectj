@@ -55,6 +55,8 @@ public class Aj implements ClassPreProcessor {
             __dump(className, weaved);
             return weaved;
         } catch (Throwable t) {
+            //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
+            // would make sense at least in test f.e. see TestHelper.handleMessage()
             t.printStackTrace();
             return bytes;
         }
@@ -110,7 +112,7 @@ public class Aj implements ClassPreProcessor {
      * @throws Throwable
      */
     static void __dump(String name, byte[] b) throws Throwable {
-        if (true) return;//FIXME AV have an option
+        //if (true) return;//FIXME AV have an option
         String className = name.replace('.', '/');
         final File dir;
         if (className.indexOf('/') > 0) {

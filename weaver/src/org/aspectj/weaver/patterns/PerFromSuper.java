@@ -72,7 +72,7 @@ public class PerFromSuper extends PerClause {
 	
 	
 	
-	private PerClause lookupConcretePerClause(ResolvedTypeX lookupType) {
+	public PerClause lookupConcretePerClause(ResolvedTypeX lookupType) {
 		PerClause ret = lookupType.getPerClause();
 		if (ret == null) return null;
 		if (ret instanceof PerFromSuper) {

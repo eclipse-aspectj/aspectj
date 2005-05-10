@@ -150,14 +150,14 @@ public class PerTypeWithin extends PerClause {
 
         //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
         if (inAspect.isAnnotationStyleAspect()) {
-            inAspect.crosscuttingMembers.addTypeMunger(
+            inAspect.crosscuttingMembers.addLateTypeMunger(
                     inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
             );
         }
 
         //ATAJ inline around advice support
         if (Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
-            inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
+            inAspect.crosscuttingMembers.addLateTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 
 		return ret;

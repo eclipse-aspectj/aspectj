@@ -42,7 +42,7 @@ public class ModelPerformanceTest extends AjdeTestCase {
 		long modelBuildTime = timedBuild(true);
 		float overhead = (float)modelBuildTime / (float)rawBuildTime;
 		
-		assertTrue(overhead < 1.3);
+		assertTrue("overhead is " + overhead + " > 1.3", overhead < 1.3);
 //		System.err.println("> overhead: " + overhead);
 	}
 

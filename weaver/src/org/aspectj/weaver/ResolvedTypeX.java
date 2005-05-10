@@ -414,6 +414,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 		crosscuttingMembers.setPerClause(getPerClause());
 		crosscuttingMembers.addShadowMungers(collectShadowMungers());
 		crosscuttingMembers.addTypeMungers(getTypeMungers());
+        //FIXME AV - skip but needed ?? or  ?? crosscuttingMembers.addLateTypeMungers(getLateTypeMungers());
 		crosscuttingMembers.addDeclares(collectDeclares(!this.doesNotExposeShadowMungers()));
 		crosscuttingMembers.addPrivilegedAccesses(getPrivilegedAccesses());
 		

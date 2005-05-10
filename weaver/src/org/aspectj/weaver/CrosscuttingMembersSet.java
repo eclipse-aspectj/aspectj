@@ -31,11 +31,12 @@ import org.aspectj.weaver.patterns.DeclareParents;
  */
 public class CrosscuttingMembersSet {
 	private World world;
-	//FIXME Alex: we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
+	//FIXME AV - ? we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
     private Map members = new HashMap();
 	
 	private List shadowMungers = null;
 	private List typeMungers = null;
+    private List lateTypeMungers = null;
 	private List declareSofts = null;
 	private List declareParents = null;
 	private List declareAnnotationOnTypes   = null;
@@ -92,6 +93,7 @@ public class CrosscuttingMembersSet {
 	private void clearCaches() {
 		shadowMungers = null;
 		typeMungers = null;
+        lateTypeMungers = null;
 		declareSofts = null;
 		declareParents = null;
 		declareDominates = null;
@@ -119,7 +121,18 @@ public class CrosscuttingMembersSet {
 		}
 		return typeMungers;
 	}
-	
+
+    public List getLateTypeMungers() {
+        if (lateTypeMungers == null) {
+            ArrayList ret = new ArrayList();
+            for (Iterator i = members.values().iterator(); i.hasNext(); ) {
+                ret.addAll(((CrosscuttingMembers)i.next()).getLateTypeMungers());
+            }
+            lateTypeMungers = ret;
+        }
+        return lateTypeMungers;
+    }
+
 	public List getDeclareSofts() {
 		if (declareSofts == null) {
 			ArrayList ret = new ArrayList();

@@ -240,10 +240,10 @@ public class CompileSpec implements ITestStep {
 	    if (files == null) files = "";
 		StringTokenizer strTok = new StringTokenizer(files,",");
 		while (strTok.hasMoreTokens()) {
-			String file = strTok.nextToken();
+			final String file = strTok.nextToken();
 			if (file.endsWith(".jar")) {
 				jarList.add(file);
-			} else {
+            } else {
 				fileList.add(file);
 			}
 		}

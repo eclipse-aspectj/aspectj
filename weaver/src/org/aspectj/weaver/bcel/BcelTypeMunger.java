@@ -147,7 +147,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		return changed;
 	}
-	
+
 	private String getShortname(String path)  {
 		int takefrom = path.lastIndexOf('/');
 		if (takefrom == -1) {

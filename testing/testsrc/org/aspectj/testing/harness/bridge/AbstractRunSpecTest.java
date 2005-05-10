@@ -38,7 +38,7 @@ public class AbstractRunSpecTest extends TestCase {
         spec.setDescription("some description, with extra");
         XMLWriter out = new XMLWriter(new PrintWriter(System.out));
         spec.writeXml(out);
-        out.close();
+        //out.close();//FIXME this close System.out and makes the IntelliJ test runner hang (AV)
     }
 
     public void testSetOptions() {

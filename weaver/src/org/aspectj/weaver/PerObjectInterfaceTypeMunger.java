@@ -15,12 +15,36 @@ package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.HashMap;
 
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.FastMatchInfo;
+import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.util.FuzzyBoolean;
 
 public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
+
+    // key is advisedType, value is Set of aspect type that advise the type and are perObject
+    public static Map s_advisedTypeToAspects = new HashMap();
+    public static void registerAsAdvisedBy(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
+        if (PerClause.PEROBJECT.equals(aspectType.getPerClause().getKind())) {
+            Set aspects = (Set)s_advisedTypeToAspects.get(matchType);
+            if (aspects == null) {
+                aspects = new HashSet(1);
+                s_advisedTypeToAspects.put(matchType, aspects);
+            }
+            aspects.add(aspectType);
+        }
+    }
+    public static void unregisterFromAsAdvisedBy(ResolvedTypeX matchType) {
+        s_advisedTypeToAspects.remove(matchType);
+    }
+
 	private ResolvedMember getMethod;
 	private ResolvedMember setMethod;
 	private TypeX aspectType;
@@ -66,7 +90,14 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
         // comment from Andy - this is hard to fix...
         
         // right now I filter @AJ aspect else it end up with duplicate members
-        return !matchType.isInterface() && !matchType.isAnnotationStyleAspect();
+        //return !matchType.isInterface() && !matchType.isAnnotationStyleAspect();
+        Set aspects = (Set)s_advisedTypeToAspects.get(matchType);
+        if (aspects == null) {
+            return false;
+        } else {
+            return aspects.contains(aspectType);
+        }
+
     }
 
     private FuzzyBoolean isWithinType(ResolvedTypeX type) {

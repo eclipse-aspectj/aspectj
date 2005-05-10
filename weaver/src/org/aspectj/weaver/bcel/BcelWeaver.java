@@ -72,6 +72,7 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.BindingAnnotationTypePattern;
 import org.aspectj.weaver.patterns.BindingTypePattern;
@@ -119,8 +120,9 @@ public class BcelWeaver implements IWeaver {
     private boolean needToReweaveWorld = false;
 
     private List shadowMungerList = null; // setup by prepareForWeave
-	private List typeMungerList = null; // setup by prepareForWeave 
-	private List declareParentsList = null; // setup by prepareForWeave 
+	private List typeMungerList = null; // setup by prepareForWeave
+    private List lateTypeMungerList = null; // setup by prepareForWeave
+	private List declareParentsList = null; // setup by prepareForWeave
 
     private ZipOutputStream zipOutputStream;
 
@@ -426,6 +428,7 @@ public class BcelWeaver implements IWeaver {
 		shadowMungerList = xcutSet.getShadowMungers();
 		rewritePointcuts(shadowMungerList);
 		typeMungerList = xcutSet.getTypeMungers();
+        lateTypeMungerList = xcutSet.getLateTypeMungers();
 		declareParentsList = xcutSet.getDeclareParents();
     	
 		// The ordering here used to be based on a string compare on toString() for the two mungers - 
@@ -1004,7 +1007,7 @@ public class BcelWeaver implements IWeaver {
         		ShadowMunger element = (ShadowMunger) iter.next();
         		if (element instanceof BcelAdvice) { // This will stop us incorrectly reporting deow Checkers
                   BcelAdvice ba = (BcelAdvice)element;
-                  if (!ba.hasMatchedSomething()) { 
+                  if (!ba.hasMatchedSomething()) {
 					 // Because we implement some features of AJ itself by creating our own kind of mungers, you sometimes
  				     // find that ba.getSignature() is not a BcelMethod - for example it might be a cflow entry munger.
 	                 if (ba.getSignature()!=null) {
@@ -1356,7 +1359,7 @@ public class BcelWeaver implements IWeaver {
 			clazz = classType.getLazyClassGen();
 			//System.err.println("got lazy gen: " + clazz + ", " + clazz.getWeaverState());
 			try {
-				boolean isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers);
+				boolean isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList);
 				if (isChanged) {
 					if (dump) dump(classFile, clazz);
 					return clazz;

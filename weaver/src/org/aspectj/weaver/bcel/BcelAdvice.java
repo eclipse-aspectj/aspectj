@@ -35,12 +35,16 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.ExactTypePattern;
 import org.aspectj.weaver.patterns.ExposedState;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerObject;
+import org.aspectj.weaver.patterns.PerFromSuper;
 
 /**
  * Advice implemented for bcel.
@@ -136,7 +140,26 @@ public class BcelAdvice extends Advice {
 
     public void implementOn(Shadow s) {
         hasMatchedAtLeastOnce=true;
-        BcelShadow shadow = (BcelShadow) s;       
+        BcelShadow shadow = (BcelShadow) s;
+
+        //FIXME AV ok ?
+        // callback for perObject AJC MightHaveAspect postMunge (#75442)
+        if (getConcreteAspect() != null
+                && getConcreteAspect().getPerClause() != null
+                && PerClause.PEROBJECT.equals(getConcreteAspect().getPerClause().getKind())) {
+            final PerObject clause;
+            if (getConcreteAspect().getPerClause() instanceof PerFromSuper) {
+                clause = (PerObject)((PerFromSuper) getConcreteAspect().getPerClause()).lookupConcretePerClause(getConcreteAspect());
+            } else {
+                clause = (PerObject) getConcreteAspect().getPerClause();
+            }
+            if (clause.isThis()) {
+                PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getThisVar().getType(), getConcreteAspect());
+            } else {
+                PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getTargetVar().getType(), getConcreteAspect());
+            }
+        }
+
         if (getKind() == AdviceKind.Before) {
             shadow.weaveBefore(this);
         } else if (getKind() == AdviceKind.AfterReturning) {
