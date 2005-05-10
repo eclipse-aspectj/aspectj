@@ -1033,24 +1033,25 @@ public class BcelWeaver implements IWeaver {
      * may choose to weave them in either order - but you'll probably have other problems if
      * you are supplying partial hierarchies like that !
      */
-    private void weaveParentsFor(List typesForWeaving,String typeToWeave) {
-        // Look at the supertype first
-    	ResolvedTypeX rtx = world.resolve(typeToWeave);
-        ResolvedTypeX superType = rtx.getSuperclass();
-        if (superType!=null && typesForWeaving.contains(superType.getClassName())) {
-            weaveParentsFor(typesForWeaving,superType.getClassName());
-        }
-        
-        // Then look at the superinterface list
-        ResolvedTypeX[] interfaceTypes = rtx.getDeclaredInterfaces();
-        for (int i = 0; i < interfaceTypes.length; i++) {
-            ResolvedTypeX rtxI = interfaceTypes[i];
-            if (typesForWeaving.contains(rtxI.getClassName())) {
-                weaveParentsFor(typesForWeaving,rtxI.getClassName());
-            }
-        }
-        weaveParentTypeMungers(rtx); // Now do this type
-        typesForWeaving.remove(typeToWeave); // and remove it from the list of those to process
+	   private void weaveParentsFor(List typesForWeaving,String typeToWeave) {
+		   // Look at the supertype first
+		   ResolvedTypeX rtx = world.resolve(typeToWeave);
+		   ResolvedTypeX superType = rtx.getSuperclass();
+		   
+		   if (superType!=null && typesForWeaving.contains(superType.getName())) {
+		     weaveParentsFor(typesForWeaving,superType.getName());
+		   }
+		         
+		   // Then look at the superinterface list
+		   ResolvedTypeX[] interfaceTypes = rtx.getDeclaredInterfaces();
+		   for (int i = 0; i < interfaceTypes.length; i++) {
+		     ResolvedTypeX rtxI = interfaceTypes[i];
+		     if (typesForWeaving.contains(rtxI.getName())) {
+		       weaveParentsFor(typesForWeaving,rtxI.getName());
+		     }
+		   }
+           weaveParentTypeMungers(rtx); // Now do this type
+           typesForWeaving.remove(typeToWeave); // and remove it from the list of those to process
     }
     
     public void prepareToProcessReweavableState() {
