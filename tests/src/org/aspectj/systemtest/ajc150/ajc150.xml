@@ -2188,4 +2188,7 @@
       <compile files="PR88606.aj" options="-1.5"/>
    </ajc-test>
  
+   <ajc-test dir="bugs150" title="enum called Enum, annotation called Annotation, etc">
+     <compile files="PR90827.aj" options="-1.5"/>
+   </ajc-test>
 </suite>

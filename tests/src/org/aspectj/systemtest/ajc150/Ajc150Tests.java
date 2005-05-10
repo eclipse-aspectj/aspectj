@@ -157,9 +157,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("pertypewithin({interface}) illegal field modifier");
   }
   
-//  public void testEnumCalledEnumEtc() {
-//	  runTest("enum called Enum, annotation called Annotation, etc");
-//  }
+  public void testEnumCalledEnumEtc() {
+	  runTest("enum called Enum, annotation called Annotation, etc");
+  }
   
   // helper methods.....
   
