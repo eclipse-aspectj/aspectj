@@ -49,6 +49,7 @@ sp="-Dskip.cvs=true -Daspectj.modules.dir=../.."
 sp="${sp} -Djava13.home=c:/home/apps/jdk13"
 sp="${sp} -Djava14.home=c:/home/apps/jdk14"
 sp="${sp} -Djava15.home=c:/home/apps/jdk15"
+#sp="${sp} -Drun.14.only=true"
 
 #alias myant="$scriptDir/../../lib/ant/bin/ant"
 myant="$scriptDir/../../lib/ant/bin/ant"

@@ -26,7 +26,6 @@
    test
      test-sources             # - requires only sources
        test-harness-tests     # run tests/{suite}.xml's
-       test-junit-modules     # tests/junitModules.xml
      test-install             # - requires distribution
        test-build-examples    # install/docs/examples
        test-ajc-aspectj       # ajc compiles aspectj
@@ -444,25 +443,25 @@
 	</target>
 
 	<target name="test-junit-modules" 
-		depends="init-variables,init-junitTests-available">
-		<antcall target="do-run-ant">
-			<param name="run.ant.file" value="junitModules.xml"/>
-			<param name="ant.target" value="test-all"/>
-			<param name="ant.dir" 
-				location="${aspectj.modules.dir}/tests"/>
-			<param name="ant.output" 
-				location="${aj.build.log.dir}/test-junitModules"/>
-		</antcall>
+		depends="init-variables">	    
 		
+		<antcall target="do-run-ant">
+			<param name="run.ant.file" value="newbuild.xml"/>
+			<param name="ant.target" value="test"/>
+			<param name="ant.dir" 
+				location="${aspectj.modules.dir}/run-all-junit-tests"/>
+			<param name="ant.output" 
+				location="${aj.build.log.dir}/test-run-all-junit-tests"/>
+		</antcall>
 		<property file="${java.home.file}"/>
 		<property name="tjm.copy.todir"
-			location="${aj.build.log.dir}/junitXmlOutput-${build.java.version}"/>
+			location="${aj.build.log.dir}/test-run-all-junit-tests-${build.java.version}"/>
 		<mkdir dir="${tjm.copy.todir}"/>
 		<delete quiet="on">
 			<fileset dir="${tjm.copy.todir}" includes="**/*"/>
 		</delete>
 		<property name="xmlSrcDir"
-			location="${aspectj.tests.dir}/bin/junitXmlOutput"/>
+			location="${aj.build.dir}/junit/run-all-junit-tests"/>
 		<move todir="${tjm.copy.todir}" >
 		 	<fileset dir="${xmlSrcDir}"	includes="**/*"/>
 		</move>
@@ -722,7 +721,7 @@
 			<sysproperty key="ANT_HOME" 
 				path="${aspectj.ant.home}"/>
 
-			<!-- for tests/junitModules.xml -->
+			<!-- for ajde -->
 			<sysproperty key="aspectjrt.path"
 				file="${aj.build.install.dir}/lib/aspectjrt.jar"/>
 			<sysproperty key="test.classpath"
