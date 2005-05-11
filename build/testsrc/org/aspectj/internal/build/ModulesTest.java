@@ -17,7 +17,10 @@ package org.aspectj.internal.build;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -36,6 +39,17 @@ import org.aspectj.internal.tools.build.Util;
  * 
  */
 public class ModulesTest extends TestCase {
+    public static final List /*String*/ MODULE_NAMES;
+    private static final File BASE_DIR = new File("..");
+    static {
+        String[] names = {
+        "ajbrowser", "ajde", "ajdoc", "asm", "aspectj5rt",
+        "bridge", "loadtime", "loadtime5", "org.aspectj.ajdt.core",
+        "runtime", "taskdefs", "testing-client", "testing-util",
+        "tests", "util", "weaver"};
+        List list = Arrays.asList(names);
+        MODULE_NAMES = Collections.unmodifiableList(list);
+    }
 
    private static boolean delete(File file) { // XXX Util
         if ((null == file) || !file.exists()) {
@@ -83,25 +97,32 @@ public class ModulesTest extends TestCase {
         }
         return new Modules(baseDir, jarDir, true, handler);
     }
-    
-    public void testModuleCreation() {
-        Modules modules = getModules(null);
-        Module eclipse = modules.getModule("org.eclipse.jdt.core");
-        assertTrue(eclipse.valid);
-    }
-
+      
     public void testAllModulesCreation() {
-        File baseDir = new File("..");
-        String[] knowns = {"runtime", "util", "weaver" };
-        File[] files = new File[knowns.length];
-        for (int i = 0; i < files.length; i++) {
-            files[i] = new File(knowns[i]);
-            if (files[i].isDirectory()) {
-                File classpath = new File(files[i], ".classpath");
+        ArrayList badModules = new ArrayList();
+        for (Iterator iter = MODULE_NAMES.iterator(); iter.hasNext();) {
+            String name = (String) iter.next();
+            File dir = new File(BASE_DIR, name);
+            if (dir.isDirectory()) {
+                File classpath = new File(dir, ".classpath");
                 if (classpath.exists()) {
-                    checkModule(files[i].getName());
+                    Modules modules = getModules(null);
+                    Module module = modules.getModule(name);
+                    if (!module.valid) {
+                        badModules.add(module);
+                    }
                 }
             }
+        }
+        if (!badModules.isEmpty()) {
+            StringBuffer sb = new StringBuffer();
+            for (Iterator iter = badModules.iterator(); iter.hasNext();) {
+                Module module = (Module) iter.next();
+                System.err.println(module.toLongString());
+                sb.append("\n");
+                sb.append(module);
+            }
+            fail(sb.toString());
         }
     }
     
@@ -112,7 +133,7 @@ public class ModulesTest extends TestCase {
         Modules modules = getModules(null);
         Module module = modules.getModule(s);
         if (!module.valid) {
-            assertTrue(module.toString(), false);
+            assertTrue(module.toLongString(), false);
         }
     }
     
