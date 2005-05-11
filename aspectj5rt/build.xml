@@ -28,7 +28,7 @@
     <target name="test:compile" depends="compile" if="jdk15">
         <mkdir dir="../aspectj5rt/bintest"/>
         <javac debug="on" destdir="../aspectj5rt/bintest" source="1.5" target="1.5">
-            <src path="../aspectj5rt/testsrc"/>
+            <src path="../aspectj5rt/java5-testsrc"/>
             <classpath refid="aspectj5rt.test.src.path"/>
             <classpath path="../aspectj5rt/bin"/>
         </javac>
