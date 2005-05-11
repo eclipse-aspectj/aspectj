@@ -16,12 +16,10 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Iterator;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.framework.TestCase;
 
 import org.apache.commons.digester.Digester;
 import org.aspectj.tools.ajc.AjcTestCase;
