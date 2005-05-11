@@ -28,7 +28,7 @@
         <!-- FIXME: we override compile due to use of 1.5 -->
         <mkdir dir="${basedir}/bin"/>
         <javac debug="on" destdir="${basedir}/bin" source="1.5" target="1.5">
-            <src path="${basedir}/src"/>
+            <src path="${basedir}/java5-src"/>
             <classpath refid="loadtime5.src.path"/>
         </javac>
     </target>
