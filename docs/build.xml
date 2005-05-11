@@ -12,13 +12,10 @@
 <!--     Xerox/PARC     initial implementation                                 -->
 <!-- ========================================================================= -->
 
-<!DOCTYPE project [
-<!ENTITY build-properties SYSTEM "file:../build/build-properties.xml">
-]>
-<project name="build-docs" default="dist" basedir=".">
+<project name="docs" default="dist" basedir=".">
 
     <property name="project.name" value="build-docs" />
-
+	    
     <target name="product" depends="local-dist" />
     <target name="clean"
             depends="clean-directories,clean-doc-directories"
@@ -28,8 +25,8 @@
     <!-- Init                                                                  -->
     <!-- ===================================================================== -->
 
-    &build-properties;
-
+    <import file="${basedir}/../build/build-properties.xml"/>
+    
     <target name="init" depends="init-properties,init-directories">
 
         <property name="docs.src.pattern"
