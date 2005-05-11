@@ -260,8 +260,10 @@ public class AntBuilder extends Builder {
         // I suspect it requires the proper adapter setup.
         Javac javac = new Javac(); 
         setupTask(javac, "javac");
+        javac.setIncludeantruntime(false);
         javac.setDestdir(classesDir);
         javac.setSrcdir(path);
+        javac.setVerbose(verbose);
         path = null;
         
         // -- classpath
@@ -286,16 +288,6 @@ public class AntBuilder extends Builder {
         } else {
             javac.setSource("1.5");
             javac.setTarget("1.5");
-            // TODO allow modules to mix 1.5 and prior code by omitting 1.5
-            // gack if non-java5 and non-testsrc in this build
-            for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
-                String name = ((File) iter.next()).getName();
-                if (!Util.Constants.JAVA5_SRC.equals(name)
-                    && !Util.Constants.JAVA5_TESTSRC.equals(name)) {
-                    String m = "modules mixing pre-15 and 15 source are built with -target 1.5";
-                    throw new BuildException(m + ": " + name);
-                }
-            }
         }
         // compile
         boolean passed = false;
