@@ -19,8 +19,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Commandline.Argument;
-import org.aspectj.internal.tools.ant.taskdefs.*;
 import org.aspectj.internal.tools.ant.taskdefs.BuildModule;
+import org.aspectj.internal.tools.ant.taskdefs.Checklics;
 import org.aspectj.internal.tools.build.*;
 
 import java.io.File;
@@ -71,7 +71,7 @@ public class BuildModuleTest extends TestCase {
     
 	public BuildModuleTest(String name) {
 		super(name);
-        building = (null != System.getProperty("run.build.tests"));
+        building = Boolean.getBoolean("run.build.tests");
 	}
 
 	protected void tearDown() throws Exception {
