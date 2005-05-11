@@ -12,21 +12,16 @@
 package org.aspectj.weaver.loadtime.definition;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.DTDHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
-import com.sun.org.apache.xerces.internal.impl.XMLEntityManager;
 
 /**
  * FIXME AV - doc, concrete aspect
@@ -107,7 +102,7 @@ public class DocumentParser extends DefaultHandler {
         }
     }
 
-    public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
         if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
             InputStream in = DTD_STREAM;
             if (in == null) {
