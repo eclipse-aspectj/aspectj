@@ -89,7 +89,9 @@ public class AjcTestCase extends TestCase {
         // "ant compile" to rebuild "aspect5rt/bin" will not expose the IDE changes...
         // but I don't want to have it first to avoid side effects when running from Ant.
         File.pathSeparator + ".." + File.separator + "_IDE" +
-		File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar";
+		File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar"
+        + File.pathSeparator+ ".."+File.separator+"loadtime"+File.separator+"bin" 
+        ;
 
 	/**
 	 * Helper class that represents the specification of an individual
