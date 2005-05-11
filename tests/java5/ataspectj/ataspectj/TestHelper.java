@@ -31,7 +31,7 @@ import org.aspectj.weaver.loadtime.DefaultMessageHandler;
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class TestHelper extends  DefaultMessageHandler {
+public class TestHelper extends DefaultMessageHandler {
 
     public static void runAndThrowOnFailure(junit.framework.Test test) {
         TestRunner r = new TestRunner();

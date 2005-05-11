@@ -58,7 +58,6 @@
         <run class="ataspectj.PrecedenceTest"/>
     </ajc-test>
 
-<!--    <comment>FIXME AV when JDT of M6 is in</comment> -->
     <ajc-test dir="java5/ataspectj" title="AfterXTest">
         <compile files="ataspectj/AfterXTest.java,ataspectj/TestHelper.java" options="-1.5"/>
         <run class="ataspectj.AfterXTest"/>

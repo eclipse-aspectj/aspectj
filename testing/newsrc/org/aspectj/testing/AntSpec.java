@@ -45,8 +45,7 @@ import java.util.StringTokenizer;
 public class AntSpec implements ITestStep {
     
     private final static String DEFAULT_LTW_CLASSPATH_ENTRIES =
-            ".." + File.separator + "_IDE"//ALEX hack since IntelliJ does not produce modules/bin/
-            + File.pathSeparator + ".." + File.separator + "asm/bin"
+            ".." + File.separator + "asm/bin"
             + File.pathSeparator + ".." + File.separator + "bridge/bin"
             + File.pathSeparator + ".." + File.separator + "loadtime/bin"
             + File.pathSeparator + ".." + File.separator + "loadtime5/bin"
