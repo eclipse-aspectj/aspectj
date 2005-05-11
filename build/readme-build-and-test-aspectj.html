@@ -48,6 +48,7 @@ debug failed builds, see
     <li>Release completion</li>
     </ol>
    </li>  
+  <li>New modules, Java 5, and Ant-only build problems</li>
   <li>Build Problems</li>
 </ol>
 
@@ -101,13 +102,17 @@ that usually means checking out the modules directory:
 Eclipse users should check out subdirectories of 
  <code>org.aspectj/modules</code> as a Java project.  
 
-<p/>Not all modules are required.
+<p/>
+<p>
+	
+Not all modules are required.
 The <code>aspectj-attic</code> module only has old code,
 and the <code>tests</code> and <code>testing-*</code> modules
 are only needed to run tests.  Also modules with Java 5 source
 in <code>{module}/java5-src</code> require Java 5 to build
 for the release; the Java 5 source files are ignored when building
 under 1.4 or earlier VM's.
+</p>
 
 <h3>Standard builds</h3>
 <h4>Building using Ant</h4>
@@ -143,6 +148,11 @@ Consider defining the following flag properties:
 </table>
 
 <p/>
+<p>
+You can also use the build script in each module and the targets
+"test" (default) or "compile".  ("clean" removes  all build products,
+not just those for that module.)
+<p/>
 For example, to build everything into a release bundle,
 with verbose logging
 <pre>
@@ -150,10 +160,18 @@ with verbose logging
   ../lib/ant/bin/ant 
 </pre>
 
-To build only the asm module (and any modules it requires):
+To build only the asm module (and any modules it requires) using
+<code>modules/build</code>:
 <pre>
   cd modules/build
   ../lib/ant/bin/ant -f build.xml any-module -Dmodule.name=asm
+</pre>
+
+To run JUnit tests (output to <code>../aj-build/junit</code>) 
+for the util module using <code>util/build.xml</code>:
+<pre>
+  cd modules/util
+  ../lib/ant/bin/ant test
 </pre>
 
 To build the test harness into 
@@ -340,9 +358,98 @@ Pushing the release out to the web involves manually updating
  
 <p/>
 <hr/>
+<a name="antInvariants"/>
+<h3>New modules, Java 5, and Ant-only build problems</h3>
+<p>
+	As described more fully in 
+	<a href="readme-build-module.html">readme-build-module.html</a>,
+	the build system introspects on module and the .classpath file
+	to determine how to build.  Further, it enforces stricter build
+	invariants than the Eclipse projects do; when your code works
+	in Eclipse but fails in the Ant, it's your responsibility to fix it
+	by following the build invariants below.	
+</p>
+<p>
+	How the build system introspects, and the build invariants that
+	are enforced by the Ant build:
+</p>
+<ul>
+	<li>A given module is identified by its directory name.
+	</li>
+	<li>Most modules are Eclipse Java projects; some are AspectJ projects.
+		Eclipse is not required to build.
+	</li>
+	<li>The file <code>{module.name}/.classpath</code> is read to determine
+		the source directories and required projects and libraries.
+	</li>
+	<li>Normal Java source files are in <code>src</code> and <code>testsrc</code>
+		directories.
+	</li>
+	<li>Java 5 source files are in <code>java5-src</code> and <code>java5-testsrc</code>
+		directories.
+	</li>
+	<li>Neither <code>testsrc</code> directory is used in production builds.
+	</li>
+	<li>
+		This only requires what's in the 
+		<a href="../lib">../lib</a> directory and the usual Java VM's.
+		That means modules can only depend on each other and the libraries
+		in <a href="../lib">../lib</a>.
+	</li>
+	<li>Modules are built into jar files.  <code>{module.name}.jar</code>
+		includes only the module classes, and <code>{module.name}-all.jar</code>
+		includes the module classes plus any antecendant modules and any
+		required libraries not skipped (see below).  
+	</li>
+	<li>A file <code>{module.name}/{module.name}.mf.txt</code>, if available,
+		will be used as the jar file manifest, after replacing certain
+		variables in the <code>.mf.txt</code> file.
+	</li>
+	<li>All required libraries are included in the production jars, except
+		for testing libraries and those "skipped" in
+		<a href="src/org/aspectj/internal/tools/build/Builder.properties">
+			Builder.properties</a>
+		(Ant, JUnit, etc.).
+	</li>
+	<li>Test classes are excluded from the compile process for production builds.
+		These result in the same jar files; there is no way to 
+		tell externally whether the test classes were stripped from a jar.
+	</li>
+	<li>ONLY resources specified as <code>resource.pattern</code> in
+		<a href="src/org/aspectj/internal/tools/build/Builder.properties">
+			Builder.properties</a>
+		are included with assembled jars.
+	</li>
+	<li>No <code>testing-*</code> module is used in production builds,
+		directly or indirectly.
+	</li>
+	<li>It is an error for any code to depend on any <code>testsrc</code> code,
+		whether in the same or another module.
+	</li>
+	<li>AspectJ projects are built in Ant using
+		<a href="../lib/aspectj">../lib/aspectj</a>.
+	</li>
+	<li>Java 5 code is not supported in AspectJ (yet).
+	</li>
+	<li>Java 5 code is built in Ant only if JAVA_HOME points to Java 5 (or later).
+	</li>
+	<li>No normal code can depend on any Java 5 code.
+		The build system checks by building everything using the 
+		lowest VM supported by the tools.
+	</li>
+</ul>
+<p>That means there are a number of legal Eclipse projects and code
+	arrangements which are not valid AspectJ modules.
+	When you add modules, libraries, or dependencies, you must build
+	with Ant to verify these invariants are not broken.
+</p>
 <h3>Build problems</h3>
 Some build problems and fixes encountered in the past:
 <ul>
+	<li>If the build works in Eclipse, but fails in Ant,
+		do not assume the build scripts are broken.
+		See <a href="#antInvariants">Invariants enforced only in Ant</a>.
+	</li>
   <li>If your compiles fail because Ant cannot find <code>javac</code>,
       put the JDK bin directory on your PATH and/or define
       the JAVA_HOME environment variable.
