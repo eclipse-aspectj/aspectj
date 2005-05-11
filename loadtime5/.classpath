@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src">
+	<classpathentry kind="src" path="java5-src">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="java5-testsrc">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="testsrc">
 		<attributes>
 		</attributes>
 	</classpathentry>
@@ -21,6 +29,14 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/testing-util">
 		<attributes>
 		</attributes>
 	</classpathentry>
