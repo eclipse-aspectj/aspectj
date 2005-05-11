@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<aspectj>
+    <weaver options="-XmessageHolderClass:ataspectj.TestHelper"/>
+    <aspects>
+        <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerSingleton"/>
+        <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerTarget"/>
+        <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerCflow"/>
+        <aspect name="ataspectj.PerClauseTestAspects.TestAspectPTW"/>
+    </aspects>
+</aspectj>
