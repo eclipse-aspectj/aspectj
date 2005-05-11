@@ -10,6 +10,7 @@
 	<classpathentry kind="src" path="/bridge"/>
 	<classpathentry kind="src" path="/ajde"/>
 	<classpathentry kind="src" path="/asm"/>
+	<classpathentry kind="var" path="JAVA_HOME/lib/tools.jar"/>
 	<classpathentry sourcepath="/lib/bcel/bcel-src.zip" kind="lib" path="/lib/bcel/bcel.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
