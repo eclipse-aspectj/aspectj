@@ -1,14 +1,14 @@
 
-The AspectJ tree builds using a variant of Ant 1.5.1.
+The AspectJ tree builds using Ant 1.6.3.  
+(No longer is a special version of Ant required.)
 
-lib/ contains Ant 1.5.1 core and optional taskdef classes,
-as well as xalan.jar which is used for the junitreport task.
+To run tests using the junit task, junit.jar is added to lib/.
 
-To run tests with the junit task, junit.jar must be added
-to the system classpath with optional.jar; the script in
-aspectj/build/bin/ant.[bat|sh] does this.
+This directory contains:
 
-To run junit tests and junitreport (and other optional tasks) requires 
-declaring the taskdef explicitly. See build-modules.xml.  
+o The contents of the binary distribution of Ant 1.6.3,
+  not including the docs directory.
 
-For ant scripts, use build/bin/ant.[bat|sh], which adds junit.jar.
+o ant-src.zip, .java extracted from the source distribution of Ant 1.6.3.
+
+For Ant, see http://ant.apache.org.
