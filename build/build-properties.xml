@@ -15,7 +15,8 @@
 
 <!-- include as common entity for module build scripts -->
 <!-- should only need to edit version properties -->
-
+<project name="build-properties" default="init-properties">
+	
     <target name="init-properties"
            unless="aspectj.modules.build.dir">
 
@@ -29,6 +30,7 @@
         - build.version.eclipse.plugins should be set to "9.9.9" for "DEVELOPMENT", and
         - the same as build.version.long (in major.minor.service form) for releases.
       -->
+      <property name="build.verbose"       value="false"/> 
       <property name="build.version"       value="DEVELOPMENT"/> 
       <property name="build.version.base"  value="1.2"/> 
       <property name="build.version.long"  value="DEVELOPMENT"/> 
@@ -67,6 +69,8 @@
             location="${aj.build.dir}/jars"/>
       <property name="aj.dist.dir" 
             location="${aj.build.dir}/dist"/>
+      <property name="aj.junit.dir" 
+            location="${aj.build.dir}/junit"/>
       <property name="aj.webDeploy.dir" 
             location="${aj.build.dir}/webDeploy"/>
       <property name="aj.plugin.org.aspectj.ajde.dir" 
@@ -92,24 +96,33 @@
             location="${aspectj.modules.build.dir}/products"/>
       <property name="aspectj.modules.tests.dir"
             location="${aspectj.modules.dir}/tests"/>
-      <property name="aspectj.build.jar"
-            location="${aspectj.modules.lib.dir}/build/build.jar"/>
-      <available file="${aspectj.build.jar}"
-             property="aspectj.build.jar.available"
-                value="${aspectj.build.jar}"/>
+		<jar-property name="junit.jar" 
+			location="${aspectj.modules.lib.dir}/junit/junit.jar"/>
     </target>
 
     <target name="init-taskdefs" 
          depends="init-properties"
           unless="init-taskdefs.done" >
-      <fail unless="aspectj.build.jar.available"
-          message="unable to find aspectj.build.jar: ${aspectj.build.jar}"/>
+		<jar-property name="aspectj.build.jar" 
+			location="${aspectj.modules.lib.dir}/build/build.jar"/>
+		<jar-property name="lib.ant.jar" 
+			location="${aspectj.modules.lib.dir}/ant/lib/ant.jar"/>
       <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
               classpath="${aspectj.build.jar}"/>
-      <!-- run directly from classes in bin when debugging.
-      <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
-         classpath="${aspectj.modules.dir}/build/bin"/>
-        -->
+      <property name="aj.taskdef.package"
+		value="org.aspectj.internal.tools.ant.taskdefs"/>
+		<path id="ant.lib.path">
+			<fileset dir="${aspectj.modules.lib.dir}/ant/lib">
+				<include name="**/*.jar"/>
+			</fileset>
+			</path>
+		<taskdef name="junit"             
+			classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"
+			classpathref="ant.lib.path"/>
+		<taskdef name="junitreport"             
+			classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator"
+			classpathref="ant.lib.path"/>
+
       <property name="init-taskdefs.done" value="done"/>
     </target>
 
@@ -186,3 +199,28 @@
             java.home = ${java.home}
 </echo>
     </target>
+
+    <macrodef name="jar-property">
+        <attribute name="name"/>
+        <attribute name="location"/>
+        <sequential>
+		  <property name="@{name}"
+				location="@{location}"/>
+		  <available file="${@{name}}"
+				 property="@{name}.available"
+					value="${@{name}}"/>
+		  <fail unless="@{name}.available"
+			  message="unable to find @{name}: ${@{name}}"/>
+        </sequential>
+	</macrodef>
+
+	<!-- todo convert clients to clean-dir -->
+	<macrodef name="clean-dir">
+		<attribute name="dir"/>
+		<sequential>
+			<mkdir dir="@{dir}"/>
+			<delete dir="@{dir}"/>
+			<mkdir dir="@{dir}"/>
+		</sequential>
+	</macrodef>
+</project>

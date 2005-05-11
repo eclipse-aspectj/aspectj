@@ -2,38 +2,47 @@
 
 <!-- ========================================================================= -->
 <!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),        -->
-<!-- 2003 Contributors                                                         -->
+<!-- 2003-2005 Contributors                                                         -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
 <!-- under the terms of the Common Public License v1.0                         -->
 <!-- which accompanies this distribution and is available at                   -->
 <!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
 <!--                                                                           -->
-<!-- Contributors:                                                             -->
+<!-- Contributors: (See CVS checkin's)                                         -->
 <!--     Xerox/PARC     initial implementation                                 -->
 <!--     Adrian Colyer / George Harley eclipse plugin targets                  -->
 <!-- ========================================================================= -->
 
-<!DOCTYPE project [
-<!ENTITY build-properties SYSTEM "build-properties.xml">
-]>
 <project name="build" default="all" basedir=".">
 
     <target name="all"     depends="aspectj"/> <!-- used to also depend on "eclipse.plugins"/-->
     <target name="rebuild" depends="clean,all"/>
     <target name="clean"   depends="clean-directories"/>
+    <!-- these rely on mapping ant.project.name to module.name -->
+    <target name="compile" depends="build-module"/>
+    <target name="compile-tests" depends="init">
+        <antcall target="any-module-all">
+            <param name="trim.testing.default" value="false"/>
+        </antcall>
+    </target>
+
+    <target name="test" depends="compile-tests">
+        <antcall target="run-module-junit-tests"/>
+    </target>
 
 
     <!-- ===================================================================== -->
     <!-- Init                                                                  -->
     <!-- ===================================================================== -->
     <!-- use this file to force prop values -->
-    <property file="${basedir}/local.properties"/>
+    <property name="modules.dir" location="${basedir}/.."/>
+    <property name="module.name" value="${ant.project.name}"/>
     
-    &build-properties;
+    <import file="${modules.dir}/build/build-properties.xml"/>
 
     <target name="init" depends="init-properties,init-directories">
-      <property name="build.config" value="verbose"/> 
+      <property name="build.config" value=""/> 
       <property name="trim.testing.default" value="true"/>
       <property name="aj.installer.jar" 
             location="${aj.dist.dir}/aspectj-${build.version.short}.jar"/>
@@ -156,7 +165,7 @@
           trimTesting="${trim.testing.default}"
           buildConfig="${build.config}" 
               version="${build.version.long}"
-              verbose="true"
+              verbose="${build.verbose}"
           failonerror="true"/>		
 	</target>
 
@@ -168,10 +177,9 @@
           trimTesting="${trim.testing.default}"
           buildConfig="${build.config}" 
               version="${build.version.long}"
-              verbose="true"
+              verbose="${build.verbose}"
           failonerror="true"/>		
 	</target>
-
 
 	<target name="build-module-all" depends="init,init-taskdefs,init-version">
       <ajbuild module="${module.name}"
@@ -181,11 +189,10 @@
           trimTesting="${trim.testing.default}"
           buildConfig="${build.config}" 
               version="${build.version.long}"
-              verbose="true"
+              verbose="${build.verbose}"
           assembleall="true"
           failonerror="true"/>		
 	</target>
-
 
 	<target name="create-installer" depends="init,init-taskdefs,init-filters"
 	 description="create ${installer.file} from ${staging.dir} using ${htmlSrc.dir} and ${simpleClassName}">
@@ -245,7 +252,36 @@ To use testing client jar in tests,
   mv ../aj-build/jars/testing-client-all.jar ../lib/tests/testing-client.jar
 </echo>
 	</target>
-	
+
+	<target name="run-module-junit-tests" depends="init-taskdefs" 
+		description="run all junit tests for a module">
+		<mkdir dir="${aj.junit.dir}/${module.name}"/>
+		<!-- fork to load classes, include AntRuntime to get taskdef classes junit.jar -->
+		<junit 
+		    fork="true"
+		    dir="../${module.name}"
+		    printsummary="yes" 
+          	haltonfailure="${haltOnTestFailure}">
+			<classpath>
+              	<pathelement location="${aj.build.dir}/jars/${module.name}-all.jar"/>
+				<!-- libraries clipped from -all jars (though junit in parent) -->
+            	<pathelement location="${aspectjrt.path}"/>
+            	<pathelement location="${junit.jar}"/>
+           </classpath>
+
+		<!-- aspectjrt.path used by ajde tests -->
+		<sysproperty key="aspectjrt.path" value="${aspectjrt.path}"/>
+
+        <formatter type="xml"/>
+        <batchtest 
+		    todir="${aj.junit.dir}/${module.name}">
+            <fileset dir="${modules.dir}/${module.name}/testsrc">
+              <include name="*ModuleTests.java" />
+            </fileset>
+        </batchtest>        
+      </junit>        
+    </target>
+    
 	<!-- remove as unused - see release/build.xml test-sources -->
 	<target name="ajcTests" depends="init,build-testing-drivers">
       <java fork="true" jar="${aj.jar.dir}/testing-drivers-all.jar"
@@ -289,7 +325,7 @@ To use testing client jar in tests,
 	   <ant dir="${aspectj.modules.dir}/docs"
 	    antfile="build.xml"
 	    target="local-dist"
-	    inheritAll="false"/> <!-- true? -->
+	    inheritAll="false"/>
 	</target>
 	
 	<target name="aspectjrt" depends="init"
