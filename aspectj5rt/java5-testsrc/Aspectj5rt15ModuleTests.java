@@ -11,18 +11,22 @@
  * ******************************************************************/
 
 // default package
-import org.aspectj.testing.util.TestUtil;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class Aspectj5rtModuleTests extends TestCase {
+import org.aspectj.internal.lang.reflect.AjTypeTests;
+import org.aspectj.internal.lang.reflect.AjTypeTestsWithAspects;
 
-    public static Test suite() {
+public class Aspectj5rt15ModuleTests extends TestCase {
+
+    public static Test suite() { 
         TestSuite suite = new TestSuite("Aspectj5rt module tests");
-        TestUtil.loadTestsReflectively(suite, "Aspectj5rt15ModuleTests", true);
+		suite.addTestSuite(AjTypeTests.class);
+		suite.addTestSuite(AjTypeTestsWithAspects.class);
         return suite;
     }
 
-}
+
+}  

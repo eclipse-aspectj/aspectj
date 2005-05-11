@@ -14,7 +14,6 @@ package org.aspectj.internal.lang.reflect;
 import java.lang.reflect.Method;
 
 import org.aspectj.lang.annotation.AdviceName;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.Advice;
 import org.aspectj.lang.reflect.AdviceType;
 
