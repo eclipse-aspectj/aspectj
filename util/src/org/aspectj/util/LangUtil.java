@@ -86,6 +86,24 @@ public class LangUtil {
             return false;
         }        
     }
+	
+	private static boolean is13VMOrGreater = true;
+	private static boolean is14VMOrGreater = true;
+	private static boolean is15VMOrGreater = false;
+	
+	static {
+		String vm = System.getProperty("java.runtime.version");
+		if (vm==null) vm = System.getProperty("java.vm.version");
+		if (vm.startsWith("1.3")) {
+			is14VMOrGreater = false;
+		} else if (vm.startsWith("1.5")) {
+			is15VMOrGreater = true;
+		}
+	}
+	
+	public static boolean is13VMOrGreater() { return is13VMOrGreater;}
+	public static boolean is14VMOrGreater() { return is14VMOrGreater;}
+	public static boolean is15VMOrGreater() { return is15VMOrGreater;}
     
     /**
      * Shorthand for "if null, throw IllegalArgumentException"

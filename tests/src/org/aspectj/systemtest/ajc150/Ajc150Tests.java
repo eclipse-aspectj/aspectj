@@ -23,6 +23,7 @@ import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.util.LangUtil;
 
 /**
  * These are tests that will run on Java 1.4 and use the old harness format for test specification.
@@ -115,7 +116,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testBadASMforEnums() throws IOException {
   	runTest("bad asm for enums");
   	
-  	if (System.getProperty("java.vm.version").startsWith("1.5")) {
+  	if (LangUtil.is15VMOrGreater()) {
 	  	ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	  	PrintWriter pw = new PrintWriter(baos);
 	  	AsmManager.dumptree(pw,AsmManager.getDefault().getHierarchy().getRoot(),0);

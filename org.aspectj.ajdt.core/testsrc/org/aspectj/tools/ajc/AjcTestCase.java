@@ -52,18 +52,6 @@ public class AjcTestCase extends TestCase {
 
 	private RunResult lastRunResult;
 	
-	protected static boolean is13VMOrGreater = true;
-	protected static boolean is14VMOrGreater = true;
-	protected static boolean is15VMOrGreater = false;
-	
-	static {
-		String vm = System.getProperty("java.vm.version");
-		if (vm.startsWith("1.3")) {
-			is14VMOrGreater = false;
-		} else if (vm.startsWith("1.5")) {
-			is15VMOrGreater = true;
-		}
-	}
 	
 	/**
 	 * The Ajc (compiler) instance used for thet test. Created afresh

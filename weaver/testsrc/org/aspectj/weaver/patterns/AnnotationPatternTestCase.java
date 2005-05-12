@@ -10,6 +10,7 @@
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.bridge.AbortException;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.BcweaverTests;
@@ -20,18 +21,7 @@ import junit.framework.TestCase;
 
 public class AnnotationPatternTestCase extends TestCase {
 	
-	private static boolean is13VMOrGreater = true;
-	private static boolean is14VMOrGreater = true;
-	private static boolean is15VMOrGreater = false;
-	
-	static {
-		String vm = System.getProperty("java.vm.version");
-		if (vm.startsWith("1.3")) {
-			is14VMOrGreater = false;
-		} else if (vm.startsWith("1.5")) {
-			is15VMOrGreater = true;
-		}
-	}
+
 	
 	public void testParseSimpleAnnotationPattern() {
 		PatternParser p = new PatternParser("@Foo");
@@ -254,7 +244,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 	
 	public void testExactAnnotationPatternMatching() {
-		if (is15VMOrGreater) {
+		if (LangUtil.is15VMOrGreater()) {
 		PatternParser p = new PatternParser("@Foo");
 		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
@@ -266,7 +256,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 	
 	public void testBindingAnnotationPatternMatching() {
-		if (is15VMOrGreater) {
+		if (LangUtil.is15VMOrGreater()) {
 		PatternParser p = new PatternParser("foo");
 		AnnotationTypePattern ap = p.parseAnnotationNameOrVarTypePattern();
 		try {
@@ -283,7 +273,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 	
 	public void testAndAnnotationPatternMatching() {
-		if (is15VMOrGreater) {
+		if (LangUtil.is15VMOrGreater()) {
 		PatternParser p = new PatternParser("@Foo @Boo");
 		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);
@@ -313,7 +303,7 @@ public class AnnotationPatternTestCase extends TestCase {
 //	}
 //	
 	public void testNotAnnotationPatternMatching() {
-		if (is15VMOrGreater) {
+		if (LangUtil.is15VMOrGreater()) {
 		PatternParser p = new PatternParser("!@Foo");
 		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);

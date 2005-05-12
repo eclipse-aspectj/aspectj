@@ -20,6 +20,7 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -61,19 +62,6 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	private BcelWorld world;
 	private AnnotationTypePattern fooTP,simpleAnnotationTP;
 	
-	private static boolean is13VMOrGreater = true;
-	private static boolean is14VMOrGreater = true;
-	private static boolean is15VMOrGreater = false;
-	
-	static {
-		String vm = System.getProperty("java.vm.version");
-		if (vm.startsWith("1.3")) {
-			is14VMOrGreater = false;
-		} else if (vm.startsWith("1.5")) {
-			is15VMOrGreater = true;
-		}
-	}
-	
 	private ResolvedTypeX loadType(String name) {
 		if (world == null) {
 		  world = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/testcode.jar");
@@ -93,7 +81,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	
 	
 	public void testAnnotationPatternMatchingOnTypes() {
-		if (is15VMOrGreater) {
+		if (LangUtil.is15VMOrGreater()) {
 		ResolvedTypeX rtx = loadType("AnnotatedClass");
         initAnnotationTypePatterns();		
 		
@@ -170,7 +158,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testAnnotationPatternMatchingOnMethods() {
-		if (is15VMOrGreater) {
+		if (LangUtil.is15VMOrGreater()) {
 		ResolvedTypeX rtx = loadType("AnnotatedClass");
 		ResolvedMember aMethod = rtx.getDeclaredMethods()[1];
         
@@ -188,7 +176,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testAnnotationPatternMatchingOnFields() {
-		if (is15VMOrGreater) {
+		if (LangUtil.is15VMOrGreater()) {
 		ResolvedTypeX rtx = loadType("AnnotatedClass");
 		ResolvedMember aField = rtx.getDeclaredFields()[0];
 
