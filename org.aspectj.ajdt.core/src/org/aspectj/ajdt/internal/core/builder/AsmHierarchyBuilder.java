@@ -578,12 +578,13 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	/**
 	 * Doesn't print qualified allocation expressions.
 	 */
-	protected String genSourceSignature(FieldDeclaration fieldDeclaration) {
+	protected String genSourceSignature(FieldDeclaration fieldDeclaration) {	
 		StringBuffer output = new StringBuffer();
-		FieldDeclaration.printModifiers(fieldDeclaration.modifiers, output);
 		if (fieldDeclaration.type == null) { // This is an enum value
-			output.append(fieldDeclaration.binding.type.debugName()).append(" ").append(fieldDeclaration.name);
+			output.append(fieldDeclaration.name); // ajh02: the "," or ";" has to be put on by whatever uses the sourceSignature
+			return output.toString();
 		} else {
+			FieldDeclaration.printModifiers(fieldDeclaration.modifiers, output);
 			fieldDeclaration.type.print(0, output).append(' ').append(fieldDeclaration.name);
 		}
 		

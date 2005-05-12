@@ -252,7 +252,7 @@ public class Declaration implements Serializable {
 
 
     public boolean isType() {
-        return getKind().equals("interface") || getKind().equals("class") || getKind().equals("aspect");
+		return getKind().equals("interface") || getKind().equals("class") || getKind().equals("aspect") || getKind().equals("enum");
     }
 
     public boolean hasBody() {

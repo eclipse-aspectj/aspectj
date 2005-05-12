@@ -111,7 +111,15 @@ class StubFileGenerator {
 		    	String signature = ""; 
 		    	if (!member.getKind().equals(IProgramElement.Kind.POINTCUT)
 		    	    && !member.getKind().equals(IProgramElement.Kind.ADVICE)) {
-		    		signature = member.getSourceSignature();//StructureUtil.genSignature(member);
+					signature = member.getSourceSignature();//StructureUtil.genSignature(member);
+					if (member.getKind().equals(IProgramElement.Kind.ENUM_VALUE)){
+						if (((IProgramElement)members.get(members.indexOf(member)+1)).getKind().equals(IProgramElement.Kind.ENUM_VALUE)){
+							// if the next member is also an ENUM_VALUE:
+							signature = signature + ",";
+						} else {
+							signature = signature + ";";
+						}
+					}
                 } 
 		    	
 		    	if (member.getKind().isDeclare()) {
