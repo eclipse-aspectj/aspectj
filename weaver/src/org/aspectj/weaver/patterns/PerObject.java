@@ -104,9 +104,12 @@ public class PerObject extends PerClause {
 		//concreteEntry.state = Pointcut.CONCRETE;
 		inAspect.crosscuttingMembers.addConcreteShadowMunger(
 				Advice.makePerObjectEntry(world, concreteEntry, isThis, inAspect));
+
+        // FIXME AV - don't use lateMunger here due to test "inheritance, around advice and abstract pointcuts"
+        // see #75442 thread. Issue with weaving order.
 		ResolvedTypeMunger munger =
 			new PerObjectInterfaceTypeMunger(inAspect, concreteEntry);
-		inAspect.crosscuttingMembers.addLateTypeMunger(world.concreteTypeMunger(munger, inAspect));
+		inAspect.crosscuttingMembers.addTypeMunger(world.concreteTypeMunger(munger, inAspect));
 
         //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
         if (inAspect.isAnnotationStyleAspect()) {
