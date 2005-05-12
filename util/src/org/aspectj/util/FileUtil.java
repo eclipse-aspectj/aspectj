@@ -879,7 +879,11 @@ public class FileUtil {
 		LangUtil.throwIaxIfNull(file, "file");
         URL result = null;
         try {
-           String url =  "file:" + file.getAbsolutePath().replace('\\', '/');
+            result = file.toURI().toURL();
+            if (null != result) {
+                return result;
+            }
+            String url =  "file:" + file.getAbsolutePath().replace('\\', '/');
             result = new URL(url + (file.isDirectory() ? "/" : ""));
         } catch (MalformedURLException e) {
             String m = "Util.makeURL(\"" + file.getPath() + "\" MUE " + e.getMessage();
@@ -1349,6 +1353,7 @@ public class FileUtil {
             try {
                 final int MAX = 4096;
                 byte[] buf = new byte[MAX];
+                // TODO this blocks, hanging the harness
                 int count = in.read(buf, 0, MAX);
                 ByteArrayOutputStream mySnoop;
                 while ((halt && finishStream && (0 < count))
