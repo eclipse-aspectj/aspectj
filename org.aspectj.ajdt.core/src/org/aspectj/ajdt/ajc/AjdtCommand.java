@@ -87,7 +87,10 @@ public class AjdtCommand implements ICommand {
      */
     protected boolean doCommand(IMessageHandler handler, boolean repeat) {
         try {
-			//buildManager.setMessageHandler(handler);
+            if (handler instanceof IMessageHolder) {
+                Dump.saveMessageHolder((IMessageHolder) handler);
+            }
+			// buildManager.setMessageHandler(handler);
             CountingMessageHandler counter = new CountingMessageHandler(handler);
             if (counter.hasErrors()) {
                 return false;
