@@ -1,18 +1,23 @@
-public aspect NotRuntimeRetention {
-    
-    pointcut doSomethingExecution() : execution(* doSomething());
-    pointcut doSomethingCall() : call(* doSomething());
-    
-    // CE L7
-    before() : doSomethingExecution() && @this(MyClassRetentionAnnotation) {
-    	// should be compile-time error!
-        System.out.println("How did I get here?");
-    }
-    
-    // CE L13
-    after() returning : doSomethingCall() && @target(MyClassRetentionAnnotation) {
-    	// should be compile-time error!
-        System.out.println("How did I get here?");
-    }
-    
+//"must have runtime retention"
+
+import java.lang.annotation.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyRuntimeAnnotation {}
+
+@Retention(RetentionPolicy.SOURCE)
+@interface MySourceAnnotation {}
+
+@Retention(RetentionPolicy.CLASS)
+@interface MyClassAnnotation {}
+
+@interface MyAnnotation {}
+
+aspect X {
+ @MyRuntimeAnnotation @MySourceAnnotation @MyClassAnnotation @MyAnnotation
+ void a(){}
+ before(MyRuntimeAnnotation a): execution(* *(..)) && @annotation(a) {} // no error
+ before(MySourceAnnotation a): execution(* *(..)) && @annotation(a) {} // error expected
+ before(MyClassAnnotation a): execution(* *(..)) && @annotation(a) {} // error expected
+ before(MyAnnotation a): execution(* *(..)) && @annotation(a) {} // error expected
 }

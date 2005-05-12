@@ -280,7 +280,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	    if (!isAnnotation()) {
 	        return false;
 	    } else {
-	    	return (binding.getAnnotationTagBits() & TagBits.AnnotationRuntimeRetention)!=0;        
+		   return (binding.getAnnotationTagBits() & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention;        
 	    }
 	}
 	

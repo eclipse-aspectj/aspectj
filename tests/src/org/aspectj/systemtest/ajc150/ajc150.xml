@@ -391,9 +391,10 @@
     </ajc-test>   
     
     <ajc-test dir="java5/annotations/thisOrtarget" vm="1.5" title="must have runtime retention">
-        <compile options="-1.5" files="TestingAnnotations.java,NotRuntimeRetention.aj">
-               <message kind="error" line="7" text="Annotation type MyClassRetentionAnnotation does not have runtime retention"/>
-               <message kind="error" line="13" text="Annotation type MyClassRetentionAnnotation does not have runtime retention"/>
+        <compile options="-1.5" files="NotRuntimeRetention.aj">
+         <message kind="error" line="20" text="Annotation type MySourceAnnotation does not have runtime retention"/>
+            <message kind="error" line="21" text="Annotation type MyClassAnnotation does not have runtime retention"/>
+            <message kind="error" line="22" text="Annotation type MyAnnotation does not have runtime retention"/>
         </compile>
     </ajc-test>
      
