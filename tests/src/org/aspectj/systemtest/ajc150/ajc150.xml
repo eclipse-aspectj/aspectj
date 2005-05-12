@@ -2191,4 +2191,8 @@
    <ajc-test dir="bugs150" title="enum called Enum, annotation called Annotation, etc">
      <compile files="PR90827.aj" options="-1.5"/>
    </ajc-test>
+   
+   <ajc-test dir="bugs150" title="Internal compiler error">
+     <compile files="PR86832.aj" options="-1.5"/>
+   </ajc-test>
 </suite>

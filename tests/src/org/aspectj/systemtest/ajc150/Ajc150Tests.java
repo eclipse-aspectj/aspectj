@@ -161,6 +161,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("enum called Enum, annotation called Annotation, etc");
   }
   
+  public void testInternalCompilerError_pr86832() {
+	  runTest("Internal compiler error");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
