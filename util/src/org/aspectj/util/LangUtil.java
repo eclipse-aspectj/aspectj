@@ -1271,6 +1271,9 @@ public class LangUtil {
                 errStream.setSnoop(errSnoop);
             }
             outStream = new FileUtil.Pipe(process.getInputStream(), System.out);
+            if (null != outSnoop) {
+                outStream.setSnoop(outSnoop);
+            }
             inStream = new FileUtil.Pipe(System.in, process.getOutputStream());
             // start 4 threads, process & pipes for in, err, out
             Runnable processRunner = new Runnable() {
