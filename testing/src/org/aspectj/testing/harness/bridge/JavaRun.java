@@ -12,6 +12,7 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.Tester;
@@ -23,6 +24,7 @@ import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.WeavingURLClassLoader;
 
 import java.io.*;
 import java.lang.reflect.*;
@@ -78,7 +80,8 @@ public class JavaRun implements IAjcRun {
      * @see org.aspectj.testing.harness.bridge.AjcTest.IAjcRun#setup(File, File)
 	 */
 	public boolean setupAjcRun(Sandbox sandbox, Validator validator) {
-		this.sandbox = sandbox;        
+		this.sandbox = sandbox;
+        sandbox.javaRunInit(this);
 		return (validator.nullcheck(spec.className, "class name")
             && validator.nullcheck(sandbox, "sandbox")
             && validator.canReadDir(sandbox.getTestBaseSrcDir(this), "testBaseSrc dir")
@@ -98,6 +101,7 @@ public class JavaRun implements IAjcRun {
                 ClassNotFoundException,
                 NoSuchMethodException {
         boolean completedNormally = false;
+        boolean passed = false;
         if (!LangUtil.isEmpty(spec.dirChanges)) {
             MessageUtil.info(status, "XXX dirChanges not implemented in JavaRun");
         }
@@ -106,31 +110,70 @@ public class JavaRun implements IAjcRun {
             File[] libs = sandbox.getClasspathJars(readable, this);
             boolean includeClassesDir = true;
             File[] dirs = sandbox.getClasspathDirectories(readable, this, includeClassesDir);
-            completedNormally = (spec.forkSpec.fork || !LangUtil.isEmpty(spec.aspectpath))
+            completedNormally = (spec.forkSpec.fork)
                 ? runInOtherVM(status, libs, dirs)
                 : runInSameVM(status, libs, dirs);
+            passed = completedNormally;
         } finally {
-            if (!completedNormally  || !status.runResult()) {
+            if (!passed  || !status.runResult()) {
                 MessageUtil.info(status, spec.toLongString());
                 MessageUtil.info(status, "sandbox: " + sandbox);
             }
         }
-        return completedNormally;
+        return passed;
     }
     protected boolean runInSameVM(IRunStatus status, File[] libs, File[] dirs) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         ClassLoader loader = null;
-        URL[] urls = FileUtil.getFileURLs(libs);
         boolean completedNormally = false;
+        boolean passed = false;
+        ByteArrayOutputStream outSnoop = null;
+        PrintStream oldOut = null;
+        ByteArrayOutputStream errSnoop = null;
+        PrintStream oldErr = null;
         if (spec.outStreamIsError) {
-            // XXX implement same-vm stream snooping
-            // strictly speaking, also warn for errStream, but 
-            // it is on by default (in same-VM, Tester controls;
-            // in other-vm stream-snooping controls)
-            MessageUtil.info(status, "unimplemented: stream-based error implemented in same vm");
+            outSnoop = new ByteArrayOutputStream();
+            oldOut = System.out;
+            System.setOut(new PrintStream(outSnoop, true));
+        }
+        if (spec.errStreamIsError) {
+            errSnoop = new ByteArrayOutputStream();
+            oldErr = System.err;
+            System.setErr(new PrintStream(errSnoop, true));
         }
         Class targetClass = null;
         try {
-            loader = new TestClassLoader(urls, dirs);
+            final URL[] clAndLibs;
+            {
+                File[] files = sandbox.findFiles(spec.classpath);
+                URL[] clURLs = FileUtil.getFileURLs(files);
+                URL[] libURLs = FileUtil.getFileURLs(libs);
+                clAndLibs = new URL[clURLs.length + libURLs.length];
+                System.arraycopy(clURLs, 0, clAndLibs , 0, clURLs.length);
+                System.arraycopy(libURLs, 0, clAndLibs, clURLs.length, libURLs.length);
+            }
+            if (!spec.isLTW()) {
+                loader = new TestClassLoader(clAndLibs, dirs);                
+            } else {
+                final URL[] aspectURLs;
+                {
+                    File[] files = sandbox.findFiles(spec.aspectpath);
+                    aspectURLs = FileUtil.getFileURLs(files);
+                }
+                ArrayList classpath = new ArrayList();
+                classpath.addAll(Arrays.asList(aspectURLs));
+                final URL[] classURLs;
+                {
+                    classpath.addAll(Arrays.asList(clAndLibs));
+                    URL[] urls = FileUtil.getFileURLs(dirs);
+                    classpath.addAll(Arrays.asList(urls));
+                    classpath.add(FileUtil.getFileURL(Globals.F_aspectjrt_jar));
+                    classpath.add(FileUtil.getFileURL(Globals.F_testingclient_jar));
+                    classURLs = (URL[]) classpath.toArray(new URL[0]);
+                }
+                
+                ClassLoader parent = JavaRun.class.getClassLoader();
+                loader = new WeavingURLClassLoader(classURLs, aspectURLs, parent);
+            }
             // make the following load test optional
             // Class testAspect = loader.loadClass("org.aspectj.lang.JoinPoint");
             targetClass = loader.loadClass(spec.className);
@@ -139,6 +182,16 @@ public class JavaRun implements IAjcRun {
             RunSecurityManager.ME.setJavaRunThread(this);
             main.invoke(null, new Object[] { spec.getOptionsArray() });
             completedNormally = true;
+            boolean snoopFailure =
+                ((null != errSnoop) && 0 < errSnoop.size())
+                || ((null != outSnoop) && 0 < outSnoop.size());
+            passed = !snoopFailure && (null == spec.expectedException);
+        } catch (AbortException e) {
+            if (expectedException(e)) {
+                passed = true;
+            } else {
+                throw e;
+            }
         } catch (InvocationTargetException e) {
             // this and following clauses catch ExitCalledException
             Throwable thrown = LangUtil.unwrapException(e);
@@ -152,6 +205,8 @@ public class JavaRun implements IAjcRun {
                 MessageUtil.fail(status, "test code should not use the AWT event queue");
                 throw (RunSecurityManager.AwtUsedException) thrown;
                 // same as: status.thrown(thrown);
+            } else if (expectedException(thrown)) {
+                passed = true;
             } else if (thrown instanceof RuntimeException) {
                 throw (RuntimeException) thrown;
             } else if (thrown instanceof Error) {
@@ -167,13 +222,19 @@ public class JavaRun implements IAjcRun {
             MessageUtil.info(status, "sandbox.classes: " + Arrays.asList(classes));
             MessageUtil.fail(status, null, e);
         } finally {
+            if (null != oldOut) {
+                System.setOut(oldOut);
+            }
+            if (null != oldErr) {
+                System.setErr(oldErr);
+            }
             RunSecurityManager.ME.releaseJavaRunThread(this);
             if (!completedNormally) {
                 MessageUtil.info(status, "targetClass: " + targetClass);
                 MessageUtil.info(status, "loader: " + loader);
             }
         }
-        return completedNormally;
+        return passed;
     }
     
     /**
@@ -198,9 +259,19 @@ public class JavaRun implements IAjcRun {
             appendClasspath(cp, spec.forkSpec.bootclasspath);
             appendClasspath(cp, dirs);        
             appendClasspath(cp, libs);
+            File[] classpathFiles = sandbox.findFiles(spec.classpath);
+            int cpLength = (null == classpathFiles ? 0 : classpathFiles.length);
+            int spLength = (null == spec.classpath ? 0 : spec.classpath.length);
+            if (cpLength != spLength) {
+                throw new Error("unable to find " + Arrays.asList(spec.classpath)
+                        + " got " + Arrays.asList(classpathFiles));
+            }
+            appendClasspath(cp, classpathFiles);
+            File[] stdlibs = {Globals.F_aspectjrt_jar, Globals.F_testingclient_jar};
+            appendClasspath(cp, stdlibs);
             classpath = cp.toString();
         }
-        if (LangUtil.isEmpty(spec.aspectpath)) {
+        if (!spec.isLTW()) {
             cmd.add("-classpath");
             cmd.add(classpath);
         } else {
@@ -209,11 +280,12 @@ public class JavaRun implements IAjcRun {
                 throw new Error("load-time weaving test requires Java 1.4+");
             }
             cmd.add("-Djava.system.class.loader=org.aspectj.weaver.WeavingURLClassLoader");
+            // assume harness VM classpath has WeavingURLClassLoader (but not others)
             cmd.add("-classpath");
             cmd.add(System.getProperty("java.class.path"));
 
             File[] aspectJars = sandbox.findFiles(spec.aspectpath);
-            if (LangUtil.isEmpty(aspectJars)) {
+            if (aspectJars.length != spec.aspectpath.length) {
                 throw new Error("unable to find " + Arrays.asList(spec.aspectpath));
             }
             StringBuffer cp = new StringBuffer();
@@ -231,6 +303,7 @@ public class JavaRun implements IAjcRun {
         class DoneFlag {
             boolean done;
             boolean failed;
+            int code;
         }
         final StringBuffer commandLabel = new StringBuffer();
         final DoneFlag doneFlag = new DoneFlag();
@@ -247,13 +320,13 @@ public class JavaRun implements IAjcRun {
                         + commandLabel 
                         + "\"";
                     if (null != ex.fromProcess) {
-                        String m = "Exception running " + context;
-                        MessageUtil.abort(handler, m, ex.fromProcess);
-                        doneFlag.failed = true;
+                        if (!expectedException(ex.fromProcess)) {
+                            String m = "Exception running " + context;
+                            MessageUtil.abort(handler, m, ex.fromProcess);
+                            doneFlag.failed = true;
+                        }
                     } else if (0 != result) {
-                        String m = result + " result code from running " + context;
-                        MessageUtil.fail(handler, m);
-                        doneFlag.failed = true;
+                        doneFlag.code = result;
                     }
                     if (null != ex.fromInPipe) {
                         String m = "Error processing input pipe for " + context;
@@ -306,8 +379,12 @@ public class JavaRun implements IAjcRun {
                 // ignore
             }
         }
+
+        boolean foundException = false;
         if (0 < errSnoop.size()) {
-            if (spec.errStreamIsError) {
+            if (expectedException(errSnoop)) {
+                foundException = true;
+            } else if (spec.errStreamIsError) {
                 MessageUtil.error(handler, errSnoop.toString());
                 if (!doneFlag.failed) {
                     doneFlag.failed = true;
@@ -317,7 +394,9 @@ public class JavaRun implements IAjcRun {
             }
         }
         if (0 < outSnoop.size()) {
-            if (spec.outStreamIsError) {
+            if (expectedException(outSnoop)) {
+                foundException = true;
+            } else if (spec.outStreamIsError) {
                 MessageUtil.error(handler, outSnoop.toString());
                 if (!doneFlag.failed) {
                     doneFlag.failed = true;
@@ -326,10 +405,36 @@ public class JavaRun implements IAjcRun {
                 MessageUtil.info(handler, "Output stream: " + outSnoop.toString());
             }
         }
+        if (!foundException) {
+            if (null != spec.expectedException) {
+                String m = " expected exception " + spec.expectedException;
+                MessageUtil.fail(handler, m);                
+                doneFlag.failed = true;
+            } else if (0 != doneFlag.code) {
+                String m = doneFlag.code + " result from " + commandLabel;
+                MessageUtil.fail(handler, m);
+                doneFlag.failed = true;
+            }
+        }
         if (doneFlag.failed) {
             MessageUtil.info(handler, "other-vm command-line: " + commandLabel);
         }
         return !doneFlag.failed;
+    }
+
+    protected boolean expectedException(Throwable thrown) {
+        if (null != spec.expectedException) {
+            String cname = thrown.getClass().getName();
+            if (-1 != cname.indexOf(spec.expectedException)) {
+                return true; // caller sets value for returns normally
+            }
+        }
+        return false;
+    }
+    
+    protected boolean expectedException(ByteArrayOutputStream bout) {
+        return ((null != spec.expectedException)
+                && (-1 != bout.toString().indexOf(spec.expectedException)));
     }
     
     /**
@@ -518,6 +623,9 @@ public class JavaRun implements IAjcRun {
         
         protected final ForkSpec forkSpec;
         protected String[] aspectpath;
+        protected boolean useLTW;
+        protected String[] classpath;
+        protected String expectedException;
         
         public Spec() {
             super(XMLNAME);
@@ -542,6 +650,10 @@ public class JavaRun implements IAjcRun {
             return result;    
         }
 
+        public boolean isLTW() {
+            return useLTW || (null != aspectpath);
+        }
+        
         /**
          * @param version "1.1", "1.2", "1.3", "1.4"
          * @throws IllegalArgumentException if version is not recognized
@@ -556,15 +668,26 @@ public class JavaRun implements IAjcRun {
             this.className = className;
         }
         
+        public void setLTW(String ltw) {
+            useLTW = Boolean.parseBoolean(ltw);
+        }
+        
         public void setAspectpath(String path) {
             this.aspectpath = XMLWriter.unflattenList(path);
         }
-        public void setErrStreamIsError(boolean errStreamIsError) {
-            this.errStreamIsError = errStreamIsError;
+        public void setException(String exception) {
+            this.expectedException = exception;
+        }
+        
+        public void setClasspath(String path) {
+            this.classpath = XMLWriter.unflattenList(path);
+        }
+        public void setErrStreamIsError(String errStreamIsError) {
+            this.errStreamIsError = Boolean.parseBoolean(errStreamIsError);
         }
 
-        public void setOutStreamIsError(boolean outStreamIsError) {
-            this.outStreamIsError = outStreamIsError;
+        public void setOutStreamIsError(String outStreamIsError) {
+            this.outStreamIsError = Boolean.parseBoolean(outStreamIsError);
         }
 
         /** @param skip if true, then do not set up Tester */

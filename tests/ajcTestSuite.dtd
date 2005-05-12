@@ -4,8 +4,8 @@
 
    <!ELEMENT suite (ajc-test*)>
    <!ATTLIST suite suiteDir CDATA #IMPLIED >
-
-   <!ELEMENT ajc-test (compile, (compile | inc-compile | run)*)>
+	<!-- permits leading inc-compile, will fail -->
+   <!ELEMENT ajc-test ((compile | inc-compile | run)*)>
    <!ATTLIST ajc-test title CDATA #REQUIRED >
    <!ATTLIST ajc-test dir CDATA #REQUIRED >
    <!ATTLIST ajc-test pr CDATA #IMPLIED >
@@ -42,6 +42,9 @@
    <!ATTLIST run fork CDATA #IMPLIED >
    <!ATTLIST run vmargs CDATA #IMPLIED >
    <!ATTLIST run aspectpath CDATA #IMPLIED >
+   <!ATTLIST run classpath CDATA #IMPLIED >
+   <!ATTLIST run LTW CDATA #IMPLIED >
+   <!ATTLIST run exception CDATA #IMPLIED >
 
    <!ELEMENT message (source*)>
    <!ATTLIST message kind (abort | fail | error | warning | info | Xlint) #REQUIRED >

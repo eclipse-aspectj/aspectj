@@ -128,6 +128,8 @@ public class Sandbox {
     /** cache results of rendering final fields */
     private transient String toStringLeader;
     
+    private transient boolean compilerRunInit;
+    
     /** @throws IllegalArgumentException unless validator validates
      *           testBaseDir as readable
      */
@@ -353,8 +355,47 @@ public class Sandbox {
         return testBaseSrcDir;
     }
     
+    void defaultTestBaseSrcDir(JavaRun caller) {
+        LangUtil.throwIaxIfNull(caller, "caller");
+        if (null != testBaseSrcDir) {
+            throw new IllegalStateException("testBaseSrcDir not null");
+        }
+        testBaseSrcDir = testBaseDir;
+    }
+    
+    static boolean readableDir(File dir) {
+        return ((null != dir) && dir.isDirectory() && dir.canRead());
+    }
+
+    void compilerRunInit(CompilerRun caller, File testBaseSrcDir,
+            File[] aspectPath, boolean aspectpathReadable,
+            File[] classPath, boolean classpathReadable,
+            String bootclassPath
+            ) {
+        if (null != testBaseSrcDir) {
+            setTestBaseSrcDir(testBaseSrcDir, caller);
+        }
+        if ((null != aspectPath) && (0 < aspectPath.length)) {
+            setAspectpath(aspectPath, aspectpathReadable, caller);
+        }
+        if ((null != classPath) && (0 < classPath.length)) {
+            setClasspath(classPath, classpathReadable, caller);
+        }
+        
+        setBootclasspath(bootclassPath, caller);
+        compilerRunInit = true;
+    }
+    void javaRunInit(JavaRun caller) {
+        if (!compilerRunInit) {
+            testBaseSrcDir = testBaseDir;
+            // default to aspectjrt.jar?
+            compileClasspath = new File[0]; 
+            
+        }
+    }
+
     /** @throws IllegalArgumentException unless a readable directory */
-    void setTestBaseSrcDir(File dir, CompilerRun caller) {
+    private void setTestBaseSrcDir(File dir, CompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         if ((null == dir) || !dir.isDirectory() || !dir.canRead()) {
             throw new IllegalArgumentException("bad test base src dir: " + dir);
@@ -366,7 +407,7 @@ public class Sandbox {
      * Set aspectpath.
      * @param readable if true, then throw IllegalArgumentException if not readable 
      */
-    void setAspectpath(File[] files, boolean readable, CompilerRun caller) {
+    private void setAspectpath(File[] files, boolean readable, CompilerRun caller) {
         LangUtil.throwIaxIfNull(files, "files");
         LangUtil.throwIaxIfNull(caller, "caller");
         assertState(null == aspectpath, "aspectpath already written");
@@ -386,7 +427,7 @@ public class Sandbox {
      * @param bootClasspath
      * @param caller
      */
-    void setBootclasspath(String bootClasspath, CompilerRun caller) {
+    private void setBootclasspath(String bootClasspath, CompilerRun caller) {
         this.bootClasspath = bootClasspath;
     }
     
@@ -394,7 +435,7 @@ public class Sandbox {
      * Set compile classpath.
      * @param readable if true, then throw IllegalArgumentException if not readable 
      */
-    void setClasspath(File[] files, boolean readable, CompilerRun caller) {
+    private void setClasspath(File[] files, boolean readable, CompilerRun caller) {
         LangUtil.throwIaxIfNull(files, "files");
         LangUtil.throwIaxIfNull(caller, "caller");
         assertState(!gotClasspath, "classpath already read");
@@ -520,7 +561,7 @@ public class Sandbox {
         public boolean accept(File file) {
             if (null != file) {
                 String name = file.getName();
-                if (null != name) {
+                if ((null != name) && (null != names)) {
                     for (int i = 0; i < names.length; i++) {
                         if (name.equals(names[i])) {
                             return true;

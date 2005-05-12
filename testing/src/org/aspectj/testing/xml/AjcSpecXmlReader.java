@@ -360,8 +360,14 @@ public class AjcSpecXmlReader {
         jrunspec.addMessage((IMessage) null);
         // input s.b. interpretable by Boolean.valueOf(String)
         jrunspec.setSkipTester(true); 
-        jrunspec.setErrStreamIsError(true);
-        jrunspec.setOutStreamIsError(true);
+        jrunspec.setErrStreamIsError("false");
+        jrunspec.setOutStreamIsError("false");
+        jrunspec.setAspectpath("");
+        jrunspec.setClasspath("");
+        jrunspec.setFork(false);
+        jrunspec.setLTW("false");
+        jrunspec.setException("Error");
+        
         
         DirChanges.Spec dcspec = new DirChanges.Spec();
         dcspec.setAdded((String) null);

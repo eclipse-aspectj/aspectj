@@ -13,6 +13,15 @@
         PASS fail {title..}  # expect fail, actual pass
 
      Also pick out "incremental-test" keyword for incremental tests.
+	 
+	 Variant tests below:
+	 - [fork|spoon]-[out|err|Error]-[detected|ignored]
+	 - ltw-[base|jarAspectpath{-jarClasspath}]
+	 
+	 Issues:
+	 - harness not stopping after unexpected-fails completes.
+	   When exception thrown, everything cleaned up?
+
 -->
 <suite>
 <!-- disabled so skipping expect-fail causes all to pass
@@ -24,6 +33,7 @@
         <compile files="NoSuchFile.java"/>
     </ajc-test>
 -->
+
     <ajc-test dir="harness"
       title="pass 2 error">
         <compile files="ErrorTest.java">
@@ -219,7 +229,7 @@
 
         <inc-compile tag="same" fresh="true" />
 		<run class="packageOne.Main" 
-		   options="new-event"/> <!-- now expect new-event -->
+		   options="new-event"/>
     </ajc-test>
     
     <ajc-test dir="harness"  keywords="incremental-test"
@@ -440,7 +450,7 @@
 		</inc-compile>
     </ajc-test>
        
-    <!--ajc-test dir="harness"
+    <ajc-test dir="harness"
     	keywords="expect-fail"
 		title="fail not forking or setting property">
         <compile files="SystemPropertiesTest.java"/>
@@ -461,29 +471,150 @@
         	fork="true" 
         	vmargs="-DPASS=true,-Dname=value"/>
     </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		title="pass fork verify Main runs">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" fork="true"/> 
+    </ajc-test>
+	
+    <ajc-test dir="harness/fork"
+		title="pass spoon verify Main runs">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		keywords="expect-fail"
+		title="fail fork-err-detected Main runs, uses System.err, fails on err">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="err" fork="true"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		title="pass fork-err-ignored Main runs, uses System.err, err ignored">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="err" fork="true" errStreamIsError="false"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		keywords="expect-fail"
+		title="fail fork-out-detected Main runs, uses System.out, fails on out">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="out" fork="true" outStreamIsError="true"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		title="pass fork-out-ignored Main runs, uses System.out, out ignored">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="out" fork="true" outStreamIsError="false"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		keywords="expect-fail"
+		title="fail fork-Error-detected Main runs, throws Error, fails on Error">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="Error" fork="true" /> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		title="pass fork-Error-ignored Main runs, throws Error, expects Error">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="Error" fork="true" exception="Error"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		keywords="expect-fail"
+		title="fail fork-Error-missed Main runs, does not throws Error, expects Error">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" fork="true" exception="Error"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		keywords="expect-fail"
+		title="fail spoon-err-detected Main runs, uses System.err, fails on err">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="err" /> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		title="pass spoon-err-ignored Main runs, uses System.err, err ignored">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="err" errStreamIsError="false"/> 
+    </ajc-test>
+    <ajc-test dir="harness/fork"
+		keywords="expect-fail"
+		title="fail spoon-out-detected Main runs, uses System.out, fails on out">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="out" outStreamIsError="true"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		title="pass spoon-out-ignored Main runs, uses System.out, out ignored">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="out" outStreamIsError="false"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		keywords="expect-fail"
+		title="fail spoon-Error-detected Main runs, throws Error, fails on Error">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="Error"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		title="pass spoon-Error-ignored Main runs, throws Error, expects Error">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="Error" exception="Error"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/fork"
+		keywords="expect-fail"
+		title="fail spoon-Error-missed Main runs, does not throws Error, expects Error">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" exception="Error"/> 
+    </ajc-test>
+	
     <ajc-test dir="harness/aspectpath"
-		title="pass aspectpath LTW aspect works in one compile">
+		keywords="expect-fail"
+		title="fail ltw-base Main fails without aspect">
+        <compile files="Main.java"/>
+        <run class="Main"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/aspectpath"
+		title="pass ltw-base Main fails without aspect (expected)">
+        <compile files="Main.java"/>
+        <run class="Main" exception="Error"/> 
+    </ajc-test>
+
+    <ajc-test dir="harness/aspectpath"
+		title="pass ltw-base Main works with aspect">
         <compile files="A.java,Main.java"/>
         <run class="Main"/> 
     </ajc-test>
 
     <ajc-test dir="harness/aspectpath"
-		keywords="expect-fail"
-		title="fail aspectpath LTW failure case">
-        <compile files="Main.java"/>
-        <run class="Main"/> 
-    </ajc-test-->
-
-	<!-- uncomment after weaveinfo messages 
-         (which cause false negatives) are suppressed
-    <ajc-test dir="harness/aspectpath"
-		title="pass aspectpath LTW">
+		title="pass ltw-jarAspectpath">
         <compile files="A.java" outjar="out.jar"/>
         <compile files="Main.java"/>
         <run class="Main" aspectpath="out.jar"/> 
     </ajc-test>
-    -->
 
+    <ajc-test dir="harness/aspectpath"
+		title="pass ltw-jarAspectpath-jarClasspath">
+        <compile files="A.java" outjar="out.jar"/>
+        <compile files="Main.java" outjar="cl.zip"/>
+        <run class="Main" aspectpath="out.jar" classpath="cl.zip"/> 
+    </ajc-test>
+
+<!-- reproduce hang from blocking IO read at JavaRun.java 
+    <ajc-test dir="harness/fork"
+		title="pass fork-Error-ignored Main runs, throws Error, expects Error">
+        <compile files="MainWriter.java"/>
+        <run class="MainWriter" options="Error" fork="true" exception="Error"/> 
+    </ajc-test>
+-->
 </suite>
 
 

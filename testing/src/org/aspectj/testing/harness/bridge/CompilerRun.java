@@ -148,7 +148,6 @@ public class CompilerRun implements IAjcRun {
                 return false;
             }
         }
-        sandbox.setTestBaseSrcDir(testBaseSrcDir, this);
 
         // Sources come as relative paths - check read, copy if staging.
         // This renders paths absolute before run(RunStatusI) is called.
@@ -179,9 +178,7 @@ public class CompilerRun implements IAjcRun {
         // validate readable for sources
         if (!spec.badInput) {
             if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
-                // moved validation of inpathPaths below due to ambiguous base dir
-                //|| !validator.canRead(testBaseSrcDir, injarPaths, "injars")
-                //|| !validator.canRead(testBaseSrcDir, inpathPaths, "inpaths")
+                // see validation of inpathPaths below due to ambiguous base dir
                 || !validator.canRead(
                     testBaseSrcDir,
                     spec.argfiles,
@@ -401,11 +398,8 @@ public class CompilerRun implements IAjcRun {
         }
         cp[index++] = Globals.F_aspectjrt_jar;
         cp[index++] = Globals.F_testingclient_jar;
-        sandbox.setClasspath(cp, checkReadable, this);
-        // set aspectpath
-        if (0 < aspectFiles.length) {
-            sandbox.setAspectpath(aspectFiles, checkReadable, this);
-        }
+        sandbox.compilerRunInit(this, testBaseSrcDir, aspectFiles,
+                checkReadable, cp, checkReadable, null);
 
         // XXX todo set bootclasspath if set for forking?
         return true;
@@ -439,9 +433,7 @@ public class CompilerRun implements IAjcRun {
             MessageUtil.abort(status, spec.testSetup.failureReason);
             return false;
         }
-//        boolean ignoreWarnings =
-//            (spec.testSetup.ignoreWarningsSet
-//                && spec.testSetup.ignoreWarnings);
+
         AjcMessageHandler handler =
             new AjcMessageHandler(spec.getMessages());
         handler.init();
