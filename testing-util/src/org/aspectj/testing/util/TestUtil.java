@@ -26,12 +26,19 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import jdiff.text.FileLine;
@@ -58,12 +65,170 @@ import org.aspectj.util.Reflection;
  */
 
 public final class TestUtil {
+    private static final String ASPECTJRT_KEY = "aspectjrt";
+    private static final String TESTING_CLIENT_KEY = "testing-client";
+    public static final URL BAD_URL;
+    private static final File LIB_DIR;
+    private static final Properties LIB_RPATHS;
+    private static final Map LIB_ENTRIES;
+    static {
+        {
+            URL url = null;
+            try {
+                url = new URL("http://eclipse.org/BADURL");
+            } catch (MalformedURLException e) {
+                // ignore - hopefully never
+            }
+            BAD_URL = url;
+        }
+        {
+            File file = new File("lib");
+            if (!isLibDir(file)) {
+                File cur = new File(".").getAbsoluteFile();
+                File parent = cur.getParentFile();
+                while (null != parent) {
+                    file = new File(parent, "lib");
+                    if (isLibDir(file)) {
+                        break;
+                    }
+                    parent = parent.getParentFile();
+                }
+                if (null == parent) {
+                    file = new File("NOT IN ASPECTJ TREE");
+                }
+            }
+            LIB_DIR = file;
+        }
+
+        LIB_RPATHS = new Properties();
+        LIB_RPATHS.setProperty(ASPECTJRT_KEY, "tests/aspectjrt.jar");
+        LIB_RPATHS.setProperty(TESTING_CLIENT_KEY, "tests/testing-client.jar");
+        // TODO support others loaded dynamically
+        
+        Map map = new HashMap();
+        for (Iterator iter = LIB_RPATHS.keySet().iterator(); iter.hasNext();) {
+            String key = (String) iter.next();
+            String path = LIB_RPATHS.getProperty(key);
+            File file = null;
+            URL url = null;
+            try {
+                file = libFile(path);
+                url = libURL(path);
+            } catch (IllegalArgumentException e) {
+                file = new File(path + " not found");
+                url = BAD_URL;
+            } finally {
+                map.put(key + ".file", file);
+                map.put(key + ".url", url);
+            }            
+        }
+        // TODO support changing entries, etc.
+        LIB_ENTRIES = Collections.unmodifiableMap(map);
+    }
+    private static boolean isLibDir(File lib) {
+        return new File(lib, "test" + File.separator + "aspectjrt.jar").exists();
+    }
 
     private TestUtil() {
         super();
     }
 
+    public static URL fileToURL(File file) {
+        try {
+            return file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
 
+    public static String filesToPath(File[] entries) {
+        return toPath(entries);
+    }
+    public static String urlsToPath(URL[] entries) {
+        return toPath(entries);
+    }
+    /**
+     * untyped interface for mixed entries
+     */
+    public static String filesOrurlsToPath(Object[] entries) {
+        return toPath(entries);
+    }
+    
+    /**
+     * This relies on these being File (where toString() == getPath())
+     * or URL (where toString() == toExternalForm()).
+     * @param entries the Object[] of File or URL elements
+     * @return the String with entries dlimited by the File.pathSeparator
+     */
+    private static String toPath(Object[] entries) {
+        if ((null == entries) || (0 == entries.length)) {
+            return "";
+        }
+        StringBuffer path = new StringBuffer();
+        boolean started = false;
+        for (int i = 0; i < entries.length; i++) {
+            if (null != entries[i]) {
+                if (started) {
+                    path.append(File.pathSeparator);
+                } else {
+                    started = true;
+                }
+                path.append(entries[i].toString());
+            }
+        }
+        return path.toString();
+    }
+    
+
+    public static File aspectjrtJarFile() {
+        return (File) LIB_ENTRIES.get(ASPECTJRT_KEY + ".file");
+    }
+    
+    public static URL aspectjrtJarURL() {
+        return (URL) LIB_ENTRIES.get(ASPECTJRT_KEY + ".url");
+    }
+    public static File testingClientJarFile() {
+        return (File) LIB_ENTRIES.get(TESTING_CLIENT_KEY + ".file");
+    }
+    
+    public static URL testingClientJarURL() {
+        return (URL) LIB_ENTRIES.get(TESTING_CLIENT_KEY + ".url");
+    }
+    
+    /**
+     * 
+     * @param rpath the String relative path from the library directory 
+     *  to a resource that must exist (may be a directory),
+     *  using forward slashes as a file separator
+     * @return the File path 
+     * @throws IllegalArgumentException if no such directory or file
+     */
+    public static File libFile(String rpath) {
+        if ((null == rpath) || (0 == rpath.length())) {
+            throw new IllegalArgumentException("no input");
+        }
+        rpath = rpath.replace('/', File.separatorChar);
+        File result = new File(LIB_DIR, rpath);
+        if (result.exists()) {
+            return result;
+        }
+        throw new IllegalArgumentException("not in " + LIB_DIR + ": " + rpath);
+    }
+    
+    /**
+     * Like libPath, only it returns a URL.
+     * @return URL or null if it does not exist
+     * @throws IllegalArgumentException if no such directory or file
+     */
+    public static URL libURL(String rpath) {
+        File file = libFile(rpath);
+        try {
+            return file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("bad URL from: " + file);
+        }        
+    }
+    
     // ---- arrays
 
     public static void assertArrayEquals(String msg, Object[] expected,
