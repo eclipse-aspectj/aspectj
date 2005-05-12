@@ -336,7 +336,7 @@ public class PatternParser {
 			return parseWithinAnnotationPointcut();
 		} else if (kind.equals("withincode")) {
 			return parseWithinCodeAnnotationPointcut();
-		} throw new ParserException("@pointcut name expected, but found " + kind, t);
+		} throw new ParserException("pointcut name", t);
 	}
 	
 	private Pointcut parseAtAnnotationPointcut() {
