@@ -879,7 +879,7 @@ public class FileUtil {
 		LangUtil.throwIaxIfNull(file, "file");
         URL result = null;
         try {
-            result = file.toURI().toURL();
+            result = file.toURL();//TODO AV - was toURI.toURL that does not works on Java 1.3 
             if (null != result) {
                 return result;
             }

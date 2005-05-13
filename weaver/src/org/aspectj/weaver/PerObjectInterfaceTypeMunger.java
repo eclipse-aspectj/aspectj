@@ -97,6 +97,8 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
             // FIXME AV - #75442 see thread
             // back off on old style : it can happen for perTarget that target type is presented first to the weaver
             // while caller side is not thus we have advisedTypeToAspects still empty..
+
+            // note: needed only for perTarget if lateMunger is used (see PerObject)
             return !matchType.isInterface() && !matchType.isAnnotationStyleAspect();
         } else {
             return aspects.contains(aspectType);

@@ -14,18 +14,50 @@ import java.io.File;
 
 import junit.framework.Test;
 
-import org.aspectj.testing.AutowiredXMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class AtAjMisuseTests extends AutowiredXMLBasedAjcTestCase {
+public class AtAjMisuseTests extends XMLBasedAjcTestCase {
 
     protected File getSpecFile() {
         return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/misuse.xml");
     }
 
     public static Test suite() {
-        return AutowiredXMLBasedAjcTestCase.loadSuite(AtAjMisuseTests.class);
+        return XMLBasedAjcTestCase.loadSuite(AtAjMisuseTests.class);
     }
+
+    public void testQAspectClassExtendingQAspectClass() {
+		runTest("@Aspect class extending @Aspect class");
+	}
+
+	public void testClassWithQBeforeExtendingQAspectClass() {
+		runTest("class with @Before extending @Aspect class");
+	}
+
+	public void testQPointcutNotReturningVoid() {
+		runTest("@Pointcut not returning void");
+	}
+
+	public void testQPointcutWithGarbageString() {
+		runTest("@Pointcut with garbage string");
+	}
+
+	public void testQPointcutWithThrowsClause() {
+		runTest("@Pointcut with throws clause");
+	}
+
+	public void testQAfterReturningWithWrongNumberOfArgs() {
+		runTest("@AfterReturning with wrong number of args");
+	}
+
+	public void testQBeforeOnNon_publicMethod() {
+		runTest("@Before on non-public method");
+	}
+
+	public void testQBeforeOnMethodNotReturningVoid() {
+		runTest("@Before on method not returning void");
+	}
 }

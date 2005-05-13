@@ -19,6 +19,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+import org.aspectj.util.LangUtil;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -83,11 +84,20 @@ public class DocumentParser extends DefaultHandler {
 
             try {
                 xmlReader.setFeature("http://xml.org/sax/features/validation", false);
-                xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            } catch (SAXNotRecognizedException e) {
+            } catch (SAXException e) {
                 ;//fine, the parser don't do validation
             }
+            try {
+                xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            } catch (SAXException e) {
+                ;//fine, the parser don't do validation
+            }
+            try {
+                xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            } catch (SAXException e) {
+                ;//fine, the parser don't do validation
+            }
+
 
             xmlReader.setEntityResolver(parser);
             in = url.openStream();
@@ -106,6 +116,10 @@ public class DocumentParser extends DefaultHandler {
         if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
             InputStream in = DTD_STREAM;
             if (in == null) {
+                System.err.println(
+                        "AspectJ - WARN - could not read DTD "
+                        + publicId
+                );
                 return null;
             } else {
                 return new InputSource(in);
@@ -203,8 +217,7 @@ public class DocumentParser extends DefaultHandler {
 
     private static String replaceXmlAnd(String expression) {
         //TODO AV do we need to handle "..)AND" or "AND(.." ?
-        //FIXME AV Java 1.4 code - if KO, use some Strings util
-        return expression.replaceAll(" AND ", " && ");
+        return LangUtil.replace(expression, " AND ", " && ");
     }
 
     private boolean isNull(String s) {

@@ -16,21 +16,69 @@ import java.io.File;
 import junit.framework.Test;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.AutowiredXMLBasedAjcTestCase;
 
 /**                              
  * A suite for @AspectJ aspects located in java5/ataspectj
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class AtAjSyntaxTests extends AutowiredXMLBasedAjcTestCase {
+public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 	
 	public static Test suite() {
-	    return AutowiredXMLBasedAjcTestCase.loadSuite(AtAjSyntaxTests.class);
+	    return XMLBasedAjcTestCase.loadSuite(AtAjSyntaxTests.class);
 	}
 
 	protected File getSpecFile() {
 	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/syntax.xml");
 	}
+
+
+    public void testSimpleBefore() {
+        runTest("SimpleBefore");
+    }
+
+    public void testSimpleAfter() {
+        runTest("SimpleAfter");
+    }
+
+    public void testSingletonAspectBindings() {
+        runTest("singletonAspectBindings");
+    }
+
+    public void testCflowTest() {
+        runTest("CflowTest");
+    }
+
+    public void testPointcutReferenceTest() {
+        runTest("PointcutReferenceTest");
+    }
+
+    public void testXXJoinPointTest() {
+        runTest("XXJoinPointTest");
+    }
+
+    public void testPrecedenceTest() {
+        runTest("PrecedenceTest");
+    }
+
+    public void testAfterXTest() {
+        runTest("AfterXTest");
+    }
+
+    public void testBindingTest() {
+        runTest("BindingTest");
+    }
+
+    public void testBindingTestNoInline() {
+        runTest("BindingTest no inline");
+    }
+
+    public void testPerClause() {
+        runTest("PerClause");
+    }
+
+    public void testAroundInlineMunger() {
+        runTest("AroundInlineMunger");
+    }
 
 }

@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150.ataspectj;
 
-import org.aspectj.testing.AutowiredXMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 import junit.framework.Test;
 
 import java.io.File;
@@ -19,13 +19,25 @@ import java.io.File;
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class AtAjLTWTests extends AutowiredXMLBasedAjcTestCase {
+public class AtAjLTWTests extends XMLBasedAjcTestCase {
 
 	public static Test suite() {
-	    return AutowiredXMLBasedAjcTestCase.loadSuite(org.aspectj.systemtest.ajc150.ataspectj.AtAjLTWTests.class);
+	    return XMLBasedAjcTestCase.loadSuite(org.aspectj.systemtest.ajc150.ataspectj.AtAjLTWTests.class);
 	}
 
 	protected File getSpecFile() {
 	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/ltw.xml");
+	}
+
+	public void testRunThemAllWithJavacCompiledAndLTW() {
+		runTest("RunThemAllWithJavacCompiledAndLTW");
+	}
+
+	public void testAjcLTWPerClauseTest_XnoWeave() {
+		runTest("AjcLTW PerClauseTest -XnoWeave");
+	}
+
+	public void testAjcLTWPerClauseTest_Xreweavable() {
+		runTest("AjcLTW PerClauseTest -Xreweavable");
 	}
 }

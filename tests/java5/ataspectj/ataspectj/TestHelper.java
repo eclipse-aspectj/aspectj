@@ -18,7 +18,6 @@ import junit.framework.TestFailure;
 
 import java.util.Enumeration;
 
-import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.weaver.loadtime.DefaultMessageHandler;
@@ -61,6 +60,7 @@ public class TestHelper extends DefaultMessageHandler {
         } else {
             // we do exit here since Assert.fail will only trigger a runtime exception that might
             // be catched by the weaver anyway
+            System.err.println("*** Exiting - got a warning/fail/error/abort IMessage");
             System.exit(-1);
         }
         return ret;

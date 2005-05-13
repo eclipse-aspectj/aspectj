@@ -109,7 +109,7 @@ public class PerObject extends PerClause {
         // see #75442 thread. Issue with weaving order.
 		ResolvedTypeMunger munger =
 			new PerObjectInterfaceTypeMunger(inAspect, concreteEntry);
-		inAspect.crosscuttingMembers.addTypeMunger(world.concreteTypeMunger(munger, inAspect));
+		inAspect.crosscuttingMembers.addLateTypeMunger(world.concreteTypeMunger(munger, inAspect));
 
         //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
         if (inAspect.isAnnotationStyleAspect()) {

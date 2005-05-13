@@ -210,7 +210,7 @@ public class LangUtil {
      * Splits <code>input</code> at commas, 
      * trimming any white space.
      *
-     * @param text <code>String</code> to split.
+     * @param input <code>String</code> to split.
      * @return List of String of elements.
      */
     public static List commaSplit(String input) {
@@ -265,8 +265,8 @@ public class LangUtil {
      * no delimiters, the input itself is returned
      * after trimming white space.
      *
-     * @param text <code>String</code> to split.
-     * @param delimiter <code>String</code> separators for input.
+     * @param input <code>String</code> to split.
+     * @param delim <code>String</code> separators for input.
      * @return List of String of elements.
      */
     public static List anySplit(String input, String delim) {

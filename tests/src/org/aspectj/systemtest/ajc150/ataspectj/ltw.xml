@@ -2,7 +2,7 @@
 <suite>
 
     <ajc-test dir="java5/ataspectj" title="RunThemAllWithJavacCompiledAndLTW">
-        <ant file="ajc-ant.xml" target="javac.ltw"/>
+        <ant file="ajc-ant.xml" target="javac.ltw" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AjcLTW PerClauseTest -XnoWeave">

@@ -135,7 +135,7 @@ public final class TestUtil {
 
     public static URL fileToURL(File file) {
         try {
-            return file.toURI().toURL();
+            return file.toURL();
         } catch (MalformedURLException e) {
             return null;
         }
@@ -223,7 +223,7 @@ public final class TestUtil {
     public static URL libURL(String rpath) {
         File file = libFile(rpath);
         try {
-            return file.toURI().toURL();
+            return file.toURL();
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("bad URL from: " + file);
         }        
