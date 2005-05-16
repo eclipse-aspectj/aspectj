@@ -34,6 +34,13 @@ public class ExposedState {
 		// XXX there maybe something about target for non-static sigs
 		this(signature.getParameterTypes().length);
 	}
+	
+	public boolean isFullySetUp() {
+		for (int i = 0; i < vars.length; i++) {
+			if (vars[i]==null) return false;
+		}
+		return true;
+	}
 
 	public void set(int i, Var var) {
 		//XXX add sanity checks
@@ -60,7 +67,7 @@ public class ExposedState {
     }
 
 	public String toString() {
-		return "ExposedState(" + Arrays.asList(vars) + ", " + aspectInstance + ")";
+		return "ExposedState(#Vars="+vars.length+",Vars=" + Arrays.asList(vars) + ",AspectInstance=" + aspectInstance + ")";
 	}
 
 	// Set to true if we have reported an error message against it,
