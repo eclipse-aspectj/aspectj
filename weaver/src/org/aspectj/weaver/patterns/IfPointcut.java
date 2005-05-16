@@ -134,29 +134,43 @@ public class IfPointcut extends Pointcut {
 
 	//??? The implementation of name binding and type checking in if PCDs is very convoluted
 	//    There has to be a better way...
-	private boolean findingResidue = false;
+
+    private boolean findingResidue = false;
+	
+	// Similar to lastMatchedShadowId - but only for if PCDs.
+	private int ifLastMatchedShadowId;
+	private Test ifLastMatchedShadowResidue;
+	
+	/**
+	 * At each shadow that matched, the residue can be different.
+	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (findingResidue) return Literal.TRUE;
 		findingResidue = true;
 		try {
-			ExposedState myState = new ExposedState(baseArgsCount);
-			//System.out.println(residueSource);
-			//??? we throw out the test that comes from this walk.  All we want here
-			//    is bindings for the arguments
-			residueSource.findResidue(shadow, myState);
-			
-			//System.out.println(myState);
+
+			// Have we already been asked this question?
+			if (shadow.shadowId == ifLastMatchedShadowId) return ifLastMatchedShadowResidue;
 			
 			Test ret = Literal.TRUE;
-			
 			List args = new ArrayList();
-	        for (int i=0; i < baseArgsCount; i++) {
-	        	Var v = myState.get(i);
-	        	args.add(v);
-	        	ret = Test.makeAnd(ret, 
-	        		Test.makeInstanceof(v, 
-	        			testMethod.getParameterTypes()[i].resolve(shadow.getIWorld())));
-	        }
+			
+			// If there are no args to sort out, don't bother with the recursive call
+			if (baseArgsCount > 0) {
+				ExposedState myState = new ExposedState(baseArgsCount);
+				//??? we throw out the test that comes from this walk.  All we want here
+				//    is bindings for the arguments
+				residueSource.findResidue(shadow, myState);
+				
+				
+		        for (int i=0; i < baseArgsCount; i++) {
+		        	Var v = myState.get(i);
+		        	args.add(v);
+		        	ret = Test.makeAnd(ret, 
+		        		Test.makeInstanceof(v, 
+		        			testMethod.getParameterTypes()[i].resolve(shadow.getIWorld())));
+		        }
+			}
 	
 	        // handle thisJoinPoint parameters
 	        if ((extraParameterFlags & Advice.ThisJoinPoint) != 0) {
@@ -173,6 +187,9 @@ public class IfPointcut extends Pointcut {
 	        
 	        ret = Test.makeAnd(ret, Test.makeCall(testMethod, (Expr[])args.toArray(new Expr[args.size()])));
 
+			// Remember...
+			ifLastMatchedShadowId = shadow.shadowId;
+			ifLastMatchedShadowResidue = ret;
 			return ret; 
 			
 		} finally {

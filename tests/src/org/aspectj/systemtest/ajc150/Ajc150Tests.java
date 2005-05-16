@@ -165,6 +165,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testInternalCompilerError_pr86832() {
 	  runTest("Internal compiler error");
   }
+
+  /**
+   * IfPointcut.findResidueInternal() was modified to make this test complete in a short amount
+   * of time - if you see it hanging, someone has messed with the optimization.
+   */
+  public void testIfEvaluationExplosiion_PR94086() {
+	  runTest("Exploding compile time with if() statements in pointcut");
+  }
   
   // helper methods.....
   

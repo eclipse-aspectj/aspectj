@@ -2196,4 +2196,8 @@
    <ajc-test dir="bugs150" title="Internal compiler error">
      <compile files="PR86832.aj" options="-1.5"/>
    </ajc-test>
+   
+   <ajc-test dir="bugs150" title="Exploding compile time with if() statements in pointcut">
+     <compile files="PR94086.aj" options="-1.5"/>
+   </ajc-test>
 </suite>
