@@ -95,4 +95,9 @@
         <compile files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
         <run class="ataspectj.AroundInlineMungerTest"/>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AroundInlineMunger2">
+        <compile files="ataspectj/AroundInlineMungerTest2.aj,ataspectj/AroundInlineMungerTestAspects2.aj,ataspectj/TestHelper.java" options="-1.5 -Xlint:ignore"/>
+        <run class="ataspectj.AroundInlineMungerTest2"/>
+    </ajc-test>
 </suite>

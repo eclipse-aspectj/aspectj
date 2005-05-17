@@ -38,5 +38,13 @@
         </java>
     </target>
 
+    <target name="ltw.AroundInlineMungerTest2">
+        <java fork="yes" classname="ataspectj.AroundInlineMungerTest2" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop-aroundinlinemungertest2.xml"/>
+        </java>
+    </target>
+
     <target name="javac.ltw" depends="compile:javac, ltw"/>
 </project>

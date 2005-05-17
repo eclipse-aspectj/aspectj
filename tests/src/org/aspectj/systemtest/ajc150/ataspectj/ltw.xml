@@ -69,4 +69,13 @@
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest2">
+        <compile
+            files="ataspectj/AroundInlineMungerTestAspects2.aj"
+            options="-1.5 -Xlint:ignore"/>
+        <compile
+            files="ataspectj/AroundInlineMungerTest2.aj,ataspectj/TestHelper.java"
+            options="-1.5 -Xreweavable"/>
+        <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest2" verbose="true"/>
+    </ajc-test>
 </suite>
