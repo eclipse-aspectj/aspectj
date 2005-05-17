@@ -576,7 +576,7 @@ public class AjcTestCase extends TestCase {
 			fail("main method in class " + className + " is not public");
 		} catch (InvocationTargetException invTgt) {
 			// the main method threw an exception...
-			fail("Exception thrown by " + className + ".main(String[]) :" + invTgt.getTargetException());
+            fail("Exception thrown by " + className + ".main(String[]) :" + invTgt.getTargetException());
 		} finally {
 			System.setOut(systemOut);
 			System.setErr(systemErr);

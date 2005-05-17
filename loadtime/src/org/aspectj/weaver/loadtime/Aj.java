@@ -14,6 +14,7 @@ package org.aspectj.weaver.loadtime;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -99,8 +100,14 @@ public class Aj implements ClassPreProcessor {
                         new Integer(bytes.length)
                     }
             );
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (InvocationTargetException e) {
+            if (e.getTargetException() instanceof LinkageError) {
+                ;//is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+            } else {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

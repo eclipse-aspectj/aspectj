@@ -155,9 +155,9 @@ public class PerTypeWithin extends PerClause {
             );
         }
 
-        //ATAJ inline around advice support
+        //ATAJ inline around advice support - don't use a late munger to allow around inling for itself
         if (Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
-            inAspect.crosscuttingMembers.addLateTypeMunger(new BcelAccessForInlineMunger(inAspect));
+            inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 
 		return ret;

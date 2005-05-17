@@ -48,6 +48,9 @@ import java.util.List;
  * Specific state and logic is kept in the munger ala ITD so that call/get/set pointcuts can still be matched
  * on the wrapped member thanks to the EffectiveSignature attribute.
  *
+ * FIXME AV - this whole one should be skept when -XnoInline is used
+ * (add breakpoint on lazyMethodGen.setCanInline to see where things happening)
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class BcelAccessForInlineMunger extends BcelTypeMunger {
@@ -218,6 +221,13 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
             }
 
             curr = next;
+        }
+
+        // no reason for not inlining this advice
+        // since it is used for @AJ advice that cannot be inlined by defauilt
+        // make sure we set inline to true since we have done this analysis
+        if (!realizedCannotInline) {
+            aroundAdvice.setCanInline(true);
         }
     }
 

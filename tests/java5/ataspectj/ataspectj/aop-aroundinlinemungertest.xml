@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<aspectj>
+    <weaver options="-XmessageHolderClass:ataspectj.TestHelper"/>
+    <aspects>
+        <aspect name="ataspectj.AroundInlineMungerTestAspects.Open"/>
+    </aspects>
+</aspectj>

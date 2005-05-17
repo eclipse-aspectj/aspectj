@@ -44,13 +44,14 @@ public class Options {
     //FIXME dump option - dump what - dump before/after ?
 
     public static WeaverOption parse(String options, ClassLoader laoder) {
+        if (LangUtil.isEmpty(options)) {
+            return new WeaverOption();
+        }
         // the first option wins
         List flags = LangUtil.anySplit(options, " ");
         Collections.reverse(flags);
 
         WeaverOption weaverOption = new WeaverOption();
-        weaverOption.messageHandler = new DefaultMessageHandler();//default
-
 
         // do a first round on the message handler since it will report the options themselves
         for (Iterator iterator = flags.iterator(); iterator.hasNext();) {
@@ -99,7 +100,7 @@ public class Options {
             } else {
                 weaverOption.messageHandler.handleMessage(
                         new Message(
-                                "Cannot configure weaver with option " + arg + ": unknown option",
+                                "Cannot configure weaver with option '" + arg + "': unknown option",
                                 IMessage.WARNING,
                                 null,
                                 null
@@ -132,5 +133,13 @@ public class Options {
         boolean noInline;
         boolean showWeaveInfo;
         IMessageHandler messageHandler;
+
+        public WeaverOption() {
+            messageHandler = new DefaultMessageHandler();//default
+
+            //temp alex
+            messageHandler.dontIgnore(IMessage.WEAVEINFO);
+            messageHandler.dontIgnore(IMessage.INFO);
+        }
     }
 }

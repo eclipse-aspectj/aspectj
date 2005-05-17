@@ -162,6 +162,8 @@ public class BcelWeaver implements IWeaver {
 
     	//System.out.println("type: " + type + " for " + aspectName);
 		if (type.isAspect()) {
+            //TODO AV - happens to reach that a lot of time: for each type flagged reweavable X for each aspect in the weaverstate
+            //=> mainly for nothing for LTW - pbly for something in incremental build...
 			xcutSet.addOrReplaceAspect(type);
 		} else {
             // FIXME : Alex: better warning upon no such aspect from aop.xml
@@ -945,7 +947,19 @@ public class BcelWeaver implements IWeaver {
 		    BcelObjectType classType = getClassType(className);			            
 			processReweavableStateIfPresent(className, classType);
 		}
-								
+
+        // register all aspect that have been extracted from reweavable state for LTW
+        // note: when doing AJC, the missing aspect is already catch in the previous state thru Type.MISSING
+        if (alreadyConfirmedReweavableState != null) {
+            for (Iterator iterator = alreadyConfirmedReweavableState.iterator(); iterator.hasNext();) {
+                String aspectClassName = (String) iterator.next();
+                addLibraryAspect(aspectClassName);
+            }
+            // refresh all the stuff... perhaps too much here...
+            if (!alreadyConfirmedReweavableState.isEmpty())
+                prepareForWeave();
+        }
+
 		requestor.addingTypeMungers();
         
         // We process type mungers in two groups, first mungers that change the type
@@ -1062,7 +1076,8 @@ public class BcelWeaver implements IWeaver {
 			world.showMessage(IMessage.INFO,
 					WeaverMessages.format(WeaverMessages.REWEAVABLE_MODE),
 					null, null);
-    	 	    	
+
+        //TODO AV - can't we avoid this creation (LTW = happens for each class load!)
     	alreadyConfirmedReweavableState = new HashSet();
     }
     

@@ -107,7 +107,7 @@ public class PerSingleton extends PerClause {
 
         //ATAJ inline around advice support
         if (Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
-            inAspect.crosscuttingMembers.addLateTypeMunger(new BcelAccessForInlineMunger(inAspect));
+            inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 
         return ret;

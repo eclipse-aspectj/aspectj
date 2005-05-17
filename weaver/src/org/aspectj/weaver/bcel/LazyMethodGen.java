@@ -100,7 +100,7 @@ public final class LazyMethodGen {
 
     private int             maxLocals; 
     
-    private boolean canInline = true;
+    private boolean canInline = true;//FIXME AV - ALEX? shouldn't that default to false or unknown?
     private boolean hasExceptionHandlers;
     
     private boolean isSynthetic = false;
@@ -140,6 +140,18 @@ public final class LazyMethodGen {
         this.attributes = new Attribute[0];
         this.enclosingClass = enclosingClass;
         assertGoodBody();
+
+        // @AJ advice are not inlined by default since requires further analysis
+        // and weaving ordering control
+        // TODO AV - improve - note: no room for improvement as long as aspects are reweavable
+        // since the inlined version with wrappers and an to be done annotation to keep
+        // inline state will be garbaged due to reweavable impl
+        if (memberView != null && isAdviceMethod()) {
+            if (enclosingClass.getType().isAnnotationStyleAspect()) {
+                //TODO we could check for @Around advice as well
+                this.canInline = false;
+            }
+        }
     }
        
     private int calculateMaxLocals() {
@@ -167,6 +179,18 @@ public final class LazyMethodGen {
         
 		this.accessFlags = m.getAccessFlags();
 		this.name = m.getName();
+
+        // @AJ advice are not inlined by default since requires further analysis
+        // and weaving ordering control
+        // TODO AV - improve - note: no room for improvement as long as aspects are reweavable
+        // since the inlined version with wrappers and an to be done annotation to keep
+        // inline state will be garbaged due to reweavable impl
+        if (memberView != null && isAdviceMethod()) {
+            if (enclosingClass.getType().isAnnotationStyleAspect()) {
+                //TODO we could check for @Around advice as well
+                this.canInline = false;
+            }
+        }
     }
     
     public boolean hasDeclaredLineNumberInfo() {

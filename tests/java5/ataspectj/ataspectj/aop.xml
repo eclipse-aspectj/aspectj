@@ -21,6 +21,6 @@
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerCflow"/>
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPTW"/>
 
-        <aspect name="ataspectj.AroundInlineMungerTest.Open"/>
+        <aspect name="ataspectj.AroundInlineMungerTestAspects.Open"/>
     </aspects>
 </aspectj>

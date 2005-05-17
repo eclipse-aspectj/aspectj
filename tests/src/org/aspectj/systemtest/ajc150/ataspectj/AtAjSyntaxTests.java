@@ -32,7 +32,6 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/syntax.xml");
 	}
 
-
     public void testSimpleBefore() {
         runTest("SimpleBefore");
     }
@@ -75,6 +74,10 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 
     public void testPerClause() {
         runTest("PerClause");
+    }
+
+    public void testAroundInlineMunger_XnoInline() {
+        runTest("AroundInlineMunger -XnoInline");
     }
 
     public void testAroundInlineMunger() {

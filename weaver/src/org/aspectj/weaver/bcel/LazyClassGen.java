@@ -639,7 +639,7 @@ public final class LazyClassGen {
 	
 	public boolean isReweavable() {
 		if (myType.getWeaverState()==null) return false;
-		return myType.getWeaverState().isReweavable();
+        return myType.getWeaverState().isReweavable();
 	}
 	
 	public Set getAspectsAffectingType() {
@@ -700,7 +700,9 @@ public final class LazyClassGen {
     
     // reflective thisJoinPoint support
     Map/*BcelShadow, Field*/ tjpFields = new HashMap();
-    public static final ObjectType tjpType = 
+    public static final ObjectType proceedingTjpType =
+    	new ObjectType("org.aspectj.lang.ProceedingJoinPoint");
+    public static final ObjectType tjpType =
     	new ObjectType("org.aspectj.lang.JoinPoint");
     public static final ObjectType staticTjpType = 
     	new ObjectType("org.aspectj.lang.JoinPoint$StaticPart");

@@ -40,13 +40,15 @@ public class TestHelper extends DefaultMessageHandler {
             Enumeration e = rr.failures();
             while (e.hasMoreElements()) {
                 sb.append("JUnit Failure: ");
-                sb.append(((TestFailure)e.nextElement()).thrownException().toString());
+                TestFailure failure = (TestFailure)e.nextElement();
+                sb.append(failure.thrownException().toString());
                 sb.append("\n");
             }
             e = rr.errors();
             while (e.hasMoreElements()) {
                 sb.append("JUnit Error: ");
-                sb.append(((TestFailure)e.nextElement()).thrownException().toString());
+                TestFailure failure = (TestFailure)e.nextElement();
+                sb.append(failure.thrownException().toString());
                 sb.append("\n");
             }
             throw new RuntimeException(sb.toString());

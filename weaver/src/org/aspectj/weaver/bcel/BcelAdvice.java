@@ -21,6 +21,7 @@ import java.util.Collections;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
@@ -367,6 +368,13 @@ public class BcelAdvice extends Advice {
                     // ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
 	                if (getKind() == AdviceKind.Around) {
 	                    il.append(closureInstantiation);
+                        //
+//                        if (canInline(shadow)) {
+//                            //FIXME ALEX? passin a boolean instead of checking there
+//                            il.append(fact.createCheckCast(
+//                                    (ReferenceType) BcelWorld.makeBcelType(TypeX.forName("org.aspectj.lang.ProceedingJoinPoint"))
+//                            ));
+//                        }
 	                    continue;
 	                } else if ("Lorg/aspectj/lang/JoinPoint$StaticPart;".equals(getSignature().getParameterTypes()[i].getSignature())) {
 	                    if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {

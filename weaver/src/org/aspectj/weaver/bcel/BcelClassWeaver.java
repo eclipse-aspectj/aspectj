@@ -327,7 +327,7 @@ class BcelClassWeaver implements IClassWeaver {
        
 
         Set aspectsAffectingType = null;
-        if (inReweavableMode) aspectsAffectingType = new HashSet();
+        if (inReweavableMode || clazz.getType().isAspect()) aspectsAffectingType = new HashSet();
         
         boolean isChanged = false;
         
@@ -345,7 +345,7 @@ class BcelClassWeaver implements IClassWeaver {
         	boolean typeMungerAffectedType = munger.munge(this);
         	if (typeMungerAffectedType) {
         		isChanged = true;
-        		if (inReweavableMode) aspectsAffectingType.add(munger.getAspectType().getName());
+        		if (inReweavableMode || clazz.getType().isAspect()) aspectsAffectingType.add(munger.getAspectType().getName());
         	}
         }
 
@@ -378,7 +378,7 @@ class BcelClassWeaver implements IClassWeaver {
 			boolean shadowMungerMatched = match(mg);
 			if (shadowMungerMatched) {
 				// For matching mungers, add their declaring aspects to the list that affected this type
-				if (inReweavableMode) aspectsAffectingType.addAll(findAspectsForMungers(mg));
+				if (inReweavableMode || clazz.getType().isAspect()) aspectsAffectingType.addAll(findAspectsForMungers(mg));
               isChanged = true;
 			}
         }
@@ -415,7 +415,7 @@ class BcelClassWeaver implements IClassWeaver {
                     boolean typeMungerAffectedType = munger.munge(this);
                     if (typeMungerAffectedType) {
                         isChanged = true;
-                        if (inReweavableMode) aspectsAffectingType.add(munger.getAspectType().getName());
+                        if (inReweavableMode || clazz.getType().isAspect()) aspectsAffectingType.add(munger.getAspectType().getName());
                     }
                 }
             }
@@ -429,7 +429,7 @@ class BcelClassWeaver implements IClassWeaver {
 			weaveInAddedMethods(); // FIXME asc are these potentially affected by declare annotation?
         }
         
-        if (inReweavableMode) {
+        if (inReweavableMode || clazz.getType().isAspect()) {
         	WeaverStateInfo wsi = clazz.getOrCreateWeaverStateInfo();
         	wsi.addAspectsAffectingType(aspectsAffectingType);
         	wsi.setUnwovenClassFileData(ty.getJavaClass().getBytes());

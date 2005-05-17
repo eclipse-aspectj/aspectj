@@ -121,6 +121,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 URL xml = (URL) xmls.nextElement();
                 definitions.add(DocumentParser.parse(xml));
             }
+            
+            // still go thru if definitions is empty since we will configure
+            // the default message handler in there
             registerOptions(weaver, loader, definitions);
             registerAspectExclude(weaver, loader, definitions);
             registerAspects(weaver, loader, definitions);

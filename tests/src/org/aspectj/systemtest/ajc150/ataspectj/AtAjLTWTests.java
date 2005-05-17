@@ -29,15 +29,39 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/ltw.xml");
 	}
 
-	public void testRunThemAllWithJavacCompiledAndLTW() {
-		runTest("RunThemAllWithJavacCompiledAndLTW");
-	}
 
-	public void testAjcLTWPerClauseTest_XnoWeave() {
-		runTest("AjcLTW PerClauseTest -XnoWeave");
-	}
+    //FIXME AV - those all 4 depends on #75442...
+//	public void testRunThemAllWithJavacCompiledAndLTW() {
+//		runTest("RunThemAllWithJavacCompiledAndLTW");
+//	}
+//
+//	public void testAjcLTWPerClauseTest_XnoWeave() {
+//		runTest("AjcLTW PerClauseTest -XnoWeave");
+//	}
+//
+//	public void testAjcLTWPerClauseTest_Xreweavable() {
+//		runTest("AjcLTW PerClauseTest -Xreweavable");
+//	}
+//
+//    public void testJavaCAjcLTWPerClauseTest() {
+//        runTest("JavaCAjcLTW PerClauseTest");
+//    }
 
-	public void testAjcLTWPerClauseTest_Xreweavable() {
-		runTest("AjcLTW PerClauseTest -Xreweavable");
-	}
+    public void testAjcLTWAroundInlineMungerTest_XnoWeave() {
+        runTest("AjcLTW AroundInlineMungerTest -XnoWeave");
+    }
+
+    public void testAjcLTWAroundInlineMungerTest_Xreweavable() {
+        runTest("AjcLTW AroundInlineMungerTest -Xreweavable");
+    }
+
+    public void testAjcLTWAroundInlineMungerTest() {
+        runTest("AjcLTW AroundInlineMungerTest");
+    }
+
+    public void testAjcLTWAroundInlineMungerTest_XnoInline_Xreweavable() {
+        runTest("AjcLTW AroundInlineMungerTest -XnoInline -Xreweavable");
+    }
+
+
 }

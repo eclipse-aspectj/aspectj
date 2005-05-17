@@ -52,6 +52,7 @@ import org.aspectj.apache.bcel.generic.SWAP;
 import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -1933,8 +1934,7 @@ public class BcelShadow extends Shadow {
         BcelObjectType ot = BcelWorld.getBcelObjectType(declaringType); 
         
 		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
-		if (!adviceMethod.getCanInline())
-		{
+		if (!adviceMethod.getCanInline()) {
 			weaveAroundClosure(munger, hasDynamicTest);
 			return;
 		}
@@ -2357,6 +2357,14 @@ public class BcelShadow extends Shadow {
                 ResolvedTypeX stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
                     ret.append(new ALOAD(localJp));// from localAdvice signature
+//                } else if ("Lorg/aspectj/lang/ProceedingJoinPoint;".equals(stateType.getSignature())) {
+//                    //FIXME ALEX?
+//                        ret.append(new ALOAD(localJp));// from localAdvice signature
+////                        ret.append(fact.createCheckCast(
+////                                (ReferenceType) BcelWorld.makeBcelType(stateTypeX)
+////                    ));
+//                        // cast ?
+//
                 } else {
                     ret.append(InstructionFactory.createLoad(stateType, i));
                 }
@@ -2452,10 +2460,7 @@ public class BcelShadow extends Shadow {
 //        return ret;
     }
 
-    public void weaveAroundClosure(
-        BcelAdvice munger, 
-        boolean hasDynamicTest) 
-    {
+    public void weaveAroundClosure(BcelAdvice munger, boolean hasDynamicTest) {
     	InstructionFactory fact = getFactory();
 
 		enclosingMethod.setCanInline(false);
@@ -2938,6 +2943,8 @@ public class BcelShadow extends Shadow {
         // join point, it is unnecessary to accept (and pass) tjp.
         if (thisJoinPointVar != null) {
         	parameterTypes = addTypeToEnd(LazyClassGen.tjpType, parameterTypes);
+            //FIXME ALEX? which one            
+            //parameterTypes = addTypeToEnd(LazyClassGen.proceedingTjpType, parameterTypes);
         }
         
         TypeX returnType;

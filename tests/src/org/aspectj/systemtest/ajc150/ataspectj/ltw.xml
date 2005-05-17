@@ -19,21 +19,54 @@
         <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>
     </ajc-test>
 
-<!--    FIXME AV: todo by Andy-->
-<!--    <ajc-test dir="java5/ataspectj" title="JavaCAjcLTW PerClauseTest">-->
-<!--        <compile-->
-<!--            files="ataspectj/PerClauseTest.java,ataspectj/TestHelper.java"-->
-<!--            options="-1.5 -XnoWeave"/>-->
-<!--        <comment>-->
-<!--        aspectOf methods will be pushed in, ignore warning for adviceDidNotMatch but still do the logic for them-->
-<!--        since such just added methods are an interesting case (percflow ajc$perCflowStack advice)-->
-<!--        </comment>-->
-<!--        <compile-->
-<!--            files="ataspectj/PerClauseTestAspects.java"-->
-<!--            options="-1.5 -Xdev:NoAtAspectJProcessing">-->
-<!--                <message kind="warning"/>-->
-<!--            </compile>-->
-<!--        <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>-->
-<!--    </ajc-test>-->
+    <ajc-test dir="java5/ataspectj" title="JavaCAjcLTW PerClauseTest">
+        <compile
+            files="ataspectj/PerClauseTest.java,ataspectj/TestHelper.java,ataspectj/PerClauseTestAspects.java"
+            options="-1.5 -XnoWeave"/>
+        <comment>
+        aspectOf methods will be pushed in, ignore warning for adviceDidNotMatch but still do the logic for them
+        since such just added methods are an interesting case (percflow ajc$perCflowStack advice)
+        </comment>
+        <compile
+            files="ataspectj/PerClauseTestAspects.java"
+            options="-1.5 -Xdev:NoAtAspectJProcessing">
+                <message kind="warning"/>
+        </compile>
+        <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -XnoWeave">
+        <compile
+            files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java"
+            options="-1.5 -XnoWeave"/>
+        <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -Xreweavable">
+        <compile
+            files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java"
+            options="-1.5 -Xreweavable"/>
+        <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest">
+        <compile
+            files="ataspectj/AroundInlineMungerTestAspects.java"
+            options="-1.5 -Xlint:ignore"/>
+        <compile
+            files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java"
+            options="-1.5 -Xreweavable"/>
+        <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -XnoInline -Xreweavable">
+        <compile
+            files="ataspectj/AroundInlineMungerTestAspects.java"
+            options="-1.5 -Xlint:ignore -XnoInline -Xreweavable"/>
+        <compile
+            files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java"
+            options="-1.5 -Xreweavable -XnoInline"/>
+        <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
+    </ajc-test>
 
 </suite>

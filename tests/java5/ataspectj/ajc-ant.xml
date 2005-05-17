@@ -34,7 +34,7 @@
         <java fork="yes" classname="ataspectj.AroundInlineMungerTest" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="-Daj5.def=ataspectj/aop.xml"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop-aroundinlinemungertest.xml"/>
         </java>
     </target>
 
