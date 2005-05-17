@@ -20,6 +20,7 @@ import org.aspectj.testing.run.IRunIterator;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.WrappedRunIterator;
 import org.aspectj.testing.util.TestClassLoader;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
@@ -669,7 +670,7 @@ public class JavaRun implements IAjcRun {
         }
         
         public void setLTW(String ltw) {
-            useLTW = Boolean.parseBoolean(ltw);
+            useLTW = TestUtil.parseBoolean(ltw);
         }
         
         public void setAspectpath(String path) {
@@ -683,11 +684,11 @@ public class JavaRun implements IAjcRun {
             this.classpath = XMLWriter.unflattenList(path);
         }
         public void setErrStreamIsError(String errStreamIsError) {
-            this.errStreamIsError = Boolean.parseBoolean(errStreamIsError);
+            this.errStreamIsError = TestUtil.parseBoolean(errStreamIsError);
         }
 
         public void setOutStreamIsError(String outStreamIsError) {
-            this.outStreamIsError = Boolean.parseBoolean(outStreamIsError);
+            this.outStreamIsError = TestUtil.parseBoolean(outStreamIsError);
         }
 
         /** @param skip if true, then do not set up Tester */

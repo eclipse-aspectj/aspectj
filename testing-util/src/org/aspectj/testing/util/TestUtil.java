@@ -179,6 +179,52 @@ public final class TestUtil {
         return path.toString();
     }
     
+    /**
+     * @param s the String to parse for [on|off|true|false]
+     * @throws IllegalArgumentException if input is bad
+     **/
+    public static boolean parseBoolean(String input) {
+        return parseBoolean(input, true);
+    }
+    
+    /**
+     * @param s the String to parse for [on|off|true|false]
+     * @param iaxOnError if true and input is bad, throw
+     * IllegalArgumentException
+     * @return true if input is true, false otherwise
+     * @throws IllegalArgumentException if iaxOnError and input is bad
+     */
+     public static boolean parseBoolean(final String input, boolean iaxOnError) {
+        final String syntax = ": [on|off|true|false]";
+        if (null == input) {
+            return false;
+        }
+        String lc = input.trim().toLowerCase();
+        boolean result = false;
+        boolean valid = false;
+        switch (lc.length()) {
+        case 2:
+            if (valid = "on".equals(lc)) {
+                result = true;                
+            }
+            break;
+        case 3:
+            valid = "off".equals(lc);
+            break;
+        case 4:
+            if (valid = "true".equals(lc)) {
+                result = true;                
+            }
+            break;
+        case 5:
+            valid = "false".equals(lc);
+            break;
+        }
+        if (iaxOnError && !valid) {
+            throw new IllegalArgumentException(input + syntax);
+        }
+        return result;
+    }
 
     public static File aspectjrtJarFile() {
         return (File) LIB_ENTRIES.get(ASPECTJRT_KEY + ".file");

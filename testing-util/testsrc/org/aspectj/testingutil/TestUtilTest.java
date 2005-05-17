@@ -93,6 +93,40 @@ public class TestUtilTest extends TestCase {
         assertTrue(!TestUtil.sameFiles(holder, expectedBaseDir, actualBaseDir, filename));
     }
 
+    public void testParseBoolean() {
+        {
+            String[] trues = {"true", "TRUE", "on", "ON" };
+            for (int i = 0; i < trues.length; i++) {
+                assertTrue(trues[i], TestUtil.parseBoolean(trues[i]));
+            }
+        }
+        {
+            String[] falses = {"false", "FALSE", "off", "off" };
+            for (int i = 0; i < falses.length; i++) {
+                assertTrue(falses[i], !TestUtil.parseBoolean(falses[i]));
+            }
+        }
+        String[] errors = {"fals", "tru", "T", "on of" };
+        boolean fail = false;
+        final int MAX = errors.length-1;
+        for (int i = 0; i <= MAX; i++) {
+            try {
+                TestUtil.parseBoolean(errors[i], fail);
+                assertTrue("no exception: " + errors[i], !fail);
+            } catch (IllegalArgumentException e) {
+                assertTrue("exception: " + errors[i], fail);
+                String m = e.getMessage();
+                if (-1 == m.indexOf(errors[i])) {
+                    fail(errors[i] + " not in " + m);
+                }
+            }
+            if ((i == MAX) && !fail) {
+                i = -1;
+                fail = true;
+            }
+        }
+        
+    }
     public void testFileCompareClass() throws IOException {
         if (!TestUtil.ClassLineator.haveDisassembler()) {
             System.err.println("skipping testFileCompareClass - no disassembler on classpath");
