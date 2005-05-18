@@ -12,6 +12,7 @@ package org.aspectj.systemtest.java14;
 import java.io.File;
 import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.util.LangUtil;
 
 public class Java14Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -47,14 +48,17 @@ public class Java14Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  }
 
   public void test006(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 006 not >=1.4");return;}
     runTest("compiling asserts in methods");
   }
 
   public void test007(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 007 not >=1.4");return;}
     runTest("asserts");
   }
 
   public void test008(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 008 not >=1.4");return;}
     runTest("asserts in aspect and declared methods [requires 1.4]");
   }
 
@@ -71,6 +75,7 @@ public class Java14Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
   public void test012(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 012 not >=1.4");return;}
     runTest("assert tests in introduction [requires 1.4]");
   }
 
@@ -79,18 +84,22 @@ public class Java14Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
   public void test014(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 014 not >=1.4");return;}
     runTest("assert statement in advice coverage [requires 1.4]");
   }
 
   public void test015(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 015 not >=1.4");return;}
     runTest("assert statement in advice  [requires 1.4]");
   }
 
   public void test016(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 016 not >=1.4");return;}
     runTest("assert and pertarget crashes compiler");
   }
 
   public void test017(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 017 not >=1.4");return;}
     runTest("testing that assert works like .class");
   }
 
@@ -107,6 +116,7 @@ public class Java14Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
   
   public void test021(){
+	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 021 not >=1.4");return;}
     runTest("Class Literals as non final fields (also assert, and this$0)");
   }
 

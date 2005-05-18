@@ -48,7 +48,7 @@ public class AjcTest {
 	private String title;
 	private String keywords;
 	private String comment;
-	private String vmLevel = "1.4";
+	private String vmLevel = "1.3";
 
 	public AjcTest() {
 	}
