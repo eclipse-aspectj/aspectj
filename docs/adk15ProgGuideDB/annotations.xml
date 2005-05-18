@@ -413,7 +413,7 @@
   	  	               '!' TypePattern |
   	  	               '(' AnnotationPattern? TypePattern ')'
   	  	               TypePattern '&&' TypePattern |
-  	  	               TypePattern '||' TypePattern |
+  	  	               TypePattern '||' TypePattern 
   	  	
   	  	SimpleTypePattern := DottedNamePattern '+'? '[]'*
   	  	

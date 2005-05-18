@@ -1,3 +1,4 @@
+<!--<!DOCTYPE chapter SYSTEM "file:/C:/Documents%20and%20Settings/colyer/My%20Documents/projects/aspectjdev/lib/docbook/docbook-dtd/docbookx.dtd"> -->
 <chapter id="generics" xreflabel="Generics">
 
   <title>Generics</title>
@@ -13,39 +14,921 @@
 	</para>
 
 	<sect2>
-		<title>Declaring Parameterized Types</title>
+		<title>Declaring Generic Types</title>
 		
+        <para>
+            A generic type is declared with one or more type parameters following the type name. 
+            By convention formal type parameters are named using a single letter, though this is not required.  
+            A simple generic list type
+            (that can contain elements of any type <literal>E</literal>) could be declared:
+        </para>
+        
+        <programlisting><![CDATA[
+		interface List<E> {
+		   Iterator<E> iterator();
+		   void add(E anItem);
+		   E remove(E anItem);  
+		}
+		]]></programlisting>
+        		
+        		
+        <para>
+            It is important to understand that unlike template mechanisms there will only be one type, and one class file, corresponding to 
+            the <literal>List</literal> interface, regardless of how many different instantiations of the <literal>List</literal> interface a program
+            has (each potentially providing a different value for the type parameter <literal>E</literal>). A consequence of this
+            is that you cannot refer to the type parameters of a type declaration in a static method or initializer, or in the declaration or 
+            initializer of a static variable. 
+        </para>    
+         <para>
+             A <emphasis>parameterized type</emphasis> 
+            is an invocation of a generic type with concrete values supplied for
+            all of its type parameters (for example, <literal>List&lt;String></literal> or <literal>List&lt;Food></literal>).
+        </para>
+        
+        <para>A generic type may be declared with multiple type parameters. In addition to simple type parameter names, type
+        parameter declarations can also constrain the set of types allowed by using the <literal>extends</literal> 
+        keyword. Some examples follow:</para>
+        
+        <variablelist>
+
+        <varlistentry>
+          <term>class Foo&lt;T> {...}</term>
+          <listitem>
+            <para>A class <literal>Foo</literal> with one type parameter, <literal>T</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>class Foo&lt;T,S> {...}</term>
+          <listitem>
+            <para>A class <literal>Foo</literal> with two type parameters, <literal>T</literal> and <literal>S</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+                
+        <varlistentry>
+          <term>class Foo&lt;T extends Number> {...}</term>
+          <listitem>
+            <para>A class <literal>Foo</literal> with one type parameter <literal>T</literal>, where <literal>T</literal> must be
+            instantiated as the type <literal>Number</literal> or a subtype of <literal>Number</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+        
+        <varlistentry>
+          <term>class Foo&lt;T, S extends T> {...}</term>
+          <listitem>
+            <para>A class <literal>Foo</literal> with two type parameters, <literal>T</literal> and <literal>S</literal>. <literal>Foo</literal>
+            must be instantiated with a type <literal>S</literal> that is a subtype of the type specified for parameter <literal>T</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+        
+        <varlistentry>
+          <term>class Foo&lt;T extends Number &amp; Comparable> {...}</term>
+          <listitem>
+            <para>A class <literal>Foo</literal> with one type parameter, <literal>T</literal>. <literal>Foo</literal>
+            must be instantiated with a type that is a subtype of <literal>Number</literal> and that implements <literal>Comparable</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+                        
+       </variablelist>
+                
 	</sect2>
 	
 	<sect2>
-	    <title>Using Parameterized Types</title>
+	    <title>Using Generic and Parameterized Types</title>
+	    
+	    <para>You declare a variable (or a method/constructor argument) of a parameterized type  by specifying a concrete type specfication for each type parameter in
+	        the generic type. The following example declares a list of strings and a list of numbers:</para>
+	        
+        <programlisting><![CDATA[
+        List<String> strings;
+        List<Number> numbers;
+		]]></programlisting>
+	        
+	    <para>It is also possible to declare a variable of a generic type without specifying any values for the type
+	        parameters (a <emphasis>raw</emphasis> type). For example, <literal>List strings</literal>. 
+	        In this case, unchecked warnings may be issued by the compiler
+	        when the referenced object is passed as a parameter to a method expecting a parameterized type such as a 
+	        <literal>List&lt;String></literal>. New code written in the Java 5 language would not be expected to use
+	        raw types.</para>
+	        
+	    <para>Parameterized types are instantiated by specifying type parameter values in the constructor call expression as in
+	    the following examples:</para>    
+
+        <programlisting><![CDATA[
+        List<String> strings = new MyListImpl<String>();
+        List<Number> numbers = new MyListImpl<Number>();
+		]]></programlisting>
+
+	    <para>
+	     When declaring parameterized types, the <literal>?</literal> wildcard may be used, which stands for "some type".
+	     The <literal>extends</literal> and <literal>super</literal> keywords may be used in conjunction with the wildcard
+	     to provide upper and lower bounds on the types that may satisfy the type constraints. For example:
+	    </para>    
+
+        <variablelist>
+
+        <varlistentry>
+          <term>List&lt;?&gt;</term>
+          <listitem>
+            <para>A list containing elements of some type, the type of the elements in the list is unknown.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>List&lt;? extends Number&gt;</term>
+          <listitem>
+            <para>A list containing elements of some type that extends Number, the exact type of the elements in the list is unknown.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>List&lt;? super Double&gt;</term>
+          <listitem>
+            <para>A list containing elements of some type that is a super-type of Double, the exact type of the elements in the list is unknown.
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+      	        
+      	<para>
+      	  A generic type may be extended as any other type. Given a generic type <literal>Foo&lt;T&gt;</literal> then
+      	  a subtype <literal>Goo</literal> may be declared in one of the following ways:      	
+      	</para>        
+
+        <variablelist>
+
+        <varlistentry>
+          <term>class Goo extends Foo</term>
+          <listitem>
+            <para>Here <literal>Foo</literal> is used as a raw type, and the appropriate warning messages will be
+            issued by the compiler on attempting to invoke methods in <literal>Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>class Goo&lt;E&gt; extends Foo</term>
+          <listitem>
+            <para><literal>Goo</literal> is a generic type, but the super-type <literal>Foo</literal> is used as a raw
+            type and the appropriate warning messages will be
+            issued by the compiler on attempting to invoke methods defined by <literal>Foo</literal>.            
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>class Goo&lt;E&gt; extends Foo&lt;E&gt;</term>
+          <listitem>
+            <para>This is the most usual form. <literal>Goo</literal> is a generic type with one parameter that extends
+            the generic type <literal>Foo</literal> with that same parameter. So <literal>Goo&lt;String&lt;</literal> is 
+            a subclass of <literal>Foo&lt;String&gt;</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>class Goo&lt;E,F&gt; extends Foo&lt;E&gt;</term>
+          <listitem>
+            <para><literal>Goo</literal> is a generic type with two parameters that extends
+            the generic type <literal>Foo</literal> with the first type parameter of <literal>Goo</literal> being used
+            to parameterize <literal>Foo</literal>. So <literal>Goo&lt;String,Integer&lt;</literal> is 
+            a subclass of <literal>Foo&lt;String&gt;</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>class Goo extends Foo&lt;String&gt;</term>
+          <listitem>
+            <para><literal>Goo</literal> is a type that extends
+            the parameterized type <literal>Foo&lt;String&gt;</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+      	        
+	    <para>A generic type may implement one or more generic interfaces, following the type binding
+	    rules given above. A type may also implement one or more parameterized interfaces (for example,
+	    <literal>class X implements List&lt;String&gt;</literal>, however a type may not at the same time
+	    be a subtype of two interface types which are different parameterizations of the same interface.</para>
 	</sect2>
 	
 	<sect2>
-	    <title>Assignments and Wildcards</title>
+	    <title>Subtypes, Supertypes, and Assignability</title>
+	    
+	    <para>
+	      The supertype of a generic type <literal>C</literal> is the type given in the extends clause of
+	      <literal>C</literal>, or <literal>Object</literal> if no extends clause is present. Given the type declaration
+	    </para>
+
+        <programlisting><![CDATA[
+        public interface List<E> extends Collection<E> {... }
+		]]></programlisting>
+	    
+	    <para>
+	      then the supertype of <literal>List&lt;E&gt;</literal> is <literal>Collection&lt;E&gt;</literal>.
+	    </para>
+	    
+	    <para>
+	      The supertype of a parameterized type <literal>P</literal> is the type given in the extends clause of
+	      <literal>P</literal>, or <literal>Object</literal> if no extends clause is present. Any type parameters in
+	      the supertype are substituted in accordance with the parameterization of <literal>P</literal>. An example
+	      will make this much clearer: Given the type <literal>List&lt;Double&gt;</literal> and the definition of
+	      the <literal>List</literal> given above, the direct supertype is
+	      <literal>Collection&lt;Double&gt;</literal>. <literal>List&lt;Double&gt;</literal> is <emphasis>not</emphasis>
+	      considered to be a subtype of <literal>List&lt;Number&gt;</literal>.
+	    </para>
+	    
+	    <para>
+	      An instance of a parameterized type <literal>P&lt;T1,T2,...Tn&gt;</literal>may be assigned to a variable of 
+	      the same type or a supertype
+	      without casting. In addition it may be assigned to a variable <literal>R&lt;S1,S2,...Sm&gt;</literal> where
+	      <literal>R</literal> is a supertype of <literal>P</literal> (the supertype relationship is reflexive), 
+	      <literal>m &lt;= n</literal>, and for all type parameters <literal>S1..m</literal>, <literal>Tm</literal> equals
+	      <literal>Sm</literal> <emphasis>or</emphasis> <literal>Sm</literal> is a wildcard type specification and 
+	      <literal>Tm</literal> falls within the bounds of the wildcard. For example, <literal>List&lt;String&gt;</literal>
+	      can be assigned to a variable of type <literal>Collection&lt;?&gt;</literal>, and <literal>List&lt;Double&gt;</literal>
+	      can be assigned to a variable of type <literal>List&lt;? extends Number&gt;</literal>. 	      
+	    </para>
+	    
 	</sect2>
 	
 	<sect2>
-	    <title>Generic Methods</title>
+	    <title>Generic Methods and Constructors</title>
+	    <para>
+	      A static method may be declared with one or more type parameters as in the following declaration:
+	    </para>
+
+        <programlisting><![CDATA[
+          static <T> T first(List<T> ts) { ... }
+		]]></programlisting>
+	    
+	    <para>
+	        Such a definition can appear in any type, the type parameter <literal>T</literal> does not need to
+	        be declared as a type parameter of the enclosing type.
+	    </para>
+	    
+	    <para>
+	      Non-static methods may also be declared with one or more type parameters in a similar fashion:
+	    </para>
+	    
+        <programlisting><![CDATA[
+          <T extends Number> T max(T t1, T t2) { ... }
+		]]></programlisting>
+	    
+	    <para>The same technique can be used to declare a generic constructor.</para>
+	    	    
+	</sect2>
+	
+	<sect2>
+	  <title>Erasure</title>
+	  <para>Generics in Java are implemented using a technique called <emphasis>erasure</emphasis>. All
+	  type parameter information is erased from the run-time type system. Asking an object of a parameterized
+	  type for its class will return the class object for the raw type (eg. <literal>List</literal> for an object
+	  declared to be of type <literal>List&lt;String&gt;</literal>. A consequence of this is that you cannot at
+	  runtime ask if an object is an <literal>instanceof</literal> a parameterized type.</para>
 	</sect2>
   </sect1>
 	
   <sect1 id="generics-inAspectJ5">
+      <title>Generics in AspectJ 5</title>
       
       <sect2>
-          <title>Parameterized Aspect Types</title>
+       <title>Matching generic and parameterized types in type patterns</title>
+      
+      <para>
+           The type pattern <literal>"Foo"</literal> matches all types named <literal>Foo</literal>, whether they
+           be simple types, generic types, or parameterized types. So for example, <literal>Foo</literal>, 
+           <literal>Foo&lt;T&gt;</literal>, and <literal>Foo&lt;String&gt;</literal>will all be matched. 
+      </para>
+      
+      <para>
+          AspectJ 5 also extends the specification of type patterns to allow explicit matching of generic and parameterized
+          types.
+      </para>
+      
+      	<programlisting><![CDATA[
+  	  	TypePattern := SimpleTypePattern |
+  	  	               '!' TypePattern |
+  	  	               '(' AnnotationPattern? TypePattern ')'
+  	  	               TypePattern '&&' TypePattern |
+  	  	               TypePattern '||' TypePattern |
+  	  	               TypePattern '<' TypeParameterPatternList '>'
+  	  	               
+  	  	TypeParameterPatternList ::= TypeParameterPattern (',' TypeParameterPattern)*
+  	  	
+  	  	TypeParameterPattern ::= TypePattern |
+  	  	                                    '?' TypeBoundPattern?
+  	  	                                    
+  	  	TypeBoundPattern ::= 'extends' TypePattern AdditionalBoundPatternList? |
+  	  	                               'super' TypePattern AdditionalBoundPatternList?
+  	  	                     
+  	  	AdditionalBoundPatternList ::= AdditionalBoundPattern AdditionalBoundPatternList |
+  	  	                                         AdditionalBoundPattern
+  	  	                               
+  	  	AdditionalBoundPattern ::= '&' TypePattern 
+  	  	
+  	  	TypeParameterList ::= '<' TypeParameter (',' TypeParameter)* '>'
+  	  	    
+  	  	TypeParameter ::= Identifier TypeBound?
+  	  	
+  	  	TypeBound ::= 'extends' ReferenceType AdditionBoundList? |
+  	  	                     'super' ReferenceType AdditionalBoundList?
+  	  	                     
+  	  	AdditionalBoundList ::= AdditionalBound AdditionalBoundList |
+  	  	                                AdditionalBound
+  	  	                                
+  	  	AdditionalBound ::= '&' ReferenceType 
+  	  	
+		]]></programlisting>
+  	  	
+  	  	<para>
+  	  	    A simple identifier occuring in a type parameter list will be treated as a type name unless it has previously
+  	  	    been declared as a type variable in a <literal>TypeParameterList</literal>. Some simple examples of 
+  	  	    type patterns follow:
+  	  	</para>
+  	  	
+    <variablelist>
+
+        <varlistentry>
+          <term>List&lt;String&gt;</term>
+          <listitem>
+            <para>Matches the parameterized type <literal>List&lt;String&gt;</literal>
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>List&lt;? extends Number&gt;</term>
+          <listitem>
+            <para>Matches the parameterized type <literal>List&lt;? extends Number&gt;</literal>
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>List&lt;E&gt;</term>
+          <listitem>
+            <para>Matches the parameterized type <literal>List&lt;E&gt;</literal>. If <literal>E</literal> is not
+            a type then an <literal>invalidAbsoluteTypeName</literal> xlint warning will be issued.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>&lt;E&gt; List&lt;E&gt;</term>
+          <listitem>
+            <para>Matches the generic type <literal>List&lt;E&gt;</literal>. The type parameter name does not
+            have to match the name used in the declaration of <literal>List</literal>, but the bounds must match.
+            Also matches any parameterization of <literal>List</literal> that satisfies the bounds of the type variable
+            (for example, <literal>List&lt;String&gt;</literal>).
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+  	  	
+  	  <para>
+  	    The <literal>*</literal>, <literal>+</literal>, and <literal>..</literal> wildcards may be used in type patterns
+  	    matching against generic and parameterized types (just as in any other type pattern). The <literal>+</literal>
+  	    wildcard matches all subtypes. Recalling the discussion on subtypes and supertypes in the previous section, note
+  	    that the pattern <literal>List&lt;Number&gt;+</literal> will match <literal>List&lt;Number&gt;</literal> and
+  	    <literal>LinkedList&lt;Number&gt;</literal>, but not <literal>List&lt;Double&gt;</literal>. To match lists of
+  	    any number type use the pattern <literal>List&lt;Number+&gt;</literal> which will match 
+  	    <literal>List&lt;Number&gt;</literal>, <literal>List&lt;Double&gt;</literal>, <literal>List&lt;Float&gt;</literal>
+  	    and so on.  
+  	  </para>	
+  	  
+  	  <para>
+  	      The generics wildcard <literal>?</literal> is considered part of the signature of a parameterized type, and
+  	      is <emphasis>not</emphasis> used as an AspectJ wildcard in type matching. For example:
+  	  </para>
+  	  	
+    <variablelist>
+
+        <varlistentry>
+          <term>List&lt;*&gt;</term>
+          <listitem>
+            <para>Matches any parameterized <literal>List</literal>type (<literal>List&lt;String&gt;</literal>,
+              <literal>List&lt;Integer&gt;</literal> and so on).
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>List&lt;?&gt;</term>
+          <listitem>
+            <para>Matches the parameterized type <literal>List&lt;?&gt;</literal> (and does 
+              <emphasis>not</emphasis> match <literal>List&lt;String&gt;</literal>,
+              <literal>List&lt;Integer&gt;</literal> and so on)
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>List&lt;? extends Number+&gt;</term>
+          <listitem>
+            <para>Matches <literal>List&lt;? extends Number&gt;</literal>, <literal>List&lt;? extends Double&gt;</literal>,
+              and so on, but does not match <literal>List&lt;Double&gt;</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+
       </sect2>
       
       <sect2>
-          <title></title>
+          <title>Signature patterns</title>
+          
+          <para>
+            Signature patterns are extended to allow matching of generic methods and constructors, and of
+            members of generic types and parameterized types. 
+          </para>
+          
+          <para>To match members in generic types, the type variables are declared at the start of the
+          signature pattern as in the following examples:</para>
+
+      <variablelist>
+
+        <varlistentry>
+          <term>&lt;T&gt; T *&lt;T&gt;.*</term>
+          <listitem>
+            <para>Matches a field of the type of type parameter <literal>T</literal> in any generic type with a single
+            unbounded type parameter. The field may be of any name.  The similar looking pattern <literal>&lt;T&gt; T *.*</literal> is
+            not valid as the type parameter <literal>T</literal> must be bound in the field pattern body.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>&lt;T extends Number,S&gt; T Util&lt;T,S&gt;.someFunction(List&lt;S&gt;)</term>
+          <listitem>
+            <para>Matches the method <literal>someFunction</literal> in a generic type <literal>Util</literal> with
+            two type parameters, the first type parameter having an upper bound of <literal>Number</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>&lt;E&gt; LinkedList&lt;E&gt;.new()</term>
+          <listitem>
+            <para>Matches the no-argument constructor of the generic type <literal>LinkedList</literal>. 
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+          
+          <para>Matching of members of parameterized types is straightforward. For example, 
+          <literal>void List&lt;String&gt;.add(String)</literal> matches the add method in the 
+          parameterized type <literal>List&lt;String&gt;</literal>.</para>
+          
+          <para>
+            To match a generic method simply omit the binding of the type variable(s) in the declaring type
+            pattern. For example:          
+          </para>
+
+        <programlisting><![CDATA[
+          <T> List<T> *.favourites(List<T>)
+		]]></programlisting>
+		
+		<para>matches a generic method <literal>favourites</literal> declared in any type. To match a 
+		static generic method simply include the <literal>static</literal> modifier in the type pattern.</para>
+          
+      </sect2>
+  	  	
+      <sect2>
+          <title>Pointcuts</title>
+
+        <para>
+            In this section we discuss how type patterns and signature patterns matching on generic and 
+            parameterized types, methods, and constructors can be used in pointcut expressions.  We distinguish
+            between pointcuts that match based on static type information, and pointcuts that match based on
+            runtime type information (<literal>this, target, args</literal>).
+        </para>
+
+         can have execution jps for parameterized interface types?
+
+        <programlisting><![CDATA[
+        
+          execution(* List<T>.*(..))
+          call(* List<String>.*(..))
+          execution(T List<T>.*(..))
+          execution(* List<T>.*(T))
+          execution(<T> * *(..))
+          execution(<T> T *.*(T,T))
+          execution(<T extends Number> T *.*(T,T))
+          execution(static<T> T *.*(T))    
+          call(* List<?>.*(..))
+          call(* List<? extends Number>.*(..))
+          call(* List<? super Double>.*(..))
+          
+          this/target/args   
+          examples with "+"                
+		]]></programlisting>
+
+      declaring pointcuts in generic classes.
+
+      </sect2>
+      
+      <sect2>
+          <title>Inter-type Declarations</title>
+          
+          <para>
+            AspectJ 5 allows type parameters to be used in inter-type declarations - either for declaring generic
+            methods and constructors, or for declaring members on generic types. The syntax for declaring generic
+            methods and constructors follows the regular AspectJ convention of simply qualifying the member name with
+            the target type.
+          </para>
+          
+        <variablelist>
+
+        <varlistentry>
+          <term>&lt;T extends Number&gt; T Utils.max(T first, T second) {...}</term>
+          <listitem>
+            <para>Declares a generic instance method <literal>max</literal> on the class <literal>Util</literal>.
+            The <literal>max</literal> method takes two arguments, <literal>first</literal> and <literal>second</literal> which must
+            both be of the same type (and that type must be Number or a subtype of Number) and returns an instance
+            of that type.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>static &lt;E&gt; E Utils.first(List&lt;E&gt; elements) {...}</term>
+          <listitem>
+            <para>Declares a static generic method <literal>first</literal> on the class <literal>Util</literal>.
+            The <literal>first</literal> method takes a list of elements of some type, and returns an instance
+            of that type.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>&lt;T&gt; Sorter.new(List&lt;T&gt; elements,Comparator&lt;? super T&gt; comparator) {...}</term>
+          <listitem>
+            <para>Declares a constructor on the class <literal>Sorter</literal>.
+            The constructor takes a list of elements of some type, and a comparator that can compare instances
+            of the element type.
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+         
+      <para>
+         A generic type may be the target of an inter-type declaration, used either in its raw form or with
+         type parameters specified. If type parameters are specified, then the number of type parameters and
+         their bounds given in the inter-type declararation must be compatible with type parameter definitions in
+         the generic type declaration. Type parameter <emphasis>names</emphasis> do not have to match.
+         For example, given the generic type <literal>Foo&lt;T,S extends Number&gt;</literal> then:      
+      </para>    
+      
+        <variablelist>
+
+        <varlistentry>
+          <term>String Foo.getName() {...}</term>
+          <listitem>
+            <para>Declares a <literal>getName</literal> method on behalf of the raw type <literal>Foo</literal>. It is
+            not possible to refer to the type parameters of Foo in such a declaration.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>R Foo&lt;Q, R extends Number&gt;.getMagnitude() {...}</term>
+          <listitem>
+            <para>Declares a method <literal>getMagnitude</literal> on the generic class <literal>Foo</literal>.
+            The method returns an instance of the type substituted for the second type parameter in an invocation
+            of <literal>Foo</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>R Foo&lt;Q, R&gt;.getMagnitude() {...}</term>
+          <listitem>
+            <para>Results in a compilation error since the generic type <literal>Foo</literal> with two unbounded
+            type parameters cannot be found.
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+      
+      <para>A parameterized type may not be the target of an inter-type declaration. This is because
+      there is only one type (the generic type) regardless of how many different invocations (parameterizations) of
+      that generic type are made in a program. Therefore it does not make sense to try and declare a member
+      on behalf of (say) <literal>Foo&lt;String&gt;</literal>, you can only declare members on the generic
+      type <literal>Foo&lt;T&gt;</literal>. 
+      </para>
+      
+      <para>
+        If an inter-type member is declared inside a generic aspect, then the type parameter names from the
+        aspect declaration may be used in the signature specification of the inter-type declaration, but 
+        <emphasis>not</emphasis> as type parameter names for a generic target type. In other words the example
+        that follows is legal:
+      </para>
+
+        <programlisting><![CDATA[
+            public abstract aspect A<T> {
+              
+              private T Foo.data;
+              
+              public T Foo.getData(T defaultValue) {
+                return (this.data != null ? data : defaultValue);
+              }   
+                
+            }
+		]]></programlisting>
+      
+      <para>
+       Whereas the following example is not allowed and will report an error that a parameterized type may not be the
+       target of an inter-type declaration (since when the type parameter <literal>T</literal> in the aspect is subsituted with
+       say, <literal>String</literal>, then the target of the inter-type declaration becomes <literal>Goo&lt;String&gt;</literal>).  
+      </para>
+
+        <programlisting><![CDATA[
+            public abstract aspect A<T> {
+              
+              private T Goo<T>.data;
+              
+              public T Goo<T>.getData(T defaultValue) {
+                return (this.data != null ? data : defaultValue);
+              }   
+                
+            }
+		]]></programlisting>
+            
       </sect2>
 
       <sect2>
-          <title></title>
+          <title>Declare Parents</title>
+          
+          <para>Both generic and parameterized types can be used as the parent type in a <literal>declare parents</literal>
+          statement (as long as the resulting type hierarchy would be well-formed in accordance with Java's sub-typing
+          rules). Generic types may also be used as the target type of a <literal>declare parents</literal> statement: 
+          a type variable specification preceeds the type pattern in these cases.
+          Some examples follow:</para>
+
+        <variablelist>
+
+        <varlistentry>
+          <term>declare parents: Foo implements List&lt;String&gt;</term>
+          <listitem>
+            <para>The <literal>Foo</literal> type implements the <literal>List&lt;String&gt;</literal> interface. If
+            <literal>Foo</literal> already implements some other parameterization of the <literal>List</literal>
+            interface (for example, <literal>List&lt;Integer&gt;</literal> then a compilation error will result since a 
+            type cannot implement multiple parameterizations of the same generic interface type. 
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>declare parents: &lt;T&gt; org.xyz..*&lt;T&gt; extends Base&lt;T&gt;</term>
+          <listitem>
+            <para>All generic types declared in a package beginning with <literal>org.xyz</literal> and with a 
+            single unbounded type parameter, extend the generic type <literal>Base&lt;T&gt;</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>declare parents: &lt;T&gt; org.xyz..*&lt;T&gt; extends Base&lt;S&gt;</term>
+          <listitem>
+            <para>Results in a compilation error (unless <literal>S</literal> is a type) since <literal>S</literal> is
+            not bound in the type pattern.
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+
+      </sect2>
+      
+      <sect2>
+          <title>Declare Soft</title>
+          <para>It is an error to use a generic or parameterized type as the softened exception type in a declare soft statement. Java 5 does
+          not permit a generic class to be a direct or indirect subtype of <literal>Throwable</literal> (JLS 8.1.2).</para>
       </sect2>
 
       <sect2>
-          <title></title>
+          <title>Parameterized Aspects</title>
+          
+          <para>
+            AspectJ 5 allows an <emphasis>abstract</emphasis> aspect to be declared as a generic type. Any concrete
+            aspect extending a generic abstract aspect must extend a parameterized version of the abstract aspect.
+            Wildcards are not permitted in this parameterization.     
+          </para>
+      
+          <para>Given the aspect declaration:</para>
+          
+        <programlisting><![CDATA[
+            public abstract aspect ParentChildRelationship<P,C> {
+                ...
+            }
+		]]></programlisting>
+           
+           <para>then</para>
+
+       <variablelist>
+
+        <varlistentry>
+          <term>public aspect FilesInFolders extends ParentChildRelationship&lt;Folder,File&gt; {...</term>
+          <listitem>
+            <para>declares a concrete sub-aspect, <literal>FilesInFolders</literal> which extends the
+            parameterized abstract aspect <literal>ParentChildRelationship&lt;Folder,File&gt;</literal>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>public aspect FilesInFolders extends ParentChildRelationship {...</term>
+          <listitem>
+            <para>results in a compilation error since the <literal>ParentChildRelationship</literal> aspect must
+            be fully parameterized.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>public aspect ThingsInFolders&lt;T&gt; extends ParentChildRelationship&lt;Folder,T&gt;</term>
+          <listitem>
+            <para>results in a compilation error since concrete aspects may not have type parameters.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>public abstract aspect ThingsInFolders&lt;T&gt; extends ParentChildRelationship&lt;Folder,T&gt;</term>
+          <listitem>
+            <para>declares a sub-aspect of <literal>ParentChildRelationship</literal> in which <literal>Folder</literal>
+            plays the role of parent (is bound to the type variable <literal>P</literal>).
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+      
+       <para>An exception to the rule that concrete aspects may not be generic is a pertypewithin aspect, which
+       may be declared with a single unbounded type parameter. This is discussed in the chapter on <xref
+      linkend="pertypewithin" />.</para>
+            
+        <para>The type parameter variables from a generic aspect declaration may be used in place of a type within any
+        member of the aspect. For example, we can declare a <literal>ParentChildRelationship</literal> aspect to
+        manage the bi-directional relationship between parent and child nodes as follows:
+        </para>
+
+        <programlisting><![CDATA[
+            public abstract aspect ParentChildRelationship<P,C> {
+                
+                /**
+                 * Parents contain a list of children
+                 */
+                private List<C> P.children;
+                    
+                /**
+                 * Each child has a parent
+                 */
+                private P C.parent;
+                
+                /**
+                 * ensure bi-directional navigation on adding a child
+                 */
+                public void P.addChild(C child) {
+                   if (child.parent != null) {
+                     child.parent.removeChild(child);
+                   }
+                   children.add(child);
+                   child.parent = this;
+                }
+
+                /**
+                 * ensure bi-directional navigation on removing a child
+                 */
+                public void P.removeChild(C child) {
+                   if (children.remove(child)) {
+                     child.parent = null;
+                   }
+                }
+
+               /**
+                 * ensure bi-directional navigation on setting parent
+                 */
+                public void C.setParent(P parent) {
+                   parent.addChild(this);
+                }
+                
+                public pointcut addingChild(P p, C c) :
+                  execution(* P.addChild(C)) && this(p) && args(c);
+                  
+                public pointcut removingChild(P p, C c) :
+                  execution(* P.removeChild(C)) && this(p) && args(c);
+            }
+		]]></programlisting>
+
+        <para>
+          Note in the above example how the type parameters <literal>P</literal> and <literal>C</literal> can be
+          used in inter-type declarations, pointcut expressions, and any other member of the aspect type. 
+        </para>
+        
+        <para>
+          The example aspect captures the protocol for managing a bi-directional parent-child relationship between
+          any two types playing the role of parent and child. In a compiler implementation managing an abstract syntax
+          tree (AST) in which AST nodes may contain other AST nodes we could declare the concrete aspect:
+        </para>
+
+        <programlisting><![CDATA[
+            public aspect ASTNodeContainment extends ParentChildRelationship<ASTNode,ASTNode> {
+                
+                before(ASTNode parent, ASTNode child) : addingChild(parent, child) {
+                  ...
+                }
+                
+            }
+		]]></programlisting>
+            
+         <para>
+           As a result of this declaration, <literal>ASTNode</literal> gains members:
+         </para>
+
+        <simplelist>
+            <member><literal>List&lt;ASTNode&gt; children</literal></member>
+            <member><literal>ASTNode parent</literal></member>
+            <member><literal>void addChild(ASTNode child)</literal></member>
+            <member><literal>void removeChild(ASTNode child)</literal></member>
+            <member><literal>void setParent(ASTNode parent)</literal></member>
+        </simplelist>         
+         
+         <para>
+           In a system managing files and folders, we could declare the concrete aspect:
+         </para>
+
+        <programlisting><![CDATA[
+            public aspect FilesInFolders extends ParentChildRelationship<Folder,File> {
+                                
+            }
+		]]></programlisting>
+
+         <para>
+           As a result of this declaration, <literal>Folder</literal> gains members:
+         </para>
+
+        <simplelist>
+            <member><literal>List&lt;File&gt; children</literal></member>
+            <member><literal>void addChild(File child)</literal></member>
+            <member><literal>void removeChild(File child)</literal></member>
+        </simplelist>         
+
+        <para>and <literal>File</literal> gains members:</para>
+        
+        <simplelist>
+            <member><literal>Folder parent</literal></member>
+            <member><literal>void setParent(Folder parent)</literal></member>
+        </simplelist>         
+         
+        <para>When used in this way, the type parameters in a generic abstract aspect declare
+        <emphasis>roles</emphasis>, and the parameterization of the abstract aspect in the <literal>extends</literal>
+        clause binds types to those roles. This is a case where you may consider departing from the standard practice 
+        of using a single letter to represent a type parameter, and instead use a role name. It makes no difference
+        to the compiler which option you choose of course.</para>
+
+        <programlisting><![CDATA[
+            public abstract aspect ParentChildRelationship<Parent,Child> {
+                
+                /**
+                 * Parents contain a list of children
+                 */
+                private List<Child> Parent.children;
+                    
+                /**
+                 * Each child has a parent
+                 */
+                private Parent Child.parent;
+                
+                /**
+                 * ensure bi-directional navigation on adding a child
+                 */
+                public void Parent.addChild(Child child) {
+                   if (child.parent != null) {
+                     child.parent.removeChild(child);
+                   }
+                   children.add(child);
+                   child.parent = this;
+                }
+         
+                ...
+		]]></programlisting>
       </sect2>
       
   </sect1>
