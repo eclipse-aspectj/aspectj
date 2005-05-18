@@ -96,7 +96,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 								endPos,
 								sLoc != null ? sLoc.getLine() : 0
 								);
-		IProblem[] seeAlso = buildSeeAlsoProblems(message.getExtraSourceLocations(),
+		IProblem[] seeAlso = buildSeeAlsoProblems(problem,message.getExtraSourceLocations(),
 												  problemSource,	
 												  usedBinarySourceFileName);
 		problem.setSeeAlsoProblems(seeAlso);
@@ -179,7 +179,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 		return context;
 	}
 	
-	private IProblem[] buildSeeAlsoProblems(List sourceLocations,
+	private IProblem[] buildSeeAlsoProblems(IProblem originalProblem,List sourceLocations,
 											CompilationResult problemSource,
 											boolean usedBinarySourceFileName) {
 		List ret = new ArrayList();
@@ -198,6 +198,8 @@ public class WeaverMessageHandler implements IMessageHandler {
 										loc.getLine());
 			  ret.add(dp);
 			} else {
+				System.err.println("About to abort due to null location, dumping state:");
+				System.err.println("> Original Problem="+problemSource.toString());
 				throw new RuntimeException("Internal Compiler Error: Unexpected null source location passed as 'see also' location.");
 			}
 		}
