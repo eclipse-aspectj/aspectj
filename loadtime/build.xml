@@ -1,62 +1,6 @@
 <?xml version="1.0"?>
-<project name="loadtime" default="all" basedir=".">
-
-    <import file="../build/build-common.xml"/>
-    <import file="../asm/build.xml"/>
-    <import file="../bridge/build.xml"/>
-    <import file="../util/build.xml"/>
-    <import file="../weaver/build.xml"/>
-
-
-    <path id="loadtime.test.src.path">
-        <fileset dir="${basedir}/../lib">
-            <include name="junit/*.jar"/>
-        </fileset>
-        <path refid="loadtime.src.path"/>
-    </path>
-
-    <path id="loadtime.src.path">
-        <pathelement path="../asm/bin"/>
-        <pathelement path="../bridge/bin"/>
-        <pathelement path="../util/bin"/>
-        <pathelement path="../weaver/bin"/>
-        <fileset dir="${basedir}/../lib">
-            <include name="bcel/*.jar"/>
-        </fileset>
-    </path>
-
-    <target name="compile" depends="init,
-                                    asm.compile,
-                                    bridge.compile,
-                                    util.compile,
-                                    weaver.compile">
-        <srccompile project="loadtime" path="loadtime.src.path"/>
-        <!-- copy resources -->
-        <copy todir="../loadtime/bin">
-            <fileset dir="../loadtime/src" includes="**/*.dtd"/>
-        </copy>
-    </target>
-
-    <target name="test:compile" depends="compile">
-        <testcompile project="loadtime" path="loadtime.src.path"/>
-        <!-- copy resources -->
-        <copy todir="../loadtime/bin">
-            <fileset dir="../loadtime/testsrc" includes="**/*.xml"/>
-        </copy>
-    </target>
-
-    <target name="test" depends="test:compile">
-        <testrun project="loadtime" path="loadtime.test.src.path" suite="LoadtimeModuleTests"/>
-    </target>
-
-    <target name="jar" depends="compile">
-        <delete file="${build.ajdir}/jars/loadtime.jar"/>
-        <jar destfile="${build.ajdir}/jars/loadtime.jar">
-            <fileset dir="bin">
-                <include name="**/*"/>
-            </fileset>
-        </jar>
-    </target>
-
+<!-- see ../build/*.html for explanation -->
+<project name="loadtime" default="test" basedir=".">
+    <import file="${basedir}/../build/build.xml"/>  
 </project>
 

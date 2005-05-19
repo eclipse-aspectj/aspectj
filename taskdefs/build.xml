@@ -1,64 +1,6 @@
 <?xml version="1.0"?>
-<project name="taskdefs" default="all" basedir=".">
-
-    <import file="../build/build-common.xml"/>
-    <import file="../bridge/build.xml"/>
-    <import file="../org.aspectj.ajdt.core/build.xml"/>
-
-    <path id="taskdefs.test.src.path">
-        <path refid="taskdefs.src.path"/>
-        <fileset dir="${basedir}/../lib">
-            <include name="junit/*.jar"/>
-        </fileset>
-        <!-- below: needed for test run but not test:compile -->
-        <pathelement path="../weaver/bin"/>
-        <pathelement path="../asm/bin"/>
-        <pathelement path="../runtime/bin"/>
-        <fileset dir="${basedir}/../org.eclipse.jdt.core">
-            <include name="*.jar"/>
-        </fileset>
-        <fileset dir="${basedir}/../lib">
-            <include name="bcel/*.jar"/>
-        </fileset>
-    </path>
-
-    <path id="taskdefs.src.path">
-        <pathelement path="../bridge/bin"/>
-        <pathelement path="../org.aspectj.ajdt.core/bin"/>
-        <pathelement path="../util/bin"/>
-    </path>
-
-    <target name="compile" depends="init,
-                                    bridge.compile,
-                                    org.aspectj.ajdt.core.compile,
-                                    util.compile">
-        <srccompile project="taskdefs" path="taskdefs.src.path"/>
-        <!-- copy resources -->
-        <copy todir="../taskdefs/bin">
-            <fileset dir="../taskdefs/src" includes="**/*.properties"/>
-        </copy>
-    </target>
-
-    <target name="test:compile" depends="compile">
-        <testcompile project="taskdefs" path="taskdefs.test.src.path"/>
-    </target>
-
-    <target name="test" depends="test:compile,
-                                 asm.compile,
-                                 org.aspectj.ajdt.core.compile,
-                                 runtime.compile,
-                                 weaver.compile">
-        <testrun project="taskdefs" path="taskdefs.test.src.path" suite="TaskdefsModuleTests"/>
-    </target>
-
-    <target name="jar" depends="compile">
-        <delete file="${build.ajdir}/jars/taskdefs.jar"/>
-        <zip destfile="${build.ajdir}/jars/taskdefs.jar">
-            <fileset dir="bin">
-                <include name="**/*"/>
-            </fileset>
-        </zip>
-    </target>
-
+<!-- see ../build/*.html for explanation -->
+<project name="taskdefs" default="test" basedir=".">
+    <import file="${basedir}/../build/build.xml"/>  
 </project>
 

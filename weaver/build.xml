@@ -1,62 +1,6 @@
 <?xml version="1.0"?>
-<project name="weaver" default="all" basedir=".">
-
-    <import file="../build/build-common.xml"/>
-    <import file="../asm/build.xml"/>
-    <import file="../runtime/build.xml"/>
-    <import file="../util/build.xml"/>
-    <import file="../testing-util/build.xml"/>
-
-    <path id="weaver.test.src.path">
-        <pathelement path="../testing-util/bin"/>
-        <fileset dir="${basedir}/../lib">
-            <include name="junit/*.jar"/>
-            <include name="jdiff/*.jar"/>
-        </fileset>
-        <path refid="weaver.src.path"/>
-    </path>
-
-    <path id="weaver.src.path">
-        <pathelement path="../asm/bin"/>
-        <pathelement path="../bridge/bin"/>
-        <pathelement path="../runtime/bin"/>
-        <pathelement path="../util/bin"/>
-        <fileset dir="${basedir}/../lib">
-            <include name="bcel/*.jar"/>
-        </fileset>
-    </path>
-
-    <target name="compile" depends="init,
-                                    asm.compile,
-                                    bridge.compile,
-                                    runtime.compile,
-                                    util.compile">
-        <srccompile project="weaver" path="weaver.src.path"/>
-        <!-- copy resources -->
-        <copy todir="../weaver/bin">
-            <fileset dir="../weaver/src" includes="**/*.properties"/>
-        </copy>
-    </target>
-
-    <target name="test:compile" depends="compile,
-                                         testing-util.compile">
-        <testcompile project="weaver" path="weaver.test.src.path"/>
-    </target>
-
-    <target name="test" depends="test:compile">
-        <testrun project="weaver" path="weaver.test.src.path" suite="BcweaverModuleTests"/>
-    </target>
-
-    <target name="jar" depends="compile">
-        <delete file="${build.ajdir}/jars/weaver.jar"/>
-        <copy file="weaver.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
-        <jar destfile="${build.ajdir}/jars/weaver.jar" manifest="${build.ajdir}/temp/weaver.mf.txt">
-            <fileset dir="bin">
-                <include name="**/*"/>
-            </fileset>
-        </jar>
-    </target>
-    <!-- FIXME av weaver-all needed ? -->
-
+<!-- see ../build/*.html for explanation -->
+<project name="weaver" default="test" basedir=".">
+    <import file="${basedir}/../build/build.xml"/>  
 </project>
 

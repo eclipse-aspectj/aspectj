@@ -1,62 +1,6 @@
 <?xml version="1.0"?>
-<project name="ajde" default="all" basedir=".">
-
-    <import file="../build/build-common.xml"/>
-    <import file="../runtime/build.xml"/>
-    <import file="../org.aspectj.ajdt.core/build.xml"/>
-
-    <path id="ajde.test.src.path">
-        <path refid="ajde.src.path"/>
-        <pathelement path="../org.aspectj.ajdt.core/bintest"/>
-        <pathelement path="../weaver/bin"/>
-        <pathelement path="../runtime/bin"/>
-        <fileset dir="${basedir}/../lib">
-            <include name="bcel/*.jar"/>
-            <include name="junit/*.jar"/>
-        </fileset>
-    </path>
-
-    <path id="ajde.src.path">
-        <fileset dir="${basedir}/../org.eclipse.jdt.core">
-            <include name="*.jar"/>
-        </fileset>
-        <pathelement path="../asm/bin"/>
-        <pathelement path="../bridge/bin"/>
-        <pathelement path="../org.aspectj.ajdt.core/bin"/>
-        <pathelement path="../util/bin"/>
-    </path>
-
-    <target name="compile" depends="init,
-                                    asm.compile,
-                                    bridge.compile,
-                                    org.aspectj.ajdt.core.compile,
-                                    util.compile">
-        <srccompile project="ajde" path="ajde.src.path"/>
-        <!-- copy resources -->
-        <copy todir="../ajde/bin">
-            <fileset dir="../ajde/src" includes="**/*.gif"/>
-        </copy>
-    </target>
-
-    <target name="test:compile" depends="compile,
-                                         org.aspectj.ajdt.core.test:compile,
-                                         weaver.test:compile">
-        <testcompile project="ajde" path="ajde.test.src.path"/>
-    </target>
-
-    <target name="test" depends="test:compile,
-                                 runtime.compile">
-        <testrun project="ajde" path="ajde.test.src.path" suite="AjdeModuleTests"/>
-    </target>
-
-    <target name="jar" depends="compile">
-        <delete file="${build.ajdir}/jars/ajde.jar"/>
-        <zip destfile="${build.ajdir}/jars/ajde.jar">
-            <fileset dir="bin">
-                <include name="**/*"/>
-            </fileset>
-        </zip>
-    </target>
-
+<!-- see ../build/*.html for explanation -->
+<project name="ajde" default="test" basedir=".">
+    <import file="${basedir}/../build/build.xml"/>  
 </project>
 

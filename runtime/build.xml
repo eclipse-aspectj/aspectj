@@ -1,56 +1,6 @@
 <?xml version="1.0"?>
-<project name="runtime" default="all" basedir=".">
-
-    <import file="../build/build-common.xml"/>
-
-    <path id="runtime.test.src.path">
-        <fileset dir="${basedir}/../lib">
-            <include name="junit/*.jar"/>
-        </fileset>
-        <path refid="runtime.src.path"/>
-    </path>
-
-    <path id="runtime.src.path">
-    </path>
-
-    <target name="compile" depends="init, compile:jdk13, compile:residual">
-        <!-- don't use the Ant macro srccompile that is Java 1.3 level -->
-        <!-- use an indirection level since Java 5 does not accept -source 1.1 anymore -->
-        <!-- under Java 5 we will only ensure source 1.2 -->
-    </target>
-    <target name="compile:jdk13" if="jdk13">
-        <!-- Note: note sure we can trust that. Pbly better if CruiseControl runs with a real 1.1 for this module -->
-        <!-- f.e. use a TreeMap (@since Java 1.2) somewhere, and it still compiles.. -->
-        <mkdir dir="../runtime/bin"/>
-        <javac debug="on" destdir="../runtime/bin" source="1.1" target="1.1">
-            <src path="../runtime/src"/>
-            <classpath refid="runtime.src.path"/>
-        </javac>
-    </target>
-    <target name="compile:residual">
-        <srccompile project="runtime" path="runtime.src.path"/>
-    </target>
-
-    <target name="test:compile" depends="compile">
-        <!-- TODO AV do we want to run them on 1.1 ? -->
-        <testcompile project="runtime" path="runtime.test.src.path"/>
-    </target>
-
-    <target name="test" depends="test:compile">
-        <testrun project="runtime" path="runtime.test.src.path" suite="RuntimeModuleTests"/>
-    </target>
-
-    <target name="all" depends="init, compile, test:compile"/>
-
-    <target name="jar" depends="compile">
-        <delete file="${build.ajdir}/jars/runtime.jar"/>
-        <copy file="runtime.mf.txt" todir="${build.ajdir}/temp" filtering="yes"/>
-        <jar destfile="${build.ajdir}/jars/runtime.jar" manifest="${build.ajdir}/temp/runtime.mf.txt">
-            <fileset dir="bin">
-                <include name="**/*"/>
-            </fileset>
-        </jar>
-    </target>
-
+<!-- see ../build/*.html for explanation -->
+<project name="runtime" default="test" basedir=".">
+    <import file="${basedir}/../build/build.xml"/>  
 </project>
 
