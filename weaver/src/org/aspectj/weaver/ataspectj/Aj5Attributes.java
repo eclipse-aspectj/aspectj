@@ -54,6 +54,8 @@ import org.aspectj.weaver.patterns.PerTypeWithin;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.ParserException;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 
 /**
  * Annotation defined aspect reader.
@@ -124,6 +126,21 @@ public class Aj5Attributes {
                 m_argumentNamesLazy = getMethodArgumentNamesAsInSource(method);
             }
             return m_argumentNamesLazy;
+        }
+    }
+
+    /**
+     * A struct when we read @AJ on field
+     *
+     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+     */
+    private static class AjAttributeFieldStruct extends AjAttributeStruct {
+
+        final Field field;
+
+        public AjAttributeFieldStruct(Field field, ResolvedTypeX type, ISourceContext sourceContext, IMessageHandler messageHandler) {
+            super(type, sourceContext, messageHandler);
+            this.field = field;
         }
     }
 
@@ -206,15 +223,15 @@ public class Aj5Attributes {
         // in order to be able to resolve the pointcut references later on
         //FIXME alex loop over class super class
         //FIXME alex can that be too slow ?
-        for (int m = 0; m < javaClass.getMethods().length; m++) {
-            Method method = javaClass.getMethods()[m];
+        for (int i = 0; i < javaClass.getMethods().length; i++) {
+            Method method = javaClass.getMethods()[i];
 			if (method.getName().startsWith(NameMangler.PREFIX)) continue;  // already dealt with by ajc...
             //FIXME alex optimize, this method struct will gets recreated for advice extraction
             AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, type, context, msgHandler);
             Attribute[] mattributes = method.getAttributes();
 
-            for (int i = 0; i < mattributes.length; i++) {
-                Attribute mattribute = mattributes[i];
+            for (int j = 0; j < mattributes.length; j++) {
+                Attribute mattribute = mattributes[j];
                 if (acceptAttribute(mattribute)) {
                     RuntimeAnnotations mrvs = (RuntimeAnnotations) mattribute;
                     handlePointcutAnnotation(mrvs, mstruct);
@@ -223,6 +240,40 @@ public class Aj5Attributes {
                 }
             }
             struct.ajAttributes.addAll(mstruct.ajAttributes);
+        }
+
+
+        // code style declare error / warning are class attributes
+        for (int i = 0; i < javaClass.getFields().length; i++) {
+            Field field = javaClass.getFields()[i];
+			if (field.getName().startsWith(NameMangler.PREFIX)) continue;  // already dealt with by ajc...
+            //FIXME alex optimize, this method struct will gets recreated for advice extraction
+            AjAttributeFieldStruct fstruct = new AjAttributeFieldStruct(field, type, context, msgHandler);
+            Attribute[] fattributes = field.getAttributes();
+
+            for (int j = 0; j < fattributes.length; j++) {
+                Attribute fattribute = fattributes[j];
+                if (acceptAttribute(fattribute)) {
+                    RuntimeAnnotations frvs = (RuntimeAnnotations) fattribute;
+                    if (handleDeclareErrorOrWarningAnnotation(frvs, fstruct)) {
+                        // semantic check - must be in an @Aspect [remove if previous block bypassed in advance]
+                        if (!type.isAnnotationStyleAspect()) {
+                            msgHandler.handleMessage(
+                                    new Message(
+                                            "Found @AspectJ annotations in a non @Aspect type '" + type.getName() + "'",
+                                            IMessage.WARNING,
+                                            null,
+                                            type.getSourceLocation()
+                                    )
+                            );
+                            ;// go ahead
+                        }
+                    }
+                    // there can only be one RuntimeVisible bytecode attribute
+                    break;
+                }
+            }
+            struct.ajAttributes.addAll(fstruct.ajAttributes);
         }
         return struct.ajAttributes;
     }
@@ -315,8 +366,7 @@ public class Aj5Attributes {
      * @return list of AjAttributes, always empty for now
      */
     public static List readAj5FieldAttributes(Field field, ResolvedTypeX type, ISourceContext context,IMessageHandler msgHandler) {
-		if (field.getName().startsWith(NameMangler.PREFIX)) return Collections.EMPTY_LIST;  // already dealt with by ajc...
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     /**
@@ -530,7 +580,14 @@ public class Aj5Attributes {
             String pointcut = null;
             String returned = null;
             if ((annValue!=null && annPointcut!=null) || (annValue==null && annPointcut==null)) {
-                throw new RuntimeException("AfterReturning at most value or pointcut must be filled");
+                struct.handler.handleMessage(
+                        new Message(
+                                "@AfterReturning: either 'value' or 'poincut' must be provided, not both: " + methodToString(struct.method),
+                                struct.enclosingType.getSourceLocation(),
+                                true
+                        )
+                );
+                return false;
             }
             if (annValue != null) {
                 pointcut = annValue.getValue().stringifyValue();
@@ -538,7 +595,14 @@ public class Aj5Attributes {
                 pointcut = annPointcut.getValue().stringifyValue();
             }
             if (isNullOrEmpty(pointcut)) {
-                throw new RuntimeException("AfterReturning pointcut unspecified");
+                struct.handler.handleMessage(
+                        new Message(
+                                "@AfterReturning: either 'value' or 'poincut' must be provided, not both: " + methodToString(struct.method),
+                                struct.enclosingType.getSourceLocation(),
+                                true
+                        )
+                );
+                return false;
             }
             if (annReturned!=null) {
                 returned = annReturned.getValue().stringifyValue();
@@ -608,7 +672,14 @@ public class Aj5Attributes {
             String pointcut = null;
             String throwned = null;
             if ((annValue!=null && annPointcut!=null) || (annValue==null && annPointcut==null)) {
-                throw new RuntimeException("AfterReturning at most value or pointcut must be filled");
+                struct.handler.handleMessage(
+                        new Message(
+                                "@AfterThrowing: either 'value' or 'poincut' must be provided, not both: " + methodToString(struct.method),
+                                struct.enclosingType.getSourceLocation(),
+                                true
+                        )
+                );
+                return false;
             }
             if (annValue != null) {
                 pointcut = annValue.getValue().stringifyValue();
@@ -616,7 +687,14 @@ public class Aj5Attributes {
                 pointcut = annPointcut.getValue().stringifyValue();
             }
             if (isNullOrEmpty(pointcut)) {
-                throw new RuntimeException("AfterReturning pointcut unspecified");
+                struct.handler.handleMessage(
+                        new Message(
+                                "@AfterThrowing: either 'value' or 'poincut' must be provided, not both: " + methodToString(struct.method),
+                                struct.enclosingType.getSourceLocation(),
+                                true
+                        )
+                );
+                return false;
             }
             if (annThrowned!=null) {
                 throwned = annThrowned.getValue().stringifyValue();
@@ -801,6 +879,69 @@ public class Aj5Attributes {
     }
 
     /**
+     * Read @DeclareError, @DeclareWarning
+     *
+     * @param runtimeAnnotations
+     * @param struct
+     * @return true if found
+     */
+    private static boolean handleDeclareErrorOrWarningAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct struct) {
+        Annotation error = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.DeclareError");
+        boolean hasError = false;
+        if (error != null) {
+            ElementNameValuePair declareError = getAnnotationElement(error, "value");
+            if (declareError != null) {
+                if (!"Ljava/lang/String;".equals(struct.field.getSignature()) || struct.field.getConstantValue()==null) {
+                    struct.handler.handleMessage(
+                            new Message(
+                                    "@DeclareError used on a non String constant field " + fieldToString(struct.field),
+                                    struct.enclosingType.getSourceLocation(),
+                                    true
+                    ));
+                    return false;
+                }
+                FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+                IScope binding = new BindingScope(
+                        struct.enclosingType,
+                        bindings
+                );
+				Pointcut pc = Pointcut.fromString(declareError.getValue().stringifyValue()).resolve(binding);
+                struct.ajAttributes.add(new AjAttribute.DeclareAttribute(
+                        new DeclareErrorOrWarning(true, pc, struct.field.getConstantValue().toString())
+                ));
+                return hasError = true;
+            }
+        }
+        Annotation warning = getAnnotation(runtimeAnnotations, "org.aspectj.lang.annotation.DeclareWarning");
+        boolean hasWarning = false;
+        if (warning != null) {
+            ElementNameValuePair declareWarning = getAnnotationElement(warning, "value");
+            if (declareWarning != null) {
+                if (!"Ljava/lang/String;".equals(struct.field.getSignature()) || struct.field.getConstantValue()==null) {
+                    struct.handler.handleMessage(
+                            new Message(
+                                    "@DeclareWarning used on a non String constant field " + fieldToString(struct.field),
+                                    struct.enclosingType.getSourceLocation(),
+                                    true
+                    ));
+                    return false;
+                }
+                FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+                IScope binding = new BindingScope(
+                        struct.enclosingType,
+                        bindings
+                );
+				Pointcut pc = Pointcut.fromString(declareWarning.getValue().stringifyValue()).resolve(binding);
+                struct.ajAttributes.add(new AjAttribute.DeclareAttribute(
+                        new DeclareErrorOrWarning(false, pc, struct.field.getConstantValue().toString())
+                ));
+                return hasWarning = true;
+            }
+        }
+        return hasError || hasWarning;
+    }
+
+    /**
      * Returns a readable representation of a method.
      * Method.toString() is not suitable.
      *
@@ -811,6 +952,20 @@ public class Aj5Attributes {
         StringBuffer sb = new StringBuffer();
         sb.append(method.getName());
         sb.append(method.getSignature());
+        return sb.toString();
+    }
+
+    /**
+     * Returns a readable representation of a field.
+     * Field.toString() is not suitable.
+     *
+     * @param field
+     * @return
+     */
+    private static String fieldToString(Field field) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(field.getName()).append(' ');
+        sb.append(field.getSignature());
         return sb.toString();
     }
 

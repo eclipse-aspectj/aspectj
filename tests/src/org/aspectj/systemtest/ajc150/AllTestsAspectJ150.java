@@ -48,8 +48,7 @@ public class AllTestsAspectJ150 {
 		suite.addTest(GenericsTests.suite());
 		suite.addTest(AtAjSyntaxTests.suite());
         suite.addTest(AtAjMisuseTests.suite());
-        //FIXME AV - #75442
-        //suite.addTest(AtAjLTWTests.suite());
+        suite.addTest(AtAjLTWTests.suite());
 		//$JUnit-END$
 		return suite;
 	}

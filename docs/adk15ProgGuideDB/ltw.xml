@@ -38,6 +38,8 @@
                 need to specify the <literal>-Xreweavable</literal> compiler option when building
                 them. This causes AspectJ to save additional state in the class files that is used
                 to support subsequent reweaving. </para>
+            <para><!-- FIXME AV -->As per AspectJ 1.5.0 M3 aspects (code style or annotation style) are
+            reweavable by default, and weaved classes may be as well in 1.5.0 final.</para>
         </sect2>
     </sect1>
     
@@ -92,6 +94,7 @@
                 <varlistentry>
                     <term>Command line</term>
                     <listitem>
+                        <!-- FIXME AV - wondering what is the status of this one as per aop.xml etc.. -->
                         <para> AspectJ includes a script "aj" that allows programs executed at
                             the command line to take advantage of load-time weaving. 
                             The script is customized when AspectJ is installed depending on the chosen 
@@ -207,6 +210,7 @@
                 found on the search path (regular <literal>getResourceAsStream</literal> lookup)
                 according to the following rules: </para>
             <itemizedlist>
+                <!-- FIXME AV - looks like we can refine conf in a child CL - not good -->
                 <listitem> The set of available aspects is the set of all
                     declared and defined aspects (<literal>aspect</literal> and
                     <literal>concrete-aspect</literal> elements of the <literal>aspects</literal>
@@ -286,6 +290,12 @@
                         </row>
                         <row>
                             <entry>
+                                <literal>-Xlint, -Xlint:ignore, ...</literal>
+                            </entry>
+                            <entry>Configure lint messages</entry><!--FIXME AV - default to blabla, see link X -->
+                        </row>
+                        <row>
+                            <entry>
                                 <literal>-nowarn, -warn:none</literal>
                             </entry>
                             <entry>Suppress warning messages</entry>
@@ -311,7 +321,7 @@
                         </row>
                         <row>
                             <entry>
-                                <literal>-Xnoinline</literal>
+                                <literal>-XnoInline</literal>
                             </entry>
                             <entry>Don't inline around advice.</entry>
                         </row>
@@ -323,9 +333,14 @@
                         </row>
                         <row>
                             <entry>
-                                <literal>-XmessageHolderClass</literal>
+                                <literal>-XmessageHolderClass:...</literal>
                             </entry>
-                            <entry>Provide alternative output destination to stderr for all weaver messages</entry>
+                            <entry>Provide alternative output destination to stdout/stderr for all weaver messages.
+                            The given value must be the full qualified class name of a class that implements
+                            <literal>org.aspectj.weaver.loadtime</literal>
+                            and that is visible from where the <literal>aop.xml</literal> is packed.
+                            If more than one such options are used,
+                            the first occurence only is taken into account.</entry>
                         </row>
                     </tbody>
                 </tgroup>
@@ -345,7 +360,7 @@
         <sect2>
             <title>JVMTI</title>
             <para> When using JDK 1.5 the JVMTI agent can be used by starting the JVM with the
-                following option: </para>
+                following option (adapt according to the path to aspectjweaver.jar): </para>
             <programlisting><![CDATA[
 			-javaagent=aspectjweaver.jar          
 		  ]]></programlisting>

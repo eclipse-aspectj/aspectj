@@ -38,8 +38,14 @@
     <comment>line is enclosing class - TBD</comment>
     <ajc-test dir="java5/ataspectj"
         pr="" title="@Pointcut with garbage string">
-        <compile files="ataspectj/misuse/Test014.java" options="-1.5 -Xdev:NoAtAspectJProcessing">
+        <compile files="ataspectj/misuse/Test014.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
             <message kind="error" line="7" text="Cannot parse @Pointcut 'call%dddd"/>
+            <message kind="error" text="can't find referenced pointcut"/>
+            <message kind="error" text="can't find pointcut"/>
+            <message kind="error" text="@AfterThrowing: either 'value' or 'poincut' must be provided, not both"/>
+            <message kind="error" text="@AfterReturning: either 'value' or 'poincut' must be provided, not both"/>
+            <message kind="error" text="@DeclareWarning used on a non String constant field"/>
+            <message kind="error" text="@DeclareError used on a non String constant field"/>
         </compile>
     </ajc-test>
 

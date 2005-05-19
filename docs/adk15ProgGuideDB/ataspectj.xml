@@ -51,8 +51,8 @@
      public aspect Foo {}
       ]]></programlisting>
 
-    <para>Privileged aspects are declared as:</para>
-
+    <para>Privileged aspects are not supported by the annotation style</para>
+    <!--
      <programlisting><![CDATA[
      @Aspect(isPrivileged=true)
      public class Foo {}
@@ -61,47 +61,18 @@
      
      public privileged aspect Foo {}
       ]]></programlisting>
-
+    -->
     <para>To specify an aspect an aspect instantiation model (the default is
-    singleton), use the <literal>instantionModel</literal> and
-    <literal>perClausePattern</literal> attributes. For example:</para>
+    singleton), provide the perclause as the <literal>@Aspect</literal> value.
+    For example:</para>
     
      <programlisting><![CDATA[
-     @Aspect(instantiationModel=AspectInstantiationModel.PERTHIS,
-             perClausePattern="execution(* abc..*(..))")
+     @Aspect("perthis(execution(* abc..*(..)))")
      public class Foo {}
      
      is equivalent to...
      
      public aspect Foo perthis(execution(* abc..*(..))) {}
-      ]]></programlisting>
-    
-    <para>The full definitions of the Aspect annotation type and the
-        AspectInstantiationModel enumerated type are:</para>
-
-     <programlisting><![CDATA[
-     /**
-      * Use to indicate that a class should be treated as an aspect by
-      * AspectJ's weaver.
-      */
-     @Target({ElementType.TYPE})
-     public @interface Aspect {
-     	AspectInstantiationModel instantiationModel() default AspectInstantiationModel.SINGLETON;
-     	String perClausePattern() default "";
-       	boolean isPrivileged() default false;
-     }
-     
-     /**
-      * The different aspect instantiation models supported by AspectJ
-      */
-     public enum AspectInstantiationModel {
-      SINGLETON,
-      PERTHIS,
-      PERTARGET,
-      PERCFLOW,
-      PERCFLOWBELOW,
-      PERTYPEWITHIN
-     }
       ]]></programlisting>
 
   </sect1>
@@ -286,9 +257,9 @@
           <literal>thisJoinPointStaticPart</literal>, 
           <literal>thisEnclosingJoinPointStaticPart</literal> then these need to 
           be declared as additional method parameters when using the annotation
-          style. In AspectJ 1.5.0 we require that these parameters be declared
+          style. <!-- TODO AV - not any more -- In AspectJ 1.5.0 we require that these parameters be declared
           first in the parameter list, in later releases we may relax this
-          requirement.</para>
+          requirement.--></para>
 
      <programlisting><![CDATA[
      @AdviceName("callFromFoo")
@@ -384,7 +355,7 @@
       
      <programlisting><![CDATA[
      public interface ProceedingJoinPoint extends JoinPoint {
-       public Object proceed(Object... args);
+       public Object proceed(Object[] args);
      }
       ]]></programlisting>
       
@@ -402,26 +373,28 @@
      <programlisting><![CDATA[
      public aspect ProceedAspect {
        pointcut setAge(int i): call(* setAge(..)) && args(i);
-    
+
        Object around(int i): setAge(i) {
          return proceed(i*2);
        }
      }
-     
+
      can be written as...
-     
+
      @Aspect
      public class ProceedAspect {
-     
+
        @Pointcut("call(* setAge(..)) && args(i)")
        void setAge(int i) {}
-     
+
        @Around("setAge(i)")
        public Object twiceAsOld(ProceedingJoinPoint thisJoinPoint, int i) {
-         return thisJoinPoint.proceed(i*2);
+         return thisJoinPoint.proceed(new Object[]{i*2}); //using Java 5 autoboxing
        }
-     
-     }          
+
+     }
+
+     Note that the ProceedingJoinPoint does not need to be passed as the proceed(..) arguments.
       ]]></programlisting>
       
       </sect2>
@@ -587,22 +560,32 @@
      (This is the same behaviour as when using declare warning or error with the
      code style). Declare warning and error declarations are made by annotating
      a string constant whose value is the message to be issued.</para>
-     
+
+     <para>Note that the String must be a constant and not the result of the invocation
+     of a static method for example.</para>
+
      <programlisting><![CDATA[
        declare warning : call(* javax.sql..*(..)) && !within(org.xyz.daos..*)
                        : "Only DAOs should be calling JDBC.";
-                       
+
        declare error : execution(* IFoo+.*(..)) && !within(org.foo..*)
                      : "Only foo types can implement IFoo";
-                     
+
        can be written as...
-       
+
        @DeclareWarning("call(* javax.sql..*(..)) && !within(org.xyz.daos..*)")
        static final String aMessage = "Only DAOs should be calling JDBC.";
-       
+
        @DeclareError("execution(* IFoo+.*(..)) && !within(org.foo..*)")
        static final String badIFooImplementors = "Only foo types can implement IFoo";
-     
+
+       // the following is not valid since the message is not a String constant
+       @DeclareError("execution(* IFoo+.*(..)) && !within(org.foo..*)")
+       static final String badIFooImplementorsCorrupted = getMessage();
+       static String getMessage() {
+           return "Only foo types can implement IFoo " + System.currentTimeMillis();
+       }
+
       ]]></programlisting>
      
        
@@ -646,10 +629,13 @@
         public static boolean hasAspect(Object anAspect, Class forType) {...}
       }
       ]]></programlisting>
-      
+
+      <!-- TODO AV - stuff below is not done -->
+      <!--
       <para>When the AspectJ weaver sees calls to these methods, it will convert
       them into the most efficient form possible (to get performance equivalent
-      to a direct <literal>MyAspect.aspectOf()</literal> call).</para>      
+      to a direct <literal>MyAspect.aspectOf()</literal> call).</para>
+      -->
   </sect1>
 </chapter>
 

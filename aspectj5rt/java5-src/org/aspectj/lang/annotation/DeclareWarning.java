@@ -20,12 +20,14 @@ import java.lang.annotation.Target;
  * @author colyer
  * Annotation for declare warning...
  * 
- * usage:
- * @DeclareWarning("somePcut()")
- * private static final String "a message";
+ * usage: @DeclareWarning("somePcut()")
+ *        private static final String "a message";
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface DeclareWarning {
+    /**
+     * The pointcut expression where to bind the error (don't use if, formal bindings, cflow etc)
+     */
 	String value();
 }

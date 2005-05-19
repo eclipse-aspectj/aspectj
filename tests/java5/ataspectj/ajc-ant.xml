@@ -1,9 +1,10 @@
 <!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
 <project name="foo" default="javac.ltw">
 
+    <!-- using this we can debug the forked VM -->
     <property
         name="jdwp"
-        value=""/>
+        value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
 
     <target name="compile:javac">
         <!-- compile only javac compilable stuff -->
@@ -35,6 +36,7 @@
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj5.def=ataspectj/aop-aroundinlinemungertest.xml"/>
+            <!--<jvmarg line="${jdwp}"/>--><!-- uncomment to debug with JDWP -->
         </java>
     </target>
 
