@@ -60,9 +60,9 @@ This is a minimal introduction to building and testing AspectJ.
   export CVS_ROOT=":pserver:anonymous@dev.eclipse.org:/home/technology"
   cvs co org.aspectj/modules</pre>
 If using Eclipse, check out the subdirectories of 
-<code>org.aspectj/modules</code> as Java projects.  
+<code>org.aspectj/modules</code> as Eclipse projects.  
 Skip modules <code>aspectj-attic</code> and (unless running
-compiler tests) <code>tests</code> and most <code>testing*</code>
+JUnit or compiler tests) <code>tests</code> and most <code>testing*</code>
 modules.  Do not skip <code>testing-utils</code>, 
 which is used by other modules.
 
@@ -116,14 +116,27 @@ under 1.4 or earlier VM's.
 
 <h3>Standard builds</h3>
 <h4>Building using Ant</h4>
-To do a build, use Ant to run <a href="build.xml">build.xml</a>
-from this <a href=".">build</a> directory.  
-To run Ant, use the project's <a href="../lib/ant">../lib/ant</a>
-scripts and libraries, not your own.
-The default target builds the AspectJ distribution;
+This <a href=".">build</a> directory has a master 
+<a href="build.xml">build.xml</a> script, and the modules have
+satellite <code>build.xml</code> which support building only that
+module.	
+(To run Ant, use the project's <a href="../lib/ant">../lib/ant</a>
+scripts and libraries, not your own.  Currently the build uses
+a standard Ant release, but we might modify our version of the
+Ant distribution.)
+The default target for the master <a href="build.xml">build.xml</a> 
+creates an AspectJ distribution in 
+	<a href="../aj-build/dist/aspectj-DEVELOPMENT.jar">
+		../aj-build/dist/aspectj-DEVELOPMENT.jar
+	</a>;
 see the <a href="build.xml">build.xml</a> for other targets.
+The <code>build.xml</code>'s in the other modules support the
+targets <code>compile</code> and <code>test</code> for just
+that module; if you do <code>clean</code>, all binaries for all
+modules are cleaned.
 
-Consider defining the following flag properties:
+When using the master <code>build.xml</code>,
+consider defining the following flag properties:
 <p/>
 <table cellpadding="1" border="1">
 <tr><th>Property</th><th>Meaning</th>
@@ -149,46 +162,66 @@ Consider defining the following flag properties:
 
 <p/>
 <p>
-You can also use the build script in each module and the targets
-"test" (default) or "compile".  ("clean" removes  all build products,
-not just those for that module.)
-<p/>
 For example, to build everything into a release bundle,
-with verbose logging
+with verbose logging:
+</p>
 <pre>
   cd modules/build
   ../lib/ant/bin/ant 
 </pre>
 
+<p>
 To build only the asm module (and any modules it requires) using
 <code>modules/build</code>:
+</p>
 <pre>
   cd modules/build
   ../lib/ant/bin/ant -f build.xml any-module -Dmodule.name=asm
 </pre>
-
-To run JUnit tests (output to <code>../aj-build/junit</code>) 
-for the util module using <code>util/build.xml</code>:
+<p>
+To build and test the asm module from that module:
+</p>
 <pre>
-  cd modules/util
+  cd modules/asm
   ../lib/ant/bin/ant test
 </pre>
 
+<p>
 To build the test harness into 
   <code>../aj-build/jars/testing-drivers-all.jar</code>:
+</p>
 <pre>
   cd modules/build
   ../lib/ant/bin/ant -f build.xml build-testing-drivers
 </pre>
 
 <h4>Building with Eclipse</h4>
-As mentioned above, the modules are Eclipse Java projects, so
+<p>
+As mentioned above, the modules are Eclipse projects, so
 once checked out, they should build as-is.  That will enable you
 to run the compiler or test harness from within Eclipse (see below),
 but it will not build the AspectJ release as Ant does.
+If you are making changes in Eclipse, you should set your default JRE 
+to the minimum supported by the AspectJ tools (currently JDK 1.3)
+to avoid using later API's.
+You'll need to set some variables in your Eclipse environment;
+currently these are:
+</p>
+<ul>
+	<li><u>JAVA_HOME</u>: used to access <code>JAVA_HOME/lib/tools.jar</code>
+		</li>
+	<li><u>JRE15_LIB</u>: used to access Java 5 libraries.
+		Some modules/projects use Java 5 API's.  These have
+		per-project compiler settings for 5.0 compliance, but cannot
+		be built with the default pre-1.5 VM libraries.
+		Until the minimum VM required by the tools is 1.5,
+		we'll need to define this variable.
+		</li>
+</ul>
 
 <h4>Running the Ant build scripts from Eclipse</h4>
-When running Ant from Eclipse, be sure to replace the Eclipse Ant 
+When running Ant from older versions of Eclipse, 
+be sure to replace the Eclipse Ant 
 libraries with ours.  In the Ant configuration, remove all jars 
 specified by Eclipse and add all the libraries in 
 <a href="../lib/ant/lib">../lib/ant/lib</a>
@@ -258,19 +291,30 @@ build products.
 
 
 <h3>Testing AspectJ</h3>
+<p>
 Each module has a tree of JUnit tests in the <code>testsrc</code> directory.
 These parallel the <code>src</code> directories and contain roll-up suites
 for each package 
   (<code>{module}/testsrc/{packagePath}/{package}Tests.java</code>) and 
 for the module as a whole  
   (<code>{module}/testsrc/{module}ModuleTests.java</code>). 
-
-<p/>The AspectJ project also has <i>additional</i> custom tests in the 
-  <a href="../tests">tests module</a>,
+</p>
+<p>
+The AspectJ project also has <i>additional</i> custom tests in the 
+<a href="../tests">tests module</a>,
 mainly the compiler tests run by the harness in 
   <a href="../tests/ajcTests.xml">ajcTests.xml</a>. <u>It is important
 to run these additional compiler tests (not covered by the JUnit
 suite) before and after any change to the compiler.</u>
+</p>
+<p>
+The module <a href="../run-all-junit-tests">run-all-junit-tests</a>
+refers to all the other modules and the compiler tests adapted through
+the <a href="../tests/src">../tests/src</a>.  So the easiest way to
+run the JUnit and compiler tests is to run the top-level suite 
+<a href="../run-all-junit-tests/testsrc/RunTheseBeforeYouCommitTests.java">
+	RunTheseBeforeYouCommitTests</a>.
+</p>
 
 <h4>Running JUnit tests in Eclipse</h4>
 JUnit tests may be run under eclipse by selecting any JUnit source file
@@ -280,19 +324,27 @@ To run all the JUnit tests, use Ant to "build"
 This file uses the eclipse module bin directories as its classpath,
 so it will not work for someone not compiling with Eclipse.
 
-<h4>Running JUnit tests from the command-line without Eclipse</h4>
-The AspectJ project committers do not do this, but it should work fine.
-The trick is to build the modules with their associated test code 
-(which happens by default) 
-and put the resulting jars on the classpath with the JUnit harness. 
-
+<h4>Running JUnit tests from the command-line without Eclipse or Ant</h4>
+<p>
+As you might expect, you can run JUnit directly if you put the built 
+modules on the JUnit classpath.  You can build in Eclipse or using
+Ant.  The master build script enables you to build an assembled jar
+for a module which includes all the normal and testing classes and
+any antecedants (except for those "skipped" - see 
+<a href="readme-build-module.html">readme-build-module.html</a>).
+</p>
 <h4>Running JUnit tests from Ant without Eclipse</h4>
-This entails editing
-   <a href="../tests/junitModules.xml">../tests/junitModules.xml</a>
-to use a classpath containing the built module jars as described above.
-[todo: update junitModules.xml with non-eclipse variant]
+<p>
+As shown above, you can use the module build script:	
+</p>
+<pre>
+cd modules/util
+../lib/ant/bin/ant test	
+</pre>
 
 <h4>Using the test harness to run compiler tests</h4>
+<p>
+	
 The <code>build-testing-drivers</code> target builds a single jar with
 the AspectJ binaries and a test harness as the main class. 
 It reads test suite files like 
@@ -301,7 +353,7 @@ use the -help flag to see available options.
 For more information, see
   <a href="../tests/readme-tests-module.html">
            ../tests/readme-tests-module.html</a>.
-<p/>
+</p>
 <hr/>
 <h3><a name="releases"></a>Releases</h3>
 <h4>Release builds</h4>
