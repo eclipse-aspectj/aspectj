@@ -226,7 +226,8 @@
         <mkdir dir="${docs.dist.dir}/aspectjlib" />
         <copy todir="${docs.dist.dir}/doc/aspectjlib" filtering="off">
             <fileset dir="${docs.src.dir}/../org.aspectj.lib"
-                     includes="build-aspectjlib.xml,src"
+                     includes="build-aspectjlib.xml,src/**"
+                	excludes="CVS"
             />
         </copy>
     </target>
