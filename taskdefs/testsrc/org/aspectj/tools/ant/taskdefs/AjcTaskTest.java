@@ -16,19 +16,28 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
-import org.apache.tools.ant.*;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.selectors.FilenameSelector;
-import org.aspectj.bridge.*;
-import org.aspectj.util.*;
-
-import java.io.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import junit.framework.TestCase;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Location;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.selectors.FilenameSelector;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * Some API tests, but mostly functional tests driving
