@@ -175,6 +175,19 @@
         <run class="AspectMain"/>
     </ajc-test>
 
+    <ajc-test dir="harness/classpathTest"
+      title="pass pure binary weaving, with jars/dir on classpath"
+      keywords="purejava">
+        <compile classpath="classesDir,jars/required.jar" 
+                 files="Main.java"
+                 options="-Xreweavable"
+                 outjar="main.zip"/>
+        <compile classpath="classesDir,jars/required.jar"
+                 aspectpath="jars/requiredAspects.jar,jars/AspectMain.jar"
+                 files="main.zip"/>
+        <run class="Main"/>
+    </ajc-test>
+
     <ajc-test dir="harness"  keywords="incremental-test"
     		title="pass minimal purejava sourceroots test">
         <compile sourceroots="sourceroot"/>
@@ -608,12 +621,35 @@
         <run class="Main" aspectpath="out.jar" classpath="cl.zip"/> 
     </ajc-test>
 
-<!-- reproduce hang from blocking IO read at JavaRun.java 
+<!-- 
+
+reproduce hang from blocking IO read at JavaRun.java 
     <ajc-test dir="harness/fork"
 		title="pass fork-Error-ignored Main runs, throws Error, expects Error">
         <compile files="MainWriter.java"/>
         <run class="MainWriter" options="Error" fork="true" exception="Error"/> 
     </ajc-test>
+
+
+unforked exception check is failing.
+Also forked/unforked throw different exceptions
+
+    <ajc-test dir="harness/classpathTest"
+      title="pass specify jars and directories on classpath"
+      keywords="purejava">
+        <compile classpath="classesDir,jars/required.jar" 
+                 files="Main.java"
+                 options="-Xreweavable"
+                 outjar="main.zip"/>
+        <run class="Main" fork="true" exception="NoClassDefFoundError"/>
+        <run class="Main" fork="false" exception="java.lang.ClassNotFoundException"/>
+        <run class="Main" classpath="main.zip"/>
+        <compile classpath="classesDir,jars/required.jar"
+			files="main.zip"/>
+        <run class="Main"/>
+    </ajc-test>
+    
+    
 -->
 </suite>
 
