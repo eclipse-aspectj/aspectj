@@ -1,0 +1,27 @@
+<project name="classpathTest" default="aspect">
+	<target name="aspect"
+		description="produce AspectMain.jar">
+		<property name="lib.dir"
+	    	location="../../../lib"/>
+		<property name="aspectj.lib.dir"
+	    	location="${lib.dir}/aspectj/lib"/>
+	    <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    		<classpath> 
+        		<pathelement path="${aspectj.lib.dir}/aspectjtools.jar"/> 
+			</classpath>
+		</taskdef>
+		<iajc
+			outjar="jars/AspectMain.jar"
+		    fork="true"
+		    forkclasspath="${aspectj.lib.dir}/aspectjtools.jar"
+	        srcdir="." includes="AspectMain.java">           
+			<classpath>
+	    	    <pathelement path="${aspectj.lib.dir}/aspectjrt.jar"/> 
+	    	    <pathelement path="${lib.dir}/test/testing-client.jar"/> 
+	  	        <pathelement path="jars/required.jar"/> 
+	  	        <pathelement path="classesDir"/> 
+		        <pathelement path="jars/requiredAspects.jar"/> 
+			</classpath>
+		</iajc>
+	</target>	
+</project>

@@ -6,7 +6,7 @@ for classpath (jar and dir) and aspectpath.
 Binaries are in jars/*, and classesDir/*, and 
 binary sources and a build script are in classpath-src.
   
-Two test specifications are in tests/ajcHarnessTests.xml:
+See specifications are in tests/ajcHarnessTests.xml, e.g.,
 
     <ajc-test dir="harness/classpathTest"
       title="specify jars and directories on classpath"
