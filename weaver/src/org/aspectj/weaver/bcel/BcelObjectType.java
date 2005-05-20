@@ -36,9 +36,8 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.ataspectj.Aj5Attributes;
-import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 
 
 // ??? exposed for testing
@@ -186,7 +185,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     public boolean isAnnotationStyleAspect() {
 		if (!discoveredWhetherAnnotationStyle) {
 			discoveredWhetherAnnotationStyle = true;
-			isAnnotationStyleAspect = !isCodeStyleAspect && hasAnnotation(Ajc5MemberMaker.ASPECT);
+			isAnnotationStyleAspect = !isCodeStyleAspect && hasAnnotation(AjcMemberMaker.ASPECT_ANNOTATION);
 		}
         return isAnnotationStyleAspect;
     }
@@ -198,7 +197,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 		// Pass in empty list that can store things for readAj5 to process
         List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
 		processAttributes(l,pointcuts,false);
-		l = Aj5Attributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler(),isCodeStyleAspect);
+		l = AtAjAttributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler(),isCodeStyleAspect);
 		processAttributes(l,pointcuts,true);
 		
 		this.pointcuts = (ResolvedPointcutDefinition[]) 

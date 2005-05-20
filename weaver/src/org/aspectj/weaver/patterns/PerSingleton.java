@@ -27,7 +27,6 @@ import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 
 public class PerSingleton extends PerClause {
 	public PerSingleton() {
@@ -97,7 +96,7 @@ public class PerSingleton extends PerClause {
 		ret.inAspect = inAspect;
 
         //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
-        if (!inAspect.isAbstract() && Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
+        if (!inAspect.isAbstract() && inAspect.isAnnotationStyleAspect()) {
             //TODO will those change be ok if we add a serializable aspect ?
             // dig: "can't be Serializable/Cloneable unless -XserializableAspects"
             inAspect.crosscuttingMembers.addLateTypeMunger(
@@ -106,7 +105,7 @@ public class PerSingleton extends PerClause {
         }
 
         //ATAJ inline around advice support
-        if (Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
+        if (inAspect.isAnnotationStyleAspect()) {
             inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 

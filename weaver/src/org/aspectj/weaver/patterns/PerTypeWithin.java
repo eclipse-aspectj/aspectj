@@ -33,7 +33,6 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
-import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -156,7 +155,7 @@ public class PerTypeWithin extends PerClause {
         }
 
         //ATAJ inline around advice support - don't use a late munger to allow around inling for itself
-        if (Ajc5MemberMaker.isAnnotationStyleAspect(inAspect)) {
+        if (inAspect.isAnnotationStyleAspect()) {
             inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 

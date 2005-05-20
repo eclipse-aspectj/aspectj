@@ -37,7 +37,6 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
-import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.ExactTypePattern;
@@ -362,7 +361,7 @@ public class BcelAdvice extends Advice {
 
             if (v == null) {
                 // if not @AJ aspect, go on with the regular binding handling
-            	if (!Ajc5MemberMaker.isAnnotationStyleAspect(getConcreteAspect())) {
+            	if (!getConcreteAspect().isAnnotationStyleAspect()) {
             		continue;
             	} else {
                     // ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
@@ -408,7 +407,7 @@ public class BcelAdvice extends Advice {
         
         // ATAJ: for code style aspect, handles the extraFlag as usual ie not
         // in the middle of the formal bindings but at the end, in a rock solid ordering
-        if (!Ajc5MemberMaker.isAnnotationStyleAspect(getConcreteAspect())) {
+        if (!getConcreteAspect().isAnnotationStyleAspect()) {
             if (getKind() == AdviceKind.Around) {
                 il.append(closureInstantiation);
             } else if (hasExtraParameter()) {

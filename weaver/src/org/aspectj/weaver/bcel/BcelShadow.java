@@ -74,7 +74,6 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Var;
-import org.aspectj.weaver.ataspectj.Ajc5MemberMaker;
 
 
 /*
@@ -2549,8 +2548,7 @@ public class BcelShadow extends Shadow {
 		}
 
         // ATAJ for @AJ aspect we need to link the closure with the joinpoint instance
-        if (Ajc5MemberMaker.isAnnotationStyleAspect(munger.getConcreteAspect())) {
-            //advice.append(new POP());
+        if (munger.getConcreteAspect().isAnnotationStyleAspect()) {
             closureInstantiation.append(Utility.createInvoke(
                     getFactory(),
                     getWorld(),
@@ -2563,12 +2561,9 @@ public class BcelShadow extends Shadow {
                             )
             ));
         }
-        //System.err.println(closureInstantiation);
-
 
         InstructionList advice = new InstructionList();
         advice.append(munger.getAdviceArgSetup(this, null, closureInstantiation));
-//        advice.append(closureInstantiation);
 
         // invoke the advice
         advice.append(munger.getNonTestAdviceInstructions(this));

@@ -100,4 +100,11 @@
         <compile files="ataspectj/AroundInlineMungerTest2.aj,ataspectj/AroundInlineMungerTestAspects2.aj,ataspectj/TestHelper.java" options="-1.5 -Xlint:ignore"/>
         <run class="ataspectj.AroundInlineMungerTest2"/>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="Deow">
+        <compile files="ataspectj/DeowTest.java" options="-1.5">
+            <message kind="warning" line="28" text="call hello"/>
+            <message kind="error" line="29" text="call hi"/>
+        </compile>
+    </ajc-test>
 </suite>

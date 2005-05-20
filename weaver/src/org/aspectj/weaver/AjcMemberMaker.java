@@ -13,6 +13,9 @@
 
 package org.aspectj.weaver;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+
 import java.lang.reflect.Modifier;
 
 //import org.aspectj.weaver.ResolvedTypeX.Name;
@@ -692,4 +695,22 @@ public class AjcMemberMaker {
 			"<init>",
 			"()V");
 	}
+
+    //-- common types we use. Note: Java 5 dependand types are refered to as String
+    public final static TypeX ASPECT_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.Aspect");
+    public final static TypeX BEFORE_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.Before");
+    public final static TypeX AROUND_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.Around");
+    public final static TypeX AFTERRETURNING_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.AfterReturning");
+    public final static TypeX AFTERTHROWING_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.AfterThrowing");
+    public final static TypeX AFTER_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.After");
+    public final static TypeX POINTCUT_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.Pointcut");
+    public final static TypeX DECLAREERROR_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.DeclareError");
+    public final static TypeX DECLAREWARNING_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.DeclareWarning");
+    public final static TypeX DECLAREPRECEDENCE_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.DeclarePrecedence");
+
+    public final static TypeX TYPEX_JOINPOINT = TypeX.forName(JoinPoint.class.getName().replace('/','.'));
+    public final static TypeX TYPEX_PROCEEDINGJOINPOINT = TypeX.forName(ProceedingJoinPoint.class.getName().replace('/','.'));
+    public final static TypeX TYPEX_STATICJOINPOINT = TypeX.forName(JoinPoint.StaticPart.class.getName().replace('/','.'));
+    public final static TypeX TYPEX_ENCLOSINGSTATICJOINPOINT = TypeX.forName(JoinPoint.EnclosingStaticPart.class.getName().replace('/','.'));
+
 }

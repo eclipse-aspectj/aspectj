@@ -87,4 +87,8 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
     public void testAroundInlineMunger2() {
         runTest("AroundInlineMunger2");
     }
+
+    public void testDeow() {
+        runTest("Deow");
+    }
 }

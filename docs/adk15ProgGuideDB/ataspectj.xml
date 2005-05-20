@@ -323,13 +323,13 @@
         System.out.println("phew");
       }
       
-      @AfterReturning(value="call(Foo+.new(..))",returning="f")
+      @AfterReturning(pointcut="call(Foo+.new(..))",returning="f")
       public void itsAFoo(Foo f) {
         System.out.println("It's a Foo: " + f);
       }            
       ]]></programlisting>
       
-      <para>(Note the need for the "value=" prefix in front of the pointcut
+      <para>(Note the use of the "pointcut=" prefix in front of the pointcut
       expression in the returning case).</para>
       
       <para>After throwing advice works in a similar fashion, using the 
