@@ -501,6 +501,7 @@ public class AjcTestCase extends TestCase {
 	public RunResult getLastRunResult() {
 		return lastRunResult;
 	}
+    public void testNothingForAntJUnit() {}
 	
 	/**
 	 * Run the given class (main method), and return the result in a RunResult. The program runs with
