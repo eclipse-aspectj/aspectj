@@ -98,6 +98,8 @@
             location="${aspectj.modules.dir}/tests"/>
 		<jar-property name="junit.jar" 
 			location="${aspectj.modules.lib.dir}/junit/junit.jar"/>
+		<property name="junit.includes" 
+	        value="**/*Test.java,**/**TestCase.java"/>	
     </target>
 
     <target name="init-taskdefs" 
@@ -119,11 +121,23 @@
 		<taskdef name="junit"             
 			classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"
 			classpathref="ant.lib.path"/>
+	    <available classname="org.apache.xalan.processor.TransformerFactoryImpl" 
+	        property="xalan.available"
+	        value="true">        
+	        <classpath refid="ant.lib.path"/>
+	    </available>
+        <condition property="junitreport.available" value="true">
+        	<istrue value="${xalan.available}"/>
+    	</condition>
+        <echo message="junitreport.available: ${junitreport.available}"/>
+        <antcall target="init-junitreport"/>
+    </target>
+
+    <target name="init-junitreport" depends="init-properties"
+        if="xalan.available">
 		<taskdef name="junitreport"             
 			classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator"
 			classpathref="ant.lib.path"/>
-
-      <property name="init-taskdefs.done" value="done"/>
     </target>
 
     <target name="init-directories" 
@@ -219,7 +233,9 @@
 		<attribute name="dir"/>
 		<sequential>
 			<mkdir dir="@{dir}"/>
-			<delete dir="@{dir}"/>
+			<delete>
+        		<fileset dir="@{dir}" includes="*"/>
+        	</delete>
 			<mkdir dir="@{dir}"/>
 		</sequential>
 	</macrodef>
