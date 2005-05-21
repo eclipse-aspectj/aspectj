@@ -223,7 +223,105 @@
     <!-- ===================================================================== -->
     <!-- custom targets                                                        -->
     <!-- ===================================================================== -->
-	<target name="build-testing-drivers" depends="init-taskdefs,init"
+	<!-- 
+	deprecated, but desireable...
+    <target name="junit-tests-allinone" 
+		depends="init"
+	    description="deprecated - kills JUnit by using run-all-junit-tests ">
+	    <property name="alltests.module"
+	    	value="run-all-junit-tests"/>
+		<clean-dir dir="${aj.junit.dir}"/>
+	    <antcall target="build-module-all">
+	        <param name="module.name" value="${alltests.module}"/>
+	        <param name="trim.testing.default" value="false"/>
+	    </antcall>
+      	<junit fork="on" 
+      		includeAntRuntime="off" 
+      		dir="${aspectj.modules.build.dir}"
+           	printsummary="yes" 
+           	haltonfailure="${haltOnTestFailure}" >
+           	<classpath>
+           	    <pathelement location="${java.home}/lib/tools.jar"/>
+           	    <pathelement location="${aj.jar.dir}/${alltests.module}-all.jar"/>
+            	<pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar"/> 
+            	<fileset dir="${aspectj.modules.lib.dir}/ant/lib" 
+                   includes="ant.jar,ant-junit.jar,xml-apis.jar,xercesImpl.jar"/>
+           </classpath>
+    		<jvmarg value="-Daspectjrt.path=${aspectjrt.path}" />
+    		<jvmarg value="-Xmx400m" />
+        <formatter type="xml"/>
+        <test name="AllModuleTests" todir="${aj.junit.dir}"/>
+      </junit>        
+	</target>
+    -->
+	<target name="junit-tests" 
+		depends="init"
+	    description="build and run JUnit leaf tests ${junit.includes}">
+	    <property name="alltests.module"
+	    	value="run-all-junit-tests"/>
+		<clean-dir dir="${aj.junit.dir}"/>
+	    <antcall target="build-module-all">
+	        <param name="module.name" value="${alltests.module}"/>
+	        <param name="trim.testing.default" value="false"/>
+	    </antcall>
+	    
+      	<junit fork="on" 
+      		includeAntRuntime="off" 
+      		dir="${aspectj.modules.build.dir}"
+           	printsummary="yes" 
+           	haltonfailure="${haltOnTestFailure}" >
+           	<classpath>
+           	    <pathelement location="${aj.jar.dir}/${alltests.module}-all.jar"/>
+           	    <!-- see skipped libraries in Builder.properties -->
+           	    <pathelement location="${java.home}/lib/tools.jar"/>
+            	<pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar"/> 
+            	<fileset dir="${aspectj.modules.lib.dir}/ant/lib" 
+                	includes="ant.jar,ant-junit.jar,xml-apis.jar,xercesImpl.jar"/>
+           	</classpath>
+    		<jvmarg value="-Daspectjrt.path=${aspectjrt.path}" />
+    		<jvmarg value="-Xmx400m" />
+	        <formatter type="xml"/>
+	        <batchtest todir="${aj.junit.dir}">
+	            <fileset dir="${aspectj.modules.dir}/ajbrowser/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/ajde/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/ajdoc/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/asm/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/bridge/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/build/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/loadtime/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/runtime/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/taskdefs/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/testing/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/testing-client/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/testing-drivers/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/tests/src" includes="**/*Tests.java"/>
+	            <fileset dir="${aspectj.modules.dir}/util/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/weaver/testsrc" includes="${junit.includes}"/>
+	        </batchtest>
+		</junit> 
+	    <antcall target="if.junitreport"/>
+	</target>
+    	
+    <target name="if.junitreport" depends="init"
+        if="junitreport.available"
+        description="silently skip if no libraries available">
+        <antcall target="junitreport"/>
+    </target>
+    
+    <target name="junitreport" depends="init,init-taskdefs">
+    	<fail unless="junitreport.available"
+	    	message="junitreport needs lib/ant/lib/xalan.jar"/>
+	    <clean-dir dir="${aj.junit.dir}/html"/>
+	    <junitreport todir="${aj.junit.dir}/html">
+	      <fileset dir="${aj.junit.dir}">
+	        <include name="TEST-*.xml"/>
+	      </fileset>
+	      <report format="frames" todir="${aj.junit.dir}/html"/>
+	    </junitreport>
+	</target>
+
+    <target name="build-testing-drivers" depends="init-taskdefs,init"
 	      unless="testing.drivers.all.available"> 
 		<antcall target="any-module-all">
 			<param name="module.name" value="testing-drivers"/>
