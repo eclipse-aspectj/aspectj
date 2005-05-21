@@ -10,7 +10,9 @@
  */
 package org.aspectj.weaver.test;
 
-public class Test {
+import junit.framework.TestCase;
+
+public class Test extends TestCase {
     public static void main(String[] args) {
         foo()
         .
@@ -20,4 +22,5 @@ public class Test {
         new Exception().printStackTrace();
         return new Test();
     }
+    public void testNothingForAntJUnit() {}
 }
