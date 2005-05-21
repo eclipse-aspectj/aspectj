@@ -35,6 +35,7 @@ public class AjdeTestCase extends TestCase {
 	public AjdeTestCase(String name) {
 		super(name);
 	}
+    public void testEmptyAddedForAntJUnit() {}
 
 	protected File openFile(String path) {
 		return new File(currTestDataPath + File.separatorChar + path);
