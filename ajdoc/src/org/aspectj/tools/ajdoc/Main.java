@@ -87,11 +87,11 @@ public class Main implements Config {
 
     public static void main(String[] args) {
     	clearState();
-//    	if (!JavadocRunner.has14ToolsAvailable()) {
-//    		System.err.println("ajdoc requires a JDK 1.4 or later tools jar - exiting");
-//    		aborted = true;
-//    		return;
-//    	}
+    	if (!JavadocRunner.has14ToolsAvailable()) {
+    		System.err.println("ajdoc requires a JDK 1.4 or later tools jar - exiting");
+    		aborted = true;
+    		return;
+    	}
     	  
         // STEP 1: parse the command line and do other global setup
         sourcepath.addElement("."); // add the current directory to the classapth
