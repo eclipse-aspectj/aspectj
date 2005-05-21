@@ -137,8 +137,6 @@
 			location="${aj.build.dir}/jars"/>
 		<property name="aj.build.dist.dir"
 			location="${aj.build.dir}/dist"/>
-		<property name="aj.build.jar.dir"
-			location="${aj.build.dir}/jars"/>
 		<property name="aj.build.install.dir"
 			location="${aj.build.dir}/install"/>
 		<property name="aj.build.log.dir"
@@ -442,13 +440,13 @@
 		<antcall target="test-junit-modules"/>
 	</target>
 
-	<target name="test-junit-modules" 
+    <target name="test-junit-modules" 
 		depends="init-variables,init-junitTests-available">
 		<antcall target="do-run-ant">
-			<param name="run.ant.file" value="junitModules.xml"/>
-			<param name="ant.target" value="test-all"/>
+			<param name="run.ant.file" value="build.xml"/>
+			<param name="ant.target" value="junit-tests"/>
 			<param name="ant.dir" 
-				location="${aspectj.modules.dir}/tests"/>
+				location="${aspectj.modules.dir}/build"/>
 			<param name="ant.output" 
 				location="${aj.build.log.dir}/test-junitModules"/>
 		</antcall>
