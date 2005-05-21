@@ -17,17 +17,23 @@ package org.aspectj.tools.ajdoc;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.aspectj.util.LangUtil;
+
 /**
  * @author Mik Kersten
  */
 class JavadocRunner {
 	
 	static boolean has14ToolsAvailable() {
-		Class jdMainClass = com.sun.tools.javadoc.Main.class;
 		try {
+            Class jdMainClass = com.sun.tools.javadoc.Main.class;
 			Class[] paramTypes = new Class[] {String[].class};
 			jdMainClass.getMethod("execute", paramTypes);
-		} catch (NoSuchMethodException e) {
+        } catch (NoClassDefFoundError e) {
+            return false;
+        } catch (UnsupportedClassVersionError e) {
+            return false;
+        } catch (NoSuchMethodException e) {
 			return false;
 		}
 		return true;
