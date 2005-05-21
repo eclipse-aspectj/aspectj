@@ -23,6 +23,7 @@ public class ConcretizationTestCase extends WeaveTestCase {
 	public ConcretizationTestCase(String name) {
 		super(name);
 	}
+    public void testNothingForAntJUnit() {}
 		
    // String[] none = new String[0];
 	
