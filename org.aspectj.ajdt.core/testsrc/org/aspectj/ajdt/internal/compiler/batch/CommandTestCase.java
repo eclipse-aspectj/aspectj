@@ -70,7 +70,7 @@ public abstract class CommandTestCase extends TestCase {
 		
 		runCompiler(args, expectedErrors);
 	}
-	
+	public void testEmptyForAntJUnitSupport() {}
 	public void checkMultipleCompile(String source) throws InterruptedException {
 		List args = new ArrayList();
 		args.add("-verbose");
