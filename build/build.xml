@@ -282,22 +282,21 @@
     		<jvmarg value="-Xmx400m" />
 	        <formatter type="xml"/>
 	        <batchtest todir="${aj.junit.dir}">
-	            <fileset dir="${aspectj.modules.dir}/ajbrowser/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/ajde/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/ajdoc/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/asm/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/bridge/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/build/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/loadtime/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/runtime/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/taskdefs/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/testing/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/testing-client/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/testing-drivers/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/tests/src" includes="**/*Tests.java"/>
-	            <fileset dir="${aspectj.modules.dir}/util/testsrc" includes="${junit.includes}"/>
-	            <fileset dir="${aspectj.modules.dir}/weaver/testsrc" includes="${junit.includes}"/>
+	            <fileset dir="${aspectj.modules.dir}/ajde/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/ajdoc/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/asm/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/bridge/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/build/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/loadtime/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/runtime/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/taskdefs/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/testing/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/testing-client/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/testing-drivers/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/tests/src" includes="**/*Tests.java" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/util/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
+	            <fileset dir="${aspectj.modules.dir}/weaver/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
 	        </batchtest>
 		</junit> 
 	    <antcall target="if.junitreport"/>

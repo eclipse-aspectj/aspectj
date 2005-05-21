@@ -100,6 +100,9 @@
 			location="${aspectj.modules.lib.dir}/junit/junit.jar"/>
 		<property name="junit.includes" 
 	        value="**/*Test.java,**/**TestCase.java"/>	
+		<property name="junit.excludes" 
+	        value="**/DocumentParserTest.java,**/CommandTestCase.java,**/VerifyWeaveTestCase.java,**/KnownfailuresTests.java,**/KnownLimitationsTests.java,**/PureJavaTests.java,**/AbstractWorldTestCase.java,**/WeaveTestCase.java"/>	
+    	<!-- would like to enable PureJavaTests.java -->
     </target>
 
     <target name="init-taskdefs" 
