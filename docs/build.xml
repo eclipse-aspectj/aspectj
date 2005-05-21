@@ -286,19 +286,11 @@
 
     <target name="devguide" depends="init">
 
-        <echo level="info"
-              message="**** docs: just inside devguide target"
-        />
-
         <copy todir="${docs.src.dir}/devGuideDB" filtering="off">
             <fileset dir="${devguide.icons.dir}"
                      includes="${include.devguide.icons}"
             />
         </copy>
-
-        <echo level="info"
-              message="**** docs: about to make call to build-guide target"
-        />
 
         <antcall target="build-guide">
             <param name="xml-html-copy"
