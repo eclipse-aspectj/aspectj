@@ -120,7 +120,8 @@ public class MegaZipTestCase extends WeaveTestCase {
 	}	
 	
 	// this is something we test every now and again.
-	public void testBig() throws IOException {
+	// to try, rename as testBig and put aspectjtools.jar in testdata
+	public void trytestBig() throws IOException {
 		System.out.println("could take 80 seconds...");
 		zipTest("aspectjtools.jar");
 	}
