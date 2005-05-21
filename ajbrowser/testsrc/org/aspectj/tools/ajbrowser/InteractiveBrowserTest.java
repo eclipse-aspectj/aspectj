@@ -23,10 +23,13 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.ajde.*;
 
 /**
+ * Define system property "ajbrowser.interactive" to run.
  * @author Mik Kersten
  */
 public class InteractiveBrowserTest extends TestCase {
-
+    static boolean interactive() {
+        return (null != System.getProperty("ajbrowser.interactive"));
+    }
 	public InteractiveBrowserTest(String name) {
 		super(name);
 	}
@@ -44,6 +47,9 @@ public class InteractiveBrowserTest extends TestCase {
 	}
 
 	public void testAddProjectTask() {
+        if (!interactive()) {
+            return;
+        }
 		BrowserManager.getDefault().init(new String[]{}, true);	
 		Ajde.getDefault().getTaskListManager().addProjectTask(
 			"project-level task",
@@ -55,6 +61,9 @@ public class InteractiveBrowserTest extends TestCase {
 	}
 	
 	public void testAddSourceLineTasks() {
+        if (!interactive()) {
+            return;
+        }
 		BrowserManager.getDefault().init(new String[]{}, true);	
 		ISourceLocation dummyLocation = new SourceLocation(new File("<file>"), 0, 0);
 
