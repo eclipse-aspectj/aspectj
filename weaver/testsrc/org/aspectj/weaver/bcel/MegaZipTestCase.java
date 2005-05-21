@@ -118,7 +118,7 @@ public class MegaZipTestCase extends WeaveTestCase {
 		weaver.weave(weaver1, outFile);
 		assertTrue(outFile.lastModified() > startTime);
 	}	
-	
+	public void testEmptyForAntJUnit(){}
 	// this is something we test every now and again.
 	// to try, rename as testBig and put aspectjtools.jar in testdata
 	public void trytestBig() throws IOException {
