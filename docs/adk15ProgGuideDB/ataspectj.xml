@@ -257,7 +257,7 @@
           <literal>thisJoinPointStaticPart</literal>, 
           <literal>thisEnclosingJoinPointStaticPart</literal> then these need to 
           be declared as additional method parameters when using the annotation
-          style. <!-- TODO AV - not any more -- In AspectJ 1.5.0 we require that these parameters be declared
+          style. <!-- TODO AV - not any more - In AspectJ 1.5.0 we require that these parameters be declared
           first in the parameter list, in later releases we may relax this
           requirement.--></para>
 
