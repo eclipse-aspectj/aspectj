@@ -40,6 +40,8 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
  */
 public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
+    private final static String AOP_XML = "META-INF/aop.xml";
+
     //ATAJ LTW include/exclude
     private List m_includeTypePattern = new ArrayList();
     private List m_excludeTypePattern = new ArrayList();
@@ -106,7 +108,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private void registerDefinitions(final BcelWeaver weaver, final ClassLoader loader) {
         try {
             //TODO av underoptimized: we will parse each XML once per CL that see it
-            Enumeration xmls = loader.getResources("/META-INF/aop.xml");
+            Enumeration xmls = loader.getResources(AOP_XML);
             List definitions = new ArrayList();
 
             //TODO av dev mode needed ? TBD -Daj5.def=...

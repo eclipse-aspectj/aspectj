@@ -1,5 +1,5 @@
 <!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
-<project name="foo" default="javac.ltw">
+<project name="ltw" default="javac.ltw">
 
     <!-- using this we can debug the forked VM -->
     <property
@@ -18,8 +18,9 @@
     <target name="ltw">
         <java fork="yes" classname="ataspectj.AllLTWTests" failonerror="yes">
             <classpath refid="aj.path"/>
+            <!-- use META-INF/aop.xml style -->
+            <classpath path="ataspectj/pathentry"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="-Daj5.def=ataspectj/aop.xml"/>
         </java>
     </target>
 

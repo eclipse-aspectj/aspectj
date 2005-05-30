@@ -11,9 +11,6 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import org.aspectj.weaver.loadtime.Aj;
-import org.aspectj.weaver.loadtime.ClassPreProcessor;
-
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
