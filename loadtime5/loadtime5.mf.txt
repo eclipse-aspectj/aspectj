@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
-
 Name: org/aspectj/weaver/
 Specification-Title: AspectJ Weaver Classes
 Specification-Version: @build.version.short@
