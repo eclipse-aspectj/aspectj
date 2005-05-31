@@ -3,8 +3,7 @@ package ataspectj.misuse;
 
 import org.aspectj.lang.annotation.*;
 
-@Aspect
-public class Test005 {
+public abstract class Test005 {
 
     @Aspect
     public static class Test005B extends Test005 {
