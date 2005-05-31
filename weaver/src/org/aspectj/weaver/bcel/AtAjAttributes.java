@@ -25,6 +25,8 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
@@ -34,6 +36,7 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.FormalBinding;
@@ -406,6 +409,13 @@ public class AtAjAttributes {
                 // could not parse it, ignore the aspect
                 return false;
             } else {
+                // semantic check for inheritance (only one level up)
+                if (!"java.lang.Object".equals(struct.enclosingType.getSuperclass().getName())) {
+                    if (!struct.enclosingType.getSuperclass().isAbstract() && struct.enclosingType.getSuperclass().isAspect()) {
+                        reportError("cannot extend a concrete aspect", struct);
+                        return false;
+                    }
+                }
                 perClause.setLocation(struct.context, -1, -1);
                 struct.ajAttributes.add(new AjAttribute.Aspect(perClause));
                 return true;
@@ -510,6 +520,7 @@ public class AtAjAttributes {
                 }
                 IScope binding = new BindingScope(
                         struct.enclosingType,
+                        struct.context,
                         bindings
                 );
 
@@ -563,6 +574,7 @@ public class AtAjAttributes {
                 }
                 IScope binding = new BindingScope(
                         struct.enclosingType,
+                        struct.context,
                         bindings
                 );
 
@@ -641,6 +653,7 @@ public class AtAjAttributes {
             }
             IScope binding = new BindingScope(
                     struct.enclosingType,
+                    struct.context,
                     bindings
             );
 
@@ -723,6 +736,7 @@ public class AtAjAttributes {
             }
             IScope binding = new BindingScope(
                     struct.enclosingType,
+                    struct.context,
                     bindings
             );
 
@@ -780,6 +794,7 @@ public class AtAjAttributes {
                 }
                 IScope binding = new BindingScope(
                         struct.enclosingType,
+                        struct.context,
                         bindings
                 );
 
@@ -840,6 +855,7 @@ public class AtAjAttributes {
                 try {
                     binding = new BindingScope(
                             struct.enclosingType,
+                            struct.context,
                             extractBindings(struct)
                     );
                 } catch (UnreadableDebugInfoException e) {
@@ -893,6 +909,7 @@ public class AtAjAttributes {
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
                 IScope binding = new BindingScope(
                         struct.enclosingType,
+                        struct.context,
                         bindings
                 );
                 Pointcut pc = parsePointcut(declareError.getValue().stringifyValue(), struct);
@@ -919,6 +936,7 @@ public class AtAjAttributes {
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
                 IScope binding = new BindingScope(
                         struct.enclosingType,
+                        struct.context,
                         bindings
                 );
                 Pointcut pc = parsePointcut(declareWarning.getValue().stringifyValue(), struct);
@@ -1176,14 +1194,20 @@ public class AtAjAttributes {
      */
     public static class BindingScope extends SimpleScope {
         private ResolvedTypeX m_enclosingType;
+        private ISourceContext m_sourceContext;
 
-        public BindingScope(ResolvedTypeX type, FormalBinding[] bindings) {
+        public BindingScope(ResolvedTypeX type, ISourceContext sourceContext, FormalBinding[] bindings) {
             super(type.getWorld(), bindings);
             m_enclosingType = type;
+            m_sourceContext = sourceContext;
         }
 
         public ResolvedTypeX getEnclosingType() {
             return m_enclosingType;
+        }
+
+        public ISourceLocation makeSourceLocation(IHasPosition location) {
+            return m_sourceContext.makeSourceLocation(location);
         }
     }
 

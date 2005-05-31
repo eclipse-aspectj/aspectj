@@ -77,8 +77,6 @@ public class BcelSourceContext implements ISourceContext {
 
 
 	public ISourceLocation makeSourceLocation(IHasPosition position) {
-		
-		
 		if (lineBreaks != null) {
 			int line = Arrays.binarySearch(lineBreaks, position.getStart());
 			if (line < 0) line = -line;

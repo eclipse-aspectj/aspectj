@@ -34,6 +34,7 @@ public class AllLTWTests extends TestCase {
         suite.addTestSuite(ataspectj.BindingTest.class);
         suite.addTestSuite(ataspectj.PerClauseTest.class);
         suite.addTestSuite(AroundInlineMungerTest.class);
+        suite.addTestSuite(SingletonInheritanceTest.class);
 
         return suite;
     }

@@ -91,4 +91,8 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
     public void testDeow() {
         runTest("Deow");
     }
+
+    public void testSingletonInheritance() {
+        runTest("singletonInheritance");
+    }
 }

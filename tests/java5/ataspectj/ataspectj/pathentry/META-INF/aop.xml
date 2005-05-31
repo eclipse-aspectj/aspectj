@@ -22,5 +22,7 @@
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPTW"/>
 
         <aspect name="ataspectj.AroundInlineMungerTestAspects.Open"/>
+
+        <aspect name="ataspectj.SingletonInheritanceTest.ChildAspect"/>
     </aspects>
 </aspectj>

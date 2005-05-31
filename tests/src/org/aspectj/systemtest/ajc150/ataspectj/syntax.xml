@@ -107,4 +107,12 @@
             <message kind="error" line="29" text="call hi"/>
         </compile>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="singletonInheritance">
+        <compile files="ataspectj/SingletonInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
+        <run class="ataspectj.SingletonInheritanceTest"/>
+        <compile files="ataspectj/SingletonInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.SingletonInheritanceTest"/>
+      </ajc-test>
+
 </suite>
