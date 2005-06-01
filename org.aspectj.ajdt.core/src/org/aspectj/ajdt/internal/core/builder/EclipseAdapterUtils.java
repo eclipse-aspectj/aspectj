@@ -80,8 +80,8 @@ public class EclipseAdapterUtils {
         char c;
         //remove all SPACE and TAB that begin the error message...
         int trimLeftIndex = 0;
-        while (((c = extract[trimLeftIndex++]) == TAB) || (c == SPACE)) {
-        };
+        while (   (((c = extract[trimLeftIndex++]) == TAB) || (c == SPACE)) && trimLeftIndex<extract.length   ) { };
+		if (trimLeftIndex>=extract.length) return new String(extract)+"\n";
         System.arraycopy(
             extract,
             trimLeftIndex - 1,
