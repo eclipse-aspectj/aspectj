@@ -33,7 +33,7 @@ public class Member implements Comparable, AnnotatedElement {
     private final String name;
     private final TypeX[] parameterTypes;
     private final String signature;
-	private final String declaredSignature;
+	private final String declaredSignature; // TODO asc Is this redundant? Is it needed for generics?
     private String paramSignature;
 
     public Member(
