@@ -33,6 +33,7 @@ public class Member implements Comparable, AnnotatedElement {
     private final String name;
     private final TypeX[] parameterTypes;
     private final String signature;
+	private final String declaredSignature;
     private String paramSignature;
 
     public Member(
@@ -47,11 +48,12 @@ public class Member implements Comparable, AnnotatedElement {
         this.modifiers = modifiers;
         this.name = name;
         this.signature = signature;
+		this.declaredSignature = signature;
         if (kind == FIELD) {
             this.returnType = TypeX.forSignature(signature);
             this.parameterTypes = TypeX.NONE;
         } else {
-            Object[] returnAndParams = signatureToTypes(signature);
+            Object[] returnAndParams = signatureToTypes(signature,false);
             this.returnType = (TypeX) returnAndParams[0];
             this.parameterTypes = (TypeX[]) returnAndParams[1];
         }
@@ -73,9 +75,11 @@ public class Member implements Comparable, AnnotatedElement {
         this.name = name;
         this.parameterTypes = parameterTypes;
         if (kind == FIELD) {
-            this.signature = returnType.getSignature();
+            this.signature = returnType.getRawTypeSignature();
+			this.declaredSignature = returnType.getSignature();
         } else {
-            this.signature = typesToSignature(returnType, parameterTypes);
+            this.signature = typesToSignature(returnType, parameterTypes,true);
+			this.declaredSignature = typesToSignature(returnType,parameterTypes,false);
         }
     }
     
@@ -99,11 +103,12 @@ public class Member implements Comparable, AnnotatedElement {
      * @param      signature the JVM bytecode method signature string we want to break apart
      * @return     a pair of TypeX, TypeX[] representing the return types and parameter types. 
      */
-    public static String typesToSignature(TypeX returnType, TypeX[] paramTypes) {
+    public static String typesToSignature(TypeX returnType, TypeX[] paramTypes, boolean useRawTypes) {
         StringBuffer buf = new StringBuffer();
         buf.append("(");
         for (int i = 0, len = paramTypes.length; i < len; i++) {
-            buf.append(paramTypes[i].getSignature());
+			if (paramTypes[i].isParameterized() && useRawTypes) buf.append(paramTypes[i].getRawTypeSignature());
+			else                                                buf.append(paramTypes[i].getSignature());
         }
         buf.append(")");
         buf.append(returnType.getSignature());
@@ -124,7 +129,8 @@ public class Member implements Comparable, AnnotatedElement {
         return buf.toString();   
     }
     
-    /** returns an Object[] pair of TypeX, TypeX[] representing return type, 
+    /** 
+     * returns an Object[] pair of TypeX, TypeX[] representing return type, 
      * argument types parsed from the JVM bytecode signature of a method.  Yes,
      * this should actually return a nice statically-typed pair object, but we
      * don't have one of those.  
@@ -138,17 +144,42 @@ public class Member implements Comparable, AnnotatedElement {
      * @param      signature the JVM bytecode method signature string we want to break apart
      * @return     a pair of TypeX, TypeX[] representing the return types and parameter types. 
      */
-    private static Object[] signatureToTypes(String sig) {
+    private static Object[] signatureToTypes(String sig,boolean keepParameterizationInfo) {
         List l = new ArrayList();
         int i = 1;
         while (true) {
             char c = sig.charAt(i);
-            if (c == ')') break;
+            if (c == ')') break; // break out when the hit the ')'
             int start = i;
             while (c == '[') c = sig.charAt(++i);
             if (c == 'L') {
-                i = sig.indexOf(';', start) + 1;
-                l.add(TypeX.forSignature(sig.substring(start, i)));
+				int nextSemicolon = sig.indexOf(';',start);
+				int firstAngly = sig.indexOf('<',start);
+				if (firstAngly == -1 || firstAngly>nextSemicolon) {
+                  i = nextSemicolon + 1;
+                  l.add(TypeX.forSignature(sig.substring(start, i)));
+				} else {
+					// generics generics generics
+					// Have to skip to the *correct* ';'
+					boolean endOfSigReached = false;
+					int posn = firstAngly;
+					int genericDepth=0;
+					while (!endOfSigReached) {
+						switch (sig.charAt(posn)) {
+						  case '<': genericDepth++;break;
+						  case '>': genericDepth--;break;
+						  case ';': if (genericDepth==0) endOfSigReached=true;break;
+						  default:
+						}
+						posn++;
+					}
+					// posn now points to the correct nextSemicolon :)
+					i=posn;
+					String toProcess = null;
+					toProcess = sig.substring(start,i);
+					TypeX tx = TypeX.forSignature(toProcess);
+					l.add(tx);					
+				}
             } else {
                 l.add(TypeX.forSignature(sig.substring(start, ++i)));
             }
@@ -166,11 +197,11 @@ public class Member implements Comparable, AnnotatedElement {
         return new Member(FIELD, declaring, mods, type, name, TypeX.NONE);
     }    
     public static Member method(TypeX declaring, int mods, String name, String signature) {
-        Object[] pair = signatureToTypes(signature);
+        Object[] pair = signatureToTypes(signature,false);
         return method(declaring, mods, (TypeX) pair[0], name, (TypeX[]) pair[1]);
     }
     public static Member pointcut(TypeX declaring, String name, String signature) {
-        Object[] pair = signatureToTypes(signature);
+        Object[] pair = signatureToTypes(signature,false);
         return pointcut(declaring, 0, (TypeX) pair[0], name, (TypeX[]) pair[1]);
     }
 
@@ -401,6 +432,9 @@ public class Member implements Comparable, AnnotatedElement {
      * use getParameterSignature() - it is importnant to choose the right one in the face of covariance.
      */
     public String getSignature() { return signature; }
+	
+	/** TODO ASC Should return the non-erased version of the signature... untested */
+	public String getDeclaredSignature() { return declaredSignature;}
     public int getArity() { return parameterTypes.length; }
   
     /**
