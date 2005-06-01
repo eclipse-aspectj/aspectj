@@ -64,7 +64,7 @@ import java.util.List;
 /** 
  * Abstract super class for fields and methods.
  *
- * @version $Id: FieldOrMethod.java,v 1.3 2005/03/10 12:15:04 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.4 2005/06/01 14:55:44 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends AccessFlags implements Cloneable, Node {
@@ -74,6 +74,9 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   protected Attribute[]  attributes;      // Collection of attributes
   private   Annotation[] annotations;     // annotations defined on the field or method 
   protected ConstantPool constant_pool;
+
+  private String signatureAttributeString = null;
+  private boolean searchedForSignatureAttribute = false;
   
 
   // Annotations are collected from certain attributes, don't do it more than necessary!
@@ -213,6 +216,16 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   }
 
   /**
+   * This will return the contents of a signature attribute attached to a member, or if there
+   * is none it will return the same as 'getSignature()'.  Signature attributes are attached
+   * to members that were declared generic.
+   */
+  public final String getDeclaredSignature() {
+    if (getRealSignatureFromAttribute()!=null) return getRealSignatureFromAttribute();
+	return getSignature();  
+  }
+  
+  /**
    * @return deep copy of this field
    */
   protected FieldOrMethod copy_(ConstantPool constant_pool) {
@@ -267,4 +280,25 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
 	newAnnotations[len] = a;
 	annotations = newAnnotations;
   }
+  
+  
+  /**
+   * Hunts for a signature attribute on the member and returns its contents.  So where the 'regular' signature
+   * may be (Ljava/util/Vector;)V the signature attribute may in fact say '(Ljava/util/Vector<Ljava/lang/String;>;)V'
+   * Coded for performance - searches for the attribute only when requested - only searches for it once.
+   */
+  public final String getRealSignatureFromAttribute() {
+	if (!searchedForSignatureAttribute) {
+	  boolean found=false;
+      for(int i=0; !found && i < attributes_count; i++) {
+        if(attributes[i] instanceof Signature) {
+		  signatureAttributeString = ((Signature)attributes[i]).getSignature();
+		  found=true;
+        }
+      }
+	  searchedForSignatureAttribute=true;
+	}
+	return signatureAttributeString;
+  }
+  
 }
