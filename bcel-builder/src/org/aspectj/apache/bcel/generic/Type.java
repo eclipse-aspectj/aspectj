@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.4 2005/03/10 12:14:19 aclement Exp $
+ * @version $Id: Type.java,v 1.5 2005/06/01 14:57:23 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified:
@@ -175,9 +175,31 @@ public abstract class Type implements java.io.Serializable {
       return new TypeHolder(new ArrayType(th.getType(), dim),dim+th.getConsumed());
     } else { // type == T_REFERENCE
       // Format is 'Lblahblah;'
-      int index = signature.indexOf(';'); // Look for closing `;'
-      if(index < 0) throw new ClassFormatException("Invalid signature: " + signature);
-      return new TypeHolder(new ObjectType(signature.substring(1, index).replace('/', '.')),index+1);
+      int index = signature.indexOf(';'); // Look for closing ';'
+	  if (index < 0) throw new ClassFormatException("Invalid signature: " + signature);
+	  
+	  // generics awareness
+      int nextAngly = signature.indexOf('<');
+	  String typeString = null;
+	  if (nextAngly==-1 || nextAngly>index) {
+		typeString = signature.substring(1,index).replace('/','.');
+	  } else {
+		boolean endOfSigReached = false;
+		int posn = nextAngly;
+		int genericDepth=0;
+		while (!endOfSigReached) {
+			switch (signature.charAt(posn++)) {
+			  case '<': genericDepth++;break;
+			  case '>': genericDepth--;break;
+			  case ';': if (genericDepth==0) endOfSigReached=true;break;
+			  default:
+			}
+		}
+		index=posn-1;
+		typeString = signature.substring(1,nextAngly).replace('/','.');
+	  }
+	  // ObjectType doesn't currently store parameterized info
+      return new TypeHolder(new ObjectType(typeString),index+1);
     }
   }
 
