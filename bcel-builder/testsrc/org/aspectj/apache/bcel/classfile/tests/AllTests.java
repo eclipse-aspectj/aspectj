@@ -33,8 +33,7 @@ public class AllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Tests for BCEL Java5 support");
 		//$JUnit-BEGIN$
-		suite
-			.addTestSuite(RuntimeVisibleParameterAnnotationAttributeTest.class);
+		suite.addTestSuite(RuntimeVisibleParameterAnnotationAttributeTest.class);
 		suite.addTestSuite(AnnotationDefaultAttributeTest.class);
 		suite.addTestSuite(EnclosingMethodAttributeTest.class);
 		suite.addTestSuite(MethodAnnotationsTest.class);
@@ -50,6 +49,7 @@ public class AllTests {
 		suite.addTestSuite(GeneratingAnnotatedClassesTest.class);
 		suite.addTestSuite(TypeAnnotationsTest.class);
 		suite.addTestSuite(UtilTests.class);
+		suite.addTestSuite(GenericSignatureParsingTest.class);
 		//$JUnit-END$
 		return suite;
 	}
