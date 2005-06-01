@@ -40,6 +40,7 @@ public class Ajde {
 	private static final Ajde INSTANCE = new Ajde();
 	private static final String NOT_INITIALIZED_MESSAGE = "Ajde is not initialized.";
 	private static boolean isInitialized = false;
+	private static int compatibilityLevel = 1; // Used by org.aspectj.ajde upgrade task
     
 	private BuildManager buildManager;
 //	private EditorManager editorManager;
