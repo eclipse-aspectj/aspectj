@@ -1356,7 +1356,7 @@ public final class LazyMethodGen {
 	public String getSignature() {
 		if (memberView!=null) return memberView.getSignature();
 		return Member.typesToSignature(BcelWorld.fromBcel(getReturnType()), 
-										BcelWorld.fromBcel(getArgumentTypes()));
+										BcelWorld.fromBcel(getArgumentTypes()),false);
 	}
     
     public String getParameterSignature() {

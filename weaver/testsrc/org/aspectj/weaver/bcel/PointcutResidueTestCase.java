@@ -192,7 +192,7 @@ public class PointcutResidueTestCase extends WeaveTestCase {
                     "ajc_before_0",
                     Member.typesToSignature(
                         ResolvedTypeX.VOID,
-                        TypeX.forNames(formalTypes))),
+                        TypeX.forNames(formalTypes),false)),
             	0, -1, -1, null, null);
 
 		ResolvedTypeX inAspect = world.resolve("Aspect");
