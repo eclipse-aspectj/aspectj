@@ -2200,4 +2200,38 @@
    <ajc-test dir="bugs150" title="Exploding compile time with if() statements in pointcut">
      <compile files="PR94086.aj" options="-1.5"/>
    </ajc-test>
+   
+   <ajc-test dir="java5/generics/bugs" title="ITD method with generic arg">
+     <compile files="PR97763.aj" options="-1.5"/>
+     <run class="PR97763">
+       <stderr>
+         <line text="Number of entries=2"/>
+       </stderr>
+     </run>
+   </ajc-test>
+
+   <ajc-test dir="bugs150" title="NPE at ClassScope.java:660 when compiling generic class">
+     <compile files="PR95993.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 1">
+     <compile files="GenericAspect1.aj" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 2">
+     <compile files="GenericAspect2.aj" options="-1.5">
+       <message kind="error" line="9" text="can not extend"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/genericaspects" title="declare parents">
+     <compile files="GenericAspect3.aj" options="-1.5"/>
+     <run class="GenericAspect3">
+      <stderr>
+		<line text="A"/>
+		<line text="B"/>
+      </stderr>
+     </run>
+   </ajc-test>
+   
 </suite>

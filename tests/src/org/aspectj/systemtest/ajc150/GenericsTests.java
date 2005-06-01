@@ -39,5 +39,24 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testPR88606() {
 		runTest("Parameterized types on introduced fields not correctly recognized");
 	}
+
+    public void testPR97763() {
+	    runTest("ITD method with generic arg");
+    }
+
+    public void testGenericsBang_pr95993() {
+	    runTest("NPE at ClassScope.java:660 when compiling generic class");
+    }    
 	
+	public void testPR96220_GenericAspects1() {
+		runTest("generic aspects - 1");
+	}
+	
+	public void testPR96220_GenericAspects2() {
+		runTest("generic aspects - 2");
+	}
+	
+	public void testPR96220_GenericAspects3() {
+		runTest("declare parents");
+	}
 }
