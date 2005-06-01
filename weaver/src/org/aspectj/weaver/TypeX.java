@@ -25,6 +25,12 @@ public class TypeX implements AnnotatedElement {
     protected String signature;
 	
 	/**
+	 * For parameterized types, this is the signature of the raw type (e.g. Ljava/util/List; )
+	 * For non-parameterized types, it is null.
+	 */
+	protected String rawTypeSignature;
+	
+	/**
 	 * If this is a parameterized type, these are its parameters
 	 */
 	protected TypeX[] typeParameters;
@@ -121,6 +127,7 @@ public class TypeX implements AnnotatedElement {
 		for (int i = 0; i < paramTypeNames.length; i++) {
 			ret.typeParameters[i] = TypeX.forName(paramTypeNames[i]);
 		}
+		ret.rawTypeSignature = ret.signature;
 		// sig for e.g. List<String> is Ljava/util/List<Ljava/lang/String;>;
 		StringBuffer sigAddition = new StringBuffer();
 		sigAddition.append("<");
@@ -129,7 +136,7 @@ public class TypeX implements AnnotatedElement {
 		}
 		sigAddition.append(">");
 		sigAddition.append(";");
-		ret.signature = ret.signature + sigAddition.toString();
+		ret.signature = ret.signature.substring(0,ret.signature.length()-1) + sigAddition.toString();
 		return ret;
     }
 	
@@ -196,15 +203,12 @@ public class TypeX implements AnnotatedElement {
             case 'F': return ResolvedTypeX.FLOAT;
             case 'I': return ResolvedTypeX.INT;
             case 'J': return ResolvedTypeX.LONG;
-            case 'L':
-                return new TypeX(signature);
+            case 'L': return new TypeX(signature);
             case 'S': return ResolvedTypeX.SHORT;
             case 'V': return ResolvedTypeX.VOID;
             case 'Z': return ResolvedTypeX.BOOLEAN;
-            case '[':
-                return new TypeX(signature);
-            default: 
-                throw new BCException("Bad type signature " + signature);
+            case '[': return new TypeX(signature);
+            default:  throw new BCException("Bad type signature " + signature);
         }      
     }
     
@@ -288,8 +292,21 @@ public class TypeX implements AnnotatedElement {
      * @return  the java JVM signature string for this type.
      */
     public String getSignature() {
-        return signature;
+		if (!isParameterized() || rawTypeSignature==null) { return signature; }
+		return rawTypeSignature;
     }
+	
+	public String getParameterizedSignature() {
+		return signature;
+	}
+	
+	/**
+	 * For parameterized types, return the signature for the raw type
+	 */
+	public String getRawTypeSignature() {
+		if (!isParameterized() || rawTypeSignature==null) { return signature; }
+		return rawTypeSignature;
+	}
 
     /**
      * Determins if this represents an array type.
@@ -313,7 +330,9 @@ public class TypeX implements AnnotatedElement {
 	    return isParameterized && typeParameters==null;
 	}
 	
-	private final void setParameterized(boolean b) { isParameterized=b;}
+	private final void setParameterized(boolean b) { 
+		isParameterized=b;
+	}
 	
     
     /**
