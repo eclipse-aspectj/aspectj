@@ -155,11 +155,6 @@ public abstract class World implements Dump.INode {
     }
     protected final ResolvedTypeX resolveObjectType(TypeX ty) {
 		String signature = ty.getSignature();
-		if (signature.indexOf("<") != -1) {
-			// extract the raw type...
-			// XXX - might need to do more in the future to propagate full parameterized info...
-			signature = signature.substring(0,signature.indexOf("<"));
-		}
 
     	ResolvedTypeX.Name name = new ResolvedTypeX.Name(signature, this);
     	ResolvedTypeX.ConcreteName concreteName = resolveObjectType(name);
