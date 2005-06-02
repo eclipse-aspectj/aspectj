@@ -64,18 +64,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	// Developers notebook
 	// ITD of generic members
 	
-//	public void testItdNonStaticMethod() {
-//		runTest("Parsing generic ITDs - 1");
-//	}
-//	public void testItdStaticMethod() {
-//		runTest("Parsing generic ITDs - 2");
-//	}
-//	public void testItdCtor() {
-//		runTest("Parsing generic ITDs - 3");
-//	}
-//	public void testItdComplexMethod() {
-//		runTest("Parsing generic ITDs - 4");
-//	}
+	public void testItdNonStaticMethod() {
+		runTest("Parsing generic ITDs - 1");
+	}
+	public void testItdStaticMethod() {
+		runTest("Parsing generic ITDs - 2");
+	}
+	public void testItdCtor() {
+		runTest("Parsing generic ITDs - 3");
+	}
+	public void testItdComplexMethod() {
+		runTest("Parsing generic ITDs - 4");
+	}
 	
 //	public void testItdOnGenericType() {
 //		runTest("ITDs on generic type");
