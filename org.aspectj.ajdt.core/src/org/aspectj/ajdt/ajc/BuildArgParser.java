@@ -491,6 +491,9 @@ public class BuildArgParser extends Main {
 				} else {
 					showError("-outjar requires jar path argument");
 				}
+            } else if (arg.equals("-log")){
+				// remove it as it's already been handled in org.aspectj.tools.ajc.Main
+				args.remove(args.get(nextArgIndex));
             } else if (arg.equals("-incremental")) {
                 buildConfig.setIncrementalMode(true);
             } else if (arg.equals("-XincrementalFile")) {

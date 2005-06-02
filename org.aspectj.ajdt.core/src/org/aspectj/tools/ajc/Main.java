@@ -15,9 +15,11 @@
 package org.aspectj.tools.ajc;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Date;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
@@ -212,12 +214,12 @@ public class Main {
         IMessageHolder holder = clientHolder;
         if (null == holder) {
             holder = ourHandler;
-            if (verbose) {
+//            if (verbose) {
                 ourHandler.setInterceptor(MessagePrinter.VERBOSE);
-            } else {
-                ourHandler.ignore(IMessage.INFO);
-                ourHandler.setInterceptor(MessagePrinter.TERSE);
-            }
+//            } else {
+//                ourHandler.ignore(IMessage.INFO);
+//                ourHandler.setInterceptor(MessagePrinter.TERSE);
+//            }
         }
         
         // make sure we handle out of memory gracefully...
@@ -268,7 +270,34 @@ public class Main {
      * @param holder the MessageHandler sink for messages.
      */
     public void run(String[] args, IMessageHolder holder) {
-        if (LangUtil.isEmpty(args)) {
+
+		boolean logMode = (-1 != ("" + LangUtil.arrayAsList(args)).indexOf("-log"));
+		PrintStream logStream = null;
+		FileOutputStream fos = null;
+		if (logMode){
+			int logIndex = LangUtil.arrayAsList(args).indexOf("-log");
+			String logFileName = args[logIndex + 1];
+			File logFile = new File(logFileName);
+			try{
+				logFile.createNewFile();
+				fos = new FileOutputStream(logFileName, true);
+				logStream = new PrintStream(fos,true);
+			} catch(Exception e){			
+				fail(holder, "Couldn't open log file: ", e);				
+			}
+			Date now = new Date();
+			logStream.println(now.toString());
+			boolean verbose = (-1 != ("" + LangUtil.arrayAsList(args)).indexOf("-verbose"));
+			if (verbose) {
+					ourHandler.setInterceptor(new LogModeMessagePrinter(true,logStream));
+		          } else {
+		              ourHandler.ignore(IMessage.INFO);
+					  ourHandler.setInterceptor(new LogModeMessagePrinter(false,logStream));
+		          }
+			holder = ourHandler;
+		}
+		
+		if (LangUtil.isEmpty(args)) {
             args = new String[] { "-?" };
         }  else if (controller.running()) {
             fail(holder, "already running with controller: " + controller, null);
@@ -324,6 +353,19 @@ public class Main {
         	}
     	} catch (Throwable t) {
             fail(holder, "unexpected exception", t);
+        } finally{
+			if (logStream != null){
+				logStream.close();
+				logStream = null;
+			}
+			if (fos != null){
+				try {
+					fos.close();
+				} catch (IOException e){
+					fail(holder, "unexpected exception", e);
+				}
+				fos = null;
+			}
         }
     }
     

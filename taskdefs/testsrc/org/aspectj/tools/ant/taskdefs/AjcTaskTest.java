@@ -301,35 +301,17 @@ public class AjcTaskTest extends TestCase {
 	// verifies that the log attribute of AjcTask writes output to the given log file
 	public void testLoggingMode() {
 		AjcTask task = getTask("default.lst");
-		File logFile = new File("testLogFile.txt");
+		task.setFailonerror(false);
+		File logFile = new File("testLogFile1.txt");
+		String s = logFile.getAbsolutePath();
 		logFile.delete();
-		try {
-			logFile.createNewFile();
-		} catch (IOException e) {
-			fail("unexpected " + e.getMessage());
-		}
 		long initialLength = logFile.length();
 		task.setLog(logFile);
-		checkRun(task, null);
+		runTest(task,null,null);
 		long newLength = logFile.length();
 		assertTrue(newLength > initialLength);
 		logFile.delete();
 	}
-	
-	// this test method submitted by patch from Andrew Huff (IBM)
-	// verifies that the log attribute of AjcTask appends output to the given log file
-	public void testLoggingIsAppending(){
-		AjcTask task = getTask("compileError.lst");
-		task.setFailonerror(false);
- 		File logFile = new File("testLogFile.txt");
- 		task.setLog(logFile);
- 		checkRun(task,null);		
- 		long oldLength = logFile.length();
-		checkRun(task,null);
-		long newLength = logFile.length();
-		assertTrue(newLength > oldLength);
- 		logFile.delete();
- 	}
 
     private void checkRun(AjcTask task, String exceptionString) {
 		try {
