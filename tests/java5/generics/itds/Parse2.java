@@ -2,5 +2,5 @@
 public class Parse2 { }
 
 aspect X {
-  static <T> T Parse2.m(T) {} 
+  static <T> T Parse2.m(T timeFor) { return null; } 
 }

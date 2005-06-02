@@ -2,5 +2,5 @@
 public class Parse1 { }
 
 aspect X {
-  <T> T Parse1.m(T) {} 
+  <T> T Parse1.m(T timeFor) { return null;} 
 }

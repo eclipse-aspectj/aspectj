@@ -1,8 +1,8 @@
 import java.util.*;
 
 // Complex ITDM
-public class Parse1 { }
+public class Parse4 { }
 
 aspect X {
-  <T> Parse1.sort(List<T> elements,Comparator<? super T> comparator) {}
+  <T> void Parse4.sort(List<T> elements,Comparator<? super T> comparator) {}
 }

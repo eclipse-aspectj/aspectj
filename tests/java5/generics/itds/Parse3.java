@@ -1,6 +1,6 @@
 // Simple ITDC
-public class Parse1 { }
+public class Parse3 { }
 
 aspect X {
-  <T> T Parse1.new(T) {} 
+  <T> Parse3.new(T cupOf) {} 
 }
