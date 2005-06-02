@@ -2154,7 +2154,9 @@
         </compile>
     </ajc-test>
 
-    <!-- Generics tests -->
+    <!-- ============================================================== -->
+    <!--   Start of generics tests                                      -->
+    <!-- ============================================================== -->
 
     <ajc-test dir="java5/generics" title="ITD with parameterized type" vm="1.5">
         <compile files="ITDReturningParameterizedType.aj" options="-1.5"/>
@@ -2201,6 +2203,8 @@
      <compile files="PR94086.aj" options="-1.5"/>
    </ajc-test>
    
+   // generic bugs
+   
    <ajc-test dir="java5/generics/bugs" title="ITD method with generic arg">
      <compile files="PR97763.aj" options="-1.5"/>
      <run class="PR97763">
@@ -2214,6 +2218,14 @@
      <compile files="PR95993.java" options="-1.5"/>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/bugs" title="Problems resolving type name inside generic class">
+     <compile files="PR95992.java" options="-1.5"/>
+   </ajc-test>
+   
+   // end of generic bugs
+
+   // generic aspects
+   
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 1">
      <compile files="GenericAspect1.aj" options="-1.5"/>
    </ajc-test>
@@ -2224,7 +2236,7 @@
      </compile>
    </ajc-test>
    
-   <ajc-test dir="java5/generics/genericaspects" title="declare parents">
+   <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 3">
      <compile files="GenericAspect3.aj" options="-1.5"/>
      <run class="GenericAspect3">
       <stderr>
@@ -2233,5 +2245,88 @@
       </stderr>
      </run>
    </ajc-test>
+   
+   // end of generic aspects
+   
+   // generic ITDs
+   
+   <ajc-test dir="java5/generics/itds" title="itd of non static member">
+       <compile files="A.java" options="-1.5"/>
+       <run class="A">
+         <stderr>
+           <line text="fillthisin"/>
+         </stderr>
+       </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="itd of static member">
+       <compile files="B.java" options="-1.5"/>
+       <run class="B">
+         <stderr>
+           <line text="fillthisin..."/>
+         </stderr>
+       </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="itd using type parameter">
+       <compile files="C.java" options="-1.5"/>
+       <run class="C">
+         <stderr>
+           <line text="fillthisin..."/>
+         </stderr>
+       </run>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="itd incorrectly using type parameter">
+       <compile files="D.java" options="-1.5"/>
+       <run class="D">
+         <stderr>
+           <line text="fillthisin..."/>
+         </stderr>
+       </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 1">
+     <compile files="Parse1.java" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 2">
+     <compile files="Parse2.java" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 3">
+     <compile files="Parse3.java" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 4">
+     <compile files="Parse4.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="ITDs on generic type">
+     <compile files="Parse5.java" options="-1.5">
+        <message kind="error" line="9"/>
+        <message kind="error" line="11"/>
+        <message kind="error" line="13"/>
+        <message kind="error" line="15"/>
+     </compile>
+   </ajc-test>
+   
+   // end of generic ITDs
+   
+   // generic decps
+   
+   <ajc-test dir="java5/generics/decp" title="generic decp">
+     <compile files="Basic.aj" options="-1.5"/>
+     <run class="Basic"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp" title="illegal generic decp">
+     <compile files="Basic2.aj" options="-1.5"/>
+   </ajc-test>
+   
+   // end of generic decps
+   <!-- ============================================================== -->
+   <!--     End of generics tests                                      -->
+   <!-- ============================================================== -->
    
 </suite>

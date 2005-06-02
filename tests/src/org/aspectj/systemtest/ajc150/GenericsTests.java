@@ -48,6 +48,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	    runTest("NPE at ClassScope.java:660 when compiling generic class");
     }    
 	
+	// generic aspects
 	public void testPR96220_GenericAspects1() {
 		runTest("generic aspects - 1");
 	}
@@ -57,6 +58,56 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	}
 	
 	public void testPR96220_GenericAspects3() {
-		runTest("declare parents");
+		runTest("generic aspects - 3");
 	}
+	
+	// Developers notebook
+	// ITD of generic members
+	
+//	public void testItdNonStaticMethod() {
+//		runTest("Parsing generic ITDs - 1");
+//	}
+//	public void testItdStaticMethod() {
+//		runTest("Parsing generic ITDs - 2");
+//	}
+//	public void testItdCtor() {
+//		runTest("Parsing generic ITDs - 3");
+//	}
+//	public void testItdComplexMethod() {
+//		runTest("Parsing generic ITDs - 4");
+//	}
+	
+//	public void testItdOnGenericType() {
+//		runTest("ITDs on generic type");
+//	}
+//	
+//	public void testItdNonStaticMember() {
+//		runTest("itd of non static member");
+//	}
+//	
+//	public void testItdStaticMember() {
+//		runTest("itd of static member");
+//	}
+//	
+//	public void testItdUsingTypeParameter() {
+//		runTest("itd using type parameter");
+//	}
+//	
+//	public void testItdIncorrectlyUsingTypeParameter() {
+//		runTest("itd incorrectly using type parameter");
+//	}
+
+	// generic declare parents
+//	public void testPR96220_GenericDecp() {
+//		runTest("generic decp");
+//	}
+//
+//	public void testIllegalGenericDecp() {
+//		runTest("illegal generic decp");
+//	}
+//
+//	public void testPR95992_TypeResolvingProblemWithGenerics() {
+//		runTest("Problems resolving type name inside generic class");
+//	}
+	
 }
