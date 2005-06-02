@@ -25,21 +25,22 @@ import org.aspectj.asm.IProgramElement;
 /**
  * @author Mik Kersten
  */
-class StubFileGenerator {
+class StubFileGenerator{
 
     static Hashtable declIDTable = null;
 
-    static void doFiles(Hashtable table,
+    static void doFiles (Hashtable table,
                         SymbolManager symbolManager,
                         File[] inputFiles,
-                        File[] signatureFiles) {
+                        File[] signatureFiles) throws DocException {
         declIDTable = table;
         for (int i = 0; i < inputFiles.length; i++) {
             processFile(symbolManager, inputFiles[i], signatureFiles[i]);
         }
     }
+    
 
-    static void processFile(SymbolManager symbolManager, File inputFile, File signatureFile) {
+    static void processFile(SymbolManager symbolManager, File inputFile, File signatureFile) throws DocException {
         try {
         	String path = StructureUtil.translateAjPathName(signatureFile.getCanonicalPath());
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path)));
@@ -56,7 +57,11 @@ class StubFileGenerator {
         		if (node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)) {
         			processImportDeclaration(node, writer);
         		} else {
-        			processTypeDeclaration(node, writer);
+					try {
+        			  processTypeDeclaration(node, writer);
+					} catch (DocException d){
+						throw new DocException("File name invalid: " + inputFile.toString());
+					}
         		}
         	}
            	
@@ -78,12 +83,15 @@ class StubFileGenerator {
 		}  	 
     }
     
-    private static void processTypeDeclaration(IProgramElement classNode, PrintWriter writer) throws IOException {
+    private static void processTypeDeclaration(IProgramElement classNode, PrintWriter writer) throws DocException {
     	
     	String formalComment = addDeclID(classNode, classNode.getFormalComment());
     	writer.println(formalComment);
     	
     	String signature = genSourceSignature(classNode);// StructureUtil.genSignature(classNode);
+		if (signature == null){
+			throw new DocException("The java file is invalid");
+		}
     	
 //    	System.err.println("######" + signature + ", " + classNode.getName());
     	if (!StructureUtil.isAnonymous(classNode) && !classNode.getName().equals("<undefined>")) {
@@ -94,7 +102,7 @@ class StubFileGenerator {
     	}
     }
 
-	private static void processMembers(List/*IProgramElement*/ members, PrintWriter writer, boolean declaringTypeIsInterface) throws IOException {
+	private static void processMembers(List/*IProgramElement*/ members, PrintWriter writer, boolean declaringTypeIsInterface) throws DocException {
     	for (Iterator it = members.iterator(); it.hasNext();) {
 			IProgramElement member = (IProgramElement) it.next();
 		
@@ -155,12 +163,14 @@ class StubFileGenerator {
      */
     private static String genSourceSignature(IProgramElement classNode) {
     	String signature = classNode.getSourceSignature();
-    	int index = signature.indexOf("aspect");
-    	if (index != -1 && signature.charAt(index-1) != '.') {
-    		signature = signature.substring(0, index) +
-			"class " +
-			signature.substring(index + 6, signature.length());
-    	}
+		if (signature != null){
+			int index = signature.indexOf("aspect");
+			if (index != -1 && signature.charAt(index-1) != '.') {
+				signature = signature.substring(0, index) +
+				"class " +
+				signature.substring(index + 6, signature.length());
+			}
+		}
     	return signature;
 	}
 	

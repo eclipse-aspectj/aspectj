@@ -33,9 +33,10 @@ interface Config {
                                "  -classpath <pathlist>     Specify where to find user class files\n" +
                                "  -bootclasspath <pathlist> Override location of class files loaded\n" +
                                "  -d <directory>            Destination directory for output files\n" +
-                               "  -argfile <file>           Build config file (wildcards not supported\n" +
+                               "  -argfile <file>           Build config file (wildcards not supported)\n" +
                                "  -verbose                  Output messages about what Javadoc is doing\n" +
-                               "  -v                        Print out the version of ajdoc" +
+                               "  -v                        Print out the version of ajdoc\n" +
+							   "  -source <version>         set source level (1.3, 1.4 or 1.5)" +
                                "\n"+
                                "If an argument is of the form @<filename>, the file will be interpreted as\n"+
                                "a line delimited set of arguments to insert into the argument list.";

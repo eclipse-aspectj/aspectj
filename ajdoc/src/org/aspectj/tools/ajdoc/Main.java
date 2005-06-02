@@ -153,7 +153,13 @@ public class Main implements Config {
 
             // PHASE 1: generate Signature files (Java with DeclIDs and no bodies).
             System.out.println( "> Building signature files..." );
+			try{
             StubFileGenerator.doFiles(declIDTable, symbolManager, inputFiles, signatureFiles);
+			} catch (DocException d){
+				System.err.println(d.getMessage());
+	           // d.printStackTrace();
+				return;
+			}
 
             // PHASE 2: let Javadoc generate HTML (with DeclIDs)
             System.out.println( "> Calling javadoc..." );
@@ -223,7 +229,12 @@ public class Main implements Config {
 	                                       "package-summary.html", true);
 	            }
             } else {
-            	File[] files = FileUtil.listFiles(rootDir, new FileFilter() {
+				File[] files = rootDir.listFiles();
+				if (files == null){
+					System.err.println("Destination directory is not a directory: " + rootDir.toString());
+					return;
+				}
+            	files = FileUtil.listFiles(rootDir, new FileFilter() {
             		public boolean accept(File f) {
 						return f.getName().equals("package-summary.html");
 					}
@@ -678,10 +689,14 @@ public class Main implements Config {
 
 
     static void displayHelpAndExit(String message) {
-        if (message != null) System.err.println(message);
-        System.err.println();
-        System.err.println(Config.USAGE);
-        exit(0);
+        if (message != null) {
+			System.err.println(message);
+			System.err.println();
+	        System.err.println(Config.USAGE);
+        } else {
+			System.out.println(Config.USAGE);
+			exit(0);
+        }
     }
 
     static protected void exit(int value) {
