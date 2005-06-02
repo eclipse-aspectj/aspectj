@@ -2548,7 +2548,7 @@ public class BcelShadow extends Shadow {
 		}
 
         // ATAJ for @AJ aspect we need to link the closure with the joinpoint instance
-        if (munger.getConcreteAspect().isAnnotationStyleAspect()) {
+        if (munger.getConcreteAspect()!=null && munger.getConcreteAspect().isAnnotationStyleAspect()) {
             closureInstantiation.append(Utility.createInvoke(
                     getFactory(),
                     getWorld(),

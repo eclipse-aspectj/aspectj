@@ -361,7 +361,7 @@ public class BcelAdvice extends Advice {
 
             if (v == null) {
                 // if not @AJ aspect, go on with the regular binding handling
-            	if (!getConcreteAspect().isAnnotationStyleAspect()) {
+            	if (getConcreteAspect()==null || !getConcreteAspect().isAnnotationStyleAspect()) {
             		continue;
             	} else {
                     // ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
@@ -407,7 +407,7 @@ public class BcelAdvice extends Advice {
         
         // ATAJ: for code style aspect, handles the extraFlag as usual ie not
         // in the middle of the formal bindings but at the end, in a rock solid ordering
-        if (!getConcreteAspect().isAnnotationStyleAspect()) {
+        if (getConcreteAspect()==null || !getConcreteAspect().isAnnotationStyleAspect()) {
             if (getKind() == AdviceKind.Around) {
                 il.append(closureInstantiation);
             } else if (hasExtraParameter()) {
