@@ -11,6 +11,8 @@
  * ******************************************************************/
 
 // default package
+import org.aspectj.util.LangUtil;
+
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
@@ -29,7 +31,12 @@ public class AllTests extends TestCase {
         suite.addTest(TestingDriversModuleTests.suite());
         suite.addTest(UtilModuleTests.suite());
         suite.addTest(BcweaverModuleTests.suite());
-		suite.addTest(Aspectj5rtModuleTests.suite());
+        if (LangUtil.is15VMOrGreater()) {
+            suite.addTest(Aspectj5rtModuleTests.suite());
+            suite.addTest(Loadtime5ModuleTests.suite());
+        } else {
+            System.err.println("Warning: not running 1.5 tests");
+        }
         return suite;
     }
 
