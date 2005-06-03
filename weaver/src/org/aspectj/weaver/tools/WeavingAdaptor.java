@@ -192,8 +192,8 @@ public class WeavingAdaptor {
     }
 
 	private boolean shouldWeaveName (String name) {
-		return !((name.startsWith("org.apache.bcel.")//FIXME AV why ? bcel is wrapped in org.aspectj.
-                || name.startsWith("org.aspectj.")
+		return !((/*(name.startsWith("org.apache.bcel.")//FIXME AV why ? bcel is wrapped in org.aspectj.
+                ||*/ name.startsWith("org.aspectj.")
                 || name.startsWith("java.")
                 || name.startsWith("javax."))
                 || name.startsWith("$Proxy"));//JDK proxies

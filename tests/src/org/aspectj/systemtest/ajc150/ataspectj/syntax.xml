@@ -12,13 +12,13 @@
         <run class="SimpleBefore"/>
     </ajc-test>
 
-     <ajc-test dir="java5/ataspectj" title="SimpleAfter">
+    <ajc-test dir="java5/ataspectj" title="SimpleAfter">
         <compile files="SimpleAfter.java" options="-1.5 -showWeaveInfo -XnoInline">
-          <message kind="weave" text="(SimpleAfter.java:13) advised by after advice from 'SimpleAfter$X'"/>
+            <message kind="weave" text="(SimpleAfter.java:13) advised by after advice from 'SimpleAfter$X'"/>
         </compile>
         <run class="SimpleAfter"/>
         <compile files="SimpleAfter.java" options="-1.5 -showWeaveInfo -XnoInline -Xdev:NoAtAspectJProcessing">
-          <message kind="weave" text="(SimpleAfter.java:13) advised by after advice from 'SimpleAfter$X'"/>
+            <message kind="weave" text="(SimpleAfter.java:13) advised by after advice from 'SimpleAfter$X'"/>
         </compile>
         <run class="SimpleAfter"/>
     </ajc-test>
@@ -28,7 +28,7 @@
         <run class="ataspectj.SingletonAspectBindingsTest"/>
         <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing"/>
         <run class="ataspectj.SingletonAspectBindingsTest"/>
-      </ajc-test>
+    </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="CflowTest">
         <compile files="ataspectj/CflowTest.java,ataspectj/TestHelper.java" options="-1.5"/>
@@ -63,11 +63,11 @@
         <run class="ataspectj.AfterXTest"/>
     </ajc-test>
 
-<!--    <comment>FIXME AV when we impl if support in pointcut parser and weaver</comment>-->
-<!--    <ajc-test dir="java5/ataspectj" title="IfPointcutTest">-->
-<!--        <compile files="ataspectj/IfPointcutTest.java,ataspectj/TestHelper.java" options="-1.5"/>-->
-<!--        <run class="ataspectj.IfPointcutTest"/>-->
-<!--    </ajc-test>-->
+    <!--    <comment>FIXME AV when we impl if support in pointcut parser and weaver</comment>-->
+    <!--    <ajc-test dir="java5/ataspectj" title="IfPointcutTest">-->
+    <!--        <compile files="ataspectj/IfPointcutTest.java,ataspectj/TestHelper.java" options="-1.5"/>-->
+    <!--        <run class="ataspectj.IfPointcutTest"/>-->
+    <!--    </ajc-test>-->
 
     <ajc-test dir="java5/ataspectj" title="BindingTest">
         <compile files="ataspectj/BindingTest.java,ataspectj/TestHelper.java" options="-1.5"/>
@@ -113,6 +113,13 @@
         <run class="ataspectj.SingletonInheritanceTest"/>
         <compile files="ataspectj/SingletonInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing"/>
         <run class="ataspectj.SingletonInheritanceTest"/>
-      </ajc-test>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="perClauseInheritance">
+<!--        <compile files="ataspectj/PerClauseInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>-->
+<!--        <run class="ataspectj.PerClauseInheritanceTest"/>-->
+        <compile files="ataspectj/PerClauseInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.PerClauseInheritanceTest"/>
+    </ajc-test>
 
 </suite>

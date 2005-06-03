@@ -22,6 +22,7 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ReferenceType;
+import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
@@ -142,23 +143,23 @@ public class BcelAdvice extends Advice {
         hasMatchedAtLeastOnce=true;
         BcelShadow shadow = (BcelShadow) s;
 
-        //FIXME AV ok ?
-        // callback for perObject AJC MightHaveAspect postMunge (#75442)
-        if (getConcreteAspect() != null
-                && getConcreteAspect().getPerClause() != null
-                && PerClause.PEROBJECT.equals(getConcreteAspect().getPerClause().getKind())) {
-            final PerObject clause;
-            if (getConcreteAspect().getPerClause() instanceof PerFromSuper) {
-                clause = (PerObject)((PerFromSuper) getConcreteAspect().getPerClause()).lookupConcretePerClause(getConcreteAspect());
-            } else {
-                clause = (PerObject) getConcreteAspect().getPerClause();
-            }
-            if (clause.isThis()) {
-                PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getThisVar().getType(), getConcreteAspect());
-            } else {
-                PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getTargetVar().getType(), getConcreteAspect());
-            }
-        }
+        //FIXME AV - see #75442, this logic is not enough so for now comment it out until we fix the bug
+//        // callback for perObject AJC MightHaveAspect postMunge (#75442)
+//        if (getConcreteAspect() != null
+//                && getConcreteAspect().getPerClause() != null
+//                && PerClause.PEROBJECT.equals(getConcreteAspect().getPerClause().getKind())) {
+//            final PerObject clause;
+//            if (getConcreteAspect().getPerClause() instanceof PerFromSuper) {
+//                clause = (PerObject)((PerFromSuper) getConcreteAspect().getPerClause()).lookupConcretePerClause(getConcreteAspect());
+//            } else {
+//                clause = (PerObject) getConcreteAspect().getPerClause();
+//            }
+//            if (clause.isThis()) {
+//                PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getThisVar().getType(), getConcreteAspect());
+//            } else {
+//                PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getTargetVar().getType(), getConcreteAspect());
+//            }
+//        }
 
         if (getKind() == AdviceKind.Before) {
             shadow.weaveBefore(this);
@@ -260,8 +261,6 @@ public class BcelAdvice extends Advice {
      */
     public boolean mustCheckExceptions() {
         if (getConcreteAspect() == null) {
-            //FIXME AV: not sure this is good to default to that.
-            // dig when do we reach that ie not yet concretized
             return true;
         }
         return !getConcreteAspect().isAnnotationStyleAspect();
@@ -362,19 +361,11 @@ public class BcelAdvice extends Advice {
             if (v == null) {
                 // if not @AJ aspect, go on with the regular binding handling
             	if (getConcreteAspect()==null || !getConcreteAspect().isAnnotationStyleAspect()) {
-            		continue;
+            		;
             	} else {
                     // ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
 	                if (getKind() == AdviceKind.Around) {
 	                    il.append(closureInstantiation);
-                        //
-//                        if (canInline(shadow)) {
-//                            //FIXME ALEX? passin a boolean instead of checking there
-//                            il.append(fact.createCheckCast(
-//                                    (ReferenceType) BcelWorld.makeBcelType(TypeX.forName("org.aspectj.lang.ProceedingJoinPoint"))
-//                            ));
-//                        }
-	                    continue;
 	                } else if ("Lorg/aspectj/lang/JoinPoint$StaticPart;".equals(getSignature().getParameterTypes()[i].getSignature())) {
 	                    if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
 	                        shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
@@ -393,9 +384,16 @@ public class BcelAdvice extends Advice {
 	                        fact,
 	                        getExtraParameterType().resolve(world));
 	                } else {
-                        //FIXME AV test for that - this code  will throw an error if ProceedingJP is used in a before advice f.e. ok ??
-                        throw new Error("Should not happen - unbound advice argument at index " + i + " in [" +
-                                toString() + "]");
+                        getConcreteAspect().getWorld().getMessageHandler().handleMessage(
+                                new Message(
+                                        "use of ProceedingJoinPoint is allowed only on around advice ("
+                                        + "arg " + i + " in " + toString() + ")",
+                                        this.getSourceLocation(),
+                                        true
+                                )
+                        );
+                        // try to avoid verify error and pass in null
+                        il.append(InstructionConstants.ACONST_NULL);
 	                }
             	}
             } else {

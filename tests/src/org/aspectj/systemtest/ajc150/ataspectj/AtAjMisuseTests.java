@@ -61,4 +61,8 @@ public class AtAjMisuseTests extends XMLBasedAjcTestCase {
 	public void testQBeforeOnMethodNotReturningVoid() {
 		runTest("@Before on method not returning void");
 	}
+
+    public void testQBeforeWithPJP() {
+        runTest("@Before with PJP");
+    }
 }

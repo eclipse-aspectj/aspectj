@@ -33,7 +33,8 @@ public class AllTests extends TestCase {
         suite.addTest(BcweaverModuleTests.suite());
         if (LangUtil.is15VMOrGreater()) {
             suite.addTest(Aspectj5rtModuleTests.suite());
-            suite.addTest(Loadtime5ModuleTests.suite());
+            suite.addTest(LoadtimeModuleTests.suite());//FIXME AV - should be run on 1.3 when xml deps si fixed in the build
+            suite.addTest(Loadtime515ModuleTests.suite());
         } else {
             System.err.println("Warning: not running 1.5 tests");
         }

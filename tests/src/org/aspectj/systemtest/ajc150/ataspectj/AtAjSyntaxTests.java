@@ -11,26 +11,25 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150.ataspectj;
 
-import java.io.File;
-
 import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
-/**                              
+import java.io.File;
+
+/**
  * A suite for @AspectJ aspects located in java5/ataspectj
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
-	
-	public static Test suite() {
-	    return XMLBasedAjcTestCase.loadSuite(AtAjSyntaxTests.class);
-	}
 
-	protected File getSpecFile() {
-	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/syntax.xml");
-	}
+    public static Test suite() {
+        return XMLBasedAjcTestCase.loadSuite(AtAjSyntaxTests.class);
+    }
+
+    protected File getSpecFile() {
+        return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/syntax.xml");
+    }
 
     public void testSimpleBefore() {
         runTest("SimpleBefore");
@@ -94,5 +93,9 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 
     public void testSingletonInheritance() {
         runTest("singletonInheritance");
+    }
+
+    public void testPerClauseInheritance() {
+        runTest("perClauseInheritance");
     }
 }

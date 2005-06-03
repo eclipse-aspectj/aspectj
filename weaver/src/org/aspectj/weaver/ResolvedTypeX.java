@@ -782,6 +782,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 		public void setDelegate(ConcreteName delegate) {
 			this.delegate = delegate;
 		}
+        
 		public int getEndPos() {
 			return endPos;
 		}

@@ -48,9 +48,6 @@ import java.util.List;
  * Specific state and logic is kept in the munger ala ITD so that call/get/set pointcuts can still be matched
  * on the wrapped member thanks to the EffectiveSignature attribute.
  *
- * FIXME AV - this whole one should be skept when -XnoInline is used
- * (add breakpoint on lazyMethodGen.setCanInline to see where things happening)
- *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class BcelAccessForInlineMunger extends BcelTypeMunger {
@@ -73,6 +70,9 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 
     public BcelAccessForInlineMunger(ResolvedTypeX aspectType) {
         super(null, aspectType);
+        if (aspectType.getWorld().isXnoInline()) {
+            throw new Error("This should not happen");
+        }
     }
 
     public boolean munge(BcelClassWeaver weaver) {
@@ -134,7 +134,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
         InstructionHandle curr = aroundAdvice.getBody().getStart();
         InstructionHandle end = aroundAdvice.getBody().getEnd();
         ConstantPoolGen cpg = aroundAdvice.getEnclosingClass().getConstantPoolGen();
-        InstructionFactory factory = aroundAdvice.enclosingClass.getFactory();
+        InstructionFactory factory = aroundAdvice.getEnclosingClass().getFactory();
 
         boolean realizedCannotInline = false;
         while (curr != end) {

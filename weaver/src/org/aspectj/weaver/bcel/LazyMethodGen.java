@@ -87,8 +87,8 @@ public final class LazyMethodGen {
     private  InstructionList body; // leaving null for abstracts
     private  Attribute[]     attributes;
    // private AnnotationGen[]  annotations;
-    /* private */ final LazyClassGen    enclosingClass;   
-    private /*final*/ BcelMethod      memberView;//FIXME AV LTW
+    private final LazyClassGen enclosingClass;   
+    private BcelMethod memberView;
     int highestLineNumber = 0;
 
 	/** This is nonnull if this method is the result of an "inlining".  We currently
@@ -100,7 +100,7 @@ public final class LazyMethodGen {
 
     private int             maxLocals; 
     
-    private boolean canInline = true;//FIXME AV - ALEX? shouldn't that default to false or unknown?
+    private boolean canInline = true;
     private boolean hasExceptionHandlers;
     
     private boolean isSynthetic = false;
@@ -218,9 +218,7 @@ public final class LazyMethodGen {
 	public boolean hasAnnotation(TypeX annotationTypeX) {
 		initialize();
 		if (memberView==null) {
-            memberView = new BcelMethod(getEnclosingClass().getBcelObjectType(), getMethod());//FIXME AV LTW
-			//System.err.println("REPORT THIS! 02: Can't determine if "+getEnclosingClass().getName() + "." + this.getName() + this.getSignature()+" has annotation "+annotationTypeX);
-			//return false
+            memberView = new BcelMethod(getEnclosingClass().getBcelObjectType(), getMethod());
             return memberView.hasAnnotation(annotationTypeX);
 		}
 		return memberView.hasAnnotation(annotationTypeX);

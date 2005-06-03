@@ -51,6 +51,7 @@ import org.aspectj.weaver.patterns.PerTypeWithin;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.weaver.patterns.PerFromSuper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -177,16 +178,15 @@ public class AtAjAttributes {
                 // we don't need to look for several attribute occurence since it cannot happen as per JSR175
                 if (!isCodeStyleAspect) {
                     hasAtAspectAnnotation = handleAspectAnnotation(rvs, struct);
+                    //TODO AV - if put outside the if isCodeStyleAspect then we would enable mix style
+                    hasAtPrecedenceAnnotation = handlePrecedenceAnnotation(rvs, struct);
                 }
-                //TODO: below means mix style for @DeclarePrecedence - are we sure we want that ?
-                hasAtPrecedenceAnnotation = handlePrecedenceAnnotation(rvs, struct);
                 // there can only be one RuntimeVisible bytecode attribute
                 break;
             }
         }
 
         // basic semantic check
-        //FIXME AV TBD could be skipped and silently ignore - TBD with Andy
         if (hasAtPrecedenceAnnotation && !hasAtAspectAnnotation) {
             msgHandler.handleMessage(
                     new Message(
@@ -199,7 +199,7 @@ public class AtAjAttributes {
             // bypass what we have read
             return EMPTY_LIST;
         }
-        //FIXME turn on when ajcMightHaveAspect fixed
+        //FIXME turn on when ajcMightHaveAspect
 //        if (hasAtAspectAnnotation && type.isInterface()) {
 //            msgHandler.handleMessage(
 //                    new Message(
@@ -214,7 +214,6 @@ public class AtAjAttributes {
 //        }
 
         // the following block will not detect @Pointcut in non @Aspect types for optimization purpose
-        // FIXME AV TBD with Andy
         if (!hasAtAspectAnnotation) {
             return EMPTY_LIST;
         }
@@ -222,8 +221,7 @@ public class AtAjAttributes {
         // code style pointcuts are class attributes
         // we need to gather the @AJ pointcut right now and not at method level annotation extraction time
         // in order to be able to resolve the pointcut references later on
-        //FIXME alex loop over class super class
-        //FIXME alex can that be too slow ?
+        // we don't need to look in super class, the pointcut reference in the grammar will do it
         for (int i = 0; i < javaClass.getMethods().length; i++) {
             Method method = javaClass.getMethods()[i];
             if (method.getName().startsWith(NameMangler.PREFIX)) continue;  // already dealt with by ajc...
@@ -297,8 +295,10 @@ public class AtAjAttributes {
         // we remember if we found one @AJ annotation for minimal semantic error reporting
         // the real reporting beeing done thru AJDT and the compiler mapping @AJ to AjAtttribute
         // or thru APT
-        // FIXME AV we could actually skip the whole thing if type is not itself an @Aspect
-        // but then we would not see any warning. TBD with Andy
+        //
+        // Note: we could actually skip the whole thing if type is not itself an @Aspect
+        // but then we would not see any warning. We do bypass for pointcut but not for advice since it would
+        // be too silent.
         boolean hasAtAspectJAnnotation = false;
         boolean hasAtAspectJAnnotationMustReturnVoid = false;
         for (int i = 0; i < attributes.length; i++) {
@@ -392,11 +392,25 @@ public class AtAjAttributes {
     private static boolean handleAspectAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeStruct struct) {
         Annotation aspect = getAnnotation(runtimeAnnotations, AjcMemberMaker.ASPECT_ANNOTATION);
         if (aspect != null) {
+            // semantic check for inheritance (only one level up)
+            boolean extendsAspect = false;
+            if (!"java.lang.Object".equals(struct.enclosingType.getSuperclass().getName())) {
+                if (!struct.enclosingType.getSuperclass().isAbstract() && struct.enclosingType.getSuperclass().isAspect()) {
+                    reportError("cannot extend a concrete aspect", struct);
+                    return false;
+                }
+                extendsAspect = struct.enclosingType.getSuperclass().isAspect();
+            }
+
             ElementNameValuePair aspectPerClause = getAnnotationElement(aspect, VALUE);
             final PerClause perClause;
             if (aspectPerClause == null) {
-                // defaults to singleton
-                perClause = new PerSingleton();
+                // empty value means singleton unless inherited
+                if (!extendsAspect) {
+                    perClause = new PerSingleton();
+                } else {
+                    perClause = new PerFromSuper(struct.enclosingType.getSuperclass().getPerClause().getKind());
+                }
             } else {
                 String perX = aspectPerClause.getValue().stringifyValue();
                 if (perX == null || perX.length() <= 0) {
@@ -409,13 +423,6 @@ public class AtAjAttributes {
                 // could not parse it, ignore the aspect
                 return false;
             } else {
-                // semantic check for inheritance (only one level up)
-                if (!"java.lang.Object".equals(struct.enclosingType.getSuperclass().getName())) {
-                    if (!struct.enclosingType.getSuperclass().isAbstract() && struct.enclosingType.getSuperclass().isAspect()) {
-                        reportError("cannot extend a concrete aspect", struct);
-                        return false;
-                    }
-                }
                 perClause.setLocation(struct.context, -1, -1);
                 struct.ajAttributes.add(new AjAttribute.Aspect(perClause));
                 return true;

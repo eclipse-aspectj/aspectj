@@ -46,11 +46,11 @@ public class Ajc {
 	private static final String TESTER_PATH = 
 		".."+File.separator+"testing-client"+File.separator+"bin" + File.pathSeparator + 
 		".."+File.separator+"runtime"+File.separator+"bin" + File.pathSeparator +
-        //FIXME AV - can someone tell why those jar needs to be there ??
+        //TODO AV - done, remove comments: can someone tell why those jar needs to be there ??
         // 1/ see the line before: bin/ will take precedence..
         // 2/ see below - aspectj5rt is added last which makes it UNconsistent with the way runtime is handled here..
-		".."+File.separator+"lib"+File.separator+"test"+File.separator+"aspectjrt.jar"+ File.pathSeparator+
-		".."+File.separator+"lib"+File.separator+"test"+File.separator+"testing-client.jar" + File.pathSeparator +
+		//".."+File.separator+"lib"+File.separator+"test"+File.separator+"aspectjrt.jar"+ File.pathSeparator+
+		//".."+File.separator+"lib"+File.separator+"test"+File.separator+"testing-client.jar" + File.pathSeparator +
 		".."+File.separator+"aspectj5rt"+File.separator+"bin" + File.pathSeparator
         + File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar"
         + File.pathSeparator+ ".."+File.separator+"bridge"+File.separator+"bin" 

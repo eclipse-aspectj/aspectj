@@ -79,7 +79,14 @@
         </compile>
     </ajc-test>
 
-<!--
+    <ajc-test dir="java5/ataspectj"
+        pr="" title="@Before with PJP">
+        <compile files="ataspectj/misuse/Test100.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
+            <message kind="error" text="use of ProceedingJoinPoint is allowed only on around advice"/>
+        </compile>
+    </ajc-test>
+
+    <!--
 ALEX: todo
     <ajc-test dir="java5/ataspectj/coverage"
         pr="" title="@Pointcut with wrong number of args">

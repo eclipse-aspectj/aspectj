@@ -96,7 +96,7 @@ public class PerSingleton extends PerClause {
 		ret.inAspect = inAspect;
 
         //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
-        if (!inAspect.isAbstract() && inAspect.isAnnotationStyleAspect()) {
+        if (inAspect.isAnnotationStyleAspect()  && !inAspect.isAbstract()) {
             //TODO will those change be ok if we add a serializable aspect ?
             // dig: "can't be Serializable/Cloneable unless -XserializableAspects"
             inAspect.crosscuttingMembers.addLateTypeMunger(
@@ -105,7 +105,7 @@ public class PerSingleton extends PerClause {
         }
 
         //ATAJ inline around advice support
-        if (inAspect.isAnnotationStyleAspect()) {
+        if (inAspect.isAnnotationStyleAspect() && !inAspect.getWorld().isXnoInline()) {
             inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
         }
 

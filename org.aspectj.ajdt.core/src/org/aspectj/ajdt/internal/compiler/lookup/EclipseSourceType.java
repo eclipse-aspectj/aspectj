@@ -1,13 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC                 initial implementation
+ *     Alexandre Vasseur    support for @AJ perClause
  * ******************************************************************/
 
 
@@ -22,10 +23,13 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
+import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 
 /**
@@ -35,6 +39,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
  */
 public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 	private static final char[] pointcutSig = "Lorg/aspectj/lang/annotation/Pointcut;".toCharArray();
+    private static final char[] aspectSig = "Lorg/aspectj/lang/annotation/Aspect;".toCharArray();
 	protected ResolvedPointcutDefinition[] declaredPointcuts = null;
 	protected ResolvedMember[] declaredMethods = null;
 	protected ResolvedMember[] declaredFields = null;
@@ -68,18 +73,19 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 
 
 	public boolean isAspect() {
-		return declaration instanceof AspectDeclaration;
+		final boolean isCodeStyle = declaration instanceof AspectDeclaration;
+        return isCodeStyle?isCodeStyle:isAnnotationStyleAspect();
 	}
 
-    // FIXME ATAJ  isAnnotationStyleAspect() needs implementing?
     public boolean isAnnotationStyleAspect() {
         if (declaration.annotations == null) {
             return false;
         }
-        for (int i = 0; i < declaration.annotations.length; i++) {
-            Annotation annotation = declaration.annotations[i];
-            // do something there
-            ;
+        ResolvedTypeX[] annotations = getAnnotationTypes();
+        for (int i = 0; i < annotations.length; i++) {
+            if ("org.aspectj.lang.annotation.Aspect".equals(annotations[i].getName())) {
+                return true;
+            }
         }
         return false;
     }
@@ -338,9 +344,97 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		//should probably be: ((AspectDeclaration)declaration).perClause;
 		// but we don't need this level of detail, and working with real per clauses
 		// at this stage of compilation is not worth the trouble
-		return new PerSingleton(); 
+        if (!isAnnotationStyleAspect()) {
+            return new PerSingleton();
+        } else {
+            // for @Aspect, we do need the real kind though we don't need the real perClause
+            PerClause.Kind kind = getPerClauseForTypeDeclaration(declaration);
+            //returning a perFromSuper is enough to get the correct kind.. (that's really a hack - AV)
+            return new PerFromSuper(kind);
+        }
 	}
-	
+
+    PerClause.Kind getPerClauseForTypeDeclaration(TypeDeclaration typeDeclaration) {
+        Annotation[] annotations = typeDeclaration.annotations;
+        for (int i = 0; i < annotations.length; i++) {
+            Annotation annotation = annotations[i];
+            if (CharOperation.equals(aspectSig, annotation.resolvedType.signature())) {
+                // found @Aspect(...)
+                if (annotation.memberValuePairs() == null || annotation.memberValuePairs().length == 0) {
+                    // it is an @Aspect or @Aspect()
+                    // needs to use PerFromSuper if declaration extends a super aspect
+                    PerClause.Kind kind = lookupPerClauseKind(typeDeclaration.binding.superclass);
+                    // if no super aspect, we have a @Aspect() means singleton
+                    if (kind == null) {
+                        return PerClause.SINGLETON;
+                    } else {
+                        return kind;
+                    }
+                } else if (annotation instanceof SingleMemberAnnotation) {
+                    // it is an @Aspect(...something...)
+                    SingleMemberAnnotation theAnnotation = (SingleMemberAnnotation)annotation;
+                    String clause = new String(((StringLiteral)theAnnotation.memberValue).source());//TODO cast safe ?
+                    if (clause.startsWith("perthis(")) {
+                        return PerClause.PEROBJECT;
+                    } else if (clause.startsWith("pertarget(")) {
+                        return PerClause.PEROBJECT;
+                    } else if (clause.startsWith("percflow(")) {
+                        return PerClause.PERCFLOW;
+                    } else if (clause.startsWith("percflowbelow(")) {
+                        return PerClause.PERCFLOW;
+                    } else if (clause.startsWith("pertypewithin(")) {
+                        return PerClause.PERTYPEWITHIN;
+                    } else if (clause.startsWith("issingleton(")) {
+                        return PerClause.SINGLETON;
+                    } else {
+                        eclipseWorld().showMessage(IMessage.ABORT,
+                            "cannot determine perClause '" + clause + "'",
+                            new EclipseSourceLocation(typeDeclaration.compilationResult, typeDeclaration.sourceStart, typeDeclaration.sourceEnd), null);
+                        return PerClause.SINGLETON;//fallback strategy just to avoid NPE
+                    }
+                } else {
+                    eclipseWorld().showMessage(IMessage.ABORT,
+                        "@Aspect annotation is expected to be SingleMemberAnnotation with 'String value()' as unique element",
+                        new EclipseSourceLocation(typeDeclaration.compilationResult, typeDeclaration.sourceStart, typeDeclaration.sourceEnd), null);
+                    return PerClause.SINGLETON;//fallback strategy just to avoid NPE
+                }
+            }
+        }
+        return null;//no @Aspect annotation at all (not as aspect)
+    }
+
+    // adapted from AspectDeclaration
+    private PerClause.Kind lookupPerClauseKind(ReferenceBinding binding) {
+        final PerClause.Kind kind;
+        if (binding instanceof BinaryTypeBinding) {
+            ResolvedTypeX superTypeX = factory.fromEclipse(binding);
+            PerClause perClause = superTypeX.getPerClause();
+            // clause is null for non aspect classes since coming from BCEL attributes
+            if (perClause != null) {
+                kind = superTypeX.getPerClause().getKind();
+            } else {
+                kind = null;
+            }
+        } else if (binding instanceof SourceTypeBinding ) {
+            SourceTypeBinding sourceSc = (SourceTypeBinding)binding;
+            if (sourceSc.scope.referenceContext instanceof AspectDeclaration) {
+                //code style
+                kind = ((AspectDeclaration)sourceSc.scope.referenceContext).perClause.getKind();
+            } else if (sourceSc.scope.referenceContext instanceof TypeDeclaration) {
+                // if @Aspect: perFromSuper, else if @Aspect(..) get from anno value, else null
+                kind = getPerClauseForTypeDeclaration((TypeDeclaration)(sourceSc.scope.referenceContext));
+            } else {
+                //XXX should not happen
+                kind = null;
+            }
+        } else {
+            //XXX need to handle this too
+            kind = null;
+        }
+        return kind;
+    }
+
+
 	protected Collection getDeclares() {
 		return declares;
 	}

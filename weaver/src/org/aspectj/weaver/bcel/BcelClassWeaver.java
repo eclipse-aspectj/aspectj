@@ -382,8 +382,7 @@ class BcelClassWeaver implements IClassWeaver {
               isChanged = true;
 			}
         }
-        //if (! isChanged) return false;//FIXME AV - was active, WHY ?? I need to reach the lateTypeMunger
-        
+
         // now we weave all but the initialization shadows
 		for (Iterator i = methodGens.iterator(); i.hasNext();) {
 			LazyMethodGen mg = (LazyMethodGen)i.next();
@@ -404,14 +403,8 @@ class BcelClassWeaver implements IClassWeaver {
         // now proceed with late type mungers
         if (lateTypeMungers != null) {
             for (Iterator i = lateTypeMungers.iterator(); i.hasNext(); ) {
-                Object o = i.next();
-                if ( !(o instanceof BcelTypeMunger) ) {
-                    throw new Error("should not happen or what ?");//FIXME AV ??was System.err.println("surprising: " + o);
-                    //continue;
-                }
-                BcelTypeMunger munger = (BcelTypeMunger)o;
+                BcelTypeMunger munger = (BcelTypeMunger)i.next();
                 if (munger.matches(clazz.getType())) {
-                    //FIXME AV - Andy must track change by this lateMunging only and deal with a reweavable thing
                     boolean typeMungerAffectedType = munger.munge(this);
                     if (typeMungerAffectedType) {
                         isChanged = true;
@@ -420,8 +413,10 @@ class BcelClassWeaver implements IClassWeaver {
                 }
             }
         }
-        // flush to save some memory - FIXME AV - extract in a better way ?
-        PerObjectInterfaceTypeMunger.unregisterFromAsAdvisedBy(clazz.getType());
+
+        //FIXME AV - see #75442, for now this is not enough to fix the bug, comment that out until we really fix it
+//        // flush to save some memory
+//        PerObjectInterfaceTypeMunger.unregisterFromAsAdvisedBy(clazz.getType());
 
 		// finally, if we changed, we add in the introduced methods.
         if (isChanged) {

@@ -53,7 +53,12 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     private ResolvedMember[] methods = null;
     private ResolvedTypeX[] annotationTypes = null;
     private AnnotationX[] annotations = null;
-            
+
+    // track unpackAttribute. In some case (per clause inheritance) we encounter
+    // unpacked state when calling getPerClause
+    // this whole thing would require more clean up (AV)
+    private boolean isUnpacked = false;
+
     // strangely non-lazy
     private ResolvedPointcutDefinition[] pointcuts = null;
 	private PerClause perClause = null;
@@ -191,6 +196,8 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
     }
 
 	private void unpackAspectAttributes() {
+        isUnpacked = true;
+
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
@@ -245,6 +252,9 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 	}
 
 	public PerClause getPerClause() {
+        if (!isUnpacked) {
+            unpackAspectAttributes();
+        }
 		return perClause;
 	}
     
