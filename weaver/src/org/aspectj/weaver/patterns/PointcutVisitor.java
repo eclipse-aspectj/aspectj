@@ -13,13 +13,8 @@ package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.Member;
 
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import org.aspectj.weaver.patterns.TypePattern.*;
+import org.aspectj.weaver.patterns.AnnotationTypePattern.*;
 
 /**
  * A Pointcut or TypePattern visitor
@@ -152,6 +147,10 @@ public interface PointcutVisitor {
         private void p(Object o) {
             sb.append(o.toString());
         }
+		
+		private void p(char c) {
+			sb.append(c);
+		}
 
         /**
          * This method helps maintaining the API and raises warning when PatternNode subclasses do not
