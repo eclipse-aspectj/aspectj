@@ -639,21 +639,6 @@ public class PatternParser {
 			dim++;
 		}
 
-        // FIXME AV for Adrian - varargs need special handling since Token are 3x"." and not "..."
-        // the following works for 'call(* *(int, Integer...))' but not in the general case (see testAJDKExamples test f.e.)
-        // and the current code does not work for 'call(* *(int, Integer...))'
-//        int varargDot = 0;
-//        while (maybeEat(".")) {
-//            varargDot++;
-//        }
-//        boolean isVarArgs = false;
-//        if (varargDot > 0) {
-//            if (varargDot == 3) {
-//                isVarArgs = true;
-//            } else {
-//                throw new ParserException("Invalid varargs", tokenSource.peek());
-//            }
-//        }
         boolean isVarArgs = maybeEat("...");
 
 		boolean includeSubtypes = maybeEat("+");
@@ -785,8 +770,10 @@ public class PatternParser {
 				if (previous != null) {
 					if (!isAdjacent(previous, tok)) break;
 				}
-				if (tok.getString() == "*" || tok.isIdentifier()) {
+				if (tok.getString() == "*" || (tok.isIdentifier() && tok.getString()!="...")) {
 					buf.append(tok.getString());
+				} else if (tok.getString()=="...") {
+					break;
 				} else if (tok.getLiteralKind() != null) {
 					//System.err.println("literal kind: " + tok.getString());
 					String s = tok.getString();
@@ -829,19 +816,6 @@ public class PatternParser {
 			
 			if (afterDot == null) {
 				buf.setLength(0);
-//                //FIXME AV for Adrian - the following does not works in the general case
-//                //varargs lookahead
-//                IToken next_1 = tokenSource.peek();
-//                if (!IToken.EOF.equals(next_1) && next_1.getString().equals(".")) {
-//                    IToken next_2 = tokenSource.peek(1);
-//                    if (!IToken.EOF.equals(next_2) && next_2.getString().equals(".")) {
-//                        IToken next_3 = tokenSource.peek(2);
-//                        if (!IToken.EOF.equals(next_3) && next_3.getString().equals(".")) {
-//                            // happens to be a varargs
-//                            break;
-//                        }
-//                    }
-//                }
 				// no elipsis or dotted name part
                 if (!maybeEat(".")) break;
                 // go on

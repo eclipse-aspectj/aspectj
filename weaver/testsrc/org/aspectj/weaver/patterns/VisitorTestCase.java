@@ -47,9 +47,9 @@ public class VisitorTestCase extends TestCase {
         //empty so that JUnit does not complain about no test cases in there - this one beeing already in the suite
     }
 
-//    public void testTemp() {
-//        Pointcut.fromString("call(* *(int, Integer...))");
-//    }
+    public void testTemp() {
+        Pointcut.fromString("call(* *(int, Integer...))");
+    }
 
 //    public void testPointcuts() {
 //        if (pointcuts.isEmpty()) {

@@ -95,7 +95,6 @@ public class BasicTokenSource implements ITokenSource {
 				case '\r':
 					continue;
 				case '*':
-				case '.':
 				case '(':
 				case ')':
 				case '+':
@@ -107,6 +106,22 @@ public class BasicTokenSource implements ITokenSource {
 				case '@':
 				    tokens.add(BasicToken.makeOperator(makeString(ch), i-1, i-1));
 				    continue;
+				case '.':
+					if ((i+2)<=chars.length) {
+						// could be '...'
+						char nextChar1 = chars[i];
+						char nextChar2 = chars[i+1];
+						if (ch==nextChar1 && ch==nextChar2) {
+							// '...'
+							tokens.add(BasicToken.makeIdentifier("...",i-1,i+1));
+							i=i+2;
+						} else {
+							tokens.add(BasicToken.makeOperator(makeString(ch), i-1, i-1));
+						}
+					} else {
+						tokens.add(BasicToken.makeOperator(makeString(ch), i-1, i-1));
+					}
+					continue;
 				case '&':
 				case '|':
 				    if (i == chars.length) {
