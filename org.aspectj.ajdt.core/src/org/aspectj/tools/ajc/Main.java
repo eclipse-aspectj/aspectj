@@ -214,12 +214,12 @@ public class Main {
         IMessageHolder holder = clientHolder;
         if (null == holder) {
             holder = ourHandler;
-//            if (verbose) {
+            if (verbose) {
                 ourHandler.setInterceptor(MessagePrinter.VERBOSE);
-//            } else {
-//                ourHandler.ignore(IMessage.INFO);
-//                ourHandler.setInterceptor(MessagePrinter.TERSE);
-//            }
+            } else {
+                ourHandler.ignore(IMessage.INFO);
+                ourHandler.setInterceptor(MessagePrinter.TERSE);
+            }
         }
         
         // make sure we handle out of memory gracefully...
