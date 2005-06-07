@@ -62,7 +62,7 @@ class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
 	public Method getAdvice() {
 		if (adviceMethod == null) {
 			try {
-				adviceMethod = declaringType.getDeclaredMethod(getName(),getParameterTypes());
+				adviceMethod = getDeclaringType().getDeclaredMethod(getName(),getParameterTypes());
 			} catch (Exception ex) {
 				; // nothing we can do, caller will see null
 			}

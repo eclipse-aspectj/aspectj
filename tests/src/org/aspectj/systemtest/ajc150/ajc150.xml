@@ -1065,6 +1065,11 @@
        <message kind="warning" line="7" text="advice defined in AnAspect has not been applied [Xlint:adviceDidNotMatch]"/>
      </compile>
   </ajc-test>
+   
+  <ajc-test dir="bugs150" title="NPE in reflect implementation" pr="94167">
+     <compile files="PR94167.java"/>
+     <run class="reflect.PR94167"/>
+  </ajc-test>
 
    <!-- ======================================================================================= -->
    <!--               annotated aspect members                                                  -->

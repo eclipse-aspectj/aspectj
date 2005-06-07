@@ -170,8 +170,12 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
    * IfPointcut.findResidueInternal() was modified to make this test complete in a short amount
    * of time - if you see it hanging, someone has messed with the optimization.
    */
-  public void testIfEvaluationExplosiion_PR94086() {
+  public void testIfEvaluationExplosion_pr94086() {
 	  runTest("Exploding compile time with if() statements in pointcut");
+  }
+  
+  public void testReflectNPE_pr94167() {
+	  runTest("NPE in reflect implementation");
   }
   
   // helper methods.....

@@ -60,7 +60,7 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 	public Method getMethod() {
 		if (method == null) {
 			try {
-				method = declaringType.getDeclaredMethod(getName(),getParameterTypes());
+				method = getDeclaringType().getDeclaredMethod(getName(),getParameterTypes());
 			} catch (NoSuchMethodException nsmEx) {
 				; // nothing we can do, user will see null return
 			}
