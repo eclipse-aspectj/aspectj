@@ -1,0 +1,31 @@
+(PerObject+ && *)
+LTWHelloWorld+
+*
+D
+ContainerLoader+
+C+
+TheObject+
+Caller+
+p.EachObjectTarget+
+Product1+
+MemberInitSet+
+test.Test+
+(C+ && *)
+AspectOf
+Interface+
+(java.lang.Object+ && !A+)
+Pos+
+Driver+
+Foo+
+Class+
+SubC+
+SubC
+SubC2+
+Test+
+(Base+ && *)
+ataspectj.PerClauseTest
+ataspectj.PerClauseInheritanceTest
+ataspectj.PerClauseInheritanceTest
+ataspectj.PerClauseTest
+ataspectj.PerClauseTest
+Foo

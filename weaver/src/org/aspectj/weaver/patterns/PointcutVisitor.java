@@ -189,6 +189,7 @@ public interface PointcutVisitor {
 
         public Object visit(AnyAnnotationTypePattern node, Object data) {
             //@ANY : ignore
+            p('*');
             return null;
         }
 
@@ -198,11 +199,12 @@ public interface PointcutVisitor {
         }
 
         public Object visit(AndAnnotationTypePattern node, Object data) {
-            p('(');
+            //p('(');
             node.getLeft().accept(this, data);
-            p(" && ");
+            //p(" && ");
+            p(' ');
             node.getRight().accept(this, data);
-            p(')');
+            //p(')');
             return null;
         }
 
@@ -227,8 +229,8 @@ public interface PointcutVisitor {
         public Object visit(AnnotationPatternList node, Object data) {
             AnnotationTypePattern[] annotations = node.getAnnotationPatterns();
             for (int i = 0; i < annotations.length; i++) {
+                if (i>0) p(", ");//FIXME AV should that be here?
                 annotations[i].accept(this, data);
-                p(' ');
             }
             return null;
         }
@@ -272,7 +274,7 @@ public interface PointcutVisitor {
         }
 
         public Object visit(ExactAnnotationTypePattern node, Object data) {
-            p('@');
+            //p('@'); // since @annotation(@someAnno) cannot be parsed anymore
             p(node.annotationType.getName());
             return null;
         }
@@ -314,9 +316,8 @@ public interface PointcutVisitor {
         }
 
         public Object visit(NotAnnotationTypePattern node, Object data) {
-            p("!(");
+            p("!");
             node.negatedPattern.accept(this, data);
-            p(')');
             return null;
         }
 
@@ -379,7 +380,7 @@ public interface PointcutVisitor {
 
             if (node.getKind() == Member.STATIC_INITIALIZATION) {
                 node.getDeclaringType().accept(this, data);
-                p(".<clinit>()");
+                //p(".<clinit>()");
             } else if (node.getKind() == Member.HANDLER) {
                 p("handler(");
                 node.getParameterTypes().get(0).accept(this, data);//Note: we know we have 1 child
@@ -614,8 +615,17 @@ public interface PointcutVisitor {
         }
 
         public static void main(String args[]) throws Throwable {
-            String s = "execution(* foo.bar.do() throws !(@An Waza), !Bla)";
-            check(s);
+            String[] s = new String[]{
+                //"@args(Foo, Goo, *, .., Moo)",
+                //"execution(* *())",
+                //"call(* *(int, Integer...))",
+                //"staticinitialization(@(Foo) @(Boo) @(Goo) Moo)",
+                "staticinitialization(!@(Immutable) *)"
+
+            };
+            for (int i = 0; i < s.length; i++) {
+                check(s[i]);
+            }
         }
 
     }
