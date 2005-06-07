@@ -144,7 +144,7 @@ public interface PointcutVisitor {
             return sb.toString();
         }
 
-        private void p(Object o) {
+        private void append(Object o) {
             sb.append(o.toString());
         }
 		
@@ -171,18 +171,18 @@ public interface PointcutVisitor {
         }
 
         public Object visit(NoTypePattern node, Object data) {
-            p(node.toString());//TODO no idea when this one is used
+            append(node.toString());//TODO no idea when this one is used
             return null;
         }
 
         public Object visit(EllipsisTypePattern node, Object data) {
-            p(node.toString());
+            append(node.toString());
             return null;
         }
 
         public Object visit(AnyWithAnnotationTypePattern node, Object data) {
             node.annotationPattern.accept(this, data);
-            p(" *");
+            append(" *");
             return null;
         }
 
@@ -193,7 +193,7 @@ public interface PointcutVisitor {
         }
 
         public Object visit(EllipsisAnnotationTypePattern node, Object data) {
-            p("..");
+            append("..");
             return null;
         }
 
@@ -210,7 +210,7 @@ public interface PointcutVisitor {
         public Object visit(AndPointcut node, Object data) {
             p('(');
             node.getLeft().accept(this, data);
-            p(" && ");
+            append(" && ");
             node.getRight().accept(this, data);
             p(')');
             return null;
@@ -219,7 +219,7 @@ public interface PointcutVisitor {
         public Object visit(AndTypePattern node, Object data) {
             p('(');
             node.left.accept(this, data);
-            p(" && ");
+            append(" && ");
             node.right.accept(this, data);
             p(')');
             return null;
@@ -228,45 +228,45 @@ public interface PointcutVisitor {
         public Object visit(AnnotationPatternList node, Object data) {
             AnnotationTypePattern[] annotations = node.getAnnotationPatterns();
             for (int i = 0; i < annotations.length; i++) {
-                if (i>0) p(", ");//FIXME AV should that be here?
+                if (i>0) append(", ");//FIXME AV should that be here?
                 annotations[i].accept(this, data);
             }
             return null;
         }
 
         public Object visit(AnnotationPointcut node, Object data) {
-            p("@annotation(");
+            append("@annotation(");
             node.annotationTypePattern.accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(ArgsAnnotationPointcut node, Object data) {
-            p("@args(");
+            append("@args(");
             node.arguments.accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(ArgsPointcut node, Object data) {
-            p("args(");
+            append("args(");
             node.arguments.accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(BindingAnnotationTypePattern node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(BindingTypePattern node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(CflowPointcut node, Object data) {
-            p(node.isBelow?"cflowbelow(":"cflow(");
+            append(node.isBelow?"cflowbelow(":"cflow(");
             node.getEntry().accept(this, data);
             p(')');
             return null;
@@ -274,7 +274,7 @@ public interface PointcutVisitor {
 
         public Object visit(ExactAnnotationTypePattern node, Object data) {
             //p('@'); // since @annotation(@someAnno) cannot be parsed anymore
-            p(node.annotationType.getName());
+            append(node.annotationType.getName());
             return null;
         }
 
@@ -287,9 +287,9 @@ public interface PointcutVisitor {
 
             String typeString = node.type.toString();
             if (node.isVarArgs) typeString = typeString.substring(0, typeString.lastIndexOf('['));//TODO AV - ugly
-            p(typeString);
+            append(typeString);
             if (node.includeSubtypes) p('+');
-            if (node.isVarArgs) p("...");
+            if (node.isVarArgs) append("...");
             if (node.annotationPattern != AnnotationTypePattern.ANY) {
                 p(')');
             }
@@ -297,7 +297,7 @@ public interface PointcutVisitor {
         }
 
         public Object visit(KindedPointcut node, Object data) {
-            p(node.getKind().getSimpleName());
+            append(node.getKind().getSimpleName());
             p('(');
             node.signature.accept(this, data);
             p(')');
@@ -305,30 +305,30 @@ public interface PointcutVisitor {
         }
 
         public Object visit(ModifiersPattern node, Object data) {
-            p(node.toString());//note: node takes care of forbidden mods
+            append(node.toString());//note: node takes care of forbidden mods
             return null;
         }
 
         public Object visit(NamePattern node, Object data) {
-            p(node.toString());
+            append(node.toString());
             return null;
         }
 
         public Object visit(NotAnnotationTypePattern node, Object data) {
-            p("!");
+            append("!");
             node.negatedPattern.accept(this, data);
             return null;
         }
 
         public Object visit(NotPointcut node, Object data) {
-            p("!(");
+            append("!(");
             node.getNegatedPointcut().accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(NotTypePattern node, Object data) {
-            p("!(");
+            append("!(");
             node.pattern.accept(this, data);
             p(')');
             return null;
@@ -337,7 +337,7 @@ public interface PointcutVisitor {
         public Object visit(OrAnnotationTypePattern node, Object data) {
             p('(');
             node.getLeft().accept(this, data);
-            p(" || ");
+            append(" || ");
             node.getRight().accept(this, data);
             p(')');
             return null;
@@ -346,7 +346,7 @@ public interface PointcutVisitor {
         public Object visit(OrPointcut node, Object data) {
             p('(');
             node.getLeft().accept(this, data);
-            p(" || ");
+            append(" || ");
             node.getRight().accept(this, data);
             p(')');
             return null;
@@ -355,14 +355,14 @@ public interface PointcutVisitor {
         public Object visit(OrTypePattern node, Object data) {
             p('(');
             node.left.accept(this, data);
-            p(" || ");
+            append(" || ");
             node.right.accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(ReferencePointcut node, Object data) {
-            p(node.toString());
+            append(node.toString());
             return null;
         }
 
@@ -381,7 +381,7 @@ public interface PointcutVisitor {
                 node.getDeclaringType().accept(this, data);
                 //p(".<clinit>()");
             } else if (node.getKind() == Member.HANDLER) {
-                p("handler(");
+                append("handler(");
                 node.getParameterTypes().get(0).accept(this, data);//Note: we know we have 1 child
                 p(')');
             } else {
@@ -394,7 +394,7 @@ public interface PointcutVisitor {
                     p('.');
                 }
                 if (node.getKind() == Member.CONSTRUCTOR) {
-                    p("new");
+                    append("new");
                 } else {
                     node.getName().accept(this, data);
                 }
@@ -412,7 +412,7 @@ public interface PointcutVisitor {
         }
 
         public Object visit(ThisOrTargetAnnotationPointcut node, Object data) {
-            p(node.isThis() ? "@this(" : "@target(");
+            append(node.isThis() ? "@this(" : "@target(");
             node.annotationTypePattern.accept(this, data);
             //buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);
             p(')');
@@ -420,7 +420,7 @@ public interface PointcutVisitor {
         }
 
         public Object visit(ThisOrTargetPointcut node, Object data) {
-            p(node.isThis() ? "this(" : "target(");
+            append(node.isThis() ? "this(" : "target(");
             node.type.accept(this, data);
             p(')');
             return null;
@@ -431,7 +431,7 @@ public interface PointcutVisitor {
         public Object visit(ThrowsPattern node, Object data) {
             if (node == ThrowsPattern.ANY) return null;
 
-            p("throws ");
+            append("throws ");
             node.required.accept(this, data);
             if (node.forbidden.size() > 0) {
                 // a hack since throws !(A, B) cannot be parsed
@@ -448,7 +448,7 @@ public interface PointcutVisitor {
             TypePattern[] typePatterns = node.getTypePatterns();
             for (int i = 0; i < typePatterns.length; i++) {
                 TypePattern typePattern = typePatterns[i];
-                if (i > 0) p(", ");
+                if (i > 0) append(", ");
                 if (inThrowsForbidden) p('!');
                 typePattern.accept(this, data);
             }
@@ -456,7 +456,7 @@ public interface PointcutVisitor {
         }
 
         public Object visit(WildAnnotationTypePattern node, Object data) {
-            p("@(");
+            append("@(");
             node.typePattern.accept(this, data);
             p(')');
             return null;
@@ -478,7 +478,7 @@ public interface PointcutVisitor {
                 }
             }
             if (node.includeSubtypes) p('+');
-            if (node.isVarArgs) p("...");//FIXME ? in type pattern
+            if (node.isVarArgs) append("...");//FIXME ? in type pattern
             if (node.annotationPattern != AnnotationTypePattern.ANY) {
                 p(')');
             }
@@ -486,35 +486,35 @@ public interface PointcutVisitor {
         }
 
         public Object visit(WithinAnnotationPointcut node, Object data) {
-            p("@within(");
+            append("@within(");
             node.annotationTypePattern.accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(WithinCodeAnnotationPointcut node, Object data) {
-            p("@withincode(");
+            append("@withincode(");
             node.annotationTypePattern.accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(WithinPointcut node, Object data) {
-            p("within(");
+            append("within(");
             node.typePattern.accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(WithincodePointcut node, Object data) {
-            p("withincode(");
+            append("withincode(");
             node.signature.accept(this, data);
             p(')');
             return null;
         }
 
         public Object visit(Pointcut.MatchesNothingPointcut node, Object data) {
-            p("");//TODO shouldn't that be a "false" ?
+            append("");//TODO shouldn't that be a "false" ?
             return null;
         }
 
@@ -522,71 +522,71 @@ public interface PointcutVisitor {
         //-------------- perX
 
         public Object visit(PerCflow node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(PerFromSuper node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(PerObject node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(PerSingleton node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(PerTypeWithin node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         // ------------- declare X
 
         public Object visit(DeclareAnnotation node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(DeclareErrorOrWarning node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(DeclareParents node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(DeclarePrecedence node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(DeclareSoft node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         // ----------- misc
 
         public Object visit(ConcreteCflowPointcut node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(HandlerPointcut node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
         public Object visit(IfPointcut node, Object data) {
-            p(node);
+            append(node);
             return null;
         }
 
