@@ -503,4 +503,7 @@ public class TypePatternList extends PatternNode {
 		return ret;
 	}
 
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

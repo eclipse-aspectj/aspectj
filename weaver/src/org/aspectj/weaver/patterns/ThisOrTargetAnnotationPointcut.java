@@ -43,7 +43,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	private boolean isThis;
 	private boolean alreadyWarnedAboutDEoW = false;
-	private ExactAnnotationTypePattern annotationTypePattern;
+	ExactAnnotationTypePattern annotationTypePattern;
 	private ShadowMunger munger;
 	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
 	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
@@ -266,4 +266,8 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		buf.append(")");
 		return buf.toString();   
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

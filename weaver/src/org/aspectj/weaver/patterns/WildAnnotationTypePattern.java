@@ -31,7 +31,7 @@ import org.aspectj.weaver.World;
  */
 public class WildAnnotationTypePattern extends AnnotationTypePattern {
 
-	private TypePattern typePattern;
+	TypePattern typePattern;
 	private boolean resolved = false;
 	
 	/**
@@ -138,4 +138,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	public String toString() {
 		return "@(" + typePattern.toString() + ")";
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

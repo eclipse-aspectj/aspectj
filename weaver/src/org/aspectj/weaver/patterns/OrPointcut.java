@@ -29,7 +29,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Test;
 
 public class OrPointcut extends Pointcut {
-	private Pointcut left, right;
+	Pointcut left, right;
 	private Set couldMatchKinds;
 
 	public OrPointcut(Pointcut left, Pointcut right) {
@@ -147,4 +147,8 @@ public class OrPointcut extends Pointcut {
 	public Pointcut getRight() {
 		return right;
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

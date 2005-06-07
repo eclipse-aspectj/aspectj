@@ -140,6 +140,10 @@ public class ConcreteCflowPointcut extends Pointcut {
 		throw new RuntimeException("unimplemented");
 	}
 
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
 
 	public static class Slot {
 		int formalIndex;

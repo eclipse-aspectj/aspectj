@@ -39,7 +39,7 @@ import org.aspectj.weaver.ast.Var;
  */
 public class ArgsAnnotationPointcut extends NameBindingPointcut {
 
-	private AnnotationPatternList arguments;
+	AnnotationPatternList arguments;
 
 	/**
 	 * 
@@ -215,5 +215,9 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
         StringBuffer buf = new StringBuffer("@args");
         buf.append(arguments.toString());
         return buf.toString();
+    }
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
     }
 }

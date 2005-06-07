@@ -312,5 +312,7 @@ public class ReferencePointcut extends Pointcut {
         return result;
     }
 
-
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

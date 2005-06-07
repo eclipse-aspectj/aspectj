@@ -221,4 +221,8 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		if (formalName != null) ret = ret + " " + formalName;
 		return ret;
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

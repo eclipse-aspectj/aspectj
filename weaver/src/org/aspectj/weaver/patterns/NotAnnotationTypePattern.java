@@ -20,7 +20,7 @@ import org.aspectj.weaver.World;
 
 public class NotAnnotationTypePattern extends AnnotationTypePattern {
 
-	private AnnotationTypePattern negatedPattern;
+	AnnotationTypePattern negatedPattern;
 	
 	public NotAnnotationTypePattern(AnnotationTypePattern pattern) {
 		this.negatedPattern = pattern;
@@ -83,4 +83,8 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 	public AnnotationTypePattern getNegatedPattern() {
 		return negatedPattern;
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

@@ -512,6 +512,7 @@ public class SignaturePattern extends PatternNode {
     		if (kind == Member.METHOD || kind == Member.CONSTRUCTOR) {
     			buf.append(parameterTypes.toString());
     		}
+            //FIXME AV - throws is not printed here, weird
     	}
     	return buf.toString();
     }
@@ -624,4 +625,7 @@ public class SignaturePattern extends PatternNode {
 		return annotationPattern == AnnotationTypePattern.ANY;
 	}
 
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

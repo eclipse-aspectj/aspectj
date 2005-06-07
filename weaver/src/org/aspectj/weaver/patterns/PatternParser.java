@@ -219,7 +219,8 @@ public class PatternParser {
 		
 		if (maybeEat("||")) {
 			p = new OrPointcut(p, parsePointcut());
-		}		
+		}
+
 		return p;
 	}
 	

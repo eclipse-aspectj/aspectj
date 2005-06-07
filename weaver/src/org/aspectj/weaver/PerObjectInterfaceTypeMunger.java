@@ -25,6 +25,12 @@ import java.util.HashMap;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PointcutVisitor;
+import org.aspectj.weaver.patterns.PatternNode;
+import org.aspectj.weaver.patterns.PerThisOrTargetPointcutVisitor;
+import org.aspectj.weaver.patterns.PerObject;
+import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.util.FuzzyBoolean;
 
 public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
@@ -86,9 +92,28 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 	}
 	
 	public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
+        if (matchType.isInterface()) return false;
+
+        //FIXME AV - cache that
+        final boolean isPerThis;
+        if (aspectType.getPerClause() instanceof PerFromSuper) {
+            PerFromSuper ps = (PerFromSuper) aspectType.getPerClause();
+            isPerThis = ((PerObject)ps.lookupConcretePerClause(aspectType)).isThis();
+        } else {
+            isPerThis = ((PerObject)aspectType.getPerClause()).isThis();
+        }
+        PerThisOrTargetPointcutVisitor v = new PerThisOrTargetPointcutVisitor(
+                !isPerThis,
+                aspectType
+        );
+        TypePattern tp = v.getPerTypePointcut(testPointcut);
+
+        if (true) return tp.matchesStatically(matchType);
+
+
         //FIXME ATAJ waiting Andy patch...
         // comment from Andy - this is hard to fix...
-        
+
         // right now I filter @AJ aspect else it end up with duplicate members
         //return !matchType.isInterface() && !matchType.isAnnotationStyleAspect();
         Set aspects = (Set)s_advisedTypeToAspects.get(matchType);

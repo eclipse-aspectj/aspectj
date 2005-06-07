@@ -277,6 +277,10 @@ public class IfPointcut extends Pointcut {
 		return ret;
 	}
 
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
 	private static class IfFalsePointcut extends IfPointcut {
 		
 		public IfFalsePointcut() {

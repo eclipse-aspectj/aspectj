@@ -30,7 +30,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
  * @author Jim Hugunin
  */
 public class AndTypePattern extends TypePattern {
-	private TypePattern left, right;
+	TypePattern left, right;
 	
 	public AndTypePattern(TypePattern left, TypePattern right) {
 		super(false,false);  //?? we override all methods that care about includeSubtypes
@@ -160,5 +160,9 @@ public class AndTypePattern extends TypePattern {
 		ret = ret + 37 * right.hashCode();
 		return ret;
 	}
-	
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
 }

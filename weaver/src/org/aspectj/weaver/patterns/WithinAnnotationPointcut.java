@@ -41,7 +41,7 @@ import org.aspectj.weaver.ast.Var;
  */
 public class WithinAnnotationPointcut extends NameBindingPointcut {
 
-	private AnnotationTypePattern annotationTypePattern;
+	AnnotationTypePattern annotationTypePattern;
 	private ShadowMunger munger;
 	
 	/**
@@ -203,5 +203,9 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);
 		buf.append(")");
 		return buf.toString();
+    }
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
     }
 }

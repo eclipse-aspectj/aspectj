@@ -146,4 +146,7 @@ public class AndPointcut extends Pointcut {
 		return right;
 	}
 
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

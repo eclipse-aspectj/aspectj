@@ -389,6 +389,12 @@ class EllipsisTypePattern extends TypePattern {
 	public int hashCode() {
 		return 17 * 37;
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+
 }
 
 class AnyTypePattern extends TypePattern {
@@ -473,6 +479,10 @@ class AnyTypePattern extends TypePattern {
 	public int hashCode() {
 		return 37;
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }
 
 /**
@@ -620,7 +630,7 @@ class NoTypePattern extends TypePattern {
 		return false;
 	}
 	
-	public String toString() { return "<nothing>"; }
+	public String toString() { return "<nothing>"; }//FIXME AV - bad! toString() cannot be parsed back (not idempotent)
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -635,5 +645,9 @@ class NoTypePattern extends TypePattern {
 	public int hashCode() {
 		return 17 * 37 * 37;
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }
 

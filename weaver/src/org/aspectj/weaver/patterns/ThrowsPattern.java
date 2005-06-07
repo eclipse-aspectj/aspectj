@@ -24,8 +24,8 @@ import org.aspectj.weaver.World;
 
 
 public class ThrowsPattern extends PatternNode {
-	private TypePatternList required;
-	private TypePatternList forbidden;
+	TypePatternList required;
+	TypePatternList forbidden;
 	
 	public static final ThrowsPattern ANY =
 		new ThrowsPattern(TypePatternList.EMPTY, TypePatternList.EMPTY);
@@ -143,4 +143,8 @@ public class ThrowsPattern extends PatternNode {
 		forbidden.write(s);
 		//XXXwriteLocation(s);
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

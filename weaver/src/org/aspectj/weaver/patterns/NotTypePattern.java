@@ -32,7 +32,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
  * @author Jim Hugunin
  */
 public class NotTypePattern extends TypePattern {
-	private TypePattern pattern;
+	TypePattern pattern;
 	
 	public NotTypePattern(TypePattern pattern) {
 		super(false,false);  //??? we override all methods that care about includeSubtypes
@@ -145,4 +145,8 @@ public class NotTypePattern extends TypePattern {
 	public int hashCode() {
 		return 17 + 37 * pattern.hashCode();
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

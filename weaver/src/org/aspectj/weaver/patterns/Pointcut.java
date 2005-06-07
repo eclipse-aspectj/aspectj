@@ -353,7 +353,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
         return parser.parsePointcut();
     }
     
-    private static class MatchesNothingPointcut extends Pointcut {
+    static class MatchesNothingPointcut extends Pointcut {
     	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 			return Literal.FALSE; // can only get here if an earlier error occurred
 		}
@@ -412,6 +412,10 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 		}
 		
 		public String toString() { return ""; }
+
+        public Object accept(PointcutVisitor visitor, Object data) {
+            return visitor.visit(this, data);
+        }
 	}
     
     //public static Pointcut MatchesNothing = new MatchesNothingPointcut();

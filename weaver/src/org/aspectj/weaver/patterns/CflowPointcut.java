@@ -44,7 +44,7 @@ import org.aspectj.weaver.ast.Test;
 
 public class CflowPointcut extends Pointcut {
 	private Pointcut entry; // The pointcut inside the cflow() that represents the 'entry' point
-	private boolean isBelow;// Is this cflowbelow?
+	boolean isBelow;// Is this cflowbelow?
 	private int[] freeVars;
 	
 	private static Hashtable cflowFields = new Hashtable();
@@ -307,5 +307,9 @@ public class CflowPointcut extends Pointcut {
 			cflowFields.put(pcutkey,o);
 		}
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 
 }

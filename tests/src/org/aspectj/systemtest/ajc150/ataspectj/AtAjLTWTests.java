@@ -31,13 +31,13 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 
 
     //FIXME AV - those all 4 depends on #75442...
-//	public void testRunThemAllWithJavacCompiledAndLTW() {
-//		runTest("RunThemAllWithJavacCompiledAndLTW");
-//	}
-//
-//	public void testAjcLTWPerClauseTest_XnoWeave() {
-//		runTest("AjcLTW PerClauseTest -XnoWeave");
-//	}
+	public void testRunThemAllWithJavacCompiledAndLTW() {
+		runTest("RunThemAllWithJavacCompiledAndLTW");
+	}
+
+	public void testAjcLTWPerClauseTest_XnoWeave() {
+		runTest("AjcLTW PerClauseTest -XnoWeave");
+	}
 //
 //	public void testAjcLTWPerClauseTest_Xreweavable() {
 //		runTest("AjcLTW PerClauseTest -Xreweavable");

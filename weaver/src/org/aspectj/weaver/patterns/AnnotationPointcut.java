@@ -60,7 +60,7 @@ import org.aspectj.weaver.bcel.BcelTypeMunger;
  */
 public class AnnotationPointcut extends NameBindingPointcut {
 
-	private ExactAnnotationTypePattern annotationTypePattern;
+	ExactAnnotationTypePattern annotationTypePattern;
     private ShadowMunger munger = null; // only set after concretization
 	
 	public AnnotationPointcut(ExactAnnotationTypePattern type) {
@@ -261,5 +261,9 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		buf.append(")");
 		return buf.toString();
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 
 }

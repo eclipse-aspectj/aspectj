@@ -21,6 +21,7 @@
             <!-- use META-INF/aop.xml style -->
             <classpath path="ataspectj/pathentry"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <!--<jvmarg line="${jdwp}"/>-->
         </java>
     </target>
 

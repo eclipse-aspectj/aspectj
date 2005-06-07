@@ -42,7 +42,7 @@ import org.aspectj.weaver.ast.Var;
  */
 public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
-	private ExactAnnotationTypePattern annotationTypePattern;
+	ExactAnnotationTypePattern annotationTypePattern;
     private ShadowMunger munger = null; // only set after concretization
     private static final Set matchedShadowKinds = new HashSet();
     static {
@@ -211,4 +211,8 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 		buf.append(")");
 		return buf.toString();
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

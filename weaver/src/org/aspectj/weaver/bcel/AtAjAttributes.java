@@ -52,6 +52,7 @@ import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.PerFromSuper;
+import org.aspectj.weaver.patterns.PointcutVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1331,7 +1332,7 @@ public class AtAjAttributes {
             pointcut.setLocation(location.context, -1, -1);//FIXME -1,-1 is not good enough
             return pointcut;
         } catch (ParserException e) {
-            reportError("Invalid pointcut '" + pointcutString + "' : " + e.getLocation(), location);
+            reportError("Invalid pointcut '" + pointcutString + "': " + e.toString(), location);
             return null;
         }
     }

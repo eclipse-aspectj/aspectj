@@ -303,4 +303,8 @@ public class ArgsPointcut extends NameBindingPointcut {
 	public String toString() {
 		return "args" + arguments.toString() + "";
 	}
+
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

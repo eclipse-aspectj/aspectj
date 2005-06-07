@@ -262,4 +262,8 @@ public class ExactTypePattern extends TypePattern {
 		throw new IllegalStateException("trying to re-resolve");
 	}
 
+    public Object accept(PointcutVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
 }
