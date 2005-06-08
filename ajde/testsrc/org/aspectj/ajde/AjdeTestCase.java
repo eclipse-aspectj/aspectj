@@ -21,8 +21,7 @@ import junit.framework.TestCase;
 
 public class AjdeTestCase extends TestCase {
 
-	private static final String TEST_DATA_PATH = AjdeTests.TESTDATA_PATH;
-	//private static final String TEST_DATA_PATH = "C:/Dev/aspectj/modules/ajde/testdata";
+	private static final String TEST_DATA_PATH = AjdeTests.testDataPath(null);
 
 	protected NullIdeManager ideManager = NullIdeManager.getIdeManager();
 	protected TestBuildListener testerBuildListener = new TestBuildListener();
@@ -57,7 +56,7 @@ public class AjdeTestCase extends TestCase {
 	}	
 
 	protected void setUp(String testDataPath) throws Exception {
-		currTestDataPath = TEST_DATA_PATH + File.separatorChar + testDataPath;
+		currTestDataPath = AjdeTests.testDataPath(testDataPath);
 		// AMC - added this next line as a temporary workaround for 
 		// listener leakage in AsmManager induced by the Ajde test suite.
 		AsmManager.getDefault().removeAllListeners();

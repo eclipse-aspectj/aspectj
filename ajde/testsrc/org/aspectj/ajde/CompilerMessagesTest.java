@@ -26,6 +26,7 @@ import org.aspectj.bridge.IMessage;
  */
 public class CompilerMessagesTest extends AjdeTestCase {
 	
+    // TODO-path
 	private final String CONFIG_FILE_PATH = "../examples/declare-warning/all.lst";
 
 	public CompilerMessagesTest(String name) {

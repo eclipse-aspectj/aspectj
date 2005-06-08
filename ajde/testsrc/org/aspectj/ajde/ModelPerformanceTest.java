@@ -17,6 +17,7 @@ package org.aspectj.ajde;
  */
 public class ModelPerformanceTest extends AjdeTestCase {
 
+    // TODO-path
 	private final String CONFIG_FILE_PATH = "../examples/spacewar/spacewar/debug.lst";
   
 	public ModelPerformanceTest(String name) {

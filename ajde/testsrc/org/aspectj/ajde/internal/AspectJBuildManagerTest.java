@@ -42,6 +42,7 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
         // XXX should fail? empty configs fail b/c no sources specified
         doSynchronousBuild("empty.lst");
         assertTrue("compile of empty build config", testerBuildListener.getBuildSucceeded());   
+        // TODO-path
         doSynchronousBuild("../examples/figures-coverage/all.lst");
         assertTrue("compile success", testerBuildListener.getBuildSucceeded());
 		File file = new File(Ajde.getDefault().getProjectProperties().getOutputPath() + "/figures/Main.class");
@@ -51,6 +52,7 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
             assertTrue("expected class " + file, false);
 		}			
         
+        // TODO-path
 		file = openFile("../examples/figures-coverage/all.ajsym");
         if (file.exists()) {
             file.delete();

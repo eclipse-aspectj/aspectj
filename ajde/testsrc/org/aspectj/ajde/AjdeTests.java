@@ -14,11 +14,29 @@
 
 package org.aspectj.ajde;
 
+import java.io.File;
+
+import org.aspectj.util.FileUtil;
+
 import junit.framework.*;
  
 public class AjdeTests extends TestCase {
 
-    public static String TESTDATA_PATH = "../ajde/testdata";
+    // TODO-path
+    private static final File TESTDATA_PATH;
+    static {
+        String[] paths = { "../ajde/testdata" };
+        TESTDATA_PATH  = FileUtil.getBestFile(paths);
+    }
+    public static String testDataPath(String file) {
+        if (null == file) {
+            return TESTDATA_PATH.getPath();
+        }
+        File f = new File(TESTDATA_PATH, file);
+        f = FileUtil.getBestFile(f);
+        return (null == f ? "" : f.getPath());
+    }
+
     public static Test suite() { 
         TestSuite suite = new TestSuite(AjdeTests.class.getName());
         //$JUnit-BEGIN$

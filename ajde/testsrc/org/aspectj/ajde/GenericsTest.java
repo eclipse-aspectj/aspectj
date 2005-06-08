@@ -18,6 +18,7 @@ import org.aspectj.asm.AsmManager;
 public class GenericsTest extends AjdeTestCase {
     
     private AsmManager manager = null;
+    // TODO-path
 	private static final String CONFIG_FILE_PATH = "../bug-83565/build.lst";
  
 	public void testBuild() {	

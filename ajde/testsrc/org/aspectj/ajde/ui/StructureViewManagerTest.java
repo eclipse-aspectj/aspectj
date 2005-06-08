@@ -27,6 +27,7 @@ import org.aspectj.asm.*;
  */
 public class StructureViewManagerTest extends AjdeTestCase {
 	
+    // TODO-path
 	private final String CONFIG_FILE_PATH = "../examples/figures-coverage/all.lst";
 	private final String CONFIG_FILE_PATH_2 = "../examples/inheritance/inheritance.lst";
 	
@@ -134,6 +135,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		doSynchronousBuild(CONFIG_FILE_PATH);		
 		
 		properties = Ajde.getDefault().getStructureViewManager().getDefaultViewProperties();
+        // TODO-path
 		testFile = openFile("../examples/figures-coverage/figures/Figure.java");
 		currentView = Ajde.getDefault().getStructureViewManager().createViewForSourceFile(testFile.getAbsolutePath(), properties);
 		currentView.setRenderer(renderer);

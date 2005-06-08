@@ -26,6 +26,7 @@ import org.aspectj.asm.IProgramElement;
  */
 public class StructureSearchManagerTest extends AjdeTestCase {
 	
+    // TODO-path
 	private final String CONFIG_FILE_PATH = "../examples/figures-coverage/all.lst";
 
 	public StructureSearchManagerTest(String name) {

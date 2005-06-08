@@ -42,7 +42,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	private NullIdeProperties projectProperties = null;
     private MessageHandler messageHandler;
 	private static final String configFile = 
-		AjdeTests.TESTDATA_PATH + "/examples/figures-coverage/all.lst";
+		AjdeTests.testDataPath("examples/figures-coverage/all.lst");
 	
 
 	public BuildConfigurationTests( String name ) {
@@ -407,7 +407,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		List configRoots = buildConfig.getSourceRoots();	
 		assertTrue( "no source dirs", configRoots.isEmpty() );
 		
-		File f = new File( AjdeTests.TESTDATA_PATH + "/examples/figures/figures-coverage" );
+		File f = new File( AjdeTests.testDataPath("examples/figures/figures-coverage" ));
 		roots.add( f );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
@@ -416,7 +416,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		assertTrue( "source dir", configRoots2.contains(f) );
 
 		
-		File f2 = new File( AjdeTests.TESTDATA_PATH + "/examples/figures/figures-demo" );
+		File f2 = new File( AjdeTests.testDataPath("examples/figures/figures-demo"));
 		roots.add( f2 );		
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            

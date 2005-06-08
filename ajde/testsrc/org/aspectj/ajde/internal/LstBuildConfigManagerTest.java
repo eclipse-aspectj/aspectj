@@ -135,6 +135,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 
 		BAD_PATHS_FILE_CONTENTS = WILDCARDS_FILE_CONTENTS;
 
+        // TODO-path
 		INCLUDES_FILE_CONTENTS =
 			"../coordination/Condition.java;" +
 			"../coordination/CoordinationAction.java;" +

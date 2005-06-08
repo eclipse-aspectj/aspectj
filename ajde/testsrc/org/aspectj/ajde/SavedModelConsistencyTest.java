@@ -28,6 +28,7 @@ import org.aspectj.asm.IProgramElement;
  */
 public class SavedModelConsistencyTest extends AjdeTestCase {
 	
+    // TODO-path
 	private final String CONFIG_FILE_PATH = "../examples/coverage/coverage.lst";
 
 	public SavedModelConsistencyTest(String name) {
@@ -46,6 +47,7 @@ public class SavedModelConsistencyTest extends AjdeTestCase {
         assertTrue("model exists", model != null);
         
 		assertTrue("root exists", model.getRoot() != null);
+        // TODO-path
 		File testFile = openFile("../examples/coverage/ModelCoverage.java");
 		assertTrue(testFile.exists());
 		

@@ -21,6 +21,7 @@ import org.aspectj.asm.*;
 public class AsmDeclarationsTest extends AjdeTestCase {
 
 	private IHierarchy model = null;
+    // TODO-path
 	private static final String CONFIG_FILE_PATH = "../examples/coverage/coverage.lst";
 //	private static final int DEC_MESSAGE_LENGTH = AsmElementFormatter.MAX_MESSAGE_LENGTH;
 

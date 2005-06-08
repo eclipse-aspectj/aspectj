@@ -25,6 +25,7 @@ import org.aspectj.asm.*;
  */
 public class StructureModelTest extends AjdeTestCase {
 	
+    // TODO-path
 	private final String CONFIG_FILE_PATH = "../examples/figures-coverage/all.lst";
 
 	public StructureModelTest(String name) {

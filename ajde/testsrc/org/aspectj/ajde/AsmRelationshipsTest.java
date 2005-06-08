@@ -24,6 +24,7 @@ import org.aspectj.asm.IRelationship;
 public class AsmRelationshipsTest extends AjdeTestCase {
   
 	private AsmManager manager = null;
+    // TODO-path
 	private static final String CONFIG_FILE_PATH = "../examples/coverage/coverage.lst";
 
 	public AsmRelationshipsTest(String name) {
