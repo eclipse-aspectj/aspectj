@@ -12,32 +12,44 @@
 
 // default package
 import org.aspectj.util.LangUtil;
+import org.aspectj.testing.util.TestUtil;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 public class AllTests extends TestCase {
-
+    public static final boolean skipSupportModules = false;
+    
     public static TestSuite suite() {
         TestSuite suite = new TestSuite(AllTests.class.getName());
         suite.addTest(AjbrowserModuleTests.suite());
         suite.addTest(AjdeModuleTests.suite());
+        suite.addTest(AjdocModuleTests.suite());
         suite.addTest(AsmModuleTests.suite());
         suite.addTest(BridgeModuleTests.suite());
+        suite.addTest(LoadtimeModuleTests.suite());
         suite.addTest(EajcModuleTests.suite());
+        //suite.addTest(LibModuleTests.suite());
         suite.addTest(RuntimeModuleTests.suite());
         suite.addTest(TaskdefsModuleTests.suite());
-        suite.addTest(TestingModuleTests.suite());
-        suite.addTest(TestingDriversModuleTests.suite());
+        if (!skipSupportModules) {
+            suite.addTest(BuildModuleTests.suite());
+            suite.addTest(TestingModuleTests.suite());
+            suite.addTest(TestingClientModuleTests.suite());
+            suite.addTest(TestingDriversModuleTests.suite());
+            suite.addTest(TestingUtilModuleTests.suite());
+        }
         suite.addTest(UtilModuleTests.suite());
         suite.addTest(BcweaverModuleTests.suite());
         if (LangUtil.is15VMOrGreater()) {
-            suite.addTest(Aspectj5rtModuleTests.suite());
-            suite.addTest(LoadtimeModuleTests.suite());//FIXME AV - should be run on 1.3 when xml deps si fixed in the build
-            suite.addTest(Loadtime515ModuleTests.suite());
+            // these only require 1.3, but in Eclipse they are built 
+            // with 1.5, i.e., wrong class version to load under 1.3
+            // so the class name can only be used reflectively
+            TestUtil.loadTestsReflectively(suite, "Aspectj5rtModuleTests", false);
+            TestUtil.loadTestsReflectively(suite, "Loadtime5ModuleTests", false);
         } else {
-            System.err.println("Warning: not running 1.5 tests");
-        }
+            suite.addTest(TestUtil.skipTest("for 1.5"));
+        } 
         return suite;
     }
 
