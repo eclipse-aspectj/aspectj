@@ -38,7 +38,11 @@ public class IntMap {
 	
 	
 	public ResolvedPointcutDefinition peekEnclosingDefinitition() {
-		return (ResolvedPointcutDefinition)enclosingDefinition.get(enclosingDefinition.size()-1);
+        try {
+		    return (ResolvedPointcutDefinition)enclosingDefinition.get(enclosingDefinition.size()-1);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
 	}
 	
 	

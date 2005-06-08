@@ -847,9 +847,10 @@ public class AtAjAttributes {
             ElementNameValuePair pointcutExpr = getAnnotationElement(pointcut, VALUE);
             if (pointcutExpr != null) {
 
-                // semantic check: the method must return void
-                if (!Type.VOID.equals(struct.method.getReturnType())) {
-                    reportWarning("Found @Pointcut on a method not returning void", struct);
+                // semantic check: the method must return void, or be "public static boolean" for if() support
+                if (!(Type.VOID.equals(struct.method.getReturnType())
+                      || (Type.BOOLEAN.equals(struct.method.getReturnType()) && struct.method.isStatic() && struct.method.isPublic()))) {
+                    reportWarning("Found @Pointcut on a method not returning 'void' or not 'public static boolean'", struct);
                     ;//no need to stop
                 }
                 // semantic check: the method must not throw anything
@@ -888,6 +889,7 @@ public class AtAjAttributes {
                                         struct.method.getModifiers(),
                                         struct.method.getName(),
                                         argumentTypes,
+                                        TypeX.forSignature(struct.method.getReturnType().getSignature()),
                                         pc,
                                         binding
                                 )
@@ -1064,7 +1066,6 @@ public class AtAjAttributes {
 //        }
     }
 
-
     /**
      * Compute the flag for the xxxJoinPoint extra argument
      *
@@ -1072,17 +1073,30 @@ public class AtAjAttributes {
      * @return
      */
     private static int extractExtraArgument(Method method) {
-        int extraArgument = 0;
         Type[] methodArgs = method.getArgumentTypes();
+        String[] sigs = new String[methodArgs.length];
         for (int i = 0; i < methodArgs.length; i++) {
-            String methodArg = methodArgs[i].getSignature();
-            if (AjcMemberMaker.TYPEX_JOINPOINT.getSignature().equals(methodArg)) {
+            sigs[i] = methodArgs[i].getSignature();
+        }
+        return extractExtraArgument(sigs);
+    }
+
+    /**
+     * Compute the flag for the xxxJoinPoint extra argument
+     *
+     * @param argumentSignatures
+     * @return
+     */
+    public static int extractExtraArgument(String[] argumentSignatures) {
+        int extraArgument = 0;
+        for (int i = 0; i < argumentSignatures.length; i++) {
+            if (AjcMemberMaker.TYPEX_JOINPOINT.getSignature().equals(argumentSignatures[i])) {
                 extraArgument |= Advice.ThisJoinPoint;
-            } else if (AjcMemberMaker.TYPEX_PROCEEDINGJOINPOINT.getSignature().equals(methodArg)) {
+            } else if (AjcMemberMaker.TYPEX_PROCEEDINGJOINPOINT.getSignature().equals(argumentSignatures[i])) {
                 extraArgument |= Advice.ThisJoinPoint;
-            } else if (AjcMemberMaker.TYPEX_STATICJOINPOINT.getSignature().equals(methodArg)) {
+            } else if (AjcMemberMaker.TYPEX_STATICJOINPOINT.getSignature().equals(argumentSignatures[i])) {
                 extraArgument |= Advice.ThisJoinPointStaticPart;
-            } else if (AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT.getSignature().equals(methodArg)) {
+            } else if (AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT.getSignature().equals(argumentSignatures[i])) {
                 extraArgument |= Advice.ThisEnclosingJoinPointStaticPart;
             }
         }
@@ -1231,9 +1245,10 @@ public class AtAjAttributes {
 
         private Pointcut m_lazyPointcut = null;
 
-        public LazyResolvedPointcutDefinition(ResolvedTypeX declaringType, int modifiers, String name, TypeX[] parameterTypes,
+        public LazyResolvedPointcutDefinition(ResolvedTypeX declaringType, int modifiers, String name,
+                                              TypeX[] parameterTypes, TypeX returnType,
                                               Pointcut pointcut, IScope binding) {
-            super(declaringType, modifiers, name, parameterTypes, null);
+            super(declaringType, modifiers, name, parameterTypes, returnType, null);
             m_pointcutUnresolved = pointcut;
             m_binding = binding;
         }
@@ -1328,7 +1343,7 @@ public class AtAjAttributes {
      */
     private static Pointcut parsePointcut(String pointcutString, AjAttributeStruct location) {
         try {
-            Pointcut pointcut = Pointcut.fromString(pointcutString);
+            Pointcut pointcut = new PatternParser(pointcutString, location.context).parsePointcut();
             pointcut.setLocation(location.context, -1, -1);//FIXME -1,-1 is not good enough
             return pointcut;
         } catch (ParserException e) {

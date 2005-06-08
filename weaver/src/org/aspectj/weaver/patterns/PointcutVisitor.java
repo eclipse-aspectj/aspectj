@@ -610,11 +610,13 @@ public interface PointcutVisitor {
 
         public static void main(String args[]) throws Throwable {
             String[] s = new String[]{
-                //"@args(Foo, Goo, *, .., Moo)",
-                //"execution(* *())",
-                //"call(* *(int, Integer...))",
-                //"staticinitialization(@(Foo) @(Boo) @(Goo) Moo)",
-                "staticinitialization(!@(Immutable) *)"
+//                "@args(Foo, Goo, *, .., Moo)",
+//                "execution(* *())",
+//                "call(* *(int, Integer...))",
+//                "staticinitialization(@(Foo) @(Boo) @(Goo) Moo)",
+//                "staticinitialization(!@(Immutable) *)"
+//                "execution(* *()) && if()",
+                "(if(true) && set(int BaseApp.i))"
 
             };
             for (int i = 0; i < s.length; i++) {

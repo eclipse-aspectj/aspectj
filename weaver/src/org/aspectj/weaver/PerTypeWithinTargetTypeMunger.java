@@ -21,17 +21,14 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 // PTWIMPL Target type munger adds the localAspectOf() method
 public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
-	private ResolvedMember localAspectOfMethod;
 	private TypeX aspectType;
 	private PerTypeWithin testPointcut;
-
 
 	public PerTypeWithinTargetTypeMunger(TypeX aspectType, PerTypeWithin testPointcut) {
 		super(PerTypeWithinInterface, null);
 		this.aspectType    = aspectType;
 		this.testPointcut  = testPointcut;
 	}
-	
 
 	public void write(DataOutputStream s) throws IOException {
 		throw new RuntimeException("shouldn't be serialized");

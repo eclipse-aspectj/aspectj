@@ -317,6 +317,33 @@ public class PatternParser {
 			SignaturePattern sig = parseConstructorSignaturePattern();
 			eat(")");
 			return new KindedPointcut(Shadow.PreInitialization, sig);
+        } else if (kind.equals("if")) {
+            //@style support
+            parseIdentifier();
+            eat("(");
+            if (maybeEat("true")) {
+                eat(")");
+                return new IfPointcut.IfTruePointcut();
+            } else if (maybeEat("false")) {
+                eat(")");
+                return new IfPointcut.IfFalsePointcut();
+            } else {
+                //TODO AV - true/false stuff needed ? What are the token here ?
+                eat(")");
+                // build a readable pointcut as an hint (toString() dumps raw token array into an horrible thing)
+                StringBuffer sb = new StringBuffer();
+                int currentIndex = tokenSource.getIndex();
+                try {
+                    tokenSource.setIndex(0);
+                    for (int i = 0; !IToken.EOF.equals(tokenSource.peek(i)); i++) {
+                        if (i > 0) sb.append(' ');
+                        sb.append(tokenSource.peek(i).getString());
+                    }
+                } finally {
+                    tokenSource.setIndex(currentIndex);
+                }
+                return new IfPointcut(sb.toString());
+            }
 		} else {
 			return parseReferencePointcut();
 		}
@@ -770,9 +797,9 @@ public class PatternParser {
 				if (previous != null) {
 					if (!isAdjacent(previous, tok)) break;
 				}
-				if (tok.getString() == "*" || (tok.isIdentifier() && tok.getString()!="...")) {
+				if ("*".equals(tok.getString()) || (tok.isIdentifier() && !"...".equals(tok.getString()))) {
 					buf.append(tok.getString());
-				} else if (tok.getString()=="...") {
+				} else if ("...".equals(tok.getString())) {
 					break;
 				} else if (tok.getLiteralKind() != null) {
 					//System.err.println("literal kind: " + tok.getString());
@@ -842,7 +869,7 @@ public class PatternParser {
 			if (previous != null) {
 				if (!isAdjacent(previous, tok)) break;
 			}
-			if (tok.getString() == "*" || tok.isIdentifier()) {
+			if (tok.getString().equals("*") || tok.isIdentifier()) {
 				buf.append(tok.getString());
 			} else if (tok.getLiteralKind() != null) {
 				//System.err.println("literal kind: " + tok.getString());
@@ -1103,7 +1130,7 @@ public class PatternParser {
 	public String parseStringLiteral() {
 		IToken token = tokenSource.next();
 		String literalKind = token.getLiteralKind();
-		if (literalKind == "string") {
+		if (literalKind.equals("string")) {
 			return token.getString();
 		}
 
@@ -1142,7 +1169,7 @@ public class PatternParser {
 	
 	public boolean maybeEat(String token) {
 		IToken next = tokenSource.peek();
-		if (next.getString() == token) {
+		if (next.getString().equals(token)) {
 			tokenSource.next();
 			return true;
 		} else {
@@ -1162,7 +1189,7 @@ public class PatternParser {
 		
 	public boolean peek(String token) {
 		IToken next = tokenSource.peek();
-		return next.getString() == token;
+		return next.getString().equals(token);
 	}
 
 	

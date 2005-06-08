@@ -46,7 +46,7 @@ public class ExposedState {
 		//XXX add sanity checks
 		// Some checks added in ArgsPointcut and ThisOrTargetPointcut
 //		if (vars[i]!=null) {
-//			if (!var.getType().equals(vars[i].getType())) 
+//			if (!var.getType().equals(vars[i].getType()))
 //			  throw new RuntimeException("Shouldn't allow a slot to change type! Currently="+var.getType()+"   New="+vars[i].getType());
 //		}
 		vars[i] = var;

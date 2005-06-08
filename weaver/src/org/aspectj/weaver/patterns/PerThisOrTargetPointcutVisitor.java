@@ -11,11 +11,9 @@
  *******************************************************************************/
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.Member;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.World;
 
 /**
  * A visitor that turns a pointcut into a type pattern equivalent for a perthis or pertarget matching:

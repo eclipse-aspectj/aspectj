@@ -21,19 +21,40 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 public class ResolvedPointcutDefinition extends ResolvedMember {
 	private Pointcut pointcut;
-	
-	public ResolvedPointcutDefinition(
+
+    public ResolvedPointcutDefinition(
+        TypeX declaringType,
+        int modifiers,
+        String name,
+        TypeX[] parameterTypes,
+        Pointcut pointcut)
+    {
+        this(declaringType, modifiers, name, parameterTypes, ResolvedTypeX.VOID, pointcut);
+    }
+
+    /**
+     * An instance which can be given a specific returnType, used f.e. in if() pointcut for @AJ
+     * 
+     * @param declaringType
+     * @param modifiers
+     * @param name
+     * @param parameterTypes
+     * @param returnType
+     * @param pointcut
+     */
+    public ResolvedPointcutDefinition(
 		TypeX declaringType,
 		int modifiers,
 		String name,
 		TypeX[] parameterTypes,
-		Pointcut pointcut) 
+        TypeX returnType,
+		Pointcut pointcut)
     {
 		super(
 			POINTCUT,
 			declaringType,
 			modifiers,
-			ResolvedTypeX.VOID,
+			returnType,
 			name,
 			parameterTypes);
 		this.pointcut = pointcut;

@@ -21,7 +21,7 @@
     <ajc-test dir="java5/ataspectj"
         pr="" title="@Pointcut not returning void">
         <compile files="ataspectj/misuse/Test008.java" options="-1.5 -Xdev:NoAtAspectJProcessing">
-            <message kind="warning" line="9" text="Found @Pointcut on a method not returning void"/>
+            <message kind="warning" line="9" text="Found @Pointcut on a method not returning 'void' or not 'public static boolean'"/>
         </compile>
     </ajc-test>
 

@@ -1,16 +1,15 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC                 initial implementation
+ *     Alexandre Vasseur    if() implementation for @AJ style
  * ******************************************************************/
-
-
 package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
@@ -34,28 +33,45 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.bcel.AtAjAttributes;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
 
-
 public class IfPointcut extends Pointcut {
 	public ResolvedMember testMethod;
 	public int extraParameterFlags;
-	
+
+    /**
+     * A token source dump that looks like a pointcut (but is NOT parseable at all - just here to help debugging etc)
+     */
+    private String enclosingPointcutHint;
+
 	public Pointcut residueSource;
 	int baseArgsCount;
 	
 	//XXX some way to compute args
 
-	
 	public IfPointcut(ResolvedMember testMethod, int extraParameterFlags) {
 		this.testMethod = testMethod;
 		this.extraParameterFlags = extraParameterFlags;
 		this.pointcutKind = IF;
+        this.enclosingPointcutHint = null;
 	}
-	
+
+    /**
+     * No-arg constructor for @AJ style, where the if() body is actually the @Pointcut annotated method
+     */
+    public IfPointcut(String enclosingPointcutHint) {
+        this.pointcutKind = IF;
+        this.enclosingPointcutHint = enclosingPointcutHint;
+        this.testMethod = null;// resolved during concretize
+        this.extraParameterFlags = -1;//allows to keep track of the @Aj style
+    }
+
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;
 	}
@@ -122,19 +138,24 @@ public class IfPointcut extends Pointcut {
 		IfPointcut o = (IfPointcut)other;
 		return o.testMethod.equals(this.testMethod);
 	}
+
     public int hashCode() {
         int result = 17;
         result = 37*result + testMethod.hashCode();
         return result;
     }
-	public String toString() {
-		return "if(" + testMethod + ")";
-	}
 
+    public String toString() {
+        if (extraParameterFlags < 0) {
+            //@AJ style
+            return "if()";
+        } else {
+		    return "if(" + testMethod + ")";//FIXME AV - bad, this makes it unparsable. Perhaps we can use if() for code style behind the scene!
+        }
+	}
 
 	//??? The implementation of name binding and type checking in if PCDs is very convoluted
 	//    There has to be a better way...
-
     private boolean findingResidue = false;
 	
 	// Similar to lastMatchedShadowId - but only for if PCDs.
@@ -155,43 +176,68 @@ public class IfPointcut extends Pointcut {
 			Test ret = Literal.TRUE;
 			List args = new ArrayList();
 			
-			// If there are no args to sort out, don't bother with the recursive call
-			if (baseArgsCount > 0) {
-				ExposedState myState = new ExposedState(baseArgsCount);
-				//??? we throw out the test that comes from this walk.  All we want here
-				//    is bindings for the arguments
-				residueSource.findResidue(shadow, myState);
-				
-				
-		        for (int i=0; i < baseArgsCount; i++) {
-		        	Var v = myState.get(i);
-		        	args.add(v);
-		        	ret = Test.makeAnd(ret, 
-		        		Test.makeInstanceof(v, 
-		        			testMethod.getParameterTypes()[i].resolve(shadow.getIWorld())));
-		        }
-			}
-	
-	        // handle thisJoinPoint parameters
-	        if ((extraParameterFlags & Advice.ThisJoinPoint) != 0) {
-	        	args.add(shadow.getThisJoinPointVar());
-	        }
-	        
-	        if ((extraParameterFlags & Advice.ThisJoinPointStaticPart) != 0) {
-	        	args.add(shadow.getThisJoinPointStaticPartVar());
-	        }
-	        
-	        if ((extraParameterFlags & Advice.ThisEnclosingJoinPointStaticPart) != 0) {
-	        	args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
-	        }
-	        
+	        // code style
+            if (extraParameterFlags >= 0) {
+                // If there are no args to sort out, don't bother with the recursive call
+                if (baseArgsCount > 0) {
+                    ExposedState myState = new ExposedState(baseArgsCount);
+                    //??? we throw out the test that comes from this walk.  All we want here
+                    //    is bindings for the arguments
+                    residueSource.findResidue(shadow, myState);
+
+
+                    for (int i=0; i < baseArgsCount; i++) {
+                        Var v = myState.get(i);
+                        args.add(v);
+                        ret = Test.makeAnd(ret,
+                            Test.makeInstanceof(v,
+                                testMethod.getParameterTypes()[i].resolve(shadow.getIWorld())));
+                    }
+                }
+
+                // handle thisJoinPoint parameters
+                if ((extraParameterFlags & Advice.ThisJoinPoint) != 0) {
+                    args.add(shadow.getThisJoinPointVar());
+                }
+
+                if ((extraParameterFlags & Advice.ThisJoinPointStaticPart) != 0) {
+                    args.add(shadow.getThisJoinPointStaticPartVar());
+                }
+
+                if ((extraParameterFlags & Advice.ThisEnclosingJoinPointStaticPart) != 0) {
+                    args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
+                }
+            } else {
+                // @style is slightly different
+                int currentStateIndex = 0;
+                //FIXME AV - "args(jp)" test(jp, thejp) will fail here
+                for (int i = 0; i < testMethod.getParameterTypes().length; i++) {
+                    String argSignature = testMethod.getParameterTypes()[i].getSignature();
+                    if (AjcMemberMaker.TYPEX_JOINPOINT.getSignature().equals(argSignature)) {
+                        args.add(shadow.getThisJoinPointVar());
+                    } else if (AjcMemberMaker.TYPEX_PROCEEDINGJOINPOINT.getSignature().equals(argSignature)) {
+                        args.add(shadow.getThisJoinPointVar());
+                    } else if (AjcMemberMaker.TYPEX_STATICJOINPOINT.getSignature().equals(argSignature)) {
+                        args.add(shadow.getThisJoinPointStaticPartVar());
+                    } else if (AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT.getSignature().equals(argSignature)) {
+                        args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
+                    } else {
+                        // we don't use i as JoinPoint.* can be anywhere in the signature in @style
+                        Var v = state.get(currentStateIndex++);
+                        args.add(v);
+                        ret = Test.makeAnd(ret,
+                            Test.makeInstanceof(v,
+                                testMethod.getParameterTypes()[i].resolve(shadow.getIWorld())));
+                    }
+                }
+            }
+
 	        ret = Test.makeAnd(ret, Test.makeCall(testMethod, (Expr[])args.toArray(new Expr[args.size()])));
 
 			// Remember...
 			ifLastMatchedShadowId = shadow.shadowId;
 			ifLastMatchedShadowResidue = ret;
 			return ret; 
-			
 		} finally {
 			findingResidue = false;
 		}
@@ -221,14 +267,56 @@ public class IfPointcut extends Pointcut {
 					null);
 			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
-		
+
 		if (partiallyConcretized != null) {
 			return partiallyConcretized;
 		}
-		IfPointcut ret = new IfPointcut(testMethod, extraParameterFlags);
-		ret.copyLocationFrom(this);
-		partiallyConcretized = ret;
-		
+
+        final IfPointcut ret;
+        if (extraParameterFlags < 0 && testMethod == null) {
+            // @AJ style, we need to find the testMethod in the aspect defining the "if()" enclosing pointcut
+            ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();
+            if (def != null) {
+                ResolvedTypeX aspect = inAspect.getWorld().resolve(def.getDeclaringType());
+                ResolvedMember[] methods = aspect.getDeclaredJavaMethods();
+                for (int i = 0; i < methods.length; i++) {
+                    ResolvedMember method = methods[i];
+                    if (def.getName().equals(method.getName())
+                        && def.getParameterTypes().length == method.getParameterTypes().length) {
+                        boolean sameSig = true;
+                        for (int j = 0; j < method.getParameterTypes().length; j++) {
+                            TypeX argJ = method.getParameterTypes()[j];
+                            if (!argJ.equals(def.getParameterTypes()[j])) {
+                                sameSig = false;
+                                break;
+                            }
+                        }
+                        if (sameSig) {
+                            testMethod = method;
+                            break;
+                        }
+                    }
+                }
+                if (testMethod == null) {
+                    inAspect.getWorld().showMessage(
+                            IMessage.ERROR,
+                            "Cannot find if() body from '" + def.toString() + "' for '" + enclosingPointcutHint + "'",
+                            this.getSourceLocation(),
+                            null
+                    );
+                    return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+                }
+            } else {
+                testMethod = inAspect.getWorld().resolve(bindings.getAdviceSignature());
+            }
+            ret = new IfPointcut(enclosingPointcutHint);
+            ret.testMethod = testMethod;
+        } else {
+            ret = new IfPointcut(testMethod, extraParameterFlags);
+        }
+        ret.copyLocationFrom(this);
+        partiallyConcretized = ret;
+
 		// It is possible to directly code your pointcut expression in a per clause
 		// rather than defining a pointcut declaration and referencing it in your
 		// per clause.  If you do this, we have problems (bug #62458).  For now,
@@ -260,7 +348,24 @@ public class IfPointcut extends Pointcut {
 				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			}
 			ret.baseArgsCount = def.getParameterTypes().length;
-			
+
+            // for @style, we have implicit binding for JoinPoint.* things
+            //FIXME AV - will lead to failure for "args(jp)" test(jp, thejp) / see args() implementation
+            if (ret.extraParameterFlags < 0) {
+                ret.baseArgsCount = 0;
+                for (int i = 0; i < testMethod.getParameterTypes().length; i++) {
+                    String argSignature = testMethod.getParameterTypes()[i].getSignature();
+                    if (AjcMemberMaker.TYPEX_JOINPOINT.getSignature().equals(argSignature)
+                        || AjcMemberMaker.TYPEX_PROCEEDINGJOINPOINT.getSignature().equals(argSignature)
+                        || AjcMemberMaker.TYPEX_STATICJOINPOINT.getSignature().equals(argSignature)
+                        || AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT.getSignature().equals(argSignature)) {
+                        ;
+                    } else {
+                        ret.baseArgsCount++;
+                    }
+                }
+            }
+
 			IntMap newBindings = IntMap.idMap(ret.baseArgsCount);
 			newBindings.copyContext(bindings);
 			ret.residueSource = def.getPointcut().concretize(inAspect, newBindings);
@@ -281,10 +386,11 @@ public class IfPointcut extends Pointcut {
         return visitor.visit(this, data);
     }
 
-	private static class IfFalsePointcut extends IfPointcut {
+	public static class IfFalsePointcut extends IfPointcut {
 		
 		public IfFalsePointcut() {
 			super(null,0);
+            this.pointcutKind = Pointcut.IF_FALSE;
 		}
 		
 		public Set couldMatchKinds() {
@@ -355,10 +461,11 @@ public class IfPointcut extends Pointcut {
 		return ret;
 	}
 
-	private static class IfTruePointcut extends IfPointcut {		
+	public static class IfTruePointcut extends IfPointcut {
 			
 		public IfTruePointcut() {
 			super(null,0);
+            this.pointcutKind = Pointcut.IF_TRUE;
 		}
 
 		public boolean alwaysTrue() {

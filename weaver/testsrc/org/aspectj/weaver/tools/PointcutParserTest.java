@@ -65,10 +65,12 @@ public class PointcutParserTest extends TestCase {
 	public void testParseIfPCD() {
 		PointcutParser p = new PointcutParser();
 		try {
+            // AV - those 3 are supported for @style 
 			p.parsePointcutExpression("if(true)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("if pointcuts and reference pointcuts are not supported"));
+            p.parsePointcutExpression("if(true)");
+            p.parsePointcutExpression("if()");
+		} catch(Throwable t) {
+            fail(t.toString());
 		}
 	}
 	

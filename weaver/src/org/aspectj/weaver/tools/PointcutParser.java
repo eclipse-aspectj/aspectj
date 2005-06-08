@@ -24,6 +24,7 @@ import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
+import org.aspectj.weaver.patterns.IfPointcut;
 
 /**
  * A PointcutParser can be used to build PointcutExpressions for a 
@@ -142,9 +143,13 @@ public class PointcutParser {
         	        throw new UnsupportedOperationException("handler is not supported by this parser");
         	    break;
         	case Pointcut.IF:
+                if (((IfPointcut)pc).extraParameterFlags >= 0) {
+                    throw new UnsupportedOperationException("if not supported for non @AspectJ style");
+                }
+                break;
         	case Pointcut.IF_FALSE:
         	case Pointcut.IF_TRUE:
-        	    throw new UnsupportedOperationException("if is not supported by this parser");        	    
+        	    break;
         	case Pointcut.KINDED:
         		validateKindedPointcut(((KindedPointcut)pc));
         	    break;
