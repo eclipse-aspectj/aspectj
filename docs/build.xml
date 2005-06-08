@@ -15,10 +15,10 @@
 <project name="docs" default="dist" basedir=".">
 
     <property name="project.name" value="build-docs" />
-	    
+
     <target name="product" depends="local-dist" />
     <target name="clean"
-            depends="clean-directories,clean-doc-directories"
+            depends="clean-doc-directories"
     />
 
     <!-- ===================================================================== -->
@@ -26,7 +26,7 @@
     <!-- ===================================================================== -->
 
     <import file="${basedir}/../build/build-properties.xml"/>
-    
+
     <target name="init" depends="init-properties,init-directories">
 
         <property name="docs.src.pattern"
@@ -234,19 +234,33 @@
 
     <target name="api"
             depends="init"
-            description="javadoc for AspectJ lang, lang.reflect and org.aspectj.weaver.tools"
+            description="javadoc for AspectJ runtime and weaver"
     >
-        <delete dir="${docs.dist.dir}/doc/api" />
-        <mkdir dir="${docs.dist.dir}/doc/api" />
-        <javadoc sourcepath="${aspectj.modules.dir}/runtime/src;${aspectj.modules.dir}/weaver/src"
-                 destdir="${docs.dist.dir}/doc/api"
-                 windowtitle="AspectJ(tm) runtime API"
-                 link="http://java.sun.com/j2se/1.4.2/docs/api"
-                 classpath="${aspectj.modules.dir}/asm/bin;${aspectj.modules.dir}/bridge/bin;${aspectj.modules.dir}/util/bin;${aspectj.modules.dir}/lib/bcel/bcel.jar"
-                 packagenames="org.aspectj.lang,org.aspectj.lang.reflect,org.aspectj.weaver.tools"
-        />
-        <!-- note: link ineffective at avoiding see tag warning -->
+        <property file="${docs.src.dir}/docs.build.properties" />
+        <delete quiet="on">
+            <fileset dir="${docs.dist.dir}/doc" includes="*api/*" />
+        </delete>
+        <aspectj-javadoc module="runtime" />
+        <aspectj-javadoc module="weaver" />
     </target>
+
+    <macrodef name="aspectj-javadoc">
+        <attribute name="module" />
+        <sequential>
+            <mkdir dir="${docs.dist.dir}/doc/@{module}-api" />
+            <javadoc sourcepath="${@{module}.sourcepath}"
+                     destdir="${docs.dist.dir}/doc/@{module}-api"
+                     windowtitle="AspectJ(tm) @{module} API"
+                     classpath="${@{module}.classpath}"
+                     packagenames="${@{module}.packagenames}"
+            >
+                <link offline="true"
+                      href="http://java.sun.com/j2se/1.5/docs/api"
+                      packagelistLoc="${docs.src.dir}/jdk15-packages.txt"
+                />
+            </javadoc>
+        </sequential>
+    </macrodef>
 
     <target name="faq" depends="init">
         <antcall target="xml-html">
@@ -261,7 +275,7 @@
             <param name="xml-target-file"
                    value="${docs.dist.dir}/doc/faq.html"
             />
-           <param name="xml-html-stylesheet" value="aspectj-faq.css" />
+            <param name="xml-html-stylesheet" value="aspectj-faq.css" />
         </antcall>
     </target>
 
@@ -269,8 +283,8 @@
         <antcall target="build-guide">
             <param name="guide.dir" value="progGuideDB" />
             <param name="guide.name" value="progguide" />
-        	  <param name="xml-html-copy"
-          	            value="dd_arrow.gif,aspects.gif,figureUML.gif,overview.gif,telecom.gif,aspectj-docs.css"/>       
+            <param name="xml-html-copy"
+          	            value="dd_arrow.gif,aspects.gif,figureUML.gif,overview.gif,telecom.gif,aspectj-docs.css"/>
         </antcall>
     </target>
 
@@ -278,8 +292,8 @@
         <antcall target="build-guide">
             <param name="guide.dir" value="adk15ProgGuideDB" />
             <param name="guide.name" value="adk15notebook" />
-       	    <param name="xml-html-copy"
-    	            value="dd_arrow.gif,aspectj-docs.css"/>       
+            <param name="xml-html-copy"
+    	            value="dd_arrow.gif,aspectj-docs.css"/>
         </antcall>
     </target>
 
