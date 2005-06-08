@@ -10,7 +10,7 @@ public class A {
 
 aspect X {
   <T extends Number> T Utils.max(T first,T second) {
-    if (first>second) return first; else return second;
+    if (first.intValue()>second.intValue()) return first; else return second;
   }
 }
 

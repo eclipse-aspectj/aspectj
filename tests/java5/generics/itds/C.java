@@ -6,3 +6,6 @@ public abstract aspect C<T> {
     return (this.data!=null?data:defaultValue);
   }
 }
+
+class Foo {
+}
