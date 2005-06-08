@@ -79,7 +79,7 @@
 	    the aspect tracks all known instances of each type within
 	    <literal>org.xyz..*</literal>. To get access to the instances, a
 	    programmer can simply write 
-	    <literal>InstanceTracking.aspectOf(org.xyz.SomeType).getInstances()</literal>.
+	    <literal>InstanceTracking.aspectOf(org.xyz.SomeType.class).getInstances()</literal>.
 	</para>
   
     <para>
