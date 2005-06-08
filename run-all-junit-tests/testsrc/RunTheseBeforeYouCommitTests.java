@@ -1,29 +1,27 @@
+/* *******************************************************************
+ * Copyright (c) 2005 Contributors.
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Eclipse Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://eclipse.org/legal/epl-v10.html 
+ *  
+ * Contributors (See CVS checkin's): 
+ * 
+ * ******************************************************************/
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.aspectj.systemtest.AllTests15;
-
-/*
- * Created on 03-Aug-2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
-/**
- * @author colyer
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 public class RunTheseBeforeYouCommitTests {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for default package");
-		//$JUnit-BEGIN$
-		suite.addTest(AllTests.suite());
-		suite.addTest(AllTests15.suite());
-		//$JUnit-END$
+        String name = RunTheseBeforeYouCommitTests.class.getName();
+		TestSuite suite = new TestSuite(name);
+        // unit tests
+        suite.addTest(AllTests.suite());
+        // compiler tests
+        suite.addTest(TestsModuleTests.suite());            
 		return suite;
 	}
 }
