@@ -339,6 +339,64 @@ public class FileUtil {
     }
     
     /**
+     * Get best File for the first-readable path in input paths,
+     * treating entries prefixed "sp:" as system property keys.
+     * Safe to call in static initializers.
+     * @param paths the String[] of paths to check.
+     * @return null if not found, or valid File otherwise
+     */
+    public static File getBestFile(String[] paths) {
+        if (null == paths) {
+            return null;
+        }
+        File result = null;
+        for (int i = 0; (null == result) && (i < paths.length); i++) {
+            String path = paths[i];
+            if (null == path) {
+                continue;
+            }
+            if (path.startsWith("sp:")) {
+                try {
+                    path = System.getProperty(path.substring(3));
+                } catch (Throwable t) {
+                    path = null;
+                }
+                if (null == path) {
+                    continue;
+                }
+            }
+            try {
+                File f = new File(path);
+                if (f.exists() && f.canRead()) {
+                    result = FileUtil.getBestFile(f);
+                }
+            } catch (Throwable t) {
+                // swallow
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Render as best file, canonical or absolute.
+     * @param file the File to get the best File for (not null)
+     * @return File of the best-available path
+     * @throws IllegalArgumentException if file is null
+     */
+    public static File getBestFile(File file) {
+        LangUtil.throwIaxIfNull(file, "file");
+        if (file.exists()) {
+            try {
+                return file.getCanonicalFile();
+            } catch (IOException e) {
+                return file.getAbsoluteFile();
+            }
+        } else {
+            return file;
+        }
+    }
+
+    /**
      * Render as best path, canonical or absolute.
      * @param file the File to get the path for (not null)
      * @return String of the best-available path

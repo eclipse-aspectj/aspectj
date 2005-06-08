@@ -212,6 +212,29 @@ public class FileUtilTest extends TestCase {
         assertTrue(!noSuchFile.isDirectory());
     }
     
+    public void testGetBestFile() {
+        assertNull(FileUtil.getBestFile((String[]) null));
+        assertNull(FileUtil.getBestFile(new String[0]));
+        assertNull(FileUtil.getBestFile(new String[] {"!"}));
+        File f = FileUtil.getBestFile(new String[] {"."});
+        assertNotNull(f);
+        f = FileUtil.getBestFile(new String[] {"!", "."});
+        assertNotNull(f);
+        assertTrue(f.canRead());
+        boolean setProperty = false;
+        try {
+            System.setProperty("bestfile", ".");
+            setProperty = true;
+        } catch (Throwable t) {
+            // ignore Security, etc.
+        }
+        if (setProperty) {
+            f = FileUtil.getBestFile(new String[] {"sp:bestfile"});
+            assertNotNull(f);
+            assertTrue(f.canRead());
+        }
+    }
+    
     public void testCopyFiles() {
         // bad input
         Class iaxClass = IllegalArgumentException.class;
