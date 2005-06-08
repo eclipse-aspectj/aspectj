@@ -27,6 +27,7 @@ import java.util.StringTokenizer;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.testing.util.TestUtil;
 
 import junit.framework.TestCase;
 
@@ -479,6 +480,7 @@ public class AjcTestCase extends TestCase {
 	public CompilationResult ajc(File baseDir, String[] args) {
 		try {
 			ajc.setBaseDir(baseDir);
+            args = fixupArgs(args);
 			return ajc.compile(args);
 		} catch(IOException ioEx ) {
 			fail("IOException thrown during compilation: " + ioEx);
@@ -584,7 +586,46 @@ public class AjcTestCase extends TestCase {
 		}
 		return lastRunResult;
 	}
-	
+    
+    /**
+     * Any central pre-processing of args.
+     * This supplies aspectjrt.jar if available and classpath not set.
+     * @param args the String[] args to fix up
+     * @return the String[] args to use
+     */
+	protected String[] fixupArgs(String[] args) {
+        if (null == args) {
+            return null;
+        }
+        int cpIndex = -1;
+        boolean hasruntime = false;      
+        for (int i = 0; i < args.length-1; i++) {
+            if ("-classpath".equals(args[i])) {
+                cpIndex = i;
+                String next = args[i+1];
+                hasruntime = ((null != next) 
+                        && (-1 != next.indexOf("aspectjrt.jar")));
+            }
+        }
+        if (-1 == cpIndex) {
+            String[] newargs = new String[args.length + 2];
+            newargs[0] = "-classpath";
+            newargs[1] = TestUtil.aspectjrtPath().getPath();
+            System.arraycopy(args, 0, newargs, 2, args.length);
+            args = newargs;
+        } else {
+            if (!hasruntime) {
+                cpIndex++;
+                String[] newargs = new String[args.length];
+                System.arraycopy(args, 0, newargs, 0, args.length);
+                newargs[cpIndex] = args[cpIndex] + File.pathSeparator
+                + TestUtil.aspectjrtPath().getPath();
+                args = newargs;
+            }
+        }
+        return args;
+    }
+    
 	private List copyAll(List in) {
 		if (in == Collections.EMPTY_LIST) return in;
 		
@@ -669,5 +710,6 @@ public class AjcTestCase extends TestCase {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
+        //ajc = null;
 	}
 }
