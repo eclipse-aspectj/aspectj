@@ -63,15 +63,32 @@ import org.aspectj.util.Reflection;
  * this class. Also, the bytecode weaver is required to compare class files, but
  * not to compare other files.
  */
-
 public final class TestUtil {
+    private static final boolean JAVA_5_VM;
     private static final String ASPECTJRT_KEY = "aspectjrt";
     private static final String TESTING_CLIENT_KEY = "testing-client";
     public static final URL BAD_URL;
     private static final File LIB_DIR;
     private static final Properties LIB_RPATHS;
     private static final Map LIB_ENTRIES;
+    private static File ASPECTJRT_PATH;
     static {
+        {
+            String[] paths = { "sp:aspectjrt.path", "sp:aspectjrt.jar",
+                    "../lib/test/aspectjrt.jar", "../aj-build/jars/aspectj5rt-all.jar",
+                    "../aj-build/jars/runtime.jar",
+                    "../runtime/bin"};
+            ASPECTJRT_PATH = FileUtil.getBestFile(paths);
+        }
+        {
+            boolean j5 = false;
+            try {
+                Class.forName("java.lang.annotation.Annotation");
+                j5 = true;
+            } catch (Throwable t) {                
+            }
+            JAVA_5_VM = j5;
+        }
         {
             URL url = null;
             try {
@@ -133,6 +150,13 @@ public final class TestUtil {
         super();
     }
 
+    
+    public static boolean is15VMOrGreater() { return JAVA_5_VM;}
+    
+    public static File aspectjrtPath() {
+        return ASPECTJRT_PATH;
+    }
+    
     public static URL fileToURL(File file) {
         try {
             return file.toURL();
@@ -597,11 +621,33 @@ public final class TestUtil {
     }
 
 
+    public static String cleanTestName(String name) {
+        name = name.replace(' ', '_');
+        return name;
+    }
+    public static Test skipTest(String tests) {
+        // could printStackTrace to give more context if needed...
+        System.err.println("skipping tests " + tests);
+        return testNamed("skipping tests " + tests);
+    }
+    
+    public static Test testNamed(String named) {
+        final String name = cleanTestName(named);
+        return new Test() {
+            public int countTestCases() {
+                return 1; 
+            }
+            public void run(TestResult r) {
+                r.startTest(this);
+                r.endTest(this);
+            }
+            public String toString() { return name; }
+        };
+    }
+    
     /**
-     * TODO move to testing-utils for use by loadtime5, others.
-     * 
-     * @param sink
-     * @param sourceName
+     * @param sink the TestSuite sink to add result to
+     * @param sourceName the String fully-qualified name of the class with a suite() method to load
      */
     public static void loadTestsReflectively(TestSuite sink, String sourceName, boolean ignoreError) {
         Throwable thrown = null;
