@@ -32,6 +32,8 @@ public class PatternsTestCase extends TestCase {
 		
 		String[] args = { 
 //			"-XajdocDebug", 
+                "-classpath",
+                AjdocTests.ASPECTJRT_PATH.getPath(),
 			"-d", 
 			outdir.getAbsolutePath(),
 			"-sourcepath", 

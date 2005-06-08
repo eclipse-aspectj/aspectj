@@ -29,7 +29,10 @@ public class SpacewarTestCase extends TestCase {
 		File outdir = new File("testdata/spacewar/docdir");
 		File sourcepath = new File("testdata/spacewar");
 		
-		String[] args = { "-d", 
+		String[] args = { 
+                "-classpath",
+                AjdocTests.ASPECTJRT_PATH.getPath(),
+                "-d", 
 				outdir.getAbsolutePath(),
 				"-sourcepath",
 				sourcepath.getAbsolutePath(),
@@ -46,6 +49,8 @@ public class SpacewarTestCase extends TestCase {
 		
 		String[] args = { 
 		        "-public",
+                "-classpath",
+                AjdocTests.ASPECTJRT_PATH.getPath(),
 		        "-d", 
 				outdir.getAbsolutePath(),
 				"-sourcepath",
