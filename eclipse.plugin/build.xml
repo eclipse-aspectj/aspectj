@@ -10,7 +10,8 @@
 <!-- ====================================================================== -->
 
 <project name="eclipse.plugins" default="eclipse.plugins" basedir=".">
-    <import file="${basedir}/../build/build-properties.xml" />
+    <property name="aspectj.modules.dir" location="${basedir}/.."/>
+    <import file="${aspectj.modules.dir}/build/build-properties.xml" />
 
     <target name="info">
         <echo>
@@ -75,6 +76,7 @@
         />
         <!-- verify source dirs included:
         grep 'kind="src"' */.classpath | sed '/testsrc/d;/path="\//d;s|\/.*path="|\/|;s|".*||'
+        compare filelist: ${aspectj.tools.modules}
         -->
         <zip destfile="${ep.eclipse.dist.dir}/${name.source}/src/aspectjsrc.zip"
         >
