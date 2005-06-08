@@ -76,17 +76,17 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testItdComplexMethod() {
 		runTest("Parsing generic ITDs - 4");
 	}
+		
+	public void testItdNonStaticMember() {
+		runTest("itd of non static member");
+	}
 	
+	public void testItdStaticMember() {
+		runTest("itd of static member");
+	}
+
 //	public void testItdOnGenericType() {
 //		runTest("ITDs on generic type");
-//	}
-//	
-//	public void testItdNonStaticMember() {
-//		runTest("itd of non static member");
-//	}
-//	
-//	public void testItdStaticMember() {
-//		runTest("itd of static member");
 //	}
 //	
 //	public void testItdUsingTypeParameter() {
@@ -110,4 +110,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 //		runTest("Problems resolving type name inside generic class");
 //	}
 	
+	// missing tests in here:
+	
+	// 1. public ITDs and separate compilation - are the signatures correct for the new public members?
+	// 2. ITDF
 }
