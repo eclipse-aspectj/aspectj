@@ -86,7 +86,7 @@ public class ExactTypePattern extends TypePattern {
 		} 
 		if (other instanceof WildTypePattern) {
 			WildTypePattern owtp = (WildTypePattern) other;
-			String yourSimpleNamePrefix = owtp.namePatterns[0].maybeGetSimpleName();
+			String yourSimpleNamePrefix = owtp.getNamePatterns()[0].maybeGetSimpleName();
 			if (yourSimpleNamePrefix != null) {
 				return (type.getName().startsWith(yourSimpleNamePrefix));
 			}

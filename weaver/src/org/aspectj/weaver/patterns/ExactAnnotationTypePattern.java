@@ -48,7 +48,11 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		this.bindingPattern = true;
 		// will be turned into BindingAnnotationTypePattern during resolution
 	}
-	
+
+    public TypeX getAnnotationType() {
+        return annotationType;
+    }
+
 	public FuzzyBoolean fastMatches(AnnotatedElement annotated) {
 		if (annotated.hasAnnotation(annotationType)) {
 			return FuzzyBoolean.YES;

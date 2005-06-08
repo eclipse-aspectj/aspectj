@@ -33,7 +33,7 @@ import org.aspectj.weaver.WeaverMessages;
 
 //XXX need to use dim in matching
 public class WildTypePattern extends TypePattern {
-	NamePattern[] namePatterns;
+	private NamePattern[] namePatterns;
 	int ellipsisCount;
 	String[] importedPrefixes;
 	String[] knownMatches;
@@ -65,6 +65,10 @@ public class WildTypePattern extends TypePattern {
 		this.end = endPos;
 		this.isVarArgs = isVarArg;
 	}
+
+    public NamePattern[] getNamePatterns() {
+        return namePatterns;
+    }
 
 	// called by parser after parsing a type pattern, must bump dim as well as setting flag
 	public void setIsVarArgs(boolean isVarArgs) {

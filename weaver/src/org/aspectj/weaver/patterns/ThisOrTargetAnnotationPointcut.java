@@ -43,7 +43,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	private boolean isThis;
 	private boolean alreadyWarnedAboutDEoW = false;
-	ExactAnnotationTypePattern annotationTypePattern;
+	private ExactAnnotationTypePattern annotationTypePattern;
 	private ShadowMunger munger;
 	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
 	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
@@ -68,7 +68,11 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	    this(isThis,type);
 	    this.munger = munger;
 	}
-	
+
+    public ExactAnnotationTypePattern getAnnotationTypePattern() {
+        return annotationTypePattern;
+    }
+
 	public Set couldMatchKinds() {
 		return isThis ? thisKindSet : targetKindSet;
 	}

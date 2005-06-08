@@ -51,7 +51,7 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
             //pertarget(.. && !within(Foo)) => true as well !
             return MAYBE;
         } else {
-            return node.typePattern;
+            return node.getTypePattern();
         }
     }
 
@@ -61,7 +61,7 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
             //pertarget(.. && !withincode(* Foo.do())) => true as well !
             return MAYBE;
         } else {
-            return node.signature.getDeclaringType();
+            return node.getSignature().getDeclaringType();
         }
     }
 
@@ -69,7 +69,7 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
         if (m_isTarget) {
             return MAYBE;
         } else {
-            return node.annotationTypePattern;
+            return node.getAnnotationTypePattern();
         }
     }
 
@@ -89,13 +89,13 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
                     || node.getKind().equals(Shadow.MethodExecution)
                     || node.getKind().equals(Shadow.PreInitialization)
                     || node.getKind().equals(Shadow.StaticInitialization)) {
-            return node.signature.getDeclaringType();
+            return node.getSignature().getDeclaringType();
         } else if (node.getKind().equals(Shadow.ConstructorCall)
                    || node.getKind().equals(Shadow.FieldGet)
                    || node.getKind().equals(Shadow.FieldSet)
                    || node.getKind().equals(Shadow.MethodCall)) {
             if (m_isTarget) {
-                return node.signature.getDeclaringType();
+                return node.getSignature().getDeclaringType();
             } else {
                 return MAYBE;
             }
@@ -124,9 +124,9 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
 
     public Object visit(ThisOrTargetAnnotationPointcut node, Object data) {
         if (m_isTarget && !node.isThis()) {
-            return node.annotationTypePattern;
+            return node.getAnnotationTypePattern();
         } else if (!m_isTarget && node.isThis()) {
-            return node.annotationTypePattern;
+            return node.getAnnotationTypePattern();
         } else {
             // perthis(@target(Foo))
             return MAYBE;
@@ -139,7 +139,7 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
             //pertarget(target(Foo)) => Foo+ for type pattern matching
             //perthis(this(Foo)) => Foo+ for type pattern matching
             // TODO AV - we do like a deep copy by parsing it again.. quite dirty, would need a clean deep copy
-            TypePattern copy = new PatternParser(node.type.toString()).parseTypePattern();
+            TypePattern copy = new PatternParser(node.getType().toString()).parseTypePattern();
             copy.includeSubtypes = true;
             return copy;
         } else {

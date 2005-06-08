@@ -24,8 +24,8 @@ import org.aspectj.weaver.World;
 
 
 public class ThrowsPattern extends PatternNode {
-	TypePatternList required;
-	TypePatternList forbidden;
+	private TypePatternList required;
+	private TypePatternList forbidden;
 	
 	public static final ThrowsPattern ANY =
 		new ThrowsPattern(TypePatternList.EMPTY, TypePatternList.EMPTY);
@@ -34,6 +34,14 @@ public class ThrowsPattern extends PatternNode {
 		this.required = required;
 		this.forbidden = forbidden;
 	}
+
+    public TypePatternList getRequired() {
+        return required;
+    }
+
+    public TypePatternList getForbidden() {
+        return forbidden;
+    }
 
 	public String toString() {
 		if (this == ANY) return "";

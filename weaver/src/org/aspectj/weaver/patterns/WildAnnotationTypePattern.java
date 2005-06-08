@@ -31,7 +31,7 @@ import org.aspectj.weaver.World;
  */
 public class WildAnnotationTypePattern extends AnnotationTypePattern {
 
-	TypePattern typePattern;
+	private TypePattern typePattern;
 	private boolean resolved = false;
 	
 	/**
@@ -42,6 +42,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		this.typePattern = typePattern;
 	}
 
+    public TypePattern getTypePattern() {
+        return typePattern;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#matches(org.aspectj.weaver.AnnotatedElement)

@@ -30,7 +30,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
  * @author Jim Hugunin
  */
 public class AndTypePattern extends TypePattern {
-	TypePattern left, right;
+	private TypePattern left, right;
 	
 	public AndTypePattern(TypePattern left, TypePattern right) {
 		super(false,false);  //?? we override all methods that care about includeSubtypes
@@ -144,6 +144,14 @@ public class AndTypePattern extends TypePattern {
 		}
 		return buff.toString();
 	}
+
+    public TypePattern getLeft() {
+        return left;
+    }
+
+    public TypePattern getRight() {
+        return right;
+    }
 
 	public boolean equals(Object obj) {
 		if (! (obj instanceof AndTypePattern)) return false;

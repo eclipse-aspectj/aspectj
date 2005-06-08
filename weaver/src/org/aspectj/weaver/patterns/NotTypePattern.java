@@ -32,13 +32,17 @@ import org.aspectj.weaver.VersionedDataInputStream;
  * @author Jim Hugunin
  */
 public class NotTypePattern extends TypePattern {
-	TypePattern pattern;
+	private TypePattern negatedPattern;
 	
 	public NotTypePattern(TypePattern pattern) {
 		super(false,false);  //??? we override all methods that care about includeSubtypes
-		this.pattern = pattern;
+		this.negatedPattern = pattern;
 		setLocation(pattern.getSourceContext(), pattern.getStart(), pattern.getEnd());
 	}
+
+    public TypePattern getNegatedPattern() {
+        return negatedPattern;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
@@ -48,31 +52,31 @@ public class NotTypePattern extends TypePattern {
 	}
 	
 	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
-		return pattern.matchesInstanceof(type).not();
+		return negatedPattern.matchesInstanceof(type).not();
 	}
 
 	protected boolean matchesExactly(ResolvedTypeX type) {
-		return (!pattern.matchesExactly(type) && annotationPattern.matches(type).alwaysTrue());
+		return (!negatedPattern.matchesExactly(type) && annotationPattern.matches(type).alwaysTrue());
 	}
 	
 	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
-		return (!pattern.matchesExactly(type,annotatedType) && annotationPattern.matches(annotatedType).alwaysTrue());
+		return (!negatedPattern.matchesExactly(type,annotatedType) && annotationPattern.matches(annotatedType).alwaysTrue());
 	}
 	
 	public boolean matchesStatically(Class type) {
-		return !pattern.matchesStatically(type);
+		return !negatedPattern.matchesStatically(type);
 	}
 
 	public FuzzyBoolean matchesInstanceof(Class type) {
-		return pattern.matchesInstanceof(type).not();
+		return negatedPattern.matchesInstanceof(type).not();
 	}
 
 	protected boolean matchesExactly(Class type) {
-		return !pattern.matchesExactly(type);
+		return !negatedPattern.matchesExactly(type);
 	}
 	
 	public boolean matchesStatically(ResolvedTypeX type) {
-		return !pattern.matchesStatically(type);
+		return !negatedPattern.matchesStatically(type);
 	}
 	
 	public void setAnnotationTypePattern(AnnotationTypePattern annPatt) {
@@ -80,13 +84,13 @@ public class NotTypePattern extends TypePattern {
 	}
 	
 	public void setIsVarArgs(boolean isVarArgs) {
-		pattern.setIsVarArgs(isVarArgs);
+		negatedPattern.setIsVarArgs(isVarArgs);
 	}
 	
 	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.NOT);
-		pattern.write(s);
+		negatedPattern.write(s);
 		annotationPattern.write(s);
 		writeLocation(s);
 	}
@@ -106,13 +110,13 @@ public class NotTypePattern extends TypePattern {
 		boolean allowBinding, boolean requireExactType)
 	{
 		if (requireExactType) return notExactType(scope);
-		pattern = pattern.resolveBindings(scope, bindings, false, false);
+		negatedPattern = negatedPattern.resolveBindings(scope, bindings, false, false);
 		return this;
 	}
 	
 	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
 		if (requireExactType) return TypePattern.NO;
-		pattern = pattern.resolveBindingsFromRTTI(allowBinding,requireExactType);
+		negatedPattern = negatedPattern.resolveBindingsFromRTTI(allowBinding,requireExactType);
 		return this;
 	}
 
@@ -124,7 +128,7 @@ public class NotTypePattern extends TypePattern {
 			buff.append(' ');
 		}
 		buff.append('!');
-		buff.append(pattern);
+		buff.append(negatedPattern);
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buff.append(')');
 		}
@@ -136,14 +140,14 @@ public class NotTypePattern extends TypePattern {
 	 */
 	public boolean equals(Object obj) {
 		if (! (obj instanceof NotTypePattern)) return false;
-		return (pattern.equals(((NotTypePattern)obj).pattern));
+		return (negatedPattern.equals(((NotTypePattern)obj).negatedPattern));
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return 17 + 37 * pattern.hashCode();
+		return 17 + 37 * negatedPattern.hashCode();
 	}
 
     public Object accept(PointcutVisitor visitor, Object data) {

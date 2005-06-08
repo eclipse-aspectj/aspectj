@@ -39,7 +39,7 @@ import org.aspectj.weaver.ast.Var;
  */
 public class ArgsAnnotationPointcut extends NameBindingPointcut {
 
-	AnnotationPatternList arguments;
+	private AnnotationPatternList arguments;
 
 	/**
 	 * 
@@ -48,7 +48,11 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 		super();
 		this.arguments = arguments;
 	}
-	
+
+    public AnnotationPatternList getArguments() {
+        return arguments;
+    }
+
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;  // empty args() matches jps with no args
 	}
@@ -138,7 +142,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
 	            }
 
-				ResolvedTypeX rAnnType = ap.annotationType.resolve(shadow.getIWorld());
+				ResolvedTypeX rAnnType = ap.getAnnotationType().resolve(shadow.getIWorld());
 				if (ap instanceof BindingAnnotationTypePattern) {
 					BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)ap;
 					Var annvar = shadow.getArgAnnotationVar(argsIndex,rAnnType);

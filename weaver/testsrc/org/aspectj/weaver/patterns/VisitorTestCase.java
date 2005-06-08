@@ -43,41 +43,33 @@ public class VisitorTestCase extends TestCase {
         }
     }
 
-    public void testMock() {
-        //empty so that JUnit does not complain about no test cases in there - this one beeing already in the suite
+    public void testPointcuts() {
+        if (pointcuts.isEmpty()) {
+            fail("Empty pointcuts file!");
+        }
+        for (Iterator iterator = pointcuts.iterator(); iterator.hasNext();) {
+            String pointcut = (String) iterator.next();
+            try  {
+                PointcutVisitor.DumpPointcutVisitor.check(pointcut);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                fail("Failed on '"+pointcut+"': " +t.toString());
+            }
+        }
     }
 
-    public void testTemp() {
-        Pointcut.fromString("call(* *(int, Integer...))");
+    public void testTypePatterns() {
+        if (typePatterns.isEmpty()) {
+            fail("Empty typePatterns file!");
+        }
+        for (Iterator iterator = typePatterns.iterator(); iterator.hasNext();) {
+            String tp = (String) iterator.next();
+            try  {
+                TypePattern p = new PatternParser(tp).parseTypePattern();
+                PointcutVisitor.DumpPointcutVisitor.check(p, true);
+            } catch (Throwable t) {
+                fail("Failed on '"+tp+"': " +t.toString());
+            }
+        }
     }
-
-//    public void testPointcuts() {
-//        if (pointcuts.isEmpty()) {
-//            fail("Empty pointcuts file!");
-//        }
-//        for (Iterator iterator = pointcuts.iterator(); iterator.hasNext();) {
-//            String pointcut = (String) iterator.next();
-//            try  {
-//                PointcutVisitor.DumpPointcutVisitor.check(pointcut);
-//            } catch (Throwable t) {
-//                t.printStackTrace();
-//                fail("Failed on '"+pointcut+"': " +t.toString());
-//            }
-//        }
-//    }
-//
-//    public void testTypePatterns() {
-//        if (typePatterns.isEmpty()) {
-//            fail("Empty typePatterns file!");
-//        }
-//        for (Iterator iterator = typePatterns.iterator(); iterator.hasNext();) {
-//            String tp = (String) iterator.next();
-//            try  {
-//                TypePattern p = new PatternParser(tp).parseTypePattern();
-//                PointcutVisitor.DumpPointcutVisitor.check(p, true);
-//            } catch (Throwable t) {
-//                fail("Failed on '"+tp+"': " +t.toString());
-//            }
-//        }
-//    }
 }

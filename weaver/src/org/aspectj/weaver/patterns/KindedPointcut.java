@@ -37,7 +37,7 @@ import org.aspectj.weaver.ast.Test;
 
 public class KindedPointcut extends Pointcut {
 	Shadow.Kind kind;
-	SignaturePattern signature;
+	private SignaturePattern signature;
 	private Set matchKinds;
     
     private ShadowMunger munger = null; // only set after concretization
@@ -54,12 +54,15 @@ public class KindedPointcut extends Pointcut {
     public KindedPointcut(
         Shadow.Kind kind,
         SignaturePattern signature,
-        ShadowMunger munger)
-    {
+        ShadowMunger munger) {
         this(kind, signature);
         this.munger = munger;
     }
-    
+
+    public SignaturePattern getSignature() {
+        return signature;
+    }
+
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#couldMatchKinds()
 	 */

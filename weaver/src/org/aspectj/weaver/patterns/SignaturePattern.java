@@ -490,7 +490,7 @@ public class SignaturePattern extends PatternNode {
     	
     	if (kind == Member.STATIC_INITIALIZATION) {
     		buf.append(declaringType.toString());
-    		buf.append(".<clinit>()");
+    		buf.append(".<clinit>()");//FIXME AV - bad, cannot be parsed again
     	} else if (kind == Member.HANDLER) {
     		buf.append("handler(");
     		buf.append(parameterTypes.get(0));

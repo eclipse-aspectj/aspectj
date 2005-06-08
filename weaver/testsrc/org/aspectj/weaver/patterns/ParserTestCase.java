@@ -51,7 +51,7 @@ public class ParserTestCase extends TestCase {
 		KindedPointcut p = (KindedPointcut) parser.parsePointcut();
 		//System.out.println(p);
 		assertEquals(p.kind, BcelShadow.MethodExecution);
-		assertTrue(p.signature.getName().matches("foobar"));
+		assertTrue(p.getSignature().getName().matches("foobar"));
 		
 		
 		try {
@@ -69,7 +69,7 @@ public class ParserTestCase extends TestCase {
 		p.resolveBindings(makeSimpleScope(),new Bindings(3));
 		assertEquals("execution(@p.SimpleAnnotation void Hello.*(..))",p.toString());
 		assertEquals(p.kind, Shadow.MethodExecution);
-		assertTrue(p.signature.getName().matches("foobar"));
+		assertTrue(p.getSignature().getName().matches("foobar"));
 	}
 	
 	// note... toString on a pointcut is a very quick and easy way to test a successful parse

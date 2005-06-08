@@ -51,12 +51,16 @@ import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
  * @author Jim Hugunin
  */
 public class ArgsPointcut extends NameBindingPointcut { 
-	TypePatternList arguments;
+	private TypePatternList arguments;
 	
 	public ArgsPointcut(TypePatternList arguments) {
 		this.arguments = arguments;
 		this.pointcutKind = ARGS;
 	}
+
+    public TypePatternList getArguments() {
+        return arguments;
+    }
 
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;  // empty args() matches jps with no args

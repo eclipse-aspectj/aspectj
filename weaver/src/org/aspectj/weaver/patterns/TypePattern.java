@@ -59,7 +59,15 @@ public abstract class TypePattern extends PatternNode {
 		this.includeSubtypes = includeSubtypes;
 		this.isVarArgs = isVarArgs;
 	}
-	
+
+    public AnnotationTypePattern getAnnotationPattern() {
+        return annotationPattern;
+    }
+
+    public boolean isVarArgs() {
+        return isVarArgs;
+    }
+
 	public boolean isStarAnnotation() {
 		return annotationPattern == AnnotationTypePattern.ANY;
 	}

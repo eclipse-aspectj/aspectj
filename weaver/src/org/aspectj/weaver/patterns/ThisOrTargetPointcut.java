@@ -53,7 +53,7 @@ import org.aspectj.weaver.ast.Var;
  */
 public class ThisOrTargetPointcut extends NameBindingPointcut {
 	private boolean isThis;
-	TypePattern type;
+	private TypePattern type;
 
 	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
 	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
@@ -70,7 +70,11 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		this.type = type;
 		this.pointcutKind = THIS_OR_TARGET;
 	}
-	
+
+    public TypePattern getType() {
+        return type;
+    }
+
 	public boolean isThis() { return isThis; }
 
 	public Set couldMatchKinds() {

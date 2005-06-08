@@ -60,7 +60,7 @@ import org.aspectj.weaver.bcel.BcelTypeMunger;
  */
 public class AnnotationPointcut extends NameBindingPointcut {
 
-	ExactAnnotationTypePattern annotationTypePattern;
+	private ExactAnnotationTypePattern annotationTypePattern;
     private ShadowMunger munger = null; // only set after concretization
 	
 	public AnnotationPointcut(ExactAnnotationTypePattern type) {
@@ -73,6 +73,10 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		this(type);
 		this.munger = munger;
 	}
+
+    public ExactAnnotationTypePattern getAnnotationTypePattern() {
+        return annotationTypePattern;
+    }
 
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;
@@ -182,7 +186,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
-			TypeX annotationType = btp.annotationType;
+			TypeX annotationType = btp.getAnnotationType();
 			Var var = shadow.getKindedAnnotationVar(annotationType);
 			
 			// This should not happen, we shouldn't have gotten this far 

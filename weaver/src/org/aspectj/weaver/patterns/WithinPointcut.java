@@ -33,13 +33,17 @@ import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
 public class WithinPointcut extends Pointcut {
-	TypePattern typePattern;
+	private TypePattern typePattern;
 	
 	public WithinPointcut(TypePattern type) {
 		this.typePattern = type;
 		this.pointcutKind = WITHIN;
 	}
-	
+
+    public TypePattern getTypePattern() {
+        return typePattern;
+    }
+
 	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
 		while (type != null) {
 			if (typePattern.matchesStatically(type)) {			    

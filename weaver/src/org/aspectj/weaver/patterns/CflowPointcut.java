@@ -44,7 +44,7 @@ import org.aspectj.weaver.ast.Test;
 
 public class CflowPointcut extends Pointcut {
 	private Pointcut entry; // The pointcut inside the cflow() that represents the 'entry' point
-	boolean isBelow;// Is this cflowbelow?
+	private boolean isBelow;// Is this cflowbelow?
 	private int[] freeVars;
 	
 	private static Hashtable cflowFields = new Hashtable();
@@ -67,6 +67,10 @@ public class CflowPointcut extends Pointcut {
 		this.freeVars = freeVars;
 		this.pointcutKind = CFLOW;
 	}
+
+    public boolean isBelow() {
+        return isBelow;
+    }
 
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;

@@ -31,7 +31,7 @@ import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
 public class WithincodePointcut extends Pointcut {
-	SignaturePattern signature;
+	private SignaturePattern signature;
     private static final Set matchedShadowKinds = new HashSet();
     static {
     	matchedShadowKinds.addAll(Shadow.ALL_SHADOW_KINDS);
@@ -48,7 +48,11 @@ public class WithincodePointcut extends Pointcut {
 		this.signature = signature;
 		this.pointcutKind = WITHINCODE;
 	}
-  
+
+    public SignaturePattern getSignature() {
+        return signature;
+    }
+
 	public Set couldMatchKinds() {
 		return matchedShadowKinds;
 	}

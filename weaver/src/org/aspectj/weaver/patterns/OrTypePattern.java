@@ -30,7 +30,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
  * @author Jim Hugunin
  */
 public class OrTypePattern extends TypePattern {
-	TypePattern left, right;
+	private TypePattern left, right;
 	
 	public OrTypePattern(TypePattern left, TypePattern right) {
 		super(false,false);  //??? we override all methods that care about includeSubtypes
@@ -38,6 +38,14 @@ public class OrTypePattern extends TypePattern {
 		this.right = right;
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 	}
+
+    public TypePattern getRight() {
+        return right;
+    }
+
+    public TypePattern getLeft() {
+        return left;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
