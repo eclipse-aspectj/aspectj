@@ -86,7 +86,7 @@ public final class LazyMethodGen {
     private  String[]        declaredExceptions;
     private  InstructionList body; // leaving null for abstracts
     private  Attribute[]     attributes;
-   // private AnnotationGen[]  annotations;
+    private List  newAnnotations;
     private final LazyClassGen enclosingClass;   
     private BcelMethod memberView;
     int highestLineNumber = 0;
@@ -208,16 +208,25 @@ public final class LazyMethodGen {
     public void addAnnotation(AnnotationX ax) {
     	initialize();
 		if (memberView==null) {
-			System.err.println("REPORT THIS! 01: Lost annotation: "+ax+" cant be put onto "+this);
-			return;
+			// If member view is null, we manage them in newAnnotations
+			if (newAnnotations==null) newAnnotations = new ArrayList();
+			newAnnotations.add(ax);
+		} else {
+			memberView.addAnnotation(ax);
 		}
-		memberView.addAnnotation(ax);
     }
 	
 
 	public boolean hasAnnotation(TypeX annotationTypeX) {
 		initialize();
 		if (memberView==null) {
+			// Check local annotations first
+			if (newAnnotations!=null) {
+				for (Iterator iter = newAnnotations.iterator(); iter.hasNext();) {
+					AnnotationX element = (AnnotationX) iter.next();
+					if (element.getBcelAnnotation().getTypeName().equals(annotationTypeX.getName())) return true;
+				}
+			}
             memberView = new BcelMethod(getEnclosingClass().getBcelObjectType(), getMethod());
             return memberView.hasAnnotation(annotationTypeX);
 		}
@@ -831,16 +840,13 @@ public final class LazyMethodGen {
             gen.addAttribute(attributes[i]);
         }
         
-// We don't manage our own set of annotations...
-//        if (annotations!=null) { 
-//          for (int i = 0, len = annotations.length; i < len; i++) {
-//            gen.addAnnotation(annotations[i]);
-//          }
-//        }
+        if (newAnnotations!=null) { 
+			for (Iterator iter = newAnnotations.iterator(); iter.hasNext();) {
+				AnnotationX element = (AnnotationX) iter.next();
+				gen.addAnnotation(new AnnotationGen(element.getBcelAnnotation(),gen.getConstantPool(),true));
+			}
+        }
 		
-		// work with the annotations from the memberView rather
-		// than any set we know about.  This assumes we only work with
-		// annotations on LazyMethodGens that represent real members.
         if (memberView!=null && memberView.getAnnotations()!=null && memberView.getAnnotations().length!=0) {
 		  AnnotationX[] ans = memberView.getAnnotations();
           for (int i = 0, len = ans.length; i < len; i++) {

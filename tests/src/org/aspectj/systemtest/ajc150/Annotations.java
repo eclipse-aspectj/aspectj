@@ -78,7 +78,19 @@ public class Annotations extends XMLBasedAjcTestCase {
   public void testAnnotatedITDs() {
   	runTest("annotated itds");
   }
+  
+  public void testAnnotatedITDs2() {
+    runTest("annotated public itds");
+  }
 
+  public void testAnnotatedITDs3() {
+	runTest("annotated public itds - values");
+  }
+
+  public void testAnnotatedITDs4() {
+	runTest("annotated public itds - multiple complex annotations");
+  }
+  
   public void testAnnotatedITDsWithWrongAnnotationType() {
   	runTest("annotated itds with bad target");
   }

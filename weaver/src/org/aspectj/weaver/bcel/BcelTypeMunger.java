@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
@@ -27,6 +28,7 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -34,7 +36,9 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.AsmRelationshipProvider;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
@@ -704,7 +708,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	private boolean mungeNewMethod(BcelClassWeaver weaver, NewMethodTypeMunger munger) {
 		ResolvedMember signature = munger.getSignature();
 		ResolvedMember dispatchMethod = munger.getDispatchMethod(aspectType);
-		
+
 		LazyClassGen gen = weaver.getLazyClassGen();
 		
 		ResolvedTypeX onType = weaver.getWorld().resolve(signature.getDeclaringType(),munger.getSourceLocation());
@@ -724,7 +728,27 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			ResolvedMember introMethod = 
 					AjcMemberMaker.interMethod(signature, aspectType, onInterface);
             
+			AnnotationX annotationsOnRealMember[] = null;
+			// pr98901
+		    // For copying the annotations across, we have to discover the real member in the aspect
+		    // which is holding them.
+			if (weaver.getWorld().behaveInJava5Way && !onInterface && munger.getSignature().isPublic() && !munger.getSignature().isAbstract()) {
+				ResolvedMember realMember = getRealMemberForITDFromAspect(aspectType,dispatchMethod);
+				if (realMember==null) throw new BCException("Couldn't find ITD holder member '"+
+						                                    dispatchMethod+"' on aspect "+aspectType);
+				annotationsOnRealMember = realMember.getAnnotations();
+			}
+
 			LazyMethodGen mg = makeMethodGen(gen, introMethod);
+			
+			if (annotationsOnRealMember!=null) {
+				for (int i = 0; i < annotationsOnRealMember.length; i++) {
+					AnnotationX annotationX = annotationsOnRealMember[i];
+					Annotation a = annotationX.getBcelAnnotation();
+					AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
+					mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+				}
+			}
 
 			if (!onInterface && !Modifier.isAbstract(introMethod.getModifiers())) {
 				InstructionList body = mg.getBody();
@@ -813,6 +837,16 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		} else {
 			return false;
 		}
+	}
+	
+	private ResolvedMember getRealMemberForITDFromAspect(ResolvedTypeX aspectType,ResolvedMember dispatchMethod) {
+		ResolvedMember aspectMethods[] = aspectType.getDeclaredMethods();
+		ResolvedMember realMember = null;
+		for (int i = 0; realMember==null && i < aspectMethods.length; i++) {
+			ResolvedMember member = aspectMethods[i];
+			if (member.getName().equals(dispatchMethod.getName())) realMember = member;
+		}
+		return realMember;
 	}
 
 	private void addNeededSuperCallMethods(
