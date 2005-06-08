@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
-<project name="aspectj" basedir="." default="all">
+<project name="run-all-junit-tests" basedir="build" default="all">
 
-    <!-- a root build.xml that redirects to build/build-master.xml for convenience so that ones can type
-    "ant .." straight in the modules/ root -->
+    <!-- redirect to build/build.xml to build from modules root -->
+    <!-- user should still set up build/local.properties -->
+
+    <property name="aspectj.modules.dir" location="${basedir}/.."/>
+
+    <macrodef name="aj-ant">
+        <attribute name="target"/>
+        <sequential>
+            <ant inheritAll="false" target="@{target}" dir="${basedir}"/>
+        </sequential>
+    </macrodef>
 
     <target name="patch">
         <cvs output="patch">
@@ -13,39 +22,27 @@
      </target>
 
     <target name="clean">
-        <subant target="clean">
-            <fileset dir="." includes="build/build-master.xml"/>
-        </subant>
+        <aj-ant target="clean"/>
     </target>
 
     <target name="cleanall">
-        <subant target="cleanall">
-            <fileset dir="." includes="build/build-master.xml"/>
-        </subant>
+        <aj-ant target="clean"/>
     </target>
 
     <target name="all">
-        <subant target="all">
-            <fileset dir="." includes="build/build-master.xml"/>
-        </subant>
+        <aj-ant target="all"/>
     </target>
 
     <target name="compile">
-        <subant target="compile">
-            <fileset dir="." includes="build/build-master.xml"/>
-        </subant>
+        <aj-ant target="all"/>
     </target>
 
     <target name="test">
-        <subant target="test">
-            <fileset dir="." includes="build/build-master.xml"/>
-        </subant>
+        <aj-ant target="test"/>
     </target>
 
     <target name="jar">
-        <subant target="jar">
-            <fileset dir="." includes="build/build-master.xml"/>
-        </subant>
+        <aj-ant target="all"/>
     </target>
 
 </project>
