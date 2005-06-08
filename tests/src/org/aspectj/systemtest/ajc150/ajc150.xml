@@ -503,6 +503,22 @@
         <run class="a.b.c.A"/>
     </ajc-test>   
     
+    <ajc-test dir="java5/annotations/itds" vm="1.5" title="annotated public itds">
+      <compile files="AtItd2.aj" options="-1.5"/>
+      <run class="AtItd2"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/itds" vm="1.5" title="annotated public itds - values">
+      <compile files="AtItd3.aj" options="-1.5"/>
+      <run class="AtItd3"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/annotations/itds" vm="1.5" title="annotated public itds - multiple complex annotations">
+      <compile files="AtItd4.aj" options="-1.5"/>
+      <run class="AtItd4"/>
+    </ajc-test>
+    
+    
     <ajc-test dir="java5/annotations/itds" vm="1.5" title="nasty annotation and itds test">
         <compile files="AnnotationsAndITDs.aj" options="-1.5">
             <!-- first two are ITCs, second two are ITCs annotated via declare @ctor, third is default ctor -->
@@ -2269,11 +2285,21 @@
    
    // generic ITDs
    
+   <ajc-test dir="java5/generics/itds" title="ITDs on generic type">
+     <compile files="Parse5.java" options="-1.5">
+        <message kind="error" line="9"/>
+        <message kind="error" line="11"/>
+        <message kind="error" line="13"/>
+        <message kind="error" line="15"/>
+     </compile>
+   </ajc-test>
+   
    <ajc-test dir="java5/generics/itds" title="itd of non static member">
        <compile files="A.java" options="-1.5"/>
        <run class="A">
          <stderr>
-           <line text="fillthisin"/>
+           <line text="min(2,4)=>2"/>
+           <line text="max(2,4)=>4"/>
          </stderr>
        </run>
    </ajc-test>
@@ -2282,7 +2308,8 @@
        <compile files="B.java" options="-1.5"/>
        <run class="B">
          <stderr>
-           <line text="fillthisin..."/>
+           <line text="min(2,4)=>2"/>
+           <line text="max(2,4)=>4"/>
          </stderr>
        </run>
    </ajc-test>
@@ -2319,15 +2346,6 @@
 
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 4">
      <compile files="Parse4.java" options="-1.5"/>
-   </ajc-test>
-   
-   <ajc-test dir="java5/generics/itds" title="ITDs on generic type">
-     <compile files="Parse5.java" options="-1.5">
-        <message kind="error" line="9"/>
-        <message kind="error" line="11"/>
-        <message kind="error" line="13"/>
-        <message kind="error" line="15"/>
-     </compile>
    </ajc-test>
    
    // end of generic ITDs
