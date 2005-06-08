@@ -12,10 +12,6 @@
 		<attributes>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
-		<attributes>
-		</attributes>
-	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/asm">
 		<attributes>
 		</attributes>
@@ -37,6 +33,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/testing-util">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/JRE15_SRC" kind="var" path="JRE15_LIB">
 		<attributes>
 		</attributes>
 	</classpathentry>
