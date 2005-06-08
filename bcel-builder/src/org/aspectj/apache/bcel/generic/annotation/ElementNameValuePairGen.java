@@ -17,6 +17,7 @@ import java.io.IOException;
 
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 
 
@@ -38,6 +39,14 @@ public class ElementNameValuePairGen {
 			nameIdx = nvp.getNameIndex();
 		}
 		value = ElementValueGen.copy(nvp.getValue(),cpool,copyPoolEntries);
+	}
+	
+	/**
+	 * Retrieve an immutable version of this ElementNameValuePairGen
+	 */
+	public ElementNameValuePair getElementNameValuePair() {
+		ElementValue immutableValue = value.getElementValue();
+		return new ElementNameValuePair(nameIdx,immutableValue,cpool.getConstantPool());
 	}
 
 

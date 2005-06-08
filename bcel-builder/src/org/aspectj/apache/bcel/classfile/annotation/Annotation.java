@@ -51,6 +51,12 @@ public class Annotation {
 		this.cpool = cpool;
 	}
 	
+	public Annotation(int index,ConstantPool cpool,boolean visible) {
+		this.cpool = cpool;
+		this.typeIndex = index;
+		this.isRuntimeVisible = visible;
+	}
+	
 	protected static Annotation read(DataInputStream dis,ConstantPool cpool,boolean isRuntimeVisible) throws IOException {
 		Annotation a = new Annotation(cpool);
 		a.typeIndex = dis.readUnsignedShort();

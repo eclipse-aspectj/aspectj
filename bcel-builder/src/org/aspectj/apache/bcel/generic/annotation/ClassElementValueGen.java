@@ -17,6 +17,7 @@ import java.io.IOException;
 
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 
@@ -37,6 +38,13 @@ public class ClassElementValueGen extends ElementValueGen {
     	//this.idx = cpool.addClass(t);
     	idx = cpool.addUtf8(t.getSignature());
     }
+	
+	/**
+	 * Return immutable variant of this ClassElementValueGen
+	 */
+	public ElementValue getElementValue() {
+		return new ClassElementValue(type,idx,cpGen.getConstantPool());
+	}
     
 	public ClassElementValueGen(ClassElementValue value, ConstantPoolGen cpool,boolean copyPoolEntries) {
 		super(CLASS,cpool);

@@ -34,6 +34,11 @@ public abstract class ElementValueGen {
     	this.type = type;
     	this.cpGen = cpGen;
     }
+	
+	/**
+     * Subtypes return an immutable variant of the ElementValueGen
+     */
+	public abstract ElementValue getElementValue();
     
 	public int getElementValueType() {
     	return type;

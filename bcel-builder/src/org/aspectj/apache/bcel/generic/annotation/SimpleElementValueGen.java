@@ -20,6 +20,7 @@ import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantInteger;
 import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 
@@ -119,6 +120,13 @@ public class SimpleElementValueGen extends ElementValueGen {
 					  	                     "to copy this type "+type);
 			}
 		}
+	}
+	
+	/**
+     * Return immutable variant
+     */
+	public ElementValue getElementValue() {
+		return new SimpleElementValue(type,idx,cpGen.getConstantPool());
 	}
 
 	public int getIndex() {

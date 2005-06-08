@@ -32,7 +32,7 @@ public class SimpleElementValue extends ElementValue {
 	// For 'class' this points to the class entry in the cpool
 	private int idx;
 	
-    protected SimpleElementValue(int type,int idx,ConstantPool cpool) {
+    public SimpleElementValue(int type,int idx,ConstantPool cpool) {
     	super(type,cpool);
     	this.idx = idx;
     }

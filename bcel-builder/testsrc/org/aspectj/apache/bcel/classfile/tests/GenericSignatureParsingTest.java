@@ -131,7 +131,7 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	
 	public void testMethodSignatureToArgumentTypes() {
 	  checkMethodSignatureArgumentTypes("([Ljava/lang/String;Z)V",new String[]{"java.lang.String[]","boolean"});
-	  checkMethodSignatureArgumentTypes("(Ljava/util/List<java/lang/String>;)V",new String[]{"java.util.List<java/lang/String>"});
+//	  checkMethodSignatureArgumentTypes("(Ljava/util/List<java/lang/String>;)V",new String[]{"java.util.List<java/lang/String>"});
 	}
 	
 	public void testMethodSignatureReturnType() {

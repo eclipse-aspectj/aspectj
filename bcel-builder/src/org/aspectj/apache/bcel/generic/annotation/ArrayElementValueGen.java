@@ -42,6 +42,19 @@ public class ArrayElementValueGen extends ElementValueGen {
 			evalues.add(datums[i]);
 		}
 	}
+	
+	/**
+	 * Return immutable variant of this ArrayElementValueGen
+	 */
+	public ElementValue getElementValue() {
+		ElementValue[] immutableData = new ElementValue[evalues.size()];
+		int i =0;
+		for (Iterator iter = evalues.iterator(); iter.hasNext();) {
+			ElementValueGen element = (ElementValueGen) iter.next();
+			immutableData[i++] = element.getElementValue();
+		}
+		return new ArrayElementValue(type,immutableData,cpGen.getConstantPool());
+	}
 
 	/**
 	 * @param value

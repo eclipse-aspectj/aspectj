@@ -16,6 +16,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 
 
@@ -49,6 +50,13 @@ public class AnnotationElementValueGen extends ElementValueGen {
     public String stringifyValue() {
     	throw new RuntimeException("Not implemented yet");
     }
+	
+	/**
+     * Return immutable variant of this AnnotationElementValueGen
+     */
+	public ElementValue getElementValue() {
+		return new AnnotationElementValue(this.type,a.getAnnotation(),cpGen.getConstantPool());
+	}
     
     public AnnotationGen getAnnotation() { return a;}
    

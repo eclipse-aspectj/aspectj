@@ -18,7 +18,6 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
-import org.aspectj.apache.bcel.classfile.Utility;
 
 
 public class EnumElementValue extends ElementValue {
@@ -48,7 +47,7 @@ public class EnumElementValue extends ElementValue {
     
     public String getEnumTypeString() {
     	ConstantUtf8 cu8 = (ConstantUtf8)cpool.getConstant(typeIdx,Constants.CONSTANT_Utf8);
-		return Utility.signatureToString(cu8.getBytes());
+		return cu8.getBytes();//Utility.signatureToString(cu8.getBytes());
     }
     
 	public String getEnumValueString() {

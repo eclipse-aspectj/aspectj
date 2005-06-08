@@ -66,6 +66,18 @@ public class AnnotationGen {
 		this.cpool = cpool;
 	}
 	
+	/**
+	 * Retrieve an immutable version of this AnnotationGen
+	 */
+	public Annotation getAnnotation() {
+		Annotation a = new Annotation(typeIndex,cpool.getConstantPool(),isRuntimeVisible);
+		for (Iterator iter = evs.iterator(); iter.hasNext();) {
+			ElementNameValuePairGen element = (ElementNameValuePairGen) iter.next();
+			a.addElementNameValuePair(element.getElementNameValuePair());
+		}
+		return a;
+	}
+	
 	public AnnotationGen(ObjectType type,List /*ElementNameValuePairGen*/ elements,boolean vis,ConstantPoolGen cpool) {
 		this.cpool = cpool;
 		this.typeIndex = cpool.addUtf8(type.getSignature());

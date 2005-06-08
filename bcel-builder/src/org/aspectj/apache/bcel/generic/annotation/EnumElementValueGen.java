@@ -15,9 +15,8 @@ package org.aspectj.apache.bcel.generic.annotation;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.aspectj.apache.bcel.classfile.ConstantClass;
-import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
@@ -40,6 +39,14 @@ public class EnumElementValueGen extends ElementValueGen {
     	this.typeIdx = typeIdx;
     	this.valueIdx= valueIdx;
     }
+	
+	/**
+     * Return immutable variant of this EnumElementValue
+     */
+	public ElementValue getElementValue() {
+		System.err.println("Duplicating value: "+getEnumTypeString()+":"+getEnumValueString());
+		return new EnumElementValue(type,typeIdx,valueIdx,cpGen.getConstantPool());
+	}
     
     public EnumElementValueGen(ObjectType t,String value,ConstantPoolGen cpool) {
     	super(ElementValueGen.ENUM_CONSTANT,cpool);
@@ -74,14 +81,17 @@ public class EnumElementValueGen extends ElementValueGen {
     
     // BCELBUG: Should we need to call utility.signatureToString() on the output here?
     public String getEnumTypeString() {
-    	ConstantClass cu8 = (ConstantClass)getConstantPool().getConstant(typeIdx);
-    	return ((ConstantUtf8)getConstantPool().getConstant(cu8.getNameIndex())).getBytes();
+//		Constant cc = getConstantPool().getConstant(typeIdx);
+//    	ConstantClass cu8 = (ConstantClass)getConstantPool().getConstant(typeIdx);		
+//    	return ((ConstantUtf8)getConstantPool().getConstant(cu8.getNameIndex())).getBytes();
+		return ((ConstantUtf8)getConstantPool().getConstant(typeIdx)).getBytes();
 		// return Utility.signatureToString(cu8.getBytes());
     }
     
 	public String getEnumValueString() {
-		ConstantString cu8 = (ConstantString)getConstantPool().getConstant(valueIdx);
-    	return ((ConstantUtf8)getConstantPool().getConstant(cu8.getStringIndex())).getBytes();
+		return ((ConstantUtf8)getConstantPool().getConstant(valueIdx)).getBytes();
+//		ConstantString cu8 = (ConstantString)getConstantPool().getConstant(valueIdx);
+//    	return ((ConstantUtf8)getConstantPool().getConstant(cu8.getStringIndex())).getBytes();
 	}
     
     public int getValueIndex() { return valueIdx;}

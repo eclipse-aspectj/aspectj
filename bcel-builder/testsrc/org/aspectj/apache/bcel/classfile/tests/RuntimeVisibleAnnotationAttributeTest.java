@@ -312,7 +312,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("Should be of type EnumElementValue but is "+ev,ev instanceof EnumElementValue);
 		EnumElementValue eev = (EnumElementValue)ev;
 		assertTrue("Should be an enum type value but is "+eev.getElementValueType(),eev.getElementValueType()==SimpleElementValue.ENUM_CONSTANT);
-		assertTrue("Enum type for annotation should be 'SimpleEnum' but is "+eev.getEnumTypeString(),eev.getEnumTypeString().equals("SimpleEnum"));
+		assertTrue("Enum type for annotation should be 'SimpleEnum' but is "+Utility.signatureToString(eev.getEnumTypeString()),Utility.signatureToString(eev.getEnumTypeString()).equals("SimpleEnum"));
 		assertTrue("String value should be 'Red' but was '"+eev.getEnumValueString()+"'",
 				eev.getEnumValueString().equals("Red"));
 	}
