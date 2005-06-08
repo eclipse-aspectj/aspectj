@@ -19,6 +19,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.tools.ajc.AjcTests;
 import org.aspectj.weaver.bcel.LazyClassGen;
 
 import java.io.File;
@@ -166,9 +167,7 @@ public abstract class CommandTestCase extends TestCase {
 
 	/** get the location of the org.aspectj.lang & runtime classes */
 	protected static String getRuntimeClasspath() {
-		return "../runtime/bin" + File.pathSeparator + "../aspectj5rt/bin" + File.pathSeparator + 
-			   System.getProperty("aspectjrt.path");
-		
+        return AjcTests.aspectjrtClasspath();		
 	}
 
 }

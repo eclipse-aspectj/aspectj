@@ -15,9 +15,9 @@ package org.aspectj.ajdt.internal.compiler.batch;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.ArrayList;
 
 import org.aspectj.ajdt.ajc.AjdtAjcTests;
+import org.aspectj.tools.ajc.AjcTests;
 
 public class BcweaverJarMaker {
 
@@ -50,8 +50,7 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/tracing.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" + File.pathSeparator + 
-			System.getProperty("aspectjrt.path"));
+		args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Trace.java");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/MyTrace.java");
@@ -65,8 +64,7 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/megatrace.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" + File.pathSeparator + 
-			System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/MegaTrace.java");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/ExecTrace.java");
@@ -81,8 +79,7 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/megatrace0easy.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" + File.pathSeparator + 
-			System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/MegaTrace.java");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/ObviousTraceNothing.java");
@@ -96,8 +93,7 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/megatrace0hard.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" + File.pathSeparator + 
-			System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/MegaTrace.java");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/HardTraceNothing.java");
@@ -114,8 +110,7 @@ public class BcweaverJarMaker {
 		args.add("-noweave");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" + File.pathSeparator + 
-			System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/MegaTrace.java");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/trace/ExecTrace.java");
@@ -130,8 +125,7 @@ public class BcweaverJarMaker {
 		args.add("../weaver/testdata/dummyAspect.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" + File.pathSeparator + 
-			System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/DummyAspect.java");
 		

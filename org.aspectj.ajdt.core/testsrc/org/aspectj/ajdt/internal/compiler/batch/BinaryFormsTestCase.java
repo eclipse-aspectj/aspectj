@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.aspectj.ajdt.ajc.AjdtAjcTests;
 import org.aspectj.testing.util.TestUtil;
+import org.aspectj.tools.ajc.AjcTests;
 
 
 public class BinaryFormsTestCase extends CommandTestCase {
@@ -34,8 +35,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out/lib.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" 
-			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
 		args.add("out");
@@ -50,8 +50,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out/lib.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" 
-			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
 		args.add("out");
@@ -69,8 +68,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out/lib.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" 
-			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
 		args.add("out");
@@ -87,8 +85,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		args.add("out/lib.jar");
 
 		args.add("-classpath");
-		args.add("../runtime/bin" 
-			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
 		args.add("out");
@@ -100,8 +97,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 
 		args = new ArrayList();
 		args.add("-classpath");
-		args.add("../runtime/bin" + File.pathSeparator + "out/lib.jar"
-			+ File.pathSeparator + System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
 		args.add("out");
@@ -112,8 +108,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args = new ArrayList();
 		args.add("-classpath");
-		args.add("../runtime/bin" + File.pathSeparator + "out/lib.jar" + 
-			File.pathSeparator + System.getProperty("aspectjrt.path"));
+        args.add(AjcTests.aspectjrtClasspath() + File.pathSeparator + "out/lib.jar");
 		args.add("-Xlint:error");
 		
 		args.add("-d");
