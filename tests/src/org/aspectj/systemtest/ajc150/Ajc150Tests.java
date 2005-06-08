@@ -178,6 +178,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("NPE in reflect implementation");
   }
   
+  public void testStaticImports_pr84260() {
+	  runTest("static import failures");
+  } 
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

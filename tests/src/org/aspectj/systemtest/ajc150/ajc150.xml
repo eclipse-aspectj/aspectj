@@ -51,6 +51,20 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr84260" vm="1.5" title="static import failures">
+        <compile files="A.java,I1.java,I2.java" options="-1.5"/>
+        <run class="I1">
+          <stderr>
+            <line text="static method running"/>
+          </stderr>
+        </run>
+        <run class="I2">
+          <stderr>
+            <line text="static method running"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
     <ajc-test dir="decp" pr="80249" title="Order of types passed to compiler determines weaving behavior">
         <compile files="A.java,B.java,AspectX.java"/>
         <run class="B"/>
