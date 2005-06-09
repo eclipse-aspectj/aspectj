@@ -97,7 +97,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 
 		args = new ArrayList();
 		args.add("-classpath");
-        args.add(AjcTests.aspectjrtClasspath());
+        args.add("out/lib.jar" + File.pathSeparator + AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
 		args.add("out");
