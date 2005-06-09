@@ -52,7 +52,6 @@ import org.aspectj.apache.bcel.generic.SWAP;
 import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;

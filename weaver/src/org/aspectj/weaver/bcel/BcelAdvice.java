@@ -21,7 +21,6 @@ import java.util.Collections;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
@@ -37,15 +36,11 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.ExactTypePattern;
 import org.aspectj.weaver.patterns.ExposedState;
 import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.patterns.PerObject;
-import org.aspectj.weaver.patterns.PerFromSuper;
 
 /**
  * Advice implemented for bcel.

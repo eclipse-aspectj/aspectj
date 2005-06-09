@@ -72,7 +72,6 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.BindingAnnotationTypePattern;
 import org.aspectj.weaver.patterns.BindingTypePattern;

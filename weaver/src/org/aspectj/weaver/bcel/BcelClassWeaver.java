@@ -75,7 +75,6 @@ import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.Shadow.Kind;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.FastMatchInfo;

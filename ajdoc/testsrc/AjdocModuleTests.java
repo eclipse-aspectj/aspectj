@@ -9,13 +9,11 @@
  * Contributors: 
  *     Mik Kersten     initial implementation 
  * ******************************************************************/
-import java.io.File;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.aspectj.tools.ajdoc.AjdocTests;
-import org.aspectj.util.FileUtil;
 
 /**
  * @author Mik Kersten

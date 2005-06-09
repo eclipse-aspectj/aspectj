@@ -17,8 +17,6 @@ package org.aspectj.tools.ajdoc;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.aspectj.util.LangUtil;
-
 /**
  * @author Mik Kersten
  */

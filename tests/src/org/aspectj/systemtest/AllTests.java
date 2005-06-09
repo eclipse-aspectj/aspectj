@@ -13,7 +13,6 @@ import org.aspectj.systemtest.ajc10x.Ajc10xTests;
 import org.aspectj.systemtest.ajc11.Ajc11Tests;
 import org.aspectj.systemtest.ajc120.Ajc120Tests;
 import org.aspectj.systemtest.ajc121.Ajc121Tests;
-import org.aspectj.systemtest.ajc150.AllTestsAspectJ150;
 import org.aspectj.systemtest.aspectpath.AspectPathTests;
 import org.aspectj.systemtest.base.BaseTests;
 import org.aspectj.systemtest.design.DesignTests;

@@ -35,7 +35,6 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.bcel.AtAjAttributes;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;

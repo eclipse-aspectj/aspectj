@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.aspectj.ajde.internal.CompilerAdapter;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 

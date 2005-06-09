@@ -471,14 +471,17 @@ public class AjcSpecXmlReader {
                 String publicId, 
                 String systemId)
                 throws SAXException {
+            InputSource result = null;
             if ((null != systemId) && 
                 systemId.endsWith(NAME)) {
                 String path = getPath(systemId);
                 if (null != path) {
-                    return new InputSource(path);
+                    result = new InputSource(path);
+                    result.setSystemId(path);
+                    result.setPublicId(path);
                 }
             }
-            return null;
+            return result;
         }
     }
 }

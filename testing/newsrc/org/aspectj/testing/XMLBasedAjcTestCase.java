@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
@@ -39,6 +40,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	private static Map testMap = new HashMap();
 	private static boolean suiteLoaded = false;
 	private AjcTest currentTest = null;
+    private Stack clearTestAfterRun = new Stack();
 	
 	public XMLBasedAjcTestCase() {
 	}
@@ -96,11 +98,20 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 */
 	protected void runTest(String title) {
 		currentTest = (AjcTest) testMap.get(title);
+        final boolean clearTest = clearTestAfterRun();
 		if (currentTest == null) {
-			fail("No test '" + title + "' in suite.");
-		}
+            if (clearTest) {
+                System.err.println("test already run: " + title);
+                return;
+            } else {
+                fail("No test '" + title + "' in suite.");
+            }
+		} 
 		ajc.setShouldEmptySandbox(true);
 		currentTest.runTest(this);
+        if (clearTest) {
+            testMap.remove(title);
+        }
 	}
 
 	/**
@@ -119,6 +130,25 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	public void addTest(AjcTest test) {
 		testMap.put(test.getTitle(),test);
 	}
+    protected final void pushClearTestAfterRun(boolean val) {
+        clearTestAfterRun.push(val ? Boolean.FALSE: Boolean.TRUE);
+    }
+    protected final boolean popClearTestAfterRun() {
+        return clearTest(true);
+    }
+    protected final boolean clearTestAfterRun() {
+        return clearTest(false);
+    }
+    private boolean clearTest(boolean pop) {
+        if (clearTestAfterRun.isEmpty()) {
+            return false;
+        }
+        boolean result = ((Boolean) clearTestAfterRun.peek()).booleanValue();
+        if (pop) {
+            clearTestAfterRun.pop();
+        }
+        return result;
+    }
 
 	/*
 	 * The rules for parsing a suite spec file. The Digester using bean properties to match attributes

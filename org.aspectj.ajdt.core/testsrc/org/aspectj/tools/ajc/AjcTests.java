@@ -13,8 +13,6 @@
 
 package org.aspectj.tools.ajc;
 
-import java.io.File;
-
 import org.aspectj.testing.util.TestUtil;
 
 import junit.framework.Test;

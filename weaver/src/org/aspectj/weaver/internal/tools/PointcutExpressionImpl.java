@@ -19,7 +19,6 @@ import org.aspectj.weaver.patterns.AbstractPatternNodeVisitor;
 import org.aspectj.weaver.patterns.ArgsAnnotationPointcut;
 import org.aspectj.weaver.patterns.ArgsPointcut;
 import org.aspectj.weaver.patterns.CflowPointcut;
-import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.NotAnnotationTypePattern;
 import org.aspectj.weaver.patterns.NotPointcut;

@@ -22,8 +22,6 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelShadow;
 import org.aspectj.weaver.bcel.BcelWorld;
 
-import sun.reflect.generics.tree.TypeVariableSignature;
-
 /**
  * @author hugunin
  *

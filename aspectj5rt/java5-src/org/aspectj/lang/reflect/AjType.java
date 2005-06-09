@@ -17,7 +17,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.Set;
 
 /**
  * The runtime representation of a type (Aspect, Class, Interface, Annotation, Enum, or Array) in an AspectJ
