@@ -51,6 +51,10 @@ public class ConcreteCflowPointcut extends Pointcut {
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return FuzzyBoolean.MAYBE;
+	}
     
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//??? this is not maximally efficient
@@ -140,7 +144,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		throw new RuntimeException("unimplemented");
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 

@@ -60,6 +60,11 @@ public class WithincodePointcut extends Pointcut {
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return FuzzyBoolean.MAYBE;
+	}
+
     
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//This will not match code in local or anonymous classes as if
@@ -139,7 +144,7 @@ public class WithincodePointcut extends Pointcut {
 		return ret;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

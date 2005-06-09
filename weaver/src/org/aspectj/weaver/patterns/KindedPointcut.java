@@ -98,6 +98,11 @@ public class KindedPointcut extends Pointcut {
 		return FuzzyBoolean.MAYBE;
 	}	
 	
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return FuzzyBoolean.fromBoolean(signature.couldMatch(targetType));
+	}
+
+	
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 
@@ -314,7 +319,7 @@ public class KindedPointcut extends Pointcut {
 		return kind;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

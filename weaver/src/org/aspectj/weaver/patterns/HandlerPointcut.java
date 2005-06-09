@@ -58,6 +58,10 @@ public class HandlerPointcut extends Pointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 	
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return FuzzyBoolean.MAYBE;
+	}
+	
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != Shadow.ExceptionHandler) return FuzzyBoolean.NO;
 		
@@ -157,7 +161,7 @@ public class HandlerPointcut extends Pointcut {
 		return ret;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

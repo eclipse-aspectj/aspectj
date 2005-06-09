@@ -54,6 +54,10 @@ public class PerTypeWithin extends PerClause {
 		this.typePattern = p;
 	}
 
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	public Set couldMatchKinds() {
 		return kindSet;
 	}
@@ -63,6 +67,10 @@ public class PerTypeWithin extends PerClause {
 		if (typePattern.annotationPattern instanceof AnyAnnotationTypePattern) {
 			return isWithinType(info.getType());
 		}
+		return FuzzyBoolean.MAYBE;
+	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
 		return FuzzyBoolean.MAYBE;
 	}
 	

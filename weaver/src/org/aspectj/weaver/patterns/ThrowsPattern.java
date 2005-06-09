@@ -152,7 +152,7 @@ public class ThrowsPattern extends PatternNode {
 		//XXXwriteLocation(s);
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

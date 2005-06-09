@@ -104,6 +104,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	protected int lastMatchedShadowId;
 	private FuzzyBoolean lastMatchedShadowResult;
 	private Test lastMatchedShadowResidue;
+	private TypeVariablePatternList typeVariables = TypeVariablePatternList.EMPTY;
 	
 	/**
 	 * Constructor for Pattern.
@@ -118,11 +119,24 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 * Could I match any shadows in the code defined within this type?
 	 */
 	public abstract FuzzyBoolean fastMatch(FastMatchInfo info);
+	
+	/**
+	 * Could I match any shadows defined in this type?
+	 */
+	public abstract FuzzyBoolean fastMatch(Class targetType);
 
 	/**
 	 * The set of ShadowKinds that this Pointcut could possibly match  
 	 */
 	public abstract /*Enum*/Set/*<Shadow.Kind>*/ couldMatchKinds();
+	
+	public TypeVariablePatternList getTypeVariables() {
+		return typeVariables;
+	}
+	
+	public void setTypeVariables(TypeVariablePatternList typeVars) {
+		this.typeVariables = typeVars;
+	}
 	
 	/**
 	 * Do I really match this shadow?
@@ -366,6 +380,10 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 			return FuzzyBoolean.NO;
 		}
 		
+		public FuzzyBoolean fastMatch(Class targetType) {
+			return FuzzyBoolean.NO;
+		}
+		
 		protected FuzzyBoolean matchInternal(Shadow shadow) {
 			return FuzzyBoolean.NO;
 		}
@@ -413,7 +431,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 		
 		public String toString() { return ""; }
 
-        public Object accept(PointcutVisitor visitor, Object data) {
+        public Object accept(PatternNodeVisitor visitor, Object data) {
             return visitor.visit(this, data);
         }
 	}

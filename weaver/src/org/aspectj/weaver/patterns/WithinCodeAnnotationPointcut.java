@@ -79,6 +79,10 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return FuzzyBoolean.MAYBE;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
@@ -216,7 +220,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 		return buf.toString();
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

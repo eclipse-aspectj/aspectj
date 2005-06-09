@@ -54,10 +54,16 @@ public abstract class TypePattern extends PatternNode {
 	protected boolean includeSubtypes;
 	protected boolean isVarArgs = false;
 	protected AnnotationTypePattern annotationPattern = AnnotationTypePattern.ANY;
+	protected TypePatternList typeParameters = TypePatternList.EMPTY;
 	
-	protected TypePattern(boolean includeSubtypes,boolean isVarArgs) {
+	protected TypePattern(boolean includeSubtypes,boolean isVarArgs,TypePatternList typeParams) {
 		this.includeSubtypes = includeSubtypes;
 		this.isVarArgs = isVarArgs;
+		this.typeParameters = (typeParams == null ? TypePatternList.EMPTY : typeParams);
+	}
+	
+	protected TypePattern(boolean includeSubtypes, boolean isVarArgs) {
+		this(includeSubtypes,isVarArgs,null);
 	}
 
     public AnnotationTypePattern getAnnotationPattern() {
@@ -82,6 +88,14 @@ public abstract class TypePattern extends PatternNode {
 	
 	public void setAnnotationTypePattern(AnnotationTypePattern annPatt) {
 		this.annotationPattern = annPatt;
+	}
+	
+	public void setTypeParameters(TypePatternList typeParams) {
+		this.typeParameters = typeParams;
+	}
+	
+	public TypePatternList getTypeParameters() {
+		return this.typeParameters;
 	}
 	
 	public void setIsVarArgs(boolean isVarArgs) {
@@ -335,7 +349,7 @@ class EllipsisTypePattern extends TypePattern {
 	 * @param includeSubtypes
 	 */
 	public EllipsisTypePattern() {
-		super(false,false);
+		super(false,false,new TypePatternList());
 	}
 
 	/* (non-Javadoc)
@@ -398,7 +412,7 @@ class EllipsisTypePattern extends TypePattern {
 		return 17 * 37;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
@@ -412,7 +426,7 @@ class AnyTypePattern extends TypePattern {
 	 * @param includeSubtypes
 	 */
 	public AnyTypePattern() {
-		super(false,false);
+		super(false,false,new TypePatternList());
 	}
 
 	/* (non-Javadoc)
@@ -488,7 +502,7 @@ class AnyTypePattern extends TypePattern {
 		return 37;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }
@@ -504,6 +518,10 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		annotationPattern = atp;
 	}
 
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		return true;
 	}
@@ -571,7 +589,7 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 class NoTypePattern extends TypePattern {
 	
 	public NoTypePattern() {
-		super(false,false);
+		super(false,false,new TypePatternList());
 	}
 
 	
@@ -654,7 +672,7 @@ class NoTypePattern extends TypePattern {
 		return 17 * 37 * 37;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

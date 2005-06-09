@@ -99,6 +99,10 @@ public class DeclareAnnotation extends Declare {
 		return ret.toString();
 	}
 	
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	public void resolve(IScope scope) {
 		if (typePattern != null) {
 			typePattern = typePattern.resolveBindings(scope,Bindings.NONE,false,false);

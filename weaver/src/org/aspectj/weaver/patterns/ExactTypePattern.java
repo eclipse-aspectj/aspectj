@@ -208,6 +208,7 @@ public class ExactTypePattern extends TypePattern {
 		out.writeBoolean(includeSubtypes);
 		out.writeBoolean(isVarArgs);
 		annotationPattern.write(out);
+		typeParameters.write(out);
 		writeLocation(out);
 	}
 	
@@ -224,6 +225,7 @@ public class ExactTypePattern extends TypePattern {
 		if (version > EXACT_VERSION) throw new BCException("ExactTypePattern was written by a more recent version of AspectJ");
 		TypePattern ret = new ExactTypePattern(TypeX.read(s), s.readBoolean(), s.readBoolean());
 		ret.setAnnotationTypePattern(AnnotationTypePattern.read(s,context));
+		ret.setTypeParameters(TypePatternList.read(s,context));
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -262,7 +264,7 @@ public class ExactTypePattern extends TypePattern {
 		throw new IllegalStateException("trying to re-resolve");
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 

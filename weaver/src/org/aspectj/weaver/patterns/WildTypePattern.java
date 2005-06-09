@@ -38,9 +38,16 @@ public class WildTypePattern extends TypePattern {
 	String[] importedPrefixes;
 	String[] knownMatches;
 	int dim;
+	
+	// these next three are set if the type pattern is constrained by extends or super clauses, in which case the
+	// namePatterns must have length 1
+	// TODO AMC: read/write/resolve of these fields
+	TypePattern upperBound;  //  extends Foo 
+	TypePattern[] additionalInterfaceBounds;  // extends Foo & A,B,C
+	TypePattern lowerBound;  // super Foo
 
-	WildTypePattern(NamePattern[] namePatterns, boolean includeSubtypes, int dim, boolean isVarArgs) {
-		super(includeSubtypes,isVarArgs);
+	WildTypePattern(NamePattern[] namePatterns, boolean includeSubtypes, int dim, boolean isVarArgs, TypePatternList typeParams) {
+		super(includeSubtypes,isVarArgs,typeParams);
 		this.namePatterns = namePatterns;
 		this.dim = dim;
 		ellipsisCount = 0;
@@ -51,7 +58,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public WildTypePattern(List names, boolean includeSubtypes, int dim) {
-		this((NamePattern[])names.toArray(new NamePattern[names.size()]), includeSubtypes, dim,false);
+		this((NamePattern[])names.toArray(new NamePattern[names.size()]), includeSubtypes, dim,false,TypePatternList.EMPTY);
 
 	}
 	
@@ -65,10 +72,31 @@ public class WildTypePattern extends TypePattern {
 		this.end = endPos;
 		this.isVarArgs = isVarArg;
 	}
-
+	
+	public WildTypePattern(
+			List names, 
+			boolean includeSubtypes, 
+			int dim, 
+			int endPos, 
+			boolean isVarArg, 
+			TypePatternList typeParams,
+			TypePattern upperBound,
+			TypePattern[] additionalInterfaceBounds,
+			TypePattern lowerBound) {
+		this((NamePattern[])names.toArray(new NamePattern[names.size()]),includeSubtypes,dim,isVarArg,typeParams);
+		this.end = endPos;
+		this.upperBound = upperBound;
+		this.lowerBound = lowerBound;
+		this.additionalInterfaceBounds = additionalInterfaceBounds;
+	}
+	
     public NamePattern[] getNamePatterns() {
         return namePatterns;
     }
+	
+	public TypePattern getUpperBound() { return upperBound; }
+	public TypePattern getLowerBound() { return lowerBound; }
+	public TypePattern[] getAdditionalIntefaceBounds() { return additionalInterfaceBounds; }
 
 	// called by parser after parsing a type pattern, must bump dim as well as setting flag
 	public void setIsVarArgs(boolean isVarArgs) {
@@ -638,6 +666,7 @@ public class WildTypePattern extends TypePattern {
 		s.writeBoolean(includeSubtypes);
 		s.writeInt(dim);
 		s.writeBoolean(isVarArgs);
+		typeParameters.write(s);  // ! change from M2
 		//??? storing this information with every type pattern is wasteful of .class
 		//    file size. Storing it on enclosing types would be more efficient
 		FileUtil.writeStringArray(knownMatches, s);
@@ -667,7 +696,8 @@ public class WildTypePattern extends TypePattern {
 	  boolean includeSubtypes = s.readBoolean();
 	  int dim = s.readInt();
 	  boolean varArg = s.readBoolean();
-	  WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim, varArg);
+	  TypePatternList typeParams = TypePatternList.read(s, context);
+	  WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim, varArg,typeParams);
 	  ret.knownMatches = FileUtil.readStringArray(s);
 	  ret.importedPrefixes = FileUtil.readStringArray(s);
 	  ret.readLocation(context, s);
@@ -683,14 +713,14 @@ public class WildTypePattern extends TypePattern {
 		}
 		boolean includeSubtypes = s.readBoolean();
 		int dim = s.readInt();
-		WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim, false);
+		WildTypePattern ret = new WildTypePattern(namePatterns, includeSubtypes, dim, false,null);
 		ret.knownMatches = FileUtil.readStringArray(s);
 		ret.importedPrefixes = FileUtil.readStringArray(s);
 		ret.readLocation(context, s);
 		return ret;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 

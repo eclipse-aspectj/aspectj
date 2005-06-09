@@ -177,8 +177,16 @@ public class AnnotationPatternList extends PatternNode {
 		writeLocation(s);
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		for (int i = 0; i < typePatterns.length; i++) {
+			typePatterns[i].traverse(visitor,ret);
+		}
+		return ret;
+	}
 
 }

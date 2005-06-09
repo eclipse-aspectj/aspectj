@@ -8,6 +8,7 @@
  * 
  * Contributors:
  *   Alexandre Vasseur         initial implementation
+ *   Adrian Colyer                refactoring for traversal and grouping by kind
  *******************************************************************************/
 package org.aspectj.weaver.patterns;
 
@@ -18,122 +19,85 @@ import org.aspectj.weaver.Member;
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public interface PointcutVisitor {
+public interface PatternNodeVisitor {
 
-    Object visit(AnyTypePattern node, Object data);
-
-    Object visit(NoTypePattern node, Object data);
-
-    Object visit(EllipsisTypePattern node, Object data);
-
-    Object visit(AnyWithAnnotationTypePattern node, Object data);
-
+	// Annotation type patterns
+	Object visit(AndAnnotationTypePattern node, Object data);
     Object visit(AnyAnnotationTypePattern node, Object data);
-
     Object visit(EllipsisAnnotationTypePattern node, Object data);
-
-    Object visit(AndAnnotationTypePattern node, Object data);
-
-    Object visit(AndPointcut node, Object data);
-
-    Object visit(AndTypePattern node, Object data);
-
+    Object visit(ExactAnnotationTypePattern node, Object data);
+    Object visit(BindingAnnotationTypePattern node, Object data);
+    Object visit(NotAnnotationTypePattern node, Object data);
+    Object visit(OrAnnotationTypePattern node, Object data);
+    Object visit(WildAnnotationTypePattern node, Object data);
     Object visit(AnnotationPatternList node, Object data);
 
-    Object visit(AnnotationPointcut node, Object data);
-
-    Object visit(ArgsAnnotationPointcut node, Object data);
-
-    Object visit(ArgsPointcut node, Object data);
-
-    Object visit(BindingAnnotationTypePattern node, Object data);
-
-    Object visit(BindingTypePattern node, Object data);
-
-    Object visit(CflowPointcut node, Object data);
-
-    Object visit(ConcreteCflowPointcut node, Object data);
-
-    Object visit(DeclareAnnotation node, Object data);
-
-    Object visit(DeclareErrorOrWarning node, Object data);
-
-    Object visit(DeclareParents node, Object data);
-
-    Object visit(DeclarePrecedence node, Object data);
-
-    Object visit(DeclareSoft node, Object data);
-
-    Object visit(ExactAnnotationTypePattern node, Object data);
-
+    // Regular type patterns	
+    Object visit(AndTypePattern node, Object data);	
+    Object visit(AnyTypePattern node, Object data);
+    Object visit(AnyWithAnnotationTypePattern node, Object data);
+    Object visit(EllipsisTypePattern node, Object data);
     Object visit(ExactTypePattern node, Object data);
-
-    Object visit(HandlerPointcut node, Object data);
-
-    Object visit(IfPointcut node, Object data);
-
-    Object visit(KindedPointcut node, Object data);
-
-    Object visit(ModifiersPattern node, Object data);
-
-    Object visit(NamePattern node, Object data);
-
-    Object visit(NotAnnotationTypePattern node, Object data);
-
-    Object visit(NotPointcut node, Object data);
-
+    Object visit(BindingTypePattern node, Object data);
     Object visit(NotTypePattern node, Object data);
-
-    Object visit(OrAnnotationTypePattern node, Object data);
-
-    Object visit(OrPointcut node, Object data);
-
+    Object visit(NoTypePattern node, Object data);
     Object visit(OrTypePattern node, Object data);
-
-    Object visit(PerCflow node, Object data);
-
-    Object visit(PerFromSuper node, Object data);
-
-    Object visit(PerObject node, Object data);
-
-    Object visit(PerSingleton node, Object data);
-
-    Object visit(PerTypeWithin node, Object data);
-
-    Object visit(PatternNode node, Object data);
-
-    Object visit(ReferencePointcut node, Object data);
-
-    Object visit(SignaturePattern node, Object data);
-
-    Object visit(ThisOrTargetAnnotationPointcut node, Object data);
-
-    Object visit(ThisOrTargetPointcut node, Object data);
-
-    Object visit(ThrowsPattern node, Object data);
-
+    Object visit(WildTypePattern node, Object data);
     Object visit(TypePatternList node, Object data);
 
-    Object visit(WildAnnotationTypePattern node, Object data);
-
-    Object visit(WildTypePattern node, Object data);
-
+    // Pointcuts
+	Object visit(AndPointcut node, Object data);
+    Object visit(CflowPointcut node, Object data);
+    Object visit(ConcreteCflowPointcut node, Object data);
+    Object visit(HandlerPointcut node, Object data);
+    Object visit(IfPointcut node, Object data);
+    Object visit(KindedPointcut node, Object data);
+    Object visit(Pointcut.MatchesNothingPointcut node, Object data);
+    Object visit(AnnotationPointcut node, Object data);
+    Object visit(ArgsAnnotationPointcut node, Object data);
+    Object visit(ArgsPointcut node, Object data);
+    Object visit(ThisOrTargetAnnotationPointcut node, Object data);
+    Object visit(ThisOrTargetPointcut node, Object data);
     Object visit(WithinAnnotationPointcut node, Object data);
-
     Object visit(WithinCodeAnnotationPointcut node, Object data);
-
+    Object visit(NotPointcut node, Object data);
+    Object visit(OrPointcut node, Object data);
+    Object visit(ReferencePointcut node, Object data);
     Object visit(WithinPointcut node, Object data);
-
     Object visit(WithincodePointcut node, Object data);
 
-    Object visit(Pointcut.MatchesNothingPointcut node, Object data);
+	// Per-clauses
+    Object visit(PerCflow node, Object data);
+    Object visit(PerFromSuper node, Object data);
+    Object visit(PerObject node, Object data);
+    Object visit(PerSingleton node, Object data);
+    Object visit(PerTypeWithin node, Object data);
+
+	
+	// Declares
+    Object visit(DeclareAnnotation node, Object data);
+    Object visit(DeclareErrorOrWarning node, Object data);
+    Object visit(DeclareParents node, Object data);
+    Object visit(DeclarePrecedence node, Object data);
+    Object visit(DeclareSoft node, Object data);
+
+	// Miscellaneous patterns
+    Object visit(ModifiersPattern node, Object data);
+    Object visit(NamePattern node, Object data);
+    Object visit(SignaturePattern node, Object data);
+    Object visit(ThrowsPattern node, Object data);
+	Object visit(TypeVariable node, Object data);
+	Object visit(TypeVariablePatternList node,Object data);
+
+	// Catch-all
+    Object visit(PatternNode node, Object data);
 
     /**
      * A sample toString like visitor that helps understanding the AST tree structure organization
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    static class DumpPointcutVisitor implements PointcutVisitor {
+    static class DumpPointcutVisitor implements PatternNodeVisitor {
 
         private StringBuffer sb = new StringBuffer();
         public String get() {
@@ -259,7 +223,7 @@ public interface PointcutVisitor {
         }
 
         public Object visit(CflowPointcut node, Object data) {
-            append(node.isBelow()?"cflowbelow(":"cflow(");
+            append(node.isCflowBelow()?"cflowbelow(":"cflow(");
             node.getEntry().accept(this, data);
             append(')');
             return null;
@@ -584,6 +548,16 @@ public interface PointcutVisitor {
             append(node);
             return null;
         }
+		
+		public Object visit(TypeVariable node, Object data) {
+			append(node);
+			return null;
+		}
+		
+		public Object visit(TypeVariablePatternList node, Object data) {
+			append(node);
+			return null;
+		}
 
         public static void check(String s) {
             check(Pointcut.fromString(s), false);
@@ -610,13 +584,11 @@ public interface PointcutVisitor {
 
         public static void main(String args[]) throws Throwable {
             String[] s = new String[]{
-//                "@args(Foo, Goo, *, .., Moo)",
-//                "execution(* *())",
-//                "call(* *(int, Integer...))",
-//                "staticinitialization(@(Foo) @(Boo) @(Goo) Moo)",
-//                "staticinitialization(!@(Immutable) *)"
-//                "execution(* *()) && if()",
-                "(if(true) && set(int BaseApp.i))"
+                //"@args(Foo, Goo, *, .., Moo)",
+                //"execution(* *())",
+                //"call(* *(int, Integer...))",
+                //"staticinitialization(@(Foo) @(Boo) @(Goo) Moo)",
+                   "(if(true) && set(int BaseApp.i))"
 
             };
             for (int i = 0; i < s.length; i++) {

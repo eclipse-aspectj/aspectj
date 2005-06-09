@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
@@ -31,6 +32,7 @@ public class DeclareParents extends Declare {
 	private TypePattern child;
 	private TypePatternList parents;
 	private boolean isWildChild = false;
+	private TypeVariablePatternList typeVariablesInScope = TypeVariablePatternList.EMPTY; // AspectJ 5 extension for generic types
 	
 
 	public DeclareParents(TypePattern child, List parents) {
@@ -43,6 +45,14 @@ public class DeclareParents extends Declare {
 		if (child instanceof WildTypePattern) isWildChild = true;
 	}
 	
+	public TypeVariablePatternList getTypeParameters() {
+		return this.typeVariablesInScope;
+	}
+	
+	public void setTypeParameters(TypeVariablePatternList typeParameters) {
+		this.typeVariablesInScope = typeParameters;
+	}
+	
 	public boolean match(ResolvedTypeX typeX) {
 		if (!child.matchesStatically(typeX)) return false;
 		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled() &&
@@ -52,6 +62,10 @@ public class DeclareParents extends Declare {
 		}
 		
 		return true;
+	}
+	
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
 	}
 	
 	public String toString() {
@@ -83,11 +97,15 @@ public class DeclareParents extends Declare {
 		s.writeByte(Declare.PARENTS);
 		child.write(s);
 		parents.write(s);
+		typeVariablesInScope.write(s);  // change to binary form in AJ 5
 		writeLocation(s);
 	}
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		Declare ret = new DeclareParents(TypePattern.read(s, context), TypePatternList.read(s, context));
+		DeclareParents ret = new DeclareParents(TypePattern.read(s, context), TypePatternList.read(s, context));
+		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			ret.setTypeParameters(TypeVariablePatternList.read(s,context));
+		}
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -106,8 +124,9 @@ public class DeclareParents extends Declare {
 	}
 	
     public void resolve(IScope scope) {
-    	child = child.resolveBindings(scope, Bindings.NONE, false, false);
-    	parents = parents.resolveBindings(scope, Bindings.NONE, false, true); 
+		ScopeWithTypeVariables resolutionScope = new ScopeWithTypeVariables(typeVariablesInScope,scope);
+    	child = child.resolveBindings(resolutionScope, Bindings.NONE, false, false);
+    	parents = parents.resolveBindings(resolutionScope, Bindings.NONE, false, true); 
 
 //    	 Could assert this ...
 //    	    	for (int i=0; i < parents.size(); i++) {

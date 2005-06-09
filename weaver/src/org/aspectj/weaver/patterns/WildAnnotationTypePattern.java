@@ -142,7 +142,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		return "@(" + typePattern.toString() + ")";
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

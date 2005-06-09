@@ -49,6 +49,10 @@ public class NotPointcut extends Pointcut {
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return body.fastMatch(type).not();
 	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return body.fastMatch(targetType).not();
+	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		return body.match(shadow).not();
@@ -133,8 +137,14 @@ public class NotPointcut extends Pointcut {
 		return ret;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor,data);
+		this.body.traverse(visitor,ret);
+		return ret;
+	}
 
 }

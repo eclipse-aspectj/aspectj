@@ -69,6 +69,10 @@ public class ArgsPointcut extends NameBindingPointcut {
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return FuzzyBoolean.MAYBE;
+	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		FuzzyBoolean ret =
@@ -308,7 +312,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 		return "args" + arguments.toString() + "";
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

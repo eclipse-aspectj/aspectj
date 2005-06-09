@@ -353,6 +353,10 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 	
+	public boolean couldMatch(Class declaringClass) {
+		return declaringTypeMatch(declaringClass);
+	}
+	
 	public boolean matches(Class declaringClass, java.lang.reflect.Member member) {
 	    if (kind == Member.ADVICE) return true;
 	    if (kind == Member.POINTCUT) return false;
@@ -625,7 +629,7 @@ public class SignaturePattern extends PatternNode {
 		return annotationPattern == AnnotationTypePattern.ANY;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

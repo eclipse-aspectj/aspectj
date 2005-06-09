@@ -33,11 +33,19 @@ public class PerFromSuper extends PerClause {
 		this.kind = kind;
 	}
 
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;
 	}
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
+		throw new RuntimeException("unimplemented");
+	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
 		throw new RuntimeException("unimplemented");
 	}
 	

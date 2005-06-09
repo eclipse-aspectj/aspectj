@@ -35,6 +35,10 @@ public class DeclarePrecedence extends Declare {
 		this.patterns = patterns;
 	}
 	
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare precedence: ");

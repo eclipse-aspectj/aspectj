@@ -32,11 +32,19 @@ public class PerSingleton extends PerClause {
 	public PerSingleton() {
 	}
 
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;
 	}
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
+		return FuzzyBoolean.YES;
+	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
 		return FuzzyBoolean.YES;
 	}
 	

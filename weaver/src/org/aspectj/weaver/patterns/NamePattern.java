@@ -158,7 +158,7 @@ public class NamePattern extends PatternNode {
 		return starCount == 1 && pattern.length == 1;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

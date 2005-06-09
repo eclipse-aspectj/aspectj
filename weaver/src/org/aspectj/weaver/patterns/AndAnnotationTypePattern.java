@@ -89,7 +89,14 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 	public AnnotationTypePattern getLeft() { return left; }
 	public AnnotationTypePattern getRight() { return right; }
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor,data);
+		left.traverse(visitor,ret);
+		right.traverse(visitor,ret);
+		return ret;
+	}
 }

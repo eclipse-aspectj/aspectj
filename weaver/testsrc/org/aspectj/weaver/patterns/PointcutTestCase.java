@@ -31,11 +31,19 @@ public class PointcutTestCase extends TestCase {
 	public void testMatchJP() {
 		Pointcut p = new Pointcut() {
 
+			public Object accept(PatternNodeVisitor visitor, Object data) {
+				return visitor.visit(this,data);
+			}
+			
 			public Set couldMatchKinds() {
 				return null;
 			}
 			
 			public FuzzyBoolean fastMatch(FastMatchInfo info) {
+				return null;
+			}
+			
+			public FuzzyBoolean fastMatch(Class targetClass) {
 				return null;
 			}
 

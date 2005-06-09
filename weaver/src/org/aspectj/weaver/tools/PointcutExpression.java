@@ -23,6 +23,19 @@ import java.lang.reflect.Method;
 public interface PointcutExpression {
 
 	/**
+	 * Determine whether or not this pointcut could ever match a join point in the given class.
+	 * @param aClass  the candidate class
+	 * @return true iff this pointcut <i>may</i> match a join point within(aClass), and false otherwise 
+	 */
+	boolean couldMatchJoinPointsInType(Class aClass);
+	
+	/**
+	 * Returns true iff this pointcut contains any expression that might necessitate a dynamic test
+	 * at some join point (e.g. args)
+	 */
+	boolean mayNeedDynamicTest();
+	
+	/**
 	 * Determine whether or not this pointcut matches a method call to the given method.
 	 * @param aMethod the method being called
 	 * @param thisClass the type making the method call

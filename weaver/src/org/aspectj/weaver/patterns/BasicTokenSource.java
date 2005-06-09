@@ -104,6 +104,9 @@ public class BasicTokenSource implements ITokenSource {
 				case '!':
 				case ':':
 				case '@':
+				case '<':
+				case '>':
+				case 	'?':
 				    tokens.add(BasicToken.makeOperator(makeString(ch), i-1, i-1));
 				    continue;
 				case '.':
@@ -123,6 +126,11 @@ public class BasicTokenSource implements ITokenSource {
 					}
 					continue;
 				case '&':
+					if ((i+1) <= chars.length && chars[i] != '&') {
+						tokens.add(BasicToken.makeOperator(makeString(ch),i-1,i-1));
+						continue;
+					}
+					// fall-through
 				case '|':
 				    if (i == chars.length) {
 				    	throw new BCException("bad " + ch);

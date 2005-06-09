@@ -468,6 +468,20 @@ public class PointcutExpressionTest extends TestCase {
 		PointcutExpression ex = p.parsePointcutExpression("staticinitialization(*..A+)");
 		assertEquals("staticinitialization(*..A+)",ex.getPointcutExpression());
 	}
+	
+	public void testCouldMatchJoinPointsInType() {
+		PointcutExpression ex = p.parsePointcutExpression("execution(* org.aspectj.weaver.tools.PointcutExpressionTest.B.*(..))");
+		assertFalse("Could never match String",ex.couldMatchJoinPointsInType(String.class));
+		assertTrue("Will always match B",ex.couldMatchJoinPointsInType(B.class));
+		assertFalse("Does not match A",ex.couldMatchJoinPointsInType(A.class));
+	}
+	
+	public void testMayNeedDynamicTest() {
+		PointcutExpression ex = p.parsePointcutExpression("execution(* org.aspectj.weaver.tools.PointcutExpressionTest.B.*(..))");
+		assertFalse("No dynamic test needed",ex.mayNeedDynamicTest());
+		ex = p.parsePointcutExpression("execution(* org.aspectj.weaver.tools.PointcutExpressionTest.B.*(..)) && args(X)");
+		assertTrue("Dynamic test needed",ex.mayNeedDynamicTest());
+	}
 
 	protected void setUp() throws Exception {
 		super.setUp();

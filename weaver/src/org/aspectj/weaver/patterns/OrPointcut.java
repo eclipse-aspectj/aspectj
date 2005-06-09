@@ -50,6 +50,10 @@ public class OrPointcut extends Pointcut {
 		return left.fastMatch(type).or(right.fastMatch(type));
 	}
 
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return left.fastMatch(targetType).or(right.fastMatch(targetType));
+	}
+	
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		FuzzyBoolean leftMatch = left.match(shadow);
 		if (leftMatch.alwaysTrue()) return leftMatch;
@@ -148,7 +152,14 @@ public class OrPointcut extends Pointcut {
 		return right;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor,data);
+		left.traverse(visitor, ret);
+		right.traverse(visitor,ret);
+		return ret;
+	}
 }

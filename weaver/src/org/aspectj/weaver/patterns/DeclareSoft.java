@@ -32,6 +32,10 @@ public class DeclareSoft extends Declare {
 		this.pointcut = pointcut;
 	}
 	
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare soft: ");

@@ -17,9 +17,12 @@ import junit.framework.TestCase;
 
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelShadow;
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import sun.reflect.generics.tree.TypeVariableSignature;
 
 /**
  * @author hugunin
@@ -227,6 +230,154 @@ public class ParserTestCase extends TestCase {
 	    PatternParser parser = new PatternParser("@args(Foo,Goo,*,..,Moo)");
 	    Pointcut p = parser.parsePointcut();
 	    assertEquals("@args(Foo, Goo, ANY, .., Moo)",p.toString());
+	}
+	
+	public void testParseSimpleTypeVariable() {
+		PatternParser parser = new PatternParser("T");
+		TypeVariable tv = parser.parseTypeVariable();
+		TypeVariable expected = new TypeVariable("T");
+		assertEquals("Expected simple type variable T",expected,tv);
+	}
+	
+	public void testParseExtendingTypeVariable() {
+		PatternParser parser = new PatternParser("T extends Number");
+		TypeVariable tv = parser.parseTypeVariable();
+		TypeVariable expected = new TypeVariable("T",new PatternParser("Number").parseTypePattern());
+		assertEquals("Expected type variable T extends Number",expected,tv);
+	}
+	
+	public void testParseExtendingTypeVariableWithPattern() {
+		PatternParser parser = new PatternParser("T extends Number+");
+		TypeVariable tv = parser.parseTypeVariable();
+		TypeVariable expected = new TypeVariable("T",new PatternParser("Number+").parseTypePattern());
+		assertEquals("Expected type variable T extends Number+",expected,tv);		
+	}
+	
+	public void testParseExtendingTypeVariableWithInterface() {
+		PatternParser parser = new PatternParser("T extends Number & Comparable");
+		TypeVariable tv = parser.parseTypeVariable();
+		TypeVariable expected = new TypeVariable("T",new PatternParser("Number").parseTypePattern(),
+				new TypePattern[] {new PatternParser("Comparable").parseTypePattern()},null);
+		assertEquals("Expected type variable T extends Number",expected,tv);
+	}
+	
+	public void testParseExtendingTypeVariableWithInterfaceList() {
+		PatternParser parser = new PatternParser("T extends Number & Comparable & Cloneable");
+		TypeVariable tv = parser.parseTypeVariable();
+		TypeVariable expected = new TypeVariable("T",new PatternParser("Number").parseTypePattern(),
+				new TypePattern[] {new PatternParser("Comparable").parseTypePattern(),
+			                                new PatternParser("Cloneable").parseTypePattern()},null);
+		assertEquals("Expected type variable T extends Number",expected,tv);
+	}
+	
+	public void testParseTypeParameterList() {
+		PatternParser parser = new PatternParser("<T>");
+		TypeVariablePatternList list = parser.maybeParseTypeVariableList();
+		TypeVariable[] patterns = list.getTypeVariablePatterns();
+		TypeVariable expected = new TypeVariable("T");
+		assertEquals("Expected simple type variable T",expected,patterns[0]);
+		assertEquals("One pattern in list",1,patterns.length);
+	}
+	
+	public void testParseTypeParameterListWithSeveralTypeParameters() {
+		PatternParser parser = new PatternParser("<T,S extends Number, R>");
+		TypeVariablePatternList list = parser.maybeParseTypeVariableList();
+		TypeVariable[] patterns = list.getTypeVariablePatterns();
+		TypeVariable expected0 = new TypeVariable("T");
+		assertEquals("Expected simple type variable T",expected0,patterns[0]);
+		TypeVariable expected1 = new TypeVariable("S",new PatternParser("Number").parseTypePattern());
+		assertEquals("Expected type variable S extends Number",expected1,patterns[1]);
+		TypeVariable expected2 = new TypeVariable("R");
+		assertEquals("Expected simple type variable R",expected2,patterns[2]);
+		
+		assertEquals("3 patterns in list",3,patterns.length);
+	}
+	
+	
+	public void testParseAllowedSuperInTypeVariable() {
+		PatternParser parser = new PatternParser("T super Number+");
+		TypeVariable tv = parser.parseTypeVariable();
+		TypeVariable expected = new TypeVariable("T",new ExactTypePattern(TypeX.OBJECT,false,false),null,new PatternParser("Number+").parseTypePattern());
+		assertEquals("Expected type variable T super Number+",expected,tv);				
+	}
+	
+	public void testParseAnythingTypeVariable() {
+		PatternParser parser = new PatternParser("?");
+		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true,false);
+		assertEquals("Expected type variable ?","?",tp.maybeGetSimpleName());
+	}
+
+	public void testParseAnythingExtendsTypeVariable() {
+		PatternParser parser = new PatternParser("? extends Number");
+		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true,false);
+		assertEquals("Expected type variable ?","?",tp.maybeGetSimpleName());
+		assertEquals("upper Bound of Number",new PatternParser("Number").parseTypePattern(),tp.getUpperBound());
+	}
+	
+	public void testParseAnythingSuperTypeVariable() {
+		PatternParser parser = new PatternParser("? super Number+");
+		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true,false);
+		assertEquals("Expected type variable ?","?",tp.maybeGetSimpleName());
+		assertEquals("lower Bound of Number+",new PatternParser("Number+").parseTypePattern(),tp.getLowerBound());
+	}
+	
+	public void testParseDeclareParentsWithTypeParameterList() {
+		PatternParser parser = new PatternParser("declare parents : <T> Foo<T> implements IveGoneMad");
+		DeclareParents decp = (DeclareParents) parser.parseDeclare();
+		TypeVariablePatternList tvp = decp.getTypeParameters();
+		assertEquals("one type parameter",1,tvp.getTypeVariablePatterns().length);
+		assertEquals("expecting T","T",tvp.getTypeVariablePatterns()[0].getName());
+	}
+	
+	public void testParameterizedTypePatternsAny() {
+		PatternParser parser = new PatternParser("*<T,S extends Number>");
+		WildTypePattern wtp = (WildTypePattern) parser.parseTypePattern(false,true);
+		TypePatternList tvs = wtp.getTypeParameters();
+		assertEquals("2 type parameters",2,tvs.getTypePatterns().length);
+		assertEquals("T",new PatternParser("T").parseTypePattern(),tvs.getTypePatterns()[0]);
+		assertEquals("S extends Number",new PatternParser("S extends Number").parseTypePattern(false,true),tvs.getTypePatterns()[1]);
+	}
+	
+	public void testParameterizedTypePatternsSimple() {
+		PatternParser parser = new PatternParser("List<String>");
+		WildTypePattern wtp = (WildTypePattern) parser.parseTypePattern();
+		TypePatternList tvs = wtp.getTypeParameters();
+		assertEquals("1 type parameter",1,tvs.getTypePatterns().length);		
+		assertEquals("String",new PatternParser("String").parseTypePattern(),tvs.getTypePatterns()[0]);
+		assertEquals("List",wtp.getNamePatterns()[0].toString());
+	}
+	
+	public void testNestedParameterizedTypePatterns() {
+		PatternParser parser = new PatternParser("List<List<List<String>>>");
+		WildTypePattern wtp = (WildTypePattern) parser.parseTypePattern();
+		TypePatternList typeParameters = wtp.getTypeParameters();
+		WildTypePattern expected = (WildTypePattern) typeParameters.getTypePatterns()[0];
+		assertEquals("expecting a List", "List",expected.maybeGetSimpleName());
+		typeParameters = expected.getTypeParameters();
+		expected = (WildTypePattern) typeParameters.getTypePatterns()[0];
+		assertEquals("expecting a List", "List",expected.maybeGetSimpleName());
+		typeParameters = expected.getTypeParameters();
+		expected = (WildTypePattern) typeParameters.getTypePatterns()[0];
+		assertEquals("expecting a String", "String",expected.maybeGetSimpleName());
+	}
+
+	public void testSimpleTypeVariableList() {
+		PatternParser parser = new PatternParser("<T,S,V>");
+		TypeVariablePatternList tl = parser.maybeParseSimpleTypeVariableList();
+		TypeVariable[] patterns = tl.getTypeVariablePatterns();
+		assertEquals("3 patterns",3,patterns.length);
+		assertEquals("T",new TypeVariable("T"),patterns[0]);
+		assertEquals("S",new TypeVariable("S"),patterns[1]);
+		assertEquals("V",new TypeVariable("V"),patterns[2]);
+	}
+	
+	public void testSimpleTypeVariableListError() {
+		PatternParser parser = new PatternParser("<T extends Number>");
+		try {
+			TypeVariablePatternList tl = parser.maybeParseSimpleTypeVariableList();
+		} catch (ParserException ex) {
+			assertEquals("Expecting >",">",ex.getMessage());
+		}	
 	}
 	
 	public TestScope makeSimpleScope() {

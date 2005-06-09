@@ -69,6 +69,10 @@ public class ReferencePointcut extends Pointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 	
+	public FuzzyBoolean fastMatch(Class targetType) {
+		return FuzzyBoolean.MAYBE;
+	}
+	
 	/**
 	 * Do I really match this shadow?
 	 */
@@ -312,7 +316,7 @@ public class ReferencePointcut extends Pointcut {
         return result;
     }
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

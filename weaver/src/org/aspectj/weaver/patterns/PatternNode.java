@@ -81,7 +81,9 @@ public abstract class PatternNode implements IHasSourceLocation {
 		this.sourceContext = context;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
+    public abstract Object accept(PatternNodeVisitor visitor, Object data);
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		return accept(visitor,data);
+	}
 }

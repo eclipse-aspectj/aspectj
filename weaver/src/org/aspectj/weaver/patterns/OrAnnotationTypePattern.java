@@ -48,6 +48,17 @@ public class OrAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor,data);
+		left.traverse(visitor,ret);
+		right.traverse(visitor,ret);
+		return ret;
+	}
+	
 	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		AnnotationTypePattern p = new OrAnnotationTypePattern(
 				AnnotationTypePattern.read(s,context),

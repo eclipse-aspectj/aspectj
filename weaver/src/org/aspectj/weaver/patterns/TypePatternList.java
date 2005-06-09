@@ -34,7 +34,7 @@ public class TypePatternList extends PatternNode {
 		new TypePatternList(new TypePattern[] {});
 	
 	public static final TypePatternList ANY =
-	    new TypePatternList(new TypePattern[] {TypePattern.ELLIPSIS});
+	    new TypePatternList(new TypePattern[] {new EllipsisTypePattern()});  //can't use TypePattern.ELLIPSIS because of circular static dependency that introduces
 	
 	public TypePatternList() {
 		typePatterns = new TypePattern[0];
@@ -503,7 +503,15 @@ public class TypePatternList extends PatternNode {
 		return ret;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor,data);
+		for (int i = 0; i < typePatterns.length; i++) {
+			typePatterns[i].traverse(visitor,ret);
+		}
+		return ret;
+	}
 }

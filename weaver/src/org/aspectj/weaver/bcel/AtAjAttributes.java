@@ -11,6 +11,12 @@
  *******************************************************************************/
 package org.aspectj.weaver.bcel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -24,46 +30,38 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.Message;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.SourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
-import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.IScope;
+import org.aspectj.weaver.patterns.IdentityPointcutVisitor;
+import org.aspectj.weaver.patterns.IfPointcut;
+import org.aspectj.weaver.patterns.NotPointcut;
+import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.PerCflow;
 import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.weaver.patterns.PerObject;
 import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.PerTypeWithin;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.patterns.PerFromSuper;
-import org.aspectj.weaver.patterns.PointcutVisitor;
-import org.aspectj.weaver.patterns.IdentityPointcutVisitor;
-import org.aspectj.weaver.patterns.IfPointcut;
-import org.aspectj.weaver.patterns.AndPointcut;
-import org.aspectj.weaver.patterns.NotPointcut;
-import org.aspectj.weaver.patterns.OrPointcut;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Annotation defined aspect reader.

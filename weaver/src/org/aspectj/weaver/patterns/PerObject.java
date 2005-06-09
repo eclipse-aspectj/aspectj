@@ -52,12 +52,20 @@ public class PerObject extends PerClause {
 		this.isThis = isThis;
 	}
 
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	public Set couldMatchKinds() {
 		return isThis ? thisKindSet : targetKindSet;
 	}
 	
 	// -----
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
+		return FuzzyBoolean.MAYBE;
+	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
 		return FuzzyBoolean.MAYBE;
 	}
 	

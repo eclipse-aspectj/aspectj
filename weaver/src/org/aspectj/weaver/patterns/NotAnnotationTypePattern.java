@@ -84,7 +84,13 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 		return negatedPattern;
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor,data);
+		negatedPattern.traverse(visitor,ret);
+		return ret;
+	}
 }

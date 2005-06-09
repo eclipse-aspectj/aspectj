@@ -100,7 +100,7 @@ class AnyAnnotationTypePattern extends AnnotationTypePattern {
 	
 	public String toString() { return "@ANY"; }
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     
@@ -121,7 +121,7 @@ class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
 
 	public String toString() { return ".."; }
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     

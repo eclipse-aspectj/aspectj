@@ -93,7 +93,7 @@ public class ModifiersPattern extends PatternNode {
 		return flag.intValue();
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

@@ -15,7 +15,17 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.weaver.patterns.AbstractPatternNodeVisitor;
+import org.aspectj.weaver.patterns.ArgsAnnotationPointcut;
+import org.aspectj.weaver.patterns.ArgsPointcut;
+import org.aspectj.weaver.patterns.CflowPointcut;
+import org.aspectj.weaver.patterns.FastMatchInfo;
+import org.aspectj.weaver.patterns.IfPointcut;
+import org.aspectj.weaver.patterns.NotAnnotationTypePattern;
+import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
+import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
 import org.aspectj.weaver.tools.FuzzyBoolean;
 import org.aspectj.weaver.tools.PointcutExpression;
 
@@ -30,6 +40,16 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	public PointcutExpressionImpl(Pointcut pointcut, String expression) {
 		this.pointcut = pointcut;
 		this.expression = expression;
+	}
+	
+	public boolean couldMatchJoinPointsInType(Class aClass) {
+		return pointcut.fastMatch(aClass).maybeTrue();
+	}
+	
+	public boolean mayNeedDynamicTest() {
+		HasPossibleDynamicContentVisitor visitor = new HasPossibleDynamicContentVisitor();
+		pointcut.traverse(visitor, null);
+		return visitor.hasDynamicContent();
 	}
 
 	/* (non-Javadoc)
@@ -191,6 +211,50 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		if (fb == org.aspectj.util.FuzzyBoolean.NO) return FuzzyBoolean.NO;
 		if (fb == org.aspectj.util.FuzzyBoolean.MAYBE) return FuzzyBoolean.MAYBE;
 		throw new IllegalArgumentException("Cant match FuzzyBoolean " + fb);
+	}
+	
+	private static class HasPossibleDynamicContentVisitor extends AbstractPatternNodeVisitor {
+		private boolean hasDynamicContent = false;
+		
+		public boolean hasDynamicContent() { return hasDynamicContent; }
+		
+		public Object visit(ArgsAnnotationPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
+		
+		public Object visit(ArgsPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
+
+		public Object visit(CflowPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
+		
+		public Object visit(IfPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
+		
+		public Object visit(NotAnnotationTypePattern node, Object data) {
+			return node.getNegatedPattern().accept(this, data);
+		}
+		
+		public Object visit(NotPointcut node, Object data) {
+			return node.getNegatedPointcut().accept(this, data);
+		}
+		
+		public Object visit(ThisOrTargetAnnotationPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
+		
+		public Object visit(ThisOrTargetPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
 	}
 	
 	public static class Handler implements Member {

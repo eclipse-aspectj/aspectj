@@ -179,7 +179,8 @@ public class PatternParser {
 	}
 
 	private Declare parseParents() {
-		TypePattern p = parseTypePattern();
+		TypeVariablePatternList typeParameters = maybeParseTypeVariableList();
+		TypePattern p = parseTypePattern(false,false);
 		IToken t = tokenSource.next();
 		if (!(t.getString().equals("extends") || t.getString().equals("implements"))) {
 			throw new ParserException("extends or implements", t);
@@ -192,7 +193,11 @@ public class PatternParser {
 		
 		//XXX somewhere in the chain we need to enforce that we have only ExactTypePatterns
 		
-		return new DeclareParents(p, l);
+		DeclareParents decp = new DeclareParents(p, l);
+		if (typeParameters != null) {
+			decp.setTypeParameters(typeParameters);
+		}
+		return decp;
 	}
 
 	private Declare parseSoft() {
@@ -269,26 +274,28 @@ public class PatternParser {
 		}
 		
 		String kind = parseIdentifier();
+		IToken possibleTypeVariableToken = tokenSource.peek();
+		TypeVariablePatternList typeVariables = maybeParseSimpleTypeVariableList();
 		tokenSource.setIndex(start);
 		if (kind.equals("execution") || kind.equals("call") || 
 						kind.equals("get") || kind.equals("set")) {
-			return parseKindedPointcut();
+			p = parseKindedPointcut();
 		} else if (kind.equals("args")) {
-			return parseArgsPointcut();
+			p = parseArgsPointcut();
 		} else if (kind.equals("this") || kind.equals("target")) {
-			return parseThisOrTargetPointcut();
+			p = parseThisOrTargetPointcut();
 		} else if (kind.equals("within")) {
-			return parseWithinPointcut();
+			p = parseWithinPointcut();
 		} else if (kind.equals("withincode")) {
-			return parseWithinCodePointcut();
+			p = parseWithinCodePointcut();
 		} else if (kind.equals("cflow")) {
-			return parseCflowPointcut(false);
+			p = parseCflowPointcut(false);
 		} else if (kind.equals("cflowbelow")) {
-			return parseCflowPointcut(true);
+			p = parseCflowPointcut(true);
 		} else  if (kind.equals("adviceexecution")) {
 			parseIdentifier(); eat("(");
 			eat(")");
-			return new KindedPointcut(Shadow.AdviceExecution,
+			p = new KindedPointcut(Shadow.AdviceExecution,
 				new SignaturePattern(Member.ADVICE, ModifiersPattern.ANY, 
 					TypePattern.ANY, TypePattern.ANY, NamePattern.ANY, 
 					TypePatternList.ANY, 
@@ -296,57 +303,50 @@ public class PatternParser {
 					AnnotationTypePattern.ANY));
 		} else  if (kind.equals("handler")) {
 			parseIdentifier(); eat("(");
-			TypePattern typePat = parseTypePattern();
+			TypePattern typePat = parseTypePattern(false,true);
 			eat(")");
-			return new HandlerPointcut(typePat);
+			p = new HandlerPointcut(typePat);
 		} else  if (kind.equals("initialization")) {
 			parseIdentifier(); eat("(");
 			SignaturePattern sig = parseConstructorSignaturePattern();
 			eat(")");
-			return new KindedPointcut(Shadow.Initialization, sig);
+			p = new KindedPointcut(Shadow.Initialization, sig);
 		} else  if (kind.equals("staticinitialization")) {
 			parseIdentifier(); eat("(");
-			TypePattern typePat = parseTypePattern();
+			TypePattern typePat = parseTypePattern(false,true);
 			eat(")");
-			return new KindedPointcut(Shadow.StaticInitialization,
+			p = new KindedPointcut(Shadow.StaticInitialization,
 					new SignaturePattern(Member.STATIC_INITIALIZATION, ModifiersPattern.ANY, 
 					TypePattern.ANY, typePat, NamePattern.ANY, TypePatternList.EMPTY, 
 					ThrowsPattern.ANY,AnnotationTypePattern.ANY));
-		} else  if (kind.equals("preinitialization")) {
+		}  else  if (kind.equals("preinitialization")) {
 			parseIdentifier(); eat("(");
 			SignaturePattern sig = parseConstructorSignaturePattern();
 			eat(")");
-			return new KindedPointcut(Shadow.PreInitialization, sig);
-        } else if (kind.equals("if")) {
-            //@style support
-            parseIdentifier();
-            eat("(");
-            if (maybeEat("true")) {
-                eat(")");
-                return new IfPointcut.IfTruePointcut();
-            } else if (maybeEat("false")) {
-                eat(")");
-                return new IfPointcut.IfFalsePointcut();
-            } else {
-                //TODO AV - true/false stuff needed ? What are the token here ?
-                eat(")");
-                // build a readable pointcut as an hint (toString() dumps raw token array into an horrible thing)
-                StringBuffer sb = new StringBuffer();
-                int currentIndex = tokenSource.getIndex();
-                try {
-                    tokenSource.setIndex(0);
-                    for (int i = 0; !IToken.EOF.equals(tokenSource.peek(i)); i++) {
-                        if (i > 0) sb.append(' ');
-                        sb.append(tokenSource.peek(i).getString());
-                    }
-                } finally {
-                    tokenSource.setIndex(currentIndex);
-                }
-                return new IfPointcut(sb.toString());
-            }
-		} else {
-			return parseReferencePointcut();
+			p = new KindedPointcut(Shadow.PreInitialization, sig);
+		} else  if (kind.equals("if")) {
+			// @style support allows if(), if(true), if(false)
+			parseIdentifier(); 
+			eat("(");
+			if (maybeEatIdentifier("true")) {
+				eat(")");
+				p = new IfPointcut.IfTruePointcut();
+			} else if (maybeEatIdentifier("false")) {
+			    eat(")");
+				p = new IfPointcut.IfFalsePointcut();
+			} else {
+				eat(")");
+				// TODO - Alex has some token stuff going on here to get a readable name in place of ""...
+				p = new IfPointcut("");
+			}
 		}
+		else {
+			p = parseReferencePointcut();
+			if (typeVariables != null) 
+				throw new ParserException("type variable specification not allowed for reference pointcuts",possibleTypeVariableToken);
+		}
+		if (typeVariables != null) p.setTypeVariables(typeVariables);
+		return p;
 	}
 
 	public Pointcut parseAnnotationPointcut() {		
@@ -538,36 +538,40 @@ public class PatternParser {
 	}
 	
 	public TypePattern parseTypePattern() {
-		TypePattern p = parseAtomicTypePattern(); 
+		return parseTypePattern(false,false);
+	}
+	
+	public TypePattern parseTypePattern(boolean insideTypeParameters, boolean allowTypeVariableDeclarations) {
+		TypePattern p = parseAtomicTypePattern(insideTypeParameters,allowTypeVariableDeclarations); 
 		if (maybeEat("&&")) {
-			p = new AndTypePattern(p, parseNotOrTypePattern());
+			p = new AndTypePattern(p, parseNotOrTypePattern(insideTypeParameters,allowTypeVariableDeclarations));
 		}  
 		
 		if (maybeEat("||")) {
-			p = new OrTypePattern(p, parseTypePattern());
+			p = new OrTypePattern(p, parseTypePattern(insideTypeParameters,allowTypeVariableDeclarations));
 		}		
 		return p;
 	}
 	
-	private TypePattern parseNotOrTypePattern() {
-		TypePattern p = parseAtomicTypePattern();
+	private TypePattern parseNotOrTypePattern(boolean insideTypeParameters,boolean allowTypeVariableDeclarations) {
+		TypePattern p = parseAtomicTypePattern(insideTypeParameters,allowTypeVariableDeclarations);
 		if (maybeEat("&&")) {			
-			p = new AndTypePattern(p, parseTypePattern());
+			p = new AndTypePattern(p, parseTypePattern(insideTypeParameters,allowTypeVariableDeclarations));
 		} 
 		return p;		
 	}
 	
-	private TypePattern parseAtomicTypePattern() {
+	private TypePattern parseAtomicTypePattern(boolean insideTypeParameters, boolean allowTypeVariableDeclarations) {
 		AnnotationTypePattern ap = maybeParseAnnotationPattern();
 		if (maybeEat("!")) {
 			//int startPos = tokenSource.peek(-1).getStart();
 			//??? we lose source location for true start of !type
-			TypePattern p = new NotTypePattern(parseAtomicTypePattern());
+			TypePattern p = new NotTypePattern(parseAtomicTypePattern(insideTypeParameters,allowTypeVariableDeclarations));
 			p = setAnnotationPatternForTypePattern(p,ap);
 			return p;			
 		}
 		if (maybeEat("(")) {
-			TypePattern p = parseTypePattern();
+			TypePattern p = parseTypePattern(insideTypeParameters,allowTypeVariableDeclarations);
 			p = setAnnotationPatternForTypePattern(p,ap);
 			eat(")");
 			boolean isVarArgs = maybeEat("...");
@@ -575,7 +579,7 @@ public class PatternParser {
 			return p;
 		}
 		int startPos = tokenSource.peek().getStart();
-	    TypePattern p = parseSingleTypePattern();
+	    TypePattern p = parseSingleTypePattern(insideTypeParameters,allowTypeVariableDeclarations);
 	    int endPos = tokenSource.peek(-1).getEnd();
 	    p = setAnnotationPatternForTypePattern(p,ap);
 	    p.setLocation(sourceContext, startPos, endPos);
@@ -586,7 +590,7 @@ public class PatternParser {
 		TypePattern ret = t;
 		if (ap != AnnotationTypePattern.ANY) {
 			if (t == TypePattern.ANY) {
-				ret = new WildTypePattern(new NamePattern[] {NamePattern.ANY},false,0,false);
+				ret = new WildTypePattern(new NamePattern[] {NamePattern.ANY},false,0,false,null);
 			}
 			if (t.annotationPattern == AnnotationTypePattern.ANY) {
 				ret.setAnnotationTypePattern(ap);				
@@ -649,17 +653,27 @@ public class PatternParser {
 	}
 	
 	public TypePattern parseSingleTypePattern() {
+		return parseSingleTypePattern(false, false);
+	}
+	
+	public TypePattern parseSingleTypePattern(boolean insideTypeParameters, boolean allowTypeVariableDeclarations) {
+		if (insideTypeParameters && maybeEat("?")) return parseGenericsWildcardTypePattern();
+		
 		List names = parseDottedNamePattern(); 
-//		new ArrayList();
-//		NamePattern p1 = parseNamePattern();
-//		names.add(p1);
-//		while (maybeEat(".")) {
-//			if (maybeEat(".")) {
-//				names.add(NamePattern.ELLIPSIS);
-//			}
-//			NamePattern p2 = parseNamePattern();
-//			names.add(p2);
-//		}
+		
+		TypePattern upperBound = null;
+		TypePattern[] additionalInterfaceBounds = new TypePattern[0];
+		TypePattern lowerBound = null;
+		if ((names.size() == 1) && allowTypeVariableDeclarations) {
+			if (maybeEatIdentifier("extends")) {
+				upperBound = parseTypePattern(false,false);
+				additionalInterfaceBounds = maybeParseAdditionalInterfaceBounds();
+			}
+			if (maybeEatIdentifier("super")) {
+				lowerBound = parseTypePattern(false,false);
+			}
+		}
+
 		int dim = 0;
 		while (maybeEat("[")) {
 			eat("]");
@@ -669,10 +683,14 @@ public class PatternParser {
         boolean isVarArgs = maybeEat("...");
 
 		boolean includeSubtypes = maybeEat("+");
+		
+		TypePatternList typeParameters = maybeParseTypeParameterList(allowTypeVariableDeclarations);
 		int endPos = tokenSource.peek(-1).getEnd();
 		
 		//??? what about the source location of any's????
-		if (names.size() == 1 && ((NamePattern)names.get(0)).isAny() && dim == 0 && !isVarArgs) return TypePattern.ANY;
+		if (names.size() == 1 && ((NamePattern)names.get(0)).isAny() && 
+				dim == 0 && !isVarArgs && typeParameters == null && upperBound == null &&
+				lowerBound == null) return TypePattern.ANY;
 		
 		// Notice we increase the dimensions if varargs is set.  this is to allow type matching to
 		// succeed later: The actual signature at runtime of a method declared varargs is an array type of
@@ -680,10 +698,26 @@ public class PatternParser {
 		// pattern 'Integer...' we create a WildTypePattern 'Integer[]' with varargs set.  If this matches
 		// during shadow matching, we confirm that the varargs flags match up before calling it a successful
 		// match.
-		return new WildTypePattern(names, includeSubtypes, dim+(isVarArgs?1:0), endPos,isVarArgs);
+		return new WildTypePattern(names, includeSubtypes, dim+(isVarArgs?1:0), endPos,isVarArgs,typeParameters,
+				upperBound,additionalInterfaceBounds,lowerBound);
 	}
 	
-
+	public TypePattern parseGenericsWildcardTypePattern() {
+		List names = new ArrayList();
+		names.add(new NamePattern("?"));
+		TypePattern upperBound = null;
+		TypePattern[] additionalInterfaceBounds = new TypePattern[0];
+		TypePattern lowerBound = null;
+		if (maybeEatIdentifier("extends")) {
+			upperBound = parseTypePattern(false,false);
+			additionalInterfaceBounds = maybeParseAdditionalInterfaceBounds();
+		}
+		if (maybeEatIdentifier("super")) {
+			lowerBound = parseTypePattern(false,false);
+		}
+		int endPos = tokenSource.peek(-1).getEnd();
+		return new WildTypePattern(names,false,0,endPos,false,null,upperBound,additionalInterfaceBounds,lowerBound);
+	}
 	
 //	private AnnotationTypePattern completeAnnotationPattern(AnnotationTypePattern p) {
 //		if (maybeEat("&&")) {
@@ -797,9 +831,9 @@ public class PatternParser {
 				if (previous != null) {
 					if (!isAdjacent(previous, tok)) break;
 				}
-				if ("*".equals(tok.getString()) || (tok.isIdentifier() && !"...".equals(tok.getString()))) {
+				if (tok.getString() == "*" || (tok.isIdentifier() && tok.getString()!="...")) {
 					buf.append(tok.getString());
-				} else if ("...".equals(tok.getString())) {
+				} else if (tok.getString()=="...") {
 					break;
 				} else if (tok.getLiteralKind() != null) {
 					//System.err.println("literal kind: " + tok.getString());
@@ -869,7 +903,7 @@ public class PatternParser {
 			if (previous != null) {
 				if (!isAdjacent(previous, tok)) break;
 			}
-			if (tok.getString().equals("*") || tok.isIdentifier()) {
+			if (tok.getString() == "*" || tok.isIdentifier()) {
 				buf.append(tok.getString());
 			} else if (tok.getLiteralKind() != null) {
 				//System.err.println("literal kind: " + tok.getString());
@@ -1067,6 +1101,9 @@ public class PatternParser {
 	
 	public SignaturePattern parseFieldSignaturePattern() {
 		int startPos = tokenSource.peek().getStart();
+		
+	//	TypePatternList followMe = TypePatternList.ANY;
+		
 		AnnotationTypePattern annotationPattern = maybeParseAnnotationPattern();
 		ModifiersPattern modifiers = parseModifiersPattern();
 		TypePattern returnType = parseTypePattern();
@@ -1100,6 +1137,82 @@ public class PatternParser {
 		    return null;
 		}
 	}
+	
+	/**
+	 * Parse type variable declarations for a generic method or at the start of a signature pointcut to identify
+	 * type variable names in a generic type.
+	 * @param includeParameterizedTypes
+	 * @return
+	 */
+	public TypeVariablePatternList maybeParseTypeVariableList() {
+		if (!maybeEat("<")) return null;
+		List typeVars = new ArrayList();
+		TypeVariable t = parseTypeVariable();
+		typeVars.add(t);
+		while (maybeEat(",")) {
+			TypeVariable nextT = parseTypeVariable();
+			typeVars.add(nextT);
+		}
+		eat(">");
+		TypeVariable[] tvs = new TypeVariable[typeVars.size()];
+		typeVars.toArray(tvs);
+		return new TypeVariablePatternList(tvs);
+	}
+	
+	// of the form execution<T,S,V> - allows identifiers only
+	public TypeVariablePatternList maybeParseSimpleTypeVariableList() {
+		if (!maybeEat("<")) return null;
+		List typeVars = new ArrayList();
+		do {
+			String typeVarName = parseIdentifier();
+			TypeVariable tv = new TypeVariable(typeVarName);
+			typeVars.add(tv);
+		} while (maybeEat(","));
+		eat(">");
+		TypeVariable[] tvs = new TypeVariable[typeVars.size()];
+		typeVars.toArray(tvs);
+		return new TypeVariablePatternList(tvs);		
+	}
+	
+	public TypePatternList maybeParseTypeParameterList(boolean allowTypeVariables) {
+		if (!maybeEat("<")) return null;
+		List typePats = new ArrayList();
+		do {
+			TypePattern tp = parseTypePattern(true,allowTypeVariables);
+			typePats.add(tp);
+		} while(maybeEat(","));
+		eat(">");
+		TypePattern[] tps = new TypePattern[typePats.size()];
+		typePats.toArray(tps);
+		return new TypePatternList(tps);		
+	}
+	
+	public TypeVariable parseTypeVariable() {
+		TypePattern upperBound = null;
+		TypePattern[] additionalInterfaceBounds = null;
+		TypePattern lowerBound = null;
+		String typeVariableName = null;
+		if (typeVariableName == null) typeVariableName = parseIdentifier();
+		if (maybeEatIdentifier("extends")) {
+			upperBound = parseTypePattern();
+			additionalInterfaceBounds = maybeParseAdditionalInterfaceBounds();
+		} else if (maybeEatIdentifier("super")) {
+			lowerBound = parseTypePattern();
+		}
+		return new TypeVariable(typeVariableName,upperBound,additionalInterfaceBounds,lowerBound);
+	}
+	
+	private TypePattern[] maybeParseAdditionalInterfaceBounds() {
+		List boundsList = new ArrayList();
+		while (maybeEat("&")) {
+			TypePattern tp = parseTypePattern();
+			boundsList.add(tp);
+		}
+		if (boundsList.size() == 0) return null;
+		TypePattern[] ret = new TypePattern[boundsList.size()];
+		boundsList.toArray(ret);
+		return ret;
+	}
 
 	public String parsePossibleStringSequence(boolean shouldEnd) {
 		StringBuffer result = new StringBuffer();
@@ -1130,7 +1243,7 @@ public class PatternParser {
 	public String parseStringLiteral() {
 		IToken token = tokenSource.next();
 		String literalKind = token.getLiteralKind();
-		if (literalKind.equals("string")) {
+		if (literalKind == "string") {
 			return token.getString();
 		}
 
@@ -1169,7 +1282,7 @@ public class PatternParser {
 	
 	public boolean maybeEat(String token) {
 		IToken next = tokenSource.peek();
-		if (next.getString().equals(token)) {
+		if (next.getString() == token) {
 			tokenSource.next();
 			return true;
 		} else {
@@ -1189,7 +1302,7 @@ public class PatternParser {
 		
 	public boolean peek(String token) {
 		IToken next = tokenSource.peek();
-		return next.getString().equals(token);
+		return next.getString() == token;
 	}
 
 	

@@ -44,7 +44,7 @@ import org.aspectj.weaver.ast.Test;
 
 public class CflowPointcut extends Pointcut {
 	private Pointcut entry; // The pointcut inside the cflow() that represents the 'entry' point
-	private boolean isBelow;// Is this cflowbelow?
+	boolean isBelow;// Is this cflowbelow?
 	private int[] freeVars;
 	
 	private static Hashtable cflowFields = new Hashtable();
@@ -68,9 +68,12 @@ public class CflowPointcut extends Pointcut {
 		this.pointcutKind = CFLOW;
 	}
 
-    public boolean isBelow() {
-        return isBelow;
-    }
+	/**
+	 * @return Returns true is this is a cflowbelow pointcut
+	 */
+	public boolean isCflowBelow() {
+		return isBelow;
+	}
 
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;
@@ -82,6 +85,10 @@ public class CflowPointcut extends Pointcut {
 	}
 	
     public FuzzyBoolean fastMatch(FastMatchInfo type) {
+		return FuzzyBoolean.MAYBE;
+	}
+	
+	public FuzzyBoolean fastMatch(Class targetType) {
 		return FuzzyBoolean.MAYBE;
 	}
     
@@ -312,8 +319,7 @@ public class CflowPointcut extends Pointcut {
 		}
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
-    }
-
+	}
 }

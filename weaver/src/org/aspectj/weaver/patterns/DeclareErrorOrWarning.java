@@ -58,7 +58,10 @@ public class DeclareErrorOrWarning extends Declare {
         return result;
     }
 
-
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this,data);
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Declare.ERROR_OR_WARNING);
 		s.writeBoolean(isError);

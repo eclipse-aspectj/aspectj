@@ -14,7 +14,7 @@ package org.aspectj.weaver.patterns;
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class IdentityPointcutVisitor implements PointcutVisitor {
+public class IdentityPointcutVisitor implements PatternNodeVisitor {
 
     public Object visit(AnyTypePattern node, Object data) {
         return node;
@@ -231,4 +231,12 @@ public class IdentityPointcutVisitor implements PointcutVisitor {
     public Object visit(Pointcut.MatchesNothingPointcut node, Object data) {
         return node;
     }
+
+	public Object visit(TypeVariable node, Object data) {
+		return node;
+	}
+
+	public Object visit(TypeVariablePatternList node, Object data) {
+		return node;
+	}
 }

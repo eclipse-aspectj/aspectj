@@ -150,7 +150,14 @@ public class NotTypePattern extends TypePattern {
 		return 17 + 37 * negatedPattern.hashCode();
 	}
 
-    public Object accept(PointcutVisitor visitor, Object data) {
+    public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+	
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor,data);
+		negatedPattern.traverse(visitor, ret);
+		return ret;
+	}
+
 }
