@@ -182,6 +182,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("static import failures");
   } 
   
+//  public void testGenerics_pr99089() {
+//      runTest("ArrayIndexOutOfBoundsException - Generics in privileged aspects");
+//  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

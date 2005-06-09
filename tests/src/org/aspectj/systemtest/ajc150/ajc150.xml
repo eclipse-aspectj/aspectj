@@ -112,6 +112,10 @@
         <run class="PR78021"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr99089" vm="1.5" pr="99089" title="ArrayIndexOutOfBoundsException - Generics in privileged aspects">
+        <compile files="DataClass.java,TracingAspect.java" options="-1.5"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs150" pr="79554" title="Return in try-block disables catch-block if final-block is present">
         <compile files="PR79554.java"/>
         <run class="PR79554"/>
@@ -1006,8 +1010,8 @@
        <compile files="P.java,Q.java,R.java"/>
        <run class="P">
            <stderr>
-               <line text="R reporting 3"/>
                <line text="Q reporting 2"/>
+               <line text="R reporting 3"/>
            </stderr>
        </run>
    </ajc-test> 
