@@ -58,10 +58,9 @@ public class PerTypeWithinTests extends XMLBasedAjcTestCase {
    * Aspects Q and R match P with a pertypewithin() - they shouldn't clash in any way
    *
    */
-  // TODO test invalid - assumes advise in unrelated aspects are ordered
-//  public void testTwoAspectsHittingOneType() {
-//  	runTest("ptw multi-aspects");
-//  }
+  public void testTwoAspectsHittingOneType() {
+  	runTest("ptw multi-aspects");
+  }
 
   /**
    * Checks the use of pertypewithin() doesn't result in extra join points (i.e. the

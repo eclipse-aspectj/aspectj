@@ -1,5 +1,7 @@
 aspect Q pertypewithin(P) {
 
+  declare precedence: R,Q;
+
   int ctr = 0;
 
   after(): execution(* runA(..)) {
