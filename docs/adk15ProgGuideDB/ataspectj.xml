@@ -1,376 +1,512 @@
 <chapter id="ataspectj" xreflabel="AtAspectJ">
 
-  <title>An Annotation Based Development Style</title>
-  
-  <sect1 id="ataspectj-intro">
-      <title>Introduction</title>
-      
-      <para>In addition to the familiar AspectJ code-based style of aspect
+    <title>An Annotation Based Development Style</title>
+
+    <sect1 id="ataspectj-intro">
+        <title>Introduction</title>
+
+        <para>In addition to the familiar AspectJ code-based style of aspect
       declaration, AspectJ 5 also supports an annotation-based style of 
       aspect declaration. We informally call the set of annotations that
       support this development style the "@AspectJ" annotations.</para>
-      
-      <para>
+
+        <para>
           AspectJ 5 allows aspects and their members to be specified using
           either the code style or the annotation style. Whichever style you
           use, the AspectJ weaver ensures that your program has exactly the
           same semantics. It is, to quote a famous advertising campaign, 
           "a choice, not a compromise". The two styles can be mixed within
           a single application, and even within a single source file, though
-          we doubt this latter mix will be recommended in practice.       
-      </para>
-      
-      <para>
+          we doubt this latter mix will be recommended in practice.
+        </para>
+
+        <para>
           The use of the @AspectJ annotations means that there are large 
           classes of AspectJ applications that can be compiled by a regular
           Java 5 compiler, and subsequently woven by the AspectJ weaver (for
           example, as an additional build stage, or as late as class load-time).
           In this chapter we introduce the @AspectJ annotations and show how
           they can be used to declare aspects and aspect members.
-      </para>
-                        
-  </sect1>
-  
-  <sect1 id="ataspectj-aspects">
-      <title>Aspect Declarations</title>
-      
-      <para>
-      Aspect declarations are supported by the 
-      <literal>org.aspectj.lang.annotation.Aspect</literal> annotation. 
-      The declaration:      
-      </para>
-      
-     <programlisting><![CDATA[
+        </para>
+
+    </sect1>
+
+    <sect1 id="ataspectj-aspects">
+        <title>Aspect Declarations</title>
+
+        <para>
+      Aspect declarations are supported by the
+            <literal>org.aspectj.lang.annotation.Aspect</literal> annotation.
+      The declaration:
+        </para>
+
+        <programlisting><![CDATA[
      @Aspect
      public class Foo {}
-      ]]></programlisting>
-      
-      <para>Is equivalent to:</para>
+         ]]></programlisting>
 
-     <programlisting><![CDATA[
+        <para>Is equivalent to:</para>
+
+        <programlisting><![CDATA[
      public aspect Foo {}
-      ]]></programlisting>
+         ]]></programlisting>
 
-    <para>Privileged aspects are not supported by the annotation style</para>
-    <!--
-     <programlisting><![CDATA[
-     @Aspect(isPrivileged=true)
-     public class Foo {}
-     
-     is equivalent to...
-     
-     public privileged aspect Foo {}
-      ]]></programlisting>
-    -->
-    <para>To specify an aspect an aspect instantiation model (the default is
-    singleton), provide the perclause as the <literal>@Aspect</literal> value.
-    For example:</para>
-    
-     <programlisting><![CDATA[
+        <para>And since issingleton() is the default aspect instantiation model it is equivalent to:</para>
+
+        <programlisting><![CDATA[
+      @Aspect("issingleton()")
+      public class Foo {}
+         ]]></programlisting>
+
+
+        <para>Privileged aspects are not supported by the annotation style</para>
+        <!--
+         <programlisting><![CDATA[
+         @Aspect(isPrivileged=true)
+         public class Foo {}
+
+         is equivalent to...
+
+         public privileged aspect Foo {}
+          ]]></programlisting>
+        -->
+        <para>To specify an aspect an aspect instantiation model (the default is
+    singleton), provide the perclause as the
+            <literal>@Aspect</literal> value.
+    For example:
+        </para>
+
+        <programlisting><![CDATA[
      @Aspect("perthis(execution(* abc..*(..)))")
      public class Foo {}
-     
-     is equivalent to...
-     
-     public aspect Foo perthis(execution(* abc..*(..))) {}
-      ]]></programlisting>
 
-  </sect1>
-  
-  <sect1 id="ataspectj-pcadvice">
-      <title>Pointcuts and Advice</title>
-      
-      <para>
-          Pointcut and advice declarations can be made using the 
-          <literal>Pointcut, Before, After, AfterReturning, AfterThrowing,</literal>
-          and <literal>Around</literal> annotations.                    
-      </para>
-      
-      <sect2>
-          <title>Pointcuts</title>
-          
-          <para>
-              Pointcuts are specified using the 
-              <literal>org.aspectj.lang.annotation.Pointcut</literal> annotation
-              on a method declaration. The method should have a <literal>void</literal>
+     is equivalent to...
+
+     public aspect Foo perthis(execution(* abc..*(..))) {}
+         ]]></programlisting>
+
+    </sect1>
+
+    <sect1 id="ataspectj-pcadvice">
+        <title>Pointcuts and Advice</title>
+
+        <para>
+          Pointcut and advice declarations can be made using the
+            <literal>Pointcut, Before, After, AfterReturning, AfterThrowing,</literal>
+          and
+            <literal>Around</literal> annotations.
+        </para>
+
+        <sect2>
+            <title>Pointcuts</title>
+
+            <para>
+              Pointcuts are specified using the
+                <literal>org.aspectj.lang.annotation.Pointcut</literal> annotation
+              on a method declaration. The method should have a
+                <literal>void</literal>
               return type. The parameters of the method correspond to the parameters
               of the pointcut. The modifiers of the method correspond to the modifiers
-              of the pointcut. The method body should be empty and there should be no
-              throws clause.
-          </para>
-          
-          <para>A simple example:</para>
+              of the pointcut.
+            </para>
 
-     <programlisting><![CDATA[     
+            <para>
+              As a general rule, the
+                <literal>@Pointcut</literal> annotated method must have an empty method body
+              and must not have any
+                <literal>throws</literal> clause. If formal are bound (using
+                <literal>args(), target(), this(), @args(), @target(), @this(), @annotation())</literal> in the
+              pointcut, then they must appear in the method signature.
+            </para>
+
+            <para>
+            There is one special case to the general rule for when you use
+                <literal>if()</literal> pointcut
+            as detailled in the next section.
+            </para>
+
+            <para>A simple example:</para>
+
+            <programlisting><![CDATA[
      @Pointcut("call(* *.*(..))")
      void anyCall() {}
-     
+
      is equivalent to...
-     
+
      pointcut anyCall() : call(* *.*(..));
-      ]]></programlisting>
-          
-          <para>An example with modifiers:</para>
-          
-     <programlisting><![CDATA[
+             ]]></programlisting>
+
+
+            <para>An example with formal bindings:</para>
+
+            <programlisting><![CDATA[
+     @Pointcut("call(* *.*(int)) && args(i) && target(callee)")
+     void someCall(int i, Foo callee) {}
+
+     is equivalent to...
+
+     pointcut anyCall(int i, Foo callee) : call(* *.*(int)) && args(i) && target(callee);
+             ]]></programlisting>
+
+
+
+
+            <para>An example with modifiers (it is also good to remember that Java 5 annotations are not inherited):</para>
+
+            <programlisting><![CDATA[
      @Pointcut("")
      protected abstract void anyCall();
-     
+
      is equivalent to...
-     
+
      protected abstract pointcut anyCall();
-      ]]></programlisting>
-          
-          <para>
+             ]]></programlisting>
+
+            <para>
           Using the code style, types referenced in pointcut expressions are 
           resolved with respect to the imported types in the compilation unit.
           When using the annotation style, types referenced in pointcut 
           expressions are resolved in the absence of any imports and so have
           to be fully qualified if they are not by default visible to the
-          declaring type (outside of the declaring package and java.lang). This
+          declaring type (outside of the declaring package and
+                <literal>java.lang</literal>). This
           to not apply to type patterns with wildcards, which are always resolved
-          in a global scope.            
-          </para>
-          
-          <para>
+          in a global scope.
+            </para>
+
+            <para>
           Consider the following compilation unit:
-          </para>
-          
-     <programlisting><![CDATA[
+            </para>
+
+            <programlisting><![CDATA[
      package org.aspectprogrammer.examples;
-     
+
      import java.util.List;
-     
+
      public aspect Foo {
-     
+
        pointcut listOperation() : call(* List.*(..));
-      
+
        pointcut anyUtilityCall() : call(* java.util..*(..));
-           
+
      }
-      ]]></programlisting>
-      
-      <para>
-      Using the annotation style this would be written as:      
-      </para>
-      
-     <programlisting><![CDATA[
+             ]]></programlisting>
+
+            <para>
+      Using the annotation style this would be written as:
+            </para>
+
+            <programlisting><![CDATA[
      package org.aspectprogrammer.examples;
-     
+
      import java.util.List; // redundant but harmless
-     
+
      @Aspect
      public class Foo {
-     
+
        @Pointcut("call(* java.util.List.*(..))") // must qualify
        void listOperation() {}
-      
+
        @Pointcut("call(* java.util..*(..))")
        void anyUtilityCall() {}
-           
+
      }
-      ]]></programlisting>
-      
-      <para>The <literal>value</literal> attribute of the 
-      <literal>Pointcut</literal> declaration may contain any valid
-      AspectJ pointcut declaration.</para>
-          
-      </sect2>
-      
-      <sect2>
-          <title>Advice</title>
-          
-          <para>In this section we first discuss the use of annotations for 
-          simple advice declarations. Then we show how <literal>thisJoinPoint</literal>
+             ]]></programlisting>
+
+            <para>The
+                <literal>value</literal> attribute of the
+                <literal>Pointcut</literal> declaration may contain any valid
+                AspectJ pointcut declaration - though <literal>if()</literal> pointcut is a special case explained below.
+            </para>
+
+            <para>The special case for the <literal>if()</literal> pointcut.</para>
+
+            <para>In code style, it is possible to use the <literal>if(...)</literal> poincut to implement
+                conditional pointcut whose residual if form will be evaluated at runtime. The <literal>if(...)</literal>
+                body can be any valid Java boolean expression, and can use any exposed formal, as well as the join point forms
+                <literal>thisJoinPoint, thisJoinPointStaticPart and thisJoinPointEnclosingStaticPart</literal>.
+             </para>
+
+            <para>
+                When using the annotation style, it would be really a pain to write a valid Java expression within
+                the annotation value so the syntax differs sligthly, whilst providing the very same
+                semantics and runtime behaviour. Take the following examples:
+            </para>
+
+            <programlisting><![CDATA[
+     @Pointcut("call(* *.*(int)) && args(i) && if()")
+     public static boolean someCallWithIfTest(int i) {
+        return i > 0;
+     }
+
+     is equivalent to...
+
+     pointcut someCallWithIfTest(int i) : call(* *.*(int)) && args(i) && if(i > 0);
+             ]]></programlisting>
+
+            <para> and the following is also a valid form:</para>
+
+            <programlisting><![CDATA[
+     static int COUNT = 0;
+
+     @Pointcut("call(* *.*(int)) && args(i) && if()")
+     public static boolean someCallWithIfTest(int i, JoinPoint jp, JoinPoint.EnclosingStaticPart esjp) {
+        // can call any kind of method (though this method is a static one)
+        return i > 0
+               && jp.getSignature().getName.startsWith("doo")
+               && esjp.getSignature().getName().startsWith("test")
+               && COUNT++ < 10;
+     }
+
+     @Before("someCallWithIfTest(arg0, jp, enc)") // see how the pointcut is referenced: we obey its exact signature
+     public void beforeAdviceWithRuntimeTest(int arg0, JoinPoint jp, JoinPoint.EnclosingStaticPart enc) {
+        //...
+     }
+
+     // Note that the following is NOT valid
+     /*
+     @Before("call(* *.*(int)) && args(i) && if()")
+     public void advice(int i) {
+        // so you were writing an advice or an if body ?
+     }
+     */
+             ]]></programlisting>
+
+            <para>
+                It is thus possible with the annotation style to use the <literal>if()</literal> pointcut
+                only within an <literal>@Pointcut</literal> expression. The <literal>if()</literal> must not contain any
+                body. The so annotated <literal>@Pointcut</literal> method must then be of the form <literal>public static boolean</literal>
+                and can use formal bindings as usual.
+                Extra <emphasis>implicit</emphasis> (thus unbound) arguments of type JoinPoint, JoinPoint.StaticPart and JoinPoint.EnclosingStaticPart can also be used
+                (they can't for regular pointcut without <literal>if()</literal> form).
+            </para>
+
+            <para>
+                The special forms <literal>if(true)</literal> and <literal>if(false)</literal> can be used in a more
+                general way and don't imply that the pointcut method must have a body.
+                You can thus write <literal>@Before("somePoincut() &amp;&amp; if(false)")</literal>.
+            </para>
+
+        </sect2>
+
+        <sect2>
+            <title>Advice</title>
+
+            <para>In this section we first discuss the use of annotations for
+          simple advice declarations. Then we show how
+                <literal>thisJoinPoint</literal>
           and its siblings are handled in the body of advice and discuss the 
-          treatment of <literal>proceed</literal> in around advice.</para>
-          
-          <para>Using the annotation style, an advice declaration is written as
-          a regular Java method with one of the <literal>Before, After, AfterReturning,
-          AfterThrowing,</literal> or <literal>Around</literal> annotations. Except in
+          treatment of
+                <literal>proceed</literal> in around advice.
+            </para>
+
+            <para>Using the annotation style, an advice declaration is written as
+          a regular Java method with one of the
+                <literal>Before, After, AfterReturning,
+          AfterThrowing,</literal> or
+                <literal>Around</literal> annotations. Except in
           the case of around advice, the method should return void. The method should 
-          be declared public.</para>
-             
-          <para>A method that has an advice annotation is treated exactly as an
+          be declared public.
+            </para>
+
+            <para>A method that has an advice annotation is treated exactly as an
           advice declaration by AspectJ's weaver. This includes the join points that
           arise when the advice is executed (an adviceexecution join point, not a 
           method execution join point), and the restriction that advice cannot be
           invoked explicitly (the weaver will issue an error if an advice method
           is explicitly invoked).</para>
-          
-          <para>The following example shows a simple before advice declaration in
+
+            <para>The following example shows a simple before advice declaration in
           both styles:</para>
 
-     <programlisting><![CDATA[
+            <programlisting><![CDATA[
      before() : call(* org.aspectprogrammer..*(..)) && this(Foo) {
        System.out.println("Call from Foo");
      }
-     
+
      is equivalent to...
-     
+
      @Before("call(* org.aspectprogrammer..*(..)) && this(Foo)")
      public void callFromFoo() {
        System.out.println("Call from Foo");
      }
-      ]]></programlisting>
-          
-          <para>Notice one slight difference between the two advice declarations: in
+             ]]></programlisting>
+
+            <para>Notice one slight difference between the two advice declarations: in
           the annotation style, the advice has a name, "callFromFoo". Even though
           advice cannot be invoked explicitly, this name is useful in join point
           matching when advising advice execution. For this reason, and to preserve
           exact semantic equivalence between the two styles, we also support the
-          <literal>org.aspectj.lang.annotation.AdviceName</literal> annotation.
-          The exact equivalent declarations are:</para>
+                <literal>org.aspectj.lang.annotation.AdviceName</literal> annotation.
+          The exact equivalent declarations are:
+            </para>
 
-     <programlisting><![CDATA[
+            <programlisting><![CDATA[
      @AdviceName("callFromFoo")
      before() : call(* org.aspectprogrammer..*(..)) && this(Foo) {
        System.out.println("Call from Foo");
      }
-     
+
      is equivalent to...
-     
+
      @Before("call(* org.aspectprogrammer..*(..)) && this(Foo)")
      public void callFromFoo() {
        System.out.println("Call from Foo");
      }
-      ]]></programlisting>
-          
-          <para>If the advice body needs to know which particular <literal>Foo</literal>
-          was doing the calling, just add a parameter to the advice declaration.</para>
+             ]]></programlisting>
 
-     <programlisting><![CDATA[
+            <para>If the advice body needs to know which particular
+                <literal>Foo</literal>
+          was doing the calling, just add a parameter to the advice declaration.
+            </para>
+
+            <programlisting><![CDATA[
      @AdviceName("callFromFoo")
      before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
        System.out.println("Call from Foo: " + foo);
      }
-     
+
      is equivalent to...
-     
+
      @Before("call(* org.aspectprogrammer..*(..)) && this(foo)")
      public void callFromFoo(Foo foo) {
        System.out.println("Call from Foo: " + foo);
      }
-      ]]></programlisting>
-          
-          <para>If the advice body needs access to <literal>thisJoinPoint</literal>,
-          <literal>thisJoinPointStaticPart</literal>, 
-          <literal>thisEnclosingJoinPointStaticPart</literal> then these need to 
+             ]]></programlisting>
+
+            <para>If the advice body needs access to
+                <literal>thisJoinPoint</literal>,
+                <literal>thisJoinPointStaticPart</literal>,
+                <literal>thisEnclosingJoinPointStaticPart</literal> then these need to
           be declared as additional method parameters when using the annotation
           style. <!-- TODO AV - not any more - In AspectJ 1.5.0 we require that these parameters be declared
-          first in the parameter list, in later releases we may relax this
-          requirement.--></para>
+            first in the parameter list, in later releases we may relax this
+            requirement.-->
+            </para>
 
-     <programlisting><![CDATA[
+            <programlisting><![CDATA[
      @AdviceName("callFromFoo")
      before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
-       System.out.println("Call from Foo: " + foo + " at " 
+       System.out.println("Call from Foo: " + foo + " at "
                           + thisJoinPoint);
      }
-     
+
      is equivalent to...
-     
+
      @Before("call(* org.aspectprogrammer..*(..)) && this(foo)")
      public void callFromFoo(JoinPoint thisJoinPoint, Foo foo) {
-       System.out.println("Call from Foo: " + foo + " at " 
+       System.out.println("Call from Foo: " + foo + " at "
                           + thisJoinPoint);
      }
-      ]]></programlisting>
-          
-          <para>Advice that needs all three variables would be declared:</para>
+             ]]></programlisting>
 
-     <programlisting><![CDATA[
+            <para>Advice that needs all three variables would be declared:</para>
+
+            <programlisting><![CDATA[
      @Before("call(* org.aspectprogrammer..*(..)) && this(Foo)")
-     public void callFromFoo(JoinPoint thisJoinPoint, 
+     public void callFromFoo(JoinPoint thisJoinPoint,
                              JoinPoint.StaticPart thisJoinPointStaticPart,
                              JoinPoint.EnclosingStaticPart thisEnclosingJoinPointStaticPart) {
-         // ...                             
+         // ...
      }
-      ]]></programlisting>
-      
-      <para>
-          <literal>JoinPoint.EnclosingStaticPart</literal> is a new (empty) sub-interface
-          of <literal>JoinPoint.StaticPart</literal> which allows the AspectJ weaver to 
-          distinguish based on type which of <literal>thisJoinPointStaticPart</literal> and
-          <literal>thisEnclosingJoinPointStaticPart</literal> should be passed in a given
+             ]]></programlisting>
+
+            <para>
+                <literal>JoinPoint.EnclosingStaticPart</literal> is a new (empty) sub-interface
+          of
+                <literal>JoinPoint.StaticPart</literal> which allows the AspectJ weaver to
+          distinguish based on type which of
+                <literal>thisJoinPointStaticPart</literal> and
+                <literal>thisEnclosingJoinPointStaticPart</literal> should be passed in a given
           parameter position.
-      </para>
-          
-      <para><literal>After</literal> advice declarations take exactly the same form
-      as <literal>Before</literal>, as do the forms of <literal>AfterReturning</literal>
-      and <literal>AfterThrowing</literal> that do not expose the return type or
-      thrown exception respectively.</para>
-      
-      <para>
+            </para>
+
+            <para>
+                <literal>After</literal> advice declarations take exactly the same form
+      as
+                <literal>Before</literal>, as do the forms of
+                <literal>AfterReturning</literal>
+      and
+                <literal>AfterThrowing</literal> that do not expose the return type or
+      thrown exception respectively.
+            </para>
+
+            <para>
       To expose a return value with after returning advice simply declare the returning
       parameter as a parameter in the method body and bind it with the "returning"
       attribute:
-      </para>
-      
-      <programlisting><![CDATA[      
+            </para>
+
+            <programlisting><![CDATA[
       after() returning : criticalOperation() {
         System.out.println("phew");
       }
-      
+
       after() returning(Foo f) : call(Foo+.new(..)) {
         System.out.println("It's a Foo: " + f);
       }
-      
+
       can be written as...
-      
+
       @AfterReturning("criticalOperation()")
       public void phew() {
         System.out.println("phew");
       }
-      
+
       @AfterReturning(pointcut="call(Foo+.new(..))",returning="f")
       public void itsAFoo(Foo f) {
         System.out.println("It's a Foo: " + f);
-      }            
-      ]]></programlisting>
-      
-      <para>(Note the use of the "pointcut=" prefix in front of the pointcut
+      }
+            ]]></programlisting>
+
+            <para>(Note the use of the "pointcut=" prefix in front of the pointcut
       expression in the returning case).</para>
-      
-      <para>After throwing advice works in a similar fashion, using the 
-      <literal>throwing</literal> attribute when needing to expose a 
-      thrown exception.</para>
-      
-      <para>For around advice, we have to tackle the problem of <literal>proceed</literal>.
+
+            <para>After throwing advice works in a similar fashion, using the
+                <literal>throwing</literal> attribute when needing to expose a
+      thrown exception.
+            </para>
+
+            <para>For around advice, we have to tackle the problem of
+                <literal>proceed</literal>.
       One of the design goals for the annotation style is that a large class of
       AspectJ applications should be compilable with a standard Java 5 compiler.
-      A straight call to <literal>proceed</literal> inside a method body:</para>
+      A straight call to
+                <literal>proceed</literal> inside a method body:
+            </para>
 
-     <programlisting><![CDATA[
+            <programlisting><![CDATA[
      @Around("call(* org.aspectprogrammer..*(..))")
      public Object doNothing() {
-       return proceed(); // CE on this line                            
+       return proceed(); // CE on this line
      }
-      ]]></programlisting>
-      
-      
-      <para>will result in a "No such method" compilation error. For this 
-      reason AspectJ 5 defines a new sub-interface of <literal>JoinPoint</literal>, 
-      <literal>ProceedingJoinPoint</literal>. </para>
-      
-     <programlisting><![CDATA[
+             ]]></programlisting>
+
+
+            <para>will result in a "No such method" compilation error. For this
+      reason AspectJ 5 defines a new sub-interface of
+                <literal>JoinPoint</literal>,
+                <literal>ProceedingJoinPoint</literal>.
+            </para>
+
+            <programlisting><![CDATA[
      public interface ProceedingJoinPoint extends JoinPoint {
        public Object proceed(Object[] args);
      }
-      ]]></programlisting>
-      
-      <para>The around advice given above can now be written as:</para>
+             ]]></programlisting>
 
-     <programlisting><![CDATA[
+            <para>The around advice given above can now be written as:</para>
+
+            <programlisting><![CDATA[
      @Around("call(* org.aspectprogrammer..*(..))")
      public Object doNothing(ProceedingJoinPoint thisJoinPoint) {
-       return thisJoinPoint.proceed();                             
+       return thisJoinPoint.proceed();
      }
-      ]]></programlisting>
-      
-      <para>Here's an example that uses parameters for the proceed call:</para>
+             ]]></programlisting>
 
-     <programlisting><![CDATA[
+            <para>Here's an example that uses parameters for the proceed call:</para>
+
+            <programlisting><![CDATA[
      public aspect ProceedAspect {
        pointcut setAge(int i): call(* setAge(..)) && args(i);
 
@@ -395,176 +531,188 @@
      }
 
      Note that the ProceedingJoinPoint does not need to be passed as the proceed(..) arguments.
-      ]]></programlisting>
-      
-      </sect2>
-      
-  </sect1>
-  
-  <sect1 id="ataspectj-itds">
-      <title>Inter-type Declarations</title>
-      
-      <para>
+             ]]></programlisting>
+
+        </sect2>
+
+    </sect1>
+
+    <sect1 id="ataspectj-itds">
+        <title>Inter-type Declarations</title>
+
+        <para>
       Inter-type declarations are challenging to support using an annotation style.
       It's very important to preserve the exact same semantics between the code style
       and the annotation style. We also want to support compilation of a large set
       of AspectJ applications using a standard Java 5 compiler. For these reasons, in
       the initial release of AspectJ 5 we will only support inter-type declarations
       on interfaces using the annotation style.
-      </para>
-      
-      <para>
+        </para>
+
+        <para>
       Consider the following aspect:
-      </para>
-      
-     <programlisting><![CDATA[
+        </para>
+
+        <programlisting><![CDATA[
      public aspect MoodIndicator {
-      
+
         public interface Moody {};
-        
+
         private Mood Moody.mood = Mood.HAPPY;
-        
+
         public Mood Moody.getMood() {
           return mood;
         }
-     
+
         declare parents : org.xyz..* implements Moody;
-        
+
         before(Moody m) : execution(* *.*(..)) && this(m) {
            System.out.println("I'm feeling " + m.getMood());
         }
      }
-      ]]></programlisting>
-      
-      <para>
-      This declares an interface <literal>Moody</literal>, and then makes two
+         ]]></programlisting>
+
+        <para>
+      This declares an interface
+            <literal>Moody</literal>, and then makes two
       inter-type declarations on the interface - a field that is private to the
       aspect, and a method that returns the mood. Within the body of the inter-type
-      declared method <literal>getMoody</literal>, the type of <literal>this</literal>
-      is <literal>Moody</literal> (the target type of the inter-type declaration).
-      </para>
-      
-      <para>Using the annotation style this aspect can be written:
-      </para>
+      declared method
+            <literal>getMoody</literal>, the type of
+            <literal>this</literal>
+      is
+            <literal>Moody</literal> (the target type of the inter-type declaration).
+        </para>
 
-     <programlisting><![CDATA[
+        <para>Using the annotation style this aspect can be written:
+        </para>
+
+        <programlisting><![CDATA[
      @Aspect
      public class MoodIndicator {
-      
+
         public interface Moody {
           Mood getMood();
         };
-        
+
         @DeclareParents("org.xzy..*")
         class MoodyImpl implements Moody {
            private Mood mood = Mood.HAPPY;
-           
+
            public Mood getMood() {
              return mood;
            }
         }
 
-        @Before("execution(* *.*(..)) && this(m)")     
+        @Before("execution(* *.*(..)) && this(m)")
         void feelingMoody(Moody m) {
            System.out.println("I'm feeling " + m.getMood());
         }
      }
-      ]]></programlisting>
-      
-      <para>
+         ]]></programlisting>
+
+        <para>
       This is very similar to the mixin mechanism supported by AspectWerkz. The 
-      effect of the <literal>@DeclareParents</literal> annotation is equivalent to
+      effect of the
+            <literal>@DeclareParents</literal> annotation is equivalent to
       a declare parents statement that all types matching the type pattern implement
       the interface implemented by the annotated class. In addition, the member
       declarations within the annotated class are treated as inter-type declarations
       on the implemented interface. Note how this scheme operates within the constraints
-      of Java type checking and ensures that <literal>this</literal> has access
-      to the exact same set of members as in the code style example.</para>
-      
-      <para>The annotated class may only extend <literal>Object</literal>, and may
+      of Java type checking and ensures that
+            <literal>this</literal> has access
+      to the exact same set of members as in the code style example.
+        </para>
+
+        <para>The annotated class may only extend
+            <literal>Object</literal>, and may
       only implement a single interface. The interface implemented by the class may
       itself extend other interfaces.
-      </para>
-      
-  </sect1>
-  
-  <sect1 id="ataspectj-declare">
-      <title>Declare statements</title>
-      
-      <para>The previous section on inter-type declarations covered the case
+        </para>
+
+    </sect1>
+
+    <sect1 id="ataspectj-declare">
+        <title>Declare statements</title>
+
+        <para>The previous section on inter-type declarations covered the case
       of declare parents ... implements. The 1.5.0 release of AspectJ 5 will
       not support annotation style declarations for declare parents ... extends
       and declare soft (programs with these declarations would not in general
       be compilable by a regular Java 5 compiler, reducing the priority of
       their implementation). These may be supported in a future release.</para>
-      
-      <para>Declare precedence and declare annotation <emphasis>will</emphasis>
-       be supported. For declare precedence, use the <literal>@DeclarePrecedence</literal>
-       annotation as in the following example:</para>
 
-     <programlisting><![CDATA[     
+        <para>Declare precedence and declare annotation
+            <emphasis>will</emphasis>
+       be supported. For declare precedence, use the
+            <literal>@DeclarePrecedence</literal>
+       annotation as in the following example:
+        </para>
+
+        <programlisting><![CDATA[
      public aspect SystemArchitecture {
        declare precedence : Security*, TransactionSupport, Persistence;
-       
+
        // ...
      }
-     
+
      can be written as:
-     
+
      @Aspect
      @DeclarePrecedence("Security*,org.xyz.TransactionSupport,org.xyz.Persistence")
      public class SystemArchitecture {
-     
+
        // ...
      }
-      ]]></programlisting>
-     
-     <para>
+         ]]></programlisting>
+
+        <para>
      Declare annotation is supported via annotations on a dummy type member. If the
-     <literal>Target</literal> specification of the annotation allows it, use a field,
-     otherwise declare a member of the type required by the <literal>Target</literal>.
+            <literal>Target</literal> specification of the annotation allows it, use a field,
+     otherwise declare a member of the type required by the
+            <literal>Target</literal>.
      For example:
-     </para>  
-     
-     <programlisting><![CDATA[
+        </para>
+
+        <programlisting><![CDATA[
      public aspect DeclareAnnotationExamples {
        declare annotation : org.xyz.model..* : @BusinessDomain;
-       
+
        declare annotation : public * BankAccount+.*(..) : @Secured(role="supervisor");
-       
+
        declare anotation : * DAO+.* : @Persisted;
-     
+
      }
-     
+
      can be written as...
-     
+
      @Aspect
      public class DeclareAnnotationExamples {
-     
+
        @DeclareAnnotation("org.xyz.model..*)
        @BusinessDomain Object modelClass;
-       
+
        // this example assumes that the @Secured annotation has a Target
        // annotation with value ElementType.METHOD
        @DeclareAnnotation("public * org.xyz.banking.BankAccount+.*(..)")
        @Secured(role="supervisor) void bankAccountMethod();
-       
+
        @DeclareAnnotation("* DAO+.*")
-       @Persisted Object daoFields;     
-     }     
-      ]]></programlisting>
-     
-     <para>We also support annotation style declarations for declare warning and
+       @Persisted Object daoFields;
+     }
+         ]]></programlisting>
+
+        <para>We also support annotation style declarations for declare warning and
      declare error - any corresponding warnings and errors will be emitted at
      weave time, not when the aspects containing the declarations are compiled.
      (This is the same behaviour as when using declare warning or error with the
      code style). Declare warning and error declarations are made by annotating
      a string constant whose value is the message to be issued.</para>
 
-     <para>Note that the String must be a constant and not the result of the invocation
+        <para>Note that the String must be a constant and not the result of the invocation
      of a static method for example.</para>
 
-     <programlisting><![CDATA[
+        <programlisting><![CDATA[
        declare warning : call(* javax.sql..*(..)) && !within(org.xyz.daos..*)
                        : "Only DAOs should be calling JDBC.";
 
@@ -586,56 +734,59 @@
            return "Only foo types can implement IFoo " + System.currentTimeMillis();
        }
 
-      ]]></programlisting>
-     
-       
-  </sect1>
-  
-  <sect1 id="ataspectj-aspectof">
-      <title>aspectOf() and hasAspect() methods</title>
-      
-      <para>A central part of AspectJ's programming model is that aspects
-      written using the code style and compiled using ajc support 
-      <literal>aspectOf</literal> and <literal>hasAspect</literal> static
+         ]]></programlisting>
+
+
+    </sect1>
+
+    <sect1 id="ataspectj-aspectof">
+        <title>aspectOf() and hasAspect() methods</title>
+
+        <para>A central part of AspectJ's programming model is that aspects
+      written using the code style and compiled using ajc support
+            <literal>aspectOf</literal> and
+            <literal>hasAspect</literal> static
       methods. When developing an aspect using the annotation style and compiling
       using a regular Java 5 compiler, these methods will not be visible to the 
       compiler and will result in a compilation error if another part of the
-      program tries to call them.</para>
-      
-      <para>To provide equivalent support for AspectJ applications compiled with
-          a standard Java 5 compiler, AspectJ 5 defines the <literal>Aspects</literal>
+      program tries to call them.
+        </para>
+
+        <para>To provide equivalent support for AspectJ applications compiled with
+          a standard Java 5 compiler, AspectJ 5 defines the
+            <literal>Aspects</literal>
           utility class:
-      </para>
-      
-      <programlisting><![CDATA[
+        </para>
+
+        <programlisting><![CDATA[
       public class Aspects {
-      
+
         /* variation used for singleton, percflow, percflowbelow */
-        static<T> public static T aspectOf(T aspectType) {...} 
+        static<T> public static T aspectOf(T aspectType) {...}
 
         /* variation used for perthis, pertarget */
-        static<T> public static T aspectOf(T aspectType, Object forObject) {...} 
+        static<T> public static T aspectOf(T aspectType, Object forObject) {...}
 
         /* variation used for pertypewithin */
-        static<T> public static T aspectOf(T aspectType, Class forType) {...} 
-      
+        static<T> public static T aspectOf(T aspectType, Class forType) {...}
+
         /* variation used for singleton, percflow, percflowbelow */
         public static boolean hasAspect(Object anAspect) {...}
-        
+
         /* variation used for perthis, pertarget */
         public static boolean hasAspect(Object anAspect, Object forObject) {...}
-        
+
         /* variation used for pertypewithin */
         public static boolean hasAspect(Object anAspect, Class forType) {...}
       }
-      ]]></programlisting>
+        ]]></programlisting>
 
-      <!-- TODO AV - stuff below is not done -->
-      <!--
-      <para>When the AspectJ weaver sees calls to these methods, it will convert
-      them into the most efficient form possible (to get performance equivalent
-      to a direct <literal>MyAspect.aspectOf()</literal> call).</para>
-      -->
-  </sect1>
+        <!-- TODO AV - stuff below is not done -->
+        <!--
+        <para>When the AspectJ weaver sees calls to these methods, it will convert
+        them into the most efficient form possible (to get performance equivalent
+        to a direct <literal>MyAspect.aspectOf()</literal> call).</para>
+        -->
+    </sect1>
 </chapter>
 
