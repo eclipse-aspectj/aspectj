@@ -34,10 +34,12 @@ public class IfPointcutTest extends TestCase {
     }
 
     public void testIf() {
-        fail("FIXME AV: see below, TestAspect has its advice and pointcut commented out");
+        s_log = new StringBuffer();
         IfPointcutTest me = new IfPointcutTest();
         me.hello(1);
+        assertEquals("aop ", s_log.toString());
         me.hello(-1);
+        assertEquals("aop ", s_log.toString());//unchanged
     }
 
     public static void main(String[] args) {
@@ -48,23 +50,17 @@ public class IfPointcutTest extends TestCase {
         return new junit.framework.TestSuite(IfPointcutTest.class);
     }
 
-
-
     @Aspect
     public static class TestAspect {
 
-        public boolean positive(int i) {
-            return (i>=0);
+        @Pointcut("args(i) && if()")
+        public static boolean positive(int i) {
+            return i>=0;
         }
 
-        //FIXME av if pcd support
-        //@Pointcut("args(i) && if(i>0)")
-        void ifPc(int i) {}
-
-        //FIXME av if pcd support
-        //@Before("execution(* ataspectj.IfPointcutTest.hello(int)) && ifPc(i)")
-        void before(int i) {
-            System.out.println("IfPointcutTest$TestAspect.before");
+        @Before("execution(* ataspectj.IfPointcutTest.hello(int)) && positive(i)")
+        public void before(int i) {
+            log("aop");
         }
     }
 }

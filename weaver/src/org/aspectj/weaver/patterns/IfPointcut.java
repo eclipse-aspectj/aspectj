@@ -117,11 +117,12 @@ public class IfPointcut extends Pointcut {
 	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.IF);
-		testMethod.write(s);
+		testMethod.write(s);//TODO Adrian, do something if this one happens to be null for @style if() from JDT stuff
 		s.writeByte(extraParameterFlags);
 		writeLocation(s);
 	}
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
+        //TODO Adrian, read may failt if testMethod happens to be null for @style if() from JDT stuff
 		IfPointcut ret = new IfPointcut(ResolvedMember.readResolvedMember(s, context), s.readByte());
 		ret.readLocation(context, s);
 		return ret;

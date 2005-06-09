@@ -98,4 +98,8 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
     public void testPerClauseInheritance() {
         runTest("perClauseInheritance");
     }
+
+    public void testIfPointcut() {
+        runTest("IfPointcutTest");
+    }
 }

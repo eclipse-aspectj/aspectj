@@ -53,6 +53,11 @@ import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.weaver.patterns.PointcutVisitor;
+import org.aspectj.weaver.patterns.IdentityPointcutVisitor;
+import org.aspectj.weaver.patterns.IfPointcut;
+import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.NotPointcut;
+import org.aspectj.weaver.patterns.OrPointcut;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -446,19 +451,19 @@ public class AtAjAttributes {
         final PerClause perClause;
         if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERCFLOW.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERCFLOW.extractPointcut(perClauseString);
-            poincut = parsePointcut(pointcutString, struct);
+            poincut = parsePointcut(pointcutString, struct, false);
             perClause = new PerCflow(poincut, false);
         } else if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERCFLOWBELOW.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERCFLOWBELOW.extractPointcut(perClauseString);
-            poincut = parsePointcut(pointcutString, struct);
+            poincut = parsePointcut(pointcutString, struct, false);
             perClause = new PerCflow(poincut, true);
         } else if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERTARGET.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERTARGET.extractPointcut(perClauseString);
-            poincut = parsePointcut(pointcutString, struct);
+            poincut = parsePointcut(pointcutString, struct, false);
             perClause = new PerObject(poincut, false);
         } else if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERTHIS.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERTHIS.extractPointcut(perClauseString);
-            poincut = parsePointcut(pointcutString, struct);
+            poincut = parsePointcut(pointcutString, struct, false);
             perClause = new PerObject(poincut, true);
         } else if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERTYPEWITHIN.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERTYPEWITHIN.extractPointcut(perClauseString);
@@ -539,7 +544,7 @@ public class AtAjAttributes {
                 if (preResolvedPointcut != null) {
                     pc = preResolvedPointcut.getPointcut();
                 } else {
-                    pc = parsePointcut(beforeAdvice.getValue().stringifyValue(), struct);
+                    pc = parsePointcut(beforeAdvice.getValue().stringifyValue(), struct, false);
                     if (pc == null) return false;//parse error
                     pc.resolve(binding);
                 }
@@ -593,7 +598,7 @@ public class AtAjAttributes {
                 if (preResolvedPointcut != null) {
                     pc = preResolvedPointcut.getPointcut();
                 } else {
-                    pc = parsePointcut(afterAdvice.getValue().stringifyValue(), struct);
+                    pc = parsePointcut(afterAdvice.getValue().stringifyValue(), struct, false);
                     if (pc == null) return false;//parse error
                     pc.resolve(binding);
                 }
@@ -677,7 +682,7 @@ public class AtAjAttributes {
             if (preResolvedPointcut != null) {
                 pc = preResolvedPointcut.getPointcut();
             } else {
-                pc = parsePointcut(pointcut, struct);
+                pc = parsePointcut(pointcut, struct, false);
                 if (pc == null) return false;//parse error
                 pc.resolve(binding);
             }
@@ -760,7 +765,7 @@ public class AtAjAttributes {
             if (preResolvedPointcut != null) {
                 pc = preResolvedPointcut.getPointcut();
             } else {
-                pc = parsePointcut(pointcut, struct);
+                pc = parsePointcut(pointcut, struct, false);
                 if (pc == null) return false;//parse error
                 pc.resolve(binding);
             }
@@ -813,7 +818,7 @@ public class AtAjAttributes {
                 if (preResolvedPointcut != null) {
                     pc = preResolvedPointcut.getPointcut();
                 } else {
-                    pc = parsePointcut(aroundAdvice.getValue().stringifyValue(), struct);
+                    pc = parsePointcut(aroundAdvice.getValue().stringifyValue(), struct, false);
                     if (pc == null) return false;//parse error
                     pc.resolve(binding);
                 }
@@ -878,7 +883,7 @@ public class AtAjAttributes {
 
                 // use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
                 // since for it to be resolved, we will need other pointcuts to be registered as well
-                Pointcut pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct);
+                Pointcut pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
                 if (pc == null) return;//parse error
                 // do not resolve binding now but lazily
                 pc.setLocation(struct.context, -1, -1);
@@ -922,7 +927,7 @@ public class AtAjAttributes {
                         struct.context,
                         bindings
                 );
-                Pointcut pc = parsePointcut(declareError.getValue().stringifyValue(), struct);
+                Pointcut pc = parsePointcut(declareError.getValue().stringifyValue(), struct, false);
                 if (pc == null) {
                     hasError = false;//cannot parse pointcut
                 } else {
@@ -949,7 +954,7 @@ public class AtAjAttributes {
                         struct.context,
                         bindings
                 );
-                Pointcut pc = parsePointcut(declareWarning.getValue().stringifyValue(), struct);
+                Pointcut pc = parsePointcut(declareWarning.getValue().stringifyValue(), struct, false);
                 if (pc == null) {
                     hasWarning = false;//cannot parse pointcut
                 } else {
@@ -1339,17 +1344,28 @@ public class AtAjAttributes {
      *
      * @param pointcutString
      * @param location
+     * @param allowIf
      * @return
      */
-    private static Pointcut parsePointcut(String pointcutString, AjAttributeStruct location) {
+    private static Pointcut parsePointcut(String pointcutString, AjAttributeStruct location, boolean allowIf) {
         try {
             Pointcut pointcut = new PatternParser(pointcutString, location.context).parsePointcut();
+            if (!allowIf && pointcutString.indexOf("if()") >= 0 && hasIf(pointcut)) {
+                reportError("if() pointcut is not allowed at this pointcut location '" + pointcutString +"'", location);
+                return null;
+            }
             pointcut.setLocation(location.context, -1, -1);//FIXME -1,-1 is not good enough
             return pointcut;
         } catch (ParserException e) {
             reportError("Invalid pointcut '" + pointcutString + "': " + e.toString(), location);
             return null;
         }
+    }
+
+    private static boolean hasIf(Pointcut pointcut) {
+        IfFinder visitor = new IfFinder();
+        pointcut.accept(visitor, null);
+        return visitor.hasIf;
     }
 
     /**
@@ -1367,6 +1383,38 @@ public class AtAjAttributes {
         } catch (ParserException e) {
             reportError("Invalid type pattern'" + patternString + "' : " + e.getLocation(), location);
             return null;
+        }
+    }
+
+    /**
+     * Look for an if() pointcut
+     */
+    private static class IfFinder extends IdentityPointcutVisitor {
+        boolean hasIf = false;
+        public Object visit(IfPointcut node, Object data) {
+            if (node.alwaysFalse() || node.alwaysTrue()) {
+                ;//IfFalse / IfTrue
+            } else {
+                hasIf = true;
+            }
+            return node;
+        }
+
+        public Object visit(AndPointcut node, Object data) {
+            if (!hasIf) node.getLeft().accept(this, data);
+            if (!hasIf) node.getLeft().accept(this, data);
+            return node;
+        }
+
+        public Object visit(NotPointcut node, Object data) {
+            if (!hasIf) node.getNegatedPointcut().accept(this, data);
+            return node;
+        }
+
+        public Object visit(OrPointcut node, Object data) {
+            if (!hasIf) node.getLeft().accept(this, data);
+            if (!hasIf) node.getLeft().accept(this, data);
+            return node;
         }
     }
 }
