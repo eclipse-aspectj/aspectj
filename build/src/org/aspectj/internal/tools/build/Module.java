@@ -21,12 +21,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import org.aspectj.internal.tools.build.Result.Kind;
+
 
 /**
  * This represents an (eclipse) build module/unit used by a Builder to compile
@@ -97,16 +99,18 @@ public class Module {
      * 
      * @see findKnownJarAntecedants()
      */
-    private static void doFindKnownJarAntecedants(Module module, List known) {
-        Util.iaxIfNull(module, "module");
+     static void doFindKnownJarAntecedants(Result result, List known) {
+        Util.iaxIfNull(result, "result");
         Util.iaxIfNull(known, "known");
-        addIfNew(module.getLibJars(), known);
-        for (Iterator iter = module.getRequired().iterator(); iter.hasNext();) {
-            Module required = (Module) iter.next();
-            File requiredJar = required.getModuleJar();
+        addIfNew(result.getLibJars(), known);
+        addIfNew(result.getExportedLibJars(), known);
+        Result[] reqs = result.getRequired();
+        for (int i = 0; i < reqs.length; i++) {
+            Result requiredResult = reqs[i];
+            File requiredJar = requiredResult.getOutputFile();
             if (!known.contains(requiredJar)) {
                 known.add(requiredJar);
-                doFindKnownJarAntecedants(required, known);
+                doFindKnownJarAntecedants(requiredResult, known);
             }
         }
     }
@@ -117,6 +121,31 @@ public class Module {
         return (path.endsWith(".java") || path.endsWith(".aj")); // XXXFileLiteral
     }
 
+    /** @return List of File of any module or library jar ending with suffix */
+    private static ArrayList findJarsBySuffix(String suffix, Kind kind,
+            List libJars, List required) {
+        ArrayList result = new ArrayList();
+        if (null != suffix) {
+            // library jars
+            for (Iterator iter = libJars.iterator(); iter.hasNext();) {
+                File file = (File) iter.next();
+                if (file.getPath().endsWith(suffix)) {
+                    result.add(file);
+                }
+            }
+            // module jars
+            for (Iterator iter = required.iterator(); iter.hasNext();) {
+                Module module = (Module) iter.next();
+                Result moduleResult = module.getResult(kind);
+                File file = moduleResult.getOutputFile();
+                if (file.getPath().endsWith(suffix)) {
+                    result.add(file);
+                }
+            }
+        }
+        return result;
+    }
+    
     public final boolean valid;
 
     public final File moduleDir;
@@ -124,7 +153,15 @@ public class Module {
     public final String name;
 
     /** reference back to collection for creating required modules */
-    final Modules modules;
+    private final Modules modules;
+
+    private final Result release;
+
+    private final Result test;
+
+    private final Result testAll;
+
+    private final Result releaseAll;
 
     /** path to output jar - may not exist */
     private final File moduleJar;
@@ -151,7 +188,7 @@ public class Module {
     private final Properties properties;
 
     /** Module list of required modules */
-    private final List required;
+    private final List requiredModules;
 
     /** List of File that are newer than moduleJar. Null until requested */
     // private List newerFiles;
@@ -161,23 +198,22 @@ public class Module {
     /** true if we have calculated whether this is out of date */
     private boolean outOfDateSet;
 
-    /** if true, trim testing-related source directories, modules, and libraries */
-    private final boolean trimTesting;
-
     /** logger */
     private final Messager messager;
 
+    private final File jarDir;
+
     Module(File moduleDir, File jarDir, String name, Modules modules,
-            boolean trimTesting, Messager messager) {
+            Messager messager) {
         Util.iaxIfNotCanReadDir(moduleDir, "moduleDir");
         Util.iaxIfNotCanReadDir(jarDir, "jarDir");
         Util.iaxIfNull(name, "name");
         Util.iaxIfNull(modules, "modules");
         this.moduleDir = moduleDir;
-        this.trimTesting = trimTesting;
+        this.jarDir = jarDir;
         this.libJars = new ArrayList();
         this.exportedLibJars = new ArrayList();
-        this.required = new ArrayList();
+        this.requiredModules = new ArrayList();
         this.srcDirs = new ArrayList();
         this.classpathVariables = new ArrayList();
         this.properties = new Properties();
@@ -186,128 +222,65 @@ public class Module {
         this.messager = messager;
         this.moduleJar = new File(jarDir, name + ".jar");
         this.assembledJar = new File(jarDir, name + "-all.jar");
+        this.release = new Result(Result.RELEASE, this, jarDir);
+        this.releaseAll = new Result(Result.RELEASE_ALL, this, jarDir);
+        this.test = new Result(Result.TEST, this, jarDir);
+        this.testAll = new Result(Result.TEST_ALL, this, jarDir);
         valid = init();
     }
 
-    /** @return path to output jar - may not exist */
-    public File getModuleJar() {
-        return moduleJar;
-    }
-
-    /** @return path to output assembled jar - may not exist */
-    public File getAssembledJar() {
-        return assembledJar;
-    }
-
-    /** @return unmodifiable List of String classpath variables */
-    public List getClasspathVariables() {
-        return Collections.unmodifiableList(classpathVariables);
-    }
-
-    /** @return unmodifiable List of required modules String names */
-    public List getRequired() {
-        return Collections.unmodifiableList(required);
-    }
-
-    /** @return unmodifiable list of exported library files, guaranteed readable */
-    public List getExportedLibJars() {
-        return Collections.unmodifiableList(exportedLibJars);
-    }
-
-    /** @return unmodifiable list of required library files, guaranteed readable */
-    public List getLibJars() {
-        return Collections.unmodifiableList(libJars);
-    }
-
-    /** @return unmodifiable list of source directories, guaranteed readable */
-    public List getSrcDirs() {
-        return Collections.unmodifiableList(srcDirs);
-    }
 
     /** @return Modules registry of known modules, including this one */
     public Modules getModules() {
         return modules;
     }
 
-    /** @return List of File jar paths to be merged into module-dist */
-    public List getMerges() {
-        String value = properties.getProperty(name + ".merges");
-        if ((null == value) || (0 == value.length())) {
-            return Collections.EMPTY_LIST;
-        }
-        ArrayList result = new ArrayList();
-        StringTokenizer st = new StringTokenizer(value);
-        while (st.hasMoreTokens()) {
-            result.addAll(findJarsBySuffix(st.nextToken()));
-        }
-        return result;
-    }
-
-    public void clearOutOfDate() {
-        outOfDate = false;
-        outOfDateSet = false;
-    }
-
     /**
+     * @param kind
+     *            the Kind of the result to recalculate
      * @param recalculate
      *            if true, then force recalculation
      * @return true if the target jar for this module is older than any source
      *         files in a source directory or any required modules or any
      *         libraries or if any libraries or required modules are missing
      */
-    public boolean outOfDate(boolean recalculate) {
-        if (recalculate) {
-            outOfDateSet = false;
+    public static boolean outOfDate(Result result, boolean recalculate) {
+        File outputFile = result.getOutputFile();
+        if (!(outputFile.exists() && outputFile.canRead())) {
+            return true;
         }
-        if (!outOfDateSet) {
-            outOfDate = false;
-            try {
-                if (!(moduleJar.exists() && moduleJar.canRead())) {
-                    return outOfDate = true;
+        final long time = outputFile.lastModified();
+        File file;
+        for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
+            File srcDir = (File) iter.next();
+            for (Iterator srcFiles = sourceFiles(srcDir); srcFiles.hasNext();) {
+                file = (File) srcFiles.next();
+                if (outOfDate(time, file)) {
+                    return true;
                 }
-                final long time = moduleJar.lastModified();
-                File file;
-                for (Iterator iter = srcDirs.iterator(); iter.hasNext();) {
-                    File srcDir = (File) iter.next();
-                    for (Iterator srcFiles = sourceFiles(srcDir); srcFiles
-                            .hasNext();) {
-                        file = (File) srcFiles.next();
-                        if (outOfDate(time, file)) {
-                            return outOfDate = true;
-                        }
-                    }
-                }
-                // required modules
-                for (Iterator iter = getRequired().iterator(); iter.hasNext();) {
-                    Module required = (Module) iter.next();
-                    file = required.getModuleJar();
-                    if (outOfDate(time, file)) {
-                        return outOfDate = true;
-                    }
-                }
-                // libraries
-                for (Iterator iter = getLibJars().iterator(); iter.hasNext();) {
-                    file = (File) iter.next();
-                    if (outOfDate(time, file)) {
-                        return outOfDate = true;
-                    }
-                }
-            } finally {
-                outOfDateSet = true;
             }
         }
-        return outOfDate;
+        // required modules
+        final Kind kind = result.getKind();
+        Result[] reqs = result.getRequired();
+        for (int i = 0; i < reqs.length; i++) {
+            Result requiredResult = reqs[i];
+            file = requiredResult.getOutputFile();
+            if (outOfDate(time, file)) {
+                return true;
+            }
+        }
+        // libraries
+        for (Iterator iter = result.getLibJars().iterator(); iter.hasNext();) {
+            file = (File) iter.next();
+            if (outOfDate(time, file)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    /**
-     * Add any (File) library jar or (File) required module jar to the List
-     * known, if not added already.
-     */
-    public ArrayList findKnownJarAntecedants() {
-        ArrayList result = new ArrayList();
-        doFindKnownJarAntecedants(this, result);
-        return result;
-    }
+    
 
     public String toString() {
         return name;
@@ -315,12 +288,45 @@ public class Module {
 
     public String toLongString() {
         return "Module [name=" + name + ", srcDirs=" + srcDirs + ", required="
-                + required + ", moduleJar=" + moduleJar + ", libJars="
+                + requiredModules + ", moduleJar=" + moduleJar + ", libJars="
                 + libJars + "]";
     }
 
+    public Result getResult(Kind kind) {
+        return kind.assemble ? (kind.normal ? releaseAll : testAll)
+                : (kind.normal ? release : test);
+    }
+    
+    List srcDirs(Result result) {
+        myResult(result);
+        return srcDirs;
+    }
+    List libJars(Result result) {
+        myResult(result);
+        return libJars;
+    }
+    List classpathVariables(Result result) {
+        myResult(result);
+        return classpathVariables;
+    }
+    List exportedLibJars(Result result) {
+        myResult(result);
+        return exportedLibJars;
+    }
+    List requiredModules(Result result) {
+        myResult(result);
+        return requiredModules;
+    }
+    
+    private void myResult(Result result) {
+        if ((null == result) || this != result.getModule()) {
+            throw new IllegalArgumentException("not my result: " + result + ": " + this);
+        }
+    }
+
     private boolean init() {
-        return initClasspath() && initProperties() && reviewInit();
+        return initClasspath() && initProperties() && reviewInit()
+                && initResults();
     }
 
     /** read eclipse .classpath file XXX line-oriented hack */
@@ -336,7 +342,7 @@ public class Module {
             while (null != (line = reader.readLine())) {
                 line = line.trim();
                 // dumb - only handle comment-only lines
-                if (!line.startsWith("<?xml") && ! line.startsWith("<!--")) {
+                if (!line.startsWith("<?xml") && !line.startsWith("<!--")) {
                     item.acceptLine(line);
                 }
             }
@@ -358,18 +364,19 @@ public class Module {
         String kind = attributes[getATTSIndex("kind")];
         String path = attributes[getATTSIndex("path")];
         String exp = attributes[getATTSIndex("exported")];
-        boolean exported = ("true".equals(exp));                 
+        boolean exported = ("true".equals(exp));
         return update(kind, path, toString, exported);
     }
-    
-    private boolean update(String kind, String path, String toString, boolean exported) {    
+
+    private boolean update(String kind, String path, String toString,
+            boolean exported) {
         String libPath = null;
         if ("src".equals(kind)) {
             if (path.startsWith("/")) { // module
                 String moduleName = path.substring(1);
                 Module req = modules.getModule(moduleName);
                 if (null != req) {
-                    required.add(req);
+                    requiredModules.add(req);
                     return true;
                 } else {
                     messager.error("update unable to create required module: "
@@ -468,13 +475,8 @@ public class Module {
     }
 
     /**
-     * Post-process initialization. This implementation trims testing-related
-     * source directories, libraries, and modules if trimTesting is
-     * enabled/true. For modules whose names start with "testing",
-     * testing-related sources are trimmed, but this does not trim dependencies
-     * on other modules prefixed "testing" or on testing libraries like junit.
-     * That means testing modules can be built with trimTesting enabled.
-     * 
+     * Post-process initialization. This implementation trims java5 source dirs
+     * if not running in a Java 5 VM.
      * @return true if initialization post-processing worked
      */
     protected boolean reviewInit() {
@@ -482,42 +484,24 @@ public class Module {
             for (ListIterator iter = srcDirs.listIterator(); iter.hasNext();) {
                 File srcDir = (File) iter.next();
                 String lcname = srcDir.getName().toLowerCase();
-                if (trimTesting
-                        && (Util.Constants.TESTSRC.equals(lcname) || Util.Constants.JAVA5_TESTSRC
-                                .equals(lcname))) {
-                    iter.remove();
-                } else if (!Util.JAVA5_VM
+                if (!Util.JAVA5_VM
                         && (Util.Constants.JAVA5_SRC.equals(lcname) || Util.Constants.JAVA5_TESTSRC
                                 .equals(lcname))) {
                     // assume optional for pre-1.5 builds
                     iter.remove();
                 }
             }
-            if (!trimTesting) {
-                return true;
-            }
-            if (!name.startsWith("testing")) {
-                for (ListIterator iter = libJars.listIterator(); iter.hasNext();) {
-                    File libJar = (File) iter.next();
-                    String name = libJar.getName();
-                    if ("junit.jar".equals(name.toLowerCase())) { // XXXFileLiteral
-                        iter.remove(); // XXX if verbose log
-                    }
-                }
-                for (ListIterator iter = required.listIterator(); iter
-                        .hasNext();) {
-                    Module required = (Module) iter.next();
-                    String name = required.name;
-                    // XXX testing-util only ?
-                    if (name.toLowerCase().startsWith("testing")) { // XXXFileLiteral
-                        iter.remove(); // XXX if verbose log
-                    }
-                }
-            }
         } catch (UnsupportedOperationException e) {
             return false; // failed XXX log also if verbose
         }
         return true;
+    }
+
+    /**
+     * After reviewInit, setup four kinds of results.
+     */
+    protected boolean initResults() {
+        return true; // results initialized lazily
     }
 
     /** resolve path absolutely, assuming / means base of modules dir */
@@ -541,29 +525,6 @@ public class Module {
         return fullPath;
     }
 
-    /** @return List of File of any module or library jar ending with suffix */
-    private ArrayList findJarsBySuffix(String suffix) {
-        ArrayList result = new ArrayList();
-        if (null != suffix) {
-            // library jars
-            for (Iterator iter = getLibJars().iterator(); iter.hasNext();) {
-                File file = (File) iter.next();
-                if (file.getPath().endsWith(suffix)) {
-                    result.add(file);
-                }
-            }
-            // module jars
-            for (Iterator iter = getRequired().iterator(); iter.hasNext();) {
-                Module module = (Module) iter.next();
-                File file = module.getModuleJar();
-                if (file.getPath().endsWith(suffix)) {
-                    result.add(file);
-                }
-            }
-        }
-        return result;
-    }
-
     class ICB implements XMLItem.ICallback {
         public void end(Properties attributes) {
             String kind = attributes.getProperty("kind");
@@ -580,23 +541,28 @@ public class Module {
         public interface ICallback {
             void end(Properties attributes);
         }
+
         static final String START_NAME = "classpathentry";
 
         static final String ATT_STARTED = "STARTED";
 
         final ICallback callback;
+
         final StringBuffer input = new StringBuffer();
 
         final String[] attributes = new String[ATTS.length];
+
         final String targetEntity;
+
         String entityName;
+
         String attributeName;
 
         XMLItem(String targetEntity, ICallback callback) {
             this.callback = callback;
             this.targetEntity = targetEntity;
             reset();
-            
+
         }
 
         private void reset() {
@@ -630,7 +596,7 @@ public class Module {
                     } else {
                         result.add(s);
                     }
-                } else {  // not a delimiter
+                } else { // not a delimiter
                     if (inQuote) {
                         quote.append(s);
                     } else {
@@ -647,7 +613,7 @@ public class Module {
                 next(tokens[i]);
             }
         }
-        
+
         private Properties attributesToProperties() {
             Properties result = new Properties();
             for (int i = 0; i < attributes.length; i++) {
@@ -664,17 +630,17 @@ public class Module {
                 error("Did not expect " + name + ": " + value);
             }
         }
-        
+
         void errorIfNull(String name, String value) {
             if (null == value) {
                 error("expected value for " + name);
             }
         }
-        
+
         boolean activeEntity() {
             return targetEntity.equals(entityName);
         }
-        
+
         /**
          * Assumes that comments and "<?xml"-style lines are removed.
          */
@@ -716,7 +682,9 @@ public class Module {
                 } else if (null == attributeName) {
                     attributeName = s;
                 } else {
-                    System.out.println("unknown state - not value, attribute, or entity: " + s);
+                    System.out
+                            .println("unknown state - not value, attribute, or entity: "
+                                    + s);
                 }
             }
         }
@@ -748,4 +716,3 @@ public class Module {
         }
     }
 }
-

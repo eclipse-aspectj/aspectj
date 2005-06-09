@@ -28,13 +28,11 @@ public class Modules {
     public final File baseDir;
     public final File jarDir;
     private final Messager handler;
-    public final boolean trimTesting;
     
-    public Modules(File baseDir, File jarDir, boolean trimTesting, Messager handler) {
+    public Modules(File baseDir, File jarDir, Messager handler) {
         this.baseDir = baseDir;
         this.jarDir = jarDir;
         this.handler = handler;
-        this.trimTesting = trimTesting;
         Util.iaxIfNotCanReadDir(baseDir, "baseDir");
         Util.iaxIfNotCanReadDir(jarDir, "jarDir");
         Util.iaxIfNull(handler, "handler");
@@ -55,7 +53,7 @@ public class Modules {
             if (!Util.canReadDir(moduleDir)) {
                 handler.error("not a module: " + name);
             } else {
-                result = new Module(moduleDir, jarDir, name, this, trimTesting, handler);
+                result = new Module(moduleDir, jarDir, name, this, handler);
                 if (result.valid) {
                     modules.put(name, result);
                 } else {

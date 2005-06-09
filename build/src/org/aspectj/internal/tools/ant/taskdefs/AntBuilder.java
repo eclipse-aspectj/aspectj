@@ -40,18 +40,14 @@ import org.aspectj.internal.tools.build.BuildSpec;
 import org.aspectj.internal.tools.build.Builder;
 import org.aspectj.internal.tools.build.Messager;
 import org.aspectj.internal.tools.build.Module;
-import org.aspectj.internal.tools.build.Modules;
-import org.aspectj.internal.tools.build.ProductModule;
+import org.aspectj.internal.tools.build.Result;
 import org.aspectj.internal.tools.build.Util;
+import org.aspectj.internal.tools.build.Result.Kind;
 
 /**
  * Implement Builder in Ant.
  */
 public class AntBuilder extends Builder {
-    /*
-     * warning: This just constructs and uses Ant Task objects, 
-     * which in some cases causes the tasks to fail.
-     */
 
     /**
      * Factory for a Builder.
@@ -72,7 +68,7 @@ public class AntBuilder extends Builder {
                 verbose = true;
             }
         }
-        Messager handler = new ProjectMessager(project);
+        Messager handler = new Messager(); // TODO new ProjectMessager(project);
         Builder result = new ProductBuilder(project, tempDir, useEclipseCompiles, handler);
         if (verbose) {
             result.setVerbose(true);
@@ -80,51 +76,89 @@ public class AntBuilder extends Builder {
         return result;
     }
     
+    private static String resultToTargetName(Result result) {
+        return result.getName();
+    }
     /** 
-     * Make and register target for this module and antecedants.
-     * This ensures that the (direct) depends list is generated
-     * for each target.
-     * This depends on topoSort to detect cycles. XXX unverified
+     * Ensure targets exist for this module and all antecedants,
+     * so topoSort can work.
      */
-    private static void makeTargetsForModule(
-        final Module module, 
-        final Hashtable targets, 
-        final boolean rebuild) {
-        Target target = (Target) targets.get(module.name);
-        if (null == target) {
-            // first add the target
-            target = new Target();
-            target.setName(module.name);
-            List req = module.getRequired();
-            StringBuffer depends = new StringBuffer();
-            boolean first = true;
-            for (Iterator iterator = req.iterator(); iterator.hasNext();) {
-                Module reqModule = (Module) iterator.next();
-                if (rebuild || reqModule.outOfDate(false)) {
+    private static void makeTargetsForResult(
+            final Result result, 
+            final Hashtable targets) {
+            final String resultTargetName = resultToTargetName(result);
+            Target target = (Target) targets.get(resultTargetName);
+            if (null == target) {
+                // first add the target
+                target = new Target();
+                target.setName(resultTargetName);
+                
+                Result[] reqs = result.getRequired();
+                StringBuffer depends = new StringBuffer();
+                boolean first = true;
+                for (int i = 0; i < reqs.length; i++) {
+                    Result reqResult = reqs[i];
                     if (!first) {
                         depends.append(",");
                     } else {
                         first = false;
                     }
-                    depends.append(reqModule.name);
+                    depends.append(resultToTargetName(reqResult));
                 }
-            }
-            if (0 < depends.length()) {
-                target.setDepends(depends.toString());
-            }
-            targets.put(module.name, target);
+                if (0 < depends.length()) {
+                    target.setDepends(depends.toString());
+                }
+                targets.put(resultTargetName, target);
 
-            // then recursively add any required modules
-            for (Iterator iterator = module.getRequired().iterator();
-                iterator.hasNext();
-                ) {
-                Module reqModule = (Module) iterator.next();
-                if (rebuild || reqModule.outOfDate(false)) {
-                    makeTargetsForModule(reqModule, targets, rebuild);
-                }                
-            }                        
+                // then recursively add any required results
+                for (int i = 0; i < reqs.length; i++) {
+                    Result reqResult = reqs[i];
+                    makeTargetsForResult(reqResult, targets);
+                }                        
+            }
         }
-    }
+//    private static void edited_makeTargetsForResult(
+//            final Result result, 
+//            final Hashtable targets, 
+//            final boolean rebuild) {
+//            String resultTargetName = result.getOutputFile().getName();
+//            Target target = (Target) targets.get(resultTargetName);
+//            if (null == target) {
+//                // first add the target
+//                target = new Target();
+//                target.setName(resultTargetName);
+//                Kind kind = result.getKind();
+//                Module module = result.getModule();
+//                Kind compileKind = Result.kind(module.isNormal(), !Result.ASSEMBLE);
+//                Result compileResult = module.getResult(compileKind);
+//                Result[] req = compileResult.getRequired();
+//                StringBuffer depends = new StringBuffer();
+//                boolean first = true;
+//                for (int i = 0; i < req.length; i++) {
+//                    Result reqResult = req[i];
+//                    if (!first) {
+//                        depends.append(",");
+//                    } else {
+//                        first = false;
+//                    }
+//                    depends.append(reqResult.name);
+//                }
+//                if (0 < depends.length()) {
+//                    target.setDepends(depends.toString());
+//                }
+//                targets.put(module.name, target);
+//
+//                // then recursively add any required modules
+//                for (Iterator iterator = compileResult.getRequired().iterator();
+//                    iterator.hasNext();
+//                    ) {
+//                    Module reqModule = (Module) iterator.next();
+//                    if (rebuild || reqModule.outOfDate(kind, false)) {
+//                        makeTargetsForResult(reqModule, targets, rebuild, kind);
+//                    }                
+//                }                        
+//            }
+//        }
 
     private final Project project;
 
@@ -208,18 +242,43 @@ public class AntBuilder extends Builder {
         }
         return copy;
     }
-
+    protected void dumpMinFile(Result result,File classesDir, List errors) {
+        String name = result.getName() + "-empty";
+        File minFile = new File(classesDir, name);
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(minFile);
+            fw.write(name);
+        } catch (IOException e) {
+            errors.add("IOException writing " 
+                + name
+                + " to "
+                + minFile
+                + ": "
+                + Util.renderException(e));
+        } finally {
+            Util.close(fw);
+        }
+        
+    }
     protected boolean compile(
-        Module module, 
+        Result result, 
         File classesDir,
         boolean useExistingClasses, 
         List errors) {
         
+        if (!classesDir.exists() && !classesDir.mkdirs()) {
+            errors.add("compile - unable to create " + classesDir);
+            return false;
+        }
+        if (useExistingClasses) {
+            return true;
+        }
         // -- source paths
         Path path = new Path(project);
         boolean hasSourceDirectories = false;
         boolean isJava5Compile = false;
-        for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
+        for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
             File file = (File) iter.next();
             path.createPathElement().setLocation(file);
             if (!isJava5Compile 
@@ -231,30 +290,8 @@ public class AntBuilder extends Builder {
                 hasSourceDirectories = true;
             }
         }
-        if (!classesDir.exists() && !classesDir.mkdirs()) {
-            errors.add("compile - unable to create " + classesDir);
-            return false;
-        }
-        if (!hasSourceDirectories) { // none - dump minimal file and exit
-            File minFile = new File(classesDir, module.name);
-            FileWriter fw = null;
-            try {
-                fw = new FileWriter(minFile);
-                fw.write(module.name);
-            } catch (IOException e) {
-                errors.add("IOException writing " 
-                    + module.name
-                    + " to "
-                    + minFile
-                    + ": "
-                    + Util.renderException(e));
-            } finally {
-                Util.close(fw);
-            }
+        if (!hasSourceDirectories) { 
             return true; // nothing to compile - ok
-        }
-        if (useExistingClasses) {
-            return true;
         }
         // XXX  test whether build.compiler property takes effect automatically
         // I suspect it requires the proper adapter setup.
@@ -268,18 +305,19 @@ public class AntBuilder extends Builder {
         
         // -- classpath
         Path classpath = new Path(project);
-        boolean hasLibraries = setupClasspath(module, classpath);
+        boolean hasLibraries = setupClasspath(result, classpath);
         // need to add system classes??
-        boolean inEclipse = true; // XXX detect, fork only in eclipse
-        if (hasLibraries && inEclipse) {
-            javac.setFork(true); // XXX otherwise never releases library jars
-        }
+//        boolean inEclipse = true; // XXX detect, fork only in eclipse
+//        if (hasLibraries && inEclipse) { // if fork, on compiler failure, no report
+//            javac.setFork(true); // TODO XXX otherwise never releases library jars
+//        }
         // also fork if using 1.5?
         // can we build under 1.4, but fork javac 1.5 compile?
         
         // -- set output directory
         classpath.createPathElement().setLocation(classesDir);
         javac.setClasspath(classpath);
+
         // misc
         javac.setDebug(true);
         if (!isJava5Compile) {
@@ -293,7 +331,7 @@ public class AntBuilder extends Builder {
         boolean passed = false;
         BuildException failure = null;
         try {
-            passed = executeTask(AspectJSupport.wrapIfNeeded(module, javac));
+            passed = executeTask(AspectJSupport.wrapIfNeeded(result, javac));
         } catch (BuildException e) {
             failure = e;
         } catch (Error e) {
@@ -301,36 +339,43 @@ public class AntBuilder extends Builder {
         } catch (RuntimeException e) {
             failure = new BuildException(e);
         } finally {
+            if (!passed) {
+                String args = "" + Arrays.asList(javac.getCurrentCompilerArgs());
+                if ("[]".equals(args)) {
+                    args = "{" + result.toLongString() + "}";
+                }
+                String m = "BuildException compiling " + result.toLongString() + args 
+                    + (null == failure? "" : ": " + Util.renderException(failure));
+                //debuglog System.err.println(m);
+                errors.add(m);
+            }
             javac.init(); // be nice to let go of classpath libraries...
-        }
-        if (!passed) {
-            String args = "" + Arrays.asList(javac.getCurrentCompilerArgs());
-            errors.add("BuildException compiling " + module.toLongString() + args 
-                + (null == failure? "" : ": " + Util.renderException(failure)));
         }
         return passed;
     }
     
-    public boolean setupClasspath(Module module, Path classpath) { // XXX fix test access
+    public boolean setupClasspath(Result result, Path classpath) { // XXX fix test access
         boolean hasLibraries = false;
         // required libraries
-        for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
+        for (Iterator iter = result.getLibJars().iterator(); iter.hasNext();) {
             File file = (File) iter.next();            
             classpath.createPathElement().setLocation(file);
             if (!hasLibraries) {
                 hasLibraries = true;
             }
         }
+        Kind kind = result.getKind();
+        Result[] reqs = result.getRequired();
         // required modules and their exported libraries
-        for (Iterator iter = module.getRequired().iterator(); iter.hasNext();) {
-            Module required = (Module) iter.next();            
-            classpath.createPathElement().setLocation(required.getModuleJar());
+        for (int i = 0; i < reqs.length; i++) {
+            Result requiredResult = reqs[i];
+            classpath.createPathElement().setLocation(requiredResult.getOutputFile());
             if (!hasLibraries) {
                 hasLibraries = true;
             }
             // also put on classpath libraries exported from required module
             // XXX exported modules not supported
-            for (Iterator iterator = required.getExportedLibJars().iterator();
+            for (Iterator iterator = requiredResult.getExportedLibJars().iterator();
                 iterator.hasNext();
                 ) {
                 classpath.createPathElement().setLocation((File) iterator.next());
@@ -344,18 +389,19 @@ public class AntBuilder extends Builder {
      * with any specified manifest file.  
      * META-INF directories are excluded.
      */
-    protected boolean assemble(Module module, File classesDir, List errors) {
+    protected boolean assemble(Result result, File classesDir, List errors) {
         if (!buildingEnabled) {
             return false;
         }
+
         // ---- zip result up
         Zip zip = new Zip();
         setupTask(zip, "zip");
-        zip.setDestFile(module.getModuleJar());
+        zip.setDestFile(result.getOutputFile());
         ZipFileSet zipfileset = null;
         
         // -- merge any resources in any of the src directories
-        for (Iterator iter = module.getSrcDirs().iterator(); iter.hasNext();) {
+        for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
             File srcDir = (File) iter.next();
             zipfileset = new ZipFileSet();
             zipfileset.setProject(project);
@@ -364,25 +410,27 @@ public class AntBuilder extends Builder {
             zip.addZipfileset(zipfileset);
         }
         
+        final Module module = result.getModule();
         // -- merge any merge jars
-        List mergeJars =  module.getMerges();
-        removeLibraryFilesToSkip(module, mergeJars);
-//        final boolean useManifest = false;
-        if (0 < mergeJars.size()) {
-            for (Iterator iter = mergeJars.iterator(); iter.hasNext();) {
-                File mergeJar = (File) iter.next();
-                zipfileset = new ZipFileSet();
-                zipfileset.setProject(project);
-                zipfileset.setSrc(mergeJar);
-                zipfileset.setIncludes("**/*");
-                zipfileset.setExcludes("META-INF/manifest.mf"); // XXXFileLiteral
-                zipfileset.setExcludes("meta-inf/manifest.MF");
-                zipfileset.setExcludes("META-INF/MANIFEST.mf"); 
-                zipfileset.setExcludes("meta-inf/MANIFEST.MF");
-                zip.addZipfileset(zipfileset);
-            }
-        }
-        // merge classes; put any meta-inf/manifest.mf here
+//      TODO removing-merges
+//        List mergeJars =  result.getMerges();
+//        removeLibraryFilesToSkip(module, mergeJars);
+////        final boolean useManifest = false;
+//        if (0 < mergeJars.size()) {
+//            for (Iterator iter = mergeJars.iterator(); iter.hasNext();) {
+//                File mergeJar = (File) iter.next();
+//                zipfileset = new ZipFileSet();
+//                zipfileset.setProject(project);
+//                zipfileset.setSrc(mergeJar);
+//                zipfileset.setIncludes("**/*");
+//                zipfileset.setExcludes("META-INF/manifest.mf"); // XXXFileLiteral
+//                zipfileset.setExcludes("meta-inf/manifest.MF");
+//                zipfileset.setExcludes("META-INF/MANIFEST.mf"); 
+//                zipfileset.setExcludes("meta-inf/MANIFEST.MF");
+//                zip.addZipfileset(zipfileset);
+//            }
+//        }
+//        // merge classes; put any meta-inf/manifest.mf here
         File metaInfDir = new File(classesDir, "META-INF");
         Util.deleteContents(metaInfDir);
 
@@ -403,32 +451,38 @@ public class AntBuilder extends Builder {
         zipfileset.setDir(classesDir);
         zipfileset.setIncludes("**/*");
         zip.addZipfileset(zipfileset);
+        File[] contents = classesDir.listFiles();
+        if ((null == contents) || (0 == contents.length)) {
+            // *something* to zip up
+            dumpMinFile(result, classesDir,errors);
+        }
 
         try {
-            handler.log("assembling " + module  + " in " + module.getModuleJar());
+            handler.log("assembling " + module  + " in " + result.getOutputFile());
             return executeTask(zip)
                 // zip returns true when it doesn't create zipfile
                 // because there are no entries to add, so verify done
-                && Util.canReadFile(module.getModuleJar());
+                && Util.canReadFile(result.getOutputFile());
         } catch (BuildException e) {
             errors.add("BuildException zipping " + module + ": " + e.getMessage());
             return false;
         } finally {
-            module.clearOutOfDate();
+            result.clearOutOfDate();
         }
     }
     /**
 	 * @see org.aspectj.internal.tools.build.Builder#buildAntecedants(Module)
 	 */
-	protected String[] getAntecedantModuleNames(Module module, boolean rebuild) {
+	protected Result[] getAntecedantResults(Result moduleResult) {
         Hashtable targets = new Hashtable();
-        makeTargetsForModule(module, targets, rebuild);   
-        // XXX bug: doc says topoSort returns String, but returns Target 
-        Collection result = project.topoSort(module.name, targets);
-        // XXX is it topoSort that should detect cycles?
+        makeTargetsForResult(moduleResult, targets);   
+        String targetName = resultToTargetName(moduleResult);
+        // bug: doc says topoSort returns String, but returns Target 
+        Collection result = project.topoSort(targetName, targets);
+        // fyi, we don't rely on topoSort to detect cycles - see buildAll
         int size = result.size();
         if (0 == result.size()) {
-            return new String[0];
+            return new Result[0];
         }
         ArrayList toReturn = new ArrayList();
         for (Iterator iter = result.iterator(); iter.hasNext();) {
@@ -440,35 +494,36 @@ public class AntBuilder extends Builder {
                 toReturn.add(name);
             }
         }
-        // topoSort always returns module.name    
+        // topoSort always returns target name    
         if ((1 == size) 
-            && module.name.equals(toReturn.get(0))
-            && !module.outOfDate(false)) {
-            return new String[0];
+            && targetName.equals(toReturn.get(0))
+            && !moduleResult.outOfDate(false)) {
+            return new Result[0];
         }
-        return (String[]) toReturn.toArray(new String[0]);
+        return Result.getResults((String[]) toReturn.toArray(new String[0]));
     }
         
     /**
      * Generate Module.assembledJar with merge of itself and all antecedants
      */                    
-    protected boolean assembleAll(Module module, Messager handler) {
+    protected boolean assembleAll(Result result, Messager handler) {
+        //System.out.println("assembling " + result);
         if (!buildingEnabled) {
             return false;
         }
-        Util.iaxIfNull(module, "module");
+        Util.iaxIfNull(result, "result");
         Util.iaxIfNull(handler, "handler");
-        if (module.outOfDate(false)) {
-            throw new IllegalStateException("module out of date: " + module);
+        if (!result.getKind().isAssembly()) {
+            throw new IllegalStateException("not assembly: " + result);
         }
         
         // ---- zip result up
         Zip zip = new Zip();
         setupTask(zip, "zip");
-        zip.setDestFile(module.getAssembledJar());
+        zip.setDestFile(result.getOutputFile());
         ZipFileSet zipfileset = null;
-        
-        List known = module.findKnownJarAntecedants();
+        final Module module = result.getModule();
+        List known = result.findKnownJarAntecedants();
         removeLibraryFilesToSkip(module, known);
         // -- merge any antecedents, less any manifest
         for (Iterator iter = known.iterator(); iter.hasNext();) {
@@ -487,11 +542,14 @@ public class AntBuilder extends Builder {
         // merge the module jar itself, including same manifest (?)
         zipfileset = new ZipFileSet();
         zipfileset.setProject(project);
-        zipfileset.setSrc(module.getModuleJar());
+        Kind normal = Result.kind(result.getKind().isNormal(), !Result.ASSEMBLE);
+        File src = module.getResult(normal).getOutputFile();
+        zipfileset.setSrc(src);
         zip.addZipfileset(zipfileset);
 
         try {
-            handler.log("assembling all " + module  + " in " + module.getAssembledJar());
+            handler.log("assembling all " + module
+                    + " in " + result.getOutputFile());
             if (verbose) {
 	            handler.log("knownAntecedants: " + known);
             }
@@ -500,7 +558,7 @@ public class AntBuilder extends Builder {
             handler.logException("BuildException zipping " + module, e);
             return false;
         } finally {
-            module.clearOutOfDate();
+            result.clearOutOfDate();
         }
     }
 
@@ -543,25 +601,28 @@ public class AntBuilder extends Builder {
          * @param javac the Javac compile commands
          * @return javac or a Task to compile with AspectJ if needed
          */
-        static Task wrapIfNeeded(Module module, Javac javac) {
+        static Task wrapIfNeeded(Result result, Javac javac) {
             final Project project = javac.getProject();
             Path runtimeJar = null;
-            if (runtimeJarOnClasspath(module)) { 
+            final Module module = result.getModule();
+            if (runtimeJarOnClasspath(result)) { 
                 // yes aspectjrt.jar on classpath
-            } else if (module.getClasspathVariables().contains(ASPECTJRT_JAR_VARIABLE)) {
+            } else if (result.getClasspathVariables().contains(ASPECTJRT_JAR_VARIABLE)) {
                 // yes, in variables - find aspectjrt.jar to add to classpath
                 runtimeJar = getAspectJLib(project, module, "aspectjrt.jar");
             } else {
                 // no
+                //System.out.println("javac " + result + " " + javac.getClasspath()); 
                 return javac;
             }
+            //System.out.println("aspectj " + result + " " + javac.getClasspath()); 
             Path aspectjtoolsJar = getAspectJLib(project, module, "aspectjtools.jar");
             return aspectJTask(javac, aspectjtoolsJar, runtimeJar);
         }
         
         /** @return true if aspectjrt.jar is on classpath */
-        private static boolean runtimeJarOnClasspath(Module module) {
-            for (Iterator iter = module.getLibJars().iterator(); iter.hasNext();) {
+        private static boolean runtimeJarOnClasspath(Result result) {
+            for (Iterator iter = result.getLibJars().iterator(); iter.hasNext();) {
                 File file = (File) iter.next();
                 if ("aspectjrt.jar".equals(file.getName())) {
                     return true;
@@ -741,113 +802,34 @@ class ProductBuilder extends AntBuilder {
     }
     
     /**
-     * Build product by discovering any modules to build,
-     * building those, assembling the product distribution,
-     * and optionally creating an installer for it.
-     * @return true on success
+     * Delegate for super.buildProduct(..) template method.
      */
-    protected boolean buildProduct(BuildSpec buildSpec) 
-        throws BuildException {
-        Util.iaxIfNull(buildSpec, "buildSpec");
-        // XXX if installer and not out of date, do not rebuild unless rebuild set
-
-        if (!buildSpec.trimTesting) {
-            buildSpec.trimTesting = true;
-            handler.log("testing trimmed for " + buildSpec);
-        }
-        Util.iaxIfNotCanReadDir(buildSpec.productDir, "productDir");
-        Util.iaxIfNotCanReadDir(buildSpec.baseDir, "baseDir");
-        Util.iaxIfNotCanWriteDir(buildSpec.distDir, "distDir");
-
-        // ---- discover modules to build, and build them
-        Modules modules = new Modules(
-            buildSpec.baseDir, 
-            buildSpec.jarDir, 
-            buildSpec.trimTesting, 
-            handler);
-        ProductModule[] productModules = discoverModules(buildSpec.productDir, modules);
-        for (int i = 0; i < productModules.length; i++) {
-            if (buildSpec.verbose) {
-                handler.log("building product module " + productModules[i]); 
-            }
-            if (!buildProductModule(productModules[i])) {
-                return false;
-            }
-        }
-        if (buildSpec.verbose) {
-            handler.log("assembling product module for " + buildSpec); 
-        }
-        
-        // ---- assemble product distribution
-        final String productName = buildSpec.productDir.getName();
-        final File targDir = new File(buildSpec.distDir, productName);
-        final String targDirPath = targDir.getPath();
-        if (targDir.canWrite()) {
-            Util.deleteContents(targDir);
-        }
-        
-        if (!targDir.canWrite() && !targDir.mkdirs()) {
-            if (buildSpec.verbose) {
-                handler.log("buildProduct unable to create " + targDir);
-            }
-            return false;
-        }
-        // filter-copy everything but the binaries
-        Copy copy = makeCopyTask(true);
+    protected boolean copyBinaries(BuildSpec buildSpec, File distDir, File targDir, String excludes) {
+        Copy copy = makeCopyTask(false);
         copy.setTodir(targDir);
-        File distDir = new File(buildSpec.productDir, "dist");       // XXXFileLiteral
-        Util.iaxIfNotCanReadDir(distDir, "product dist directory");
         FileSet fileset = new FileSet();
-        fileset.setDir(distDir);
-        fileset.setExcludes(Builder.BINARY_SOURCE_PATTERN);
-        copy.addFileset(fileset);
-        if (!executeTask(copy)) {
-            return false;
-        }
-        
-        // copy binaries (but not module flag files)
-        String excludes = null;
-        {
-            StringBuffer buf = new StringBuffer();        
-            for (int i = 0; i < productModules.length; i++) {
-                if (0 < buf.length()) {
-                    buf.append(",");
-                }
-                buf.append(productModules[i].relativePath);
-            }
-            if (0 < buf.length()) {
-                excludes = buf.toString();
-            }
-        }
-        copy = makeCopyTask(false);
-        copy.setTodir(targDir);
-        fileset = new FileSet();
         fileset.setDir(distDir);
         fileset.setIncludes(Builder.BINARY_SOURCE_PATTERN);
         if (null != excludes) {
             fileset.setExcludes(excludes);
         }
         copy.addFileset(fileset);
-        if (!executeTask(copy)) {
-            return false;
-        }
+        return executeTask(copy);
+    }
 
-        // copy binaries associated with module flag files
-        for (int i = 0; i < productModules.length; i++) {
-            ProductModule product = productModules[i];
-            String targPath = Util.path(targDirPath, product.relativePath);
-            File jarFile = (product.assembleAll 
-                ? product.module.getAssembledJar()
-                : product.module.getModuleJar() );
-            copyFile(jarFile, new File(targPath), FILTER_OFF);
-        } 
-        handler.log("created product in " + targDir);
-        // ---- create installer 
-        if (buildSpec.createInstaller) {
-            return buildInstaller(buildSpec, targDirPath);
-        } else {
-            return true;
-        }
+    /**
+     * Delegate for super.buildProduct(..) template method.
+     */
+    protected boolean copyNonBinaries(BuildSpec buildSpec, File distDir, File targDir) {
+        // filter-copy everything but the binaries
+        Copy copy = makeCopyTask(true);
+        copy.setTodir(targDir);
+        Util.iaxIfNotCanReadDir(distDir, "product dist directory");
+        FileSet fileset = new FileSet();
+        fileset.setDir(distDir);
+        fileset.setExcludes(Builder.BINARY_SOURCE_PATTERN);
+        copy.addFileset(fileset);
+        return executeTask(copy);
     }
     
     protected boolean buildInstaller(BuildSpec buildSpec, String targDirPath) {
