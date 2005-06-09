@@ -34,6 +34,7 @@ public class AllLTWTests extends TestCase {
         suite.addTestSuite(AroundInlineMungerTest.class);
         suite.addTestSuite(SingletonInheritanceTest.class);
         suite.addTestSuite(PerClauseInheritanceTest.class);
+        suite.addTestSuite(IfPointcut2Test.class);
 
         return suite;
     }

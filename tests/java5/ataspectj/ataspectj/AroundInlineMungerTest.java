@@ -12,10 +12,6 @@
 package ataspectj;
 
 import junit.framework.TestCase;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

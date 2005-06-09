@@ -30,16 +30,16 @@ public class IfPointcutTest extends TestCase {
     }
 
     public void hello(int i) {
-        System.out.println("IfPointcutTest.hello " + i);
+        log("hello-" + i);
     }
 
     public void testIf() {
         s_log = new StringBuffer();
         IfPointcutTest me = new IfPointcutTest();
         me.hello(1);
-        assertEquals("aop ", s_log.toString());
+        assertEquals("aop hello-1 ", s_log.toString());
         me.hello(-1);
-        assertEquals("aop ", s_log.toString());//unchanged
+        assertEquals("aop hello-1 hello--1 ", s_log.toString());//unchanged
     }
 
     public static void main(String[] args) {
@@ -53,7 +53,7 @@ public class IfPointcutTest extends TestCase {
     @Aspect
     public static class TestAspect {
 
-        @Pointcut("args(i) && if()")
+        @Pointcut("args(i) && if() && if(true)")
         public static boolean positive(int i) {
             return i>=0;
         }

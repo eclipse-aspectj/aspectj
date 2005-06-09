@@ -29,8 +29,6 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/ltw.xml");
 	}
 
-
-    //FIXME AV - those all 4 depends on #75442...
 	public void testRunThemAllWithJavacCompiledAndLTW() {
 		runTest("RunThemAllWithJavacCompiledAndLTW");
 	}

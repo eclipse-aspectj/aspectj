@@ -102,4 +102,8 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
     public void testIfPointcut() {
         runTest("IfPointcutTest");
     }
+
+    public void testIfPointcut2() {
+        runTest("IfPointcut2Test");
+    }
 }

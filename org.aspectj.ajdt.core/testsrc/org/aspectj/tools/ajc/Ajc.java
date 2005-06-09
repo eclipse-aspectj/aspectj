@@ -335,7 +335,7 @@ public class Ajc {
 				    newArgs[i] = buff.toString();
 				    if (args[i-1].equals("-classpath")) {
 				    	hasClasspath = true;
-				    	newArgs[i] = newArgs[i] + File.pathSeparator + TESTER_PATH;
+				    	newArgs[i] = newArgs[i] + File.pathSeparator + TESTER_PATH + File.pathSeparator + getSandboxDirectory().getAbsolutePath();
 				    }
 				} else {
 					// could be resource file
