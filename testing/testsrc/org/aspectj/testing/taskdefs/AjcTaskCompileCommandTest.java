@@ -31,6 +31,7 @@ import junit.framework.TestCase;
  */
 public class AjcTaskCompileCommandTest extends TestCase {
     static boolean loggedWarning = false;
+    static boolean runAllTests = true;
     static ArrayList tempFiles = new ArrayList();
     
     private static File getClassesDir() {
@@ -84,11 +85,11 @@ public class AjcTaskCompileCommandTest extends TestCase {
 
     
     public void testWaitUntilMessagesQuiet_1_2() {
-        checkWait(1, 2, 0, 0);
+        if (runAllTests) checkWait(1, 2, 0, 0);
     }
     
     public void testWaitUntilMessagesQuiet_1_10() {
-        checkWait(1, 10, 0, 0);
+        if (runAllTests) checkWait(1, 10, 0, 0);
     }
     
     public void testWaitUntilMessagesQuiet_8_10() {
@@ -98,11 +99,11 @@ public class AjcTaskCompileCommandTest extends TestCase {
     // XXX two async tests might fail if adder thread starved
     
     public void testWaitUntilMessagesQuiet_1_10_4_1() {
-        checkWait(1, 10, 4, 1);
+        if (runAllTests) checkWait(1, 10, 4, 1);
     }
     
     public void testWaitUntilMessagesQuiet_8_10_2_1() {
-        checkWait(8, 20, 2, 1);
+        if (runAllTests) checkWait(8, 20, 2, 1);
     }
 
     void runSimpleTest(String path, int expectedErrors) {
