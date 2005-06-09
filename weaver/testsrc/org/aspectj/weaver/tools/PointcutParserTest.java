@@ -22,18 +22,18 @@ public class PointcutParserTest extends TestCase {
 	public void testGetAllSupportedPointcutPrimitives() {
 		Set s = PointcutParser.getAllSupportedPointcutPrimitives();
 		assertEquals("Should be 14 elements in the set",14,s.size());
-		assertFalse("Should not contain if pcd",s.contains(PointcutPrimitives.IF));
-		assertFalse("Should not contain cflow pcd",s.contains(PointcutPrimitives.CFLOW));
-		assertFalse("Should not contain cflowbelow pcd",s.contains(PointcutPrimitives.CFLOW_BELOW));
+		assertFalse("Should not contain if pcd",s.contains(PointcutPrimitive.IF));
+		assertFalse("Should not contain cflow pcd",s.contains(PointcutPrimitive.CFLOW));
+		assertFalse("Should not contain cflowbelow pcd",s.contains(PointcutPrimitive.CFLOW_BELOW));
 	}
 	
 	public void testEmptyConstructor() {
 		PointcutParser parser = new PointcutParser();
 		Set s = parser.getSupportedPrimitives();
 		assertEquals("Should be 14 elements in the set",14,s.size());
-		assertFalse("Should not contain if pcd",s.contains(PointcutPrimitives.IF));
-		assertFalse("Should not contain cflow pcd",s.contains(PointcutPrimitives.CFLOW));
-		assertFalse("Should not contain cflowbelow pcd",s.contains(PointcutPrimitives.CFLOW_BELOW));
+		assertFalse("Should not contain if pcd",s.contains(PointcutPrimitive.IF));
+		assertFalse("Should not contain cflow pcd",s.contains(PointcutPrimitive.CFLOW));
+		assertFalse("Should not contain cflowbelow pcd",s.contains(PointcutPrimitive.CFLOW_BELOW));
 	}
 	
 	public void testSetConstructor() {
@@ -41,10 +41,10 @@ public class PointcutParserTest extends TestCase {
 		PointcutParser parser = new PointcutParser(p);
 		assertEquals("Should use the set we pass in",p,parser.getSupportedPrimitives());
 		Set q = new HashSet();
-		q.add(PointcutPrimitives.ARGS);
+		q.add(PointcutPrimitive.ARGS);
 		parser = new PointcutParser(q);
 		assertEquals("Should have only one element in set",1,parser.getSupportedPrimitives().size());
-		assertEquals("Should only have ARGS pcd",PointcutPrimitives.ARGS,
+		assertEquals("Should only have ARGS pcd",PointcutPrimitive.ARGS,
 				parser.getSupportedPrimitives().iterator().next());
 	}
 	
@@ -62,15 +62,23 @@ public class PointcutParserTest extends TestCase {
 		} catch (IllegalArgumentException ex) {}
 	}
 	
+	public void testParseExceptionErrorMessages() {
+		PointcutParser p = new PointcutParser();
+		try {
+			PointcutExpression pEx = p.parsePointcutExpression("execution(int Foo.*(..) && args(Double)");
+			fail("Expected IllegalArgumentException");
+		} catch (IllegalArgumentException ex) {
+			assertTrue("Pointcut is not well-formed message",ex.getMessage().startsWith("Pointcut is not well-formed: expecting ')' at character position 24"));
+		}		
+	}
+	
 	public void testParseIfPCD() {
 		PointcutParser p = new PointcutParser();
 		try {
-            // AV - those 3 are supported for @style 
 			p.parsePointcutExpression("if(true)");
-            p.parsePointcutExpression("if(true)");
-            p.parsePointcutExpression("if()");
-		} catch(Throwable t) {
-            fail(t.toString());
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Should not support IF",PointcutPrimitive.IF,ex.getUnsupportedPrimitive());
 		}
 	}
 	
@@ -78,15 +86,15 @@ public class PointcutParserTest extends TestCase {
 		PointcutParser p = new PointcutParser();
 		try {
 			p.parsePointcutExpression("cflow(this(t))");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("cflow and cflowbelow are not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Should not support CFLOW",PointcutPrimitive.CFLOW,ex.getUnsupportedPrimitive());
 		}
 		try {
 			p.parsePointcutExpression("cflowbelow(this(t))");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("cflow and cflowbelow are not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Should not support CFLOW_BELOW",PointcutPrimitive.CFLOW_BELOW,ex.getUnsupportedPrimitive());
 		}	
 	}
 	
@@ -94,9 +102,9 @@ public class PointcutParserTest extends TestCase {
 		PointcutParser p = new PointcutParser();
 		try {
 			p.parsePointcutExpression("bananas(x)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("if pointcuts and reference pointcuts are not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertTrue(ex.getUnsupportedPrimitive() == PointcutPrimitive.REFERENCE);
 		}	
 	}
 
@@ -105,99 +113,99 @@ public class PointcutParserTest extends TestCase {
 		PointcutParser p = new PointcutParser(s);
 		try {
 			p.parsePointcutExpression("args(x)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("args is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Args",PointcutPrimitive.ARGS,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("within(x)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("within is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Within",PointcutPrimitive.WITHIN,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("withincode(new(..))");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("withincode is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Withincode",PointcutPrimitive.WITHIN_CODE,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("handler(Exception)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("handler is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("handler",PointcutPrimitive.HANDLER,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("this(X)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("this is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("this",PointcutPrimitive.THIS,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("target(X)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("target is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("target",PointcutPrimitive.TARGET,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("this(X) && target(Y)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("this is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("This",PointcutPrimitive.THIS,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("this(X) || target(Y)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("this is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("This",PointcutPrimitive.THIS,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("!this(X)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("this is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("This",PointcutPrimitive.THIS,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("call(* *.*(..))");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("call is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Call",PointcutPrimitive.CALL,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("execution(* *.*(..))");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("execution is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Execution",PointcutPrimitive.EXECUTION,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("get(* *)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("get is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Get",PointcutPrimitive.GET,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("set(* *)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("set is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Set",PointcutPrimitive.SET,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("initialization(new(..))");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("initialization is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Initialization",PointcutPrimitive.INITIALIZATION,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("preinitialization(new(..))");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("preinitialization is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Prc-init",PointcutPrimitive.PRE_INITIALIZATION,ex.getUnsupportedPrimitive());
 		}	
 		try {
 			p.parsePointcutExpression("staticinitialization(T)");
-			fail("Expected UnsupportedOperationException");
-		} catch(UnsupportedOperationException ex) {
-			assertTrue(ex.getMessage().startsWith("staticinitialization is not supported"));
+			fail("Expected UnsupportedPointcutPrimitiveException");
+		} catch(UnsupportedPointcutPrimitiveException ex) {
+			assertEquals("Staticinit",PointcutPrimitive.STATIC_INITIALIZATION,ex.getUnsupportedPrimitive());
 		}	
 	}	
 }
