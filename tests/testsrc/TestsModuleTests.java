@@ -25,9 +25,7 @@ public class TestsModuleTests extends TestCase {
         String name = TestsModuleTests.class.getName();
         TestSuite suite = new TestSuite(name);
         // compiler tests, wrapped for JUnit
-        suite.addTest(AllTests.suite());            
         if (LangUtil.is15VMOrGreater()) {
-            suite.addTest(AllTests14.suite());            
             suite.addTest(AllTests15.suite());
         } else if (LangUtil.is14VMOrGreater()) {
             System.err.println("Skipping tests for 1.5");
@@ -36,6 +34,7 @@ public class TestsModuleTests extends TestCase {
         } else {
             System.err.println("Skipping tests for 1.4 and 1.5");
             //suite.addTest(TestUtil.skipTest("for 1.4 and 1.5"));
+	        suite.addTest(AllTests.suite());            
         }
         return suite;
     }
