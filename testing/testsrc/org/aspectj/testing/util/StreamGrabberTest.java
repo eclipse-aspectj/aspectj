@@ -22,6 +22,7 @@ package org.aspectj.testing.util;
 import java.io.PrintStream;
 
 import junit.framework.TestCase;
+import junit.framework.TestResult;
 import junit.textui.TestRunner;
 
 /**
@@ -35,8 +36,16 @@ public class StreamGrabberTest extends TestCase {
         = "org.aspectj.testing.util.StreamGrabberTest";
 
     /** @param args ignored */
-    public static void main(String[] args) {
-        TestRunner.main(new String[] {ME});
+    public static void main(String[] args) throws Exception {
+        class C extends TestRunner {
+            public TestResult go(String[] a) throws Exception {
+                return start(a);
+            }
+        }
+        TestResult r = new C().go(args);
+        if (!r.wasSuccessful()) {
+            System.err.println(r.errorCount() + "/" + r.failureCount());
+        }
     }
 
     public StreamGrabberTest(String s) { super(s); }

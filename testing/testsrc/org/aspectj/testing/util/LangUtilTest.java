@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import junit.framework.TestCase;
+import junit.framework.TestResult;
 import junit.textui.TestRunner;
 
 /**
@@ -33,8 +34,16 @@ public class LangUtilTest extends TestCase {
         = "org.aspectj.testing.util.LangUtilTest";
 
     /** @param args ignored */
-    public static void main(String[] args) {
-        TestRunner.main(new String[] {ME});
+    public static void main(String[] args) throws Exception {
+        class C extends TestRunner {
+            public TestResult go(String[] a) throws Exception {
+                return start(a);
+            }
+        }
+        TestResult r = new C().go(new String[] {ME});
+        if (!r.wasSuccessful()) {
+            System.err.println(r.errorCount() + "/" + r.failureCount());
+        }
     }
     
 	/**
