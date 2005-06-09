@@ -14,20 +14,21 @@
 
 package org.aspectj.internal.build;
 
-import org.apache.tools.ant.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
+import junit.framework.TestCase;
+
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Commandline.Argument;
 import org.aspectj.internal.tools.ant.taskdefs.BuildModule;
 import org.aspectj.internal.tools.ant.taskdefs.Checklics;
-import org.aspectj.internal.tools.build.*;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import junit.framework.TestCase;
+import org.aspectj.internal.tools.build.Util;
 
 /**
  * Test our integrated taskdef build.
@@ -44,27 +45,39 @@ public class BuildModuleTest extends TestCase {
 
     private static boolean printInfoMessages = false;
     private static boolean printedMessage;
+
+    // to just build one module verbosely
+    private static final String[] DEBUGS  
+        = {};
+
     // skip those requiring ajdoc, which requires tools.jar
     // also skip those requiring java5 unless manually set up
     private static final String[] SKIPS 
-        = {"aspectjtools", "ajdoc", "aspectj5rt"};
+        //= {};
+       = {"aspectjtools", "ajdoc", "aspectj5rt", "run-all-junit-tests"};
+
     private static final String SKIP_MESSAGE = 
         "BuildModuleTest: Define \"run.build.tests\" as a system "
         + "property to run tests to build ";
     private static final String BUILD_CONFIG;
+    private static final boolean useEclipseCompiles;
     static {
+        boolean useEclipse = false;
         String config = null;
         try {
             config = System.getProperty("build.config");
+            useEclipse = ((null != config) 
+                    && (-1 != config.indexOf("useEclipseCompiles")));
         } catch (Throwable t) {
             // ignore
         }
+        useEclipseCompiles = useEclipse;
         BUILD_CONFIG = config;
         if (printInfoMessages) {
             System.out.println("BuildModuleTest build.config: " + config);
         }
     }
-    
+        
     ArrayList tempFiles = new ArrayList();
     private File jarDir;
     boolean building;  // must be enabled for tests to run
@@ -76,6 +89,9 @@ public class BuildModuleTest extends TestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
+        if (debugging()) {
+            return;
+        }
         for (Iterator iter = tempFiles.iterator(); iter.hasNext();) {
 			File file = (File) iter.next();
             if (!Util.delete(file)) {
@@ -96,7 +112,11 @@ public class BuildModuleTest extends TestCase {
 		}
 	}
     
-    public void testBuild() {
+	public void testAllJunitTests() {
+      checkBuild("run-all-junit-tests");
+    }
+
+	public void testBuild() {
         checkBuild("build", 
             Checklics.class.getName(), 
             new String[0], // help message
@@ -112,26 +132,35 @@ public class BuildModuleTest extends TestCase {
     }
 
     public void testAspectj5rt() {
-        checkBuild("aspectj5rt", 
-                "org.aspectj.lang.annotation.Main",
-                new String[] {}); // compiler version
+        checkBuild("aspectj5rt"); 
     }
-
+   
     public void testAjbrowser() {
         checkBuild("ajbrowser", 
             "org.aspectj.tools.ajbrowser.Main",
             new String[] {"-noExit", "-version"}); // compiler version
+    }
+    public void testTestingUtils() {
+        checkBuild("testing-util"); 
     }
 
     public void testAjdt() {
         checkBuild("org.aspectj.ajdt.core", 
            "org.aspectj.tools.ajc.Main",
             new String[] { "-noExit", "-version" });
+    }//
+    public void testTesting() {
+        checkBuild("testing", 
+            "org.aspectj.testing.util.LangUtilTest", 
+            new String[] {"ignored"});
     }
     public void testTestingDrivers() {
         checkBuild("testing-drivers", 
             "org.aspectj.testing.drivers.Harness", 
             new String[] {"-help"});
+    }
+    public void testWeaver() {
+        checkBuild("weaver"); 
     }
     
     // ajdoc relies on tools.jar
@@ -148,7 +177,6 @@ public class BuildModuleTest extends TestCase {
         assertTrue(""+productDir, productDir.canRead());
         checkBuildProduct(productDir, baseDir, distDir, jarDir);
     }
-
 
     void checkBuildProduct(File productDir, File baseDir, File distDir, File jarDir) {
         if (!shouldBuild(productDir.getPath())) {
@@ -180,6 +208,9 @@ public class BuildModuleTest extends TestCase {
 
     File getAntJar() {
         return new File("../lib/ant/lib/ant.jar");
+    }
+    File getJUnitJar() {
+        return new File("../lib/junit/junit.jar");
     }
     
     File getJarDir() {
@@ -218,23 +249,55 @@ public class BuildModuleTest extends TestCase {
     void checkBuild(String module, 
         String classname, 
         String[] args) {
-        checkBuild(module, classname, args, false);
+        checkBuild(module, classname, args, true);
     }
 
     boolean shouldBuild(String target) {
+        if (null == target) {
+            return false;
+        }
         if (!building && !printedMessage) {
             System.err.println(SKIP_MESSAGE + target + " (this is the only warning)");
             printedMessage = true;
         }
-        for (int i = 0; i < SKIPS.length; i++) {
-            if (SKIPS[i].equals(target)) {
-                if (printInfoMessages) {
-                    System.err.println(target + " skipped build test [" + getClass().getName() + ".shouldBuild(..)]");                
+        if (debugging()) {
+            for (int i = 0; i < DEBUGS.length; i++) {
+                if (target.equals(DEBUGS[i])) {
+                    return true;
                 }
-                return false;
+            }
+            return false;
+        } else {
+            for (int i = 0; i < SKIPS.length; i++) {
+                if (SKIPS[i].equals(target)) {
+                    if (printInfoMessages) {
+                        System.err.println(target + " skipped build test [" + getClass().getName() + ".shouldBuild(..)]");                
+                    }
+                    return false;
+                }
             }
         }
         return building;
+    }
+    private static boolean debugging() {
+        return ((null != DEBUGS) && (0 < DEBUGS.length));
+    }
+    private static String name(String module, boolean trimTesting, boolean assemble) {
+        return module + (trimTesting?"":"-test") + (assemble?"-all":"");
+    }
+    private static void deleteJar(File jar) {
+        if (jar.exists()) {
+            jar.delete();
+        }
+        if (jar.exists()) {
+            try {
+                Thread.sleep(5000);
+            } catch (Throwable t) {                
+            }
+        }
+        if (jar.exists()) {
+            assertTrue("cannot delete " + jar, jar.delete());
+        }
     }
     void checkBuild(String module, 
         String classname, 
@@ -245,49 +308,58 @@ public class BuildModuleTest extends TestCase {
         }
         assertTrue(null != module);
         checkJavac();
-        
-        // run without assembly
-        BuildModule task = getTask(module);
-        File jar = new File(getJarDir(), module + ".jar");
-        task.setAssembleall(false);
-        task.execute();
-        assertTrue("cannot read " + jar, jar.canRead());
-        assertTrue("cannot delete " + jar, jar.delete());
+        File jar;
+        jar = doTask(module, true, false);
+        deleteJar(jar);
+        jar = doTask(module, true, true);
+        deleteJar(jar);
+        jar = doTask(module, false, false);
+        deleteJar(jar);
+        jar = doTask(module, false, true);
 
-        // run with assembly
-        task = getTask(module);
-        task.setAssembleall(true);
-        task.execute();
-        jar = new File(getJarDir(), module + "-all.jar");
-        assertTrue("cannot read " + jar, jar.canRead());
         // verify if possible
-        if (null == classname) {
-            return;
-        }
-        
-        Java java = new Java();
-        Project project = task.getProject();
-        java.setProject(project);
-        java.setFailonerror(true);
-        Path cp = new Path(project);
-        cp.append(new Path(project, jar.getAbsolutePath()));
-        if (addAnt) {
-            cp.append(new Path(project, getAntJar().getAbsolutePath()));
-        }
-        java.setClasspath(cp);
-        java.setClassname(classname);
-        if (null != args) {
-            for (int i = 0; i < args.length; i++) {
-                Argument arg = java.createArg();
-                arg.setValue(args[i]);
+        if (null != classname) {
+            Java java = new Java();
+            Project project = new Project();
+            java.setProject(project);
+            java.setFailonerror(true);
+            Path cp = new Path(project);
+            assertTrue(jar.canRead());
+            cp.append(new Path(project, jar.getAbsolutePath()));
+            if (addAnt) {
+                cp.append(new Path(project, getAntJar().getAbsolutePath()));
+                cp.append(new Path(project, getJUnitJar().getAbsolutePath()));
+            }
+            java.setClasspath(cp);
+            java.setClassname(classname);
+            if (null != args) {
+                for (int i = 0; i < args.length; i++) {
+                    Argument arg = java.createArg();
+                    arg.setValue(args[i]);
+                }
+            }
+            try {
+                java.execute();
+            } catch (BuildException e) {
+                e.printStackTrace(System.err);
+                assertTrue("BuildException running " + classname, false);
             }
         }
-        try {
-            java.execute();
-        } catch (BuildException e) {
-            e.printStackTrace(System.err);
-            assertTrue("BuildException running " + classname, false);
+        
+    }
+
+    File doTask(String module, boolean trimTesting, boolean assembleAll) {
+        BuildModule task = getTask(module);
+        String name = name(module, trimTesting, assembleAll);
+        File jar = new File(getJarDir(), name+ ".jar");
+        task.setAssembleall(assembleAll);
+        task.setTrimtesting(trimTesting);
+        task.execute();
+        if (!jar.canRead()) {
+            File[] files = getJarDir().listFiles();
+            fail("cannot read " + jar + " in " + Arrays.asList(files));
         }
+        return jar;
     }
 
     void checkJavac() {

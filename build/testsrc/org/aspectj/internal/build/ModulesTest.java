@@ -34,7 +34,9 @@ import org.aspectj.internal.tools.ant.taskdefs.BuildModule;
 import org.aspectj.internal.tools.build.Messager;
 import org.aspectj.internal.tools.build.Module;
 import org.aspectj.internal.tools.build.Modules;
+import org.aspectj.internal.tools.build.Result;
 import org.aspectj.internal.tools.build.Util;
+import org.aspectj.internal.tools.build.Result.Kind;
 /**
  * 
  */
@@ -95,7 +97,7 @@ public class ModulesTest extends TestCase {
         if (null == handler) {
             handler = new Messager();
         }
-        return new Modules(baseDir, jarDir, true, handler);
+        return new Modules(baseDir, jarDir, handler);
     }
       
     public void testAllModulesCreation() {
@@ -148,7 +150,9 @@ public class ModulesTest extends TestCase {
         File tempDir = new File(".");
         AntBuilder builder = (AntBuilder) AntBuilder.getBuilder("", project, tempDir);
         Path classpath = new Path(project);
-        boolean hasLibraries = builder.setupClasspath(ajdt, classpath);
+        Kind kind = Result.kind(Result.NORMAL, !Result.ASSEMBLE);
+        Result result = ajdt.getResult(kind);
+        boolean hasLibraries = builder.setupClasspath(result, classpath);
         assertTrue(hasLibraries);
         if ((null == classpath) || (2 > classpath.size())) {
             assertTrue(classpath.toString(), false);
