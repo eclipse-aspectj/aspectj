@@ -41,27 +41,6 @@
     <property name="module.name" value="${ant.project.name}"/>
     
     <import file="${modules.dir}/build/build-properties.xml"/>
-	<target name="wes" depends="init-properties">
-	    <delete file="${aj.failure.file}"/>
-	    <echo message="-> no false negative (no file)"/>
-	    <antcall target="fail-if-failures"/>
-	    
-	    <touch file="${aj.failure.file}"/>
-	    <echo message="-> no false negative (empty file)"/>
-	    <antcall target="fail-if-failures"/>
-
-	    <echo message="-> no false negative (unset Property)"/>
-	    <report-if-failed text="not error text" property="unsetProperty"/>
-	    <antcall target="fail-if-failures"/>
-
-	    <echo message="-> true negative (set Property)"/>
-	    <property name="setProperty" value="."/>
-	    <report-if-failed text="error text" property="setProperty"/>
-	    <antcall target="fail-if-failures"/>
-
-	    <loadfile property="emit" srcfile="${aj.failure.file}"/>
-	    <echo message="-> file contents: ${emit}"/>
-    </target>
     <target name="init" depends="init-properties,init-directories">
       <property name="build.config" value=""/> 
       <property name="trim.testing.default" value="true"/>
