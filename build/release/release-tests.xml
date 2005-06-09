@@ -1,0 +1,273 @@
+<!-- ========================================================================= -->
+<!-- Copyright (c) 2005 Contributors.                                          -->
+<!-- All rights reserved.                                                      -->
+<!-- This program and the accompanying materials are made available            -->
+<!-- under the terms of the Eclipse Public License v1.0                        -->
+<!-- which accompanies this distribution and is available at                   -->
+<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
+<!--                                                                           -->
+<!-- Contributors:                                                             -->
+<!--     Wes Isberg     initial implementation                                 -->
+<!-- ========================================================================= -->
+<project name="release-tests" default="product-tests">
+	<target name="JUnit-tests" unless="skip.test"
+		description="run JUnit unit and compiler tests">
+	    <build-aspectj vm="${max.vm}" target="test-each-module"/>
+		<build-aspectj vm="${max.vm}" target="clean-jars"/>
+	    <build-aspectj vm="${min.vm}" target="test-each-module"/>
+	</target>
+				
+	<target name="product-tests" unless="skip.test"
+		description="run product tests">
+		<do-vm-targets target="test-build-examples"/>
+	</target>
+			
+	<target name="init-postBuild-properties" depends="init-release-properties">
+		<require-available property="aspectj.jar"
+			path="${aj.dist.dir}/aspectj-${build.version}.jar"/>
+			
+		<property name="harness.jar"
+			location="${aj.jar.dir}/testing-drivers-all.jar"/>
+    </target>
+	
+	<target name="init-sources-available" depends="init-release-properties"
+		unless="sources.available">
+		<available property="sources.available"
+			file="${aspectj.modules.dir}/build/build.xml"/>
+		<fail unless="sources.available" message="checkout first"/>
+	</target>
+
+	<target name="init-aspectj-available" depends="init-release-properties"
+		unless="aspectj.available">
+		<available property="aspectj.available"
+			file="${aj.install.dir}" type="dir"/>
+		<fail unless="aspectj.available" 
+			message="install first in ${aj.install.dir}"/>
+	</target>
+
+	<target name="init-harness-available" depends="init-release-properties"
+		unless="harness.available">
+		<available property="harness.available"
+			classname="org.aspectj.testing.drivers.Harness"
+			classpath="${harness.jar}"/>
+		<fail unless="harness.available" 
+			message="harness not found - first build-tests"/>
+	</target>
+	
+	<target name="test-build-examples" 
+		depends="init-postBuild-properties,init-aspectj-available">
+		<run-example name="bean"/>
+		<run-example name="intro"/>
+		<run-example name="intro-clone"/>
+		<run-example name="intro-compare"/>
+		<run-example name="intro-hash"/>
+		<run-example name="telecom"/>
+		<run-example name="telecom-billing"/>
+		<run-example name="telecom-timing"/>
+		<run-example name="tjp"/>
+		<run-example name="tracing-1"/>
+		<run-example name="tracing-2"/>
+		<run-example name="tracing-3"/>
+		<run-example name="tracing-bc"/>
+		<run-example name="nonGui"/>
+		<echo message="TODO: setup and run compiler adapter example"/>
+	</target>
+	
+	<target name="do-run-harness" depends="init-postBuild-properties,init-harness-available">
+		<fail unless="suite.filename" message="define suite.filename"/>
+		<fail unless="harness.args" message="define harness.args"/>
+		<fail unless="harness.suffix" message="define harness.suffix"/>
+		
+		<property name="drho.default.options"
+			value="-release -logFail -killTemp"/>
+		
+		<property file="${java.home.file}"/>
+		<fail unless="build.java.home"
+			message="failed to read ${build.java.home} from ${java.home.file}"/>
+		<fail unless="build.java.version"
+			message="failed to read ${build.java.version} from ${java.home.file}"/>
+		
+		<property name="harness.output.file"
+			location="${aj.logs.dir}/test-${suite.filename}${harness.suffix}-${build.java.version}.txt"/>
+		<echo> do-run-harness ${suite.filename}.xml with options
+			${drho.default.options} ${harness.args} to ${harness.output.file}
+		</echo>
+		<java fork="true" dir="${aspectj.modules.dir}/tests" jar="${harness.jar}"
+			jvm="${build.java.command}" maxmemory="250m"
+			output="${harness.output.file}">
+			<jvmarg line="${harness.jvmline}"/>
+			<arg value="${suite.filename}.xml"/>
+			<arg line="${drho.default.options} ${harness.args}"/>
+		</java>
+	</target>
+	
+	<macrodef name="run-example">
+		<attribute name="name"/>
+		<sequential>
+			
+		<antcall target="init"/>
+		<antcall target="do-run-ant">
+			<param name="ant.dir" 
+				location="${aj.install.dir}/doc/examples"/>
+			<param name="run.ant.file" value="build.xml"/>
+			<param name="ant.target" value="@{name}"/>
+			<param name="ant.output" 
+				location="${aj.logs.dir}/test-example-@{name}"/>
+			<param name="ant.properties" value=""/>
+			<!-- XXX getting OOMemory - permit and investigate -->
+			<param name="failonerror" value="false"/>
+		</antcall>
+		</sequential>
+	</macrodef>
+	
+	<target name="test-ajc-aspectj" 
+		depends="init-postBuild-properties,init-aspectj-available,init-sources-available">
+		<antcall target="do-run-ant">
+			<param name="ant.dir" 
+				location="${aspectj.modules.dir}/tests/product/build-aspectj"/>
+			<param name="run.ant.file" value="build.xml"/>
+			<param name="ant.target" value=""/>
+			<param name="ant.output" 
+				location="${aj.logs.dir}/test-ajc-aspectj"/>
+		</antcall>
+		<delete quiet="on" dir="${aspectj.modules.dir}/tests/product/build-aspectj/output"/>
+	</target>
+	
+	<!-- ====                                        source tests ==== -->
+	<target name="test-sources">
+		<do-vm-targets target="do-test-sources-sequence"/>
+	</target>
+
+	<target name="do-test-sources-sequence">
+		<antcall target="test-harness-tests"/>
+		<antcall target="test-junit-modules"/>
+	</target>
+
+	<target name="test-doc-links" 
+		depends="init-aspectj-available,init-harness-available"
+		description="run link check against distribution">
+		<setup-vm vm="13"/>
+		<property file="${java.home.file}"/>
+		<fail unless="build.java.home" 
+		     message="failed to read ${build.java.home} from ${java.home.file}"/>
+
+		<property name="doclink.output.file"
+			location="${aj.logs.dir}/test-doc-links"/>
+		<property name="doclink.start.file"
+			location="${aj.install.dir}/README-AspectJ.html"/>
+		<echo>
+  test-doc-links ${doclink.start.file}
+              to ${doclink.output.file}-[out|messages].txt
+  WARNING: verify manually if result code is not 0.  Known failures:
+  - google link nets 403, but works in browser
+  - progguide/printable.html has harmless empty link to d0e26 (ajc-ref?)
+
+</echo>
+		<java 
+			classname="org.aspectj.testing.util.LinkCheck"
+			fork="true"
+			dir="${aj.install.dir}"
+			classpath="${harness.jar}" 
+			jvm="${build.java.command}"
+			output="${doclink.output.file}-out.txt">
+			<arg value="${doclink.start.file}"/>
+			<arg value="-printInfo"/>
+			<arg value="-log"/>
+			<arg value="${doclink.output.file}-messages.txt"/>
+			<sysproperty key="http.proxyHost" value="${proxy.host}" />
+			<sysproperty key="http.proxyPort" value="${proxy.port}" />
+		</java>
+	</target>
+	
+	<target name="test-examples-11" depends="init-harness-available"
+		description="run examples under JDK 1.1">
+		<property name="j11.home"
+			location="${java11.home}"/>
+		<property name="java11.command"
+			location="${java11.home}/bin/java"/>
+		<property name="java11.classes.zip"
+			location="${java11.home}/lib/classes.zip"/>
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTestsExamples"/>
+			<param name="harness.args" value="-1.1"/>
+			<param name="harness.suffix" value="-run11"/>
+			<param name="harness.jvmline" 
+				value="-Djavarun.fork=true -Djavarun.java=${java11.command} -Djavarun.java.home=${j11.home} -Djavarun.bootclasspath=${java11.classes.zip}"/>
+		</antcall>
+	</target>
+    
+    <target name="compile-runtime-11" depends="init-postBuild-properties"
+        description="compile runtime under 1.1 - fails, but by how much?">
+        <mkdir dir="${aj.build.dir}/classes-1.1"/>
+        <property name="j11.classes"
+            location="${j11.home}/lib/classes.zip"/>
+        <javac
+            compiler="javac1.1"
+            bootclasspath="${j11.classes}"
+            source="1.3"
+            includejavaruntime="no"
+            includeantruntime="no"
+            destdir="${aj.build.dir}/classes-1.1"
+            srcdir="${aspectj.modules.dir}/runtime/src"
+            target="1.1"
+            verbose="false"
+            failonerror="false"
+            />
+       <delete dir="${aj.build.dir}/classes-1.1"/>
+    </target>
+
+	<target name="test-harness-tests" depends="build-tests">
+		<!-- we could use harness variants, e.g., "-emacssym-",
+		     but separating runs puts each variant in a different 
+		     output file, which makes them easier to analyze.
+		-->
+		<antcall target="init-harness-available"/>
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcHarnessTests"/>
+			<param name="harness.args" value="-ajctestSkipKeywords=expect-fail"/>
+			<param name="harness.suffix" value="-pass"/>
+		</antcall>
+		
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTests"/>
+			<param name="harness.args" value=""/>
+			<param name="harness.suffix" value=""/>
+		</antcall>
+
+		<!-- 
+			skip variants for now 
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTests"/>
+			<param name="harness.args" value="-emacssym"/>
+			<param name="harness.suffix" value="-emacssym"/>
+		</antcall>
+
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTests"/>
+			<param name="harness.args" value="-ajctaskCompiler -ajctestSkipKeywords=knownLimitation-ajctaskCompiler"/>
+			<param name="harness.suffix" value="-ajctaskCompiler"/>
+		</antcall>
+
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTestsExamples"/>
+			<param name="harness.args" value=""/>
+			<param name="harness.suffix" value=""/>
+		</antcall>
+
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTestsExamples"/>
+			<param name="harness.args" value="-ajctaskCompiler"/>
+			<param name="harness.suffix" value="-ajctaskCompiler"/>
+		</antcall>
+		-->
+
+		<!-- AJDE compiler hangs when done - unclose swing thread?
+		<antcall target="do-run-harness">
+			<param name="suite.filename" value="ajcTests"/>
+			<param name="harness.args" value="-ajdeCompiler -ajctestSkipKeywords=knownLimitations-ajdeCompiler"/>
+			<param name="harness.suffix" value="-ajdeCompiler"/>
+		</antcall>
+		-->
+	</target>
+				
+</project>

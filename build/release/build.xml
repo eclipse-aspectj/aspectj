@@ -1,156 +1,55 @@
 <!-- ========================================================================= -->
-<!-- Copyright (c) 2003 Contributors.                                          -->
+<!-- Copyright (c) 2003-2005 Contributors.                                     -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
-<!-- under the terms of the Common Public License v1.0                         -->
+<!-- under the terms of the Eclipse Public License v1.0                        -->
 <!-- which accompanies this distribution and is available at                   -->
-<!-- http://www.eclipse.org/legal/cpl-v10.html                                 -->
+<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
 <!--                                                                           -->
 <!-- Contributors:                                                             -->
 <!--     Wes Isberg     initial implementation                                 -->
 <!-- ========================================================================= -->
 
-<project name="build" default="all" basedir=".">
-		
-<!-- ========================================================================= -->
+<project name="build" default="all" basedir="..">
 
-	<target name="info" depends="init-variables">
-	<echo>
- Build and test the AspectJ source tree. Targets:
-  
- all (default)
-   install                    # install distribution
-     build
-       build-release          # build distribution 
-       build-tests            # build test classes
-   test
-     test-sources             # - requires only sources
-       test-harness-tests     # run tests/{suite}.xml's
-     test-install             # - requires distribution
-       test-build-examples    # install/docs/examples
-       test-ajc-aspectj       # ajc compiles aspectj
- 
- Normally this builds with Java 1.5 and tests with both
- Java 1.3 and 1.4, so define all properties. You
- can select any target (not prefixed "do-" or "init-").
- The leaf targets will run with Java version set in 
-     ${java.home.file}
- When running non-leaf targets, if you want to test
- only in 1.3 or 1.4, set property "run.1[3|4].only". 
-
- Properties to consider setting on the command-line:
-
-    -- required 
-    java11.home           JAVA_HOME for latest JDK 1.1
-    java13.home           JAVA_HOME for latest J2SE 1.3
-    java14.home           JAVA_HOME for latest J2SE 1.4
-    java15.home           JAVA_HOME for latest J2SE 1.5
+    <property name="aspectj.modules.dir" location="${basedir}/.."/>
     
-    -- flags to control   
-    run.13.only           only use Java 1.3
-    run.14.only           only use Java 1.4
-    skip.cvs              no CVS checkout (true)
-    skip.build            no build (done already)
-    skip.test             no tests
-    skip.build.release    no build of release
-    skip.build.tests      no build of tests
-    version               set if not DEVELOPMENT(?)
-    aspectj.build.props   Ant props for ../build.xml
+    <import file="${aspectj.modules.dir}/build/build-properties.xml"/>
+    <import file="${aspectj.modules.dir}/build/release/release-tests.xml"/>
 
-    -- locations to re-use existing tree or install  
-    aspectj.workspace     location for new cvs tree
-    aspectj.modules.dir   ... for existing cvs tree
-    aj.build.install.dir  ... for installed dist
-
-    -- when building behind a proxy server 
-       (currently only used for test-doc-links target)
-    proxy.host            name of proxy server
-	proxy.port            proxy server's port number
-
- Example command lines for using this script:
-  
- - define variable for standard properties
-  
-   sp="-Djava13.home=d:/j13 -Djava14.home=d:/j14 -Djava15.home=d:/j15"
-   sp="$${sp} -Daspectj.modules.dir=../.."
-
- - clean first
-
-   cd build
-   ant clean 
-    
- - test only sources in local tree 
-  
-   cd build/release
-   ant test-sources $${sp}
-
- - build and install distribution:
- 
-   cd build/release
-   ant install $${sp}
-  
- - test installation and sources in local tree:
-  
-   cd build/release
-   ant test $${sp} -Dskip.build=true 
-  
- - do everything but checkout from cvs:
-  
-   cd build
-   ant clean 
-   cd release
-   ant all $${sp}
-           
-</echo>
+	<target name="info">
+	    <echo message="see build.readme.txt and readme.txt"/>
 	</target>
 	
-	<target name="init-variables" >
-		
-		<!-- re-enable when tested -->
-		<property name="skip.cvs" value="true"/>
+    <target name="init" depends="init-release-properties">
+	</target>
+    
+	<target name="init-release-properties" depends="init-properties,init-directories">
+		<property name="do.cvs" value="false"/>
+	    <property name="run.${min.vm}" value="true"/>
+	    <property name="run.14" value="false"/>
+	    <property name="run.${max.vm}" value="true"/>
 		
 		<property name="aspectj.build.props" value=""/>
-		<property name="version" value="DEVELOPMENT"/>
 		<property name="ant.verbose" value=""/>
 		<property name="failonerror" value="true"/>
 		<property name="harness.jvmline" value="-Dignore=me"/>
 
 		<property name="aspectj.workspace"
-			location="${basedir}/aspectj-workspace"/>
-		<property name="aspectj.modules.dir"
-			location="${aspectj.workspace}/org.aspectj/modules"/>
-		<property name="aspectj.build.dir"
-			location="${aspectj.modules.dir}/build"/>
+			location="${aspectj.modules.dir}/../.."/>
 		<property name="aspectj.build.release.dir"
-			location="${aspectj.build.dir}/release"/>
-		<property name="aspectj.tests.dir"
-			location="${aspectj.modules.dir}/tests"/>
+			location="${aspectj.modules.build.dir}/release"/>
 		<property name="aspectj.lib.dir"
 			location="${aspectj.modules.dir}/lib"/>
 		<property name="aspectj.ant.home"
 			location="${aspectj.lib.dir}/ant"/>
 		<property name="aspectj.ant.lib.dir"
 			location="${aspectj.ant.home}/lib"/>
-		<property name="aj.build.dir"
-			location="${aspectj.modules.dir}/aj-build"/>
-		<property name="aj.build.jar.dir"
-			location="${aj.build.dir}/jars"/>
-		<property name="aj.build.dist.dir"
-			location="${aj.build.dir}/dist"/>
-		<property name="aj.build.install.dir"
-			location="${aj.build.dir}/install"/>
-		<property name="aj.build.log.dir"
+		<property name="aj.logs.dir"
 			location="${aj.build.dir}/logs"/>
 
-		<!-- todo: clean-up file created as side-effect -->
 		<property name="java.home.file"
-			location="${aspectj.build.release.dir}/javahome.props.tmp"/>
-
-		<property name="aspectj.jar"
-			location="${aj.build.dist.dir}/aspectj-${version}.jar"/>
-			
-		<property name="harness.jar"
-			location="${aj.build.jar.dir}/testing-drivers-all.jar"/>
+			location="${aj.build.dir}/javahome.props.tmp"/>
 
 		<property name="java13.command"
 			location="${java13.home}/bin/java"/>
@@ -161,542 +60,87 @@
 		<property name="java15.command"
 			location="${java15.home}/bin/java"/>
 
-        <mkdir dir="${aj.build.log.dir}"/>
+        <mkdir dir="${aj.logs.dir}"/>
 		
-		<path id="lib.classpath">
-          <pathelement location="${aspectj.lib.dir}/eclipse2.0/jdtDepends.jar" />
-          <pathelement location="${aspectj.lib.dir}/bcel/bcel.jar" />
-          <pathelement location="${aspectj.lib.dir}/jdiff/jdiff.jar" />
-          <pathelement location="${aspectj.lib.dir}/commons/commons.jar" />
-          <pathelement location="${aspectj.lib.dir}/ant/lib/ant.jar" />
-          <pathelement location="${aspectj.lib.dir}/ant/lib/xml-apis.jar" />
-          <pathelement location="${aspectj.lib.dir}/ant/lib/xercesImpl.jar" />
-          <pathelement location="${aspectj.lib.dir}/junit/junit.jar" />
-          <pathelement location="${aspectj.modules.dir}/org.eclipse.jdt.core/jdtcore-for-aspectj.jar" />
-		</path>
-
-		<!-- requires normal build, i.e., with test classes -->
-		<path id="jar.classpath">
-          <pathelement location="${aj.build.jar.dir}/ajde.jar" />
-          <pathelement location="${aj.build.jar.dir}/ajbrowser.jar" />
-          <pathelement location="${aj.build.jar.dir}/ajdoc.jar" />
-          <pathelement location="${aj.build.jar.dir}/asm.jar" />
-          <pathelement location="${aj.build.jar.dir}/bridge.jar" />
-          <pathelement location="${aj.build.jar.dir}/build.jar" />
-          <pathelement location="${aj.build.jar.dir}/org.aspectj.ajdt.core.jar" />
-          <pathelement location="${aj.build.jar.dir}/runtime.jar" />
-          <pathelement location="${aj.build.jar.dir}/taskdefs.jar" />
-          <pathelement location="${aj.build.jar.dir}/testing.jar" />
-          <pathelement location="${aj.build.jar.dir}/testing-client.jar" />
-          <pathelement location="${aj.build.jar.dir}/testing-drivers.jar" />
-          <pathelement location="${aj.build.jar.dir}/testing-util.jar" />
-          <pathelement location="${aj.build.jar.dir}/util.jar" />
-          <pathelement location="${aj.build.jar.dir}/weaver.jar" />
-          <path refid="lib.classpath"/>
-        </path>
-        
-        <available property="jar.path.available"
-        	file="${aj.build.jar.dir}/ajbrowser.jar" type="file"/>
-
 	</target>
 	
-	<target name="init-sources-available" depends="init-variables"
-		unless="sources.available">
-		<available property="sources.available"
-			file="${aspectj.modules.dir}/build/build.xml"/>
-		<fail unless="sources.available" message="checkout first"/>
-	</target>
-
-	<target name="init-aspectj-available" depends="init-variables"
-		unless="aspectj.available">
-		<available property="aspectj.available"
-			file="${aj.build.install.dir}" type="dir"/>
-		<fail unless="aspectj.available" 
-			message="install first in ${aj.build.install.dir}"/>
-	</target>
-
-	<target name="init-harness-available" depends="init-variables"
-		unless="harness.available">
-		<available property="harness.available"
-			classname="org.aspectj.testing.drivers.Harness"
-			classpath="${harness.jar}"/>
-		<fail unless="harness.available" 
-			message="harness not found - first build-tests"/>
-	</target>
-
-	<target name="init-junitTests-available" depends="init-variables"
-		unless="tests.available">
-		<available property="tests.available"
-			classname="TestingDriversModuleTests">
-			<classpath>
-				<path refid="jar.classpath"/>
-				<path location="${aspectj.lib.dir}/junit/junit.jar"/>
-			</classpath>
-		</available>
-		<fail unless="tests.available" 
-			message="test classes not found - first build-tests"/>
-	</target>
-
-<!-- ========================================================================= -->
-
-	<target name="all">
-		<antcall target="install"/>
-		<antcall target="test"/>
-	</target>
-
-	<target name="build" unless="skip.build"
-		description="build an AspectJ release and tests">
-		<antcall target="build-release">
-			<param name="do.ant.vm" value="15"/>
-	    </antcall>
-		<antcall target="build-tests">
-			<param name="do.ant.vm" value="15"/>
-	    </antcall>
-	</target>
-
-	<target name="build-13-check" unless="skip.build"
-		description="build an AspectJ release and tests using 1.3">
-		<antcall target="build-release">
-			<param name="do.ant.vm" value="13"/>
-	    </antcall>
-		<antcall target="build-tests">
-			<param name="do.ant.vm" value="13"/>
-	    </antcall>
-	</target>
-
-    <target name="test" unless="skip.test"
-		description="test AspectJ source and distribution">
-		<antcall target="test-sources"/>
-		<antcall target="test-install"/>
-	</target>
-
-	<target name="install" depends="build,init-variables"
-		description="install AspectJ distribution using current java">
-		<fail unless="aspectj.jar" message="define aspectj.jar"/>
-		<fail unless="aj.build.install.dir" message="define aj.build.install.dir"/>
-		<mkdir dir="${aj.build.install.dir}"/>
-		<delete dir="${aj.build.install.dir}"/>
-		<mkdir dir="${aj.build.install.dir}"/>
-		<java fork="true" jar="${aspectj.jar}" failonerror="true">
-			<arg line="-to ${aj.build.install.dir}"/>
-		</java>
-	</target>
-
-	<target name="create-tree" depends="init-variables"
-		unless="skip.cvs"
-		description="create an AspectJ source tree">
-		<fail message="testing now - remove when validated"/>
-		<mkdir dir="${aspectj.workspace}"/>
-		<delete dir="${aspectj.workspace}"/>
-		<mkdir dir="${aspectj.workspace}"/>
-		<cvs cvsRoot=":pserver:anonymous@eclipse.org:/home/technology"
-		          dest="${aspectj.workspace}"
-		       package="org.aspectj/modules" 
-		         quiet="on" 
-		   failonerror="on" 
-		       command="checkout -P" />
-	</target>
-
-	<target name="build-release" depends="init-variables,create-tree"
-		description="build an AspectJ release under Java ${do.ant.vm} (param)"
-		unless="skip.build.release">
-		
-		<!-- release build destroys test build, but not vice-versa -->
-		<antcall target="do-aspectj-build">
-			<param name="do.ant.target" value="clean"/>
-			<param name="do.ant.props" value=""/>
-			<param name="do.ant.vm" value="${do.ant.vm}"/>
-		</antcall>
-		<antcall target="do-aspectj-build">
-			<param name="do.ant.target" value="aspectj"/>
-			<param name="do.ant.props" value=""/>
-			<param name="do.ant.vm" value="${do.ant.vm}"/>
-		</antcall>
-		
-		<antcall target="do-aspectj-build">
-			<param name="do.ant.target" value="eclipse.plugins"/>
-			<param name="do.ant.props" value=""/>
-			<param name="do.ant.vm" value="${do.ant.vm}"/>
-		</antcall>
-	</target>
-
-	<target name="build-tests" depends="init-variables,create-tree"
-		description="build AspectJ tests under Java 13"
-		unless="skip.build.tests">
-						
-		<antcall target="do-aspectj-build">
-			<param name="do.ant.target" value="clean-jars"/>
-			<param name="do.ant.props" value=""/>
-			<param name="do.ant.vm" value="${do.ant.vm}"/>
-		</antcall>
-		<antcall target="do-aspectj-build">
-			<param name="do.ant.target" value="build-testing-jars"/>
-			<param name="do.ant.props" value="-Dtrim.testing.default=false"/>
-			<param name="do.ant.vm" value="${do.ant.vm}"/>
-		</antcall>
-	</target>
-				
-	<!-- ====                                        install tests ==== -->
-	<target name="test-install">
-		<antcall target="do-13-target">
-			<param name="do.target" value="do-test-install-sequence"/>
-		</antcall>
-		<antcall target="do-14-target">
-			<param name="do.target" value="do-test-install-sequence"/>
-		</antcall>
-		<antcall target="do-15-target">
-			<param name="do.target" value="do-test-install-sequence"/>
-		</antcall>
-		<antcall target="test-doc-links"/>
-		<echo message="TODO: Run test-examples-11 manually - AWT not exiting?"/>
-		<!-- antcall target="test-examples-11"/ -->
-	</target>
-	
-	<target name="do-test-install-sequence" 
-		depends="init-variables,init-aspectj-available">
-		<antcall target="test-build-examples"/>
-		<antcall target="test-ajc-aspectj"/>
-	</target>
-
-	<target name="test-build-examples" 
-		depends="init-variables,init-aspectj-available">
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="bean"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="intro"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="intro-clone"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="intro-compare"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="intro-hash"/>
-		</antcall>
-		<!-- observer uses GUI -->
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="telecom"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="telecom-billing"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="telecom-timing"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="tjp"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="tracing-none"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="tracing-1"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="tracing-2"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="tracing-3"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="tracing-bc"/>
-		</antcall>
-		<antcall target="do-build-installed-example">
-			<param name="example.target" value="nonGui"/>
-		</antcall>
-		<echo message="TODO: setup and run compiler adapter example"/>
-	</target>
-
-	<target name="test-ajc-aspectj" 
-		depends="init-variables,init-aspectj-available,init-sources-available">
-		<antcall target="do-run-ant">
-			<param name="ant.dir" 
-				location="${aspectj.modules.dir}/tests/product/build-aspectj"/>
-			<param name="run.ant.file" value="build.xml"/>
-			<param name="ant.target" value=""/>
-			<param name="ant.output" 
-				location="${aj.build.log.dir}/test-ajc-aspectj"/>
-		</antcall>
-		<delete quiet="on" dir="${aspectj.modules.dir}/tests/product/build-aspectj/output"/>
-	</target>
-	
-	<!-- ====                                        source tests ==== -->
-	<target name="test-sources">
-		<antcall target="do-13-target">
-			<param name="do.target" value="do-test-sources-sequence"/>
-		</antcall>
-		<antcall target="do-14-target">
-			<param name="do.target" value="do-test-sources-sequence"/>
-		</antcall>
-		<antcall target="do-15-target">
-			<param name="do.target" value="do-test-sources-sequence"/>
-		</antcall>
-	</target>
-
-	<target name="do-test-sources-sequence">
-		<antcall target="test-harness-tests"/>
-		<antcall target="test-junit-modules"/>
-	</target>
-
-    <target name="test-junit-modules" 
-		depends="init-variables,init-junitTests-available">
-		<antcall target="do-run-ant">
-			<param name="run.ant.file" value="build.xml"/>
-			<param name="ant.target" value="junit-tests"/>
-			<param name="ant.dir" 
-				location="${aspectj.modules.dir}/build"/>
-			<param name="ant.output" 
-				location="${aj.build.log.dir}/test-junitModules"/>
-		</antcall>
-		
-		<property file="${java.home.file}"/>
-		<property name="tjm.copy.todir"
-			location="${aj.build.log.dir}/junitXmlOutput-${build.java.version}"/>
-		<mkdir dir="${tjm.copy.todir}"/>
-		<delete quiet="on">
-			<fileset dir="${tjm.copy.todir}" includes="**/*"/>
-		</delete>
-		<property name="xmlSrcDir"
-			location="${aspectj.tests.dir}/bin/junitXmlOutput"/>
-		<move todir="${tjm.copy.todir}" >
-		 	<fileset dir="${xmlSrcDir}"	includes="**/*"/>
-		</move>
-	</target>
-
-    <target name="test-junit" 
-		depends="init-variables">	    
-		
-		<antcall target="do-run-ant">
-			<param name="run.ant.file" value="newbuild.xml"/>
-			<param name="ant.target" value="test"/>
-			<param name="ant.dir" 
-				location="${aspectj.modules.dir}/run-all-junit-tests"/>
-			<param name="ant.output" 
-				location="${aj.build.log.dir}/test-run-all-junit-tests"/>
-		</antcall>
-		<property file="${java.home.file}"/>
-		<property name="tjm.copy.todir"
-			location="${aj.build.log.dir}/test-run-all-junit-tests-${build.java.version}"/>
-		<mkdir dir="${tjm.copy.todir}"/>
-		<delete quiet="on">
-			<fileset dir="${tjm.copy.todir}" includes="**/*"/>
-		</delete>
-		<property name="xmlSrcDir"
-			location="${aj.build.dir}/junit/run-all-junit-tests"/>
-		<move todir="${tjm.copy.todir}" >
-		 	<fileset dir="${xmlSrcDir}"	includes="**/*"/>
-		</move>
-	</target>
-
-	<target name="test-doc-links" 
-		depends="init-aspectj-available,init-harness-available"
-		description="run link check against distribution">
-		<antcall target="do-java13-setup"/>
-		<property file="${java.home.file}"/>
-		<fail unless="build.java.home" 
-		     message="failed to read ${build.java.home} from ${java.home.file}"/>
-
-		<property name="doclink.output.file"
-			location="${aj.build.log.dir}/test-doc-links"/>
-		<property name="doclink.start.file"
-			location="${aj.build.install.dir}/README-AspectJ.html"/>
-		<echo>
-  test-doc-links ${doclink.start.file}
-              to ${doclink.output.file}-[out|messages].txt
-  WARNING: verify manually if result code is not 0.  Known failures:
-  - google link nets 403, but works in browser
-  - progguide/printable.html has harmless empty link to d0e26 (ajc-ref?)
-
-</echo>
-		<java 
-			classname="org.aspectj.testing.util.LinkCheck"
-			fork="true"
-			dir="${aj.build.install.dir}"
-			classpath="${harness.jar}" 
-			jvm="${build.java.command}"
-			output="${doclink.output.file}-out.txt">
-			<arg value="${doclink.start.file}"/>
-			<arg value="-printInfo"/>
-			<arg value="-log"/>
-			<arg value="${doclink.output.file}-messages.txt"/>
-			<sysproperty key="http.proxyHost" value="${proxy.host}" />
-			<sysproperty key="http.proxyPort" value="${proxy.port}" />
-		</java>
-	</target>
-	
-	<target name="test-examples-11" depends="init-harness-available"
-		description="run examples under JDK 1.1">
-		<property name="j11.home"
-			location="${java11.home}"/>
-		<property name="java11.command"
-			location="${java11.home}/bin/java"/>
-		<property name="java11.classes.zip"
-			location="${java11.home}/lib/classes.zip"/>
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTestsExamples"/>
-			<param name="harness.args" value="-1.1"/>
-			<param name="harness.suffix" value="-run11"/>
-			<param name="harness.jvmline" 
-				value="-Djavarun.fork=true -Djavarun.java=${java11.command} -Djavarun.java.home=${j11.home} -Djavarun.bootclasspath=${java11.classes.zip}"/>
-		</antcall>
+	<target name="all" depends="init">
+		<clean-dir dir="${aj.build.dir}"/>
+        <build-aspectj vm="${min.vm}" target="all"/>
+		<clean-dir dir="${aj.build.dir}"/>
+		<antcall target="build-install"/>
+		<antcall target="post-build"/>
 	</target>
     
-    <target name="compile-runtime-11" depends="init-variables"
-        description="compile runtime under 1.1 - fails, but by how much?">
-        <mkdir dir="${aj.build.dir}/classes-1.1"/>
-        <property name="j11.classes"
-            location="${j11.home}/lib/classes.zip"/>
-        <javac
-            compiler="javac1.1"
-            bootclasspath="${j11.classes}"
-            source="1.3"
-            includejavaruntime="no"
-            includeantruntime="no"
-            destdir="${aj.build.dir}/classes-1.1"
-            srcdir="${aspectj.modules.dir}/runtime/src"
-            target="1.1"
-            verbose="false"
-            failonerror="false"
-            />
-       <delete dir="${aj.build.dir}/classes-1.1"/>
-    </target>
-
-	<target name="test-harness-tests" depends="init-harness-available">
-		<!-- we could use harness variants, e.g., "-emacssym-",
-		     but separating runs puts each variant in a different 
-		     output file, which makes them easier to analyze.
-		-->
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcHarnessTests"/>
-			<param name="harness.args" value="-ajctestSkipKeywords=expect-fail"/>
-			<param name="harness.suffix" value="-pass"/>
-		</antcall>
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTestsFailing"/>
-			<param name="harness.args" value=""/>
-			<param name="harness.suffix" value=""/>
-		</antcall>
-
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTestsFailing"/>
-			<param name="harness.args" value="-emacssym"/>
-			<param name="harness.suffix" value="-emacssym"/>
-		</antcall>
-		
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTests"/>
-			<param name="harness.args" value=""/>
-			<param name="harness.suffix" value=""/>
-		</antcall>
-
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTests"/>
-			<param name="harness.args" value="-emacssym"/>
-			<param name="harness.suffix" value="-emacssym"/>
-		</antcall>
-
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTests"/>
-			<param name="harness.args" value="-ajctaskCompiler -ajctestSkipKeywords=knownLimitation-ajctaskCompiler"/>
-			<param name="harness.suffix" value="-ajctaskCompiler"/>
-		</antcall>
-
-		<!-- examples tested only from command-line, eclipse -->
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTestsExamples"/>
-			<param name="harness.args" value=""/>
-			<param name="harness.suffix" value=""/>
-		</antcall>
-
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTestsExamples"/>
-			<param name="harness.args" value="-ajctaskCompiler"/>
-			<param name="harness.suffix" value="-ajctaskCompiler"/>
-		</antcall>
-		<!-- skip examples -emacssym - avoid littering docs tree -->
-
-		<!-- AJDE compiler hangs when done - unclose swing thread?
-		<antcall target="do-run-harness">
-			<param name="suite.filename" value="ajcTests"/>
-			<param name="harness.args" value="-ajdeCompiler -ajctestSkipKeywords=knownLimitations-ajdeCompiler"/>
-			<param name="harness.suffix" value="-ajdeCompiler"/>
-		</antcall>
-		-->
+	<target name="post-build" depends="init">
+		<antcall target="install"/>
+		<antcall target="JUnit-tests"/>
+		<build-aspectj vm="${max.vm}" target="junitreport"/>
+		<antcall target="build-tests"/>
+		<antcall target="product-tests"/>
+		<antcall target="fail-if-failures"/>
 	</target>
-	
-	<!-- =======  do-{...} tasks are called only by other tasks ======== -->
 
-	<target name="do-run-harness" 
-		depends="init-variables,init-harness-available">
-		<fail unless="suite.filename" 
-		     message="define suite.filename"/>
-		<fail unless="harness.args" 
-		     message="define harness.args"/>
-		<fail unless="harness.suffix" 
-		     message="define harness.suffix"/>
+    <target name="build-install" depends="init-release-properties"
+        unless="build-install.done"
+        description="build aspectj using Java max.vm=${max.vm}">
+	    <build-aspectj vm="${max.vm}" target="all"/>
+        <property name="build-install.done" value="true"/>
+	</target>
+    
+    <target name="build-tests" depends="init-release-properties"
+        unless="build-test.done"
+        description="build aspectj tests using Java max.vm=${max.vm}">
+	    <antcall target="clean-jars"/>
+        <build-aspectj vm="${max.vm}" target="build-testing-jars"/>
+        <property name="build-test.done" value="true"/>
+	</target>
 
-		<property name="drho.default.options"
-			value="-release -logFail -killTemp"/>
+	<target name="clean-install" depends="init-release-properties">
+	    <clean-dir dir="${aj.install.dir}"/>
+	</target>
 
+    
+	<target name="install" depends="init-release-properties"
+		description="install AspectJ distribution using Java min.vm=${min.vm}">
+	    <antcall target="init-postBuild-properties"/>
+		<require-available property="aspectj.jar"
+			path="${aj.dist.dir}/aspectj-${build.version}.jar"/>
+		<clean-dir dir="${aj.install.dir}"/>
+		<setup-vm vm="${min.vm}"/>
 		<property file="${java.home.file}"/>
-		<fail unless="build.java.home" 
-		     message="failed to read ${build.java.home} from ${java.home.file}"/>
-		<fail unless="build.java.version" 
-		     message="failed to read ${build.java.version} from ${java.home.file}"/>
-
-		<property name="harness.output.file"
-			location="${aj.build.log.dir}/test-${suite.filename}${harness.suffix}-${build.java.version}.txt"/>
-		<echo>
-    do-run-harness ${suite.filename}.xml 
-      with options ${drho.default.options} ${harness.args}
-                to ${harness.output.file}
-</echo>
-		<java 
-			fork="true"
-			dir="${aspectj.tests.dir}"
-			jar="${harness.jar}" 
+		<fail unless="build.java.command" 
+		     message="failed to read ${build.java.command} from ${java.home.file}"/>
+	    <java 
+		    fork="true" 
 			jvm="${build.java.command}"
-			maxmemory="250m" 
-			output="${harness.output.file}">
-			<jvmarg line="${harness.jvmline}"/>
-			<arg value="${suite.filename}.xml"/>
-			<arg line="${drho.default.options} ${harness.args}"/>			
+			jar="${aspectj.jar}" 
+		    failonerror="true">
+			<arg line="-to ${aj.install.dir}"/>
 		</java>
 	</target>
 	
-	<target name="do-build-installed-example" depends="init-variables">
-		<antcall target="do-run-ant">
-			<param name="ant.dir" 
-				location="${aj.build.install.dir}/doc/examples"/>
-			<param name="run.ant.file" value="build.xml"/>
-			<param name="ant.target" value="${example.target}"/>
-			<param name="ant.output" 
-				location="${aj.build.log.dir}/test-example-${example.target}"/>
-			<param name="ant.properties" value=""/>
-			<!-- XXX getting OOMemory - permit and investigate -->
-			<param name="failonerror" value="false"/>
-		</antcall>
-	</target>
-
-	<target name="do-aspectj-build" depends="init-variables"
-		description="build targets in ../build.xml using Java ${do.ant.vm}">
-		<fail unless="do.ant.target" message="caller sets do.ant.target"/>	
-		<fail unless="do.ant.props" message="caller sets do.ant.props"/>	
-		<fail unless="do.ant.vm" message="caller sets do.ant.vm"/>	
-		<antcall target="do-java${do.ant.vm}-setup"/>
-		<antcall target="do-run-ant">
-			<param name="ant.dir" location="${aspectj.build.dir}"/>
-			<param name="run.ant.file" value="build.xml"/>
-			<param name="ant.target" value="${do.ant.target}"/>
-			<param name="ant.output" 
-				location="${aj.build.log.dir}/build-${do.ant.target}"/>
-			<param name="ant.properties" value="${do.ant.props} ${aspectj.build.props}"/>
-		</antcall>
-	</target>
-
-	<target name="do-run-ant" depends="init-variables"
+	<macrodef name="build-aspectj">
+	    <attribute name="target"/>
+	    <attribute name="vm"/>
+	    <sequential>
+	        <setup-vm vm="@{vm}"/>
+	        <condition property="do.ant.props" value=" ">
+	            <not><isset property="do.ant.props"/></not>
+	        </condition>
+	        	
+			<antcall target="do-run-ant">
+				<param name="ant.dir" location="${aspectj.modules.build.dir}"/>
+				<param name="run.ant.file" value="build.xml"/>
+				<param name="ant.target" value="@{target}"/>
+				<param name="ant.output" 
+					location="${aj.logs.dir}/build-@{target}"/>
+				<param name="ant.properties" value="${do.ant.props} ${aspectj.build.props}"/>
+			</antcall>
+	    </sequential>
+    </macrodef>
+    
+	<target name="do-run-ant" depends="init-release-properties"
 	 description="the ant we use to build">
 		<!-- we could use normal ant, but we enforce using
 		     our ant libraries and the specified java runtime
@@ -731,6 +175,7 @@
 			newenvironment="true"
 			output="${ant.output.file}">
 			<classpath>
+			    <!-- TODO use lib/ant-launcher.jar only? -->
 				<fileset dir="${aspectj.ant.lib.dir}">
 					<include name="*.jar"/>
 				</fileset>
@@ -746,67 +191,72 @@
 
 			<!-- for ajde -->
 			<sysproperty key="aspectjrt.path"
-				file="${aj.build.install.dir}/lib/aspectjrt.jar"/>
-			<sysproperty key="test.classpath"
-				value="jar.classpath"/>
+				file="${aj.install.dir}/lib/aspectjrt.jar;${aspectj.modules.dir}/lib/test/aspectjrt.jar"/>
 
 			<!-- for tests/product/build-aspectj/build.xml -->
 			<sysproperty key="ASPECTJ_MODULES"
 				file="${aspectj.modules.dir}"/>
 			<sysproperty key="ASPECTJ_HOME"
-				file="${aj.build.install.dir}"/>
+				file="${aj.install.dir}"/>
 			<arg line="-f ${run.ant.file} ${ant.target} ${ant.verbose} ${ant.properties}"/>
 		</java>
 	</target>
-
-	<target name="do-13-target"	unless="run.14.only">
-		<antcall target="do-java13-setup"/>
-		<antcall target="${do.target}"/>
-	</target>
-
-	<target name="do-14-target"	unless="run.13.only">
-		<antcall target="do-java14-setup"/>
-		<antcall target="${do.target}"/>
-	</target>
-	
-	<target name="do-15-target"	unless="run.14.only">
-		<antcall target="do-java15-setup"/>
-		<antcall target="${do.target}"/>
-	</target>
-
-    <target name="do-java15-setup">
-		<antcall target="do-write-javahome-file">
-			<param name="build.java.version" value="15"/>
-			<param name="build.java.home"    value="${java15.home}"/>
-		</antcall>
-	</target>
-
-    <target name="do-java14-setup">
-		<antcall target="do-write-javahome-file">
-			<param name="build.java.version" value="14"/>
-			<param name="build.java.home"    value="${java14.home}"/>
-		</antcall>
-	</target>
     
-	<!-- legal do.ant.vm values are 13, 14, 15 per these target names -->
-	<target name="do-java13-setup">
-		<antcall target="do-write-javahome-file">
-			<param name="build.java.version" value="13"/>
-			<param name="build.java.home"    value="${java13.home}"/>
-		</antcall>
+    <macrodef name="do-vm-targets">
+        <attribute name="target"/>
+        <sequential>            
+			<do-vm-target target="@{target}" vm="min" />
+			<do-vm-target target="@{target}" vm="14" />
+	 		<do-vm-target target="@{target}" vm="max" />
+	    </sequential>
+	</macrodef>
+    <macrodef name="do-vm-target">
+	    <attribute name="vm"/>
+    	<attribute name="target"/>
+	    <sequential>
+	        <antcall target="do-@{vm}-target">
+    			<param name="do.target" value="@{target}"/>
+            </antcall>
+	    </sequential>
+	</macrodef>
+    
+	<target name="do-13-target"	if="run.13">
+		<setup-vm vm="13"/>
+		<antcall target="${do.target}"/>
+	</target>
+
+	<target name="do-14-target"	if="run.14">
+		<setup-vm vm="14"/>
+		<antcall target="${do.target}"/>
+	</target>
+
+    <target name="do-15-target"	if="run.15">
+		<setup-vm vm="15"/>
+		<antcall target="${do.target}"/>
 	</target>
 	
-	<target name="do-write-javahome-file" depends="init-variables"
-		description="save global build.java.[version,command,home]">
-		<fail unless="build.java.version"/>
-		<fail unless="build.java.home"/>
-		<property name="wjf.bjh" location="${build.java.home}"/>
-		<property name="wjf.cmd" location="${wjf.bjh}/bin/java"/>
-		<propertyfile file="${java.home.file}">
-			<entry key="build.java.version" value="${build.java.version}"/>
-			<entry key="build.java.home" value="${wjf.bjh}"/>
-			<entry key="build.java.command" value="${wjf.cmd}"/>
-		</propertyfile>
+	<target name="do-min-target"	if="run.${min.vm}">
+		<setup-vm vm="${min.vm}"/>
+		<antcall target="${do.target}"/>
 	</target>
+
+	<target name="do-max-target"	if="run.${max.vm}">
+		<setup-vm vm="${max.vm}"/>
+		<antcall target="${do.target}"/>
+	</target>
+
+    <macrodef name="setup-vm">
+        <attribute name="vm"/>
+        <sequential>            
+			<property name="wjf.bjh" location="${java@{vm}.home}"/>
+			<property name="wjf.cmd" location="${wjf.bjh}/bin/java"/>
+            <delete file="${java.home.file}"/>
+			<propertyfile file="${java.home.file}">
+				<entry key="build.java.version" value="@{vm}"/>
+				<entry key="build.java.home" value="${wjf.bjh}"/>
+				<entry key="build.java.command" value="${wjf.cmd}"/>
+			</propertyfile>
+        </sequential>
+    </macrodef>
 
 </project>

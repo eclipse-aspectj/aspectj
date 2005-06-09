@@ -1,8 +1,9 @@
 
-This script builds and tests an AspectJ release.
-Use the info target to emit details.
+This directory has scripts to build and test an AspectJ release.
+At the bottom of this readme is a bash script to run it.
 
-At the bottom is a bash script to run it.
+NOTE: currently the set of tests done during the release build is
+a subset of available product tests...
 
 ---- Evaluating the results of a build cycle
 
@@ -45,23 +46,18 @@ Known imperfect results in the AspectJ 1.1 release:
 scriptDir=`dirname "${0}"`
 scriptDir=`cd "$scriptDir"; pwd | sed 's|/cygdrive/c/|c:/|'`
 
-sp="-Dskip.cvs=true -Daspectj.modules.dir=../.."
-sp="${sp} -Djava13.home=c:/home/apps/jdk13"
-sp="${sp} -Djava14.home=c:/home/apps/jdk14"
-sp="${sp} -Djava15.home=c:/home/apps/jdk15"
-#sp="${sp} -Drun.14.only=true"
-
 #alias myant="$scriptDir/../../lib/ant/bin/ant"
 myant="$scriptDir/../../lib/ant/bin/ant"
 
-# clean
+# clean, create distribution jar
 cd `dirname "$0"`
 cd ..
 "$myant" clean
+"$myant" 
 
-# build local tree and install distribution:
+# install distribution:
 cd release
-"$myant" install ${sp}
+"$myant" install 
   
 # test installation and sources in local tree:
 [ -z "$skipTest" ] && "$myant" test ${sp} -Dskip.build=true 
@@ -69,4 +65,4 @@ cd release
 # check 1.1 runtime - compile will fail,
 # but should only be in known 1.2-dependent classes
 #export JAVA_HOME=c:/home/apps/jdk13
-#"$myant" compile-runtime-11 ${sp}
+#"$myant" compile-runtime-11 

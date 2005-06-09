@@ -18,9 +18,13 @@
 <project name="build-properties" default="init-properties">
 	
     <target name="init-properties"
-           unless="aspectj.modules.build.dir">
-
-      <!-- 
+           unless="init-properties.done">
+		<!-- callers should define aspectj.modules.dir -->
+		<property name="aspectj.modules.dir" location="${basedir}/.."/>
+		<require-available property="local-properties"
+			path="${aspectj.modules.dir}/build/local.properties"/>
+		<property file="${aspectj.modules.dir}/build/local.properties"/>
+	<!-- 
       	Changing version:
       	- base should always be 1.1 (used for manifests, other version-parsing code)
       	- Others should be DEVELOPMENT unless testing/doing release builds, when
@@ -30,12 +34,13 @@
         - build.version.eclipse.plugins should be set to "9.9.9" for "DEVELOPMENT", and
         - the same as build.version.long (in major.minor.service form) for releases.
       -->
-      <property name="build.verbose"       value="false"/> 
+	  <property name="min.vm" value="13"/>
+	  <property name="max.vm" value="15"/>
+	  <property name="build.verbose"       value="false"/> 
       <property name="build.version"       value="DEVELOPMENT"/> 
       <property name="build.version.base"  value="1.2"/> 
       <property name="build.version.long"  value="DEVELOPMENT"/> 
       <property name="build.version.short" value="DEVELOPMENT"/> 
-      <property name="build.version.eclipse.plugins" value="9.9.9"/>
 
       <!-- formats comply with SimpleDateFormat -->
       <property name="build.time.format"   value="EEEE MMM d, yyyy 'at' HH:mm:ss z"/> 
@@ -52,17 +57,13 @@
 	  <property name="company.name"         value="aspectj.org"/>
 	  <property name="copyright.allRights.from1998"
                value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2005 Contributors.  All rights reserved." />
-
-      <!-- callers define basedir as dir of build file? -->
-      <property name="aspectj.modules.dir"
-            location="${basedir}/.."/>
-
+				
 	  <!-- aj... names are generated, can be mutated/cleaned -->
-      <property name="aj.results.dir" 
-            location="${aspectj.modules.dir}/aj-build-results"/>
 	  <!-- these names are known to BuildModule.java and common to all -->
       <property name="aj.build.dir" 
             location="${aspectj.modules.dir}/aj-build"/>
+	  <property name="aj.failure.file"
+		    location="${aj.build.dir}/failures.txt"/>
       <property name="aj.temp.dir" 
             location="${aj.build.dir}/temp"/>
       <property name="aj.jar.dir" 
@@ -73,15 +74,11 @@
             location="${aj.build.dir}/junit"/>
       <property name="aj.webDeploy.dir" 
             location="${aj.build.dir}/webDeploy"/>
-      <property name="aj.plugin.org.aspectj.ajde.dir" 
-            location="${aj.dist.dir}/ide/eclipse/org.aspectj.ajde"/>
-      <property name="aj.plugin.org.aspectj.aspectjrt.dir" 
-            location="${aj.dist.dir}/ide/eclipse/org.aspectj.aspectjrt"/>
-      <property name="aj.plugin.org.aspectj.ajde.source.dir" 
-            location="${aj.dist.dir}/ide/eclipse/org.aspectj.ajde.source"/>
-      <property name="aj.plugin.org.aspectj.ajde.doc.dir" 
-            location="${aj.dist.dir}/ide/eclipse/org.aspectj.ajde.doc"/>
-
+      <property name="aj.install.dir" 
+            location="${aj.build.dir}/install"/>
+      <property name="aj.logs.dir" 
+            location="${aj.build.dir}/logs"/>
+				
 	  <!-- aspectj... names are sources, not to be mutated -->
       <property name="aspectj.modules.lib.dir"
             location="${aspectj.modules.dir}/lib"/>
@@ -96,13 +93,39 @@
             location="${aspectj.modules.build.dir}/products"/>
       <property name="aspectj.modules.tests.dir"
             location="${aspectj.modules.dir}/tests"/>
+
+		<property file="${aspectj.modules.build.dir}/junit-patterns.properties"/>
+				
+		<property name="aspectj.tools.modules.13"
+			value="ajbrowser,ajde,ajdoc,asm,bridge,loadtime,org.aspectj.ajdt.core,runtime,taskdefs,util,weaver"/>
+		<property name="aspectj.tools.modules.15"
+			value="loadtime5,aspectj5rt"/>
+		<condition property="aspectj.tools.modules"
+			value="${aspectj.tools.modules.13},${aspectj.tools.modules.15}">
+			<equals arg1="1.5" arg2="${ant.java.version}"/>			
+		</condition>
+		<condition property="aspectj.tools.modules"
+			value="${aspectj.tools.modules.13}">
+			<not>
+				<equals arg1="1.5" arg2="${ant.java.version}"/>			
+			</not>
+		</condition>
+		<property name="aspectj.test.modules"
+			value="build,testing,testing-client,testing-drivers,testing-util,tests"/>
+		<property name="aspectj.compilerTest.modules"
+			value="tests"/>
+		<property name="aspectj.other.modules"
+			value="docs,eclipse.plugin"/>
+
 		<jar-property name="junit.jar" 
 			location="${aspectj.modules.lib.dir}/junit/junit.jar"/>
-		<property name="junit.includes" 
-	        value="**/*Test.java,**/**TestCase.java"/>	
-		<property name="junit.excludes" 
-	        value="**/DocumentParserTest.java,**/CommandTestCase.java,**/VerifyWeaveTestCase.java,**/KnownfailuresTests.java,**/KnownLimitationsTests.java,**/PureJavaTests.java,**/AbstractWorldTestCase.java,**/WeaveTestCase.java"/>	
-    	<!-- would like to enable PureJavaTests.java -->
+		<guarded-property name="jdk.tools.jar"
+			location="${java.home}/../lib/tools.jar"/>
+		<guarded-property name="jdk.tools.jar"
+			location="${java.home}/lib/tools.jar"/>
+		<guarded-property name="aspectjrt.path"
+			location="${aspectj.modules.lib.dir}/test/aspectjrt.jar"/>
+		<property name="init-properties.done" value="true"/>
     </target>
 
     <target name="init-taskdefs" 
@@ -112,10 +135,8 @@
 			location="${aspectj.modules.lib.dir}/build/build.jar"/>
 		<jar-property name="lib.ant.jar" 
 			location="${aspectj.modules.lib.dir}/ant/lib/ant.jar"/>
-      <taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
+		<taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
               classpath="${aspectj.build.jar}"/>
-      <property name="aj.taskdef.package"
-		value="org.aspectj.internal.tools.ant.taskdefs"/>
 		<path id="ant.lib.path">
 			<fileset dir="${aspectj.modules.lib.dir}/ant/lib">
 				<include name="**/*.jar"/>
@@ -144,20 +165,15 @@
     </target>
 
     <target name="init-directories" 
-         depends="init-properties">
-<!-- some flows take us through this target twice in one build and it needs to
-	 successfully execute twice -->
-<!-- unless="init-directories.done" -->
-      <mkdir dir="${aj.results.dir}" />
+         depends="init-properties"
+		description="ensure dirs, possibly many times in a build">
       <mkdir dir="${aj.build.dir}" />
       <mkdir dir="${aj.temp.dir}" />
       <mkdir dir="${aj.jar.dir}" />
       <mkdir dir="${aj.dist.dir}" />
-      <mkdir dir="${aj.plugin.org.aspectj.ajde.dir}" />
-      <mkdir dir="${aj.plugin.org.aspectj.ajde.source.dir}" />
-      <mkdir dir="${aj.plugin.org.aspectj.ajde.doc.dir}" />
-      <property name="init-directories.done" value="done"/>
-    </target>
+      <mkdir dir="${aj.install.dir}" />
+      <mkdir dir="${aj.logs.dir}" />
+	</target>
 
     <target name="init-filters"
          depends="init-properties"
@@ -186,9 +202,10 @@
          depends="init-directories"
           unless="clean-directories.done" >
       <property name="clean-directories.done" value="done"/>
-      <delete quiet="on" dir="${aj.build.dir}" /> <!-- warning if not deleted? -->
+      <delete quiet="on">
+		  <fileset dir="${aj.build.dir}" includes="*,**/*"/>
+	  </delete> 
       <antcall target="init-directories"/>
-      <!-- aj.results.dir is not cleaned -->
     </target>
 
     <target name="clean-jars" 
@@ -211,7 +228,6 @@
   build.version.short = ${build.version.short}
   aspectj.modules.dir = ${aspectj.modules.dir}
          aj.build.dir = ${aj.build.dir}
-       aj.results.dir = ${aj.results.dir}
              ant.home = ${ant.home}
             java.home = ${java.home}
 </echo>
@@ -230,16 +246,116 @@
 			  message="unable to find @{name}: ${@{name}}"/>
         </sequential>
 	</macrodef>
-
-	<!-- todo convert clients to clean-dir -->
+    <macrodef name="guarded-property"
+		description="set property {name} to {location} if unset and {location} exists">
+        <attribute name="name"/>
+        <attribute name="location"/>
+        <sequential>
+			<property name="@{name}.path"
+				location="@{location}"/>
+			<condition property="@{name}"
+				value="${@{name}.path}">
+				<and>
+					<not>
+						<isset property="@{name}"/>
+					</not>
+					<available file="${@{name}.path}"/>			  			  
+				</and>
+			</condition>
+        </sequential>
+	</macrodef>
+	
 	<macrodef name="clean-dir">
 		<attribute name="dir"/>
 		<sequential>
 			<mkdir dir="@{dir}"/>
 			<delete>
-        		<fileset dir="@{dir}" includes="*"/>
+        		<fileset dir="@{dir}" includes="*,**/*"/>
         	</delete>
 			<mkdir dir="@{dir}"/>
 		</sequential>
 	</macrodef>
+
+	<macrodef name="report-if-failed">
+		<attribute name="property"/>
+		<attribute name="text"/>
+		<sequential>
+			<echo level="debug" message="property: @{property}: ${@{property}}"/>
+			<echo level="debug" message="text: @{text}: ${@{text}}"/>
+			<condition property="failed" value="true">
+				<isset property="@{property}"/>
+			</condition>
+			<echo level="debug" message="failed: ${failed}"/>
+			<antcall target="do-report-fail">
+				<param name="text" value="@{text}"/>
+			</antcall>
+		</sequential>
+	</macrodef>
+	<target name="do-report-fail"
+		if="failed">
+		<echo level="debug" message="do-report-fail - failed=${failed}"/>
+		<echo level="debug" message="do-report-fail - text=${text}"/>
+		<echo append="true" file="${aj.failure.file}">${text}
+</echo>
+	</target>
+
+	<target name="fail-if-failures"
+		description="fail if ${aj.failure.file} exists and is not empty">
+        <loadfile 
+			failonerror="false"
+			property="failures" 
+			srcfile="${aj.failure.file}"/>
+		<fail>
+			<condition>
+				<length file="${aj.failure.file}" 
+					when="greater" length="0"/>
+			</condition>
+${failures}
+</fail>
+									<!--
+        <loadfile 
+			failonerror="false"
+			property="failures" 
+			srcfile="${aj.failure.file}"/>
+        <condition property="failure">
+            <equals arg1="${failures}" arg2="${failure}"/>
+        </condition>
+		<condition property="passed">
+            <equals arg1="${failures}" arg2=""/>
+        </condition>
+		<fail unless="passed">${failures}
+</fail>
+												-->
+	</target>
+		
+	<macrodef name="set-available"
+	    description="set property and property.available if path exists">
+		<attribute name="property"/>
+	    <attribute name="path"/>
+		<sequential>
+		<property name="@{property}.location" 
+				location="@{path}"/>
+	
+			<available property="@{property}"
+				file="${@{property}.location}"
+				value="${@{property}.location}"/>
+			<condition property="@{property}.available">
+				<equals arg1="${@{property}.location}" arg2="${@{property}}"/>
+			</condition>
+		</sequential>
+	</macrodef>
+
+    <macrodef name="require-available">
+		<attribute name="property"/>
+	    <attribute name="path"/>
+	    <attribute name="message" default=""/>
+		<sequential>
+			
+	    <set-available property="@{property}" path="@{path}"/>
+	    <fail unless="@{property}.available">
+@{message} (property "@{property}" not at "@{path}")
+		</fail>
+		</sequential>
+	</macrodef>
+						
 </project>

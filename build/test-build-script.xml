@@ -1,0 +1,42 @@
+<!-- ========================================================================= -->
+<!-- Copyright (c) 2005 Contributors                                                         -->
+<!-- All rights reserved.                                                      -->
+<!-- This program and the accompanying materials are made available            -->
+<!-- under the terms of the Eclipse Public License v1.0                         -->
+<!-- which accompanies this distribution and is available at                   -->
+<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
+<!--                                                                           -->
+<!-- Contributors: (See CVS checkin's)                                         -->
+<!--     Wes Isberg     initial implementation                                 -->
+<!-- ========================================================================= -->
+
+<project name="test-build-script" default="all" basedir=".">
+
+    <property name="modules.dir" location="${basedir}/.."/>
+    
+    <import file="${modules.dir}/build/build-properties.xml"/>
+
+	<target name="all" depends="failures"/>
+	
+	<target name="failures" depends="init-properties">
+	    <delete file="${aj.failure.file}"/>
+	    <echo message="-> no false negative (no file)"/>
+	    <antcall target="fail-if-failures"/>
+	    
+	    <touch file="${aj.failure.file}"/>
+	    <echo message="-> no false negative (empty file)"/>
+	    <antcall target="fail-if-failures"/>
+
+	    <echo message="-> no false negative (unset Property)"/>
+	    <report-if-failed text="not error text" property="unsetProperty"/>
+	    <antcall target="fail-if-failures"/>
+
+	    <echo message="-> true negative (set Property)"/>
+	    <property name="setProperty" value="."/>
+	    <report-if-failed text="error text" property="setProperty"/>
+	    <antcall target="fail-if-failures"/>
+
+	    <loadfile property="emit" srcfile="${aj.failure.file}"/>
+	    <echo message="-> file contents: ${emit}"/>
+    </target>
+</project>

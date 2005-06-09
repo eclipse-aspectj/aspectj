@@ -16,36 +16,57 @@
 
 <project name="build" default="all" basedir=".">
 
-    <target name="all"     depends="aspectj"/> <!-- used to also depend on "eclipse.plugins"/-->
+    <target name="all"     depends="aspectj">
+        <antcall target="eclipse.plugins"/>
+    </target>
     <target name="rebuild" depends="clean,all"/>
     <target name="clean"   depends="clean-directories"/>
-    <!-- these rely on mapping ant.project.name to module.name -->
-    <target name="compile" depends="build-module"/>
-    <target name="compile-tests" depends="init">
-        <antcall target="any-module-all">
-            <param name="trim.testing.default" value="false"/>
-        </antcall>
+    
+    <target name="compile" depends="build-module"
+    	description="compile module ${module.name} (without tests, by default)"/>
+
+    <target name="compile-tests" depends="init"
+        description="compile module ${module.name} tests">
+		<assemble-module-test module="${module.name}"/>
     </target>
 
     <target name="test" depends="compile-tests">
-        <antcall target="run-module-junit-tests"/>
+        <antcall target="do-test-junit"/>
     </target>
-
 
     <!-- ===================================================================== -->
     <!-- Init                                                                  -->
     <!-- ===================================================================== -->
-    <!-- use this file to force prop values -->
     <property name="modules.dir" location="${basedir}/.."/>
     <property name="module.name" value="${ant.project.name}"/>
     
     <import file="${modules.dir}/build/build-properties.xml"/>
+	<target name="wes" depends="init-properties">
+	    <delete file="${aj.failure.file}"/>
+	    <echo message="-> no false negative (no file)"/>
+	    <antcall target="fail-if-failures"/>
+	    
+	    <touch file="${aj.failure.file}"/>
+	    <echo message="-> no false negative (empty file)"/>
+	    <antcall target="fail-if-failures"/>
 
+	    <echo message="-> no false negative (unset Property)"/>
+	    <report-if-failed text="not error text" property="unsetProperty"/>
+	    <antcall target="fail-if-failures"/>
+
+	    <echo message="-> true negative (set Property)"/>
+	    <property name="setProperty" value="."/>
+	    <report-if-failed text="error text" property="setProperty"/>
+	    <antcall target="fail-if-failures"/>
+
+	    <loadfile property="emit" srcfile="${aj.failure.file}"/>
+	    <echo message="-> file contents: ${emit}"/>
+    </target>
     <target name="init" depends="init-properties,init-directories">
       <property name="build.config" value=""/> 
       <property name="trim.testing.default" value="true"/>
       <property name="aj.installer.jar" 
-            location="${aj.dist.dir}/aspectj-${build.version.short}.jar"/>
+            location="${aj.dist.dir}/aspectj-${build.version.long}.jar"/>
 
       <available property="ant.lib.aspectjtools"
          file="${ant.home}/lib/aspectjtools.jar"
@@ -138,20 +159,7 @@
        failonerror="on" 
            command="update -dP" />
     </target>
-
-    <!-- ===================================================================== -->
-    <!-- test targets                                                          -->
-    <!-- ===================================================================== -->	
-	
-	<target name="quicklook" >
-	   <antcall target="clean"/>
-	   <!-- todo: compile modules without test sources -->
-	   <!-- todo: junit tests (compile with test sources) -->
-	   <antcall target="aspectj"/>
-	   <antcall target="ajcTests"/>
-	   <!-- todo: product install and tests -->
-	</target>
-	
+		
     <!-- ===================================================================== -->
     <!-- antcall targets                                                       -->
     <!-- ===================================================================== -->	
@@ -162,7 +170,7 @@
               baseDir="${aspectj.modules.dir}"
               distDir="${aj.dist.dir}"
            productDir="${aspectj.modules.dir}/build/products/${product.name}"
-          trimTesting="${trim.testing.default}"
+          trimTesting="true"
           buildConfig="${build.config}" 
               version="${build.version.long}"
               verbose="${build.verbose}"
@@ -170,30 +178,50 @@
 	</target>
 
 	<target name="build-module" depends="init,init-taskdefs,init-version">
-      <ajbuild jarDir="${aj.jar.dir}"
-              baseDir="${aspectj.modules.dir}"
-              distDir="${aj.dist.dir}"
-               module="${module.name}"              
-          trimTesting="${trim.testing.default}"
-          buildConfig="${build.config}" 
-              version="${build.version.long}"
-              verbose="${build.verbose}"
-          failonerror="true"/>		
-	</target>
-
-	<target name="build-module-all" depends="init,init-taskdefs,init-version">
       <ajbuild module="${module.name}"
               baseDir="${aspectj.modules.dir}"
               distDir="${aj.dist.dir}"
                jarDir="${aj.jar.dir}"
-          trimTesting="${trim.testing.default}"
+          trimTesting="${trim.testing}"
           buildConfig="${build.config}" 
               version="${build.version.long}"
               verbose="${build.verbose}"
-          assembleall="true"
+          assembleall="${assemble}"
           failonerror="true"/>		
 	</target>
 
+    <macrodef name="build-module-all">
+		<attribute name="module"/>
+		<attribute name="trimTesting" default="${trim.testing.default}"/>
+		<sequential>
+			<antcall target="build-module">
+				<param name="module.name" value="@{module}"/>
+				<param name="trim.testing" value="@{trimTesting}"/>
+				<param name="assemble" value="true"/>
+			</antcall>
+		</sequential>
+	</macrodef>
+    <macrodef name="build-module">
+		<attribute name="module"/>
+		<attribute name="trimTesting" default="${trim.testing.default}"/>
+		<attribute name="assemble" default="false"/>
+		<sequential>
+			<antcall target="build-module">
+				<param name="module.name" value="@{module}"/>
+				<param name="trim.testing" value="@{trimTesting}"/>
+				<param name="assemble" value="@{assemble}"/>
+			</antcall>
+		</sequential>
+	</macrodef>
+    
+    <macrodef name="assemble-module-test">
+		<attribute name="module"/>
+		<sequential>
+    		<build-module module="@{module}" assemble="true" trimTesting="false"/>
+		</sequential>
+	</macrodef>
+
+    
 	<target name="create-installer" depends="init,init-taskdefs,init-filters"
 	 description="create ${installer.file} from ${staging.dir} using ${htmlSrc.dir} and ${simpleClassName}">
         <!-- init-filters: filter on copy used by ajinstaller taskdef -->
@@ -221,186 +249,126 @@
     </target>
 
     <!-- ===================================================================== -->
-    <!-- custom targets                                                        -->
-    <!-- ===================================================================== -->
-	<!-- 
-	deprecated, but desireable...
-    <target name="junit-tests-allinone" 
+    <!-- test targets                                                          -->
+    <!-- ===================================================================== -->	
+    <target name="test-run-all-junit-tests" 
 		depends="init"
-	    description="deprecated - kills JUnit by using run-all-junit-tests ">
-	    <property name="alltests.module"
-	    	value="run-all-junit-tests"/>
-		<clean-dir dir="${aj.junit.dir}"/>
-	    <antcall target="build-module-all">
-	        <param name="module.name" value="${alltests.module}"/>
-	        <param name="trim.testing.default" value="false"/>
+        description="run unit tests via run-all-junit-tests module">
+	    <antcall target="test">
+	        <param name="module.name" value="run-all-junit-tests"/>
 	    </antcall>
-      	<junit fork="on" 
-      		includeAntRuntime="off" 
-      		dir="${aspectj.modules.build.dir}"
-           	printsummary="yes" 
-           	haltonfailure="${haltOnTestFailure}" >
-           	<classpath>
-           	    <pathelement location="${java.home}/lib/tools.jar"/>
-           	    <pathelement location="${aj.jar.dir}/${alltests.module}-all.jar"/>
-            	<pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar"/> 
-            	<fileset dir="${aspectj.modules.lib.dir}/ant/lib" 
-                   includes="ant.jar,ant-junit.jar,xml-apis.jar,xercesImpl.jar"/>
-           </classpath>
-    		<jvmarg value="-Daspectjrt.path=${aspectjrt.path}" />
-    		<jvmarg value="-Xmx400m" />
-        <formatter type="xml"/>
-        <test name="AllModuleTests" todir="${aj.junit.dir}"/>
-      </junit>        
-	</target>
-    -->
-	<target name="junit-tests" 
-		depends="init"
-	    description="build and run JUnit leaf tests ${junit.includes}">
-	    <property name="alltests.module"
-	    	value="run-all-junit-tests"/>
-		<clean-dir dir="${aj.junit.dir}"/>
-	    <antcall target="build-module-all">
-	        <param name="module.name" value="${alltests.module}"/>
-	        <param name="trim.testing.default" value="false"/>
-	    </antcall>
-	    
-      	<junit fork="on" 
-      		includeAntRuntime="off" 
-      		dir="${aspectj.modules.build.dir}"
-           	printsummary="yes" 
-           	haltonfailure="${haltOnTestFailure}" >
-           	<classpath>
-           	    <pathelement location="${aj.jar.dir}/${alltests.module}-all.jar"/>
-           	    <!-- see skipped libraries in Builder.properties -->
-           	    <pathelement location="${java.home}/lib/tools.jar"/>
-            	<pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar"/> 
-            	<fileset dir="${aspectj.modules.lib.dir}/ant/lib" 
-                	includes="ant.jar,ant-junit.jar,xml-apis.jar,xercesImpl.jar"/>
-           	</classpath>
-    		<jvmarg value="-Daspectjrt.path=${aspectjrt.path}" />
-    		<jvmarg value="-Xmx400m" />
-	        <formatter type="xml"/>
-	        <batchtest todir="${aj.junit.dir}">
-	            <fileset dir="${aspectj.modules.dir}/ajde/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/ajdoc/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/asm/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/bridge/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/build/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/loadtime/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/runtime/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/taskdefs/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/testing/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/testing-client/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/testing-drivers/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/tests/src" includes="**/*Tests.java" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/util/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	            <fileset dir="${aspectj.modules.dir}/weaver/testsrc" includes="${junit.includes}" excludes="${junit.excludes}"/>
-	        </batchtest>
-		</junit> 
-	    <antcall target="if.junitreport"/>
-	</target>
-    	
-    <target name="if.junitreport" depends="init"
-        if="junitreport.available"
-        description="silently skip if no libraries available">
-        <antcall target="junitreport"/>
     </target>
     
-    <target name="junitreport" depends="init,init-taskdefs">
-    	<fail unless="junitreport.available"
-	    	message="junitreport needs lib/ant/lib/xalan.jar"/>
+    <target name="test-compiler-tests" 
+		depends="init"
+        description="run compiler tests via tests module">
+	    <antcall target="test">
+	        <param name="module.name" value="tests"/>
+	    </antcall>
+    </target>
+
+    <target name="test-each-module" 
+		depends="init"
+	    description="run JUnit tests for each module">
+	    <subant target="test">
+	        <filelist dir="${aspectj.modules.dir}"
+	            files="${aspectj.tools.modules},${aspectj.test.modules}"/>
+	    </subant>
+	</target>
+	                	    
+    <target name="junitreport" depends="init,init-taskdefs"
+        if="junitreport.available">
 	    <clean-dir dir="${aj.junit.dir}/html"/>
 	    <junitreport todir="${aj.junit.dir}/html">
 	      <fileset dir="${aj.junit.dir}">
-	        <include name="TEST-*.xml"/>
+	        <include name="**/TEST-*.xml"/>
 	      </fileset>
 	      <report format="frames" todir="${aj.junit.dir}/html"/>
 	    </junitreport>
+        <pathconvert property="jur.url" targetos="unix">
+        	<path location="${aj.junit.dir}/html/index.html"/>
+        </pathconvert>
+        <echo message="see file:${jur.url}"/>
 	</target>
+    
+	<target name="do-test-junit" 
+	    depends="init-taskdefs" 
+		description="run junit tests for a module using module root or leaves">
+		<property name="dtj.dir"
+	    	location="${aj.junit.dir}/${module.name}"/>
+	    <mkdir dir="${dtj.dir}"/>
 
-    <target name="build-testing-drivers" depends="init-taskdefs,init"
-	      unless="testing.drivers.all.available"> 
-		<antcall target="any-module-all">
-			<param name="module.name" value="testing-drivers"/>
-		</antcall>
-	</target>
+	    <condition property="dtj.includes"
+	        value="${junit.includes}"
+	        else="${junit.rootSuites}">
+	        <istrue value="${junit.leaves}"/>
+	    </condition>
+	    <condition property="dtj.excludes"
+	        value="${junit.excludes}"
+	        else="">
+	        <istrue value="${junit.leaves}"/>
+	    </condition>
+      	
+	    <junit 
+	    	dir="${aspectj.modules.build.dir}"
+      	    failureproperty="test-junit-${module.name}.failed"
+      	    fork="on" 
+      	    forkmode="perTest"
+      	    maxmemory="400m"
+      		includeAntRuntime="off" 
+           	printsummary="yes" 
+           	haltonfailure="${haltOnTestFailure}" >
+           	<classpath>
+           	    <pathelement location="${aj.jar.dir}/${module.name}-test-all.jar"/>
+				<!-- see skipped libraries in Builder.properties -->
+           	    <pathelement location="${jdk.tools.jar}"/>
+            	<pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar"/> 
+				<!-- XML api's used by loadtime, also needed when running under 1.3 per Ant FAQ -->
+           	    <fileset dir="${aspectj.modules.lib.dir}/ant/lib" 
+                	includes="ant.jar,ant-junit.jar,xml-apis.jar,xercesImpl.jar"/>
+           	</classpath>
+    		<jvmarg value="-Daspectjrtpath=${aspectjrt.path}" />
+	        <formatter type="xml"/>
+	        <batchtest todir="${dtj.dir}">
+	            <fileset dir="${modules.dir}/${module.name}/testsrc"
+	                includes="${dtj.includes}"
+	                excludes="${dtj.excludes}"/>
+            </batchtest>        
+	    </junit>
+	    <report-if-failed text="JUnit tests for ${module.name} failed"
+	        property="test-junit-${module.name}.failed"/>
+    </target>
 
-	<target name="build-testing-jars" 
-		depends="aspectjrt,build,ajbrowser-all"
-		description="build testing jars.
-		Use -Dtrim.testing.default=false to build junit tests">
-		<antcall target="any-module">
-			<param name="module.name" value="testing"/>
-		</antcall>
-		<antcall target="any-module">
-			<param name="module.name" value="testing-drivers"/>
-		</antcall>
-		<antcall target="build-testing-drivers"/>
+    	
+    <!-- ===================================================================== -->
+    <!-- custom targets                                                        -->
+    <!-- ===================================================================== -->
+
+    <target name="build-harness-jar" depends="init"
+		description="build harness jar from scratch">
+        <antcall target="clean-jars"/>
+		<assemble-module-test module="testing-drivers"/>
 	</target>
 	
-	<target name="build-testing-client" depends="init-taskdefs,init">
-	  <antcall target="build-module-all">
-	    <param name="module.name" value="testing-client"/>
-	  </antcall>
+    <target name="build-testing-jars" depends="init"
+		description="build harness jar from scratch">
+        <antcall target="build-harness-jar"/>
+	</target>
+
+    <target name="build-testing-client" depends="init-taskdefs,init">
+		<build-module module="testing-client" assemble="true"/>
+		<assemble-module-test module="testing-client"/>
 	  <echo>
 To use testing client jar in tests, 
   mv ../aj-build/jars/testing-client-all.jar ../lib/tests/testing-client.jar
 </echo>
 	</target>
 
-	<target name="run-module-junit-tests" depends="init-taskdefs" 
-		description="run all junit tests for a module">
-		<mkdir dir="${aj.junit.dir}/${module.name}"/>
-		<!-- fork to load classes, include AntRuntime to get taskdef classes junit.jar -->
-		<junit 
-		    fork="true"
-		    dir="../${module.name}"
-		    printsummary="yes" 
-          	haltonfailure="${haltOnTestFailure}">
-			<classpath>
-              	<pathelement location="${aj.build.dir}/jars/${module.name}-all.jar"/>
-				<!-- libraries clipped from -all jars (though junit in parent) -->
-            	<pathelement location="${aspectjrt.path}"/>
-            	<pathelement location="${junit.jar}"/>
-           </classpath>
-
-		<!-- aspectjrt.path used by ajde tests -->
-		<sysproperty key="aspectjrt.path" value="${aspectjrt.path}"/>
-
-        <formatter type="xml"/>
-        <batchtest 
-		    todir="${aj.junit.dir}/${module.name}">
-            <fileset dir="${modules.dir}/${module.name}/testsrc">
-              <include name="*ModuleTests.java" />
-            </fileset>
-        </batchtest>        
-      </junit>        
-    </target>
-    
-	<!-- remove as unused - see release/build.xml test-sources -->
-	<target name="ajcTests" depends="init,build-testing-drivers">
-      <java fork="true" jar="${aj.jar.dir}/testing-drivers-all.jar"
-            dir="${aspectj.modules.tests.dir}"
-          output="${aj.results.dir}/ajcTests.out.txt">
-        <arg value="-traceTestsMin"/>
-        <arg value="-logFail"/>
-        <arg value="-hideStreams"/>
-        <arg value="-loud"/>
-        <arg value="-ajctestSkipKeywords=purejava,knownLimitations"/>
-        <arg value="ajcTests.xml"/>
-      </java>
-      <echo message="find result in ${aj.results.dir}/ajcTests.out.txt"/>
-	</target>
-	
-	<target name="aspectj" depends="init,aspectjtools-dist,docs-dist" 
+    <target name="aspectj" depends="init,aspectjtools-dist,docs-dist" 
 	  description="create installer from local distributions">
 	  <property name="installer.staging.dir"
             location="${aj.temp.dir}/installer-staging"/>
-	  <mkdir dir="${installer.staging.dir}"/>
-	  <delete dir="${installer.staging.dir}"/>
-	  <mkdir dir="${installer.staging.dir}"/>
+	  <clean-dir dir="${installer.staging.dir}"/>
 	  <copy todir="${installer.staging.dir}">
 	    <fileset dir="${aj.dist.dir}/tools"/>
 	    <fileset dir="${aj.dist.dir}/docs"/>
@@ -427,10 +395,8 @@ To use testing client jar in tests,
 	
 	<target name="aspectjrt" depends="init"
 	 description="build aspectjrt.jar (differently than release)">
-	  <antcall target="build-module-all">
-	    <param name="module.name" value="runtime"/>
-	  </antcall>
-	  <copy file="${aj.jar.dir}/runtime.jar"
+		<build-module-all module="aspectj5rt"/>
+	  <copy file="${aj.jar.dir}/aspectj5rt-all.jar"
 	      tofile="${aj.jar.dir}/aspectjrt.jar"/>
 	</target>
 	
@@ -440,17 +406,13 @@ To use testing client jar in tests,
 
 	<!-- for any-[module|product], define [module|product].name -->
 	<target name="any-module" depends="init">
-	  <fail unless="module.name" message="use -Dmodule.name=... to define"/>
-	  <antcall target="build-module">
-	    <param name="module.name" value="${module.name}"/>
-	  </antcall>
+		<fail unless="module.name" message="use -Dmodule.name=... to define"/>
+		<build-module module="${module.name}"/>
 	</target>
 
 	<target name="any-module-all" depends="init">
-	  <fail unless="module.name" message="use -Dmodule.name=... to define"/>
-	  <antcall target="build-module-all">
-	    <param name="module.name" value="${module.name}"/>
-	  </antcall>
+		<fail unless="module.name" message="use -Dmodule.name=... to define"/>
+		<build-module-all module="${module.name}"/>
 	</target>
 
 	<target name="any-product" depends="init">
@@ -460,30 +422,16 @@ To use testing client jar in tests,
 	  </antcall>
 	</target>
 
-	<!-- literal targets -->
-	<target name="eajc" depends="init">
-	  <antcall target="build-module-all">
-	    <param name="module.name" value="org.aspectj.ajdt.core"/>
-	  </antcall>
-	  <echo message="use org.aspectj.ajdt.core-all.jar for eajc.jar"/>
-	</target>
-
 	<target name="ajbrowser-all" >
-	  <antcall target="build-module-all">
-	    <param name="module.name" value="ajbrowser"/>
-	  </antcall>
+    	<build-module-all module="ajbrowser"/>
     </target>
 
 	<target name="ajdoc-all">
-	  <antcall target="build-module-all">
-	    <param name="module.name" value="ajdoc"/>
-	  </antcall>
+    	<build-module-all module="ajdoc"/>
     </target>
 
 	<target name="build">
-	  <antcall target="build-module">
-	    <param name="module.name" value="build"/>
-	  </antcall>
+		<build-module-all module="build"/>
     </target>
 
 	<target name="aspectjtools-dist" depends="init"
@@ -497,90 +445,10 @@ To use testing client jar in tests,
     <!-- eclipse plugins                                                       -->
     <!-- ===================================================================== -->
 
-	<target name="eclipse.plugins" depends="org.aspectj.ajde.source,
-	                                        org.aspectj.ajde.doc,
-	                                        org.aspectj.ajde,
-	                                        org.aspectj.aspectjrt"
-     	    description="create the Eclipse distribution plugins"/>	  
-
-	<target name="org.aspectj.ajde.source" depends="init"
-	  description="build the AspectJ source distribution plugin">
-	  <copy todir="${aj.plugin.org.aspectj.ajde.source.dir}">
-	    <fileset dir="${aspectj.modules.dir}/eclipse.plugin/org.aspectj.ajde.source"/>
-	  </copy>	  
-	  <replace file="${aj.plugin.org.aspectj.ajde.source.dir}/plugin.xml"
-	           token="build.version.eclipse.plugins"
-	           value="${build.version.eclipse.plugins}"/>
-	  <copy file="${aspectj.modules.dir}/org.eclipse.jdt.core/jdtcore-for-aspectj-src.zip"
-	        todir="${aj.plugin.org.aspectj.ajde.source.dir}/src"/> 
-	  <zip destfile="${aj.plugin.org.aspectj.ajde.source.dir}/src/aspectjsrc.zip">
-	    <fileset dir="${aspectj.modules.dir}/ajbrowser/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/ajdoc/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/ajde/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/asm/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/bridge/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/runtime/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/taskdefs/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/util/src" includes="**"/>
-	    <fileset dir="${aspectj.modules.dir}/weaver/src" includes="**"/>
-	  </zip>
-	  <jar destfile="${aj.plugin.org.aspectj.ajde.source.dir}/../org.aspectj.ajde.source_${build.version.eclipse.plugins}.jar">
-	    <fileset dir="${aj.plugin.org.aspectj.ajde.source.dir}" includes="**"/>	    
-	  </jar>
-	</target>
-
-	<target name="org.aspectj.ajde.doc" depends="init,docs-dist"
-	  description="build the AspectJ documentation plugin for Eclipse">
-	  <copy todir="${aj.plugin.org.aspectj.ajde.doc.dir}">
-	    <fileset dir="${aspectj.modules.dir}/eclipse.plugin/org.aspectj.ajde.doc"/>
-	  </copy>
-	  <copy todir="${aj.plugin.org.aspectj.ajde.doc.dir}/doc">
-	    <fileset dir="${aj.dist.dir}/docs/doc" includes="**"/>	    	  
-	  </copy>
-	  <replace file="${aj.plugin.org.aspectj.ajde.doc.dir}/plugin.xml"
-	           token="build.version.eclipse.plugins"
-	           value="${build.version.eclipse.plugins}"/>
-	  <jar destfile="${aj.plugin.org.aspectj.ajde.doc.dir}/../org.aspectj.ajde.doc_${build.version.eclipse.plugins}.jar">
-	    <fileset dir="${aj.plugin.org.aspectj.ajde.doc.dir}" includes="**"/>	    
-	  </jar>
-	</target>
-
-	<target name="org.aspectj.ajde" depends="init,aspectj"
-	  description="build the AspectJ library plugin for Eclipse">
-	  <copy todir="${aj.plugin.org.aspectj.ajde.dir}">
-	    <fileset dir="${aspectj.modules.dir}/eclipse.plugin/org.aspectj.ajde"/>
-	  </copy>	  
-	  <replace file="${aj.plugin.org.aspectj.ajde.dir}/plugin.xml"
-	           token="build.version.eclipse.plugins"
-	           value="${build.version.eclipse.plugins}"/>
-	  <copy file="${aj.dist.dir}/tools/lib/aspectjrt.jar"
-	        todir="${aj.plugin.org.aspectj.ajde.dir}"/> 
-	  <copy file="${aj.dist.dir}/tools/lib/aspectjtools.jar"
-	        todir="${aj.plugin.org.aspectj.ajde.dir}"/>
-	  <jar destfile="${aj.plugin.org.aspectj.ajde.dir}/ajde.jar">
-	  	<zipfileset src="${aj.dist.dir}/tools/lib/aspectjtools.jar"
-	  	   includes="org/aspectj/**"/>
-	  </jar> 	  
-	  <jar destfile="${aj.plugin.org.aspectj.ajde.dir}/../org.aspectj.ajde_${build.version.eclipse.plugins}.jar">
-	    <fileset dir="${aj.plugin.org.aspectj.ajde.dir}" includes="**"/>	    
-	  </jar>
-	</target>
-
-	<target name="org.aspectj.aspectjrt" depends="init,aspectj"
-	  description="build the AspectJ runtime library plugin for Eclipse">
-	  <copy todir="${aj.plugin.org.aspectj.aspectjrt.dir}">
-	    <fileset dir="${aspectj.modules.dir}/eclipse.plugin/org.aspectj.aspectjrt"/>
-	  </copy>	  
-	  <replace file="${aj.plugin.org.aspectj.aspectjrt.dir}/plugin.xml"
-	           token="build.version.eclipse.plugins"
-	           value="${build.version.eclipse.plugins}"/>
-	  <copy file="${aj.dist.dir}/tools/lib/aspectjrt.jar"
-	        todir="${aj.plugin.org.aspectj.aspectjrt.dir}"/> 
-	  <jar destfile="${aj.plugin.org.aspectj.aspectjrt.dir}/../org.aspectj.aspectjrt_${build.version.eclipse.plugins}.jar">
-	    <fileset dir="${aj.plugin.org.aspectj.aspectjrt.dir}" includes="**"/>	    
-	  </jar>
-	</target>
+	<target name="eclipse.plugins" depends="init"
+     	    description="create the Eclipse distribution plugins">	  
+	   <ant dir="${aspectj.modules.dir}/eclipse.plugin" inheritAll="false"/>
+    </target>
 
 </project>
 
