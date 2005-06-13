@@ -203,7 +203,7 @@ public class PerClauseTest extends TestCase {
             ;//ok
         }
     }
-    
+
     static class PTW1 {
         static void foo() {};
     }

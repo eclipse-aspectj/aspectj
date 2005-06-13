@@ -242,8 +242,7 @@ public class BcelWeaver implements IWeaver {
 
 //	// The ANT copy task should be used to copy resources across.
 //	private final static boolean CopyResourcesFromInpathDirectoriesToOutput=false;
-	private Set alreadyConfirmedReweavableState;
-	
+
 	/**
 	 * Add any .class files in the directory to the outdir.  Anything other than .class files in
 	 * the directory (or its subdirectories) are considered resources and are also copied. 
@@ -486,6 +485,7 @@ public class BcelWeaver implements IWeaver {
                         int numArgs = advice.getSignature().getParameterTypes().length;
                         if (numFormals > 0) {
                             names = advice.getSignature().getParameterNames(world);
+                            System.out.println(advice.getSignature().toLongString());//AVB
                             validateBindings(newP,p,numArgs,names);
                         }
                     } else {
@@ -947,18 +947,6 @@ public class BcelWeaver implements IWeaver {
 			processReweavableStateIfPresent(className, classType);
 		}
 
-        // register all aspect that have been extracted from reweavable state for LTW
-        // note: when doing AJC, the missing aspect is already catch in the previous state thru Type.MISSING
-        if (alreadyConfirmedReweavableState != null) {
-            for (Iterator iterator = alreadyConfirmedReweavableState.iterator(); iterator.hasNext();) {
-                String aspectClassName = (String) iterator.next();
-                addLibraryAspect(aspectClassName);
-            }
-            // refresh all the stuff... perhaps too much here...
-            if (!alreadyConfirmedReweavableState.isEmpty())
-                prepareForWeave();
-        }
-
 		requestor.addingTypeMungers();
         
         // We process type mungers in two groups, first mungers that change the type
@@ -1075,9 +1063,6 @@ public class BcelWeaver implements IWeaver {
 			world.showMessage(IMessage.INFO,
 					WeaverMessages.format(WeaverMessages.REWEAVABLE_MODE),
 					null, null);
-
-        //TODO AV - can't we avoid this creation (LTW = happens for each class load!)
-    	alreadyConfirmedReweavableState = new HashSet();
     }
     
     public void processReweavableStateIfPresent(String className, BcelObjectType classType) {
@@ -1089,6 +1074,8 @@ public class BcelWeaver implements IWeaver {
 					null,null);
 			Set aspectsPreviouslyInWorld = wsi.getAspectsAffectingType();
 			if (aspectsPreviouslyInWorld!=null) {
+                // keep track of them just to ensure unique missing aspect error reporting
+                Set alreadyConfirmedReweavableState = new HashSet();
 				for (Iterator iter = aspectsPreviouslyInWorld.iterator(); iter.hasNext();) {
 					String requiredTypeName = (String) iter.next();
 					if (!alreadyConfirmedReweavableState.contains(requiredTypeName)) {
@@ -1171,8 +1158,7 @@ public class BcelWeaver implements IWeaver {
 		onType.clearInterTypeMungers();
 		
 		List decpToRepeat = new ArrayList();
-		List decaToRepeat = new ArrayList();
-		
+
 		boolean aParentChangeOccurred      = false;
 		boolean anAnnotationChangeOccurred = false;
 		// First pass - apply all decp mungers

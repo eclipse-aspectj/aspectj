@@ -541,6 +541,7 @@ public class AtAjAttributes {
                 Pointcut pc = null;
                 if (preResolvedPointcut != null) {
                     pc = preResolvedPointcut.getPointcut();
+                    //pc.resolve(binding);
                 } else {
                     pc = parsePointcut(beforeAdvice.getValue().stringifyValue(), struct, false);
                     if (pc == null) return false;//parse error

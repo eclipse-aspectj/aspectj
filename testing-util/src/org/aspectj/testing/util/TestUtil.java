@@ -204,7 +204,7 @@ public final class TestUtil {
     }
     
     /**
-     * @param s the String to parse for [on|off|true|false]
+     * @param input the String to parse for [on|off|true|false]
      * @throws IllegalArgumentException if input is bad
      **/
     public static boolean parseBoolean(String input) {
@@ -212,7 +212,7 @@ public final class TestUtil {
     }
     
     /**
-     * @param s the String to parse for [on|off|true|false]
+     * @param input the String to parse for [on|off|true|false]
      * @param iaxOnError if true and input is bad, throw
      * IllegalArgumentException
      * @return true if input is true, false otherwise

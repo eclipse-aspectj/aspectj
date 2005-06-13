@@ -30,6 +30,7 @@
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj5.def=ataspectj/aop-perclausetest.xml"/>
+<!--            <jvmarg line="${jdwp}"/>            -->
         </java>
     </target>
 
