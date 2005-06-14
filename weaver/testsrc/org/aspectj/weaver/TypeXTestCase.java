@@ -76,6 +76,44 @@ public class TypeXTestCase extends TestCase {
 		assertEquals(t.getName(),"java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
 		assertEquals(t.getSignature(),"Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
 	}
+	
+	/**
+	 * Verify TypeX signature processing creates the right kind of TypeX's from a signature.
+	 * 
+	 * For example, calling TypeX.dump() for 
+	 *   "Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>;"
+	 * results in:
+	 *   TypeX:  signature=Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>; parameterized=true #params=2
+     *     TypeX:  signature=Ljava/util/List<Ljava/lang/String;>; parameterized=true #params=1
+     *       TypeX:  signature=Ljava/lang/String; parameterized=false #params=0
+     *     TypeX:  signature=Ljava/lang/String; parameterized=false #params=0
+	 */
+	public void testTypexGenericSignatureProcessing() {
+		TypeX tx = null;
+		
+		tx = new TypeX("Ljava/util/Set<Ljava/lang/String;>;");
+		checkTX(tx,true,1);
+		
+		tx = new TypeX("Ljava/util/Set<Ljava/util/List<Ljava/lang/String;>;>;");
+		checkTX(tx,true,1);
+		
+		tx = new TypeX("Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>;");
+		checkTX(tx,true,2);
+		checkTX(tx.getTypeParameters()[0],true,1);
+		checkTX(tx.getTypeParameters()[1],false,0);
+//		System.err.println(tx.dump());
+	}
+	
+	private void checkTX(TypeX tx,boolean shouldBeParameterized,int numberOfTypeParameters) {
+		assertTrue("Expected parameterization flag to be "+shouldBeParameterized,tx.isParameterized()==shouldBeParameterized);
+		if (numberOfTypeParameters==0) {
+			TypeX[] params = tx.getTypeParameters();
+			assertTrue("Expected 0 type parameters but found "+params.length,params==null || params.length==0);
+	    } else {
+				assertTrue("Expected #type parameters to be "+numberOfTypeParameters,tx.getTypeParameters().length==numberOfTypeParameters);
+	    }
+	}
+	
 
     private void isPrimitiveTest(TypeX[] types, boolean[] isPrimitives) {
         for (int i = 0, len = types.length; i < len; i++) {
