@@ -205,7 +205,7 @@ public class EclipseFactory {
 					WildcardBinding wcb = (WildcardBinding) ptb.arguments[i];
 					arguments[i] = getName(((TypeVariableBinding)wcb.typeVariable()).firstBound);
 				}  else {
-					arguments[i] = getName(ptb.arguments[i]);
+					arguments[i] = fromBinding(ptb.arguments[i]).getName();
 				}
 			}
 			return TypeX.forParameterizedTypeNames(getName(binding), arguments);
@@ -361,9 +361,9 @@ public class EclipseFactory {
 			} else {
 			    TypeX[] typeParameters = typeX.getTypeParameters();
 				ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
-				ReferenceBinding[] argumentBindings = new ReferenceBinding[typeParameters.length];
+				TypeBinding[] argumentBindings = new TypeBinding[typeParameters.length];
 				for (int i = 0; i < argumentBindings.length; i++) {
-					argumentBindings[i] = lookupBinding(typeParameters[i].getName());
+					argumentBindings[i] = makeTypeBinding(typeParameters[i]);
 				}
 				ParameterizedTypeBinding ptb = 
 					lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
