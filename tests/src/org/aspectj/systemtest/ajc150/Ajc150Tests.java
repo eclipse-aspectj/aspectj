@@ -174,17 +174,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("Exploding compile time with if() statements in pointcut");
   }
   
-  public void testReflectNPE_pr94167() {
-	  runTest("NPE in reflect implementation");
-  }
+  public void testReflectNPE_pr94167() {runTest("NPE in reflect implementation");}
   
-  public void testStaticImports_pr84260() {
-	  runTest("static import failures");
-  } 
+  public void testStaticImports_pr84260() {runTest("static import failures");} 
   
-//  public void testGenerics_pr99089() {
-//      runTest("ArrayIndexOutOfBoundsException - Generics in privileged aspects");
-//  }
+  public void testGenerics_pr99089() {runTest("ArrayIndexOutOfBoundsException - Generics in privileged aspects");}
+  
+  public void testItdGenerics_pr99228() {runTest("ITD of a field into a generic class");}
+  public void testItdGenerics_pr98320() {runTest("intertype with nested generic type");}
   
   // helper methods.....
   
