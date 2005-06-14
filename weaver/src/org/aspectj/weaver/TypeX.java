@@ -16,11 +16,15 @@ package org.aspectj.weaver;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
 
 public class TypeX implements AnnotatedElement {
+	
 	/**
-	 * This is the bytecode string representation of this Type
+	 * This is the string representation of this Type, will include parameterization info
 	 */
     protected String signature;
 	
@@ -34,8 +38,7 @@ public class TypeX implements AnnotatedElement {
 	 * If this is a parameterized type, these are its parameters
 	 */
 	protected TypeX[] typeParameters;
-	
-	protected boolean isParameterized = false;
+	private boolean isParameterized = false;
 
 	/**
 	 * @param      signature   the bytecode string representation of this Type
@@ -43,7 +46,75 @@ public class TypeX implements AnnotatedElement {
     protected TypeX(String signature) {
         super();
         this.signature = signature;
+		// avoid treating '<missing>' as a parameterized type ...
+		if (signature.charAt(0)!='<' && signature.indexOf("<")!=-1) {
+			// anglies alert - generic/parameterized type
+			processSignature(signature);
+
+		}
     }
+	
+	/**
+	 * Called when processing a parameterized type, sets the raw type for this typeX and calls a subroutine
+	 * to handle sorting out the type parameters for the type.
+	 */
+	private void processSignature(String sig) {
+		// determine the raw type
+		int parameterTypesStart = signature.indexOf("<");
+		int parameterTypesEnd   = signature.lastIndexOf(">");
+		StringBuffer rawTypeSb = new StringBuffer();
+		rawTypeSb.append(signature.substring(0,parameterTypesStart)).append(";");
+		rawTypeSignature = rawTypeSb.toString();
+		typeParameters = processParameterization(signature,parameterTypesStart+1,parameterTypesEnd-1);
+		isParameterized = true;
+	}
+	
+	/**
+	 * For a parameterized signature, e.g. <Ljava/langString;Ljava/util/List<Ljava/lang/String;>;>"
+	 * this routine will return an appropriate array of TypeXs representing the top level type parameters.
+	 * Where type parameters are themselves parameterized, we recurse.
+	 */
+	public TypeX[] processParameterization(String paramSig,int startpos,int endpos) {
+		boolean debug = false;
+		if (debug) {
+			StringBuffer sb = new StringBuffer();
+			sb.append(paramSig).append("\n");
+			for(int i=0;i<paramSig.length();i++) {
+				if (i==startpos || i==endpos) sb.append("^");
+				else if (i<startpos || i>endpos) sb.append(" ");
+				else sb.append("-");
+			}
+			sb.append("\n");
+			System.err.println(sb.toString());
+		}
+		int posn = startpos;
+		List parameterTypes = new ArrayList();
+		while (posn<endpos && paramSig.charAt(posn)!='>') {
+			int nextAngly = paramSig.indexOf("<",posn);
+			int nextSemi  = paramSig.indexOf(";",posn);
+			if (nextAngly==-1 || nextSemi<nextAngly) { // the next type is not parameterized
+				// simple type
+				parameterTypes.add(TypeX.forSignature(paramSig.substring(posn,nextSemi+1)));
+				posn=nextSemi+1; // jump to the next type
+			} else if (nextAngly!=-1 && nextSemi>nextAngly) {  // parameterized type, e.g. Ljava/util/Set<Ljava/util/String;>
+				int count=1;
+				int pos=nextAngly+1;
+				for (;count>0;pos++){
+					switch (paramSig.charAt(pos)) {
+						case '<':count++;break;
+						case '>':count--;break;
+						default:
+					}
+				}
+				String sub = paramSig.substring(posn,pos+1);
+				parameterTypes.add(TypeX.forSignature(sub));
+				posn=pos+1;
+			} else {
+				throw new BCException("What the hell do i do with this? ["+paramSig.substring(posn)+"]");
+			} 
+		}
+		return (TypeX[])parameterTypes.toArray(new TypeX[]{});
+	}
 
     // ---- Things we can do without a world
     
@@ -292,8 +363,7 @@ public class TypeX implements AnnotatedElement {
      * @return  the java JVM signature string for this type.
      */
     public String getSignature() {
-		if (!isParameterized() || rawTypeSignature==null) { return signature; }
-		return rawTypeSignature;
+		return signature;
     }
 	
 	public String getParameterizedSignature() {
@@ -883,6 +953,33 @@ public class TypeX implements AnnotatedElement {
 		}
 	}
 	
+	/**
+	 * Exposed for testing, dumps the parameterization info for a typeX into a string, so you can check its OK.
+	 * 
+	 * For example, calling TypeX.dump() for 
+	 *   "Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>;"
+	 * results in:
+	 *   TypeX:  signature=Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>; parameterized=true #params=2
+     *     TypeX:  signature=Ljava/util/List<Ljava/lang/String;>; parameterized=true #params=1
+     *       TypeX:  signature=Ljava/lang/String; parameterized=false #params=0
+     *     TypeX:  signature=Ljava/lang/String; parameterized=false #params=0
+	 */
+	public String dump() {
+		StringBuffer  sb = new StringBuffer();
+		dumpHelper(sb,0);
+		return sb.toString();
+	}
+	
+	private void dumpHelper(StringBuffer collector,int depth) {
+		collector.append("TypeX:  signature="+getSignature()+" parameterized="+isParameterized()+" #params="+getTypeParameters().length);
+		if (isParameterized()) {
+			for (int i = 0; i < getTypeParameters().length; i++) {
+				TypeX tx = getTypeParameters()[i];
+				collector.append("\n  ");for(int ii=0;ii<depth;ii++) collector.append(" ");
+				tx.dumpHelper(collector,depth+2);
+			}
+		}
+	}
 
 	
 	
