@@ -72,6 +72,14 @@
         <run class="B"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150" pr="99228" vm="1.5" title="ITD of a field into a generic class">
+        <compile files="PR99228.aj" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="98320" vm="1.5" title="intertype with nested generic type">
+        <compile files="PR98320.aj" options="-1.5"/>
+    </ajc-test>
+    
     <ajc-test dir="decs" pr="42743" title="declare soft of runtime exception">
         <compile files="DeclareSoftRuntimeException.aj">
             <message kind="warning" line="3" text="MyRuntimeException will not be softened as it is already a RuntimeException"/>
@@ -114,6 +122,12 @@
     
     <ajc-test dir="bugs150/pr99089" vm="1.5" pr="99089" title="ArrayIndexOutOfBoundsException - Generics in privileged aspects">
         <compile files="DataClass.java,TracingAspect.java" options="-1.5"/>
+        <run class="DataClass">
+          <stderr>
+          <line text="before:Length of v=1"/>
+          <line text="after:Length of v=2"/>
+          </stderr>
+        </run>
     </ajc-test>
     
     <ajc-test dir="bugs150" pr="79554" title="Return in try-block disables catch-block if final-block is present">
