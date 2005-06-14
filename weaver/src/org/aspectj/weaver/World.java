@@ -122,7 +122,7 @@ public abstract class World implements Dump.INode {
 
     public ResolvedTypeX resolve(TypeX ty, boolean allowMissing) {
     	//System.out.println("resolve: " + ty + " world " + typeMap.keySet());
-        String signature = ty.getSignature();
+        String signature = ty.getRawTypeSignature();
         ResolvedTypeX ret = typeMap.get(signature);
         if (ret != null) { ret.world = this; return ret; } // Set the world for the RTX
         
@@ -154,7 +154,7 @@ public abstract class World implements Dump.INode {
     	return resolve(TypeX.forName(name));
     }
     protected final ResolvedTypeX resolveObjectType(TypeX ty) {
-		String signature = ty.getSignature();
+		String signature = ty.getRawTypeSignature();
 
     	ResolvedTypeX.Name name = new ResolvedTypeX.Name(signature, this);
     	ResolvedTypeX.ConcreteName concreteName = resolveObjectType(name);
@@ -476,7 +476,7 @@ public abstract class World implements Dump.INode {
 	}
 
 	public ResolvedTypeX.Name lookupOrCreateName(TypeX ty) {
-		String signature = ty.getSignature();
+		String signature = ty.getRawTypeSignature();
         ResolvedTypeX.Name ret = (ResolvedTypeX.Name)typeMap.get(signature);
         if (ret == null) {
         	ret = new ResolvedTypeX.Name(signature, this);
