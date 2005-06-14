@@ -15,9 +15,11 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.weaver.BCException;
 
 public class InterTypeScope extends ClassScope {
 	ReferenceBinding onType;
@@ -32,7 +34,12 @@ public class InterTypeScope extends ClassScope {
 	// this method depends on the fact that BinaryTypeBinding extends SourceTypeBinding
 	private SourceTypeBinding makeSourceTypeBinding(ReferenceBinding onType) {
 		if (onType instanceof SourceTypeBinding) return (SourceTypeBinding)onType;
-		else throw new RuntimeException("can't handle: " + onType);
+		else if (onType instanceof ParameterizedTypeBinding) {
+			ReferenceBinding rb = ((ParameterizedTypeBinding)onType).type;
+			if (rb instanceof SourceTypeBinding) return (SourceTypeBinding)rb;
+			else throw new BCException("In parameterized type "+onType+", can't handle reference binding "+rb);
+		}
+		throw new BCException("can't handle: " + onType);
 	}
 
 	public SourceTypeBinding invocationType() {
