@@ -283,8 +283,7 @@ public class AjcMemberMaker {
 	// -- privileged accessors
 	
 	public static ResolvedMember privilegedAccessMethodForMethod(TypeX aspectType, ResolvedMember method) {
-		String sig;
-		sig = method.getSignature();
+		String sig = method.getDeclaredSignature();
 		return new ResolvedMember(Member.METHOD,
 			method.getDeclaringType(),
 			Modifier.PUBLIC | (method.isStatic() ? Modifier.STATIC : 0),

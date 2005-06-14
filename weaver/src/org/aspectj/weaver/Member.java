@@ -56,6 +56,7 @@ public class Member implements Comparable, AnnotatedElement {
             Object[] returnAndParams = signatureToTypes(signature,false);
             this.returnType = (TypeX) returnAndParams[0];
             this.parameterTypes = (TypeX[]) returnAndParams[1];
+			signature = typesToSignature(returnType,parameterTypes,true);
         }
     }
 
@@ -75,10 +76,10 @@ public class Member implements Comparable, AnnotatedElement {
         this.name = name;
         this.parameterTypes = parameterTypes;
         if (kind == FIELD) {
-            this.signature = returnType.getRawTypeSignature();
+            this.signature         = returnType.getRawTypeSignature();
 			this.declaredSignature = returnType.getSignature();
         } else {
-            this.signature = typesToSignature(returnType, parameterTypes,true);
+            this.signature         = typesToSignature(returnType, parameterTypes,true);
 			this.declaredSignature = typesToSignature(returnType,parameterTypes,false);
         }
     }
@@ -111,7 +112,8 @@ public class Member implements Comparable, AnnotatedElement {
 			else                                                buf.append(paramTypes[i].getSignature());
         }
         buf.append(")");
-        buf.append(returnType.getSignature());
+        if (returnType.isParameterized() && useRawTypes) buf.append(returnType.getRawTypeSignature());
+        else 											 buf.append(returnType.getSignature());
         return buf.toString();        
     }
     
