@@ -366,9 +366,10 @@ public class AjdeInteractionTestbed extends TestCase {
 			log("MyProjectProperties.getClasspath()");
 			String cp =  
 			  new File(testdataSrcDir) + File.pathSeparator +
-    		  System.getProperty("sun.boot.class.path") + File.pathSeparator +  
-    		  "../runtime/bin" + File.pathSeparator + 
-    		  System.getProperty("aspectjrt.path");	
+    		  System.getProperty("sun.boot.class.path") + 
+    		  File.pathSeparator + "../runtime/bin" + 
+    		  File.pathSeparator +  System.getProperty("aspectjrt.path") +
+    		  File.pathSeparator+".."+File.separator+"lib" + File.separator+"test"+File.separator+"aspectjrt.jar";
 			
 			// look at dependant projects
 			List projects = (List)dependants.get(projectName);
