@@ -204,28 +204,14 @@ public class Result {
         return outputFile;
     }
 
-    public void rebuilding() {
-        outOfDate = true;
-        outOfDateSet = true;
-        if (outputFile.exists()) {
-            outputFile.delete();
-            if (outputFile.exists()) {
-                throw new Error("unable to delete existing " + outputFile);
-            }
-        }
-    }
-
     public void clearOutOfDate() {
         outOfDateSet = false;
         outOfDate = false;
     }
 
-    public boolean outOfDate(boolean recalculate) {
-        if (recalculate) {
-            clearOutOfDate();
-        }
+    public boolean outOfDate() {
         if (!outOfDateSet) {
-            outOfDate = Module.outOfDate(this, recalculate);
+            outOfDate = Module.outOfDate(this);
             outOfDateSet = true;
         }
         return outOfDate;

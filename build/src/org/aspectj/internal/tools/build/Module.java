@@ -244,7 +244,7 @@ public class Module {
      *         files in a source directory or any required modules or any
      *         libraries or if any libraries or required modules are missing
      */
-    public static boolean outOfDate(Result result, boolean recalculate) {
+    public static boolean outOfDate(Result result) {
         File outputFile = result.getOutputFile();
         if (!(outputFile.exists() && outputFile.canRead())) {
             return true;
@@ -261,7 +261,6 @@ public class Module {
             }
         }
         // required modules
-        final Kind kind = result.getKind();
         Result[] reqs = result.getRequired();
         for (int i = 0; i < reqs.length; i++) {
             Result requiredResult = reqs[i];
