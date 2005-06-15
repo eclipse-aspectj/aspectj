@@ -28,6 +28,10 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Commandline.Argument;
 import org.aspectj.internal.tools.ant.taskdefs.BuildModule;
 import org.aspectj.internal.tools.ant.taskdefs.Checklics;
+import org.aspectj.internal.tools.build.Messager;
+import org.aspectj.internal.tools.build.Module;
+import org.aspectj.internal.tools.build.Modules;
+import org.aspectj.internal.tools.build.Result;
 import org.aspectj.internal.tools.build.Util;
 
 /**
@@ -52,9 +56,11 @@ public class BuildModuleTest extends TestCase {
 
     // skip those requiring ajdoc, which requires tools.jar
     // also skip those requiring java5 unless manually set up
+    // also skip big ones to avoid slowing the build too much
     private static final String[] SKIPS 
         //= {};
-       = {"aspectjtools", "ajdoc", "aspectj5rt", "run-all-junit-tests"};
+       = {"aspectjtools", "ajdoc", "aspectj5rt", "run-all-junit-tests",
+        "ajbrowser", "testing", "testing-drivers", "org.aspectj.ajdt.core", "weaver"};
 
     private static final String SKIP_MESSAGE = 
         "BuildModuleTest: Define \"run.build.tests\" as a system "
@@ -80,12 +86,17 @@ public class BuildModuleTest extends TestCase {
         
     ArrayList tempFiles = new ArrayList();
     private File jarDir;
+    private boolean deleteJars;
     boolean building;  // must be enabled for tests to run
     
 	public BuildModuleTest(String name) {
 		super(name);
         building = Boolean.getBoolean("run.build.tests");
 	}
+    protected void setUp() {
+        // change to view whether prior output is used
+        deleteJars = true; // todo
+    }
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
@@ -123,6 +134,10 @@ public class BuildModuleTest extends TestCase {
             true); // ant needed
     }
     
+    public void testUtil() {
+        checkBuild("util");
+    }
+
     public void testAsm() {
         checkBuild("asm");
     }
@@ -135,6 +150,16 @@ public class BuildModuleTest extends TestCase {
         checkBuild("aspectj5rt"); 
     }
    
+//    public void testLocalOutOfDate() { 
+//        Messager handler = new Messager();
+//        File jarDir = new File("c:/home/ws/head/aj-build/jars");
+//        File baseDir = new File("c:/home/ws/head");
+//        Modules mods = new Modules(baseDir, jarDir, handler);
+//        Module module = mods.getModule("ajbrowser");
+//        Result r = module.getResult(Result.kind(true, true));
+//        r.outOfDate();
+//    }
+    
     public void testAjbrowser() {
         checkBuild("ajbrowser", 
             "org.aspectj.tools.ajbrowser.Main",
@@ -285,7 +310,10 @@ public class BuildModuleTest extends TestCase {
     private static String name(String module, boolean trimTesting, boolean assemble) {
         return module + (trimTesting?"":"-test") + (assemble?"-all":"");
     }
-    private static void deleteJar(File jar) {
+    private void deleteJar(File jar) {
+        if (!deleteJars) {
+            return ;
+        }
         if (jar.exists()) {
             jar.delete();
         }
@@ -345,7 +373,7 @@ public class BuildModuleTest extends TestCase {
                 assertTrue("BuildException running " + classname, false);
             }
         }
-        
+        deleteJar(jar);        
     }
 
     File doTask(String module, boolean trimTesting, boolean assembleAll) {
