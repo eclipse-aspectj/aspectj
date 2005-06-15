@@ -48,6 +48,7 @@ import org.aspectj.internal.tools.build.Result.Kind;
  * Implement Builder in Ant.
  */
 public class AntBuilder extends Builder {
+    private static final boolean FORCE_FORK_FOR_LIBRARIES = false;
 
     /**
      * Factory for a Builder.
@@ -68,7 +69,8 @@ public class AntBuilder extends Builder {
                 verbose = true;
             }
         }
-        Messager handler = new Messager(); // TODO new ProjectMessager(project);
+        //Messager handler = new Messager(); // debugging
+        Messager handler = new ProjectMessager(project);
         Builder result = new ProductBuilder(project, tempDir, useEclipseCompiles, handler);
         if (verbose) {
             result.setVerbose(true);
@@ -117,48 +119,6 @@ public class AntBuilder extends Builder {
                 }                        
             }
         }
-//    private static void edited_makeTargetsForResult(
-//            final Result result, 
-//            final Hashtable targets, 
-//            final boolean rebuild) {
-//            String resultTargetName = result.getOutputFile().getName();
-//            Target target = (Target) targets.get(resultTargetName);
-//            if (null == target) {
-//                // first add the target
-//                target = new Target();
-//                target.setName(resultTargetName);
-//                Kind kind = result.getKind();
-//                Module module = result.getModule();
-//                Kind compileKind = Result.kind(module.isNormal(), !Result.ASSEMBLE);
-//                Result compileResult = module.getResult(compileKind);
-//                Result[] req = compileResult.getRequired();
-//                StringBuffer depends = new StringBuffer();
-//                boolean first = true;
-//                for (int i = 0; i < req.length; i++) {
-//                    Result reqResult = req[i];
-//                    if (!first) {
-//                        depends.append(",");
-//                    } else {
-//                        first = false;
-//                    }
-//                    depends.append(reqResult.name);
-//                }
-//                if (0 < depends.length()) {
-//                    target.setDepends(depends.toString());
-//                }
-//                targets.put(module.name, target);
-//
-//                // then recursively add any required modules
-//                for (Iterator iterator = compileResult.getRequired().iterator();
-//                    iterator.hasNext();
-//                    ) {
-//                    Module reqModule = (Module) iterator.next();
-//                    if (rebuild || reqModule.outOfDate(kind, false)) {
-//                        makeTargetsForResult(reqModule, targets, rebuild, kind);
-//                    }                
-//                }                        
-//            }
-//        }
 
     private final Project project;
 
@@ -306,13 +266,11 @@ public class AntBuilder extends Builder {
         // -- classpath
         Path classpath = new Path(project);
         boolean hasLibraries = setupClasspath(result, classpath);
-        // need to add system classes??
-//        boolean inEclipse = true; // XXX detect, fork only in eclipse
-//        if (hasLibraries && inEclipse) { // if fork, on compiler failure, no report
-//            javac.setFork(true); // TODO XXX otherwise never releases library jars
-//        }
+        if (hasLibraries && FORCE_FORK_FOR_LIBRARIES) {
+            javac.setFork(true); // otherwise never releases library jars            
+            // can we build under 1.4, but fork javac 1.5 compile?
+        }
         // also fork if using 1.5?
-        // can we build under 1.4, but fork javac 1.5 compile?
         
         // -- set output directory
         classpath.createPathElement().setLocation(classesDir);
@@ -393,6 +351,9 @@ public class AntBuilder extends Builder {
         if (!buildingEnabled) {
             return false;
         }
+        if (!result.outOfDate()) {
+            return true;
+        }
 
         // ---- zip result up
         Zip zip = new Zip();
@@ -411,26 +372,7 @@ public class AntBuilder extends Builder {
         }
         
         final Module module = result.getModule();
-        // -- merge any merge jars
-//      TODO removing-merges
-//        List mergeJars =  result.getMerges();
-//        removeLibraryFilesToSkip(module, mergeJars);
-////        final boolean useManifest = false;
-//        if (0 < mergeJars.size()) {
-//            for (Iterator iter = mergeJars.iterator(); iter.hasNext();) {
-//                File mergeJar = (File) iter.next();
-//                zipfileset = new ZipFileSet();
-//                zipfileset.setProject(project);
-//                zipfileset.setSrc(mergeJar);
-//                zipfileset.setIncludes("**/*");
-//                zipfileset.setExcludes("META-INF/manifest.mf"); // XXXFileLiteral
-//                zipfileset.setExcludes("meta-inf/manifest.MF");
-//                zipfileset.setExcludes("META-INF/MANIFEST.mf"); 
-//                zipfileset.setExcludes("meta-inf/MANIFEST.MF");
-//                zip.addZipfileset(zipfileset);
-//            }
-//        }
-//        // merge classes; put any meta-inf/manifest.mf here
+
         File metaInfDir = new File(classesDir, "META-INF");
         Util.deleteContents(metaInfDir);
 
@@ -458,7 +400,7 @@ public class AntBuilder extends Builder {
         }
 
         try {
-            handler.log("assembling " + module  + " in " + result.getOutputFile());
+            handler.log("assemble " + module  + " in " + result.getOutputFile());
             return executeTask(zip)
                 // zip returns true when it doesn't create zipfile
                 // because there are no entries to add, so verify done
@@ -497,7 +439,7 @@ public class AntBuilder extends Builder {
         // topoSort always returns target name    
         if ((1 == size) 
             && targetName.equals(toReturn.get(0))
-            && !moduleResult.outOfDate(false)) {
+            && !moduleResult.outOfDate()) {
             return new Result[0];
         }
         return Result.getResults((String[]) toReturn.toArray(new String[0]));
@@ -507,10 +449,13 @@ public class AntBuilder extends Builder {
      * Generate Module.assembledJar with merge of itself and all antecedants
      */                    
     protected boolean assembleAll(Result result, Messager handler) {
-        //System.out.println("assembling " + result);
         if (!buildingEnabled) {
             return false;
         }
+        if (!result.outOfDate()) {
+            return true;
+        }
+        
         Util.iaxIfNull(result, "result");
         Util.iaxIfNull(handler, "handler");
         if (!result.getKind().isAssembly()) {
