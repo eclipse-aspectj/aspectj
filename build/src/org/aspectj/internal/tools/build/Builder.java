@@ -305,6 +305,10 @@ public abstract class Builder {
         }
         return noErr;
     }
+    
+    protected final boolean isLogging() {
+        return (verbose && (null != this.handler));        
+    }
 
     protected Result[] skipUptodate(Result[] results) {
         if (null == results) {
@@ -313,7 +317,7 @@ public abstract class Builder {
         Result[] done = new Result[results.length];
         int to = 0;
         for (int i = 0; i < done.length; i++) {
-            if ((null != results[i]) && results[i].outOfDate(false)) {
+            if ((null != results[i]) && results[i].outOfDate()) {
                 done[to++] = results[i];
             }
         }
@@ -338,10 +342,7 @@ public abstract class Builder {
         Result[] buildList = skipUptodate(getAntecedantResults(result));
         ArrayList doneList = new ArrayList();
         if ((null != buildList) && (0 < buildList.length)) {
-            final Modules modules = result.getModule().getModules();
-            final Messager handler = this.handler;
-            final boolean log = (verbose && (null != handler));
-            if (log) {
+            if (isLogging()) {
                 handler.log("modules to build: " + Arrays.asList(buildList));
             }
             for (int i = 0; i < buildList.length; i++) {
@@ -352,13 +353,8 @@ public abstract class Builder {
                 String requiredName = required.getName();
                 if (!doneList.contains(requiredName)) {
                     doneList.add(requiredName);
-                    if (required.outOfDate(false)) {
-                        if (log) {
-                            handler.log("building " + requiredName);
-                        }
-                        if (!buildOnly(required, errors)) {
-                            return false;
-                        }
+                    if (!buildOnly(required, errors)) {
+                        return false;
                     }
                 }
             }
@@ -376,6 +372,12 @@ public abstract class Builder {
      * @return false after successful build, when module jar should exist
      */
     protected final boolean buildOnly(Result result, List errors) {
+        if (!result.outOfDate()) {
+            return true;
+        }
+        if (isLogging()) {
+            handler.log("building " + result);
+        }
         if (!buildingEnabled) {
             return false;
         }
