@@ -46,7 +46,7 @@ public class AllTests extends TestCase {
             // with 1.5, i.e., wrong class version to load under 1.3
             // so the class name can only be used reflectively
             TestUtil.loadTestsReflectively(suite, "Aspectj5rtModuleTests", false);
-            TestUtil.loadTestsReflectively(suite, "Loadtime515ModuleTests", false);
+            TestUtil.loadTestsReflectively(suite, "Loadtime5ModuleTests", false);
         } else {
             suite.addTest(TestUtil.skipTest("for 1.5"));
         } 
