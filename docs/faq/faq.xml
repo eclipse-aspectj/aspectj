@@ -22,7 +22,7 @@
        2003-2005 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated April 12, 2005
+  <para>Last updated June 16, 2005
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -3574,22 +3574,50 @@ vmparam -Xmx384m
         </answer>
       </qandaentry>
       <qandaentry>
+        <question id="q:reflectiveCalls"
+            xreflabel="Q:Why doesn't AspectJ pick out reflective calls?">
+          <para>Why doesn't AspectJ pick out reflective calls?
+			  The pointcut <literal>call(void run())</literal> 
+			  won't pick out a call using reflection, like
+			  <literal>((Method)run).invoke(null, args)</literal>.
+          </para>
+        </question>
+        <answer>
+          <para>The pointcut 
+			  <literal>execution(void run())</literal> will
+			  work. The call pointcut doesn't work because 
+			  <literal>Method.invoke(..)</literal> is the Java method-call,
+			  and AspectJ cannot delve into the Java reflection library to
+			  implement call semantics.  To advise a reflective call
+			  (e.g., because the compiler does not control the code for the
+			  method execution), test the context for <literal>invoke(..)</literal>.
+			  Here's a pointcut that tests only if the method name is
+			  correct:
+          </para>
+          <programlisting>
+aspect A {
+    pointcut runReflectiveCall(Method run) : target(run) &amp;&amp;
+         call(Object Method.invoke(..)) &amp;&amp; if("run".equals(run.getName()));		  
+    before() : runReflectiveCall(Method) { 
+        System.out.println("before reflective call " + thisJoinPoint); 
+    }
+}
+          </programlisting>
+			        </answer>
+      </qandaentry>
+	  <qandaentry>
         <question id="q:currentbugs"
             xreflabel="Q:What are the bugs now most affecting users?">
           <para>What are the bugs now most affecting users?</para>
         </question>
         <answer>
-          <itemizedlist>
-            <listitem>
-              <para>The bugs affecting the semantics of the language
-              	are marked with the "info" keyword.  Find them with
-              	the query
-              	<ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;keywords=info">
-              		        http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;keywords=info
-              		        </ulink>
-              </para>
-            </listitem>
-          </itemizedlist>
+		  <para>The bugs affecting the semantics of the language
+			  are marked with the "info" keyword.  Find them with
+			  the query
+			  <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;keywords=info">
+						  http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;keywords=info
+						  </ulink>
+		  </para>
         </answer>
       </qandaentry>
     </qandadiv>
@@ -4281,7 +4309,27 @@ vmparam -Xmx384m
           </para>
         </answer>
       </qandaentry>
-    </qandadiv>
+      <qandaentry>
+        <question id="q:bcel"
+            xreflabel="Q:BCEL is used by AspectJ but it's not actively developed.  Will you change?">
+          <para>BCEL is used by AspectJ but it's not actively developed.  Will you change?
+          </para>
+        </question>
+        <answer>
+          <para>The AspectJ bytecode weaver has used BCEL for bytecode manipulation
+			  since its first release.  We have upgraded it extensively, to improve 
+			  performance, support Java 5, etc.  The BCEL developers have not
+			  incorporated our patches, so we continue to maintain our own version.
+			  Ours has been optimized for the AspectJ weaver and battle-hardened 
+			  over years of development and use.  At some point in the future,
+			  the AspectJ weaver might be restructured to make it easy to see 
+			  whether another bytecode package offers the same stability, 
+			  functionality, and performance, but for now we prefer using something
+			  that we know works well.
+          </para>
+        </answer>
+      </qandaentry>
+	</qandadiv>
 
     <qandadiv id="help" xreflabel="Getting Help">
       <title>Getting Help</title>
@@ -4550,9 +4598,11 @@ vmparam -Xmx384m
         <answer>
           <para>
           Entries changed recently:
-            <itemizedlist>
+            <itemizedlist> 
+        <listitem><para><xref linkend="q:bcel"/></para></listitem>
+		<listitem><para><xref linkend="q:reflectiveCalls"/></para></listitem>
         <listitem><para><xref linkend="q:java5"/></para></listitem>
-        <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
+	    <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
         <listitem><para><xref linkend="q:buildingsource"/></para></listitem>
             </itemizedlist>
           </para>
