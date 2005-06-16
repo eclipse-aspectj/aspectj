@@ -122,11 +122,18 @@
 	declared public to be overridden in any subtype or to be called 
 	from code in a later compile using the target type as a library.
   </para>
-  
+    
   <para>
     Other AspectJ implementations, indeed, future versions of ajc, may
     define <emphasis>code the implementation controls</emphasis> more
-    liberally or restrictively.
+    liberally or restrictively, so long as they comport with the Java
+	language.  For example, the <literal>call</literal> pointcut does
+	not pick out reflective calls to a method implemented in 
+	<literal>java.lang.reflect.Method.invoke(Object, Object[])</literal>.
+	Some suggest that the call "happens" and the call pointcut should
+	pick it out, but the AspectJ language shouldn't anticipate what happens
+	in code outside the control of the implementation, even when it
+	is a a well-defined API in a Java standard library.
   </para>
 
   <para>
