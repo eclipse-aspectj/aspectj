@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
+
 public class TypeX implements AnnotatedElement {
 	
 	/**
@@ -34,11 +35,13 @@ public class TypeX implements AnnotatedElement {
 	 */
 	protected String rawTypeSignature;
 	
-	/**
-	 * If this is a parameterized type, these are its parameters
-	 */
+	// It is not sufficient to say that a parameterized type with no type parameters in fact
+	// represents a raw type - a parameterized type with no type parameters can represent
+	// an inner type of a parameterized type that specifies no type parameters of its own.
 	protected TypeX[] typeParameters;
 	private boolean isParameterized = false;
+	private boolean isRawtype = false;
+	
 
 	/**
 	 * @param      signature   the bytecode string representation of this Type
@@ -194,26 +197,32 @@ public class TypeX implements AnnotatedElement {
     public static TypeX forParameterizedTypeNames(String name, String[] paramTypeNames) {
 		TypeX ret = TypeX.forName(name);
 		ret.setParameterized(true);
-		ret.typeParameters = new TypeX[paramTypeNames.length];
-		for (int i = 0; i < paramTypeNames.length; i++) {
-			ret.typeParameters[i] = TypeX.forName(paramTypeNames[i]);
+		ret.typeParameters = null;
+		if (paramTypeNames!=null) {
+			ret.typeParameters = new TypeX[paramTypeNames.length];
+			for (int i = 0; i < paramTypeNames.length; i++) {
+				ret.typeParameters[i] = TypeX.forName(paramTypeNames[i]);
+			}
 		}
 		ret.rawTypeSignature = ret.signature;
 		// sig for e.g. List<String> is Ljava/util/List<Ljava/lang/String;>;
-		StringBuffer sigAddition = new StringBuffer();
-		sigAddition.append("<");
-		for (int i = 0; i < ret.typeParameters.length; i++) {
-			sigAddition.append(ret.typeParameters[i].signature);			
+		if (ret.typeParameters!=null) {
+			StringBuffer sigAddition = new StringBuffer();
+			sigAddition.append("<");
+			for (int i = 0; i < ret.typeParameters.length; i++) {
+				sigAddition.append(ret.typeParameters[i].signature);			
+			}
+			sigAddition.append(">");
+			sigAddition.append(";");
+			ret.signature = ret.signature.substring(0,ret.signature.length()-1) + sigAddition.toString();
 		}
-		sigAddition.append(">");
-		sigAddition.append(";");
-		ret.signature = ret.signature.substring(0,ret.signature.length()-1) + sigAddition.toString();
 		return ret;
     }
 	
 	public static TypeX forRawTypeNames(String name) {
 		TypeX ret = TypeX.forName(name);
 		ret.setParameterized(true);
+		ret.setRawtype(true);
 		// FIXME asc  no need to mess up the signature is there?
 		// ret.signature = ret.signature+"#RAW";
 		return ret;
@@ -324,7 +333,10 @@ public class TypeX implements AnnotatedElement {
 		String name = getName();
 		if (isParameterized()) {
 			if (isRawType()) return name;
-			else             return name.substring(0,name.indexOf("<"));
+			else {
+				if (typeParameters==null) return name;
+				else                      return name.substring(0,name.indexOf("<"));
+			}
 		} else {
 			return name;
 		}
@@ -387,22 +399,23 @@ public class TypeX implements AnnotatedElement {
         return signature.startsWith("[");
     }
 	
-	/**
-	 * Determines if this represents a parameterized type.
-	 */
 	public final boolean isParameterized() {
 		return isParameterized;
-//		return signature.indexOf("<") != -1; 
-//		//(typeParameters != null) && (typeParameters.length > 0);
 	}
 	
 	public final boolean isRawType() { 
-	    return isParameterized && typeParameters==null;
+		return isRawtype;
+//	    return isParameterized && typeParameters==null;
 	}
 	
 	private final void setParameterized(boolean b) { 
 		isParameterized=b;
 	}
+	
+    private final void setRawtype(boolean b) {
+		isRawtype=b;
+    }
+	
 	
     
     /**

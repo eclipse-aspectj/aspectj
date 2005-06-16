@@ -180,9 +180,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void testGenerics_pr99089() {runTest("ArrayIndexOutOfBoundsException - Generics in privileged aspects");}
   
-  public void testItdGenerics_pr99228() {runTest("ITD of a field into a generic class");}
-  public void testItdGenerics_pr98320() {runTest("intertype with nested generic type");}
-  
+  public void testItdGenerics_pr99228()  {runTest("ITD of a field into a generic class");}
+  public void testItdGenerics_pr98320()  {runTest("intertype with nested generic type");}
+  public void testItdGenerics_pr100227() {runTest("inner class with generic enclosing class");}
+
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

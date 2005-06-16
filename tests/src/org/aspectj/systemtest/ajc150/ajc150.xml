@@ -2275,6 +2275,18 @@
      <compile files="PR95992.java" options="-1.5"/>
    </ajc-test>
    
+   <ajc-test dir="bugs150" pr="100227" title="inner class with generic enclosing class">
+     <compile files="pr100227.aj" options="-1.5"/>
+     <run class="pr100227">
+	     <stderr>
+	    	 <line text="Outer.Inner.inner=2"/>
+	    	 <line text="Outer.Inner.p() executing"/>
+	    	 <line text="Generic_Outer.Inner.inner=4"/>
+	    	 <line text="Generic_Outer.Inner.p() executing"/>
+	     </stderr>
+     </run>
+   </ajc-test>
+   
    // end of generic bugs
 
    // generic aspects

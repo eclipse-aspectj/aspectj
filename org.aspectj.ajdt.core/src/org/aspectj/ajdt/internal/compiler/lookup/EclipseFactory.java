@@ -199,13 +199,18 @@ public class EclipseFactory {
 				return TypeX.forRawTypeNames(getName(binding));
 			}
 			ParameterizedTypeBinding ptb = (ParameterizedTypeBinding) binding;
-			String[] arguments = new String[ptb.arguments.length];
-			for (int i = 0; i < arguments.length; i++) {
-				if (ptb.arguments[i] instanceof WildcardBinding) {
-					WildcardBinding wcb = (WildcardBinding) ptb.arguments[i];
-					arguments[i] = getName(((TypeVariableBinding)wcb.typeVariable()).firstBound);
-				}  else {
-					arguments[i] = fromBinding(ptb.arguments[i]).getName();
+			
+			String[] arguments = null;
+			
+			if (ptb.arguments!=null) { // null can mean this is an inner type of a Parameterized Type with no bounds of its own (pr100227)
+				arguments = new String[ptb.arguments.length];
+				for (int i = 0; i < arguments.length; i++) {
+					if (ptb.arguments[i] instanceof WildcardBinding) {
+						WildcardBinding wcb = (WildcardBinding) ptb.arguments[i];
+						arguments[i] = getName(((TypeVariableBinding)wcb.typeVariable()).firstBound);
+					}  else {
+						arguments[i] = fromBinding(ptb.arguments[i]).getName();
+					}
 				}
 			}
 			return TypeX.forParameterizedTypeNames(getName(binding), arguments);
