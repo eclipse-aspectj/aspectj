@@ -2287,6 +2287,11 @@
      </run>
    </ajc-test>
    
+   <ajc-test dir="bugs150" pr="100260" title="methods inherited from a generic parent">
+     <compile files="pr100260.aj" options="-1.5"/>
+     <run class="pr100260"/>
+   </ajc-test>
+   
    // end of generic bugs
 
    // generic aspects

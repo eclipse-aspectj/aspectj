@@ -183,7 +183,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testItdGenerics_pr99228()  {runTest("ITD of a field into a generic class");}
   public void testItdGenerics_pr98320()  {runTest("intertype with nested generic type");}
   public void testItdGenerics_pr100227() {runTest("inner class with generic enclosing class");}
-
+  public void testItdGenerics_pr100260() {runTest("methods inherited from a generic parent");}
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
