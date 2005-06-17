@@ -56,23 +56,23 @@ public class AjTypeTestsWithAspects extends TestCase {
 		
 		PerClause pc = perThisA.getPerClause();
 		assertEquals(PerClauseKind.PERTHIS,pc.getKind());
-		assertEquals("pc()",pc.getPointcutExpression());
+		assertEquals("pc()",pc.getPointcutExpression().toString());
 		
 		pc= perTargetA.getPerClause();
 		assertEquals(PerClauseKind.PERTARGET,pc.getKind());
-		assertEquals("pc()",pc.getPointcutExpression());
+		assertEquals("pc()",pc.getPointcutExpression().toString());
 
 		pc= perCflowA.getPerClause();
 		assertEquals(PerClauseKind.PERCFLOW,pc.getKind());
-		assertEquals("pc()",pc.getPointcutExpression());
+		assertEquals("pc()",pc.getPointcutExpression().toString());
 
 		pc= perCflowbelowA.getPerClause();
 		assertEquals(PerClauseKind.PERCFLOWBELOW,pc.getKind());
-		assertEquals("pc()",pc.getPointcutExpression());
+		assertEquals("pc()",pc.getPointcutExpression().toString());
 
 		pc= perTypeWithinA.getPerClause();
 		assertEquals(PerClauseKind.PERTYPEWITHIN,pc.getKind());
-		assertEquals("org.aspectj..*",pc.getPointcutExpression());
+		assertEquals("org.aspectj..*",pc.getPointcutExpression().toString());
 
 	}
 	
@@ -143,13 +143,13 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetDeclaredPointcut() throws Exception {
 		Pointcut p1 = sa.getDeclaredPointcut("simpleAspectMethodExecution");
 		assertEquals("simpleAspectMethodExecution",p1.getName());
-		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression());
+		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression().toString());
 		assertEquals(sa,p1.getDeclaringType());
 		assertEquals(0,p1.getParameterTypes().length);
 		assertTrue(Modifier.isPublic(p1.getModifiers()));
 		Pointcut p2 = sa.getDeclaredPointcut("simpleAspectCall");
 		assertEquals("simpleAspectCall",p2.getName());
-		assertEquals("call(* SimpleAspect.*(..))",p2.getPointcutExpression());
+		assertEquals("call(* SimpleAspect.*(..))",p2.getPointcutExpression().toString());
 		assertEquals(sa,p2.getDeclaringType());
 		assertEquals(1,p2.getParameterTypes().length);
 		assertTrue(Modifier.isPrivate(p2.getModifiers()));
@@ -164,13 +164,13 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetPointcut() throws Exception {
 		Pointcut p1 = sa.getPointcut("simpleAspectMethodExecution");
 		assertEquals("simpleAspectMethodExecution",p1.getName());
-		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression());
+		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression().toString());
 		assertEquals(sa,p1.getDeclaringType());
 		assertEquals(0,p1.getParameterTypes().length);
 		assertTrue(Modifier.isPublic(p1.getModifiers()));
 		Pointcut p2 = sa.getPointcut("simpleAspectCall");
 		assertEquals("simpleAspectCall",p2.getName());
-		assertEquals("call(* SimpleAspect.*(..))",p2.getPointcutExpression());
+		assertEquals("call(* SimpleAspect.*(..))",p2.getPointcutExpression().toString());
 		assertEquals(sa,p2.getDeclaringType());
 		assertEquals(1,p2.getParameterTypes().length);
 		assertTrue(Modifier.isPrivate(p2.getModifiers()));
@@ -212,10 +212,10 @@ public class AjTypeTestsWithAspects extends TestCase {
 		assertEquals(4,advice.length);
 
 		advice = sa.getDeclaredAdvice(AdviceType.BEFORE);
-		assertEquals("execution(* SimpleAspect.*(..))",advice[0].getPointcutExpression());
+		assertEquals("execution(* SimpleAspect.*(..))",advice[0].getPointcutExpression().toString());
 		assertEquals("logEntry",advice[0].getName());
 		assertEquals(AdviceType.BEFORE,advice[0].getKind());
-		assertEquals("execution(* SimpleAspect.*(..))",advice[1].getPointcutExpression());
+		assertEquals("execution(* SimpleAspect.*(..))",advice[1].getPointcutExpression().toString());
 		assertEquals("",advice[1].getName());
 	}
 	
@@ -304,11 +304,11 @@ public class AjTypeTestsWithAspects extends TestCase {
 			if (deow.isError()) {
 				if (deow.getMessage().equals("dont call this method code")) foundCodeError = true;
 				if (deow.getMessage().equals("dont call this method ann")) foundAnnError = true;
-				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression());
+				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression().toString());
 			} else {
 				if (deow.getMessage().equals("dont call this method code")) foundCodeWarning = true;
 				if (deow.getMessage().equals("dont call this method ann")) foundAnnWarning = true;
-				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression());				
+				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression().toString());				
 			}
 		}
 		assertTrue(foundCodeWarning && foundAnnWarning && foundCodeError && foundAnnError);

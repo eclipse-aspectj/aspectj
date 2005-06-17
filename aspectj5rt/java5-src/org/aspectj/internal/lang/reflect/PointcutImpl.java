@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 
 import org.aspectj.lang.reflect.AjType;
 import org.aspectj.lang.reflect.Pointcut;
+import org.aspectj.lang.reflect.PointcutExpression;
 
 /**
  * @author colyer
@@ -23,13 +24,13 @@ import org.aspectj.lang.reflect.Pointcut;
 public class PointcutImpl implements Pointcut {
 
 	private final String name;
-	private final String pc;
+	private final PointcutExpression pc;
 	private final Method baseMethod;
 	private final AjType declaringType;
 	
 	protected PointcutImpl(String name, String pc, Method method, AjType declaringType) {
 		this.name = name;
-		this.pc = pc;
+		this.pc = new PointcutExpressionImpl(pc);
 		this.baseMethod = method;
 		this.declaringType = declaringType;
 	}
@@ -37,7 +38,7 @@ public class PointcutImpl implements Pointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.Pointcut#getPointcutExpression()
 	 */
-	public String getPointcutExpression() {
+	public PointcutExpression getPointcutExpression() {
 		return pc;
 	}
 	

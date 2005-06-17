@@ -9,13 +9,22 @@
  * Contributors: 
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
-package org.aspectj.lang.reflect;
+package org.aspectj.internal.lang.reflect;
 
-public interface Advice {
+import org.aspectj.lang.reflect.PointcutExpression;
 
-	AdviceType getKind();
+/**
+ * @author colyer
+ *
+ */
+public class PointcutExpressionImpl implements PointcutExpression {
+	private String expression;
 	
-	String getName();
+	public PointcutExpressionImpl(String aPointcutExpression) {
+		this.expression = aPointcutExpression;
+	}
 	
-	PointcutExpression getPointcutExpression();
+	public String toString() {
+		return expression;
+	}
 }

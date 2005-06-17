@@ -16,7 +16,7 @@ package org.aspectj.lang.reflect;
  *
  */
 public interface DeclareErrorOrWarning {
-	String getPointcutExpression();
+	PointcutExpression getPointcutExpression();
 	String getMessage();
 	boolean isError();
 	

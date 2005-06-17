@@ -13,6 +13,7 @@ package org.aspectj.internal.lang.reflect;
 
 import org.aspectj.lang.reflect.PerClause;
 import org.aspectj.lang.reflect.PerClauseKind;
+import org.aspectj.lang.reflect.PointcutExpression;
 
 /**
  * @author colyer
@@ -21,11 +22,11 @@ import org.aspectj.lang.reflect.PerClauseKind;
 public class PerClauseImpl implements PerClause {
 
 	private final PerClauseKind kind;
-	private final String pointcutExpression;
+	private final PointcutExpression pointcutExpression;
 	
 	protected PerClauseImpl(PerClauseKind kind, String pointcutExpression) {
 		this.kind = kind;
-		this.pointcutExpression = pointcutExpression;
+		this.pointcutExpression = new PointcutExpressionImpl(pointcutExpression);
 	}
 	
 	/* (non-Javadoc)
@@ -38,7 +39,7 @@ public class PerClauseImpl implements PerClause {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.PerClause#getPointcutExpression()
 	 */
-	public String getPointcutExpression() {
+	public PointcutExpression getPointcutExpression() {
 		return pointcutExpression;
 	}
 

@@ -12,6 +12,7 @@
 package org.aspectj.internal.lang.reflect;
 
 import org.aspectj.lang.reflect.DeclareErrorOrWarning;
+import org.aspectj.lang.reflect.PointcutExpression;
 
 /**
  * @author colyer
@@ -19,12 +20,12 @@ import org.aspectj.lang.reflect.DeclareErrorOrWarning;
  */
 public class DeclareErrorOrWarningImpl implements DeclareErrorOrWarning {
 
-	private String pc;
+	private PointcutExpression pc;
 	private String msg;
 	private boolean isError;
 	
 	public DeclareErrorOrWarningImpl(String pointcut, String message, boolean isError) {
-		this.pc = pointcut;
+		this.pc = new PointcutExpressionImpl(pointcut);
 		this.msg = message;
 		this.isError = isError;
 	}
@@ -32,7 +33,7 @@ public class DeclareErrorOrWarningImpl implements DeclareErrorOrWarning {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.DeclareErrorOrWarning#getPointcutExpression()
 	 */
-	public String getPointcutExpression() {
+	public PointcutExpression getPointcutExpression() {
 		return pc;
 	}
 

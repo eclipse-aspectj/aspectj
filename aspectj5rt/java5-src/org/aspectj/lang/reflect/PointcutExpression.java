@@ -11,11 +11,14 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
-public interface Advice {
+/**
+ * Represents an anonymous pointcut expression as used in pointcuts, advice declarations,
+ * declares, and per-clauses
+ */
+public interface PointcutExpression {
 
-	AdviceType getKind();
-	
-	String getName();
-	
-	PointcutExpression getPointcutExpression();
+	/**
+	 * Returns a String representation of the pointcut expression 
+	 */
+	String toString();
 }
