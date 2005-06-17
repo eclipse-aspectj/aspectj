@@ -32,22 +32,17 @@
 		
 		<property name="aspectj.build.props" value=""/>
 		<property name="ant.verbose" value=""/>
-		<property name="failonerror" value="true"/>
+		<property name="failonerror" value="false"/>
 		<property name="harness.jvmline" value="-Dignore=me"/>
 
-		<property name="aspectj.workspace"
-			location="${aspectj.modules.dir}/../.."/>
-		<property name="aspectj.build.release.dir"
-			location="${aspectj.modules.build.dir}/release"/>
-		<property name="aspectj.lib.dir"
-			location="${aspectj.modules.dir}/lib"/>
 		<property name="aspectj.ant.home"
-			location="${aspectj.lib.dir}/ant"/>
+			location="${aspectj.modules.lib.dir}/ant"/>
 		<property name="aspectj.ant.lib.dir"
 			location="${aspectj.ant.home}/lib"/>
-		<property name="aj.logs.dir"
-			location="${aj.build.dir}/logs"/>
 
+		<property name="harness.jar"
+			location="${aj.jar.dir}/testing-drivers-test-all.jar"/>
+		
 		<property name="java.home.file"
 			location="${aj.build.dir}/javahome.props.tmp"/>
 
@@ -65,42 +60,32 @@
 	</target>
 	
 	<target name="all" depends="init">
-		<clean-dir dir="${aj.build.dir}"/>
-        <build-aspectj vm="${min.vm}" target="all"/>
-		<clean-dir dir="${aj.build.dir}"/>
-		<antcall target="build-install"/>
-		<antcall target="post-build"/>
-	</target>
-    
-	<target name="post-build" depends="init">
-		<antcall target="install"/>
-		<antcall target="JUnit-tests"/>
+	    <build-aspectj vm="${min.vm}" target="clean"/>
+	    <save-build-id id="min-vm-${min.vm}"/>
+	    <build-aspectj vm="${min.vm}" target="echo-properties"/>
+	    <build-aspectj vm="${min.vm}" target="all"/>
+	    <build-aspectj vm="${min.vm}" target="test-each-module"/>
 		<build-aspectj vm="${max.vm}" target="junitreport"/>
-		<antcall target="build-tests"/>
-		<antcall target="product-tests"/>
-		<antcall target="fail-if-failures"/>
-	</target>
-
-    <target name="build-install" depends="init-release-properties"
-        unless="build-install.done"
-        description="build aspectj using Java max.vm=${max.vm}">
+		<build-aspectj vm="${max.vm}" target="save-result"/>
+	    
+	    <build-aspectj vm="${max.vm}" target="clean-keep-results"/>
+	    <!-- can't use safety of build-aspectj since deleting output file -->
+		<antcall target="clean-default-results"/>
+		
+	    <save-build-id id="max-vm-${max.vm}"/>
+		<build-aspectj vm="${max.vm}" target="echo-properties"/>
 	    <build-aspectj vm="${max.vm}" target="all"/>
-        <property name="build-install.done" value="true"/>
+	    <build-aspectj vm="${max.vm}" target="test-each-module"/>
+		<build-aspectj vm="${max.vm}" target="junitreport"/>
+	    <antcall target="product-tests"/>
+		<!-- TODO re-enable antcall target="harness-tests"/ --> 
+		<build-aspectj vm="13" target="compile-runtime-11"/>
+			
+	    <build-aspectj vm="${max.vm}" target="save-result"/>
+	    
+		<antcall target="fail-if-allresults-allfailures"/>
 	</target>
-    
-    <target name="build-tests" depends="init-release-properties"
-        unless="build-test.done"
-        description="build aspectj tests using Java max.vm=${max.vm}">
-	    <antcall target="clean-jars"/>
-        <build-aspectj vm="${max.vm}" target="build-testing-jars"/>
-        <property name="build-test.done" value="true"/>
-	</target>
-
-	<target name="clean-install" depends="init-release-properties">
-	    <clean-dir dir="${aj.install.dir}"/>
-	</target>
-
-    
+          
 	<target name="install" depends="init-release-properties"
 		description="install AspectJ distribution using Java min.vm=${min.vm}">
 	    <antcall target="init-postBuild-properties"/>
@@ -119,8 +104,8 @@
 			<arg line="-to ${aj.install.dir}"/>
 		</java>
 	</target>
-	
-	<macrodef name="build-aspectj">
+    
+    <macrodef name="build-aspectj">
 	    <attribute name="target"/>
 	    <attribute name="vm"/>
 	    <sequential>
@@ -135,9 +120,16 @@
 				<param name="ant.target" value="@{target}"/>
 				<param name="ant.output" 
 					location="${aj.logs.dir}/build-@{target}"/>
-				<param name="ant.properties" value="${do.ant.props} ${aspectj.build.props}"/>
+				<param name="ant.properties" 
+				    value="${do.ant.props} ${aspectj.build.props}"/>
+				<param name="resultproperty"
+					value="@{target}.@{vm}.result"/>
 			</antcall>
-	    </sequential>
+			<echo message="1 compile-runtime-11.13.result: ${compile-runtime-11.13.result}"/>
+			<report-if-failed property="@{target}.@{vm}.result"
+				text="Build failed: build-@{target} (@{vm})"/>
+			<echo message="2 compile-runtime-11.13.result: ${compile-runtime-11.13.result}"/>
+		</sequential>
     </macrodef>
     
 	<target name="do-run-ant" depends="init-release-properties"
@@ -155,7 +147,12 @@
 		     message="failed to read ${build.java.home} from ${java.home.file}"/>
 		<fail unless="build.java.version" 
 		     message="failed to read ${build.java.version} from ${java.home.file}"/>
-
+		<available property="aspectjrt.path" 
+			value="${aj.install.dir}/lib/aspectjrt.jar"
+			file="${aj.install.dir}/lib/aspectjrt.jar"/>
+		<available property="aspectjrt.path"
+			value="${lib.test.aspectjrt.jar}" 
+			file="${lib.test.aspectjrt.jar}"/>
 		<property name="ant.output.file" 
 			location="${ant.output}-${build.java.version}.txt"/>
 		<echo>
@@ -163,23 +160,27 @@
      file/target -f ${run.ant.file} ${ant.target}
          options ${ant.verbose} ${ant.properties}
           output ${ant.output.file}
+  resultproperty ${resultproperty}
+     failonerror ${failonerror}
+  aspectjrt.path ${aspectjrt.path}
 </echo>
 
 		<java 
 			fork="true"
+			resultproperty="${resultproperty}"
+			failonerror="${failonerror}"
 			dir="${ant.dir}"
 			jvm="${build.java.command}"
 			classname="org.apache.tools.ant.Main"
 			maxmemory="350m"
-			failonerror="${failonerror}"
 			newenvironment="true"
 			output="${ant.output.file}">
 			<classpath>
-			    <!-- TODO use lib/ant-launcher.jar only? -->
+			    <!-- TODO use lib/ant-launcher.jar only? use jdk.tools.jar (version) -->
 				<fileset dir="${aspectj.ant.lib.dir}">
 					<include name="*.jar"/>
 				</fileset>
-				<pathelement location="${aspectj.lib.dir}/junit/junit.jar"/>
+				<pathelement location="${junit.jar}"/>
 				<pathelement location="${build.java.home}/lib/tools.jar"/> 
 			</classpath>
 
@@ -190,8 +191,7 @@
 				path="${aspectj.ant.home}"/>
 
 			<!-- for ajde -->
-			<sysproperty key="aspectjrt.path"
-				file="${aj.install.dir}/lib/aspectjrt.jar;${aspectj.modules.dir}/lib/test/aspectjrt.jar"/>
+			<sysproperty key="aspectjrt.path" file="${aspectjrt.path}"/>
 
 			<!-- for tests/product/build-aspectj/build.xml -->
 			<sysproperty key="ASPECTJ_MODULES"
@@ -200,6 +200,8 @@
 				file="${aj.install.dir}"/>
 			<arg line="-f ${run.ant.file} ${ant.target} ${ant.verbose} ${ant.properties}"/>
 		</java>
+		<report-if-failed property="${resultproperty}"
+			text="Build failed: ${ant.output.file}"/>
 	</target>
     
     <macrodef name="do-vm-targets">
