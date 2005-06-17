@@ -19,9 +19,8 @@
     <target name="all"     depends="aspectj">
         <antcall target="eclipse.plugins"/>
     </target>
-    <target name="rebuild" depends="clean,all"/>
     <target name="clean"   depends="clean-directories"/>
-    
+		    
     <target name="compile" depends="build-module"
     	description="compile module ${module.name} (without tests, by default)"/>
 
@@ -251,7 +250,7 @@
 	    description="run JUnit tests for each module">
 	    <subant target="test">
 	        <filelist dir="${aspectj.modules.dir}"
-	            files="${aspectj.tools.modules},${aspectj.test.modules}"/>
+	        	files="${aspectj.tools.modules},${aspectj.test.modules}"/>
 	    </subant>
 	</target>
 	                	    
@@ -306,7 +305,7 @@
            	    <fileset dir="${aspectj.modules.lib.dir}/ant/lib" 
                 	includes="ant.jar,ant-junit.jar,xml-apis.jar,xercesImpl.jar"/>
            	</classpath>
-    		<jvmarg value="-Daspectjrtpath=${aspectjrt.path}" />
+    		<jvmarg value="-Daspectjrtpath=${lib.test.aspectjrt.jar}" />
 	        <formatter type="xml"/>
 	        <batchtest todir="${dtj.dir}">
 	            <fileset dir="${modules.dir}/${module.name}/testsrc"
@@ -330,7 +329,7 @@
 	</target>
 	
     <target name="build-testing-jars" depends="init"
-		description="build harness jar from scratch">
+		description="build testing jars from scratch">
         <antcall target="build-harness-jar"/>
 	</target>
 
@@ -378,7 +377,44 @@ To use testing client jar in tests,
 	  <copy file="${aj.jar.dir}/aspectj5rt-all.jar"
 	      tofile="${aj.jar.dir}/aspectjrt.jar"/>
 	</target>
-	
+
+    <target name="compile-runtime-11" depends="init-properties"
+        description="compile runtime under 1.1 - fails, but by how much?">
+        <condition property="cr1.in13">
+            <equals arg1="1.3" arg2="${ant.java.version}"/>
+        </condition>
+		<antcall target="compile-runtime-11-flag-unless13"/>
+		<antcall target="compile-runtime-11-do-if13"/>
+    </target>
+    
+    <target name="compile-runtime-11-flag-unless13" depends="init-properties"
+    	unless="cr1.in13">
+        <echo message="Skipping compile-runtime-11 unless 1.3"/>
+    </target>
+    
+    <target name="compile-runtime-11-do-if13" depends="init-properties"
+        if="cr1.in13">
+        <mkdir dir="${aj.build.dir}/classes-1.1"/>
+        <property name="java11.classes.zip"
+            location="${java11.home}/lib/classes.zip"/>
+        <available property="classes.zip.available"
+        	file="${java11.classes.zip}"/>
+        <fail unless="classes.zip.available" message="no 1.1 bootclasspath"/>
+        <javac
+            compiler="javac1.1"
+            bootclasspath="${java11.classes.zip}"
+            source="1.3"
+            includejavaruntime="no"
+            includeantruntime="no"
+            destdir="${aj.build.dir}/classes-1.1"
+            srcdir="${aspectj.modules.dir}/runtime/src"
+            target="1.1"
+            verbose="false"
+            failonerror="true"
+            />
+       <delete dir="${aj.build.dir}/classes-1.1"/>
+    </target>
+    
     <!-- ===================================================================== -->
     <!-- boilerplate antcalls                                                  -->
     <!-- ===================================================================== -->
