@@ -10,12 +10,6 @@
 <!--     Wes Isberg     initial implementation                                 -->
 <!-- ========================================================================= -->
 <project name="release-tests" default="product-tests">
-	<target name="JUnit-tests" unless="skip.test"
-		description="run JUnit unit and compiler tests">
-	    <build-aspectj vm="${max.vm}" target="test-each-module"/>
-		<build-aspectj vm="${max.vm}" target="clean-jars"/>
-	    <build-aspectj vm="${min.vm}" target="test-each-module"/>
-	</target>
 				
 	<target name="product-tests" unless="skip.test"
 		description="run product tests">
@@ -24,10 +18,7 @@
 			
 	<target name="init-postBuild-properties" depends="init-release-properties">
 		<require-available property="aspectj.jar"
-			path="${aj.dist.dir}/aspectj-${build.version}.jar"/>
-			
-		<property name="harness.jar"
-			location="${aj.jar.dir}/testing-drivers-all.jar"/>
+			path="${aj.dist.dir}/aspectj-${build.version}.jar"/>			
     </target>
 	
 	<target name="init-sources-available" depends="init-release-properties"
@@ -51,7 +42,7 @@
 			classname="org.aspectj.testing.drivers.Harness"
 			classpath="${harness.jar}"/>
 		<fail unless="harness.available" 
-			message="harness not found - first build-tests"/>
+			message="harness not found - first build-testing"/>
 	</target>
 	
 	<target name="test-build-examples" 
@@ -139,7 +130,7 @@
 	</target>
 
 	<target name="do-test-sources-sequence">
-		<antcall target="test-harness-tests"/>
+		<antcall target="harness-tests"/>
 		<antcall target="test-junit-modules"/>
 	</target>
 
@@ -195,28 +186,16 @@
 				value="-Djavarun.fork=true -Djavarun.java=${java11.command} -Djavarun.java.home=${j11.home} -Djavarun.bootclasspath=${java11.classes.zip}"/>
 		</antcall>
 	</target>
-    
-    <target name="compile-runtime-11" depends="init-postBuild-properties"
-        description="compile runtime under 1.1 - fails, but by how much?">
-        <mkdir dir="${aj.build.dir}/classes-1.1"/>
-        <property name="j11.classes"
-            location="${j11.home}/lib/classes.zip"/>
-        <javac
-            compiler="javac1.1"
-            bootclasspath="${j11.classes}"
-            source="1.3"
-            includejavaruntime="no"
-            includeantruntime="no"
-            destdir="${aj.build.dir}/classes-1.1"
-            srcdir="${aspectj.modules.dir}/runtime/src"
-            target="1.1"
-            verbose="false"
-            failonerror="false"
-            />
-       <delete dir="${aj.build.dir}/classes-1.1"/>
-    </target>
 
-	<target name="test-harness-tests" depends="build-tests">
+    <target name="build-testing" depends="init-release-properties"
+        unless="build-testing.done"
+        description="build aspectj tests using Java max.vm=${max.vm}">
+	    <antcall target="clean-jars"/>
+        <build-aspectj vm="${max.vm}" target="build-testing-jars"/>
+        <property name="build-testing.done" value="true"/>
+	</target>
+    
+	<target name="harness-tests" depends="build-testing">
 		<!-- we could use harness variants, e.g., "-emacssym-",
 		     but separating runs puts each variant in a different 
 		     output file, which makes them easier to analyze.
