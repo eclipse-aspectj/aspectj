@@ -56,7 +56,6 @@
 			location="${java15.home}/bin/java"/>
 
         <mkdir dir="${aj.logs.dir}"/>
-		
 	</target>
 	
 	<target name="all" depends="init">
@@ -77,6 +76,7 @@
 	    <build-aspectj vm="${max.vm}" target="all"/>
 	    <build-aspectj vm="${max.vm}" target="test-each-module"/>
 		<build-aspectj vm="${max.vm}" target="junitreport"/>
+		<antcall target="install"/>
 		<antcall target="product-tests"/>
 		<!-- TODO re-enable antcall target="harness-tests"/ --> 
 		<build-aspectj vm="13" target="compile-runtime-11"/>
@@ -243,19 +243,18 @@
 		<setup-vm vm="${max.vm}"/>
 		<antcall target="${do.target}"/>
 	</target>
-
     <macrodef name="setup-vm">
         <attribute name="vm"/>
         <sequential>            
-			<property name="wjf.bjh" location="${java@{vm}.home}"/>
-			<property name="wjf.cmd" location="${wjf.bjh}/bin/java"/>
+			<property name="wjf@{vm}.bjh" location="${java@{vm}.home}"/>
+			<property name="wjf@{vm}.cmd" location="${wjf@{vm}.bjh}/bin/java"/>
             <delete file="${java.home.file}"/>
 			<propertyfile file="${java.home.file}">
 				<entry key="build.java.version" value="@{vm}"/>
-				<entry key="build.java.home" value="${wjf.bjh}"/>
-				<entry key="build.java.command" value="${wjf.cmd}"/>
+				<entry key="build.java.home" value="${wjf@{vm}.bjh}"/>
+				<entry key="build.java.command" value="${wjf@{vm}.cmd}"/>
 			</propertyfile>
         </sequential>
-    </macrodef>
+	</macrodef>
 
 </project>
