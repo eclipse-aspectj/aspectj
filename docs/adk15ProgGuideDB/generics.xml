@@ -1,4 +1,5 @@
-<!--<!DOCTYPE chapter SYSTEM "file:/C:/Documents%20and%20Settings/colyer/My%20Documents/projects/aspectjdev/lib/docbook/docbook-dtd/docbookx.dtd"> -->
+<!--<!DOCTYPE chapter SYSTEM "file:/C:/Documents%20and%20Settings/colyer/My%20Documents/projects/aspectjdev/lib/docbook/docbook-dtd/docbookx.dtd">
+-->
 <chapter id="generics" xreflabel="Generics">
 
   <title>Generics</title>
@@ -580,7 +581,8 @@
         <para>A type variable declaration list can appear following any pointcut designator except
         for <literal>handler</literal> (Java 5 does
         not permit a generic class to be a direct or indirect subtype of <literal>Throwable</literal>
-         - see JLS 8.1.2), <literal>if, cflow, cflowbelow</literal>, and the annotation pointcut designators 
+         - see JLS 8.1.2), the dynamic pointcuts <literal>this, target, args, if, cflow, cflowbelow</literal>, 
+         and the annotation pointcut designators 
         (<literal>@args, @this, @within</literal> and so on).</para>
         
     </sect3>
@@ -892,7 +894,6 @@
      
      <sect3>
         <title>Call, get and set pointcuts</title>
-     </sect3>
      
      <para>
          The <literal>call, get,</literal> and <literal>set</literal> join points can occur on the client
@@ -953,32 +954,233 @@
          </para>
          
          Some examples follow:
+
+      <variablelist>
+
+        <varlistentry>
+          <term>call(* List&lt;?&gt;.*(..))</term>
+          <listitem>
+            <para>matches a call to any method of a <literal>List&lt;?&gt;</literal> (a call where the
+            target is declared to be a <literal>List&lt;?&gt;</literal>). For example:
+            </para>
+        <programlisting><![CDATA[
+        int countItems(List<?> anyList) {
+          return anyList.size();   // matched by call(* List<?>.*(..))
+        }
+		]]></programlisting>
+
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>call&lt;T&gt;(* List&lt;T&gt;.*(..))</term>
+          <listitem>
+            <para>matches any call to an operation defined in the generic type 
+            <literal>List&lt;E&gt;</literal>. This includes calls made to <literal>List&lt;String&gt;</literal>,
+            <literal>List&lt;Number&gt;</literal>, <literal>List&lt;? super Foo&gt;</literal> and so on.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>get&lt;T&gt;(T *&lt;T extends Account&gt;.*)</term>
+          <listitem>
+            <para>matches the get of any field defined in a generic type with one type parameter that has 
+                an upper bound of <literal>Account</literal>. The field has the type of the type parameter, and
+                can be of any name. This pointcut expression matches both gets of the field within the
+                declaring type, and also gets on parameterized instances of the type.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>set(Account Foo&lt;Account&gt;.*Account)</term>
+          <listitem>
+            <para>matches the set of a field of type <literal>Account</literal>  where the target
+            is of type <literal>Foo&lt;Account&gt;</literal> and the field name ends with "Account". Does not
+            match sets of any "*Account" field occurring within the <literal>Foo</literal> type itself.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>call(* List&lt;? extends Number&gt;.add(..))</term>
+          <listitem>
+            <para>matches any call to add an element to a list of type <literal>List&lt;? extends Number&gt;</literal>.
+            Does not match calls to add elements to lists of type <literal>List&lt;Number&gt;</literal> or 
+            <literal>List&lt;Double&gt;</literal> as these are distinct types.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>call(* List&lt;Number+&gt;.add(..))</term>
+          <listitem>
+            <para>matches any call to add an element to a list of type <literal> Number</literal> or
+            any subclass of <literal>Number</literal>. For example, <literal>List&lt;Number&gt;, 
+            List&lt;Double&gt; List&lt;Float&gt;</literal>.
+            Does not match calls to add elements to lists of type <literal>List&lt;? extends Number&gt;</literal> 
+            as this is a distinct type.
+            </para>
+          </listitem>
+        </varlistentry>
+
+    </variablelist>
+     </sect3>
          
-         
-     
      <sect3>
         <title>Handler</title>
+
+      <para>
+          The Java Language Specification states that a generic class may not be a direct or indirect
+          subclass of <literal>Throwable</literal>. Therefore it is a compilation error to use a generic
+          or parameterized type pattern in a <literal>handler</literal> pointcut expression.
+      </para>
+
      </sect3>
      
      <sect3>
         <title>Runtime type matching: this, target and args</title>
-     </sect3>
      
+     <para>
+         Java 5 generics are implemented using a technique known an <emphasis>erasure</emphasis>.
+         In particular, what gets "erased" is the ability to find out the parameterized runtime type
+         of an instance of a generic type. You can ask if something is an <literal>instanceof List</literal>,
+         but not if something is an <literal>instanceof List&lt;String&gt;</literal>
+     </para>
      
+     <para>
+         The <literal>this, target</literal> and <literal>args</literal> pointcut designators all match
+         based on the runtime type of the appropriate object (this, target, or argument) at a join point. 
+         To match any parameterization of a generic type, simply use the raw type (type variables are
+         not permitted with these designators).  For example:
+      </para>
+     
+      <variablelist>
 
+        <varlistentry>
+          <term>target(List)</term>
+          <listitem>
+            <para>matches any call to an instance of <literal>List</literal> (including 
+            <literal>List&lt;String&gt;, List&lt;Number&gt;</literal>, and so on.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>args (List)</term>
+          <listitem>
+            <para>matches any join point with a single argument that is an instance of 
+            <literal>List</literal>. 
+            </para>
+          </listitem>
+        </varlistentry>
+        
+       </variablelist>
+       
+     <para>
+         To match specific parameterizations of a generic type, simply use the type that you require
+         the relevant object to be an instance of inside the pointcut expression. For example:
+         <literal>target(List&lt;String&gt;)</literal>. 
+     </para>
+     <para>
+         Recall that runtime tests to determine whether an object is an instance of a parameterized
+         type are not possible due to erasure. Therefore AspectJ matching behaviour with 
+         parameterized types for <literal>this, target</literal> and <literal>args</literal> is as follows. 
+     </para>
+     
+     <simplelist>
+         <member>If it can be statically determined that a given object will always be an instance
+         of the required type, then the pointcut expressions matches. For example, given a variable
+         <literal>bankAccounts</literal>
+         of type <literal>Set&lt;BankAccount&gt;</literal> and the pointcut expression
+         <literal>target(Set&lt;BankAccount&gt;)</literal> then any call made to
+         <literal>bankAccounts</literal> will be matched.</member>
+         <member>If it can be statically determined that a given object can never be an 
+         instance of the required type, then the pointcut expression does not match. The
+         expression <literal>target(List&lt;String&gt;)</literal>will never match a call made 
+         using a variable of type <literal>List&lt;Number&gt;</literal> (it is not possible for
+         a type to implement two different parameterizations of the same interface).</member>
+         <member>If an object <emphasis>might</emphasis> be an instance of the required
+         type in some circumstances but not in others, then since it is not possible to perform
+         the runtime test, AspectJ deems the pointcut expression to match, but issues an
+         unchecked warning. This is analogous to the behaviour of the Java compiler when
+         converting between raw and parameterized types. Given a variable of type
+         <literal>List&lt;? extends Number&gt;</literal> and a call join point with 
+         target pointcut expression <literal>target(List&lt;Double&gt;)</literal> then 
+         the expression matches but with an unchecked warning. The warning can be suppressed
+         by annotating the associated advice with either <literal>@SuppressAjWarnings</literal>
+         or <literal>@SuppressAjWarnings("unchecked")</literal>.</member>
+     </simplelist>
+     
+      <para>   
+         When using a parameterized type with the
+         <literal>this</literal> pointcut designator then a joinpoint is unambiguously 
+         matched if and only if one or more of the following conditions hold:
+     </para>
+     
+     <simplelist>
+         <member>the runtime type of the <literal>this</literal> object extends or
+         implements the parameterized type. For example, 
+         <literal>class Foo implements List&lt;String&gt;</literal> will match
+         <literal>this(List&lt;String&gt;)</literal>.</member>
+         <member>
+           The parameterized "this" type is given using a generics wildcard in the pointcut 
+           expression, and the bounds of
+           the generic runtime type of <literal>this</literal> are such that all valid parameterizations
+           are matched by the wildcard. For example, the pointcut expression 
+           <literal>this(List&lt;? extends Number&gt;)</literal> will match a <literal>this</literal>
+           object of type <literal>class Foo&lt;N extends Number&gt; implements List&lt;N&gt;</literal>,
+           but not an object of type  <literal>class Foo&lt;N&gt; implements List&lt;N&gt;</literal>.
+         </member>
+     </simplelist>
+
+      <para>
+       You've already seen some examples of using the generic wildcard <literal>?</literal>
+        in parameterized type patterns. Since <literal>this, target</literal> and 
+       <literal>args</literal> match using an instance of test, the generic wildcard can be useful in
+       specifying an acceptable range of parameterized types to match. When used in the binding
+       form, the same restrictions on operations permitted on the bound variable apply as when a 
+       method declares a parameter with a wildcard type. For example, in the advice below, it is
+       a compilation error to attemp to add an element into the list <literal>aList</literal>. 
+      </para>
 
         <programlisting><![CDATA[
-        
-          call(* List<?>.*(..))
-          call(* List<? extends Number>.*(..))
-          call(* List<? super Double>.*(..))
-          
-          this/target/args   
-          examples with "+"                
+        before(List<? extends Number> aList) : 
+          execution(* org.xyz.Foo.*(..)) && args(aList) {
+           aList.add(new Double(5.0d));  // Compilation error on this line
+        }
 		]]></programlisting>
 
+     </sect3>
+     
     <sect3>
         <title>Declaring pointcuts in generic classes</title>
+
+    <para>
+        AspectJ permits pointcuts to be declared in classes as well as aspects. A pointcut defined
+        inside a generic class may not use the type variables of the class in the pointcut expression
+        (just as static members of a generic class may not use type variables). 
+        For example:        
+     </para>
+
+        <programlisting><![CDATA[
+        public class Foo<T extends Number> {
+          
+          ...
+          
+          // Not allowed - uses T in the pointcut expression
+          public pointcut fooOperationCall(T t) : 
+             call(* Foo<T>.*(T)) && args(t);   
+            
+            
+          // permitted, but recommended to use an alternate variable name in the local 
+          // type variable declaration - e.g. execution<S>(...)
+          public pointcut fooExecution(Number n) :
+             execution<T>(* Foo<T>.*(T)) && args(n); 
+        }
+		]]></programlisting>
+
     </sect3>
 
       </sect2>
@@ -1030,8 +1232,8 @@
          
       <para>
          A generic type may be the target of an inter-type declaration, used either in its raw form or with
-         type parameters specified. If type parameters are specified, then the number of type parameters and
-         their bounds given in the inter-type declararation must be compatible with type parameter definitions in
+         type parameters specified. If type parameters are specified, then the number of type parameters given
+          must match the number of type parameters in
          the generic type declaration. Type parameter <emphasis>names</emphasis> do not have to match.
          For example, given the generic type <literal>Foo&lt;T,S extends Number&gt;</literal> then:      
       </para>    
@@ -1048,7 +1250,7 @@
         </varlistentry>
 
         <varlistentry>
-          <term>R Foo&lt;Q, R extends Number&gt;.getMagnitude() {...}</term>
+          <term>R Foo&lt;Q, R&gt;.getMagnitude() {...}</term>
           <listitem>
             <para>Declares a method <literal>getMagnitude</literal> on the generic class <literal>Foo</literal>.
             The method returns an instance of the type substituted for the second type parameter in an invocation
@@ -1058,10 +1260,11 @@
         </varlistentry>
 
         <varlistentry>
-          <term>R Foo&lt;Q, R&gt;.getMagnitude() {...}</term>
+          <term>R Foo&lt;Q, R extends Number&gt;.getMagnitude() {...}</term>
           <listitem>
-            <para>Results in a compilation error since the generic type <literal>Foo</literal> with two unbounded
-            type parameters cannot be found.
+            <para>Results in a compilation error since a bounds specification is not allowed in this
+                form of an inter-type declaration (the bounds are determined from the declaration of the
+                target type).
             </para>
           </listitem>
         </varlistentry>
@@ -1244,6 +1447,20 @@
                  * Each child has a parent
                  */
                 private P C.parent;
+
+                /**
+                  * Parents provide access to their children
+                  */
+                public List<C> P.getChildren() {
+                    return Collections.unmodifiableList(children);  
+                }
+                
+                /**
+                 * A child provides access to its parent
+                 */
+                 public P C.getParent() {
+                   return parent;
+                 }
                 
                 /**
                  * ensure bi-directional navigation on adding a child
@@ -1308,6 +1525,8 @@
         <simplelist>
             <member><literal>List&lt;ASTNode&gt; children</literal></member>
             <member><literal>ASTNode parent</literal></member>
+            <member><literal>List&lt;ASTNode&gt;getChildren()</literal></member>
+            <member><literal>ASTNode getParent()</literal></member>
             <member><literal>void addChild(ASTNode child)</literal></member>
             <member><literal>void removeChild(ASTNode child)</literal></member>
             <member><literal>void setParent(ASTNode parent)</literal></member>
@@ -1329,6 +1548,7 @@
 
         <simplelist>
             <member><literal>List&lt;File&gt; children</literal></member>
+            <member><literal>List&lt;File&gt; getChildren()</literal></member>
             <member><literal>void addChild(File child)</literal></member>
             <member><literal>void removeChild(File child)</literal></member>
         </simplelist>         
@@ -1337,6 +1557,7 @@
         
         <simplelist>
             <member><literal>Folder parent</literal></member>
+            <member><literal>Folder getParent()</literal></member>
             <member><literal>void setParent(Folder parent)</literal></member>
         </simplelist>         
          
@@ -1359,6 +1580,20 @@
                  */
                 private Parent Child.parent;
                 
+                /**
+                  * Parents provide access to their children
+                  */
+                public List<Children> Parent.getChildren() {
+                    return Collections.unmodifiableList(children);  
+                }
+                
+                /**
+                 * A child provides access to its parent
+                 */
+                 public Parent Children.getParent() {
+                   return parent;
+                 }
+                                
                 /**
                  * ensure bi-directional navigation on adding a child
                  */
