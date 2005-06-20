@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<aspectj>
+    <weaver options="-XmessageHolderClass:ataspectj.TestHelper">
+        <dump within="ataspectj.DumpTestThe*"/> 
+    </weaver>
+</aspectj>

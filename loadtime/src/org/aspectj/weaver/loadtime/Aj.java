@@ -51,9 +51,11 @@ public class Aj implements ClassPreProcessor {
         }
 
         try {
-            byte[] weaved = WeaverContainer.getWeaver(loader).weaveClass(className, bytes);
-            //FIXME AV make dump optionnal and configurable
-            __dump(className, weaved);
+            WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader);
+            byte[] weaved = weavingAdaptor.weaveClass(className, bytes);
+            if (weavingAdaptor.shouldDump(className.replace('/', '.'))) {
+                dump(className, weaved);
+            }
             return weaved;
         } catch (Throwable t) {
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
@@ -112,23 +114,22 @@ public class Aj implements ClassPreProcessor {
     }
 
     /**
-     * Dump the given bytcode in _dump/...
+     * Dump the given bytcode in _dump/... (dev mode)
      *
      * @param name
      * @param b
      * @throws Throwable
      */
-    static void __dump(String name, byte[] b) throws Throwable {
-        if (true) return;//FIXME AV have an option
+    static void dump(String name, byte[] b) throws Throwable {
         String className = name.replace('.', '/');
         final File dir;
         if (className.indexOf('/') > 0) {
-            dir = new File("_dump" + File.separator + className.substring(0, className.lastIndexOf('/')));
+            dir = new File("_ajdump" + File.separator + className.substring(0, className.lastIndexOf('/')));
         } else {
-            dir = new File("_dump");
+            dir = new File("_ajdump");
         }
         dir.mkdirs();
-        String fileName = "_dump" + File.separator + className + ".class";
+        String fileName = "_ajdump" + File.separator + className + ".class";
         FileOutputStream os = new FileOutputStream(fileName);
         os.write(b);
         os.close();

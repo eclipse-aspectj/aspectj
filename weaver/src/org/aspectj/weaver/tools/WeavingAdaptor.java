@@ -173,7 +173,7 @@ public class WeavingAdaptor {
 	 */
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
 		if (shouldWeave(name)) {
-            System.out.println("WeavingAdaptor.weaveClass " + name);
+            //System.out.println("WeavingAdaptor.weaveClass " + name);
 			info("weaving '" + name + "'");
 			bytes = getWovenBytes(name, bytes);
 		}
@@ -189,6 +189,10 @@ public class WeavingAdaptor {
     //ATAJ
     protected boolean accept(String name) {
         return true;
+    }
+
+    public boolean shouldDump(String name) {
+        return false;
     }
 
 	private boolean shouldWeaveName (String name) {

@@ -51,5 +51,13 @@
         </java>
     </target>
 
+    <target name="ltw.DumpTest">
+        <java fork="yes" classname="ataspectj.DumpTest" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop-dump.xml"/>
+        </java>
+    </target>
+
     <target name="javac.ltw" depends="compile:javac, ltw"/>
 </project>

@@ -37,7 +37,7 @@ public class DocumentParserTest extends TestCase {
 
         assertEquals("foo..bar.Goo+", def.getIncludePatterns().get(0));
         assertEquals("@Baz", def.getAspectExcludePatterns().get(0));
-
+        assertEquals("foo..*", def.getDumpPatterns().get(0));
     }
 
 }

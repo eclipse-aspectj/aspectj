@@ -46,7 +46,7 @@ weaver
     TODO: Note: the scope of the options can be ClassLoader aware but should be assumed JVM wide
 ******************************************************************************************************************************-->
 <!ELEMENT weaver (
-    (include | exclude)*
+    (include | exclude | dump)*
 )>
 <!ATTLIST weaver
     options CDATA #IMPLIED
@@ -75,6 +75,17 @@ A class must be matched by NONE of the exclude elements to be exposed to the wea
 ******************************************************************************************************************************-->
 <!ELEMENT exclude EMPTY>
 <!ATTLIST exclude
+    within CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+dump
+*********************************************************************************************************************************
+[dump] control post-weaving dump to the "./_dump" folder (debugging purpose only)
+@within defines a type pattern
+    (it is not a startWith)
+******************************************************************************************************************************-->
+<!ELEMENT dump EMPTY>
+<!ATTLIST dump
     within CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************

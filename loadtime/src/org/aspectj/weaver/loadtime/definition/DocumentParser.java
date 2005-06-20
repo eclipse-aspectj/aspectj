@@ -47,6 +47,7 @@ public class DocumentParser extends DefaultHandler {
 
     private final static String ASPECTJ_ELEMENT = "aspectj";
     private final static String WEAVER_ELEMENT = "weaver";
+    private final static String DUMP_ELEMENT = "dump";
     private final static String INCLUDE_ELEMENT = "include";
     private final static String EXCLUDE_ELEMENT = "exclude";
     private final static String OPTIONS_ATTRIBUTE = "options";
@@ -58,7 +59,6 @@ public class DocumentParser extends DefaultHandler {
     private final static String POINTCUT_ELEMENT = "pointcut";
     private final static String WITHIN_ATTRIBUTE = "within";
     private final static String EXPRESSION_ATTRIBUTE = "expression";
-
 
     private final Definition m_definition;
 
@@ -175,6 +175,11 @@ public class DocumentParser extends DefaultHandler {
             String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
             if (!isNull(typePattern)) {
                 m_definition.getExcludePatterns().add(typePattern);
+            }
+        } else if (DUMP_ELEMENT.equals(qName) && m_inWeaver) {
+            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            if (!isNull(typePattern)) {
+                m_definition.getDumpPatterns().add(typePattern);
             }
         } else if (EXCLUDE_ELEMENT.equals(qName) && m_inAspects) {
             String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);

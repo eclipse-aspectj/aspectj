@@ -485,7 +485,6 @@ public class BcelWeaver implements IWeaver {
                         int numArgs = advice.getSignature().getParameterTypes().length;
                         if (numFormals > 0) {
                             names = advice.getSignature().getParameterNames(world);
-                            System.out.println(advice.getSignature().toLongString());//AVB
                             validateBindings(newP,p,numArgs,names);
                         }
                     } else {

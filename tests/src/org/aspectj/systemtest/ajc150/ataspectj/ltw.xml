@@ -78,4 +78,12 @@
             options="-1.5 -Xreweavable"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest2" verbose="true"/>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="LTW DumpTest">
+        <compile
+            files="ataspectj/DumpTest.java,ataspectj/DumpTestTheDump.java,ataspectj/TestHelper.java"
+            options="-1.5"/>
+        <ant file="ajc-ant.xml" target="ltw.DumpTest" verbose="true"/>
+    </ajc-test>
+
 </suite>

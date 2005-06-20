@@ -66,4 +66,8 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("AjcLTW AroundInlineMungerTest2");
     }
 
+    public void testLTWDump() {
+        runTest("LTW DumpTest");
+    }
+
 }

@@ -23,6 +23,8 @@ public class Definition {
 
     private StringBuffer m_weaverOptions;
 
+    private List m_dumpPatterns;
+
     private List m_includePatterns;
 
     private List m_excludePatterns;
@@ -35,6 +37,7 @@ public class Definition {
 
     public Definition() {
         m_weaverOptions = new StringBuffer();
+        m_dumpPatterns = new ArrayList(0);
         m_includePatterns = new ArrayList(0);
         m_excludePatterns = new ArrayList(0);
         m_aspectClassNames = new ArrayList();
@@ -44,6 +47,10 @@ public class Definition {
 
     public String getWeaverOptions() {
         return m_weaverOptions.toString();
+    }
+
+    public List getDumpPatterns() {
+        return m_dumpPatterns;
     }
 
     public List getIncludePatterns() {

@@ -11,13 +11,6 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-
 import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -35,6 +28,13 @@ import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.GeneratedClassHandler;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -42,19 +42,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
     private final static String AOP_XML = "META-INF/aop.xml";
 
-    //ATAJ LTW include/exclude
+    private List m_dumpTypePattern = new ArrayList();
     private List m_includeTypePattern = new ArrayList();
     private List m_excludeTypePattern = new ArrayList();
     private List m_aspectExcludeTypePattern = new ArrayList();
-    public void addIncludeTypePattern(TypePattern typePattern) {
-        m_includeTypePattern.add(typePattern);
-    }
-    public void addExcludeTypePattern(TypePattern typePattern) {
-        m_excludeTypePattern.add(typePattern);
-    }
-    public void addAspectExcludeTypePattern(TypePattern typePattern) {
-        m_aspectExcludeTypePattern.add(typePattern);
-    }
 
     public ClassLoaderWeavingAdaptor(final ClassLoader loader) {
         super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
@@ -68,7 +59,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             public void acceptClass(String name, byte[] bytes) {
                 //TODO av make dump configurable
                 try {
-                    Aj.__dump(name, bytes);
+                    if (shouldDump(name.replace('/', '.'))) {
+                        Aj.dump(name, bytes);
+                    }
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -130,6 +123,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             registerAspectExclude(weaver, loader, definitions);
             registerAspects(weaver, loader, definitions);
             registerIncludeExclude(weaver, loader, definitions);
+            registerDump(weaver, loader, definitions);
         } catch (Exception e) {
             weaver.getWorld().getMessageHandler().handleMessage(
                     new Message("Register definition failed", IMessage.WARNING, e, null)
@@ -161,7 +155,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         world.setXlazyTjp(weaverOption.lazyTjp);
         weaver.setReweavableMode(weaverOption.reWeavable, false);
         world.setXnoInline(weaverOption.noInline);
-        world.setBehaveInJava5Way(weaverOption.java5);
+        world.setBehaveInJava5Way(weaverOption.java5);//TODO should be autodetected ?
         //TODO proceedOnError option
     }
 
@@ -227,6 +221,24 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
     }
 
+    /**
+     * Register the dump filter
+     *
+     * @param weaver
+     * @param loader
+     * @param definitions
+     */
+    private void registerDump(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+        for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
+            Definition definition = (Definition) iterator.next();
+            for (Iterator iterator1 = definition.getDumpPatterns().iterator(); iterator1.hasNext();) {
+                String dump = (String) iterator1.next();
+                TypePattern pattern = new PatternParser(dump).parseTypePattern();
+                m_dumpTypePattern.add(pattern);
+            }
+        }
+    }
+
     protected boolean accept(String className) {
         // avoid ResolvedType if not needed
         if (m_excludeTypePattern.isEmpty() && m_includeTypePattern.isEmpty()) {
@@ -244,7 +256,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         for (Iterator iterator = m_includeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
-            if (! typePattern.matchesStatically(classInfo)) {
+            if (!typePattern.matchesStatically(classInfo)) {
                 // include does not match - skip
                 return false;
             }
@@ -270,4 +282,21 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         return true;
     }
 
+    public boolean shouldDump(String className) {
+        // avoid ResolvedType if not needed
+        if (m_dumpTypePattern.isEmpty()) {
+            return false;
+        }
+        //TODO AV - optimize for className.startWith only
+        ResolvedTypeX classInfo = weaver.getWorld().getCoreType(TypeX.forName(className));
+        //dump
+        for (Iterator iterator = m_dumpTypePattern.iterator(); iterator.hasNext();) {
+            TypePattern typePattern = (TypePattern) iterator.next();
+            if (typePattern.matchesStatically(classInfo)) {
+                // dump match
+                return true;
+            }
+        }
+        return false;
+    }
 }
