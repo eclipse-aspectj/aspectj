@@ -9,10 +9,10 @@ public aspect ReferencePointcuts {
 	public static void main(String[] args) throws NoSuchPointcutException {
 		AjType myType = AjTypeSystem.getAjType(ReferencePointcuts.class);
 		Pointcut p1 = myType.getPointcut("pc1");
-		if (!p1.getPointcutExpression().equals("call(* *(..))")) 
+		if (!p1.getPointcutExpression().toString().equals("call(* *(..))")) 
 			throw new RuntimeException("unexpected pc expression: " + p1.getPointcutExpression());
 		Pointcut p2 = myType.getPointcut("pc2");
-		if (!p2.getPointcutExpression().equals("(pc1() || execution(* *(..)))")) 
+		if (!p2.getPointcutExpression().toString().equals("(pc1() || execution(* *(..)))")) 
 			throw new RuntimeException("unexpected pc expression: " + p2.getPointcutExpression());
 
 	}
