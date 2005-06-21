@@ -49,7 +49,7 @@ public class BuildModuleTest extends TestCase {
 
     private static boolean printInfoMessages = false;
     private static boolean printedMessage;
-
+    private static final boolean REMOVE_JARS_AFTER_DEBUGGING = true;
     // to just build one module verbosely
     private static final String[] DEBUGS  
         = {};
@@ -98,13 +98,17 @@ public class BuildModuleTest extends TestCase {
         deleteJars = true; // todo
     }
 
-	protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
 		super.tearDown();
-        if (debugging()) {
+        if (debugging() && !REMOVE_JARS_AFTER_DEBUGGING) {
             return;
         }
+        deleteTempFiles();
+	}
+    
+    protected void deleteTempFiles() {
         for (Iterator iter = tempFiles.iterator(); iter.hasNext();) {
-			File file = (File) iter.next();
+            File file = (File) iter.next();
             if (!Util.delete(file)) {
                 File[] list = file.listFiles();
                 if (!Util.isEmpty(list)) {                
@@ -120,10 +124,10 @@ public class BuildModuleTest extends TestCase {
                     System.err.println(sb.toString());
                 }
             }
-		}
-	}
-    
-	public void testAllJunitTests() {
+        }
+    }
+
+    public void testAllJunitTests() {
       checkBuild("run-all-junit-tests");
     }
 
@@ -159,7 +163,16 @@ public class BuildModuleTest extends TestCase {
 //        Result r = module.getResult(Result.kind(true, true));
 //        r.outOfDate();
 //    }
-    
+//    public void testAspectj5rtRequired() {
+//        File baseDir = new File("..");        
+//        Modules modules = new Modules(baseDir, getJarDir(), new Messager());
+//        Module module = modules.getModule("aspectj5rt");
+//        Result result = module.getResult(Result.kind(true, true));
+//        Result[] results = result.getRequired();
+//        System.out.println(result.toLongString());
+//        System.out.println("results: " + Arrays.asList(results));
+//        deleteTempFiles();
+//    }
     public void testAjbrowser() {
         checkBuild("ajbrowser", 
             "org.aspectj.tools.ajbrowser.Main",
@@ -240,7 +253,11 @@ public class BuildModuleTest extends TestCase {
     
     File getJarDir() {
         if (null == jarDir) {
-            jarDir = new File("tempJarDir");
+            File baseDir = new File("../aj-build/");
+            if (!baseDir.canWrite()) {
+                baseDir = new File(".");
+            }
+            jarDir = new File(baseDir, "BuildModuleTest-jars");
             tempFiles.add(jarDir);
         }
         if (!jarDir.exists()) {
@@ -336,14 +353,10 @@ public class BuildModuleTest extends TestCase {
         }
         assertTrue(null != module);
         checkJavac();
-        File jar;
-        jar = doTask(module, true, false);
-        deleteJar(jar);
-        jar = doTask(module, true, true);
-        deleteJar(jar);
-        jar = doTask(module, false, false);
-        deleteJar(jar);
-        jar = doTask(module, false, true);
+        doTask(module, true, false);
+        doTask(module, true, true);
+        doTask(module, false, false);
+        File jar = doTask(module, false, true, true);
 
         // verify if possible
         if (null != classname) {
@@ -375,8 +388,11 @@ public class BuildModuleTest extends TestCase {
         }
         deleteJar(jar);        
     }
+    void doTask(String module, boolean trimTesting, boolean assembleAll) {
+        doTask(module, trimTesting, assembleAll, false);
+    }
 
-    File doTask(String module, boolean trimTesting, boolean assembleAll) {
+    File doTask(String module, boolean trimTesting, boolean assembleAll, boolean keepJars) {
         BuildModule task = getTask(module);
         String name = name(module, trimTesting, assembleAll);
         File jar = new File(getJarDir(), name+ ".jar");
@@ -386,6 +402,9 @@ public class BuildModuleTest extends TestCase {
         if (!jar.canRead()) {
             File[] files = getJarDir().listFiles();
             fail("cannot read " + jar + " in " + Arrays.asList(files));
+        }
+        if (!keepJars && deleteJars) {
+            deleteTempFiles();
         }
         return jar;
     }
