@@ -4,7 +4,7 @@ public class Basic{
 
   public static void main(String[]argv) {
     Basic b = new Basic();
-    if (b instanceof I) throw new RuntimeException("Should implement I??");
+    if (!(b instanceof I)) throw new RuntimeException("Should implement I??");
   }
 }
 
