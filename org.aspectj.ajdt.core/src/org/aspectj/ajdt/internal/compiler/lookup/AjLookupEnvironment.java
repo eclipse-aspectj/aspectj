@@ -51,6 +51,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
@@ -286,7 +287,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
         }
 
 		if (hasPointcuts || dec instanceof AspectDeclaration) {
-        	ResolvedTypeX.Name name = (ResolvedTypeX.Name)factory.fromEclipse(sourceType);
+        	ReferenceType name = (ReferenceType)factory.fromEclipse(sourceType);
         	EclipseSourceType eclipseSourceType = (EclipseSourceType)name.getDelegate();
         	eclipseSourceType.checkPointcutDeclarations();
 		}

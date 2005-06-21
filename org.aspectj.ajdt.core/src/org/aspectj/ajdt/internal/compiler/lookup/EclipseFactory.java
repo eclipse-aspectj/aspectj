@@ -30,6 +30,7 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
@@ -463,7 +464,7 @@ public class EclipseFactory {
 	
 	public void addSourceTypeBinding(SourceTypeBinding binding) {
 		TypeDeclaration decl = binding.scope.referenceContext;
-		ResolvedTypeX.Name name = getWorld().lookupOrCreateName(TypeX.forName(getName(binding)));
+		ReferenceType name = getWorld().lookupOrCreateName(TypeX.forName(getName(binding)));
 		EclipseSourceType t = new EclipseSourceType(name, this, binding, decl);
 		name.setDelegate(t);
 		if (decl instanceof AspectDeclaration) {

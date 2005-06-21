@@ -156,14 +156,14 @@ public abstract class World implements Dump.INode {
     protected final ResolvedTypeX resolveObjectType(TypeX ty) {
 		String signature = ty.getRawTypeSignature();
 
-    	ResolvedTypeX.Name name = new ResolvedTypeX.Name(signature, this);
-    	ResolvedTypeX.ConcreteName concreteName = resolveObjectType(name);
+    	ReferenceType name = new ReferenceType(signature, this);
+    	ReferenceTypeDelegate concreteName = resolveObjectType(name);
     	if (concreteName == null) return ResolvedTypeX.MISSING;
     	name.setDelegate(concreteName);
     	return name;
     }
     
-    protected abstract ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name ty);
+    protected abstract ReferenceTypeDelegate resolveObjectType(ReferenceType ty);
     
 
     protected final boolean isCoerceableFrom(TypeX type, TypeX other) {
@@ -475,11 +475,11 @@ public abstract class World implements Dump.INode {
 		XlazyTjp = b;
 	}
 
-	public ResolvedTypeX.Name lookupOrCreateName(TypeX ty) {
+	public ReferenceType lookupOrCreateName(TypeX ty) {
 		String signature = ty.getRawTypeSignature();
-        ResolvedTypeX.Name ret = (ResolvedTypeX.Name)typeMap.get(signature);
+        ReferenceType ret = (ReferenceType)typeMap.get(signature);
         if (ret == null) {
-        	ret = new ResolvedTypeX.Name(signature, this);
+        	ret = new ReferenceType(signature, this);
         	typeMap.put(signature, ret);
         }
         

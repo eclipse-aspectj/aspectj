@@ -28,9 +28,11 @@ import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -41,7 +43,7 @@ import org.aspectj.weaver.patterns.PerClause;
 
 
 // ??? exposed for testing
-public class BcelObjectType extends ResolvedTypeX.ConcreteName {
+public class BcelObjectType extends AbstractReferenceTypeDelegate {
     private JavaClass javaClass;
     private boolean isObject = false;  // set upon construction
 	private LazyClassGen lazyClassGen = null;  // set lazily if it's an aspect
@@ -89,7 +91,7 @@ public class BcelObjectType extends ResolvedTypeX.ConcreteName {
 	
     
     // IMPORTANT! THIS DOESN'T do real work on the java class, just stores it away.
-    BcelObjectType(ResolvedTypeX.Name resolvedTypeX, JavaClass javaClass, boolean exposedToWeaver) {
+    BcelObjectType(ReferenceType resolvedTypeX, JavaClass javaClass, boolean exposedToWeaver) {
         super(resolvedTypeX, exposedToWeaver);
         this.javaClass = javaClass;
 

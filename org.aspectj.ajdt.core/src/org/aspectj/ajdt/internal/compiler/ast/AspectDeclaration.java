@@ -51,6 +51,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
@@ -82,7 +83,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	
 	public EclipseSourceType concreteName;
 	
-	public ResolvedTypeX.Name typeX;
+	public ReferenceType typeX;
 	
 	public EclipseFactory factory;  //??? should use this consistently
 

@@ -43,6 +43,8 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedTypeX;
@@ -217,7 +219,7 @@ public class BcelWorld extends World implements Repository {
     }       
 
 
-	protected ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name ty) {
+	protected ReferenceTypeDelegate resolveObjectType(ReferenceType ty) {
         String name = ty.getName();
         JavaClass jc = null;
         //UnwovenClassFile classFile = (UnwovenClassFile)sourceJavaClasses.get(name);
@@ -235,7 +237,7 @@ public class BcelWorld extends World implements Repository {
         }
 	}
 	
-	protected BcelObjectType makeBcelObjectType(ResolvedTypeX.Name resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
+	protected BcelObjectType makeBcelObjectType(ReferenceType resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
 		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc, exposedToWeaver);
 		return ret;
 	}
@@ -267,10 +269,10 @@ public class BcelWorld extends World implements Repository {
 	
 	public BcelObjectType addSourceObjectType(JavaClass jc) {
 		String signature = TypeX.forName(jc.getClassName()).getSignature();
-        ResolvedTypeX.Name nameTypeX = (ResolvedTypeX.Name)typeMap.get(signature);
+        ReferenceType nameTypeX = (ReferenceType)typeMap.get(signature);
 
         if (nameTypeX == null) {
-        	nameTypeX = new ResolvedTypeX.Name(signature, this);
+        	nameTypeX = new ReferenceType(signature, this);
         }
         BcelObjectType ret = makeBcelObjectType(nameTypeX, jc, true);
         typeMap.put(signature, nameTypeX);
@@ -411,7 +413,7 @@ public class BcelWorld extends World implements Repository {
 
 	public static BcelObjectType getBcelObjectType(ResolvedTypeX concreteAspect) {
 		//XXX need error checking
-		return (BcelObjectType) ((ResolvedTypeX.Name)concreteAspect).getDelegate();
+		return (BcelObjectType) ((ReferenceType)concreteAspect).getDelegate();
 	}
 
 	public void tidyUp() {

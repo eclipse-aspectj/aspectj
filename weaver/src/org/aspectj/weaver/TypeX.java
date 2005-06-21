@@ -40,7 +40,7 @@ public class TypeX implements AnnotatedElement {
 	// an inner type of a parameterized type that specifies no type parameters of its own.
 	protected TypeX[] typeParameters;
 	private boolean isParameterized = false;
-	private boolean isRawtype = false;
+	private boolean isRawtype = false; // TODO asc - change to isGeneric?
 	
 
 	/**

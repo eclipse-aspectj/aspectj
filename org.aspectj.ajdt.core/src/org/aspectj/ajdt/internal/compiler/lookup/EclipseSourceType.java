@@ -37,7 +37,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
  * 
  * @author Jim Hugunin
  */
-public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
+public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	private static final char[] pointcutSig = "Lorg/aspectj/lang/annotation/Pointcut;".toCharArray();
     private static final char[] aspectSig = "Lorg/aspectj/lang/annotation/Aspect;".toCharArray();
 	protected ResolvedPointcutDefinition[] declaredPointcuts = null;
@@ -58,7 +58,7 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
 		return factory;
 	}
 
-	public EclipseSourceType(ResolvedTypeX.Name resolvedTypeX, EclipseFactory factory,
+	public EclipseSourceType(ReferenceType resolvedTypeX, EclipseFactory factory,
 								SourceTypeBinding binding, TypeDeclaration declaration)
 	{
 		super(resolvedTypeX, true);
@@ -435,15 +435,15 @@ public class EclipseSourceType extends ResolvedTypeX.ConcreteName {
     }
 
 
-	protected Collection getDeclares() {
+	public Collection getDeclares() {
 		return declares;
 	}
 
-	protected Collection getPrivilegedAccesses() {
+	public Collection getPrivilegedAccesses() {
 		return Collections.EMPTY_LIST;
 	}
 
-	protected Collection getTypeMungers() {
+	public Collection getTypeMungers() {
 		return typeMungers;
 	}
 
