@@ -329,7 +329,7 @@ public class Result {
     }
 
     private void initRequiredResults() {
-        Module module = getModule();
+        final Module module = getModule();
         final Kind kind = getKind();
         if (kind.assemble) {
             if (kind.normal) {
@@ -348,18 +348,18 @@ public class Result {
         }
         // externally-required:
         List modules = module.requiredModules(this);
-        final boolean thisIsTestingModule = isTestingModule(module);
+        final boolean adoptTests = !kind.normal || isTestingModule(module);
         for (Iterator iter = modules.iterator(); iter.hasNext();) {
-            module = (Module) iter.next();
-            if (thisIsTestingModule || !kind.normal) {
+            Module required = (Module) iter.next();
+            if (adoptTests) {
                 // testing builds can rely on other release and test results
-                requiredResults.add(module.getResult(TEST));
-                requiredResults.add(module.getResult(RELEASE));
-            } else {
+                requiredResults.add(required.getResult(TEST));
+                requiredResults.add(required.getResult(RELEASE));
+            } else if (!isTestingModule(required)){
                 // release builds can only rely on non-testing results
                 // from non-testing modules
-                requiredResults.add(module.getResult(RELEASE));
-            }
+                requiredResults.add(required.getResult(RELEASE));
+            } // else skip release dependencies on testing-* (testing-util)
         }
     }
 
