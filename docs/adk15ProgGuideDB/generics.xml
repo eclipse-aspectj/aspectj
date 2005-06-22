@@ -385,7 +385,7 @@
         <varlistentry>
           <term>List&lt;E&gt;</term>
           <listitem>
-            <para>Outside of a scope in which <literal>E</literal>is defined as a type variable, this pattern matches the 
+            <para>Outside of a scope in which <literal>E</literal> is defined as a type variable, this pattern matches the 
             parameterized type <literal>List&lt;E&gt;</literal>. If <literal>E</literal> is not
             a type then an <literal>invalidAbsoluteTypeName</literal> xlint warning will be issued. 
             </para>
@@ -421,7 +421,7 @@
         <varlistentry>
           <term>List&lt;*&gt;</term>
           <listitem>
-            <para>Matches any generic or parameterized <literal>List</literal>type (<literal>List&lt;String&gt;</literal>,
+            <para>Matches any generic or parameterized <literal>List</literal> type (<literal>List&lt;String&gt;</literal>,
               <literal>List&lt;Integer&gt;</literal> and so on) with a single type parameter.
             </para>
           </listitem>
@@ -505,11 +505,6 @@
             unbounded type parameter (the pattern<literal>*&lt;T&gt;</literal>). The field may be of any name.
             </para>
           
-     <para>Matching of members of parameterized types is straightforward. For example, 
-          <literal>void List&lt;String&gt;.add(String)</literal> matches the add method in the 
-          parameterized type <literal>List&lt;String&gt;</literal>.     
-     </para>
-          
           <para>
             To match a generic <emphasis>method</emphasis> the generic method type variable
             declarations become part of the signature pattern. For example:          
@@ -555,21 +550,19 @@
          list immediately following the pointcut desginator keyword. For example:</para>
          
         <programlisting><![CDATA[
-          call<T>(* Foo<T>.*(T))
+          get<T>(Foo<T> *)
 		]]></programlisting>
          
-        <para>matches a call to a method with any name (<literal>*</literal>) declared 
-        by a generic type <literal>Foo</literal> with one unbounded type parameter. The method
-        takes one argument which is of the type of the type variable.</para>
+        <para>matches a get join point for a field with any name (<literal>*</literal>) and of
+        the generic type <literal>Foo&lt;T&gt;</literal>.</para>
         
         <para>In contrast, the pointcut</para>
         
         <programlisting><![CDATA[
-          call(* Foo<T>.*(T))
+          get(Foo<T>.*)
 		]]></programlisting>
         
-        <para>matches a call to a method with any name that takes an argument of
-        type <literal>T</literal>, where the target of the call is declared as the parameterized
+        <para>matches a get join point for a field with any name and of the parameterized
         type <literal>Foo&lt;T&gt;</literal>. If there is no type <literal>T</literal> in scope, an 
         "invalid absolute type name (T)" warning will be issued.</para>
         
@@ -752,8 +745,8 @@
 
         <para>Since there is only one generic type, <literal>NumberOperations</literal>,
         which implements a generic interface. Either of the pointcut expressions
-        <literal>execution&lt;T&gt;(* Greatest&lt;T&gt;>.*(..))</literal> or 
-        <literal>execution&lt;T&gt;(* Greatest&lt;T extends Number&gt;>.*(..))</literal> will
+        <literal>execution&lt;T&gt;(* Greatest&lt;T&gt;.*(..))</literal> or 
+        <literal>execution&lt;T&gt;(* Greatest&lt;T extends Number&gt;.*(..))</literal> will
         match the execution of <literal>greatest</literal> in this example.  Recall from 
         chapter <xref linkend="jpsigs"/> that a kinded pointcut primitive matches a join point if
         it exactly matches one of the signatures of the join point. The signatures of the
@@ -811,9 +804,8 @@
          <para>The <literal>within</literal> and <literal>withincode</literal> 
          pointcut designators both match the
          execution of join points that occur within a type or a member of a type respectively. Therefore
-         the same considerations with respect to there only being <literal>one</literal> type for
-         a generic type regardless of how many parameterizations of that type are used in a program 
-         apply.
+         the same considerations apply with respect to there only being <literal>one</literal> type for
+         a generic type regardless of how many parameterizations of that type are used in a program.
          </para>
          
          <para>The <literal>within</literal> pointcut designator can never be used in conjunction
@@ -853,7 +845,7 @@
          
          <para>The <literal>withincode</literal> designator is likewise normally used with a 
          generic type, but can be used with a parameterized interface type to match join points
-         arising from code lexically within the implementation of the interface methods in a type
+         arising from code lexically within the implementation of the interface methods, in a type
          that implements the parameterized interface.
          </para> 
 
@@ -896,9 +888,8 @@
         <title>Call, get and set pointcuts</title>
      
      <para>
-         The <literal>call, get,</literal> and <literal>set</literal> join points can occur on the client
-         side (ie. outside of the type owning the member being called, accessed, or updated) or 
-         within the type that owns the target member. The following short program demonstrates this:
+         At a <literal>call</literal> join point, the target of the call may be either a generic or
+         a parameterized type. The following short program demonstrates this:
      </para>
 
         <programlisting><![CDATA[
@@ -906,7 +897,7 @@
         
           public T timeFor;  
           
-          public Foo<T>(T aCuppa) {
+          public Foo(T aCuppa) {
                 timeFor = aCuppa;      // set-site A
           }
         
@@ -922,7 +913,7 @@
         
         public class Main {
           public static void main(String[] args) {
-            Foo<String> foos = new Foo<String>();
+            Foo<String> foos = new Foo<String>("tea");
             foos.doThis("b");  //call-site B  
             foos.doThat("c");  // call-site C
             foos.timeFor = "a cuppa"; // set-site B
@@ -932,51 +923,65 @@
 
         <para>
             We have annotated the three method call sites as call-site A, call-site B, and call-site C. 
-            Call-site A is situated within the generic type <literal>Foo&lt;T&gt;</literal> and the call
-            join point has signature <literal>public void Foo&lt;T&gt;doThat(T)</literal>. The join point
-            arising from call-site B is a client-side call join point and has the signatures
-            <literal>public void Foo&lt;String&gt;doThis(String)</literal> (from the static type of 
-            <literal>foos</literal>) <emphasis>and</emphasis>  
-            <literal>public void Foo&lt;T&gt;doThis(T)</literal>. Likewise the call join point arising from
-            call-site C has the signatures 
-            <literal>public void Foo&lt;String&gt;doThat(String)</literal> (from the static type of 
-            <literal>foos</literal>) <emphasis>and</emphasis>  
-            <literal>public void Foo&lt;T&gt;doThat(T)</literal>. A call pointcut expression matches if the
-            signature pattern exactly matches one of the signatures of the call join point.
-        </para>
-        
-        <para>
-            The signatures for get and set join points works in a similar fashion. At set-site A in the above
-            example, the set join point has signature <literal>public T Foo&lt;T&gt;.timeFor</literal>. At 
-            set-site B the set join point has signatures <literal>public T Foo&lt;T&gt;.timeFor</literal> and
-            <literal>public String Foo&lt;String&gt;.timeFor</literal>. A get or set pointcut expression
-            matches if the signature pattern exactly matches one of the signatures of the join point.
-         </para>
-         
-         Some examples follow:
+            Call-site A is situated within the generic type <literal>Foo&lt;T&gt;</literal> and 
+            the target of the call is of type <literal>Foo&lt;T&gt;</literal>. Call-sites B and C have a
+            target of type <literal>public void Foo&lt;String&gt;</literal>. However, in all three cases
+            the <emphasis>declaring type</emphasis> of the method is <literal>Foo&lt;T&gt;</literal>.
+            A <literal>call</literal> pointcut expression matches based on the declaring type of a method
+            (where specified) so all three call-sites in the above program will give rise to call join points 
+            matched by the pointcut <literal>call&lt;T&gt;(* Foo&lt;T&gt;.do*(T))</literal>, but 
+            <emphasis>none of them</emphasis> will be matched by the pointcut 
+             <literal>call(* Foo&lt;String&gt;.do*(String))</literal>.
+          </para>
+            
+          <para>Likewise both of the set join points in the above program (arising from the lines of
+            code annotated "set-site A" and "set-site B" are matched by the pointcut expression
+            <literal>set&lt;T&gt;(T Foo&lt;T&gt;.*)</literal>, but <emphasis>neither of them</emphasis> are
+            matched by the pointcut expression <literal>set(String Foo&lt;String&gt;.*)</literal>.
+          </para>
+          
+          <para>
+              Specifying a parameterized type pattern in the declaring type pattern position of a call, get or set
+              pointcut expression results in a compilation error "declaring type cannot be parameterized".
+              The <literal>call, get</literal>, and <literal>set</literal> pointcut designators can be combined with
+              <literal>target</literal> to match based on the actual (possibly parameterized) target type of the receiver.
+           </para>
+          
+          <para>
+              A field's type may be either generic or parameterized, as illustrated in the example below.
+           </para>
+
+        <programlisting><![CDATA[
+          class Farmers<F> {
+              private F aField;  // field with a generic type
+              private List<F>; // field with a generic type
+              private List<String> fieldNames;  // field with a parameterized type
+          }
+		]]></programlisting>
+            
+            <para>The get and set join points for a field declared with a generic type are
+            only matched by get and set pointcut expressions that specify a generic type pattern (or <literal>*</literal>)
+            for the field type. For example, <literal>get&lt;T&gt;(T Farmers&lt;T&gt;.aField)</literal>
+            matches a get of the field <literal>aField</literal>, whereas 
+            <literal>get(String Farmers&lt;String&gt;.aField)</literal> never does (even when the
+            target object at the join point is of type <literal>Farmers&lt;String&gt;</literal>). 
+            </para>
+            
+            <para>
+                A field with a parameterized type is matched by specifying a parameterized type
+                pattern (or <literal>*</literal>) for the field type. For example, <literal>set(List&lt;String&gt; Farmers.fieldName)</literal>.
+                The expression <literal>set&lt;T&gt;(List&lt;String&gt; Farmers&lt;T&gt;.fieldNames)</literal> would
+                also match here (but would no longer match if the <literal>Farmers</literal> type were refactored
+                to be a plain (non-generic) type).
+            </para>
 
       <variablelist>
-
-        <varlistentry>
-          <term>call(* List&lt;?&gt;.*(..))</term>
-          <listitem>
-            <para>matches a call to any method of a <literal>List&lt;?&gt;</literal> (a call where the
-            target is declared to be a <literal>List&lt;?&gt;</literal>). For example:
-            </para>
-        <programlisting><![CDATA[
-        int countItems(List<?> anyList) {
-          return anyList.size();   // matched by call(* List<?>.*(..))
-        }
-		]]></programlisting>
-
-          </listitem>
-        </varlistentry>
 
         <varlistentry>
           <term>call&lt;T&gt;(* List&lt;T&gt;.*(..))</term>
           <listitem>
             <para>matches any call to an operation defined in the generic type 
-            <literal>List&lt;E&gt;</literal>. This includes calls made to <literal>List&lt;String&gt;</literal>,
+            <literal>List&lt;E&gt;</literal>. This includes calls where the target is of type <literal>List&lt;String&gt;</literal>,
             <literal>List&lt;Number&gt;</literal>, <literal>List&lt;? super Foo&gt;</literal> and so on.
             </para>
           </listitem>
@@ -987,43 +992,50 @@
           <listitem>
             <para>matches the get of any field defined in a generic type with one type parameter that has 
                 an upper bound of <literal>Account</literal>. The field has the type of the type parameter, and
-                can be of any name. This pointcut expression matches both gets of the field within the
-                declaring type, and also gets on parameterized instances of the type.
+                can be of any name.
             </para>
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term>set(Account Foo&lt;Account&gt;.*Account)</term>
+          <term>set(List&lt;Account&gt; Foo.*Account)</term>
           <listitem>
-            <para>matches the set of a field of type <literal>Account</literal>  where the target
-            is of type <literal>Foo&lt;Account&gt;</literal> and the field name ends with "Account". Does not
-            match sets of any "*Account" field occurring within the <literal>Foo</literal> type itself.
+            <para>matches the set of a field of type <literal>List&lt;Account&gt;</literal> declared in 
+            type <literal>Foo</literal> where the field name ends with "Account". 
             </para>
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term>call(* List&lt;? extends Number&gt;.add(..))</term>
+          <term>get(List&lt;? extends Number&gt; *)</term>
           <listitem>
-            <para>matches any call to add an element to a list of type <literal>List&lt;? extends Number&gt;</literal>.
-            Does not match calls to add elements to lists of type <literal>List&lt;Number&gt;</literal> or 
+            <para>matches any get of a field of type <literal>List&lt;? extends Number&gt;</literal>.
+            Does not match gets of fields of type <literal>List&lt;Number&gt;</literal> or 
             <literal>List&lt;Double&gt;</literal> as these are distinct types.
             </para>
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term>call(* List&lt;Number+&gt;.add(..))</term>
+          <term>get(List&lt;Number+&gt; *)</term>
           <listitem>
-            <para>matches any call to add an element to a list of type <literal> Number</literal> or
+            <para>matches any get of a field of type <literal>List&lt;Number&gt;</literal> or
             any subclass of <literal>Number</literal>. For example, <literal>List&lt;Number&gt;, 
             List&lt;Double&gt; List&lt;Float&gt;</literal>.
-            Does not match calls to add elements to lists of type <literal>List&lt;? extends Number&gt;</literal> 
+            Does not match a get join point for a field of type <literal>List&lt;? extends Number&gt;</literal> 
             as this is a distinct type.
             </para>
           </listitem>
         </varlistentry>
+
+        <varlistentry>
+          <term>call(* List&lt;?&gt;.*(..))</term>
+          <listitem>
+            <para>results in a compilation error, "declaring type cannot be parameterized (List&lt;?&gt;)".
+                </para>
+          </listitem>
+        </varlistentry>
+
 
     </variablelist>
      </sect3>
@@ -1081,59 +1093,77 @@
      <para>
          To match specific parameterizations of a generic type, simply use the type that you require
          the relevant object to be an instance of inside the pointcut expression. For example:
-         <literal>target(List&lt;String&gt;)</literal>. 
+         <literal>args(List&lt;String&gt;)</literal>. 
      </para>
+     
      <para>
          Recall that runtime tests to determine whether an object is an instance of a parameterized
          type are not possible due to erasure. Therefore AspectJ matching behaviour with 
          parameterized types for <literal>this, target</literal> and <literal>args</literal> is as follows. 
      </para>
      
-     <simplelist>
-         <member>If it can be statically determined that a given object will always be an instance
-         of the required type, then the pointcut expressions matches. For example, given a variable
-         <literal>bankAccounts</literal>
-         of type <literal>Set&lt;BankAccount&gt;</literal> and the pointcut expression
-         <literal>target(Set&lt;BankAccount&gt;)</literal> then any call made to
-         <literal>bankAccounts</literal> will be matched.</member>
-         <member>If it can be statically determined that a given object can never be an 
+     <para>For a parameterized type specified in an <literal>args</literal> pointcut expression:</para>
+
+     <itemizedlist>
+         <listitem>If it can be statically determined that a given object will always be an instance
+         of the required type, then the pointcut expression matches. For example, given a method 
+         with signature <literal>void foo(Set&lt;BankAccount&gt;)</literal>
+         and the pointcut expression
+         <literal>args(Set&lt;BankAccount&gt;)</literal> then any call or execution join point 
+         for the method will be matched.</listitem>
+         <listitem>If it can be statically determined that a given object can never be an 
          instance of the required type, then the pointcut expression does not match. The
-         expression <literal>target(List&lt;String&gt;)</literal>will never match a call made 
-         using a variable of type <literal>List&lt;Number&gt;</literal> (it is not possible for
-         a type to implement two different parameterizations of the same interface).</member>
-         <member>If an object <emphasis>might</emphasis> be an instance of the required
+         expression <literal>args(List&lt;String&gt;)</literal>will never match a call or  
+         execution join point for a method taking a single argument of type <literal>List&lt;Number&gt;</literal> (it is not possible for
+         a type to implement two different parameterizations of the same interface).</listitem>
+         <listitem>If an object <emphasis>might</emphasis> be an instance of the required
          type in some circumstances but not in others, then since it is not possible to perform
          the runtime test, AspectJ deems the pointcut expression to match, but issues an
          unchecked warning. This is analogous to the behaviour of the Java compiler when
-         converting between raw and parameterized types. Given a variable of type
-         <literal>List&lt;? extends Number&gt;</literal> and a call join point with 
-         target pointcut expression <literal>target(List&lt;Double&gt;)</literal> then 
-         the expression matches but with an unchecked warning. The warning can be suppressed
+         converting between raw and parameterized types. Given a method that takes a single argument of type
+         <literal>List&lt;? extends Number&gt;</literal> and  
+         pointcut expression <literal>args(List&lt;Double&gt;)</literal> then 
+         the expression matches call and execution join points for the method, but with an unchecked warning. The warning can be suppressed
          by annotating the associated advice with either <literal>@SuppressAjWarnings</literal>
-         or <literal>@SuppressAjWarnings("unchecked")</literal>.</member>
-     </simplelist>
+         or <literal>@SuppressAjWarnings("unchecked")</literal>.</listitem>
+    </itemizedlist>
      
       <para>   
          When using a parameterized type with the
-         <literal>this</literal> pointcut designator then a joinpoint is unambiguously 
-         matched if and only if one or more of the following conditions hold:
+         <literal>this</literal> pointcut designator then a joinpoint is 
+         matched if and only if at least one of the following conditions hold:
      </para>
      
-     <simplelist>
-         <member>the runtime type of the <literal>this</literal> object extends or
-         implements the parameterized type. For example, 
-         <literal>class Foo implements List&lt;String&gt;</literal> will match
-         <literal>this(List&lt;String&gt;)</literal>.</member>
-         <member>
+     <itemizedlist>
+         <listitem>
+         the runtime type of the <literal>this</literal> object extends or
+         implements the parameterized type. For example, an object with runtime type <literal>Foo</literal>,
+         defined as  
+         <literal>class Foo implements List&lt;String&gt;</literal>, will match
+         <literal>this(List&lt;String&gt;)</literal>.</listitem>
+         <listitem>
            The parameterized "this" type is given using a generics wildcard in the pointcut 
            expression, and the bounds of
            the generic runtime type of <literal>this</literal> are such that all valid parameterizations
            are matched by the wildcard. For example, the pointcut expression 
            <literal>this(List&lt;? extends Number&gt;)</literal> will match a <literal>this</literal>
-           object of type <literal>class Foo&lt;N extends Number&gt; implements List&lt;N&gt;</literal>,
-           but not an object of type  <literal>class Foo&lt;N&gt; implements List&lt;N&gt;</literal>.
-         </member>
-     </simplelist>
+           object of type <literal>class Foo&lt;N extends Number&gt; implements List&lt;N&gt;</literal>.
+           If <emphasis>some</emphasis> parameterization may be matched by the wildcard (for 
+           example an object of type <literal>class Foo&lt;N&gt; implements List&lt;N&gt;</literal>) the pointcut
+           will match but with an unchecked warning.
+         </listitem>
+     </itemizedlist>
+
+      <para>
+        Using a parameterized type with the <literal>target</literal> pointcut designator is not supported in
+        the 1.5.0 release of AspectJ 5. If a future release of AspectJ supports this feature, the matching rules
+        will be the same as those described for <literal>args</literal>. The reason for the limitation is that
+        erasure makes it impossible in the general case to determine the parameterized target type at a call, get, or set
+        join point from Java bytecodes (only the raw type information is available). If a class file has been compiled
+        with variable debug information ("-g" or "-g:vars") then parameterized type information <emphasis>can</emphasis>
+        be recovered using a combination of data flow analysis and the local variable type table (potentially expensive). A more
+        efficient implementation would be possible for class files compiled from source by <literal>ajc</literal>.
+      </para>
 
       <para>
        You've already seen some examples of using the generic wildcard <literal>?</literal>
@@ -1142,13 +1172,13 @@
        specifying an acceptable range of parameterized types to match. When used in the binding
        form, the same restrictions on operations permitted on the bound variable apply as when a 
        method declares a parameter with a wildcard type. For example, in the advice below, it is
-       a compilation error to attemp to add an element into the list <literal>aList</literal>. 
+       a compilation error to attempt to add an element into the list <literal>aList</literal>. 
       </para>
 
         <programlisting><![CDATA[
         before(List<? extends Number> aList) : 
           execution(* org.xyz.Foo.*(..)) && args(aList) {
-           aList.add(new Double(5.0d));  // Compilation error on this line
+           aList.add(5.0d);  // Compilation error on this line
         }
 		]]></programlisting>
 
