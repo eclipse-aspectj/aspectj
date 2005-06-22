@@ -232,7 +232,7 @@ public class IdentityPointcutVisitor implements PatternNodeVisitor {
         return node;
     }
 
-	public Object visit(TypeVariable node, Object data) {
+	public Object visit(TypeVariablePattern node, Object data) {
 		return node;
 	}
 

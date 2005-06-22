@@ -1183,14 +1183,14 @@ public class PatternParser {
 	public TypeVariablePatternList maybeParseTypeVariableList() {
 		if (!maybeEat("<")) return null;
 		List typeVars = new ArrayList();
-		TypeVariable t = parseTypeVariable();
+		TypeVariablePattern t = parseTypeVariable();
 		typeVars.add(t);
 		while (maybeEat(",")) {
-			TypeVariable nextT = parseTypeVariable();
+			TypeVariablePattern nextT = parseTypeVariable();
 			typeVars.add(nextT);
 		}
 		eat(">");
-		TypeVariable[] tvs = new TypeVariable[typeVars.size()];
+		TypeVariablePattern[] tvs = new TypeVariablePattern[typeVars.size()];
 		typeVars.toArray(tvs);
 		return new TypeVariablePatternList(tvs);
 	}
@@ -1201,11 +1201,11 @@ public class PatternParser {
 		List typeVars = new ArrayList();
 		do {
 			String typeVarName = parseIdentifier();
-			TypeVariable tv = new TypeVariable(typeVarName);
+			TypeVariablePattern tv = new TypeVariablePattern(typeVarName);
 			typeVars.add(tv);
 		} while (maybeEat(","));
 		eat(">","',' or '>'");
-		TypeVariable[] tvs = new TypeVariable[typeVars.size()];
+		TypeVariablePattern[] tvs = new TypeVariablePattern[typeVars.size()];
 		typeVars.toArray(tvs);
 		return new TypeVariablePatternList(tvs);		
 	}
@@ -1223,7 +1223,7 @@ public class PatternParser {
 		return new TypePatternList(tps);		
 	}
 	
-	public TypeVariable parseTypeVariable() {
+	public TypeVariablePattern parseTypeVariable() {
 		TypePattern upperBound = null;
 		TypePattern[] additionalInterfaceBounds = null;
 		TypePattern lowerBound = null;
@@ -1235,7 +1235,7 @@ public class PatternParser {
 		} else if (maybeEatIdentifier("super")) {
 			lowerBound = parseTypePattern();
 		}
-		return new TypeVariable(typeVariableName,upperBound,additionalInterfaceBounds,lowerBound);
+		return new TypeVariablePattern(typeVariableName,upperBound,additionalInterfaceBounds,lowerBound);
 	}
 	
 	private TypePattern[] maybeParseAdditionalInterfaceBounds() {

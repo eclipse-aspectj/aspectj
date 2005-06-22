@@ -36,7 +36,7 @@ public class ScopeWithTypeVariables implements IScope {
 	 * @see org.aspectj.weaver.patterns.IScope#lookupType(java.lang.String, org.aspectj.weaver.IHasPosition)
 	 */
 	public TypeX lookupType(String name, IHasPosition location) {
-		TypeVariable typeVariableMatch = typeVariables.lookupTypeVariable(name);
+		TypeVariablePattern typeVariableMatch = typeVariables.lookupTypeVariable(name);
 		if (typeVariableMatch != null) {
 			return typeVariableMatch.resolvedType();
 		} else {

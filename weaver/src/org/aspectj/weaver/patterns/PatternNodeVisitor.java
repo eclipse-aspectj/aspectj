@@ -86,7 +86,7 @@ public interface PatternNodeVisitor {
     Object visit(NamePattern node, Object data);
     Object visit(SignaturePattern node, Object data);
     Object visit(ThrowsPattern node, Object data);
-	Object visit(TypeVariable node, Object data);
+	Object visit(TypeVariablePattern node, Object data);
 	Object visit(TypeVariablePatternList node,Object data);
 
 	// Catch-all
@@ -549,7 +549,7 @@ public interface PatternNodeVisitor {
             return null;
         }
 		
-		public Object visit(TypeVariable node, Object data) {
+		public Object visit(TypeVariablePattern node, Object data) {
 			append(node);
 			return null;
 		}

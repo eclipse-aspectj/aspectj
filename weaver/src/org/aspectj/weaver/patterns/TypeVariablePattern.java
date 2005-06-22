@@ -30,7 +30,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
  * <li>Foo&lt;T extends Bar &amp; IGoo&gt;
  * </ul>
  */
-public class TypeVariable extends PatternNode {
+public class TypeVariablePattern extends PatternNode {
 
 	private static final String anything = "?";
 	
@@ -45,7 +45,7 @@ public class TypeVariable extends PatternNode {
 	 * Create a named type variable with upper bound Object and no lower bounds.
 	 * Use this constructor for the simple "T" case
 	 */
-	public TypeVariable(String variableName) {
+	public TypeVariablePattern(String variableName) {
 		this.name = variableName;
 		this.upperBound = new ExactTypePattern(TypeX.OBJECT,false,false);
 		this.lowerBound = null;
@@ -58,14 +58,14 @@ public class TypeVariable extends PatternNode {
 	 * @param variableName
 	 * @param upperBound
 	 */
-	public TypeVariable(String variableName, TypePattern upperBound) {
+	public TypeVariablePattern(String variableName, TypePattern upperBound) {
 		this.name = variableName;
 		this.upperBound = upperBound;
 		this.lowerBound = null;
 		this.interfaceBounds = null;
 	}
 	
-	public TypeVariable(String variableName, TypePattern upperLimit, TypePattern[] interfaceBounds, TypePattern lowerBound) {
+	public TypeVariablePattern(String variableName, TypePattern upperLimit, TypePattern[] interfaceBounds, TypePattern lowerBound) {
 		this.name = variableName;
 		this.upperBound = upperLimit;
 		if (upperBound == null) upperBound = new ExactTypePattern(TypeX.OBJECT,false,false);
@@ -117,8 +117,8 @@ public class TypeVariable extends PatternNode {
 	}
 	
 	public boolean equals(Object obj) {
-		if (!(obj instanceof TypeVariable)) return false;
-		TypeVariable other = (TypeVariable) obj;
+		if (!(obj instanceof TypeVariablePattern)) return false;
+		TypeVariablePattern other = (TypeVariablePattern) obj;
 		if (!name.equals(other.name)) return false;
 		if (!upperBound.equals(other.upperBound)) return false;
 		if (lowerBound != null) {
@@ -193,8 +193,8 @@ public class TypeVariable extends PatternNode {
 		writeLocation(s);		
 	}
 	
-	public static TypeVariable read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		TypeVariable tv = null;
+	public static TypeVariablePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
+		TypeVariablePattern tv = null;
 		String name = s.readUTF();
 		TypePattern upperBound = TypePattern.read(s, context);
 		TypePattern[] additionalInterfaceBounds = null;
@@ -208,7 +208,7 @@ public class TypeVariable extends PatternNode {
 		boolean hasLowerBound = s.readBoolean();
 		TypePattern lowerBound = null;
 		if (hasLowerBound) lowerBound = TypePattern.read(s,context);
-		tv = new TypeVariable(name,upperBound,additionalInterfaceBounds,lowerBound);
+		tv = new TypeVariablePattern(name,upperBound,additionalInterfaceBounds,lowerBound);
 		tv.readLocation(context, s);
 		return tv;
 	}

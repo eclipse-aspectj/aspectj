@@ -23,19 +23,19 @@ import org.aspectj.weaver.VersionedDataInputStream;
  */
 public class TypeVariablePatternList extends PatternNode {
 
-	public static final TypeVariablePatternList EMPTY = new TypeVariablePatternList(new TypeVariable[0]);
+	public static final TypeVariablePatternList EMPTY = new TypeVariablePatternList(new TypeVariablePattern[0]);
 	
-	private TypeVariable[] patterns;
+	private TypeVariablePattern[] patterns;
 	
-	public TypeVariablePatternList(TypeVariable[] typeVars) {
+	public TypeVariablePatternList(TypeVariablePattern[] typeVars) {
 		this.patterns = typeVars;
 	}
 	
-	public TypeVariable[] getTypeVariablePatterns() {
+	public TypeVariablePattern[] getTypeVariablePatterns() {
 		return this.patterns;
 	}
 	
-	public TypeVariable lookupTypeVariable(String name) {
+	public TypeVariablePattern lookupTypeVariable(String name) {
 		for (int i = 0; i < patterns.length; i++) {
 			if (patterns[i].getName().equals(name)) {
 				return patterns[i];
@@ -56,9 +56,9 @@ public class TypeVariablePatternList extends PatternNode {
 		TypeVariablePatternList ret = EMPTY;
 		int length = s.readInt();
 		if (length > 0) {
-			TypeVariable[] patterns = new TypeVariable[length];
+			TypeVariablePattern[] patterns = new TypeVariablePattern[length];
 			for (int i = 0; i < patterns.length; i++) {
-				patterns[i] = TypeVariable.read(s,context);
+				patterns[i] = TypeVariablePattern.read(s,context);
 			}
 			ret = new TypeVariablePatternList(patterns);
 		}
