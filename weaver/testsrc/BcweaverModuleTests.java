@@ -13,10 +13,10 @@
 // default package
 
 import org.aspectj.weaver.LocaleTest;
+import org.aspectj.weaver.TypeVariableTestCase;
 import org.aspectj.weaver.tools.ToolsTests;
 
 import junit.framework.*;
-import junit.framework.Test;
 
 public class BcweaverModuleTests extends TestCase {
 
@@ -26,6 +26,7 @@ public class BcweaverModuleTests extends TestCase {
         suite.addTest(org.aspectj.weaver.BcweaverTests.suite()); 
 		suite.addTest(org.aspectj.weaver.patterns.PatternsTests.suite()); 
         suite.addTestSuite(LocaleTest.class);
+        suite.addTestSuite(TypeVariableTestCase.class);
         suite.addTest(ToolsTests.suite());
         return suite;
     }
