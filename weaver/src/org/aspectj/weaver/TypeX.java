@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002,2005
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
+ *     Andy Clement  start of generics upgrade...
  * ******************************************************************/
 
 
@@ -39,10 +40,11 @@ public class TypeX implements AnnotatedElement {
 	// represents a raw type - a parameterized type with no type parameters can represent
 	// an inner type of a parameterized type that specifies no type parameters of its own.
 	protected TypeX[] typeParameters;
+	private TypeVariable[] typeVariables;
 	private boolean isParameterized = false;
 	private boolean isRawtype = false; // TODO asc - change to isGeneric?
 	
-
+	
 	/**
 	 * @param      signature   the bytecode string representation of this Type
 	 */
@@ -189,6 +191,15 @@ public class TypeX implements AnnotatedElement {
         }
         return ret;
     }  
+	
+//	public static TypeX forGenericType(String name,TypeVariable[] tvbs) {
+//		TypeX ret = TypeX.forName(name);
+//		ret.setParameterized(false);
+//		ret.setRawType();
+//		ret.typeVariables = tvbs;
+//		ret.rawTypeSignature = ret.signature;
+//		return ret;
+//	}
 	
 	/**
 	 * Makes a parameterized type with the given name
@@ -382,12 +393,24 @@ public class TypeX implements AnnotatedElement {
 		return signature;
 	}
 	
+	//	 as in <N:java/lang/Number;>?java/lang/Object;LFoo<TN;>;
+	// so it includes the information about the type variables and then about any parameterizations of the 
+	// super class and super interfaces
+	public String getGenericSignature() {
+		throw new RuntimeException("not implemented");
+	}
+	
+	
 	/**
 	 * For parameterized types, return the signature for the raw type
 	 */
 	public String getRawTypeSignature() {
-		if (!isParameterized() || rawTypeSignature==null) { return signature; }
+		if (!isParameterized() || rawTypeSignature==null) { return signature; } // TODO asc what??
 		return rawTypeSignature;
+	}
+	
+	public TypeX getRawType() {
+		return TypeX.forSignature(getRawTypeSignature());
 	}
 
     /**
@@ -777,6 +800,7 @@ public class TypeX implements AnnotatedElement {
 				// Map<String,List<Integer>> -> Ljava/util/Map<java/lang/String;Ljava/util/List<Ljava/lang/Integer;>;>;
 				StringBuffer nameBuff = new StringBuffer();
 				boolean justSeenLeftArrowChar = false;
+				boolean justSeenTypeParameter = false;
 				boolean justSeenSemiColon= false;
 				int paramNestLevel = 0;
 				for (int i = 0 ; i < name.length(); i++) {
@@ -805,8 +829,23 @@ public class TypeX implements AnnotatedElement {
 								nameBuff.append("L");
 							}
 							break;
+						case 'T':
+							if (justSeenLeftArrowChar) {
+								justSeenLeftArrowChar = false;
+								justSeenTypeParameter = true;
+								break;
+							}
+							if (justSeenSemiColon) {
+								nameBuff.append(",");
+							} else {
+								nameBuff.append("T");
+							}
+							justSeenTypeParameter = true;
+							// type parameter
+							break;
 						default: 
 							justSeenSemiColon = false;
+							justSeenTypeParameter = false;
 							justSeenLeftArrowChar = false;
 							nameBuff.append(c);
 					}
@@ -994,8 +1033,23 @@ public class TypeX implements AnnotatedElement {
 		}
 	}
 
+	public TypeVariable[] getTypeVariables() {
+		return typeVariables;
+	}
+
 	
-	
+	public boolean isSuperTypeParameterized(TypeX superclass) {
+		throw new RuntimeException("not yet implemented");
+	}
+	boolean isSuperTypeBoundToTypeVariable(TypeX superclass) {
+		throw new RuntimeException("not yet implemented");
+	}
+	TypeX getSuperTypeParameterization(TypeX superclass) {
+		throw new RuntimeException("not yet implemented");
+	}
+	TypeVariable getSuperTypeBounds(TypeX superclass) {
+		throw new RuntimeException("not yet implemented");
+	}
 	
 	public static final String MISSING_NAME = "<missing>";
 
