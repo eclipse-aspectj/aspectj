@@ -19,6 +19,13 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.PerClause;
 
 public class ReferenceType extends ResolvedTypeX {
+	
+	/**
+	 * For parameterized types (or the raw type) - this field points to the actual
+	 * reference type from which they are derived.
+	 */
+	ReferenceType genericType = null;
+	
 	ReferenceTypeDelegate delegate = null;
 	ISourceContext sourceContext = null;
 	int startPos = 0;
@@ -28,6 +35,16 @@ public class ReferenceType extends ResolvedTypeX {
     public ReferenceType(String signature, World world) {
         super(signature, world);
     }
+	
+	public ReferenceType(ReferenceType genericType,String signature, World world) {
+		super(signature,world);
+		this.genericType=genericType;
+		setDelegate(genericType.getDelegate());
+		// TODO asc generics: for non generic types, should we hold a delegate here or just 
+		// delegate to the one on the generic type? it might let us be a little more flexible 
+		// if we do this - changing just the generic type delegate will affect all parameterized 
+		// and raw variants
+	}
         
     public final boolean isClass() {
     	return delegate.isClass();
