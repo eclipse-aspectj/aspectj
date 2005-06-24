@@ -514,4 +514,22 @@ public class TypePatternList extends PatternNode {
 		}
 		return ret;
 	}
+
+	public boolean areAllExact() {
+		for (int i = 0; i < typePatterns.length; i++) {
+			TypePattern array_element = typePatterns[i];
+			if (!(array_element instanceof ExactTypePattern)) return false;
+		}
+		return true;
+	}
+
+	public String[] maybeGetCleanNames() {
+      String[] theParamNames = new String[typePatterns.length];
+	  for (int i = 0; i < typePatterns.length; i++) {
+		TypePattern string = typePatterns[i];
+		if (!(string instanceof ExactTypePattern)) return null;
+		theParamNames[i] = ((ExactTypePattern)string).getExactType().getName();
+	  }
+	  return theParamNames;
+	}
 }
