@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.3 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.4 2005/06/26 20:27:40 acolyer Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -109,6 +109,10 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   // Annotations are collected from certain attributes, don't do it more than necessary!
   private boolean annotationsOutOfDate = true;
 
+  // state for dealing with generic signature string
+  private String signatureAttributeString = null;
+  private boolean searchedForSignatureAttribute = false;
+  
   /**
    * In cases where we go ahead and create something,
    * use the default SyntheticRepository, because we
@@ -866,4 +870,26 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 	    
     return vec.toArray();
   }
+  
+  /**
+   * Hunts for a signature attribute on the member and returns its contents.  So where the 'regular' signature
+   * may be Ljava/util/Vector; the signature attribute will tell us
+   * e.g. "<E:>Ljava/lang/Object". We can learn the type variable names, their bounds,
+   * and the true superclass and superinterface types (including any parameterizations)
+   * Coded for performance - searches for the attribute only when requested - only searches for it once.
+   */
+  public final String getGenericSignature() {
+	if (!searchedForSignatureAttribute) {
+	  boolean found=false;
+      for(int i=0; !found && i < attributes.length; i++) {
+        if(attributes[i] instanceof Signature) {
+		  signatureAttributeString = ((Signature)attributes[i]).getSignature();
+		  found=true;
+        }
+      }
+	  searchedForSignatureAttribute=true;
+	}
+	return signatureAttributeString;
+  }
+
 }
