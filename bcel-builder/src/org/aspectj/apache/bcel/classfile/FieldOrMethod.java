@@ -64,7 +64,7 @@ import java.util.List;
 /** 
  * Abstract super class for fields and methods.
  *
- * @version $Id: FieldOrMethod.java,v 1.4 2005/06/01 14:55:44 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.5 2005/06/26 20:27:23 acolyer Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends AccessFlags implements Cloneable, Node {
@@ -221,7 +221,7 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
    * to members that were declared generic.
    */
   public final String getDeclaredSignature() {
-    if (getRealSignatureFromAttribute()!=null) return getRealSignatureFromAttribute();
+    if (getGenericSignature()!=null) return getGenericSignature();
 	return getSignature();  
   }
   
@@ -284,10 +284,10 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   
   /**
    * Hunts for a signature attribute on the member and returns its contents.  So where the 'regular' signature
-   * may be (Ljava/util/Vector;)V the signature attribute may in fact say '(Ljava/util/Vector<Ljava/lang/String;>;)V'
+   * may be (Ljava/util/Vector;)V the signature attribute may in fact say 'Ljava/lang/Vector<Ljava/lang/String>;'
    * Coded for performance - searches for the attribute only when requested - only searches for it once.
    */
-  public final String getRealSignatureFromAttribute() {
+  public final String getGenericSignature() {
 	if (!searchedForSignatureAttribute) {
 	  boolean found=false;
       for(int i=0; !found && i < attributes_count; i++) {
