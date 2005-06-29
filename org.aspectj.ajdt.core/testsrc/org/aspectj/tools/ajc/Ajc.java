@@ -56,6 +56,7 @@ public class Ajc {
         // bin directories.  This means for the necessary types to be found we have to put these jars on the classpath:
 		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"bridge.jar"
         + File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"util.jar"
+		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"loadtime.jar"
 		+ File.pathSeparator+".."+File.separator+"lib"     +File.separator+"test"+File.separator+"testing-client.jar"
 		// hmmm, this next one should perhaps point to an aj-build jar...
 		+ File.pathSeparator+".."+File.separator+"lib"     +File.separator+"test"+File.separator+"aspectjrt.jar"
