@@ -163,7 +163,6 @@ public class GenericSignatureParser {
 	  
 	  private ArrayTypeSignature parseArrayTypeSignature() {
 		  // opening [ already eaten
-		  eat("["); // grammar adds another one!
 		  FieldTypeSignature fieldType = parseFieldTypeSignature(true);
 		  if (fieldType != null) {
 			  return new ArrayTypeSignature(fieldType);
@@ -273,6 +272,7 @@ public class GenericSignatureParser {
 	  }
 	  
 	  private boolean maybeEat(String token) {
+		  if (tokenStream.length <= tokenIndex) return false;
 		  if (tokenStream[tokenIndex].equals(token)) {
 			  tokenIndex++;
 			  return true;
@@ -329,6 +329,8 @@ public class GenericSignatureParser {
 					tokens.add(";");
 					break;
 				case '^':
+					if (identifier.length() > 0) tokens.add(identifier.toString());
+					identifier = new StringBuffer();
 					tokens.add("^");
 					break;
 				case '+':
@@ -350,6 +352,7 @@ public class GenericSignatureParser {
 					break;
 				case ')' :
 					tokens.add(")");
+					break;
 				case '[' :
 					tokens.add("[");
 					break;

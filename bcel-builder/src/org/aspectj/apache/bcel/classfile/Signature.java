@@ -71,7 +71,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from <em>Attribute</em> and represents a reference
  * to a <href="http://wwwipd.ira.uka.de/~pizza/gj/">GJ</a> attribute.
  *
- * @version $Id: Signature.java,v 1.4 2005/07/01 09:10:45 acolyer Exp $
+ * @version $Id: Signature.java,v 1.5 2005/07/01 11:29:54 acolyer Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -457,7 +457,7 @@ public final class Signature extends Attribute {
 	  }
   }
 
-  static class TypeVariableSignature extends FieldTypeSignature {
+  public static class TypeVariableSignature extends FieldTypeSignature {
 	  public String typeVariableName;
 	  public TypeVariableSignature(String typeVarToken) {
 		  this.typeVariableName = typeVarToken.substring(1);
@@ -468,7 +468,7 @@ public final class Signature extends Attribute {
 	  }
   }
 
-  static class ArrayTypeSignature extends FieldTypeSignature {
+  public static class ArrayTypeSignature extends FieldTypeSignature {
 	  public TypeSignature typeSig;
 	  public ArrayTypeSignature(TypeSignature aTypeSig) {
 		  this.typeSig = aTypeSig;

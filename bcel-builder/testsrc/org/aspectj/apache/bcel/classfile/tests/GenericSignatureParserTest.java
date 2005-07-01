@@ -1,12 +1,17 @@
 package org.aspectj.apache.bcel.classfile.tests;
 
+
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
 import org.aspectj.apache.bcel.classfile.Signature.ClassTypeSignature;
 import org.aspectj.apache.bcel.classfile.Signature.FieldTypeSignature;
 import org.aspectj.apache.bcel.classfile.Signature.SimpleClassTypeSignature;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
+
+import sun.reflect.generics.scope.MethodScope;
 
 import junit.framework.TestCase;
 
@@ -115,6 +120,92 @@ public class GenericSignatureParserTest extends TestCase {
 		FieldTypeSignature fsig = parser.parseAsFieldSignature("Ljava/lang/String;");
 		assertTrue("ClassTypeSignature", fsig instanceof ClassTypeSignature);
 		assertEquals("Ljava/lang/String;",fsig.toString());
+	}
+	
+	public void testFieldSignatureParsingArrayType() {
+		FieldTypeSignature fsig = parser.parseAsFieldSignature("[Ljava/lang/String;");
+		assertTrue("ArrayTypeSignature", fsig instanceof Signature.ArrayTypeSignature);
+		assertEquals("[Ljava/lang/String;",fsig.toString());		
+	}
+	
+	public void testFieldSignatureParsingTypeVariable() {
+		FieldTypeSignature fsig = parser.parseAsFieldSignature("TT;");
+		assertTrue("TypeVariableSignature",fsig instanceof Signature.TypeVariableSignature);
+		assertEquals("TT;",fsig.toString());
+	}
+	
+	public void testSimpleMethodSignatureParsing() {
+		Signature.MethodTypeSignature mSig = parser.parseAsMethodSignature("()V");
+		assertEquals("No type parameters",0,mSig.formalTypeParameters.length);
+		assertEquals("No parameters",0,mSig.parameters.length);
+		assertEquals("Void return type","V",mSig.returnType.toString());
+		assertEquals("No throws",0,mSig.throwsSignatures.length);
+	}
+	
+	public void testMethodSignatureTypeParams() {
+		Signature.MethodTypeSignature mSig = parser.parseAsMethodSignature("<T:>(TT;)V");
+		assertEquals("One type parameter",1,mSig.formalTypeParameters.length);
+		assertEquals("T",mSig.formalTypeParameters[0].identifier);
+		assertEquals("Ljava/lang/Object;",mSig.formalTypeParameters[0].classBound.toString());
+		assertEquals("One parameter",1,mSig.parameters.length);
+		assertEquals("TT;",mSig.parameters[0].toString());
+		assertEquals("Void return type","V",mSig.returnType.toString());
+		assertEquals("No throws",0,mSig.throwsSignatures.length);		
+	}
+	
+	public void testMethodSignatureGenericReturn() {
+		Signature.MethodTypeSignature mSig = parser.parseAsMethodSignature("<T:>()TT;");
+		assertEquals("One type parameter",1,mSig.formalTypeParameters.length);
+		assertEquals("T",mSig.formalTypeParameters[0].identifier);
+		assertEquals("Ljava/lang/Object;",mSig.formalTypeParameters[0].classBound.toString());
+		assertEquals("No parameters",0,mSig.parameters.length);
+		assertEquals("'T' return type","TT;",mSig.returnType.toString());
+		assertEquals("No throws",0,mSig.throwsSignatures.length);		
+	}
+	
+	public void testMethodSignatureThrows() {
+		Signature.MethodTypeSignature mSig = parser.parseAsMethodSignature("<T:>(TT;)V^Ljava/lang/Exception;^Ljava/lang/RuntimeException;");
+		assertEquals("One type parameter",1,mSig.formalTypeParameters.length);
+		assertEquals("T",mSig.formalTypeParameters[0].identifier);
+		assertEquals("Ljava/lang/Object;",mSig.formalTypeParameters[0].classBound.toString());
+		assertEquals("One parameter",1,mSig.parameters.length);
+		assertEquals("TT;",mSig.parameters[0].toString());
+		assertEquals("Void return type","V",mSig.returnType.toString());
+		assertEquals("2 throws",2,mSig.throwsSignatures.length);	
+		assertEquals("Ljava/lang/Exception;",mSig.throwsSignatures[0].toString());
+		assertEquals("Ljava/lang/RuntimeException;",mSig.throwsSignatures[1].toString());
+	}
+	
+	public void testMethodSignatureParsingInJDK() throws Exception{
+		SyntheticRepository repository = SyntheticRepository.getInstance();
+		String[] testClasses = new String[] {
+			"java.lang.Comparable",
+			"java.lang.Iterable",
+			"java.lang.Class",
+			"java.lang.Enum",
+			"java.lang.InheritableThreadLocal",
+			"java.lang.ThreadLocal",
+			"java.util.Collection",
+			"java.util.Comparator",
+			"java.util.Enumeration",
+			"java.util.Iterator",
+			"java.util.List",
+			"java.util.ListIterator",
+			"java.util.Map",
+			"java.util.Map$Entry",
+			"java.util.Queue",
+			"java.util.Set",
+			"java.util.SortedMap",
+			"java.util.SortedSet"
+		};
+		for (int i = 0; i < testClasses.length; i++) {
+			JavaClass jc = repository.loadClass(testClasses[i]);
+			Method[] methods = jc.getMethods();
+			for (int j = 0; j < methods.length; j++) {
+				String sig = methods[j].getGenericSignature();
+				if (sig != null) parser.parseAsMethodSignature(sig);
+			}
+		}		
 	}
 	
 	private void assertEquals(String[] expected, String[] actual) {
