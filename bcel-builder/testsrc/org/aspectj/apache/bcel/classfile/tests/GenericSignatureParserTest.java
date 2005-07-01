@@ -1,0 +1,154 @@
+package org.aspectj.apache.bcel.classfile.tests;
+
+import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
+import org.aspectj.apache.bcel.classfile.Signature.ClassTypeSignature;
+import org.aspectj.apache.bcel.classfile.Signature.FieldTypeSignature;
+import org.aspectj.apache.bcel.classfile.Signature.SimpleClassTypeSignature;
+import org.aspectj.apache.bcel.util.SyntheticRepository;
+
+import junit.framework.TestCase;
+
+public class GenericSignatureParserTest extends TestCase {
+
+	GenericSignatureParser parser;
+	
+	public void testSimpleTokenize() {
+		String [] tokens = parser.tokenize("Ljava/lang/String;");
+		assertEquals(new String[] {"Ljava","/","lang","/","String",";"},tokens);
+	}
+	
+	public void testTokenizeWithWildTypeArguments() {
+		String[] tokens = parser.tokenize("Ljava/lang/String<*>;");
+		assertEquals(new String[] {"Ljava","/","lang","/","String","<","*",">",";"},tokens);
+	}
+	
+	public void testTokenizeWithExtendsTypeArguments() {
+		String[] tokens = parser.tokenize("Ljava/util/List<+TE>;");
+		assertEquals(new String[] {"Ljava","/","util","/","List","<","+","TE",">",";"},tokens);
+	}
+
+	public void testTokenizeWithSuperTypeArguments() {
+		String[] tokens = parser.tokenize("Ljava/util/List<-TE>;");
+		assertEquals(new String[] {"Ljava","/","util","/","List","<","-","TE",">",";"},tokens);
+	}
+	
+	public void testTokenizeArrayType() {
+		String [] tokens = parser.tokenize("[Ljava/lang/String;");
+		assertEquals(new String[] {"[","Ljava","/","lang","/","String",";"},tokens);		
+	}
+	
+	public void testTokenizeFormalTypeParameters() {
+		String[] tokens = parser.tokenize("<T:Ljava/lang/String;:Ljava/util/Comparable;>");
+		assertEquals(new String[] {"<","T",":","Ljava","/","lang","/","String",";",":","Ljava","/","util","/","Comparable",";",">"},tokens);
+	}
+
+	public void testParseClassSignatureSimple() {
+		ClassSignature sig = parser.parseAsClassSignature("Ljava/lang/String;");
+		assertEquals("No type parameters",0,sig.formalTypeParameters.length);
+		assertEquals("No superinterfaces",0,sig.superInterfaceSignatures.length);
+		assertEquals("Ljava/lang/String;",sig.superclassSignature.classSignature);
+		SimpleClassTypeSignature outerType = sig.superclassSignature.outerType;
+		assertEquals("Ljava/lang/String;",outerType.identifier);
+		assertEquals("No type args",0,outerType.typeArguments.length);
+	}
+	
+	public void testParseClassSignatureTypeArgs() {
+		ClassSignature sig = parser.parseAsClassSignature("Ljava/util/List<+Ljava/lang/String;>;");
+		assertEquals("No type parameters",0,sig.formalTypeParameters.length);
+		assertEquals("No superinterfaces",0,sig.superInterfaceSignatures.length);
+		assertEquals("Ljava/util/List<+Ljava/lang/String;>;",sig.superclassSignature.classSignature);
+		SimpleClassTypeSignature outerType = sig.superclassSignature.outerType;
+		assertEquals("Ljava/util/List",outerType.identifier);
+		assertEquals("One type arg",1,outerType.typeArguments.length);		
+		assertTrue(outerType.typeArguments[0].isPlus);
+		assertEquals("+Ljava/lang/String;",outerType.typeArguments[0].toString());
+	}
+	
+	public void testParseClassSignatureTheFullMonty() {
+		ClassSignature sig = parser.parseAsClassSignature("<E:Ljava/lang/String;:Ljava/lang/Number<TE;>;>Ljava/util/List<TE;>;Ljava/util/Comparable<-TE;>;");
+		assertEquals("1 formal parameter",1,sig.formalTypeParameters.length);
+		assertEquals("E",sig.formalTypeParameters[0].identifier);
+		ClassTypeSignature fsig = (ClassTypeSignature) sig.formalTypeParameters[0].classBound;
+		assertEquals("Ljava/lang/String;",fsig.classSignature);
+		assertEquals("1 interface bound",1,sig.formalTypeParameters[0].interfaceBounds.length);
+		ClassTypeSignature isig = (ClassTypeSignature) sig.formalTypeParameters[0].interfaceBounds[0];
+		assertEquals("Ljava/lang/Number<TE;>;",isig.classSignature);
+		assertEquals("Ljava/util/List<TE;>;",sig.superclassSignature.classSignature);
+		assertEquals("1 type argument",1,sig.superclassSignature.outerType.typeArguments.length);
+		assertEquals("TE;",sig.superclassSignature.outerType.typeArguments[0].toString());
+		assertEquals("1 super interface",1,sig.superInterfaceSignatures.length);
+		assertEquals("Ljava/util/Comparable<-TE;>;",sig.superInterfaceSignatures[0].toString());
+	}
+	
+	public void testClassSignatureParsingInJDK() throws Exception {
+		SyntheticRepository repository = SyntheticRepository.getInstance();
+		String[] testClasses = new String[] {
+			"java.lang.Comparable",
+			"java.lang.Iterable",
+			"java.lang.Class",
+			"java.lang.Enum",
+			"java.lang.InheritableThreadLocal",
+			"java.lang.ThreadLocal",
+			"java.util.Collection",
+			"java.util.Comparator",
+			"java.util.Enumeration",
+			"java.util.Iterator",
+			"java.util.List",
+			"java.util.ListIterator",
+			"java.util.Map",
+			"java.util.Map$Entry",
+			"java.util.Queue",
+			"java.util.Set",
+			"java.util.SortedMap",
+			"java.util.SortedSet"
+		};
+		for (int i = 0; i < testClasses.length; i++) {
+			JavaClass jc = repository.loadClass(testClasses[i]);
+			String sig = jc.getGenericSignature();
+			parser.parseAsClassSignature(sig);
+		}
+	}
+	
+	public void testFieldSignatureParsingClassType() {
+		FieldTypeSignature fsig = parser.parseAsFieldSignature("Ljava/lang/String;");
+		assertTrue("ClassTypeSignature", fsig instanceof ClassTypeSignature);
+		assertEquals("Ljava/lang/String;",fsig.toString());
+	}
+	
+	private void assertEquals(String[] expected, String[] actual) {
+		if (actual.length != expected.length) {
+			int shorter = Math.min(expected.length,actual.length);
+			for (int i = 0; i < shorter; i++) {
+				if (!actual[i].equals(expected[i])) {
+					fail("Expected " + expected[i] + " at position " + i + " but found " + 
+							actual[i]);
+				}				
+			}
+			fail("Expected " + expected.length + " tokens but got " + actual.length +
+					tokensToString(actual));
+		}
+		for (int i = 0; i < actual.length; i++) {
+			if (!actual[i].equals(expected[i])) {
+				fail("Expected " + expected[i] + " at position " + i + " but found " + 
+						actual[i]);
+			}
+		}
+	}
+	
+	private String tokensToString(String[] tokens) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(tokens[0]);
+		for (int i = 1; i < tokens.length; i++) {
+			sb.append(",");
+			sb.append(tokens[i]);
+		}
+		return sb.toString();
+	}
+	
+	protected void setUp() throws Exception {
+		super.setUp();
+		parser = new GenericSignatureParser();
+	}
+}

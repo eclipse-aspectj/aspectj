@@ -58,19 +58,20 @@ package org.aspectj.apache.bcel.classfile;
  */
 
 
-import  org.aspectj.apache.bcel.Constants;
-
-import sun.reflect.generics.tree.SimpleClassTypeSignature;
-
-import  java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.aspectj.apache.bcel.Constants;
 
 /**
  * This class is derived from <em>Attribute</em> and represents a reference
  * to a <href="http://wwwipd.ira.uka.de/~pizza/gj/">GJ</a> attribute.
  *
- * @version $Id: Signature.java,v 1.3 2005/06/26 20:29:23 acolyer Exp $
+ * @version $Id: Signature.java,v 1.4 2005/07/01 09:10:45 acolyer Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -306,22 +307,136 @@ public final class Signature extends Attribute {
   // =============================================
   // AMC extensions
   
+  private ClassSignature classSig;
+  private MethodTypeSignature methodSig;
+  private FieldTypeSignature fieldSig;
+  
+  public ClassSignature asClassSignature() {
+	  if (classSig == null) {
+		  GenericSignatureParser parser = new GenericSignatureParser();
+		  classSig = parser.parseAsClassSignature(getSignature());
+	  }
+	  return classSig;
+  }
+  
+  public MethodTypeSignature asMethodTypeSignature() {
+	  if (methodSig == null) {
+		  GenericSignatureParser parser = new GenericSignatureParser();
+		  methodSig = parser.parseAsMethodSignature(getSignature());
+	  }
+	  return methodSig;	  
+  }
+  
+  public FieldTypeSignature asFieldTypeSignature() {
+	  if (fieldSig == null) {
+		  GenericSignatureParser parser = new GenericSignatureParser();
+		  fieldSig = parser.parseAsFieldSignature(getSignature());		  
+	  }
+	  return fieldSig;
+  }
+  
+  /**
+   * structure holding a parsed class signature
+   */
+  public static class ClassSignature {
+	  public FormalTypeParameter[] formalTypeParameters = new FormalTypeParameter[0];
+	  public ClassTypeSignature superclassSignature;
+	  public ClassTypeSignature[] superInterfaceSignatures = new ClassTypeSignature[0];
+	  public String toString() {
+		  StringBuffer ret = new StringBuffer();
+		  ret.append(formalTypeParameters.toString());
+		  ret.append(superclassSignature.toString());
+		  for (int i = 0; i < superInterfaceSignatures.length; i++) {
+			ret.append(superInterfaceSignatures[i].toString());
+		  }
+		  return ret.toString();
+	  }
+  }
+  
+  public static class MethodTypeSignature { 
+	  public FormalTypeParameter[] formalTypeParameters = new FormalTypeParameter[0];
+	  public TypeSignature[] parameters = new TypeSignature[0];
+	  public TypeSignature returnType;
+	  public FieldTypeSignature[] throwsSignatures = new FieldTypeSignature[0];
+	  
+	  public MethodTypeSignature(
+			  FormalTypeParameter[] aFormalParameterList,
+			  TypeSignature[] aParameterList,
+			  TypeSignature aReturnType,
+			  FieldTypeSignature[] aThrowsSignatureList
+	  		) {
+		  this.formalTypeParameters = aFormalParameterList;
+		  this.parameters = aParameterList;
+		  this.returnType = aReturnType;
+		  this.throwsSignatures = aThrowsSignatureList;
+	  }
+	  
+	  public String toString() {
+		  StringBuffer sb = new StringBuffer();
+		  if (formalTypeParameters.length > 0) {
+			  sb.append("<");
+			  for (int i = 0; i < formalTypeParameters.length; i++) {
+				  sb.append(formalTypeParameters[i].toString());
+			  }
+			  sb.append(">");
+		  }
+		  sb.append("(");
+		  for (int i = 0; i < parameters.length; i++) {
+			  sb.append(parameters[i].toString());
+		  }
+		  sb.append(")");
+		  sb.append(returnType.toString());
+		  for (int i = 0; i < throwsSignatures.length; i++) {
+			  sb.append("^");
+			  sb.append(throwsSignatures[i].toString());
+		  }
+		  return sb.toString();
+	  }
+  }
+  
   /**
    * structure capturing a FormalTypeParameter from the Signature grammar
    */
-  static class FormalTypeParameter {
-	  String identifier;
-	  FieldTypeSignature classBound;
-	  FieldTypeSignature[] interfaceBounds;
+  public static class FormalTypeParameter {
+	  public String identifier;
+	  public FieldTypeSignature classBound;
+	  public FieldTypeSignature[] interfaceBounds;
+	  public String toString() {
+		  StringBuffer ret =  new StringBuffer();
+		  ret.append("T");
+		  ret.append(identifier);
+		  ret.append(":");
+		  ret.append(classBound.toString());
+		  for (int i = 0; i < interfaceBounds.length; i++) {
+			ret.append(":");
+			ret.append(interfaceBounds[i].toString());
+		  }
+		  return ret.toString();
+	  }
   }
   
-  static abstract class FieldTypeSignature {
-	  boolean isClassTypeSignature() { return false; }
-	  boolean isTypeVariableSignature() { return false; }
-	  boolean isArrayTypeSignature() { return false; }
+  public static abstract class TypeSignature {
+	  public boolean isBaseType() { return false; }
   }
   
-  static class ClassTypeSignature extends FieldTypeSignature {
+  public static class BaseTypeSignature extends TypeSignature {
+	  private String sig;
+	  public BaseTypeSignature(String aPrimitiveType) {
+		  sig = aPrimitiveType;
+	  }
+	  public boolean isBaseType() { return true; }
+	  public String toString() {
+		  return sig;
+	  }
+  }
+  
+  public static abstract class FieldTypeSignature extends TypeSignature {
+	  public boolean isClassTypeSignature() { return false; }
+	  public boolean isTypeVariableSignature() { return false; }
+	  public boolean isArrayTypeSignature() { return false; }
+  }
+  
+  public static class ClassTypeSignature extends FieldTypeSignature {
 	  public String classSignature;
 	  public SimpleClassTypeSignature outerType;
 	  public SimpleClassTypeSignature[] nestedTypes; 
@@ -335,7 +450,11 @@ public final class Signature extends Attribute {
 		  this.outerType = outer;
 		  this.nestedTypes = inners;
 	  }
-	  boolean isClassTypeSignature() { return true; }
+	  public boolean isClassTypeSignature() { return true; }
+	  
+	  public String toString() {
+		  return classSignature;
+	  }
   }
 
   static class TypeVariableSignature extends FieldTypeSignature {
@@ -343,25 +462,24 @@ public final class Signature extends Attribute {
 	  public TypeVariableSignature(String typeVarToken) {
 		  this.typeVariableName = typeVarToken.substring(1);
 	  }
-	  boolean isTypeVariableSignature() { return true; }
+	  public boolean isTypeVariableSignature() { return true; }
+	  public String toString() {
+		  return "T" + typeVariableName + ";";
+	  }
   }
 
   static class ArrayTypeSignature extends FieldTypeSignature {
-	  public FieldTypeSignature fieldTypeSig;
-	  public String baseTypeSig;
-	  public boolean isBaseTypeArray;
-	  public ArrayTypeSignature(FieldTypeSignature aFieldSig) {
-		  this.fieldTypeSig = aFieldSig;
-		  isBaseTypeArray = false;
+	  public TypeSignature typeSig;
+	  public ArrayTypeSignature(TypeSignature aTypeSig) {
+		  this.typeSig = aTypeSig;
 	  }
-	  public ArrayTypeSignature(String aBaseType) {
-		  this.baseTypeSig = aBaseType;
-		  isBaseTypeArray = true;
+	  public boolean isArrayTypeSignature() { return true; }
+	  public String toString() {
+		  return "[" + typeSig.toString();
 	  }
-	  boolean isArrayTypeSignature() { return true; }
   }
 
-  static class SimpleClassTypeSignature {
+  public static class SimpleClassTypeSignature {
 	  public String identifier;
 	  public TypeArgument[] typeArguments;
 	  
@@ -389,7 +507,7 @@ public final class Signature extends Attribute {
 	  }
   }
   
-  static class TypeArgument {
+  public static class TypeArgument {
 	  public boolean isWildcard = false;
 	  public boolean isPlus = false; 
 	  public boolean isMinus = false;
@@ -405,307 +523,14 @@ public final class Signature extends Attribute {
 		  this.signature = aSig;
 	  }
 	  
-  }
-  
-  /**
-   * can't ask questions of signature content until it has been parsed.
-   */
-  private boolean isParsed = false;
-  
-  private FormalTypeParameter[] formalTypeParameters;
-  private ClassTypeSignature superclassSignature;
-  private ClassTypeSignature[] superInterfaceSignatures;
-  
-  private String[] tokenStream;  // for parse in flight
-  private int tokenIndex = 0;
-  
-  public FormalTypeParameter[] getFormalTypeParameters() {
-	  if (!isParsed) throw new IllegalStateException("Must parse signature attribute first");
-	  return formalTypeParameters;
-  }
-  
-  public ClassTypeSignature getSuperclassSignature() {
-	  if (!isParsed) throw new IllegalStateException("Must parse signature attribute first");
-	  return superclassSignature;	  
-  }
-  
-  public ClassTypeSignature[] getSuperInterfaceSignatures() {
-	  if (!isParsed) throw new IllegalStateException("Must parse signature attribute first");
-	  return superInterfaceSignatures;	  	  
-  }
-  
-  /**
-   * AMC.
-   * Parse the signature string interpreting it as a ClassSignature according to
-   * the grammar defined in Section 4.4.4 of the JVM specification.
-   */
-  public void parseAsClassSignature() {
-	  tokenStream = tokenize(getSignature());
-	  tokenIndex = 0;
-	  // FormalTypeParameters-opt
-	  if (maybeEat("<")) {
-		List formalTypeParametersList = new ArrayList();
-		do {
-			formalTypeParametersList.add(parseFormalTypeParameter());
-		} while (!maybeEat(">"));
-		formalTypeParameters = new FormalTypeParameter[formalTypeParametersList.size()];
-		formalTypeParametersList.toArray(formalTypeParameters);
+	  public String toString() {
+		  if (isWildcard) return "*";
+		  StringBuffer sb = new StringBuffer();
+		  if (isPlus) sb.append("+");
+		  if (isMinus) sb.append("-");
+		  sb.append(signature.toString());
+		  return sb.toString();
 	  }
-	  superclassSignature = parseClassTypeSignature();
-	  List superIntSigs = new ArrayList();
-	  while (tokenIndex < tokenStream.length) {
-		  superIntSigs.add(parseClassTypeSignature());
-	  }
-	  superInterfaceSignatures = new ClassTypeSignature[superIntSigs.size()];
-	  superIntSigs.toArray(superInterfaceSignatures);
-	  isParsed = true;
-  }
-  
-  /**
-   * AMC.
-   * Parse the signature string interpreting it as a MethodTypeSignature according to
-   * the grammar defined in Section 4.4.4 of the JVM specification.
-   */
-  public void parseAsMethodSignature() {
-	  isParsed = true;	  
-  }
-  
-  /**
-   * AMC.
-   * Parse the signature string interpreting it as a FieldTypeSignature according to
-   * the grammar defined in Section 4.4.4 of the JVM specification.
-   */
-  public void parseAsFieldSignature() {
-	  isParsed = true;  
-  }
-
-  private FormalTypeParameter parseFormalTypeParameter() {
-	  FormalTypeParameter ftp = new FormalTypeParameter();
-	  // Identifier
-	  ftp.identifier = eatIdentifier();
-	  // ClassBound
-	  eat(":");
-	  ftp.classBound = parseFieldTypeSignature(true);
-	  if (ftp.classBound == null) {
-		  ftp.classBound = new ClassTypeSignature("Ljava/lang/Object;","Object");
-	  }
-	  // Optional InterfaceBounds
-	  List optionalBounds = new ArrayList();
-	  while (maybeEat(":")) {
-		  optionalBounds.add(parseFieldTypeSignature(false));
-	  }
-	  ftp.interfaceBounds = new FieldTypeSignature[optionalBounds.size()];
-	  optionalBounds.toArray(ftp.interfaceBounds);
-	  return ftp;
-  }
-  
-  private FieldTypeSignature parseFieldTypeSignature(boolean isOptional) {
-	  if (isOptional) {
-		  // anything other than 'L', 'T' or '[' and we're out of here
-		  if (!tokenStream[tokenIndex].startsWith("L") &&
-			   !tokenStream[tokenIndex].startsWith("T") &&
-			   !tokenStream[tokenIndex].startsWith("[")) {
-			  return null;
-		  }
-	  }
-	  if (maybeEat("[")) {
-		  return parseArrayTypeSignature();
-	  } else if (tokenStream[tokenIndex].startsWith("L")) {
-		  return parseClassTypeSignature();
-	  } else if (tokenStream[tokenIndex].startsWith("T")) {
-		  return parseTypeVariableSignature();
-	  } else {
-		  throw new IllegalStateException("Expection [,L, or T, but found " +
-				  tokenStream[tokenIndex]);
-	  }
-  }
-  
-  private ArrayTypeSignature parseArrayTypeSignature() {
-	  // opening [ already eaten
-	  eat("["); // grammar adds another one!
-	  FieldTypeSignature fieldType = parseFieldTypeSignature(true);
-	  if (fieldType != null) {
-		  return new ArrayTypeSignature(fieldType);
-	  } else {
-		  // must be BaseType array
-		  return new ArrayTypeSignature(eatIdentifier());
-	  }
-  }
-
-  // L PackageSpecifier* SimpleClassTypeSignature ClassTypeSignature* ;
-  private ClassTypeSignature parseClassTypeSignature() {
-	  SimpleClassTypeSignature outerType = null;
-	  SimpleClassTypeSignature[] nestedTypes = new SimpleClassTypeSignature[0];
-	  StringBuffer ret = new StringBuffer();
-	  String identifier = eatIdentifier();
-	  ret.append(identifier);
-	  while (maybeEat("/")) {
-		  ret.append(eatIdentifier());
-	  }
-	  // now we have either a "." indicating the start of a nested type,
-	  // or a "<" indication type arguments, or ";" and we are done.
-	  while (!maybeEat(";")) {
-		  if (maybeEat(".")) {
-			  // outer type completed
-			  outerType = new SimpleClassTypeSignature(identifier);
-			  List nestedTypeList = new ArrayList();
-			  do {
-				  ret.append(".");
-				  SimpleClassTypeSignature sig = parseSimpleClassTypeSignature();
-				  ret.append(sig.toString());
-				  nestedTypeList.add(ret);
-			  } while(maybeEat("."));
-			  nestedTypes = new SimpleClassTypeSignature[nestedTypeList.size()];
-			  nestedTypeList.toArray(nestedTypes);
-		  } else if (tokenStream[tokenIndex].equals("<")) {
-			  ret.append("<");
-			  TypeArgument[] tArgs = maybeParseTypeArguments();
-			  for (int i=0; i < tArgs.length; i++) {
-				  ret.append(tArgs[i].toString());
-			  }
-			  ret.append(">");
-			  outerType = new SimpleClassTypeSignature(identifier,tArgs);
-			  // now parse possible nesteds...
-			  List nestedTypeList = new ArrayList();
-			  while (maybeEat(".")) {
-				  ret.append(".");
-				  SimpleClassTypeSignature sig = parseSimpleClassTypeSignature();
-				  ret.append(sig.toString());
-				  nestedTypeList.add(ret);				  
-			  }
-			  nestedTypes = new SimpleClassTypeSignature[nestedTypeList.size()];
-			  nestedTypeList.toArray(nestedTypes);
-		  } else {
-			  throw new IllegalStateException("Expecting .,<, or ;, but found " + tokenStream[tokenIndex]);
-		  }
-	  }
-	  ret.append(";");
-	  return new ClassTypeSignature(ret.toString(),outerType,nestedTypes);
-  }
-  
-  private SimpleClassTypeSignature parseSimpleClassTypeSignature() {
-	  String identifier = eatIdentifier();
-	  TypeArgument[] tArgs = maybeParseTypeArguments();
-	  if (tArgs != null) {
-		  return new SimpleClassTypeSignature(identifier,tArgs);
-	  } else {
-		  return new SimpleClassTypeSignature(identifier);
-	  }
-  }
-  
-  private TypeArgument parseTypeArgument() {
-	  boolean isPlus = false;
-	  boolean isMinus = false;
-	  if (maybeEat("*")) {
-		  return new TypeArgument();
-	  } else if (maybeEat("+")) {
-		  isPlus = true;
-	  } else if (maybeEat("-")) {
-		  isMinus = true;
-	  }
-	  FieldTypeSignature sig = parseFieldTypeSignature(false);
-	  return new TypeArgument(isPlus,isMinus,sig);
-  }
-  
-  private TypeArgument[] maybeParseTypeArguments() {
-	  if (maybeEat("<")) {
-		  List typeArgs = new ArrayList();
-		  do {
-			  TypeArgument arg = parseTypeArgument();
-			  typeArgs.add(arg);
-		  } while(!maybeEat(">"));
-		  TypeArgument[] tArgs = new TypeArgument[typeArgs.size()];
-		  typeArgs.toArray(tArgs);
-		  return tArgs;
-	  } else {
-		  return null;
-	  }
-  }
-  
-  private TypeVariableSignature parseTypeVariableSignature() {
-	  TypeVariableSignature tv = new TypeVariableSignature(eatIdentifier());
-	  eat(";");
-	  return tv;
-  }
-  
-  private boolean maybeEat(String token) {
-	  if (tokenStream[tokenIndex].equals(token)) {
-		  tokenIndex++;
-		  return true;
-	  }
-	  return false;
-  }
-  
-  private void eat(String token) {
-	  if (!tokenStream[tokenIndex].equals(token)) {
-		  throw new IllegalStateException("Expecting " + token + " but found " + tokenStream[tokenIndex]);
-	  }
-	  tokenIndex++;
-  }
-  
-  private String eatIdentifier() {
-	  return tokenStream[tokenIndex++];
-  }
-
-  private String[] tokenize(String signatureString) {
-	  char[] chars = signatureString.toCharArray();
-	  int index = 0;
-	  List tokens = new ArrayList();
-	  StringBuffer identifier = new StringBuffer();
-	  do {
-		switch (chars[index]) {
-			case '<' :
-				tokens.add("<");
-				break;
-			case '>' :
-				tokens.add(">");
-				break;
-			case ':' :
-				if (identifier.length() > 0) tokens.add(identifier.toString());
-				identifier = new StringBuffer();
-				tokens.add(":");
-				break;
-			case '/' :
-				if (identifier.length() > 0) tokens.add(identifier.toString());
-				identifier = new StringBuffer();
-				tokens.add("/");
-				break;
-			case ';' :
-				if (identifier.length() > 0) tokens.add(identifier.toString());
-				identifier = new StringBuffer();
-				tokens.add(";");
-				break;
-			case '^':
-				tokens.add("^");
-				break;
-			case '+':
-				tokens.add("+");
-				break;
-			case '-':
-				tokens.add("-");
-				break;
-			case '*':
-				tokens.add("*");
-			case '.' :
-				if (identifier.length() > 0) tokens.add(identifier.toString());
-				identifier = new StringBuffer();
-				tokens.add(".");
-				break;
-			case '(' :
-				tokens.add("(");
-				break;
-			case ')' :
-				tokens.add(")");
-			case '[' :
-				break;
-			default : 
-				identifier.append(chars[index]);
-		}
-	  } while(index < chars.length);
-	  if (identifier.length() > 0) tokens.add(identifier.toString());
-	  String [] tokenArray = new String[tokens.size()];
-	  tokens.toArray(tokenArray);
-	  return tokenArray;
   }
   
 }
