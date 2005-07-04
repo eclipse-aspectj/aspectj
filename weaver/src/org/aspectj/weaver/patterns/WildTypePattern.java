@@ -454,7 +454,19 @@ public class WildTypePattern extends TypePattern {
 			}
 		}
 		
+		// Only if the type is exact *and* the type parameters are exact should we create an 
+		// ExactTypePattern for this WildTypePattern
+		
+		// resolve any type parameters
+		if (typeParameters!=null && typeParameters.size()>0) {
+			typeParameters.resolveBindings(scope,bindings,allowBinding,requireExactType);
+		}
+		
 		String cleanName = maybeGetCleanName();
+		String[] typeParamCleanNames = typeParameters.maybeGetCleanNames();
+		
+		// TODO asc generics - do we need to duplicate all this logic that gets done on cleanName
+		// for the typeParamCleanNames?
 		String originalName = cleanName;
 		// if we discover it is 'MISSING' when searching via the scope, this next local var will
 		// tell us if it is really missing or if it does exist in the world and we just can't
@@ -489,8 +501,21 @@ public class WildTypePattern extends TypePattern {
 					  scope.getWorld().getLint().invalidAbsoluteTypeName.signal(originalName, getSourceLocation());
 				}
 			} else {
-				if (dim != 0) type = TypeX.makeArray(type, dim);
-				TypePattern ret = new ExactTypePattern(type, includeSubtypes,isVarArgs);
+				TypePattern ret = null;
+				if (typeParameters.size()>0) {
+					if (typeParameters.areAllExact()) {
+						TypeX tx = TypeX.forParameterizedTypeNames(cleanName,typeParamCleanNames);
+						type = scope.getWorld().resolve(tx,true); 
+						if (dim != 0) type = TypeX.makeArray(type, dim);
+						ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
+					} else {
+					    // TODO generics not written yet - when the type parameters are not exact
+						throw new RuntimeException("Type parameters are not exact");
+					}
+				} else {
+					if (dim != 0) type = TypeX.makeArray(type, dim);
+					ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);					
+				}
 				ret.setAnnotationTypePattern(annotationPattern);
 				ret.copyLocationFrom(this);
 				return ret;
@@ -611,6 +636,11 @@ public class WildTypePattern extends TypePattern {
     			buf.append(name.toString());
     		}
     	}
+		if (typeParameters!=null && typeParameters.size()!=0) {
+			buf.append("<");
+			buf.append(typeParameters.toString());
+			buf.append(">");
+		}
     	if (includeSubtypes) buf.append('+');
 		if (isVarArgs) buf.append("...");
     	if (annotationPattern != AnnotationTypePattern.ANY) {
