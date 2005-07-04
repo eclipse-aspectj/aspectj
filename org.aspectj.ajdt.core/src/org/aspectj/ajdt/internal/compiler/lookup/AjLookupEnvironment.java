@@ -578,7 +578,15 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		
 		// Get the annotation specified in the declare
 		TypeBinding tb = factory.makeTypeBinding(decA.getAspect());
-		MethodBinding[] mbs = ((SourceTypeBinding)tb).getMethods(decA.getAnnotationMethod().toCharArray());
+		
+		SourceTypeBinding stb = null;
+		// TODO asc determine if there really is a problem here (see comment below)
+		
+		// ClassCastException here means we probably have either a parameterized type or a raw type, we need the
+		// commented out code to get it to work ... currently uncommented because I've not seen a case where its
+		// required yet ...
+		stb = (SourceTypeBinding)tb;
+		MethodBinding[] mbs = stb.getMethods(decA.getAnnotationMethod().toCharArray());
 		long abits = mbs[0].getAnnotationTagBits(); // ensure resolved
 		TypeDeclaration typeDecl = ((SourceTypeBinding)mbs[0].declaringClass).scope.referenceContext;
 		AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
