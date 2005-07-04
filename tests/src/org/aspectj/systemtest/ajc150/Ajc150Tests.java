@@ -165,6 +165,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testInternalCompilerError_pr86832() {
 	  runTest("Internal compiler error");
   }
+  
+  public void testCloneMethod_pr83311() {
+	  runTest("overriding/polymorphism error on interface method introduction");
+  }
 
   /**
    * IfPointcut.findResidueInternal() was modified to make this test complete in a short amount
@@ -179,6 +183,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testStaticImports_pr84260() {runTest("static import failures");} 
   
   public void testGenerics_pr99089() {runTest("ArrayIndexOutOfBoundsException - Generics in privileged aspects");}
+  public void testGenerics_pr95993() {runTest("NPE at ClassScope.java:660 when compiling generic class");}
   
   public void testItdGenerics_pr99228()  {runTest("ITD of a field into a generic class");}
   public void testItdGenerics_pr98320()  {runTest("intertype with nested generic type");}

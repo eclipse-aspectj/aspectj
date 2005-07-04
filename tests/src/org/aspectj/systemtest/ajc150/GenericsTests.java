@@ -98,9 +98,27 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 //	}
 
 	// generic declare parents
-//	public void testPR96220_GenericDecp() {
-//		runTest("generic decp");
+	public void testPR96220_GenericDecp() {
+		runTest("generic decp - simple");
+	}
+	
+//	public void testGenericDecpMultipleVariantsOfAParameterizedType() {
+//		runTest("generic decp - implementing two variants");
 //	}
+//	
+//	public void testGenericDecpIncorrectNumberOfTypeParams() {
+//		runTest("generic decp - incorrect number of type parameters");
+//	}
+//	
+//	public void testGenericDecpSpecifyingBounds() {
+//		runTest("generic decp - specifying bounds");
+//	}
+//	
+//	public void testGenericDecpViolatingBounds() {
+//		runTest("generic decp - specifying bounds but breaking them");
+//	}
+	
+	// need separate compilation test to verify signatures are ok
 //
 //	public void testIllegalGenericDecp() {
 //		runTest("illegal generic decp");

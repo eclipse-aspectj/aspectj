@@ -51,6 +51,10 @@
         </compile>
     </ajc-test>
     
+   <ajc-test dir="bugs150" pr="83311" title="overriding/polymorphism error on interface method introduction">
+     <compile files="pr83311.aj"/>
+   </ajc-test>
+    
     <ajc-test dir="bugs150/pr84260" vm="1.5" title="static import failures">
         <compile files="A.java,I1.java,I2.java" options="-1.5"/>
         <run class="I1">
@@ -2387,14 +2391,34 @@
    
    // generic decps
    
-   <ajc-test dir="java5/generics/decp" title="generic decp">
+   <ajc-test dir="java5/generics/decp" title="generic decp - simple">
      <compile files="Basic.aj" options="-1.5"/>
      <run class="Basic"/>
    </ajc-test>
    
-   <ajc-test dir="java5/generics/decp" title="illegal generic decp">
+   <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants">
      <compile files="Basic2.aj" options="-1.5"/>
+     <run class="Basic2"/>
    </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
+     <compile files="Basic3.aj" options="-1.5"/>
+     <run class="Basic3"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp" title="generic decp - specifying bounds">
+     <compile files="Basic4.aj" options="-1.5"/>
+     <run class="Basic4"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp" title="generic decp - specifying bounds but breaking them">
+     <compile files="Basic5.aj" options="-1.5"/>
+     <run class="Basic5"/>
+   </ajc-test>
+   
+   <!--ajc-test dir="java5/generics/decp" title="illegal generic decp">
+     <compile files="Basic2.aj" options="-1.5"/>
+   </ajc-test-->
    
    // end of generic decps
    <!-- ============================================================== -->
