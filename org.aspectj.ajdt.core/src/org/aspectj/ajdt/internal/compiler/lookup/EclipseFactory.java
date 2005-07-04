@@ -34,6 +34,7 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
@@ -216,6 +217,28 @@ public class EclipseFactory {
 			}
 			return TypeX.forParameterizedTypeNames(getName(binding), arguments);
 		}
+		
+		// Convert the source type binding for a generic type into a generic TypeX
+		// notice we can easily determine the type variables from the eclipse object
+		// and we can recover the generic signature from it too - so we pass those
+		// to the forGenericType() method.
+		if (binding.isGenericType() && 
+		    !binding.isParameterizedType() && 
+		    !binding.isRawType()) {
+			TypeVariableBinding[] tvbs = binding.typeVariables();
+			TypeVariable[] tVars = new TypeVariable[tvbs.length];
+			for (int i = 0; i < tvbs.length; i++) {
+				TypeVariableBinding eclipseV = tvbs[i];
+				String name = CharOperation.charToString(eclipseV.sourceName); 
+				tVars[i] = new TypeVariable(name,fromBinding(eclipseV.superclass()),fromBindings(eclipseV.superInterfaces()));
+			}
+			//TODO asc generics - temporary guard....
+			if (!(binding instanceof SourceTypeBinding))
+				throw new RuntimeException("Cant get the generic sig for "+binding.debugName());
+			return TypeX.forGenericType(getName(binding),tVars,
+					CharOperation.charToString(((SourceTypeBinding)binding).genericSignature()));
+		}
+		
 		return TypeX.forName(getName(binding));
 	}
 
@@ -341,7 +364,7 @@ public class EclipseFactory {
 	}
 	
 	private TypeBinding makeTypeBinding1(TypeX typeX) {
-		if (typeX.isPrimitive()) {
+		if (typeX.isPrimitive()) { 
 			if (typeX == ResolvedTypeX.BOOLEAN) return BaseTypes.BooleanBinding;
 			if (typeX == ResolvedTypeX.BYTE) return BaseTypes.ByteBinding;
 			if (typeX == ResolvedTypeX.CHAR) return BaseTypes.CharBinding;
@@ -360,21 +383,20 @@ public class EclipseFactory {
 			}
 			return lookupEnvironment.createArrayType(makeTypeBinding(typeX), dim);
 		} else if (typeX.isParameterized()) {
-			if (typeX.isRawType()) {
-				ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
-				RawTypeBinding rtb = lookupEnvironment.createRawType(baseTypeBinding,baseTypeBinding.enclosingType());
-				return rtb;
-			} else {
-			    TypeX[] typeParameters = typeX.getTypeParameters();
-				ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
-				TypeBinding[] argumentBindings = new TypeBinding[typeParameters.length];
-				for (int i = 0; i < argumentBindings.length; i++) {
-					argumentBindings[i] = makeTypeBinding(typeParameters[i]);
-				}
-				ParameterizedTypeBinding ptb = 
-					lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
-				return ptb;
+		    // Converting back to a binding from a TypeX
+		    TypeX[] typeParameters = typeX.getTypeParameters();
+			ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
+			TypeBinding[] argumentBindings = new TypeBinding[typeParameters.length];
+			for (int i = 0; i < argumentBindings.length; i++) {
+				argumentBindings[i] = makeTypeBinding(typeParameters[i]);
 			}
+			ParameterizedTypeBinding ptb = 
+				lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
+			return ptb;
+		} else if (typeX.isRawType()) {
+			ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
+			RawTypeBinding rtb = lookupEnvironment.createRawType(baseTypeBinding,baseTypeBinding.enclosingType());
+			return rtb;
 		} else {
 			return lookupBinding(typeX.getName());
 		}
@@ -464,8 +486,21 @@ public class EclipseFactory {
 	
 	public void addSourceTypeBinding(SourceTypeBinding binding) {
 		TypeDeclaration decl = binding.scope.referenceContext;
-		ReferenceType name = getWorld().lookupOrCreateName(TypeX.forName(getName(binding)));
+		
+		// Deal with the raw/basic type to give us an entry in the world type map
+		TypeX simpleTx  = TypeX.forName(getName(binding)); 
+		ReferenceType name  = getWorld().lookupOrCreateName(simpleTx);
 		EclipseSourceType t = new EclipseSourceType(name, this, binding, decl);
+		
+		// For generics, go a bit further - build a typex for the generic type
+		// give it the same delegate and link it to the raw type
+		if (binding.isGenericType()) {
+			TypeX complexTx = fromBinding(binding); // fully aware of any generics info
+			ReferenceType complexName = new ReferenceType(complexTx,world);//getWorld().lookupOrCreateName(complexTx);
+			name.setGenericType(complexName);
+			complexName.setDelegate(t);
+		}
+				
 		name.setDelegate(t);
 		if (decl instanceof AspectDeclaration) {
 			((AspectDeclaration)decl).typeX = name;
