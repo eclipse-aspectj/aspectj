@@ -18,6 +18,15 @@ import java.util.Iterator;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.PerClause;
 
+/**
+ * A reference type represents some 'real' type, not a primitive, not an array - but
+ * a real type, for example java.util.List.  Each ReferenceType has a delegate
+ * that is the underlying artifact - either an eclipse artifact or a
+ * bcel artifact.  If the type represents a raw type (i.e. there is
+ * a generic form) then the genericType field is set to point to the
+ * generic type.  If it is for a parameterized type then the generic type
+ * is also set to point to the generic form.
+ */
 public class ReferenceType extends ResolvedTypeX {
 	
 	/**
@@ -36,14 +45,12 @@ public class ReferenceType extends ResolvedTypeX {
         super(signature, world);
     }
 	
-	public ReferenceType(ReferenceType genericType,String signature, World world) {
-		super(signature,world);
-		this.genericType=genericType;
-		setDelegate(genericType.getDelegate());
-		// TODO asc generics: for non generic types, should we hold a delegate here or just 
-		// delegate to the one on the generic type? it might let us be a little more flexible 
-		// if we do this - changing just the generic type delegate will affect all parameterized 
-		// and raw variants
+    /**
+     * Create a reference type for a generic type
+     */
+	public ReferenceType(TypeX genericType, World world) {
+		super(genericType.getSignature(),world);
+		genericSignature=genericType.genericSignature;
 	}
         
     public final boolean isClass() {
@@ -209,6 +216,14 @@ public class ReferenceType extends ResolvedTypeX {
 	
 	public boolean doesNotExposeShadowMungers() {
 		return delegate.doesNotExposeShadowMungers();
+	}
+	
+	public String getDeclaredGenericSignature() {
+		return delegate.getDeclaredGenericSignature();
+	}
+	
+	public void setGenericType(ReferenceType rt) {
+		this.genericType = rt;
 	}
 
 }
