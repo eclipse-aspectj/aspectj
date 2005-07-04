@@ -21,13 +21,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
+import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
 
 
 public class TypeX implements AnnotatedElement {
 	
-	/**
-	 * This is the string representation of this Type, will include parameterization info
-	 */
+	// This is the string representation of this Type, will include parameterization info for parameterized types.
+    // e.g.: Ljava/lang/String; or LMyInterface<Ljava/lang/Double;>;
     protected String signature;
 	
 	/**
@@ -36,13 +38,25 @@ public class TypeX implements AnnotatedElement {
 	 */
 	protected String rawTypeSignature;
 	
+	// For a generic type, this is the 'declared' signature
+	// e.g. for Enum: <E:Ljava/lang/Enum<TE;>;>Ljava/lang/Object;Ljava/lang/Comparable<TE;>;Ljava/io/Serializable;
+	// note: it doesnt include the name of the type!
+	protected String genericSignature;
+	
+	
 	// It is not sufficient to say that a parameterized type with no type parameters in fact
 	// represents a raw type - a parameterized type with no type parameters can represent
 	// an inner type of a parameterized type that specifies no type parameters of its own.
-	protected TypeX[] typeParameters;
+	protected TypeX[]      typeParameters;
 	private TypeVariable[] typeVariables;
-	private boolean isParameterized = false;
-	private boolean isRawtype = false; // TODO asc - change to isGeneric?
+
+    // SIMPLE represents something that can never be raw/generic/parameterized - e.g. Integer or String
+	private int typeKind = SIMPLE;
+	public final static int SIMPLE       =0;
+	public final static int RAW          =1;
+	public final static int GENERIC      =2;
+	public final static int PARAMETERIZED=3;
+	
 	
 	
 	/**
@@ -52,10 +66,9 @@ public class TypeX implements AnnotatedElement {
         super();
         this.signature = signature;
 		// avoid treating '<missing>' as a parameterized type ...
-		if (signature.charAt(0)!='<' && signature.indexOf("<")!=-1) {
-			// anglies alert - generic/parameterized type
+		if (signature.charAt(0)!='<' && signature.indexOf("<")!=-1 && !signature.startsWith("<missing>")) {
+			// anglies alert - parameterized type
 			processSignature(signature);
-
 		}
     }
 	
@@ -71,11 +84,11 @@ public class TypeX implements AnnotatedElement {
 		rawTypeSb.append(signature.substring(0,parameterTypesStart)).append(";");
 		rawTypeSignature = rawTypeSb.toString();
 		typeParameters = processParameterization(signature,parameterTypesStart+1,parameterTypesEnd-1);
-		isParameterized = true;
+		typeKind = PARAMETERIZED;
 	}
 	
 	/**
-	 * For a parameterized signature, e.g. <Ljava/langString;Ljava/util/List<Ljava/lang/String;>;>"
+	 * For a parameterized signature, e.g. <Ljava/lang/String;Ljava/util/List<Ljava/lang/String;>;>"
 	 * this routine will return an appropriate array of TypeXs representing the top level type parameters.
 	 * Where type parameters are themselves parameterized, we recurse.
 	 */
@@ -192,14 +205,38 @@ public class TypeX implements AnnotatedElement {
         return ret;
     }  
 	
-//	public static TypeX forGenericType(String name,TypeVariable[] tvbs) {
-//		TypeX ret = TypeX.forName(name);
-//		ret.setParameterized(false);
-//		ret.setRawType();
-//		ret.typeVariables = tvbs;
-//		ret.rawTypeSignature = ret.signature;
-//		return ret;
-//	}
+	
+    public static TypeX forGenericTypeSignature(String nameSig,String declaredGenericSig) {
+    	TypeX ret = TypeX.forSignature(nameSig);
+    	ret.typeKind=GENERIC;
+    	
+    	ClassSignature csig = new GenericSignatureParser().parseAsClassSignature(declaredGenericSig);
+    	
+    	Signature.FormalTypeParameter[] ftps = csig.formalTypeParameters;
+    	String s = ftps[0].identifier;
+    	Signature.FieldTypeSignature ftss = ftps[0].classBound;
+    	ret.typeVariables = new TypeVariable[ftps.length];
+    	// TODO asc/amc other information in the signature isnt being recorded in the TypeX as it should be ...
+    	// this problem will be found be further testcases
+    	for (int i = 0; i < ftps.length; i++) {
+			Signature.FormalTypeParameter parameter = ftps[i];
+			Signature.ClassTypeSignature cts = (Signature.ClassTypeSignature)parameter.classBound;
+			ret.typeVariables[i]=new TypeVariable(ftps[i].identifier,TypeX.forSignature(cts.outerType.identifier+";"));
+		}
+    	ret.rawTypeSignature = ret.signature;
+    	ret.signature = ret.rawTypeSignature;
+    	ret.genericSignature=declaredGenericSig;
+    	return ret;
+    }
+    
+	public static TypeX forGenericType(String name,TypeVariable[] tvbs,String genericSig) { // TODO asc generics needs a declared sig
+		TypeX ret = TypeX.forName(name);
+		ret.typeKind=GENERIC;
+		ret.typeVariables = tvbs;
+		ret.rawTypeSignature = ret.signature;
+		ret.genericSignature = genericSig;
+		return ret;
+	}
 	
 	/**
 	 * Makes a parameterized type with the given name
@@ -207,7 +244,7 @@ public class TypeX implements AnnotatedElement {
 	 */
     public static TypeX forParameterizedTypeNames(String name, String[] paramTypeNames) {
 		TypeX ret = TypeX.forName(name);
-		ret.setParameterized(true);
+		ret.typeKind=PARAMETERIZED;
 		ret.typeParameters = null;
 		if (paramTypeNames!=null) {
 			ret.typeParameters = new TypeX[paramTypeNames.length];
@@ -232,8 +269,7 @@ public class TypeX implements AnnotatedElement {
 	
 	public static TypeX forRawTypeNames(String name) {
 		TypeX ret = TypeX.forName(name);
-		ret.setParameterized(true);
-		ret.setRawtype(true);
+		ret.typeKind = RAW;
 		// FIXME asc  no need to mess up the signature is there?
 		// ret.signature = ret.signature+"#RAW";
 		return ret;
@@ -339,15 +375,16 @@ public class TypeX implements AnnotatedElement {
     public String getName() {
         return signatureToName(signature);
     }
+    
+    public String getRawName() {
+    	return signatureToName((rawTypeSignature==null?signature:rawTypeSignature));
+    }
 	
 	public String getBaseName() {
 		String name = getName();
-		if (isParameterized()) {
-			if (isRawType()) return name;
-			else {
-				if (typeParameters==null) return name;
-				else                      return name.substring(0,name.indexOf("<"));
-			}
+		if (isParameterized() || isGeneric()) {
+			if (typeParameters==null) return name;
+			else                      return name.substring(0,name.indexOf("<"));
 		} else {
 			return name;
 		}
@@ -405,13 +442,14 @@ public class TypeX implements AnnotatedElement {
 	 * For parameterized types, return the signature for the raw type
 	 */
 	public String getRawTypeSignature() {
-		if (!isParameterized() || rawTypeSignature==null) { return signature; } // TODO asc what??
+		if (rawTypeSignature==null) return signature;
 		return rawTypeSignature;
 	}
 	
 	public TypeX getRawType() {
 		return TypeX.forSignature(getRawTypeSignature());
 	}
+	
 
     /**
      * Determins if this represents an array type.
@@ -423,24 +461,18 @@ public class TypeX implements AnnotatedElement {
     }
 	
 	public final boolean isParameterized() {
-		return isParameterized;
+		return typeKind==PARAMETERIZED;
 	}
 	
 	public final boolean isRawType() { 
-		return isRawtype;
-//	    return isParameterized && typeParameters==null;
+		return typeKind==RAW;
 	}
 	
-	private final void setParameterized(boolean b) { 
-		isParameterized=b;
+	public final boolean isGeneric() {
+		return typeKind==GENERIC;
 	}
 	
-    private final void setRawtype(boolean b) {
-		isRawtype=b;
-    }
 	
-	
-    
     /**
      * Returns a TypeX object representing the effective outermost enclosing type
      * for a name type.  For all other types, this will return the type itself.
@@ -856,6 +888,9 @@ public class TypeX implements AnnotatedElement {
             case 'Z': return "boolean";
             case '[':
                 return signatureToName(signature.substring(1, signature.length())) + "[]";
+//            case '<': 
+//            	// its a generic!
+ //           	if (signature.charAt(1)=='>') return signatureToName(signature.substring(2));
             default: 
                 throw new BCException("Bad type signature: " + signature);
         }      
