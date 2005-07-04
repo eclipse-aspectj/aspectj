@@ -27,9 +27,6 @@ import org.aspectj.systemtest.xlint.XLintTests;
 
 /**
  * @author colyer
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class AllTests {
 
@@ -54,6 +51,7 @@ public class AllTests {
 		suite.addTest(SUIDTests.suite());
 		suite.addTest(XLintTests.suite());
 		//$JUnit-END$
+
 		return suite;
 	}
 }

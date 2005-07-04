@@ -3,11 +3,11 @@
 
     <ajc-test dir="java5/ataspectj" title="SimpleBefore">
         <compile files="SimpleBefore.java" options="-1.5 -showWeaveInfo -XnoInline">
-            <message kind="weave" text="(SimpleBefore.java:23) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:1)"/>
+            <message kind="weave" text="(SimpleBefore.java:23) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:33)"/>
         </compile>
         <run class="SimpleBefore"/>
         <compile files="SimpleBefore.java" options="-1.5 -showWeaveInfo -XnoInline -Xdev:NoAtAspectJProcessing">
-            <message kind="weave" text="(SimpleBefore.java:23) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:1)"/>
+            <message kind="weave" text="(SimpleBefore.java:23) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:33)"/>
         </compile>
         <run class="SimpleBefore"/>
     </ajc-test>
@@ -24,10 +24,15 @@
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="singletonAspectBindings">
-        <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
+        <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -emacssym -XnoInline"/>
         <run class="ataspectj.SingletonAspectBindingsTest"/>
-        <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing"/>
+        <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -emacssym -XnoInline -Xdev:NoAtAspectJProcessing"/>
         <run class="ataspectj.SingletonAspectBindingsTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="singletonAspectBindings2">
+        <compile files="ataspectj/SingletonAspectBindingsTest2.aj,ataspectj/TestHelper.java" options="-1.5 -emacssym -XnoInline"/>
+        <run class="ataspectj.SingletonAspectBindingsTest2"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="CflowTest">

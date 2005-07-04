@@ -32,6 +32,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
@@ -121,10 +122,12 @@ public class AtAjAttributes {
         private String[] m_argumentNamesLazy = null;
 
         final Method method;
+        final BcelMethod bMethod;
 
-        public AjAttributeMethodStruct(Method method, ResolvedTypeX type, ISourceContext sourceContext, IMessageHandler messageHandler) {
+        public AjAttributeMethodStruct(Method method, BcelMethod bMethod, ResolvedTypeX type, ISourceContext sourceContext, IMessageHandler messageHandler) {
             super(type, sourceContext, messageHandler);
             this.method = method;
+            this.bMethod = bMethod;
         }
 
         public String[] getArgumentNames() {
@@ -230,7 +233,7 @@ public class AtAjAttributes {
             Method method = javaClass.getMethods()[i];
             if (method.getName().startsWith(NameMangler.PREFIX)) continue;  // already dealt with by ajc...
             //FIXME alex optimize, this method struct will gets recreated for advice extraction
-            AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, type, context, msgHandler);
+            AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, null, type, context, msgHandler);//FIXME AVASM
             Attribute[] mattributes = method.getAttributes();
 
             for (int j = 0; j < mattributes.length; j++) {
@@ -290,10 +293,10 @@ public class AtAjAttributes {
      * @param msgHandler
      * @return list of AjAttributes
      */
-    public static List readAj5MethodAttributes(Method method, ResolvedTypeX type, ResolvedPointcutDefinition preResolvedPointcut, ISourceContext context, IMessageHandler msgHandler) {
+    public static List readAj5MethodAttributes(Method method, BcelMethod bMethod, ResolvedTypeX type, ResolvedPointcutDefinition preResolvedPointcut, ISourceContext context, IMessageHandler msgHandler) {
         if (method.getName().startsWith(NameMangler.PREFIX)) return Collections.EMPTY_LIST;  // already dealt with by ajc...
 
-        AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, type, context, msgHandler);
+        AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, bMethod, type, context, msgHandler);
         Attribute[] attributes = method.getAttributes();
 
         // we remember if we found one @AJ annotation for minimal semantic error reporting
@@ -427,7 +430,7 @@ public class AtAjAttributes {
                 // could not parse it, ignore the aspect
                 return false;
             } else {
-                perClause.setLocation(struct.context, -1, -1);
+                perClause.setLocation(struct.context, struct.context.getOffset(), struct.context.getOffset()+1);//FIXME AVASM
                 struct.ajAttributes.add(new AjAttribute.Aspect(perClause));
                 return true;
             }
@@ -549,13 +552,14 @@ public class AtAjAttributes {
                 }
                 setIgnoreUnboundBindingNames(pc, bindings);
 
+                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
                 struct.ajAttributes.add(
                         new AjAttribute.AdviceAttribute(
                                 AdviceKind.Before,
                                 pc,
                                 extraArgument,
-                                -1,
-                                -1,
+                                sl.getOffset(),
+                                sl.getOffset()+1,//FIXME AVASM
                                 struct.context
                         )
                 );
@@ -603,13 +607,14 @@ public class AtAjAttributes {
                 }
                 setIgnoreUnboundBindingNames(pc, bindings);
 
+                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
                 struct.ajAttributes.add(
                         new AjAttribute.AdviceAttribute(
                                 AdviceKind.After,
                                 pc,
                                 extraArgument,
-                                -1,
-                                -1,
+                                sl.getOffset(),
+                                sl.getOffset()+1,//FIXME AVASM
                                 struct.context
                         )
                 );
@@ -687,13 +692,14 @@ public class AtAjAttributes {
             }
             setIgnoreUnboundBindingNames(pc, bindings);
 
+            ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
             struct.ajAttributes.add(
                     new AjAttribute.AdviceAttribute(
                             AdviceKind.AfterReturning,
                             pc,
                             extraArgument,
-                            -1,
-                            -1,
+                            sl.getOffset(),
+                            sl.getOffset()+1,//FIXME AVASM
                             struct.context
                     )
             );
@@ -770,13 +776,14 @@ public class AtAjAttributes {
             }
             setIgnoreUnboundBindingNames(pc, bindings);
 
+            ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
             struct.ajAttributes.add(
                     new AjAttribute.AdviceAttribute(
                             AdviceKind.AfterThrowing,
                             pc,
                             extraArgument,
-                            -1,
-                            -1,
+                            sl.getOffset(),
+                            sl.getOffset()+1,//FIXME AVASM
                             struct.context
                     )
             );
@@ -823,13 +830,14 @@ public class AtAjAttributes {
                 }
                 setIgnoreUnboundBindingNames(pc, bindings);
 
+                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
                 struct.ajAttributes.add(
                         new AjAttribute.AdviceAttribute(
                                 AdviceKind.Around,
                                 pc,
                                 extraArgument,
-                                -1,
-                                -1,
+                                sl.getOffset(),
+                                sl.getOffset()+1,//FIXME AVASM
                                 struct.context
                         )
                 );
@@ -885,7 +893,7 @@ public class AtAjAttributes {
                 Pointcut pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
                 if (pc == null) return;//parse error
                 // do not resolve binding now but lazily
-                pc.setLocation(struct.context, -1, -1);
+                pc.setLocation(struct.context, -1, -1);//FIXME AVASM !! bMethod is null here..
                 struct.ajAttributes.add(
                         new AjAttribute.PointcutDeclarationAttribute(
                                 new LazyResolvedPointcutDefinition(
@@ -1342,21 +1350,21 @@ public class AtAjAttributes {
      * Parse the given pointcut, return null on failure and issue an error
      *
      * @param pointcutString
-     * @param location
+     * @param struct
      * @param allowIf
      * @return
      */
-    private static Pointcut parsePointcut(String pointcutString, AjAttributeStruct location, boolean allowIf) {
+    private static Pointcut parsePointcut(String pointcutString, AjAttributeStruct struct, boolean allowIf) {
         try {
-            Pointcut pointcut = new PatternParser(pointcutString, location.context).parsePointcut();
+            Pointcut pointcut = new PatternParser(pointcutString, struct.context).parsePointcut();
             if (!allowIf && pointcutString.indexOf("if()") >= 0 && hasIf(pointcut)) {
-                reportError("if() pointcut is not allowed at this pointcut location '" + pointcutString +"'", location);
+                reportError("if() pointcut is not allowed at this pointcut location '" + pointcutString +"'", struct);
                 return null;
             }
-            pointcut.setLocation(location.context, -1, -1);//FIXME -1,-1 is not good enough
+            pointcut.setLocation(struct.context, -1, -1);//FIXME -1,-1 is not good enough
             return pointcut;
         } catch (ParserException e) {
-            reportError("Invalid pointcut '" + pointcutString + "': " + e.toString(), location);
+            reportError("Invalid pointcut '" + pointcutString + "': " + e.toString(), struct);
             return null;
         }
     }

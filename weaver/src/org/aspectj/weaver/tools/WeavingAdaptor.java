@@ -200,7 +200,8 @@ public class WeavingAdaptor {
                 ||*/ name.startsWith("org.aspectj.")
                 || name.startsWith("java.")
                 || name.startsWith("javax."))
-                || name.startsWith("$Proxy"));//JDK proxies
+                || name.startsWith("$Proxy")//JDK proxies
+                || name.startsWith("sun.reflect."));//JDK reflect
 	}
 
     /**

@@ -100,7 +100,7 @@ final class BcelMethod extends ResolvedMember {
 		associatedShadowMunger = null;
         List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler());
 		processAttributes(world, as);
-		as = AtAjAttributes.readAj5MethodAttributes(method, world.resolve(getDeclaringType()), preResolvedPointcut,getSourceContext(world), world.getMessageHandler());
+		as = AtAjAttributes.readAj5MethodAttributes(method, this, world.resolve(getDeclaringType()), preResolvedPointcut,getSourceContext(world), world.getMessageHandler());
 		processAttributes(world,as);
 	}
 

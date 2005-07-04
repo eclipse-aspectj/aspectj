@@ -68,14 +68,16 @@ public class PerFromSuper extends PerClause {
 			inAspect.getWorld().getMessageHandler().handleMessage(
 			  MessageUtil.error(WeaverMessages.format(WeaverMessages.MISSING_PER_CLAUSE,inAspect.getSuperclass()), getSourceLocation())
 			);
-		}
-		if (p.getKind() != kind) {
-			inAspect.getWorld().getMessageHandler().handleMessage(
-			  MessageUtil.error(WeaverMessages.format(WeaverMessages.WRONG_PER_CLAUSE,kind,p.getKind()),
-			  					getSourceLocation())
-			);
-		}
-		return p.concretize(inAspect);
+            return new PerSingleton().concretize(inAspect);// AV: fallback on something else NPE in AJDT
+		} else {
+            if (p.getKind() != kind) {
+                inAspect.getWorld().getMessageHandler().handleMessage(
+                  MessageUtil.error(WeaverMessages.format(WeaverMessages.WRONG_PER_CLAUSE,kind,p.getKind()),
+                                    getSourceLocation())
+                );
+            }
+            return p.concretize(inAspect);
+        }
 	}
 	
 	

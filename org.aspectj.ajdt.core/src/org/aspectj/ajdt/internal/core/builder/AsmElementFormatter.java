@@ -1,13 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC                     initial implementation
+ *     Alexandre Vasseur        support for @AJ style
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -39,6 +40,7 @@ import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.TypePatternList;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 
 /**
  * @author Mik Kersten
@@ -218,9 +220,31 @@ public class AsmElementFormatter {
 				node.setKind(IProgramElement.Kind.CONSTRUCTOR);
 			} else {
 				node.setKind(IProgramElement.Kind.METHOD);
-			} 
-			String label = new String(methodDeclaration.selector);
-			node.setName(label); 
+
+                //TODO AV - could speed up if we could dig only for @Aspect declaring types (or aspect if mixed style allowed)
+                //??? how to : node.getParent().getKind().equals(IProgramElement.Kind.ASPECT)) {
+                if (true && methodDeclaration.annotations != null) {
+                    for (int i = 0; i < methodDeclaration.annotations.length; i++) {
+                        //Note: AV: implicit single advice type support here (should be enforced somewhere as well (APT etc))
+                        Annotation annotation = methodDeclaration.annotations[i];
+                        String annotationSig = new String(annotation.type.getTypeBindingPublic(methodDeclaration.scope).signature());
+                        if ("Lorg/aspectj/lang/annotation/Pointcut;".equals(annotationSig)) {
+                            node.setKind(IProgramElement.Kind.POINTCUT);
+                            break;
+                        } else if ("Lorg/aspectj/lang/annotation/Before;".equals(annotationSig)
+                                   || "Lorg/aspectj/lang/annotation/After;".equals(annotationSig)
+                                   || "Lorg/aspectj/lang/annotation/AfterReturning;".equals(annotationSig)
+                                   || "Lorg/aspectj/lang/annotation/AfterThrowing;".equals(annotationSig)
+                                   || "Lorg/aspectj/lang/annotation/Around;".equals(annotationSig)) {
+                            node.setKind(IProgramElement.Kind.ADVICE);
+                            //TODO AV - all are considered anonymous - is that ok?
+                            node.setDetails(POINTCUT_ANONYMOUS);
+                            break;
+                        }
+                    }
+                }
+			}
+			node.setName(new String(methodDeclaration.selector));
 			setParameters(methodDeclaration, node);
 		}
 	}

@@ -50,8 +50,19 @@ public class EclipseSourceContext implements ISourceContext {
 		return new EclipseSourceLocation(result, position.getStart(), position.getEnd());
 	}
 
-	public ISourceLocation makeSourceLocation(int line) {
-		return new SourceLocation(getSourceFile(), line);
+    public ISourceLocation makeSourceLocation(int line) {
+		SourceLocation sl = new SourceLocation(getSourceFile(), line);
+
+        // compute the offset
+        //TODO AV - should we do it lazily?
+        int[] offsets = result.lineSeparatorPositions;
+        int likelyOffset = 0;
+        if (line > 0 && line < offsets.length) {
+            //1st char of given line is next char after previous end of line
+            likelyOffset = offsets[line-1];
+        }
+        sl.setOffset(likelyOffset);
+        return sl;
 	}
 
 }

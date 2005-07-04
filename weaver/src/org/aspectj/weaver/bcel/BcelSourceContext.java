@@ -87,7 +87,17 @@ public class BcelSourceContext implements ISourceContext {
 	}
 	
 	public ISourceLocation makeSourceLocation(int line) {
-		return new SourceLocation(getSourceFile(), line);
+        if (line < 0) line = 0;
+		SourceLocation sl = new SourceLocation(getSourceFile(), line);
+        if (lineBreaks != null) {
+            int likelyOffset = 0;
+            if (line > 0 && line < lineBreaks.length) {
+                //1st char of given line is next char after previous end of line
+                likelyOffset = lineBreaks[line-1] + 1;
+            }
+            sl.setOffset(likelyOffset);
+        }
+        return sl;
 	}
 
 	public void addAttributeInfo(SourceContextAttribute sourceContextAttribute) {

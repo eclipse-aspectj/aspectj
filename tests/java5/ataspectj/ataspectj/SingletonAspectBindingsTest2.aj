@@ -27,7 +27,7 @@ import java.io.FileReader;
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class SingletonAspectBindingsTest extends TestCase {
+public class SingletonAspectBindingsTest2 extends TestCase {
 
     static StringBuffer s_log = new StringBuffer();
     static void log(String s) {
@@ -39,7 +39,7 @@ public class SingletonAspectBindingsTest extends TestCase {
     }
 
     public static junit.framework.Test suite() {
-        return new junit.framework.TestSuite(SingletonAspectBindingsTest.class);
+        return new junit.framework.TestSuite(SingletonAspectBindingsTest2.class);
     }
 
     public void hello() {
@@ -53,7 +53,7 @@ public class SingletonAspectBindingsTest extends TestCase {
 
     public void testExecutionWithThisBinding() {
         s_log = new StringBuffer();
-        SingletonAspectBindingsTest me = new SingletonAspectBindingsTest();
+        SingletonAspectBindingsTest2 me = new SingletonAspectBindingsTest2();
         me.hello();
         // see here advice precedence as in source code order
         //TODO check around relative order
@@ -64,14 +64,14 @@ public class SingletonAspectBindingsTest extends TestCase {
 
     public void testExecutionWithArgBinding() {
         s_log = new StringBuffer();
-        SingletonAspectBindingsTest me = new SingletonAspectBindingsTest();
+        SingletonAspectBindingsTest2 me = new SingletonAspectBindingsTest2();
         me.hello("x");
         assertEquals("before- x hello- x ", s_log.toString());
     }
 
 
-    @Aspect
-    public static class TestAspect {
+    //@Aspect
+    static aspect TestAspect {
 
         static int s = 0;
 
@@ -86,63 +86,62 @@ public class SingletonAspectBindingsTest extends TestCase {
 
         //public static TestAspect aspectOf() {return null;}
 
-        @Around("execution(* ataspectj.SingletonAspectBindingsTest.hello())")
-        public void aaround(ProceedingJoinPoint jp) {
+        void around() : execution(* ataspectj.SingletonAspectBindingsTest2.hello()) {
+        //public void aaround(ProceedingJoinPoint jp) {
             log("around_");
             try {
-                jp.proceed();
+                proceed();
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
             log("_around");
         }
 
-        @Around("execution(* ataspectj.SingletonAspectBindingsTest.hello()) && this(t)")
-        public void around2(ProceedingJoinPoint jp, Object t) {
+        void around(Object t) : execution(* ataspectj.SingletonAspectBindingsTest2.hello()) && this(t) {
+        //public void around2(ProceedingJoinPoint jp, Object t) {
             log("around2_");
-            assertEquals(SingletonAspectBindingsTest.class.getName(), t.getClass().getName());
+            assertEquals(SingletonAspectBindingsTest2.class.getName(), t.getClass().getName());
             try {
-                jp.proceed();
+                proceed(t);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
             log("_around2");
         }
 
-        @Before("execution(* ataspectj.SingletonAspectBindingsTest.hello())")
-        public void before(JoinPoint.StaticPart sjp) {
+        before() : execution(* ataspectj.SingletonAspectBindingsTest2.hello()) {
+        //public void before(JoinPoint.StaticPart sjp) {
             log("before");
-            assertEquals("hello", sjp.getSignature().getName());
+            assertEquals("hello", thisJoinPointStaticPart.getSignature().getName());
         }
 
-        @After("execution(* ataspectj.SingletonAspectBindingsTest.hello())")
-        public void after(JoinPoint.StaticPart sjp) {
+        after() : execution(* ataspectj.SingletonAspectBindingsTest2.hello()) {
+        //public void after(JoinPoint.StaticPart sjp) {
             log("after");
-            assertEquals("execution(public void ataspectj.SingletonAspectBindingsTest.hello())", sjp.toLongString());
+            assertEquals("execution(public void ataspectj.SingletonAspectBindingsTest2.hello())", thisJoinPointStaticPart.toLongString());
         }
 
         //TODO see String alias, see before advice name clash - all that works
         // 1/ String is in java.lang.* - see SimpleScope.javalangPrefix array
         // 2/ the advice is register thru its Bcel Method mirror
-        @Before("execution(* ataspectj.SingletonAspectBindingsTest.hello(String)) && args(s)")
-        public void before(String s, JoinPoint.StaticPart sjp) {
+        before(String s) : execution(* ataspectj.SingletonAspectBindingsTest2.hello(String)) && args(s) {
+        //public void before(String s, JoinPoint.StaticPart sjp) {
             log("before-");
             log(s);
-            assertEquals("hello", sjp.getSignature().getName());
+            assertEquals("hello", thisJoinPointStaticPart.getSignature().getName());
         }
 
     }
 
 //    public void testHe() throws Throwable {
-//        //Allow to look inn file based on advises/advised-by offset numbers   
 //        File f = new File("../tests/java5/ataspectj/ataspectj/SingletonAspectBindingsTest2.aj");
 //        FileReader r = new FileReader(f);
 //        int i = 0;
-//        for (i = 0; i < 2800; i++) {
+//        for (i = 0; i < 3950; i++) {
 //            r.read();
 //        }
-//        for (;i < 2900; i++) {
-//            if (i == 2817) System.out.print("X");
+//        for (;i < 4000; i++) {
+//            if (i == 3983) System.out.print("X");
 //            System.out.print((char)r.read());
 //        }
 //        System.out.print("|DONE");

@@ -1,14 +1,15 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
- *     Mik Kersten	revisions, added additional relationships 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Common Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
+ *     Mik Kersten	revisions, added additional relationships
+ *     Alexandre Vasseur        support for @AJ style
  * ******************************************************************/
 
  
@@ -211,6 +212,17 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		else if (typeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
 		else if (typeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
+        //@AJ support
+        if (typeDeclaration.annotations != null) {
+            for (int i = 0; i < typeDeclaration.annotations.length; i++) {
+                Annotation annotation = typeDeclaration.annotations[i];
+                if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(),
+                                  "Lorg/aspectj/lang/annotation/Aspect;".toCharArray())) {
+                    kind = IProgramElement.Kind.ASPECT;
+                }
+            }
+        }
+
 		IProgramElement peNode = new ProgramElement(
 			name,
 			kind,
@@ -238,6 +250,17 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		else if (memberTypeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
 		else if (memberTypeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
 		else if (memberTypeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+
+        //@AJ support
+        if (memberTypeDeclaration.annotations != null) {
+            for (int i = 0; i < memberTypeDeclaration.annotations.length; i++) {
+                Annotation annotation = memberTypeDeclaration.annotations[i];
+                if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(),
+                                  "Lorg/aspectj/lang/annotation/Aspect;".toCharArray())) {
+                    kind = IProgramElement.Kind.ASPECT;
+                }
+            }
+        }
 
 		IProgramElement peNode = new ProgramElement(
 			name,
@@ -276,6 +299,18 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (memberTypeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
 		else if (memberTypeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
 		else if (memberTypeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+
+        //@AJ support
+        if (memberTypeDeclaration.annotations != null) {
+            for (int i = 0; i < memberTypeDeclaration.annotations.length; i++) {
+                Annotation annotation = memberTypeDeclaration.annotations[i];
+                if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(),
+                                  "Lorg/aspectj/lang/annotation/Aspect;".toCharArray())) {
+                    kind = IProgramElement.Kind.ASPECT;
+                    break;
+                }
+            }
+        }
 
 		IProgramElement peNode = new ProgramElement(
 			fullName,
