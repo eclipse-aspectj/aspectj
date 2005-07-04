@@ -1183,6 +1183,9 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	    return true;
 	}
 	
+	/**
+	 * @return true if the override is legal
+	 */
 	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child) {
 		//System.err.println("check: " + child.getDeclaringType() + " overrides " + parent.getDeclaringType());
 		if (!parent.getReturnType().equals(child.getReturnType())) {
@@ -1245,6 +1248,12 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	
 	private int compareMemberPrecedence(ResolvedMember m1, ResolvedMember m2) {
 		//if (!m1.getReturnType().equals(m2.getReturnType())) return 0;
+		
+		// need to allow for the special case of 'clone' - which is like abstract but is
+		// not marked abstract.  The code below this next line seems to make assumptions
+		// about what will have gotten through the compiler based on the normal
+		// java rules.  clone goes against these...
+		if (m2.isProtected() && m2.isNative() && m2.getName().equals("clone")) return +1;
 		
 		if (Modifier.isAbstract(m1.getModifiers())) return -1;
 		if (Modifier.isAbstract(m2.getModifiers())) return +1;
