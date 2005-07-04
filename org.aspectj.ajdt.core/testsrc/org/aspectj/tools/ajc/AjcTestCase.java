@@ -74,6 +74,7 @@ public class AjcTestCase extends TestCase {
 		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"bridge.jar"
         + File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"util.jar"
 		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"loadtime.jar"
+		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"weaver.jar"
 		+ File.pathSeparator+".."+File.separator+"lib"     +File.separator+"test"+File.separator+"testing-client.jar"
 		// hmmm, this next one should perhaps point to an aj-build jar...
 		+ File.pathSeparator+".."+File.separator+"lib"     +File.separator+"test"+File.separator+"aspectjrt.jar"
