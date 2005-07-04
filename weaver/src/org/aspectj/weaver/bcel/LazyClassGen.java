@@ -453,6 +453,27 @@ public final class LazyClassGen {
 			// of attribute are confirmed to be correct.
 			// myGen.addAttribute(getSourceDebugExtensionAttribute());
 		}
+		
+// TODO asc generics, fix up the declared signature attribute (dont need this just yet...)
+//		Attribute sigAttribute = null;
+//		Attribute[] as = myGen.getAttributes();
+//		for (int i = 0; i < as.length; i++) {
+//			Attribute attribute = as[i];
+//			if (attribute.getName().equals("Signature")) sigAttribute = attribute;
+//		}
+//		if (sigAttribute!=null) {
+//			// Got it
+//			myGen.removeAttribute(sigAttribute);
+//			
+//			int nameIndex = constantPoolGen.addUtf8("Signature");
+//			String data = ((Signature)sigAttribute).getSignature()+"LJ<java/"
+//			//System.err.println(data);
+//			byte[] bytes = Utility.stringToUTF(data);
+//			int length = bytes.length;
+//
+//			return new Unknown(nameIndex, length, bytes, constantPoolGen.getConstantPool());	
+//			new org.aspectj.apache.bcel.classfile.Signature((Signature)sigAttribute);
+//		}
     }
 
 	/**
@@ -497,7 +518,7 @@ public final class LazyClassGen {
     }
     
     public void addInterface(TypeX typeX, ISourceLocation sourceLocation) {
-    	myGen.addInterface(typeX.getName());
+    	myGen.addInterface(typeX.getRawName());
         if (!typeX.equals(TypeX.SERIALIZABLE)) 
 		  warnOnAddedInterface(typeX.getName(),sourceLocation);
     }
