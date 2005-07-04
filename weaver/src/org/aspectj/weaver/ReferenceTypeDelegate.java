@@ -52,4 +52,6 @@ public interface ReferenceTypeDelegate {
 	public WeaverStateInfo getWeaverState();
 	public ReferenceType getResolvedTypeX();
 	public boolean doesNotExposeShadowMungers();
+	
+	public String getDeclaredGenericSignature();
 }
