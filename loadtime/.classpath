@@ -28,6 +28,10 @@
 		<attributes>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/lib/ext/jrockit/managementapi-jrockit81.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
 	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar">
 		<attributes>
 		</attributes>

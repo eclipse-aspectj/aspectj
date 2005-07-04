@@ -1,0 +1,8 @@
+The managementapi-jrockit81.jar jar file in this folder is an excerpt of the BEA JRockit Management API
+as per JRockit 8.1 (Java 1.4) (supports also for JRockit 7 ie Java 1.3).
+
+It contains only the class file needed at build time for AspectJ
+and must not be used by the end-user.
+
+http://www.jrockit.com
+http://www.bea.com
