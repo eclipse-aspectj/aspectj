@@ -28,8 +28,8 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
-import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.Pointcut;
 
 public abstract class World implements Dump.INode {
 	protected IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
@@ -119,10 +119,40 @@ public abstract class World implements Dump.INode {
     	}
     	return coreTy;
     }
+    
+    /**
+     * Attempt to resolve a type that should be a generic type.  
+     */
+    public ResolvedTypeX resolveTheGenericType(TypeX ty, boolean allowMissing) {
+        // Look up the raw type by signature
+    	String signature = ty.getRawType().getSignature();
+    	ResolvedTypeX ret = (ResolvedTypeX) typeMap.get(signature);
+    	if (ret==null) {
+    		ret = resolve(TypeX.forSignature(signature));
+        	typeMap.put(signature,ret);
+    	}
+    	//TODO asc temporary guard - can this ever happen?
+    	if (ret==null) throw new RuntimeException("RAW TYPE IS missing for "+ty);
+    	
+    	// Does the raw type know its generic form? (It will if we created the
+    	// raw type from a source type, it won't if its been created just through
+    	// being referenced, e.g. java.util.List
+    	ResolvedTypeX generic = ((ReferenceType)ret).genericType;
+    	if (generic != null) { generic.world = this; return generic; } 
+
+    	// Fault in the generic that underpins the raw type ;)
+    	ReferenceTypeDelegate thegen = resolveObjectType((ReferenceType)ret);
+    	ReferenceType genericRefType = new ReferenceType(
+    			TypeX.forGenericTypeSignature(ret.getSignature(),thegen.getDeclaredGenericSignature()),this);
+    	((ReferenceType)ret).setGenericType(genericRefType);
+    	genericRefType.delegate=thegen;
+    	((ReferenceType)ret).delegate=thegen;
+    	return genericRefType;
+    }
 
     public ResolvedTypeX resolve(TypeX ty, boolean allowMissing) {
-    	//System.out.println("resolve: " + ty + " world " + typeMap.keySet());
-        String signature = ty.getRawTypeSignature();
+    	//System.out.println("resolve: " + ty + " world " + typeMap.keySet());		
+        String signature = ty.getSignature();
         ResolvedTypeX ret = typeMap.get(signature);
         if (ret != null) { ret.world = this; return ret; } // Set the world for the RTX
         
@@ -139,13 +169,16 @@ public abstract class World implements Dump.INode {
                 dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type "+ty.getName()));
             }
         }
-		if (ty.isParameterized() && !ty.isRawType()) {
+		if (ty.isParameterized()) {
 			for (int i = 0; i < ty.typeParameters.length; i++) {
 				ty.typeParameters[i] = resolve(ty.typeParameters[i],allowMissing);
 			}
 		}
         //System.out.println("ret: " + ret);
-        typeMap.put(signature, ret);
+        // Pulling in the type may have already put the right entry in the map
+		if (typeMap.get(signature)==null) {
+	        typeMap.put(signature, ret);
+		}
         return ret;
     }
     
@@ -153,14 +186,30 @@ public abstract class World implements Dump.INode {
     public ResolvedTypeX resolve(String name) {
     	return resolve(TypeX.forName(name));
     }
-    protected final ResolvedTypeX resolveObjectType(TypeX ty) {
-		String signature = ty.getRawTypeSignature();
 
-    	ReferenceType name = new ReferenceType(signature, this);
-    	ReferenceTypeDelegate concreteName = resolveObjectType(name);
-    	if (concreteName == null) return ResolvedTypeX.MISSING;
-    	name.setDelegate(concreteName);
-    	return name;
+	
+	/*
+     * Copes with parameterized types.  When it sees one then it discovers the
+     * base type and reuses the delegate
+     */
+    protected final ResolvedTypeX resolveObjectType(TypeX ty) {
+		if (ty.isParameterized()) {
+			ReferenceType genericType = (ReferenceType)resolveTheGenericType(ty,false);
+			ReferenceType parameterizedType = new ReferenceType(ty.getSignature(),this);
+			parameterizedType.setGenericType(genericType);
+			parameterizedType.setDelegate(genericType.getDelegate()); // move into setgenerictype
+			return parameterizedType;
+		} else if (ty.isGeneric()) {
+			ReferenceType genericType = (ReferenceType)resolveTheGenericType(ty,false);
+			return genericType;
+		} else {
+			String signature = ty.getRawTypeSignature();
+			ReferenceType name = new ReferenceType(signature/*was ty.getSignature()*/, this);
+	    	ReferenceTypeDelegate concreteName = resolveObjectType(name);
+	    	if (concreteName == null) return ResolvedTypeX.MISSING;
+	    	name.setDelegate(concreteName);
+	    	return name;
+		}
     }
     
     protected abstract ReferenceTypeDelegate resolveObjectType(ReferenceType ty);
@@ -476,16 +525,16 @@ public abstract class World implements Dump.INode {
 	}
 
 	public ReferenceType lookupOrCreateName(TypeX ty) {
-		String signature = ty.getRawTypeSignature();
+		String signature = ty.getSignature();
         ReferenceType ret = (ReferenceType)typeMap.get(signature);
         if (ret == null) {
         	ret = new ReferenceType(signature, this);
         	typeMap.put(signature, ret);
         }
-        
 		return ret;
 	}
 	
+
 //	public void clearUnexposed() {
 //		List toRemove = new ArrayList();
 //		for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
