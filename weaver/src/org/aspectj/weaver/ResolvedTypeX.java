@@ -1411,5 +1411,15 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	public WeaverStateInfo getWeaverState() {
 		return null;
 	}
+	
+	/**
+	 * Overridden by ReferenceType to return a sensible answer for parameterized and raw types.
+	 * @return
+	 */
+	public ResolvedTypeX getGenericType() {
+		if (!(isParameterized() || isRawType()))
+			throw new BCException("The type "+getBaseName()+" is not parameterized or raw - it has no generic type");
+		return null;
+	}
 
 }

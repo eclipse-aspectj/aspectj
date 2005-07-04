@@ -225,5 +225,9 @@ public class ReferenceType extends ResolvedTypeX {
 	public void setGenericType(ReferenceType rt) {
 		this.genericType = rt;
 	}
+	
+	public ResolvedTypeX getGenericType() {
+		return genericType;
+	}
 
 }
