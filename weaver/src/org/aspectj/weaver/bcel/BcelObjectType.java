@@ -21,9 +21,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
@@ -74,6 +76,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     private boolean isAnnotationStyleAspect = false;// set upon construction
 	private boolean isCodeStyleAspect = false; // not redundant with field above!
 
+//  TODO asc need soon but not just yet...
+//	private boolean discoveredDeclaredSignature = false;
+//	private String declaredSignature = null;
 
 	public Collection getTypeMungers() {
 		return typeMungers;	
@@ -448,6 +453,16 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public AnnotationX[] getAnnotations() {
 		ensureAnnotationTypesRetrieved();
 		return annotations;
+	}
+
+
+	public String getDeclaredGenericSignature() {
+		Attribute[] as = javaClass.getAttributes();
+		for (int i = 0; i < as.length; i++) {
+			Attribute attribute = as[i];
+			if (attribute instanceof Signature) return ((Signature)attribute).getSignature();
+		}
+		throw new RuntimeException("Should not have been asked for the signature?");
 	}
 } 
     

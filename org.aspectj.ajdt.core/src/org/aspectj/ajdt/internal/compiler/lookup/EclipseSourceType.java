@@ -450,5 +450,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	public boolean doesNotExposeShadowMungers() {
 		return true;
 	}
-
+	
+	public String getDeclaredGenericSignature() {
+		return CharOperation.charToString(binding.genericSignature());
+	}
 }
