@@ -3020,7 +3020,7 @@ public class BcelShadow extends Shadow {
 			if (getKind()==Shadow.StaticInitialization && getEnclosingClass().getType().getSourceLocation().getOffset()!=0)
 				return getEnclosingClass().getType().getSourceLocation();
 			else 
-			    return getEnclosingClass().getType().getSourceContext().makeSourceLocation(sourceLine);
+			    return getEnclosingClass().getType().getSourceContext().makeSourceLocation(sourceLine, 0);
 		}
 	}
 

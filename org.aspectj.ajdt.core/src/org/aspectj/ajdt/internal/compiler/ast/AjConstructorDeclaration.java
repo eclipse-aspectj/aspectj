@@ -53,6 +53,6 @@ public class AjConstructorDeclaration extends ConstructorDeclaration {
 		}
 		
 		extraAttributeList.add(
-				new EclipseAttributeAdapter(new AjAttribute.MethodDeclarationLineNumberAttribute(declarationStartLine)));
+				new EclipseAttributeAdapter(new AjAttribute.MethodDeclarationLineNumberAttribute(declarationStartLine, this.sourceStart())));
 	}
 }

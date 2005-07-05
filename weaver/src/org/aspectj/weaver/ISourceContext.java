@@ -17,6 +17,6 @@ import org.aspectj.bridge.ISourceLocation;
 
 public interface ISourceContext {
 	public ISourceLocation makeSourceLocation(IHasPosition position);
-	public ISourceLocation makeSourceLocation(int line);
+	public ISourceLocation makeSourceLocation(int line, int offset);
 	public int getOffset();
 }

@@ -314,23 +314,35 @@ public abstract class AjAttribute {
 		}
 		
 		private int lineNumber;
-		
-		public MethodDeclarationLineNumberAttribute(int line) {
+
+        // AV: added in 1.5 M3 thus handling cases where we don't have that information
+        private int offset;
+
+		public MethodDeclarationLineNumberAttribute(int line, int offset) {
 			this.lineNumber = line;
+            this.offset = offset;
 		}
 		
 		public int getLineNumber() { return lineNumber; }
-		
+
+        public int getOffset() { return offset; }
+
 		public void write(DataOutputStream s) throws IOException {
 			s.writeInt(lineNumber);
+            s.writeInt(offset);
 		}
 		
 		public static MethodDeclarationLineNumberAttribute read(VersionedDataInputStream s) throws IOException {
-			return new MethodDeclarationLineNumberAttribute(s.readInt());
+            int line = s.readInt();
+            int offset = 0;
+            if (s.available()>0) {
+                offset = s.readInt();
+            }
+			return new MethodDeclarationLineNumberAttribute(line, offset);
 		}
 
 		public String toString() {
-			return AttributeName + ": " + lineNumber;
+			return AttributeName + ": " + lineNumber + ":" + offset;
 		}
 	}
 	

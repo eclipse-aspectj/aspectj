@@ -552,7 +552,7 @@ public class AtAjAttributes {
                 }
                 setIgnoreUnboundBindingNames(pc, bindings);
 
-                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
+                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod.getDeclarationOffset());
                 struct.ajAttributes.add(
                         new AjAttribute.AdviceAttribute(
                                 AdviceKind.Before,
@@ -607,7 +607,7 @@ public class AtAjAttributes {
                 }
                 setIgnoreUnboundBindingNames(pc, bindings);
 
-                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
+                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod.getDeclarationOffset());
                 struct.ajAttributes.add(
                         new AjAttribute.AdviceAttribute(
                                 AdviceKind.After,
@@ -692,7 +692,7 @@ public class AtAjAttributes {
             }
             setIgnoreUnboundBindingNames(pc, bindings);
 
-            ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
+            ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod.getDeclarationOffset());
             struct.ajAttributes.add(
                     new AjAttribute.AdviceAttribute(
                             AdviceKind.AfterReturning,
@@ -776,7 +776,7 @@ public class AtAjAttributes {
             }
             setIgnoreUnboundBindingNames(pc, bindings);
 
-            ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
+            ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod.getDeclarationOffset());
             struct.ajAttributes.add(
                     new AjAttribute.AdviceAttribute(
                             AdviceKind.AfterThrowing,
@@ -830,7 +830,7 @@ public class AtAjAttributes {
                 }
                 setIgnoreUnboundBindingNames(pc, bindings);
 
-                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber());
+                ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod.getDeclarationOffset());
                 struct.ajAttributes.add(
                         new AjAttribute.AdviceAttribute(
                                 AdviceKind.Around,

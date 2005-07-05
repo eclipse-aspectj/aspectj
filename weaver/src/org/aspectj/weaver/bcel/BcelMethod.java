@@ -151,13 +151,21 @@ final class BcelMethod extends ResolvedMember {
 			return -1;
 		}
 	}
-    
+
+    public int getDeclarationOffset() {
+        if (declarationLineNumber != null) {
+            return declarationLineNumber.getOffset();
+        } else {
+            return -1;
+        }
+    }
+
     public ISourceLocation getSourceLocation() {
       ISourceLocation ret = super.getSourceLocation(); 
       if ((ret == null || ret.getLine()==0) && hasDeclarationLineNumberInfo()) {
         // lets see if we can do better
         ISourceContext isc = getSourceContext();
-        if (isc !=null) ret = isc.makeSourceLocation(getDeclarationLineNumber());
+        if (isc !=null) ret = isc.makeSourceLocation(getDeclarationLineNumber(), getDeclarationOffset());
         else            ret = new SourceLocation(null,getDeclarationLineNumber());
       }
       return ret;

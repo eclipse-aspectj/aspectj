@@ -394,7 +394,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	public ISourceLocation getSourceLocation() {
-		return getResolvedTypeX().getSourceContext().makeSourceLocation(0); //FIXME ??? we can do better than this
+		return getResolvedTypeX().getSourceContext().makeSourceLocation(0, 0); //FIXME ??? we can do better than this
 	}
 	
 	public AjAttribute.WeaverVersionInfo getWeaverVersionAttribute() {

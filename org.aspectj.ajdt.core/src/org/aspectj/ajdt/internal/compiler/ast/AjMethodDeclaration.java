@@ -69,6 +69,6 @@ public class AjMethodDeclaration extends MethodDeclaration {
 		}
 		
 		extraAttributeList.add(
-				new EclipseAttributeAdapter(new AjAttribute.MethodDeclarationLineNumberAttribute(declarationStartLine)));
+				new EclipseAttributeAdapter(new AjAttribute.MethodDeclarationLineNumberAttribute(declarationStartLine, this.sourceStart())));
 	}
 }

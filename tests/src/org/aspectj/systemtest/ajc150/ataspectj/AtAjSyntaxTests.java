@@ -41,11 +41,11 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 
     public void testSingletonAspectBindings() {
         //Note AV: uncomment setReporting to get it in modules/tests folder
-        //org.aspectj.asm.AsmManager.setReporting("debug.txt",true,true,true,true);
+        org.aspectj.asm.AsmManager.setReporting("debug.txt",true,true,true,true);
         runTest("singletonAspectBindings");
         // same stuff with AJ
         //org.aspectj.asm.AsmManager.setReporting("debug-aj.txt",true,true,true,true);
-        runTest("singletonAspectBindings2");
+        //runTest("singletonAspectBindings2");
 
     }
 
