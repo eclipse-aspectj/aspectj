@@ -79,7 +79,8 @@
 		<antcall target="install"/>
 		<antcall target="product-tests"/>
 		<!-- TODO re-enable antcall target="harness-tests"/ --> 
-		<build-aspectj vm="13" target="compile-runtime-11"/>
+		<!-- Temporary removal to see if build will work... -->
+		<!--build-aspectj vm="13" target="compile-runtime-11"/-->
 			
 	    <build-aspectj vm="${max.vm}" target="save-result"/>
 	    
