@@ -111,6 +111,11 @@ public abstract class World implements Dump.INode {
     	return resolve(ty, false);
     }
     
+    // if we already have an rtx, don't re-resolve it
+    public ResolvedTypeX resolve(ResolvedTypeX ty) {
+    	return ty;
+    }
+    
     public ResolvedTypeX getCoreType(TypeX tx) {
     	ResolvedTypeX coreTy = resolve(tx,true);
     	if (coreTy == ResolvedTypeX.MISSING) {
