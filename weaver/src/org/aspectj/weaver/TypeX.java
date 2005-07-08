@@ -243,15 +243,20 @@ public class TypeX implements AnnotatedElement {
 	 * and parameterized type names.
 	 */
     public static TypeX forParameterizedTypeNames(String name, String[] paramTypeNames) {
-		TypeX ret = TypeX.forName(name);
-		ret.typeKind=PARAMETERIZED;
-		ret.typeParameters = null;
-		if (paramTypeNames!=null) {
-			ret.typeParameters = new TypeX[paramTypeNames.length];
+		TypeX[] paramTypes = null;
+    	if (paramTypeNames!=null) {
+			paramTypes = new TypeX[paramTypeNames.length];
 			for (int i = 0; i < paramTypeNames.length; i++) {
-				ret.typeParameters[i] = TypeX.forName(paramTypeNames[i]);
+				paramTypes[i] = TypeX.forName(paramTypeNames[i]);
 			}
 		}
+    	return TypeX.forParameterizedTypes(name, paramTypes);
+    }
+    
+    public static TypeX forParameterizedTypes(String name, TypeX[] paramTypes) {
+		TypeX ret = TypeX.forName(name);
+		ret.typeKind=PARAMETERIZED;
+		ret.typeParameters = paramTypes;
 		ret.rawTypeSignature = ret.signature;
 		// sig for e.g. List<String> is Ljava/util/List<Ljava/lang/String;>;
 		if (ret.typeParameters!=null) {
@@ -264,7 +269,7 @@ public class TypeX implements AnnotatedElement {
 			sigAddition.append(";");
 			ret.signature = ret.signature.substring(0,ret.signature.length()-1) + sigAddition.toString();
 		}
-		return ret;
+		return ret;    	
     }
 	
 	public static TypeX forRawTypeNames(String name) {
@@ -468,7 +473,8 @@ public class TypeX implements AnnotatedElement {
 		return typeKind==RAW;
 	}
 	
-	public final boolean isGeneric() {
+	// AMC - made non-final since ReferenceType needs to override this.
+	public /*final*/ boolean isGeneric() {
 		return typeKind==GENERIC;
 	}
 	
