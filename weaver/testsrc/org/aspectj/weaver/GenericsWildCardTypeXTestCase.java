@@ -23,13 +23,13 @@ public class GenericsWildCardTypeXTestCase extends TestCase {
 
 	public void testIdentity() {
 		TypeX anything = GenericsWildcardTypeX.GENERIC_WILDCARD;
-		assertEquals("?",anything.getSignature());
+		assertEquals("Ljava/lang/Object;",anything.getSignature());
 	}
 	
 	public void testResolving() {
 		BoundedReferenceType brt = (BoundedReferenceType)
 			GenericsWildcardTypeX.GENERIC_WILDCARD.resolve(new BcelWorld());
-		assertEquals("?",brt.getSignature());
+		assertEquals("Ljava/lang/Object;",brt.getSignature());
 		assertTrue(brt.isExtends());
 		assertEquals("Ljava/lang/Object;",brt.getUpperBound().getSignature());
 	}

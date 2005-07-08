@@ -47,6 +47,8 @@ public class AllTests extends TestCase {
             // so the class name can only be used reflectively
             TestUtil.loadTestsReflectively(suite, "Aspectj5rtModuleTests", false);
             TestUtil.loadTestsReflectively(suite, "Loadtime5ModuleTests", false);
+            // this next one is built normally, but needs 1.5 rt.jar to pass
+            suite.addTest(BcweaverModuleTests15.suite());
         } else {
             suite.addTest(TestUtil.skipTest("for 1.5"));
         } 

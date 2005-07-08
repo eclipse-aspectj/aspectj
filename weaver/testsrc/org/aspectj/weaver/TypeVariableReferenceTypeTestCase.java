@@ -27,19 +27,11 @@ public class TypeVariableReferenceTypeTestCase extends TestCase {
 	BoundedReferenceType superClass;
 	BoundedReferenceType extendsWithExtras;
 	BcelWorld world;
-
-	public void testConstructionByNameAndBound() {
-		TypeVariableReferenceType tvrt = new TypeVariableReferenceType("T",javaLangClass,true,world);
-		assertEquals("T",tvrt.getTypeVariableName());
-		assertTrue(tvrt.isExtends);
-		assertEquals(javaLangClass,tvrt.getUpperBound());
-	}
 	
 	public void testConstructionByNameAndVariable() {
 		TypeVariable tv = new TypeVariable("T",javaLangClass);
 		TypeVariableReferenceType tvrt = new TypeVariableReferenceType(tv,world);
-		assertEquals("T",tvrt.getTypeVariableName());
-		assertTrue(tvrt.isExtends);
+		assertEquals("T",tvrt.getTypeVariable().getName());
 		assertEquals(javaLangClass,tvrt.getUpperBound());
 	}
 	

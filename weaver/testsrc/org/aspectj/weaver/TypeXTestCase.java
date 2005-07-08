@@ -106,7 +106,7 @@ public class TypeXTestCase extends TestCase {
 	
 	public void testTypeXForParameterizedTypes() {
 		TypeX stringType = TypeX.forName("java/lang/String");
-		TypeX listOfStringType = TypeX.forParameterizedTypes("java/util/List", new TypeX[] {stringType});
+		TypeX listOfStringType = TypeX.forParameterizedTypes(TypeX.forName("java/util/List"), new TypeX[] {stringType});
 		assertEquals("1 type param",1,listOfStringType.typeParameters.length);
 		assertEquals(stringType,listOfStringType.typeParameters[0]);
 		assertTrue(listOfStringType.isParameterized());
