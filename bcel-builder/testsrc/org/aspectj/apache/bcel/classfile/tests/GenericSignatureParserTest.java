@@ -186,6 +186,13 @@ public class GenericSignatureParserTest extends TestCase {
 		assertEquals("Ljava/lang/RuntimeException;",mSig.throwsSignatures[1].toString());
 	}
 	
+	public void testMethodSignaturePrimitiveParams() {
+		Signature.MethodTypeSignature mSig = parser.parseAsMethodSignature("(ILjava/lang/Object;)V");		
+		assertEquals("2 parameters",2,mSig.parameters.length);
+		assertEquals("I",mSig.parameters[0].toString());
+		assertEquals("Ljava/lang/Object;",mSig.parameters[1].toString());
+	}
+	
 	public void testMethodSignatureParsingInJDK() throws Exception{
 		SyntheticRepository repository = SyntheticRepository.getInstance();
 		String[] testClasses = new String[] {
