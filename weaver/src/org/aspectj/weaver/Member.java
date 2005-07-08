@@ -503,6 +503,14 @@ public class Member implements Comparable, AnnotatedElement {
     public final boolean isPrivate() {
         return Modifier.isPrivate(modifiers);
     }    
+    
+    /**
+     * Returns true iff the member is generic (NOT parameterized)
+     * For example, a method declared in a generic type
+     */
+    public boolean canBeParameterized() {
+    	return false;
+    }
 
 	public final int getCallsiteModifiers() {
 		return modifiers & ~ Modifier.INTERFACE;
