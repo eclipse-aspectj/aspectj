@@ -1,5 +1,6 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ *                      2005 contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -7,7 +8,8 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC     initial implementation
+ *     Adrian Colyer, canBeParameterized tests 
  * ******************************************************************/
 
 
@@ -16,6 +18,7 @@ package org.aspectj.weaver;
 import junit.framework.TestCase;
 
 import org.aspectj.testing.util.TestUtil;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * This is a test case for all the portions of Member that don't require a world.
@@ -142,6 +145,57 @@ public class MemberTestCase extends TestCase {
         isStaticTest(m, true);
     }
 
+    public void testCanBeParameterizedRegularMethod() {
+    	BcelWorld world = new BcelWorld();
+    	ResolvedTypeX javaLangClass = world.resolve(TypeX.forName("java/lang/Class"));
+    	ResolvedMember[] methods = javaLangClass.getDeclaredMethods();
+    	ResolvedMember getAnnotations = null;
+    	for (int i = 0; i < methods.length; i++) {
+			if (methods[i].getName().equals("getAnnotations")) {
+				getAnnotations = methods[i];
+				break;
+			}
+		}
+    	if (getAnnotations != null) { // so can run on non-Java 5
+//    		System.out.println("got it");
+    		assertFalse(getAnnotations.canBeParameterized());
+    	}
+    }
+    
+    public void testCanBeParameterizedGenericMethod() {
+    	BcelWorld world = new BcelWorld();
+    	ResolvedTypeX javaLangClass = world.resolve(TypeX.forName("java/lang/Class"));
+    	ResolvedMember[] methods = javaLangClass.getDeclaredMethods();
+    	ResolvedMember asSubclass = null;
+    	for (int i = 0; i < methods.length; i++) {
+			if (methods[i].getName().equals("asSubclass")) {
+				asSubclass = methods[i];
+				break;
+			}
+		}
+    	if (asSubclass != null) { // so can run on non-Java 5
+//    		System.out.println("got it");
+    		assertTrue(asSubclass.canBeParameterized());
+    	}    	
+    }
+    
+    public void testCanBeParameterizedMethodInGenericType() {
+       	BcelWorld world = new BcelWorld();
+    	ResolvedTypeX javaUtilList = world.resolve(TypeX.forName("java/util/List"));
+    	ResolvedMember[] methods = javaUtilList.getDeclaredMethods();
+    	ResolvedMember add = null;
+    	for (int i = 0; i < methods.length; i++) {
+			if (methods[i].getName().equals("add")) {
+				add = methods[i];
+				break;
+			}
+		}
+    	if (add != null) { // so can run on non-Java 5
+//    		System.out.println("got it");
+    		assertTrue(add.canBeParameterized());
+    	}    	    	
+    }
+    
     private void isStaticTest(Member m, boolean b) {
         assertEquals(m + " is static", b, m.isStatic());
     }

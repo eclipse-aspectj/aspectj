@@ -104,6 +104,15 @@ public class TypeXTestCase extends TestCase {
 //		System.err.println(tx.dump());
 	}
 	
+	public void testTypeXForParameterizedTypes() {
+		TypeX stringType = TypeX.forName("java/lang/String");
+		TypeX listOfStringType = TypeX.forParameterizedTypes("java/util/List", new TypeX[] {stringType});
+		assertEquals("1 type param",1,listOfStringType.typeParameters.length);
+		assertEquals(stringType,listOfStringType.typeParameters[0]);
+		assertTrue(listOfStringType.isParameterized());
+		assertFalse(listOfStringType.isGeneric());
+	}
+	
 	private void checkTX(TypeX tx,boolean shouldBeParameterized,int numberOfTypeParameters) {
 		assertTrue("Expected parameterization flag to be "+shouldBeParameterized,tx.isParameterized()==shouldBeParameterized);
 		if (numberOfTypeParameters==0) {
