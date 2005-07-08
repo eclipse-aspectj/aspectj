@@ -250,11 +250,11 @@ public class TypeX implements AnnotatedElement {
 				paramTypes[i] = TypeX.forName(paramTypeNames[i]);
 			}
 		}
-    	return TypeX.forParameterizedTypes(name, paramTypes);
+    	return TypeX.forParameterizedTypes(TypeX.forName(name), paramTypes);
     }
     
-    public static TypeX forParameterizedTypes(String name, TypeX[] paramTypes) {
-		TypeX ret = TypeX.forName(name);
+    public static TypeX forParameterizedTypes(TypeX rawType, TypeX[] paramTypes) {
+		TypeX ret = rawType;
 		ret.typeKind=PARAMETERIZED;
 		ret.typeParameters = paramTypes;
 		ret.rawTypeSignature = ret.signature;
