@@ -43,6 +43,7 @@ public interface ReferenceTypeDelegate {
 	public ResolvedTypeX[]  getDeclaredInterfaces();
 	public ResolvedMember[] getDeclaredMethods();
 	public ResolvedMember[] getDeclaredPointcuts();
+	public TypeVariable[] getTypeVariables();
 
 	public PerClause  getPerClause();
 	public Collection getDeclares() ;
