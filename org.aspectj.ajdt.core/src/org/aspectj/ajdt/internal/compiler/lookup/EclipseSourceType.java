@@ -103,6 +103,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 		return false;
 	}
+	
 	public WeaverStateInfo getWeaverState() {
 		return null;
 	}
@@ -459,4 +460,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		char[] sig =  binding.genericSignature();
 		return (sig==null?false:sig[0]=='<');
 	}
+	
+	public TypeVariable[] getTypeVariables() {
+		throw new UnsupportedOperationException("For Andy to implement!");
+	}
+	
 }
