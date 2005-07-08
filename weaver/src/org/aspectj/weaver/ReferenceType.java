@@ -56,6 +56,10 @@ public class ReferenceType extends ResolvedTypeX {
     public final boolean isClass() {
     	return delegate.isClass();
     }
+    
+    public final boolean isGeneric() {
+    	return delegate.isGeneric();
+    }
 
     public AnnotationX[] getAnnotations() {
     	return delegate.getAnnotations();
