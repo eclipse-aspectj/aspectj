@@ -16,34 +16,25 @@ package org.aspectj.weaver;
  */
 public class TypeVariableReferenceType extends BoundedReferenceType {
 
-	private String name;
-	
-	public TypeVariableReferenceType(
-			String aTypeVariableName,
-			ReferenceType aBound,
-			boolean isExtends,
-			World aWorld
-			) {
-		super(aBound,isExtends,aWorld);
-		this.name = aTypeVariableName;
-	}
+	private TypeVariable typeVariable;
 	
 	public TypeVariableReferenceType(
 			TypeVariable aTypeVariable,
 			World aWorld) {
-		super((ReferenceType)aTypeVariable.getUpperBound(),true,aWorld);
-		this.name = aTypeVariable.getName();
-		if (aTypeVariable.getLowerBound() != null) {
-			this.isExtends = false;
-			this.isSuper = true;
-			this.lowerBound = (ReferenceType) aTypeVariable.getLowerBound();
-		}
+		super(aTypeVariable.getUpperBound().getSignature(),aWorld);
+		this.typeVariable = aTypeVariable;
+		this.isExtends = false;
+		this.isSuper = false;
+		this.upperBound = (ReferenceType) aTypeVariable.getUpperBound();
+		this.lowerBound = (ReferenceType) aTypeVariable.getLowerBound();
 		if (aTypeVariable.getAdditionalInterfaceBounds().length > 0) {
 			this.additionalInterfaceBounds = (ReferenceType[]) aTypeVariable.getAdditionalInterfaceBounds();
 		}
+		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)aTypeVariable.getUpperBound()));
 	}
 	
-	public String getTypeVariableName() {
-		return name;
+	public TypeVariable getTypeVariable() {
+		return typeVariable;
 	}
+	
 }
