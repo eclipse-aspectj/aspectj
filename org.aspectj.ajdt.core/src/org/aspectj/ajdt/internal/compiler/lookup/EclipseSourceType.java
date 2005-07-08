@@ -103,11 +103,6 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 		return false;
 	}
-	
-	public boolean isGeneric() {
-		return binding.genericSignature() != null;
-	}
-	
 	public WeaverStateInfo getWeaverState() {
 		return null;
 	}
@@ -458,5 +453,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	
 	public String getDeclaredGenericSignature() {
 		return CharOperation.charToString(binding.genericSignature());
+	}
+	
+	public boolean isGeneric() {
+		char[] sig =  binding.genericSignature();
+		return (sig==null?false:sig[0]=='<');
 	}
 }
