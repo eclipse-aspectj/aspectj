@@ -493,6 +493,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		}
 		throw new RuntimeException("Should not have been asked for the signature?");
 	}
+	
+	Signature.ClassSignature getGenericClassTypeSignature() {
+		return javaClass.getGenericClassTypeSignature();
+	}
 } 
     
     
