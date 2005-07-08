@@ -23,12 +23,12 @@ public class GenericsWildcardTypeX extends TypeX {
 	private BoundedReferenceType resolved = null;
 	
 	private GenericsWildcardTypeX() {
-		super("?");
+		super("Ljava/lang/Object;");  // should be super("?") ?
 	}
 	
 	public ResolvedTypeX resolve(World world) {
 		if (resolved == null) {
-			resolved = new BoundedReferenceType("?",world);
+			resolved = new BoundedReferenceType("Ljava/lang/Object;",world);
 		}
 		return resolved;
 	}
