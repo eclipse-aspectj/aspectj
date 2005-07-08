@@ -39,10 +39,10 @@ public class BcelGenericSignatureToTypeXConverter {
 		
 		// first build the 'raw type' signature
 		StringBuffer sig = new StringBuffer();
-		sig.append(aClassTypeSignature.outerType.identifier);
+		sig.append(aClassTypeSignature.outerType.identifier.replace(';',' ').trim());
 		for (int i = 0; i < aClassTypeSignature.nestedTypes.length; i++) {
-			sig.append(".");  // can't be dollar as types can have $ in their names
-			sig.append(aClassTypeSignature.nestedTypes[i].identifier);
+			sig.append("/"); 
+			sig.append(aClassTypeSignature.nestedTypes[i].identifier.replace(';',' ').trim());
 		}
 		sig.append(";");
 		
@@ -59,10 +59,10 @@ public class BcelGenericSignatureToTypeXConverter {
 			for (int i = 0; i < typeArgumentTypes.length; i++) {
 				typeArgumentTypes[i] = typeArgument2TypeX(innerType.typeArguments[i],typeParams,world);
 			}
-			return world.resolve(TypeX.forParameterizedTypes(sig.toString(), typeArgumentTypes));
+			return world.resolve(TypeX.forParameterizedTypes(TypeX.forSignature(sig.toString()), typeArgumentTypes));
 		} else {
 			// we have a non-parameterized type
-			return world.resolve(TypeX.forName(sig.toString()));
+			return world.resolve(TypeX.forSignature(sig.toString()));
 		}
 	}
 	
@@ -117,12 +117,12 @@ public class BcelGenericSignatureToTypeXConverter {
 		}
 	}
 	
-	private static ResolvedTypeX typeSignature2TypeX(
+	public static ResolvedTypeX typeSignature2TypeX(
 			Signature.TypeSignature aTypeSig,
 			Signature.FormalTypeParameter[] typeParams,
 			World world) {
 		if (aTypeSig.isBaseType()) {
-			return world.resolve(TypeX.forName(((Signature.BaseTypeSignature)aTypeSig).toString()));
+			return world.resolve(TypeX.forSignature(((Signature.BaseTypeSignature)aTypeSig).toString()));
 		} else {
 			return fieldTypeSignature2TypeX((Signature.FieldTypeSignature)aTypeSig,typeParams,world);
 		}
