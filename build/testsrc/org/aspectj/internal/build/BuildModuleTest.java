@@ -28,10 +28,6 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Commandline.Argument;
 import org.aspectj.internal.tools.ant.taskdefs.BuildModule;
 import org.aspectj.internal.tools.ant.taskdefs.Checklics;
-import org.aspectj.internal.tools.build.Messager;
-import org.aspectj.internal.tools.build.Module;
-import org.aspectj.internal.tools.build.Modules;
-import org.aspectj.internal.tools.build.Result;
 import org.aspectj.internal.tools.build.Util;
 
 /**
