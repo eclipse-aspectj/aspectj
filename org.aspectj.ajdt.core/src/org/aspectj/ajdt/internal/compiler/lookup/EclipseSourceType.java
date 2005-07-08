@@ -103,6 +103,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 		return false;
 	}
+	
+	public boolean isGeneric() {
+		return binding.genericSignature() != null;
+	}
+	
 	public WeaverStateInfo getWeaverState() {
 		return null;
 	}
