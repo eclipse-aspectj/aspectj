@@ -340,6 +340,9 @@ public class TypeX implements AnnotatedElement {
             case 'V': return ResolvedTypeX.VOID;
             case 'Z': return ResolvedTypeX.BOOLEAN;
             case '[': return new TypeX(signature);
+            case '+': return new TypeX(signature);
+            case '-' : return new TypeX(signature);
+            case '?' : return GenericsWildcardTypeX.GENERIC_WILDCARD;
             default:  throw new BCException("Bad type signature " + signature);
         }      
     }
@@ -897,6 +900,8 @@ public class TypeX implements AnnotatedElement {
 //            case '<': 
 //            	// its a generic!
  //           	if (signature.charAt(1)=='>') return signatureToName(signature.substring(2));
+            case '+' : return signatureToName(signature.substring(1, signature.length()));
+            case '-' : return signatureToName(signature.substring(1, signature.length()));
             default: 
                 throw new BCException("Bad type signature: " + signature);
         }      
