@@ -40,6 +40,12 @@ public class ReferenceType extends ResolvedTypeX {
 	int startPos = 0;
 	int endPos = 0;
 
+	// cached values for members
+	ResolvedMember[] parameterizedMethods = null;
+	ResolvedMember[] parameterizedFields = null;
+	ResolvedMember[] parameterizedPointcuts = null;
+	ResolvedTypeX[] parameterizedInterfaces = null;
+	
 	//??? should set delegate before any use
     public ReferenceType(String signature, World world) {
         super(signature, world);
@@ -159,21 +165,65 @@ public class ReferenceType extends ResolvedTypeX {
 	}
 
 	public ResolvedMember[] getDeclaredFields() {
-		return delegate.getDeclaredFields();
+		if (parameterizedFields != null) return parameterizedFields;
+		if (isParameterized()) {
+			ResolvedMember[] delegateFields = delegate.getDeclaredFields();
+			parameterizedFields = new ResolvedMember[delegateFields.length];
+			for (int i = 0; i < delegateFields.length; i++) {
+				parameterizedFields[i] = delegateFields[i].parameterizedWith(getTypeParameters());
+			}
+			return parameterizedFields;
+		} else {
+			return delegate.getDeclaredFields();
+		}
 	}
 
 	public ResolvedTypeX[] getDeclaredInterfaces() {
-		return delegate.getDeclaredInterfaces();
+		if (parameterizedInterfaces != null) return parameterizedInterfaces;
+		if (isParameterized()) {
+			ResolvedTypeX[] delegateInterfaces = delegate.getDeclaredInterfaces();
+			parameterizedInterfaces = new ResolvedTypeX[delegateInterfaces.length];
+			for (int i = 0; i < delegateInterfaces.length; i++) {
+				parameterizedInterfaces[i] = delegateInterfaces[i].parameterizedWith(getTypeParameters());
+			}
+			return parameterizedInterfaces;
+		} else {
+			return delegate.getDeclaredInterfaces();
+		}
 	}
 
 	public ResolvedMember[] getDeclaredMethods() {
-		return delegate.getDeclaredMethods();
+		if (parameterizedMethods != null) return parameterizedMethods;
+		if (isParameterized()) {
+			ResolvedMember[] delegateMethods = delegate.getDeclaredMethods();
+			parameterizedMethods = new ResolvedMember[delegateMethods.length];
+			for (int i = 0; i < delegateMethods.length; i++) {
+				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(getTypeParameters());
+			}
+			return parameterizedMethods;
+		} else {
+			return delegate.getDeclaredMethods();
+		}
 	}
 
 	public ResolvedMember[] getDeclaredPointcuts() {
-		return delegate.getDeclaredPointcuts();
+		if (parameterizedPointcuts != null) return parameterizedPointcuts;
+		if (isParameterized()) {
+			ResolvedMember[] delegatePointcuts = delegate.getDeclaredPointcuts();
+			parameterizedPointcuts = new ResolvedMember[delegatePointcuts.length];
+			for (int i = 0; i < delegatePointcuts.length; i++) {
+				parameterizedPointcuts[i] = delegatePointcuts[i].parameterizedWith(getTypeParameters());
+			}
+			return parameterizedPointcuts;
+		} else {
+			return delegate.getDeclaredPointcuts();
+		}
 	}
 
+	public TypeVariable[] getTypeVariables() {
+		return delegate.getTypeVariables();
+	}
+	
 	public PerClause getPerClause() { return delegate.getPerClause(); }
 	protected Collection getDeclares() { return delegate.getDeclares(); }
 	protected Collection getTypeMungers() { return delegate.getTypeMungers(); }
@@ -196,8 +246,16 @@ public class ReferenceType extends ResolvedTypeX {
 
 	public void setDelegate(ReferenceTypeDelegate delegate) {
 		this.delegate = delegate;
+		clearParameterizationCaches();
 	}
     
+	private void clearParameterizationCaches() {
+		parameterizedFields = null;
+		parameterizedInterfaces = null;
+		parameterizedMethods = null;
+		parameterizedPointcuts = null;
+	}
+
 	public int getEndPos() {
 		return endPos;
 	}

@@ -17,8 +17,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -293,6 +295,63 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 
 	public boolean isAnnotatedElsewhere() {
 		return isAnnotatedElsewhere;
+	}
+	
+	/**
+	 * Get the TypeX for the return type, taking generic signature into account
+	 */
+	public TypeX getGenericReturnType() {
+		return getReturnType();
+	}
+	
+	/**
+	 * Get the TypeXs of the parameter types, taking generic signature into account
+	 */
+	public TypeX[] getGenericParameterTypes() {
+		return getParameterTypes();
+	}
+	
+	// return a resolved member in which all type variables in the signature of this
+	// member have been replaced with the given bindings.
+	public ResolvedMember parameterizedWith(TypeX[] typeParameters) {
+		if (!this.getDeclaringType().isGeneric()) {
+			throw new IllegalStateException("Can't ask to parameterize a member of a non-generic type");
+		}
+		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
+		if (typeVariables.length != typeParameters.length) {
+			throw new IllegalStateException("Wrong number of type parameters supplied");
+		}
+		Map typeMap = new HashMap();
+		for (int i = 0; i < typeVariables.length; i++) {
+			typeMap.put(typeVariables[i].getName(), typeParameters[i]);
+		}
+		TypeX parameterizedReturnType = parameterize(getGenericReturnType(),typeMap);
+		TypeX[] parameterizedParameterTypes = new TypeX[getGenericParameterTypes().length];
+		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
+			parameterizedParameterTypes[i] = 
+				parameterize(getGenericParameterTypes()[i], typeMap);
+		}
+		return new ResolvedMember(
+					getKind(),
+					getDeclaringType(),
+					getModifiers(),
+					parameterizedReturnType,
+					getName(),
+					parameterizedParameterTypes,
+					getExceptions()
+				);
+	}
+	
+	private TypeX parameterize(TypeX aType, Map typeVariableMap) {
+		if (aType instanceof TypeVariableReferenceType) {
+			String variableName = ((TypeVariableReferenceType)aType).getTypeVariable().getName();
+			if (!typeVariableMap.containsKey(variableName)) {
+				throw new IllegalStateException("Type variable " + variableName + " not bound in type map");
+			}
+			return (TypeX) typeVariableMap.get(variableName);
+		} else {
+			return aType;
+		}
 	}
 }
    

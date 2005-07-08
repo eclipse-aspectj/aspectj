@@ -328,10 +328,31 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 
         // If they aren't the same, we need to allow for covariance ... where one sig might be ()LCar; and 
         // the subsig might be ()LFastCar; - where FastCar is a subclass of Car
-        boolean equalParamSignatures = m1.getParameterSignature().equals(m2.getParameterSignature());
-        return equalParamSignatures;
+        boolean equalCovariantSignatures = m1.getParameterSignature().equals(m2.getParameterSignature());
+        if (equalCovariantSignatures) return true;
+        
+        // If they aren't the same, we need to allow for generics... where one sig might be a parameterization
+        // of another sig.
+        if (m1.canBeParameterized()) {
+        	boolean m2MatchesParameterizationOfm1 =
+        		matchesGenericMethod(m1,m2);  
+        	if (m2MatchesParameterizationOfm1) return true;
+        } 
+        if (m2.canBeParameterized()) {
+        	boolean m1MatchesParameterizationOfm2 =
+        		matchesGenericMethod(m2,m1);
+        	if (m1MatchesParameterizationOfm2) return true;
+        }
+        return false;
     }
     
+    /**
+     * This method is only called from matches(m1,m2)
+     * We know that the names match, but that's it.
+     */
+    private static boolean matchesGenericMethod(Member aGenericMember, Member possibleParameterizationMember) {
+    	return false;
+    }
     
     public static boolean conflictingSignature(Member m1, Member m2) {
     	if (m1 == null || m2 == null) return false;
@@ -1422,4 +1443,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 		return null;
 	}
 
+	public ResolvedTypeX parameterizedWith(TypeX[] typeParameters) {
+		return this;
+	}
 }
