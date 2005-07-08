@@ -1,3 +1,15 @@
+/* *******************************************************************
+ * Copyright (c) 2005 Contributors
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Adrian Colyer     initial implementation 
+ * ******************************************************************/
+
 package org.aspectj.apache.bcel.classfile.tests;
 
 
@@ -10,8 +22,6 @@ import org.aspectj.apache.bcel.classfile.Signature.ClassTypeSignature;
 import org.aspectj.apache.bcel.classfile.Signature.FieldTypeSignature;
 import org.aspectj.apache.bcel.classfile.Signature.SimpleClassTypeSignature;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
-
-import sun.reflect.generics.scope.MethodScope;
 
 import junit.framework.TestCase;
 
