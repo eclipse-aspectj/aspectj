@@ -16,11 +16,15 @@ package org.aspectj.weaver.bcel;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
+import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.apache.bcel.classfile.Signature.TypeVariableSignature;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
@@ -230,5 +234,40 @@ final class BcelMethod extends ResolvedMember {
 				annotations[i] = new AnnotationX(annotation,world);
 			}
     	}
+	}
+	 
+
+	 private boolean canBeParameterized = false;
+	 private boolean calculatedParameterization = false;
+	 /**
+	  * A method can be parameterized if it has one or more generic
+	  * parameters. A generic parameter (type variable parameter) is
+	  * identified by the prefix "T"
+	  */
+	 public boolean canBeParameterized() {
+		if (calculatedParameterization) return canBeParameterized;
+		
+		String fullSignature = method.getGenericSignature();
+		if (fullSignature == null) {
+			canBeParameterized = false;
+		} else {
+			Signature.MethodTypeSignature mtSig = new GenericSignatureParser().parseAsMethodSignature(fullSignature);
+			if (mtSig.formalTypeParameters.length > 0) {
+				// generic method declaration
+				canBeParameterized = true;
+			} else {
+				// might be method with generic parameters declared in generic type
+				Signature.TypeSignature[] params = mtSig.parameters;
+				for (int i = 0; i < params.length; i++) {
+					if (params[i] instanceof TypeVariableSignature) {
+						canBeParameterized = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		calculatedParameterization = true;
+		return canBeParameterized;
 	}
 }
