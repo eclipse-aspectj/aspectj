@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.4 2005/06/26 20:27:40 acolyer Exp $
+ * @version $Id: JavaClass.java,v 1.5 2005/07/08 10:19:14 acolyer Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -111,6 +111,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 
   // state for dealing with generic signature string
   private String signatureAttributeString = null;
+  private Signature signatureAttribute = null;
   private boolean searchedForSignatureAttribute = false;
   
   /**
@@ -879,17 +880,34 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
    * Coded for performance - searches for the attribute only when requested - only searches for it once.
    */
   public final String getGenericSignature() {
+	loadGenericSignatureInfoIfNecessary();
+	return signatureAttributeString;
+  }
+
+private void loadGenericSignatureInfoIfNecessary() {
 	if (!searchedForSignatureAttribute) {
 	  boolean found=false;
       for(int i=0; !found && i < attributes.length; i++) {
         if(attributes[i] instanceof Signature) {
-		  signatureAttributeString = ((Signature)attributes[i]).getSignature();
+          signatureAttribute = ((Signature)attributes[i]);
+		  signatureAttributeString = signatureAttribute.getSignature();
 		  found=true;
         }
       }
 	  searchedForSignatureAttribute=true;
 	}
-	return signatureAttributeString;
+}
+  
+  /**
+   * the parsed version of the above
+   */
+  public final Signature.ClassSignature getGenericClassTypeSignature() {
+	  loadGenericSignatureInfoIfNecessary();
+	  if (signatureAttribute != null) {
+		  return signatureAttribute.asClassSignature();
+	  } else {
+		  return null;
+	  }
   }
 
 }
