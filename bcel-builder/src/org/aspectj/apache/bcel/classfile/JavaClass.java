@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.5 2005/07/08 10:19:14 acolyer Exp $
+ * @version $Id: JavaClass.java,v 1.6 2005/07/08 15:17:23 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -98,6 +98,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   private Attribute[]  attributes;    // attributes defined in the class
   private Annotation[] annotations;   // annotations defined on the class
   private byte         source = HEAP; // Generated in memory
+  private boolean     isGeneric = false;
 
   public static final byte HEAP = 1;
   public static final byte FILE = 2;
@@ -884,7 +885,12 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 	return signatureAttributeString;
   }
 
-private void loadGenericSignatureInfoIfNecessary() {
+  public boolean isGeneric() {
+	  loadGenericSignatureInfoIfNecessary();
+	  return isGeneric;
+  }
+
+  private void loadGenericSignatureInfoIfNecessary() {
 	if (!searchedForSignatureAttribute) {
 	  boolean found=false;
       for(int i=0; !found && i < attributes.length; i++) {
@@ -894,9 +900,10 @@ private void loadGenericSignatureInfoIfNecessary() {
 		  found=true;
         }
       }
+      isGeneric = found && signatureAttributeString.charAt(0)=='<';
 	  searchedForSignatureAttribute=true;
 	}
-}
+  }
   
   /**
    * the parsed version of the above
