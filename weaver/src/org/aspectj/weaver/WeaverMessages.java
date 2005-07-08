@@ -125,6 +125,10 @@ public class WeaverMessages {
 	
 	public static final String INCORRECT_TARGET_FOR_DECLARE_ANNOTATION = "incorrectTargetForDeclareAnnotation";
 	
+	
+	// Generics
+	public static final String CANT_DECP_MULTIPLE_PARAMETERIZATIONS="cantDecpMultipleParameterizations";
+	
 	public static String format(String key) {
 		return bundle.getString(key);
 	}
