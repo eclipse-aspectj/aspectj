@@ -47,7 +47,7 @@ public class BoundedReferenceType extends ReferenceType {
 	}
 	
 	/**
-	 * only for use when resolving GenericsWildcardTypeX
+	 * only for use when resolving GenericsWildcardTypeX or a TypeVariableReferenceType
 	 */
 	BoundedReferenceType(String sig, World world) {
 		super(sig,world);
@@ -81,7 +81,7 @@ public class BoundedReferenceType extends ReferenceType {
 		}
 	}
 	
-	private static class ReferenceTypeReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
+	protected static class ReferenceTypeReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
 
 		public ReferenceTypeReferenceTypeDelegate(ReferenceType backing) {
 			super(backing,false);
@@ -177,6 +177,10 @@ public class BoundedReferenceType extends ReferenceType {
 
 		public WeaverStateInfo getWeaverState() {
 			return null;
+		}
+
+		public TypeVariable[] getTypeVariables() {
+			return resolvedTypeX.getTypeVariables();
 		}
 
 	}
