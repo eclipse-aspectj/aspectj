@@ -12,7 +12,11 @@
 
 // default package
 
+import org.aspectj.weaver.BoundedReferenceTypeTestCase;
+import org.aspectj.weaver.GenericsWildCardTypeXTestCase;
 import org.aspectj.weaver.LocaleTest;
+import org.aspectj.weaver.ReferenceTypeTestCase;
+import org.aspectj.weaver.TypeVariableReferenceTypeTestCase;
 import org.aspectj.weaver.TypeVariableTestCase;
 import org.aspectj.weaver.tools.ToolsTests;
 
@@ -27,6 +31,10 @@ public class BcweaverModuleTests extends TestCase {
 		suite.addTest(org.aspectj.weaver.patterns.PatternsTests.suite()); 
         suite.addTestSuite(LocaleTest.class);
         suite.addTestSuite(TypeVariableTestCase.class);
+        suite.addTestSuite(ReferenceTypeTestCase.class);
+        suite.addTestSuite(BoundedReferenceTypeTestCase.class);
+        suite.addTestSuite(TypeVariableReferenceTypeTestCase.class);
+        suite.addTestSuite(GenericsWildCardTypeXTestCase.class);
         suite.addTest(ToolsTests.suite());
         return suite;
     }
