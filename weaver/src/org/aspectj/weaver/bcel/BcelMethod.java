@@ -53,6 +53,7 @@ final class BcelMethod extends ResolvedMember {
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
 	private ResolvedTypeX[] resolvedAnnotations;
 	private World world;
+	private BcelObjectType bcelObjectType;
 
 	BcelMethod(BcelObjectType declaringType, Method method) {
 		super(
@@ -67,6 +68,7 @@ final class BcelMethod extends ResolvedMember {
 		this.method = method;
 		this.sourceContext = declaringType.getResolvedTypeX().getSourceContext();
 		this.world = declaringType.getResolvedTypeX().getWorld();
+		this.bcelObjectType = declaringType;
 		unpackAjAttributes(world);
 		unpackJavaAttributes();
 	}
@@ -238,36 +240,64 @@ final class BcelMethod extends ResolvedMember {
 	 
 
 	 private boolean canBeParameterized = false;
-	 private boolean calculatedParameterization = false;
 	 /**
 	  * A method can be parameterized if it has one or more generic
 	  * parameters. A generic parameter (type variable parameter) is
 	  * identified by the prefix "T"
 	  */
 	 public boolean canBeParameterized() {
-		if (calculatedParameterization) return canBeParameterized;
-		
-		String fullSignature = method.getGenericSignature();
-		if (fullSignature == null) {
-			canBeParameterized = false;
-		} else {
-			Signature.MethodTypeSignature mtSig = new GenericSignatureParser().parseAsMethodSignature(fullSignature);
-			if (mtSig.formalTypeParameters.length > 0) {
-				// generic method declaration
-				canBeParameterized = true;
-			} else {
-				// might be method with generic parameters declared in generic type
-				Signature.TypeSignature[] params = mtSig.parameters;
-				for (int i = 0; i < params.length; i++) {
-					if (params[i] instanceof TypeVariableSignature) {
-						canBeParameterized = true;
-						break;
-					}
-				}
-			}
-		}
-		
-		calculatedParameterization = true;
+		 unpackGenericSignature();
 		return canBeParameterized;
 	}
+	 
+	 // genericized version of return and parameter types
+	 private boolean unpackedGenericSignature = false;
+	 private TypeX genericReturnType = null;
+	 private TypeX[] genericParameterTypes = null;
+	 
+	 public TypeX[] getGenericParameterTypes() {
+		 unpackGenericSignature();
+		 return genericParameterTypes;
+	 }
+	 
+	 public TypeX getGenericReturnType() {
+		 unpackGenericSignature();
+		 return genericReturnType;
+	 }
+	 
+	 private void unpackGenericSignature() {
+		 if (unpackedGenericSignature) return;
+		 unpackedGenericSignature = true;
+		 String gSig = method.getGenericSignature();
+		 if (gSig != null) {
+			 Signature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(method.getGenericSignature());
+ 			 if (mSig.formalTypeParameters.length > 0) {
+				// generic method declaration
+				canBeParameterized = true;
+			 }
+ 			 Signature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
+ 			 Signature.FormalTypeParameter[] formals = new
+ 			 	Signature.FormalTypeParameter[genericTypeSig.formalTypeParameters.length + mSig.formalTypeParameters.length];
+ 			 // put method formal in front of type formals for overriding in lookup
+ 			 System.arraycopy(mSig.formalTypeParameters,0,formals,0,mSig.formalTypeParameters.length);
+ 			 System.arraycopy(genericTypeSig.formalTypeParameters,0,formals,mSig.formalTypeParameters.length,genericTypeSig.formalTypeParameters.length);
+ 			 Signature.TypeSignature returnTypeSignature = mSig.returnType;
+			 genericReturnType = BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
+					 returnTypeSignature, formals,
+					 world);
+			 Signature.TypeSignature[] paramTypeSigs = mSig.parameters;
+			 genericParameterTypes = new TypeX[paramTypeSigs.length];
+			 for (int i = 0; i < paramTypeSigs.length; i++) {
+				genericParameterTypes[i] = 
+					BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
+							paramTypeSigs[i],formals,world);
+				if (paramTypeSigs[i] instanceof TypeVariableSignature) {
+					canBeParameterized = true;
+				}
+			 }
+		 } else {
+			 genericReturnType = getReturnType();
+			 genericParameterTypes = getParameterTypes();
+		 }
+	 }
 }
