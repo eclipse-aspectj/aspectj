@@ -38,9 +38,11 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.PerClause;
 
 
@@ -57,6 +59,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     private ResolvedMember[] methods = null;
     private ResolvedTypeX[] annotationTypes = null;
     private AnnotationX[] annotations = null;
+    private TypeVariable[] typeVars = null;
 
     // track unpackAttribute. In some case (per clause inheritance) we encounter
     // unpacked state when calling getPerClause
@@ -119,6 +122,32 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     public void setJavaClass(JavaClass newclass) {
     	this.javaClass = newclass;
     	resetState();
+    }
+    
+    /**
+     * Return true if this is a generic type (has one or more type variables
+     * in its signature).
+     */
+    public boolean isGeneric() {
+    	return javaClass.getGenericSignature() != null;
+    }
+    
+    
+    public TypeVariable[] getTypeVariables() {
+    	if (!isGeneric()) return new TypeVariable[0];
+    	
+    	if (typeVars == null) {
+	    	Signature.ClassSignature classSig = javaClass.getGenericClassTypeSignature();
+	    	typeVars = new TypeVariable[classSig.formalTypeParameters.length];
+	    	for (int i = 0; i < typeVars.length; i++) {
+				Signature.FormalTypeParameter ftp = classSig.formalTypeParameters[i];
+				typeVars[i] = BcelGenericSignatureToTypeXConverter.formalTypeParameter2TypeVariable(
+						ftp, 
+						classSig.formalTypeParameters,
+						getResolvedTypeX().getWorld());
+			}
+    	}
+    	return typeVars;
     }
     
     public int getModifiers() {
