@@ -4,6 +4,11 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.apache.bcel.util.ClassPath;
+import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class GenericsTests extends XMLBasedAjcTestCase {
@@ -97,14 +102,54 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 //		runTest("itd incorrectly using type parameter");
 //	}
 
-	// generic declare parents
+	// ----------------------------------------------------------------------------------------
+	// generic declare parents tests
+	// ----------------------------------------------------------------------------------------
+	
 	public void testPR96220_GenericDecp() {
 		runTest("generic decp - simple");
+		verifyClassSignature("Basic","Ljava/lang/Object;LJ<Ljava/lang/Double;>;LI<Ljava/lang/Double;>;");
 	}
 	
-//	public void testGenericDecpMultipleVariantsOfAParameterizedType() {
-//		runTest("generic decp - implementing two variants");
-//	}
+	// Both the existing type decl and the one adding via decp are parameterized
+	public void testGenericDecpMultipleVariantsOfAParameterizedType1() {
+		runTest("generic decp - implementing two variants #1");
+	}
+
+	// Existing type decl is raw and the one added via decp is parameterized
+	public void testGenericDecpMultipleVariantsOfAParameterizedType2() {
+		runTest("generic decp - implementing two variants #2");
+	}
+
+	// Existing type decl is parameterized and the one added via decp is raw
+	public void testGenericDecpMultipleVariantsOfAParameterizedType3() {
+		runTest("generic decp - implementing two variants #3");
+	}
+
+	// decp is parameterized but it does match the one already on the type
+	public void testGenericDecpMultipleVariantsOfAParameterizedType4() {
+		runTest("generic decp - implementing two variants #4");
+	}
+	
+	// same as above four tests for binary weaving
+	public void testGenericDecpMultipleVariantsOfAParameterizedType1_binaryWeaving() {
+		runTest("generic decp binary - implementing two variants #1");
+	}
+	
+	public void testGenericDecpMultipleVariantsOfAParameterizedType2_binaryWeaving() {
+		runTest("generic decp binary - implementing two variants #2");
+	}
+
+	// Existing type decl is parameterized and the one added via decp is raw
+	public void testGenericDecpMultipleVariantsOfAParameterizedType3_binaryWeaving() {
+		runTest("generic decp binary - implementing two variants #3");
+	}
+
+	// decp is parameterized but it does match the one already on the type
+	public void testGenericDecpMultipleVariantsOfAParameterizedType4_binaryWeaving() {
+		runTest("generic decp binary - implementing two variants #4");
+	}
+	
 //	
 //	public void testGenericDecpIncorrectNumberOfTypeParams() {
 //		runTest("generic decp - incorrect number of type parameters");
@@ -132,4 +177,28 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	// 1. public ITDs and separate compilation - are the signatures correct for the new public members?
 	// 2. ITDF
+	
+	// --- helpers
+	
+	// Check the signature attribute on a class is correct
+	private void verifyClassSignature(String classname,String sig) {
+		try {
+			ClassPath cp = 
+				new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
+		    SyntheticRepository sRepos =  SyntheticRepository.getInstance(cp);
+			JavaClass clazz = sRepos.loadClass(classname);
+			Signature sigAttr = null;
+			Attribute[] attrs = clazz.getAttributes();
+			for (int i = 0; i < attrs.length; i++) {
+				Attribute attribute = attrs[i];
+				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
+			}
+			assertTrue("Failed to find signature attribute for class "+classname,sigAttr!=null);
+			assertTrue("Expected signature to be '"+sig+"' but was '"+sigAttr.getSignature()+"'",
+					sigAttr.getSignature().equals(sig));
+		} catch (ClassNotFoundException e) {
+			fail("Couldn't find class "+classname+" in the sandbox directory.");
+		}
+	}
+	
 }

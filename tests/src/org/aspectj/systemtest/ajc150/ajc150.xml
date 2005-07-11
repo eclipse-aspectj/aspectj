@@ -2396,10 +2396,51 @@
      <run class="Basic"/>
    </ajc-test>
    
-   <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants">
-     <compile files="Basic2.aj" options="-1.5"/>
-     <run class="Basic2"/>
+   <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants #1">
+     <compile files="Basic2.aj" options="-1.5">
+        <message kind="error" line="11" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Basic2 since it already has I&lt;java.lang.String&gt; in its hierarchy"/>
+     </compile>
    </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants #2">
+     <compile files="Basic2b.aj" options="-1.5">
+        <message kind="error" line="10" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Basic2b since it already has I in its hierarchy"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants #3">
+     <compile files="Basic2c.aj" options="-1.5">
+        <message kind="error" line="10" text="Cannot declare parent I onto type Basic2c since it already has I&lt;java.lang.Double&gt; in its hierarchy"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants #4">
+     <compile files="Basic2d.aj" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/decp/binary" title="generic decp binary - implementing two variants #1">
+     <weave classesFiles="Base1.java" aspectsFiles="Asp1.aj" options="-1.5,-showWeaveInfo">
+        <message kind="error" line="2" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Base1 since it already has I&lt;java.lang.String&gt; in its hierarchy"/>
+     </weave>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp/binary" title="generic decp binary - implementing two variants #2">
+     <weave classesFiles="Base2.java" aspectsFiles="Asp2.aj" options="-1.5,-showWeaveInfo">
+        <message kind="error" line="2" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Base2 since it already has I in its hierarchy"/>
+     </weave>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp/binary" title="generic decp binary - implementing two variants #3">
+     <weave classesFiles="Base3.java" aspectsFiles="Asp3.aj" options="-1.5,-showWeaveInfo">
+        <message kind="error" line="2" text="Cannot declare parent I onto type Base3 since it already has I&lt;java.lang.Double&gt; in its hierarchy"/>
+     </weave>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/decp/binary" title="generic decp binary - implementing two variants #4">
+     <weave classesFiles="Base4.java" aspectsFiles="Asp4.aj" options="-1.5,-showWeaveInfo"/>
+   </ajc-test>
+
+<!--                 -->
    
    <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
      <compile files="Basic3.aj" options="-1.5"/>
