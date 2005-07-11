@@ -17,11 +17,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -156,6 +161,45 @@ public class DeclareParents extends Declare {
 					WeaverMessages.format(WeaverMessages.DECP_OBJECT),
 			        this.getSourceLocation(), null);
 			return null;
+		}
+		
+		// Ensure the target doesn't already have an 
+		// alternate parameterization of the generic type on it
+		if (parentType.isParameterized() || parentType.isRawType()) {
+			ResolvedTypeX newParentGenericType = parentType.getGenericType();
+			// Let's take a look at the parents we already have
+			Iterator iter = targetType.getDirectSupertypes();
+			while (iter.hasNext()) {
+				ResolvedTypeX supertype = (ResolvedTypeX)iter.next();
+				if ( ((supertype.isRawType() && parentType.isParameterized()) || 
+					  (supertype.isParameterized() && parentType.isRawType())) && newParentGenericType.equals(supertype.getGenericType())) {
+					// new parent is a parameterized type, but this is a raw type
+					world.getMessageHandler().handleMessage(new Message(
+							WeaverMessages.format(WeaverMessages.CANT_DECP_MULTIPLE_PARAMETERIZATIONS,parentType.getName(),targetType.getName(),supertype.getName()),
+							getSourceLocation(), 
+							true,
+							new ISourceLocation[]{targetType.getSourceLocation()}));
+					return null;
+				}
+				if (supertype.isParameterized()) {
+					ResolvedTypeX generictype = supertype.getGenericType();
+					if (newParentGenericType.equals(generictype)) {
+						// Have to verify the parameterizations match, otherwise its a no-go
+						boolean isOk = true;
+						for (int pNum = 0;pNum<parentType.getTypeParameters().length && isOk;pNum++) {
+						  if (!parentType.getTypeParameters()[pNum].equals(supertype.getTypeParameters()[pNum])) isOk=false;
+						}
+						if (!isOk) {
+							world.getMessageHandler().handleMessage(new Message(
+									WeaverMessages.format(WeaverMessages.CANT_DECP_MULTIPLE_PARAMETERIZATIONS,parentType.getName(),targetType.getName(),supertype.getName()),
+									getSourceLocation(), 
+									true,
+									new ISourceLocation[]{targetType.getSourceLocation()}));
+							return null;
+						}
+					}
+				}
+			}
 		}
 
 		if (parentType.isAssignableFrom(targetType)) return null;  // already a parent
