@@ -27,8 +27,12 @@ public class TypeVariableReferenceType extends BoundedReferenceType {
 		this.isSuper = false;
 		this.upperBound = (ReferenceType) aTypeVariable.getUpperBound();
 		this.lowerBound = (ReferenceType) aTypeVariable.getLowerBound();
-		if (aTypeVariable.getAdditionalInterfaceBounds().length > 0) {
-			this.additionalInterfaceBounds = (ReferenceType[]) aTypeVariable.getAdditionalInterfaceBounds();
+		TypeX[] ifBounds = aTypeVariable.getAdditionalInterfaceBounds();
+		if (ifBounds.length > 0) {
+			this.additionalInterfaceBounds = new ReferenceType[ifBounds.length];
+			for (int i = 0; i < ifBounds.length; i++) {
+				this.additionalInterfaceBounds[i] = (ReferenceType) ifBounds[i]; 
+			}
 		}
 		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)aTypeVariable.getUpperBound()));
 	}
