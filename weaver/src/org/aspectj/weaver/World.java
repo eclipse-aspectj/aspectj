@@ -142,7 +142,7 @@ public abstract class World implements Dump.INode {
     	// Does the raw type know its generic form? (It will if we created the
     	// raw type from a source type, it won't if its been created just through
     	// being referenced, e.g. java.util.List
-    	ResolvedTypeX generic = ((ReferenceType)ret).genericType;
+    	ResolvedTypeX generic = ret.getGenericType();
     	if (generic != null) { generic.world = this; return generic; } 
 
     	// Fault in the generic that underpins the raw type ;)
@@ -209,11 +209,24 @@ public abstract class World implements Dump.INode {
 			return genericType;
 		} else {
 			String signature = ty.getRawTypeSignature();
-			ReferenceType name = new ReferenceType(signature/*was ty.getSignature()*/, this);
+    		ReferenceType name = new ReferenceType(signature/*was ty.getSignature()*/, this);
 	    	ReferenceTypeDelegate concreteName = resolveObjectType(name);
 	    	if (concreteName == null) return ResolvedTypeX.MISSING;
-	    	name.setDelegate(concreteName);
-	    	return name;
+	    	if (concreteName.isGeneric()) {
+	    		// During resolution we have discovered that the underlying type is in fact generic, 
+	    		// so the thing we thought was a simple type is in fact a raw type.
+
+	        	ReferenceType genericRefType = new ReferenceType(
+	        			TypeX.forGenericTypeSignature(signature,concreteName.getDeclaredGenericSignature()),this);
+	    		// name =  ReferenceType.fromTypeX(TypeX.forRawTypeNames(ty.getName()),this);
+		    	name.setDelegate(concreteName);
+		    	genericRefType.setDelegate(concreteName);
+		    	name.setGenericType(genericRefType);
+		    	return name;
+	    	} else {
+		    	name.setDelegate(concreteName);
+		    	return name;
+	    	}
 		}
     }
     
@@ -533,7 +546,7 @@ public abstract class World implements Dump.INode {
 		String signature = ty.getSignature();
         ReferenceType ret = (ReferenceType)typeMap.get(signature);
         if (ret == null) {
-        	ret = new ReferenceType(signature, this);
+        	ret = ReferenceType.fromTypeX(ty, this);
         	typeMap.put(signature, ret);
         }
 		return ret;
@@ -582,7 +595,7 @@ public abstract class World implements Dump.INode {
 		private Map tMap = new HashMap();
 		private Map expendableMap = new WeakHashMap();
 					
-		public ResolvedTypeX put(String key, ResolvedTypeX type) {
+		public ResolvedTypeX put(String key, ResolvedTypeX type) { 
 			if (isExpendable(type))  {
 				return (ResolvedTypeX) expendableMap.put(key,type);
 			} else {
