@@ -39,6 +39,13 @@ public class ReferenceType extends ResolvedTypeX {
 	ISourceContext sourceContext = null;
 	int startPos = 0;
 	int endPos = 0;
+    
+    public static ReferenceType fromTypeX(TypeX tx, World world) {
+    	ReferenceType rt = new ReferenceType(tx.getRawTypeSignature(),world);
+    	rt.typeKind = tx.typeKind;
+    	return rt;
+    }
+    
 
 	// cached values for members
 	ResolvedMember[] parameterizedMethods = null;
@@ -57,6 +64,7 @@ public class ReferenceType extends ResolvedTypeX {
 	public ReferenceType(TypeX genericType, World world) {
 		super(genericType.getSignature(),world);
 		genericSignature=genericType.genericSignature;
+		typeKind=GENERIC;
 	}
         
     public final boolean isClass() {
@@ -290,7 +298,13 @@ public class ReferenceType extends ResolvedTypeX {
 	}
 	
 	public void setGenericType(ReferenceType rt) {
-		this.genericType = rt;
+		genericType = rt;
+		// Should we 'promote' this reference type from simple to raw?  
+		// makes sense if someone is specifying that it has a generic form
+		if ( typeKind == TypeX.SIMPLE ) {
+			typeKind         = TypeX.RAW;
+			rawTypeSignature = signature;
+		}
 	}
 	
 	public ResolvedTypeX getGenericType() {
