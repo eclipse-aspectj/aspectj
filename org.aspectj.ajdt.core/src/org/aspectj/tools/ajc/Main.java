@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Date;
 
@@ -127,7 +128,6 @@ public class Main {
 		}
 		IMessage[] messages = holder.getMessages(kind, orGreater);
 		if (!LangUtil.isEmpty(messages)) {
-			StringBuffer buf = new StringBuffer();
 			for (int i = 0; i < messages.length; i++) {
 				sink.add(MessagePrinter.render(messages[i]));
 			}
@@ -145,7 +145,17 @@ public class Main {
             + (null != m ? m + "\n": "") 
             + LangUtil.renderException(thrown, true);
     }
-                
+        
+    
+    private static String parmInArgs(String flag, String[] args) {
+        int loc = 1+(null == args ? -1 :Arrays.asList(args).indexOf(flag));
+        return ((0 == loc) || (args.length <= loc)?null:args[loc]);
+    }
+
+    private static boolean flagInArgs(String flag, String[] args) {
+        return ((null != args) && (Arrays.asList(args).indexOf(flag) != -1));
+    }
+    
     /** append nothing if numItems is 0,
      * numItems + label + (numItems > 1? "s" : "") otherwise,
      * prefixing with " " if sink has content
@@ -210,7 +220,7 @@ public class Main {
      * and signal result (0 no exceptions/error, <0 exceptions, >0 compiler errors).
      */
     public void runMain(String[] args, boolean useSystemExit) {
-        boolean verbose = (-1 != ("" + LangUtil.arrayAsList(args)).indexOf("-verbose"));
+        final boolean verbose = flagInArgs("-verbose", args);
         IMessageHolder holder = clientHolder;
         if (null == holder) {
             holder = ourHandler;
@@ -271,29 +281,26 @@ public class Main {
      */
     public void run(String[] args, IMessageHolder holder) {
 
-		boolean logMode = (-1 != ("" + LangUtil.arrayAsList(args)).indexOf("-log"));
 		PrintStream logStream = null;
 		FileOutputStream fos = null;
-		if (logMode){
-			int logIndex = LangUtil.arrayAsList(args).indexOf("-log");
-			String logFileName = args[logIndex + 1];
+        String logFileName = parmInArgs("-log", args);
+		if (null != logFileName){
 			File logFile = new File(logFileName);
 			try{
 				logFile.createNewFile();
 				fos = new FileOutputStream(logFileName, true);
 				logStream = new PrintStream(fos,true);
 			} catch(Exception e){			
-				fail(holder, "Couldn't open log file: ", e);				
+				fail(holder, "Couldn't open log file: " + logFileName, e);				
 			}
 			Date now = new Date();
 			logStream.println(now.toString());
-			boolean verbose = (-1 != ("" + LangUtil.arrayAsList(args)).indexOf("-verbose"));
-			if (verbose) {
-					ourHandler.setInterceptor(new LogModeMessagePrinter(true,logStream));
-		          } else {
-		              ourHandler.ignore(IMessage.INFO);
-					  ourHandler.setInterceptor(new LogModeMessagePrinter(false,logStream));
-		          }
+			if (flagInArgs("-verbose", args)) {
+				ourHandler.setInterceptor(new LogModeMessagePrinter(true,logStream));
+	          } else {
+	              ourHandler.ignore(IMessage.INFO);
+				  ourHandler.setInterceptor(new LogModeMessagePrinter(false,logStream));
+	          }
 			holder = ourHandler;
 		}
 		
@@ -312,12 +319,10 @@ public class Main {
             return;
         }      
         try {
-//            boolean verbose = (-1 != ("" + Arrays.asList(args)).indexOf("-verbose"));
             outer:
             while (true) {
                 boolean passed = command.runCommand(args, holder);
                 if (report(passed, holder) && controller.incremental()) {
-//                    final boolean onCommandLine = controller.commandLineIncremental();
                     while (controller.doRepeatCommand(command)) {
                         holder.clearMessages();
                         if (controller.buildFresh()) {
