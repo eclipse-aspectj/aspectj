@@ -35,6 +35,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeVariable;
+import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.World;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
@@ -174,6 +175,9 @@ public class EclipseFactory {
 	 * sure when/if this gets us unstuck?  It does mean we forget that it is a type variable when going back
 	 * the other way from the TypeX and that would seem a bad thing - but I've yet to see the reason we need to
 	 * remember the type variable.
+	 * Adrian 10-July-05
+	 * When we forget it's a type variable we come unstuck when getting the declared members of a parameterized
+	 * type - since we don't know it's a type variable we can't replace it with the type parameter.
 	 */
 	//??? going back and forth between strings and bindings is a waste of cycles
 	public static TypeX fromBinding(TypeBinding binding) {
@@ -185,14 +189,7 @@ public class EclipseFactory {
 		}
 		// first piece of generics support!
 		if (binding instanceof TypeVariableBinding) {
-			// this is a type variable...
-			TypeVariableBinding tvb = (TypeVariableBinding) binding;
-			// This code causes us to forget its a TVB which we will need when going back the other way...
-			if (tvb.firstBound!=null) {
-			  return TypeX.forName(getName(tvb.firstBound)); // XXX needs more investigation as to whether this is correct in all cases
-			} else {
-			  return TypeX.forName(getName(tvb.superclass));
-			}
+			return fromTypeVariableBinding((TypeVariableBinding)binding);
 		}
 		
 		if (binding instanceof ParameterizedTypeBinding) {
@@ -242,6 +239,25 @@ public class EclipseFactory {
 		return TypeX.forName(getName(binding));
 	}
 
+	private static TypeX fromTypeVariableBinding(TypeVariableBinding aTypeVariableBinding) {
+		// TODO -- what about lower bounds??
+//		String name = new String(aTypeVariableBinding.sourceName());
+//		TypeX superclassType = fromBinding(aTypeVariableBinding.superclass());
+//		TypeX[] superinterfaces = new TypeX[aTypeVariableBinding.superInterfaces.length];
+//		for (int i = 0; i < superinterfaces.length; i++) {
+//			superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
+//		}
+//		TypeVariable tv = new TypeVariable(name,superclassType,superinterfaces);
+//		TypeVariableReferenceType ret = null; /// how do we get a world???
+//		return ret;
+		// old code...
+		if (aTypeVariableBinding.firstBound!=null) {
+		  return TypeX.forName(getName(aTypeVariableBinding.firstBound)); // XXX needs more investigation as to whether this is correct in all cases
+		} else {
+		  return TypeX.forName(getName(aTypeVariableBinding.superclass));
+		}
+	}
+	
 	public static TypeX[] fromBindings(TypeBinding[] bindings) {
 		if (bindings == null) return TypeX.NONE;
 		int len = bindings.length;

@@ -30,6 +30,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 
 /**
@@ -462,7 +463,19 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public TypeVariable[] getTypeVariables() {
-		throw new UnsupportedOperationException("For Andy to implement!");
+		if (declaration.typeParameters == null) return new TypeVariable[0];
+		TypeVariable[] typeVariables = new TypeVariable[declaration.typeParameters.length];
+		for (int i = 0; i < typeVariables.length; i++) {
+			typeVariables[i] = typeParameter2TypeVariable(declaration.typeParameters[i]);
+		}
+		return typeVariables;
 	}
 	
+	private TypeVariable typeParameter2TypeVariable(TypeParameter aTypeParameter) {
+		String name = new String(aTypeParameter.name);
+		ReferenceBinding superclassBinding = aTypeParameter.binding.superclass;
+		TypeX superclass = TypeX.forSignature(new String(superclassBinding.signature()));
+		// TODO AMC - superinterfaces
+		return new TypeVariable(name,superclass);
+	}
 }
