@@ -43,6 +43,8 @@ public class TypeX implements AnnotatedElement {
 	// note: it doesnt include the name of the type!
 	protected String genericSignature;
 	
+	private boolean isSuper = false;
+	private boolean isExtends = false;
 	
 	// It is not sufficient to say that a parameterized type with no type parameters in fact
 	// represents a raw type - a parameterized type with no type parameters can represent
@@ -51,7 +53,7 @@ public class TypeX implements AnnotatedElement {
 	private TypeVariable[] typeVariables;
 
     // SIMPLE represents something that can never be raw/generic/parameterized - e.g. Integer or String
-	private int typeKind = SIMPLE;
+	protected int typeKind = SIMPLE;
 	public final static int SIMPLE       =0;
 	public final static int RAW          =1;
 	public final static int GENERIC      =2;
@@ -78,10 +80,16 @@ public class TypeX implements AnnotatedElement {
 	 */
 	private void processSignature(String sig) {
 		// determine the raw type
+		//TODO asc generics tidy this bit up?
+		boolean skip=false;
+		if (sig.charAt(0)=='+') {isExtends=true;skip=true;}
+		if (sig.charAt(0)=='-') {isSuper=true;skip=true;}
 		int parameterTypesStart = signature.indexOf("<");
 		int parameterTypesEnd   = signature.lastIndexOf(">");
 		StringBuffer rawTypeSb = new StringBuffer();
-		rawTypeSb.append(signature.substring(0,parameterTypesStart)).append(";");
+		String p = signature.substring(0,parameterTypesStart);
+		if (skip) p = p.substring(1);
+		rawTypeSb.append(p).append(";");
 		rawTypeSignature = rawTypeSb.toString();
 		typeParameters = processParameterization(signature,parameterTypesStart+1,parameterTypesEnd-1);
 		typeKind = PARAMETERIZED;
@@ -213,11 +221,7 @@ public class TypeX implements AnnotatedElement {
     	ClassSignature csig = new GenericSignatureParser().parseAsClassSignature(declaredGenericSig);
     	
     	Signature.FormalTypeParameter[] ftps = csig.formalTypeParameters;
-    	String s = ftps[0].identifier;
-    	Signature.FieldTypeSignature ftss = ftps[0].classBound;
     	ret.typeVariables = new TypeVariable[ftps.length];
-    	// TODO asc/amc other information in the signature isnt being recorded in the TypeX as it should be ...
-    	// this problem will be found be further testcases
     	for (int i = 0; i < ftps.length; i++) {
 			Signature.FormalTypeParameter parameter = ftps[i];
 			Signature.ClassTypeSignature cts = (Signature.ClassTypeSignature)parameter.classBound;
@@ -275,8 +279,6 @@ public class TypeX implements AnnotatedElement {
 	public static TypeX forRawTypeNames(String name) {
 		TypeX ret = TypeX.forName(name);
 		ret.typeKind = RAW;
-		// FIXME asc  no need to mess up the signature is there?
-		// ret.signature = ret.signature+"#RAW";
 		return ret;
 	}
 	
@@ -1099,5 +1101,32 @@ public class TypeX implements AnnotatedElement {
 	
 	public static final String MISSING_NAME = "<missing>";
 
+
+
+	public static TypeX[] getInterfacesFromSignature(String sig) {
+ 		// there is a declared signature - use it to work out the interfaces, rather than the stuff in the class file...
+		ClassSignature cSig = new GenericSignatureParser().parseAsClassSignature(sig);
+		Signature.ClassTypeSignature[] declaredInterfaces = cSig.superInterfaceSignatures;
+		TypeX[] retVal = new TypeX[declaredInterfaces.length];
+		for (int i = 0; i < declaredInterfaces.length; i++) {
+			Signature.ClassTypeSignature signature = declaredInterfaces[i];
+			retVal[i] = convertFromClassSignatureToTypeX(signature);
+		}
+		return retVal;
+	}
+	
+	private static TypeX convertFromClassSignatureToTypeX(Signature.ClassTypeSignature signature) {
+		return new TypeX(signature.classSignature);
+	}
+	
+		public String getKind() {
+		switch (typeKind) {
+			case 0: return "SIMPLE";
+			case 1: return "RAW";
+			case 2: return "GENERIC";
+			case 3: return "PARAMETERIZED";
+			default: return null;
+		}		
+	}
 }
 
