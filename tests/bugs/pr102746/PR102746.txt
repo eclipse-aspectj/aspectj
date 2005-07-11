@@ -1,0 +1,9 @@
+
+Would test with 
+
+    <ajc-test dir="bugs/pr102746" title="log to file with -log in classpath">
+        <compile files="lib/Lib.java" outjar="foo-logging.jar"/>
+        <compile files="PR102746.java" classpath="foo-logging.jar"/>
+    </ajc-test>
+
+except that the harness is I think snooping for foo-logging.jar wrong.
