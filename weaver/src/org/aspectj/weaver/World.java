@@ -157,6 +157,10 @@ public abstract class World implements Dump.INode {
 
     public ResolvedTypeX resolve(TypeX ty, boolean allowMissing) {
     	//System.out.println("resolve: " + ty + " world " + typeMap.keySet());		
+    	if (ty instanceof UnresolvedTypeVariableReferenceType) {
+    		// AMC - don't like this instanceof test, suggests some refactoring needed...
+    		return ((UnresolvedTypeVariableReferenceType)ty).resolve(this);
+    	}
         String signature = ty.getSignature();
         ResolvedTypeX ret = typeMap.get(signature);
         if (ret != null) { ret.world = this; return ret; } // Set the world for the RTX
