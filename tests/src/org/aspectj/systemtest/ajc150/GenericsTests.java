@@ -177,9 +177,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	// 1. public ITDs and separate compilation - are the signatures correct for the new public members?
 	// 2. ITDF
+
+	// -- Pointcut tests...
+	
+	public void testExecutionWithRawType() {
+		runTest("execution pcd with raw type matching");
+	}
 	
 	// --- helpers
-	
+		
 	// Check the signature attribute on a class is correct
 	private void verifyClassSignature(String classname,String sig) {
 		try {
@@ -200,5 +206,6 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 			fail("Couldn't find class "+classname+" in the sandbox directory.");
 		}
 	}
-	
+		
+
 }

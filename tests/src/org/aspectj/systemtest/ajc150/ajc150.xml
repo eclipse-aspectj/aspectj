@@ -2260,7 +2260,7 @@
      <compile files="PR94086.aj" options="-1.5"/>
    </ajc-test>
    
-   // generic bugs
+   <!-- generic bugs -->
    
    <ajc-test dir="java5/generics/bugs" title="ITD method with generic arg">
      <compile files="PR97763.aj" options="-1.5"/>
@@ -2296,9 +2296,9 @@
      <run class="pr100260"/>
    </ajc-test>
    
-   // end of generic bugs
+   <!-- end of generic bugs -->
 
-   // generic aspects
+   <!-- generic aspects -->
    
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 1">
      <compile files="GenericAspect1.aj" options="-1.5"/>
@@ -2320,10 +2320,10 @@
      </run>
    </ajc-test>
    
-   // end of generic aspects
+   <!-- end of generic aspects -->
    
-   // generic ITDs
-   
+   <!-- generic ITDs -->
+  
    <ajc-test dir="java5/generics/itds" title="ITDs on generic type">
      <compile files="Parse5.java" options="-1.5">
         <message kind="error" line="9"/>
@@ -2387,9 +2387,9 @@
      <compile files="Parse4.java" options="-1.5"/>
    </ajc-test>
    
-   // end of generic ITDs
+   <!-- end of generic ITDs -->
    
-   // generic decps
+   <!-- generic decps -->
    
    <ajc-test dir="java5/generics/decp" title="generic decp - simple">
      <compile files="Basic.aj" options="-1.5"/>
@@ -2401,7 +2401,7 @@
         <message kind="error" line="11" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Basic2 since it already has I&lt;java.lang.String&gt; in its hierarchy"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants #2">
      <compile files="Basic2b.aj" options="-1.5">
         <message kind="error" line="10" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Basic2b since it already has I in its hierarchy"/>
@@ -2442,7 +2442,7 @@
 
 <!--                 -->
    
-   <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
+ <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
      <compile files="Basic3.aj" options="-1.5"/>
      <run class="Basic3"/>
    </ajc-test>
@@ -2460,8 +2460,20 @@
    <!--ajc-test dir="java5/generics/decp" title="illegal generic decp">
      <compile files="Basic2.aj" options="-1.5"/>
    </ajc-test-->
+     
+   <!-- end of generic decps -->
    
-   // end of generic decps
+   <!-- generics and  pointcuts -->
+   
+   <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw type matching">
+     <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,RawTypeMatching.aj" options="-1.5">
+         <message kind="warning" line="4" text="execution(* GenericInterface.*(..))"/>
+         <message kind="warning" line="5" text="execution(* GenericInterface.*(..))"/>
+     </compile>
+   </ajc-test>
+   
+   <!-- end of generics and pointcuts tests -->
+   
    <!-- ============================================================== -->
    <!--     End of generics tests                                      -->
    <!-- ============================================================== -->
