@@ -26,12 +26,14 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.apache.bcel.classfile.Signature.ClassTypeSignature;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ReferenceType;
@@ -80,8 +82,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private boolean isCodeStyleAspect = false; // not redundant with field above!
 
 //  TODO asc need soon but not just yet...
-//	private boolean discoveredDeclaredSignature = false;
-//	private String declaredSignature = null;
+	private boolean haveLookedForDeclaredSignature = false;
+	private String declaredSignature = null;
+	private boolean isGenericType = false;
 
 	public Collection getTypeMungers() {
 		return typeMungers;	
@@ -124,13 +127,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     	resetState();
     }
     
-    /**
-     * Return true if this is a generic type (has one or more type variables
-     * in its signature).
-     */
-    public boolean isGeneric() {
-    	return javaClass.getGenericSignature() != null;
-    }
+   
     
     
     public TypeVariable[] getTypeVariables() {
@@ -166,8 +163,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
         return superClass;
     }
         
-    /** 
-     * Must take into account generic signature
+    /**
+     * Retrieves the declared interfaces - this allows for the generic signature on a type.  If specified
+     * then the generic signature is used to work out the types - this gets around the results of
+     * erasure when the class was originally compiled.
      */
     public ResolvedTypeX[] getDeclaredInterfaces() {
     	unpackGenericSignature();
@@ -494,12 +493,16 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 
 	public String getDeclaredGenericSignature() {
-		Attribute[] as = javaClass.getAttributes();
-		for (int i = 0; i < as.length; i++) {
-			Attribute attribute = as[i];
-			if (attribute instanceof Signature) return ((Signature)attribute).getSignature();
+		if (!haveLookedForDeclaredSignature) {
+			haveLookedForDeclaredSignature = true;
+			Attribute[] as = javaClass.getAttributes();
+			for (int i = 0; i < as.length && declaredSignature==null; i++) {
+				Attribute attribute = as[i];
+				if (attribute instanceof Signature) declaredSignature = ((Signature)attribute).getSignature();
+			}
+			if (declaredSignature!=null) isGenericType= (declaredSignature.charAt(0)=='<');
 		}
-		throw new RuntimeException("Should not have been asked for the signature?");
+		return declaredSignature;
 	}
 	
 	Signature.ClassSignature getGenericClassTypeSignature() {
@@ -507,6 +510,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	private boolean genericSignatureUnpacked = false;
+		
 	private void unpackGenericSignature() {
 		if (genericSignatureUnpacked) return;
 		genericSignatureUnpacked = true;
@@ -526,6 +530,18 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			}
 		}
 	}
+	
+	private void ensureGenericInfoProcessed() { getDeclaredGenericSignature();}
+	
+	public boolean isGeneric() {
+	  ensureGenericInfoProcessed();
+	  return isGenericType;
+	}
+	
+	public String toString() {
+		return (javaClass==null?"BcelObjectType":"BcelObjectTypeFor:"+javaClass.getClassName());
+	}
+	
 } 
     
     
