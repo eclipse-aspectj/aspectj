@@ -213,10 +213,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             for (Iterator i = methods.iterator(); i.hasNext();) {
                 BcelMethod o = (BcelMethod)i.next();
                 if (o.isAbstract() && !o.getName().startsWith("ajc$interField")) { // Ignore abstract methods of ajc$interField prefixed methods
-                    BcelMethod discoveredImpl = null;
+                    ResolvedMember discoveredImpl = null;
                     List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator();
                     for (Iterator ii = newParentTargetMethods.iterator(); ii.hasNext() && discoveredImpl==null;) {
-                        BcelMethod gen2 = (BcelMethod) ii.next();
+                        ResolvedMember gen2 = (ResolvedMember) ii.next();
                         if (gen2.getName().equals(o.getName()) && 
                             gen2.getParameterSignature().equals(o.getParameterSignature()) && !gen2.isAbstract()) {
                             discoveredImpl = gen2; // Found a valid implementation !
