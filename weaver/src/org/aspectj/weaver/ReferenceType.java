@@ -178,6 +178,11 @@ public class ReferenceType extends ResolvedTypeX {
 		}
 	}
 
+	/**
+	 * Find out from the generic signature the true signature of any interfaces
+	 * I implement. If I am parameterized, these may then need to be parameterized
+	 * before returning.
+	 */
 	public ResolvedTypeX[] getDeclaredInterfaces() {
 		if (parameterizedInterfaces != null) return parameterizedInterfaces;
 		if (isParameterized()) {
