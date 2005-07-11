@@ -154,15 +154,23 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
         return javaClass.getAccessFlags();
     }
 
+    /**
+     * Must take into account generic signature
+     */
     public ResolvedTypeX getSuperclass() {
         if (isObject) return null;
+    	unpackGenericSignature();
         if (superClass == null) {
             superClass = getResolvedTypeX().getWorld().resolve(TypeX.forName(javaClass.getSuperclassName()));
         }
         return superClass;
     }
         
+    /** 
+     * Must take into account generic signature
+     */
     public ResolvedTypeX[] getDeclaredInterfaces() {
+    	unpackGenericSignature();
         if (interfaces == null) {
             String[] ifaceNames = javaClass.getInterfaceNames();
             interfaces = new ResolvedTypeX[ifaceNames.length];
@@ -496,6 +504,27 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	
 	Signature.ClassSignature getGenericClassTypeSignature() {
 		return javaClass.getGenericClassTypeSignature();
+	}
+	
+	private boolean genericSignatureUnpacked = false;
+	private void unpackGenericSignature() {
+		if (genericSignatureUnpacked) return;
+		genericSignatureUnpacked = true;
+		Signature.ClassSignature cSig = getGenericClassTypeSignature();
+		if (cSig != null) {
+			Signature.ClassTypeSignature superSig = cSig.superclassSignature;
+			this.superClass = 
+				BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+						superSig, cSig.formalTypeParameters, getResolvedTypeX().getWorld());
+			this.interfaces = new ResolvedTypeX[cSig.superInterfaceSignatures.length];
+			for (int i = 0; i < cSig.superInterfaceSignatures.length; i++) {
+				this.interfaces[i] = 
+					BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+							cSig.superInterfaceSignatures[i],
+							cSig.formalTypeParameters, 
+							getResolvedTypeX().getWorld());
+			}
+		}
 	}
 } 
     
