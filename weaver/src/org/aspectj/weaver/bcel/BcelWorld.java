@@ -268,14 +268,28 @@ public class BcelWorld extends World implements Repository {
 	
 	
 	public BcelObjectType addSourceObjectType(JavaClass jc) {
+		BcelObjectType ret = null;
 		String signature = TypeX.forName(jc.getClassName()).getSignature();
         ReferenceType nameTypeX = (ReferenceType)typeMap.get(signature);
 
-        if (nameTypeX == null) {
-        	nameTypeX = new ReferenceType(signature, this);
+        if (nameTypeX == null) {        	
+		    if (jc.isGeneric()) {
+		    	nameTypeX =  ReferenceType.fromTypeX(TypeX.forRawTypeNames(jc.getClassName()),this);
+		        ret = makeBcelObjectType(nameTypeX, jc, true);
+		    	ReferenceType genericRefType = new ReferenceType(
+		    			TypeX.forGenericTypeSignature(signature,ret.getDeclaredGenericSignature()),this);
+				nameTypeX.setDelegate(ret);
+		    	genericRefType.setDelegate(ret);
+		    	nameTypeX.setGenericType(genericRefType);
+		       	typeMap.put(signature, nameTypeX);
+		    } else {
+	        	nameTypeX = new ReferenceType(signature, this);
+	            ret = makeBcelObjectType(nameTypeX, jc, true);
+	           	typeMap.put(signature, nameTypeX);
+		    }
+        } else {
+            ret = makeBcelObjectType(nameTypeX, jc, true);
         }
-        BcelObjectType ret = makeBcelObjectType(nameTypeX, jc, true);
-        typeMap.put(signature, nameTypeX);
 		return ret;
 	}
 	
