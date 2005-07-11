@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC                 initial implementation 
+ *     Andy Clement  6Jul05 generics - signature attribute
  * ******************************************************************/
 
 
@@ -35,6 +36,7 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.generic.ClassGen;
@@ -74,10 +76,28 @@ import org.aspectj.weaver.World;
  */
 public final class LazyClassGen {
 	
-	// ---- JSR 45 info
-	int highestLineNumber = 0;
+	int highestLineNumber = 0; // ---- JSR 45 info
 	
 	private SortedMap /* <String, InlinedSourceFileInfo> */ inlinedFiles = new TreeMap();
+	
+	private  boolean regenerateGenericSignatureAttribute = false;
+	
+	private BcelObjectType myType; // XXX is not set for types we create
+	private ClassGen myGen;
+	private ConstantPoolGen constantPoolGen;
+
+    private List /*LazyMethodGen*/ methodGens  = new ArrayList();
+    private List /*LazyClassGen*/  classGens   = new ArrayList();
+    private List /*AnnotationGen*/ annotations = new ArrayList();
+    private int childCounter = 0;
+    
+    private InstructionFactory fact;
+    
+	private boolean isSerializable = false;
+	private boolean hasSerialVersionUIDField = false;
+	private boolean hasClinit = false;
+	
+	// ---
 	
 	static class InlinedSourceFileInfo {
 		int highestLineNumber;
@@ -202,24 +222,11 @@ public final class LazyClassGen {
         out.println();
     }
 
-	private BcelObjectType myType; // XXX is not set for types we create
-	private ClassGen myGen;
-	private ConstantPoolGen constantPoolGen;
-
-    private List /*LazyMethodGen*/ methodGens  = new ArrayList();
-    private List /*LazyClassGen*/  classGens   = new ArrayList();
-    private List /*AnnotationGen*/ annotations = new ArrayList();
-    private int childCounter = 0;
 
     public int getNewGeneratedNameTag() {
         return childCounter++;
     }
     
-    private InstructionFactory fact;
-    
-	private boolean isSerializable = false;
-	private boolean hasSerialVersionUIDField = false;
-	private boolean hasClinit = false;
     // ---- 
 
     public LazyClassGen(
@@ -232,6 +239,7 @@ public final class LazyClassGen {
         myGen = new ClassGen(class_name, super_class_name, file_name, access_flags, interfaces);
 		constantPoolGen = myGen.getConstantPool();
         fact = new InstructionFactory(myGen, constantPoolGen);
+        regenerateGenericSignatureAttribute = true;
     }
 
 	//Non child type, so it comes from a real type in the world.
@@ -454,27 +462,82 @@ public final class LazyClassGen {
 			// myGen.addAttribute(getSourceDebugExtensionAttribute());
 		}
 		
-// TODO asc generics, fix up the declared signature attribute (dont need this just yet...)
-//		Attribute sigAttribute = null;
-//		Attribute[] as = myGen.getAttributes();
-//		for (int i = 0; i < as.length; i++) {
-//			Attribute attribute = as[i];
-//			if (attribute.getName().equals("Signature")) sigAttribute = attribute;
-//		}
-//		if (sigAttribute!=null) {
-//			// Got it
-//			myGen.removeAttribute(sigAttribute);
-//			
-//			int nameIndex = constantPoolGen.addUtf8("Signature");
-//			String data = ((Signature)sigAttribute).getSignature()+"LJ<java/"
-//			//System.err.println(data);
-//			byte[] bytes = Utility.stringToUTF(data);
-//			int length = bytes.length;
-//
-//			return new Unknown(nameIndex, length, bytes, constantPoolGen.getConstantPool());	
-//			new org.aspectj.apache.bcel.classfile.Signature((Signature)sigAttribute);
-//		}
+		fixupGenericSignatureAttribute();
     }
+
+    /**
+     * When working with 1.5 generics, a signature attribute is attached to the type which indicates
+     * how it was declared.  This routine ensures the signature attribute for what we are about
+     * to write out is correct.  Basically its responsibilities are:
+     *   1. Checking whether the attribute needs changing (i.e. did weaving change the type hierarchy)
+     *   2. If it did, removing the old attribute
+     *   3. Check if we need an attribute at all, are we generic? are our supertypes parameterized/generic?
+     *   4. Build the new attribute which includes all typevariable, supertype and superinterface information
+     */
+	private void fixupGenericSignatureAttribute () {
+		
+		// TODO asc generics Temporarily assume that types we generate dont need a signature attribute (closure/etc).. will need revisiting no doubt...
+		if (myType==null) return;
+			
+		// 1. Has anything changed that would require us to modify this attribute?
+		if (!regenerateGenericSignatureAttribute) return;
+		
+		// 2. Find the old attribute
+		Signature sigAttr = null;
+		if (myType!=null) { // if null, this is a type built from scratch, it won't already have a sig attribute
+			Attribute[] as = myGen.getAttributes();
+			for (int i = 0; i < as.length; i++) {
+				Attribute attribute = as[i];
+				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
+			}
+		}
+		
+		// 3. Do we need an attribute?
+		boolean needAttribute = false;
+		if (sigAttr!=null) needAttribute = true; // If we had one before, we definetly still need one as types can't be 'removed' from the hierarchy
+		
+		// check the interfaces
+		if (!needAttribute) {
+			if (myType==null) {
+				boolean stop = true;
+			}
+			ResolvedTypeX[] interfaceRTXs = myType.getDeclaredInterfaces();
+			for (int i = 0; i < interfaceRTXs.length; i++) {
+				ResolvedTypeX typeX = interfaceRTXs[i];
+				if (typeX.isGeneric() || typeX.isParameterized())  needAttribute = true;
+			}
+		
+			// check the supertype
+			ResolvedTypeX superclassRTX = myType.getSuperclass();
+			if (superclassRTX.isGeneric() || superclassRTX.isParameterized()) needAttribute = true;
+		}
+		
+		if (needAttribute) {
+			StringBuffer signature = new StringBuffer();
+			// first, the type variables...
+			// TODO asc generics implement this!
+			// now the supertype
+			signature.append(myType.getSuperclass().getSignature());
+			ResolvedTypeX[] interfaceRTXs = myType.getDeclaredInterfaces();
+			for (int i = 0; i < interfaceRTXs.length; i++) {
+				signature.append(interfaceRTXs[i].getSignature());
+			}
+			myGen.addAttribute(createSignatureAttribute(signature.toString()));
+		}
+		
+		// TODO asc generics The 'old' signature is left in the constant pool - I wonder how safe it would be to 
+		// remove it since we don't know what else (if anything) is referring to it
+	}
+	
+	/** 
+	 * Helper method to create a signature attribute based on a string signature:
+	 *  e.g. "Ljava/lang/Object;LI<Ljava/lang/Double;>;"
+	 */
+	private Signature createSignatureAttribute(String signature) {
+		int nameIndex = constantPoolGen.addUtf8("Signature");
+		int sigIndex  = constantPoolGen.addUtf8(signature);
+		return new Signature(nameIndex,2,sigIndex,constantPoolGen.getConstantPool());
+	}
 
 	/**
 	 * 
@@ -518,12 +581,14 @@ public final class LazyClassGen {
     }
     
     public void addInterface(TypeX typeX, ISourceLocation sourceLocation) {
+    	regenerateGenericSignatureAttribute = true;
     	myGen.addInterface(typeX.getRawName());
         if (!typeX.equals(TypeX.SERIALIZABLE)) 
 		  warnOnAddedInterface(typeX.getName(),sourceLocation);
     }
     
 	public void setSuperClass(TypeX typeX) {
+    	regenerateGenericSignatureAttribute = true;
 		myGen.setSuperclassName(typeX.getName());
 	 }
     
