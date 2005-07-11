@@ -128,7 +128,7 @@ public class GenericSignatureParser {
 		  eat(":");
 		  ftp.classBound = parseFieldTypeSignature(true);
 		  if (ftp.classBound == null) {
-			  ftp.classBound = new ClassTypeSignature("Ljava/lang/Object;","Object");
+			  ftp.classBound = new ClassTypeSignature("Ljava/lang/Object;","Ljava/lang/Object");
 		  }
 		  // Optional InterfaceBounds
 		  List optionalBounds = new ArrayList();
