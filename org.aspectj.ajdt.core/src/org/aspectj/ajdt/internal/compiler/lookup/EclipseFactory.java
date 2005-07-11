@@ -504,7 +504,12 @@ public class EclipseFactory {
 		TypeDeclaration decl = binding.scope.referenceContext;
 		
 		// Deal with the raw/basic type to give us an entry in the world type map
-		TypeX simpleTx  = TypeX.forName(getName(binding)); 
+		TypeX simpleTx = null;
+		if (binding.isGenericType()) {
+		    simpleTx  = TypeX.forRawTypeNames(getName(binding)); 
+		} else {
+			simpleTx  = TypeX.forName(getName(binding)); 
+		}
 		ReferenceType name  = getWorld().lookupOrCreateName(simpleTx);
 		EclipseSourceType t = new EclipseSourceType(name, this, binding, decl);
 		
