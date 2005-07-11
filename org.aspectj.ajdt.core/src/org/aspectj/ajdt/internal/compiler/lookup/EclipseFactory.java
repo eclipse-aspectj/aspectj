@@ -37,6 +37,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.World;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
@@ -239,23 +240,24 @@ public class EclipseFactory {
 		return TypeX.forName(getName(binding));
 	}
 
+	private static Map typeVariableBindingsInProgress = new HashMap();
 	private static TypeX fromTypeVariableBinding(TypeVariableBinding aTypeVariableBinding) {
-		// TODO -- what about lower bounds??
-//		String name = new String(aTypeVariableBinding.sourceName());
-//		TypeX superclassType = fromBinding(aTypeVariableBinding.superclass());
-//		TypeX[] superinterfaces = new TypeX[aTypeVariableBinding.superInterfaces.length];
-//		for (int i = 0; i < superinterfaces.length; i++) {
-//			superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
-//		}
-//		TypeVariable tv = new TypeVariable(name,superclassType,superinterfaces);
-//		TypeVariableReferenceType ret = null; /// how do we get a world???
-//		return ret;
-		// old code...
-		if (aTypeVariableBinding.firstBound!=null) {
-		  return TypeX.forName(getName(aTypeVariableBinding.firstBound)); // XXX needs more investigation as to whether this is correct in all cases
-		} else {
-		  return TypeX.forName(getName(aTypeVariableBinding.superclass));
+		if (typeVariableBindingsInProgress.containsKey(aTypeVariableBinding)) {
+			return (TypeX) typeVariableBindingsInProgress.get(aTypeVariableBinding);
 		}
+		UnresolvedTypeVariableReferenceType ret = new UnresolvedTypeVariableReferenceType();
+		typeVariableBindingsInProgress.put(aTypeVariableBinding,ret);
+		// TODO -- what about lower bounds??
+		String name = new String(aTypeVariableBinding.sourceName());
+		TypeX superclassType = fromBinding(aTypeVariableBinding.superclass());
+		TypeX[] superinterfaces = new TypeX[aTypeVariableBinding.superInterfaces.length];
+		for (int i = 0; i < superinterfaces.length; i++) {
+			superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
+		}
+		TypeVariable tv = new TypeVariable(name,superclassType,superinterfaces);
+		ret.setTypeVariable(tv);
+		typeVariableBindingsInProgress.remove(aTypeVariableBinding);
+		return ret;
 	}
 	
 	public static TypeX[] fromBindings(TypeBinding[] bindings) {
@@ -336,33 +338,33 @@ public class EclipseFactory {
 		return finishedTypeMungers;
 	}
 	
-	public static ResolvedMember makeResolvedMember(MethodBinding binding) {
+	public ResolvedMember makeResolvedMember(MethodBinding binding) {
 		return makeResolvedMember(binding, binding.declaringClass);
 	}
 
-	public static ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
+	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
 		//System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
 		ResolvedMember ret =  new ResolvedMember(
 			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
-			fromBinding(declaringType),
+			world.resolve(fromBinding(declaringType)),
 			binding.modifiers,
-			fromBinding(binding.returnType),
+			world.resolve(fromBinding(binding.returnType)),
 			new String(binding.selector),
-			fromBindings(binding.parameters),
-			fromBindings(binding.thrownExceptions));
+			world.resolve(fromBindings(binding.parameters)),
+			world.resolve(fromBindings(binding.thrownExceptions)));
 		return ret;
 	}
 
-	public static ResolvedMember makeResolvedMember(FieldBinding binding) {
+	public ResolvedMember makeResolvedMember(FieldBinding binding) {
 		return makeResolvedMember(binding, binding.declaringClass);
 	}
 	
-	public static ResolvedMember makeResolvedMember(FieldBinding binding, TypeBinding receiverType) {
+	public ResolvedMember makeResolvedMember(FieldBinding binding, TypeBinding receiverType) {
 		return new ResolvedMember(
 			Member.FIELD,
-			fromBinding(receiverType),
+			world.resolve(fromBinding(receiverType)),
 			binding.modifiers,
-			fromBinding(binding.type),
+			world.resolve(fromBinding(binding.type)),
 			new String(binding.name),
 			TypeX.NONE);
 	}

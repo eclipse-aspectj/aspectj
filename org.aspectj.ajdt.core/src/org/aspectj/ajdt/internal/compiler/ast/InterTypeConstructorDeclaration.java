@@ -218,7 +218,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		ResolvedTypeX declaringTypeX = world.fromEclipse(onTypeBinding);
 		ResolvedTypeX aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		
-		ResolvedMember bindingAsMember = EclipseFactory.makeResolvedMember(binding);
+		ResolvedMember bindingAsMember = world.makeResolvedMember(binding);
 		
 		ResolvedMember signature =
 			new ResolvedMember(Member.CONSTRUCTOR, declaringTypeX, declaredModifiers, 
@@ -250,7 +250,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			
 			
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
-				EclipseFactory.makeResolvedMember(explicitConstructor));
+				world.makeResolvedMember(explicitConstructor));
 		} else {
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
 				new ResolvedMember(Member.CONSTRUCTOR, 

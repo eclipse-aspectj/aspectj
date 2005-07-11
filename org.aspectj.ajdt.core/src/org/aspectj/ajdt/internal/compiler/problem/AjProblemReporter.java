@@ -163,7 +163,7 @@ public class AjProblemReporter extends ProblemReporter {
 							m.getAspectType(),
 							sig.getDeclaringType().isInterface(
 								factory.getWorld())),
-						EclipseFactory.makeResolvedMember(concreteMethod))) {
+						factory.makeResolvedMember(concreteMethod))) {
 					return;
 				}
 			}
@@ -210,7 +210,7 @@ public class AjProblemReporter extends ProblemReporter {
 							m.getAspectType(),
 							sig.getDeclaringType().isInterface(
 								factory.getWorld())),
-						EclipseFactory.makeResolvedMember(abstractMethod))) {
+						factory.makeResolvedMember(abstractMethod))) {
 					return;
 				}
 			}

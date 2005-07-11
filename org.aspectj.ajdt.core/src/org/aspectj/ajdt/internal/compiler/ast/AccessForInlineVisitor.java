@@ -153,7 +153,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			binding.modifiers = AstUtil.makePackageVisible(binding.modifiers);
 		}
 		
-		ResolvedMember m = EclipseFactory.makeResolvedMember(binding, receiverType);
+		ResolvedMember m = world.makeResolvedMember(binding, receiverType);
 		if (inAspect.accessForInline.containsKey(m)) return (FieldBinding)inAspect.accessForInline.get(m);
 		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding, m);
 		
@@ -176,14 +176,14 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			// declaring class?  After all, the field is private but we can see it from 
 			// where we are.
 			binding.modifiers = AstUtil.makePackageVisible(binding.modifiers);
-			m = EclipseFactory.makeResolvedMember(binding);
+			m = world.makeResolvedMember(binding);
 		} else {
 			// Sometimes receiverType and binding.declaringClass are *not* the same.
 			
 			// Sometimes receiverType is a subclass of binding.declaringClass.  In these situations
 			// we want the generated inline accessor to call the method on the subclass (at
 			// runtime this will be satisfied by the super).
-			m = EclipseFactory.makeResolvedMember(binding, receiverType);
+			m = world.makeResolvedMember(binding, receiverType);
 		}
 		if (inAspect.accessForInline.containsKey(m)) return (MethodBinding)inAspect.accessForInline.get(m);
 		MethodBinding ret = world.makeMethodBinding(
@@ -202,7 +202,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 	}
 	
 	private MethodBinding getSuperAccessMethod(MethodBinding binding) {
-		ResolvedMember m = EclipseFactory.makeResolvedMember(binding);
+		ResolvedMember m = world.makeResolvedMember(binding);
 		ResolvedMember superAccessMember = AjcMemberMaker.superAccessMethod(inAspect.typeX, m);
 		if (inAspect.superAccessForInline.containsKey(superAccessMember)) {
 			return ((SuperAccessMethodPair)inAspect.superAccessForInline.get(superAccessMember)).accessMethod;

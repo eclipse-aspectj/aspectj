@@ -68,7 +68,7 @@ public class EclipseShadow extends Shadow {
 			return new Member(Member.STATIC_INITIALIZATION, getEnclosingType(), 0, 
 						ResolvedTypeX.VOID, "<clinit>", TypeX.NONE);
 		} else if (context instanceof AbstractMethodDeclaration) {
-			return EclipseFactory.makeResolvedMember(((AbstractMethodDeclaration)context).binding);
+			return world.makeResolvedMember(((AbstractMethodDeclaration)context).binding);
 		} else {
 			return null;
 		}
@@ -134,12 +134,12 @@ public class EclipseShadow extends Shadow {
 		if (astNode instanceof AllocationExpression) {
 			AllocationExpression e = (AllocationExpression)astNode;
 			return new EclipseShadow(world, Shadow.ConstructorCall,
-					EclipseFactory.makeResolvedMember(e.binding), astNode, context);
+					world.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof MessageSend) {
 			MessageSend e = (MessageSend)astNode;
 			if (e.isSuperAccess()) return null;  // super calls don't have shadows
 			return new EclipseShadow(world, Shadow.MethodCall,
-					EclipseFactory.makeResolvedMember(e.binding), astNode, context);
+					world.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof ExplicitConstructorCall) {
 			//??? these should be ignored, they don't have shadows
 			return null;				
@@ -167,7 +167,7 @@ public class EclipseShadow extends Shadow {
 				//throw new RuntimeException("unimplemented: " + e);
 			}
 			return new EclipseShadow(world, kind,
-					EclipseFactory.makeResolvedMember(e.binding), astNode, context);
+					world.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof TypeDeclaration) {
 			return new EclipseShadow(world, Shadow.StaticInitialization,
 							new Member(Member.STATIC_INITIALIZATION, 

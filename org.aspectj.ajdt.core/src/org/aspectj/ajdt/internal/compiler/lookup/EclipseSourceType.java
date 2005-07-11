@@ -151,7 +151,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					declaredPointcuts.add(df);
 				} else {
 					if (amd.binding == null || !amd.binding.isValidBinding()) continue;
-					declaredMethods.add(EclipseFactory.makeResolvedMember(amd.binding));
+					declaredMethods.add(factory.makeResolvedMember(amd.binding));
 				}
 			}
 		}
@@ -159,7 +159,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		FieldBinding[] fields = binding.fields();
 		for (int i=0, len=fields.length; i < len; i++) {
 			FieldBinding f = fields[i];
-			declaredFields.add(EclipseFactory.makeResolvedMember(f));
+			declaredFields.add(factory.makeResolvedMember(f));
 		}
 			
 		this.declaredPointcuts = (ResolvedPointcutDefinition[])

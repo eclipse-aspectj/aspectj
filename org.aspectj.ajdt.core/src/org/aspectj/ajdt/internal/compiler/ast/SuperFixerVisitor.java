@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
 import org.aspectj.weaver.NameMangler;
@@ -95,8 +96,9 @@ public class SuperFixerVisitor extends ASTVisitor {
 			targetClass);
 			
 		AstUtil.replaceMethodBinding(call, superAccessBinding);
-		
-		ResolvedMember targetMember = EclipseFactory.makeResolvedMember(superBinding);
+	
+    	EclipseFactory factory = ((AjLookupEnvironment)method.scope.environment()).factory;
+		ResolvedMember targetMember = factory.makeResolvedMember(superBinding);
 		superMethodsCalled.add(targetMember);
 	}
 }

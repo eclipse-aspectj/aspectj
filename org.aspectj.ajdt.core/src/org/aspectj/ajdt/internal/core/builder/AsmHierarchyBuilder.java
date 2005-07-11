@@ -413,11 +413,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
     }
     
     private ResolvedMember getPointcutDeclaration(ReferencePointcut rp, MethodDeclaration declaration) {
-		World world = ((AjLookupEnvironment)declaration.scope.environment()).factory.getWorld();
+    	EclipseFactory factory = ((AjLookupEnvironment)declaration.scope.environment()).factory;
+		World world = factory.getWorld();
 		TypeX onType = rp.onType;
 		if (onType == null) {
 			if (declaration.binding != null) {
-			    Member member = EclipseFactory.makeResolvedMember(declaration.binding);
+			    Member member = factory.makeResolvedMember(declaration.binding);
 				onType = member.getDeclaringType();
 			} else {
 				return null;
@@ -496,7 +497,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			String memberName = "";
 			String memberBytecodeSignature = "";
 			try { 
-				Member member = EclipseFactory.makeResolvedMember(methodDeclaration.binding);
+		    	EclipseFactory factory = ((AjLookupEnvironment)methodDeclaration.scope.environment()).factory;
+				Member member = factory.makeResolvedMember(methodDeclaration.binding);
 				memberName = member.getName();
 				memberBytecodeSignature = member.getSignature();
 			} catch (BCException bce) {  // bad type name 
@@ -684,7 +686,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			String memberName = "";
 			String memberBytecodeSignature = "";
 			try {
-				Member member = EclipseFactory.makeResolvedMember(constructorDeclaration.binding);
+		    	EclipseFactory factory = ((AjLookupEnvironment)constructorDeclaration.scope.environment()).factory;
+				Member member = factory.makeResolvedMember(constructorDeclaration.binding);
 				memberName = member.getName();
 				memberBytecodeSignature = member.getSignature();
 			} catch (BCException bce) {  // bad type name 
