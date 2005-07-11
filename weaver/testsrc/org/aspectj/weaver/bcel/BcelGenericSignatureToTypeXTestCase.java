@@ -55,9 +55,9 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 		assertEquals("Ljava/io/Serializable;",serializable.getSignature());
 	}
 	
-	public void testInners() {
+	public void testColonColon() {
 		BcelWorld world = new BcelWorld();
-		Signature.ClassSignature cSig = new GenericSignatureParser().parseAsClassSignature("<T::LBase$Inner;>Ljava/lang/Object;LBase<TT;>;");
+		Signature.ClassSignature cSig = new GenericSignatureParser().parseAsClassSignature("<T::Ljava/io/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable<TT;>;");
 		TypeX resolved = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 				cSig.superclassSignature,
 				cSig.formalTypeParameters,
