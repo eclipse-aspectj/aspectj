@@ -19,6 +19,7 @@ import org.aspectj.weaver.MemberTestCase15;
 import org.aspectj.weaver.ReferenceTypeTestCase;
 import org.aspectj.weaver.TypeVariableReferenceTypeTestCase;
 import org.aspectj.weaver.TypeVariableTestCase;
+import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
 
 public class BcweaverModuleTests15 extends TestCase {
 	   public static Test suite() { 
@@ -29,6 +30,7 @@ public class BcweaverModuleTests15 extends TestCase {
 	        suite.addTestSuite(TypeVariableReferenceTypeTestCase.class);
 	        suite.addTestSuite(GenericsWildCardTypeXTestCase.class);
 	        suite.addTestSuite(MemberTestCase15.class);
+	        suite.addTestSuite(BcelGenericSignatureToTypeXTestCase.class);
 	        return suite;
 	    }
 
