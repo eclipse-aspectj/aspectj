@@ -128,4 +128,14 @@ public class TypeVariable {
 		ResolvedTypeX subType = (ResolvedTypeX) candidateSubType;
 		return superType.isAssignableFrom(subType);
 	}
+
+	// only used when resolving circular dependencies
+	public void setUpperBound(TypeX aTypeX) {
+		this.upperBound = aTypeX;
+	}
+	
+	// good enough approximation
+	public String toString() {
+		return "T" + upperBound.getSignature();
+	}
 }
