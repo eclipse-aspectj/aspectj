@@ -74,13 +74,15 @@ public class Aj implements ClassPreProcessor {
         private static Map weavingAdaptors = new WeakHashMap();
 
         static WeavingAdaptor getWeaver(ClassLoader loader) {
-            synchronized (weavingAdaptors) {
-                WeavingAdaptor weavingAdaptor = (WeavingAdaptor) weavingAdaptors.get(loader);
-                if (weavingAdaptor == null) {
-                    weavingAdaptor = new ClassLoaderWeavingAdaptor(loader);
-                    weavingAdaptors.put(loader, weavingAdaptor);
+            synchronized(loader) {//FIXME AV - temp fix for #99861
+                synchronized (weavingAdaptors) {
+                    WeavingAdaptor weavingAdaptor = (WeavingAdaptor) weavingAdaptors.get(loader);
+                    if (weavingAdaptor == null) {
+                        weavingAdaptor = new ClassLoaderWeavingAdaptor(loader);
+                        weavingAdaptors.put(loader, weavingAdaptor);
+                    }
+                    return weavingAdaptor;
                 }
-                return weavingAdaptor;
             }
         }
     }
