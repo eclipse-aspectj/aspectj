@@ -153,7 +153,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
                 // look in the whole method list and not just declared for super calls and alike
                 List methods = callee.getMethodsWithoutIterator();
                 for (Iterator iter = methods.iterator(); iter.hasNext();) {
-                    BcelMethod resolvedMember = (BcelMethod) iter.next();
+                    ResolvedMember resolvedMember = (ResolvedMember) iter.next();
                     if (invoke.getName(cpg).equals(resolvedMember.getName())
                             && invoke.getSignature(cpg).equals(resolvedMember.getSignature())
                             && !resolvedMember.isPublic()) {
