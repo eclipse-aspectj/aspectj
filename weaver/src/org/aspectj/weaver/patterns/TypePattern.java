@@ -212,6 +212,8 @@ public abstract class TypePattern extends PatternNode {
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
 		for (Iterator i = type.getDirectSupertypes(); i.hasNext(); ) {
 			ResolvedTypeX superType = (ResolvedTypeX)i.next();
+			// TODO asc generics, temporary whilst matching isnt aware..
+			if (superType.isParameterized()) superType = superType.getRawType().resolve(superType.getWorld());
 			if (matchesSubtypes(superType,type)) return true;
 		}
 		return false;
