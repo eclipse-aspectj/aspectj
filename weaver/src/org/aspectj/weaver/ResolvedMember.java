@@ -346,7 +346,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		if (aType instanceof TypeVariableReferenceType) {
 			String variableName = ((TypeVariableReferenceType)aType).getTypeVariable().getName();
 			if (!typeVariableMap.containsKey(variableName)) {
-				throw new IllegalStateException("Type variable " + variableName + " not bound in type map");
+				return aType; // if the type variable comes from the method (and not the type) thats OK
 			}
 			return (TypeX) typeVariableMap.get(variableName);
 		} else {
