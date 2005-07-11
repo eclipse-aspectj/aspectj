@@ -131,10 +131,17 @@
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="perClauseInheritance">
-<!--        <compile files="ataspectj/PerClauseInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>-->
-<!--        <run class="ataspectj.PerClauseInheritanceTest"/>-->
+        <compile files="ataspectj/PerClauseInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
+        <run class="ataspectj.PerClauseInheritanceTest"/>
         <compile files="ataspectj/PerClauseInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing"/>
         <run class="ataspectj.PerClauseInheritanceTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="MultipleBinding">
+        <compile files="ataspectj/MultipleBindingTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -XnoInline"/>
+        <run class="ataspectj.MultipleBindingTest"/>
+        <compile files="ataspectj/MultipleBindingTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.MultipleBindingTest"/>
     </ajc-test>
 
 </suite>

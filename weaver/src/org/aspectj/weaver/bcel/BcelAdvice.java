@@ -346,39 +346,68 @@ public class BcelAdvice extends Advice {
 
 
 		if (exposedState.getAspectInstance() != null) {
-			il.append(
-				BcelRenderer.renderExpr(fact, world, exposedState.getAspectInstance()));
+			il.append(BcelRenderer.renderExpr(fact, world, exposedState.getAspectInstance()));
 		}
+        final boolean isAnnotationStyleAspect = getConcreteAspect()!=null && getConcreteAspect().isAnnotationStyleAspect();
+        boolean previousIsClosure = false;
         for (int i = 0, len = exposedState.size(); i < len; i++) {
         	if (exposedState.isErroneousVar(i)) continue; // Erroneous vars have already had error msgs reported!
             BcelVar v = (BcelVar) exposedState.get(i);
 
             if (v == null) {
                 // if not @AJ aspect, go on with the regular binding handling
-            	if (getConcreteAspect()==null || !getConcreteAspect().isAnnotationStyleAspect()) {
+            	if (!isAnnotationStyleAspect) {
             		;
             	} else {
                     // ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
-	                if (getKind() == AdviceKind.Around) {
-	                    il.append(closureInstantiation);
+	                //if (getKind() == AdviceKind.Around) {
+                    //    previousIsClosure = true;
+	                //    il.append(closureInstantiation);
+                    if ("Lorg/aspectj/lang/ProceedingJoinPoint;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+                        //make sure we are in an around, since we deal with the closure, not the arg here
+                        if (getKind() != AdviceKind.Around) {
+                            previousIsClosure = false;
+                            getConcreteAspect().getWorld().getMessageHandler().handleMessage(
+                                    new Message(
+                                            "use of ProceedingJoinPoint is allowed only on around advice ("
+                                            + "arg " + i + " in " + toString() + ")",
+                                            this.getSourceLocation(),
+                                            true
+                                    )
+                            );
+                            // try to avoid verify error and pass in null
+                            il.append(InstructionConstants.ACONST_NULL);
+                        } else {
+                            if (previousIsClosure) {
+                                il.append(InstructionConstants.DUP);
+                            } else {
+                                previousIsClosure = true;
+                                il.append(closureInstantiation.copy());
+                            }
+                        }
 	                } else if ("Lorg/aspectj/lang/JoinPoint$StaticPart;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+                        previousIsClosure = false;
 	                    if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
 	                        shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
 	                    }
 	                } else if ("Lorg/aspectj/lang/JoinPoint;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+                        previousIsClosure = false;
 	                    if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
 	                        il.append(shadow.loadThisJoinPoint());
 	                    }
 	                } else if ("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+                        previousIsClosure = false;
 	                    if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
 	                        shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
 	                    }
 	                } else if (hasExtraParameter()) {
+                        previousIsClosure = false;
 	                    extraVar.appendLoadAndConvert(
 	                        il,
 	                        fact,
 	                        getExtraParameterType().resolve(world));
 	                } else {
+                        previousIsClosure = false;
                         getConcreteAspect().getWorld().getMessageHandler().handleMessage(
                                 new Message(
                                         "use of ProceedingJoinPoint is allowed only on around advice ("
@@ -397,10 +426,10 @@ public class BcelAdvice extends Advice {
             }
         }
 
-        
+
         // ATAJ: for code style aspect, handles the extraFlag as usual ie not
         // in the middle of the formal bindings but at the end, in a rock solid ordering
-        if (getConcreteAspect()==null || !getConcreteAspect().isAnnotationStyleAspect()) {
+        if (!isAnnotationStyleAspect) {
             if (getKind() == AdviceKind.Around) {
                 il.append(closureInstantiation);
             } else if (hasExtraParameter()) {

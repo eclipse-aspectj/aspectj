@@ -134,15 +134,15 @@ public class SingletonAspectBindingsTest extends TestCase {
     }
 
 //    public void testHe() throws Throwable {
-//        //Allow to look inn file based on advises/advised-by offset numbers   
-//        File f = new File("../tests/java5/ataspectj/ataspectj/SingletonAspectBindingsTest2.aj");
+//        //Allow to look inn file based on advises/advised-by offset numbers
+//        File f = new File("../tests/java5/ataspectj/ataspectj/SingletonAspectBindingsTest.java");
 //        FileReader r = new FileReader(f);
 //        int i = 0;
-//        for (i = 0; i < 2800; i++) {
+//        for (i = 0; i < 3700; i++) {
 //            r.read();
 //        }
-//        for (;i < 2900; i++) {
-//            if (i == 2817) System.out.print("X");
+//        for (;i < 3800; i++) {
+//            if (i==3721 || i == 3742 || i == 3777) System.out.print("X");
 //            System.out.print((char)r.read());
 //        }
 //        System.out.print("|DONE");
