@@ -222,8 +222,27 @@ public class SignaturePattern extends PatternNode {
 			if (!name.matches(sig.getName())) return false;
 			
 			// Check the parameters
-			if (!parameterTypes.matches(world.resolve(sig.getParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
-				return false;
+			// AMC parameterized types make this more complex. Suppose I have a 
+	        // type that implements a parameterized interface. It might declare a method
+			// foo(Double). If foo is defined in I<T> and the type implements I<Double>,
+			// then the signature pattern I.foo(Object) (the erasure) *should* match.
+			// But [Object] does not match [Double] so we have some work to do...
+			ResolvedTypeX[] resolvedParameters = world.resolve(sig.getParameterTypes());
+			if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
+				// It could still be a match based on the erasure of a parameterized type
+				// method in our hierarchy.
+				// We need to find out as cheaply as possible.
+				ResolvedMember sigErasure = sig.getErasure();
+				if (sigErasure != null) {
+					ResolvedTypeX[] erasureParameters = world.resolve(sigErasure.getParameterTypes());
+					if (!parameterTypes.matches(erasureParameters,TypePattern.STATIC).alwaysTrue()) {
+						// fail if we don't match the erasure either
+						return false;
+					} 
+				} else {
+					// fail if there is no erasure as the params don't match
+					return false;
+				}
 			}
 			
 			// If we have matched on parameters, let's just check it isn't because the last parameter in the pattern

@@ -607,6 +607,10 @@ public class Member implements Comparable, AnnotatedElement {
 			b |= walkUp(acc, (ResolvedTypeX)i.next());
 		}
 		
+		if (!b && curr.isParameterized()) {
+			b = walkUp(acc,curr.getGenericType());
+		}
+		
 		if (!b) {
 			b = curr.lookupMemberNoSupers(this) != null;
 		} 
@@ -622,6 +626,9 @@ public class Member implements Comparable, AnnotatedElement {
 			boolean b = false;
 			for (Iterator i = curr.getDirectSupertypes(); i.hasNext(); ) {
 				b |= walkUpStatic(acc, (ResolvedTypeX)i.next());
+			}
+			if (!b && curr.isParameterized()) {
+				b = walkUpStatic(acc,curr.getGenericType());
 			}
 			if (b) acc.add(curr);
 			return b;

@@ -331,27 +331,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         boolean equalCovariantSignatures = m1.getParameterSignature().equals(m2.getParameterSignature());
         if (equalCovariantSignatures) return true;
         
-        // If they aren't the same, we need to allow for generics... where one sig might be a parameterization
-        // of another sig.
-        if (m1.canBeParameterized()) {
-        	boolean m2MatchesParameterizationOfm1 =
-        		matchesGenericMethod(m1,m2);  
-        	if (m2MatchesParameterizationOfm1) return true;
-        } 
-        if (m2.canBeParameterized()) {
-        	boolean m1MatchesParameterizationOfm2 =
-        		matchesGenericMethod(m2,m1);
-        	if (m1MatchesParameterizationOfm2) return true;
-        }
         return false;
-    }
-    
-    /**
-     * This method is only called from matches(m1,m2)
-     * We know that the names match, but that's it.
-     */
-    private static boolean matchesGenericMethod(Member aGenericMember, Member possibleParameterizationMember) {
-    	return false;
     }
     
     public static boolean conflictingSignature(Member m1, Member m2) {
@@ -1445,5 +1425,37 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 
 	public ResolvedTypeX parameterizedWith(TypeX[] typeParameters) {
 		return this;
+	}
+	
+	public boolean hasParameterizedSuperType() {
+		getParameterizedSuperTypes();
+		return parameterizedSuperTypes.length > 0;
+	}
+	
+	private ResolvedTypeX[] parameterizedSuperTypes = null;
+	/**
+	 * Similar to the above method, but accumulates the super types
+	 * @return
+	 */
+	public ResolvedTypeX[] getParameterizedSuperTypes() {
+		if (parameterizedSuperTypes != null) return parameterizedSuperTypes;
+		List accumulatedTypes = new ArrayList();
+		accumulateParameterizedSuperTypes(this,accumulatedTypes);
+		ResolvedTypeX[] ret = new ResolvedTypeX[accumulatedTypes.size()];
+		parameterizedSuperTypes = (ResolvedTypeX[]) accumulatedTypes.toArray(ret);
+		return parameterizedSuperTypes;
+	}
+	
+	private void accumulateParameterizedSuperTypes(ResolvedTypeX forType, List parameterizedTypeList) {
+		if (forType.isParameterized()) {
+			parameterizedTypeList.add(forType);
+		}
+		if (forType.getSuperclass() != null) {
+			accumulateParameterizedSuperTypes(forType.getSuperclass(), parameterizedTypeList);
+		}
+		ResolvedTypeX[] interfaces = forType.getDeclaredInterfaces();
+		for (int i = 0; i < interfaces.length; i++) {
+			accumulateParameterizedSuperTypes(interfaces[i], parameterizedTypeList);
+		}
 	}
 }

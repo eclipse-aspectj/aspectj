@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +34,11 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     
     public String[] parameterNames = null;
     protected TypeX[] checkedExceptions = TypeX.NONE;
+    /**
+     * if this member is a parameterized version of a member in a generic type,
+     * then this field holds a reference to the member we parameterize.
+     */
+    protected ResolvedMember backingGenericMember = null;
     private Set annotationTypes = null;
 	// Some members are 'created' to represent other things (for example ITDs).  These
 	// members have their annotations stored elsewhere, and this flag indicates that is
@@ -72,6 +78,20 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		this.checkedExceptions = checkedExceptions;
 	}
     
+	public ResolvedMember(
+			Kind kind,
+			TypeX declaringType,
+			int modifiers,
+			TypeX returnType,
+			String name,
+			TypeX[] parameterTypes,
+			TypeX[] checkedExceptions,
+			ResolvedMember backingGenericMember) 
+		{
+			this(kind, declaringType, modifiers, returnType, name, parameterTypes,checkedExceptions);
+			this.backingGenericMember = backingGenericMember;
+		}
+	
 	public ResolvedMember(
 		Kind kind,
 		TypeX declaringType,
@@ -338,7 +358,8 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 					parameterizedReturnType,
 					getName(),
 					parameterizedParameterTypes,
-					getExceptions()
+					getExceptions(),
+					this
 				);
 	}
 	
@@ -353,5 +374,49 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 			return aType;
 		}
 	}
+	
+	
+	/**
+	 * If this member is defined by a parameterized super-type, return the erasure
+	 * of that member.
+	 * For example:
+	 * interface I<T> { T foo(T aTea); }
+	 * class C implements I<String> {
+	 *   String foo(String aString) { return "something"; }
+	 * }
+	 * The resolved member for C.foo has signature String foo(String). The
+	 * erasure of that member is Object foo(Object)  -- use upper bound of type
+	 * variable.
+	 * A type is a supertype of itself.
+	 */
+	public ResolvedMember getErasure() {
+		if (calculatedMyErasure) return myErasure;
+		calculatedMyErasure = true;
+		ResolvedTypeX resolvedDeclaringType = (ResolvedTypeX) getDeclaringType();
+		// this next test is fast, and the result is cached.
+		if (!resolvedDeclaringType.hasParameterizedSuperType()) {
+			return null;
+		} else {
+			// we have one or more parameterized super types.
+			// this member may be defined by one of them... we need to find out.
+			Collection declaringTypes = this.getDeclaringTypes(resolvedDeclaringType.getWorld());
+			for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
+				ResolvedTypeX aDeclaringType = (ResolvedTypeX) iter.next();
+				if (aDeclaringType.isParameterized()) {
+					// we've found the (a?) parameterized type that defines this member.
+					// now get the erasure of it
+					ResolvedMember matchingMember = aDeclaringType.lookupMemberNoSupers(this);
+					if (matchingMember != null && matchingMember.backingGenericMember != null) {
+						myErasure = matchingMember.backingGenericMember;
+						return myErasure;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	private ResolvedMember myErasure = null;
+	private boolean calculatedMyErasure = false;
 }
    
