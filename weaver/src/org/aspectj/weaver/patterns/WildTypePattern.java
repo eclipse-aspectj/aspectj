@@ -526,11 +526,11 @@ public class WildTypePattern extends TypePattern {
 				ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
 			} else {
 			    // TODO generics not written yet - when the type parameters are not exact
-				throw new RuntimeException("Type parameters are not exact");
+				//throw new RuntimeException("Type parameters are not exact");
 				// AMC... just leave it as a wild type pattern then?
-				//importedPrefixes = scope.getImportedPrefixes();
-				//knownMatches = preMatch(scope.getImportedNames());
-				//return this;
+				importedPrefixes = scope.getImportedPrefixes();
+				knownMatches = preMatch(scope.getImportedNames());
+				return this;
 			}
 		} else {
 			if (dim != 0) rawType = TypeX.makeArray(rawType, dim);
