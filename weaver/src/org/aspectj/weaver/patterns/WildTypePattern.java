@@ -415,23 +415,57 @@ public class WildTypePattern extends TypePattern {
     								boolean allowBinding, boolean requireExactType)
     { 		
     	if (isNamePatternStar()) {
-    	    // If there is an annotation specified we have to
-    	    // use a special variant of Any TypePattern called
-    	    // AnyWithAnnotation
-    		if (annotationPattern == AnnotationTypePattern.ANY) {
-    		  if (dim == 0 && !isVarArgs) { // pr72531
-    			return TypePattern.ANY;  //??? loses source location
-    		  } 
-    		} else {
-    	    	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
-    			AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(annotationPattern); 			
-    			ret.setLocation(sourceContext,start,end);
-    			return ret;
-    		}
+    		TypePattern anyPattern = maybeResolveToAnyPattern(scope, bindings, allowBinding, requireExactType);
+    		if (anyPattern != null) return anyPattern;
 		}
 
+    	TypePattern bindingTypePattern = maybeResolveToBindingTypePattern(scope, bindings, allowBinding, requireExactType);
+    	if (bindingTypePattern != null) return bindingTypePattern;
+    	
     	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
     	
+		// resolve any type parameters
+		if (typeParameters!=null && typeParameters.size()>0) {
+			typeParameters.resolveBindings(scope,bindings,allowBinding,requireExactType);
+		}
+		
+		String fullyQualifiedName = maybeGetCleanName();
+		if (fullyQualifiedName != null) {
+			return resolveBindingsFromFullyQualifiedTypeName(fullyQualifiedName, scope, bindings, allowBinding, requireExactType);
+		} else {
+			if (requireExactType) {
+				scope.getWorld().getMessageHandler().handleMessage(
+					MessageUtil.error(WeaverMessages.format(WeaverMessages.WILDCARD_NOT_ALLOWED),
+										getSourceLocation()));
+				return NO;
+			}
+			importedPrefixes = scope.getImportedPrefixes();
+			knownMatches = preMatch(scope.getImportedNames());			
+			return this;  // pattern contains wildcards so can't be resolved to an ExactTypePattern...
+			//XXX need to implement behavior for Lint.invalidWildcardTypeName
+		}		
+	}
+	
+	private TypePattern maybeResolveToAnyPattern(IScope scope, Bindings bindings, 
+			boolean allowBinding, boolean requireExactType) {
+ 	    // If there is an annotation specified we have to
+	    // use a special variant of Any TypePattern called
+	    // AnyWithAnnotation
+		if (annotationPattern == AnnotationTypePattern.ANY) {
+		  if (dim == 0 && !isVarArgs) { // pr72531
+			return TypePattern.ANY;  //??? loses source location
+		  } 
+		} else {
+	    	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
+			AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(annotationPattern); 			
+			ret.setLocation(sourceContext,start,end);
+			return ret;
+		}
+		return null; // can't resolve to a simple "any" pattern
+	}
+	
+	private TypePattern maybeResolveToBindingTypePattern(IScope scope, Bindings bindings, 
+			boolean allowBinding, boolean requireExactType) {
 		String simpleName = maybeGetSimpleName();
 		if (simpleName != null) {
 			FormalBinding formalBinding = scope.lookupFormal(simpleName);
@@ -453,87 +487,80 @@ public class WildTypePattern extends TypePattern {
 				return binding;
 			}
 		}
-		
-		// Only if the type is exact *and* the type parameters are exact should we create an 
-		// ExactTypePattern for this WildTypePattern
-		
-		// resolve any type parameters
-		if (typeParameters!=null && typeParameters.size()>0) {
-			typeParameters.resolveBindings(scope,bindings,allowBinding,requireExactType);
-		}
-		
-		String cleanName = maybeGetCleanName();
-		String[] typeParamCleanNames = typeParameters.maybeGetCleanNames();
-		
-		// TODO asc generics - do we need to duplicate all this logic that gets done on cleanName
-		// for the typeParamCleanNames?
-		String originalName = cleanName;
-		// if we discover it is 'MISSING' when searching via the scope, this next local var will
-		// tell us if it is really missing or if it does exist in the world and we just can't
-		// see it from the current scope.
+		return null; // not possible to resolve to a binding type pattern
+	}
+	
+	private TypePattern resolveBindingsFromFullyQualifiedTypeName(String fullyQualifiedName, IScope scope, Bindings bindings, 
+			boolean allowBinding, boolean requireExactType) {
+		String originalName = fullyQualifiedName;
 		ResolvedTypeX resolvedTypeInTheWorld = null;
-		if (cleanName != null) {
-			TypeX type;
-			
-			//System.out.println("resolve: " + cleanName);
-			//??? this loop has too many inefficiencies to count
-			resolvedTypeInTheWorld = scope.getWorld().resolve(TypeX.forName(cleanName),true);
-			while ((type = scope.lookupType(cleanName, this)) == ResolvedTypeX.MISSING) {
-				int lastDot = cleanName.lastIndexOf('.');
-				if (lastDot == -1) break;
-				cleanName = cleanName.substring(0, lastDot) + '$' + cleanName.substring(lastDot+1);
-				if (resolvedTypeInTheWorld == ResolvedTypeX.MISSING)
-					resolvedTypeInTheWorld = scope.getWorld().resolve(TypeX.forName(cleanName),true);					
-			}
-			if (type == ResolvedTypeX.MISSING) {
-				if (requireExactType) {
-					if (!allowBinding) {
-						scope.getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_BIND_TYPE,originalName),
-											getSourceLocation()));
-					} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
-						scope.getWorld().getLint().invalidAbsoluteTypeName.signal(originalName, getSourceLocation());
-					}
-					return NO;
-				} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
-					// Only put the lint warning out if we can't find it in the world
-					if (resolvedTypeInTheWorld == ResolvedTypeX.MISSING)
-					  scope.getWorld().getLint().invalidAbsoluteTypeName.signal(originalName, getSourceLocation());
-				}
+		TypeX type;
+		
+		//System.out.println("resolve: " + cleanName);
+		//??? this loop has too many inefficiencies to count
+		resolvedTypeInTheWorld = scope.getWorld().resolve(TypeX.forName(fullyQualifiedName),true);
+		while ((type = scope.lookupType(fullyQualifiedName, this)) == ResolvedTypeX.MISSING) {
+			int lastDot = fullyQualifiedName.lastIndexOf('.');
+			if (lastDot == -1) break;
+			fullyQualifiedName = fullyQualifiedName.substring(0, lastDot) + '$' + fullyQualifiedName.substring(lastDot+1);
+			if (resolvedTypeInTheWorld == ResolvedTypeX.MISSING)
+				resolvedTypeInTheWorld = scope.getWorld().resolve(TypeX.forName(fullyQualifiedName),true);					
+		}
+		if (type == ResolvedTypeX.MISSING) {
+			return resolveBindingsForMissingType(resolvedTypeInTheWorld, originalName, scope, bindings, allowBinding, requireExactType);
+		} else {
+			return resolveBindingsForExactRawType(scope,type,fullyQualifiedName);
+		}
+	}
+	
+	private TypePattern resolveBindingsForExactRawType(IScope scope, TypeX rawType, String fullyQualifiedName) {
+		TypePattern ret = null;
+		if (typeParameters.size()>0) {
+			// Only if the type is exact *and* the type parameters are exact should we create an 
+			// ExactTypePattern for this WildTypePattern					
+			if (typeParameters.areAllExact()) {
+				String[] typeParamCleanNames = typeParameters.maybeGetCleanNames();
+				TypeX tx = TypeX.forParameterizedTypeNames(rawType.getName(),typeParamCleanNames);
+				TypeX type = scope.getWorld().resolve(tx,true); 
+				if (dim != 0) type = TypeX.makeArray(type, dim);
+				ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
 			} else {
-				TypePattern ret = null;
-				if (typeParameters.size()>0) {
-					if (typeParameters.areAllExact()) {
-						TypeX tx = TypeX.forParameterizedTypeNames(cleanName,typeParamCleanNames);
-						type = scope.getWorld().resolve(tx,true); 
-						if (dim != 0) type = TypeX.makeArray(type, dim);
-						ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
-					} else {
-					    // TODO generics not written yet - when the type parameters are not exact
-						throw new RuntimeException("Type parameters are not exact");
-					}
-				} else {
-					if (dim != 0) type = TypeX.makeArray(type, dim);
-					ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);					
-				}
-				ret.setAnnotationTypePattern(annotationPattern);
-				ret.copyLocationFrom(this);
-				return ret;
+			    // TODO generics not written yet - when the type parameters are not exact
+				throw new RuntimeException("Type parameters are not exact");
+				// AMC... just leave it as a wild type pattern then?
+				//importedPrefixes = scope.getImportedPrefixes();
+				//knownMatches = preMatch(scope.getImportedNames());
+				//return this;
 			}
 		} else {
-			if (requireExactType) {
-				scope.getWorld().getMessageHandler().handleMessage(
-					MessageUtil.error(WeaverMessages.format(WeaverMessages.WILDCARD_NOT_ALLOWED),
-										getSourceLocation()));
-				return NO;
-			}
-			//XXX need to implement behavior for Lint.invalidWildcardTypeName
+			if (dim != 0) rawType = TypeX.makeArray(rawType, dim);
+			ret = new ExactTypePattern(rawType,includeSubtypes,isVarArgs);					
 		}
-		
+		ret.setAnnotationTypePattern(annotationPattern);
+		ret.copyLocationFrom(this);
+		return ret;
+	}
+	
+	private TypePattern resolveBindingsForMissingType(ResolvedTypeX typeFoundInWholeWorldSearch, String nameWeLookedFor, IScope scope, Bindings bindings, 
+			boolean allowBinding, boolean requireExactType) {
+		if (requireExactType) {
+			if (!allowBinding) {
+				scope.getWorld().getMessageHandler().handleMessage(
+					MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_BIND_TYPE,nameWeLookedFor),
+									getSourceLocation()));
+			} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
+				scope.getWorld().getLint().invalidAbsoluteTypeName.signal(nameWeLookedFor, getSourceLocation());
+			}
+			return NO;
+		} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
+			// Only put the lint warning out if we can't find it in the world
+			if (typeFoundInWholeWorldSearch == ResolvedTypeX.MISSING) {
+			  scope.getWorld().getLint().invalidAbsoluteTypeName.signal(nameWeLookedFor, getSourceLocation());
+			}
+		}
 		importedPrefixes = scope.getImportedPrefixes();
 		knownMatches = preMatch(scope.getImportedNames());
-		
-		return this;
+		return this;		
 	}
 	
 	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
