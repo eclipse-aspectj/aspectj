@@ -62,8 +62,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 
@@ -71,7 +69,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from <em>Attribute</em> and represents a reference
  * to a <href="http://wwwipd.ira.uka.de/~pizza/gj/">GJ</a> attribute.
  *
- * @version $Id: Signature.java,v 1.5 2005/07/01 11:29:54 acolyer Exp $
+ * @version $Id: Signature.java,v 1.6 2005/07/12 13:59:06 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
