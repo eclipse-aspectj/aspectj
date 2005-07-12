@@ -128,6 +128,8 @@ public class WeaverMessages {
 	
 	// Generics
 	public static final String CANT_DECP_MULTIPLE_PARAMETERIZATIONS="cantDecpMultipleParameterizations";
+	public static final String INCORRECT_NUMBER_OF_TYPE_ARGUMENTS = "incorrectNumberOfTypeArguments";
+	public static final String VIOLATES_TYPE_VARIABLE_BOUNDS = "violatesTypeVariableBounds";
 	
 	public static String format(String key) {
 		return bundle.getString(key);
