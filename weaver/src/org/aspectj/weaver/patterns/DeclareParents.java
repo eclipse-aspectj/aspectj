@@ -37,7 +37,7 @@ public class DeclareParents extends Declare {
 	private TypePattern child;
 	private TypePatternList parents;
 	private boolean isWildChild = false;
-	private TypeVariablePatternList typeVariablesInScope = TypeVariablePatternList.EMPTY; // AspectJ 5 extension for generic types
+	private String[] typeVariablesInScope = new String[0]; // AspectJ 5 extension for generic types
 	
 
 	public DeclareParents(TypePattern child, List parents) {
@@ -50,11 +50,11 @@ public class DeclareParents extends Declare {
 		if (child instanceof WildTypePattern) isWildChild = true;
 	}
 	
-	public TypeVariablePatternList getTypeParameters() {
+	public String[] getTypeParameterNames() {
 		return this.typeVariablesInScope;
 	}
 	
-	public void setTypeParameters(TypeVariablePatternList typeParameters) {
+	public void setTypeParametersInScope(String[] typeParameters) {
 		this.typeVariablesInScope = typeParameters;
 	}
 	
@@ -102,14 +102,21 @@ public class DeclareParents extends Declare {
 		s.writeByte(Declare.PARENTS);
 		child.write(s);
 		parents.write(s);
-		typeVariablesInScope.write(s);  // change to binary form in AJ 5
+		s.writeInt(typeVariablesInScope.length);
+		for (int i = 0; i < typeVariablesInScope.length; i++) {
+			s.writeUTF(typeVariablesInScope[i]);
+		}
 		writeLocation(s);
 	}
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		DeclareParents ret = new DeclareParents(TypePattern.read(s, context), TypePatternList.read(s, context));
 		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
-			ret.setTypeParameters(TypeVariablePatternList.read(s,context));
+			int numTypeVariablesInScope = s.readInt();
+			ret.typeVariablesInScope = new String[numTypeVariablesInScope];
+			for (int i = 0; i < numTypeVariablesInScope; i++) {
+				ret.typeVariablesInScope[i] = s.readUTF();
+			}
 		}
 		ret.readLocation(context, s);
 		return ret;

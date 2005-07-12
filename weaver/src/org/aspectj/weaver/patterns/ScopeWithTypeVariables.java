@@ -15,7 +15,9 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.World;
 
 /**
@@ -25,23 +27,28 @@ import org.aspectj.weaver.World;
 public class ScopeWithTypeVariables implements IScope {
 
 	private IScope delegateScope;
-	private TypeVariablePatternList typeVariables;
+	private String[] typeVariableNames;
+	private UnresolvedTypeVariableReferenceType[] typeVarTypeXs;
 	
-	public ScopeWithTypeVariables(TypeVariablePatternList typeVars, IScope delegate) {
+	public ScopeWithTypeVariables(String[] typeVarNames, IScope delegate) {
 		this.delegateScope = delegate;
-		this.typeVariables = typeVars;
+		this.typeVariableNames = typeVarNames;
+		this.typeVarTypeXs = new UnresolvedTypeVariableReferenceType[typeVarNames.length];
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.IScope#lookupType(java.lang.String, org.aspectj.weaver.IHasPosition)
 	 */
 	public TypeX lookupType(String name, IHasPosition location) {
-		TypeVariablePattern typeVariableMatch = typeVariables.lookupTypeVariable(name);
-		if (typeVariableMatch != null) {
-			return typeVariableMatch.resolvedType();
-		} else {
-			return delegateScope.lookupType(name, location);
-		}		
+		for (int i = 0; i < typeVariableNames.length; i++) {
+			if (typeVariableNames[i].equals(name)) {
+				if (typeVarTypeXs[i] == null) {
+					typeVarTypeXs[i] = new UnresolvedTypeVariableReferenceType(new TypeVariable(name));
+					return typeVarTypeXs[i];
+				}
+			}
+		}
+		return delegateScope.lookupType(name, location);
 	}
 
 	/* (non-Javadoc)

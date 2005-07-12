@@ -43,7 +43,11 @@ public class TypeVariablePatternList extends PatternNode {
 		}
 		return null;
 	}
-
+	
+	public boolean isEmpty() {
+		return ((patterns == null) || (patterns.length == 0));
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeInt(patterns.length);
 		for (int i = 0; i < patterns.length; i++) {

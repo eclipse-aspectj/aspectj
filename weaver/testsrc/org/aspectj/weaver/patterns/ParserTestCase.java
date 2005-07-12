@@ -322,9 +322,9 @@ public class ParserTestCase extends TestCase {
 	public void testParseDeclareParentsWithTypeParameterList() {
 		PatternParser parser = new PatternParser("declare parents<T> : Foo<T> implements IveGoneMad");
 		DeclareParents decp = (DeclareParents) parser.parseDeclare();
-		TypeVariablePatternList tvp = decp.getTypeParameters();
-		assertEquals("one type parameter",1,tvp.getTypeVariablePatterns().length);
-		assertEquals("expecting T","T",tvp.getTypeVariablePatterns()[0].getName());
+		String[] tvp = decp.getTypeParameterNames();
+		assertEquals("one type parameter",1,tvp.length);
+		assertEquals("expecting T","T",tvp[0]);
 	}
 	
 	public void testParameterizedTypePatternsAny() {
@@ -361,18 +361,17 @@ public class ParserTestCase extends TestCase {
 
 	public void testSimpleTypeVariableList() {
 		PatternParser parser = new PatternParser("<T,S,V>");
-		TypeVariablePatternList tl = parser.maybeParseSimpleTypeVariableList();
-		TypeVariablePattern[] patterns = tl.getTypeVariablePatterns();
-		assertEquals("3 patterns",3,patterns.length);
-		assertEquals("T",new TypeVariablePattern("T"),patterns[0]);
-		assertEquals("S",new TypeVariablePattern("S"),patterns[1]);
-		assertEquals("V",new TypeVariablePattern("V"),patterns[2]);
+		String[] tl = parser.maybeParseSimpleTypeVariableList();
+		assertEquals("3 patterns",3,tl.length);
+		assertEquals("T",tl[0]);
+		assertEquals("S",tl[1]);
+		assertEquals("V",tl[2]);
 	}
 	
 	public void testSimpleTypeVariableListError() {
 		PatternParser parser = new PatternParser("<T extends Number>");
 		try {
-			TypeVariablePatternList tl = parser.maybeParseSimpleTypeVariableList();
+			String[] tl = parser.maybeParseSimpleTypeVariableList();
 		} catch (ParserException ex) {
 			assertEquals("Expecting ',' or '>'","',' or '>'",ex.getMessage());
 		}	
@@ -382,9 +381,9 @@ public class ParserTestCase extends TestCase {
 	public void testParseCallPCDWithTypeVariables() {
 		PatternParser parser = new PatternParser("call<T>(* Foo<T>.*(T))");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvps = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvps = pc.getTypeVariablesInScope();
 		assertEquals("1 type variable",1,tvps.length);
-		assertEquals("T",tvps[0].getName());
+		assertEquals("T",tvps[0]);
 	}
 	
 	public void testParseCallPCDWithIllegalBounds() {
@@ -530,41 +529,41 @@ public class ParserTestCase extends TestCase {
 	public void testExecutionWithTypeVariables() {
 		PatternParser parser = new PatternParser("execution<T>(T Bar<T>.doSomething())");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("1 type pattern",1,tvs.length);
-		assertEquals("T",tvs[0].getName());
+		assertEquals("T",tvs[0]);
 	}
 	
 	public void testInitializationWithTypeVariables() {
 		PatternParser parser = new PatternParser("initialization<T>(Bar<T>.new())");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("1 type pattern",1,tvs.length);
-		assertEquals("T",tvs[0].getName());		
+		assertEquals("T",tvs[0]);		
 	}
 
 	public void testPreInitializationWithTypeVariables() {
 		PatternParser parser = new PatternParser("preinitialization<T>(Bar<T>.new())");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("1 type pattern",1,tvs.length);
-		assertEquals("T",tvs[0].getName());		
+		assertEquals("T",tvs[0]);		
 	}
 
 	public void testStaticInitializationWithTypeVariables() {
 		PatternParser parser = new PatternParser("staticinitialization<T>(Bar<T>)");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("1 type pattern",1,tvs.length);
-		assertEquals("T",tvs[0].getName());		
+		assertEquals("T",tvs[0]);		
 	}
 	
 	public void testWithinWithTypeVariables() {
 		PatternParser parser = new PatternParser("within<T>(Bar<T>)");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("1 type pattern",1,tvs.length);
-		assertEquals("T",tvs[0].getName());		
+		assertEquals("T",tvs[0]);		
 	}
 
 	public void testTypeParamList() {
@@ -580,35 +579,35 @@ public class ParserTestCase extends TestCase {
 	public void testWithinCodeWithTypeVariables() {
 		PatternParser parser = new PatternParser("withincode<T,S,R>(Bar<T,S extends T, R extends S>.new())");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("3 type patterns",3,tvs.length);
-		assertEquals("T",tvs[0].getName());
-		assertEquals("S",tvs[1].getName());
-		assertEquals("R",tvs[2].getName());
+		assertEquals("T",tvs[0]);
+		assertEquals("S",tvs[1]);
+		assertEquals("R",tvs[2]);
 	}
 
 	public void testCallWithTypeVariables() {
 		PatternParser parser = new PatternParser("call<T>(* Bar<T>.*(..))");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("1 type pattern",1,tvs.length);
-		assertEquals("T",tvs[0].getName());		
+		assertEquals("T",tvs[0]);		
 	}
 
 	public void testGetWithTypeVariables() {
 		PatternParser parser = new PatternParser("get<T>(* Bar<T>.*)");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("1 type pattern",1,tvs.length);
-		assertEquals("T",tvs[0].getName());		
+		assertEquals("T",tvs[0]);		
 	}
 
 	public void testSetWithTypeVariables() {
 		PatternParser parser = new PatternParser("set<T>(* Bar<T>.*)");
 		Pointcut pc = parser.parsePointcut();
-		TypeVariablePattern[] tvs = pc.getTypeVariables().getTypeVariablePatterns();
+		String[] tvs = pc.getTypeVariablesInScope();
 		assertEquals("1 type pattern",1,tvs.length);
-		assertEquals("T",tvs[0].getName());		
+		assertEquals("T",tvs[0]);		
 	}
 
 	

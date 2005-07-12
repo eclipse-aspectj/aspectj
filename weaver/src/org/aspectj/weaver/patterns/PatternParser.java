@@ -182,7 +182,7 @@ public class PatternParser {
 	}
 
 	private Declare parseParents() {
-		TypeVariablePatternList typeParameters = maybeParseTypeVariableList();
+		String[] typeParameters = maybeParseSimpleTypeVariableList();
 		eat(":");
 		TypePattern p = parseTypePattern(false,false);
 		IToken t = tokenSource.next();
@@ -199,7 +199,7 @@ public class PatternParser {
 		
 		DeclareParents decp = new DeclareParents(p, l);
 		if (typeParameters != null) {
-			decp.setTypeParameters(typeParameters);
+			decp.setTypeParametersInScope(typeParameters);
 		}
 		return decp;
 	}
@@ -279,7 +279,7 @@ public class PatternParser {
 		
 		String kind = parseIdentifier();
 		IToken possibleTypeVariableToken = tokenSource.peek();
-		TypeVariablePatternList typeVariables = maybeParseSimpleTypeVariableList();
+		String[] typeVariables = maybeParseSimpleTypeVariableList();
 		if (kind.equals("execution") || kind.equals("call") || 
 						kind.equals("get") || kind.equals("set")) {
 			p = parseKindedPointcut(kind);
@@ -372,11 +372,11 @@ public class PatternParser {
 			if (typeVariables != null) 
 				throw new ParserException("type variable specification not allowed for reference pointcuts",possibleTypeVariableToken);
 		}
-		if (typeVariables != null) p.setTypeVariables(typeVariables);
+		if (typeVariables != null) p.setTypeVariablesInScope(typeVariables);
 		return p;
 	}
 
-	private void assertNoTypeVariables(TypeVariablePatternList tvs, String errorMessage,IToken token) {
+	private void assertNoTypeVariables(String[] tvs, String errorMessage,IToken token) {
 		if ( tvs != null ) throw new ParserException(errorMessage,token);
 	}
 	
@@ -385,7 +385,7 @@ public class PatternParser {
 		IToken t = tokenSource.peek();
 		String kind = parseIdentifier();
 		IToken possibleTypeVariableToken = tokenSource.peek();
-		TypeVariablePatternList typeVariables = maybeParseSimpleTypeVariableList();
+		String[] typeVariables = maybeParseSimpleTypeVariableList();
 		if (typeVariables != null) {
 			String message = "( - type variables not allowed with @" +
 			                           kind + " pointcut designator";
@@ -1196,18 +1196,16 @@ public class PatternParser {
 	}
 	
 	// of the form execution<T,S,V> - allows identifiers only
-	public TypeVariablePatternList maybeParseSimpleTypeVariableList() {
+	public String[] maybeParseSimpleTypeVariableList() {
 		if (!maybeEat("<")) return null;
-		List typeVars = new ArrayList();
+		List typeVarNames = new ArrayList();
 		do {
-			String typeVarName = parseIdentifier();
-			TypeVariablePattern tv = new TypeVariablePattern(typeVarName);
-			typeVars.add(tv);
+			typeVarNames.add(parseIdentifier());
 		} while (maybeEat(","));
 		eat(">","',' or '>'");
-		TypeVariablePattern[] tvs = new TypeVariablePattern[typeVars.size()];
-		typeVars.toArray(tvs);
-		return new TypeVariablePatternList(tvs);		
+		String[] tvs = new String[typeVarNames.size()];
+		typeVarNames.toArray(tvs);
+		return tvs;
 	}
 	
 	public TypePatternList maybeParseTypeParameterList(boolean allowTypeVariables) {

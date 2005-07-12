@@ -104,7 +104,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	protected int lastMatchedShadowId;
 	private FuzzyBoolean lastMatchedShadowResult;
 	private Test lastMatchedShadowResidue;
-	private TypeVariablePatternList typeVariables = TypeVariablePatternList.EMPTY;
+	private String[] typeVariablesInScope = new String[0];
 	
 	/**
 	 * Constructor for Pattern.
@@ -130,12 +130,12 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 */
 	public abstract /*Enum*/Set/*<Shadow.Kind>*/ couldMatchKinds();
 	
-	public TypeVariablePatternList getTypeVariables() {
-		return typeVariables;
+	public String[] getTypeVariablesInScope() {
+		return typeVariablesInScope;
 	}
 	
-	public void setTypeVariables(TypeVariablePatternList typeVars) {
-		this.typeVariables = typeVars;
+	public void setTypeVariablesInScope(String[] typeVars) {
+		this.typeVariablesInScope = typeVars;
 	}
 	
 	/**
@@ -228,8 +228,12 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
     public final Pointcut resolve(IScope scope) {
     	assertState(SYMBOLIC);
     	Bindings bindingTable = new Bindings(scope.getFormalCount());
-        this.resolveBindings(scope, bindingTable);
-        bindingTable.checkAllBound(scope);
+    	IScope bindingResolutionScope = scope;
+    	if (typeVariablesInScope.length > 0) {
+    		bindingResolutionScope = new ScopeWithTypeVariables(typeVariablesInScope,scope);
+    	}
+        this.resolveBindings(bindingResolutionScope, bindingTable);
+        bindingTable.checkAllBound(bindingResolutionScope);
         this.state = RESOLVED;
         return this;  	
     }

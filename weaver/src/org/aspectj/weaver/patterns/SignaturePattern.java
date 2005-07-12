@@ -230,8 +230,10 @@ public class SignaturePattern extends PatternNode {
 			ResolvedTypeX[] resolvedParameters = world.resolve(sig.getParameterTypes());
 			if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
 				// It could still be a match based on the erasure of a parameterized type
-				// method in our hierarchy.
+				// method in our hierarchy - this is only allowed if the declaring type pattern
+				// is raw.
 				// We need to find out as cheaply as possible.
+				if (declaringType.getTypeParameters().size() > 0) return false;
 				ResolvedMember sigErasure = sig.getErasure();
 				if (sigErasure != null) {
 					ResolvedTypeX[] erasureParameters = world.resolve(sigErasure.getParameterTypes());

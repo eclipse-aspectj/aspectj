@@ -111,11 +111,6 @@ public class TypeVariablePattern extends PatternNode {
 		}
 	}
 	
-	public ResolvedTypeX resolvedType() {
-		throw new UnsupportedOperationException("Haven't implement ResolvedTypeX for TypeVariables yet...");
-		//return this.resolvedType;
-	}
-	
 	public boolean equals(Object obj) {
 		if (!(obj instanceof TypeVariablePattern)) return false;
 		TypeVariablePattern other = (TypeVariablePattern) obj;
