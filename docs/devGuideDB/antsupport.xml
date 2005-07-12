@@ -56,11 +56,11 @@
 	at <ulink url="http://eclipse.org/aspectj">http://eclipse.org/aspectj</ulink>.
 	</para>
 	<para>
-	In Ant, third-party tasks can be declared using a taskdef entry in 
+	In Ant 1.5, third-party tasks can be declared using a taskdef entry in 
 	the build script, to identify the name and classes. 
 	When declaring a task, include the 
 	<literal>aspectjtools.jar</literal> either in the 
-	taskdef classpath or in ${ANT_HOME}/lib where it will be added 
+	taskdef classpath or in <literal>${ANT_HOME}/lib</literal> where it will be added 
 	to the system class path by the ant script. 
 	You may specify the task script names directly, 
 	or use the "resource" attribute to specify the default names:
@@ -76,6 +76,29 @@
 	The current resource file retains the name "ajc" for the Ajc10 task, 
 	and uses "iajc" for the AspectJ post-1.1 task.
     </para>
+	<para>
+	In Ant 1.6, third-party tasks are declared in their own namespace 
+	using <literal>antlib.xml</literal>.  For example, the following
+	script would build and run the spacewar example, if you put the
+	script in the examples directory and <literal>aspectjtools.jar</literal>
+	in the <literal>${ANT_HOME}/lib</literal> directory.
+    </para>
+    <programlisting>
+    <![CDATA[
+<project name="aspectj-ant1.6" default="spacewar" 
+    xmlns:aspectj="antlib:org.aspectj" basedir=".">
+    <target name="spacewar">
+        <aspectj:iajc
+            argfiles="spacewar/debug.lst"
+            outjar="spacewar.jar"
+            classpath="../../lib/aspectjrt.jar"
+       />
+       <java classname="spacewar.Game"
+        classpath="spacewar.jar:../../lib/aspectjrt.jar"/>
+    </target>
+</project>
+]]>
+    </programlisting>
     <para>
 	For more information on using Ant, please refer to Jakarta's 
 	documentation on integrating user-defined Ant tasks into builds.
