@@ -188,6 +188,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("execution pcd with raw signature matching");
 	}
 	
+	public void testExecutionWithGenericDeclaringTypeAndErasedParameterTypes() {
+		runTest("execution pcd with generic declaring type and erased parameter types");
+	}
+	
 	// --- helpers
 		
 	// Check the signature attribute on a class is correct

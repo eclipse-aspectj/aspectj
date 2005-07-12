@@ -2472,12 +2472,18 @@
      </compile>
    </ajc-test>
    
-      <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw signature matching">
+   <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw signature matching">
      <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,RawSignatureMatching.aj" options="-1.5">
          <message kind="warning" line="4" text="execution(* GenericInterface.asInt(Number))"/>
          <message kind="warning" line="5" text="execution(* GenericInterface.asInt(Number))"/>
      </compile>
    </ajc-test>
+
+   <ajc-test dir="java5/generics/pointcuts" title="execution pcd with generic declaring type and erased parameter types">
+     <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,GenericDeclaringTypeWithParameterErasure.aj" options="-1.5">
+     </compile>
+   </ajc-test>
+
    <!-- end of generics and pointcuts tests -->
    
    <!-- ============================================================== -->
