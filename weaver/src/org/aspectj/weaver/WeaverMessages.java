@@ -128,6 +128,7 @@ public class WeaverMessages {
 	
 	// Generics
 	public static final String CANT_DECP_MULTIPLE_PARAMETERIZATIONS="cantDecpMultipleParameterizations";
+	public static final String HANDLER_PCD_DOESNT_SUPPORT_PARAMETERS="noParameterizedTypePatternInHandler";
 	public static final String INCORRECT_NUMBER_OF_TYPE_ARGUMENTS = "incorrectNumberOfTypeArguments";
 	public static final String VIOLATES_TYPE_VARIABLE_BOUNDS = "violatesTypeVariableBounds";
 	
