@@ -483,6 +483,9 @@ public class TypeX implements AnnotatedElement {
 		return typeKind==GENERIC;
 	}
 	
+	public boolean isTypeVariable() {
+		return false;
+	}
 	
     /**
      * Returns a TypeX object representing the effective outermost enclosing type

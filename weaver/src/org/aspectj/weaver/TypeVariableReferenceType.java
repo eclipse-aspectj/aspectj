@@ -41,4 +41,8 @@ public class TypeVariableReferenceType extends BoundedReferenceType {
 		return typeVariable;
 	}
 	
+	public boolean isTypeVariable() {
+		return true;
+	}
+	
 }

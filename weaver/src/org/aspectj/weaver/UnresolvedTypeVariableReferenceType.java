@@ -40,5 +40,17 @@ public class UnresolvedTypeVariableReferenceType extends TypeX {
 		typeVariable.resolve(world);
 		return new TypeVariableReferenceType(typeVariable,world);
 	}
+	
+	public boolean isTypeVariable() {
+		return true;
+	}
+
+	public String toString() {
+		if (typeVariable == null) {
+			return "<type variable not set!>";
+		} else {
+			return "T" + typeVariable.getName() + ";";
+		}
+	}
 
 }
