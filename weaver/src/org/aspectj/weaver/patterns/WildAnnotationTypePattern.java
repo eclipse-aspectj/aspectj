@@ -40,6 +40,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	public WildAnnotationTypePattern(TypePattern typePattern) {
 		super();
 		this.typePattern = typePattern;
+		this.setLocation(typePattern.getSourceContext(), typePattern.start, typePattern.end);
 	}
 
     public TypePattern getTypePattern() {
