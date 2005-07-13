@@ -19,13 +19,16 @@ import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedTypeX;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
@@ -144,6 +147,16 @@ public class HandlerPointcut extends Pointcut {
 	// list in capturing type identifiers.
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		exceptionType = exceptionType.resolveBindings(scope, bindings, false, false);
+		boolean invalidParameterization = false;
+		if (exceptionType.getTypeParameters().size() > 0) invalidParameterization = true ;
+		TypeX exactType = exceptionType.getExactType();
+		if (exactType != null && exactType.isParameterized()) invalidParameterization = true;
+		if (invalidParameterization) {
+			// no parameterized or generic types for handler
+			scope.message(
+					MessageUtil.error(WeaverMessages.format(WeaverMessages.HANDLER_PCD_DOESNT_SUPPORT_PARAMETERS),
+									getSourceLocation()));
+		}
 		//XXX add error if exact binding and not an exception
 	}
 	
