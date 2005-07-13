@@ -132,6 +132,10 @@ public class SimpleScope implements IScope {
 
 	}
 	
+	public void message(IMessage aMessage) {
+		getMessageHandler().handleMessage(aMessage);
+	}
+	
 	public World getWorld() {
 		return world;
 	}

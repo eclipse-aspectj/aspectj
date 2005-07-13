@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.IHasPosition;
@@ -44,8 +45,8 @@ public class ScopeWithTypeVariables implements IScope {
 			if (typeVariableNames[i].equals(name)) {
 				if (typeVarTypeXs[i] == null) {
 					typeVarTypeXs[i] = new UnresolvedTypeVariableReferenceType(new TypeVariable(name));
-					return typeVarTypeXs[i];
 				}
+				return typeVarTypeXs[i];
 			}
 		}
 		return delegateScope.lookupType(name, location);
@@ -120,6 +121,10 @@ public class ScopeWithTypeVariables implements IScope {
 	public void message(Kind kind, IHasPosition location1,
 			IHasPosition location2, String message) {
 		delegateScope.message(kind,location1,location2,message);
+	}
+
+	public void message(IMessage aMessage) {
+		delegateScope.message(aMessage);
 	}
 
 }

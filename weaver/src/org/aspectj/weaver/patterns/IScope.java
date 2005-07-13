@@ -45,6 +45,7 @@ public interface IScope {
 	
 	void message(IMessage.Kind kind, IHasPosition location, String message);
 	void message(IMessage.Kind kind, IHasPosition location1, IHasPosition location2, String message);
+	void message(IMessage  aMessage);
 	
 	//ISourceLocation makeSourceLocation(ILocation location);
 }

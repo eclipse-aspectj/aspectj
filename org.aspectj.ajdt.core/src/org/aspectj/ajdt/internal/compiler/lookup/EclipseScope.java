@@ -277,6 +277,11 @@ public class EclipseScope implements IScope {
 			.handleMessage(new Message(message, kind, null, makeSourceLocation(location)));
 
 	}
+	
+	public void message(IMessage aMessage) {
+		getMessageHandler().handleMessage(aMessage);
+	}
+
 	public World getWorld() {
 		return world.getWorld();
 	}
