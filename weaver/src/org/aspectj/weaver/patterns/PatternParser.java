@@ -285,17 +285,17 @@ public class PatternParser {
 			p = parseKindedPointcut(kind);
 		} else if (kind.equals("args")) {
 			assertNoTypeVariables(typeVariables,
-					"( - type variables not allowed with args pointcut designator"
+					"("
 					, possibleTypeVariableToken);			
 			p = parseArgsPointcut();
 		} else if (kind.equals("this")) {
 			assertNoTypeVariables(typeVariables,
-					"( - type variables not allowed with 'this' pointcut designator"
+					"("
 					, possibleTypeVariableToken);
 			p = parseThisOrTargetPointcut(kind);
 		} else if (kind.equals("target")) {
 			assertNoTypeVariables(typeVariables,
-					"( - type variables not allowed with target pointcut designator"
+					"("
 					, possibleTypeVariableToken);
 			p = parseThisOrTargetPointcut(kind);			
 		} else if (kind.equals("within")) {
@@ -304,17 +304,17 @@ public class PatternParser {
 			p = parseWithinCodePointcut();
 		} else if (kind.equals("cflow")) {
 			assertNoTypeVariables(typeVariables,
-					"( - type variables not allowed with cflow pointcut designator"
+					"("
 					, possibleTypeVariableToken);
 			p = parseCflowPointcut(false);
 		} else if (kind.equals("cflowbelow")) {
 			assertNoTypeVariables(typeVariables,
-					"( - type variables not allowed with cflowbelow pointcut designator"
+					"("
 					, possibleTypeVariableToken);
 			p = parseCflowPointcut(true);
 		} else  if (kind.equals("adviceexecution")) {
 			assertNoTypeVariables(typeVariables,
-					"( - type variables not allowed with adviceexecution pointcut designator"
+					"("
 					, possibleTypeVariableToken);
 			eat("(");
 			eat(")");
@@ -325,7 +325,7 @@ public class PatternParser {
 					ThrowsPattern.ANY,
 					AnnotationTypePattern.ANY));
 		} else  if (kind.equals("handler")) {
-			assertNoTypeVariables(typeVariables,"( - type variables not allowed with handler pointcut designator",possibleTypeVariableToken);
+			assertNoTypeVariables(typeVariables,"(",possibleTypeVariableToken);
 			eat("(");
 			TypePattern typePat = parseTypePattern(false,true);
 			eat(")");
@@ -351,7 +351,7 @@ public class PatternParser {
 		} else  if (kind.equals("if")) {
 			// @style support allows if(), if(true), if(false)	
 			assertNoTypeVariables(typeVariables,
-					"( - type variables not allowed with if pointcut designator"
+					"("
 					, possibleTypeVariableToken);
 			eat("(");
 			if (maybeEatIdentifier("true")) {
@@ -387,8 +387,7 @@ public class PatternParser {
 		IToken possibleTypeVariableToken = tokenSource.peek();
 		String[] typeVariables = maybeParseSimpleTypeVariableList();
 		if (typeVariables != null) {
-			String message = "( - type variables not allowed with @" +
-			                           kind + " pointcut designator";
+			String message = "(";
 			assertNoTypeVariables(typeVariables, message, possibleTypeVariableToken);
 		}
 		tokenSource.setIndex(start);
