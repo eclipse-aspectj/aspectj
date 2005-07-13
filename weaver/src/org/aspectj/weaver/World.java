@@ -156,6 +156,11 @@ public abstract class World implements Dump.INode {
     }
 
     public ResolvedTypeX resolve(TypeX ty, boolean allowMissing) {
+    	if (ty instanceof ResolvedTypeX) {
+    		ResolvedTypeX rty = (ResolvedTypeX) ty;
+    		rty.world = this; 
+    		return rty;
+    	}
     	//System.out.println("resolve: " + ty + " world " + typeMap.keySet());		
     	if (ty instanceof UnresolvedTypeVariableReferenceType) {
     		// AMC - don't like this instanceof test, suggests some refactoring needed...
