@@ -24,6 +24,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.TypeX;
 import org.aspectj.weaver.VersionedDataInputStream;
 
@@ -99,15 +100,25 @@ public class ExactTypePattern extends TypePattern {
 		if (!typeMatch && (matchType.isParameterized() || matchType.isGeneric())) {
 			typeMatch = this.type.equals(matchType.getRawType());
 		}
+		if (!typeMatch && matchType.isTypeVariable()) {
+			typeMatch = matchesTypeVariable((TypeVariableReferenceType)matchType);
+		}
 		annotationPattern.resolve(matchType.getWorld());
 		boolean annMatch = this.annotationPattern.matches(matchType).alwaysTrue();
 		return (typeMatch && annMatch);
+	}
+	
+	private boolean matchesTypeVariable(TypeVariableReferenceType matchType) {
+		return false;
 	}
 	
 	protected boolean matchesExactly(ResolvedTypeX matchType, ResolvedTypeX annotatedType) {
 		boolean typeMatch = this.type.equals(matchType);
 		if (!typeMatch && (matchType.isParameterized() || matchType.isGeneric())) {
 			typeMatch = this.type.equals(matchType.getRawType());
+		}
+		if (!typeMatch && matchType.isTypeVariable()) {
+			typeMatch = matchesTypeVariable((TypeVariableReferenceType)matchType);
 		}
 		annotationPattern.resolve(matchType.getWorld());
 		boolean annMatch = this.annotationPattern.matches(annotatedType).alwaysTrue();
