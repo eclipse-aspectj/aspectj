@@ -11,15 +11,13 @@
  * ******************************************************************/
 package org.aspectj.weaver.bcel;
 
+import junit.framework.TestCase;
+
 import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Signature;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeX;
-
-import junit.framework.TestCase;
 
 /**
  * @author colyer
