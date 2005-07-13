@@ -86,7 +86,7 @@ public class TypeVariable {
 	 * resolve all the bounds of this type variable
 	 */
 	public void resolve(World inSomeWorld) {
-		if (isResolved) throw new IllegalStateException("already resolved!");
+		if (isResolved) return;
 		
 		upperBound = upperBound.resolve(inSomeWorld);
 		if (lowerBound != null) lowerBound = lowerBound.resolve(inSomeWorld);
