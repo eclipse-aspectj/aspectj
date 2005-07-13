@@ -2464,6 +2464,52 @@
    <!-- end of generic decps -->
    
    <!-- generics and  pointcuts -->
+
+   <ajc-test dir="java5/generics/pointcuts" title="handler pcd and generics / type vars">
+     <compile files="GenericInterface.java,HandlerPointcutTests.aj" options="-1.5">
+         <message kind="error" line="4" text="Syntax error on token"/>
+         <message kind="error" line="8" text="a parameterized type pattern may not be used in a handler pointcut expression"/>
+         <message kind="warning" line="8" text="no match for this type name: T"/>
+         <message kind="error" line="11" text="a parameterized type pattern may not be used in a handler pointcut expression"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/pointcuts" title="pointcuts that dont allow type vars">
+     <compile files="PointcutsThatDontAllowTypeVars.aj" options="-1.5">
+         <message kind="error" line="3" text="Syntax error on token"/>
+         <message kind="error" line="5" text="Syntax error on token"/>
+         <message kind="error" line="7" text="Syntax error on token"/>
+         <message kind="error" line="9" text="Syntax error on token"/>
+         <message kind="error" line="11" text="Syntax error on token"/>
+         <message kind="error" line="13" text="Syntax error on token"/>
+         <message kind="error" line="15" text="Syntax error on token"/>
+         <message kind="error" line="17" text="Syntax error on token"/>
+         <message kind="error" line="19" text="Syntax error on token"/>
+         <message kind="error" line="21" text="Syntax error on token"/>
+         <message kind="error" line="23" text="Syntax error on token"/>
+         <message kind="error" line="25" text="Syntax error on token"/>
+         <message kind="error" line="27" text="Syntax error on token"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/pointcuts" title="annotation pcds with parameterized types">
+     <compile files="ParameterizedTypesInAtPCDs.aj" options="-1.5">
+         <message kind="error" line="3" text="Syntax error on token"/>
+         <message kind="error" line="5" text="Syntax error on token"/>
+         <message kind="error" line="7" text="Syntax error on token"/>
+         <message kind="error" line="9" text="Syntax error on token"/>
+         <message kind="error" line="11" text="Syntax error on token"/>
+         <message kind="error" line="13" text="Syntax error on token"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/pointcuts" title="annotation patterns with parameterized types">
+     <compile files="ParameterizedTypesInAnnotationPatterns.aj" options="-1.5">
+         <message kind="error" line="5" text="is not an annotation type"/>
+         <message kind="error" line="7" text="is not an annotation type"/>
+     </compile>
+   </ajc-test>
+   
    
    <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw type matching">
      <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,RawTypeMatching.aj" options="-1.5">
@@ -2484,6 +2530,12 @@
      </compile>
    </ajc-test>
 
+   <ajc-test dir="java5/generics/pointcuts" title="execution pcd with generic signature matching">
+     <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,GenericSignatureMatching.aj" options="-1.5">
+         <message kind="warning" line="4" text="execution&lt;T&gt;(* GenericInterface&lt;T extends Number&gt;.asInt(T))"/>
+         <message kind="warning" line="5" text="execution&lt;T&gt;(* GenericInterface&lt;T extends Number&gt;.asInt(T))"/>
+     </compile>
+   </ajc-test>
    <!-- end of generics and pointcuts tests -->
    
    <!-- ============================================================== -->

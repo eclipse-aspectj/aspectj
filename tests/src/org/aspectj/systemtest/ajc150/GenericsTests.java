@@ -13,6 +13,75 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class GenericsTests extends XMLBasedAjcTestCase {
 
+	/*==========================================
+	 * Generics test plan for pointcuts.
+	 * 
+	 * handler  PASS
+	 *   - does not permit type var spec
+	 *   - does not permit generic type (fail with type not found)
+	 *   - does not permit parameterized types
+	 * if PASS
+	 *   - does not permit type vars
+	 * cflow PASS
+	 *   - does not permit type vars
+	 * cflowbelow PASS
+	 *   - does not permit type vars
+	 * @this PASS
+	 *   - does not permit type vars PASS
+	 *   - does not permit parameterized type PASS
+	 * @target PASS
+	 *   - does not permit type vars PASS
+	 *   - does not permit parameterized type PASS
+	 * @args PASS
+     *   - does not permit type vars PASS
+	 *   - does not permit parameterized type PASS
+	 * 	 @annotation PASS
+     *   - does not permit type vars PASS
+	 *   - does not permit parameterized type PASS
+	 *   @within, @within code - as above PASS
+	 * annotation type pattern with generic and parameterized types  PASS
+	 *   - just make sure that annotation interfaces can never be generic first! VERIFIED
+	 * 	  - @Foo<T>  should fail  PASS
+	 *   - @Foo<String> should fail PASS
+	 *   - @(Foo || Bar<T>) should fail  DEFERRED (not critical)
+	 * staticinitialization
+	 *   - error on parameterized type
+	 *   - permit parameterized type +
+	 *   - wrong number of parameters in parameterized type
+	 *   - generic type with one type parameter
+	 *   - generic type with n type parameters
+	 *   - generic type with bounds [extends, extends + i/f's]
+	 *   - generic type with wrong number of type params
+	 *   - wildcards in bounds
+	 * within
+	 *   - as above, but allows parameterized type
+	 *   - wildcards in type parameters
+	 * this 
+	 *   - no type vars
+	 *   - parameterized types
+	 *        - implements
+	 *        - instanceof
+	 * target
+	 *   - as this
+	 * args
+	 *   - as this/target, plus...
+	 *   - known static match
+	 *   - known static match fail
+	 *   - maybe match with unchecked warning
+	 * get & set
+	 *   - parameterized type
+	 *   - generic type
+	 *   - return type is type variable
+	 *   - return type is parameterized
+	 * initialization, preinitialization
+	 *   - type variables as type params
+	 *   - no join points for parameterized types
+	 * execution, withincode
+	 *    - wait till we get there!
+	 * call
+	 *   - wait till we get there!
+	 */
+	
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(GenericsTests.class);
 	}
@@ -179,6 +248,22 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	// 2. ITDF
 
 	// -- Pointcut tests...
+
+	public void testHandlerWithGenerics() {
+		runTest("handler pcd and generics / type vars");
+	}
+	
+	public void testPointcutsThatDontAllowTypeVars() {
+		runTest("pointcuts that dont allow type vars");
+	}
+	
+	public void testParameterizedTypesInAtPCDs() {
+		runTest("annotation pcds with parameterized types");
+	}
+	
+	public void testAnnotationPatternsWithParameterizedTypes() {
+		runTest("annotation patterns with parameterized types");
+	}
 	
 	public void testExecutionWithRawType() {
 		runTest("execution pcd with raw type matching");
@@ -191,6 +276,11 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testExecutionWithGenericDeclaringTypeAndErasedParameterTypes() {
 		runTest("execution pcd with generic declaring type and erased parameter types");
 	}
+	
+// not passing yet...
+//	public void testExecutionWithGenericSignature() {
+//		runTest("execution pcd with generic signature matching");
+//	}
 	
 	// --- helpers
 		
