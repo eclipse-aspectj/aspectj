@@ -402,7 +402,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with handler pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 	
@@ -412,7 +412,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with 'this' pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 	
@@ -422,7 +422,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with target pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -432,7 +432,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with args pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -442,7 +442,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with if pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -452,7 +452,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with cflow pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -462,7 +462,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with cflowbelow pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -472,7 +472,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with @within pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -482,7 +482,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with @annotation pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -492,7 +492,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with @withincode pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -502,7 +502,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with @this pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 	
@@ -512,7 +512,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with @target pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 
@@ -522,7 +522,7 @@ public class ParserTestCase extends TestCase {
 			parser.parsePointcut();
 			fail("Expecting parse exception");
 		} catch (ParserException pEx) {
-			assertEquals("( - type variables not allowed with @args pointcut designator",pEx.getMessage());
+			assertEquals("(",pEx.getMessage());
 		}		
 	}
 	

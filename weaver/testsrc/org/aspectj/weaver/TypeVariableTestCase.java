@@ -65,15 +65,6 @@ public class TypeVariableTestCase extends TestCase {
 		assertEquals("resolved double",javaLangDouble.resolve(world),tv.getLowerBound());
 	}
 	
-	public void testDoubleResolve() {
-		TypeVariable tv = new TypeVariable("X");
-		tv.resolve(world);
-		try {
-			tv.resolve(world);
-			fail("Should throw illegal state exception");
-		} catch (IllegalStateException ex) {}
-	}
-	
 	public void testBindWithoutResolve() {
 		TypeVariable tv = new TypeVariable("X");
 		try {
