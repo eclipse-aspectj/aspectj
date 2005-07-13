@@ -519,8 +519,12 @@ public class WildTypePattern extends TypePattern {
 			// Only if the type is exact *and* the type parameters are exact should we create an 
 			// ExactTypePattern for this WildTypePattern					
 			if (typeParameters.areAllExact()) {
-				String[] typeParamCleanNames = typeParameters.maybeGetCleanNames();
-				TypeX tx = TypeX.forParameterizedTypeNames(rawType.getName(),typeParamCleanNames);
+				TypePattern[] typePats = typeParameters.getTypePatterns();
+				TypeX[] typeParameterTypes = new TypeX[typePats.length];
+				for (int i = 0; i < typeParameterTypes.length; i++) {
+					typeParameterTypes[i] = ((ExactTypePattern)typePats[i]).getExactType();
+				}
+				TypeX tx = TypeX.forParameterizedTypes(rawType,typeParameterTypes);
 				TypeX type = scope.getWorld().resolve(tx,true); 
 				if (dim != 0) type = TypeX.makeArray(type, dim);
 				ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
