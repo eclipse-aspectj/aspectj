@@ -25,7 +25,47 @@ import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
 
-
+/*
+ * The format of a signature.....
+ * 
+ * we smash together the generic and java signatures to give a complete
+ * signature for types.
+ * 
+ * a simple (non-generic, non-parameterized) type has signature e.g.
+ * Ljava/lang/String;
+ * 
+ * a generic type has signature:
+ * TypeParamsOpt ClassSig SuperClassSig SuperIntfListOpt
+ * 
+ * eg.
+ * 
+ * <1:Ljava/lang/Number> Lorg.xyz.Foo;Ljava/lang/Object;
+ * 
+ * for public class Foo<T extends Number>
+ * 
+ * (type variable names are replaced by numbers to give stable sigs 
+ * regardless of type variable name used)
+ * 
+ * a parameterized type has signature:
+ * TypeParamsOpt ClassSig<ParamSigList>;
+ * 
+ * but with the L for the class sig replaced by "P"
+ * 
+ * eg.
+ * Pjava/util/List<Ljava/lang/String>;
+ * 
+ * or
+ * <1:>Pjava/util/List<T1;>
+ * 
+ * (for Class Foo<T> { List<T> lt; })
+ * 
+ * a typex that is a type variable has signature as in the formal type parameter spec
+ * 
+ * for generic types, the world of resolved types has one typex (the generic one) with
+ * two keys pointing to it : the erasure signature and the full signature.
+ * 
+ * eg. Ljava/util/List; and <1:>Ljava/util/List;Ljava/lang/Object;
+ */
 public class TypeX implements AnnotatedElement {
 	
 	// This is the string representation of this Type, will include parameterization info for parameterized types.
