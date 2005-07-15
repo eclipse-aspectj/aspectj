@@ -36,8 +36,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	
     protected World world;
 	
+    // Factory methods
+    
+	public static UnresolvedType forGenericType(String name,TypeVariable[] tvbs,String genericSig) { 
+		// TODO asc generics needs a declared sig
+		UnresolvedType ret = UnresolvedType.forName(name);
+		ret.typeKind=GENERIC;
+		ret.typeVariables = tvbs;
+		ret.rawTypeSignature = ret.signature;
+		ret.genericSignature = genericSig;
+		return ret; // this cast will fail at runtime, temp refactoring issue
+	}
+	
 
-    ResolvedType(String signature, World world) {
+    
+
+    protected ResolvedType(String signature, World world) {
         super(signature);
         this.world = world;
     }

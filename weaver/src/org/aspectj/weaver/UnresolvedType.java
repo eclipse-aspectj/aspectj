@@ -156,7 +156,7 @@ public class UnresolvedType  {
 	 * Iff isParameterized(), then these are the type variables bound as parameters
 	 * in the type 
 	 */
-	private TypeVariable[] typeVariables;
+	protected TypeVariable[] typeVariables;
 
 	   /**
      * Determines if this represents a primitive type.  A primitive type
@@ -393,15 +393,6 @@ public class UnresolvedType  {
     	return ret;
     }
     
-	public static UnresolvedType forGenericType(String name,TypeVariable[] tvbs,String genericSig) { // TODO asc generics needs a declared sig
-		UnresolvedType ret = UnresolvedType.forName(name);
-		ret.typeKind=GENERIC;
-		ret.typeVariables = tvbs;
-		ret.rawTypeSignature = ret.signature;
-		ret.genericSignature = genericSig;
-		return ret;
-	}
-	
 	/**
 	 * Makes a parameterized type with the given name
 	 * and parameterized type names.
