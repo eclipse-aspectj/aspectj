@@ -35,7 +35,7 @@ public class WithinTestCase extends TestCase {
 		Shadow getOutFromArrayList = new TestShadow(
 			Shadow.FieldGet, 
 			Member.fieldFromString("java.io.PrintStream java.lang.System.out"),
-			TypeX.forName("java.util.ArrayList"),
+			UnresolvedType.forName("java.util.ArrayList"),
 			world);
 
 		checkMatch(makePointcut("within(*)"), getOutFromArrayList, FuzzyBoolean.YES);
@@ -51,7 +51,7 @@ public class WithinTestCase extends TestCase {
 		Shadow getOutFromEntry = new TestShadow(
 			Shadow.FieldGet, 
 			Member.fieldFromString("java.io.PrintStream java.lang.System.out"),
-			TypeX.forName("java.util.Map$Entry"),
+			UnresolvedType.forName("java.util.Map$Entry"),
 			world);
 			
 		checkMatch(makePointcut("within(*)"), getOutFromEntry, FuzzyBoolean.YES);

@@ -21,9 +21,9 @@ import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.Shadow.Kind;
 
 
@@ -34,10 +34,10 @@ import org.aspectj.weaver.Shadow.Kind;
 public class KindedAnnotationAccessVar extends BcelVar {
 
 	private Kind   kind;           // What kind of shadow are we at?
-	private TypeX  containingType; // The type upon which we want to ask for 'member'
+	private UnresolvedType  containingType; // The type upon which we want to ask for 'member'
 	private Member member;         // For method call/execution and field get/set contains the member that has the annotation
 	
-	public KindedAnnotationAccessVar(Kind kind, ResolvedTypeX type,TypeX theTargetIsStoredHere,Member sig) {
+	public KindedAnnotationAccessVar(Kind kind, ResolvedType type,UnresolvedType theTargetIsStoredHere,Member sig) {
 		super(type,0);
 		this.kind = kind;
 		this.containingType = theTargetIsStoredHere; 
@@ -64,7 +64,7 @@ public class KindedAnnotationAccessVar extends BcelVar {
 	}
 
 	// FIXME asc Refactor all this stuff - there is a lot of commonality	
-	public InstructionList createLoadInstructions(ResolvedTypeX toType, InstructionFactory fact) {
+	public InstructionList createLoadInstructions(ResolvedType toType, InstructionFactory fact) {
 		
 		// FIXME asc Decide on whether we ought to build an exception handler for the NoSuchMethodException that can be thrown
 		// by getDeclaredMethod()... right now we don't but no-one seems to care...
@@ -80,12 +80,12 @@ public class KindedAnnotationAccessVar extends BcelVar {
 		
 		
 		InstructionList il = new InstructionList();
-		Type jlClass = BcelWorld.makeBcelType(TypeX.JAVA_LANG_CLASS);
+		Type jlClass = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_CLASS);
 
-		Type jlString = BcelWorld.makeBcelType(TypeX.forSignature("Ljava.lang.String;"));
-		Type jlClassArray = BcelWorld.makeBcelType(TypeX.forSignature("[Ljava.lang.Class;"));
+		Type jlString = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.String;"));
+		Type jlClassArray = BcelWorld.makeBcelType(UnresolvedType.forSignature("[Ljava.lang.Class;"));
 		
-		Type jlaAnnotation = BcelWorld.makeBcelType(TypeX.forSignature("Ljava.lang.annotation.Annotation;"));
+		Type jlaAnnotation = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.annotation.Annotation;"));
 		
 		if (kind==Shadow.MethodCall || kind==Shadow.MethodExecution || 
 			kind==Shadow.PreInitialization || kind==Shadow.Initialization || 
@@ -94,7 +94,7 @@ public class KindedAnnotationAccessVar extends BcelVar {
 			// annotations for fieldset/fieldget when an ITD is involved are stored against a METHOD 
 			((kind==Shadow.FieldGet || kind==Shadow.FieldSet) && member.getKind()==Member.METHOD)) { 
 			
-			Type jlrMethod = BcelWorld.makeBcelType(TypeX.forSignature("Ljava.lang.reflect.Method;"));
+			Type jlrMethod = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.reflect.Method;"));
 		
 		// Calls getClass
 			
@@ -128,7 +128,7 @@ public class KindedAnnotationAccessVar extends BcelVar {
 		  } else { // init/preinit/ctor-call/ctor-exec
 			Type[] paramTypes = BcelWorld.makeBcelTypes(member.getParameterTypes());
 			buildArray(il,fact,jlClass,paramTypes,1);
-			Type jlrCtor = BcelWorld.makeBcelType(TypeX.forSignature("Ljava.lang.reflect.Constructor;"));
+			Type jlrCtor = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.reflect.Constructor;"));
 			il.append(fact.createInvoke("java/lang/Class","getDeclaredConstructor",jlrCtor,new Type[]{jlClassArray},Constants.INVOKEVIRTUAL));
 		
 			// !!! OPTIMIZATION: Cache the result of getDeclaredMethod() and use it 
@@ -140,7 +140,7 @@ public class KindedAnnotationAccessVar extends BcelVar {
 			il.append(Utility.createConversion(fact,jlaAnnotation,BcelWorld.makeBcelType(toType)));
 		  }
 		} else if (kind == Shadow.FieldSet || kind == Shadow.FieldGet) {
-			Type jlrField = BcelWorld.makeBcelType(TypeX.forSignature("Ljava.lang.reflect.Field;"));
+			Type jlrField = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.reflect.Field;"));
 			il.append(fact.createConstant(BcelWorld.makeBcelType(containingType))); // Stick the target on the stack
 			il.append(fact.createConstant(member.getName())); // Stick what we are after on the stack
 			il.append(fact.createInvoke("java/lang/Class","getDeclaredField",jlrField,new Type[]{jlString},Constants.INVOKEVIRTUAL));
@@ -191,7 +191,7 @@ public class KindedAnnotationAccessVar extends BcelVar {
 	public void appendLoadAndConvert(
 		InstructionList il,
 		InstructionFactory fact,
-		ResolvedTypeX toType) {
+		ResolvedType toType) {
 		il.append(createLoadInstructions(toType, fact));				
 
 	}

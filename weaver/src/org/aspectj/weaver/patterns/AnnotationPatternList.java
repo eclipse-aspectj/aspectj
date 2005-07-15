@@ -16,7 +16,7 @@ import java.util.List;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
@@ -63,7 +63,7 @@ public class AnnotationPatternList extends PatternNode {
 		}
 	}
 	
-	public FuzzyBoolean matches(ResolvedTypeX[] someArgs) {
+	public FuzzyBoolean matches(ResolvedType[] someArgs) {
 		// do some quick length tests first
   		int numArgsMatchedByEllipsis = (someArgs.length + ellipsisCount) - typePatterns.length;
 		if (numArgsMatchedByEllipsis < 0) return FuzzyBoolean.NO;
@@ -82,7 +82,7 @@ public class AnnotationPatternList extends PatternNode {
 			} else {
 				// match the argument type at argsIndex with the ExactAnnotationTypePattern
 				// we know it is exact because nothing else is allowed in args
-				if (someArgs[argsIndex].isPrimitive()) return FuzzyBoolean.NO; // can never match
+				if (someArgs[argsIndex].isPrimitiveType()) return FuzzyBoolean.NO; // can never match
 				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern)typePatterns[i];
 				FuzzyBoolean matches = ap.matchesRuntimeType(someArgs[argsIndex]);
 				if (matches == FuzzyBoolean.NO) {

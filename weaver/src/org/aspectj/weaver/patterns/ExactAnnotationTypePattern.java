@@ -18,8 +18,8 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -29,7 +29,7 @@ import org.aspectj.weaver.World;
  */
 public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 
-	protected TypeX annotationType;
+	protected UnresolvedType annotationType;
 	protected String formalName;
 	protected boolean resolved = false;
 	private boolean bindingPattern = false;
@@ -37,9 +37,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	/**
 	 * 
 	 */
-	public ExactAnnotationTypePattern(TypeX annotationType) {
+	public ExactAnnotationTypePattern(UnresolvedType annotationType) {
 		this.annotationType = annotationType;
-		this.resolved = (annotationType instanceof ResolvedTypeX);
+		this.resolved = (annotationType instanceof ResolvedType);
 	}
 
 	protected ExactAnnotationTypePattern(String formalName) {
@@ -49,7 +49,12 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		// will be turned into BindingAnnotationTypePattern during resolution
 	}
 
-    public TypeX getAnnotationType() {
+	public ResolvedType getResolvedAnnotationType() {
+		if (!resolved) throw new IllegalStateException("I need to be resolved first!");
+		return (ResolvedType) annotationType;
+	}
+	
+    public UnresolvedType getAnnotationType() {
         return annotationType;
     }
 
@@ -65,8 +70,8 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
 		boolean checkSupers = false;
-		if (annotationType.hasAnnotation(TypeX.AT_INHERITED)) {
-			if (annotated instanceof ResolvedTypeX) {
+		if (getResolvedAnnotationType().hasAnnotation(UnresolvedType.AT_INHERITED)) {
+			if (annotated instanceof ResolvedType) {
 				checkSupers = true;
 			}
 		}
@@ -74,7 +79,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		if (annotated.hasAnnotation(annotationType)) {
 			return FuzzyBoolean.YES;
 		} else if (checkSupers) {
-			ResolvedTypeX toMatchAgainst = ((ResolvedTypeX) annotated).getSuperclass();
+			ResolvedType toMatchAgainst = ((ResolvedType) annotated).getSuperclass();
 			while (toMatchAgainst != null) {
 				if (toMatchAgainst.hasAnnotation(annotationType)) return FuzzyBoolean.YES;
 				toMatchAgainst = toMatchAgainst.getSuperclass();
@@ -85,7 +90,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	
 	// this version should be called for @this, @target, @args
 	public FuzzyBoolean matchesRuntimeType(AnnotatedElement annotated) {
-		if (annotationType.hasAnnotation(TypeX.AT_INHERITED)) {
+		if (getResolvedAnnotationType().hasAnnotation(UnresolvedType.AT_INHERITED)) {
 			// a static match is good enough
 			if (matches(annotated).alwaysTrue()) {
 				return FuzzyBoolean.YES;
@@ -123,7 +128,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 				}
 				formalName = simpleName;
 				bindingPattern = true;
-				verifyIsAnnotationType(formalBinding.getType(),scope);
+				verifyIsAnnotationType(formalBinding.getType().resolve(scope.getWorld()),scope);
 				BindingAnnotationTypePattern binding = new BindingAnnotationTypePattern(formalBinding);
 				binding.copyLocationFrom(this);
 				bindings.register(binding, scope);
@@ -138,9 +143,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		annotationType = scope.getWorld().resolve(annotationType,true);
 		
 		// We may not have found it if it is in a package, lets look it up...
-		if (annotationType == ResolvedTypeX.MISSING) {
-			TypeX type = null;
-			while ((type = scope.lookupType(cleanname,this)) == ResolvedTypeX.MISSING) {
+		if (annotationType == ResolvedType.MISSING) {
+			UnresolvedType type = null;
+			while ((type = scope.lookupType(cleanname,this)) == ResolvedType.MISSING) {
 				int lastDot = cleanname.lastIndexOf('.');
 				if (lastDot == -1) break;
 				cleanname = cleanname.substring(0,lastDot)+"$"+cleanname.substring(lastDot+1);
@@ -148,7 +153,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			annotationType = scope.getWorld().resolve(type,true);
 		}
 		
-		verifyIsAnnotationType(annotationType,scope);
+		verifyIsAnnotationType((ResolvedType)annotationType,scope);
 		return this;
 	}
 	
@@ -161,8 +166,8 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	/**
 	 * @param scope
 	 */
-	private void verifyIsAnnotationType(TypeX type,IScope scope) {
-		if (!type.isAnnotation(scope.getWorld())) {
+	private void verifyIsAnnotationType(ResolvedType type,IScope scope) {
+		if (!type.isAnnotation()) {
 			IMessage m = MessageUtil.error(
 					WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,type.getName()),
 					getSourceLocation());
@@ -197,7 +202,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		if (isBindingPattern) {
 			ret = new ExactAnnotationTypePattern(s.readUTF());
 		} else {
-			ret = new ExactAnnotationTypePattern(TypeX.read(s));			
+			ret = new ExactAnnotationTypePattern(UnresolvedType.read(s));			
 		}
 		ret.readLocation(context,s);
 		return ret;

@@ -20,7 +20,7 @@ import org.aspectj.weaver.*;
 
 // PTWIMPL New kind added to this class, can be (de)serialized
 public abstract class PerClause extends Pointcut {
-	protected ResolvedTypeX inAspect;
+	protected ResolvedType inAspect;
 
 	public static PerClause readPerClause(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		Kind kind = Kind.read(s);
@@ -33,11 +33,11 @@ public abstract class PerClause extends Pointcut {
 		throw new BCException("unknown kind: " + kind);
 	}
 
-    public final Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+    public final Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
     	throw new RuntimeException("unimplemented: wrong concretize");
     }
 
-	public abstract PerClause concretize(ResolvedTypeX inAspect);
+	public abstract PerClause concretize(ResolvedType inAspect);
 	
 	public abstract PerClause.Kind getKind();
 	

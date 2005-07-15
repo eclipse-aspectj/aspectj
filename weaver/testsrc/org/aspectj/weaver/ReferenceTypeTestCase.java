@@ -21,20 +21,20 @@ public class ReferenceTypeTestCase extends TestCase {
 
 	public void testIsGenericTrue() {
 		BcelWorld world = new BcelWorld();
-		TypeX javaLangClass = TypeX.forName("java/lang/Class");
-		ResolvedTypeX rtx = world.resolve(javaLangClass);
+		UnresolvedType javaLangClass = UnresolvedType.forName("java/lang/Class");
+		ResolvedType rtx = world.resolve(javaLangClass);
 		assertTrue("Resolves to reference type",(rtx instanceof ReferenceType));
 		ReferenceType rt = (ReferenceType) rtx;
-		assertTrue("java.lang.Class is generic",rt.isGeneric());
+		assertTrue("java.lang.Class is generic",rt.isGenericType());
 	}
 	
 	public void testIsGenericFalse() {
 		BcelWorld world = new BcelWorld();
-		TypeX javaLangObject = TypeX.forName("java/lang/Object");
-		ResolvedTypeX rtx = world.resolve(javaLangObject);
+		UnresolvedType javaLangObject = UnresolvedType.forName("java/lang/Object");
+		ResolvedType rtx = world.resolve(javaLangObject);
 		assertTrue("Resolves to reference type",(rtx instanceof ReferenceType));
 		ReferenceType rt = (ReferenceType) rtx;
-		assertFalse("java.lang.Object is  not generic",rt.isGeneric());		
+		assertFalse("java.lang.Object is  not generic",rt.isGenericType());		
 	}
 	
 }

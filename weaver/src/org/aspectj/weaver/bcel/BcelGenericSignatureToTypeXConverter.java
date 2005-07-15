@@ -21,31 +21,31 @@ import org.aspectj.weaver.GenericsWildcardTypeX;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeVariableReferenceType;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 /**
  * A utility class that assists in unpacking constituent parts of 
  * generic signature attributes and returning their equivalents in
- * TypeX world.
+ * UnresolvedType world.
  */
 public class BcelGenericSignatureToTypeXConverter {
 
-	public static ResolvedTypeX classTypeSignature2TypeX(
+	public static ResolvedType classTypeSignature2TypeX(
 			Signature.ClassTypeSignature aClassTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
 			World world) {
 		Map typeMap = new HashMap();
-		ResolvedTypeX ret = classTypeSignature2TypeX(aClassTypeSignature,typeParams,world,typeMap);
+		ResolvedType ret = classTypeSignature2TypeX(aClassTypeSignature,typeParams,world,typeMap);
 		fixUpCircularDependencies(ret, typeMap);
 		return ret;
 	}
 			
 	
-	private static ResolvedTypeX classTypeSignature2TypeX(
+	private static ResolvedType classTypeSignature2TypeX(
 			Signature.ClassTypeSignature aClassTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
@@ -72,28 +72,28 @@ public class BcelGenericSignatureToTypeXConverter {
 		if (innerType.typeArguments.length > 0) {
 			// we have to create a parameterized type
 			// type arguments may be array types, class types, or typevariable types
-			TypeX[] typeArgumentTypes = new TypeX[innerType.typeArguments.length];
+			UnresolvedType[] typeArgumentTypes = new UnresolvedType[innerType.typeArguments.length];
 			for (int i = 0; i < typeArgumentTypes.length; i++) {
 				typeArgumentTypes[i] = typeArgument2TypeX(innerType.typeArguments[i],typeParams,world,inProgressTypeVariableResolutions);
 			}
-			return world.resolve(TypeX.forParameterizedTypes(TypeX.forSignature(sig.toString()), typeArgumentTypes));
+			return world.resolve(UnresolvedType.forParameterizedTypes(UnresolvedType.forSignature(sig.toString()), typeArgumentTypes));
 		} else {
 			// we have a non-parameterized type
-			return world.resolve(TypeX.forSignature(sig.toString()));
+			return world.resolve(UnresolvedType.forSignature(sig.toString()));
 		}
 	}
 	
-	public static ResolvedTypeX fieldTypeSignature2TypeX(
+	public static ResolvedType fieldTypeSignature2TypeX(
 			Signature.FieldTypeSignature aFieldTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
 			World world) {
 		Map typeMap = new HashMap();
-		ResolvedTypeX ret = fieldTypeSignature2TypeX(aFieldTypeSignature,typeParams,world,typeMap);
+		ResolvedType ret = fieldTypeSignature2TypeX(aFieldTypeSignature,typeParams,world,typeMap);
 		fixUpCircularDependencies(ret, typeMap);
 		return ret;
 	}
 	
-	private static ResolvedTypeX fieldTypeSignature2TypeX(
+	private static ResolvedType fieldTypeSignature2TypeX(
 			Signature.FieldTypeSignature aFieldTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
@@ -107,9 +107,9 @@ public class BcelGenericSignatureToTypeXConverter {
 				dims++;
 				ats = ((Signature.ArrayTypeSignature)ats).typeSig;
 			}
-			return world.resolve(TypeX.makeArray(typeSignature2TypeX(ats,typeParams,world,inProgressTypeVariableResolutions), dims));
+			return world.resolve(UnresolvedType.makeArray(typeSignature2TypeX(ats,typeParams,world,inProgressTypeVariableResolutions), dims));
 		} else if (aFieldTypeSignature.isTypeVariableSignature()) {
-			ResolvedTypeX rtx = typeVariableSignature2TypeX((Signature.TypeVariableSignature)aFieldTypeSignature,typeParams,world,inProgressTypeVariableResolutions);
+			ResolvedType rtx = typeVariableSignature2TypeX((Signature.TypeVariableSignature)aFieldTypeSignature,typeParams,world,inProgressTypeVariableResolutions);
 			return rtx;
 		} else {
 			throw new IllegalStateException("Cant understand field type signature: "  + aFieldTypeSignature);
@@ -129,26 +129,26 @@ public class BcelGenericSignatureToTypeXConverter {
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
 			Map inProgressTypeVariableResolutions) {
-			TypeX upperBound = fieldTypeSignature2TypeX(aFormalTypeParameter.classBound,typeParams,world,inProgressTypeVariableResolutions);
-			TypeX[] ifBounds = new TypeX[aFormalTypeParameter.interfaceBounds.length];
+			UnresolvedType upperBound = fieldTypeSignature2TypeX(aFormalTypeParameter.classBound,typeParams,world,inProgressTypeVariableResolutions);
+			UnresolvedType[] ifBounds = new UnresolvedType[aFormalTypeParameter.interfaceBounds.length];
 			for (int i = 0; i < ifBounds.length; i++) {
 				ifBounds[i] = fieldTypeSignature2TypeX(aFormalTypeParameter.interfaceBounds[i], typeParams,world,inProgressTypeVariableResolutions);
 			}
 			return new TypeVariable(aFormalTypeParameter.identifier,upperBound,ifBounds);
 	}
 	
-	private static ResolvedTypeX typeArgument2TypeX(
+	private static ResolvedType typeArgument2TypeX(
 			Signature.TypeArgument aTypeArgument,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
 			Map inProgressTypeVariableResolutions) {
 		if (aTypeArgument.isWildcard) return GenericsWildcardTypeX.GENERIC_WILDCARD.resolve(world);
 		if (aTypeArgument.isMinus) {
-			TypeX bound = fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams,world,inProgressTypeVariableResolutions);
+			UnresolvedType bound = fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams,world,inProgressTypeVariableResolutions);
 			ReferenceType rBound = (ReferenceType) world.resolve(bound);
 			return new BoundedReferenceType(rBound,false,world);
 		} else if (aTypeArgument.isPlus) {
-			TypeX bound = fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams,world,inProgressTypeVariableResolutions);
+			UnresolvedType bound = fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams,world,inProgressTypeVariableResolutions);
 			ReferenceType rBound = (ReferenceType) world.resolve(bound);
 			return new BoundedReferenceType(rBound,true,world);
 		} else {
@@ -157,29 +157,29 @@ public class BcelGenericSignatureToTypeXConverter {
 	}
 	
 
-	public static ResolvedTypeX typeSignature2TypeX(
+	public static ResolvedType typeSignature2TypeX(
 			Signature.TypeSignature aTypeSig,
 			Signature.FormalTypeParameter[] typeParams,
 			World world) {
 		Map typeMap = new HashMap();
-		ResolvedTypeX ret = typeSignature2TypeX(aTypeSig,typeParams,world,typeMap);
+		ResolvedType ret = typeSignature2TypeX(aTypeSig,typeParams,world,typeMap);
 		fixUpCircularDependencies(ret, typeMap);
 		return ret;
 	}
 	
-	private static ResolvedTypeX typeSignature2TypeX(
+	private static ResolvedType typeSignature2TypeX(
 			Signature.TypeSignature aTypeSig,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
 			Map inProgressTypeVariableResolutions) {
 		if (aTypeSig.isBaseType()) {
-			return world.resolve(TypeX.forSignature(((Signature.BaseTypeSignature)aTypeSig).toString()));
+			return world.resolve(UnresolvedType.forSignature(((Signature.BaseTypeSignature)aTypeSig).toString()));
 		} else {
 			return fieldTypeSignature2TypeX((Signature.FieldTypeSignature)aTypeSig,typeParams,world,inProgressTypeVariableResolutions);
 		}
 	}
 	
-	private static ResolvedTypeX typeVariableSignature2TypeX(
+	private static ResolvedType typeVariableSignature2TypeX(
 			Signature.TypeVariableSignature aTypeVarSig,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
@@ -195,17 +195,17 @@ public class BcelGenericSignatureToTypeXConverter {
 			throw new IllegalStateException("Undeclared type variable in signature: " + aTypeVarSig.typeVariableName);
 		}
 		if (inProgressTypeVariableResolutions.containsKey(typeVarBounds)) {
-			return (ResolvedTypeX) inProgressTypeVariableResolutions.get(typeVarBounds);
+			return (ResolvedType) inProgressTypeVariableResolutions.get(typeVarBounds);
 		}
 		inProgressTypeVariableResolutions.put(typeVarBounds,new FTPHolder(typeVarBounds,world));
-		ResolvedTypeX ret = new TypeVariableReferenceType(
+		ResolvedType ret = new TypeVariableReferenceType(
 				formalTypeParameter2TypeVariable(typeVarBounds,typeParams,world,inProgressTypeVariableResolutions),
 				world);
 		inProgressTypeVariableResolutions.put(typeVarBounds,ret);
 		return ret;
 	}
 	
-	private static void fixUpCircularDependencies(ResolvedTypeX aTypeX, Map typeVariableResolutions) {
+	private static void fixUpCircularDependencies(ResolvedType aTypeX, Map typeVariableResolutions) {
 		if (! (aTypeX instanceof ReferenceType)) return;
 		
 		ReferenceType rt = (ReferenceType) aTypeX;
@@ -213,7 +213,7 @@ public class BcelGenericSignatureToTypeXConverter {
 		for (int i = 0; i < typeVars.length; i++) {
 			if (typeVars[i].getUpperBound() instanceof FTPHolder) {
 				Signature.FormalTypeParameter key = ((FTPHolder) typeVars[i].getUpperBound()).ftpToBeSubstituted;
-				typeVars[i].setUpperBound((TypeX)typeVariableResolutions.get(key));
+				typeVars[i].setUpperBound((UnresolvedType)typeVariableResolutions.get(key));
 			}
 		}
 	}
@@ -227,7 +227,7 @@ public class BcelGenericSignatureToTypeXConverter {
 		public String toString() {
 			return "placeholder for TypeVariable of " + ftpToBeSubstituted.toString();
 		}
-		public ResolvedTypeX resolve(World world) {
+		public ResolvedType resolve(World world) {
 			return this;
 		}
 	}

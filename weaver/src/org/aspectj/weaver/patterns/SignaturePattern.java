@@ -37,8 +37,8 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
@@ -108,7 +108,7 @@ public class SignaturePattern extends PatternNode {
     }
     
     
-	public void postRead(ResolvedTypeX enclosingType) {
+	public void postRead(ResolvedType enclosingType) {
 		if (returnType != null) {
 			returnType.postRead(enclosingType);
 		} 
@@ -161,7 +161,7 @@ public class SignaturePattern extends PatternNode {
 	  return annotationPattern.matches(rMember).alwaysTrue();
 	}
 	
-	private ResolvedMember findMethod(ResolvedTypeX aspectType, ResolvedMember ajcMethod) {
+	private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {
 	       ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
 	       for (int i = 0; i < decMethods.length; i++) {
 			ResolvedMember member = decMethods[i];
@@ -227,7 +227,7 @@ public class SignaturePattern extends PatternNode {
 			// foo(Double). If foo is defined in I<T> and the type implements I<Double>,
 			// then the signature pattern I.foo(Object) (the erasure) *should* match.
 			// But [Object] does not match [Double] so we have some work to do...
-			ResolvedTypeX[] resolvedParameters = world.resolve(sig.getParameterTypes());
+			ResolvedType[] resolvedParameters = world.resolve(sig.getParameterTypes());
 			if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
 				// It could still be a match based on the erasure of a parameterized type
 				// method in our hierarchy - this is only allowed if the declaring type pattern
@@ -236,7 +236,7 @@ public class SignaturePattern extends PatternNode {
 				if (declaringType.getTypeParameters().size() > 0) return false;
 				ResolvedMember sigErasure = sig.getErasure();
 				if (sigErasure != null) {
-					ResolvedTypeX[] erasureParameters = world.resolve(sigErasure.getParameterTypes());
+					ResolvedType[] erasureParameters = world.resolve(sigErasure.getParameterTypes());
 					if (!parameterTypes.matches(erasureParameters,TypePattern.STATIC).alwaysTrue()) {
 						// fail if we don't match the erasure either
 						return false;
@@ -283,10 +283,10 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 	
-	public boolean declaringTypeMatchAllowingForCovariance(Member member,World world,TypePattern returnTypePattern,ResolvedTypeX sigReturn) {
-		TypeX onTypeUnresolved = member.getDeclaringType();
+	public boolean declaringTypeMatchAllowingForCovariance(Member member,World world,TypePattern returnTypePattern,ResolvedType sigReturn) {
+		UnresolvedType onTypeUnresolved = member.getDeclaringType();
 		
-		ResolvedTypeX onType = onTypeUnresolved.resolve(world);
+		ResolvedType onType = onTypeUnresolved.resolve(world);
 			
 		// fastmatch
 		if (declaringType.matchesStatically(onType) && returnTypePattern.matchesStatically(sigReturn)) 
@@ -306,13 +306,13 @@ public class SignaturePattern extends PatternNode {
 		// they are on the list because their supertype is on the list, that's why we use
 		// lookupMethod rather than lookupMemberNoSupers()
 		for (Iterator i = declaringTypes.iterator(); i.hasNext(); ) {
-			ResolvedTypeX type = (ResolvedTypeX)i.next();
+			ResolvedType type = (ResolvedType)i.next();
 			if (declaringType.matchesStatically(type)) {
 			  if (!checkReturnType) return true;
 			  ResolvedMember rm = type.lookupMethod(member);
 			  if (rm==null)  rm = type.lookupMethodInITDs(member); // It must be in here, or we have *real* problems
-			  TypeX returnTypeX = rm.getReturnType();
-			  ResolvedTypeX returnType = returnTypeX.resolve(world);
+			  UnresolvedType returnTypeX = rm.getReturnType();
+			  ResolvedType returnType = returnTypeX.resolve(world);
 			  if (returnTypePattern.matchesStatically(returnType)) return true;
 			}
 		}
@@ -424,8 +424,8 @@ public class SignaturePattern extends PatternNode {
 	}
 	
 // For methods, the above covariant aware version (declaringTypeMatchAllowingForCovariance) is used - this version is still here for fields
-	private boolean declaringTypeMatch(TypeX onTypeUnresolved, Member member, World world) {
-		ResolvedTypeX onType = onTypeUnresolved.resolve(world);
+	private boolean declaringTypeMatch(UnresolvedType onTypeUnresolved, Member member, World world) {
+		ResolvedType onType = onTypeUnresolved.resolve(world);
 		
 		// fastmatch
 		if (declaringType.matchesStatically(onType)) return true;
@@ -433,7 +433,7 @@ public class SignaturePattern extends PatternNode {
 		Collection declaringTypes = member.getDeclaringTypes(world);
 		
 		for (Iterator i = declaringTypes.iterator(); i.hasNext(); ) {
-			ResolvedTypeX type = (ResolvedTypeX)i.next();
+			ResolvedType type = (ResolvedType)i.next();
 			if (declaringType.matchesStatically(type)) return true;
 		}
 		return false;

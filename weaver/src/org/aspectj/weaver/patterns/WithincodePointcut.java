@@ -24,7 +24,7 @@ import org.aspectj.runtime.reflect.Factory;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Literal;
@@ -114,7 +114,7 @@ public class WithincodePointcut extends Pointcut {
 		signature = signature.resolveBindingsFromRTTI();
 	}
 
-	public void postRead(ResolvedTypeX enclosingType) {
+	public void postRead(ResolvedType enclosingType) {
 		signature.postRead(enclosingType);
 	}
 
@@ -138,7 +138,7 @@ public class WithincodePointcut extends Pointcut {
 	}
 	
 	
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		Pointcut ret = new WithincodePointcut(signature);
 		ret.copyLocationFrom(this);
 		return ret;

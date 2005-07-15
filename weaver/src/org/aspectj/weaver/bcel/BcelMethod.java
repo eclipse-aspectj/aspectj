@@ -34,9 +34,9 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 final class BcelMethod extends ResolvedMember {
@@ -46,12 +46,12 @@ final class BcelMethod extends ResolvedMember {
 	private ShadowMunger associatedShadowMunger;
 	private ResolvedPointcutDefinition preResolvedPointcut;  // used when ajc has pre-resolved the pointcut of some @Advice
 	
-    private ResolvedTypeX[] annotationTypes = null;
+    private ResolvedType[] annotationTypes = null;
     private AnnotationX[] annotations = null;
 	
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
-	private ResolvedTypeX[] resolvedAnnotations;
+	private ResolvedType[] resolvedAnnotations;
 	private World world;
 	private BcelObjectType bcelObjectType;
 
@@ -78,15 +78,15 @@ final class BcelMethod extends ResolvedMember {
 	private void unpackJavaAttributes() {
 		ExceptionTable exnTable = method.getExceptionTable();
 		checkedExceptions = (exnTable == null) 
-			? TypeX.NONE
-			: TypeX.forNames(exnTable.getExceptionNames());
+			? UnresolvedType.NONE
+			: UnresolvedType.forNames(exnTable.getExceptionNames());
 			
 		LocalVariableTable varTable = method.getLocalVariableTable();
 		int len = getArity();
 		if (varTable == null) {
 			this.parameterNames = Utility.makeArgNames(len);
 		} else {
-			TypeX[] paramTypes = getParameterTypes();
+			UnresolvedType[] paramTypes = getParameterTypes();
 			String[] paramNames = new String[len];
 			int index = isStatic() ? 0 : 1;
 			for (int i = 0; i < len; i++) {
@@ -185,10 +185,10 @@ final class BcelMethod extends ResolvedMember {
 		}
 	}
 	
-	public boolean hasAnnotation(TypeX ofType) {
+	public boolean hasAnnotation(UnresolvedType ofType) {
 		ensureAnnotationTypesRetrieved();
 		for (int i=0; i<annotationTypes.length; i++) {
-			ResolvedTypeX aType = annotationTypes[i];
+			ResolvedType aType = annotationTypes[i];
 			if (aType.equals(ofType)) return true;
 		}
 		return false;
@@ -199,7 +199,7 @@ final class BcelMethod extends ResolvedMember {
 		return annotations;
 	}
 	
-	 public ResolvedTypeX[] getAnnotationTypes() {
+	 public ResolvedType[] getAnnotationTypes() {
 	    ensureAnnotationTypesRetrieved();
 	    return annotationTypes;
      }
@@ -215,9 +215,9 @@ final class BcelMethod extends ResolvedMember {
 		
 		// Add it to the set of annotation types
 		len = annotationTypes.length;
-		ResolvedTypeX[] ret2 = new ResolvedTypeX[len+1];
+		ResolvedType[] ret2 = new ResolvedType[len+1];
 		System.arraycopy(annotationTypes,0,ret2,0,len);
-		ret2[len] =world.resolve(TypeX.forName(annotation.getTypeName()));
+		ret2[len] =world.resolve(UnresolvedType.forName(annotation.getTypeName()));
 		annotationTypes = ret2;
 		// FIXME asc looks like we are managing two 'bunches' of annotations, one
 		// here and one in the real 'method' - should we reduce it to one layer?
@@ -227,11 +227,11 @@ final class BcelMethod extends ResolvedMember {
 	 private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null || method.getAnnotations().length!=annotations.length) { // sometimes the list changes underneath us!
     		Annotation annos[] = method.getAnnotations();
-    		annotationTypes = new ResolvedTypeX[annos.length];
+    		annotationTypes = new ResolvedType[annos.length];
     		annotations = new AnnotationX[annos.length];
     		for (int i = 0; i < annos.length; i++) {
 				Annotation annotation = annos[i];
-				ResolvedTypeX rtx = world.resolve(TypeX.forName(annotation.getTypeName()));
+				ResolvedType rtx = world.resolve(UnresolvedType.forName(annotation.getTypeName()));
 				annotationTypes[i] = rtx;
 				annotations[i] = new AnnotationX(annotation,world);
 			}
@@ -252,15 +252,15 @@ final class BcelMethod extends ResolvedMember {
 	 
 	 // genericized version of return and parameter types
 	 private boolean unpackedGenericSignature = false;
-	 private TypeX genericReturnType = null;
-	 private TypeX[] genericParameterTypes = null;
+	 private UnresolvedType genericReturnType = null;
+	 private UnresolvedType[] genericParameterTypes = null;
 	 
-	 public TypeX[] getGenericParameterTypes() {
+	 public UnresolvedType[] getGenericParameterTypes() {
 		 unpackGenericSignature();
 		 return genericParameterTypes;
 	 }
 	 
-	 public TypeX getGenericReturnType() {
+	 public UnresolvedType getGenericReturnType() {
 		 unpackGenericSignature();
 		 return genericReturnType;
 	 }
@@ -286,7 +286,7 @@ final class BcelMethod extends ResolvedMember {
 					 returnTypeSignature, formals,
 					 world);
 			 Signature.TypeSignature[] paramTypeSigs = mSig.parameters;
-			 genericParameterTypes = new TypeX[paramTypeSigs.length];
+			 genericParameterTypes = new UnresolvedType[paramTypeSigs.length];
 			 for (int i = 0; i < paramTypeSigs.length; i++) {
 				genericParameterTypes[i] = 
 					BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(

@@ -15,8 +15,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 /**
@@ -39,7 +39,7 @@ public class TypeVariablePattern extends PatternNode {
 	private TypePattern[] interfaceBounds; // additional upper bounds (must be interfaces) arising from
 	                                                    // declarations of the form T extends Bar & IGoo, IDoo
 	private TypePattern lowerBound; // only set if type variable is of the form T super Bar
-	private ResolvedTypeX resolvedType; // only set if resolved
+	private ResolvedType resolvedType; // only set if resolved
 	
 	/**
 	 * Create a named type variable with upper bound Object and no lower bounds.
@@ -47,7 +47,7 @@ public class TypeVariablePattern extends PatternNode {
 	 */
 	public TypeVariablePattern(String variableName) {
 		this.name = variableName;
-		this.upperBound = new ExactTypePattern(TypeX.OBJECT,false,false);
+		this.upperBound = new ExactTypePattern(UnresolvedType.OBJECT,false,false);
 		this.lowerBound = null;
 		this.interfaceBounds = null;
 	}
@@ -68,7 +68,7 @@ public class TypeVariablePattern extends PatternNode {
 	public TypeVariablePattern(String variableName, TypePattern upperLimit, TypePattern[] interfaceBounds, TypePattern lowerBound) {
 		this.name = variableName;
 		this.upperBound = upperLimit;
-		if (upperBound == null) upperBound = new ExactTypePattern(TypeX.OBJECT,false,false);
+		if (upperBound == null) upperBound = new ExactTypePattern(UnresolvedType.OBJECT,false,false);
 		this.interfaceBounds = interfaceBounds;
 		this.lowerBound = lowerBound;
 	}
@@ -167,7 +167,7 @@ public class TypeVariablePattern extends PatternNode {
 	private String getExtendsClause() {
 		if (upperBound instanceof ExactTypePattern) {
 			ExactTypePattern bound = (ExactTypePattern) upperBound;
-			if (bound.type == TypeX.OBJECT) return "";
+			if (bound.type == UnresolvedType.OBJECT) return "";
 		}
 		return " extends " + upperBound.toString();
 	}

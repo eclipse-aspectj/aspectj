@@ -22,7 +22,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Test;
@@ -131,7 +131,7 @@ public class NotPointcut extends Pointcut {
 		return Test.makeNot(body.findResidue(shadow, state));
 	}
 	
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		Pointcut ret = new NotPointcut(body.concretize(inAspect, bindings));
 		ret.copyLocationFrom(this);
 		return ret;

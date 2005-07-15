@@ -12,9 +12,9 @@ package org.aspectj.weaver.patterns;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AnnotatedElement;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.BcweaverTests;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
 
 import junit.framework.TestCase;
@@ -28,7 +28,7 @@ public class AnnotationPatternTestCase extends TestCase {
 		AnnotationTypePattern foo = p.maybeParseAnnotationPattern();
 		foo = foo.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
-		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);
+		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);
 	}
 	
 	public void testParseAndAnnotationPattern() {
@@ -40,8 +40,8 @@ public class AnnotationPatternTestCase extends TestCase {
 		assertEquals("@Foo @Goo",fooAndGoo.toString());
 		AnnotationTypePattern left = ((AndAnnotationTypePattern)fooAndGoo).getLeft();
 		AnnotationTypePattern right = ((AndAnnotationTypePattern)fooAndGoo).getRight();
-		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)left).annotationType);
-		assertEquals("Goo",TypeX.forName("Goo"),((ExactAnnotationTypePattern)right).annotationType);		
+		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)left).annotationType);
+		assertEquals("Goo",UnresolvedType.forName("Goo"),((ExactAnnotationTypePattern)right).annotationType);		
 	}
 //
 //	public void testParseOrAnnotationPattern() {
@@ -51,8 +51,8 @@ public class AnnotationPatternTestCase extends TestCase {
 //		assertEquals("(@Foo || @Goo)",fooOrGoo.toString());
 //		AnnotationTypePattern left = ((OrAnnotationTypePattern)fooOrGoo).getLeft();
 //		AnnotationTypePattern right = ((OrAnnotationTypePattern)fooOrGoo).getRight();
-//		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)left).annotationType);
-//		assertEquals("Goo",TypeX.forName("Goo"),((ExactAnnotationTypePattern)right).annotationType);		
+//		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)left).annotationType);
+//		assertEquals("Goo",UnresolvedType.forName("Goo"),((ExactAnnotationTypePattern)right).annotationType);		
 //	}
 //	
 	public void testParseNotAnnotationPattern() {
@@ -62,7 +62,7 @@ public class AnnotationPatternTestCase extends TestCase {
 		notFoo = notFoo.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		assertEquals("!@Foo",notFoo.toString());
 		AnnotationTypePattern body = ((NotAnnotationTypePattern)notFoo).getNegatedPattern();
-		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)body).annotationType);
+		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)body).annotationType);
 	}
 
 	public void testParseBracketedAnnotationPattern() {
@@ -116,7 +116,7 @@ public class AnnotationPatternTestCase extends TestCase {
 		PatternParser p = new PatternParser("Foo");
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
 		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
-		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);		
+		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);		
 	}
 	
 	public void testParseNameOrVarAnnotationPatternWithNot() {
@@ -134,7 +134,7 @@ public class AnnotationPatternTestCase extends TestCase {
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
 		// rest of pattern not consumed...
 		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
-		assertEquals("Foo",TypeX.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);		
+		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);		
 	}
 	
 	public void testParseNameOrVarAnnotationWithBinding() {
@@ -339,7 +339,7 @@ public class AnnotationPatternTestCase extends TestCase {
 			this.annotationTypes = annotationTypes;
 		}
 		
-		public boolean hasAnnotation(TypeX ofType) {
+		public boolean hasAnnotation(UnresolvedType ofType) {
 			for (int i = 0; i < annotationTypes.length; i++) {
 				if (annotationTypes[i].equals(ofType.getName())) return true;
 			}
@@ -349,7 +349,7 @@ public class AnnotationPatternTestCase extends TestCase {
 		/* (non-Javadoc)
 		 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
 		 */
-		public ResolvedTypeX[] getAnnotationTypes() {
+		public ResolvedType[] getAnnotationTypes() {
 			// TODO Auto-generated method stub
 			return null;
 		}

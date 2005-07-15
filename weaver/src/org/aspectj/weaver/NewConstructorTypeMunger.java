@@ -39,7 +39,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	}
 	
 	//XXX horrible name clash here
-	public ResolvedMember getDispatchMethod(TypeX aspectType) {
+	public ResolvedMember getDispatchMethod(UnresolvedType aspectType) {
 		return AjcMemberMaker.interMethodBody(signature, aspectType);
 	}
 
@@ -74,14 +74,14 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		this.explicitConstructor = explicitConstructor;
 	}
 	
-	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {
+	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		ResolvedMember ret = getSyntheticConstructor();
-		if (ResolvedTypeX.matches(ret, member)) return getSignature();
+		if (ResolvedType.matches(ret, member)) return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
 	
 	public void check(World world) {
-		if (getSignature().getDeclaringType().isAspect(world)) {
+		if (getSignature().getDeclaringType().resolve(world).isAspect()) {
 			world.showMessage(IMessage.ERROR, 
 					WeaverMessages.format(WeaverMessages.ITD_CONS_ON_ASPECT),
 					getSignature().getSourceLocation(), null);

@@ -25,8 +25,8 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
@@ -78,13 +78,13 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	public void notePrivilegedTypeAccess(ReferenceBinding type, ASTNode location) {
 		ResolvedMember key =
 			new ResolvedMember(Member.STATIC_INITIALIZATION,
-				inAspect.factory.fromEclipse(type), 0, ResolvedTypeX.VOID, "", TypeX.NONE);
+				inAspect.factory.fromEclipse(type), 0, ResolvedType.VOID, "", UnresolvedType.NONE);
 		
 		checkWeaveAccess(key.getDeclaringType(), location);
 		accessors.put(key, key);
 	}
 
-	private void checkWeaveAccess(TypeX typeX, ASTNode location) {
+	private void checkWeaveAccess(UnresolvedType typeX, ASTNode location) {
 		World world = inAspect.factory.getWorld();
 		Lint.Kind check = world.getLint().typeNotExposedToWeaver;
 		if (check.isEnabled()) {

@@ -40,8 +40,8 @@ import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
@@ -95,12 +95,12 @@ public class AtAjAttributes {
         /**
          * The resolved type (class) for which we are reading @AJ for (be it class, method, field annotations)
          */
-        final ResolvedTypeX enclosingType;
+        final ResolvedType enclosingType;
 
         final ISourceContext context;
         final IMessageHandler handler;
 
-        public AjAttributeStruct(ResolvedTypeX type, ISourceContext sourceContext, IMessageHandler messageHandler) {
+        public AjAttributeStruct(ResolvedType type, ISourceContext sourceContext, IMessageHandler messageHandler) {
             enclosingType = type;
             context = sourceContext;
             handler = messageHandler;
@@ -123,7 +123,7 @@ public class AtAjAttributes {
         final Method method;
         final BcelMethod bMethod;
 
-        public AjAttributeMethodStruct(Method method, BcelMethod bMethod, ResolvedTypeX type, ISourceContext sourceContext, IMessageHandler messageHandler) {
+        public AjAttributeMethodStruct(Method method, BcelMethod bMethod, ResolvedType type, ISourceContext sourceContext, IMessageHandler messageHandler) {
             super(type, sourceContext, messageHandler);
             this.method = method;
             this.bMethod = bMethod;
@@ -146,7 +146,7 @@ public class AtAjAttributes {
 
         final Field field;
 
-        public AjAttributeFieldStruct(Field field, ResolvedTypeX type, ISourceContext sourceContext, IMessageHandler messageHandler) {
+        public AjAttributeFieldStruct(Field field, ResolvedType type, ISourceContext sourceContext, IMessageHandler messageHandler) {
             super(type, sourceContext, messageHandler);
             this.field = field;
         }
@@ -171,7 +171,7 @@ public class AtAjAttributes {
      * @param msgHandler
      * @return list of AjAttributes
      */
-    public static List readAj5ClassAttributes(JavaClass javaClass, ResolvedTypeX type, ISourceContext context, IMessageHandler msgHandler, boolean isCodeStyleAspect) {
+    public static List readAj5ClassAttributes(JavaClass javaClass, ResolvedType type, ISourceContext context, IMessageHandler msgHandler, boolean isCodeStyleAspect) {
         AjAttributeStruct struct = new AjAttributeStruct(type, context, msgHandler);
         Attribute[] attributes = javaClass.getAttributes();
         boolean hasAtAspectAnnotation = false;
@@ -292,7 +292,7 @@ public class AtAjAttributes {
      * @param msgHandler
      * @return list of AjAttributes
      */
-    public static List readAj5MethodAttributes(Method method, BcelMethod bMethod, ResolvedTypeX type, ResolvedPointcutDefinition preResolvedPointcut, ISourceContext context, IMessageHandler msgHandler) {
+    public static List readAj5MethodAttributes(Method method, BcelMethod bMethod, ResolvedType type, ResolvedPointcutDefinition preResolvedPointcut, ISourceContext context, IMessageHandler msgHandler) {
         if (method.getName().startsWith(NameMangler.PREFIX)) return Collections.EMPTY_LIST;  // already dealt with by ajc...
 
         AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, bMethod, type, context, msgHandler);
@@ -384,7 +384,7 @@ public class AtAjAttributes {
      * @param msgHandler
      * @return list of AjAttributes, always empty for now
      */
-    public static List readAj5FieldAttributes(Field field, ResolvedTypeX type, ISourceContext context, IMessageHandler msgHandler) {
+    public static List readAj5FieldAttributes(Field field, ResolvedType type, ISourceContext context, IMessageHandler msgHandler) {
         return Collections.EMPTY_LIST;
     }
 
@@ -882,9 +882,9 @@ public class AtAjAttributes {
                     return;
                 }
 
-                TypeX[] argumentTypes = new TypeX[struct.method.getArgumentTypes().length];
+                UnresolvedType[] argumentTypes = new UnresolvedType[struct.method.getArgumentTypes().length];
                 for (int i = 0; i < argumentTypes.length; i++) {
-                    argumentTypes[i] = TypeX.forSignature(struct.method.getArgumentTypes()[i].getSignature());
+                    argumentTypes[i] = UnresolvedType.forSignature(struct.method.getArgumentTypes()[i].getSignature());
                 }
 
                 // use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
@@ -900,7 +900,7 @@ public class AtAjAttributes {
                                         struct.method.getModifiers(),
                                         struct.method.getName(),
                                         argumentTypes,
-                                        TypeX.forSignature(struct.method.getReturnType().getSignature()),
+                                        UnresolvedType.forSignature(struct.method.getReturnType().getSignature()),
                                         pc,
                                         binding
                                 )
@@ -1023,7 +1023,7 @@ public class AtAjAttributes {
         List bindings = new ArrayList();
         for (int i = 0; i < argumentNames.length; i++) {
             String argumentName = argumentNames[i];
-            TypeX argumentType = TypeX.forSignature(method.getArgumentTypes()[i].getSignature());
+            UnresolvedType argumentType = UnresolvedType.forSignature(method.getArgumentTypes()[i].getSignature());
 
             // do not bind JoinPoint / StaticJoinPoint / EnclosingStaticJoinPoint
             // TODO solve me : this means that the JP/SJP/ESJP cannot appear as binding
@@ -1121,7 +1121,7 @@ public class AtAjAttributes {
      * @param annotationType
      * @return
      */
-    private static Annotation getAnnotation(RuntimeAnnotations rvs, TypeX annotationType) {
+    private static Annotation getAnnotation(RuntimeAnnotations rvs, UnresolvedType annotationType) {
         final String annotationTypeName = annotationType.getName();
         for (Iterator iterator = rvs.getAnnotations().iterator(); iterator.hasNext();) {
             Annotation rv = (Annotation) iterator.next();
@@ -1226,16 +1226,16 @@ public class AtAjAttributes {
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
     public static class BindingScope extends SimpleScope {
-        private ResolvedTypeX m_enclosingType;
+        private ResolvedType m_enclosingType;
         private ISourceContext m_sourceContext;
 
-        public BindingScope(ResolvedTypeX type, ISourceContext sourceContext, FormalBinding[] bindings) {
+        public BindingScope(ResolvedType type, ISourceContext sourceContext, FormalBinding[] bindings) {
             super(type.getWorld(), bindings);
             m_enclosingType = type;
             m_sourceContext = sourceContext;
         }
 
-        public ResolvedTypeX getEnclosingType() {
+        public ResolvedType getEnclosingType() {
             return m_enclosingType;
         }
 
@@ -1256,8 +1256,8 @@ public class AtAjAttributes {
 
         private Pointcut m_lazyPointcut = null;
 
-        public LazyResolvedPointcutDefinition(ResolvedTypeX declaringType, int modifiers, String name,
-                                              TypeX[] parameterTypes, TypeX returnType,
+        public LazyResolvedPointcutDefinition(ResolvedType declaringType, int modifiers, String name,
+                                              UnresolvedType[] parameterTypes, UnresolvedType returnType,
                                               Pointcut pointcut, IScope binding) {
             super(declaringType, modifiers, name, parameterTypes, returnType, null);
             m_pointcutUnresolved = pointcut;

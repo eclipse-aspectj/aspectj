@@ -15,7 +15,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
@@ -31,7 +31,7 @@ public class InterTypeFieldBinding extends FieldBinding {
 	public SyntheticMethodBinding writer;
 	public AbstractMethodDeclaration sourceMethod;
 	
-	public InterTypeFieldBinding(EclipseFactory world, ResolvedMember signature, TypeX withinType,
+	public InterTypeFieldBinding(EclipseFactory world, ResolvedMember signature, UnresolvedType withinType,
 									AbstractMethodDeclaration sourceMethod)
 	{
 		super(world.makeFieldBinding(signature), null);

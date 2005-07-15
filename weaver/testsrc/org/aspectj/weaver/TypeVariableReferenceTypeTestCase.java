@@ -38,12 +38,12 @@ public class TypeVariableReferenceTypeTestCase extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		world = new BcelWorld();
-		javaLangClass = (ReferenceType) world.resolve(TypeX.forName("java/lang/Class"));
-		javaLangObject = (ReferenceType) world.resolve(TypeX.OBJECT);
+		javaLangClass = (ReferenceType) world.resolve(UnresolvedType.forName("java/lang/Class"));
+		javaLangObject = (ReferenceType) world.resolve(UnresolvedType.OBJECT);
 		extendsClass = new BoundedReferenceType(javaLangClass,true,world);
 		superClass = new BoundedReferenceType(javaLangClass,false,world);
 		extendsWithExtras = new BoundedReferenceType(javaLangClass,true,world,
-				new ReferenceType[] {(ReferenceType)world.resolve(TypeX.forName("java/util/List"))});
+				new ReferenceType[] {(ReferenceType)world.resolve(UnresolvedType.forName("java/util/List"))});
 	}
 
 }

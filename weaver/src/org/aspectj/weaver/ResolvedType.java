@@ -30,23 +30,28 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
-public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
+public abstract class ResolvedType extends UnresolvedType implements AnnotatedElement {
 
+	private static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY  = new ResolvedType[0];
+	
     protected World world;
 	
 
-    ResolvedTypeX(String signature, World world) {
+    ResolvedType(String signature, World world) {
         super(signature);
         this.world = world;
     }
 
     // ---- things that don't require a world
 
-	/** returns Iterator&lt;ResolvedTypeX&gt;
-	 */
+    /**
+     * Returns an iterator through ResolvedType objects representing all the direct
+     * supertypes of this type.  That is, through the superclass, if any, and
+     * all declared interfaces.
+     */
     public final Iterator getDirectSupertypes() {
         Iterator ifacesIterator = Iterators.array(getDeclaredInterfaces());
-        ResolvedTypeX superclass = getSuperclass();
+        ResolvedType superclass = getSuperclass();
         if (superclass == null) {
             return ifacesIterator;
         } else {
@@ -56,51 +61,35 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 
     public abstract ResolvedMember[] getDeclaredFields();
     public abstract ResolvedMember[] getDeclaredMethods();
-    public abstract ResolvedTypeX[] getDeclaredInterfaces();
+    public abstract ResolvedType[] getDeclaredInterfaces();
     public abstract ResolvedMember[] getDeclaredPointcuts();
-    public abstract ResolvedTypeX getSuperclass();
+    /**
+     * Returns a ResolvedType object representing the superclass of this type, or null.
+     * If this represents a java.lang.Object, a primitive type, or void, this
+     * method returns null.  
+     */
+    public abstract ResolvedType getSuperclass();
+
+    /**
+     * Returns the modifiers for this type.  
+     * 
+     * See {@link java.lang.Class#getModifiers()} for a description
+     * of the weirdness of this methods on primitives and arrays.
+     *
+     * @param world the {@link World} in which the lookup is made.
+     * @return an int representing the modifiers for this type
+     * @see     java.lang.reflect.Modifier
+     */
     public abstract int getModifiers();
 
-
-    public abstract boolean needsNoConversionFrom(TypeX other);
-    public abstract boolean isCoerceableFrom(TypeX other);
-    public abstract boolean isAssignableFrom(TypeX other);
-    
-    // ---- things that would require a world if I weren't resolved
-    public final Iterator getDirectSupertypes(World world) {
-        return getDirectSupertypes();
-    }  
-    
-    public final ResolvedMember[] getDeclaredFields(World world) {
-        return getDeclaredFields();
-    }    
-    public final ResolvedMember[] getDeclaredMethods(World world) {
-        return getDeclaredMethods();
-    }    
-    public final TypeX[] getDeclaredInterfaces(World world) {
-        return getDeclaredInterfaces();
+    public ResolvedType[] getAnnotationTypes() {
+    	return EMPTY_RESOLVED_TYPE_ARRAY;
     }
-    public final ResolvedMember[] getDeclaredPointcuts(World world) {
-    	return getDeclaredPointcuts();
-    }
-  
-    public final int getModifiers(World world) {
-        return getModifiers();
-    }    
-    public final TypeX getSuperclass(World world) {
+    
+    public final UnresolvedType getSuperclass(World world) {
         return getSuperclass();
     }
 
-    // conversions
-    public final boolean isAssignableFrom(TypeX other, World world) {
-        return isAssignableFrom(other);
-    }   
-    public final boolean isCoerceableFrom(TypeX other, World world) {
-        return isCoerceableFrom(other);
-    }
-    public boolean needsNoConversionFrom(TypeX other, World world) {
-        return needsNoConversionFrom(other);
-    }
     
     // This set contains pairs of types whose signatures are concatenated
     // together, this means with a fast lookup we can tell if two types
@@ -126,22 +115,13 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
       validBoxing.add("ZLjava/lang/Boolean;");
     }
     
-    public final boolean isConvertableFrom(TypeX other) {
-        if (this.equals(OBJECT) || other.equals(OBJECT)) return true;
-        if (world.behaveInJava5Way) {
-        	if (this.isPrimitive()^other.isPrimitive()) { // If one is primitive and the other isnt
-        		if (validBoxing.contains(this.getSignature()+other.getSignature())) return true;
-        	}
-        }
-        return this.isCoerceableFrom(other);
-    }
-    
+
 
     // utilities                
-    public ResolvedTypeX getResolvedComponentType() {
+    public ResolvedType getResolvedComponentType() {
     	return null;
     }
-	public ResolvedTypeX resolve(World world) {
+	public ResolvedType resolve(World world) {
 		return this;
 	}
 	public World getWorld() {
@@ -151,7 +131,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     // ---- things from object
 
     public final boolean equals(Object other) {
-        if (other instanceof ResolvedTypeX) {
+        if (other instanceof ResolvedType) {
             return this == other;
         } else {
             return super.equals(other);
@@ -178,12 +158,12 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             public Iterator get(Object o) {
                 return 
                     dupFilter.filter(
-                        ((ResolvedTypeX)o).getDirectSupertypes());
+                        ((ResolvedType)o).getDirectSupertypes());
             }
         };
         Iterators.Getter fieldGetter = new Iterators.Getter() {
             public Iterator get(Object o) {
-                return Iterators.array(((ResolvedTypeX)o).getDeclaredFields());
+                return Iterators.array(((ResolvedType)o).getDeclaredFields());
             }
         };
         return 
@@ -212,25 +192,25 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             public Iterator get(Object o) {
                 return 
                     dupFilter.filter(
-                        Iterators.array(((ResolvedTypeX)o).getDeclaredInterfaces())
+                        Iterators.array(((ResolvedType)o).getDeclaredInterfaces())
                         );                       
             }
         };
         Iterators.Getter methodGetter = new Iterators.Getter() {
             public Iterator get(Object o) {
-                return Iterators.array(((ResolvedTypeX)o).getDeclaredMethods());
+                return Iterators.array(((ResolvedType)o).getDeclaredMethods());
             }
         };
         return 
             Iterators.mapOver(
                 Iterators.append(
                     new Iterator() {
-                        ResolvedTypeX curr = ResolvedTypeX.this;
+                        ResolvedType curr = ResolvedType.this;
                         public boolean hasNext() {
                             return curr != null;
                         }
                         public Object next() {
-                            ResolvedTypeX ret = curr;
+                            ResolvedType ret = curr;
                             curr = curr.getSuperclass();
                             return ret;
                         }
@@ -254,12 +234,12 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         return methods;
     }
     
-    private void addAndRecurse(Set knowninterfaces,List collector, ResolvedTypeX rtx) {
+    private void addAndRecurse(Set knowninterfaces,List collector, ResolvedType rtx) {
       collector.addAll(Arrays.asList(rtx.getDeclaredMethods())); // Add the methods declared on this type
-      if (!rtx.equals(ResolvedTypeX.OBJECT)) addAndRecurse(knowninterfaces,collector,rtx.getSuperclass()); // Recurse if we aren't at the top
-      ResolvedTypeX[] interfaces = rtx.getDeclaredInterfaces(); // Go through the interfaces on the way back down
+      if (!rtx.equals(ResolvedType.OBJECT)) addAndRecurse(knowninterfaces,collector,rtx.getSuperclass()); // Recurse if we aren't at the top
+      ResolvedType[] interfaces = rtx.getDeclaredInterfaces(); // Go through the interfaces on the way back down
       for (int i = 0; i < interfaces.length; i++) {
-		ResolvedTypeX iface = interfaces[i];
+		ResolvedType iface = interfaces[i];
 		if (!knowninterfaces.contains(iface)) { // Dont do interfaces more than once
           knowninterfaces.add(iface); 
           addAndRecurse(knowninterfaces,collector,iface);
@@ -346,8 +326,8 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     		return true;
     	}
     	
-    	TypeX[] p1 = m1.getParameterTypes();
-    	TypeX[] p2 = m2.getParameterTypes();
+    	UnresolvedType[] p1 = m1.getParameterTypes();
+    	UnresolvedType[] p2 = m2.getParameterTypes();
     	int n = p1.length;
     	if (n != p2.length) return false;
     	
@@ -377,13 +357,13 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             public Iterator get(Object o) {
                 return 
                     dupFilter.filter(
-                        ((ResolvedTypeX)o).getDirectSupertypes());
+                        ((ResolvedType)o).getDirectSupertypes());
             }
         };
         Iterators.Getter pointcutGetter = new Iterators.Getter() {
             public Iterator get(Object o) {
                 //System.err.println("getting for " + o);
-                return Iterators.array(((ResolvedTypeX)o).getDeclaredPointcuts());
+                return Iterators.array(((ResolvedType)o).getDeclaredPointcuts());
             }
         };
         return 
@@ -442,13 +422,13 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	            public Iterator get(Object o) {
 	                return 
 	                    dupFilter.filter(
-	                        ((ResolvedTypeX)o).getDirectSupertypes());
+	                        ((ResolvedType)o).getDirectSupertypes());
 	            }
 	        };
 	        Iterator typeIterator = Iterators.recur(this, typeGetter);
 	
 	        while (typeIterator.hasNext()) {
-	        	ResolvedTypeX ty = (ResolvedTypeX) typeIterator.next();
+	        	ResolvedType ty = (ResolvedType) typeIterator.next();
 	        	//System.out.println("super: " + ty + ", " + );
 	        	for (Iterator i = ty.getDeclares().iterator(); i.hasNext();) {
 					Declare dec = (Declare) i.next();
@@ -472,13 +452,13 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             public Iterator get(Object o) {
                 return 
                     dupFilter.filter(
-                        ((ResolvedTypeX)o).getDirectSupertypes());
+                        ((ResolvedType)o).getDirectSupertypes());
             }
         };
         Iterator typeIterator = Iterators.recur(this, typeGetter);
 
         while (typeIterator.hasNext()) {
-            ResolvedTypeX ty = (ResolvedTypeX) typeIterator.next();
+            ResolvedType ty = (ResolvedType) typeIterator.next();
             acc.addAll(ty.getDeclaredShadowMungers());     
         }
         
@@ -539,14 +519,14 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
      * Note: Only overridden by Name subtype
      */
 	public void addAnnotation(AnnotationX annotationX) {
-		throw new RuntimeException("ResolvedTypeX.addAnnotation() should never be called");
+		throw new RuntimeException("ResolvedType.addAnnotation() should never be called");
 	}
 	
 	/**
 	 * Note: Only overridden by Name subtype
 	 */
 	public AnnotationX[] getAnnotations() {
-		throw new RuntimeException("ResolvedTypeX.getAnnotations() should never be called");
+		throw new RuntimeException("ResolvedType.getAnnotations() should never be called");
 	}
 
     
@@ -617,7 +597,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 
     // ---- fields
     
-    public static final ResolvedTypeX[] NONE = new ResolvedTypeX[0];
+    public static final ResolvedType[] NONE = new ResolvedType[0];
 
     public static final Primitive BYTE    = new Primitive("B", 1, 0);
     public static final Primitive CHAR    = new Primitive("C", 1, 1);
@@ -632,9 +612,9 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     
     // ---- types
     
-    static class Array extends ResolvedTypeX {
-        ResolvedTypeX componentType;
-        Array(String s, World world, ResolvedTypeX componentType) {
+    static class Array extends ResolvedType {
+        ResolvedType componentType;
+        Array(String s, World world, ResolvedType componentType) {
             super(s, world);
             this.componentType = componentType;
         }
@@ -645,13 +625,13 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             // ??? should this return clone?  Probably not...
             // If it ever does, here is the code:
             //  ResolvedMember cloneMethod =
-            //    new ResolvedMember(Member.METHOD,this,Modifier.PUBLIC,TypeX.OBJECT,"clone",new TypeX[]{});
+            //    new ResolvedMember(Member.METHOD,this,Modifier.PUBLIC,UnresolvedType.OBJECT,"clone",new UnresolvedType[]{});
             //  return new ResolvedMember[]{cloneMethod};
         	return ResolvedMember.NONE;
         }
-        public final ResolvedTypeX[] getDeclaredInterfaces() {
+        public final ResolvedType[] getDeclaredInterfaces() {
             return
-                new ResolvedTypeX[] {
+                new ResolvedType[] {
                     world.getCoreType(CLONEABLE), 
                     world.getCoreType(SERIALIZABLE)
                 };
@@ -660,45 +640,42 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
             return ResolvedMember.NONE;
         }
         
-        public boolean hasAnnotation(TypeX ofType) {
+        public boolean hasAnnotation(UnresolvedType ofType) {
         	return false;
         }
         
-        public final ResolvedTypeX getSuperclass() {
+        public final ResolvedType getSuperclass() {
             return world.getCoreType(OBJECT);
         }
-        public final boolean isAssignableFrom(TypeX o) {
+        public final boolean isAssignableFrom(ResolvedType o) {
             if (! o.isArray()) return false;
-            if (o.getComponentType().isPrimitive()) {
+            if (o.getComponentType().isPrimitiveType()) {
                 return o.equals(this);
             } else {
-                return getComponentType().isAssignableFrom(o.getComponentType(), world);
+                return getComponentType().resolve(world).isAssignableFrom(o.getComponentType().resolve(world));
             }
         }
-        public final boolean isCoerceableFrom(TypeX o) {
-            if (o.equals(TypeX.OBJECT) || 
-                    o.equals(TypeX.SERIALIZABLE) ||
-                    o.equals(TypeX.CLONEABLE)) {
+        public final boolean isCoerceableFrom(ResolvedType o) {
+            if (o.equals(UnresolvedType.OBJECT) || 
+                    o.equals(UnresolvedType.SERIALIZABLE) ||
+                    o.equals(UnresolvedType.CLONEABLE)) {
                 return true;
             }
             if (! o.isArray()) return false;
-            if (o.getComponentType().isPrimitive()) {
+            if (o.getComponentType().isPrimitiveType()) {
                 return o.equals(this);
             } else {
-                return getComponentType().isCoerceableFrom(o.getComponentType(), world);
+                return getComponentType().resolve(world).isCoerceableFrom(o.getComponentType().resolve(world));
             }
-        }
-        public final boolean needsNoConversionFrom(TypeX o) {
-            return isAssignableFrom(o);
         }
         public final int getModifiers() {
             int mask = Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED;
             return (componentType.getModifiers() & mask) | Modifier.FINAL;
         }
-        public TypeX getComponentType() {
+        public UnresolvedType getComponentType() {
             return componentType;
         }
-        public ResolvedTypeX getResolvedComponentType() {
+        public ResolvedType getResolvedComponentType() {
             return componentType;
         }
         public ISourceContext getSourceContext() {
@@ -706,7 +683,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         }
     }
     
-    static class Primitive extends ResolvedTypeX {
+    static class Primitive extends ResolvedType {
         private int size;
         private int index;
         Primitive(String signature, int size, int index) {
@@ -720,31 +697,31 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         public final int getModifiers() {
             return Modifier.PUBLIC | Modifier.FINAL;
         }
-        public final boolean isPrimitive() {
+        public final boolean isPrimitiveType() {
             return true;
         }
-        public boolean hasAnnotation(TypeX ofType) {
+        public boolean hasAnnotation(UnresolvedType ofType) {
         	return false;
         }
-        public final boolean isAssignableFrom(TypeX other) {
-            if (!other.isPrimitive()) {
+        public final boolean isAssignableFrom(ResolvedType other) {
+            if (!other.isPrimitiveType()) {
             	if (!world.behaveInJava5Way) return false;
             	return validBoxing.contains(this.getSignature()+other.getSignature());
             }
             return assignTable[((Primitive)other).index][index];
         }
-        public final boolean isCoerceableFrom(TypeX other) {
+        public final boolean isCoerceableFrom(ResolvedType other) {
             if (this == other) return true;
-            if (! other.isPrimitive()) return false;
+            if (! other.isPrimitiveType()) return false;
             if (index > 6 || ((Primitive)other).index > 6) return false;
             return true;
         }
-        public ResolvedTypeX resolve(World world) {
+        public ResolvedType resolve(World world) {
             this.world = world;
             return super.resolve(world);
         }
-        public final boolean needsNoConversionFrom(TypeX other) {
-            if (! other.isPrimitive()) return false;
+        public final boolean needsNoConversionFrom(ResolvedType other) {
+            if (! other.isPrimitiveType()) return false;
             return noConvertTable[((Primitive)other).index][index];
         }           
         private static final boolean[][] assignTable = 
@@ -780,14 +757,14 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         public final ResolvedMember[] getDeclaredMethods() {
             return ResolvedMember.NONE;
         }
-        public final ResolvedTypeX[] getDeclaredInterfaces() {
-            return ResolvedTypeX.NONE;
+        public final ResolvedType[] getDeclaredInterfaces() {
+            return ResolvedType.NONE;
         }
         public final ResolvedMember[] getDeclaredPointcuts() {
             return ResolvedMember.NONE;
         }
 
-        public final ResolvedTypeX getSuperclass() {
+        public final ResolvedType getSuperclass() {
             return null;
         }
         
@@ -797,7 +774,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
    
     }
 
-    static class Missing extends ResolvedTypeX {
+    static class Missing extends ResolvedType {
         Missing() {
             super(MISSING_NAME, null);
         }       
@@ -807,7 +784,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         public final String getName() {
         	return MISSING_NAME;
         }
-        public boolean hasAnnotation(TypeX ofType) {
+        public boolean hasAnnotation(UnresolvedType ofType) {
         	return false;
         }
         public final ResolvedMember[] getDeclaredFields() {
@@ -816,26 +793,26 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         public final ResolvedMember[] getDeclaredMethods() {
             return ResolvedMember.NONE;
         }
-        public final ResolvedTypeX[] getDeclaredInterfaces() {
-            return ResolvedTypeX.NONE;
+        public final ResolvedType[] getDeclaredInterfaces() {
+            return ResolvedType.NONE;
         }
 
         public final ResolvedMember[] getDeclaredPointcuts() {
             return ResolvedMember.NONE;
         }
-        public final ResolvedTypeX getSuperclass() {
+        public final ResolvedType getSuperclass() {
             return null;
         }
         public final int getModifiers() {
             return 0;
         }
-        public final boolean isAssignableFrom(TypeX other) {
+        public final boolean isAssignableFrom(ResolvedType other) {
             return false;
         }   
-        public final boolean isCoerceableFrom(TypeX other) {
+        public final boolean isCoerceableFrom(ResolvedType other) {
             return false;
         }        
-        public boolean needsNoConversionFrom(TypeX other) {
+        public boolean needsNoConversionFrom(ResolvedType other) {
             return false;
         }
         public ISourceContext getSourceContext() {
@@ -900,7 +877,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     
     private void collectInterTypeParentMungers(List collector) {
         for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
-            ResolvedTypeX superType = (ResolvedTypeX) iter.next();
+            ResolvedType superType = (ResolvedType) iter.next();
             superType.collectInterTypeParentMungers(collector);
         }
         collector.addAll(getInterTypeParentMungers());
@@ -909,7 +886,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
         
     private void collectInterTypeMungers(List collector) {
         for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
-			ResolvedTypeX superType = (ResolvedTypeX) iter.next();
+			ResolvedType superType = (ResolvedType) iter.next();
             superType.collectInterTypeMungers(collector);
 		}
         
@@ -983,7 +960,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     private boolean checkAbstractDeclaration(ConcreteTypeMunger munger) {
 		if (munger.getMunger()!=null && (munger.getMunger() instanceof NewMethodTypeMunger)) {
 			ResolvedMember itdMember = munger.getSignature();
-			ResolvedTypeX onType = itdMember.getDeclaringType().resolve(world);
+			ResolvedType onType = itdMember.getDeclaringType().resolve(world);
 			if (onType.isInterface() && itdMember.isAbstract() && !itdMember.isPublic()) {
 					world.getMessageHandler().handleMessage(
 							new Message(WeaverMessages.format(WeaverMessages.ITD_ABSTRACT_MUST_BE_PUBLIC_ON_INTERFACE,munger.getSignature(),onType),"",
@@ -1012,7 +989,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
     }
 	
     /**
-     * Returns a ResolvedTypeX object representing the declaring type of this type, or
+     * Returns a ResolvedType object representing the declaring type of this type, or
      * null if this type does not represent a non-package-level-type.
      * 
      * <strong>Warning</strong>:  This is guaranteed to work for all member types.
@@ -1020,22 +997,22 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
      * it guarantees that if you call getDeclaringType() repeatedly, you will eventually
      * get the top-level class, but it does not say anything about classes in between.
      *
-     * @return the declaring TypeX object, or null.
+     * @return the declaring UnresolvedType object, or null.
      */
-    public ResolvedTypeX getDeclaringType() {
+    public ResolvedType getDeclaringType() {
     	if (isArray()) return null;
 		String name = getName();
 		int lastDollar = name.lastIndexOf('$');
 		while (lastDollar != -1) {
-			ResolvedTypeX ret = world.resolve(TypeX.forName(name.substring(0, lastDollar)), true);
-			if (ret != ResolvedTypeX.MISSING) return ret;
+			ResolvedType ret = world.resolve(UnresolvedType.forName(name.substring(0, lastDollar)), true);
+			if (ret != ResolvedType.MISSING) return ret;
 			lastDollar = name.lastIndexOf('$', lastDollar-1);
 		}
 		return null;
     }
 	
 	
-	public static boolean isVisible(int modifiers, ResolvedTypeX targetType, ResolvedTypeX fromType) {
+	public static boolean isVisible(int modifiers, ResolvedType targetType, ResolvedType fromType) {
 		//System.err.println("mod: " + modifiers + ", " + targetType + " and " + fromType);
 		
 		if (Modifier.isPublic(modifiers)) {
@@ -1054,8 +1031,8 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	}
 
 	private static boolean samePackage(
-		ResolvedTypeX targetType,
-		ResolvedTypeX fromType)
+		ResolvedType targetType,
+		ResolvedType fromType)
 	{
 		String p1 = targetType.getPackageName();
 		String p2 = fromType.getPackageName();
@@ -1170,9 +1147,9 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	// we know that the member signature matches, but that the member in the target type is not visible to the aspect.
 	// this may still be disallowed if it would result in two members within the same declaring type with the same
 	// signature AND more than one of them is concrete AND they are both visible within the target type.
-	private boolean isDuplicateMemberWithinTargetType(ResolvedMember existingMember, ResolvedTypeX targetType,ResolvedMember itdMember) {
+	private boolean isDuplicateMemberWithinTargetType(ResolvedMember existingMember, ResolvedType targetType,ResolvedMember itdMember) {
 	    if ( (existingMember.isAbstract() || itdMember.isAbstract())) return false;
-	    TypeX declaringType = existingMember.getDeclaringType();
+	    UnresolvedType declaringType = existingMember.getDeclaringType();
 	    if (!targetType.equals(declaringType)) return false;
 	    // now have to test that itdMember is visible from targetType
 	    if (itdMember.isPrivate()) return false;
@@ -1196,8 +1173,8 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 			return false;
 		}		
 		if (parent.getKind() == Member.POINTCUT) {
-			TypeX[] pTypes = parent.getParameterTypes();
-			TypeX[] cTypes = child.getParameterTypes();
+			UnresolvedType[] pTypes = parent.getParameterTypes();
+			UnresolvedType[] cTypes = child.getParameterTypes();
 			if (!Arrays.equals(pTypes, cTypes)) {
 				world.showMessage(IMessage.ERROR,
 						WeaverMessages.format(WeaverMessages.ITD_PARAM_TYPE_MISMATCH,parent,child),
@@ -1214,10 +1191,10 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 		}
 		
 		// check declared exceptions
-		ResolvedTypeX[] childExceptions = world.resolve(child.getExceptions());
-		ResolvedTypeX[] parentExceptions = world.resolve(parent.getExceptions());
-		ResolvedTypeX runtimeException = world.resolve("java.lang.RuntimeException");
-		ResolvedTypeX error = world.resolve("java.lang.Error");
+		ResolvedType[] childExceptions = world.resolve(child.getExceptions());
+		ResolvedType[] parentExceptions = world.resolve(parent.getExceptions());
+		ResolvedType runtimeException = world.resolve("java.lang.RuntimeException");
+		ResolvedType error = world.resolve("java.lang.Error");
 		
 		outer: for (int i=0, leni = childExceptions.length; i < leni; i++) {
 			//System.err.println("checking: " + childExceptions[i]);
@@ -1261,8 +1238,8 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	
 		if (m1.getDeclaringType().equals(m2.getDeclaringType())) return 0;
 		
-		ResolvedTypeX t1 = m1.getDeclaringType().resolve(world);
-		ResolvedTypeX t2 = m2.getDeclaringType().resolve(world);
+		ResolvedType t1 = m1.getDeclaringType().resolve(world);
+		ResolvedType t2 = m2.getDeclaringType().resolve(world);
 		if (t1.isAssignableFrom(t2)) {
 			return -1;
 		}
@@ -1320,7 +1297,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	}
 
 
-	public boolean isTopmostImplementor(ResolvedTypeX interfaceType) {
+	public boolean isTopmostImplementor(ResolvedType interfaceType) {
 		if (isInterface()) return false;
 		if (!interfaceType.isAssignableFrom(this)) return false;
 		// check that I'm truly the topmost implementor
@@ -1330,19 +1307,19 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 		return true;
 	}
 	
-	public ResolvedTypeX getTopmostImplementor(ResolvedTypeX interfaceType) {
+	public ResolvedType getTopmostImplementor(ResolvedType interfaceType) {
 		if (isInterface()) return null;
 		if (!interfaceType.isAssignableFrom(this)) return null;
 		// Check if my super class is an implementor?
-		ResolvedTypeX higherType  = this.getSuperclass().getTopmostImplementor(interfaceType);
+		ResolvedType higherType  = this.getSuperclass().getTopmostImplementor(interfaceType);
 		if (higherType!=null) return higherType;
 		return this;
 	}
 	
-	private ResolvedTypeX findHigher(ResolvedTypeX other) {
+	private ResolvedType findHigher(ResolvedType other) {
 	 if (this == other) return this;
      for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
-     	ResolvedTypeX rtx = (ResolvedTypeX)i.next();
+     	ResolvedType rtx = (ResolvedType)i.next();
      	boolean b = this.isAssignableFrom(rtx);
      	if (b) return rtx;
      }       
@@ -1354,7 +1331,7 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 		if (getSuperclass() != null) ret.addAll(getSuperclass().getExposedPointcuts());
 		
 		for (Iterator i = Arrays.asList(getDeclaredInterfaces()).iterator(); i.hasNext(); ) {
-			ResolvedTypeX t = (ResolvedTypeX)i.next();
+			ResolvedType t = (ResolvedType)i.next();
 			addPointcutsResolvingConflicts(ret, Arrays.asList(t.getDeclaredPointcuts()), false);
 		}
 		addPointcutsResolvingConflicts(ret, Arrays.asList(getDeclaredPointcuts()), true);
@@ -1417,13 +1394,13 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 	 * Overridden by ReferenceType to return a sensible answer for parameterized and raw types.
 	 * @return
 	 */
-	public ResolvedTypeX getGenericType() {
-		if (!(isParameterized() || isRawType()))
+	public ResolvedType getGenericType() {
+		if (!(isParameterizedType() || isRawType()))
 			throw new BCException("The type "+getBaseName()+" is not parameterized or raw - it has no generic type");
 		return null;
 	}
 
-	public ResolvedTypeX parameterizedWith(TypeX[] typeParameters) {
+	public ResolvedType parameterizedWith(UnresolvedType[] typeParameters) {
 		return this;
 	}
 	
@@ -1432,30 +1409,104 @@ public abstract class ResolvedTypeX extends TypeX implements AnnotatedElement {
 		return parameterizedSuperTypes.length > 0;
 	}
 	
-	private ResolvedTypeX[] parameterizedSuperTypes = null;
+	private ResolvedType[] parameterizedSuperTypes = null;
 	/**
 	 * Similar to the above method, but accumulates the super types
 	 * @return
 	 */
-	public ResolvedTypeX[] getParameterizedSuperTypes() {
+	public ResolvedType[] getParameterizedSuperTypes() {
 		if (parameterizedSuperTypes != null) return parameterizedSuperTypes;
 		List accumulatedTypes = new ArrayList();
 		accumulateParameterizedSuperTypes(this,accumulatedTypes);
-		ResolvedTypeX[] ret = new ResolvedTypeX[accumulatedTypes.size()];
-		parameterizedSuperTypes = (ResolvedTypeX[]) accumulatedTypes.toArray(ret);
+		ResolvedType[] ret = new ResolvedType[accumulatedTypes.size()];
+		parameterizedSuperTypes = (ResolvedType[]) accumulatedTypes.toArray(ret);
 		return parameterizedSuperTypes;
 	}
 	
-	private void accumulateParameterizedSuperTypes(ResolvedTypeX forType, List parameterizedTypeList) {
-		if (forType.isParameterized()) {
+	private void accumulateParameterizedSuperTypes(ResolvedType forType, List parameterizedTypeList) {
+		if (forType.isParameterizedType()) {
 			parameterizedTypeList.add(forType);
 		}
 		if (forType.getSuperclass() != null) {
 			accumulateParameterizedSuperTypes(forType.getSuperclass(), parameterizedTypeList);
 		}
-		ResolvedTypeX[] interfaces = forType.getDeclaredInterfaces();
+		ResolvedType[] interfaces = forType.getDeclaredInterfaces();
 		for (int i = 0; i < interfaces.length; i++) {
 			accumulateParameterizedSuperTypes(interfaces[i], parameterizedTypeList);
 		}
 	}
+
+	/**
+	 * Types may have pointcuts just as they have methods and fields.
+	 */
+	public ResolvedPointcutDefinition findPointcut(String name, World world) {
+	    return world.findPointcut(this, name);
+	}
+
+	/**
+	 * Determines if variables of this type could be assigned values of another
+	 * with lots of help.  
+	 * java.lang.Object is convertable from all types.
+	 * A primitive type is convertable from X iff it's assignable from X.
+	 * A reference type is convertable from X iff it's coerceable from X.
+	 * In other words, X isConvertableFrom Y iff the compiler thinks that _some_ value of Y
+	 * could be assignable to a variable of type X without loss of precision. 
+	 * 
+	 * @param other the other type
+	 * @param world the {@link World} in which the possible assignment should be checked.
+	 * @return true iff variables of this type could be assigned values of other with possible conversion
+	 */
+     public final boolean isConvertableFrom(ResolvedType other) {
+
+//    	 // version from TypeX
+//    	 if (this.equals(OBJECT)) return true;
+//    	 if (this.isPrimitiveType() || other.isPrimitiveType()) return this.isAssignableFrom(other);
+//    	 return this.isCoerceableFrom(other);
+//    	 
+    	 
+    	 // version from ResolvedTypeX
+    	 if (this.equals(OBJECT)) return true;
+    	 if (world.behaveInJava5Way) {
+        	if (this.isPrimitiveType()^other.isPrimitiveType()) { // If one is primitive and the other isnt
+        		if (validBoxing.contains(this.getSignature()+other.getSignature())) return true;
+        	}
+    	 }
+    	 if (this.isPrimitiveType() || other.isPrimitiveType()) return this.isAssignableFrom(other);
+    	 return this.isCoerceableFrom(other);
+	 }
+
+	/**
+	 * Determines if the variables of this type could be assigned values
+	 * of another type without casting.  This still allows for assignment conversion
+	 * as per JLS 2ed 5.2.  For object types, this means supertypeOrEqual(THIS, OTHER).
+	 * 
+	 * @param other the other type
+	 * @param world the {@link World} in which the possible assignment should be checked.
+	 * @return true iff variables of this type could be assigned values of other without casting
+	 * @exception NullPointerException if other is null
+	 */
+	public abstract boolean isAssignableFrom(ResolvedType other);
+
+	/**
+	 * Determines if values of another type could possibly be cast to
+	 * this type.  The rules followed are from JLS 2ed 5.5, "Casting Conversion".
+	 *   
+	 * <p> This method should be commutative, i.e., for all UnresolvedType a, b and all World w:
+	 * 
+	 * <blockquote><pre>
+	 *    a.isCoerceableFrom(b, w) == b.isCoerceableFrom(a, w)
+	 * </pre></blockquote>
+	 *
+	 * @param other the other type
+	 * @param world the {@link World} in which the possible coersion should be checked.
+	 * @return true iff values of other could possibly be cast to this type. 
+	 * @exception NullPointerException if other is null.
+	 */
+	public abstract boolean isCoerceableFrom(ResolvedType other);
+	
+	public boolean needsNoConversionFrom(ResolvedType o) {
+	    return isAssignableFrom(o);
+	}
+
+	    
 }

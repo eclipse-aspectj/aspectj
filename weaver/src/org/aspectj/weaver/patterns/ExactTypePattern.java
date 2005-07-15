@@ -23,13 +23,13 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariableReferenceType;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 public class ExactTypePattern extends TypePattern {
-	protected TypeX type;
+	protected UnresolvedType type;
 
 	public static final Map primitiveTypesMap;
 	public static final Map boxedPrimitivesMap;
@@ -66,7 +66,7 @@ public class ExactTypePattern extends TypePattern {
 
 	}
 	
-	public ExactTypePattern(TypeX type, boolean includeSubtypes,boolean isVarArgs) {
+	public ExactTypePattern(UnresolvedType type, boolean includeSubtypes,boolean isVarArgs) {
 		super(includeSubtypes,isVarArgs);
 		this.type = type;
 	}
@@ -81,8 +81,8 @@ public class ExactTypePattern extends TypePattern {
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		if (super.couldEverMatchSameTypesAs(other)) return true;
 		// false is necessary but not sufficient
-		TypeX otherType = other.getExactType();
-		if (otherType != ResolvedTypeX.MISSING) {
+		UnresolvedType otherType = other.getExactType();
+		if (otherType != ResolvedType.MISSING) {
 			return type.equals(otherType);
 		} 
 		if (other instanceof WildTypePattern) {
@@ -95,9 +95,9 @@ public class ExactTypePattern extends TypePattern {
 		return true;
 	}
 	
-	protected boolean matchesExactly(ResolvedTypeX matchType) {
+	protected boolean matchesExactly(ResolvedType matchType) {
 		boolean typeMatch = this.type.equals(matchType);
-		if (!typeMatch && (matchType.isParameterized() || matchType.isGeneric())) {
+		if (!typeMatch && (matchType.isParameterizedType() || matchType.isGenericType())) {
 			typeMatch = this.type.equals(matchType.getRawType());
 		}
 		if (!typeMatch && matchType.isTypeVariable()) {
@@ -112,9 +112,9 @@ public class ExactTypePattern extends TypePattern {
 		return false;
 	}
 	
-	protected boolean matchesExactly(ResolvedTypeX matchType, ResolvedTypeX annotatedType) {
+	protected boolean matchesExactly(ResolvedType matchType, ResolvedType annotatedType) {
 		boolean typeMatch = this.type.equals(matchType);
-		if (!typeMatch && (matchType.isParameterized() || matchType.isGeneric())) {
+		if (!typeMatch && (matchType.isParameterizedType() || matchType.isGenericType())) {
 			typeMatch = this.type.equals(matchType.getRawType());
 		}
 		if (!typeMatch && matchType.isTypeVariable()) {
@@ -125,22 +125,22 @@ public class ExactTypePattern extends TypePattern {
 		return (typeMatch && annMatch);		
 	}
 	
-	public TypeX getType() { return type; }
+	public UnresolvedType getType() { return type; }
 
-	public FuzzyBoolean matchesInstanceof(ResolvedTypeX matchType) {
+	public FuzzyBoolean matchesInstanceof(ResolvedType matchType) {
 		// in our world, Object is assignable from anything
-		if (type.equals(ResolvedTypeX.OBJECT)) 
+		if (type.equals(ResolvedType.OBJECT)) 
 		    return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
 		
-		if (type.isAssignableFrom(matchType, matchType.getWorld())) {
+		if (type.resolve(matchType.getWorld()).isAssignableFrom(matchType)) {
 			return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
 		}
 		
 		// fix for PR 64262 - shouldn't try to coerce primitives
-		if (type.isPrimitive()) {
+		if (type.isPrimitiveType()) {
 			return FuzzyBoolean.NO;
 		} else {
-		    return matchType.isCoerceableFrom(type) ? FuzzyBoolean.MAYBE : FuzzyBoolean.NO;
+		    return matchType.isCoerceableFrom(type.resolve(matchType.getWorld())) ? FuzzyBoolean.MAYBE : FuzzyBoolean.NO;
 		}
 	}
 	
@@ -240,7 +240,7 @@ public class ExactTypePattern extends TypePattern {
 	public static TypePattern readTypePattern150(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte version = s.readByte();
 		if (version > EXACT_VERSION) throw new BCException("ExactTypePattern was written by a more recent version of AspectJ");
-		TypePattern ret = new ExactTypePattern(TypeX.read(s), s.readBoolean(), s.readBoolean());
+		TypePattern ret = new ExactTypePattern(UnresolvedType.read(s), s.readBoolean(), s.readBoolean());
 		ret.setAnnotationTypePattern(AnnotationTypePattern.read(s,context));
 		ret.setTypeParameters(TypePatternList.read(s,context));
 		ret.readLocation(context, s);
@@ -248,7 +248,7 @@ public class ExactTypePattern extends TypePattern {
 	}
 
 	public static TypePattern readTypePatternOldStyle(DataInputStream s, ISourceContext context) throws IOException {
-		TypePattern ret = new ExactTypePattern(TypeX.read(s), s.readBoolean(),false);
+		TypePattern ret = new ExactTypePattern(UnresolvedType.read(s), s.readBoolean(),false);
 		ret.readLocation(context, s);
 		return ret;
 	}

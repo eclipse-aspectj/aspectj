@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 public class GenericsWildCardTypeXTestCase extends TestCase {
 
 	public void testIdentity() {
-		TypeX anything = GenericsWildcardTypeX.GENERIC_WILDCARD;
+		UnresolvedType anything = GenericsWildcardTypeX.GENERIC_WILDCARD;
 		assertEquals("Ljava/lang/Object;",anything.getSignature());
 	}
 	

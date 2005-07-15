@@ -13,16 +13,16 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.Shadow.Kind;
 
 
 public class FastMatchInfo {
 	private Kind kind;
-	private ResolvedTypeX type;
+	private ResolvedType type;
 
-	public FastMatchInfo(ResolvedTypeX type, Shadow.Kind kind) {
+	public FastMatchInfo(ResolvedType type, Shadow.Kind kind) {
 		this.type = type;
 		this.kind = kind;
 	}
@@ -36,7 +36,7 @@ public class FastMatchInfo {
 		return kind;
 	}
 
-	public ResolvedTypeX getType() {
+	public ResolvedType getType() {
 		return type;
 	}
 	

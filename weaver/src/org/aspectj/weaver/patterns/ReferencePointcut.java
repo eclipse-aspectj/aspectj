@@ -25,10 +25,10 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Test;
@@ -38,7 +38,7 @@ import org.aspectj.weaver.ast.Test;
 
 //XXX needs check that arguments contains no WildTypePatterns
 public class ReferencePointcut extends Pointcut {
-	public TypeX onType; 
+	public UnresolvedType onType; 
 	public TypePattern onTypeSymbolic; 
 	public String name;
 	public TypePatternList arguments;
@@ -52,7 +52,7 @@ public class ReferencePointcut extends Pointcut {
 		this.pointcutKind = REFERENCE;
 	}
 	
-	public ReferencePointcut(TypeX onType, String name, TypePatternList arguments) {
+	public ReferencePointcut(UnresolvedType onType, String name, TypePatternList arguments) {
 		this.onType = onType;
 		this.name = name;
 		this.arguments = arguments;
@@ -112,9 +112,9 @@ public class ReferencePointcut extends Pointcut {
 	}
 	
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		TypeX onType = null;
+		UnresolvedType onType = null;
 		if (s.readBoolean()) {
-			onType = TypeX.read(s);
+			onType = UnresolvedType.read(s);
 		}
 		ReferencePointcut ret = new ReferencePointcut(onType, s.readUTF(), 
 					TypePatternList.read(s, context));
@@ -126,10 +126,10 @@ public class ReferencePointcut extends Pointcut {
 		if (onTypeSymbolic != null) {
 			onType = onTypeSymbolic.resolveExactType(scope, bindings);
 			// in this case we've already signalled an error
-			if (onType == ResolvedTypeX.MISSING) return;		
+			if (onType == ResolvedType.MISSING) return;		
 		}
 		
-		ResolvedTypeX searchType;
+		ResolvedType searchType;
 		if (onType != null) {
 			searchType = scope.getWorld().resolve(onType);
 		} else {
@@ -146,7 +146,7 @@ public class ReferencePointcut extends Pointcut {
 		// if we're not a static reference, then do a lookup of outers
 		if (pointcutDef == null && onType == null) {
 			while (true) {
-				TypeX declaringType = searchType.getDeclaringType();
+				UnresolvedType declaringType = searchType.getDeclaringType();
 				if (declaringType == null) break;
 				searchType = declaringType.resolve(scope.getWorld());
 				pointcutDef = searchType.findPointcut(name);
@@ -182,7 +182,7 @@ public class ReferencePointcut extends Pointcut {
 		}
 		
 		
-		ResolvedTypeX[] parameterTypes = 
+		ResolvedType[] parameterTypes = 
 			scope.getWorld().resolve(pointcutDef.getParameterTypes());
 		
 		if (parameterTypes.length != arguments.size()) {
@@ -202,7 +202,7 @@ public class ReferencePointcut extends Pointcut {
 				return;
 			}
 			if (!p.matchesSubtypes(parameterTypes[i]) && 
-				!p.getExactType().equals(TypeX.OBJECT))
+				!p.getExactType().equals(UnresolvedType.OBJECT))
 			{
 				scope.message(IMessage.ERROR, p, "incompatible type, expected " +
 						parameterTypes[i].getName() + " found " + p);
@@ -215,7 +215,7 @@ public class ReferencePointcut extends Pointcut {
 		throw new UnsupportedOperationException("Referenced pointcuts are not supported in runtime evaluation");
 	}
 	
-	public void postRead(ResolvedTypeX enclosingType) {
+	public void postRead(ResolvedType enclosingType) {
 		arguments.postRead(enclosingType);
 	}
 
@@ -226,7 +226,7 @@ public class ReferencePointcut extends Pointcut {
 
 	//??? This is not thread safe, but this class is not designed for multi-threading
 	private boolean concretizing = false;
-	public Pointcut concretize1(ResolvedTypeX searchStart, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType searchStart, IntMap bindings) {
 		if (concretizing) {
 			//Thread.currentThread().dumpStack();
 			searchStart.getWorld().getMessageHandler().handleMessage(
@@ -241,7 +241,7 @@ public class ReferencePointcut extends Pointcut {
 			ResolvedPointcutDefinition pointcutDec;
 			if (onType != null) {
 				searchStart = onType.resolve(searchStart.getWorld());
-				if (searchStart == ResolvedTypeX.MISSING) {
+				if (searchStart == ResolvedType.MISSING) {
 					return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 				}
 			}
@@ -265,7 +265,7 @@ public class ReferencePointcut extends Pointcut {
 			}
 					
 			//System.err.println("start: " + searchStart);
-			ResolvedTypeX[] parameterTypes = searchStart.getWorld().resolve(pointcutDec.getParameterTypes());
+			ResolvedType[] parameterTypes = searchStart.getWorld().resolve(pointcutDec.getParameterTypes());
 			
 			TypePatternList arguments = this.arguments.resolveReferences(bindings);
 			
@@ -274,7 +274,7 @@ public class ReferencePointcut extends Pointcut {
 				TypePattern p = arguments.get(i);
 				//we are allowed to bind to pointcuts which use subtypes as this is type safe
 				if (!p.matchesSubtypes(parameterTypes[i])  && 
-					!p.getExactType().equals(TypeX.OBJECT))
+					!p.getExactType().equals(UnresolvedType.OBJECT))
 				{
 					throw new BCException("illegal change to pointcut declaration: " + this);
 				}

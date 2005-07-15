@@ -350,7 +350,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 //	}
 
 
-//	private int compareAspectPrecedence(ResolvedTypeX a1, ResolvedTypeX a2) {
+//	private int compareAspectPrecedence(ResolvedType a1, ResolvedType a2) {
 //		World world = a1.getWorld();
 //		int ret = world.compareByDominates(a1, a2);
 //		if (ret == 0) {

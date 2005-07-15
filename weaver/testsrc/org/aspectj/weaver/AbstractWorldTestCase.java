@@ -32,35 +32,35 @@ public abstract class AbstractWorldTestCase extends TestCase {
 	
 	protected abstract World getWorld();
 
-    private final TypeX[] primitiveTypeXs =
-            TypeX.forSignatures(
+    private final UnresolvedType[] primitiveTypeXs =
+            UnresolvedType.forSignatures(
                 new String[] {"B", "S", "C", "I", "J", "F", "D", "V"});
 
     public void testPrimitiveTypes() {
-    	ResolvedTypeX[] primitives = getWorld().resolve(primitiveTypeXs);
+    	ResolvedType[] primitives = getWorld().resolve(primitiveTypeXs);
         for(int i = 0, len = primitives.length; i < len; i++) {
-            ResolvedTypeX ty = primitives[i];
+            ResolvedType ty = primitives[i];
             modifiersTest(ty, Modifier.PUBLIC | Modifier.FINAL);
             fieldsTest(ty, ResolvedMember.NONE);
             methodsTest(ty, ResolvedMember.NONE);
-            interfacesTest(ty, ResolvedTypeX.NONE);
+            interfacesTest(ty, ResolvedType.NONE);
             superclassTest(ty, null);
             pointcutsTest(ty, ResolvedMember.NONE);
             isInterfaceTest(ty, false);
             isClassTest(ty, false);
             isAspectTest(ty, false);
             for (int j = 0; j < len; j++) {
-                ResolvedTypeX ty1 = primitives[j];
+                ResolvedType ty1 = primitives[j];
                 if (ty.equals(ty1)) {
                     isCoerceableFromTest(ty, ty1, true);
-                } else if (ty == ResolvedTypeX.BOOLEAN || ty1 == ResolvedTypeX.BOOLEAN ||
-                            ty == ResolvedTypeX.VOID || ty1 == ResolvedTypeX.VOID) {
+                } else if (ty == ResolvedType.BOOLEAN || ty1 == ResolvedType.BOOLEAN ||
+                            ty == ResolvedType.VOID || ty1 == ResolvedType.VOID) {
                     isCoerceableFromTest(ty, ty1, false);
                 } else {
                     isCoerceableFromTest(ty, ty1, true);
                 }
             }
-            isCoerceableFromTest(ty, TypeX.OBJECT, false);
+            isCoerceableFromTest(ty, UnresolvedType.OBJECT, false);
                 
             primAssignTest("B", new String[] {});
             primAssignTest("S", new String[] {"B"});
@@ -75,12 +75,12 @@ public abstract class AbstractWorldTestCase extends TestCase {
         }
     }
     private void primAssignTest(String sig, String[] lowers) {
-    	ResolvedTypeX[] primitives = getWorld().resolve(primitiveTypeXs);
-    	TypeX tx = TypeX.forSignature(sig);
-        ResolvedTypeX ty = getWorld().resolve(tx,true);
-        assertTrue("Couldnt find type "+tx,ty!=ResolvedTypeX.MISSING);
-        ResolvedTypeX[] lowerTyArray = 
-            getWorld().resolve(TypeX.forSignatures(lowers));
+    	ResolvedType[] primitives = getWorld().resolve(primitiveTypeXs);
+    	UnresolvedType tx = UnresolvedType.forSignature(sig);
+        ResolvedType ty = getWorld().resolve(tx,true);
+        assertTrue("Couldnt find type "+tx,ty!=ResolvedType.MISSING);
+        ResolvedType[] lowerTyArray = 
+            getWorld().resolve(UnresolvedType.forSignatures(lowers));
         List lowerTys = new ArrayList(Arrays.asList(lowerTyArray));
         lowerTys.add(ty);
         Set allLowerTys = new HashSet(lowerTys);
@@ -88,40 +88,40 @@ public abstract class AbstractWorldTestCase extends TestCase {
         allUpperTys.removeAll(allLowerTys);
         
         for (Iterator i = allLowerTys.iterator(); i.hasNext(); ) {
-            ResolvedTypeX other = (ResolvedTypeX) i.next();
+            ResolvedType other = (ResolvedType) i.next();
             isAssignableFromTest(ty, other, true);
         }
         for (Iterator i = allUpperTys.iterator(); i.hasNext(); ) {
-            ResolvedTypeX other = (ResolvedTypeX) i.next();
+            ResolvedType other = (ResolvedType) i.next();
             isAssignableFromTest(ty, other, false);
         }
     }  
 
     public void testPrimitiveArrays() {
-    	ResolvedTypeX[] primitives = getWorld().resolve(primitiveTypeXs);
+    	ResolvedType[] primitives = getWorld().resolve(primitiveTypeXs);
         for(int i = 0, len = primitives.length; i < len; i++) {
-            ResolvedTypeX ty = primitives[i];
-            TypeX tx = TypeX.forSignature("["+ty.getSignature());
-            ResolvedTypeX aty = getWorld().resolve(tx,true);
-            assertTrue("Couldnt find type "+tx,aty!=ResolvedTypeX.MISSING);
+            ResolvedType ty = primitives[i];
+            UnresolvedType tx = UnresolvedType.forSignature("["+ty.getSignature());
+            ResolvedType aty = getWorld().resolve(tx,true);
+            assertTrue("Couldnt find type "+tx,aty!=ResolvedType.MISSING);
             modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
             fieldsTest(aty, ResolvedMember.NONE);
             methodsTest(aty, ResolvedMember.NONE);
-            interfacesTest(aty, new ResolvedTypeX[] {
-                                    getWorld().getCoreType(TypeX.CLONEABLE),
-                                    getWorld().getCoreType(TypeX.SERIALIZABLE) });
-            superclassTest(aty, TypeX.OBJECT);
+            interfacesTest(aty, new ResolvedType[] {
+                                    getWorld().getCoreType(UnresolvedType.CLONEABLE),
+                                    getWorld().getCoreType(UnresolvedType.SERIALIZABLE) });
+            superclassTest(aty, UnresolvedType.OBJECT);
 
             pointcutsTest(aty, ResolvedMember.NONE);
             isInterfaceTest(aty, false);
             isClassTest(aty, false);
             isAspectTest(aty, false);
             for (int j = 0; j < len; j++) {
-                ResolvedTypeX ty1 = primitives[j];
+                ResolvedType ty1 = primitives[j];
                 isCoerceableFromTest(aty, ty1, false);
-                tx = TypeX.forSignature("[" + ty1.getSignature());
-                ResolvedTypeX aty1 = getWorld().resolve(tx,true);
-                assertTrue("Couldnt find type "+tx,aty1!=ResolvedTypeX.MISSING);
+                tx = UnresolvedType.forSignature("[" + ty1.getSignature());
+                ResolvedType aty1 = getWorld().resolve(tx,true);
+                assertTrue("Couldnt find type "+tx,aty1!=ResolvedType.MISSING);
                 if (ty.equals(ty1)) {
                     isCoerceableFromTest(aty, aty1, true);
                     isAssignableFromTest(aty, aty1, true);
@@ -133,44 +133,44 @@ public abstract class AbstractWorldTestCase extends TestCase {
         }
     } 
 
-    // ---- tests for parts of ResolvedTypeX objects
+    // ---- tests for parts of ResolvedType objects
     
-    protected void modifiersTest(ResolvedTypeX ty, int mods) {
+    protected void modifiersTest(ResolvedType ty, int mods) {
         assertEquals(ty + " modifiers:", Modifier.toString(mods), Modifier.toString(ty.getModifiers()));
     }
-    protected void fieldsTest(ResolvedTypeX ty, Member[] x) {
+    protected void fieldsTest(ResolvedType ty, Member[] x) {
         TestUtil.assertSetEquals(ty + " fields:", x, ty.getDeclaredJavaFields());
     }
-    protected void methodsTest(ResolvedTypeX ty, Member[] x) {
+    protected void methodsTest(ResolvedType ty, Member[] x) {
         TestUtil.assertSetEquals(ty + " methods:", x, ty.getDeclaredJavaMethods());
     }
-	protected void mungersTest(ResolvedTypeX ty, ShadowMunger[] x) {
+	protected void mungersTest(ResolvedType ty, ShadowMunger[] x) {
 		TestUtil.assertSetEquals(ty + " mungers:", x, ty.getDeclaredShadowMungersArray());
 	}
-    protected void interfacesTest(ResolvedTypeX ty, ResolvedTypeX[] x) {
+    protected void interfacesTest(ResolvedType ty, ResolvedType[] x) {
         TestUtil.assertArrayEquals(ty + " interfaces:", x, ty.getDeclaredInterfaces());
     }
-    protected void superclassTest(ResolvedTypeX ty, TypeX x) {
+    protected void superclassTest(ResolvedType ty, UnresolvedType x) {
         assertEquals(ty + " superclass:", x, ty.getSuperclass());
     }
-    protected void pointcutsTest(ResolvedTypeX ty, Member[] x) {
+    protected void pointcutsTest(ResolvedType ty, Member[] x) {
         TestUtil.assertSetEquals(ty + " pointcuts:", x, ty.getDeclaredPointcuts());
     }
-    protected void isInterfaceTest(ResolvedTypeX ty, boolean x) {
+    protected void isInterfaceTest(ResolvedType ty, boolean x) {
         assertEquals(ty + " is interface:", x, ty.isInterface());
     }
-    protected void isAspectTest(ResolvedTypeX ty, boolean x) {
+    protected void isAspectTest(ResolvedType ty, boolean x) {
         assertEquals(ty + " is aspect:", x, ty.isAspect());
     }
-    protected void isClassTest(ResolvedTypeX ty, boolean x) {
+    protected void isClassTest(ResolvedType ty, boolean x) {
         assertEquals(ty + " is class:", x, ty.isClass());
     }
-    protected void isCoerceableFromTest(TypeX ty0, TypeX ty1, boolean x) {
-        assertEquals(ty0 + " is coerceable from " + ty1, x, ty0.isCoerceableFrom(ty1, getWorld()));
-        assertEquals(ty1 + " is coerceable from " + ty0, x, ty1.isCoerceableFrom(ty0, getWorld()));
+    protected void isCoerceableFromTest(UnresolvedType ty0, UnresolvedType ty1, boolean x) {
+        assertEquals(ty0 + " is coerceable from " + ty1, x, ty0.resolve(getWorld()).isCoerceableFrom(ty1.resolve(getWorld())));
+        assertEquals(ty1 + " is coerceable from " + ty0, x, ty1.resolve(getWorld()).isCoerceableFrom(ty0.resolve(getWorld())));
     }
-    protected void isAssignableFromTest(TypeX ty0, TypeX ty1, boolean x) {
-        assertEquals(ty0 + " is assignable from " + ty1, x, ty0.isAssignableFrom(ty1, getWorld()));
+    protected void isAssignableFromTest(UnresolvedType ty0, UnresolvedType ty1, boolean x) {
+        assertEquals(ty0 + " is assignable from " + ty1, x, ty0.resolve(getWorld()).isAssignableFrom(ty1.resolve(getWorld())));
     }
 
     // ---- tests for parts of ResolvedMethod objects
@@ -178,7 +178,7 @@ public abstract class AbstractWorldTestCase extends TestCase {
     protected void modifiersTest(ResolvedMember m, int mods) {
         assertEquals(m + " modifiers:", Modifier.toString(mods), Modifier.toString(m.getModifiers()));
     }
-    protected void exceptionsTest(ResolvedMember m, TypeX[] exns) {
+    protected void exceptionsTest(ResolvedMember m, UnresolvedType[] exns) {
         TestUtil.assertSetEquals(m + " exceptions:", exns, m.getExceptions());
     }
       

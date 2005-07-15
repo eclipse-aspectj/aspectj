@@ -53,8 +53,8 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 
 public class Utility {
 
@@ -153,7 +153,7 @@ public class Utility {
      * @param declaringType
      * @return
      */
-    public static Instruction createGetOn(InstructionFactory fact, Member signature, TypeX declaringType) {
+    public static Instruction createGetOn(InstructionFactory fact, Member signature, UnresolvedType declaringType) {
         short kind;
         if (signature.isStatic()) {
             kind = Constants.GETSTATIC;
@@ -302,28 +302,29 @@ public class Utility {
     public static void appendConversion(
         InstructionList il,
         InstructionFactory fact,
-        ResolvedTypeX fromType,
-        ResolvedTypeX toType)
+        ResolvedType fromType,
+        ResolvedType toType)
     {
-        if (! toType.isConvertableFrom(fromType)) {
+        if (! toType.isConvertableFrom(fromType) &&
+        	 ! fromType.isConvertableFrom(toType)) {
             throw new BCException("can't convert from " + fromType + " to " + toType);
         }
 	    // XXX I'm sure this test can be simpler but my brain hurts and this works
         if (!toType.getWorld().behaveInJava5Way) {
         	if (toType.needsNoConversionFrom(fromType)) return;
         } else {
-        	if (toType.needsNoConversionFrom(fromType) && !(toType.isPrimitive()^fromType.isPrimitive())) return;
+        	if (toType.needsNoConversionFrom(fromType) && !(toType.isPrimitiveType()^fromType.isPrimitiveType())) return;
         }
-        if (toType.equals(ResolvedTypeX.VOID)) {
-            // assert fromType.equals(TypeX.OBJECT)
+        if (toType.equals(ResolvedType.VOID)) {
+            // assert fromType.equals(UnresolvedType.OBJECT)
             il.append(InstructionFactory.createPop(fromType.getSize()));
-        } else if (fromType.equals(ResolvedTypeX.VOID)) {
-            // assert toType.equals(TypeX.OBJECT)
+        } else if (fromType.equals(ResolvedType.VOID)) {
+            // assert toType.equals(UnresolvedType.OBJECT)
             il.append(InstructionFactory.createNull(Type.OBJECT));
             return;
-        } else if (fromType.equals(TypeX.OBJECT)) {
+        } else if (fromType.equals(UnresolvedType.OBJECT)) {
             Type to = BcelWorld.makeBcelType(toType);
-            if (toType.isPrimitive()) {
+            if (toType.isPrimitiveType()) {
                 String name = toType.toString() + "Value";
                 il.append(
                     fact.createInvoke(
@@ -335,7 +336,7 @@ public class Utility {
             } else {
                 il.append(fact.createCheckCast((ReferenceType)to));
             }
-        } else if (toType.equals(TypeX.OBJECT)) {
+        } else if (toType.equals(UnresolvedType.OBJECT)) {
             // assert fromType.isPrimitive()
             Type from = BcelWorld.makeBcelType(fromType);
             String name = fromType.toString() + "Object";
@@ -351,7 +352,7 @@ public class Utility {
         	Type from   = BcelWorld.makeBcelType(fromType);
         	Type to     = BcelWorld.makeBcelType(toType);
             String name = (String)validBoxing.get(toType.getSignature()+fromType.getSignature());
-            if (toType.isPrimitive()) {
+            if (toType.isPrimitiveType()) {
             	il.append(
                         fact.createInvoke(
                           "org.aspectj.runtime.internal.Conversions",
@@ -369,7 +370,7 @@ public class Utility {
                     Constants.INVOKESTATIC));
                 il.append(fact.createCheckCast((ReferenceType) to));
             }
-        } else if (fromType.isPrimitive()) {
+        } else if (fromType.isPrimitiveType()) {
             // assert toType.isPrimitive()
             Type from = BcelWorld.makeBcelType(fromType);
             Type to = BcelWorld.makeBcelType(toType);
@@ -649,7 +650,7 @@ public class Utility {
 		return i & ~(Modifier.PROTECTED | Modifier.PUBLIC) | Modifier.PRIVATE;
 	}
 	public static BcelVar[] pushAndReturnArrayOfVars(
-		ResolvedTypeX[] proceedParamTypes,
+		ResolvedType[] proceedParamTypes,
 		InstructionList il,
 		InstructionFactory fact,
 		LazyMethodGen enclosingMethod) 
@@ -658,7 +659,7 @@ public class Utility {
 		BcelVar[] ret = new BcelVar[len];
 
 		for (int i = len - 1; i >= 0; i--) {
-			ResolvedTypeX typeX = proceedParamTypes[i];
+			ResolvedType typeX = proceedParamTypes[i];
 			Type type = BcelWorld.makeBcelType(typeX);
 			int local = enclosingMethod.allocateLocal(type);
 			
@@ -684,7 +685,7 @@ public class Utility {
         // Go through the annotation types on the advice
         for (int i = 0;!suppressed && i<anns.length;i++) {
           // Check for the SuppressAjWarnings annotation
-          if (TypeX.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getBcelAnnotation().getTypeSignature())) {
+          if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getBcelAnnotation().getTypeSignature())) {
             // Two possibilities:
             // 1. there are no values specified (i.e. @SuppressAjWarnings)
             // 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})

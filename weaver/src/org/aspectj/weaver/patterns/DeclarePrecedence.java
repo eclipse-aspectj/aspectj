@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
@@ -85,8 +85,8 @@ public class DeclarePrecedence extends Declare {
     			seenStar = true;
     			continue;
     		}
-    		ResolvedTypeX exactType = pi.getExactType().resolve(scope.getWorld());
-    		if (exactType == ResolvedTypeX.MISSING) continue;
+    		ResolvedType exactType = pi.getExactType().resolve(scope.getWorld());
+    		if (exactType == ResolvedType.MISSING) continue;
     		
     		// Cannot do a dec prec specifying a non-aspect types unless suffixed with a '+'
     		if (!exactType.isAspect() && !pi.isIncludeSubtypes()) {
@@ -112,7 +112,7 @@ public class DeclarePrecedence extends Declare {
 		return patterns;
 	}
 
-	private int matchingIndex(ResolvedTypeX a) {
+	private int matchingIndex(ResolvedType a) {
 		int knownMatch = -1;
 		int starMatch = -1;
 		for (int i=0, len=patterns.size(); i < len; i++) {
@@ -135,7 +135,7 @@ public class DeclarePrecedence extends Declare {
 	}
 	
 
-	public int compare(ResolvedTypeX aspect1, ResolvedTypeX aspect2) {
+	public int compare(ResolvedType aspect1, ResolvedType aspect2) {
 		int index1 = matchingIndex(aspect1);
 		int index2 = matchingIndex(aspect2);
 		

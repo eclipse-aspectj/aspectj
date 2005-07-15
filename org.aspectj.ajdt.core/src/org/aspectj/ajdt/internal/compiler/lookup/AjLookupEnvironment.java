@@ -53,8 +53,8 @@ import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
@@ -237,7 +237,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
         TypeDeclaration dec = s.referenceContext;
         
         if (dec instanceof AspectDeclaration) {
-            ResolvedTypeX typeX = factory.fromEclipse(dec.binding);
+            ResolvedType typeX = factory.fromEclipse(dec.binding);
             factory.getWorld().getCrosscuttingMembersSet().addAdviceLikeDeclares(typeX);
         }
         
@@ -252,7 +252,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
         TypeDeclaration dec = s.referenceContext;
         
         if (dec instanceof AspectDeclaration) {
-            ResolvedTypeX typeX = factory.fromEclipse(dec.binding);
+            ResolvedType typeX = factory.fromEclipse(dec.binding);
             factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX);
         
             if (typeX.getSuperclass().isAspect() && !typeX.getSuperclass().isExposedToWeaver()) {
@@ -310,7 +310,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		SourceTypeBinding sourceType = s.referenceContext.binding;
 		// test classes don't extend aspects
 		if (sourceType.superclass != null) {
-			ResolvedTypeX parent = factory.fromEclipse(sourceType.superclass);
+			ResolvedType parent = factory.fromEclipse(sourceType.superclass);
 			if (parent.isAspect() && !isAspect(dec)) {
 				factory.showMessage(IMessage.ERROR, "class \'" + new String(sourceType.sourceName) + 
 						"\' can not extend aspect \'" + parent.getName() + "\'",
@@ -366,7 +366,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	
 	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, 
 			Collection declareParents, Collection declareAnnotationOnTypes, boolean skipInners) {
-		ResolvedTypeX onType = factory.fromEclipse(sourceType);
+		ResolvedType onType = factory.fromEclipse(sourceType);
 		WeaverStateInfo info = onType.getWeaverState();
 
 		if (info != null && !info.isOldStyle()) {		
@@ -398,7 +398,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		
 		for (Iterator i = dangerousInterfaces.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
-			ResolvedTypeX interfaceType = (ResolvedTypeX)entry.getKey();
+			ResolvedType interfaceType = (ResolvedType)entry.getKey();
 			if (onType.isTopmostImplementor(interfaceType)) {
 				factory.showMessage(IMessage.ERROR, 
 					onType + ": " + entry.getValue(),
@@ -529,9 +529,9 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		List newParents = declareParents.findMatchingNewParents(factory.fromEclipse(sourceType),false);
 		if (!newParents.isEmpty()) {
 			for (Iterator i = newParents.iterator(); i.hasNext(); ) {
-				ResolvedTypeX parent = (ResolvedTypeX)i.next();
+				ResolvedType parent = (ResolvedType)i.next();
 				if (dangerousInterfaces.containsKey(parent)) {
-					ResolvedTypeX onType = factory.fromEclipse(sourceType);
+					ResolvedType onType = factory.fromEclipse(sourceType);
 					factory.showMessage(IMessage.ERROR, 
 										onType + ": " + dangerousInterfaces.get(parent),
 										onType.getSourceLocation(), null);
@@ -571,7 +571,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	}
 	
 	private boolean doDeclareAnnotations(DeclareAnnotation decA, SourceTypeBinding sourceType,boolean reportProblems) {
-		ResolvedTypeX rtx = factory.fromEclipse(sourceType);
+		ResolvedType rtx = factory.fromEclipse(sourceType);
 		if (!decA.matches(rtx)) return false;
 		if (!rtx.isExposedToWeaver()) return false;
 
@@ -646,7 +646,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	}
 	
 
-	private void reportDeclareParentsMessage(WeaveMessage.WeaveMessageKind wmk,SourceTypeBinding sourceType,ResolvedTypeX parent) {
+	private void reportDeclareParentsMessage(WeaveMessage.WeaveMessageKind wmk,SourceTypeBinding sourceType,ResolvedType parent) {
 		if (!factory.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 			String filename = new String(sourceType.getFileName());
 			
@@ -671,7 +671,7 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		return path.substring(takefrom+1);
 	}
 
-	private void addParent(SourceTypeBinding sourceType, ResolvedTypeX parent) {
+	private void addParent(SourceTypeBinding sourceType, ResolvedType parent) {
 		ReferenceBinding parentBinding = (ReferenceBinding)factory.makeTypeBinding(parent); 
 		
         sourceType.rememberTypeHierarchy();
@@ -709,9 +709,9 @@ public class AjLookupEnvironment extends LookupEnvironment {
 		
 	}
 
-	public void warnOnAddedInterface (ResolvedTypeX type, ResolvedTypeX parent) {
+	public void warnOnAddedInterface (ResolvedType type, ResolvedType parent) {
 		World world = factory.getWorld();
-		ResolvedTypeX serializable = world.getCoreType(TypeX.SERIALIZABLE);
+		ResolvedType serializable = world.getCoreType(UnresolvedType.SERIALIZABLE);
 		if (serializable.isAssignableFrom(type)
 			&& !serializable.isAssignableFrom(parent)
 			&& !LazyClassGen.hasSerialVersionUIDField(type)) {

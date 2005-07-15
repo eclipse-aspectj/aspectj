@@ -34,7 +34,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 
 /**
- * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedTypeX
+ * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedType
  * 
  * @author Jim Hugunin
  */
@@ -53,7 +53,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	private SourceTypeBinding binding;
 	private TypeDeclaration declaration;
 	private boolean annotationsResolved = false;
-	private ResolvedTypeX[] resolvedAnnotations = null;
+	private ResolvedType[] resolvedAnnotations = null;
 	
 	protected EclipseFactory eclipseWorld() {
 		return factory;
@@ -82,7 +82,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
         if (declaration.annotations == null) {
             return false;
         }
-        ResolvedTypeX[] annotations = getAnnotationTypes();
+        ResolvedType[] annotations = getAnnotationTypes();
         for (int i = 0; i < annotations.length; i++) {
             if ("org.aspectj.lang.annotation.Aspect".equals(annotations[i].getName())) {
                 return true;
@@ -109,13 +109,13 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return null;
 	}
 	
-	public ResolvedTypeX getSuperclass() {
-		if (binding.isInterface()) return getResolvedTypeX().getWorld().getCoreType(TypeX.OBJECT);
+	public ResolvedType getSuperclass() {
+		if (binding.isInterface()) return getResolvedTypeX().getWorld().getCoreType(UnresolvedType.OBJECT);
 		//XXX what about java.lang.Object
 		return eclipseWorld().fromEclipse(binding.superclass());
 	}
 	
-	public ResolvedTypeX[] getDeclaredInterfaces() {
+	public ResolvedType[] getDeclaredInterfaces() {
 		return eclipseWorld().fromEclipse(binding.superInterfaces());
 	}
 
@@ -292,7 +292,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	    }
 	}
 	
-	public boolean hasAnnotation(TypeX ofType) {
+	public boolean hasAnnotation(UnresolvedType ofType) {
 
 		// Make sure they are resolved
 		if (!annotationsResolved) {
@@ -309,7 +309,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				return false;
 			}
 			String tname = CharOperation.charToString(annotation.resolvedType.constantPoolName());
-			if (TypeX.forName(tname).equals(ofType)) {
+			if (UnresolvedType.forName(tname).equals(ofType)) {
 				return true;
 			}			
 		}
@@ -320,7 +320,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		throw new RuntimeException("Missing implementation");
 		
 	}
-	public ResolvedTypeX[] getAnnotationTypes() {
+	public ResolvedType[] getAnnotationTypes() {
 		if (resolvedAnnotations!=null) return resolvedAnnotations;
 
 		// Make sure they are resolved
@@ -330,9 +330,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 		
 		if (declaration.annotations == null) {
-			resolvedAnnotations = new ResolvedTypeX[0];
+			resolvedAnnotations = new ResolvedType[0];
 		} else {
-			resolvedAnnotations = new ResolvedTypeX[declaration.annotations.length];
+			resolvedAnnotations = new ResolvedType[declaration.annotations.length];
 			Annotation[] as = declaration.annotations;
 			for (int i = 0; i < as.length; i++) {
 				Annotation annotation = as[i];
@@ -409,7 +409,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
     private PerClause.Kind lookupPerClauseKind(ReferenceBinding binding) {
         final PerClause.Kind kind;
         if (binding instanceof BinaryTypeBinding) {
-            ResolvedTypeX superTypeX = factory.fromEclipse(binding);
+            ResolvedType superTypeX = factory.fromEclipse(binding);
             PerClause perClause = superTypeX.getPerClause();
             // clause is null for non aspect classes since coming from BCEL attributes
             if (perClause != null) {
@@ -474,7 +474,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	private TypeVariable typeParameter2TypeVariable(TypeParameter aTypeParameter) {
 		String name = new String(aTypeParameter.name);
 		ReferenceBinding superclassBinding = aTypeParameter.binding.superclass;
-		TypeX superclass = TypeX.forSignature(new String(superclassBinding.signature()));
+		UnresolvedType superclass = UnresolvedType.forSignature(new String(superclassBinding.signature()));
 		// TODO AMC - superinterfaces
 		return new TypeVariable(name,superclass);
 	}

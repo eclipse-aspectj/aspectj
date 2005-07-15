@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -29,11 +29,11 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 
 public class HelperInterfaceBinding extends SourceTypeBinding {
-	private TypeX typeX;
+	private UnresolvedType typeX;
 	SourceTypeBinding enclosingType;
 	List methods = new ArrayList();
 	
-	public HelperInterfaceBinding(SourceTypeBinding enclosingType, TypeX typeX) {
+	public HelperInterfaceBinding(SourceTypeBinding enclosingType, UnresolvedType typeX) {
 		super();
 		this.fPackage = enclosingType.fPackage;
 		//this.fileName = scope.referenceCompilationUnit().getFileName();
@@ -57,7 +57,7 @@ public class HelperInterfaceBinding extends SourceTypeBinding {
 		return enclosingType.getFileName();
 	}
 
-	public TypeX getTypeX() {
+	public UnresolvedType getTypeX() {
 		return typeX;
 	}
 	

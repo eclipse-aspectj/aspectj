@@ -30,14 +30,14 @@ public abstract class Advice extends ShadowMunger {
     protected Member signature;
     
     // not necessarily declaring aspect, this is a semantics change from 1.0
-    protected ResolvedTypeX concreteAspect; // null until after concretize
+    protected ResolvedType concreteAspect; // null until after concretize
     
     protected List innerCflowEntries = Collections.EMPTY_LIST;  // just for cflow*Entry kinds
     protected int nFreeVars; // just for cflow*Entry kinds
     
     protected TypePattern exceptionType; // just for Softener kind
 
-    public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars, List innerCflowEntries, ResolvedTypeX inAspect){
+    public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars, List innerCflowEntries, ResolvedType inAspect){
     	Advice ret = world.concreteAdvice(isBelow ? AdviceKind.CflowBelowEntry : AdviceKind.CflowEntry,
     	      entry, stackField, 0, entry);
     	      //0);
@@ -48,7 +48,7 @@ public abstract class Advice extends ShadowMunger {
     }
 
     public static Advice makePerCflowEntry(World world, Pointcut entry, boolean isBelow, 
-    								Member stackField, ResolvedTypeX inAspect, List innerCflowEntries)
+    								Member stackField, ResolvedType inAspect, List innerCflowEntries)
     {
     	Advice ret = world.concreteAdvice(isBelow ? AdviceKind.PerCflowBelowEntry : AdviceKind.PerCflowEntry,
     	      entry, stackField, 0, entry);
@@ -58,7 +58,7 @@ public abstract class Advice extends ShadowMunger {
     }
 
     public static Advice makePerObjectEntry(World world, Pointcut entry, boolean isThis, 
-    								ResolvedTypeX inAspect)
+    								ResolvedType inAspect)
     {
     	Advice ret = world.concreteAdvice(isThis ? AdviceKind.PerThisEntry : AdviceKind.PerTargetEntry,
     	      entry, null, 0, entry);
@@ -68,13 +68,13 @@ public abstract class Advice extends ShadowMunger {
     }
     
     // PTWIMPL per type within entry advice is what initializes the aspect instance in the matched type
-    public static Advice makePerTypeWithinEntry(World world, Pointcut p, ResolvedTypeX inAspect) {
+    public static Advice makePerTypeWithinEntry(World world, Pointcut p, ResolvedType inAspect) {
     	Advice ret = world.concreteAdvice(AdviceKind.PerTypeWithinEntry,p,null,0,p);
     	ret.concreteAspect = inAspect;
     	return ret;
     }
     
-    public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType,ResolvedTypeX inAspect,IHasSourceLocation loc) {
+    public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType,ResolvedType inAspect,IHasSourceLocation loc) {
     	Advice ret = world.concreteAdvice(AdviceKind.Softener, entry, null, 0, loc);  
   
     	ret.exceptionType = exceptionType;
@@ -106,7 +106,7 @@ public abstract class Advice extends ShadowMunger {
 			
 			
     		if (hasExtraParameter() && kind == AdviceKind.AfterReturning) {
-    			return getExtraParameterType().isConvertableFrom(shadow.getReturnType(), world);
+    			return getExtraParameterType().resolve(world).isConvertableFrom(shadow.getReturnType().resolve(world));
     		} else if (kind == AdviceKind.PerTargetEntry) {
     			return shadow.hasTarget();
     		} else if (kind == AdviceKind.PerThisEntry) {
@@ -123,7 +123,7 @@ public abstract class Advice extends ShadowMunger {
 							getSourceLocation(), shadow.getSourceLocation());
 					return false;
 				} else if (shadow.getKind() == Shadow.StaticInitialization && 
-							shadow.getEnclosingType().isInterface(world))
+							shadow.getEnclosingType().resolve(world).isInterface())
 				{
 					world.showMessage(IMessage.ERROR,
 							WeaverMessages.format(WeaverMessages.AROUND_ON_INTERFACE_STATICINIT,shadow.getEnclosingType().getName()),
@@ -131,16 +131,16 @@ public abstract class Advice extends ShadowMunger {
 					return false;
     			} else {
     				//System.err.println(getSignature().getReturnType() + " from " + shadow.getReturnType());
-    				if (getSignature().getReturnType() == ResolvedTypeX.VOID) {
-    					if (shadow.getReturnType() != ResolvedTypeX.VOID) {
+    				if (getSignature().getReturnType() == ResolvedType.VOID) {
+    					if (shadow.getReturnType() != ResolvedType.VOID) {
     						world.showMessage(IMessage.ERROR, 
     							WeaverMessages.format(WeaverMessages.NON_VOID_RETURN,shadow),	
     							getSourceLocation(), shadow.getSourceLocation());
     						return false;
     					}
-    				} else if (getSignature().getReturnType().equals(TypeX.OBJECT)) {
+    				} else if (getSignature().getReturnType().equals(UnresolvedType.OBJECT)) {
     					return true;
-    				} else if(!shadow.getReturnType().isAssignableFrom(getSignature().getReturnType(), world)) {
+    				} else if(!shadow.getReturnType().resolve(world).isAssignableFrom(getSignature().getReturnType().resolve(world))) {
     					//System.err.println(this + ", " + sourceContext + ", " + start);
 						world.showMessage(IMessage.ERROR,
 								WeaverMessages.format(WeaverMessages.INCOMPATIBLE_RETURN_TYPE,shadow),
@@ -202,12 +202,12 @@ public abstract class Advice extends ShadowMunger {
 		return result;
 	}
 	
-	public TypeX getExtraParameterType() {
-		if (!hasExtraParameter()) return ResolvedTypeX.MISSING;
+	public UnresolvedType getExtraParameterType() {
+		if (!hasExtraParameter()) return ResolvedType.MISSING;
 		return signature.getParameterTypes()[getBaseParameterCount()];
 	}
 	
-	public TypeX getDeclaringAspect() {
+	public UnresolvedType getDeclaringAspect() {
 		return signature.getDeclaringType();
 	}
 
@@ -228,7 +228,7 @@ public abstract class Advice extends ShadowMunger {
     /** @param fromType is guaranteed to be a non-abstract aspect
      *  @param clause has been concretized at a higher level
      */
-    public ShadowMunger concretize(ResolvedTypeX fromType, World world, PerClause clause) {
+    public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
     	// assert !fromType.isAbstract();
         Pointcut p = pointcut.concretize(fromType, signature.getArity(), this);
         if (clause != null) {
@@ -299,7 +299,7 @@ public abstract class Advice extends ShadowMunger {
 		start = lexicalPosition;
 	}
 
-	public ResolvedTypeX getConcreteAspect() {
+	public ResolvedType getConcreteAspect() {
 		return concreteAspect;
 	}
 

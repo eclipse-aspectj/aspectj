@@ -30,17 +30,17 @@ public class PrivilegedAccessMunger extends ResolvedTypeMunger {
 		return getSignature();
 	}
 
-	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {
+	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		ResolvedMember ret;
 		if (getSignature().getKind() == Member.FIELD) {
 			ret = AjcMemberMaker.privilegedAccessMethodForFieldGet(aspectType, getSignature());
-			if (ResolvedTypeX.matches(ret, member)) return getSignature();
+			if (ResolvedType.matches(ret, member)) return getSignature();
 			ret = AjcMemberMaker.privilegedAccessMethodForFieldSet(aspectType, getSignature());
-			if (ResolvedTypeX.matches(ret, member)) return getSignature();
+			if (ResolvedType.matches(ret, member)) return getSignature();
 		} else {
 			//System.err.println("sig: " + getSignature());
 			ret = AjcMemberMaker.privilegedAccessMethodForMethod(aspectType, getSignature());
-			if (ResolvedTypeX.matches(ret, member)) return getSignature();
+			if (ResolvedType.matches(ret, member)) return getSignature();
 		}
 		return null;
 	}

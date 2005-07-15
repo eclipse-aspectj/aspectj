@@ -51,8 +51,8 @@ import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.PrivilegedAccessMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -61,7 +61,7 @@ import org.aspectj.weaver.patterns.Pointcut;
 //XXX addLazyMethodGen is probably bad everywhere
 public class BcelTypeMunger extends ConcreteTypeMunger {
 
-	public BcelTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType) {
+	public BcelTypeMunger(ResolvedTypeMunger munger, ResolvedType aspectType) {
 		super(munger, aspectType);
 	}
 
@@ -172,7 +172,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 */
 	private boolean mungeNewParent(BcelClassWeaver weaver, NewParentTypeMunger munger) {
 		LazyClassGen  newParentTarget = weaver.getLazyClassGen();
-		ResolvedTypeX newParent       = munger.getNewParent();
+		ResolvedType newParent       = munger.getNewParent();
         
         boolean cont = true; // Set to false when we error, so we don't actually *do* the munge           
         cont = enforceDecpRule1_abstractMethodsImplemented(weaver, munger.getSourceLocation(),newParentTarget, newParent);
@@ -206,7 +206,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
      * Rule 1: For the declare parents to be allowed, the target type must override and implement 
      *         inherited abstract methods (if the type is not declared abstract)
      */
-    private boolean enforceDecpRule1_abstractMethodsImplemented(BcelClassWeaver weaver, ISourceLocation mungerLoc,LazyClassGen newParentTarget, ResolvedTypeX newParent) {
+    private boolean enforceDecpRule1_abstractMethodsImplemented(BcelClassWeaver weaver, ISourceLocation mungerLoc,LazyClassGen newParentTarget, ResolvedType newParent) {
         boolean ruleCheckingSucceeded = true;
         if (!(newParentTarget.isAbstract() || newParentTarget.isInterface())) { // Ignore abstract classes or interfaces
             List methods = newParent.getMethodsWithoutIterator();
@@ -230,10 +230,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                             if (m.getMunger() instanceof NewMethodTypeMunger) {
                             ResolvedMember sig = m.getSignature();
                             if (!Modifier.isAbstract(sig.getModifiers())) {
-                                if (ResolvedTypeX
+                                if (ResolvedType
                                     .matches(
                                         AjcMemberMaker.interMethod(
-                                            sig,m.getAspectType(),sig.getDeclaringType().isInterface(weaver.getWorld())),o)) {
+                                            sig,m.getAspectType(),sig.getDeclaringType().resolve(weaver.getWorld()).isInterface()),o)) {
                                     satisfiedByITD = true;
                                 }
                             }
@@ -256,7 +256,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
      * Rule 2. Can't extend final types
      */
 	private boolean enforceDecpRule2_cantExtendFinalClass(BcelClassWeaver weaver, ISourceLocation mungerLoc, 
-            LazyClassGen newParentTarget, ResolvedTypeX newParent) {
+            LazyClassGen newParentTarget, ResolvedType newParent) {
         if (newParent.isFinal()) {
             error(weaver,"Cannot make type "+newParentTarget.getName()+" extend final class "+newParent.getName(),
                   newParentTarget.getType().getSourceLocation(),
@@ -270,7 +270,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	/**
      * Rule 3. Can't narrow visibility of methods when overriding
 	 */
-	private boolean enforceDecpRule3_visibilityChanges(BcelClassWeaver weaver, ResolvedTypeX newParent, BcelMethod superMethod, LazyMethodGen subMethod) {
+	private boolean enforceDecpRule3_visibilityChanges(BcelClassWeaver weaver, ResolvedType newParent, BcelMethod superMethod, LazyMethodGen subMethod) {
         boolean cont = true;
 		  if (superMethod.isPublic()) {
 		    if (subMethod.isProtected() || subMethod.isDefault() || subMethod.isPrivate()) {
@@ -306,8 +306,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
           String subReturnTypeSig   = subMethod.getReturnType().getSignature();
           if (!superReturnTypeSig.equals(subReturnTypeSig)) {
             // Allow for covariance - wish I could test this (need Java5...)
-            ResolvedTypeX subType   = weaver.getWorld().resolve(subMethod.getReturnType());
-            ResolvedTypeX superType = weaver.getWorld().resolve(superMethod.getReturnType());
+            ResolvedType subType   = weaver.getWorld().resolve(subMethod.getReturnType());
+            ResolvedType superType = weaver.getWorld().resolve(superMethod.getReturnType());
             if (!subType.isAssignableFrom(superType)) {
                 ISourceLocation sloc = subMethod.getSourceLocation();
                 weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
@@ -361,7 +361,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
     /**
      * The main part of implementing declare parents extends.  Modify super ctor calls to target the new type.
      */
-	public boolean attemptToModifySuperCalls(BcelClassWeaver weaver,LazyClassGen newParentTarget, ResolvedTypeX newParent) {
+	public boolean attemptToModifySuperCalls(BcelClassWeaver weaver,LazyClassGen newParentTarget, ResolvedType newParent) {
         String currentParent = newParentTarget.getSuperClassname();
         List mgs = newParentTarget.getMethodGens();
         
@@ -419,7 +419,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	/**
      * Creates a nice signature for the ctor, something like "(int,Integer,String)"
 	 */
-	private String createReadableCtorSig(ResolvedTypeX newParent, ConstantPoolGen cpg, INVOKESPECIAL invokeSpecial) {
+	private String createReadableCtorSig(ResolvedType newParent, ConstantPoolGen cpg, INVOKESPECIAL invokeSpecial) {
         StringBuffer sb = new StringBuffer();
 		Type[] ctorArgs = invokeSpecial.getArgumentTypes(cpg);
 		  sb.append(newParent.getClassName());
@@ -436,7 +436,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
           return sb.toString();
 	}
 
-	private ResolvedMember getConstructorWithSignature(ResolvedTypeX tx,String signature) {
+	private ResolvedMember getConstructorWithSignature(ResolvedType tx,String signature) {
         ResolvedMember[] mems = tx.getDeclaredJavaMethods();
         for (int i = 0; i < mems.length; i++) {
           ResolvedMember rm = mems[i];
@@ -455,7 +455,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		LazyClassGen gen = weaver.getLazyClassGen();
 		ResolvedMember member = munger.getMember();
 		
-		ResolvedTypeX onType = weaver.getWorld().resolve(member.getDeclaringType(),munger.getSourceLocation());
+		ResolvedType onType = weaver.getWorld().resolve(member.getDeclaringType(),munger.getSourceLocation());
 		//System.out.println("munging: " + gen + " with " + member);
 		if (onType.equals(gen.getType())) {
 			if (member.getKind() == Member.FIELD) {
@@ -585,7 +585,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			BcelWorld.makeBcelType(member.getReturnType()),
 			member.getName(),
 			BcelWorld.makeBcelTypes(member.getParameterTypes()),
-			TypeX.getNames(member.getExceptions()),
+			UnresolvedType.getNames(member.getExceptions()),
 			gen);
         
         // 43972 : Static crosscutting makes interfaces unusable for javac
@@ -711,15 +711,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 		LazyClassGen gen = weaver.getLazyClassGen();
 		
-		ResolvedTypeX onType = weaver.getWorld().resolve(signature.getDeclaringType(),munger.getSourceLocation());
+		ResolvedType onType = weaver.getWorld().resolve(signature.getDeclaringType(),munger.getSourceLocation());
 		boolean onInterface = onType.isInterface();
 		
-		if (onType.isAnnotation(weaver.getWorld())) {
+		if (onType.isAnnotation()) {
 			signalError(WeaverMessages.ITDM_ON_ANNOTATION_NOT_ALLOWED,weaver,onType);
 			return false;		
 		}
 		
-		if (onType.isEnum(weaver.getWorld())) {
+		if (onType.isEnum()) {
 			signalError(WeaverMessages.ITDM_ON_ENUM_NOT_ALLOWED,weaver,onType);
 			return false;
 		}
@@ -789,7 +789,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// - if it is *not* then something went wrong after we worked
 			// out that it was the top most implementor (see pr49657)
     		if (!gen.getType().isTopmostImplementor(onType)) {
-    			ResolvedTypeX rtx = gen.getType().getTopmostImplementor(onType);
+    			ResolvedType rtx = gen.getType().getTopmostImplementor(onType);
     			if (!rtx.isExposedToWeaver()) {
     				ISourceLocation sLoc = munger.getSourceLocation();
     			    weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
@@ -839,7 +839,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 	}
 	
-	private ResolvedMember getRealMemberForITDFromAspect(ResolvedTypeX aspectType,ResolvedMember dispatchMethod) {
+	private ResolvedMember getRealMemberForITDFromAspect(ResolvedType aspectType,ResolvedMember dispatchMethod) {
 		ResolvedMember aspectMethods[] = aspectType.getDeclaredMethods();
 		ResolvedMember realMember = null;
 		for (int i = 0; realMember==null && i < aspectMethods.length; i++) {
@@ -851,7 +851,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	private void addNeededSuperCallMethods(
 		BcelClassWeaver weaver,
-		ResolvedTypeX onType,
+		ResolvedType onType,
 		Set neededSuperCalls)
 	{
 		LazyClassGen gen = weaver.getLazyClassGen();
@@ -883,7 +883,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 	}
 
-	private void signalError(String msgid,BcelClassWeaver weaver,TypeX onType) {
+	private void signalError(String msgid,BcelClassWeaver weaver,UnresolvedType onType) {
 		IMessage msg = MessageUtil.error(
 				WeaverMessages.format(msgid,onType.getName()),getSourceLocation());
 		weaver.getWorld().getMessageHandler().handleMessage(msg);
@@ -897,14 +897,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		final InstructionFactory fact = currentClass.getFactory();
 
 		ResolvedMember newConstructorMember = newConstructorTypeMunger.getSyntheticConstructor();
-		TypeX          onType = newConstructorMember.getDeclaringType();
+		UnresolvedType          onType = newConstructorMember.getDeclaringType();
 		
-		if (onType.isAnnotation(weaver.getWorld())) {
+		if (onType.resolve(weaver.getWorld()).isAnnotation()) {
 			signalError(WeaverMessages.ITDC_ON_ANNOTATION_NOT_ALLOWED,weaver,onType);
 			return false;
 		}
 		
-		if (onType.isEnum(weaver.getWorld())) {
+		if (onType.resolve(weaver.getWorld()).isEnum()) {
 			signalError(WeaverMessages.ITDC_ON_ENUM_NOT_ALLOWED,weaver,onType);
 			return false;
 		}
@@ -922,7 +922,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		// add to body:  push arts for call to pre, from actual args starting at 1 (skipping this), going to 
 		//               declared argcount + 1
-		TypeX[] declaredParams = newConstructorTypeMunger.getSignature().getParameterTypes();
+		UnresolvedType[] declaredParams = newConstructorTypeMunger.getSignature().getParameterTypes();
 		Type[] paramTypes = freshConstructor.getArgumentTypes();
 		int frameIndex = 1;
 		for (int i = 0, len = declaredParams.length; i < len; i++) {
@@ -942,7 +942,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		body.append(InstructionConstants.ALOAD_0);
 		
 		// unpack pre args onto stack
-		TypeX[] superParamTypes = explicitConstructor.getParameterTypes();
+		UnresolvedType[] superParamTypes = explicitConstructor.getParameterTypes();
 		
 		for (int i = 0, len = superParamTypes.length; i < len; i++) {
 			body.append(InstructionFactory.createLoad(Type.OBJECT, arraySlot));
@@ -966,7 +966,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// unpack params onto stack
 		Member postMethod =
 			AjcMemberMaker.postIntroducedConstructor(aspectType, onType, declaredParams);
-		TypeX[] postParamTypes = postMethod.getParameterTypes();
+		UnresolvedType[] postParamTypes = postMethod.getParameterTypes();
 		
 		for (int i = 1, len = postParamTypes.length; i < len; i++) {
 			body.append(InstructionFactory.createLoad(Type.OBJECT, arraySlot));
@@ -1008,7 +1008,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					returnType,
 					dispatchName,
 					paramTypes,
-					TypeX.getNames(superMethod.getExceptions()),
+					UnresolvedType.getNames(superMethod.getExceptions()),
 					onGen);
 		InstructionList body = mg.getBody();
 		
@@ -1042,15 +1042,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedMember field = munger.getSignature();
 		
 		
-		ResolvedTypeX onType = weaver.getWorld().resolve(field.getDeclaringType(),munger.getSourceLocation());
+		ResolvedType onType = weaver.getWorld().resolve(field.getDeclaringType(),munger.getSourceLocation());
 		boolean onInterface = onType.isInterface();
 		
-		if (onType.isAnnotation(weaver.getWorld())) {
+		if (onType.isAnnotation()) {
 			signalError(WeaverMessages.ITDF_ON_ANNOTATION_NOT_ALLOWED,weaver,onType);
 			return false;
 		}
 		
-		if (onType.isEnum(weaver.getWorld())) {
+		if (onType.isEnum()) {
 			signalError(WeaverMessages.ITDF_ON_ENUM_NOT_ALLOWED,weaver,onType);
 			return false;
 		}

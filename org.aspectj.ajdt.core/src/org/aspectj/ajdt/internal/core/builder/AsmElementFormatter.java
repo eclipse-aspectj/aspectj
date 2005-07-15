@@ -26,8 +26,8 @@ import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -130,11 +130,11 @@ public class AsmElementFormatter {
 				TypePattern[] newParents = dp.getParents().getTypePatterns();
 				for (int i = 0; i < newParents.length; i++) {
 					TypePattern tp = newParents[i];
-					TypeX tx = tp.getExactType();
+					UnresolvedType tx = tp.getExactType();
 					if (kindOfDP == null) {
 					  kindOfDP = "implements ";
 					  try {
-					  	ResolvedTypeX rtx = tx.resolve(((AjLookupEnvironment)declare.scope.environment()).factory.getWorld());
+					  	ResolvedType rtx = tx.resolve(((AjLookupEnvironment)declare.scope.environment()).factory.getWorld());
 						if (!rtx.isInterface()) kindOfDP = "extends ";
 					  } catch (Throwable t) {
 					  	// What can go wrong???? who knows!
@@ -312,9 +312,9 @@ public class AsmElementFormatter {
 	public String genTypePatternLabel(TypePattern tp) {
 		final String TYPE_PATTERN_LITERAL = "<type pattern>";
 		String label;
-		TypeX typeX = tp.getExactType();
+		UnresolvedType typeX = tp.getExactType();
 		
-		if (typeX != ResolvedTypeX.MISSING) {
+		if (typeX != ResolvedType.MISSING) {
 			label = typeX.getName();
 			if (tp.isIncludeSubtypes()) label += "+";
 		} else {

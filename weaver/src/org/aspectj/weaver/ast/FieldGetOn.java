@@ -12,7 +12,7 @@
 package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 /**
  * Represents a field access on a given type.
@@ -23,14 +23,14 @@ import org.aspectj.weaver.TypeX;
  */
 public class FieldGetOn extends FieldGet {
 
-    private TypeX m_declaringType;
+    private UnresolvedType m_declaringType;
 
-    public FieldGetOn(Member field, TypeX declaringType) {
+    public FieldGetOn(Member field, UnresolvedType declaringType) {
         super(field, null);
         m_declaringType = declaringType;
     }
 
-    public TypeX getDeclaringType() {
+    public UnresolvedType getDeclaringType() {
         return m_declaringType;
     }
 

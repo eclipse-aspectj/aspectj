@@ -14,20 +14,20 @@
 package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 
 public class FieldGet extends Expr {
 	Member field;
-	ResolvedTypeX resolvedType;
+	ResolvedType resolvedType;
 
-	public FieldGet(Member field, ResolvedTypeX resolvedType) {
+	public FieldGet(Member field, ResolvedType resolvedType) {
 		super();
 		this.field = field;		
 		this.resolvedType = resolvedType;
 	}
     
-	public ResolvedTypeX getType() {
+	public ResolvedType getType() {
 		return resolvedType;
 	}
 
@@ -42,7 +42,7 @@ public class FieldGet extends Expr {
 		return field;
 	}
 
-	public ResolvedTypeX getResolvedType() {
+	public ResolvedType getResolvedType() {
 		return resolvedType;
 	}
 

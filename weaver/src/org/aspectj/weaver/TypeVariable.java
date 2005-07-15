@@ -31,50 +31,50 @@ public class TypeVariable {
 	 * the upper bound of the type variable (default to Object).
 	 * From the extends clause, eg. T extends Number.
 	 */
-	private TypeX upperBound = TypeX.OBJECT;
+	private UnresolvedType upperBound = UnresolvedType.OBJECT;
 	
 	/**
 	 * any additional upper (interface) bounds.
 	 * from the extends clause, e.g. T extends Number & Comparable
 	 */
-	private TypeX[] additionalInterfaceBounds = new TypeX[0];
+	private UnresolvedType[] additionalInterfaceBounds = new UnresolvedType[0];
 	
 	/**
 	 * any lower bound.
 	 * from the super clause, eg T super Foo
 	 */
-	private TypeX lowerBound = null;
+	private UnresolvedType lowerBound = null;
 	
 	public TypeVariable(String aName) {
 		this.name = aName;
 	}
 	
-	public TypeVariable(String aName, TypeX anUpperBound) {
+	public TypeVariable(String aName, UnresolvedType anUpperBound) {
 		this(aName);
 		this.upperBound = anUpperBound;
 	}
 	
-	public TypeVariable(String aName, TypeX anUpperBound, 
-			                        TypeX[] someAdditionalInterfaceBounds) {
+	public TypeVariable(String aName, UnresolvedType anUpperBound, 
+			                        UnresolvedType[] someAdditionalInterfaceBounds) {
 		this(aName,anUpperBound);
 		this.additionalInterfaceBounds = someAdditionalInterfaceBounds;
 	}
 	
-	public TypeVariable(String aName, TypeX anUpperBound, 
-            TypeX[] someAdditionalInterfaceBounds, TypeX aLowerBound) {
+	public TypeVariable(String aName, UnresolvedType anUpperBound, 
+            UnresolvedType[] someAdditionalInterfaceBounds, UnresolvedType aLowerBound) {
 		this(aName,anUpperBound,someAdditionalInterfaceBounds);
 		this.lowerBound = aLowerBound;
 	}
 	
-	public TypeX getUpperBound() {
+	public UnresolvedType getUpperBound() {
 		return upperBound;
 	}
 	
-	public TypeX[] getAdditionalInterfaceBounds() {
+	public UnresolvedType[] getAdditionalInterfaceBounds() {
 		return additionalInterfaceBounds;
 	}
 	
-	public TypeX getLowerBound() {
+	public UnresolvedType getLowerBound() {
 		return lowerBound;
 	}
 	
@@ -103,7 +103,7 @@ public class TypeVariable {
 	 * type variable.
 	 * If type variable has not been resolved then throws IllegalStateException
 	 */
-	public boolean canBeBoundTo(ResolvedTypeX aCandidateType) {
+	public boolean canBeBoundTo(ResolvedType aCandidateType) {
 		if (!isResolved) throw new IllegalStateException("Can't answer binding questions prior to resolving");
 		// can be bound iff...
 		//  aCandidateType is a subtype of upperBound
@@ -123,14 +123,14 @@ public class TypeVariable {
 		return true;
 	}
 	
-	private boolean isASubtypeOf(TypeX candidateSuperType, TypeX candidateSubType) {
-		ResolvedTypeX superType = (ResolvedTypeX) candidateSuperType;
-		ResolvedTypeX subType = (ResolvedTypeX) candidateSubType;
+	private boolean isASubtypeOf(UnresolvedType candidateSuperType, UnresolvedType candidateSubType) {
+		ResolvedType superType = (ResolvedType) candidateSuperType;
+		ResolvedType subType = (ResolvedType) candidateSubType;
 		return superType.isAssignableFrom(subType);
 	}
 
 	// only used when resolving circular dependencies
-	public void setUpperBound(TypeX aTypeX) {
+	public void setUpperBound(UnresolvedType aTypeX) {
 		this.upperBound = aTypeX;
 	}
 	

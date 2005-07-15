@@ -21,7 +21,7 @@ import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 //import org.aspectj.weaver.TypeX;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
@@ -31,14 +31,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 
 
 public class EclipseTypeMunger extends ConcreteTypeMunger {
-	private ResolvedTypeX targetTypeX;
+	private ResolvedType targetTypeX;
 	//protected ReferenceBinding targetBinding = null;
 	private AbstractMethodDeclaration sourceMethod;
 	private EclipseFactory world;
 	private ISourceLocation sourceLocation;
 	
 
-	public EclipseTypeMunger(EclipseFactory world, ResolvedTypeMunger munger, ResolvedTypeX aspectType,
+	public EclipseTypeMunger(EclipseFactory world, ResolvedTypeMunger munger, ResolvedType aspectType,
 								AbstractMethodDeclaration sourceMethod)
 	{
 		super(munger, aspectType);

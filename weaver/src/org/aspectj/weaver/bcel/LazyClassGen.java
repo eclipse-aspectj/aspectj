@@ -60,9 +60,9 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
@@ -250,14 +250,14 @@ public final class LazyClassGen {
 		this.myType = myType;
 
 		/* Does this class support serialization */
-		if (TypeX.SERIALIZABLE.isAssignableFrom(getType(),getType().getWorld())) {
+		if (UnresolvedType.SERIALIZABLE.resolve(getType().getWorld()).isAssignableFrom(getType())) {
 			isSerializable = true;       
 
 //			ResolvedMember[] fields = getType().getDeclaredFields();
 //			for (int i = 0; i < fields.length; i++) {
 //				ResolvedMember field = fields[i];
 //				if (field.getName().equals("serialVersionUID")
-//					&& field.isStatic() && field.getType().equals(ResolvedTypeX.LONG)) {
+//					&& field.isStatic() && field.getType().equals(ResolvedType.LONG)) {
 //					hasSerialVersionUIDField = true;					
 //				}
 //			}
@@ -278,13 +278,13 @@ public final class LazyClassGen {
         }
     }
 
-	public static boolean hasSerialVersionUIDField (ResolvedTypeX type) {
+	public static boolean hasSerialVersionUIDField (ResolvedType type) {
 
 		ResolvedMember[] fields = type.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			ResolvedMember field = fields[i];
 			if (field.getName().equals("serialVersionUID")
-				&& field.isStatic() && field.getType().equals(ResolvedTypeX.LONG)) {
+				&& field.isStatic() && field.getType().equals(ResolvedType.LONG)) {
 				return true;					
 			}
 		}
@@ -501,15 +501,15 @@ public final class LazyClassGen {
 			if (myType==null) {
 				boolean stop = true;
 			}
-			ResolvedTypeX[] interfaceRTXs = myType.getDeclaredInterfaces();
+			ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
 			for (int i = 0; i < interfaceRTXs.length; i++) {
-				ResolvedTypeX typeX = interfaceRTXs[i];
-				if (typeX.isGeneric() || typeX.isParameterized())  needAttribute = true;
+				ResolvedType typeX = interfaceRTXs[i];
+				if (typeX.isGenericType() || typeX.isParameterizedType())  needAttribute = true;
 			}
 		
 			// check the supertype
-			ResolvedTypeX superclassRTX = myType.getSuperclass();
-			if (superclassRTX.isGeneric() || superclassRTX.isParameterized()) needAttribute = true;
+			ResolvedType superclassRTX = myType.getSuperclass();
+			if (superclassRTX.isGenericType() || superclassRTX.isParameterizedType()) needAttribute = true;
 		}
 		
 		if (needAttribute) {
@@ -518,7 +518,7 @@ public final class LazyClassGen {
 			// TODO asc generics implement this!
 			// now the supertype
 			signature.append(myType.getSuperclass().getSignature());
-			ResolvedTypeX[] interfaceRTXs = myType.getDeclaredInterfaces();
+			ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
 			for (int i = 0; i < interfaceRTXs.length; i++) {
 				signature.append(interfaceRTXs[i].getSignature());
 			}
@@ -580,14 +580,14 @@ public final class LazyClassGen {
         classGens.add(newClass);
     }
     
-    public void addInterface(TypeX typeX, ISourceLocation sourceLocation) {
+    public void addInterface(UnresolvedType typeX, ISourceLocation sourceLocation) {
     	regenerateGenericSignatureAttribute = true;
     	myGen.addInterface(typeX.getRawName());
-        if (!typeX.equals(TypeX.SERIALIZABLE)) 
+        if (!typeX.equals(UnresolvedType.SERIALIZABLE)) 
 		  warnOnAddedInterface(typeX.getName(),sourceLocation);
     }
     
-	public void setSuperClass(TypeX typeX) {
+	public void setSuperClass(UnresolvedType typeX) {
     	regenerateGenericSignatureAttribute = true;
 		myGen.setSuperclassName(typeX.getName());
 	 }
@@ -955,7 +955,7 @@ public final class LazyClassGen {
     }
     
 
-	public ResolvedTypeX getType() {
+	public ResolvedType getType() {
 		if (myType == null) return null;
 		return myType.getResolvedTypeX();
 	}
@@ -1012,14 +1012,14 @@ public final class LazyClassGen {
 	}
 
 	
-	public boolean hasAnnotation(TypeX t) {
+	public boolean hasAnnotation(UnresolvedType t) {
 		
 		// annotations on the real thing
 		AnnotationGen agens[] = myGen.getAnnotations();
 		if (agens==null) return false;
 		for (int i = 0; i < agens.length; i++) {
 			AnnotationGen gen = agens[i];
-			if (t.equals(TypeX.forSignature(gen.getTypeSignature()))) return true;
+			if (t.equals(UnresolvedType.forSignature(gen.getTypeSignature()))) return true;
 		}
 		
 		// annotations added during this weave
@@ -1028,7 +1028,7 @@ public final class LazyClassGen {
 	}
 	
 	public void addAnnotation(Annotation a) {
-		if (!hasAnnotation(TypeX.forSignature(a.getTypeSignature()))) {
+		if (!hasAnnotation(UnresolvedType.forSignature(a.getTypeSignature()))) {
 		  annotations.add(new AnnotationGen(a,getConstantPoolGen(),true));
 		}
 	}

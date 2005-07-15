@@ -13,7 +13,7 @@ package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.IExprVisitor;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 /**
  * Represents a String constant instruction.
@@ -35,7 +35,7 @@ public class StringConstExpr extends Expr {
         v.visit(this);
     }
 
-    public ResolvedTypeX getType() {
+    public ResolvedType getType() {
         throw new RuntimeException("not supported");
     }
 

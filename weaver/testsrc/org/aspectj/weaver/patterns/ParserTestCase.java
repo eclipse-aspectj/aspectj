@@ -17,7 +17,7 @@ import junit.framework.TestCase;
 
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelShadow;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -295,7 +295,7 @@ public class ParserTestCase extends TestCase {
 	public void testParseAllowedSuperInTypeVariable() {
 		PatternParser parser = new PatternParser("T super Number+");
 		TypeVariablePattern tv = parser.parseTypeVariable();
-		TypeVariablePattern expected = new TypeVariablePattern("T",new ExactTypePattern(TypeX.OBJECT,false,false),null,new PatternParser("Number+").parseTypePattern());
+		TypeVariablePattern expected = new TypeVariablePattern("T",new ExactTypePattern(UnresolvedType.OBJECT,false,false),null,new PatternParser("Number+").parseTypePattern());
 		assertEquals("Expected type variable T super Number+",expected,tv);				
 	}
 	

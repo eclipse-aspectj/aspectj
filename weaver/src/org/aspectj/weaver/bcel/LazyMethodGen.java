@@ -58,8 +58,8 @@ import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 
 
@@ -113,7 +113,7 @@ public final class LazyMethodGen {
     
     // Used for interface introduction
     // this is the type of the interface the method is technically on
-    public ResolvedTypeX definingType = null;
+    public ResolvedType definingType = null;
     
     public LazyMethodGen(
         int accessFlags,
@@ -217,7 +217,7 @@ public final class LazyMethodGen {
     }
 	
 
-	public boolean hasAnnotation(TypeX annotationTypeX) {
+	public boolean hasAnnotation(UnresolvedType annotationTypeX) {
 		initialize();
 		if (memberView==null) {
 			// Check local annotations first
@@ -251,7 +251,7 @@ public final class LazyMethodGen {
 //		this.returnType = BcelWorld.makeBcelType(memberView.getReturnType());
 //		this.argumentTypes = BcelWorld.makeBcelTypes(memberView.getParameterTypes());
 //
-//		this.declaredExceptions = TypeX.getNames(memberView.getExceptions()); //gen.getExceptions();
+//		this.declaredExceptions = UnresolvedType.getNames(memberView.getExceptions()); //gen.getExceptions();
 //		this.attributes = new Attribute[0]; //gen.getAttributes();
 //		this.maxLocals = savedMethod.getCode().getMaxLocals();
         

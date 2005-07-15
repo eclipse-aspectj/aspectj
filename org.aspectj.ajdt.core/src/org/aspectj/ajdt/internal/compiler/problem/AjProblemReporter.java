@@ -40,7 +40,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareSoft;
@@ -88,7 +88,7 @@ public class AjProblemReporter extends ProblemReporter {
 				DeclareSoft d = (DeclareSoft)i.next();
 				// We need the exceptionType to match the type in the declare soft statement
 				// This means it must either be the same type or a subtype
-				ResolvedTypeX throwException = factory.fromEclipse((ReferenceBinding)exceptionType);
+				ResolvedType throwException = factory.fromEclipse((ReferenceBinding)exceptionType);
 				FuzzyBoolean isExceptionTypeOrSubtype = 
 					d.getException().matchesInstanceof(throwException);
 				if (!isExceptionTypeOrSubtype.alwaysTrue() ) continue;
@@ -142,7 +142,7 @@ public class AjProblemReporter extends ProblemReporter {
 	public void inheritedMethodReducesVisibility(SourceTypeBinding type, MethodBinding concreteMethod, MethodBinding[] abstractMethods) {
 		// if we implemented this method by a public inter-type declaration, then there is no error
 		
-		ResolvedTypeX onTypeX = null;		
+		ResolvedType onTypeX = null;		
 		// If the type is anonymous, look at its supertype
 		if (!type.isAnonymousType()) {
 			onTypeX = factory.fromEclipse(type);
@@ -156,13 +156,12 @@ public class AjProblemReporter extends ProblemReporter {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			ResolvedMember sig = m.getSignature();
             if (!Modifier.isAbstract(sig.getModifiers())) {
-				if (ResolvedTypeX
+				if (ResolvedType
 					.matches(
 						AjcMemberMaker.interMethod(
 							sig,
 							m.getAspectType(),
-							sig.getDeclaringType().isInterface(
-								factory.getWorld())),
+							sig.getDeclaringType().resolve(factory.getWorld()).isInterface()),
 						factory.makeResolvedMember(concreteMethod))) {
 					return;
 				}
@@ -188,7 +187,7 @@ public class AjProblemReporter extends ProblemReporter {
 		
 		// if we implemented this method by an inter-type declaration, then there is no error
 		//??? be sure this is always right
-		ResolvedTypeX onTypeX = null;
+		ResolvedType onTypeX = null;
 		
 		// If the type is anonymous, look at its supertype
 		if (!type.isAnonymousType()) {
@@ -203,13 +202,12 @@ public class AjProblemReporter extends ProblemReporter {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			ResolvedMember sig = m.getSignature();
             if (!Modifier.isAbstract(sig.getModifiers())) {
-				if (ResolvedTypeX
+				if (ResolvedType
 					.matches(
 						AjcMemberMaker.interMethod(
 							sig,
 							m.getAspectType(),
-							sig.getDeclaringType().isInterface(
-								factory.getWorld())),
+							sig.getDeclaringType().resolve(factory.getWorld()).isInterface()),
 						factory.makeResolvedMember(abstractMethod))) {
 					return;
 				}

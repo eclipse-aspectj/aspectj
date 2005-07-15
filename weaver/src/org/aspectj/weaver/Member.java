@@ -27,18 +27,18 @@ import org.aspectj.util.TypeSafeEnum;
 public class Member implements Comparable, AnnotatedElement {
     
     private final Kind kind;
-    private final TypeX declaringType;
+    private final UnresolvedType declaringType;
     protected final int modifiers; // protected because ResolvedMember uses it
-    private final TypeX returnType;
+    private final UnresolvedType returnType;
     private final String name;
-    private final TypeX[] parameterTypes;
+    private final UnresolvedType[] parameterTypes;
     private final String signature;
 	private final String declaredSignature; // TODO asc Is this redundant? Is it needed for generics?
     private String paramSignature;
 
     public Member(
         Kind kind, 
-        TypeX declaringType,
+        UnresolvedType declaringType,
         int modifiers,
         String name,
         String signature) 
@@ -50,23 +50,23 @@ public class Member implements Comparable, AnnotatedElement {
         this.signature = signature;
 		this.declaredSignature = signature;
         if (kind == FIELD) {
-            this.returnType = TypeX.forSignature(signature);
-            this.parameterTypes = TypeX.NONE;
+            this.returnType = UnresolvedType.forSignature(signature);
+            this.parameterTypes = UnresolvedType.NONE;
         } else {
             Object[] returnAndParams = signatureToTypes(signature,false);
-            this.returnType = (TypeX) returnAndParams[0];
-            this.parameterTypes = (TypeX[]) returnAndParams[1];
+            this.returnType = (UnresolvedType) returnAndParams[0];
+            this.parameterTypes = (UnresolvedType[]) returnAndParams[1];
 			signature = typesToSignature(returnType,parameterTypes,true);
         }
     }
 
     public  Member(
         Kind kind, 
-        TypeX declaringType, 
+        UnresolvedType declaringType, 
         int modifiers,
-        TypeX returnType, 
+        UnresolvedType returnType, 
         String name, 
-        TypeX[] parameterTypes) 
+        UnresolvedType[] parameterTypes) 
     {
         super();
         this.kind = kind;
@@ -90,29 +90,29 @@ public class Member implements Comparable, AnnotatedElement {
 
     // ---- utility methods
     
-    /** returns an Object[] pair of TypeX, TypeX[] representing return type, 
+    /** returns an Object[] pair of UnresolvedType, UnresolvedType[] representing return type, 
      * argument types parsed from the JVM bytecode signature of a method.  Yes,
      * this should actually return a nice statically-typed pair object, but we
      * don't have one of those.  
      *
      * <blockquote><pre>
-     *   TypeX.signatureToTypes("()[Z")[0].equals(Type.forSignature("[Z"))
-     *   TypeX.signatureToTypes("(JJ)I")[1]
-     *      .equals(TypeX.forSignatures(new String[] {"J", "J"}))
+     *   UnresolvedType.signatureToTypes("()[Z")[0].equals(Type.forSignature("[Z"))
+     *   UnresolvedType.signatureToTypes("(JJ)I")[1]
+     *      .equals(UnresolvedType.forSignatures(new String[] {"J", "J"}))
      * </pre></blockquote>
      *
      * @param      signature the JVM bytecode method signature string we want to break apart
-     * @return     a pair of TypeX, TypeX[] representing the return types and parameter types. 
+     * @return     a pair of UnresolvedType, UnresolvedType[] representing the return types and parameter types. 
      */
-    public static String typesToSignature(TypeX returnType, TypeX[] paramTypes, boolean useRawTypes) {
+    public static String typesToSignature(UnresolvedType returnType, UnresolvedType[] paramTypes, boolean useRawTypes) {
         StringBuffer buf = new StringBuffer();
         buf.append("(");
         for (int i = 0, len = paramTypes.length; i < len; i++) {
-			if (paramTypes[i].isParameterized() && useRawTypes) buf.append(paramTypes[i].getRawTypeSignature());
+			if (paramTypes[i].isParameterizedType() && useRawTypes) buf.append(paramTypes[i].getRawTypeSignature());
 			else                                                buf.append(paramTypes[i].getSignature());
         }
         buf.append(")");
-        if (returnType.isParameterized() && useRawTypes) buf.append(returnType.getRawTypeSignature());
+        if (returnType.isParameterizedType() && useRawTypes) buf.append(returnType.getRawTypeSignature());
         else 											 buf.append(returnType.getSignature());
         return buf.toString();        
     }
@@ -121,7 +121,7 @@ public class Member implements Comparable, AnnotatedElement {
      * Returns "(<signaturesOfParamTypes>,...)" - unlike the other typesToSignature
      * that also includes the return type, this one just deals with the parameter types.
      */
-    public static String typesToSignature(TypeX[] paramTypes) {
+    public static String typesToSignature(UnresolvedType[] paramTypes) {
         StringBuffer buf = new StringBuffer();
         buf.append("(");
         for(int i=0;i<paramTypes.length;i++) {
@@ -132,19 +132,19 @@ public class Member implements Comparable, AnnotatedElement {
     }
     
     /** 
-     * returns an Object[] pair of TypeX, TypeX[] representing return type, 
+     * returns an Object[] pair of UnresolvedType, UnresolvedType[] representing return type, 
      * argument types parsed from the JVM bytecode signature of a method.  Yes,
      * this should actually return a nice statically-typed pair object, but we
      * don't have one of those.  
      *
      * <blockquote><pre>
-     *   TypeX.signatureToTypes("()[Z")[0].equals(Type.forSignature("[Z"))
-     *   TypeX.signatureToTypes("(JJ)I")[1]
-     *      .equals(TypeX.forSignatures(new String[] {"J", "J"}))
+     *   UnresolvedType.signatureToTypes("()[Z")[0].equals(Type.forSignature("[Z"))
+     *   UnresolvedType.signatureToTypes("(JJ)I")[1]
+     *      .equals(UnresolvedType.forSignatures(new String[] {"J", "J"}))
      * </pre></blockquote>
      *
      * @param      signature the JVM bytecode method signature string we want to break apart
-     * @return     a pair of TypeX, TypeX[] representing the return types and parameter types. 
+     * @return     a pair of UnresolvedType, UnresolvedType[] representing the return types and parameter types. 
      */
     private static Object[] signatureToTypes(String sig,boolean keepParameterizationInfo) {
         List l = new ArrayList();
@@ -159,7 +159,7 @@ public class Member implements Comparable, AnnotatedElement {
 				int firstAngly = sig.indexOf('<',start);
 				if (firstAngly == -1 || firstAngly>nextSemicolon) {
                   i = nextSemicolon + 1;
-                  l.add(TypeX.forSignature(sig.substring(start, i)));
+                  l.add(UnresolvedType.forSignature(sig.substring(start, i)));
 				} else {
 					// generics generics generics
 					// Have to skip to the *correct* ';'
@@ -179,46 +179,46 @@ public class Member implements Comparable, AnnotatedElement {
 					i=posn;
 					String toProcess = null;
 					toProcess = sig.substring(start,i);
-					TypeX tx = TypeX.forSignature(toProcess);
+					UnresolvedType tx = UnresolvedType.forSignature(toProcess);
 					l.add(tx);					
 				}
             } else {
-                l.add(TypeX.forSignature(sig.substring(start, ++i)));
+                l.add(UnresolvedType.forSignature(sig.substring(start, ++i)));
             }
         }
-        TypeX[] paramTypes = (TypeX[]) l.toArray(new TypeX[l.size()]);
-        TypeX returnType = TypeX.forSignature(sig.substring(i+1, sig.length()));
+        UnresolvedType[] paramTypes = (UnresolvedType[]) l.toArray(new UnresolvedType[l.size()]);
+        UnresolvedType returnType = UnresolvedType.forSignature(sig.substring(i+1, sig.length()));
         return new Object[] { returnType, paramTypes };
     }            
 
     // ---- factory methods
     public static Member field(String declaring, int mods, String name, String signature) {
-        return field(declaring, mods, TypeX.forSignature(signature), name);
+        return field(declaring, mods, UnresolvedType.forSignature(signature), name);
     }
-    public static Member field(TypeX declaring, int mods, String name, TypeX type) {
-        return new Member(FIELD, declaring, mods, type, name, TypeX.NONE);
+    public static Member field(UnresolvedType declaring, int mods, String name, UnresolvedType type) {
+        return new Member(FIELD, declaring, mods, type, name, UnresolvedType.NONE);
     }    
-    public static Member method(TypeX declaring, int mods, String name, String signature) {
+    public static Member method(UnresolvedType declaring, int mods, String name, String signature) {
         Object[] pair = signatureToTypes(signature,false);
-        return method(declaring, mods, (TypeX) pair[0], name, (TypeX[]) pair[1]);
+        return method(declaring, mods, (UnresolvedType) pair[0], name, (UnresolvedType[]) pair[1]);
     }
-    public static Member pointcut(TypeX declaring, String name, String signature) {
+    public static Member pointcut(UnresolvedType declaring, String name, String signature) {
         Object[] pair = signatureToTypes(signature,false);
-        return pointcut(declaring, 0, (TypeX) pair[0], name, (TypeX[]) pair[1]);
+        return pointcut(declaring, 0, (UnresolvedType) pair[0], name, (UnresolvedType[]) pair[1]);
     }
 
 
-    private static Member field(String declaring, int mods, TypeX ty, String name) {
+    private static Member field(String declaring, int mods, UnresolvedType ty, String name) {
         return new Member(
             FIELD,
-            TypeX.forName(declaring),
+            UnresolvedType.forName(declaring),
             mods,
             ty,
             name,
-            TypeX.NONE);
+            UnresolvedType.NONE);
     }
     
-    public static Member method(TypeX declTy, int mods, TypeX rTy, String name, TypeX[] paramTys) {
+    public static Member method(UnresolvedType declTy, int mods, UnresolvedType rTy, String name, UnresolvedType[] paramTys) {
         return new Member(
         	//??? this calls <clinit> a method
             name.equals("<init>") ? CONSTRUCTOR : METHOD,
@@ -228,7 +228,7 @@ public class Member implements Comparable, AnnotatedElement {
             name,
             paramTys);
     }
-    private static Member pointcut(TypeX declTy, int mods, TypeX rTy, String name, TypeX[] paramTys) {
+    private static Member pointcut(UnresolvedType declTy, int mods, UnresolvedType rTy, String name, UnresolvedType[] paramTys) {
         return new Member(
             POINTCUT,
             declTy,
@@ -238,7 +238,7 @@ public class Member implements Comparable, AnnotatedElement {
             paramTys);
     }
     
-	public static ResolvedMember makeExceptionHandlerSignature(TypeX inType, TypeX catchType) {
+	public static ResolvedMember makeExceptionHandlerSignature(UnresolvedType inType, UnresolvedType catchType) {
 		return new ResolvedMember(
 			HANDLER,
 			inType,
@@ -269,11 +269,11 @@ public class Member implements Comparable, AnnotatedElement {
         }
         int start = i;
         while (! Character.isWhitespace(str.charAt(i))) i++;
-        TypeX retTy = TypeX.forName(str.substring(start, i));
+        UnresolvedType retTy = UnresolvedType.forName(str.substring(start, i));
 
         start = i;
         i = str.lastIndexOf('.');
-        TypeX declaringTy = TypeX.forName(str.substring(start, i).trim());
+        UnresolvedType declaringTy = UnresolvedType.forName(str.substring(start, i).trim());
         start = ++i;
         String name = str.substring(start, len).trim();
         return new Member(
@@ -282,7 +282,7 @@ public class Member implements Comparable, AnnotatedElement {
             mods,
             retTy,
             name,
-            TypeX.NONE);
+            UnresolvedType.NONE);
     }
 
     /** Takes a string in this form:
@@ -313,12 +313,12 @@ public class Member implements Comparable, AnnotatedElement {
         
         int start = i;
         while (! Character.isWhitespace(str.charAt(i))) i++;
-        TypeX returnTy = TypeX.forName(str.substring(start, i));
+        UnresolvedType returnTy = UnresolvedType.forName(str.substring(start, i));
 
         start = i;
         i = str.indexOf('(', i);
         i = str.lastIndexOf('.', i);
-        TypeX declaringTy = TypeX.forName(str.substring(start, i).trim());
+        UnresolvedType declaringTy = UnresolvedType.forName(str.substring(start, i).trim());
         
         start = ++i;
         i = str.indexOf('(', i);
@@ -328,7 +328,7 @@ public class Member implements Comparable, AnnotatedElement {
     
         String[] paramTypeNames = parseIds(str.substring(start, i).trim());
 
-        return method(declaringTy, mods, returnTy, name, TypeX.forNames(paramTypeNames));
+        return method(declaringTy, mods, returnTy, name, UnresolvedType.forNames(paramTypeNames));
     }
 
     private static String[] parseIds(String str) {
@@ -424,11 +424,11 @@ public class Member implements Comparable, AnnotatedElement {
     }        
 
     public Kind getKind() { return kind; }
-    public TypeX getDeclaringType() { return declaringType; }
-    public TypeX getReturnType() { return returnType; }
-    public TypeX getType() { return returnType; }
+    public UnresolvedType getDeclaringType() { return declaringType; }
+    public UnresolvedType getReturnType() { return returnType; }
+    public UnresolvedType getType() { return returnType; }
     public String getName() { return name; }
-    public TypeX[]  getParameterTypes() { return parameterTypes; }
+    public UnresolvedType[]  getParameterTypes() { return parameterTypes; }
     /**
      * Return full signature, including return type, e.g. "()LFastCar;" for a signature without the return type,
      * use getParameterSignature() - it is importnant to choose the right one in the face of covariance.
@@ -448,7 +448,7 @@ public class Member implements Comparable, AnnotatedElement {
     	StringBuffer sb = new StringBuffer();
     	sb.append("(");
     	for (int i = 0; i < parameterTypes.length; i++) {
-			TypeX tx = parameterTypes[i];
+			UnresolvedType tx = parameterTypes[i];
 			sb.append(tx.getSignature());
 		}
     	sb.append(")");
@@ -463,7 +463,7 @@ public class Member implements Comparable, AnnotatedElement {
         return getReturnType().equals(am.getReturnType());
     }
     
-    private static boolean equalTypes(TypeX[] a, TypeX[] b) {
+    private static boolean equalTypes(UnresolvedType[] a, UnresolvedType[] b) {
         int len = a.length;
         if (len != b.length) return false;
         for (int i = 0; i < len; i++) {
@@ -478,7 +478,7 @@ public class Member implements Comparable, AnnotatedElement {
         return world.getModifiers(this);
     }
     
-    public TypeX[] getExceptions(World world) {
+    public UnresolvedType[] getExceptions(World world) {
         return world.getExceptions(this);
     }
     
@@ -526,14 +526,14 @@ public class Member implements Comparable, AnnotatedElement {
      * If you want a sensible answer, resolve the member and call
      * hasAnnotation() on the ResolvedMember.
      */
-	public boolean hasAnnotation(TypeX ofType) {
+	public boolean hasAnnotation(UnresolvedType ofType) {
 		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
 	 */
-	public ResolvedTypeX[] getAnnotationTypes() {
+	public ResolvedType[] getAnnotationTypes() {
 		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
 	
@@ -576,16 +576,16 @@ public class Member implements Comparable, AnnotatedElement {
 //    //ATAJ.  Should probably be ajc$, used only for slow impl of Aspects.aspectOf()
 //    public static final Member ajClassField = new Member(
 //            FIELD,
-//            TypeX.OBJECT,//any one
+//            UnresolvedType.OBJECT,//any one
 //            Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL,
 //            "aj$class",
-//            TypeX.JAVA_LANG_CLASS.getSignature()
+//            UnresolvedType.JAVA_LANG_CLASS.getSignature()
 //    );
 
 
     
-	public Collection/*ResolvedTypeX*/ getDeclaringTypes(World world) {
-		ResolvedTypeX myType = getDeclaringType().resolve(world);
+	public Collection/*ResolvedType*/ getDeclaringTypes(World world) {
+		ResolvedType myType = getDeclaringType().resolve(world);
 		Collection ret = new HashSet();
 		if (kind == CONSTRUCTOR) {
 			// this is wrong if the member doesn't exist, but that doesn't matter
@@ -599,15 +599,15 @@ public class Member implements Comparable, AnnotatedElement {
 		return ret;
 	}
 	
-	private boolean walkUp(Collection acc, ResolvedTypeX curr) {
+	private boolean walkUp(Collection acc, ResolvedType curr) {
 		if (acc.contains(curr)) return true;
 		
 		boolean b = false;
 		for (Iterator i = curr.getDirectSupertypes(); i.hasNext(); ) {
-			b |= walkUp(acc, (ResolvedTypeX)i.next());
+			b |= walkUp(acc, (ResolvedType)i.next());
 		}
 		
-		if (!b && curr.isParameterized()) {
+		if (!b && curr.isParameterizedType()) {
 			b = walkUp(acc,curr.getGenericType());
 		}
 		
@@ -618,16 +618,16 @@ public class Member implements Comparable, AnnotatedElement {
 		return b;
 	}
 	
-	private boolean walkUpStatic(Collection acc, ResolvedTypeX curr) {
+	private boolean walkUpStatic(Collection acc, ResolvedType curr) {
 		if (curr.lookupMemberNoSupers(this) != null) {
 			acc.add(curr);
 			return true;
 		} else {
 			boolean b = false;
 			for (Iterator i = curr.getDirectSupertypes(); i.hasNext(); ) {
-				b |= walkUpStatic(acc, (ResolvedTypeX)i.next());
+				b |= walkUpStatic(acc, (ResolvedType)i.next());
 			}
-			if (!b && curr.isParameterized()) {
+			if (!b && curr.isParameterizedType()) {
 				b = walkUpStatic(acc,curr.getGenericType());
 			}
 			if (b) acc.add(curr);
@@ -813,7 +813,7 @@ public class Member implements Comparable, AnnotatedElement {
 
 
 
-	protected String makeString(TypeX t) {
+	protected String makeString(UnresolvedType t) {
     	// this is the inverse of the odd behavior for Class.forName w/ arrays
     	if (t.isArray()) {
     		// this behavior matches the string used by the eclipse compiler for Foo.class literals
@@ -825,7 +825,7 @@ public class Member implements Comparable, AnnotatedElement {
     
 
 
-	protected String makeString(TypeX[] types) {
+	protected String makeString(UnresolvedType[] types) {
     	if (types == null) return "";
         StringBuffer buf = new StringBuffer();
         for (int i = 0, len=types.length; i < len; i++) {

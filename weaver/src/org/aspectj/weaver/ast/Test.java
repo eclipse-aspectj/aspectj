@@ -14,7 +14,7 @@
 package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 public abstract class Test extends ASTNode {
 
@@ -71,8 +71,8 @@ public abstract class Test extends ASTNode {
     }
     
     // uses our special rules that anything matches object
-    public static Test makeInstanceof(Var v, ResolvedTypeX ty) {
-        if (ty.equals(ResolvedTypeX.OBJECT)) return Literal.TRUE;
+    public static Test makeInstanceof(Var v, ResolvedType ty) {
+        if (ty.equals(ResolvedType.OBJECT)) return Literal.TRUE;
         
         Test e;
         if (ty.isAssignableFrom(v.getType())) e = Literal.TRUE;
@@ -81,7 +81,7 @@ public abstract class Test extends ASTNode {
         return e;
     }
     
-    public static Test makeHasAnnotation(Var v, ResolvedTypeX annTy) {
+    public static Test makeHasAnnotation(Var v, ResolvedType annTy) {
         return new HasAnnotation(v,annTy);
     }
     

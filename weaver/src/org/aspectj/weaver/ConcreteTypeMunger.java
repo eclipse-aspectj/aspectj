@@ -18,9 +18,9 @@ import org.aspectj.util.PartialOrder;
 
 public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparable {
 	protected ResolvedTypeMunger munger;
-	protected ResolvedTypeX aspectType;
+	protected ResolvedType aspectType;
 
-	public ConcreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType) {
+	public ConcreteTypeMunger(ResolvedTypeMunger munger, ResolvedType aspectType) {
 		this.munger = munger;
 		this.aspectType = aspectType;
 	}
@@ -35,7 +35,7 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 		return munger;
 	}
 
-	public ResolvedTypeX getAspectType() {
+	public ResolvedType getAspectType() {
 		return aspectType;
 	}
 	
@@ -48,7 +48,7 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 		return munger.getSourceLocation(); //XXX
 	}
 
-	public boolean matches(ResolvedTypeX onType) {
+	public boolean matches(ResolvedType onType) {
 		if (munger == null) throw new RuntimeException("huh: " + this);
 		return munger.matches(onType, aspectType);
 	}
@@ -60,7 +60,7 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 	public int compareTo(Object other) {
 		ConcreteTypeMunger o = (ConcreteTypeMunger) other;
 
-		ResolvedTypeX otherAspect = o.aspectType;
+		ResolvedType otherAspect = o.aspectType;
 		
 		if (aspectType.equals(otherAspect)) {
 			return getSignature().getStart() < o.getSignature().getStart() ? -1: +1;

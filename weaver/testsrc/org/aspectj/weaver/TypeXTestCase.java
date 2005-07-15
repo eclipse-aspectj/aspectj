@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 import org.aspectj.testing.util.TestUtil;
 
 /**
- * This is a test case for all the portions of TypeX that don't require a world.
+ * This is a test case for all the portions of UnresolvedType that don't require a world.
  */
 public class TypeXTestCase extends TestCase {
 
@@ -45,59 +45,59 @@ public class TypeXTestCase extends TestCase {
             new boolean[] { true, true, false, false, false, false, true };
                                   
         nameSignatureTest(testNames, testSigs);
-        arrayTest(TypeX.forNames(testNames), componentNames);
-        arrayTest(TypeX.forSignatures(testSigs), componentNames);
+        arrayTest(UnresolvedType.forNames(testNames), componentNames);
+        arrayTest(UnresolvedType.forSignatures(testSigs), componentNames);
 
-        sizeTest(TypeX.forNames(testNames), sizes);
-        sizeTest(TypeX.forSignatures(testSigs), sizes);
+        sizeTest(UnresolvedType.forNames(testNames), sizes);
+        sizeTest(UnresolvedType.forSignatures(testSigs), sizes);
         
-        isPrimitiveTest(TypeX.forSignatures(testSigs), isPrimitive);        
+        isPrimitiveTest(UnresolvedType.forSignatures(testSigs), isPrimitive);        
     }
     
     public void testNameAndSigWithInners() {
-    	TypeX t = TypeX.forName("java.util.Map$Entry");
+    	UnresolvedType t = UnresolvedType.forName("java.util.Map$Entry");
     	assertEquals(t.getName(), "java.util.Map$Entry");
     	assertEquals(t.getSignature(), "Ljava/util/Map$Entry;");
-    	assertEquals(t.getOutermostType(), TypeX.forName("java.util.Map"));
-    	assertEquals(TypeX.forName("java.util.Map").getOutermostType(), TypeX.forName("java.util.Map"));
+    	assertEquals(t.getOutermostType(), UnresolvedType.forName("java.util.Map"));
+    	assertEquals(UnresolvedType.forName("java.util.Map").getOutermostType(), UnresolvedType.forName("java.util.Map"));
     }
 	
 	public void testNameAndSigWithParameters() {
-		TypeX t = TypeX.forName("java.util.List<java.lang.String>");
+		UnresolvedType t = UnresolvedType.forName("java.util.List<java.lang.String>");
 		assertEquals(t.getName(),"java.util.List<java.lang.String>");
 		assertEquals(t.getSignature(),"Ljava/util/List<Ljava/lang/String;>;");
-		t = new TypeX("Ljava/util/List<Ljava/lang/String;>;");
+		t = new UnresolvedType("Ljava/util/List<Ljava/lang/String;>;");
 		assertEquals(t.getName(),"java.util.List<java.lang.String>");
 		assertEquals(t.getSignature(),"Ljava/util/List<Ljava/lang/String;>;");
-		t = TypeX.forName("java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
+		t = UnresolvedType.forName("java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
 		assertEquals(t.getName(),"java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
 		assertEquals(t.getSignature(),"Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
-		t = new TypeX("Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
+		t = new UnresolvedType("Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
 		assertEquals(t.getName(),"java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
 		assertEquals(t.getSignature(),"Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
 	}
 	
 	/**
-	 * Verify TypeX signature processing creates the right kind of TypeX's from a signature.
+	 * Verify UnresolvedType signature processing creates the right kind of UnresolvedType's from a signature.
 	 * 
-	 * For example, calling TypeX.dump() for 
+	 * For example, calling UnresolvedType.dump() for 
 	 *   "Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>;"
 	 * results in:
-	 *   TypeX:  signature=Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>; parameterized=true #params=2
-     *     TypeX:  signature=Ljava/util/List<Ljava/lang/String;>; parameterized=true #params=1
-     *       TypeX:  signature=Ljava/lang/String; parameterized=false #params=0
-     *     TypeX:  signature=Ljava/lang/String; parameterized=false #params=0
+	 *   UnresolvedType:  signature=Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>; parameterized=true #params=2
+     *     UnresolvedType:  signature=Ljava/util/List<Ljava/lang/String;>; parameterized=true #params=1
+     *       UnresolvedType:  signature=Ljava/lang/String; parameterized=false #params=0
+     *     UnresolvedType:  signature=Ljava/lang/String; parameterized=false #params=0
 	 */
 	public void testTypexGenericSignatureProcessing() {
-		TypeX tx = null;
+		UnresolvedType tx = null;
 		
-		tx = new TypeX("Ljava/util/Set<Ljava/lang/String;>;");
+		tx = new UnresolvedType("Ljava/util/Set<Ljava/lang/String;>;");
 		checkTX(tx,true,1);
 		
-		tx = new TypeX("Ljava/util/Set<Ljava/util/List<Ljava/lang/String;>;>;");
+		tx = new UnresolvedType("Ljava/util/Set<Ljava/util/List<Ljava/lang/String;>;>;");
 		checkTX(tx,true,1);
 		
-		tx = new TypeX("Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>;");
+		tx = new UnresolvedType("Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>;");
 		checkTX(tx,true,2);
 		checkTX(tx.getTypeParameters()[0],true,1);
 		checkTX(tx.getTypeParameters()[1],false,0);
@@ -105,18 +105,18 @@ public class TypeXTestCase extends TestCase {
 	}
 	
 	public void testTypeXForParameterizedTypes() {
-		TypeX stringType = TypeX.forName("java/lang/String");
-		TypeX listOfStringType = TypeX.forParameterizedTypes(TypeX.forName("java/util/List"), new TypeX[] {stringType});
+		UnresolvedType stringType = UnresolvedType.forName("java/lang/String");
+		UnresolvedType listOfStringType = UnresolvedType.forParameterizedTypes(UnresolvedType.forName("java/util/List"), new UnresolvedType[] {stringType});
 		assertEquals("1 type param",1,listOfStringType.typeParameters.length);
 		assertEquals(stringType,listOfStringType.typeParameters[0]);
-		assertTrue(listOfStringType.isParameterized());
-		assertFalse(listOfStringType.isGeneric());
+		assertTrue(listOfStringType.isParameterizedType());
+		assertFalse(listOfStringType.isGenericType());
 	}
 	
-	private void checkTX(TypeX tx,boolean shouldBeParameterized,int numberOfTypeParameters) {
-		assertTrue("Expected parameterization flag to be "+shouldBeParameterized,tx.isParameterized()==shouldBeParameterized);
+	private void checkTX(UnresolvedType tx,boolean shouldBeParameterized,int numberOfTypeParameters) {
+		assertTrue("Expected parameterization flag to be "+shouldBeParameterized,tx.isParameterizedType()==shouldBeParameterized);
 		if (numberOfTypeParameters==0) {
-			TypeX[] params = tx.getTypeParameters();
+			UnresolvedType[] params = tx.getTypeParameters();
 			assertTrue("Expected 0 type parameters but found "+params.length,params==null || params.length==0);
 	    } else {
 				assertTrue("Expected #type parameters to be "+numberOfTypeParameters,tx.getTypeParameters().length==numberOfTypeParameters);
@@ -124,25 +124,25 @@ public class TypeXTestCase extends TestCase {
 	}
 	
 
-    private void isPrimitiveTest(TypeX[] types, boolean[] isPrimitives) {
+    private void isPrimitiveTest(UnresolvedType[] types, boolean[] isPrimitives) {
         for (int i = 0, len = types.length; i < len; i++) {
-            TypeX type = types[i];
+            UnresolvedType type = types[i];
             boolean b = isPrimitives[i];
-            assertEquals(type + " is primitive: ", b, type.isPrimitive());
+            assertEquals(type + " is primitive: ", b, type.isPrimitiveType());
         }           
     }
 
-    private void sizeTest(TypeX[] types, int[] sizes) {
+    private void sizeTest(UnresolvedType[] types, int[] sizes) {
         for (int i = 0, len = types.length; i < len; i++) {
-            TypeX type = types[i];
+            UnresolvedType type = types[i];
             int size = sizes[i];
             assertEquals("size of " + type + ": ", size, type.getSize());
         }           
     }
 
-    private void arrayTest(TypeX[] types, String[] components) {
+    private void arrayTest(UnresolvedType[] types, String[] components) {
         for (int i = 0, len = types.length; i < len; i++) {
-            TypeX type = types[i];
+            UnresolvedType type = types[i];
             String component = components[i];
             assertEquals(type + " is array: ", component != null, type.isArray());
             if (component != null) 
@@ -155,8 +155,8 @@ public class TypeXTestCase extends TestCase {
         for (int i = 0, len = ns.length; i < len; i++) {
             String n = ns[i];
             String s = ss[i];
-            TypeX tn = TypeX.forName(n);
-            TypeX ts = TypeX.forSignature(s);
+            UnresolvedType tn = UnresolvedType.forName(n);
+            UnresolvedType ts = UnresolvedType.forSignature(s);
 
             assertEquals("forName(n).getName()", n, 
                 tn.getName());
@@ -173,8 +173,8 @@ public class TypeXTestCase extends TestCase {
             
             for (int j = 0; j < len; j++) {
                 if (i == j) continue;
-                TypeX tn1 = TypeX.forName(ns[j]);
-                TypeX ts1 = TypeX.forSignature(ss[j]); 
+                UnresolvedType tn1 = UnresolvedType.forName(ns[j]);
+                UnresolvedType ts1 = UnresolvedType.forSignature(ss[j]); 
                 TestUtil.assertCommutativeEquals(tn, tn1, false);
                 TestUtil.assertCommutativeEquals(ts, tn1, false);
                 TestUtil.assertCommutativeEquals(tn, ts1, false);

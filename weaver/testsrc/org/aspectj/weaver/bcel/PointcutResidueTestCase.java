@@ -178,7 +178,7 @@ public class PointcutResidueTestCase extends WeaveTestCase {
             sp.resolve(
             	new SimpleScope(
             	world,
-                SimpleScope.makeFormalBindings(TypeX.forNames(formalTypes),
+                SimpleScope.makeFormalBindings(UnresolvedType.forNames(formalTypes),
                 formalNames)
                 ));
 
@@ -187,15 +187,15 @@ public class PointcutResidueTestCase extends WeaveTestCase {
                 AdviceKind.Before,
                 rp,
                 Member.method(
-                    TypeX.forName("Aspect"),
+                    UnresolvedType.forName("Aspect"),
                     Modifier.STATIC,
                     "ajc_before_0",
                     Member.typesToSignature(
-                        ResolvedTypeX.VOID,
-                        TypeX.forNames(formalTypes),false)),
+                        ResolvedType.VOID,
+                        UnresolvedType.forNames(formalTypes),false)),
             	0, -1, -1, null, null);
 
-		ResolvedTypeX inAspect = world.resolve("Aspect");
+		ResolvedType inAspect = world.resolve("Aspect");
 		CrosscuttingMembers xcut = new CrosscuttingMembers(inAspect);
 		inAspect.crosscuttingMembers = xcut;
 		

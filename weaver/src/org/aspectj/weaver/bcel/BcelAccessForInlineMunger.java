@@ -28,9 +28,9 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,7 +68,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
      */
     private Set m_inlineAccessorMethodGens;
 
-    public BcelAccessForInlineMunger(ResolvedTypeX aspectType) {
+    public BcelAccessForInlineMunger(ResolvedType aspectType) {
         super(null, aspectType);
         if (aspectType.getWorld().isXnoInline()) {
             throw new Error("This should not happen");
@@ -83,7 +83,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
         // look for all @Around advices
         for (Iterator iterator = m_aspectGen.getMethodGens().iterator(); iterator.hasNext();) {
             LazyMethodGen methodGen = (LazyMethodGen) iterator.next();
-            if (methodGen.hasAnnotation(TypeX.forName("org/aspectj/lang/annotation/Around"))) {
+            if (methodGen.hasAnnotation(UnresolvedType.forName("org/aspectj/lang/annotation/Around"))) {
                 openAroundAdvice(methodGen);
             }
         }
@@ -121,7 +121,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
      * @param onType
      * @return
      */
-    public boolean matches(ResolvedTypeX onType) {
+    public boolean matches(ResolvedType onType) {
         return aspectType.equals(onType);
     }
 
@@ -148,7 +148,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
             // open-up method call
             if ((inst instanceof InvokeInstruction)) {
                 InvokeInstruction invoke = (InvokeInstruction) inst;
-                ResolvedTypeX callee = m_aspectGen.getWorld().resolve(TypeX.forName(invoke.getClassName(cpg)));
+                ResolvedType callee = m_aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
 
                 // look in the whole method list and not just declared for super calls and alike
                 List methods = callee.getMethodsWithoutIterator();
@@ -194,7 +194,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
                 }
             } else if (inst instanceof FieldInstruction) {
                 FieldInstruction invoke = (FieldInstruction) inst;
-                ResolvedTypeX callee = m_aspectGen.getWorld().resolve(TypeX.forName(invoke.getClassName(cpg)));
+                ResolvedType callee = m_aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
                 for (int i = 0; i < callee.getDeclaredJavaFields().length; i++) {
                     ResolvedMember resolvedMember = callee.getDeclaredJavaFields()[i];
                     if (invoke.getName(cpg).equals(resolvedMember.getName())
@@ -270,7 +270,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
             InstructionList il = method.getBody();
             int register = 0;
             for (int i = 0; i < inlineAccessor.getParameterTypes().length; i++) {
-                TypeX typeX = inlineAccessor.getParameterTypes()[i];
+                UnresolvedType typeX = inlineAccessor.getParameterTypes()[i];
                 Type type = BcelWorld.makeBcelType(typeX);
                 il.append(InstructionFactory.createLoad(type, register));
                 register += type.getSize();
@@ -332,7 +332,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
             il.append(InstructionConstants.ALOAD_0);
             int register = 0;
             for (int i = 0; i < inlineAccessor.getParameterTypes().length; i++) {
-                TypeX typeX = inlineAccessor.getParameterTypes()[i];
+                UnresolvedType typeX = inlineAccessor.getParameterTypes()[i];
                 Type type = BcelWorld.makeBcelType(typeX);
                 il.append(InstructionFactory.createLoad(type, register));
                 register += type.getSize();

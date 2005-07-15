@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.aspectj.weaver.ast;
 
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 /**
  * Represents a cast expression.
@@ -42,7 +42,7 @@ public class CastExpr extends Expr {
         return m_castToTypeName;
     }
 
-    public ResolvedTypeX getType() {
+    public ResolvedType getType() {
         throw new RuntimeException("not supported");
     }
 }

@@ -19,7 +19,7 @@ import java.io.IOException;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 /**
@@ -51,15 +51,15 @@ public class NotTypePattern extends TypePattern {
 		return true;
 	}
 	
-	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
+	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		return negatedPattern.matchesInstanceof(type).not();
 	}
 
-	protected boolean matchesExactly(ResolvedTypeX type) {
+	protected boolean matchesExactly(ResolvedType type) {
 		return (!negatedPattern.matchesExactly(type) && annotationPattern.matches(type).alwaysTrue());
 	}
 	
-	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
+	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return (!negatedPattern.matchesExactly(type,annotatedType) && annotationPattern.matches(annotatedType).alwaysTrue());
 	}
 	
@@ -75,7 +75,7 @@ public class NotTypePattern extends TypePattern {
 		return !negatedPattern.matchesExactly(type);
 	}
 	
-	public boolean matchesStatically(ResolvedTypeX type) {
+	public boolean matchesStatically(ResolvedType type) {
 		return !negatedPattern.matchesStatically(type);
 	}
 	

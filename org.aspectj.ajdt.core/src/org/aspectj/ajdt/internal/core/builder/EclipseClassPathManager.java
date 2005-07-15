@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.ClassPathManager;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
@@ -52,9 +52,9 @@ public class EclipseClassPathManager extends ClassPathManager {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.bcel.ClassPathManager#find(org.aspectj.weaver.TypeX)
+	 * @see org.aspectj.weaver.bcel.ClassPathManager#find(org.aspectj.weaver.UnresolvedType)
 	 */
-	public ClassFile find(TypeX type) {
+	public ClassFile find(UnresolvedType type) {
 		ClassFile cf = null;
 		String name = type.getName();
 		if (name.endsWith(".class")) {

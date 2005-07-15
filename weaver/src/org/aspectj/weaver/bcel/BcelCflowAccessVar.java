@@ -20,7 +20,7 @@ import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 /**
  * XXX Erik and I need to discuss this hierarchy.  Having FieldRef
@@ -39,7 +39,7 @@ public class BcelCflowAccessVar extends BcelVar {
 	 * @param stackField the member containing the CFLOW_STACK_TYPE
 	 * @param index yeah yeah
 	 */
-	public BcelCflowAccessVar(ResolvedTypeX type, Member stackField, int index) {
+	public BcelCflowAccessVar(ResolvedType type, Member stackField, int index) {
 		super(type, 0);
 		this.stackField = stackField;
 		this.index = index;
@@ -64,7 +64,7 @@ public class BcelCflowAccessVar extends BcelVar {
 		il.append(createLoadInstructions(getType(), fact));
 	}
 
-	public InstructionList createLoadInstructions(ResolvedTypeX toType, InstructionFactory fact) {
+	public InstructionList createLoadInstructions(ResolvedType toType, InstructionFactory fact) {
 		InstructionList il = new InstructionList();
 
 		il.append(Utility.createGet(fact, stackField));
@@ -83,7 +83,7 @@ public class BcelCflowAccessVar extends BcelVar {
 	public void appendLoadAndConvert(
 		InstructionList il,
 		InstructionFactory fact,
-		ResolvedTypeX toType) {
+		ResolvedType toType) {
 		il.append(createLoadInstructions(toType, fact));				
 
 	}

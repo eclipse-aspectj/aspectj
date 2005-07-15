@@ -22,7 +22,7 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 /**
  * This type munger will modify a given class (see the munge() method) to include
@@ -32,7 +32,7 @@ public class BcelCflowCounterFieldAdder extends BcelTypeMunger {
 	private ResolvedMember cflowCounterField;
 	
 	public BcelCflowCounterFieldAdder(ResolvedMember cflowCounterField) {
-		super(null,(ResolvedTypeX)cflowCounterField.getDeclaringType());
+		super(null,(ResolvedType)cflowCounterField.getDeclaringType());
 		this.cflowCounterField = cflowCounterField;
 	}
 
@@ -82,7 +82,7 @@ public class BcelCflowCounterFieldAdder extends BcelTypeMunger {
 		return cflowCounterField;
 	}
 
-	public boolean matches(ResolvedTypeX onType) {
+	public boolean matches(ResolvedType onType) {
 		return onType.equals(cflowCounterField.getDeclaringType());
 	}
 

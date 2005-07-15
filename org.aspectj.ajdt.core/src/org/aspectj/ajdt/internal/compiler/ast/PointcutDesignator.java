@@ -24,7 +24,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -73,7 +73,7 @@ public class PointcutDesignator extends ASTNode {
         for (int i = 0, len = baseArgumentCount; i < len; i++) {
             Argument arg = arguments[i];
             String name = new String(arg.name);
-            TypeX type = EclipseFactory.fromBinding(parameters[i]);
+            UnresolvedType type = EclipseFactory.fromBinding(parameters[i]);
             bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
         }
         

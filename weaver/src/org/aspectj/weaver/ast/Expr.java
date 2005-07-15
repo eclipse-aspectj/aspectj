@@ -14,7 +14,7 @@
 package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 public abstract class Expr extends ASTNode {
 
@@ -26,13 +26,13 @@ public abstract class Expr extends ASTNode {
 
     public abstract void accept(IExprVisitor v);    
 
- 	public abstract ResolvedTypeX getType();
+ 	public abstract ResolvedType getType();
 
-    public static FieldGet makeFieldGet(Member myField, ResolvedTypeX inAspect) {
+    public static FieldGet makeFieldGet(Member myField, ResolvedType inAspect) {
         return new FieldGet(myField, inAspect);
     }
 
-	public static CallExpr makeCallExpr(Member member, Expr[] exprs, ResolvedTypeX returnType) {
+	public static CallExpr makeCallExpr(Member member, Expr[] exprs, ResolvedType returnType) {
 		return new CallExpr(member, exprs, returnType);
 	}
 

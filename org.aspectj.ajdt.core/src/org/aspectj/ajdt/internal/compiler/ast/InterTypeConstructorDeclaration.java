@@ -75,8 +75,8 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	{
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
 		
-		TypeX aspectTypeX = EclipseFactory.fromBinding(binding.declaringClass);
-		TypeX targetTypeX = EclipseFactory.fromBinding(onTypeBinding);
+		UnresolvedType aspectTypeX = EclipseFactory.fromBinding(binding.declaringClass);
+		UnresolvedType targetTypeX = EclipseFactory.fromBinding(onTypeBinding);
 		
 		ArrayBinding objectArrayBinding = scope.createArrayType(scope.getJavaLangObject(), 1);
 		
@@ -215,14 +215,14 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			return null;
 		}	
 		
-		ResolvedTypeX declaringTypeX = world.fromEclipse(onTypeBinding);
-		ResolvedTypeX aspectType = world.fromEclipse(classScope.referenceContext.binding);
+		ResolvedType declaringTypeX = world.fromEclipse(onTypeBinding);
+		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		
 		ResolvedMember bindingAsMember = world.makeResolvedMember(binding);
 		
 		ResolvedMember signature =
 			new ResolvedMember(Member.CONSTRUCTOR, declaringTypeX, declaredModifiers, 
-					ResolvedTypeX.VOID, "<init>", bindingAsMember.getParameterTypes(),
+					ResolvedType.VOID, "<init>", bindingAsMember.getParameterTypes(),
 					world.fromEclipse(binding.thrownExceptions));			
 		ResolvedMember syntheticInterMember =
 			AjcMemberMaker.interConstructor(declaringTypeX,  signature, aspectType);
@@ -255,7 +255,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
 				new ResolvedMember(Member.CONSTRUCTOR, 
 					EclipseFactory.fromBinding(onTypeBinding.superclass()),
-					0, ResolvedTypeX.VOID, "<init>", TypeX.NONE));
+					0, ResolvedType.VOID, "<init>", UnresolvedType.NONE));
 		}
 		return new AjAttribute.TypeMunger(munger);
 	}

@@ -23,7 +23,7 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
 
 /*
@@ -62,7 +62,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	private BcelWorld world;
 	private AnnotationTypePattern fooTP,simpleAnnotationTP;
 	
-	private ResolvedTypeX loadType(String name) {
+	private ResolvedType loadType(String name) {
 		if (world == null) {
 		  world = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/testcode.jar");
 		}
@@ -82,7 +82,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	
 	public void testAnnotationPatternMatchingOnTypes() {
 		if (LangUtil.is15VMOrGreater()) {
-		ResolvedTypeX rtx = loadType("AnnotatedClass");
+		ResolvedType rtx = loadType("AnnotatedClass");
         initAnnotationTypePatterns();		
 		
 		// One should match
@@ -105,7 +105,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testReferenceToNonAnnotationType() {
-		ResolvedTypeX rtx = loadType("AnnotatedClass"); // inits the world
+		ResolvedType rtx = loadType("AnnotatedClass"); // inits the world
 		PatternParser p = new PatternParser("@java.lang.String");
 		
 		MyMessageHandler mh = new MyMessageHandler();
@@ -121,7 +121,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testReferenceViaFormalToNonAnnotationType() {
-		ResolvedTypeX rtx = loadType("AnnotatedClass"); // inits the world
+		ResolvedType rtx = loadType("AnnotatedClass"); // inits the world
 		PatternParser p = new PatternParser("a");
 		
 		MyMessageHandler mh = new MyMessageHandler();
@@ -145,7 +145,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 
 	public void testUnresolvedAnnotationTypes() {
-		ResolvedTypeX rtx = loadType("AnnotatedClass");
+		ResolvedType rtx = loadType("AnnotatedClass");
 
 		PatternParser p = new PatternParser("@Foo");
 		AnnotationTypePattern fooTP = p.maybeParseAnnotationPattern();
@@ -159,7 +159,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	
 	public void testAnnotationPatternMatchingOnMethods() {
 		if (LangUtil.is15VMOrGreater()) {
-		ResolvedTypeX rtx = loadType("AnnotatedClass");
+		ResolvedType rtx = loadType("AnnotatedClass");
 		ResolvedMember aMethod = rtx.getDeclaredMethods()[1];
         
 		assertTrue("Haven't got the right method, I'm looking for 'm1()': "+aMethod.getName(),
@@ -177,7 +177,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	
 	public void testAnnotationPatternMatchingOnFields() {
 		if (LangUtil.is15VMOrGreater()) {
-		ResolvedTypeX rtx = loadType("AnnotatedClass");
+		ResolvedType rtx = loadType("AnnotatedClass");
 		ResolvedMember aField = rtx.getDeclaredFields()[0];
 
 				assertTrue("Haven't got the right field, I'm looking for 'i'"+aField.getName(),
@@ -195,8 +195,8 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testAnnotationTypeResolutionOnTypes() {
-		ResolvedTypeX rtx = loadType("AnnotatedClass");
-		ResolvedTypeX[] types = rtx.getAnnotationTypes();
+		ResolvedType rtx = loadType("AnnotatedClass");
+		ResolvedType[] types = rtx.getAnnotationTypes();
 		assertTrue("Did not expect null",types!=null);
 		assertTrue("Expected 1 entry but got "+types.length,types.length==1);
 		assertTrue("Should be 'p.SimpleAnnotation' but is "+types[0],
@@ -204,13 +204,13 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testAnnotationTypeResolutionOnMethods() {
-		ResolvedTypeX rtx = loadType("AnnotatedClass");
+		ResolvedType rtx = loadType("AnnotatedClass");
 
 		ResolvedMember aMethod = rtx.getDeclaredMethods()[1];
 		assertTrue("Haven't got the right method, I'm looking for 'm1()': "+aMethod.getName(),
 				aMethod.getName().equals("m1"));
 		
-		ResolvedTypeX[] types = aMethod.getAnnotationTypes();
+		ResolvedType[] types = aMethod.getAnnotationTypes();
 		assertTrue("Did not expect null",types!=null);
 		assertTrue("Expected 1 entry but got "+types.length,types.length==1);
 		assertTrue("Should be 'p.SimpleAnnotation' but is "+types[0],
@@ -218,14 +218,14 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testAnnotationTypeResolutionOnFields() {
-		ResolvedTypeX rtx = loadType("AnnotatedClass");
+		ResolvedType rtx = loadType("AnnotatedClass");
 
 		ResolvedMember aField = rtx.getDeclaredFields()[0];
 
 		assertTrue("Haven't got the right field, I'm looking for 'i'"+aField.getName(),
 				   aField.getName().equals("i"));
 				
-		ResolvedTypeX[] types = aField.getAnnotationTypes();
+		ResolvedType[] types = aField.getAnnotationTypes();
 		assertTrue("Did not expect null",types!=null);
 		assertTrue("Expected 1 entry but got "+types.length,types.length==1);
 		assertTrue("Should be 'p.SimpleAnnotation' but is "+types[0],
@@ -234,7 +234,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	
 	public void testWildPatternMatchingOnTypes() {
 		
-		ResolvedTypeX rtx = loadType("AnnotatedClass");
+		ResolvedType rtx = loadType("AnnotatedClass");
         initAnnotationTypePatterns();		
         
         // Let's create something wild

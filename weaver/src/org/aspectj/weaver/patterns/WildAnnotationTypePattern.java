@@ -18,7 +18,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -56,7 +56,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		}
 		// matches if the type of any of the annotations on the AnnotatedElement is
 		// matched by the typePattern.
-		ResolvedTypeX[] annTypes = annotated.getAnnotationTypes();
+		ResolvedType[] annTypes = annotated.getAnnotationTypes();
 		for (int i = 0; i < annTypes.length; i++) {
 			if (typePattern.matches(annTypes[i],TypePattern.STATIC).alwaysTrue()) {
 				return FuzzyBoolean.YES;
@@ -84,7 +84,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
     	resolved = true;
     	if (typePattern instanceof ExactTypePattern) {
     		ExactTypePattern et = (ExactTypePattern)typePattern;
-			if (!et.getExactType().isAnnotation(scope.getWorld())) {
+			if (!et.getExactType().resolve(scope.getWorld()).isAnnotation()) {
 				IMessage m = MessageUtil.error(
 						WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,et.getExactType().getName()),
 						getSourceLocation());

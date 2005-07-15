@@ -31,7 +31,7 @@ public class MemberTestCase extends TestCase {
 
     public void testMethodConstruction() {
         Member s = Member.methodFromString("void Foo.goo(int)");
-        Member t = Member.method(TypeX.forName("Foo"), 0, "goo", "(I)V");
+        Member t = Member.method(UnresolvedType.forName("Foo"), 0, "goo", "(I)V");
         Member u = Member.methodFromString("void Foo1.goo(int)");
         Member v = Member.methodFromString("int Foo.goo(int)");
 
@@ -69,8 +69,8 @@ public class MemberTestCase extends TestCase {
         kindTest(m, Member.METHOD);
         declaringTypeTest(m, "Foo");
         nameTest(m, "goo");
-        parameterTypesTest(m, new TypeX[] { ResolvedTypeX.INT });
-        returnTypeTest(m, ResolvedTypeX.VOID);
+        parameterTypesTest(m, new UnresolvedType[] { ResolvedType.INT });
+        returnTypeTest(m, ResolvedType.VOID);
         isInterfaceTest(m, false);
         isPrivateTest(m, false);
         isConstructorTest(m, false);
@@ -80,8 +80,8 @@ public class MemberTestCase extends TestCase {
         kindTest(m, Member.METHOD);
         declaringTypeTest(m, "java.util.Iterator");
         nameTest(m, "next");
-        parameterTypesTest(m, TypeX.NONE);
-        returnTypeTest(m, TypeX.OBJECT);
+        parameterTypesTest(m, UnresolvedType.NONE);
+        returnTypeTest(m, UnresolvedType.OBJECT);
         isInterfaceTest(m, true);
         isPrivateTest(m, false);
         isConstructorTest(m, false);
@@ -91,8 +91,8 @@ public class MemberTestCase extends TestCase {
         kindTest(m, Member.CONSTRUCTOR);
         declaringTypeTest(m, "Foo");
         nameTest(m, "<init>");
-        parameterTypesTest(m, new TypeX[] { ResolvedTypeX.INT, TypeX.OBJECT } );
-        returnTypeTest(m, ResolvedTypeX.VOID);
+        parameterTypesTest(m, new UnresolvedType[] { ResolvedType.INT, UnresolvedType.OBJECT } );
+        returnTypeTest(m, ResolvedType.VOID);
         isInterfaceTest(m, false);
         isPrivateTest(m, false);
         isConstructorTest(m, true);
@@ -102,8 +102,8 @@ public class MemberTestCase extends TestCase {
         kindTest(m, Member.METHOD);
         declaringTypeTest(m, "Foo");
         nameTest(m, "sqrt");
-        parameterTypesTest(m, new TypeX[] { ResolvedTypeX.DOUBLE } );
-        returnTypeTest(m, ResolvedTypeX.DOUBLE);
+        parameterTypesTest(m, new UnresolvedType[] { ResolvedType.DOUBLE } );
+        returnTypeTest(m, ResolvedType.DOUBLE);
         isInterfaceTest(m, false);
         isPrivateTest(m, true);
         isConstructorTest(m, false);
@@ -113,8 +113,8 @@ public class MemberTestCase extends TestCase {
         kindTest(m, Member.METHOD);
         declaringTypeTest(m, "java.lang.Math");
         nameTest(m, "max");
-        parameterTypesTest(m, new TypeX[] { ResolvedTypeX.INT, ResolvedTypeX.INT } );
-        returnTypeTest(m, ResolvedTypeX.INT);
+        parameterTypesTest(m, new UnresolvedType[] { ResolvedType.INT, ResolvedType.INT } );
+        returnTypeTest(m, ResolvedType.INT);
         isInterfaceTest(m, false);
         isPrivateTest(m, false);
         isConstructorTest(m, false);
@@ -126,8 +126,8 @@ public class MemberTestCase extends TestCase {
         kindTest(m, Member.FIELD);
         declaringTypeTest(m, "Foo");
         nameTest(m, "goo");
-        parameterTypesTest(m, TypeX.NONE);
-        returnTypeTest(m, ResolvedTypeX.INT);
+        parameterTypesTest(m, UnresolvedType.NONE);
+        returnTypeTest(m, ResolvedType.INT);
         isInterfaceTest(m, false);
         isPrivateTest(m, false);
         isConstructorTest(m, false);
@@ -137,8 +137,8 @@ public class MemberTestCase extends TestCase {
         kindTest(m, Member.FIELD);
         declaringTypeTest(m, "goo.Bar");
         nameTest(m, "i");
-        parameterTypesTest(m, TypeX.NONE);
-        returnTypeTest(m, TypeX.forName("java.util.Iterator"));
+        parameterTypesTest(m, UnresolvedType.NONE);
+        returnTypeTest(m, UnresolvedType.forName("java.util.Iterator"));
         isInterfaceTest(m, false);
         isPrivateTest(m, false);
         isConstructorTest(m, false);
@@ -157,17 +157,17 @@ public class MemberTestCase extends TestCase {
     private void isInterfaceTest(Member m, boolean b) {
         assertEquals(m + " is interface", b, m.isInterface());
     }
-    private void returnTypeTest(Member m, TypeX returnType) {
+    private void returnTypeTest(Member m, UnresolvedType returnType) {
         assertEquals(m + " return type", returnType, m.getReturnType());
     }
-    private void parameterTypesTest(Member m, TypeX[] paramTypes) {
+    private void parameterTypesTest(Member m, UnresolvedType[] paramTypes) {
         TestUtil.assertArrayEquals(m + " parameters", paramTypes, m.getParameterTypes());
     }
     private void nameTest(Member m, String name) {
         assertEquals(m + " name", name, m.getName());
     }
     private void declaringTypeTest(Member m, String declaringName) {
-        assertEquals(m + " declared in", TypeX.forName(declaringName), m.getDeclaringType());
+        assertEquals(m + " declared in", UnresolvedType.forName(declaringName), m.getDeclaringType());
     }
     private void kindTest(Member m, Member.Kind kind) {
         assertEquals(m + " kind", kind, m.getKind());

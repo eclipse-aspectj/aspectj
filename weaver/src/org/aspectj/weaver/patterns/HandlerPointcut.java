@@ -24,9 +24,9 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
@@ -149,8 +149,8 @@ public class HandlerPointcut extends Pointcut {
 		exceptionType = exceptionType.resolveBindings(scope, bindings, false, false);
 		boolean invalidParameterization = false;
 		if (exceptionType.getTypeParameters().size() > 0) invalidParameterization = true ;
-		TypeX exactType = exceptionType.getExactType();
-		if (exactType != null && exactType.isParameterized()) invalidParameterization = true;
+		UnresolvedType exactType = exceptionType.getExactType();
+		if (exactType != null && exactType.isParameterizedType()) invalidParameterization = true;
 		if (invalidParameterization) {
 			// no parameterized or generic types for handler
 			scope.message(
@@ -168,7 +168,7 @@ public class HandlerPointcut extends Pointcut {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 	
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		Pointcut ret = new HandlerPointcut(exceptionType);
 		ret.copyLocationFrom(this);
 		return ret;

@@ -25,7 +25,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -44,7 +44,7 @@ public class WithinPointcut extends Pointcut {
         return typePattern;
     }
 
-	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
+	private FuzzyBoolean isWithinType(ResolvedType type) {
 		while (type != null) {
 			if (typePattern.matchesStatically(type)) {			    
 				return FuzzyBoolean.YES;
@@ -70,8 +70,8 @@ public class WithinPointcut extends Pointcut {
 	}
     
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
-		ResolvedTypeX enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
-		if (enclosingType == ResolvedTypeX.MISSING) {
+		ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
+		if (enclosingType == ResolvedType.MISSING) {
 			IMessage msg = new Message(
 			    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_WITHINPCD,
 			    		              shadow.getEnclosingType().getName()),
@@ -144,7 +144,7 @@ public class WithinPointcut extends Pointcut {
 		typePattern = typePattern.resolveBindingsFromRTTI(false,false);
 	}
 	
-	public void postRead(ResolvedTypeX enclosingType) {
+	public void postRead(ResolvedType enclosingType) {
 		typePattern.postRead(enclosingType);
 	}
 
@@ -172,7 +172,7 @@ public class WithinPointcut extends Pointcut {
 	}
 	
 	
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		Pointcut ret = new WithinPointcut(typePattern);
 		ret.copyLocationFrom(this);
 		return ret;

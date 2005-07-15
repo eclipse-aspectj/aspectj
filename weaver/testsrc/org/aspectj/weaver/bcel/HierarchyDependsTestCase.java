@@ -29,10 +29,10 @@ public class HierarchyDependsTestCase extends TestCase {
 	public void testHierarchyDepends() {
 		BcelWorld world = new BcelWorld();
 		TypePatternQuestions questions = new TypePatternQuestions();
-		ResolvedTypeX runnableType = world.resolve("java.lang.Runnable");
-		ResolvedTypeX numberType = world.resolve("java.lang.Number");
-		ResolvedTypeX integerType = world.resolve("java.lang.Integer");
-		ResolvedTypeX stringType = world.resolve("java.lang.String");
+		ResolvedType runnableType = world.resolve("java.lang.Runnable");
+		ResolvedType numberType = world.resolve("java.lang.Number");
+		ResolvedType integerType = world.resolve("java.lang.Integer");
+		ResolvedType stringType = world.resolve("java.lang.String");
 		
 		
 		TypePattern numberPattern = new ExactTypePattern(numberType, false);

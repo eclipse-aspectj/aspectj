@@ -18,8 +18,8 @@ import java.io.IOException;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
@@ -35,7 +35,7 @@ public class DeclareAnnotation extends Declare {
 	private SignaturePattern sigPattern; // for declare @field,@method,@constructor
 	private String annotationMethod = "unknown";
 	private String annotationString = "@<annotation>";
-	private ResolvedTypeX containingAspect;
+	private ResolvedType containingAspect;
 	private AnnotationX   annotation;
 	
     /**
@@ -205,7 +205,7 @@ public class DeclareAnnotation extends Declare {
 	}
 
 
-//	public boolean getAnnotationIfMatches(ResolvedTypeX onType) {
+//	public boolean getAnnotationIfMatches(ResolvedType onType) {
 //		return (match(onType));
 //	}
 	
@@ -220,7 +220,7 @@ public class DeclareAnnotation extends Declare {
     /**
      * For @type
      */
-	public boolean matches(ResolvedTypeX typeX) {
+	public boolean matches(ResolvedType typeX) {
 		if (!typePattern.matchesStatically(typeX)) return false;
 		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled() &&
 				!typeX.isExposedToWeaver())
@@ -230,15 +230,15 @@ public class DeclareAnnotation extends Declare {
 		return true; 
 	}
 
-	public void setAspect(ResolvedTypeX typeX) {
+	public void setAspect(ResolvedType typeX) {
 		containingAspect = typeX;
 	}
 
-	public TypeX getAspect() {
+	public UnresolvedType getAspect() {
 		return containingAspect;
 	}
 
-	public void copyAnnotationTo(ResolvedTypeX onType) {
+	public void copyAnnotationTo(ResolvedType onType) {
 		ensureAnnotationDiscovered();
 		if (!onType.hasAnnotation(annotation.getSignature())) {
 			onType.addAnnotation(annotation);			
@@ -296,9 +296,9 @@ public class DeclareAnnotation extends Declare {
 	}
 
     /**
-     * @return TypeX for the annotation
+     * @return UnresolvedType for the annotation
      */
-	public TypeX getAnnotationTypeX() {
+	public UnresolvedType getAnnotationTypeX() {
 	   ensureAnnotationDiscovered();
 	   return this.annotation.getSignature(); 
 	}
@@ -323,7 +323,7 @@ public class DeclareAnnotation extends Declare {
 	 * decision if a type was specified in the sig/type pattern
 	 * signature. 
 	 */
-	public boolean couldEverMatch(ResolvedTypeX type) {
+	public boolean couldEverMatch(ResolvedType type) {
 	    // Haven't implemented variant for typePattern (doesn't seem worth it!)
 	    // BUGWARNING This test might not be sufficient for funny cases relating
 		// to interfaces and the use of '+' - but it seems really important to

@@ -21,8 +21,8 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.*;
 import org.aspectj.weaver.patterns.FormalBinding;
@@ -43,7 +43,7 @@ import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 public class EclipseScope implements IScope {
 	private Scope scope;
 	private EclipseFactory world;
-	private ResolvedTypeX enclosingType;
+	private ResolvedType enclosingType;
 	private FormalBinding[] bindings;
 	
 	private String[] importedPrefixes = null;
@@ -60,12 +60,12 @@ public class EclipseScope implements IScope {
 	}
 	
 	
-	public TypeX lookupType(String name, IHasPosition location) {
+	public UnresolvedType lookupType(String name, IHasPosition location) {
 		char[][] splitName = WildTypePattern.splitNames(name);
 		TypeBinding b = scope.getType(splitName,splitName.length);
 		//FIXME ??? need reasonable error handling...
 		if (!b.isValidBinding()) {
-			return ResolvedTypeX.MISSING;
+			return ResolvedType.MISSING;
 		}
 		
 		//System.err.println("binding: " + b);
@@ -78,7 +78,7 @@ public class EclipseScope implements IScope {
 //		System.out.println("lookup: " + name + " in " + 
 //			Arrays.asList(importedPrefixes));
 		
-		ResolvedTypeX ret = null;
+		ResolvedType ret = null;
 		String dotName = "." + name;
 		for (int i=0; i<importedNames.length; i++) {
 			String importedName = importedNames[i];
@@ -87,12 +87,12 @@ public class EclipseScope implements IScope {
 				((importedName.length() == name.length()) ||
 				 (importedName.endsWith(dotName))))
 			{
-				ResolvedTypeX found = resolveVisible(importedName);
-				if (found == ResolvedTypeX.MISSING) continue;
+				ResolvedType found = resolveVisible(importedName);
+				if (found == ResolvedType.MISSING) continue;
 				if (ret != null) {
 					message(IMessage.ERROR, location, 
 						"ambiguous type reference, both " + ret.getName() + " and " + importedName);
-					return ResolvedTypeX.MISSING;
+					return ResolvedType.MISSING;
 				} else {
 					ret = found;
 				}
@@ -104,8 +104,8 @@ public class EclipseScope implements IScope {
 		//XXX need to handle ambiguous references here
 		for (int i=0; i<importedPrefixes.length; i++) {
 			String importedPrefix = importedPrefixes[i];
-			ResolvedTypeX tryType = resolveVisible(importedPrefix + name);
-			if (tryType != ResolvedTypeX.MISSING) {
+			ResolvedType tryType = resolveVisible(importedPrefix + name);
+			if (tryType != ResolvedType.MISSING) {
 				return tryType;
 			}
 		}
@@ -115,15 +115,15 @@ public class EclipseScope implements IScope {
 	}
 	
 	
-//	private ResolvedTypeX resolveVisible(String name) {
-//		ResolvedTypeX found = world.getWorld().resolve(TypeX.forName(name), true);
-//		if (found == ResolvedTypeX.MISSING) return found;
-//		if (ResolvedTypeX.isVisible(found.getModifiers(), found, enclosingType)) return found;
-//		return ResolvedTypeX.MISSING; 
+//	private ResolvedType resolveVisible(String name) {
+//		ResolvedType found = world.getWorld().resolve(UnresolvedType.forName(name), true);
+//		if (found == ResolvedType.MISSING) return found;
+//		if (ResolvedType.isVisible(found.getModifiers(), found, enclosingType)) return found;
+//		return ResolvedType.MISSING; 
 //	}
 	
 
-//	public TypeX lookupType(String name, IHasPosition location) {
+//	public UnresolvedType lookupType(String name, IHasPosition location) {
 //		char[][] namePieces = CharOperation.splitOn('.', name.toCharArray());
 //		TypeBinding binding;
 //		if (namePieces.length == 1) {
@@ -137,7 +137,7 @@ public class EclipseScope implements IScope {
 //			//XXX do we do this always or sometimes
 //			System.err.println("error: " + binding);
 //			scope.problemReporter().invalidType(EclipseWorld.astForLocation(location), binding);
-//			return ResolvedTypeX.MISSING;
+//			return ResolvedType.MISSING;
 //		}
 //		//??? do we want this too
 ////		if (AstNode.isTypeUseDeprecated(binding, scope))
@@ -286,7 +286,7 @@ public class EclipseScope implements IScope {
 		return world.getWorld();
 	}
 
-	public ResolvedTypeX getEnclosingType() {
+	public ResolvedType getEnclosingType() {
 		return enclosingType;
 	}
 

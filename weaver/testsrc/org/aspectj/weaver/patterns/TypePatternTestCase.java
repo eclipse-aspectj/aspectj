@@ -219,7 +219,7 @@ public class TypePatternTestCase extends TestCase {
 	private void checkIllegalInstanceofMatch(String pattern, String name) {
 		try {
 			TypePattern p = makeTypePattern(pattern);
-			ResolvedTypeX type = world.resolve(name);
+			ResolvedType type = world.resolve(name);
 			/*FuzzyBoolean result = */p.matchesInstanceof(type);
 		} catch (AbortException e) {
 			return;
@@ -229,7 +229,7 @@ public class TypePatternTestCase extends TestCase {
   
   	private void checkInstanceofMatch(String pattern, String name, FuzzyBoolean shouldMatch) {
 		TypePattern p = makeTypePattern(pattern);
-		ResolvedTypeX type = world.resolve(name);
+		ResolvedType type = world.resolve(name);
 		
 		p = p.resolveBindings(makeTestScope(), null, false, false);
 		
@@ -260,7 +260,7 @@ public class TypePatternTestCase extends TestCase {
 		String name,
 		boolean shouldMatch) 
 	{
-		ResolvedTypeX type = world.resolve(name);
+		ResolvedType type = world.resolve(name);
 		//System.out.println("type: " + type);
 		boolean result = p.matchesStatically(type);
 		String msg = "matches " + p + " to " + type + " expected ";

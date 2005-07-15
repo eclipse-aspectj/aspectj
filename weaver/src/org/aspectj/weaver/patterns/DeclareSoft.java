@@ -18,8 +18,8 @@ import java.io.IOException;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
@@ -88,9 +88,9 @@ public class DeclareSoft extends Declare {
 
     public void resolve(IScope scope) {
     	exception = exception.resolveBindings(scope, null, false, true);
-    	TypeX excType = exception.getExactType();
-    	if (excType != ResolvedTypeX.MISSING) {
-    		if (!scope.getWorld().getCoreType(TypeX.THROWABLE).isAssignableFrom(excType)) {
+    	ResolvedType excType = exception.getExactType().resolve(scope.getWorld());
+    	if (excType != ResolvedType.MISSING) {
+    		if (!scope.getWorld().getCoreType(UnresolvedType.THROWABLE).isAssignableFrom(excType)) {
     			scope.getWorld().showMessage(IMessage.ERROR,
     					WeaverMessages.format(WeaverMessages.NOT_THROWABLE,excType.getName()),
     					exception.getSourceLocation(), null);
@@ -98,7 +98,7 @@ public class DeclareSoft extends Declare {
     			return;
     		}
 	        // ENH 42743 suggests that we don't soften runtime exceptions.
-			if (scope.getWorld().getCoreType(TypeX.RUNTIME_EXCEPTION).isAssignableFrom(excType)) {
+			if (scope.getWorld().getCoreType(UnresolvedType.RUNTIME_EXCEPTION).isAssignableFrom(excType)) {
 			    scope.getWorld().getLint().runtimeExceptionNotSoftened.signal(
 			      		new String[]{exception.toString()},
 			      		exception.getSourceLocation(),null);

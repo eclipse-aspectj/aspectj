@@ -22,7 +22,7 @@ import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.ast.And;
 import org.aspectj.weaver.ast.Call;
 import org.aspectj.weaver.ast.CallExpr;
@@ -186,14 +186,14 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
         // ldc_w annotationClass
         // invokevirtual java/lang/Class.isAnnotationPresent:(Ljava/lang/Class;)Z
         InstructionList il = new InstructionList();
-        Member getClass = Member.method(TypeX.OBJECT, 0, "getClass", "()Ljava/lang/Class;");
+        Member getClass = Member.method(UnresolvedType.OBJECT, 0, "getClass", "()Ljava/lang/Class;");
         il.append(Utility.createInvoke(fact, world, getClass));
         // aload annotationClass
         String s = hasAnnotation.getAnnotationType().getName();
         il.append(fact.createConstant(new ObjectType(hasAnnotation.getAnnotationType().getName())));
 //        int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
 //        il.append(new LDC_W(annClassIndex));
-        Member isAnnotationPresent = Member.method(TypeX.forName("java/lang/Class"),0,
+        Member isAnnotationPresent = Member.method(UnresolvedType.forName("java/lang/Class"),0,
                 "isAnnotationPresent","(Ljava/lang/Class;)Z");
         il.append(Utility.createInvoke(fact,world,isAnnotationPresent));
         il.append(createJumpBasedOnBooleanOnStack());

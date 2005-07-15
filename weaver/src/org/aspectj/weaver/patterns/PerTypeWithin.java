@@ -28,7 +28,7 @@ import org.aspectj.weaver.Member;
 //import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
 import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
@@ -76,8 +76,8 @@ public class PerTypeWithin extends PerClause {
 	
 	
     protected FuzzyBoolean matchInternal(Shadow shadow) {
-    	ResolvedTypeX enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
-    	if (enclosingType == ResolvedTypeX.MISSING) {
+    	ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
+    	if (enclosingType == ResolvedType.MISSING) {
     		//PTWIMPL ?? Add a proper message
     		IMessage msg = new Message(
     				"Cant find type pertypewithin matching...",
@@ -122,7 +122,7 @@ public class PerTypeWithin extends PerClause {
     }
     
 
-	public PerClause concretize(ResolvedTypeX inAspect) {
+	public PerClause concretize(ResolvedType inAspect) {
 		PerTypeWithin ret = new PerTypeWithin(typePattern);
 		ret.copyLocationFrom(this);
 		ret.inAspect = inAspect;
@@ -195,7 +195,7 @@ public class PerTypeWithin extends PerClause {
 		return toString();
 	}
 	
-	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
+	private FuzzyBoolean isWithinType(ResolvedType type) {
 		while (type != null) {
 			if (typePattern.matchesStatically(type)) {
 				return FuzzyBoolean.YES;

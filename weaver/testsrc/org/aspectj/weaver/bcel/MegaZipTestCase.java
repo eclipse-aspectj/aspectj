@@ -23,7 +23,7 @@ import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 public class MegaZipTestCase extends WeaveTestCase {
 
@@ -47,7 +47,7 @@ public class MegaZipTestCase extends WeaveTestCase {
         // BcelWorld world = new BcelWorld();
         final Member sig = 
             Member.method(
-                TypeX.forName("fluffy.Aspect"),
+                UnresolvedType.forName("fluffy.Aspect"),
                 Modifier.STATIC,
                 "aroundFun",
                 "(Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;");

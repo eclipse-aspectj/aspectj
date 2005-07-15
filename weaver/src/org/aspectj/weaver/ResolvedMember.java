@@ -33,7 +33,7 @@ import org.aspectj.bridge.ISourceLocation;
 public class ResolvedMember extends Member implements IHasPosition, AnnotatedElement {
     
     public String[] parameterNames = null;
-    protected TypeX[] checkedExceptions = TypeX.NONE;
+    protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;
     /**
      * if this member is a parameterized version of a member in a generic type,
      * then this field holds a reference to the member we parameterize.
@@ -54,11 +54,11 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     //XXX deprecate this in favor of the constructor below
 	public ResolvedMember(
 		Kind kind,
-		TypeX declaringType,
+		UnresolvedType declaringType,
 		int modifiers,
-		TypeX returnType,
+		UnresolvedType returnType,
 		String name,
-		TypeX[] parameterTypes)
+		UnresolvedType[] parameterTypes)
 	{
 		super(kind, declaringType, modifiers, returnType, name, parameterTypes);
 	}
@@ -67,12 +67,12 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     
 	public ResolvedMember(
 		Kind kind,
-		TypeX declaringType,
+		UnresolvedType declaringType,
 		int modifiers,
-		TypeX returnType,
+		UnresolvedType returnType,
 		String name,
-		TypeX[] parameterTypes,
-		TypeX[] checkedExceptions) 
+		UnresolvedType[] parameterTypes,
+		UnresolvedType[] checkedExceptions) 
 	{
 		super(kind, declaringType, modifiers, returnType, name, parameterTypes);
 		this.checkedExceptions = checkedExceptions;
@@ -80,12 +80,12 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     
 	public ResolvedMember(
 			Kind kind,
-			TypeX declaringType,
+			UnresolvedType declaringType,
 			int modifiers,
-			TypeX returnType,
+			UnresolvedType returnType,
 			String name,
-			TypeX[] parameterTypes,
-			TypeX[] checkedExceptions,
+			UnresolvedType[] parameterTypes,
+			UnresolvedType[] checkedExceptions,
 			ResolvedMember backingGenericMember) 
 		{
 			this(kind, declaringType, modifiers, returnType, name, parameterTypes,checkedExceptions);
@@ -94,7 +94,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	
 	public ResolvedMember(
 		Kind kind,
-		TypeX declaringType,
+		UnresolvedType declaringType,
 		int modifiers,
 		String name,
 		String signature) 
@@ -116,11 +116,11 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	// ----
 	
 
-    public final TypeX[] getExceptions(World world) {
+    public final UnresolvedType[] getExceptions(World world) {
         return getExceptions();
     }
     
-    public TypeX[] getExceptions() {
+    public UnresolvedType[] getExceptions() {
         return checkedExceptions;
     }
     
@@ -137,7 +137,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		return  (annotationTypes==null);
 	}
 
-    public boolean hasAnnotation(TypeX ofType) {
+    public boolean hasAnnotation(UnresolvedType ofType) {
         // The ctors don't allow annotations to be specified ... yet - but
         // that doesn't mean it is an error to call this method.
         // Normally the weaver will be working with subtypes of 
@@ -146,19 +146,19 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		return annotationTypes.contains(ofType);
     }
     
-    public ResolvedTypeX[] getAnnotationTypes() {
+    public ResolvedType[] getAnnotationTypes() {
     	// The ctors don't allow annotations to be specified ... yet - but
     	// that doesn't mean it is an error to call this method.
     	// Normally the weaver will be working with subtypes of
     	// this type - BcelField/BcelMethod
     	if (annotationTypes == null) return null;
-		return (ResolvedTypeX[])annotationTypes.toArray(new ResolvedTypeX[]{});
+		return (ResolvedType[])annotationTypes.toArray(new ResolvedType[]{});
     }
     
-	public void setAnnotationTypes(TypeX[] annotationtypes) {
+	public void setAnnotationTypes(UnresolvedType[] annotationtypes) {
 		if (annotationTypes == null) annotationTypes = new HashSet();
 		for (int i = 0; i < annotationtypes.length; i++) {
-			TypeX typeX = annotationtypes[i];
+			UnresolvedType typeX = annotationtypes[i];
 			annotationTypes.add(typeX);
 		}
 	}
@@ -187,7 +187,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     	s.writeInt(modifiers);
     	s.writeUTF(getName());
     	s.writeUTF(getSignature());
-		TypeX.writeArray(getExceptions(), s);
+		UnresolvedType.writeArray(getExceptions(), s);
 
 		s.writeInt(getStart());
 		s.writeInt(getEnd());
@@ -203,8 +203,8 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 
     
     public static ResolvedMember readResolvedMember(DataInputStream s, ISourceContext sourceContext) throws IOException {
-    	ResolvedMember m = new ResolvedMember(Kind.read(s), TypeX.read(s), s.readInt(), s.readUTF(), s.readUTF());
-		m.checkedExceptions = TypeX.readArray(s);
+    	ResolvedMember m = new ResolvedMember(Kind.read(s), UnresolvedType.read(s), s.readInt(), s.readUTF(), s.readUTF());
+		m.checkedExceptions = UnresolvedType.readArray(s);
 		m.start = s.readInt();
 		m.end = s.readInt();
 		m.sourceContext = sourceContext;
@@ -227,7 +227,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
         if (annotationTypes!=null) {
           Set r = new HashSet();
           for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
-			TypeX element = (TypeX) iter.next();
+			UnresolvedType element = (UnresolvedType) iter.next();
 			r.add(world.resolve(element));
 		  }
 		  annotationTypes = r;
@@ -300,12 +300,12 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
         return !(isPublic() || isProtected() || isPrivate());
     }
 
-	public boolean isVisible(ResolvedTypeX fromType) {
+	public boolean isVisible(ResolvedType fromType) {
 		World world = fromType.getWorld();
-		return ResolvedTypeX.isVisible(getModifiers(), getDeclaringType().resolve(world),
+		return ResolvedType.isVisible(getModifiers(), getDeclaringType().resolve(world),
 					fromType);
 	}
-	public void setCheckedExceptions(TypeX[] checkedExceptions) {
+	public void setCheckedExceptions(UnresolvedType[] checkedExceptions) {
 		this.checkedExceptions = checkedExceptions;
 	}
 
@@ -318,23 +318,23 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	}
 	
 	/**
-	 * Get the TypeX for the return type, taking generic signature into account
+	 * Get the UnresolvedType for the return type, taking generic signature into account
 	 */
-	public TypeX getGenericReturnType() {
+	public UnresolvedType getGenericReturnType() {
 		return getReturnType();
 	}
 	
 	/**
 	 * Get the TypeXs of the parameter types, taking generic signature into account
 	 */
-	public TypeX[] getGenericParameterTypes() {
+	public UnresolvedType[] getGenericParameterTypes() {
 		return getParameterTypes();
 	}
 	
 	// return a resolved member in which all type variables in the signature of this
 	// member have been replaced with the given bindings.
-	public ResolvedMember parameterizedWith(TypeX[] typeParameters) {
-		if (!this.getDeclaringType().isGeneric()) {
+	public ResolvedMember parameterizedWith(UnresolvedType[] typeParameters) {
+		if (!this.getDeclaringType().isGenericType()) {
 			throw new IllegalStateException("Can't ask to parameterize a member of a non-generic type");
 		}
 		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
@@ -345,8 +345,8 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		for (int i = 0; i < typeVariables.length; i++) {
 			typeMap.put(typeVariables[i].getName(), typeParameters[i]);
 		}
-		TypeX parameterizedReturnType = parameterize(getGenericReturnType(),typeMap);
-		TypeX[] parameterizedParameterTypes = new TypeX[getGenericParameterTypes().length];
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(),typeMap);
+		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
 			parameterizedParameterTypes[i] = 
 				parameterize(getGenericParameterTypes()[i], typeMap);
@@ -363,13 +363,13 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 				);
 	}
 	
-	private TypeX parameterize(TypeX aType, Map typeVariableMap) {
+	private UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap) {
 		if (aType instanceof TypeVariableReferenceType) {
 			String variableName = ((TypeVariableReferenceType)aType).getTypeVariable().getName();
 			if (!typeVariableMap.containsKey(variableName)) {
 				return aType; // if the type variable comes from the method (and not the type) thats OK
 			}
-			return (TypeX) typeVariableMap.get(variableName);
+			return (UnresolvedType) typeVariableMap.get(variableName);
 		} else {
 			return aType;
 		}
@@ -392,7 +392,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	public ResolvedMember getErasure() {
 		if (calculatedMyErasure) return myErasure;
 		calculatedMyErasure = true;
-		ResolvedTypeX resolvedDeclaringType = (ResolvedTypeX) getDeclaringType();
+		ResolvedType resolvedDeclaringType = (ResolvedType) getDeclaringType();
 		// this next test is fast, and the result is cached.
 		if (!resolvedDeclaringType.hasParameterizedSuperType()) {
 			return null;
@@ -401,8 +401,8 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 			// this member may be defined by one of them... we need to find out.
 			Collection declaringTypes = this.getDeclaringTypes(resolvedDeclaringType.getWorld());
 			for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
-				ResolvedTypeX aDeclaringType = (ResolvedTypeX) iter.next();
-				if (aDeclaringType.isParameterized()) {
+				ResolvedType aDeclaringType = (ResolvedType) iter.next();
+				if (aDeclaringType.isParameterizedType()) {
 					// we've found the (a?) parameterized type that defines this member.
 					// now get the erasure of it
 					ResolvedMember matchingMember = aDeclaringType.lookupMemberNoSupers(this);

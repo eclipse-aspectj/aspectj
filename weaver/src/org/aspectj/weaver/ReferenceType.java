@@ -8,7 +8,7 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
- *     Andy Clement - June 2005 - separated out from ResolvedTypeX
+ *     Andy Clement - June 2005 - separated out from ResolvedType
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -27,7 +27,7 @@ import org.aspectj.weaver.patterns.PerClause;
  * generic type.  If it is for a parameterized type then the generic type
  * is also set to point to the generic form.
  */
-public class ReferenceType extends ResolvedTypeX {
+public class ReferenceType extends ResolvedType {
 	
 	/**
 	 * For parameterized types (or the raw type) - this field points to the actual
@@ -40,7 +40,7 @@ public class ReferenceType extends ResolvedTypeX {
 	int startPos = 0;
 	int endPos = 0;
     
-    public static ReferenceType fromTypeX(TypeX tx, World world) {
+    public static ReferenceType fromTypeX(UnresolvedType tx, World world) {
     	ReferenceType rt = new ReferenceType(tx.getRawTypeSignature(),world);
     	rt.typeKind = tx.typeKind;
     	return rt;
@@ -51,7 +51,7 @@ public class ReferenceType extends ResolvedTypeX {
 	ResolvedMember[] parameterizedMethods = null;
 	ResolvedMember[] parameterizedFields = null;
 	ResolvedMember[] parameterizedPointcuts = null;
-	ResolvedTypeX[] parameterizedInterfaces = null;
+	ResolvedType[] parameterizedInterfaces = null;
 	
 	//??? should set delegate before any use
     public ReferenceType(String signature, World world) {
@@ -61,7 +61,7 @@ public class ReferenceType extends ResolvedTypeX {
     /**
      * Create a reference type for a generic type
      */
-	public ReferenceType(TypeX genericType, World world) {
+	public ReferenceType(UnresolvedType genericType, World world) {
 		super(genericType.getSignature(),world);
 		genericSignature=genericType.genericSignature;
 		typeKind=GENERIC;
@@ -71,7 +71,7 @@ public class ReferenceType extends ResolvedTypeX {
     	return delegate.isClass();
     }
     
-    public final boolean isGeneric() {
+    public final boolean isGenericType() {
     	return delegate.isGeneric();
     }
 
@@ -82,11 +82,11 @@ public class ReferenceType extends ResolvedTypeX {
     public void addAnnotation(AnnotationX annotationX) {
     	delegate.addAnnotation(annotationX);
     }
-    public boolean hasAnnotation(TypeX ofType) {
+    public boolean hasAnnotation(UnresolvedType ofType) {
     	return delegate.hasAnnotation(ofType);
     }
     
-    public ResolvedTypeX[] getAnnotationTypes() {
+    public ResolvedType[] getAnnotationTypes() {
     	return delegate.getAnnotationTypes(); 
     }
     
@@ -109,23 +109,9 @@ public class ReferenceType extends ResolvedTypeX {
     public boolean isAnnotationWithRuntimeRetention() {
         return delegate.isAnnotationWithRuntimeRetention();
     }
-     
-    public final boolean needsNoConversionFrom(TypeX o) {
-        return isAssignableFrom(o);
-    }
-     
-    public final boolean isAssignableFrom(TypeX o) {
-    	if (o.isPrimitive()) {
-    		if (!world.behaveInJava5Way) return false;
-    		if (ResolvedTypeX.validBoxing.contains(this.getSignature()+o.getSignature())) return true;
-    	}
-        ResolvedTypeX other = o.resolve(world);
-
-        return isAssignableFrom(other);
-    }
-    
-    public final boolean isCoerceableFrom(TypeX o) {
-        ResolvedTypeX other = o.resolve(world);
+      
+    public final boolean isCoerceableFrom(ResolvedType o) {
+        ResolvedType other = o.resolve(world);
 
         if (this.isAssignableFrom(other) || other.isAssignableFrom(this)) {
             return true;
@@ -147,10 +133,14 @@ public class ReferenceType extends ResolvedTypeX {
         return true;
     }
     
-    private boolean isAssignableFrom(ResolvedTypeX other) {
-        if (this == other) return true;
+    public final boolean isAssignableFrom(ResolvedType other) {
+       	if (other.isPrimitiveType()) {
+    		if (!world.behaveInJava5Way) return false;
+    		if (ResolvedType.validBoxing.contains(this.getSignature()+other.getSignature())) return true;
+    	}      
+       	if (this == other) return true;
         for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
-            if (this.isAssignableFrom((ResolvedTypeX) i.next())) return true;
+            if (this.isAssignableFrom((ResolvedType) i.next())) return true;
         }       
         return false;
     }
@@ -174,7 +164,7 @@ public class ReferenceType extends ResolvedTypeX {
 
 	public ResolvedMember[] getDeclaredFields() {
 		if (parameterizedFields != null) return parameterizedFields;
-		if (isParameterized()) {
+		if (isParameterizedType()) {
 			ResolvedMember[] delegateFields = delegate.getDeclaredFields();
 			parameterizedFields = new ResolvedMember[delegateFields.length];
 			for (int i = 0; i < delegateFields.length; i++) {
@@ -191,11 +181,11 @@ public class ReferenceType extends ResolvedTypeX {
 	 * I implement. If I am parameterized, these may then need to be parameterized
 	 * before returning.
 	 */
-	public ResolvedTypeX[] getDeclaredInterfaces() {
+	public ResolvedType[] getDeclaredInterfaces() {
 		if (parameterizedInterfaces != null) return parameterizedInterfaces;
-		if (isParameterized()) {
-			ResolvedTypeX[] delegateInterfaces = delegate.getDeclaredInterfaces();
-			parameterizedInterfaces = new ResolvedTypeX[delegateInterfaces.length];
+		if (isParameterizedType()) {
+			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
+			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < delegateInterfaces.length; i++) {
 				parameterizedInterfaces[i] = delegateInterfaces[i].parameterizedWith(getTypeParameters());
 			}
@@ -207,7 +197,7 @@ public class ReferenceType extends ResolvedTypeX {
 
 	public ResolvedMember[] getDeclaredMethods() {
 		if (parameterizedMethods != null) return parameterizedMethods;
-		if (isParameterized()) {
+		if (isParameterizedType()) {
 			ResolvedMember[] delegateMethods = delegate.getDeclaredMethods();
 			parameterizedMethods = new ResolvedMember[delegateMethods.length];
 			for (int i = 0; i < delegateMethods.length; i++) {
@@ -221,7 +211,7 @@ public class ReferenceType extends ResolvedTypeX {
 
 	public ResolvedMember[] getDeclaredPointcuts() {
 		if (parameterizedPointcuts != null) return parameterizedPointcuts;
-		if (isParameterized()) {
+		if (isParameterizedType()) {
 			ResolvedMember[] delegatePointcuts = delegate.getDeclaredPointcuts();
 			parameterizedPointcuts = new ResolvedMember[delegatePointcuts.length];
 			for (int i = 0; i < delegatePointcuts.length; i++) {
@@ -248,7 +238,7 @@ public class ReferenceType extends ResolvedTypeX {
 		return delegate.getModifiers();
 	}
 
-	public ResolvedTypeX getSuperclass() {
+	public ResolvedType getSuperclass() {
 		return delegate.getSuperclass();
 	}
 
@@ -301,13 +291,13 @@ public class ReferenceType extends ResolvedTypeX {
 		genericType = rt;
 		// Should we 'promote' this reference type from simple to raw?  
 		// makes sense if someone is specifying that it has a generic form
-		if ( typeKind == TypeX.SIMPLE ) {
-			typeKind         = TypeX.RAW;
+		if ( typeKind == UnresolvedType.SIMPLE ) {
+			typeKind         = UnresolvedType.RAW;
 			rawTypeSignature = signature;
 		}
 	}
 	
-	public ResolvedTypeX getGenericType() {
+	public ResolvedType getGenericType() {
 		return genericType;
 	}
 

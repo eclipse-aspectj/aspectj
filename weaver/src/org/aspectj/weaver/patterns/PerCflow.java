@@ -29,9 +29,9 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
@@ -83,14 +83,14 @@ public class PerCflow extends PerClause {
     }
 
 
-	public PerClause concretize(ResolvedTypeX inAspect) {
+	public PerClause concretize(ResolvedType inAspect) {
 		PerCflow ret = new PerCflow(entry, isBelow);
 		ret.inAspect = inAspect;
 		if (inAspect.isAbstract()) return ret;
 		
 		Member cflowStackField = new ResolvedMember(
 			Member.FIELD, inAspect, Modifier.STATIC|Modifier.PUBLIC|Modifier.FINAL,
-						TypeX.forName(NameMangler.CFLOW_STACK_TYPE), NameMangler.PERCFLOW_FIELD_NAME, TypeX.NONE);
+						UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE), NameMangler.PERCFLOW_FIELD_NAME, UnresolvedType.NONE);
 						
 		World world = inAspect.getWorld();
 		

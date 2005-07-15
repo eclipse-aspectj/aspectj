@@ -131,6 +131,7 @@ public class WeaverMessages {
 	public static final String HANDLER_PCD_DOESNT_SUPPORT_PARAMETERS="noParameterizedTypePatternInHandler";
 	public static final String INCORRECT_NUMBER_OF_TYPE_ARGUMENTS = "incorrectNumberOfTypeArguments";
 	public static final String VIOLATES_TYPE_VARIABLE_BOUNDS = "violatesTypeVariableBounds";
+	public static final String NO_STATIC_INIT_JPS_FOR_PARAMETERIZED_TYPES = "noStaticInitJPsForParameterizedTypes";
 	
 	public static String format(String key) {
 		return bundle.getString(key);

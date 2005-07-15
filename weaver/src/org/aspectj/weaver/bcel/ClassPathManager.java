@@ -27,7 +27,7 @@ import java.util.zip.ZipFile;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.BCException;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 
 
@@ -85,7 +85,7 @@ public class ClassPathManager {
 	}
 
 
-	public ClassFile find(TypeX type) {
+	public ClassFile find(UnresolvedType type) {
 		String name = type.getName();
 		for (Iterator i = entries.iterator(); i.hasNext(); ) {
 			Entry entry = (Entry)i.next();

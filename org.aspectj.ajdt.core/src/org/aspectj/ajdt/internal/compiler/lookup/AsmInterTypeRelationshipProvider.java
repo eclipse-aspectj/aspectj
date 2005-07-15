@@ -17,7 +17,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 /**
  * !!! is this class still being used?
@@ -32,7 +32,7 @@ public class AsmInterTypeRelationshipProvider {
 	public static final String INTER_TYPE_DECLARED_BY = "aspect declarations";
 
 	public void addRelationship(
-		ResolvedTypeX onType,
+		ResolvedType onType,
 		EclipseTypeMunger munger) {
 			
 //		IProgramElement.Kind kind = IProgramElement.Kind.ERROR;

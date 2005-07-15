@@ -23,13 +23,13 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 	private Pointcut pointcut;
 
     public ResolvedPointcutDefinition(
-        TypeX declaringType,
+        UnresolvedType declaringType,
         int modifiers,
         String name,
-        TypeX[] parameterTypes,
+        UnresolvedType[] parameterTypes,
         Pointcut pointcut)
     {
-        this(declaringType, modifiers, name, parameterTypes, ResolvedTypeX.VOID, pointcut);
+        this(declaringType, modifiers, name, parameterTypes, ResolvedType.VOID, pointcut);
     }
 
     /**
@@ -43,11 +43,11 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
      * @param pointcut
      */
     public ResolvedPointcutDefinition(
-		TypeX declaringType,
+		UnresolvedType declaringType,
 		int modifiers,
 		String name,
-		TypeX[] parameterTypes,
-        TypeX returnType,
+		UnresolvedType[] parameterTypes,
+        UnresolvedType returnType,
 		Pointcut pointcut)
     {
 		super(
@@ -59,7 +59,7 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 			parameterTypes);
 		this.pointcut = pointcut;
 		//XXXpointcut.assertState(Pointcut.RESOLVED);
-		checkedExceptions = TypeX.NONE;
+		checkedExceptions = UnresolvedType.NONE;
 	}
 	
 	// ----
@@ -68,17 +68,17 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 		getDeclaringType().write(s);
 		s.writeInt(getModifiers());
 		s.writeUTF(getName());
-		TypeX.writeArray(getParameterTypes(), s);
+		UnresolvedType.writeArray(getParameterTypes(), s);
 		pointcut.write(s);
 	}
 	
 	public static ResolvedPointcutDefinition read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedPointcutDefinition rpd =
 		  new ResolvedPointcutDefinition(
-			TypeX.read(s),
+			UnresolvedType.read(s),
 			s.readInt(),
 			s.readUTF(),
-			TypeX.readArray(s),
+			UnresolvedType.readArray(s),
 			Pointcut.read(s, context));
 		rpd.setSourceContext(context); // whilst we have a source context, let's remember it
 		return rpd;
@@ -111,8 +111,8 @@ public class ResolvedPointcutDefinition extends ResolvedMember {
 	
 	// for testing
 	public static final ResolvedPointcutDefinition DUMMY =
-	    new ResolvedPointcutDefinition(TypeX.OBJECT, 0, "missing", 
-	    				TypeX.NONE, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
+	    new ResolvedPointcutDefinition(UnresolvedType.OBJECT, 0, "missing", 
+	    				UnresolvedType.NONE, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
 
 	public void setPointcut(Pointcut pointcut) {
 		this.pointcut = pointcut;

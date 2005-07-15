@@ -53,9 +53,9 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.PerClause;
@@ -156,19 +156,19 @@ public class AspectDeclaration extends TypeDeclaration {
 		
 		
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
-		ResolvedTypeX myType = typeX;
+		ResolvedType myType = typeX;
 		//if (myType == null) System.err.println("bad myType for: " + this);
-		ResolvedTypeX superType = myType.getSuperclass();		
+		ResolvedType superType = myType.getSuperclass();		
 		
 		// can't be Serializable/Cloneable unless -XserializableAspects
 		if (!world.isXSerializableAspects()) {
-			if (world.getWorld().getCoreType(TypeX.SERIALIZABLE).isAssignableFrom(myType)) {
+			if (world.getWorld().getCoreType(UnresolvedType.SERIALIZABLE).isAssignableFrom(myType)) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd,
 								"aspects may not implement Serializable");
 				ignoreFurtherInvestigation = true;
 			    return;
 			}
-			if (world.getWorld().getCoreType(TypeX.CLONEABLE).isAssignableFrom(myType)) {
+			if (world.getWorld().getCoreType(UnresolvedType.CLONEABLE).isAssignableFrom(myType)) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd,
 								"aspects may not implement Cloneable");
 				ignoreFurtherInvestigation = true;
@@ -504,7 +504,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		ClassFile classFile)
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
-		TypeX interfaceTypeX = 
+		UnresolvedType interfaceTypeX = 
 		    AjcMemberMaker.perObjectInterfaceType(typeX);
 		HelperInterfaceBinding interfaceType =
 			new HelperInterfaceBinding(this.binding, interfaceTypeX);
@@ -524,7 +524,7 @@ public class AspectDeclaration extends TypeDeclaration {
 					
 					Label instanceFound = new Label(codeStream);
 
-					ExceptionLabel anythingGoesWrong = new ExceptionLabel(codeStream,world.makeTypeBinding(TypeX.JAVA_LANG_EXCEPTION));
+					ExceptionLabel anythingGoesWrong = new ExceptionLabel(codeStream,world.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
 					codeStream.aload_0();  
 					codeStream.invokestatic(world.makeMethodBindingForCall(AjcMemberMaker.perTypeWithinGetInstance(typeX)));
 					codeStream.astore_1();
@@ -624,7 +624,7 @@ public class AspectDeclaration extends TypeDeclaration {
 			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 			generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
 				public void generate(CodeStream codeStream) {
-					   ExceptionLabel goneBang = new ExceptionLabel(codeStream,world.makeTypeBinding(TypeX.JAVA_LANG_EXCEPTION));
+					   ExceptionLabel goneBang = new ExceptionLabel(codeStream,world.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
 					   Label noInstanceExists = new Label(codeStream);
 					   Label leave = new Label(codeStream);
 					   goneBang.placeStart();
@@ -688,7 +688,7 @@ public class AspectDeclaration extends TypeDeclaration {
 			generateMethod(classFile, AjcMemberMaker.perTypeWithinGetInstance(EclipseFactory.fromBinding(binding)), 
 			new BodyGenerator() {
 				public void generate(CodeStream codeStream) {
-					ExceptionLabel exc = new ExceptionLabel(codeStream,world.makeTypeBinding(TypeX.JAVA_LANG_EXCEPTION));
+					ExceptionLabel exc = new ExceptionLabel(codeStream,world.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
 					exc.placeStart();
 					codeStream.aload_0();
 					codeStream.ldc(NameMangler.perTypeWithinLocalAspectOf(typeX));
@@ -697,11 +697,11 @@ public class AspectDeclaration extends TypeDeclaration {
 							new MethodBinding(
 									0, 
 									"getDeclaredMethod".toCharArray(), 
-									world.makeTypeBinding(TypeX.forSignature("Ljava/lang/reflect/Method;")), // return type
-									 new TypeBinding[]{world.makeTypeBinding(TypeX.forSignature("Ljava/lang/String;")),
-											           world.makeTypeBinding(TypeX.forSignature("[Ljava/lang/Class;"))},
+									world.makeTypeBinding(UnresolvedType.forSignature("Ljava/lang/reflect/Method;")), // return type
+									 new TypeBinding[]{world.makeTypeBinding(UnresolvedType.forSignature("Ljava/lang/String;")),
+											           world.makeTypeBinding(UnresolvedType.forSignature("[Ljava/lang/Class;"))},
 									new ReferenceBinding[0],
-									(ReferenceBinding)world.makeTypeBinding(TypeX.JAVA_LANG_CLASS)));
+									(ReferenceBinding)world.makeTypeBinding(UnresolvedType.JAVA_LANG_CLASS)));
 					codeStream.astore_1();
 					codeStream.aload_1();
 					codeStream.aconst_null();
@@ -710,10 +710,10 @@ public class AspectDeclaration extends TypeDeclaration {
 							new MethodBinding(
 									0,
 									"invoke".toCharArray(),
-									world.makeTypeBinding(TypeX.OBJECT),
-									new TypeBinding[]{world.makeTypeBinding(TypeX.OBJECT),world.makeTypeBinding(TypeX.forSignature("[Ljava/lang/Object;"))},
+									world.makeTypeBinding(UnresolvedType.OBJECT),
+									new TypeBinding[]{world.makeTypeBinding(UnresolvedType.OBJECT),world.makeTypeBinding(UnresolvedType.forSignature("[Ljava/lang/Object;"))},
 									new ReferenceBinding[0],
-									(ReferenceBinding)world.makeTypeBinding(TypeX.JAVA_LANG_REFLECT_METHOD)));
+									(ReferenceBinding)world.makeTypeBinding(UnresolvedType.JAVA_LANG_REFLECT_METHOD)));
 					codeStream.checkcast(world.makeTypeBinding(typeX));
 					codeStream.astore_2();
 					codeStream.aload_2();
@@ -933,7 +933,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	private PerClause.Kind lookupPerClauseKind(ReferenceBinding binding) {
         PerClause perClause;
         if (binding instanceof BinaryTypeBinding) {
-            ResolvedTypeX superTypeX = factory.fromEclipse(binding);
+            ResolvedType superTypeX = factory.fromEclipse(binding);
             perClause = superTypeX.getPerClause();
         } else if (binding instanceof SourceTypeBinding ) {
 			SourceTypeBinding sourceSc = (SourceTypeBinding)binding;

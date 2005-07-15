@@ -29,8 +29,8 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
@@ -44,7 +44,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
     private boolean hasGeneratedInner = false;
 
-    public BcelPerClauseAspectAdder(ResolvedTypeX aspect, PerClause.Kind kind) {
+    public BcelPerClauseAspectAdder(ResolvedType aspect, PerClause.Kind kind) {
         super(null,aspect);
         this.kind = kind;
         if (kind == PerClause.SINGLETON || kind == PerClause.PERTYPEWITHIN || kind == PerClause.PERCFLOW) {
@@ -63,7 +63,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         if (!hasGeneratedInner) {
             if (kind == PerClause.PEROBJECT) {//redundant test - see constructor, but safer
                 //inner class
-                TypeX interfaceTypeX = AjcMemberMaker.perObjectInterfaceType(aspectType);
+                UnresolvedType interfaceTypeX = AjcMemberMaker.perObjectInterfaceType(aspectType);
                 LazyClassGen interfaceGen = new LazyClassGen(
                         interfaceTypeX.getName(),
                         "java.lang.Object",
@@ -120,7 +120,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         return null;
     }
 
-    public boolean matches(ResolvedTypeX onType) {
+    public boolean matches(ResolvedType onType) {
         //we cannot return onType.equals(aspectType)
         //since we need to eagerly create the nested ajcMighHaveAspect interface on LTW
         return true;

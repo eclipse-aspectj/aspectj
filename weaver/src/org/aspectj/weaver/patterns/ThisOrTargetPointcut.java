@@ -28,9 +28,9 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
@@ -95,8 +95,8 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
     
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (!couldMatch(shadow)) return FuzzyBoolean.NO;
-		TypeX typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType(); 
-		//if (typeToMatch == ResolvedTypeX.MISSING) return FuzzyBoolean.NO;
+		UnresolvedType typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType(); 
+		//if (typeToMatch == ResolvedType.MISSING) return FuzzyBoolean.NO;
 		
 		return type.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);
 	}
@@ -153,7 +153,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		type = type.resolveBindingsFromRTTI(true,true);
 	}
 	
-	public void postRead(ResolvedTypeX enclosingType) {
+	public void postRead(ResolvedType enclosingType) {
 		type.postRead(enclosingType);
 	}
 	
@@ -217,7 +217,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return exposeStateForVar(var, type, state, shadow.getIWorld());
 	}
 
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 		  // Enforce rule about which designators are supported in declare
 		  inAspect.getWorld().showMessage(IMessage.ERROR,

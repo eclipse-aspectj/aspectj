@@ -28,10 +28,10 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -145,7 +145,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		return annotationTypePattern.matches(toMatchAgainst);
 	}
 	
-	private ResolvedMember findMethod(ResolvedTypeX aspectType, ResolvedMember ajcMethod) {
+	private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {
 	       ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
 	       for (int i = 0; i < decMethods.length; i++) {
 			ResolvedMember member = decMethods[i];
@@ -172,9 +172,9 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedTypeX, org.aspectj.weaver.IntMap)
+	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
-	protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		ExactAnnotationTypePattern newType = (ExactAnnotationTypePattern) annotationTypePattern.remapAdviceFormals(bindings);		
 		Pointcut ret = new AnnotationPointcut(newType, bindings.getEnclosingAdvice());
         ret.copyLocationFrom(this);
@@ -191,7 +191,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
-			TypeX annotationType = btp.getAnnotationType();
+			UnresolvedType annotationType = btp.getAnnotationType();
 			Var var = shadow.getKindedAnnotationVar(annotationType);
 			
 			// This should not happen, we shouldn't have gotten this far 

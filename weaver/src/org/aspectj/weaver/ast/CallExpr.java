@@ -14,15 +14,15 @@
 package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 public class CallExpr extends Expr {
 	// assert m.return value is boolean
 	private final Member method;
 	private final Expr[] args;
-	private final ResolvedTypeX returnType; // yes, stored in method as well, but that one isn't resolved
+	private final ResolvedType returnType; // yes, stored in method as well, but that one isn't resolved
 
-	public CallExpr(Member m, Expr[] args, ResolvedTypeX returnType) {
+	public CallExpr(Member m, Expr[] args, ResolvedType returnType) {
 		super();
 		this.method = m;
 		this.args = args;
@@ -41,7 +41,7 @@ public class CallExpr extends Expr {
 		return method;
 	}
 
-	public ResolvedTypeX getType() {
+	public ResolvedType getType() {
 		return returnType;
 	}
 

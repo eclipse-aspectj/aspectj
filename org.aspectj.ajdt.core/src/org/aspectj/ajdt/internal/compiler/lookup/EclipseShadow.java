@@ -48,13 +48,13 @@ public class EclipseShadow extends Shadow {
 	}
 
 
-	public TypeX getEnclosingType() {
+	public UnresolvedType getEnclosingType() {
 		if (context instanceof TypeDeclaration) {
 			return EclipseFactory.fromBinding(((TypeDeclaration)context).binding);
 		} else if (context instanceof AbstractMethodDeclaration) {
 			return EclipseFactory.fromBinding(((AbstractMethodDeclaration)context).binding.declaringClass);
 		} else {
-			return ResolvedTypeX.MISSING;
+			return ResolvedType.MISSING;
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class EclipseShadow extends Shadow {
 	public Member getEnclosingCodeSignature() {
 		if (context instanceof TypeDeclaration) {
 			return new Member(Member.STATIC_INITIALIZATION, getEnclosingType(), 0, 
-						ResolvedTypeX.VOID, "<clinit>", TypeX.NONE);
+						ResolvedType.VOID, "<clinit>", UnresolvedType.NONE);
 		} else if (context instanceof AbstractMethodDeclaration) {
 			return world.makeResolvedMember(((AbstractMethodDeclaration)context).binding);
 		} else {
@@ -101,27 +101,27 @@ public class EclipseShadow extends Shadow {
 		throw new RuntimeException("unimplemented");
 	}
 
-	public Var getArgAnnotationVar(int i, TypeX annotationType) {
+	public Var getArgAnnotationVar(int i, UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
-	public Var getKindedAnnotationVar(TypeX annotationType) {
+	public Var getKindedAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 	
-	public Var getTargetAnnotationVar(TypeX annotationType) {
+	public Var getTargetAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 	
-	public Var getThisAnnotationVar(TypeX annotationType) {
+	public Var getThisAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 	
-	public Var getWithinAnnotationVar(TypeX annotationType) {
+	public Var getWithinAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 	
-	public Var getWithinCodeAnnotationVar(TypeX annotationType) {
+	public Var getWithinCodeAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
@@ -172,7 +172,7 @@ public class EclipseShadow extends Shadow {
 			return new EclipseShadow(world, Shadow.StaticInitialization,
 							new Member(Member.STATIC_INITIALIZATION, 
 								EclipseFactory.fromBinding(((TypeDeclaration)astNode).binding), 0, 
-								ResolvedTypeX.VOID, "<clinit>", TypeX.NONE),
+								ResolvedType.VOID, "<clinit>", UnresolvedType.NONE),
 							astNode, context);
 		} else {
 			return null;

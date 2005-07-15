@@ -39,9 +39,9 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.World;
@@ -55,11 +55,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private LazyClassGen lazyClassGen = null;  // set lazily if it's an aspect
 
 	// lazy, for no particular reason I can discern
-    private ResolvedTypeX[] interfaces = null;
-    private ResolvedTypeX superClass = null;
+    private ResolvedType[] interfaces = null;
+    private ResolvedType superClass = null;
     private ResolvedMember[] fields = null;
     private ResolvedMember[] methods = null;
-    private ResolvedTypeX[] annotationTypes = null;
+    private ResolvedType[] annotationTypes = null;
     private AnnotationX[] annotations = null;
     private TypeVariable[] typeVars = null;
 
@@ -154,11 +154,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     /**
      * Must take into account generic signature
      */
-    public ResolvedTypeX getSuperclass() {
+    public ResolvedType getSuperclass() {
         if (isObject) return null;
     	unpackGenericSignature();
         if (superClass == null) {
-            superClass = getResolvedTypeX().getWorld().resolve(TypeX.forName(javaClass.getSuperclassName()));
+            superClass = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(javaClass.getSuperclassName()));
         }
         return superClass;
     }
@@ -168,13 +168,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
      * then the generic signature is used to work out the types - this gets around the results of
      * erasure when the class was originally compiled.
      */
-    public ResolvedTypeX[] getDeclaredInterfaces() {
+    public ResolvedType[] getDeclaredInterfaces() {
     	unpackGenericSignature();
         if (interfaces == null) {
             String[] ifaceNames = javaClass.getInterfaceNames();
-            interfaces = new ResolvedTypeX[ifaceNames.length];
+            interfaces = new ResolvedType[ifaceNames.length];
             for (int i = 0, len = ifaceNames.length; i < len; i++) {
-                interfaces[i] = getResolvedTypeX().getWorld().resolve(TypeX.forName(ifaceNames[i]));
+                interfaces[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(ifaceNames[i]));
             }
         }
         return interfaces;
@@ -397,9 +397,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		
 		// Add it to the set of annotation types
 		len = annotationTypes.length;
-		ResolvedTypeX[] ret2 = new ResolvedTypeX[len+1];
+		ResolvedType[] ret2 = new ResolvedType[len+1];
 		System.arraycopy(annotationTypes,0,ret2,0,len);
-		ret2[len] = getResolvedTypeX().getWorld().resolve(TypeX.forName(annotation.getTypeName()));
+		ret2[len] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(annotation.getTypeName()));
 		annotationTypes = ret2;
 	}
 	
@@ -410,7 +410,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	        Annotation[] annotationsOnThisType = javaClass.getAnnotations();
 	        for (int i = 0; i < annotationsOnThisType.length; i++) {
 	            Annotation a = annotationsOnThisType[i];
-	            if (a.getTypeName().equals(TypeX.AT_RETENTION.getName())) {
+	            if (a.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
 	                List values = a.getValues();
 	                boolean isRuntime = false;
 	                for (Iterator it = values.iterator(); it.hasNext();) {
@@ -437,13 +437,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return wvInfo;
 	}
 
-	public void addParent(ResolvedTypeX newParent) {
+	public void addParent(ResolvedType newParent) {
 		if (newParent.isClass()) {
 			superClass = newParent;
 		} else {
-			ResolvedTypeX[] oldInterfaceNames = getDeclaredInterfaces();
+			ResolvedType[] oldInterfaceNames = getDeclaredInterfaces();
 			int len = oldInterfaceNames.length;
-			ResolvedTypeX[] newInterfaceNames = new ResolvedTypeX[len+1];
+			ResolvedType[] newInterfaceNames = new ResolvedType[len+1];
 			System.arraycopy(oldInterfaceNames, 0, newInterfaceNames, 0, len);
 			newInterfaceNames[len] = newParent;
 			
@@ -455,10 +455,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 
 
-	public boolean hasAnnotation(TypeX ofType) {
+	public boolean hasAnnotation(UnresolvedType ofType) {
 		ensureAnnotationTypesRetrieved();
 		for (int i = 0; i < annotationTypes.length; i++) {
-			ResolvedTypeX annX = annotationTypes[i];
+			ResolvedType annX = annotationTypes[i];
 			if (annX.equals(ofType)) return true;
 		}
 		return false;
@@ -467,18 +467,18 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null) {
     		Annotation annos[] = javaClass.getAnnotations();
-    		annotationTypes = new ResolvedTypeX[annos.length];
+    		annotationTypes = new ResolvedType[annos.length];
     		annotations = new AnnotationX[annos.length];
     		for (int i = 0; i < annos.length; i++) {
 				Annotation annotation = annos[i];
-				ResolvedTypeX rtx = getResolvedTypeX().getWorld().resolve(TypeX.forName(annotation.getTypeName()));
+				ResolvedType rtx = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(annotation.getTypeName()));
 				annotationTypes[i] = rtx;
 				annotations[i] = new AnnotationX(annotation,getResolvedTypeX().getWorld());
 			}
     	}
 	}
 	
-	public ResolvedTypeX[] getAnnotationTypes() {
+	public ResolvedType[] getAnnotationTypes() {
     	ensureAnnotationTypesRetrieved();
     	return annotationTypes;
     }
@@ -520,7 +520,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			this.superClass = 
 				BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 						superSig, cSig.formalTypeParameters, getResolvedTypeX().getWorld());
-			this.interfaces = new ResolvedTypeX[cSig.superInterfaceSignatures.length];
+			this.interfaces = new ResolvedType[cSig.superInterfaceSignatures.length];
 			for (int i = 0; i < cSig.superInterfaceSignatures.length; i++) {
 				this.interfaces[i] = 
 					BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(

@@ -13,7 +13,7 @@ package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 /**
  * A visitor that turns a pointcut into a type pattern equivalent for a perthis or pertarget matching:
@@ -30,9 +30,9 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
     private final static TypePattern MAYBE = new TypePatternMayBe();
 
     private final boolean m_isTarget;
-    private final ResolvedTypeX m_fromAspectType;
+    private final ResolvedType m_fromAspectType;
 
-    public PerThisOrTargetPointcutVisitor(boolean isTarget, ResolvedTypeX fromAspectType) {
+    public PerThisOrTargetPointcutVisitor(boolean isTarget, ResolvedType fromAspectType) {
         m_isTarget = isTarget;
         m_fromAspectType = fromAspectType;
     }
@@ -152,10 +152,10 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
         // TODO AV - may need some work for generics..
 
         ResolvedPointcutDefinition pointcutDec;
-        ResolvedTypeX searchStart = m_fromAspectType;
+        ResolvedType searchStart = m_fromAspectType;
         if (node.onType != null) {
             searchStart = node.onType.resolve(m_fromAspectType.getWorld());
-            if (searchStart == ResolvedTypeX.MISSING) {
+            if (searchStart == ResolvedType.MISSING) {
                 return MAYBE;// this should not happen since concretize will fails but just in case..
             }
         }

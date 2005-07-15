@@ -33,9 +33,9 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -57,7 +57,7 @@ public class CflowPointcut extends Pointcut {
 	 * as a non-error
 	 */
 	public static final ResolvedPointcutDefinition CFLOW_MARKER = 
-		new ResolvedPointcutDefinition(null, 0, null, TypeX.NONE, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
+		new ResolvedPointcutDefinition(null, 0, null, UnresolvedType.NONE, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
 
 	
 	public CflowPointcut(Pointcut entry, boolean isBelow, int[] freeVars) {
@@ -172,7 +172,7 @@ public class CflowPointcut extends Pointcut {
 		throw new RuntimeException("unimplemented");
 	}
 	
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 
 		// Enforce rule about which designators are supported in declare
 		if (isDeclare(bindings.getEnclosingAdvice())) {
@@ -196,7 +196,7 @@ public class CflowPointcut extends Pointcut {
 		
 		Pointcut concreteEntry;
 		
-		ResolvedTypeX concreteAspect = bindings.getConcreteAspect();
+		ResolvedType concreteAspect = bindings.getConcreteAspect();
 		
 		CrosscuttingMembers xcut = concreteAspect.crosscuttingMembers;		
 		Collection previousCflowEntries = xcut.getCflowEntries();
@@ -237,7 +237,7 @@ public class CflowPointcut extends Pointcut {
 		  	
 		  	// Create a counter field in the aspect
 		  	localCflowField = new ResolvedMember(Member.FIELD,concreteAspect,Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
-		  		NameMangler.cflowCounter(xcut),TypeX.forName(NameMangler.CFLOW_COUNTER_TYPE).getSignature());
+		  		NameMangler.cflowCounter(xcut),UnresolvedType.forName(NameMangler.CFLOW_COUNTER_TYPE).getSignature());
 		  
 		    // Create type munger to add field to the aspect
 		    concreteAspect.crosscuttingMembers.addTypeMunger(world.makeCflowCounterFieldAdder(localCflowField));
@@ -263,7 +263,7 @@ public class CflowPointcut extends Pointcut {
 				if (!bindings.hasKey(freeVar)) continue; 
 				
 				int formalIndex = bindings.get(freeVar);
-				ResolvedTypeX formalType =
+				ResolvedType formalType =
 					bindings.getAdviceSignature().getParameterTypes()[formalIndex].resolve(world);
 				
 				ConcreteCflowPointcut.Slot slot = 
@@ -278,7 +278,7 @@ public class CflowPointcut extends Pointcut {
 			  localCflowField = new ResolvedMember(
 				Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
 						NameMangler.cflowStack(xcut), 
-						TypeX.forName(NameMangler.CFLOW_STACK_TYPE).getSignature());
+						UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE).getSignature());
 			  //System.out.println("adding field to: " + inAspect + " field " + cflowField);
 						
 			  // add field and initializer to inAspect

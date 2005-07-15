@@ -85,9 +85,9 @@ public class AsmRelationshipProvider {
 
     // For ITDs
 	public void addRelationship(
-		ResolvedTypeX onType,
+		ResolvedType onType,
 		ResolvedTypeMunger munger,
-		ResolvedTypeX originatingAspect) {
+		ResolvedType originatingAspect) {
 
 	  if (!AsmManager.isCreatingModel()) return;
 		String sourceHandle = "";
@@ -125,7 +125,7 @@ public class AsmRelationshipProvider {
 		}
 	}
 	
-	public void addDeclareParentsRelationship(ISourceLocation decp,ResolvedTypeX targetType, List newParents) {
+	public void addDeclareParentsRelationship(ISourceLocation decp,ResolvedType targetType, List newParents) {
 	    if (!AsmManager.isCreatingModel()) return;
 
 		String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(decp.getSourceFile(),decp.getLine(),decp.getColumn(),decp.getOffset());
@@ -286,7 +286,7 @@ public class AsmRelationshipProvider {
 	}
 	
 	protected IProgramElement lookupMember(IHierarchy model, Member member) {
-		TypeX declaringType = member.getDeclaringType();
+		UnresolvedType declaringType = member.getDeclaringType();
 		IProgramElement classNode =
 			model.findElementForType(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);

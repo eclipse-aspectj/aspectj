@@ -31,7 +31,7 @@ public class Checker extends ShadowMunger {
 		this.isError = deow.isError();
 	}		 
 
-    public ShadowMunger concretize(ResolvedTypeX fromType, World world, PerClause clause) {
+    public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
         pointcut = pointcut.concretize(fromType, 0, this);
         return this;
     }

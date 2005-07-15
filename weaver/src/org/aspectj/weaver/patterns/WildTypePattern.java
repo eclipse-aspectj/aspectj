@@ -26,8 +26,8 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
@@ -110,8 +110,8 @@ public class WildTypePattern extends TypePattern {
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		if (super.couldEverMatchSameTypesAs(other)) return true;
 		// false is necessary but not sufficient
-		TypeX otherType = other.getExactType();
-		if (otherType != ResolvedTypeX.MISSING) {
+		UnresolvedType otherType = other.getExactType();
+		if (otherType != ResolvedType.MISSING) {
 			if (namePatterns.length > 0) {
 				if (!namePatterns[0].matches(otherType.getName())) return false;
 			}
@@ -148,11 +148,11 @@ public class WildTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.TypePattern#matchesExactly(IType)
 	 */
-	protected boolean matchesExactly(ResolvedTypeX type) {
+	protected boolean matchesExactly(ResolvedType type) {
 		return matchesExactly(type,type);
 	}
 
-	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
+	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		String targetTypeName = type.getName();
 		
 		//System.err.println("match: " + targetTypeName + ", " + knownMatches); //Arrays.asList(importedPrefixes));
@@ -333,7 +333,7 @@ public class WildTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.TypePattern#matchesInstanceof(IType)
 	 */
-	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
+	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		//XXX hack to let unmatched types just silently remain so
 		if (maybeGetSimpleName() != null) return FuzzyBoolean.NO;
 		
@@ -493,40 +493,40 @@ public class WildTypePattern extends TypePattern {
 	private TypePattern resolveBindingsFromFullyQualifiedTypeName(String fullyQualifiedName, IScope scope, Bindings bindings, 
 			boolean allowBinding, boolean requireExactType) {
 		String originalName = fullyQualifiedName;
-		ResolvedTypeX resolvedTypeInTheWorld = null;
-		TypeX type;
+		ResolvedType resolvedTypeInTheWorld = null;
+		UnresolvedType type;
 		
 		//System.out.println("resolve: " + cleanName);
 		//??? this loop has too many inefficiencies to count
-		resolvedTypeInTheWorld = scope.getWorld().resolve(TypeX.forName(fullyQualifiedName),true);
-		while ((type = scope.lookupType(fullyQualifiedName, this)) == ResolvedTypeX.MISSING) {
+		resolvedTypeInTheWorld = scope.getWorld().resolve(UnresolvedType.forName(fullyQualifiedName),true);
+		while ((type = scope.lookupType(fullyQualifiedName, this)) == ResolvedType.MISSING) {
 			int lastDot = fullyQualifiedName.lastIndexOf('.');
 			if (lastDot == -1) break;
 			fullyQualifiedName = fullyQualifiedName.substring(0, lastDot) + '$' + fullyQualifiedName.substring(lastDot+1);
-			if (resolvedTypeInTheWorld == ResolvedTypeX.MISSING)
-				resolvedTypeInTheWorld = scope.getWorld().resolve(TypeX.forName(fullyQualifiedName),true);					
+			if (resolvedTypeInTheWorld == ResolvedType.MISSING)
+				resolvedTypeInTheWorld = scope.getWorld().resolve(UnresolvedType.forName(fullyQualifiedName),true);					
 		}
-		if (type == ResolvedTypeX.MISSING) {
+		if (type == ResolvedType.MISSING) {
 			return resolveBindingsForMissingType(resolvedTypeInTheWorld, originalName, scope, bindings, allowBinding, requireExactType);
 		} else {
 			return resolveBindingsForExactRawType(scope,type,fullyQualifiedName);
 		}
 	}
 	
-	private TypePattern resolveBindingsForExactRawType(IScope scope, TypeX rawType, String fullyQualifiedName) {
+	private TypePattern resolveBindingsForExactRawType(IScope scope, UnresolvedType rawType, String fullyQualifiedName) {
 		TypePattern ret = null;
 		if (typeParameters.size()>0) {
 			// Only if the type is exact *and* the type parameters are exact should we create an 
 			// ExactTypePattern for this WildTypePattern					
 			if (typeParameters.areAllExact()) {
 				TypePattern[] typePats = typeParameters.getTypePatterns();
-				TypeX[] typeParameterTypes = new TypeX[typePats.length];
+				UnresolvedType[] typeParameterTypes = new UnresolvedType[typePats.length];
 				for (int i = 0; i < typeParameterTypes.length; i++) {
 					typeParameterTypes[i] = ((ExactTypePattern)typePats[i]).getExactType();
 				}
-				TypeX tx = TypeX.forParameterizedTypes(rawType,typeParameterTypes);
-				TypeX type = scope.getWorld().resolve(tx,true); 
-				if (dim != 0) type = TypeX.makeArray(type, dim);
+				UnresolvedType tx = UnresolvedType.forParameterizedTypes(rawType,typeParameterTypes);
+				UnresolvedType type = scope.getWorld().resolve(tx,true); 
+				if (dim != 0) type = UnresolvedType.makeArray(type, dim);
 				ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
 			} else {
 			    // TODO generics not written yet - when the type parameters are not exact
@@ -537,7 +537,7 @@ public class WildTypePattern extends TypePattern {
 				return this;
 			}
 		} else {
-			if (dim != 0) rawType = TypeX.makeArray(rawType, dim);
+			if (dim != 0) rawType = UnresolvedType.makeArray(rawType, dim);
 			ret = new ExactTypePattern(rawType,includeSubtypes,isVarArgs);					
 		}
 		ret.setAnnotationTypePattern(annotationPattern);
@@ -545,7 +545,7 @@ public class WildTypePattern extends TypePattern {
 		return ret;
 	}
 	
-	private TypePattern resolveBindingsForMissingType(ResolvedTypeX typeFoundInWholeWorldSearch, String nameWeLookedFor, IScope scope, Bindings bindings, 
+	private TypePattern resolveBindingsForMissingType(ResolvedType typeFoundInWholeWorldSearch, String nameWeLookedFor, IScope scope, Bindings bindings, 
 			boolean allowBinding, boolean requireExactType) {
 		if (requireExactType) {
 			if (!allowBinding) {
@@ -558,7 +558,7 @@ public class WildTypePattern extends TypePattern {
 			return NO;
 		} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
 			// Only put the lint warning out if we can't find it in the world
-			if (typeFoundInWholeWorldSearch == ResolvedTypeX.MISSING) {
+			if (typeFoundInWholeWorldSearch == ResolvedType.MISSING) {
 			  scope.getWorld().getLint().invalidAbsoluteTypeName.signal(nameWeLookedFor, getSourceLocation());
 			}
 		}
@@ -599,8 +599,8 @@ public class WildTypePattern extends TypePattern {
 					return NO;
 				}
 			} else {
-				TypeX type = TypeX.forName(clazz.getName());
-				if (dim != 0) type = TypeX.makeArray(type,dim);
+				UnresolvedType type = UnresolvedType.forName(clazz.getName());
+				if (dim != 0) type = UnresolvedType.makeArray(type,dim);
 				TypePattern ret = new ExactTypePattern(type, includeSubtypes,isVarArgs);
 				ret.copyLocationFrom(this);
 				return ret;
@@ -645,7 +645,7 @@ public class WildTypePattern extends TypePattern {
 	}
 	
     
-//	public void postRead(ResolvedTypeX enclosingType) {
+//	public void postRead(ResolvedType enclosingType) {
 //		this.importedPrefixes = enclosingType.getImportedPrefixes();
 //		this.knownNames = prematch(enclosingType.getImportedNames());
 //	}

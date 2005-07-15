@@ -49,59 +49,59 @@ public class NameMangler {
 
 	public static final String INITFAILURECAUSE_FIELD_NAME = PREFIX + "initFailureCause";
 	
-	public static String perObjectInterfaceGet(TypeX aspectType) {
+	public static String perObjectInterfaceGet(UnresolvedType aspectType) {
 		return makeName(aspectType.getNameAsIdentifier(), "perObjectGet");
 	}
 
-	public static String perObjectInterfaceSet(TypeX aspectType) {
+	public static String perObjectInterfaceSet(UnresolvedType aspectType) {
 		return makeName(aspectType.getNameAsIdentifier(), "perObjectSet");
 	}
 
-	public static String perObjectInterfaceField(TypeX aspectType) {
+	public static String perObjectInterfaceField(UnresolvedType aspectType) {
 		return makeName(aspectType.getNameAsIdentifier(), "perObjectField");
 	}
 
 	
 	// PTWIMPL method names that must include aspect type
-	public static String perTypeWithinFieldForTarget(TypeX aspectType) {
+	public static String perTypeWithinFieldForTarget(UnresolvedType aspectType) {
 		String s = makeName(aspectType.getNameAsIdentifier(), "ptwAspectInstance");
 		return s;
 	}
 	
-	public static String perTypeWithinLocalAspectOf(TypeX aspectType) {
+	public static String perTypeWithinLocalAspectOf(UnresolvedType aspectType) {
 		return makeName(aspectType.getNameAsIdentifier(), "localAspectOf");
 	}
 	
 	
 	
-	public static String privilegedAccessMethodForMethod(String name, TypeX objectType, TypeX aspectType) {
+	public static String privilegedAccessMethodForMethod(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("privMethod", aspectType.getNameAsIdentifier(),
 					objectType.getNameAsIdentifier(), name);
 	}
 	
-	public static String privilegedAccessMethodForFieldGet(String name, TypeX objectType, TypeX aspectType) {
+	public static String privilegedAccessMethodForFieldGet(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("privFieldGet", aspectType.getNameAsIdentifier(),
 					objectType.getNameAsIdentifier(), name);
 	}
 	
-	public static String privilegedAccessMethodForFieldSet(String name, TypeX objectType, TypeX aspectType) {
+	public static String privilegedAccessMethodForFieldSet(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("privFieldSet", aspectType.getNameAsIdentifier(),
 					objectType.getNameAsIdentifier(), name);
 	}
 	
 	
 	
-	public static String inlineAccessMethodForMethod(String name, TypeX objectType, TypeX aspectType) {
+	public static String inlineAccessMethodForMethod(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("inlineAccessMethod", aspectType.getNameAsIdentifier(),
 					objectType.getNameAsIdentifier(), name);
 	}
 	
-	public static String inlineAccessMethodForFieldGet(String name, TypeX objectType, TypeX aspectType) {
+	public static String inlineAccessMethodForFieldGet(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("inlineAccessFieldGet", aspectType.getNameAsIdentifier(),
 					objectType.getNameAsIdentifier(), name);
 	}
 	
-	public static String inlineAccessMethodForFieldSet(String name, TypeX objectType, TypeX aspectType) {
+	public static String inlineAccessMethodForFieldSet(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("inlineAccessFieldSet", aspectType.getNameAsIdentifier(),
 					objectType.getNameAsIdentifier(), name);
 	}
@@ -111,7 +111,7 @@ public class NameMangler {
 	 * The name of methods corresponding to advice declarations
 	 * Of the form: "ajc$[AdviceKind]$[AspectName]$[NumberOfAdviceInAspect]$[PointcutHash]"
 	 */
-	public static String adviceName(TypeX aspectType, AdviceKind kind, int adviceSeqNumber,int pcdHash) {
+	public static String adviceName(UnresolvedType aspectType, AdviceKind kind, int adviceSeqNumber,int pcdHash) {
 		String newname = makeName(
 			kind.getName(),
 			aspectType.getNameAsIdentifier(),
@@ -124,7 +124,7 @@ public class NameMangler {
 	 * This field goes on top-most implementers of the interface the field
 	 * is declared onto
 	 */
-	public static String interFieldInterfaceField(TypeX aspectType, TypeX interfaceType, String name) {
+	public static String interFieldInterfaceField(UnresolvedType aspectType, UnresolvedType interfaceType, String name) {
 		return makeName("interField", aspectType.getNameAsIdentifier(),
 					interfaceType.getNameAsIdentifier(), name);
 	}
@@ -133,7 +133,7 @@ public class NameMangler {
 	 * This instance method goes on the interface the field is declared onto
 	 * as well as its top-most implementors
 	 */
-	public static String interFieldInterfaceSetter(TypeX aspectType, TypeX interfaceType, String name) {
+	public static String interFieldInterfaceSetter(UnresolvedType aspectType, UnresolvedType interfaceType, String name) {
 		return makeName("interFieldSet", aspectType.getNameAsIdentifier(),
 					interfaceType.getNameAsIdentifier(), name);
 	}
@@ -143,7 +143,7 @@ public class NameMangler {
 	 * This instance method goes on the interface the field is declared onto
 	 * as well as its top-most implementors
 	 */
-	public static String interFieldInterfaceGetter(TypeX aspectType, TypeX interfaceType, String name) {
+	public static String interFieldInterfaceGetter(UnresolvedType aspectType, UnresolvedType interfaceType, String name) {
 		return makeName("interFieldGet", aspectType.getNameAsIdentifier(),
 					interfaceType.getNameAsIdentifier(), name);
 	}
@@ -152,7 +152,7 @@ public class NameMangler {
 	/**
 	 * This static method goes on the aspect that declares the inter-type field
 	 */
-	public static String interFieldSetDispatcher(TypeX aspectType, TypeX onType, String name) {
+	public static String interFieldSetDispatcher(UnresolvedType aspectType, UnresolvedType onType, String name) {
 		return makeName("interFieldSetDispatch", aspectType.getNameAsIdentifier(),
 					onType.getNameAsIdentifier(), name);
 	}
@@ -160,7 +160,7 @@ public class NameMangler {
 	/**
 	 * This static method goes on the aspect that declares the inter-type field
 	 */
-	public static String interFieldGetDispatcher(TypeX aspectType, TypeX onType, String name) {
+	public static String interFieldGetDispatcher(UnresolvedType aspectType, UnresolvedType onType, String name) {
 		return makeName("interFieldGetDispatch", aspectType.getNameAsIdentifier(),
 					onType.getNameAsIdentifier(), name);
 	}
@@ -170,7 +170,7 @@ public class NameMangler {
 	 * This field goes on the class the field
 	 * is declared onto
 	 */
-	public static String interFieldClassField(int modifiers, TypeX aspectType, TypeX classType, String name) {
+	public static String interFieldClassField(int modifiers, UnresolvedType aspectType, UnresolvedType classType, String name) {
 		if (Modifier.isPublic(modifiers)) return name;
 		//??? might want to handle case where aspect and class are in same package similar to public
 		return makeName("interField", makeVisibilityName(modifiers, aspectType), name);
@@ -179,7 +179,7 @@ public class NameMangler {
 //	/**
 //	 * This static method goes on the aspect that declares the inter-type field
 //	 */
-//	public static String classFieldSetDispatcher(TypeX aspectType, TypeX classType, String name) {
+//	public static String classFieldSetDispatcher(UnresolvedType aspectType, UnresolvedType classType, String name) {
 //		return makeName("interFieldSetDispatch", aspectType.getNameAsIdentifier(),
 //					classType.getNameAsIdentifier(), name);
 //	}
@@ -187,7 +187,7 @@ public class NameMangler {
 //	/**
 //	 * This static method goes on the aspect that declares the inter-type field
 //	 */
-//	public static String classFieldGetDispatcher(TypeX aspectType, TypeX classType, String name) 
+//	public static String classFieldGetDispatcher(UnresolvedType aspectType, UnresolvedType classType, String name) 
 //	{
 //		return makeName(
 //			"interFieldGetDispatch",
@@ -202,7 +202,7 @@ public class NameMangler {
 	 * to initialize the field;
 	 */
 
-	public static String interFieldInitializer(TypeX aspectType, TypeX classType, String name) 
+	public static String interFieldInitializer(UnresolvedType aspectType, UnresolvedType classType, String name) 
 	{
 		return makeName(
 			"interFieldInit",
@@ -218,7 +218,7 @@ public class NameMangler {
 	 * This method goes on the target type of the inter-type method. (and possibly the topmost-implemeters,
 	 * if the target type is an interface) 
 	 */
-	public static String interMethod(int modifiers, TypeX aspectType, TypeX classType, String name) 
+	public static String interMethod(int modifiers, UnresolvedType aspectType, UnresolvedType classType, String name) 
 	{
 		if (Modifier.isPublic(modifiers)) return name;
 		//??? might want to handle case where aspect and class are in same package similar to public
@@ -228,7 +228,7 @@ public class NameMangler {
 	/**
 	 * This static method goes on the declaring aspect of the inter-type method.
 	 */
-	public static String interMethodDispatcher(TypeX aspectType, TypeX classType, String name) 
+	public static String interMethodDispatcher(UnresolvedType aspectType, UnresolvedType classType, String name) 
 	{
 		return makeName("interMethodDispatch1", aspectType.getNameAsIdentifier(), 
 					classType.getNameAsIdentifier(), name);
@@ -237,7 +237,7 @@ public class NameMangler {
 	/**
 	 * This static method goes on the declaring aspect of the inter-type method.
 	 */
-	public static String interMethodBody(TypeX aspectType, TypeX classType, String name) 
+	public static String interMethodBody(UnresolvedType aspectType, UnresolvedType classType, String name) 
 	{
 		return makeName("interMethod", aspectType.getNameAsIdentifier(), 
 					classType.getNameAsIdentifier(), name);
@@ -249,8 +249,8 @@ public class NameMangler {
 	 * This static method goes on the declaring aspect of the inter-type constructor.
 	 */
 	public static String preIntroducedConstructor(
-		TypeX aspectType,
-		TypeX targetType) 
+		UnresolvedType aspectType,
+		UnresolvedType targetType) 
 	{
 		return makeName("preInterConstructor", aspectType.getNameAsIdentifier(),
 			targetType.getNameAsIdentifier());
@@ -260,8 +260,8 @@ public class NameMangler {
 	 * This static method goes on the declaring aspect of the inter-type constructor.
 	 */
 	public static String postIntroducedConstructor(
-		TypeX aspectType,
-		TypeX targetType) 
+		UnresolvedType aspectType,
+		UnresolvedType targetType) 
 	{
 		return makeName("postInterConstructor", aspectType.getNameAsIdentifier(),
 			targetType.getNameAsIdentifier());
@@ -271,7 +271,7 @@ public class NameMangler {
 	/**
 	 * This static method goes on the target class of the inter-type method.
 	 */
-	public static String superDispatchMethod(TypeX classType, String name) 
+	public static String superDispatchMethod(UnresolvedType classType, String name) 
 	{
 		return makeName("superDispatch",
 					classType.getNameAsIdentifier(), name);
@@ -280,7 +280,7 @@ public class NameMangler {
 	/**
 	 * This static method goes on the target class of the inter-type method.
 	 */
-	public static String protectedDispatchMethod(TypeX classType, String name) 
+	public static String protectedDispatchMethod(UnresolvedType classType, String name) 
 	{
 		return makeName("protectedDispatch",
 					classType.getNameAsIdentifier(), name);
@@ -288,7 +288,7 @@ public class NameMangler {
 
 	// ----
 
-	private static String makeVisibilityName(int modifiers, TypeX aspectType) {
+	private static String makeVisibilityName(int modifiers, UnresolvedType aspectType) {
 		if (Modifier.isPrivate(modifiers)) {
 			return aspectType.getOutermostType().getNameAsIdentifier();
 		} else if (Modifier.isProtected(modifiers)) {
@@ -319,7 +319,7 @@ public class NameMangler {
 
 
 	public static String makeClosureClassName(
-		TypeX enclosingType,
+		UnresolvedType enclosingType,
 		int index) 
 	{
 			return enclosingType.getName() + "$AjcClosure"  + index;

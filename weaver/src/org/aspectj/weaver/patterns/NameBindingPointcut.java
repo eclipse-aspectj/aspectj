@@ -15,7 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.util.List;
 
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
@@ -37,7 +37,7 @@ public abstract class NameBindingPointcut extends Pointcut {
 			BindingTypePattern b = (BindingTypePattern)type;
 			state.set(b.getFormalIndex(), var);
 		}
-		TypeX myType = type.getExactType(); //should have failed earlier 
+		UnresolvedType myType = type.getExactType(); //should have failed earlier 
 		
 		return Test.makeInstanceof(var, myType.resolve(world));
 	}

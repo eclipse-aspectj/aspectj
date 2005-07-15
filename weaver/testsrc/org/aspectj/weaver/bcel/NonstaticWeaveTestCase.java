@@ -44,7 +44,7 @@ public class NonstaticWeaveTestCase extends WeaveTestCase {
 		PerClause per = new PatternParser("percflow(execution(void main(..)))").maybeParsePerClause();
 		per.resolve(new TestScope(new String[0], new String[0], world));
 		
-		ResolvedTypeX onAspect = world.resolve("Aspect");
+		ResolvedType onAspect = world.resolve("Aspect");
 		CrosscuttingMembers xcut = new CrosscuttingMembers(onAspect);
 		onAspect.crosscuttingMembers = xcut;
 		
@@ -63,7 +63,7 @@ public class NonstaticWeaveTestCase extends WeaveTestCase {
 		PerClause per = new PatternParser("pertarget(call(* println(..)))").maybeParsePerClause();
 		per.resolve(new TestScope(new String[0], new String[0], world));
 		
-		ResolvedTypeX onAspect = world.resolve("Aspect");
+		ResolvedType onAspect = world.resolve("Aspect");
 		CrosscuttingMembers xcut = new CrosscuttingMembers(onAspect);
 		onAspect.crosscuttingMembers = xcut;
 		per = per.concretize(onAspect);

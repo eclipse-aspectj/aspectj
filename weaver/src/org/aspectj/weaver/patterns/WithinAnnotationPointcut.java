@@ -23,10 +23,10 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
@@ -81,8 +81,8 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
-		ResolvedTypeX enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
-		if (enclosingType == ResolvedTypeX.MISSING) {
+		ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
+		if (enclosingType == ResolvedType.MISSING) {
 			IMessage msg = new Message(
 			    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_WITHINPCD,
 			    		              shadow.getEnclosingType().getName()),
@@ -110,9 +110,9 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedTypeX, org.aspectj.weaver.IntMap)
+	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
-	protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		ExactAnnotationTypePattern newType = (ExactAnnotationTypePattern) annotationTypePattern.remapAdviceFormals(bindings);		
 		Pointcut ret = new WithinAnnotationPointcut(newType, bindings.getEnclosingAdvice());
         ret.copyLocationFrom(this);
@@ -125,7 +125,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
-			TypeX annotationType = btp.annotationType;
+			UnresolvedType annotationType = btp.annotationType;
 			Var var = shadow.getWithinAnnotationVar(annotationType);
 			
 			// This should not happen, we shouldn't have gotten this far 

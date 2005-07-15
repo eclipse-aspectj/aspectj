@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Checker;
@@ -26,11 +27,12 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -124,7 +126,7 @@ public class KindedPointcut extends Pointcut {
 			ResolvedMember rm = shadow.getSignature().resolve(shadow.getIWorld());
 			if (rm!=null) {
              	int shadowModifiers = shadow.getSignature().getModifiers(shadow.getIWorld());
-			    if (ResolvedTypeX.hasBridgeModifier(shadowModifiers)) {
+			    if (ResolvedType.hasBridgeModifier(shadowModifiers)) {
 				  shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
 						new ISourceLocation[]{shadow.getSourceLocation()});
 			    }
@@ -171,24 +173,24 @@ public class KindedPointcut extends Pointcut {
         World world = shadow.getIWorld();
         
 		// warning never needed if the declaring type is any
-		TypeX exactDeclaringType = signature.getDeclaringType().getExactType();
+		UnresolvedType exactDeclaringType = signature.getDeclaringType().getExactType();
         
-		ResolvedTypeX shadowDeclaringType =
+		ResolvedType shadowDeclaringType =
 			shadow.getSignature().getDeclaringType().resolve(world);
         
 		if (signature.getDeclaringType().isStar()
-			|| exactDeclaringType== ResolvedTypeX.MISSING)
+			|| exactDeclaringType== ResolvedType.MISSING)
 			return;
 
         // warning not needed if match type couldn't ever be the declaring type
-		if (!shadowDeclaringType.isAssignableFrom(exactDeclaringType)) {
+		if (!shadowDeclaringType.isAssignableFrom(exactDeclaringType.resolve(world))) {
             return;
 		}
 
 		// if the method in the declaring type is *not* visible to the
 		// exact declaring type then warning not needed.
 		int shadowModifiers = shadow.getSignature().getModifiers(world);
-		if (!ResolvedTypeX
+		if (!ResolvedType
 			.isVisible(
 				shadowModifiers,
 				shadowDeclaringType,
@@ -204,7 +206,7 @@ public class KindedPointcut extends Pointcut {
 			return;
 		}
 		// PR60015 - Don't report the warning if the declaring type is object and 'this' is an interface
-		if (exactDeclaringType.isInterface(world) && shadowDeclaringType.equals(world.resolve("java.lang.Object"))) {
+		if (exactDeclaringType.resolve(world).isInterface() && shadowDeclaringType.equals(world.resolve("java.lang.Object"))) {
 			return;
 		}
 
@@ -254,7 +256,7 @@ public class KindedPointcut extends Pointcut {
 	}
 	
 	
-	public void postRead(ResolvedTypeX enclosingType) {
+	public void postRead(ResolvedType enclosingType) {
 		signature.postRead(enclosingType);
 	}
 
@@ -290,14 +292,23 @@ public class KindedPointcut extends Pointcut {
 		if (kind == Shadow.ConstructorExecution) { 		// Bug fix 60936
 		  if (signature.getDeclaringType() != null) {
 			World world = scope.getWorld();
-			TypeX exactType = signature.getDeclaringType().getExactType();
+			UnresolvedType exactType = signature.getDeclaringType().getExactType();
 			if (signature.getKind() == Member.CONSTRUCTOR &&
-				!exactType.equals(ResolvedTypeX.MISSING) &&
-				exactType.isInterface(world) &&
+				!exactType.equals(ResolvedType.MISSING) &&
+				exactType.resolve(world).isInterface() &&
 				!signature.getDeclaringType().isIncludeSubtypes()) {
 					world.getLint().noInterfaceCtorJoinpoint.signal(exactType.toString(), getSourceLocation());
 				}
 		  }
+		}
+		
+		// only allow parameterized types with extends...
+		if (kind == Shadow.StaticInitialization) {
+			UnresolvedType exactType = signature.getDeclaringType().getExactType();
+			if (exactType.isParameterizedType() && !signature.getDeclaringType().isIncludeSubtypes()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_STATIC_INIT_JPS_FOR_PARAMETERIZED_TYPES),
+						getSourceLocation()));
+			}
 		}
 	}
 	
@@ -309,7 +320,7 @@ public class KindedPointcut extends Pointcut {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 	
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		Pointcut ret = new KindedPointcut(kind, signature, bindings.getEnclosingAdvice());
         ret.copyLocationFrom(this);
         return ret;

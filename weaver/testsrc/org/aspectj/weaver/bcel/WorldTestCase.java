@@ -35,15 +35,15 @@ public class WorldTestCase extends AbstractWorldTestCase {
 
 	// XXX fix the various XXXs before expecting this test to work
     public void xtestTraceJar() {
-        ResolvedTypeX trace = world.resolve(TypeX.forName("Trace"),true);
-        assertTrue("Couldnt find type Trace",trace!=ResolvedTypeX.MISSING);
+        ResolvedType trace = world.resolve(UnresolvedType.forName("Trace"),true);
+        assertTrue("Couldnt find type Trace",trace!=ResolvedType.MISSING);
         fieldsTest(trace, Member.NONE);
         /*Member constr = */Member.methodFromString("void Trace.<init>()"); 
         //XXX need attribute fix - 
         //methodsTest(trace, new Member[] { constr });
 
-        interfacesTest(trace, ResolvedTypeX.NONE);
-        superclassTest(trace, TypeX.OBJECT);
+        interfacesTest(trace, ResolvedType.NONE);
+        superclassTest(trace, UnresolvedType.OBJECT);
         isInterfaceTest(trace, false);
         isClassTest(trace, false);
         isAspectTest(trace, true);
@@ -68,10 +68,10 @@ public class WorldTestCase extends AbstractWorldTestCase {
             					Advice.ExtraArgument),
             });
         
-        ResolvedTypeX myTrace = world.resolve(TypeX.forName("MyTrace"),true);
-        assertTrue("Couldnt find type MyTrace",myTrace!=ResolvedTypeX.MISSING);
+        ResolvedType myTrace = world.resolve(UnresolvedType.forName("MyTrace"),true);
+        assertTrue("Couldnt find type MyTrace",myTrace!=ResolvedType.MISSING);
 
-        interfacesTest(myTrace, ResolvedTypeX.NONE);
+        interfacesTest(myTrace, ResolvedType.NONE);
         superclassTest(myTrace, trace);
         isInterfaceTest(myTrace, false);
         isClassTest(myTrace, false);
@@ -96,7 +96,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
 
     public void testIterator() {
         int abstractPublic = Modifier.ABSTRACT | Modifier.PUBLIC;
-        ResolvedTypeX iter = world.getCoreType(TypeX.forRawTypeNames("java.util.Iterator"));
+        ResolvedType iter = world.getCoreType(UnresolvedType.forRawTypeNames("java.util.Iterator"));
       
         modifiersTest(iter, abstractPublic | Modifier.INTERFACE);
         fieldsTest(iter, ResolvedMember.NONE);
@@ -109,15 +109,15 @@ public class WorldTestCase extends AbstractWorldTestCase {
         ResolvedMember remove = iter.lookupMethod(Member.method(iter, 0, "remove", "()V"));
         assertNotNull("iterator doesn't have remove" , remove);
         modifiersTest(remove, abstractPublic | Modifier.INTERFACE);
-        exceptionsTest(remove, TypeX.NONE);
+        exceptionsTest(remove, UnresolvedType.NONE);
 
-        ResolvedMember clone = iter.lookupMethod(Member.method(TypeX.OBJECT, 0, "clone", "()Ljava/lang/Object;"));
+        ResolvedMember clone = iter.lookupMethod(Member.method(UnresolvedType.OBJECT, 0, "clone", "()Ljava/lang/Object;"));
         assertNotNull("iterator doesn't have clone" , clone);
         modifiersTest(clone, Modifier.PROTECTED | Modifier.NATIVE);
-        exceptionsTest(clone, TypeX.forNames(new String[] {"java.lang.CloneNotSupportedException"}));
+        exceptionsTest(clone, UnresolvedType.forNames(new String[] {"java.lang.CloneNotSupportedException"}));
 
-        interfacesTest(iter, ResolvedTypeX.NONE);
-        superclassTest(iter, TypeX.OBJECT);
+        interfacesTest(iter, ResolvedType.NONE);
+        superclassTest(iter, UnresolvedType.OBJECT);
         pointcutsTest(iter, ResolvedMember.NONE);
         mungersTest(iter, ShadowMunger.NONE);
         isInterfaceTest(iter, true);

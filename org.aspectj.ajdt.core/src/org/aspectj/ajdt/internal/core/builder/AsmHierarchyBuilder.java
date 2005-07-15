@@ -415,7 +415,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
     private ResolvedMember getPointcutDeclaration(ReferencePointcut rp, MethodDeclaration declaration) {
     	EclipseFactory factory = ((AjLookupEnvironment)declaration.scope.environment()).factory;
 		World world = factory.getWorld();
-		TypeX onType = rp.onType;
+		UnresolvedType onType = rp.onType;
 		if (onType == null) {
 			if (declaration.binding != null) {
 			    Member member = factory.makeResolvedMember(declaration.binding);
@@ -424,7 +424,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				return null;
 			}
 		}
-		ResolvedMember[] members = onType.getDeclaredPointcuts(world);
+		ResolvedMember[] members = onType.resolve(world).getDeclaredPointcuts();
 		if (members != null) {
 			for (int i = 0; i < members.length; i++) {
 			    if (members[i].getName().equals(rp.name)) {

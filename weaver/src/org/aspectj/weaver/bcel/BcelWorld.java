@@ -47,8 +47,8 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -160,7 +160,7 @@ public class BcelWorld extends World implements Repository {
         Member m = Member.methodFromString(str.substring(i+2, str.length()).trim());
 
         // now, we resolve
-        TypeX[] types = m.getParameterTypes();
+        UnresolvedType[] types = m.getParameterTypes();
         FormalBinding[] bindings = new FormalBinding[ids.length];
         for (int j = 0, len = ids.length; j < len; j++) {
             bindings[j] = new FormalBinding(types[j], ids[j], j, 0, 0, "fromString");
@@ -190,11 +190,11 @@ public class BcelWorld extends World implements Repository {
     
     // ---- various interactions with bcel
 
-    public static Type makeBcelType(TypeX type) {
+    public static Type makeBcelType(UnresolvedType type) {
         return Type.getType(type.getSignature());
     }
 
-    static Type[] makeBcelTypes(TypeX[] types) {
+    static Type[] makeBcelTypes(UnresolvedType[] types) {
         Type[] ret = new Type[types.length];
         for (int i = 0, len = types.length; i < len; i++) {
             ret[i] = makeBcelType(types[i]);
@@ -202,19 +202,19 @@ public class BcelWorld extends World implements Repository {
         return ret;
     }
 
-    public static TypeX fromBcel(Type t) {
-        return TypeX.forSignature(t.getSignature());
+    public static UnresolvedType fromBcel(Type t) {
+        return UnresolvedType.forSignature(t.getSignature());
     }
 
-    static TypeX[] fromBcel(Type[] ts) {
-        TypeX[] ret = new TypeX[ts.length];
+    static UnresolvedType[] fromBcel(Type[] ts) {
+        UnresolvedType[] ret = new UnresolvedType[ts.length];
         for (int i = 0, len = ts.length; i < len; i++) {
             ret[i] = fromBcel(ts[i]);
         }
         return ret;
     }
     
-    public ResolvedTypeX resolve(Type t) {
+    public ResolvedType resolve(Type t) {
         return resolve(fromBcel(t));
     }       
 
@@ -253,7 +253,7 @@ public class BcelWorld extends World implements Repository {
         }
 
 		try {
-	        ClassPathManager.ClassFile file = classPath.find(TypeX.forName(name));
+	        ClassPathManager.ClassFile file = classPath.find(UnresolvedType.forName(name));
 	        if (file == null) return null;
 	        
 	        ClassParser parser = new ClassParser(file.getInputStream(), file.getPath());
@@ -269,15 +269,15 @@ public class BcelWorld extends World implements Repository {
 	
 	public BcelObjectType addSourceObjectType(JavaClass jc) {
 		BcelObjectType ret = null;
-		String signature = TypeX.forName(jc.getClassName()).getSignature();
+		String signature = UnresolvedType.forName(jc.getClassName()).getSignature();
         ReferenceType nameTypeX = (ReferenceType)typeMap.get(signature);
 
         if (nameTypeX == null) {        	
 		    if (jc.isGeneric()) {
-		    	nameTypeX =  ReferenceType.fromTypeX(TypeX.forRawTypeNames(jc.getClassName()),this);
+		    	nameTypeX =  ReferenceType.fromTypeX(UnresolvedType.forRawTypeNames(jc.getClassName()),this);
 		        ret = makeBcelObjectType(nameTypeX, jc, true);
 		    	ReferenceType genericRefType = new ReferenceType(
-		    			TypeX.forGenericTypeSignature(signature,ret.getDeclaredGenericSignature()),this);
+		    			UnresolvedType.forGenericTypeSignature(signature,ret.getDeclaredGenericSignature()),this);
 				nameTypeX.setDelegate(ret);
 		    	genericRefType.setDelegate(ret);
 		    	nameTypeX.setGenericType(genericRefType);
@@ -293,7 +293,7 @@ public class BcelWorld extends World implements Repository {
 		return ret;
 	}
 	
-	void deleteSourceObjectType(TypeX ty) {
+	void deleteSourceObjectType(UnresolvedType ty) {
 		typeMap.remove(ty.getSignature());
 	}
 
@@ -343,7 +343,7 @@ public class BcelWorld extends World implements Repository {
 		        }
 	        }
 	        return new ResolvedMember(kind,
-	                TypeX.forName(mg.getClassName()), 
+	                UnresolvedType.forName(mg.getClassName()), 
 	                mods,
 	                fromBcel(mg.getReturnType()),
 	                mg.getName(),
@@ -369,7 +369,7 @@ public class BcelWorld extends World implements Repository {
               : (ii instanceof INVOKESPECIAL && ! name.equals("<init>"))
                 ? Modifier.PRIVATE
                 : 0;
-        return Member.method(TypeX.forName(declaring), modifier, name, signature);
+        return Member.method(UnresolvedType.forName(declaring), modifier, name, signature);
     }  
 
     public static Member makeMungerMethodSignature(JavaClass javaClass, Method method) {
@@ -378,7 +378,7 @@ public class BcelWorld extends World implements Repository {
         else if (javaClass.isInterface()) mods = Modifier.INTERFACE;
         else if (method.isPrivate()) mods = Modifier.PRIVATE;
         return Member.method(
-            TypeX.forName(javaClass.getClassName()), mods, method.getName(), method.getSignature()); 
+            UnresolvedType.forName(javaClass.getClassName()), mods, method.getName(), method.getSignature()); 
     }
     
     private static final String[] ZERO_STRINGS = new String[0];
@@ -401,7 +401,7 @@ public class BcelWorld extends World implements Repository {
     }
     
     public ConcreteTypeMunger concreteTypeMunger(
-        ResolvedTypeMunger munger, ResolvedTypeX aspectType) 
+        ResolvedTypeMunger munger, ResolvedType aspectType) 
     {
         return new BcelTypeMunger(munger, aspectType);
     }
@@ -421,11 +421,11 @@ public class BcelWorld extends World implements Repository {
      * @param kind
      * @return
      */
-    public ConcreteTypeMunger makePerClauseAspect(ResolvedTypeX aspect, PerClause.Kind kind) {
+    public ConcreteTypeMunger makePerClauseAspect(ResolvedType aspect, PerClause.Kind kind) {
         return new BcelPerClauseAspectAdder(aspect, kind);
     }
 
-	public static BcelObjectType getBcelObjectType(ResolvedTypeX concreteAspect) {
+	public static BcelObjectType getBcelObjectType(ResolvedType concreteAspect) {
 		//XXX need error checking
 		return (BcelObjectType) ((ReferenceType)concreteAspect).getDelegate();
 	}

@@ -23,10 +23,10 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
@@ -93,7 +93,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	 */
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (!couldMatch(shadow)) return FuzzyBoolean.NO;
-	    ResolvedTypeX toMatchAgainst = 
+	    ResolvedType toMatchAgainst = 
 	        (isThis ? shadow.getThisType() : shadow.getTargetType() ).resolve(shadow.getIWorld());
 	    annotationTypePattern.resolve(shadow.getIWorld());
 	    if (annotationTypePattern.matchesRuntimeType(toMatchAgainst).alwaysTrue()) {
@@ -117,7 +117,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 			// it's a formal with a binding error
 			return;
 		}
-		ResolvedTypeX rAnnotationType = (ResolvedTypeX) annotationTypePattern.annotationType;
+		ResolvedType rAnnotationType = (ResolvedType) annotationTypePattern.annotationType;
 		if (!(rAnnotationType.isAnnotationWithRuntimeRetention())) {
 		    IMessage m = MessageUtil.error(
 					WeaverMessages.format(WeaverMessages.BINDING_NON_RUNTIME_RETENTION_ANNOTATION,rAnnotationType.getName()),
@@ -136,9 +136,9 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedTypeX, org.aspectj.weaver.IntMap)
+	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
-	protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 			  // Enforce rule about which designators are supported in declare
 			  if (!alreadyWarnedAboutDEoW) {
@@ -172,7 +172,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	    Var annVar = null;
 	    
 	    // Are annotations being bound?
-	    TypeX annotationType = annotationTypePattern.annotationType;
+	    UnresolvedType annotationType = annotationTypePattern.annotationType;
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
 			annotationType = btp.annotationType;
@@ -199,7 +199,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		if (alwaysMatches && (annVar == null)) {//change check to verify if its the 'generic' annVar that is being used
 		    return Literal.TRUE;
 		} else {
-	        ResolvedTypeX rType = annotationType.resolve(shadow.getIWorld());
+	        ResolvedType rType = annotationType.resolve(shadow.getIWorld());
 	        return Test.makeHasAnnotation(var,rType);
 		}
 	}

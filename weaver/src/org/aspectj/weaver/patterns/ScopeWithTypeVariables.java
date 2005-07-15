@@ -15,9 +15,9 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.World;
 
@@ -40,7 +40,7 @@ public class ScopeWithTypeVariables implements IScope {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.IScope#lookupType(java.lang.String, org.aspectj.weaver.IHasPosition)
 	 */
-	public TypeX lookupType(String name, IHasPosition location) {
+	public UnresolvedType lookupType(String name, IHasPosition location) {
 		for (int i = 0; i < typeVariableNames.length; i++) {
 			if (typeVariableNames[i].equals(name)) {
 				if (typeVarTypeXs[i] == null) {
@@ -62,7 +62,7 @@ public class ScopeWithTypeVariables implements IScope {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.IScope#getEnclosingType()
 	 */
-	public ResolvedTypeX getEnclosingType() {
+	public ResolvedType getEnclosingType() {
 		return delegateScope.getEnclosingType();
 	}
 

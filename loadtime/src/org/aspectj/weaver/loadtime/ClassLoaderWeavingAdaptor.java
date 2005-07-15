@@ -16,8 +16,8 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.ICrossReferenceHandler;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -245,7 +245,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             return true;
         }
         //TODO AV - optimize for className.startWith only
-        ResolvedTypeX classInfo = weaver.getWorld().getCoreType(TypeX.forName(className));
+        ResolvedType classInfo = weaver.getWorld().getCoreType(UnresolvedType.forName(className));
         //exclude
         for (Iterator iterator = m_excludeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
@@ -270,7 +270,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             return true;
         }
         //TODO AV - optimize for className.startWith only
-        ResolvedTypeX classInfo = weaver.getWorld().getCoreType(TypeX.forName(aspectClassName));
+        ResolvedType classInfo = weaver.getWorld().getCoreType(UnresolvedType.forName(aspectClassName));
         //exclude
         for (Iterator iterator = m_aspectExcludeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
@@ -288,7 +288,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             return false;
         }
         //TODO AV - optimize for className.startWith only
-        ResolvedTypeX classInfo = weaver.getWorld().getCoreType(TypeX.forName(className));
+        ResolvedType classInfo = weaver.getWorld().getCoreType(UnresolvedType.forName(className));
         //dump
         for (Iterator iterator = m_dumpTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();

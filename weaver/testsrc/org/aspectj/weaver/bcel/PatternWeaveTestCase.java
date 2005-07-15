@@ -80,7 +80,7 @@ public class PatternWeaveTestCase extends WeaveTestCase {
     {
         Pointcut sp = Pointcut.fromString(pointcutSource);
         Pointcut rp = sp.resolve(new SimpleScope(world, FormalBinding.NONE));
-        Pointcut cp = rp.concretize(ResolvedTypeX.MISSING, 0);
+        Pointcut cp = rp.concretize(ResolvedType.MISSING, 0);
         
         final List l = new ArrayList();
         BcelAdvice p = new BcelAdvice(null, cp, null, 0, -1, -1, null, null) {

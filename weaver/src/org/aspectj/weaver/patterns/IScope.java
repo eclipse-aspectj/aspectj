@@ -16,20 +16,20 @@ package org.aspectj.weaver.patterns;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 public interface IScope {
 
     /** returns the type corresponding to the name in this scope
-     *  returns ResolvedTypeX.MISSING if no such type exists and reports a problem
+     *  returns ResolvedType.MISSING if no such type exists and reports a problem
      */
-    TypeX lookupType(String name, IHasPosition location);
+    UnresolvedType lookupType(String name, IHasPosition location);
 
 	World getWorld();
 
-	ResolvedTypeX getEnclosingType();
+	ResolvedType getEnclosingType();
 
     // these next three are used to create {@link BindingTypePattern} objects.
 	IMessageHandler getMessageHandler();

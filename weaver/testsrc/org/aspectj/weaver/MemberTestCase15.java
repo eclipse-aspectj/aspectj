@@ -23,7 +23,7 @@ public class MemberTestCase15 extends TestCase {
 
 	  public void testCanBeParameterizedRegularMethod() {
 	    	BcelWorld world = new BcelWorld();
-	    	ResolvedTypeX javaLangClass = world.resolve(TypeX.forName("java/lang/Class"));
+	    	ResolvedType javaLangClass = world.resolve(UnresolvedType.forName("java/lang/Class"));
 	    	ResolvedMember[] methods = javaLangClass.getDeclaredMethods();
 	    	ResolvedMember getAnnotations = null;
 	    	for (int i = 0; i < methods.length; i++) {
@@ -40,7 +40,7 @@ public class MemberTestCase15 extends TestCase {
 	    
 	    public void testCanBeParameterizedGenericMethod() {
 	    	BcelWorld world = new BcelWorld();
-	    	ResolvedTypeX javaLangClass = world.resolve(TypeX.forName("java/lang/Class"));
+	    	ResolvedType javaLangClass = world.resolve(UnresolvedType.forName("java/lang/Class"));
 	    	ResolvedMember[] methods = javaLangClass.getDeclaredMethods();
 	    	ResolvedMember asSubclass = null;
 	    	for (int i = 0; i < methods.length; i++) {
@@ -57,7 +57,7 @@ public class MemberTestCase15 extends TestCase {
 	    
 	    public void testCanBeParameterizedMethodInGenericType() {
 	       	BcelWorld world = new BcelWorld();
-	    	ResolvedTypeX javaUtilList = world.resolve(TypeX.forName("java/util/List"));
+	    	ResolvedType javaUtilList = world.resolve(UnresolvedType.forName("java/util/List"));
 	    	ResolvedMember[] methods = javaUtilList.getDeclaredMethods();
 	    	ResolvedMember add = null;
 	    	for (int i = 0; i < methods.length; i++) {

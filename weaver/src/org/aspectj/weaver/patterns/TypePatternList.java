@@ -22,8 +22,8 @@ import java.util.List;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 public class TypePatternList extends PatternNode {
@@ -127,7 +127,7 @@ public class TypePatternList extends PatternNode {
      * 
      * This method will never return FuzzyBoolean.NEVER
      */ 
-    public FuzzyBoolean matches(ResolvedTypeX[] types, TypePattern.MatchKind kind) {
+    public FuzzyBoolean matches(ResolvedType[] types, TypePattern.MatchKind kind) {
     	int nameLength = types.length;
 		int patternLength = typePatterns.length;
 		
@@ -244,7 +244,7 @@ public class TypePatternList extends PatternNode {
     	}
     }
     
-    private static FuzzyBoolean outOfStar(final TypePattern[] pattern, final ResolvedTypeX[] target, 
+    private static FuzzyBoolean outOfStar(final TypePattern[] pattern, final ResolvedType[] target, 
                                                   int           pi,            int    ti, 
                                                   int           pLeft,         int    tLeft,
                                            final int           starsLeft, TypePattern.MatchKind kind) {
@@ -269,7 +269,7 @@ public class TypePatternList extends PatternNode {
             pi++; ti++; pLeft--; tLeft--;
         }
     }    
-    private static FuzzyBoolean inStar(final TypePattern[] pattern, final ResolvedTypeX[] target, 
+    private static FuzzyBoolean inStar(final TypePattern[] pattern, final ResolvedType[] target, 
                                                int           pi,             int    ti, 
                                          final int           pLeft,         int    tLeft,
                                                int    starsLeft,     TypePattern.MatchKind kind) {
@@ -444,7 +444,7 @@ public class TypePatternList extends PatternNode {
 		return new TypePatternList(ret);
 	}
 
-	public void postRead(ResolvedTypeX enclosingType) {
+	public void postRead(ResolvedType enclosingType) {
 		for (int i=0; i<typePatterns.length; i++) {
 			TypePattern p = typePatterns[i];
 			p.postRead(enclosingType);
@@ -497,8 +497,8 @@ public class TypePatternList extends PatternNode {
 	public Collection getExactTypes() {
 		ArrayList ret = new ArrayList();
 		for (int i=0; i<typePatterns.length; i++) {
-			TypeX t = typePatterns[i].getExactType();
-			if (t != ResolvedTypeX.MISSING) ret.add(t);
+			UnresolvedType t = typePatterns[i].getExactType();
+			if (t != ResolvedType.MISSING) ret.add(t);
 		}
 		return ret;
 	}

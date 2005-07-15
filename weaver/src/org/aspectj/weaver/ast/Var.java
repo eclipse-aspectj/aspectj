@@ -13,18 +13,18 @@
 
 package org.aspectj.weaver.ast;
 
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 
 public class Var extends Expr {
-	ResolvedTypeX type;
+	ResolvedType type;
 
-	public Var(ResolvedTypeX type) {
+	public Var(ResolvedType type) {
 		super();
 		this.type = type;		
 	}
     
-	public ResolvedTypeX getType() {
+	public ResolvedType getType() {
 		return type;
 	}
 

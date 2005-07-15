@@ -13,13 +13,13 @@
 
 package org.aspectj.weaver.ast;
 
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 public class Instanceof extends Test {
 	Var var;
-	TypeX type;
+	UnresolvedType type;
 
-	public Instanceof(Var left, TypeX right) {
+	public Instanceof(Var left, UnresolvedType right) {
 		super();
 		this.var = left;
 		this.type = right;
@@ -46,7 +46,7 @@ public class Instanceof extends Test {
         return var;
     }
 
-    public TypeX getType() {
+    public UnresolvedType getType() {
         return type;
     }
 }

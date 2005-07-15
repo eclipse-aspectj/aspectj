@@ -17,7 +17,8 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -29,7 +30,7 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 	/**
 	 * @param annotationType
 	 */
-	public BindingAnnotationTypePattern(TypeX annotationType, int index) {
+	public BindingAnnotationTypePattern(UnresolvedType annotationType, int index) {
 		super(annotationType);
 		this.formalIndex = index;
 	}
@@ -43,14 +44,15 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		if (resolved) return;
 		resolved = true;
 		annotationType = annotationType.resolve(world);
-		if (!annotationType.isAnnotation(world)) {
+		ResolvedType resolvedAnnotationType = (ResolvedType) annotationType;
+		if (!resolvedAnnotationType.isAnnotation()) {
 			IMessage m = MessageUtil.error(
 					WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,annotationType.getName()),
 					getSourceLocation());
 			world.getMessageHandler().handleMessage(m);
 			resolved = false;
 		}
-        if (!annotationType.isAnnotationWithRuntimeRetention(world)) { // default is class visibility
+        if (!resolvedAnnotationType.isAnnotationWithRuntimeRetention()) { // default is class visibility
 		    // default is class visibility
 			IMessage m = MessageUtil.error(
 					WeaverMessages.format(WeaverMessages.BINDING_NON_RUNTIME_RETENTION_ANNOTATION,annotationType.getName()),
@@ -100,7 +102,7 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		if (version > VERSION) {
 			throw new BCException("BindingAnnotationTypePattern was written by a more recent version of AspectJ");
 		}
-		AnnotationTypePattern ret = new BindingAnnotationTypePattern(TypeX.read(s),s.readShort());
+		AnnotationTypePattern ret = new BindingAnnotationTypePattern(UnresolvedType.read(s),s.readShort());
 		ret.readLocation(context,s);
 		return ret;
 	}

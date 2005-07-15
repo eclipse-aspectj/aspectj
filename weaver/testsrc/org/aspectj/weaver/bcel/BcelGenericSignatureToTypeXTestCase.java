@@ -11,13 +11,15 @@
  * ******************************************************************/
 package org.aspectj.weaver.bcel;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Signature;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeVariable;
+import org.aspectj.weaver.UnresolvedType;
+
+import junit.framework.TestCase;
 
 /**
  * @author colyer
@@ -29,7 +31,7 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 		BcelWorld world = new BcelWorld();
 		JavaClass javaLangEnum = Repository.lookupClass("java/lang/Enum");
 		Signature.ClassSignature cSig = javaLangEnum.getGenericClassTypeSignature();
-		TypeX superclass = 
+		UnresolvedType superclass = 
 			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 					cSig.superclassSignature,
 					cSig.formalTypeParameters,
@@ -37,14 +39,14 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 					);
 		assertEquals("Ljava/lang/Object;",superclass.getSignature());
 		assertEquals("2 superinterfaces",2,cSig.superInterfaceSignatures.length);
-		TypeX comparable = 
+		UnresolvedType comparable = 
 			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 					cSig.superInterfaceSignatures[0],
 					cSig.formalTypeParameters,
 					world
 					);			
 		assertEquals("Ljava/lang/Comparable<Ljava/lang/Enum<Ljava/lang/Object;>;>;",comparable.getSignature());
-		TypeX serializable = 
+		UnresolvedType serializable = 
 			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 					cSig.superInterfaceSignatures[1],
 					cSig.formalTypeParameters,
@@ -56,12 +58,12 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 	public void testColonColon() {
 		BcelWorld world = new BcelWorld();
 		Signature.ClassSignature cSig = new GenericSignatureParser().parseAsClassSignature("<T::Ljava/io/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable<TT;>;");
-		TypeX resolved = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+		UnresolvedType resolved = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 				cSig.superclassSignature,
 				cSig.formalTypeParameters,
 				world);
 		assertEquals("Ljava/lang/Object;",resolved.getSignature());
-		TypeX resolvedInt = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+		UnresolvedType resolvedInt = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 				cSig.superInterfaceSignatures[0],
 				cSig.formalTypeParameters,
 				world);

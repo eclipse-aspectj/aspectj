@@ -27,8 +27,8 @@ import org.aspectj.bridge.Message;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -58,7 +58,7 @@ public class DeclareParents extends Declare {
 		this.typeVariablesInScope = typeParameters;
 	}
 	
-	public boolean match(ResolvedTypeX typeX) {
+	public boolean match(ResolvedType typeX) {
 		if (!child.matchesStatically(typeX)) return false;
 		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled() &&
 				!typeX.isExposedToWeaver())
@@ -124,13 +124,13 @@ public class DeclareParents extends Declare {
 	
 	public boolean parentsIncludeInterface(World w) {
 		for (int i = 0; i < parents.size(); i++) {
-			if (parents.get(i).getExactType().isInterface(w)) return true;
+			if (parents.get(i).getExactType().resolve(w).isInterface()) return true;
 		}
 	  return false;	
 	}
 	public boolean parentsIncludeClass(World w) {
 		for (int i = 0; i < parents.size(); i++) {
-			if (parents.get(i).getExactType().isClass(w)) return true;
+			if (parents.get(i).getExactType().resolve(w).isClass()) return true;
 		}
 	  return false;	
 	}
@@ -158,12 +158,12 @@ public class DeclareParents extends Declare {
 		return false;
 	}
 	
-	private ResolvedTypeX maybeGetNewParent(ResolvedTypeX targetType, TypePattern typePattern, World world,boolean reportErrors) {
+	private ResolvedType maybeGetNewParent(ResolvedType targetType, TypePattern typePattern, World world,boolean reportErrors) {
 		if (typePattern == TypePattern.NO) return null;  // already had an error here
-		TypeX iType = typePattern.getExactType();
-		ResolvedTypeX parentType = iType.resolve(world);
+		UnresolvedType iType = typePattern.getExactType();
+		ResolvedType parentType = iType.resolve(world);
 		
-		if (targetType.equals(world.getCoreType(TypeX.OBJECT))) {
+		if (targetType.equals(world.getCoreType(UnresolvedType.OBJECT))) {
 			world.showMessage(IMessage.ERROR, 
 					WeaverMessages.format(WeaverMessages.DECP_OBJECT),
 			        this.getSourceLocation(), null);
@@ -172,14 +172,14 @@ public class DeclareParents extends Declare {
 		
 		// Ensure the target doesn't already have an 
 		// alternate parameterization of the generic type on it
-		if (parentType.isParameterized() || parentType.isRawType()) {
-			ResolvedTypeX newParentGenericType = parentType.getGenericType();
+		if (parentType.isParameterizedType() || parentType.isRawType()) {
+			ResolvedType newParentGenericType = parentType.getGenericType();
 			// Let's take a look at the parents we already have
 			Iterator iter = targetType.getDirectSupertypes();
 			while (iter.hasNext()) {
-				ResolvedTypeX supertype = (ResolvedTypeX)iter.next();
-				if ( ((supertype.isRawType() && parentType.isParameterized()) || 
-					  (supertype.isParameterized() && parentType.isRawType())) && newParentGenericType.equals(supertype.getGenericType())) {
+				ResolvedType supertype = (ResolvedType)iter.next();
+				if ( ((supertype.isRawType() && parentType.isParameterizedType()) || 
+					  (supertype.isParameterizedType() && parentType.isRawType())) && newParentGenericType.equals(supertype.getGenericType())) {
 					// new parent is a parameterized type, but this is a raw type
 					world.getMessageHandler().handleMessage(new Message(
 							WeaverMessages.format(WeaverMessages.CANT_DECP_MULTIPLE_PARAMETERIZATIONS,parentType.getName(),targetType.getName(),supertype.getName()),
@@ -188,8 +188,8 @@ public class DeclareParents extends Declare {
 							new ISourceLocation[]{targetType.getSourceLocation()}));
 					return null;
 				}
-				if (supertype.isParameterized()) {
-					ResolvedTypeX generictype = supertype.getGenericType();
+				if (supertype.isParameterizedType()) {
+					ResolvedType generictype = supertype.getGenericType();
 					if (newParentGenericType.equals(generictype)) {
 						// Have to verify the parameterizations match, otherwise its a no-go
 						boolean isOk = true;
@@ -251,14 +251,14 @@ public class DeclareParents extends Declare {
 		}
 		
 		// 3. Can't use decp to declare java.lang.Enum/java.lang.annotation.Annotation as the parent of a type
-		if (parentType.getSignature().equals(TypeX.ENUM.getSignature())) {
+		if (parentType.getSignature().equals(UnresolvedType.ENUM.getSignature())) {
 			if (reportErrors && !isWildChild) {
 			    world.showMessage(IMessage.ERROR,
 			    		WeaverMessages.format(WeaverMessages.CANT_DECP_TO_MAKE_ENUM_SUPERTYPE,targetType),getSourceLocation(),null);
 			}
 			return null;
 		}	
-		if (parentType.getSignature().equals(TypeX.ANNOTATION.getSignature())) {
+		if (parentType.getSignature().equals(UnresolvedType.ANNOTATION.getSignature())) {
 			if (reportErrors && !isWildChild) {
 			    world.showMessage(IMessage.ERROR,
 			    		WeaverMessages.format(WeaverMessages.CANT_DECP_TO_MAKE_ANNOTATION_SUPERTYPE,targetType),getSourceLocation(),null);
@@ -303,12 +303,12 @@ public class DeclareParents extends Declare {
 	}
 	
 
-	public List/*<ResolvedTypeX>*/ findMatchingNewParents(ResolvedTypeX onType,boolean reportErrors) {
+	public List/*<ResolvedType>*/ findMatchingNewParents(ResolvedType onType,boolean reportErrors) {
 		if (!match(onType)) return Collections.EMPTY_LIST;
 		
 		List ret = new ArrayList();
 		for (int i=0; i < parents.size(); i++) {
-			ResolvedTypeX t = maybeGetNewParent(onType, parents.get(i), onType.getWorld(),reportErrors);
+			ResolvedType t = maybeGetNewParent(onType, parents.get(i), onType.getWorld(),reportErrors);
 			if (t != null) ret.add(t);
 		}
 		

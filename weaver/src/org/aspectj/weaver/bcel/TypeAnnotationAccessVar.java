@@ -19,8 +19,8 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 
 /**
  * Used for @this() @target() @args() - represents accessing an annotated
@@ -31,7 +31,7 @@ public class TypeAnnotationAccessVar extends BcelVar {
 
 	private BcelVar target;
 	
-	public TypeAnnotationAccessVar(ResolvedTypeX type,BcelVar theAnnotatedTargetIsStoredHere) {
+	public TypeAnnotationAccessVar(ResolvedType type,BcelVar theAnnotatedTargetIsStoredHere) {
 		super(type,0);
 		target = theAnnotatedTargetIsStoredHere;
 	}
@@ -55,10 +55,10 @@ public class TypeAnnotationAccessVar extends BcelVar {
 		il.append(createLoadInstructions(getType(), fact));
 	}
 
-	public InstructionList createLoadInstructions(ResolvedTypeX toType, InstructionFactory fact) {
+	public InstructionList createLoadInstructions(ResolvedType toType, InstructionFactory fact) {
 		InstructionList il = new InstructionList();
-		Type jlClass = BcelWorld.makeBcelType(TypeX.JAVA_LANG_CLASS);
-		Type jlaAnnotation = BcelWorld.makeBcelType(TypeX.forSignature("Ljava.lang.annotation.Annotation;"));
+		Type jlClass = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_CLASS);
+		Type jlaAnnotation = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.annotation.Annotation;"));
 		il.append(target.createLoad(fact)); 
         il.append(fact.createInvoke("java/lang/Object","getClass",jlClass,new Type[]{},Constants.INVOKEVIRTUAL));
 		il.append(fact.createConstant(new ObjectType(toType.getName())));
@@ -71,7 +71,7 @@ public class TypeAnnotationAccessVar extends BcelVar {
 	public void appendLoadAndConvert(
 		InstructionList il,
 		InstructionFactory fact,
-		ResolvedTypeX toType) {
+		ResolvedType toType) {
 		il.append(createLoadInstructions(toType, fact));				
 
 	}

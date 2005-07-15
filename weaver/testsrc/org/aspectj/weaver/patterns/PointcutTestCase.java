@@ -19,7 +19,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ast.Test;
 
@@ -56,7 +56,7 @@ public class PointcutTestCase extends TestCase {
 			
 			protected void resolveBindingsFromRTTI() {}
 
-			protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+			protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 				return null;
 			}
 

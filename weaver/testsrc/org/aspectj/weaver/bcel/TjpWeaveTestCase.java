@@ -19,8 +19,8 @@ import java.util.Arrays;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 
 public class TjpWeaveTestCase extends WeaveTestCase {
 	{
@@ -75,8 +75,8 @@ public class TjpWeaveTestCase extends WeaveTestCase {
     } 
 
     public void testAround2Tjp() throws IOException {
-    	ResolvedTypeX rtx = world.resolve(TypeX.forName("Aspect"),true);
-    	assertTrue("Couldnt find type Aspect",rtx!=ResolvedTypeX.MISSING);
+    	ResolvedType rtx = world.resolve(UnresolvedType.forName("Aspect"),true);
+    	assertTrue("Couldnt find type Aspect",rtx!=ResolvedType.MISSING);
     	BcelAdvice munger1 = new BcelAdvice(
     		AdviceKind.stringToKind("around"),
     		makePointcutAll(), 

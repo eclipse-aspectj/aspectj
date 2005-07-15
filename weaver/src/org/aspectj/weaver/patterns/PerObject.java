@@ -25,7 +25,7 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
@@ -97,7 +97,7 @@ public class PerObject extends PerClause {
 
 
 
-	public PerClause concretize(ResolvedTypeX inAspect) {
+	public PerClause concretize(ResolvedType inAspect) {
 		PerObject ret = new PerObject(entry, isThis);
 		
 		ret.inAspect = inAspect;

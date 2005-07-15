@@ -16,7 +16,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -53,7 +53,7 @@ public class IfMethodDeclaration extends AjMethodDeclaration {
 			ifPointcut.testMethod = new ResolvedMember(
 				Member.METHOD,
 				EclipseFactory.fromBinding(binding.declaringClass),
-				this.modifiers, ResolvedTypeX.BOOLEAN,  
+				this.modifiers, ResolvedType.BOOLEAN,  
 				new String(this.selector),
 				EclipseFactory.fromBindings(this.binding.parameters));
 		}	

@@ -36,7 +36,7 @@ public class BoundedReferenceType extends ReferenceType {
 			this.upperBound = aBound;
 		} else {
 			this.lowerBound = aBound;
-			this.upperBound = (ReferenceType) world.resolve(TypeX.OBJECT);
+			this.upperBound = (ReferenceType) world.resolve(UnresolvedType.OBJECT);
 		}
 		setDelegate(new ReferenceTypeReferenceTypeDelegate(upperBound));
 	}
@@ -51,7 +51,7 @@ public class BoundedReferenceType extends ReferenceType {
 	 */
 	BoundedReferenceType(String sig, World world) {
 		super(sig,world);
-		this.upperBound = (ReferenceType) world.resolve(TypeX.OBJECT);
+		this.upperBound = (ReferenceType) world.resolve(UnresolvedType.OBJECT);
 	}
 	
 	public ReferenceType getUpperBound() { return upperBound; }
@@ -68,11 +68,11 @@ public class BoundedReferenceType extends ReferenceType {
 	public boolean isSuper() { return isSuper; }
 	
 	// override to include additional interface bounds...
-	public ResolvedTypeX[] getDeclaredInterfaces() {
-		ResolvedTypeX[] interfaces = super.getDeclaredInterfaces();
+	public ResolvedType[] getDeclaredInterfaces() {
+		ResolvedType[] interfaces = super.getDeclaredInterfaces();
 		if (additionalInterfaceBounds.length > 0) {
-			ResolvedTypeX[] allInterfaces = 
-				new ResolvedTypeX[interfaces.length + additionalInterfaceBounds.length];
+			ResolvedType[] allInterfaces = 
+				new ResolvedType[interfaces.length + additionalInterfaceBounds.length];
 			System.arraycopy(interfaces, 0, allInterfaces, 0, interfaces.length);
 			System.arraycopy(additionalInterfaceBounds,0,allInterfaces,interfaces.length,additionalInterfaceBounds.length);
 			return allInterfaces;
@@ -116,14 +116,14 @@ public class BoundedReferenceType extends ReferenceType {
 		}
 
 		public boolean isGeneric() {
-			return resolvedTypeX.isGeneric();
+			return resolvedTypeX.isGenericType();
 		}
 
 		public String getDeclaredGenericSignature() {
 			return resolvedTypeX.getDeclaredGenericSignature();
 		}
 		
-		public boolean hasAnnotation(TypeX ofType) {
+		public boolean hasAnnotation(UnresolvedType ofType) {
 			return resolvedTypeX.hasAnnotation(ofType);
 		}
 
@@ -131,7 +131,7 @@ public class BoundedReferenceType extends ReferenceType {
 			return resolvedTypeX.getAnnotations();
 		}
 
-		public ResolvedTypeX[] getAnnotationTypes() {
+		public ResolvedType[] getAnnotationTypes() {
 			return resolvedTypeX.getAnnotationTypes();
 		}
 
@@ -139,7 +139,7 @@ public class BoundedReferenceType extends ReferenceType {
 			return resolvedTypeX.getDeclaredFields();
 		}
 
-		public ResolvedTypeX[] getDeclaredInterfaces() {
+		public ResolvedType[] getDeclaredInterfaces() {
 			return resolvedTypeX.getDeclaredInterfaces();
 		}
 
@@ -171,7 +171,7 @@ public class BoundedReferenceType extends ReferenceType {
 			return resolvedTypeX.getModifiers();
 		}
 
-		public ResolvedTypeX getSuperclass() {
+		public ResolvedType getSuperclass() {
 			return resolvedTypeX.getSuperclass();
 		}
 

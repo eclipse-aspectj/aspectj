@@ -21,10 +21,10 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 // PTWIMPL Target type munger adds the localAspectOf() method
 public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
-	private TypeX aspectType;
+	private UnresolvedType aspectType;
 	private PerTypeWithin testPointcut;
 
-	public PerTypeWithinTargetTypeMunger(TypeX aspectType, PerTypeWithin testPointcut) {
+	public PerTypeWithinTargetTypeMunger(UnresolvedType aspectType, PerTypeWithin testPointcut) {
 		super(PerTypeWithinInterface, null);
 		this.aspectType    = aspectType;
 		this.testPointcut  = testPointcut;
@@ -34,7 +34,7 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 		throw new RuntimeException("shouldn't be serialized");
 	}
 	
-	public TypeX getAspectType() {
+	public UnresolvedType getAspectType() {
 		return aspectType;
 	}
 
@@ -45,12 +45,12 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 	// This is a lexical within() so if you say PerTypeWithin(Test) and matchType is an
 	// inner type (e.g. Test$NestedType) then it should match successfully
 	// Does not match if the target is an interface
-	public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
+	public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
 		return isWithinType(matchType).alwaysTrue() && 
 		       !matchType.isInterface();
 	}
 	
-	private FuzzyBoolean isWithinType(ResolvedTypeX type) {
+	private FuzzyBoolean isWithinType(ResolvedType type) {
 		while (type != null) {
 			if (testPointcut.getTypePattern().matchesStatically(type)) {
 				return FuzzyBoolean.YES;

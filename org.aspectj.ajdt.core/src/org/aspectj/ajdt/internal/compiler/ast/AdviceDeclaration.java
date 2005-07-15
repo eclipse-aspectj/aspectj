@@ -38,7 +38,7 @@ import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 /**
  * Represents before, after and around advice in an aspect.
@@ -62,7 +62,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	private boolean proceedInInners;
 	private ResolvedMember[] proceedCallSignatures;
 	private boolean[] formalsUnchangedToProceed;
-	private TypeX[] declaredExceptions;
+	private UnresolvedType[] declaredExceptions;
 	
 	
 	public AdviceDeclaration(CompilationResult result, AdviceKind kind) {
@@ -140,7 +140,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			formalsUnchangedToProceed = new boolean[baseArgumentCount];
 			proceedCallSignatures = new ResolvedMember[0];
 			proceedInInners = false;
-			declaredExceptions = new TypeX[0];
+			declaredExceptions = new UnresolvedType[0];
 			
 			for (int i=0; i < n; i++) {
 				Proceed call = (Proceed)proceedCalls.get(i);

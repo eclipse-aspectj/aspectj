@@ -108,7 +108,7 @@ public class TypePatternListTestCase extends TestCase {
         // to test the wildcarding, and we don't do DYNAMIC matching on wildcarded things.                        
                                 
 		TypePatternList p = makeArgumentsPattern(pattern);
-        ResolvedTypeX[] types = new ResolvedTypeX[names.length];
+        ResolvedType[] types = new ResolvedType[names.length];
         for (int i = 0; i < names.length; i++) {
             types[i] = world.resolve(names[i]);
         }
@@ -133,7 +133,7 @@ public class TypePatternListTestCase extends TestCase {
         
         for (int j = 0; j < len; j++) {
             
-            ResolvedTypeX[] types = new ResolvedTypeX[j];
+            ResolvedType[] types = new ResolvedType[j];
             for (int i = 0; i < j; i++) {
                 types[i] = world.resolve("int");
             }

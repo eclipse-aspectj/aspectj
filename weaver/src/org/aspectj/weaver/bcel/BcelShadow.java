@@ -66,10 +66,10 @@ import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Var;
@@ -264,7 +264,7 @@ public class BcelShadow extends Shadow {
 			// at a handler jp and only before advice is supported) (pr46298)
 	        argVars = new BcelVar[1];
 			int positionOffset = (hasTarget() ? 1 : 0) + ((hasThis() && !getKind().isTargetSameAsThis()) ? 1 : 0);
-            TypeX tx = getArgType(0);
+            UnresolvedType tx = getArgType(0);
             argVars[0] = genTempVar(tx, "ajc$arg0");
             InstructionHandle insertedInstruction = 
             	range.insert(argVars[0].createStore(getFactory()), Range.OutsideBefore);
@@ -376,7 +376,7 @@ public class BcelShadow extends Shadow {
     }
     
     // overrides
-    public TypeX getEnclosingType() {
+    public UnresolvedType getEnclosingType() {
     	return getEnclosingClass().getType();
     }
 
@@ -467,8 +467,8 @@ public class BcelShadow extends Shadow {
 		BcelShadow enclosingShadow) 
 	{
 		InstructionList body = enclosingMethod.getBody();
-		TypeX catchType = exceptionRange.getCatchType();
-		TypeX inType = enclosingMethod.getEnclosingClass().getType();
+		UnresolvedType catchType = exceptionRange.getCatchType();
+		UnresolvedType inType = enclosingMethod.getEnclosingClass().getType();
 		
 		ResolvedMember sig = Member.makeExceptionHandlerSignature(inType, catchType);
 		
@@ -522,7 +522,7 @@ public class BcelShadow extends Shadow {
 		Member interfaceConstructorSignature) 
 	{
 		InstructionList body = constructor.getBody();
-		// TypeX inType = constructor.getEnclosingClass().getType();
+		// UnresolvedType inType = constructor.getEnclosingClass().getType();
         BcelShadow s =
             new BcelShadow(
                 world,
@@ -559,7 +559,7 @@ public class BcelShadow extends Shadow {
 //	{
 //		// final InstructionFactory fact = constructor.getEnclosingClass().getFactory();
 //		InstructionList body = constructor.getBody();
-//		// TypeX inType = constructor.getEnclosingClass().getType();
+//		// UnresolvedType inType = constructor.getEnclosingClass().getType();
 //        BcelShadow s =
 //            new BcelShadow(
 //                world,
@@ -877,12 +877,12 @@ public class BcelShadow extends Shadow {
     private BcelVar thisVar = null;
     private BcelVar targetVar = null;
     private BcelVar[] argVars = null;
-    private Map/*<TypeX,BcelVar>*/ kindedAnnotationVars = null;
-    private Map/*<TypeX,BcelVar>*/ thisAnnotationVars = null;
-    private Map/*<TypeX,BcelVar>*/ targetAnnotationVars = null;
-    private Map/*<TypeX,BcelVar>*/[] argAnnotationVars = null;
-    private Map/*<TypeX,BcelVar>*/ withinAnnotationVars = null;
-    private Map/*<TypeX,BcelVar>*/ withincodeAnnotationVars = null;
+    private Map/*<UnresolvedType,BcelVar>*/ kindedAnnotationVars = null;
+    private Map/*<UnresolvedType,BcelVar>*/ thisAnnotationVars = null;
+    private Map/*<UnresolvedType,BcelVar>*/ targetAnnotationVars = null;
+    private Map/*<UnresolvedType,BcelVar>*/[] argAnnotationVars = null;
+    private Map/*<UnresolvedType,BcelVar>*/ withinAnnotationVars = null;
+    private Map/*<UnresolvedType,BcelVar>*/ withincodeAnnotationVars = null;
 
     public Var getThisVar() {
         if (!hasThis()) {
@@ -891,7 +891,7 @@ public class BcelShadow extends Shadow {
         initializeThisVar();
         return thisVar;
     }
-	public Var getThisAnnotationVar(TypeX forAnnotationType) {
+	public Var getThisAnnotationVar(UnresolvedType forAnnotationType) {
         if (!hasThis()) {
             throw new IllegalStateException("no this");
         }
@@ -909,7 +909,7 @@ public class BcelShadow extends Shadow {
 	    initializeTargetVar();
 	    return targetVar;
     }
-    public Var getTargetAnnotationVar(TypeX forAnnotationType) {
+    public Var getTargetAnnotationVar(UnresolvedType forAnnotationType) {
         if (!hasTarget()) {
             throw new IllegalStateException("no target");
         }
@@ -924,7 +924,7 @@ public class BcelShadow extends Shadow {
         initializeArgVars();
         return argVars[i];
    }
-   public Var getArgAnnotationVar(int i,TypeX forAnnotationType) {
+   public Var getArgAnnotationVar(int i,UnresolvedType forAnnotationType) {
 		initializeArgAnnotationVars();
 		
 		Var v= (Var) argAnnotationVars[i].get(forAnnotationType);
@@ -932,15 +932,15 @@ public class BcelShadow extends Shadow {
 		      v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world),(BcelVar)getArgVar(i)); 
 		return v;
    }   
-   public Var getKindedAnnotationVar(TypeX forAnnotationType) {
+   public Var getKindedAnnotationVar(UnresolvedType forAnnotationType) {
    		initializeKindedAnnotationVars();
    		return (Var) kindedAnnotationVars.get(forAnnotationType);
    }
-	public Var getWithinAnnotationVar(TypeX forAnnotationType) {
+	public Var getWithinAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeWithinAnnotationVars();
 		return (Var) withinAnnotationVars.get(forAnnotationType);
 	}	
-	public Var getWithinCodeAnnotationVar(TypeX forAnnotationType) {
+	public Var getWithinCodeAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeWithinCodeAnnotationVars();
 		return (Var) withincodeAnnotationVars.get(forAnnotationType);
 	}
@@ -966,7 +966,7 @@ public class BcelShadow extends Shadow {
     		lazyTjpConsumers++;
     	}
     	if (thisJoinPointVar == null) {
-			thisJoinPointVar = genTempVar(TypeX.forName("org.aspectj.lang.JoinPoint"));
+			thisJoinPointVar = genTempVar(UnresolvedType.forName("org.aspectj.lang.JoinPoint"));
     	}
     }
     
@@ -1068,7 +1068,7 @@ public class BcelShadow extends Shadow {
 									Constants.INVOKESTATIC));
 				break;
 			case 1:
-				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedTypeX.OBJECT));
+				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedType.OBJECT));
 				il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
 									"makeJP", LazyClassGen.tjpType,
 									new Type[] { LazyClassGen.staticTjpType,
@@ -1076,8 +1076,8 @@ public class BcelShadow extends Shadow {
 									Constants.INVOKESTATIC));
 				break;
 			case 2:
-				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedTypeX.OBJECT));
-				((BcelVar)getArgVar(1)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedTypeX.OBJECT));
+				((BcelVar)getArgVar(0)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedType.OBJECT));
+				((BcelVar)getArgVar(1)).appendLoadAndConvert(il, fact, world.getCoreType(ResolvedType.OBJECT));
 				il.append(fact.createInvoke("org.aspectj.runtime.reflect.Factory", 
 									"makeJP", LazyClassGen.tjpType,
 									new Type[] { LazyClassGen.staticTjpType,
@@ -1116,8 +1116,8 @@ public class BcelShadow extends Shadow {
     		thisJoinPointStaticPartVar =
     			new BcelFieldRef(
     				isEnclosingJp?
-                        world.getCoreType(TypeX.forName("org.aspectj.lang.JoinPoint$EnclosingStaticPart")):
-                        world.getCoreType(TypeX.forName("org.aspectj.lang.JoinPoint$StaticPart")),
+                        world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$EnclosingStaticPart")):
+                        world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$StaticPart")),
     				getEnclosingClass().getClassName(),
     				field.getName());
 //    		getEnclosingClass().warnOnAddedStaticInitializer(this,munger.getSourceLocation());
@@ -1156,7 +1156,7 @@ public class BcelShadow extends Shadow {
 
     private InstructionList makeArgsObjectArray() {
     	InstructionFactory fact = getFactory();
-        BcelVar arrayVar = genTempVar(TypeX.OBJECTARRAY);
+        BcelVar arrayVar = genTempVar(UnresolvedType.OBJECTARRAY);
         final InstructionList il = new InstructionList();
         int alen = getArgCount() ;
         il.append(Utility.createConstant(fact, alen));
@@ -1191,7 +1191,7 @@ public class BcelShadow extends Shadow {
             targetVar = thisVar;
         } else {
             initializeArgVars(); // gotta pop off the args before we find the target
-            TypeX type = getTargetType();
+            UnresolvedType type = getTargetType();
             type = ensureTargetTypeIsCorrect(type);
             targetVar = genTempVar(type, "ajc$target");
             range.insert(targetVar.createStore(fact), Range.OutsideBefore); 
@@ -1210,9 +1210,9 @@ public class BcelShadow extends Shadow {
      * java verification.  This method checks for the peculiar set of conditions and if they
      * are true, it has a sneak peek at the code before the call to see what is on the stack.
      */
-    public TypeX ensureTargetTypeIsCorrect(TypeX tx) {
-    	if (tx.equals(ResolvedTypeX.OBJECT) && getKind() == MethodCall && 
-    	    getSignature().getReturnType().equals(ResolvedTypeX.OBJECT) && 
+    public UnresolvedType ensureTargetTypeIsCorrect(UnresolvedType tx) {
+    	if (tx.equals(ResolvedType.OBJECT) && getKind() == MethodCall && 
+    	    getSignature().getReturnType().equals(ResolvedType.OBJECT) && 
 			getSignature().getArity()==0 && 
 			getSignature().getName().charAt(0) == 'c' &&
 			getSignature().getName().equals("clone")) {
@@ -1270,7 +1270,7 @@ public class BcelShadow extends Shadow {
         if (getKind().argsOnStack()) {
             // we move backwards because we're popping off the stack
             for (int i = len - 1; i >= 0; i--) {
-                TypeX type = getArgType(i);
+                UnresolvedType type = getArgType(i);
                 BcelVar tmp = genTempVar(type, "ajc$arg" + i);
                 range.insert(tmp.createStore(getFactory()), Range.OutsideBefore);
                 int position = i;
@@ -1283,7 +1283,7 @@ public class BcelShadow extends Shadow {
             if (arg0HoldsThis()) index++;
             
             for (int i = 0; i < len; i++) {
-                TypeX type = getArgType(i); 
+                UnresolvedType type = getArgType(i); 
                 BcelVar tmp = genTempVar(type, "ajc$arg" + i);
                 range.insert(tmp.createCopyFrom(fact, index), Range.OutsideBefore);
                 argVars[i] = tmp;
@@ -1315,9 +1315,9 @@ public class BcelShadow extends Shadow {
             targetAnnotationVars = thisAnnotationVars;
         } else {
         	targetAnnotationVars = new HashMap();
-        	ResolvedTypeX[] rtx = this.getTargetType().resolve(world).getAnnotationTypes(); // what about annotations we havent gotten yet but we will get in subclasses?
+        	ResolvedType[] rtx = this.getTargetType().resolve(world).getAnnotationTypes(); // what about annotations we havent gotten yet but we will get in subclasses?
         	for (int i = 0; i < rtx.length; i++) {
-				ResolvedTypeX typeX = rtx[i];
+				ResolvedType typeX = rtx[i];
 				targetAnnotationVars.put(typeX,new TypeAnnotationAccessVar(typeX,(BcelVar)getTargetVar()));
 			}
         	// populate.
@@ -1340,22 +1340,20 @@ public class BcelShadow extends Shadow {
     	// by determining what "kind" of shadow we are, we can find out the
     	// annotations on the appropriate element (method, field, constructor, type).
     	// Then create one BcelVar entry in the map for each annotation, keyed by
-    	// annotation type (TypeX).
+    	// annotation type (UnresolvedType).
     	
     	// FIXME asc Refactor this code, there is duplication
-    	ResolvedTypeX[] annotations = null;
+    	ResolvedType[] annotations = null;
     	ResolvedMember itdMember =null;
     	Member relevantMember = getSignature();
-    	TypeX  relevantType   = null;
-    	TypeX aspect = null;
+    	ResolvedType  relevantType   = relevantMember.getDeclaringType().resolve(world);
+    	UnresolvedType aspect = null;
     	
     	if (getKind() == Shadow.StaticInitialization) {
-    		relevantType = getSignature().getDeclaringType();
     		annotations  = relevantType.resolve(world).getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
-    		relevantType = getSignature().getDeclaringType();
-            relevantMember = findMethod2(relevantType.getDeclaredMethods(world),getSignature());
+            relevantMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());
     		
 			if (relevantMember == null) {
 				// check the ITD'd dooberries
@@ -1382,8 +1380,7 @@ public class BcelShadow extends Shadow {
     		annotations = relevantMember.getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.FieldSet || getKind() == Shadow.FieldGet) {
-    		relevantType = getSignature().getDeclaringType();
-    		relevantMember = findField(relevantType.getDeclaredFields(world),getSignature());
+    		relevantMember = findField(relevantType.getDeclaredFields(),getSignature());
     		
 			if (relevantMember==null) {
               // check the ITD'd dooberries
@@ -1406,9 +1403,8 @@ public class BcelShadow extends Shadow {
     		
     	} else if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution || 
     		        getKind() == Shadow.AdviceExecution) {
-    		relevantType = getSignature().getDeclaringType();
-    		ResolvedMember rm[] = relevantType.getDeclaredMethods(world);
-    		relevantMember = findMethod2(relevantType.getDeclaredMethods(world),getSignature());
+    		ResolvedMember rm[] = relevantType.getDeclaredMethods();
+    		relevantMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		
 			if (relevantMember == null) {
 				// check the ITD'd dooberries
@@ -1435,12 +1431,11 @@ public class BcelShadow extends Shadow {
     		annotations = relevantMember.getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.ExceptionHandler) {
-    		relevantType = getSignature().getParameterTypes()[0];
-    		annotations  =  relevantType.resolve(world).getAnnotationTypes();
+    		relevantType = getSignature().getParameterTypes()[0].resolve(world);
+    		annotations  =  relevantType.getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.PreInitialization || getKind() == Shadow.Initialization) {
-    		relevantType = getSignature().getDeclaringType();
-    		ResolvedMember found = findMethod2(relevantType.getDeclaredMethods(world),getSignature());
+    		ResolvedMember found = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		annotations = found.getAnnotationTypes();
     	}
     	
@@ -1450,7 +1445,7 @@ public class BcelShadow extends Shadow {
     	}
     	
 		for (int i = 0; i < annotations.length; i++) {
-			ResolvedTypeX aTX = annotations[i];
+			ResolvedType aTX = annotations[i];
 			KindedAnnotationAccessVar kaav =  new KindedAnnotationAccessVar(getKind(),aTX.resolve(world),relevantType,relevantMember);
     		kindedAnnotationVars.put(aTX,kaav);
 		}
@@ -1468,7 +1463,7 @@ public class BcelShadow extends Shadow {
 		return found;
 	 }
     
-    private ResolvedMember findMethod(ResolvedTypeX aspectType, ResolvedMember ajcMethod) {
+    private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {
        ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
        for (int i = 0; i < decMethods.length; i++) {
 		ResolvedMember member = decMethods[i];
@@ -1495,9 +1490,9 @@ public class BcelShadow extends Shadow {
     	if (withinAnnotationVars != null) return;
     	withinAnnotationVars = new HashMap();
     	
-    	ResolvedTypeX[] annotations = getEnclosingType().getAnnotationTypes();
+    	ResolvedType[] annotations = getEnclosingType().resolve(world).getAnnotationTypes();
 		for (int i = 0; i < annotations.length; i++) {
-			ResolvedTypeX ann = annotations[i];
+			ResolvedType ann = annotations[i];
 			Kind k = Shadow.StaticInitialization;
 			withinAnnotationVars.put(ann,new KindedAnnotationAccessVar(k,ann,getEnclosingType(),null));
 		}
@@ -1508,9 +1503,9 @@ public class BcelShadow extends Shadow {
     	withincodeAnnotationVars = new HashMap();
     
     	// For some shadow we are interested in annotations on the method containing that shadow.
-		ResolvedTypeX[] annotations = getEnclosingMethod().getMemberView().getAnnotationTypes();
+		ResolvedType[] annotations = getEnclosingMethod().getMemberView().getAnnotationTypes();
 		for (int i = 0; i < annotations.length; i++) {
-			ResolvedTypeX ann = annotations[i];
+			ResolvedType ann = annotations[i];
 			Kind k = (getEnclosingMethod().getMemberView().getKind()==Member.CONSTRUCTOR?
 					  Shadow.ConstructorExecution:Shadow.MethodExecution);
 			withincodeAnnotationVars.put(ann,
@@ -1528,7 +1523,7 @@ public class BcelShadow extends Shadow {
     }
     
     public void weaveAfter(BcelAdvice munger) {
-        weaveAfterThrowing(munger, TypeX.THROWABLE);
+        weaveAfterThrowing(munger, UnresolvedType.THROWABLE);
         weaveAfterReturning(munger);
     }
 	
@@ -1575,9 +1570,9 @@ public class BcelShadow extends Shadow {
         InstructionList advice = new InstructionList();
         BcelVar tempVar = null;
         if (munger.hasExtraParameter()) {
-            TypeX tempVarType = getReturnType();
-            if (tempVarType.equals(ResolvedTypeX.VOID)) {
-            	tempVar = genTempVar(TypeX.OBJECT);
+            UnresolvedType tempVarType = getReturnType();
+            if (tempVarType.equals(ResolvedType.VOID)) {
+            	tempVar = genTempVar(UnresolvedType.OBJECT);
             	advice.append(InstructionConstants.ACONST_NULL);
             	tempVar.appendStore(advice, getFactory());
             } else {
@@ -1607,7 +1602,7 @@ public class BcelShadow extends Shadow {
         }
     }
     
-    public void weaveAfterThrowing(BcelAdvice munger, TypeX catchType) {
+    public void weaveAfterThrowing(BcelAdvice munger, UnresolvedType catchType) {
     	// a good optimization would be not to generate anything here
     	// if the shadow is GUARANTEED empty (i.e., there's NOTHING, not even
     	// a shadow, inside me).
@@ -1622,7 +1617,7 @@ public class BcelShadow extends Shadow {
         // if (exc instanceof ExceptionInInitializerError) 
         //    throw (ExceptionInInitializerError)exc;
         if (this.getEnclosingMethod().getName().equals("<clinit>")) {
-            ResolvedTypeX eiieType = world.resolve("java.lang.ExceptionInInitializerError");
+            ResolvedType eiieType = world.resolve("java.lang.ExceptionInInitializerError");
             ObjectType eiieBcelType = (ObjectType)BcelWorld.makeBcelType(eiieType);
         	InstructionList ih = new InstructionList(InstructionConstants.NOP);
         	handler.append(exceptionVar.createLoad(fact));
@@ -1659,7 +1654,7 @@ public class BcelShadow extends Shadow {
 
 	//??? this shares a lot of code with the above weaveAfterThrowing
 	//??? would be nice to abstract that to say things only once
-    public void weaveSoftener(BcelAdvice munger, TypeX catchType) {
+    public void weaveSoftener(BcelAdvice munger, UnresolvedType catchType) {
     	// a good optimization would be not to generate anything here
     	// if the shadow is GUARANTEED empty (i.e., there's NOTHING, not even
     	// a shadow, inside me).
@@ -1736,9 +1731,9 @@ public class BcelShadow extends Shadow {
 	/**
 	 * Causes the aspect instance to be *set* for later retrievable through localAspectof()/aspectOf()
 	 */
-	public void weavePerTypeWithinAspectInitialization(final BcelAdvice munger,TypeX t) {
+	public void weavePerTypeWithinAspectInitialization(final BcelAdvice munger,UnresolvedType t) {
 		
-		if (t.isInterface(world)) return; // Don't initialize statics in 
+		if (t.resolve(world).isInterface()) return; // Don't initialize statics in 
         final InstructionFactory fact = getFactory();        
 
 		InstructionList entryInstructions = new InstructionList();
@@ -1768,7 +1763,7 @@ public class BcelShadow extends Shadow {
 		final Type objectArrayType = new ArrayType(Type.OBJECT, 1);
         final InstructionFactory fact = getFactory();        
 
-		final BcelVar testResult = genTempVar(ResolvedTypeX.BOOLEAN);
+		final BcelVar testResult = genTempVar(ResolvedType.BOOLEAN);
 
 		InstructionList entryInstructions = new InstructionList();
 		{
@@ -1801,7 +1796,7 @@ public class BcelShadow extends Shadow {
 					//arrayVar.appendLoad(entrySuccessInstructions, fact);
 					entrySuccessInstructions.append(fact.createInvoke(NameMangler.CFLOW_COUNTER_TYPE,"inc",Type.VOID,new Type[] { },Constants.INVOKEVIRTUAL));
 				} else {
-				    BcelVar arrayVar = genTempVar(TypeX.OBJECTARRAY);
+				    BcelVar arrayVar = genTempVar(UnresolvedType.OBJECTARRAY);
 	
 				    int alen = cflowStateVars.length;
 				    entrySuccessInstructions.append(Utility.createConstant(fact, alen));
@@ -1920,8 +1915,8 @@ public class BcelShadow extends Shadow {
 		 
 		// !!! THIS BLOCK OF CODE SHOULD BE IN A METHOD CALLED weaveAround(...);
         Member mungerSig = munger.getSignature();
-        ResolvedTypeX declaringType = world.resolve(mungerSig.getDeclaringType(),true);
-        if (declaringType == ResolvedTypeX.MISSING) {
+        ResolvedType declaringType = world.resolve(mungerSig.getDeclaringType(),true);
+        if (declaringType == ResolvedType.MISSING) {
           IMessage msg = new Message(
                 WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,declaringType.getClassName()),
                 "",IMessage.ERROR,getSourceLocation(),null,
@@ -2234,12 +2229,12 @@ public class BcelShadow extends Shadow {
 //		System.out.println(proceedMap + " for " + this);
 //		System.out.println(argVarList);
 		
-		ResolvedTypeX[] proceedParamTypes =
+		ResolvedType[] proceedParamTypes =
 			world.resolve(munger.getSignature().getParameterTypes());
 		// remove this*JoinPoint* as arguments to proceed
 		if (munger.getBaseParameterCount()+1 < proceedParamTypes.length) {
 			int len = munger.getBaseParameterCount()+1;
-			ResolvedTypeX[] newTypes = new ResolvedTypeX[len];
+			ResolvedType[] newTypes = new ResolvedType[len];
 			System.arraycopy(proceedParamTypes, 0, newTypes, 0, len);
 			proceedParamTypes = newTypes;
 		}
@@ -2253,7 +2248,7 @@ public class BcelShadow extends Shadow {
 		
 		for (int i=0, len=stateTypes.length; i < len; i++) {
             Type stateType = stateTypes[i];
-            ResolvedTypeX stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+            ResolvedType stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
             if (proceedMap.hasKey(i)) {
             	//throw new RuntimeException("unimplemented");
 				proceedVars[proceedMap.get(i)].appendLoadAndConvert(ret, fact, stateTypeX);
@@ -2331,7 +2326,7 @@ public class BcelShadow extends Shadow {
             }
             for (int i = startIndex, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
                 Type stateType = callbackMethod.getArgumentTypes()[i];
-                ResolvedTypeX stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+                ResolvedType stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
                     ret.append(new ALOAD(localJp));// from localAdvice signature
                 } else {
@@ -2352,7 +2347,7 @@ public class BcelShadow extends Shadow {
 
             for (int i = 0, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
                 Type stateType = callbackMethod.getArgumentTypes()[i];
-                ResolvedTypeX stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+                ResolvedType stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
                     ret.append(new ALOAD(localJp));// from localAdvice signature
 //                } else if ("Lorg/aspectj/lang/ProceedingJoinPoint;".equals(stateType.getSignature())) {
@@ -2373,7 +2368,7 @@ public class BcelShadow extends Shadow {
         ret.append(Utility.createInvoke(fact, callbackMethod));
 
         // box it again. Handles cases where around advice does return something else than Object
-        if (!TypeX.OBJECT.equals(munger.getSignature().getReturnType())) {
+        if (!UnresolvedType.OBJECT.equals(munger.getSignature().getReturnType())) {
             ret.append(Utility.createConversion(
                     fact,
                     callbackMethod.getReturnType(),
@@ -2424,12 +2419,12 @@ public class BcelShadow extends Shadow {
 //        System.out.println(proceedMap + " for " + this);
 //        System.out.println(argVarList);
 //
-//        ResolvedTypeX[] proceedParamTypes =
+//        ResolvedType[] proceedParamTypes =
 //            world.resolve(munger.getSignature().getParameterTypes());
 //        // remove this*JoinPoint* as arguments to proceed
 //        if (munger.getBaseParameterCount()+1 < proceedParamTypes.length) {
 //            int len = munger.getBaseParameterCount()+1;
-//            ResolvedTypeX[] newTypes = new ResolvedTypeX[len];
+//            ResolvedType[] newTypes = new ResolvedType[len];
 //            System.arraycopy(proceedParamTypes, 0, newTypes, 0, len);
 //            proceedParamTypes = newTypes;
 //        }
@@ -2443,7 +2438,7 @@ public class BcelShadow extends Shadow {
 //
 //        for (int i=0, len=stateTypes.length; i < len; i++) {
 //            Type stateType = stateTypes[i];
-//            ResolvedTypeX stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+//            ResolvedType stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
 //            if (proceedMap.hasKey(i)) {
 //                //throw new RuntimeException("unimplemented");
 //                proceedVars[proceedMap.get(i)].appendLoadAndConvert(ret, fact, stateTypeX);
@@ -2480,7 +2475,7 @@ public class BcelShadow extends Shadow {
     			getEnclosingClass().getNewGeneratedNameTag());
     			
     	Member constructorSig = new Member(Member.CONSTRUCTOR, 
-    								TypeX.forName(closureClassName), 0, "<init>", 
+    								UnresolvedType.forName(closureClassName), 0, "<init>", 
     								"([Ljava/lang/Object;)V");
     	
     	BcelVar closureHolder = null;
@@ -2505,7 +2500,7 @@ public class BcelShadow extends Shadow {
 		if (getKind() == PreInitialization) {
 			returnConversionCode = new InstructionList();
 			
-			BcelVar stateTempVar = genTempVar(TypeX.OBJECTARRAY);
+			BcelVar stateTempVar = genTempVar(UnresolvedType.OBJECTARRAY);
 			closureHolder.appendLoad(returnConversionCode, fact);
 			
 			returnConversionCode.append(
@@ -2519,9 +2514,9 @@ public class BcelShadow extends Shadow {
 			
 			returnConversionCode.append(InstructionConstants.ALOAD_0); // put "this" back on the stack
 			for (int i = 0, len = stateTypes.length; i < len; i++) {
-                TypeX bcelTX = BcelWorld.fromBcel(stateTypes[i]);
-                ResolvedTypeX stateRTX = world.resolve(bcelTX,true);
-                if (stateRTX == ResolvedTypeX.MISSING) {
+                UnresolvedType bcelTX = BcelWorld.fromBcel(stateTypes[i]);
+                ResolvedType stateRTX = world.resolve(bcelTX,true);
+                if (stateRTX == ResolvedType.MISSING) {
                     IMessage msg = new Message(
                              WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT,bcelTX.getClassName()),
                               "",IMessage.ERROR,getSourceLocation(),null,
@@ -2553,7 +2548,7 @@ public class BcelShadow extends Shadow {
                     getWorld(),
                     new Member(
                             Member.METHOD,
-                            TypeX.forName("org.aspectj.runtime.internal.AroundClosure"),
+                            UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
                             Modifier.PUBLIC,
                             "linkClosureAndJoinPoint",
                             "()Lorg/aspectj/lang/ProceedingJoinPoint;"
@@ -2618,7 +2613,7 @@ public class BcelShadow extends Shadow {
     
 //    LazyMethodGen constructor) {
     	InstructionFactory fact = getFactory();
-        BcelVar arrayVar = genTempVar(TypeX.OBJECTARRAY);
+        BcelVar arrayVar = genTempVar(UnresolvedType.OBJECTARRAY);
         //final Type objectArrayType = new ArrayType(Type.OBJECT, 1);
         final InstructionList il = new InstructionList();
         int alen = getArgCount() + (thisVar == null ? 0 : 1) + 
@@ -2726,10 +2721,10 @@ public class BcelShadow extends Shadow {
                                         new String[] {},
                                         closureClass); 
         InstructionList mbody = runMethod.getBody();
-        BcelVar proceedVar = new BcelVar(TypeX.OBJECTARRAY.resolve(world), 1);
+        BcelVar proceedVar = new BcelVar(UnresolvedType.OBJECTARRAY.resolve(world), 1);
     //        int proceedVarIndex = 1;
 		BcelVar stateVar =
-			new BcelVar(TypeX.OBJECTARRAY.resolve(world), runMethod.allocateLocal(1));
+			new BcelVar(UnresolvedType.OBJECTARRAY.resolve(world), runMethod.allocateLocal(1));
     //        int stateVarIndex = runMethod.allocateLocal(1);
 		mbody.append(InstructionFactory.createThis());
 		mbody.append(fact.createGetField(superClassName, "state", objectArrayType));
@@ -2740,7 +2735,7 @@ public class BcelShadow extends Shadow {
         		
 		for (int i=0, len=stateTypes.length; i < len; i++) {
             Type stateType = stateTypes[i];
-            ResolvedTypeX stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+            ResolvedType stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
             if (proceedMap.hasKey(i)) {
                 mbody.append(
                     proceedVar.createConvertableArrayLoad(fact, proceedMap.get(i),
@@ -2814,7 +2809,7 @@ public class BcelShadow extends Shadow {
 		final InstructionFactory fact = getFactory();	
 		
 		BcelVar arrayVar = new BcelVar(
-			world.getCoreType(TypeX.OBJECTARRAY),
+			world.getCoreType(UnresolvedType.OBJECTARRAY),
 			extractedMethod.allocateLocal(1));
 		
 		int len = superConstructorTypes.length;
@@ -2880,7 +2875,7 @@ public class BcelShadow extends Shadow {
 	        if (arg0HoldsThis()) { ret.put(0, 0); oldi++; newi+=1; }
 	        //assert targetVar == thisVar
 	        for (int i = 0; i < getArgCount(); i++) {
-	            TypeX type = getArgType(i); 
+	            UnresolvedType type = getArgType(i); 
 				ret.put(oldi, newi);
 	            oldi += type.getSize();
 	            newi += type.getSize();
@@ -2912,7 +2907,7 @@ public class BcelShadow extends Shadow {
 //        }
         modifiers |= Modifier.STATIC;
         if (targetVar != null && targetVar != thisVar) {
-            TypeX targetType = getTargetType();
+            UnresolvedType targetType = getTargetType();
             targetType = ensureTargetTypeIsCorrect(targetType);
             ResolvedMember resolvedMember = getSignature().resolve(world);
             
@@ -2920,7 +2915,7 @@ public class BcelShadow extends Shadow {
             	!samePackage(targetType.getPackageName(), getEnclosingType().getPackageName()) &&
 				!resolvedMember.getName().equals("clone"))
             {
-            	if (!targetType.isAssignableFrom(getThisType(), world)) {
+            	if (!targetType.resolve(world).isAssignableFrom(getThisType().resolve(world))) {
             		throw new BCException("bad bytecode");
             	}
             	targetType = getThisType();
@@ -2928,7 +2923,7 @@ public class BcelShadow extends Shadow {
             parameterTypes = addType(BcelWorld.makeBcelType(targetType), parameterTypes);
         }
         if (thisVar != null) {
-        	TypeX thisType = getThisType();
+        	UnresolvedType thisType = getThisType();
         	parameterTypes = addType(BcelWorld.makeBcelType(thisType), parameterTypes);
         }
         
@@ -2941,9 +2936,9 @@ public class BcelShadow extends Shadow {
             //parameterTypes = addTypeToEnd(LazyClassGen.proceedingTjpType, parameterTypes);
         }
         
-        TypeX returnType;
+        UnresolvedType returnType;
         if (getKind() == PreInitialization) {
-        	returnType = TypeX.OBJECTARRAY;
+        	returnType = UnresolvedType.OBJECTARRAY;
         } else {
         	returnType = getReturnType();
         }
@@ -2955,7 +2950,7 @@ public class BcelShadow extends Shadow {
                 parameterTypes,
                 new String[0],
     // XXX again, we need to look up methods!
-//                TypeX.getNames(getSignature().getExceptions(world)),
+//                UnresolvedType.getNames(getSignature().getExceptions(world)),
                 getEnclosingClass());
     }
 
@@ -2982,13 +2977,13 @@ public class BcelShadow extends Shadow {
         return ret;
     }
     
-    public BcelVar genTempVar(TypeX typeX) {
+    public BcelVar genTempVar(UnresolvedType typeX) {
     	return new BcelVar(typeX.resolve(world), genTempVarIndex(typeX.getSize()));
     }
 
 //	public static final boolean CREATE_TEMP_NAMES = true;
 
-    public BcelVar genTempVar(TypeX typeX, String localName) {
+    public BcelVar genTempVar(UnresolvedType typeX, String localName) {
 		BcelVar tv = genTempVar(typeX);
 
 //		if (CREATE_TEMP_NAMES) {

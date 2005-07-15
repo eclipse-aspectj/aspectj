@@ -15,7 +15,7 @@ package org.aspectj.weaver.bcel;
 
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 /** exceptionRanges are set initially to be low priority.  The various setPriority methods
  * should be used accordingly.  The priority is used when we pack the exception table into
@@ -35,7 +35,7 @@ import org.aspectj.weaver.TypeX;
 public final class ExceptionRange extends Range {
 
     private InstructionHandle handler;
-    private final TypeX exceptionType;
+    private final UnresolvedType exceptionType;
     private final int priority;
 
 	// ---- initialization
@@ -46,7 +46,7 @@ public final class ExceptionRange extends Range {
 	 * 
 	 * XXX priority should be fixed
 	 */
-	public ExceptionRange(InstructionList body, TypeX exceptionType, int priority) {
+	public ExceptionRange(InstructionList body, UnresolvedType exceptionType, int priority) {
 		super(body);
 		this.exceptionType = exceptionType;
 		this.priority = priority;
@@ -55,7 +55,7 @@ public final class ExceptionRange extends Range {
 	/**
 	 * @param insideExisting 
 	 */
-	public ExceptionRange(InstructionList body, TypeX exceptionType, boolean insideExisting) {
+	public ExceptionRange(InstructionList body, UnresolvedType exceptionType, boolean insideExisting) {
 		this(body, exceptionType, insideExisting ? Integer.MAX_VALUE : -1);
 	}
 	public void associateWithTargets(
@@ -77,7 +77,7 @@ public final class ExceptionRange extends Range {
     public InstructionHandle getHandler() {
         return handler;
     }
-    public TypeX getCatchType() {
+    public UnresolvedType getCatchType() {
         return exceptionType;
     }
     public int getPriority() {

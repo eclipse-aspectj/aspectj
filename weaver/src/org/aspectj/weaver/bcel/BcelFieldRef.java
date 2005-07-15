@@ -17,7 +17,7 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 /**
  * XXX Erik and I need to discuss this hierarchy.  Having FieldRef
@@ -29,7 +29,7 @@ public class BcelFieldRef extends BcelVar {
 
 	private String className, fieldName;
 
-	public BcelFieldRef(ResolvedTypeX type, String className, String fieldName) {
+	public BcelFieldRef(ResolvedType type, String className, String fieldName) {
 		super(type, 0);
 		this.className = className;
 		this.fieldName = fieldName;
@@ -59,9 +59,9 @@ public class BcelFieldRef extends BcelVar {
 //        InstructionList il,
 //        InstructionFactory fact, 
 //        int index,
-//        ResolvedTypeX convertTo)
+//        ResolvedType convertTo)
 //    {
-//        ResolvedTypeX convertFromType = getType().getResolvedComponentType();
+//        ResolvedType convertFromType = getType().getResolvedComponentType();
 //        appendLoad(il, fact);
 //        il.append(Utility.createConstant(fact, index));
 //        il.append(fact.createArrayLoad(BcelWorld.makeBcelType(convertFromType)));
@@ -74,7 +74,7 @@ public class BcelFieldRef extends BcelVar {
 //        int index,
 //        BcelFieldRef storee) 
 //    {
-//        ResolvedTypeX convertToType = getType().getResolvedComponentType();
+//        ResolvedType convertToType = getType().getResolvedComponentType();
 //        appendLoad(il, fact);
 //        il.append(Utility.createConstant(fact, index));
 //        storee.appendLoad(il, fact);
@@ -94,7 +94,7 @@ public class BcelFieldRef extends BcelVar {
 //    InstructionList createConvertableArrayLoad(
 //        InstructionFactory fact, 
 //        int index,
-//        ResolvedTypeX convertTo) 
+//        ResolvedType convertTo) 
 //    {
 //        InstructionList il = new InstructionList();
 //        appendConvertableArrayLoad(il, fact, index, convertTo);

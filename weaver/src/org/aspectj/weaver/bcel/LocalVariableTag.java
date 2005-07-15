@@ -13,14 +13,14 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 public final class LocalVariableTag extends Tag {
-    private final TypeX type;
+    private final UnresolvedType type;
     private final String name;
     private final int slot;
 
-    public LocalVariableTag(TypeX type, String name, int slot) {
+    public LocalVariableTag(UnresolvedType type, String name, int slot) {
         this.type = type;
         this.name = name;
         this.slot = slot;
@@ -32,7 +32,7 @@ public final class LocalVariableTag extends Tag {
     public int getSlot() {
         return slot;
     }
-    public TypeX getType() {
+    public UnresolvedType getType() {
         return type;
     }
     

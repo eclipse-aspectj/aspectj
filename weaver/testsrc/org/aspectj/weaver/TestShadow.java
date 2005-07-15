@@ -19,9 +19,9 @@ import org.aspectj.weaver.ast.Var;
 public class TestShadow extends Shadow {
 
 	private final World world;
-	private final TypeX thisType;
+	private final UnresolvedType thisType;
 
-    public TestShadow(Kind kind, Member signature, TypeX thisType, World world) {
+    public TestShadow(Kind kind, Member signature, UnresolvedType thisType, World world) {
         super(kind, signature, null);
         this.world = world;
         this.thisType = thisType;
@@ -32,7 +32,7 @@ public class TestShadow extends Shadow {
     }
 
 	/** this is subtly wrong.  ha ha */
-    public TypeX getEnclosingType() {
+    public UnresolvedType getEnclosingType() {
         return thisType;
     }
 
@@ -73,42 +73,42 @@ public class TestShadow extends Shadow {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.Shadow#getKindedAnnotationVar()
 	 */
-	public Var getKindedAnnotationVar(TypeX annotationType) {
+	public Var getKindedAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.Shadow#getWithinAnnotationVar()
 	 */
-	public Var getWithinAnnotationVar(TypeX annotationType) {
+	public Var getWithinAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.Shadow#getWithinCodeAnnotationVar()
 	 */
-	public Var getWithinCodeAnnotationVar(TypeX annotationType) {
+	public Var getWithinCodeAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.Shadow#getThisAnnotationVar()
 	 */
-	public Var getThisAnnotationVar(TypeX annotationType) {
+	public Var getThisAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.Shadow#getTargetAnnotationVar()
 	 */
-	public Var getTargetAnnotationVar(TypeX annotationType) {
+	public Var getTargetAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.Shadow#getArgAnnotationVar(int)
 	 */
-	public Var getArgAnnotationVar(int i,TypeX annotationType) {
+	public Var getArgAnnotationVar(int i,UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 

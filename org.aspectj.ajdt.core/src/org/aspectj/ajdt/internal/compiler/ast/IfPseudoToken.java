@@ -17,7 +17,7 @@ import java.lang.reflect.Modifier;
 
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -71,7 +71,7 @@ public class IfPseudoToken extends PseudoToken {
 		} else if (expr instanceof TrueLiteral) {
 			return IfPointcut.makeIfTruePointcut(Pointcut.SYMBOLIC);
 		} else {
-		  pointcut = new IfPointcut(new ResolvedMember(Member.METHOD, TypeX.OBJECT, 0, "if_", "()V"), 0);
+		  pointcut = new IfPointcut(new ResolvedMember(Member.METHOD, UnresolvedType.OBJECT, 0, "if_", "()V"), 0);
 		}
 		return pointcut;
 		

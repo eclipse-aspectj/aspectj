@@ -24,7 +24,7 @@ public class IntMap {
 	
 	
 	// XXX begin hack to avoid a signature refactoring in Pointcut
-	private ResolvedTypeX concreteAspect;
+	private ResolvedType concreteAspect;
 	private ShadowMunger enclosingAdvice;
 	private List/*ResolvedPointcutDefinition*/ enclosingDefinition = new ArrayList();
 	
@@ -64,11 +64,11 @@ public class IntMap {
 	}
 	
 
-	public ResolvedTypeX getConcreteAspect() {
+	public ResolvedType getConcreteAspect() {
 		return concreteAspect;
 	}
 
-	public void setConcreteAspect(ResolvedTypeX concreteAspect) {
+	public void setConcreteAspect(ResolvedType concreteAspect) {
 		this.concreteAspect = concreteAspect;
 	}
 	

@@ -18,13 +18,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 
 public class TypePatternQuestions {
 	private Map questionsAndAnswers = new HashMap();
 	
-	public FuzzyBoolean askQuestion(TypePattern pattern, ResolvedTypeX type,
+	public FuzzyBoolean askQuestion(TypePattern pattern, ResolvedType type,
 									TypePattern.MatchKind kind)
 	{
 		Question question = new Question(pattern, type, kind);
@@ -71,10 +71,10 @@ public class TypePatternQuestions {
 	
 	public class Question {
 		TypePattern pattern;
-		ResolvedTypeX type;
+		ResolvedType type;
 		TypePattern.MatchKind kind;
 	
-		public Question(TypePattern pattern, ResolvedTypeX type,
+		public Question(TypePattern pattern, ResolvedType type,
 									TypePattern.MatchKind kind) {
 			super();
 			this.pattern = pattern;

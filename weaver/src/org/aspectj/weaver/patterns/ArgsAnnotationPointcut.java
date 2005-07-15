@@ -22,9 +22,9 @@ import org.aspectj.bridge.Message;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
@@ -97,9 +97,9 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedTypeX, org.aspectj.weaver.IntMap)
+	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
-	protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 			  // Enforce rule about which designators are supported in declare
 			  inAspect.getWorld().showMessage(IMessage.ERROR,
@@ -138,15 +138,15 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 				// match the argument type at argsIndex with the ExactAnnotationTypePattern
 				// we know it is exact because nothing else is allowed in args
 				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern)arguments.get(i);
-				TypeX argType = shadow.getArgType(argsIndex);
-				ResolvedTypeX rArgType = argType.resolve(shadow.getIWorld());
-				if (rArgType == ResolvedTypeX.MISSING) {
+				UnresolvedType argType = shadow.getArgType(argsIndex);
+				ResolvedType rArgType = argType.resolve(shadow.getIWorld());
+				if (rArgType == ResolvedType.MISSING) {
 	                  IMessage msg = new Message(
 	                    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
 	                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
 	            }
 
-				ResolvedTypeX rAnnType = ap.getAnnotationType().resolve(shadow.getIWorld());
+				ResolvedType rAnnType = ap.getAnnotationType().resolve(shadow.getIWorld());
 				if (ap instanceof BindingAnnotationTypePattern) {
 					BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)ap;
 					Var annvar = shadow.getArgAnnotationVar(argsIndex,rAnnType);

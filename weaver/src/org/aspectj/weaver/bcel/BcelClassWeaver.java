@@ -68,10 +68,10 @@ import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -208,8 +208,8 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 
-	private void initializeSuperInitializerMap(ResolvedTypeX child) {
-		ResolvedTypeX[] superInterfaces = child.getDeclaredInterfaces();
+	private void initializeSuperInitializerMap(ResolvedType child) {
+		ResolvedType[] superInterfaces = child.getDeclaredInterfaces();
 		for (int i=0, len=superInterfaces.length; i < len; i++) {
 			if (ty.getResolvedTypeX().isTopmostImplementor(superInterfaces[i])) {
 				if (addSuperInitializer(superInterfaces[i])) {
@@ -219,7 +219,7 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 	}
 
-	private boolean addSuperInitializer(ResolvedTypeX onType) {
+	private boolean addSuperInitializer(ResolvedType onType) {
 		IfaceInitList l = (IfaceInitList) addedSuperInitializers.get(onType);
 		if (l != null) return false;
 		l = new IfaceInitList(onType);
@@ -229,7 +229,7 @@ class BcelClassWeaver implements IClassWeaver {
    
 	public void addInitializer(ConcreteTypeMunger cm) {
 		NewFieldTypeMunger m = (NewFieldTypeMunger) cm.getMunger();
-		ResolvedTypeX onType = m.getSignature().getDeclaringType().resolve(world);
+		ResolvedType onType = m.getSignature().getDeclaringType().resolve(world);
 		if (m.getSignature().isStatic()) {
 			addedClassInitializers.add(cm);
 		} else {
@@ -243,9 +243,9 @@ class BcelClassWeaver implements IClassWeaver {
 	}
     
     private static class IfaceInitList implements PartialOrder.PartialComparable {
-    	final ResolvedTypeX onType;
+    	final ResolvedType onType;
     	List list = new ArrayList();
-    	IfaceInitList(ResolvedTypeX onType) {
+    	IfaceInitList(ResolvedType onType) {
     		this.onType = onType;
     	}
     	
@@ -561,7 +561,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * Looks through a list of declare annotation statements and only returns
 	 * those that could possibly match on a field/method/ctor in type.
 	 */
-	private List getMatchingSubset(List declareAnnotations, ResolvedTypeX type) {
+	private List getMatchingSubset(List declareAnnotations, ResolvedType type) {
 	    List subset = new ArrayList();
 	    for (Iterator iter = declareAnnotations.iterator(); iter.hasNext();) {
 			DeclareAnnotation da = (DeclareAnnotation) iter.next();
@@ -1575,8 +1575,8 @@ class BcelClassWeaver implements IClassWeaver {
 	 */
 	private void fixAnnotationsForResolvedMember(ResolvedMember rm,ResolvedMember declaredSig) {
 	  try {
-		TypeX memberHostType = declaredSig.getDeclaringType();
-		ResolvedTypeX[] annotations = (ResolvedTypeX[])mapToAnnotations.get(rm);
+		UnresolvedType memberHostType = declaredSig.getDeclaringType();
+		ResolvedType[] annotations = (ResolvedType[])mapToAnnotations.get(rm);
 		String methodName = declaredSig.getName();
 		// FIXME asc shouldnt really rely on string names !
 		if (annotations == null) {
@@ -1604,7 +1604,7 @@ class BcelClassWeaver implements IClassWeaver {
 				annotations = resolvedDooberry.getAnnotationTypes();
 			}
 			if (annotations == null) 
-		      annotations = new ResolvedTypeX[0];
+		      annotations = new ResolvedType[0];
 			mapToAnnotations.put(rm,annotations);
 		}
 		rm.setAnnotationTypes(annotations);
@@ -1631,7 +1631,7 @@ class BcelClassWeaver implements IClassWeaver {
 			
 			if (declaredSig.getKind() == Member.FIELD) {
 				Shadow.Kind kind;
-				if (method.getReturnType().equals(ResolvedTypeX.VOID)) {
+				if (method.getReturnType().equals(ResolvedType.VOID)) {
 					kind = Shadow.FieldSet;
 				} else {
 					kind = Shadow.FieldGet;

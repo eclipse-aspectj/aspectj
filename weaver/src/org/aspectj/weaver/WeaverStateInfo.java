@@ -38,7 +38,7 @@ import org.aspectj.weaver.bcel.BcelTypeMunger;
  * 
  * Byte:  Kind.  UNTOUCHED|WOVEN|EXTENDED - If extended it can have two extra bits set 'REWEAVABLE' and 'REWEAVABLE_COMPRESSION_BIT'
  * Short: typeMungerCount - how many type mungers have affected this type
- * <TypeX & ResolvedTypeMunger>: The type mungers themselves
+ * <UnresolvedType & ResolvedTypeMunger>: The type mungers themselves
  * If we are reweavable then we also have:
  * Short: Number of aspects that touched this type in some way when it was previously woven
  * <String> The fully qualified name of each type
@@ -102,7 +102,7 @@ public class WeaverStateInfo {
 				int n = s.readShort();
 				List l = new ArrayList();
 				for (int i=0; i < n; i++) {
-					TypeX aspectType = TypeX.read(s);
+					UnresolvedType aspectType = UnresolvedType.read(s);
 					ResolvedTypeMunger typeMunger = 
 						ResolvedTypeMunger.read(s, context);
 					l.add(new Entry(aspectType, typeMunger));
@@ -117,9 +117,9 @@ public class WeaverStateInfo {
 	
 	
 	private static class Entry {
-		public TypeX aspectType;
+		public UnresolvedType aspectType;
 		public ResolvedTypeMunger typeMunger;
-		public Entry(TypeX aspectType, ResolvedTypeMunger typeMunger) {
+		public Entry(UnresolvedType aspectType, ResolvedTypeMunger typeMunger) {
 			this.aspectType = aspectType;
 			this.typeMunger = typeMunger;
 		}
@@ -155,13 +155,13 @@ public class WeaverStateInfo {
 	}
 	
 
-	public List getTypeMungers(ResolvedTypeX onType) {
+	public List getTypeMungers(ResolvedType onType) {
 		World world = onType.getWorld();
 		List ret = new ArrayList();
 		for (Iterator i = typeMungers.iterator(); i.hasNext();) {
 			Entry entry = (Entry) i.next();
-			ResolvedTypeX aspectType = world.resolve(entry.aspectType, true);
-			if (aspectType == ResolvedTypeX.MISSING) {
+			ResolvedType aspectType = world.resolve(entry.aspectType, true);
+			if (aspectType == ResolvedType.MISSING) {
 				world.showMessage(IMessage.ERROR,
 					WeaverMessages.format(WeaverMessages.ASPECT_NEEDED,entry.aspectType,onType),
 					onType.getSourceLocation(), null);

@@ -8,7 +8,7 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
- *     Andy Clement - June 2005 - separated out from ResolvedTypeX
+ *     Andy Clement - June 2005 - separated out from ResolvedType
  * ******************************************************************/
 package org.aspectj.weaver;
 

@@ -20,7 +20,7 @@ import java.util.Set;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -62,7 +62,7 @@ public class PerFromSuper extends PerClause {
     }
 
 
-	public PerClause concretize(ResolvedTypeX inAspect) {
+	public PerClause concretize(ResolvedType inAspect) {
 		PerClause p = lookupConcretePerClause(inAspect.getSuperclass());
 		if (p == null) {
 			inAspect.getWorld().getMessageHandler().handleMessage(
@@ -82,7 +82,7 @@ public class PerFromSuper extends PerClause {
 	
 	
 	
-	public PerClause lookupConcretePerClause(ResolvedTypeX lookupType) {
+	public PerClause lookupConcretePerClause(ResolvedType lookupType) {
 		PerClause ret = lookupType.getPerClause();
 		if (ret == null) return null;
 		if (ret instanceof PerFromSuper) {

@@ -54,8 +54,8 @@ public class BoundedReferenceTypeTestCase extends TestCase {
 	}
 	
 	public void testGetDeclaredInterfacesNoAdditions() {
-		ResolvedTypeX[] rt1 = extendsClass.getDeclaredInterfaces();
-		ResolvedTypeX[] rt2 = javaLangClass.getDeclaredInterfaces();
+		ResolvedType[] rt1 = extendsClass.getDeclaredInterfaces();
+		ResolvedType[] rt2 = javaLangClass.getDeclaredInterfaces();
 		assertEquals("same length",rt1.length,rt2.length);
 		for (int i = 0; i < rt2.length; i++) {
 			assertEquals("same methods",rt1[i],rt2[i]);
@@ -63,8 +63,8 @@ public class BoundedReferenceTypeTestCase extends TestCase {
 	}
 	
 	public void testGetDeclaredInterfacesWithInterfaceBounds() {
-		ResolvedTypeX[] rt1 = extendsWithExtras.getDeclaredInterfaces();
-		ResolvedTypeX[] rt2 = javaLangClass.getDeclaredInterfaces();
+		ResolvedType[] rt1 = extendsWithExtras.getDeclaredInterfaces();
+		ResolvedType[] rt2 = javaLangClass.getDeclaredInterfaces();
 		assertEquals("one extra interface",rt1.length,rt2.length + 1);
 		for (int i = 0; i < rt2.length; i++) {
 			assertEquals("same methods",rt1[i],rt2[i]);
@@ -95,11 +95,11 @@ public class BoundedReferenceTypeTestCase extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		BcelWorld world = new BcelWorld();
-		javaLangClass = (ReferenceType) world.resolve(TypeX.forName("java/lang/Class"));
-		javaLangObject = (ReferenceType) world.resolve(TypeX.OBJECT);
+		javaLangClass = (ReferenceType) world.resolve(UnresolvedType.forName("java/lang/Class"));
+		javaLangObject = (ReferenceType) world.resolve(UnresolvedType.OBJECT);
 		extendsClass = new BoundedReferenceType(javaLangClass,true,world);
 		superClass = new BoundedReferenceType(javaLangClass,false,world);
 		extendsWithExtras = new BoundedReferenceType(javaLangClass,true,world,
-				new ReferenceType[] {(ReferenceType)world.resolve(TypeX.forName("java/util/List"))});
+				new ReferenceType[] {(ReferenceType)world.resolve(UnresolvedType.forName("java/util/List"))});
 	}
 }

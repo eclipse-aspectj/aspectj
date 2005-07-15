@@ -61,7 +61,7 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 
 	protected byte[] getBytes (String name) throws IOException {
 		byte[] b = null;
-		ClassPathManager.ClassFile classFile = classPath.find(TypeX.forName(name));
+		ClassPathManager.ClassFile classFile = classPath.find(UnresolvedType.forName(name));
 		if (classFile != null) {
 			b = FileUtil.readAsByteArray(classFile.getInputStream());
 		}

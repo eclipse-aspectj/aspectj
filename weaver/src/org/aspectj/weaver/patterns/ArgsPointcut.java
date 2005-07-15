@@ -35,9 +35,9 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BetaException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
@@ -102,7 +102,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 		Collection tps = arguments.getExactTypes();
 		int sigIndex = 0;
 		for (Iterator iter = tps.iterator(); iter.hasNext();) {
-			TypeX tp = (TypeX) iter.next();
+			UnresolvedType tp = (UnresolvedType) iter.next();
 			Class lookForClass = getPossiblyBoxed(tp);
 			if (lookForClass != null) {
 				boolean foundMatchInSig = false;
@@ -145,7 +145,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 		}
 		return arguments.matchesArgsPatternSubset(paramTypes);
 	}
-	private Class getPossiblyBoxed(TypeX tp) {
+	private Class getPossiblyBoxed(UnresolvedType tp) {
 		Class ret = (Class) ExactTypePattern.primitiveTypesMap.get(tp.getName());
 		if (ret == null) ret = (Class) ExactTypePattern.boxedPrimitivesMap.get(tp.getName());
 		return ret;
@@ -210,12 +210,12 @@ public class ArgsPointcut extends NameBindingPointcut {
 		}		
 	}
 	
-	public void postRead(ResolvedTypeX enclosingType) {
+	public void postRead(ResolvedType enclosingType) {
 		arguments.postRead(enclosingType);
 	}
 
 
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 		  // Enforce rule about which designators are supported in declare
 		  inAspect.getWorld().showMessage(IMessage.ERROR,
@@ -242,11 +242,11 @@ public class ArgsPointcut extends NameBindingPointcut {
 		Test ret = Literal.TRUE;
 		
 		for (int i=0; i < len; i++) {
-			TypeX argType = shadow.getArgType(i);
+			UnresolvedType argType = shadow.getArgType(i);
 			TypePattern type = patterns[i];
 			if (!(type instanceof BindingTypePattern)) {
-                ResolvedTypeX argRTX = shadow.getIWorld().resolve(argType,true);
-                if (argRTX == ResolvedTypeX.MISSING) {
+                ResolvedType argRTX = shadow.getIWorld().resolve(argType,true);
+                if (argRTX == ResolvedType.MISSING) {
                   IMessage msg = new Message(
                     WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
                     "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});

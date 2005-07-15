@@ -65,9 +65,9 @@ import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.IWeaver;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -141,8 +141,8 @@ public class BcelWeaver implements IWeaver {
      */
     public void addLibraryAspect(String aspectName) {
         // 1 - resolve as is
-        ResolvedTypeX type = world.resolve(TypeX.forName(aspectName), true);
-        if (type.equals(ResolvedTypeX.MISSING)) {
+        ResolvedType type = world.resolve(UnresolvedType.forName(aspectName), true);
+        if (type.equals(ResolvedType.MISSING)) {
             // fallback on inner class lookup mechanism
             String fixedName = aspectName;
             int hasDot = fixedName.lastIndexOf('.');
@@ -152,8 +152,8 @@ public class BcelWeaver implements IWeaver {
                 fixedNameChars[hasDot] = '$';
                 fixedName = new String(fixedNameChars);
                 hasDot = fixedName.lastIndexOf('.');
-                type = world.resolve(TypeX.forName(fixedName), true);
-                if (!type.equals(ResolvedTypeX.MISSING)) {
+                type = world.resolve(UnresolvedType.forName(fixedName), true);
+                if (!type.equals(ResolvedType.MISSING)) {
                     break;
                 }
             }
@@ -181,7 +181,7 @@ public class BcelWeaver implements IWeaver {
 		}
 		
 		for (Iterator i = addedAspects.iterator(); i.hasNext();) {
-			ResolvedTypeX aspectX = (ResolvedTypeX) i.next();
+			ResolvedType aspectX = (ResolvedType) i.next();
 			xcutSet.addOrReplaceAspect(aspectX);
 		}
 	}
@@ -202,7 +202,7 @@ public class BcelWeaver implements IWeaver {
 	        JavaClass jc = parser.parse();
 			inStream.closeEntry();
 			
-			ResolvedTypeX type = world.addSourceObjectType(jc).getResolvedTypeX();
+			ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
     		if (type.isAspect()) {
     			addedAspects.add(type);
     		}
@@ -233,7 +233,7 @@ public class BcelWeaver implements IWeaver {
 	private void addIfAspect(byte[] bytes, String name, List toList) throws IOException {
 		ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes),name);
 		JavaClass jc = parser.parse();
-		ResolvedTypeX type = world.addSourceObjectType(jc).getResolvedTypeX();
+		ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
 		if (type.isAspect()) {
 			toList.add(type);
 		}		
@@ -388,7 +388,7 @@ public class BcelWeaver implements IWeaver {
     public void deleteClassFile(String typename) {
     	deletedTypenames.add(typename);
 //    	sourceJavaClasses.remove(typename);
-    	world.deleteSourceObjectType(TypeX.forName(typename));
+    	world.deleteSourceObjectType(UnresolvedType.forName(typename));
     }
 
 //	public void addResource (String name, UnwovenClassFile resourceFile) {
@@ -413,7 +413,7 @@ public class BcelWeaver implements IWeaver {
     	for (Iterator i = addedClasses.iterator(); i.hasNext(); ) { 
     		UnwovenClassFile jc = (UnwovenClassFile)i.next();
     		String name = jc.getClassName();
-    		ResolvedTypeX type = world.resolve(name);
+    		ResolvedType type = world.resolve(name);
     		//System.err.println("added: " + type + " aspect? " + type.isAspect());
     		if (type.isAspect()) {
     			needToReweaveWorld |= xcutSet.addOrReplaceAspect(type);
@@ -422,7 +422,7 @@ public class BcelWeaver implements IWeaver {
 
     	for (Iterator i = deletedTypenames.iterator(); i.hasNext(); ) { 
     		String name = (String)i.next();
-    		if (xcutSet.deleteAspect(TypeX.forName(name))) needToReweaveWorld = true;
+    		if (xcutSet.deleteAspect(UnresolvedType.forName(name))) needToReweaveWorld = true;
     	}
 
 		shadowMungerList = xcutSet.getShadowMungers();
@@ -1038,17 +1038,17 @@ public class BcelWeaver implements IWeaver {
      */
 	   private void weaveParentsFor(List typesForWeaving,String typeToWeave) {
 		   // Look at the supertype first
-		   ResolvedTypeX rtx = world.resolve(typeToWeave);
-		   ResolvedTypeX superType = rtx.getSuperclass();
+		   ResolvedType rtx = world.resolve(typeToWeave);
+		   ResolvedType superType = rtx.getSuperclass();
 		   
 		   if (superType!=null && typesForWeaving.contains(superType.getName())) {
 		     weaveParentsFor(typesForWeaving,superType.getName());
 		   }
 		         
 		   // Then look at the superinterface list
-		   ResolvedTypeX[] interfaceTypes = rtx.getDeclaredInterfaces();
+		   ResolvedType[] interfaceTypes = rtx.getDeclaredInterfaces();
 		   for (int i = 0; i < interfaceTypes.length; i++) {
-		     ResolvedTypeX rtxI = interfaceTypes[i];
+		     ResolvedType rtxI = interfaceTypes[i];
 		     if (typesForWeaving.contains(rtxI.getName())) {
 		       weaveParentsFor(typesForWeaving,rtxI.getName());
 		     }
@@ -1078,8 +1078,8 @@ public class BcelWeaver implements IWeaver {
 				for (Iterator iter = aspectsPreviouslyInWorld.iterator(); iter.hasNext();) {
 					String requiredTypeName = (String) iter.next();
 					if (!alreadyConfirmedReweavableState.contains(requiredTypeName)) {
-						ResolvedTypeX rtx = world.resolve(TypeX.forName(requiredTypeName),true);
-						boolean exists = rtx!=ResolvedTypeX.MISSING;
+						ResolvedType rtx = world.resolve(UnresolvedType.forName(requiredTypeName),true);
+						boolean exists = rtx!=ResolvedType.MISSING;
 						if (!exists) {
 							world.showMessage(IMessage.ERROR, 
 									WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,requiredTypeName,className),
@@ -1153,7 +1153,7 @@ public class BcelWeaver implements IWeaver {
      *      pass, repeatedly applying them until nothing changes.
      * FIXME asc confirm that algorithm is optimal ??
      */
-	public void weaveParentTypeMungers(ResolvedTypeX onType) {
+	public void weaveParentTypeMungers(ResolvedType onType) {
 		onType.clearInterTypeMungers();
 		
 		List decpToRepeat = new ArrayList();
@@ -1208,7 +1208,7 @@ public class BcelWeaver implements IWeaver {
 	/**
 	 * Apply a declare @type - return true if we change the type
 	 */
-	private boolean applyDeclareAtType(DeclareAnnotation decA, ResolvedTypeX onType,boolean reportProblems) {
+	private boolean applyDeclareAtType(DeclareAnnotation decA, ResolvedType onType,boolean reportProblems) {
 		boolean didSomething = false;
 		if (decA.matches(onType)) {
 			
@@ -1263,7 +1263,7 @@ public class BcelWeaver implements IWeaver {
 	 * Checks for an @target() on the annotation and if found ensures it allows the annotation
 	 * to be attached to the target type that matched.
 	 */
-	private boolean verifyTargetIsOK(DeclareAnnotation decA, ResolvedTypeX onType, AnnotationX annoX,boolean outputProblems) {
+	private boolean verifyTargetIsOK(DeclareAnnotation decA, ResolvedType onType, AnnotationX annoX,boolean outputProblems) {
 		boolean problemReported = false;
 		if (annoX.specifiesTarget()) {
 		  if (  (onType.isAnnotation() && !annoX.allowedOnAnnotationType()) ||
@@ -1289,7 +1289,7 @@ public class BcelWeaver implements IWeaver {
 	/**
 	 * Apply a single declare parents - return true if we change the type
 	 */
-	private boolean applyDeclareParents(DeclareParents p, ResolvedTypeX onType) {
+	private boolean applyDeclareParents(DeclareParents p, ResolvedType onType) {
 		boolean didSomething = false;
 		List newParents = p.findMatchingNewParents(onType,true);
 		if (!newParents.isEmpty()) {
@@ -1297,7 +1297,7 @@ public class BcelWeaver implements IWeaver {
 			BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
 			//System.err.println("need to do declare parents for: " + onType);
 			for (Iterator j = newParents.iterator(); j.hasNext(); ) {
-				ResolvedTypeX newParent = (ResolvedTypeX)j.next();
+				ResolvedType newParent = (ResolvedType)j.next();
 				                                        
 				// We set it here so that the imminent matching for ITDs can succeed - we 
 		        // still haven't done the necessary changes to the class file itself 
@@ -1311,7 +1311,7 @@ public class BcelWeaver implements IWeaver {
 		return didSomething;
 	}
     
-    public void weaveNormalTypeMungers(ResolvedTypeX onType) {
+    public void weaveNormalTypeMungers(ResolvedType onType) {
 		for (Iterator i = typeMungerList.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			if (m.matches(onType)) {
@@ -1434,7 +1434,7 @@ public class BcelWeaver implements IWeaver {
 		zipOutputStream.closeEntry();
 	}
 
-	private List fastMatch(List list, ResolvedTypeX type) {
+	private List fastMatch(List list, ResolvedType type) {
 		if (list == null) return Collections.EMPTY_LIST;
 
 		// here we do the coarsest grained fast match with no kind constraints

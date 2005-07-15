@@ -17,9 +17,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class NewParentTypeMunger extends ResolvedTypeMunger {
-	ResolvedTypeX newParent;
+	ResolvedType newParent;
 	
-	public NewParentTypeMunger(ResolvedTypeX newParent) {
+	public NewParentTypeMunger(ResolvedType newParent) {
 		super(Parent, null);
 		this.newParent = newParent;
 	}
@@ -29,7 +29,7 @@ public class NewParentTypeMunger extends ResolvedTypeMunger {
 	}
 
 
-	public ResolvedTypeX getNewParent() {
+	public ResolvedType getNewParent() {
 		return newParent;
 	}
 

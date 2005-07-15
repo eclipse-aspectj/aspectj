@@ -16,7 +16,7 @@ package org.aspectj.weaver.bcel;
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ast.Var;
 
 public class BcelVar extends Var {
@@ -25,7 +25,7 @@ public class BcelVar extends Var {
 
 	private int slot;
 
-	public BcelVar(ResolvedTypeX type, int slot) {
+	public BcelVar(ResolvedType type, int slot) {
 		super(type);
 		this.slot = slot;
 	}
@@ -56,7 +56,7 @@ public class BcelVar extends Var {
 	public void appendLoadAndConvert(
 		InstructionList il,
 		InstructionFactory fact,
-		ResolvedTypeX toType) {
+		ResolvedType toType) {
 		il.append(createLoad(fact));
 		Utility.appendConversion(il, fact, getType(), toType);
 	} 
@@ -75,9 +75,9 @@ public class BcelVar extends Var {
         InstructionList il,
         InstructionFactory fact, 
         int index,
-        ResolvedTypeX convertTo)
+        ResolvedType convertTo)
     {
-        ResolvedTypeX convertFromType = getType().getResolvedComponentType();
+        ResolvedType convertFromType = getType().getResolvedComponentType();
         appendLoad(il, fact);
         il.append(Utility.createConstant(fact, index));
         il.append(InstructionFactory.createArrayLoad(BcelWorld.makeBcelType(convertFromType)));
@@ -90,7 +90,7 @@ public class BcelVar extends Var {
         int index,
         BcelVar storee) 
     {
-        ResolvedTypeX convertToType = getType().getResolvedComponentType();
+        ResolvedType convertToType = getType().getResolvedComponentType();
         appendLoad(il, fact);
         il.append(Utility.createConstant(fact, index));
         storee.appendLoad(il, fact);
@@ -110,7 +110,7 @@ public class BcelVar extends Var {
     InstructionList createConvertableArrayLoad(
         InstructionFactory fact, 
         int index,
-        ResolvedTypeX convertTo) 
+        ResolvedType convertTo) 
     {
         InstructionList il = new InstructionList();
         appendConvertableArrayLoad(il, fact, index, convertTo);

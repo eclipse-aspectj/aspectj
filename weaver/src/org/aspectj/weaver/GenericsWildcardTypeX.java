@@ -15,7 +15,7 @@ package org.aspectj.weaver;
  * Represents the ? type in a generics signature prior to resolving.
  *
  */
-public class GenericsWildcardTypeX extends TypeX {
+public class GenericsWildcardTypeX extends UnresolvedType {
 
 	public static final GenericsWildcardTypeX GENERIC_WILDCARD = 
 		new GenericsWildcardTypeX();
@@ -26,10 +26,11 @@ public class GenericsWildcardTypeX extends TypeX {
 		super("Ljava/lang/Object;");  // should be super("?") ?
 	}
 	
-	public ResolvedTypeX resolve(World world) {
+	public ResolvedType resolve(World world) {
 		if (resolved == null) {
 			resolved = new BoundedReferenceType("Ljava/lang/Object;",world);
 		}
 		return resolved;
 	}
+
 }

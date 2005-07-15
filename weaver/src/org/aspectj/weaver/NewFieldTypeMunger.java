@@ -25,7 +25,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		this.setSuperMethodsCalled(superMethodsCalled);
 	}
 
-	public ResolvedMember getInitMethod(TypeX aspectType) {
+	public ResolvedMember getInitMethod(UnresolvedType aspectType) {
 		return AjcMemberMaker.interFieldInitializer(signature, aspectType);
 	}
 
@@ -44,18 +44,18 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		return munger;
 	}
 	
-	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {
+	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		//??? might give a field where a method is expected	
-		ResolvedTypeX onType = aspectType.getWorld().resolve(getSignature().getDeclaringType());
+		ResolvedType onType = aspectType.getWorld().resolve(getSignature().getDeclaringType());
 		
 		ResolvedMember ret = AjcMemberMaker.interFieldGetDispatcher(getSignature(), aspectType);
-		if (ResolvedTypeX.matches(ret, member)) return getSignature();
+		if (ResolvedType.matches(ret, member)) return getSignature();
 		ret = AjcMemberMaker.interFieldSetDispatcher(getSignature(), aspectType);
-		if (ResolvedTypeX.matches(ret, member)) return getSignature();
+		if (ResolvedType.matches(ret, member)) return getSignature();
 		ret = AjcMemberMaker.interFieldInterfaceGetter(getSignature(), onType, aspectType);
-		if (ResolvedTypeX.matches(ret, member)) return getSignature();
+		if (ResolvedType.matches(ret, member)) return getSignature();
 		ret = AjcMemberMaker.interFieldInterfaceSetter(getSignature(), onType, aspectType);
-		if (ResolvedTypeX.matches(ret, member)) return getSignature();
+		if (ResolvedType.matches(ret, member)) return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
 }

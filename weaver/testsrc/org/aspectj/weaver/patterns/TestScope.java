@@ -25,6 +25,6 @@ public class TestScope extends SimpleScope {
 	}
 
     public TestScope(String[] formalTypes, String[] formalNames, World world) {
-		super(world, SimpleScope.makeFormalBindings(TypeX.forNames(formalTypes), formalNames));
+		super(world, SimpleScope.makeFormalBindings(UnresolvedType.forNames(formalTypes), formalNames));
 	}
 }

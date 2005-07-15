@@ -39,7 +39,7 @@ import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
@@ -302,7 +302,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			FormalBinding[] bindings = buildFormalAdviceBindingsFrom(methodDeclaration);
 			pc.resolve(new EclipseScope(bindings,methodDeclaration.scope));
 			// now create a ResolvedPointcutDefinition,make an attribute out of it, and add it to the method
-			TypeX[] paramTypes = new TypeX[bindings.length];
+			UnresolvedType[] paramTypes = new UnresolvedType[bindings.length];
 			for (int i = 0; i < paramTypes.length; i++) paramTypes[i] = bindings[i].getType();
 			ResolvedPointcutDefinition resPcutDef = 
 				new ResolvedPointcutDefinition(
@@ -351,7 +351,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
             Argument arg = mDecl.arguments[i];
             String name = new String(arg.name);
 			TypeBinding argTypeBinding = mDecl.binding.parameters[i];
-            TypeX type = EclipseFactory.fromBinding(argTypeBinding);
+            UnresolvedType type = EclipseFactory.fromBinding(argTypeBinding);
 			if  (CharOperation.equals(joinPoint,argTypeBinding.signature()) ||
 				 CharOperation.equals(joinPointStaticPart,argTypeBinding.signature()) ||
 				 CharOperation.equals(joinPointEnclosingStaticPart,argTypeBinding.signature()) ||
@@ -465,7 +465,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	        for (int i = 0, len = bindings.length; i < len; i++) {
 	            Argument arg = methodDeclaration.arguments[i];
 	            String name = new String(arg.name);
-	            TypeX type = EclipseFactory.fromBinding(methodDeclaration.binding.parameters[i]);
+	            UnresolvedType type = EclipseFactory.fromBinding(methodDeclaration.binding.parameters[i]);
 	            bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
 	        }
 			swap(onType,methodDeclaration,pcDecl);

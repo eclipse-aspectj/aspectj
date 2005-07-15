@@ -25,10 +25,10 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -121,9 +121,9 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedTypeX, org.aspectj.weaver.IntMap)
+	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
-	protected Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		ExactAnnotationTypePattern newType = (ExactAnnotationTypePattern) annotationTypePattern.remapAdviceFormals(bindings);		
 		Pointcut ret = new WithinCodeAnnotationPointcut(newType, bindings.getEnclosingAdvice());
         ret.copyLocationFrom(this);
@@ -137,7 +137,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 		
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
-			TypeX annotationType = btp.annotationType;
+			UnresolvedType annotationType = btp.annotationType;
 			Var var = shadow.getWithinCodeAnnotationVar(annotationType);
 	
 			// This should not happen, we shouldn't have gotten this far 

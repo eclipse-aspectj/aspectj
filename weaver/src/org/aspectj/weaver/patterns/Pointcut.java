@@ -28,7 +28,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -252,7 +252,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 * Returns a new pointcut
 	 * Only used by test cases
 	 */
-    public final Pointcut concretize(ResolvedTypeX inAspect, int arity) {
+    public final Pointcut concretize(ResolvedType inAspect, int arity) {
         Pointcut ret = concretize(inAspect, IntMap.idMap(arity));
         // copy the unbound ignore list
         ret.m_ignoreUnboundBindingForNames = m_ignoreUnboundBindingForNames;
@@ -261,7 +261,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	
 	
 	//XXX this is the signature we're moving to
-	public final Pointcut concretize(ResolvedTypeX inAspect, int arity, ShadowMunger advice) {
+	public final Pointcut concretize(ResolvedType inAspect, int arity, ShadowMunger advice) {
 		//if (state == CONCRETE) return this; //???
 		IntMap map = IntMap.idMap(arity);
 		map.setEnclosingAdvice(advice);
@@ -277,7 +277,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	}
 	
 	
-	public final Pointcut concretize(ResolvedTypeX inAspect, IntMap bindings) {
+	public final Pointcut concretize(ResolvedType inAspect, IntMap bindings) {
 		//!!! add this test -- assertState(RESOLVED);
 		Pointcut ret = this.concretize1(inAspect, bindings);
         if (shouldCopyLocationForConcretize()) ret.copyLocationFrom(this);
@@ -305,7 +305,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 * assumed in many places.
 	 * XXX fix implementors to handle state
 	 */
-	protected abstract Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings);
+	protected abstract Pointcut concretize1(ResolvedType inAspect, IntMap bindings);
 	
 	
 	//XXX implementors need to handle state
@@ -325,7 +325,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 
 	//XXX we're not sure whether or not this is needed
 	//XXX currently it's unused  we're keeping it around as a stub
-	public void postRead(ResolvedTypeX enclosingType) {}
+	public void postRead(ResolvedType enclosingType) {}
 	
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte kind = s.readByte();
@@ -419,11 +419,11 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 		public void resolveBindingsFromRTTI() {
 		}
 	
-		public void postRead(ResolvedTypeX enclosingType) {
+		public void postRead(ResolvedType enclosingType) {
 		}
 
 		public Pointcut concretize1(
-			ResolvedTypeX inAspect,
+			ResolvedType inAspect,
 			IntMap bindings) {
 			return makeMatchesNothing(state);
 		}

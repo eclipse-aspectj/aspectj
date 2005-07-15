@@ -54,15 +54,15 @@ public abstract class World implements Dump.INode {
     protected World() {
         super();
         Dump.registerNode(this.getClass(),this);
-        typeMap.put("B", ResolvedTypeX.BYTE);
-        typeMap.put("S", ResolvedTypeX.SHORT);
-        typeMap.put("I", ResolvedTypeX.INT);
-        typeMap.put("J", ResolvedTypeX.LONG);
-        typeMap.put("F", ResolvedTypeX.FLOAT);
-        typeMap.put("D", ResolvedTypeX.DOUBLE);
-        typeMap.put("C", ResolvedTypeX.CHAR);
-        typeMap.put("Z", ResolvedTypeX.BOOLEAN);
-        typeMap.put("V", ResolvedTypeX.VOID);
+        typeMap.put("B", ResolvedType.BYTE);
+        typeMap.put("S", ResolvedType.SHORT);
+        typeMap.put("I", ResolvedType.INT);
+        typeMap.put("J", ResolvedType.LONG);
+        typeMap.put("F", ResolvedType.FLOAT);
+        typeMap.put("D", ResolvedType.DOUBLE);
+        typeMap.put("C", ResolvedType.CHAR);
+        typeMap.put("Z", ResolvedType.BOOLEAN);
+        typeMap.put("V", ResolvedType.VOID);
     }
     
     public void accept (Dump.IVisitor visitor) {
@@ -79,9 +79,9 @@ public abstract class World implements Dump.INode {
         }
     }
 
-    public ResolvedTypeX[] resolve(TypeX[] types) {
+    public ResolvedType[] resolve(UnresolvedType[] types) {
         int len = types.length;
-        ResolvedTypeX[] ret = new ResolvedTypeX[len];
+        ResolvedType[] ret = new ResolvedType[len];
         for (int i=0; i<len; i++) {
             ret[i] = resolve(types[i]);
         }
@@ -93,9 +93,9 @@ public abstract class World implements Dump.INode {
      * resolution is taking place.  In the case of an error where we can't find the
      * type - we can then at least report why (source location) we were trying to resolve it.
      */
-    public ResolvedTypeX resolve(TypeX ty,ISourceLocation isl) {
-        ResolvedTypeX ret = resolve(ty,true);
-        if (ty == ResolvedTypeX.MISSING) {
+    public ResolvedType resolve(UnresolvedType ty,ISourceLocation isl) {
+        ResolvedType ret = resolve(ty,true);
+        if (ty == ResolvedType.MISSING) {
             IMessage msg = null;
             if (isl!=null) {
               msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()),isl);
@@ -107,18 +107,18 @@ public abstract class World implements Dump.INode {
         return ret;
     }
     
-    public ResolvedTypeX resolve(TypeX ty) {
+    public ResolvedType resolve(UnresolvedType ty) {
     	return resolve(ty, false);
     }
     
     // if we already have an rtx, don't re-resolve it
-    public ResolvedTypeX resolve(ResolvedTypeX ty) {
+    public ResolvedType resolve(ResolvedType ty) {
     	return ty;
     }
     
-    public ResolvedTypeX getCoreType(TypeX tx) {
-    	ResolvedTypeX coreTy = resolve(tx,true);
-    	if (coreTy == ResolvedTypeX.MISSING) {
+    public ResolvedType getCoreType(UnresolvedType tx) {
+    	ResolvedType coreTy = resolve(tx,true);
+    	if (coreTy == ResolvedType.MISSING) {
     		 MessageUtil.error(messageHandler, 
             	WeaverMessages.format(WeaverMessages.CANT_FIND_CORE_TYPE,tx.getName()));
     	}
@@ -128,12 +128,12 @@ public abstract class World implements Dump.INode {
     /**
      * Attempt to resolve a type that should be a generic type.  
      */
-    public ResolvedTypeX resolveTheGenericType(TypeX ty, boolean allowMissing) {
+    public ResolvedType resolveTheGenericType(UnresolvedType ty, boolean allowMissing) {
         // Look up the raw type by signature
     	String signature = ty.getRawType().getSignature();
-    	ResolvedTypeX ret = (ResolvedTypeX) typeMap.get(signature);
+    	ResolvedType ret = (ResolvedType) typeMap.get(signature);
     	if (ret==null) {
-    		ret = resolve(TypeX.forSignature(signature));
+    		ret = resolve(UnresolvedType.forSignature(signature));
         	typeMap.put(signature,ret);
     	}
     	//TODO asc temporary guard - can this ever happen?
@@ -142,22 +142,22 @@ public abstract class World implements Dump.INode {
     	// Does the raw type know its generic form? (It will if we created the
     	// raw type from a source type, it won't if its been created just through
     	// being referenced, e.g. java.util.List
-    	ResolvedTypeX generic = ret.getGenericType();
+    	ResolvedType generic = ret.getGenericType();
     	if (generic != null) { generic.world = this; return generic; } 
 
     	// Fault in the generic that underpins the raw type ;)
     	ReferenceTypeDelegate thegen = resolveObjectType((ReferenceType)ret);
     	ReferenceType genericRefType = new ReferenceType(
-    			TypeX.forGenericTypeSignature(ret.getSignature(),thegen.getDeclaredGenericSignature()),this);
+    			UnresolvedType.forGenericTypeSignature(ret.getSignature(),thegen.getDeclaredGenericSignature()),this);
     	((ReferenceType)ret).setGenericType(genericRefType);
     	genericRefType.delegate=thegen;
     	((ReferenceType)ret).delegate=thegen;
     	return genericRefType;
     }
 
-    public ResolvedTypeX resolve(TypeX ty, boolean allowMissing) {
-    	if (ty instanceof ResolvedTypeX) {
-    		ResolvedTypeX rty = (ResolvedTypeX) ty;
+    public ResolvedType resolve(UnresolvedType ty, boolean allowMissing) {
+    	if (ty instanceof ResolvedType) {
+    		ResolvedType rty = (ResolvedType) ty;
     		rty.world = this; 
     		return rty;
     	}
@@ -167,14 +167,17 @@ public abstract class World implements Dump.INode {
     		return ((UnresolvedTypeVariableReferenceType)ty).resolve(this);
     	}
         String signature = ty.getSignature();
-        ResolvedTypeX ret = typeMap.get(signature);
-        if (ret != null) { ret.world = this; return ret; } // Set the world for the RTX
+        ResolvedType ret = typeMap.get(signature);
+        if (ret != null) { 
+        	ret.world = this;  // Set the world for the RTX
+        	return ret; 
+        }
         
         if (ty.isArray()) {
-            ret = new ResolvedTypeX.Array(signature, this, resolve(ty.getComponentType(), allowMissing));
+            ret = new ResolvedType.Array(signature, this, resolve(ty.getComponentType(), allowMissing));
         } else {
             ret = resolveObjectType(ty);
-            if (!allowMissing && ret == ResolvedTypeX.MISSING) {
+            if (!allowMissing && ret == ResolvedType.MISSING) {
                 MessageUtil.error(messageHandler, 
                 		WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
                 if (dumpState_cantFindTypeExceptions==null) {
@@ -183,7 +186,7 @@ public abstract class World implements Dump.INode {
                 dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type "+ty.getName()));
             }
         }
-		if (ty.isParameterized()) {
+		if (ty.isParameterizedType()) {
 			for (int i = 0; i < ty.typeParameters.length; i++) {
 				ty.typeParameters[i] = resolve(ty.typeParameters[i],allowMissing);
 			}
@@ -197,8 +200,8 @@ public abstract class World implements Dump.INode {
     }
     
     //XXX helper method might be bad
-    public ResolvedTypeX resolve(String name) {
-    	return resolve(TypeX.forName(name));
+    public ResolvedType resolve(String name) {
+    	return resolve(UnresolvedType.forName(name));
     }
 
 	
@@ -206,28 +209,28 @@ public abstract class World implements Dump.INode {
      * Copes with parameterized types.  When it sees one then it discovers the
      * base type and reuses the delegate
      */
-    protected final ResolvedTypeX resolveObjectType(TypeX ty) {
-		if (ty.isParameterized()) {
+    protected final ResolvedType resolveObjectType(UnresolvedType ty) {
+		if (ty.isParameterizedType()) {
 			ReferenceType genericType = (ReferenceType)resolveTheGenericType(ty,false);
 			ReferenceType parameterizedType = new ReferenceType(ty.getSignature(),this);
 			parameterizedType.setGenericType(genericType);
 			parameterizedType.setDelegate(genericType.getDelegate()); // move into setgenerictype
 			return parameterizedType;
-		} else if (ty.isGeneric()) {
+		} else if (ty.isGenericType()) {
 			ReferenceType genericType = (ReferenceType)resolveTheGenericType(ty,false);
 			return genericType;
 		} else {
 			String signature = ty.getRawTypeSignature();
     		ReferenceType name = new ReferenceType(signature/*was ty.getSignature()*/, this);
 	    	ReferenceTypeDelegate concreteName = resolveObjectType(name);
-	    	if (concreteName == null) return ResolvedTypeX.MISSING;
+	    	if (concreteName == null) return ResolvedType.MISSING;
 	    	if (concreteName.isGeneric()) {
 	    		// During resolution we have discovered that the underlying type is in fact generic, 
 	    		// so the thing we thought was a simple type is in fact a raw type.
 
 	        	ReferenceType genericRefType = new ReferenceType(
-	        			TypeX.forGenericTypeSignature(signature,concreteName.getDeclaredGenericSignature()),this);
-	    		// name =  ReferenceType.fromTypeX(TypeX.forRawTypeNames(ty.getName()),this);
+	        			UnresolvedType.forGenericTypeSignature(signature,concreteName.getDeclaredGenericSignature()),this);
+	    		// name =  ReferenceType.fromTypeX(UnresolvedType.forRawTypeNames(ty.getName()),this);
 		    	name.setDelegate(concreteName);
 		    	genericRefType.setDelegate(concreteName);
 		    	name.setGenericType(genericRefType);
@@ -242,43 +245,43 @@ public abstract class World implements Dump.INode {
     protected abstract ReferenceTypeDelegate resolveObjectType(ReferenceType ty);
     
 
-    protected final boolean isCoerceableFrom(TypeX type, TypeX other) {
-        return resolve(type).isCoerceableFrom(other);
+    protected final boolean isCoerceableFrom(ResolvedType type, ResolvedType other) {
+        return type.isCoerceableFrom(other);
     }
 
-    protected final boolean isAssignableFrom(TypeX type, TypeX other) {
-        return resolve(type).isAssignableFrom(resolve(other));
+    protected final boolean isAssignableFrom(ResolvedType type, ResolvedType other) {
+        return type.isAssignableFrom(other);
     }
 
-    public boolean needsNoConversionFrom(TypeX type, TypeX other) {
-        return resolve(type).needsNoConversionFrom(other);
+    public boolean needsNoConversionFrom(ResolvedType type, ResolvedType other) {
+        return type.needsNoConversionFrom(other);
     }
     
-    protected final boolean isInterface(TypeX type) {
+    protected final boolean isInterface(UnresolvedType type) {
         return resolve(type).isInterface();
     }
 
-    protected final ResolvedTypeX getSuperclass(TypeX type) {
+    protected final ResolvedType getSuperclass(UnresolvedType type) {
         return resolve(type).getSuperclass();
     }
 
-    protected final TypeX[] getDeclaredInterfaces(TypeX type) {
+    protected final UnresolvedType[] getDeclaredInterfaces(UnresolvedType type) {
         return resolve(type).getDeclaredInterfaces();
     }
 
-    protected final int getModifiers(TypeX type) {
+    protected final int getModifiers(UnresolvedType type) {
         return resolve(type).getModifiers();
     }
 
-    protected final ResolvedMember[] getDeclaredFields(TypeX type) {
+    protected final ResolvedMember[] getDeclaredFields(UnresolvedType type) {
         return resolve(type).getDeclaredFields();
     }
 
-    protected final ResolvedMember[] getDeclaredMethods(TypeX type) {
+    protected final ResolvedMember[] getDeclaredMethods(UnresolvedType type) {
         return resolve(type).getDeclaredMethods();
     }
 
-    protected final ResolvedMember[] getDeclaredPointcuts(TypeX type) {
+    protected final ResolvedMember[] getDeclaredPointcuts(UnresolvedType type) {
         return resolve(type).getDeclaredPointcuts();
     }
 
@@ -287,7 +290,7 @@ public abstract class World implements Dump.INode {
 
     // XXX should we worry about dealing with context and looking up access?
     public ResolvedMember resolve(Member member) {
-        ResolvedTypeX declaring = member.getDeclaringType().resolve(this);
+        ResolvedType declaring = member.getDeclaringType().resolve(this);
         ResolvedMember ret;
         if (member.getKind() == Member.FIELD) {
             ret = declaring.lookupField(member);
@@ -310,13 +313,13 @@ public abstract class World implements Dump.INode {
         return resolve(member).getParameterNames();
     }
 
-    protected TypeX[] getExceptions(Member member) {
+    protected UnresolvedType[] getExceptions(Member member) {
         return resolve(member).getExceptions();
     }
 
     // ---- pointcuts
 
-    public ResolvedPointcutDefinition findPointcut(TypeX typeX, String name) {
+    public ResolvedPointcutDefinition findPointcut(UnresolvedType typeX, String name) {
         throw new RuntimeException("not implemented yet");
     }
     
@@ -331,13 +334,13 @@ public abstract class World implements Dump.INode {
     
 //    public static final World EMPTY = new World() {
 //        public List getShadowMungers() { return Collections.EMPTY_LIST; }
-//        public ResolvedTypeX.ConcreteName resolveObjectType(ResolvedTypeX.Name ty) {
+//        public ResolvedType.ConcreteName resolveObjectType(ResolvedType.Name ty) {
 //            return null;
 //        }
 //        public Advice concreteAdvice(AjAttribute.AdviceAttribute attribute, Pointcut p, Member m) {
 //            throw new RuntimeException("unimplemented");
 //        }
-//        public ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType) {
+//        public ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedType aspectType) {
 //            throw new RuntimeException("unimplemented");
 //        }        
 //    };
@@ -372,17 +375,17 @@ public abstract class World implements Dump.INode {
 
     /**
      * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to them as needed
-     * @see org.aspectj.weaver.bcel.BcelWorld#makePerClauseAspect(ResolvedTypeX, org.aspectj.weaver.patterns.PerClause.Kind)
+     * @see org.aspectj.weaver.bcel.BcelWorld#makePerClauseAspect(ResolvedType, org.aspectj.weaver.patterns.PerClause.Kind)
      * 
      * @param aspect
      * @param kind
      * @return
      */
-    public ConcreteTypeMunger makePerClauseAspect(ResolvedTypeX aspect, PerClause.Kind kind) {
+    public ConcreteTypeMunger makePerClauseAspect(ResolvedType aspect, PerClause.Kind kind) {
         throw new RuntimeException("unimplemented");
     }
 
-    public abstract ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedTypeX aspectType);
+    public abstract ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedType aspectType);
 
 	/**
 	 * Nobody should hold onto a copy of this message handler, or setMessageHandler won't
@@ -419,7 +422,7 @@ public abstract class World implements Dump.INode {
 
 	
 
-//	public void addDeclare(ResolvedTypeX onType, Declare declare, boolean forWeaving) {
+//	public void addDeclare(ResolvedType onType, Declare declare, boolean forWeaving) {
 //		// this is not extensible, oh well
 //		if (declare instanceof DeclareErrorOrWarning) {
 //			ShadowMunger m = new Checker((DeclareErrorOrWarning)declare);
@@ -444,7 +447,7 @@ public abstract class World implements Dump.INode {
 	/**
 	 * Same signature as org.aspectj.util.PartialOrder.PartialComparable.compareTo
 	 */
-	public int compareByDominates(ResolvedTypeX aspect1, ResolvedTypeX aspect2) {
+	public int compareByDominates(ResolvedType aspect1, ResolvedType aspect2) {
 		//System.out.println("dom compare: " + aspect1 + " with " + aspect2);
 		//System.out.println(crosscuttingMembersSet.getDeclareDominates());
 		
@@ -479,7 +482,7 @@ public abstract class World implements Dump.INode {
 	}
 	
 	
-	public int comparePrecedence(ResolvedTypeX aspect1, ResolvedTypeX aspect2) {
+	public int comparePrecedence(ResolvedType aspect1, ResolvedType aspect2) {
 		//System.err.println("compare precedence " + aspect1 + ", " + aspect2);
 		if (aspect1.equals(aspect2)) return 0;
 		
@@ -551,7 +554,7 @@ public abstract class World implements Dump.INode {
 		XlazyTjp = b;
 	}
 
-	public ReferenceType lookupOrCreateName(TypeX ty) {
+	public ReferenceType lookupOrCreateName(UnresolvedType ty) {
 		String signature = ty.getSignature();
         ReferenceType ret = (ReferenceType)typeMap.get(signature);
         if (ret == null) {
@@ -566,7 +569,7 @@ public abstract class World implements Dump.INode {
 //		List toRemove = new ArrayList();
 //		for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
 //			String sig = (String) iter.next();
-//			ResolvedTypeX x = (ResolvedTypeX) typeMap.get(sig);
+//			ResolvedType x = (ResolvedType) typeMap.get(sig);
 //			if (!x.isExposedToWeaver() && (!x.isPrimitive())) toRemove.add(sig);
 //		}		
 //		for (Iterator iter = toRemove.iterator(); iter.hasNext();) {
@@ -579,7 +582,7 @@ public abstract class World implements Dump.INode {
 //		int exposed = 0;
 //		for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
 //			String sig = (String) iter.next();
-//			ResolvedTypeX x = (ResolvedTypeX) typeMap.get(sig);
+//			ResolvedType x = (ResolvedType) typeMap.get(sig);
 //			if (x.isExposedToWeaver()) exposed++;
 //		}
 //		System.out.println("type map contains " + typeMap.size() + " entries, " + exposed + " exposed to weaver");
@@ -588,11 +591,11 @@ public abstract class World implements Dump.INode {
 //	public void deepDumpTypeMap() {
 //		for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
 //			String sig = (String) iter.next();
-//			ResolvedTypeX x = (ResolvedTypeX) typeMap.get(sig);
-//			if (! (x instanceof ResolvedTypeX.Name)) {
+//			ResolvedType x = (ResolvedType) typeMap.get(sig);
+//			if (! (x instanceof ResolvedType.Name)) {
 //				System.out.println(sig + " -> " + x.getClass().getName() + ", " + x.getClassName());
 //			} else {
-//				ResolvedTypeX.ConcreteName cname = ((ResolvedTypeX.Name)x).getDelegate();
+//				ResolvedType.ConcreteName cname = ((ResolvedType.Name)x).getDelegate();
 //				System.out.println(sig + " -> " + cname.getClass().getName() + ", " + cname.toString());
 //			}
 //		}
@@ -604,31 +607,31 @@ public abstract class World implements Dump.INode {
 		private Map tMap = new HashMap();
 		private Map expendableMap = new WeakHashMap();
 					
-		public ResolvedTypeX put(String key, ResolvedTypeX type) { 
+		public ResolvedType put(String key, ResolvedType type) { 
 			if (isExpendable(type))  {
-				return (ResolvedTypeX) expendableMap.put(key,type);
+				return (ResolvedType) expendableMap.put(key,type);
 			} else {
-				return (ResolvedTypeX) tMap.put(key,type);
+				return (ResolvedType) tMap.put(key,type);
 			}
 		}
 		
-		public ResolvedTypeX get(String key) {
-			ResolvedTypeX ret = (ResolvedTypeX) tMap.get(key);
-			if (ret == null) ret = (ResolvedTypeX) expendableMap.get(key);
+		public ResolvedType get(String key) {
+			ResolvedType ret = (ResolvedType) tMap.get(key);
+			if (ret == null) ret = (ResolvedType) expendableMap.get(key);
 			return ret;
 		}
 		
-		public ResolvedTypeX remove(String key) {
-			ResolvedTypeX ret = (ResolvedTypeX) tMap.remove(key);
-			if (ret == null) ret = (ResolvedTypeX) expendableMap.remove(key);
+		public ResolvedType remove(String key) {
+			ResolvedType ret = (ResolvedType) tMap.remove(key);
+			if (ret == null) ret = (ResolvedType) expendableMap.remove(key);
 			return ret;
 		}
 		
-		private boolean isExpendable(ResolvedTypeX type) {
+		private boolean isExpendable(ResolvedType type) {
 			return (
 					  (type != null) &&
 					  (!type.isExposedToWeaver()) &&
-					  (!type.isPrimitive())
+					  (!type.isPrimitiveType())
 					);
 		}
 	}	

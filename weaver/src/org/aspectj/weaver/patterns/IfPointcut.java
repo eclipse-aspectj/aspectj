@@ -28,12 +28,12 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
@@ -251,7 +251,7 @@ public class IfPointcut extends Pointcut {
 	// amc - the only reason this override seems to be here is to stop the copy, but 
 	// that can be prevented by overriding shouldCopyLocationForConcretization,
 	// allowing me to make the method final in Pointcut.
-//	public Pointcut concretize(ResolvedTypeX inAspect, IntMap bindings) {
+//	public Pointcut concretize(ResolvedType inAspect, IntMap bindings) {
 //		return this.concretize1(inAspect, bindings);
 //	}
 	
@@ -260,7 +260,7 @@ public class IfPointcut extends Pointcut {
 	}
 	
 	private IfPointcut partiallyConcretized = null;
-	public Pointcut concretize1(ResolvedTypeX inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		//System.err.println("concretize: " + this + " already: " + partiallyConcretized);
 		
 		if (isDeclare(bindings.getEnclosingAdvice())) {
@@ -281,7 +281,7 @@ public class IfPointcut extends Pointcut {
             // @AJ style, we need to find the testMethod in the aspect defining the "if()" enclosing pointcut
             ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();
             if (def != null) {
-                ResolvedTypeX aspect = inAspect.getWorld().resolve(def.getDeclaringType());
+                ResolvedType aspect = inAspect.getWorld().resolve(def.getDeclaringType());
                 ResolvedMember[] methods = aspect.getDeclaredJavaMethods();
                 for (int i = 0; i < methods.length; i++) {
                     ResolvedMember method = methods[i];
@@ -289,7 +289,7 @@ public class IfPointcut extends Pointcut {
                         && def.getParameterTypes().length == method.getParameterTypes().length) {
                         boolean sameSig = true;
                         for (int j = 0; j < method.getParameterTypes().length; j++) {
-                            TypeX argJ = method.getParameterTypes()[j];
+                            UnresolvedType argJ = method.getParameterTypes()[j];
                             if (!argJ.equals(def.getParameterTypes()[j])) {
                                 sameSig = false;
                                 break;
@@ -427,11 +427,11 @@ public class IfPointcut extends Pointcut {
 		public void resolveBindingsFromRTTI() {
 		}
 
-		public void postRead(ResolvedTypeX enclosingType) {
+		public void postRead(ResolvedType enclosingType) {
 		}
 
 		public Pointcut concretize1(
-			ResolvedTypeX inAspect,
+			ResolvedType inAspect,
 			IntMap bindings) {
 			if (isDeclare(bindings.getEnclosingAdvice())) {
 				// Enforce rule about which designators are supported in declare
@@ -498,11 +498,11 @@ public class IfPointcut extends Pointcut {
 		public void resolveBindingsFromRTTI() {
 		}
 
-		public void postRead(ResolvedTypeX enclosingType) {
+		public void postRead(ResolvedType enclosingType) {
 		}
 
 		public Pointcut concretize1(
-			ResolvedTypeX inAspect,
+			ResolvedType inAspect,
 			IntMap bindings) {
 			if (isDeclare(bindings.getEnclosingAdvice())) {
 				// Enforce rule about which designators are supported in declare

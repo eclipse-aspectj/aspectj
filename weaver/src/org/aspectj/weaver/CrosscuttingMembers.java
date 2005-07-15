@@ -41,7 +41,7 @@ import org.aspectj.weaver.patterns.Pointcut;
  * @author Jim Hugunin
  */
 public class CrosscuttingMembers {
-	private ResolvedTypeX inAspect;
+	private ResolvedType inAspect;
 	private World world;
 	
 	private PerClause perClause;
@@ -59,7 +59,7 @@ public class CrosscuttingMembers {
 	private List declareAnnotationsOnField   = new ArrayList();
 	private List declareAnnotationsOnMethods = new ArrayList(); // includes ctors
 	
-	public CrosscuttingMembers(ResolvedTypeX inAspect) {
+	public CrosscuttingMembers(ResolvedType inAspect) {
 		this.inAspect = inAspect;
 		this.world = inAspect.getWorld();
 	}
@@ -144,15 +144,15 @@ public class CrosscuttingMembers {
 	
 	public void exposeTypes(Collection typesToExpose) {
 		for (Iterator i = typesToExpose.iterator(); i.hasNext(); ) {
-			exposeType((TypeX)i.next());
+			exposeType((UnresolvedType)i.next());
 		}
 	}
 	
-	public void exposeType(TypeX typeToExpose) {
-		if (typeToExpose == ResolvedTypeX.MISSING) return;
+	public void exposeType(UnresolvedType typeToExpose) {
+		if (typeToExpose == ResolvedType.MISSING) return;
 		
 		ResolvedMember member = new ResolvedMember(
-			Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedTypeX.VOID, "", TypeX.NONE);
+			Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "", UnresolvedType.NONE);
 		addTypeMunger(world.concreteTypeMunger(
 			new PrivilegedAccessMunger(member), inAspect));
 	}

@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 /**
@@ -54,21 +54,21 @@ public class OrTypePattern extends TypePattern {
 		return true; // don't dive at the moment...
 	}
 	
-	public FuzzyBoolean matchesInstanceof(ResolvedTypeX type) {
+	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		return left.matchesInstanceof(type).or(right.matchesInstanceof(type));
 	}
 
-	protected boolean matchesExactly(ResolvedTypeX type) {
+	protected boolean matchesExactly(ResolvedType type) {
 		//??? if these had side-effects, this sort-circuit could be a mistake
 		return left.matchesExactly(type) || right.matchesExactly(type);
 	}
 
-	protected boolean matchesExactly(ResolvedTypeX type, ResolvedTypeX annotatedType) {
+	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		//??? if these had side-effects, this sort-circuit could be a mistake
 		return left.matchesExactly(type,annotatedType) || right.matchesExactly(type,annotatedType);
 	}
 	
-	public boolean matchesStatically(ResolvedTypeX type) {
+	public boolean matchesStatically(ResolvedType type) {
 		return left.matchesStatically(type) || right.matchesStatically(type);
 	}
 

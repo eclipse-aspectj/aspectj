@@ -29,7 +29,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	}
 	
 	//XXX horrible name clash here
-	public ResolvedMember getDispatchMethod(TypeX aspectType) {
+	public ResolvedMember getDispatchMethod(UnresolvedType aspectType) {
 		return AjcMemberMaker.interMethodBody(signature, aspectType);
 	}
 
@@ -48,9 +48,9 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		return munger;
 	}
 	
-	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {	
+	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {	
 		ResolvedMember ret = AjcMemberMaker.interMethodDispatcher(getSignature(), aspectType);
-		if (ResolvedTypeX.matches(ret, member)) return getSignature();
+		if (ResolvedType.matches(ret, member)) return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
 }

@@ -8,7 +8,7 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
- *     Andy Clement - June 2005 - separated out from ResolvedTypeX
+ *     Andy Clement - June 2005 - separated out from ResolvedType
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -35,12 +35,12 @@ public interface ReferenceTypeDelegate {
 	public boolean isGeneric();
 	public boolean isExposedToWeaver();
 	
-	public boolean hasAnnotation(TypeX ofType);
+	public boolean hasAnnotation(UnresolvedType ofType);
 	
 	public AnnotationX[]    getAnnotations();
-    public ResolvedTypeX[]  getAnnotationTypes();
+    public ResolvedType[]  getAnnotationTypes();
 	public ResolvedMember[] getDeclaredFields();
-	public ResolvedTypeX[]  getDeclaredInterfaces();
+	public ResolvedType[]  getDeclaredInterfaces();
 	public ResolvedMember[] getDeclaredMethods();
 	public ResolvedMember[] getDeclaredPointcuts();
 	public TypeVariable[] getTypeVariables();
@@ -50,7 +50,7 @@ public interface ReferenceTypeDelegate {
 	public Collection getTypeMungers();
 	public Collection getPrivilegedAccesses();
 	public int getModifiers();
-	public ResolvedTypeX getSuperclass();		
+	public ResolvedType getSuperclass();		
 	public WeaverStateInfo getWeaverState();
 	public ReferenceType getResolvedTypeX();
 	public boolean doesNotExposeShadowMungers();

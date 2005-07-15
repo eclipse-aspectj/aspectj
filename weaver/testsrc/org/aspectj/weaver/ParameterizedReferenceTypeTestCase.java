@@ -41,7 +41,7 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 				}
 			}
 		}
-		TypeX parameterType = add.getParameterTypes()[0];
+		UnresolvedType parameterType = add.getParameterTypes()[0];
 		assertEquals("Ljava/lang/String;",parameterType.getSignature());
 		
 		ResolvedMember get = null;
@@ -53,7 +53,7 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 				}
 			}
 		}
-		TypeX returnType = get.getReturnType();
+		UnresolvedType returnType = get.getReturnType();
 		assertEquals("Ljava/lang/String;",returnType.getSignature());
 		
 	}
@@ -62,7 +62,7 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 		super.setUp();
 		world = new BcelWorld();
 		listOfString = (ReferenceType)
-			world.resolve(TypeX.forParameterizedTypeNames("java/util/List",
+			world.resolve(UnresolvedType.forParameterizedTypeNames("java/util/List",
 					new String[] {"java/lang/String"}));
 	}
 }

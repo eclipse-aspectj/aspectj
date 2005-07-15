@@ -23,17 +23,17 @@ import java.io.IOException;
 
 public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 
-    private final TypeX interfaceType;
+    private final UnresolvedType interfaceType;
     private final Pointcut testPointcut;
     private TypePattern lazyTestTypePattern;
 
-    public PerObjectInterfaceTypeMunger(TypeX aspectType, Pointcut testPointcut) {
+    public PerObjectInterfaceTypeMunger(UnresolvedType aspectType, Pointcut testPointcut) {
         super(PerObjectInterface, null);
         this.testPointcut = testPointcut;
         this.interfaceType = AjcMemberMaker.perObjectInterfaceType(aspectType);
     }
 
-    private TypePattern getTestTypePattern(ResolvedTypeX aspectType) {
+    private TypePattern getTestTypePattern(ResolvedType aspectType) {
         if (lazyTestTypePattern == null) {
             final boolean isPerThis;
             if (aspectType.getPerClause() instanceof PerFromSuper) {
@@ -52,7 +52,7 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
         throw new RuntimeException("shouldn't be serialized");
     }
 
-    public TypeX getInterfaceType() {
+    public UnresolvedType getInterfaceType() {
         return interfaceType;
     }
 
@@ -60,7 +60,7 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
         return testPointcut;
     }
 
-    public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
+    public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
         if (matchType.isInterface()) return false;
         return getTestTypePattern(aspectType).matchesStatically(matchType);
     }

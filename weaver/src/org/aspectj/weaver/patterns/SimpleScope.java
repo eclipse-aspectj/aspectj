@@ -19,14 +19,14 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 public class SimpleScope implements IScope {
 
     private World world;
-    private ResolvedTypeX enclosingType;
+    private ResolvedType enclosingType;
     protected FormalBinding[] bindings;
 
 	private String[] importedPrefixes = javaLangPrefixArray;
@@ -41,7 +41,7 @@ public class SimpleScope implements IScope {
 	// ---- impl
 
 	//XXX doesn't report any problems
-	public TypeX lookupType(String name, IHasPosition location) {
+	public UnresolvedType lookupType(String name, IHasPosition location) {
 		for (int i=0; i<importedNames.length; i++) {
 			String importedName = importedNames[i];
 			if (importedName.endsWith(name)) {
@@ -51,13 +51,13 @@ public class SimpleScope implements IScope {
 		
 		for (int i=0; i<importedPrefixes.length; i++) {
 			String importedPrefix = importedPrefixes[i];
-			TypeX tryType = world.resolve(TypeX.forName(importedPrefix + name), true);
-			if (tryType != ResolvedTypeX.MISSING) {
+			UnresolvedType tryType = world.resolve(UnresolvedType.forName(importedPrefix + name), true);
+			if (tryType != ResolvedType.MISSING) {
 				return tryType;
 			}
 		}
 
-		return world.resolve(TypeX.forName(name), true);
+		return world.resolve(UnresolvedType.forName(name), true);
 	}
 
 
@@ -92,7 +92,7 @@ public class SimpleScope implements IScope {
 		this.importedPrefixes = importedPrefixes;
 	}
 	
-	public static FormalBinding[] makeFormalBindings(TypeX[] types, String[] names) {
+	public static FormalBinding[] makeFormalBindings(UnresolvedType[] types, String[] names) {
         int len = types.length;
         FormalBinding[] bindings = new FormalBinding[len];
         for (int i = 0; i < len; i++) {
@@ -140,7 +140,7 @@ public class SimpleScope implements IScope {
 		return world;
 	}
 
-	public ResolvedTypeX getEnclosingType() {
+	public ResolvedType getEnclosingType() {
 		return enclosingType;
 	}
 

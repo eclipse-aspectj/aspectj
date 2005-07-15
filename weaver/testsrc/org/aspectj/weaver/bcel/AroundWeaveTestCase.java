@@ -49,7 +49,7 @@ public class AroundWeaveTestCase extends WeaveTestCase {
         BcelWorld world = super.world;
         final Member sig =
             Member.method(
-                TypeX.forName("Aspect"),
+                UnresolvedType.forName("Aspect"),
                 Modifier.STATIC,
                 "ajc_around",
                 "(Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;");
@@ -57,7 +57,7 @@ public class AroundWeaveTestCase extends WeaveTestCase {
         return new BcelAdvice(
         	AdviceKind.stringToKind("around"), 
         	matchOnlyPrintln ? makePointcutPrintln() : makePointcutAll(),
-	        sig, 0, -1, -1, null, TypeX.forName("Aspect").resolve(world))
+	        sig, 0, -1, -1, null, UnresolvedType.forName("Aspect").resolve(world))
 	    {
             public void specializeOn(Shadow s) {
             	super.specializeOn(s);

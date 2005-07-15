@@ -160,7 +160,7 @@ public abstract class AjAttribute {
 			munger.write(s);
 		}
 		
-		public ConcreteTypeMunger reify(World world, ResolvedTypeX aspectType) {
+		public ConcreteTypeMunger reify(World world, ResolvedType aspectType) {
 			return world.concreteTypeMunger(munger, aspectType);
 		}
 	}
@@ -404,7 +404,7 @@ public abstract class AjAttribute {
 		private boolean proceedInInners;
 		private ResolvedMember[] proceedCallSignatures; // size == # of proceed calls in body
 		private boolean[] formalsUnchangedToProceed; // size == formals.size
-		private TypeX[] declaredExceptions;
+		private UnresolvedType[] declaredExceptions;
 		
 		/**
 		 * @param lexicalPosition must be greater than the lexicalPosition 
@@ -427,7 +427,7 @@ public abstract class AjAttribute {
 		public AdviceAttribute(AdviceKind kind, Pointcut pointcut, int extraArgumentFlags, 
 								int start, int end, ISourceContext sourceContext,
 								boolean proceedInInners, ResolvedMember[] proceedCallSignatures,
-								boolean[] formalsUnchangedToProceed, TypeX[] declaredExceptions) {
+								boolean[] formalsUnchangedToProceed, UnresolvedType[] declaredExceptions) {
 			this.kind = kind;
 			this.pointcut = pointcut;
 			this.extraParameterFlags = extraArgumentFlags;
@@ -454,7 +454,7 @@ public abstract class AjAttribute {
 					s.readBoolean(),
 					ResolvedMember.readResolvedMemberArray(s, context),
 					FileUtil.readBooleanArray(s),
-					TypeX.readArray(s));
+					UnresolvedType.readArray(s));
 			} else {
 				return new AdviceAttribute(
 					kind,
@@ -475,7 +475,7 @@ public abstract class AjAttribute {
 				s.writeBoolean(proceedInInners);
 				ResolvedMember.writeArray(proceedCallSignatures, s);
 				FileUtil.writeBooleanArray(formalsUnchangedToProceed, s);
-				TypeX.writeArray(declaredExceptions, s);
+				UnresolvedType.writeArray(declaredExceptions, s);
 			}
 		}
 		
@@ -500,7 +500,7 @@ public abstract class AjAttribute {
 			return pointcut;
 		}
 
-		public TypeX[] getDeclaredExceptions() {
+		public UnresolvedType[] getDeclaredExceptions() {
 			return declaredExceptions;
 		}
 
@@ -541,7 +541,7 @@ public abstract class AjAttribute {
 			this.perClause = perClause;
 		}
 
-	    public PerClause reify(ResolvedTypeX inAspect) {
+	    public PerClause reify(ResolvedType inAspect) {
 	    	//XXXperClause.concretize(inAspect);
 	        return perClause;
 	    }

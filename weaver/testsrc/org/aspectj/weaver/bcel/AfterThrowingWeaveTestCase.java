@@ -35,7 +35,7 @@ public class AfterThrowingWeaveTestCase extends WeaveTestCase {
         ShadowMunger myMunger = 
             world.shadowMunger("afterThrowing(): get(* *.out) -> static void Aspect.ajc_afterThrowing_field_get(java.lang.Throwable)",
                         Advice.ExtraArgument);
-        ShadowMunger cm = myMunger.concretize(ResolvedTypeX.MISSING, world, null);
+        ShadowMunger cm = myMunger.concretize(ResolvedType.MISSING, world, null);
 
         weaveTest(getStandardTargets(), "AfterThrowingParam", cm);     
     }

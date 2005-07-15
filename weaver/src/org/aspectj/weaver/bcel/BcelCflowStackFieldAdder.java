@@ -23,12 +23,12 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 
 public class BcelCflowStackFieldAdder extends BcelTypeMunger {
 	private ResolvedMember cflowStackField;
 	public BcelCflowStackFieldAdder(ResolvedMember cflowStackField) {
-		super(null,(ResolvedTypeX)cflowStackField.getDeclaringType());
+		super(null,(ResolvedType)cflowStackField.getDeclaringType());
 		this.cflowStackField = cflowStackField;
 	}
 
@@ -71,7 +71,7 @@ public class BcelCflowStackFieldAdder extends BcelTypeMunger {
 		return cflowStackField;
 	}
 
-	public boolean matches(ResolvedTypeX onType) {
+	public boolean matches(ResolvedType onType) {
 		return onType.equals(cflowStackField.getDeclaringType());
 	}
 

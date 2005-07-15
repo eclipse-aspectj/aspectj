@@ -14,16 +14,16 @@
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 public class FormalBinding implements IHasPosition {
-	private final TypeX type;
+	private final UnresolvedType type;
     private final String name;
 	private final int index;
 	private final int start, end;
 	private final String fileName;
 	
-	public FormalBinding(TypeX type, String name, int index, int start, int end, String fileName) {
+	public FormalBinding(UnresolvedType type, String name, int index, int start, int end, String fileName) {
 		this.type = type;
         this.name = name;
 		this.index = index;
@@ -32,11 +32,11 @@ public class FormalBinding implements IHasPosition {
         this.fileName = fileName;
 	}
 	
-    public FormalBinding(TypeX type, int index) {
+    public FormalBinding(UnresolvedType type, int index) {
         this(type, "unknown", index, 0, 0, "unknown");
     }
 
-    public FormalBinding(TypeX type, String name, int index) {
+    public FormalBinding(UnresolvedType type, String name, int index) {
         this(type, name, index, 0, 0, "unknown");
     }
 	
@@ -66,7 +66,7 @@ public class FormalBinding implements IHasPosition {
         return name;
     }
 
-    public TypeX getType() {
+    public UnresolvedType getType() {
         return type;
     }
 
@@ -81,7 +81,7 @@ public class FormalBinding implements IHasPosition {
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */ 
     public static class ImplicitFormalBinding extends FormalBinding {
-        public ImplicitFormalBinding(TypeX type, String name, int index) {
+        public ImplicitFormalBinding(UnresolvedType type, String name, int index) {
             super(type, name, index);
         }
     }

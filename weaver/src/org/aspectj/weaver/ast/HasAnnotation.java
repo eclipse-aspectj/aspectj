@@ -10,15 +10,15 @@
  *******************************************************************************/
 package org.aspectj.weaver.ast;
 
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 
 public class HasAnnotation extends Test {
 
     private Var v;
-    private ResolvedTypeX annType;
+    private ResolvedType annType;
     
-    public HasAnnotation(Var v, ResolvedTypeX annType) {
+    public HasAnnotation(Var v, ResolvedType annType) {
         super();
         this.v = v;
         this.annType = annType;
@@ -48,7 +48,7 @@ public class HasAnnotation extends Test {
         return v;
     }
 
-    public TypeX getAnnotationType() {
+    public UnresolvedType getAnnotationType() {
         return annType;
     } 
     

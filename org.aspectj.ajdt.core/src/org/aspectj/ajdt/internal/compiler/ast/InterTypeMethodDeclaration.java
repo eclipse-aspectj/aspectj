@@ -23,9 +23,9 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -131,7 +131,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		
 		NewMethodTypeMunger myMunger = new NewMethodTypeMunger(sig, null);
 		setMunger(myMunger);
-		ResolvedTypeX aspectType = world.fromEclipse(classScope.referenceContext.binding);
+		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me =
 			myMunger.getDispatchMethod(aspectType);
 		this.selector = binding.selector = me.getName().toCharArray();
@@ -163,7 +163,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	public void generateDispatchMethod(ClassScope classScope, ClassFile classFile) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		
-		TypeX aspectType = EclipseFactory.fromBinding(classScope.referenceContext.binding);
+		UnresolvedType aspectType = EclipseFactory.fromBinding(classScope.referenceContext.binding);
 		ResolvedMember signature = munger.getSignature();
 		
 		ResolvedMember dispatchMember = 

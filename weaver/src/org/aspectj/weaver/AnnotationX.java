@@ -29,7 +29,7 @@ import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 public class AnnotationX {
 	
   private Annotation theRealAnnotation;
-  private ResolvedTypeX signature = null;
+  private ResolvedType signature = null;
   
   // @target meta-annotation related stuff, built lazily
   private boolean    lookedForAtTargetAnnotation = false;
@@ -38,14 +38,14 @@ public class AnnotationX {
   
   public AnnotationX(Annotation a,World world) {
   	theRealAnnotation = a;
-  	signature = TypeX.forSignature(theRealAnnotation.getTypeSignature()).resolve(world);
+  	signature = UnresolvedType.forSignature(theRealAnnotation.getTypeSignature()).resolve(world);
   }
 
   public Annotation getBcelAnnotation() {
 	return theRealAnnotation;
   }
   
-  public TypeX getSignature() {
+  public UnresolvedType getSignature() {
   	return signature;
   }
   
@@ -116,9 +116,9 @@ public class AnnotationX {
 
   /**
    * Helper method to retrieve an annotation on an annotation e.g.
-   * retrieveAnnotationOnAnnotation(TypeX.AT_TARGET)
+   * retrieveAnnotationOnAnnotation(UnresolvedType.AT_TARGET)
    */
-  private AnnotationX retrieveAnnotationOnAnnotation(TypeX requiredAnnotationSignature) {
+  private AnnotationX retrieveAnnotationOnAnnotation(UnresolvedType requiredAnnotationSignature) {
 	AnnotationX[] annos = signature.getAnnotations();
 	for (int i = 0; i < annos.length; i++) {
 		AnnotationX annotationX = annos[i];
@@ -134,7 +134,7 @@ public class AnnotationX {
   private void ensureAtTargetInitialized() {
 	if (!lookedForAtTargetAnnotation) {
   		lookedForAtTargetAnnotation = true;
-  		atTargetAnnotation = retrieveAnnotationOnAnnotation(TypeX.AT_TARGET);
+  		atTargetAnnotation = retrieveAnnotationOnAnnotation(UnresolvedType.AT_TARGET);
   		if (atTargetAnnotation != null) {
   			supportedTargets = new HashSet();
   			List values = atTargetAnnotation.getBcelAnnotation().getValues();

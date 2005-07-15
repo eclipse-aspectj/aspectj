@@ -50,7 +50,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		this.sourceContext = sourceContext;
 	}
 	
-	public abstract ShadowMunger concretize(ResolvedTypeX fromType, World world, PerClause clause);	
+	public abstract ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause);	
 
     public abstract void specializeOn(Shadow shadow);
     public abstract void implementOn(Shadow shadow);
@@ -114,7 +114,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 
 
 	/**
-	 * @return a Collection of ResolvedTypeX for all checked exceptions that
+	 * @return a Collection of ResolvedType for all checked exceptions that
 	 *          might be thrown by this munger
 	 */
 	public abstract Collection getThrownExceptions();

@@ -36,7 +36,7 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
@@ -212,7 +212,7 @@ public class WeavingAdaptor {
      * @return
      */
 	private boolean shouldWeaveAspect (String name) {
-		ResolvedTypeX type = bcelWorld.resolve(name);
+		ResolvedType type = bcelWorld.resolve(name);
         return (type == null || !type.isAspect() || type.isAnnotationStyleAspect());
 	}
 

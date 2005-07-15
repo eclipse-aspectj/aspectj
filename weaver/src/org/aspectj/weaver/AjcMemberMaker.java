@@ -18,7 +18,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 import java.lang.reflect.Modifier;
 
-//import org.aspectj.weaver.ResolvedTypeX.Name;
+//import org.aspectj.weaver.ResolvedType.Name;
 
 
 public class AjcMemberMaker {
@@ -34,18 +34,18 @@ public class AjcMemberMaker {
 	private static final int VISIBILITY =
 		Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED;
 
-	public static final TypeX CFLOW_STACK_TYPE = 
-		TypeX.forName(NameMangler.CFLOW_STACK_TYPE);
-	public static final TypeX AROUND_CLOSURE_TYPE = 
-		TypeX.forName("org.aspectj.runtime.internal.AroundClosure");
+	public static final UnresolvedType CFLOW_STACK_TYPE = 
+		UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE);
+	public static final UnresolvedType AROUND_CLOSURE_TYPE = 
+		UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure");
 		
-	public static final TypeX CONVERSIONS_TYPE =
-		TypeX.forName("org.aspectj.runtime.internal.Conversions");
+	public static final UnresolvedType CONVERSIONS_TYPE =
+		UnresolvedType.forName("org.aspectj.runtime.internal.Conversions");
 		
-	public static final TypeX NO_ASPECT_BOUND_EXCEPTION =
-		TypeX.forName("org.aspectj.lang.NoAspectBoundException");
+	public static final UnresolvedType NO_ASPECT_BOUND_EXCEPTION =
+		UnresolvedType.forName("org.aspectj.lang.NoAspectBoundException");
 
-	public static ResolvedMember ajcPreClinitMethod(TypeX declaringType) {
+	public static ResolvedMember ajcPreClinitMethod(UnresolvedType declaringType) {
 		return new ResolvedMember(
 			Member.METHOD, 
 			declaringType,
@@ -54,7 +54,7 @@ public class AjcMemberMaker {
 			"()V");
 	}
 
-	public static ResolvedMember ajcPostClinitMethod(TypeX declaringType) {
+	public static ResolvedMember ajcPostClinitMethod(UnresolvedType declaringType) {
 		return new ResolvedMember(
 			Member.METHOD, 
 			declaringType,
@@ -91,7 +91,7 @@ public class AjcMemberMaker {
 	}
 
 	
-	public static ResolvedMember perCflowPush(TypeX declaringType) {
+	public static ResolvedMember perCflowPush(UnresolvedType declaringType) {
 		return new ResolvedMember(
 			Member.METHOD, 
 			declaringType,
@@ -100,7 +100,7 @@ public class AjcMemberMaker {
 			"()V");
 	}
 	
-	public static ResolvedMember perCflowField(TypeX declaringType) {
+	public static ResolvedMember perCflowField(UnresolvedType declaringType) {
 		return new ResolvedMember(
 			Member.FIELD, 
 			declaringType,
@@ -109,7 +109,7 @@ public class AjcMemberMaker {
 			CFLOW_STACK_TYPE.getSignature());
 	}
 
-	public static ResolvedMember perSingletonField(TypeX declaringType) {
+	public static ResolvedMember perSingletonField(UnresolvedType declaringType) {
 		return new ResolvedMember(
 			Member.FIELD, 
 			declaringType,
@@ -119,18 +119,18 @@ public class AjcMemberMaker {
 	}
 	
 
-	public static ResolvedMember initFailureCauseField(TypeX declaringType) {
+	public static ResolvedMember initFailureCauseField(UnresolvedType declaringType) {
 		return new ResolvedMember(
 				Member.FIELD, 
 				declaringType,
 				PRIVATE_STATIC,
 				NameMangler.INITFAILURECAUSE_FIELD_NAME,
-				TypeX.THROWABLE.getSignature());
+				UnresolvedType.THROWABLE.getSignature());
 	}
 	
-	public static ResolvedMember perObjectField(TypeX declaringType, ResolvedTypeX aspectType) {
+	public static ResolvedMember perObjectField(UnresolvedType declaringType, ResolvedType aspectType) {
 		int modifiers = Modifier.PRIVATE;
-		if (!TypeX.SERIALIZABLE.isAssignableFrom(aspectType, aspectType.getWorld())) {
+		if (!UnresolvedType.SERIALIZABLE.resolve(aspectType.getWorld()).isAssignableFrom(aspectType)) {
 			modifiers |= Modifier.TRANSIENT;
 		}
 		return new ResolvedMember(
@@ -139,31 +139,35 @@ public class AjcMemberMaker {
 			modifiers,
 			aspectType,
 			NameMangler.perObjectInterfaceField(aspectType),
-			TypeX.NONE);
+			UnresolvedType.NONE);
 	}
 	
 	// PTWIMPL ResolvedMember for aspect instance field, declared in matched type
-	public static ResolvedMember perTypeWithinField(TypeX declaringType, ResolvedTypeX aspectType) {
+	public static ResolvedMember perTypeWithinField(UnresolvedType declaringType, ResolvedType aspectType) {
 		int modifiers = Modifier.PRIVATE | Modifier.STATIC;
-		if (!TypeX.SERIALIZABLE.isAssignableFrom(aspectType, aspectType.getWorld())) {
+		if (!isSerializableAspect(aspectType)) {
 			modifiers |= Modifier.TRANSIENT;
 		}
 		return new ResolvedMember(Member.FIELD, declaringType, modifiers,
-			aspectType,	NameMangler.perTypeWithinFieldForTarget(aspectType), TypeX.NONE);
+			aspectType,	NameMangler.perTypeWithinFieldForTarget(aspectType), UnresolvedType.NONE);
 	}
 	
 	// PTWIMPL ResolvedMember for type instance field, declared in aspect 
 	// (holds typename for which aspect instance exists)
-	public static ResolvedMember perTypeWithinWithinTypeField(TypeX declaringType, ResolvedTypeX aspectType) {
+	public static ResolvedMember perTypeWithinWithinTypeField(UnresolvedType declaringType, ResolvedType aspectType) {
 		int modifiers = Modifier.PRIVATE;
-		if (!TypeX.SERIALIZABLE.isAssignableFrom(aspectType, aspectType.getWorld())) {
+		if (!isSerializableAspect(aspectType)) {
 			modifiers |= Modifier.TRANSIENT;
 		}
 		return new ResolvedMember(Member.FIELD, declaringType, modifiers,
-			TypeX.forSignature("Ljava/lang/String;"), NameMangler.PERTYPEWITHIN_WITHINTYPEFIELD, TypeX.NONE);
+			UnresolvedType.forSignature("Ljava/lang/String;"), NameMangler.PERTYPEWITHIN_WITHINTYPEFIELD, UnresolvedType.NONE);
+	}
+	
+	private static boolean isSerializableAspect(ResolvedType aspectType) {
+		return UnresolvedType.SERIALIZABLE.resolve(aspectType.getWorld()).isAssignableFrom(aspectType);
 	}
 
-	public static ResolvedMember perObjectBind(TypeX declaringType) {
+	public static ResolvedMember perObjectBind(UnresolvedType declaringType) {
 		return new ResolvedMember(
 			Member.METHOD, 
 			declaringType,
@@ -173,7 +177,7 @@ public class AjcMemberMaker {
 	}
 	
 	// PTWIMPL ResolvedMember for getInstance() method, declared in aspect
-	public static ResolvedMember perTypeWithinGetInstance(TypeX declaringType) {
+	public static ResolvedMember perTypeWithinGetInstance(UnresolvedType declaringType) {
 //		private static a.X ajc$getInstance(java.lang.Class) throws java/lang/Exception
 		ResolvedMember rm = new ResolvedMember(
 			Member.METHOD, 
@@ -181,13 +185,13 @@ public class AjcMemberMaker {
 			PRIVATE_STATIC,
 			declaringType, // return value
 			NameMangler.PERTYPEWITHIN_GETINSTANCE_METHOD,
-			new TypeX[]{TypeX.JAVA_LANG_CLASS},
-			new TypeX[]{TypeX.JAVA_LANG_EXCEPTION}
+			new UnresolvedType[]{UnresolvedType.JAVA_LANG_CLASS},
+			new UnresolvedType[]{UnresolvedType.JAVA_LANG_EXCEPTION}
 			);	
 		return rm;
 	}
 
-	public static ResolvedMember perTypeWithinCreateAspectInstance(TypeX declaringType) {
+	public static ResolvedMember perTypeWithinCreateAspectInstance(UnresolvedType declaringType) {
 		// public static a.X ajc$createAspectInstance(java.lang.String)
 		ResolvedMember rm = new ResolvedMember(
 				Member.METHOD, 
@@ -195,17 +199,17 @@ public class AjcMemberMaker {
 				PUBLIC_STATIC,
 				declaringType, // return value
 				NameMangler.PERTYPEWITHIN_CREATEASPECTINSTANCE_METHOD,
-				new TypeX[]{TypeX.forSignature("Ljava/lang/String;")},new TypeX[]{}
+				new UnresolvedType[]{UnresolvedType.forSignature("Ljava/lang/String;")},new UnresolvedType[]{}
 				);	
 			return rm;
 	}
 
 
-	public static TypeX perObjectInterfaceType(TypeX aspectType) {
-		return TypeX.forName(aspectType.getName()+"$ajcMightHaveAspect");
+	public static UnresolvedType perObjectInterfaceType(UnresolvedType aspectType) {
+		return UnresolvedType.forName(aspectType.getName()+"$ajcMightHaveAspect");
 	}
 
-	public static ResolvedMember perObjectInterfaceGet(TypeX aspectType) {
+	public static ResolvedMember perObjectInterfaceGet(UnresolvedType aspectType) {
 		return new ResolvedMember(
 			Member.METHOD, 
 			perObjectInterfaceType(aspectType),
@@ -214,7 +218,7 @@ public class AjcMemberMaker {
 			"()" + aspectType.getSignature());
 	}
 
-	public static ResolvedMember perObjectInterfaceSet(TypeX aspectType) {
+	public static ResolvedMember perObjectInterfaceSet(UnresolvedType aspectType) {
 		return new ResolvedMember(
 			Member.METHOD, 
 			perObjectInterfaceType(aspectType),
@@ -224,7 +228,7 @@ public class AjcMemberMaker {
 	}
 	
 	// PTWIMPL ResolvedMember for localAspectOf() method, declared in matched type
-	public static ResolvedMember perTypeWithinLocalAspectOf(TypeX shadowType,TypeX aspectType) {
+	public static ResolvedMember perTypeWithinLocalAspectOf(UnresolvedType shadowType,UnresolvedType aspectType) {
 		return new ResolvedMember(
 			Member.METHOD, 
 			shadowType,//perTypeWithinInterfaceType(aspectType),
@@ -234,47 +238,47 @@ public class AjcMemberMaker {
 	}
 
 	
-	public static ResolvedMember perSingletonAspectOfMethod(TypeX declaringType) {
+	public static ResolvedMember perSingletonAspectOfMethod(UnresolvedType declaringType) {
 		return new ResolvedMember(Member.METHOD,
 			declaringType, PUBLIC_STATIC, "aspectOf", 
 			"()" + declaringType.getSignature());		
 	}
 	
-	public static ResolvedMember perSingletonHasAspectMethod(TypeX declaringType) {
+	public static ResolvedMember perSingletonHasAspectMethod(UnresolvedType declaringType) {
 		return new ResolvedMember(Member.METHOD,
 			declaringType, PUBLIC_STATIC, "hasAspect", 
 			"()Z");		
 	};
 	
-	public static ResolvedMember perCflowAspectOfMethod(TypeX declaringType) {
+	public static ResolvedMember perCflowAspectOfMethod(UnresolvedType declaringType) {
 		return perSingletonAspectOfMethod(declaringType);
 	}
 	
-	public static ResolvedMember perCflowHasAspectMethod(TypeX declaringType) {
+	public static ResolvedMember perCflowHasAspectMethod(UnresolvedType declaringType) {
 		return perSingletonHasAspectMethod(declaringType);
 	};
 	
-	public static ResolvedMember perObjectAspectOfMethod(TypeX declaringType) {
+	public static ResolvedMember perObjectAspectOfMethod(UnresolvedType declaringType) {
 		return new ResolvedMember(Member.METHOD,
 			declaringType, PUBLIC_STATIC, "aspectOf", 
 			"(Ljava/lang/Object;)" + declaringType.getSignature());		
 	}
 	
-	public static ResolvedMember perObjectHasAspectMethod(TypeX declaringType) {
+	public static ResolvedMember perObjectHasAspectMethod(UnresolvedType declaringType) {
 		return new ResolvedMember(Member.METHOD,
 			declaringType, PUBLIC_STATIC, "hasAspect", 
 			"(Ljava/lang/Object;)Z");		
 	};
 	
 	// PTWIMPL ResolvedMember for aspectOf(), declared in aspect
-	public static ResolvedMember perTypeWithinAspectOfMethod(TypeX declaringType) {
+	public static ResolvedMember perTypeWithinAspectOfMethod(UnresolvedType declaringType) {
 		return new ResolvedMember(Member.METHOD,
 				declaringType, PUBLIC_STATIC, "aspectOf", 
 				"(Ljava/lang/Class;)" + declaringType.getSignature());		
 	}
 	
 	// PTWIMPL ResolvedMember for hasAspect(), declared in aspect
-	public static ResolvedMember perTypeWithinHasAspectMethod(TypeX declaringType) {
+	public static ResolvedMember perTypeWithinHasAspectMethod(UnresolvedType declaringType) {
 		return new ResolvedMember(Member.METHOD,
 			declaringType, PUBLIC_STATIC, "hasAspect", 
 			"(Ljava/lang/Class;)Z");		
@@ -282,7 +286,7 @@ public class AjcMemberMaker {
 	
 	// -- privileged accessors
 	
-	public static ResolvedMember privilegedAccessMethodForMethod(TypeX aspectType, ResolvedMember method) {
+	public static ResolvedMember privilegedAccessMethodForMethod(UnresolvedType aspectType, ResolvedMember method) {
 		String sig = method.getDeclaredSignature();
 		return new ResolvedMember(Member.METHOD,
 			method.getDeclaringType(),
@@ -293,7 +297,7 @@ public class AjcMemberMaker {
 			//XXX needs thrown exceptions to be correct
 	}
 	
-	public static ResolvedMember privilegedAccessMethodForFieldGet(TypeX aspectType, Member field) {
+	public static ResolvedMember privilegedAccessMethodForFieldGet(UnresolvedType aspectType, Member field) {
 		String sig;
 		if (field.isStatic()) {
 			sig = "()" + field.getReturnType().getSignature();
@@ -309,7 +313,7 @@ public class AjcMemberMaker {
 			sig);
 	}
 	
-	public static ResolvedMember privilegedAccessMethodForFieldSet(TypeX aspectType, Member field) {
+	public static ResolvedMember privilegedAccessMethodForFieldSet(UnresolvedType aspectType, Member field) {
 		String sig;
 		if (field.isStatic()) {
 			sig = "(" + field.getReturnType().getSignature() + ")V";
@@ -327,7 +331,7 @@ public class AjcMemberMaker {
 	
 	// --- inline accessors
 	//??? can eclipse handle a transform this weird without putting synthetics into the mix
-	public static ResolvedMember superAccessMethod(TypeX baseType, ResolvedMember method) {
+	public static ResolvedMember superAccessMethod(UnresolvedType baseType, ResolvedMember method) {
 		return new ResolvedMember(Member.METHOD,
 			baseType,
 			Modifier.PUBLIC,
@@ -337,10 +341,10 @@ public class AjcMemberMaker {
 			method.getExceptions());
 	}
 	
-	public static ResolvedMember inlineAccessMethodForMethod(TypeX aspectType, ResolvedMember method) {
-		TypeX[] paramTypes = method.getParameterTypes();
+	public static ResolvedMember inlineAccessMethodForMethod(UnresolvedType aspectType, ResolvedMember method) {
+		UnresolvedType[] paramTypes = method.getParameterTypes();
 		if (!method.isStatic()) {
-			paramTypes = TypeX.insert(method.getDeclaringType(), paramTypes);
+			paramTypes = UnresolvedType.insert(method.getDeclaringType(), paramTypes);
 		}
 		return new ResolvedMember(Member.METHOD,
 			aspectType,
@@ -353,7 +357,7 @@ public class AjcMemberMaker {
 			paramTypes, method.getExceptions());
 	}
 	
-	public static ResolvedMember inlineAccessMethodForFieldGet(TypeX aspectType, Member field) {
+	public static ResolvedMember inlineAccessMethodForFieldGet(UnresolvedType aspectType, Member field) {
 		String sig;
 		if (field.isStatic()) {
 			sig = "()" + field.getReturnType().getSignature();
@@ -369,7 +373,7 @@ public class AjcMemberMaker {
 			sig);
 	}
 	
-	public static ResolvedMember inlineAccessMethodForFieldSet(TypeX aspectType, Member field) {
+	public static ResolvedMember inlineAccessMethodForFieldSet(UnresolvedType aspectType, Member field) {
 		String sig;
 		if (field.isStatic()) {
 			sig = "(" + field.getReturnType().getSignature() + ")V";
@@ -442,37 +446,37 @@ public class AjcMemberMaker {
 
 
 	public static ResolvedMember preIntroducedConstructor(
-		TypeX aspectType,
-		TypeX targetType,
-		TypeX[] paramTypes) 
+		UnresolvedType aspectType,
+		UnresolvedType targetType,
+		UnresolvedType[] paramTypes) 
 	{
 		return new ResolvedMember(
 			Member.METHOD,
 			aspectType,
 			PUBLIC_STATIC_FINAL,
-			TypeX.OBJECTARRAY,
+			UnresolvedType.OBJECTARRAY,
 			NameMangler.preIntroducedConstructor(aspectType, targetType),
 			paramTypes);
 	}
 		
 	public static ResolvedMember postIntroducedConstructor(
-		TypeX aspectType,
-		TypeX targetType,
-		TypeX[] paramTypes) 
+		UnresolvedType aspectType,
+		UnresolvedType targetType,
+		UnresolvedType[] paramTypes) 
 	{
 		return new ResolvedMember(
 			Member.METHOD,
 			aspectType,
 			PUBLIC_STATIC_FINAL,
-			ResolvedTypeX.VOID,
+			ResolvedType.VOID,
 			NameMangler.postIntroducedConstructor(aspectType, targetType),
-			TypeX.insert(targetType, paramTypes));
+			UnresolvedType.insert(targetType, paramTypes));
 	}
 	
-	public static ResolvedMember interConstructor(ResolvedTypeX targetType, ResolvedMember constructor, TypeX aspectType) {
+	public static ResolvedMember interConstructor(ResolvedType targetType, ResolvedMember constructor, UnresolvedType aspectType) {
 //		
-//		ResolvedTypeX targetType,
-//		TypeX[] argTypes,
+//		ResolvedType targetType,
+//		UnresolvedType[] argTypes,
 //		int modifiers) 
 //	{
 		ResolvedMember ret =
@@ -480,7 +484,7 @@ public class AjcMemberMaker {
 				Member.CONSTRUCTOR,
 				targetType,
 				Modifier.PUBLIC,
-				ResolvedTypeX.VOID,
+				ResolvedType.VOID,
 				"<init>",
 				constructor.getParameterTypes(),
 				constructor.getExceptions());
@@ -494,7 +498,7 @@ public class AjcMemberMaker {
 		}
 	}
 	
-	public static ResolvedMember interFieldInitializer(ResolvedMember field, TypeX aspectType) {
+	public static ResolvedMember interFieldInitializer(ResolvedMember field, UnresolvedType aspectType) {
 		return new ResolvedMember(Member.METHOD, aspectType, PUBLIC_STATIC,
 			NameMangler.interFieldInitializer(aspectType, field.getDeclaringType(), field.getName()),
 			field.isStatic() ? "()V" : "(" + field.getDeclaringType().getSignature() + ")V"
@@ -513,24 +517,24 @@ public class AjcMemberMaker {
 	/**
 	 * This static method goes on the aspect that declares the inter-type field
 	 */
-	public static ResolvedMember interFieldSetDispatcher(ResolvedMember field, TypeX aspectType) {
+	public static ResolvedMember interFieldSetDispatcher(ResolvedMember field, UnresolvedType aspectType) {
 		return new ResolvedMember(Member.METHOD, aspectType, PUBLIC_STATIC,
-			ResolvedTypeX.VOID,
+			ResolvedType.VOID,
 			NameMangler.interFieldSetDispatcher(aspectType, field.getDeclaringType(), field.getName()),
-			field.isStatic() ? new TypeX[] {field.getReturnType()} 
-			                 : new TypeX[] {field.getDeclaringType(), field.getReturnType()} 
+			field.isStatic() ? new UnresolvedType[] {field.getReturnType()} 
+			                 : new UnresolvedType[] {field.getDeclaringType(), field.getReturnType()} 
 			);
 	}
 	
 	/**
 	 * This static method goes on the aspect that declares the inter-type field
 	 */
-	public static ResolvedMember interFieldGetDispatcher(ResolvedMember field, TypeX aspectType) {
+	public static ResolvedMember interFieldGetDispatcher(ResolvedMember field, UnresolvedType aspectType) {
 		return new ResolvedMember(Member.METHOD, aspectType, PUBLIC_STATIC,
 			field.getReturnType(),
 			NameMangler.interFieldGetDispatcher(aspectType, field.getDeclaringType(), field.getName()),
-			field.isStatic() ? TypeX.NONE : new TypeX[] {field.getDeclaringType()},
-			TypeX.NONE
+			field.isStatic() ? UnresolvedType.NONE : new UnresolvedType[] {field.getDeclaringType()},
+			UnresolvedType.NONE
 			);
 	}
 	
@@ -547,12 +551,12 @@ public class AjcMemberMaker {
 	 * This field goes on the class the field
 	 * is declared onto
 	 */
-	public static ResolvedMember interFieldClassField(ResolvedMember field, TypeX aspectType) {
+	public static ResolvedMember interFieldClassField(ResolvedMember field, UnresolvedType aspectType) {
 		return new ResolvedMember(Member.FIELD, field.getDeclaringType(), 
 			makePublicNonFinal(field.getModifiers()),
 			field.getReturnType(), 
 			NameMangler.interFieldClassField(field.getModifiers(), aspectType, field.getDeclaringType(), field.getName()),
-			TypeX.NONE, TypeX.NONE
+			UnresolvedType.NONE, UnresolvedType.NONE
 			);
 	}
 	
@@ -561,11 +565,11 @@ public class AjcMemberMaker {
 	 * This field goes on top-most implementers of the interface the field
 	 * is declared onto
 	 */
-	public static ResolvedMember interFieldInterfaceField(ResolvedMember field, TypeX onClass, TypeX aspectType) {
+	public static ResolvedMember interFieldInterfaceField(ResolvedMember field, UnresolvedType onClass, UnresolvedType aspectType) {
 		return new ResolvedMember(Member.FIELD, onClass, makePublicNonFinal(field.getModifiers()),
 			field.getReturnType(), 
 			NameMangler.interFieldInterfaceField(aspectType, field.getDeclaringType(), field.getName()),
-			TypeX.NONE, TypeX.NONE
+			UnresolvedType.NONE, UnresolvedType.NONE
 			);
 	}
 	
@@ -573,13 +577,13 @@ public class AjcMemberMaker {
 	 * This instance method goes on the interface the field is declared onto
 	 * as well as its top-most implementors
 	 */
-	public static ResolvedMember interFieldInterfaceSetter(ResolvedMember field, ResolvedTypeX onType, TypeX aspectType) {
+	public static ResolvedMember interFieldInterfaceSetter(ResolvedMember field, ResolvedType onType, UnresolvedType aspectType) {
 		int modifiers = Modifier.PUBLIC;
 		if (onType.isInterface()) modifiers |= Modifier.ABSTRACT;
 		return new ResolvedMember(Member.METHOD, onType, modifiers,
-			ResolvedTypeX.VOID,
+			ResolvedType.VOID,
 			NameMangler.interFieldInterfaceSetter(aspectType, field.getDeclaringType(), field.getName()),
-			new TypeX[] {field.getReturnType()}, TypeX.NONE
+			new UnresolvedType[] {field.getReturnType()}, UnresolvedType.NONE
 			);
 	}
 	
@@ -587,13 +591,13 @@ public class AjcMemberMaker {
 	 * This instance method goes on the interface the field is declared onto
 	 * as well as its top-most implementors
 	 */
-	public static ResolvedMember interFieldInterfaceGetter(ResolvedMember field, ResolvedTypeX onType, TypeX aspectType) {
+	public static ResolvedMember interFieldInterfaceGetter(ResolvedMember field, ResolvedType onType, UnresolvedType aspectType) {
 		int modifiers = Modifier.PUBLIC;
 		if (onType.isInterface()) modifiers |= Modifier.ABSTRACT;
 		return new ResolvedMember(Member.METHOD, onType, modifiers,
 			field.getReturnType(), 
 			NameMangler.interFieldInterfaceGetter(aspectType, field.getDeclaringType(), field.getName()),
-			TypeX.NONE, TypeX.NONE
+			UnresolvedType.NONE, UnresolvedType.NONE
 			);
 	}
 	
@@ -604,7 +608,7 @@ public class AjcMemberMaker {
 	 * This method goes on the target type of the inter-type method. (and possibly the topmost-implemeters,
 	 * if the target type is an interface) 
 	 */
-	public static ResolvedMember interMethod(ResolvedMember meth, TypeX aspectType, boolean onInterface) 
+	public static ResolvedMember interMethod(ResolvedMember meth, UnresolvedType aspectType, boolean onInterface) 
 	{
 		if (Modifier.isPublic(meth.getModifiers()) && !onInterface) return meth;
 		
@@ -621,11 +625,11 @@ public class AjcMemberMaker {
 	/**
 	 * This static method goes on the declaring aspect of the inter-type method.
 	 */
-	public static ResolvedMember interMethodDispatcher(ResolvedMember meth, TypeX aspectType) 
+	public static ResolvedMember interMethodDispatcher(ResolvedMember meth, UnresolvedType aspectType) 
 	{
-		TypeX[] paramTypes = meth.getParameterTypes();
+		UnresolvedType[] paramTypes = meth.getParameterTypes();
 		if (!meth.isStatic()) {
-			paramTypes = TypeX.insert(meth.getDeclaringType(), paramTypes);
+			paramTypes = UnresolvedType.insert(meth.getDeclaringType(), paramTypes);
 		}
 		
 		return new ResolvedMember(Member.METHOD, aspectType, PUBLIC_STATIC,
@@ -637,11 +641,11 @@ public class AjcMemberMaker {
 	/**
 	 * This static method goes on the declaring aspect of the inter-type method.
 	 */
-	public static ResolvedMember interMethodBody(ResolvedMember meth, TypeX aspectType) 
+	public static ResolvedMember interMethodBody(ResolvedMember meth, UnresolvedType aspectType) 
 	{
-		TypeX[] paramTypes = meth.getParameterTypes();
+		UnresolvedType[] paramTypes = meth.getParameterTypes();
 		if (!meth.isStatic()) {
-			paramTypes = TypeX.insert(meth.getDeclaringType(), paramTypes);
+			paramTypes = UnresolvedType.insert(meth.getDeclaringType(), paramTypes);
 		}
 		
 		int modifiers = PUBLIC_STATIC;
@@ -659,10 +663,10 @@ public class AjcMemberMaker {
 	
 	
 
-	private static ResolvedMember addCookieTo(ResolvedMember ret, TypeX aspectType) {
-		TypeX[] params = ret.getParameterTypes();
+	private static ResolvedMember addCookieTo(ResolvedMember ret, UnresolvedType aspectType) {
+		UnresolvedType[] params = ret.getParameterTypes();
 		
-		TypeX[] freshParams = TypeX.add(params, aspectType);
+		UnresolvedType[] freshParams = UnresolvedType.add(params, aspectType);
 		return new ResolvedMember(
 			ret.getKind(),
 			ret.getDeclaringType(),
@@ -672,21 +676,21 @@ public class AjcMemberMaker {
 			freshParams, ret.getExceptions());
 	}
 
-	public static ResolvedMember toObjectConversionMethod(TypeX fromType) {
-		if (fromType.isPrimitive()) {
+	public static ResolvedMember toObjectConversionMethod(UnresolvedType fromType) {
+		if (fromType.isPrimitiveType()) {
 			String name = fromType.toString() + "Object";
 			return new ResolvedMember(
 				Member.METHOD,
 				CONVERSIONS_TYPE,
 				PUBLIC_STATIC,
-				TypeX.OBJECT,
+				UnresolvedType.OBJECT,
 				name,
-				new TypeX[] { fromType }, TypeX.NONE);
+				new UnresolvedType[] { fromType }, UnresolvedType.NONE);
 		} else {
 			return null;
 		}
 	}
-	public static Member interfaceConstructor(ResolvedTypeX resolvedTypeX) {
+	public static Member interfaceConstructor(ResolvedType resolvedTypeX) {
 		return new ResolvedMember(
 			Member.CONSTRUCTOR,
 			resolvedTypeX,
@@ -696,20 +700,20 @@ public class AjcMemberMaker {
 	}
 
     //-- common types we use. Note: Java 5 dependand types are refered to as String
-    public final static TypeX ASPECT_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.Aspect");
-    public final static TypeX BEFORE_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.Before");
-    public final static TypeX AROUND_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.Around");
-    public final static TypeX AFTERRETURNING_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.AfterReturning");
-    public final static TypeX AFTERTHROWING_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.AfterThrowing");
-    public final static TypeX AFTER_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.After");
-    public final static TypeX POINTCUT_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.Pointcut");
-    public final static TypeX DECLAREERROR_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.DeclareError");
-    public final static TypeX DECLAREWARNING_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.DeclareWarning");
-    public final static TypeX DECLAREPRECEDENCE_ANNOTATION = TypeX.forName("org.aspectj.lang.annotation.DeclarePrecedence");
+    public final static UnresolvedType ASPECT_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.Aspect");
+    public final static UnresolvedType BEFORE_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.Before");
+    public final static UnresolvedType AROUND_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.Around");
+    public final static UnresolvedType AFTERRETURNING_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.AfterReturning");
+    public final static UnresolvedType AFTERTHROWING_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.AfterThrowing");
+    public final static UnresolvedType AFTER_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.After");
+    public final static UnresolvedType POINTCUT_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.Pointcut");
+    public final static UnresolvedType DECLAREERROR_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareError");
+    public final static UnresolvedType DECLAREWARNING_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareWarning");
+    public final static UnresolvedType DECLAREPRECEDENCE_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclarePrecedence");
 
-    public final static TypeX TYPEX_JOINPOINT = TypeX.forName(JoinPoint.class.getName().replace('/','.'));
-    public final static TypeX TYPEX_PROCEEDINGJOINPOINT = TypeX.forName(ProceedingJoinPoint.class.getName().replace('/','.'));
-    public final static TypeX TYPEX_STATICJOINPOINT = TypeX.forName(JoinPoint.StaticPart.class.getName().replace('/','.'));
-    public final static TypeX TYPEX_ENCLOSINGSTATICJOINPOINT = TypeX.forName(JoinPoint.EnclosingStaticPart.class.getName().replace('/','.'));
+    public final static UnresolvedType TYPEX_JOINPOINT = UnresolvedType.forName(JoinPoint.class.getName().replace('/','.'));
+    public final static UnresolvedType TYPEX_PROCEEDINGJOINPOINT = UnresolvedType.forName(ProceedingJoinPoint.class.getName().replace('/','.'));
+    public final static UnresolvedType TYPEX_STATICJOINPOINT = UnresolvedType.forName(JoinPoint.StaticPart.class.getName().replace('/','.'));
+    public final static UnresolvedType TYPEX_ENCLOSINGSTATICJOINPOINT = UnresolvedType.forName(JoinPoint.EnclosingStaticPart.class.getName().replace('/','.'));
 
 }

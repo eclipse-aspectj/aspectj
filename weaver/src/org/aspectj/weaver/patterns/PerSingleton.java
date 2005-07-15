@@ -20,7 +20,7 @@ import java.util.Set;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
@@ -96,7 +96,7 @@ public class PerSingleton extends PerClause {
 //        }
     }
 
-	public PerClause concretize(ResolvedTypeX inAspect) {
+	public PerClause concretize(ResolvedType inAspect) {
 		PerSingleton ret = new PerSingleton();
 
         ret.copyLocationFrom(this);

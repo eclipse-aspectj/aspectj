@@ -61,14 +61,14 @@ public abstract class ResolvedTypeMunger {
 	// ----
 
     // fromType is guaranteed to be a non-abstract aspect
-    public ConcreteTypeMunger concretize(World world, ResolvedTypeX aspectType) {
+    public ConcreteTypeMunger concretize(World world, ResolvedType aspectType) {
 		ConcreteTypeMunger munger = world.concreteTypeMunger(this, aspectType);
         return munger;
     }
     
     
-    public boolean matches(ResolvedTypeX matchType, ResolvedTypeX aspectType) {
-    	ResolvedTypeX onType = matchType.getWorld().resolve(signature.getDeclaringType());
+    public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
+    	ResolvedType onType = matchType.getWorld().resolve(signature.getDeclaringType());
     	//System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
    		if (matchType.equals(onType)) { 
    			if (!onType.isExposedToWeaver()) {
@@ -246,7 +246,7 @@ public abstract class ResolvedTypeMunger {
 	
 	// ---- 
 
-	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedTypeX aspectType) {
+	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		if ((getSignature() != null) && getSignature().isPublic() && member.equals(getSignature())) { 
 			return getSignature();
 		}

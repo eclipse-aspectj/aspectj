@@ -31,9 +31,9 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
@@ -58,7 +58,7 @@ public class BcelAdvice extends Advice {
 		AjAttribute.AdviceAttribute attribute,
 		Pointcut pointcut,
 		Member signature,
-		ResolvedTypeX concreteAspect) 
+		ResolvedType concreteAspect) 
 	{
 		super(attribute, pointcut, signature);
 		this.concreteAspect = concreteAspect;
@@ -67,7 +67,7 @@ public class BcelAdvice extends Advice {
 	// !!! must only be used for testing
 	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature,
 		int extraArgumentFlags,
-        int start, int end, ISourceContext sourceContext, ResolvedTypeX concreteAspect)
+        int start, int end, ISourceContext sourceContext, ResolvedType concreteAspect)
     {
 		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), 
 			pointcut, signature, concreteAspect);
@@ -127,7 +127,7 @@ public class BcelAdvice extends Advice {
     private boolean canInline(Shadow s) {
     	if (attribute.isProceedInInners()) return false;
     	//XXX this guard seems to only be needed for bad test cases
-    	if (concreteAspect == null || concreteAspect == ResolvedTypeX.MISSING) return false;
+    	if (concreteAspect == null || concreteAspect == ResolvedType.MISSING) return false;
 
 		if (concreteAspect.getWorld().isXnoInline()) return false;
     	//System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
@@ -161,10 +161,10 @@ public class BcelAdvice extends Advice {
         } else if (getKind() == AdviceKind.AfterReturning) {
             shadow.weaveAfterReturning(this);
         } else if (getKind() == AdviceKind.AfterThrowing) {
-            TypeX catchType = 
+            UnresolvedType catchType = 
                 hasExtraParameter()
                 ? getExtraParameterType()
-                : TypeX.THROWABLE;
+                : UnresolvedType.THROWABLE;
             shadow.weaveAfterThrowing(this, catchType);
         } else if (getKind() == AdviceKind.After) {   
             shadow.weaveAfter(this);
@@ -203,17 +203,17 @@ public class BcelAdvice extends Advice {
 
     // ---- implementations
 	
-	private Collection collectCheckedExceptions(TypeX[] excs) {
+	private Collection collectCheckedExceptions(UnresolvedType[] excs) {
 		if (excs == null || excs.length == 0) return Collections.EMPTY_LIST;
 		
 		Collection ret = new ArrayList();
 		World world = concreteAspect.getWorld();
-		ResolvedTypeX runtimeException = world.getCoreType(TypeX.RUNTIME_EXCEPTION);
-		ResolvedTypeX error = world.getCoreType(TypeX.ERROR);
+		ResolvedType runtimeException = world.getCoreType(UnresolvedType.RUNTIME_EXCEPTION);
+		ResolvedType error = world.getCoreType(UnresolvedType.ERROR);
 		
 		for (int i=0, len=excs.length; i < len; i++) {
-			ResolvedTypeX t = world.resolve(excs[i],true);
-            if (t == ResolvedTypeX.MISSING) {
+			ResolvedType t = world.resolve(excs[i],true);
+            if (t == ResolvedType.MISSING) {
                 IMessage msg = new Message(
                   WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
                   "",IMessage.ERROR,getSourceLocation(),null,null);
@@ -266,8 +266,8 @@ public class BcelAdvice extends Advice {
     // only call me after prepare has been called
     public boolean hasDynamicTests() {
 //    	if (hasExtraParameter() && getKind() == AdviceKind.AfterReturning) {
-//            TypeX extraParameterType = getExtraParameterType();
-//            if (! extraParameterType.equals(TypeX.OBJECT) 
+//            UnresolvedType extraParameterType = getExtraParameterType();
+//            if (! extraParameterType.equals(UnresolvedType.OBJECT) 
 //            		&& ! extraParameterType.isPrimitive())
 //            	return true;
 //    	}
@@ -303,9 +303,9 @@ public class BcelAdvice extends Advice {
         // we test to see if we have the right kind of thing...
         // after throwing does this just by the exception mechanism.
         if (hasExtraParameter() && getKind() == AdviceKind.AfterReturning) {
-            TypeX extraParameterType = getExtraParameterType();
-            if (! extraParameterType.equals(TypeX.OBJECT) 
-            		&& ! extraParameterType.isPrimitive()) {
+            UnresolvedType extraParameterType = getExtraParameterType();
+            if (! extraParameterType.equals(UnresolvedType.OBJECT) 
+            		&& ! extraParameterType.isPrimitiveType()) {
                 il.append(
                     BcelRenderer.renderTest(
                         fact, 
@@ -421,7 +421,7 @@ public class BcelAdvice extends Advice {
 	                }
             	}
             } else {
-                TypeX desiredTy = getSignature().getParameterTypes()[i];
+                UnresolvedType desiredTy = getSignature().getParameterTypes()[i];
                 v.appendLoadAndConvert(il, fact, desiredTy.resolve(world));
             }
         }
@@ -515,8 +515,8 @@ public class BcelAdvice extends Advice {
 		if (ret != 0) return ret;
 		
 		
-		ResolvedTypeX declaringAspect = getDeclaringAspect().resolve(world);
-		ResolvedTypeX o_declaringAspect = o.getDeclaringAspect().resolve(world);
+		ResolvedType declaringAspect = getDeclaringAspect().resolve(world);
+		ResolvedType o_declaringAspect = o.getDeclaringAspect().resolve(world);
 		
 		
 		if (declaringAspect == o_declaringAspect) {

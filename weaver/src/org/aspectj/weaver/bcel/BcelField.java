@@ -24,8 +24,8 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 final class BcelField extends ResolvedMember {
@@ -33,7 +33,7 @@ final class BcelField extends ResolvedMember {
 	private Field field;
 	private boolean isAjSynthetic;
 	private boolean isSynthetic = false;
-	private ResolvedTypeX[] annotationTypes;
+	private ResolvedType[] annotationTypes;
 	private AnnotationX[] annotations;
 	private World world;
 
@@ -47,7 +47,7 @@ final class BcelField extends ResolvedMember {
 		this.field = field;
 		this.world = declaringType.getResolvedTypeX().getWorld();
 		unpackAttributes(world);
-		checkedExceptions = TypeX.NONE;
+		checkedExceptions = UnresolvedType.NONE;
 	}
 
 	// ----
@@ -83,7 +83,7 @@ final class BcelField extends ResolvedMember {
 		return isSynthetic;
 	}
 	
-	public boolean hasAnnotation(TypeX ofType) {
+	public boolean hasAnnotation(UnresolvedType ofType) {
 		Annotation[] anns = field.getAnnotations();
 		for (int i = 0; i < anns.length; i++) {
 			Annotation annotation = anns[i];
@@ -92,7 +92,7 @@ final class BcelField extends ResolvedMember {
 		return false;
 	}
 	
-	public ResolvedTypeX[] getAnnotationTypes() {
+	public ResolvedType[] getAnnotationTypes() {
 		ensureAnnotationTypesRetrieved();
 	 	return annotationTypes;
     }
@@ -100,11 +100,11 @@ final class BcelField extends ResolvedMember {
 	private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null) {
     		Annotation annos[] = field.getAnnotations();
-    		annotationTypes = new ResolvedTypeX[annos.length];
+    		annotationTypes = new ResolvedType[annos.length];
     		annotations = new AnnotationX[annos.length];
     		for (int i = 0; i < annos.length; i++) {
 				Annotation annotation = annos[i];
-				ResolvedTypeX rtx = world.resolve(TypeX.forName(annotation.getTypeName()));
+				ResolvedType rtx = world.resolve(UnresolvedType.forName(annotation.getTypeName()));
 				annotationTypes[i] = rtx;
 				annotations[i] = new AnnotationX(annotation,world);
 			}
@@ -122,9 +122,9 @@ final class BcelField extends ResolvedMember {
 		
 		// Add it to the set of annotation types
 		len = annotationTypes.length;
-		ResolvedTypeX[] ret2 = new ResolvedTypeX[len+1];
+		ResolvedType[] ret2 = new ResolvedType[len+1];
 		System.arraycopy(annotationTypes,0,ret2,0,len);
-		ret2[len] =world.resolve(TypeX.forName(annotation.getTypeName()));
+		ret2[len] =world.resolve(UnresolvedType.forName(annotation.getTypeName()));
 		annotationTypes = ret2;
 		// FIXME asc this call here suggests we are managing the annotations at
 		// too many levels, here in BcelField we keep a set and in the lower 'field'

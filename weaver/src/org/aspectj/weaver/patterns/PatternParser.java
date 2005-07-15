@@ -19,7 +19,7 @@ import java.util.List;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 
 //XXX doesn't handle errors for extra tokens very well (sometimes ignores)
 public class PatternParser {
@@ -714,14 +714,14 @@ public class PatternParser {
 			eat("]");
 			dim++;
 		}
+		
+		TypePatternList typeParameters = maybeParseTypeParameterList(allowTypeVariableDeclarations);
+		int endPos = tokenSource.peek(-1).getEnd();
 
         boolean isVarArgs = maybeEat("...");
 
 		boolean includeSubtypes = maybeEat("+");
-		
-		TypePatternList typeParameters = maybeParseTypeParameterList(allowTypeVariableDeclarations);
-		int endPos = tokenSource.peek(-1).getEnd();
-		
+
 		//??? what about the source location of any's????
 		if (names.size() == 1 && ((NamePattern)names.get(0)).isAny() && 
 				dim == 0 && !isVarArgs && typeParameters == null && upperBound == null &&
@@ -810,7 +810,7 @@ public class PatternParser {
 			annotationName.append('.');
 			annotationName.append(parseIdentifier());
 		}
-		TypeX type = TypeX.forName(annotationName.toString());
+		UnresolvedType type = UnresolvedType.forName(annotationName.toString());
 		p = new ExactAnnotationTypePattern(type);
 		return p;
 	}
@@ -835,7 +835,7 @@ public class PatternParser {
 //			annotationName.append('.');
 //			annotationName.append(parseIdentifier());
 //		}
-//		TypeX type = TypeX.forName(annotationName.toString());
+//		UnresolvedType type = UnresolvedType.forName(annotationName.toString());
 //		AnnotationTypePattern p = new ExactAnnotationTypePattern(type);
 //	    int endPos = tokenSource.peek(-1).getEnd();
 //	    p.setLocation(sourceContext, startPos, endPos);

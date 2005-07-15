@@ -16,7 +16,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -33,7 +33,7 @@ public class InterTypeMethodBinding extends MethodBinding {
 	
 	public AbstractMethodDeclaration sourceMethod;
 	
-	public InterTypeMethodBinding(EclipseFactory world, ResolvedMember signature, TypeX withinType,
+	public InterTypeMethodBinding(EclipseFactory world, ResolvedMember signature, UnresolvedType withinType,
 									AbstractMethodDeclaration sourceMethod)
 	{
 		super(world.makeMethodBinding(signature), null);

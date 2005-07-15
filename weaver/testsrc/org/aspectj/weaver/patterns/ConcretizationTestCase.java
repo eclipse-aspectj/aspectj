@@ -13,7 +13,7 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.WeaveTestCase;
 
 public class ConcretizationTestCase extends WeaveTestCase {
@@ -36,7 +36,7 @@ public class ConcretizationTestCase extends WeaveTestCase {
 		
 		TestShadow shadow = new TestShadow(Shadow.MethodCall, 
 			Member.methodFromString("int Aspect.i(int x)"), 
-			TypeX.OBJECT, 
+			UnresolvedType.OBJECT, 
 			world);
 		
 		ExposedState state = new ExposedState(1);
@@ -66,10 +66,10 @@ public class ConcretizationTestCase extends WeaveTestCase {
 
 		ResolvedPointcutDefinition ref =
 			new ResolvedPointcutDefinition(
-				TypeX.forName("Aspect"),
+				UnresolvedType.forName("Aspect"),
 				0,
 				"foo",
-				new TypeX[] { ResolvedTypeX.INT },
+				new UnresolvedType[] { ResolvedType.INT },
 				createResolvedPointcut(
 					"args(refA)",
 					new String[] { "refA" },
@@ -86,7 +86,7 @@ public class ConcretizationTestCase extends WeaveTestCase {
 			new BcelAdvice(
 				AdviceKind.Before,
 				in,
-				Member.method(TypeX.forName("FOO"), 0, "garadf", "(FI)V"),
+				Member.method(UnresolvedType.forName("FOO"), 0, "garadf", "(FI)V"),
 				0,
 				0, 0, null, 
 				null);
@@ -105,13 +105,13 @@ public class ConcretizationTestCase extends WeaveTestCase {
 				new String[] {"b", "a"}, new String[] {"float", "int"} ); 
 
 		ResolvedPointcutDefinition ref = 
-			new ResolvedPointcutDefinition(TypeX.forName("Aspect"), 
-				0, "foo", new TypeX[] { ResolvedTypeX.INT }, 
+			new ResolvedPointcutDefinition(UnresolvedType.forName("Aspect"), 
+				0, "foo", new UnresolvedType[] { ResolvedType.INT }, 
 				createResolvedPointcut("args(refA)",
 					new String[] {"refA"}, new String[] {"int"}));
 
 		List expectedSlots = new ArrayList();		
-		expectedSlots.add(new ConcreteCflowPointcut.Slot(1, ResolvedTypeX.INT, 0));
+		expectedSlots.add(new ConcreteCflowPointcut.Slot(1, ResolvedType.INT, 0));
 
 		checkConcr(in, ref, expectedSlots);
 	}
@@ -129,7 +129,7 @@ public class ConcretizationTestCase extends WeaveTestCase {
 		
 		
 		Advice adviceMember = new BcelAdvice(AdviceKind.Before, in, 
-			Member.method(TypeX.forName("FOO"), 0, "garadf", "(FI)V"), 0, 0, 0, null, null);
+			Member.method(UnresolvedType.forName("FOO"), 0, "garadf", "(FI)V"), 0, 0, 0, null, null);
 		
 		// The pointcut to concretize
 		AndPointcut ap = (AndPointcut)in.concretize(target, 2, adviceMember);
@@ -151,7 +151,7 @@ public class ConcretizationTestCase extends WeaveTestCase {
             sp.resolve(
             	new SimpleScope(
             	world,
-                SimpleScope.makeFormalBindings(TypeX.forNames(formalTypes),
+                SimpleScope.makeFormalBindings(UnresolvedType.forNames(formalTypes),
                 formalNames)
                 ));
 		return rp;

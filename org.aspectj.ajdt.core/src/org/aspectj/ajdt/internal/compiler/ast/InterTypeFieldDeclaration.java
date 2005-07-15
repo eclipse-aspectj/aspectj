@@ -69,10 +69,10 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
 		ResolvedMember sig = munger.getSignature();
-		TypeX aspectType = EclipseFactory.fromBinding(upperScope.referenceContext.binding);
+		UnresolvedType aspectType = EclipseFactory.fromBinding(upperScope.referenceContext.binding);
 		
-		if (sig.getReturnType() == ResolvedTypeX.VOID || 
-				(sig.getReturnType().isArray() && (sig.getReturnType().getComponentType() == ResolvedTypeX.VOID)))
+		if (sig.getReturnType() == ResolvedType.VOID || 
+				(sig.getReturnType().isArray() && (sig.getReturnType().getComponentType() == ResolvedType.VOID)))
 		{
 			upperScope.problemReporter().signalError(sourceStart, sourceEnd,
 				"field type can not be void");
@@ -173,11 +173,11 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		ResolvedMember sig =
 			new ResolvedMember(Member.FIELD, EclipseFactory.fromBinding(onTypeBinding),
 					declaredModifiers, EclipseFactory.fromBinding(binding.returnType),
-					new String(declaredSelector), TypeX.NONE);
+					new String(declaredSelector), UnresolvedType.NONE);
 		
 		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null);
 		setMunger(myMunger);
-		ResolvedTypeX aspectType = world.fromEclipse(classScope.referenceContext.binding);
+		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me = 
 			myMunger.getInitMethod(aspectType);
 		this.selector = binding.selector = me.getName().toCharArray();
@@ -205,7 +205,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	private void generateDispatchMethods(ClassScope classScope, ClassFile classFile) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		ResolvedMember sig = munger.getSignature();
-		TypeX aspectType = EclipseFactory.fromBinding(classScope.referenceContext.binding);
+		UnresolvedType aspectType = EclipseFactory.fromBinding(classScope.referenceContext.binding);
 		generateDispatchMethod(world, sig, aspectType, classScope, classFile, true);
 		generateDispatchMethod(world, sig, aspectType, classScope, classFile, false);
 	}
@@ -213,7 +213,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	private void generateDispatchMethod(
 		EclipseFactory world,
 		ResolvedMember sig,
-		TypeX aspectType,
+		UnresolvedType aspectType,
 		ClassScope classScope,
 		ClassFile classFile,
 		boolean isGetter)
@@ -239,8 +239,8 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		codeStream.initializeMaxLocals(binding);
 		if (isGetter) {
 			if (onTypeBinding.isInterface()) {
-                TypeX declaringTX = sig.getDeclaringType();
-                ResolvedTypeX declaringRTX = world.getWorld().resolve(declaringTX,munger.getSourceLocation());
+                UnresolvedType declaringTX = sig.getDeclaringType();
+                ResolvedType declaringRTX = world.getWorld().resolve(declaringTX,munger.getSourceLocation());
 				MethodBinding readMethod = world.makeMethodBinding(
 					AjcMemberMaker.interFieldInterfaceGetter(
 						sig, declaringRTX, aspectType));

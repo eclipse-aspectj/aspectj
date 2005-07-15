@@ -86,7 +86,7 @@ public abstract class Shadow {
      * 
      * @throws IllegalStateException if there is no this here
      */
-    public final TypeX getThisType() {
+    public final UnresolvedType getThisType() {
         if (!hasThis()) throw new IllegalStateException("no this");
         if (getKind().isEnclosingKind()) {
     		return getSignature().getDeclaringType();
@@ -122,7 +122,7 @@ public abstract class Shadow {
      * 
      * @throws IllegalStateException if there is no target here
      */
-    public final TypeX getTargetType() {
+    public final UnresolvedType getTargetType() {
         if (!hasTarget()) throw new IllegalStateException("no target");
         return getSignature().getDeclaringType();
     }
@@ -134,12 +134,12 @@ public abstract class Shadow {
      */
     public abstract Var getTargetVar();
     
-    public TypeX[] getArgTypes() {
-    	if (getKind() == FieldSet) return new TypeX[] { getSignature().getReturnType() };
+    public UnresolvedType[] getArgTypes() {
+    	if (getKind() == FieldSet) return new UnresolvedType[] { getSignature().getReturnType() };
         return getSignature().getParameterTypes();
     }
     
-    public TypeX getArgType(int arg) {
+    public UnresolvedType getArgType(int arg) {
     	if (getKind() == FieldSet) return getSignature().getReturnType();
         return getSignature().getParameterTypes()[arg];
     }
@@ -150,7 +150,7 @@ public abstract class Shadow {
             .getParameterTypes().length;
     }
     	
-	public abstract TypeX getEnclosingType();	
+	public abstract UnresolvedType getEnclosingType();	
 
 	public abstract Var getArgVar(int i);
 	
@@ -159,12 +159,12 @@ public abstract class Shadow {
 	public abstract Var getThisEnclosingJoinPointStaticPartVar();
     
 	// annotation variables
-	public abstract Var getKindedAnnotationVar(TypeX forAnnotationType);
-	public abstract Var getWithinAnnotationVar(TypeX forAnnotationType);
-	public abstract Var getWithinCodeAnnotationVar(TypeX forAnnotationType);
-	public abstract Var getThisAnnotationVar(TypeX forAnnotationType);
-	public abstract Var getTargetAnnotationVar(TypeX forAnnotationType);
-	public abstract Var getArgAnnotationVar(int i, TypeX forAnnotationType);
+	public abstract Var getKindedAnnotationVar(UnresolvedType forAnnotationType);
+	public abstract Var getWithinAnnotationVar(UnresolvedType forAnnotationType);
+	public abstract Var getWithinCodeAnnotationVar(UnresolvedType forAnnotationType);
+	public abstract Var getThisAnnotationVar(UnresolvedType forAnnotationType);
+	public abstract Var getTargetAnnotationVar(UnresolvedType forAnnotationType);
+	public abstract Var getArgAnnotationVar(int i, UnresolvedType forAnnotationType);
 	
 	public abstract Member getEnclosingCodeSignature();
 	
@@ -182,9 +182,9 @@ public abstract class Shadow {
     }
     
 	
-	public TypeX getReturnType() {
+	public UnresolvedType getReturnType() {
 		if (kind == ConstructorCall) return getSignature().getDeclaringType();
-		else if (kind == FieldSet) return ResolvedTypeX.VOID;
+		else if (kind == FieldSet) return ResolvedType.VOID;
 		return getSignature().getReturnType();
 	}
 
@@ -314,13 +314,13 @@ public abstract class Shadow {
 	protected boolean checkMunger(ShadowMunger munger) {
         if (munger.mustCheckExceptions()) {
             for (Iterator i = munger.getThrownExceptions().iterator(); i.hasNext(); ) {
-                if (!checkCanThrow(munger,  (ResolvedTypeX)i.next() )) return false;
+                if (!checkCanThrow(munger,  (ResolvedType)i.next() )) return false;
             }
         }
         return true;
 	}
 
-	protected boolean checkCanThrow(ShadowMunger munger, ResolvedTypeX resolvedTypeX) {
+	protected boolean checkCanThrow(ShadowMunger munger, ResolvedType resolvedTypeX) {
 		if (getKind() == ExceptionHandler) {
 			//XXX much too lenient rules here, need to walk up exception handlers
 			return true;
@@ -336,10 +336,10 @@ public abstract class Shadow {
 	}
 
 	private boolean isDeclaredException(
-		ResolvedTypeX resolvedTypeX,
+		ResolvedType resolvedTypeX,
 		Member member)
 	{
-		ResolvedTypeX[] excs = getIWorld().resolve(member.getExceptions(getIWorld()));
+		ResolvedType[] excs = getIWorld().resolve(member.getExceptions(getIWorld()));
 		for (int i=0, len=excs.length; i < len; i++) {
 			if (excs[i].isAssignableFrom(resolvedTypeX)) return true;
 		}

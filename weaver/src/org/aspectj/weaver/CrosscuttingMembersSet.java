@@ -52,7 +52,7 @@ public class CrosscuttingMembersSet {
 	 * @return whether or not that was a change to the global signature
 	 * 			XXX for efficiency we will need a richer representation than this
 	 */
-	public boolean addOrReplaceAspect(ResolvedTypeX aspectType) {
+	public boolean addOrReplaceAspect(ResolvedType aspectType) {
 		CrosscuttingMembers xcut = (CrosscuttingMembers)members.get(aspectType);
 		if (xcut == null) {
 			members.put(aspectType, aspectType.collectCrosscuttingMembers());
@@ -68,23 +68,23 @@ public class CrosscuttingMembersSet {
 		}
 	}
     
-    public void addAdviceLikeDeclares(ResolvedTypeX aspectType) {
+    public void addAdviceLikeDeclares(ResolvedType aspectType) {
         CrosscuttingMembers xcut = (CrosscuttingMembers)members.get(aspectType);
         xcut.addDeclares(aspectType.collectDeclares(true));
     }
 	
-	public boolean deleteAspect(TypeX aspectType) {
+	public boolean deleteAspect(UnresolvedType aspectType) {
 		boolean isAspect = members.remove(aspectType) != null;
 		clearCaches();
 		return isAspect;
 	}
 	
-	public boolean containsAspect(TypeX aspectType) {
+	public boolean containsAspect(UnresolvedType aspectType) {
 		return members.containsKey(aspectType);
 	}
     
 	//XXX only for testing
-	public void addFixedCrosscuttingMembers(ResolvedTypeX aspectType) {
+	public void addFixedCrosscuttingMembers(ResolvedType aspectType) {
 		members.put(aspectType, aspectType.crosscuttingMembers);
 		clearCaches();
 	}
@@ -204,11 +204,11 @@ public class CrosscuttingMembersSet {
 	}
 
 
-	public ResolvedTypeX findAspectDeclaringParents(DeclareParents p) {
+	public ResolvedType findAspectDeclaringParents(DeclareParents p) {
 		Set result = new HashSet();
 		Set keys = this.members.keySet();
 		for (Iterator iter = keys.iterator(); iter.hasNext();) {
-			ResolvedTypeX element = (ResolvedTypeX) iter.next();
+			ResolvedType element = (ResolvedType) iter.next();
 			for (Iterator i = ((CrosscuttingMembers)members.get(element)).getDeclareParents().iterator(); i.hasNext(); ) {
 				DeclareParents dp = (DeclareParents)i.next();
 				return element;

@@ -17,8 +17,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedTypeX;
-import org.aspectj.weaver.TypeX;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
@@ -81,12 +81,12 @@ public class ThrowsPattern extends PatternNode {
     	return this;
     }
     
-	public boolean matches(TypeX[] tys, World world) {
+	public boolean matches(UnresolvedType[] tys, World world) {
 		if (this == ANY) return true;
 		
 		//System.out.println("matching: " + this + " with " + Arrays.asList(tys));
 		
-		ResolvedTypeX[] types = world.resolve(tys);
+		ResolvedType[] types = world.resolve(tys);
 		// int len = types.length;
 		for (int j=0, lenj = required.size(); j < lenj; j++) {
 			if (! matchesAny(required.get(j), types)) {
@@ -122,7 +122,7 @@ public class ThrowsPattern extends PatternNode {
 
 	private boolean matchesAny(
 		TypePattern typePattern,
-		ResolvedTypeX[] types) 
+		ResolvedType[] types) 
 	{
 		for (int i = types.length - 1; i >= 0; i--) {
 			if (typePattern.matchesStatically(types[i])) return true;	
