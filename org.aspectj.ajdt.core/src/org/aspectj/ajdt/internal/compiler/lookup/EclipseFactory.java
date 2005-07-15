@@ -70,7 +70,6 @@ public class EclipseFactory {
 	private LookupEnvironment lookupEnvironment;
 	private boolean xSerializableAspects;
 	private World world;
-	private AsmHierarchyBuilder asmHierarchyBuilder;
 	
 	private Map/*UnresolvedType, TypeBinding*/ typexToBinding = new HashMap();
 	//XXX currently unused
@@ -140,7 +139,7 @@ public class EclipseFactory {
 		return ret;
 	}	
 	
-	private static String getName(TypeBinding binding) {
+	public static String getName(TypeBinding binding) {
 		if (binding instanceof TypeVariableBinding) {
 			// The first bound may be null - so default to object?
 			TypeVariableBinding tvb = (TypeVariableBinding)binding;
@@ -181,7 +180,7 @@ public class EclipseFactory {
 	 * type - since we don't know it's a type variable we can't replace it with the type parameter.
 	 */
 	//??? going back and forth between strings and bindings is a waste of cycles
-	public static UnresolvedType fromBinding(TypeBinding binding) {
+	public UnresolvedType fromBinding(TypeBinding binding) {
 		if (binding instanceof HelperInterfaceBinding) {
 			return ((HelperInterfaceBinding) binding).getTypeX();
 		}
@@ -233,7 +232,7 @@ public class EclipseFactory {
 			//TODO asc generics - temporary guard....
 			if (!(binding instanceof SourceTypeBinding))
 				throw new RuntimeException("Cant get the generic sig for "+binding.debugName());
-			return UnresolvedType.forGenericType(getName(binding),tVars,
+			return ResolvedType.forGenericType(getName(binding),tVars,
 					CharOperation.charToString(((SourceTypeBinding)binding).genericSignature()));
 		}
 		
@@ -241,7 +240,7 @@ public class EclipseFactory {
 	}
 
 	private static Map typeVariableBindingsInProgress = new HashMap();
-	private static UnresolvedType fromTypeVariableBinding(TypeVariableBinding aTypeVariableBinding) {
+	private  UnresolvedType fromTypeVariableBinding(TypeVariableBinding aTypeVariableBinding) {
 		if (typeVariableBindingsInProgress.containsKey(aTypeVariableBinding)) {
 			return (UnresolvedType) typeVariableBindingsInProgress.get(aTypeVariableBinding);
 		}
@@ -260,7 +259,7 @@ public class EclipseFactory {
 		return ret;
 	}
 	
-	public static UnresolvedType[] fromBindings(TypeBinding[] bindings) {
+	public  UnresolvedType[] fromBindings(TypeBinding[] bindings) {
 		if (bindings == null) return UnresolvedType.NONE;
 		int len = bindings.length;
 		UnresolvedType[] ret = new UnresolvedType[len];

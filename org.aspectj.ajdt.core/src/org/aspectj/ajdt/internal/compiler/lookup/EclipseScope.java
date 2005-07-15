@@ -70,7 +70,7 @@ public class EclipseScope implements IScope {
 		
 		//System.err.println("binding: " + b);
 		//  Binding(tokens, bits & RestrictiveFlagMASK, this)
-		return EclipseFactory.fromBinding(b);
+		return world.fromBinding(b);
 		
 		/*
 		computeImports();
@@ -193,7 +193,7 @@ public class EclipseScope implements IScope {
 		
 		TypeBinding[] topTypes = cuScope.topLevelTypes;
 		for (int i = 0; i < topTypes.length; i++) {
-			importedNamesList.add(EclipseFactory.fromBinding(topTypes[i]).getName());
+			importedNamesList.add(world.fromBinding(topTypes[i]).getName());
 		}
 		
 		importedNames =
@@ -208,7 +208,7 @@ public class EclipseScope implements IScope {
 		List importedPrefixesList)
 	{
 		if (binding == null) return;
-		importedPrefixesList.add(EclipseFactory.fromBinding(binding).getName()+"$");
+		importedPrefixesList.add(world.fromBinding(binding).getName()+"$");
 		
 		addClassAndParentsToPrefixes(binding.superclass(), importedPrefixesList);
 		ReferenceBinding[] superinterfaces = binding.superInterfaces();

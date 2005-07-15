@@ -49,13 +49,13 @@ public class IfMethodDeclaration extends AjMethodDeclaration {
 			ifPointcut.extraParameterFlags |= tjp.removeUnusedExtraArguments();
 			
 			//XXX this is where we should remove unavailable args if we're in a cflow
-			
+			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(scope);
 			ifPointcut.testMethod = new ResolvedMember(
 				Member.METHOD,
-				EclipseFactory.fromBinding(binding.declaringClass),
+				factory.fromBinding(binding.declaringClass),
 				this.modifiers, ResolvedType.BOOLEAN,  
 				new String(this.selector),
-				EclipseFactory.fromBindings(this.binding.parameters));
+				factory.fromBindings(this.binding.parameters));
 		}	
 	}
 }

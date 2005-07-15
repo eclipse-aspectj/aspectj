@@ -47,6 +47,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 	private int declaredModifiers;
 	private String declaredName;
 	private boolean generateSyntheticPointcutMethod = false;
+	private EclipseFactory world = null;
 	//private boolean mangleSelector = true;
     
     private ResolvedPointcutDefinition resolvedPointcutDeclaration = null;
@@ -142,6 +143,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
     }
 
     public void resolvePointcut(ClassScope upperScope) {
+    	this.world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
         super.resolve(upperScope);
     }
 
@@ -166,20 +168,20 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		}
         
         //System.out.println("resolved: " + getPointcut() + ", " + getPointcut().state);
-		makeResolvedPointcutDefinition();
+		makeResolvedPointcutDefinition(world);
         resolvedPointcutDeclaration.setPointcut(getPointcut());
 		super.resolveStatements();
 	}
 	
 
-	public ResolvedPointcutDefinition makeResolvedPointcutDefinition() {
+	public ResolvedPointcutDefinition makeResolvedPointcutDefinition(EclipseFactory inWorld) {
         if (resolvedPointcutDeclaration != null) return resolvedPointcutDeclaration;
 		//System.out.println("pc: " + getPointcut() + ", " + getPointcut().state);
 		resolvedPointcutDeclaration = new ResolvedPointcutDefinition(
-            EclipseFactory.fromBinding(this.binding.declaringClass), 
+            inWorld.fromBinding(this.binding.declaringClass), 
             declaredModifiers, 
             declaredName,
-			EclipseFactory.fromBindings(this.binding.parameters),
+			inWorld.fromBindings(this.binding.parameters),
 			getPointcut()); //??? might want to use null 
 			
 		resolvedPointcutDeclaration.setPosition(sourceStart, sourceEnd);
@@ -189,7 +191,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 
 
 	public AjAttribute makeAttribute() {
-		return new AjAttribute.PointcutDeclarationAttribute(makeResolvedPointcutDefinition());
+		return new AjAttribute.PointcutDeclarationAttribute(makeResolvedPointcutDefinition(world));
 	}
 
 	
@@ -199,6 +201,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 	 * method.
 	 */
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
+    	this.world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		if (ignoreFurtherInvestigation) return ;
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(makeAttribute()));
 		if (generateSyntheticPointcutMethod) {

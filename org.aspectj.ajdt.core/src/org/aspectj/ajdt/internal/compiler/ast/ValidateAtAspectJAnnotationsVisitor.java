@@ -301,12 +301,13 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			Pointcut pc = new PatternParser(pointcutExpression,context).parsePointcut();
 			FormalBinding[] bindings = buildFormalAdviceBindingsFrom(methodDeclaration);
 			pc.resolve(new EclipseScope(bindings,methodDeclaration.scope));
+			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(methodDeclaration.scope);
 			// now create a ResolvedPointcutDefinition,make an attribute out of it, and add it to the method
 			UnresolvedType[] paramTypes = new UnresolvedType[bindings.length];
 			for (int i = 0; i < paramTypes.length; i++) paramTypes[i] = bindings[i].getType();
 			ResolvedPointcutDefinition resPcutDef = 
 				new ResolvedPointcutDefinition(
-						EclipseFactory.fromBinding(((TypeDeclaration)typeStack.peek()).binding),
+						factory.fromBinding(((TypeDeclaration)typeStack.peek()).binding),
 						methodDeclaration.modifiers,
 						"anonymous",
 						paramTypes,
@@ -344,6 +345,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	private FormalBinding[] buildFormalAdviceBindingsFrom(MethodDeclaration mDecl) {
 		if (mDecl.arguments == null) return new FormalBinding[0];
+		EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(mDecl.scope);
 		String extraArgName = maybeGetExtraArgName();
 		if (extraArgName == null) extraArgName = "";
 		FormalBinding[] ret = new FormalBinding[mDecl.arguments.length];
@@ -351,7 +353,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
             Argument arg = mDecl.arguments[i];
             String name = new String(arg.name);
 			TypeBinding argTypeBinding = mDecl.binding.parameters[i];
-            UnresolvedType type = EclipseFactory.fromBinding(argTypeBinding);
+            UnresolvedType type = factory.fromBinding(argTypeBinding);
 			if  (CharOperation.equals(joinPoint,argTypeBinding.signature()) ||
 				 CharOperation.equals(joinPointStaticPart,argTypeBinding.signature()) ||
 				 CharOperation.equals(joinPointEnclosingStaticPart,argTypeBinding.signature()) ||
@@ -460,12 +462,13 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			pcDecl.setGenerateSyntheticPointcutMethod();
 			TypeDeclaration onType = (TypeDeclaration) typeStack.peek();
 			pcDecl.postParse(onType);
+			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(methodDeclaration.scope);
 			int argsLength = methodDeclaration.arguments == null ? 0 : methodDeclaration.arguments.length;
  		    FormalBinding[] bindings = new FormalBinding[argsLength];
 	        for (int i = 0, len = bindings.length; i < len; i++) {
 	            Argument arg = methodDeclaration.arguments[i];
 	            String name = new String(arg.name);
-	            UnresolvedType type = EclipseFactory.fromBinding(methodDeclaration.binding.parameters[i]);
+	            UnresolvedType type = factory.fromBinding(methodDeclaration.binding.parameters[i]);
 	            bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
 	        }
 			swap(onType,methodDeclaration,pcDecl);

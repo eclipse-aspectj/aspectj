@@ -111,10 +111,10 @@ public class NameMangler {
 	 * The name of methods corresponding to advice declarations
 	 * Of the form: "ajc$[AdviceKind]$[AspectName]$[NumberOfAdviceInAspect]$[PointcutHash]"
 	 */
-	public static String adviceName(UnresolvedType aspectType, AdviceKind kind, int adviceSeqNumber,int pcdHash) {
+	public static String adviceName(String nameAsIdentifier, AdviceKind kind, int adviceSeqNumber,int pcdHash) {
 		String newname = makeName(
 			kind.getName(),
-			aspectType.getNameAsIdentifier(),
+			nameAsIdentifier,
 			Integer.toString(adviceSeqNumber),
 			Integer.toHexString(pcdHash));
 		return newname;

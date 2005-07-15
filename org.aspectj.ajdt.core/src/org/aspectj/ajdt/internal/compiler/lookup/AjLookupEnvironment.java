@@ -74,7 +74,7 @@ import org.aspectj.weaver.patterns.DeclareParents;
  * @author Jim Hugunin
  */
 public class AjLookupEnvironment extends LookupEnvironment {
-	public EclipseFactory factory = null;
+	public  EclipseFactory factory = null;
 	
 //	private boolean builtInterTypesAndPerClauses = false;
 	private List pendingTypesToWeave = new ArrayList();

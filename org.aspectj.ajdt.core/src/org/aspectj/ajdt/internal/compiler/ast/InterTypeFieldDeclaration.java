@@ -69,7 +69,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
 		ResolvedMember sig = munger.getSignature();
-		UnresolvedType aspectType = EclipseFactory.fromBinding(upperScope.referenceContext.binding);
+		UnresolvedType aspectType = world.fromBinding(upperScope.referenceContext.binding);
 		
 		if (sig.getReturnType() == ResolvedType.VOID || 
 				(sig.getReturnType().isArray() && (sig.getReturnType().getComponentType() == ResolvedType.VOID)))
@@ -171,8 +171,8 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		//System.err.println("type: " + binding.returnType + ", " + returnType);
 		
 		ResolvedMember sig =
-			new ResolvedMember(Member.FIELD, EclipseFactory.fromBinding(onTypeBinding),
-					declaredModifiers, EclipseFactory.fromBinding(binding.returnType),
+			new ResolvedMember(Member.FIELD, world.fromBinding(onTypeBinding),
+					declaredModifiers, world.fromBinding(binding.returnType),
 					new String(declaredSelector), UnresolvedType.NONE);
 		
 		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null);
@@ -205,7 +205,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	private void generateDispatchMethods(ClassScope classScope, ClassFile classFile) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		ResolvedMember sig = munger.getSignature();
-		UnresolvedType aspectType = EclipseFactory.fromBinding(classScope.referenceContext.binding);
+		UnresolvedType aspectType = world.fromBinding(classScope.referenceContext.binding);
 		generateDispatchMethod(world, sig, aspectType, classScope, classFile, true);
 		generateDispatchMethod(world, sig, aspectType, classScope, classFile, false);
 	}

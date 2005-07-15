@@ -75,8 +75,8 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	{
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
 		
-		UnresolvedType aspectTypeX = EclipseFactory.fromBinding(binding.declaringClass);
-		UnresolvedType targetTypeX = EclipseFactory.fromBinding(onTypeBinding);
+		UnresolvedType aspectTypeX = world.fromBinding(binding.declaringClass);
+		UnresolvedType targetTypeX = world.fromBinding(onTypeBinding);
 		
 		ArrayBinding objectArrayBinding = scope.createArrayType(scope.getJavaLangObject(), 1);
 		
@@ -96,7 +96,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		
 		pre.binding = world.makeMethodBinding(
 			AjcMemberMaker.preIntroducedConstructor(aspectTypeX, targetTypeX, 
-					EclipseFactory.fromBindings(binding.parameters)));
+					world.fromBindings(binding.parameters)));
 		
 		pre.bindArguments();
 		pre.bindThrownExceptions();
@@ -144,7 +144,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			
 			Expression arg = explicitConstructorCall.arguments[i];
 			ResolvedMember conversionMethod = 
-				AjcMemberMaker.toObjectConversionMethod(EclipseFactory.fromBinding(explicitConstructorCall.binding.parameters[i]));
+				AjcMemberMaker.toObjectConversionMethod(world.fromBinding(explicitConstructorCall.binding.parameters[i]));
 			if (conversionMethod != null) {
 				arg = new KnownMessageSend(world.makeMethodBindingForCall(conversionMethod),
 					new CastExpression(new NullLiteral(0, 0), 
@@ -158,7 +158,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			LocalVariableBinding binding = pre.arguments[i].binding;
 			Expression arg = AstUtil.makeResolvedLocalVariableReference(binding);
 			ResolvedMember conversionMethod = 
-				AjcMemberMaker.toObjectConversionMethod(EclipseFactory.fromBinding(binding.type));
+				AjcMemberMaker.toObjectConversionMethod(world.fromBinding(binding.type));
 			if (conversionMethod != null) {
 				arg = new KnownMessageSend(world.makeMethodBindingForCall(conversionMethod),
 					new CastExpression(new NullLiteral(0, 0), 
@@ -234,7 +234,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		
 		this.selector = binding.selector =
 			NameMangler.postIntroducedConstructor(
-				EclipseFactory.fromBinding(binding.declaringClass),
+				world.fromBinding(binding.declaringClass),
 				declaringTypeX).toCharArray();
 		
 		return new EclipseTypeMunger(world, myMunger, aspectType, this);
@@ -254,7 +254,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		} else {
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
 				new ResolvedMember(Member.CONSTRUCTOR, 
-					EclipseFactory.fromBinding(onTypeBinding.superclass()),
+					world.fromBinding(onTypeBinding.superclass()),
 					0, ResolvedType.VOID, "<init>", UnresolvedType.NONE));
 		}
 		return new AjAttribute.TypeMunger(munger);

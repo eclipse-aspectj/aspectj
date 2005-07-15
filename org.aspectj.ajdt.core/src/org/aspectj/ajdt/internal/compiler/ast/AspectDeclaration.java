@@ -450,7 +450,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.perCflowPush(
-				EclipseFactory.fromBinding(binding))), 
+				factory.fromBinding(binding))), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -482,7 +482,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcPreClinitMethod(
-				EclipseFactory.fromBinding(binding))), 
+				world.fromBinding(binding))), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -650,7 +650,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		final TypeBinding interfaceType) 
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
-		generateMethod(classFile, AjcMemberMaker.perObjectBind(EclipseFactory.fromBinding(binding)), 
+		generateMethod(classFile, AjcMemberMaker.perObjectBind(world.fromBinding(binding)), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
@@ -685,7 +685,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	// PTWIMPL Generate getInstance method 
 	private void generatePerTypeWithinGetInstanceMethod(ClassFile classFile) {
 			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
-			generateMethod(classFile, AjcMemberMaker.perTypeWithinGetInstance(EclipseFactory.fromBinding(binding)), 
+			generateMethod(classFile, AjcMemberMaker.perTypeWithinGetInstance(world.fromBinding(binding)), 
 			new BodyGenerator() {
 				public void generate(CodeStream codeStream) {
 					ExceptionLabel exc = new ExceptionLabel(codeStream,world.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
@@ -728,7 +728,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	
 	private void generatePerTypeWithinCreateAspectInstanceMethod(ClassFile classFile) {
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
-		generateMethod(classFile, AjcMemberMaker.perTypeWithinCreateAspectInstance(EclipseFactory.fromBinding(binding)), 
+		generateMethod(classFile, AjcMemberMaker.perTypeWithinCreateAspectInstance(world.fromBinding(binding)), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				
@@ -823,7 +823,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	{
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, world.makeMethodBinding(AjcMemberMaker.ajcPostClinitMethod(
-				EclipseFactory.fromBinding(binding))), 
+				world.fromBinding(binding))), 
 		new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here

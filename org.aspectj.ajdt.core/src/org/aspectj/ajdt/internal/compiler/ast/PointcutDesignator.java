@@ -66,6 +66,8 @@ public class PointcutDesignator extends ASTNode {
 		if (pointcut.state == Pointcut.RESOLVED ||
 			pointcut.state == Pointcut.CONCRETE) return true;
 		
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(dec.scope);
+		
 		TypeBinding[] parameters = method.parameters;
 		Argument[] arguments = dec.arguments;
 
@@ -73,7 +75,7 @@ public class PointcutDesignator extends ASTNode {
         for (int i = 0, len = baseArgumentCount; i < len; i++) {
             Argument arg = arguments[i];
             String name = new String(arg.name);
-            UnresolvedType type = EclipseFactory.fromBinding(parameters[i]);
+            UnresolvedType type = world.fromBinding(parameters[i]);
             bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
         }
         

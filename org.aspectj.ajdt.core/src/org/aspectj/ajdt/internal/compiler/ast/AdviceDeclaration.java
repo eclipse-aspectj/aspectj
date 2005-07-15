@@ -296,13 +296,14 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	
 	// override, Called by ClassScope.postParse
 	public void postParse(TypeDeclaration typeDec) {
-		int adviceSequenceNumberInType = ((AspectDeclaration)typeDec).adviceCounter++;
+		AspectDeclaration aspectDecl = (AspectDeclaration)typeDec;
+		int adviceSequenceNumberInType = aspectDecl.adviceCounter++;
 		
 		StringBuffer stringifiedPointcut = new StringBuffer(30);
 		pointcutDesignator.print(0,stringifiedPointcut);
 		this.selector =
 			NameMangler.adviceName(
-			  EclipseFactory.fromBinding(typeDec.binding), 
+			  EclipseFactory.getName(typeDec.binding).replace('.', '_'),
 			  kind, 
 			  adviceSequenceNumberInType,
 			  stringifiedPointcut.toString().hashCode()).toCharArray();

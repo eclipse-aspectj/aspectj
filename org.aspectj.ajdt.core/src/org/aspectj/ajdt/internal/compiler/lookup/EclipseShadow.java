@@ -50,9 +50,9 @@ public class EclipseShadow extends Shadow {
 
 	public UnresolvedType getEnclosingType() {
 		if (context instanceof TypeDeclaration) {
-			return EclipseFactory.fromBinding(((TypeDeclaration)context).binding);
+			return world.fromBinding(((TypeDeclaration)context).binding);
 		} else if (context instanceof AbstractMethodDeclaration) {
-			return EclipseFactory.fromBinding(((AbstractMethodDeclaration)context).binding.declaringClass);
+			return world.fromBinding(((AbstractMethodDeclaration)context).binding.declaringClass);
 		} else {
 			return ResolvedType.MISSING;
 		}
@@ -171,7 +171,7 @@ public class EclipseShadow extends Shadow {
 		} else if (astNode instanceof TypeDeclaration) {
 			return new EclipseShadow(world, Shadow.StaticInitialization,
 							new Member(Member.STATIC_INITIALIZATION, 
-								EclipseFactory.fromBinding(((TypeDeclaration)astNode).binding), 0, 
+								world.fromBinding(((TypeDeclaration)astNode).binding), 0, 
 								ResolvedType.VOID, "<clinit>", UnresolvedType.NONE),
 							astNode, context);
 		} else {

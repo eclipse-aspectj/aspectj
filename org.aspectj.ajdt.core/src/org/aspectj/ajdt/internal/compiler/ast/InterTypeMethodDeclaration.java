@@ -124,9 +124,9 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		if (isTargetAnnotation(classScope,"method")) return null; // Error message output in isTargetAnnotation
 		if (isTargetEnum(classScope,"method")) return null; // Error message output in isTargetEnum
 		
-		ResolvedMember sig = new ResolvedMember(Member.METHOD, EclipseFactory.fromBinding(onTypeBinding),
-			declaredModifiers, EclipseFactory.fromBinding(binding.returnType), new String(declaredSelector),
-			EclipseFactory.fromBindings(binding.parameters),
+		ResolvedMember sig = new ResolvedMember(Member.METHOD, world.fromBinding(onTypeBinding),
+			declaredModifiers, world.fromBinding(binding.returnType), new String(declaredSelector),
+			world.fromBindings(binding.parameters),
 			world.fromEclipse(binding.thrownExceptions));
 		
 		NewMethodTypeMunger myMunger = new NewMethodTypeMunger(sig, null);
@@ -163,7 +163,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	public void generateDispatchMethod(ClassScope classScope, ClassFile classFile) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		
-		UnresolvedType aspectType = EclipseFactory.fromBinding(classScope.referenceContext.binding);
+		UnresolvedType aspectType = world.fromBinding(classScope.referenceContext.binding);
 		ResolvedMember signature = munger.getSignature();
 		
 		ResolvedMember dispatchMember = 

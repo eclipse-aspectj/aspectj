@@ -133,7 +133,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				if (amd == null || amd.ignoreFurtherInvestigation) continue;
 				if (amd instanceof PointcutDeclaration) {
 					PointcutDeclaration d = (PointcutDeclaration)amd;
-					ResolvedPointcutDefinition df = d.makeResolvedPointcutDefinition();
+					ResolvedPointcutDefinition df = d.makeResolvedPointcutDefinition(factory);
 					declaredPointcuts.add(df);
 				} else if (amd instanceof InterTypeDeclaration) {				
 					// these are handled in a separate pass
@@ -172,10 +172,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	private ResolvedPointcutDefinition makeResolvedPointcutDefinition(AbstractMethodDeclaration md) {
 		ResolvedPointcutDefinition resolvedPointcutDeclaration = new ResolvedPointcutDefinition(
-            EclipseFactory.fromBinding(md.binding.declaringClass), 
+            factory.fromBinding(md.binding.declaringClass), 
             md.modifiers, 
             new String(md.selector),
-			EclipseFactory.fromBindings(md.binding.parameters),
+			factory.fromBindings(md.binding.parameters),
 			null); //??? might want to use null 
 			
 		resolvedPointcutDeclaration.setPosition(md.sourceStart, md.sourceEnd);

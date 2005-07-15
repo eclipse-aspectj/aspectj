@@ -67,22 +67,24 @@ public class SuperFixerVisitor extends ASTVisitor {
 //			}
 //			return;
 		}
-		
+
+    	EclipseFactory factory = ((AjLookupEnvironment)method.scope.environment()).factory;
+
 		char[] accessName;
 		if (call.isSuperAccess() && !call.binding.isStatic()) {
 			call.receiver = new ThisReference(call.receiver.sourceStart, call.receiver.sourceEnd);
 			accessName =
-				NameMangler.superDispatchMethod(EclipseFactory.fromBinding(targetClass), 
+				NameMangler.superDispatchMethod(factory.fromBinding(targetClass), 
 							new String(superBinding.selector)).toCharArray();
 		} else if (call.receiver.isThis() && call.binding.isProtected() && !call.binding.isStatic()) {
 			//XXX this is a hack that violates some binary compatibility rules
 			if (superBinding.declaringClass.equals(targetClass)) {
 				accessName =
-					NameMangler.protectedDispatchMethod(EclipseFactory.fromBinding(targetClass), 
+					NameMangler.protectedDispatchMethod(factory.fromBinding(targetClass), 
 								new String(superBinding.selector)).toCharArray();
 			} else {
 				accessName =
-				NameMangler.superDispatchMethod(EclipseFactory.fromBinding(targetClass), 
+				NameMangler.superDispatchMethod(factory.fromBinding(targetClass), 
 							new String(superBinding.selector)).toCharArray();
 			}
 		} else {
@@ -97,7 +99,6 @@ public class SuperFixerVisitor extends ASTVisitor {
 			
 		AstUtil.replaceMethodBinding(call, superAccessBinding);
 	
-    	EclipseFactory factory = ((AjLookupEnvironment)method.scope.environment()).factory;
 		ResolvedMember targetMember = factory.makeResolvedMember(superBinding);
 		superMethodsCalled.add(targetMember);
 	}
