@@ -186,7 +186,11 @@
                 auxiliary aspects where the pointcut definitions themselves can be
                 considered part of the configuration of the service.
             </para>
-            
+
+            <para>
+                Note: concrete-aspect is not available in AspectJ 1.5 M3.
+            </para>
+
             <para>
                 The aspects element may optionally contain one or more include and
                 exclude elements (by default, all defined aspects are used for weaving).

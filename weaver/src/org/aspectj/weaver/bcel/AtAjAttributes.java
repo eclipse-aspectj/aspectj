@@ -17,31 +17,18 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.apache.bcel.classfile.Attribute;
-import org.aspectj.apache.bcel.classfile.Field;
-import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.LocalVariable;
-import org.aspectj.apache.bcel.classfile.LocalVariableTable;
-import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.*;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
-import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.ResolvedPointcutDefinition;
-import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
@@ -171,7 +158,33 @@ public class AtAjAttributes {
      * @param msgHandler
      * @return list of AjAttributes
      */
-    public static List readAj5ClassAttributes(JavaClass javaClass, ResolvedType type, ISourceContext context, IMessageHandler msgHandler, boolean isCodeStyleAspect) {
+    public static List readAj5ClassAttributes(JavaClass javaClass, ReferenceType type, ISourceContext context, IMessageHandler msgHandler, boolean isCodeStyleAspect) {
+        //FIXME AV - 1.5 M3 feature limitation, kick after M3 ships
+        try {
+            Constant[] cpool = javaClass.getConstantPool().getConstantPool();
+            for (int i = 0; i < cpool.length; i++) {
+                Constant constant = cpool[i];
+                if (constant != null && constant.getTag() == Constants.CONSTANT_Utf8) {
+                    if (!javaClass.getClassName().startsWith("org.aspectj.lang.annotation")) {
+                        ConstantUtf8 constantUtf8 = (ConstantUtf8) constant;
+                        if ("Lorg/aspectj/lang/annotation/DeclareAnnotation;".equals(constantUtf8.getBytes())) {
+                            msgHandler.handleMessage(
+                                    new Message(
+                                            "Found @DeclareAnnotation while current release does not support it (see '" + type.getName() + "')",
+                                            IMessage.WARNING,
+                                            null,
+                                            type.getSourceLocation()
+                                    )
+                            );
+                        }
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            ;
+        }
+
+
         AjAttributeStruct struct = new AjAttributeStruct(type, context, msgHandler);
         Attribute[] attributes = javaClass.getAttributes();
         boolean hasAtAspectAnnotation = false;

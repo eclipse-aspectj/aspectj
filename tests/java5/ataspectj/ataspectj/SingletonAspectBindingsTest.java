@@ -11,16 +11,10 @@
  *******************************************************************************/
 package ataspectj;
 
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import junit.framework.TestCase;
-
-import java.io.File;
-import java.io.FileReader;
 
 /**
  * Test various advice and JoinPoint + binding, without pc ref

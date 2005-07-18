@@ -702,6 +702,11 @@
      }
          ]]></programlisting>
 
+        <para>
+            Note: Declare annotation is not available in AspectJ 1.5 M3 and syntax might change
+            when it will be available.
+        </para>
+
         <para>We also support annotation style declarations for declare warning and
      declare error - any corresponding warnings and errors will be emitted at
      weave time, not when the aspects containing the declarations are compiled.
