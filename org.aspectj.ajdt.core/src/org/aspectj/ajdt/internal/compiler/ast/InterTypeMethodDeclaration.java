@@ -133,7 +133,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		setMunger(myMunger);
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me =
-			myMunger.getDispatchMethod(aspectType);
+			myMunger.getInterMethodBody(aspectType);
 		this.selector = binding.selector = me.getName().toCharArray();
 		
 		return new EclipseTypeMunger(world, myMunger, aspectType, this);
