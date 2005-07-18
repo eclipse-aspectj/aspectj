@@ -60,4 +60,23 @@
     </target>
 
     <target name="javac.ltw" depends="compile:javac, ltw"/>
+
+    <target name="ltw.Aspect2MainTest">
+        <!-- javac Aspect2 -->
+        <javac destdir="${aj.sandbox}" classpathref="aj.path"
+            srcdir="${basedir}"
+            includes="ataspectj/ltwreweavable/Aspect2.java"
+            debug="true">
+        </javac>
+        <delete dir="${aj.sandbox}" includes="**/Aspect1.class, **/Main.class"/>
+        <java fork="yes" classname="ataspectj.ltwreweavable.Main" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <classpath>
+                <pathelement path="${aj.sandbox}/main1.jar"/>
+            </classpath>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/ltwreweavable/aop-ltwreweavable.xml"/>
+        </java>
+
+    </target>
 </project>

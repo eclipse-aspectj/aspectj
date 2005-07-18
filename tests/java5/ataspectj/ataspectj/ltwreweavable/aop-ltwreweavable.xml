@@ -1,0 +1,4 @@
+<aspectj>
+    <aspect name="ataspectj.ltwreweavable.Aspect1"/>
+    <aspect name="ataspectj.ltwreweavable.Aspect2"/>
+</aspectj>

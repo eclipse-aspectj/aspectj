@@ -70,4 +70,8 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("LTW DumpTest");
     }
 
+    public void testAjcAspect1LTWAspect2_Xreweavable() {
+        runTest("Ajc Aspect1 LTW Aspect2 -Xreweavable");
+    }
+
 }

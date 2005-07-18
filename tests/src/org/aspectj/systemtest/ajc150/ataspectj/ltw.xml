@@ -86,4 +86,12 @@
         <ant file="ajc-ant.xml" target="ltw.DumpTest" verbose="true"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="Ajc Aspect1 LTW Aspect2 -Xreweavable">
+        <compile
+            files="ataspectj/ltwreweavable/Main.java,ataspectj/ltwreweavable/Aspect1.java,ataspectj/ltwreweavable/Advisable.java"
+            options="-1.5 -Xreweavable"
+            outjar="main1.jar"/>
+        <ant file="ajc-ant.xml" target="ltw.Aspect2MainTest" verbose="true"/>
+    </ajc-test>
+    
 </suite>

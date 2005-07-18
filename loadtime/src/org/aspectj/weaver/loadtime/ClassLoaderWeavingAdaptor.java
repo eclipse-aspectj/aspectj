@@ -250,7 +250,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             return true;
         }
         //TODO AV - optimize for className.startWith only
-        ResolvedType classInfo = weaver.getWorld().getCoreType(UnresolvedType.forName(className));
+        ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(className), true);
         //exclude
         for (Iterator iterator = m_excludeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
@@ -275,7 +275,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             return true;
         }
         //TODO AV - optimize for className.startWith only
-        ResolvedType classInfo = weaver.getWorld().getCoreType(UnresolvedType.forName(aspectClassName));
+        ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(aspectClassName), true);
         //exclude
         for (Iterator iterator = m_aspectExcludeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
@@ -293,7 +293,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             return false;
         }
         //TODO AV - optimize for className.startWith only
-        ResolvedType classInfo = weaver.getWorld().getCoreType(UnresolvedType.forName(className));
+        ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(className), true);
         //dump
         for (Iterator iterator = m_dumpTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
