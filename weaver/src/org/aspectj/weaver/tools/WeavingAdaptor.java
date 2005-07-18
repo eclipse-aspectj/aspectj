@@ -28,15 +28,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.MessageWriter;
+import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
@@ -67,7 +65,7 @@ public class WeavingAdaptor {
 	protected boolean verbose = getVerbose();
 	protected BcelWorld bcelWorld = null;
 	protected BcelWeaver weaver = null;
-	protected WeavingAdaptorMessageHandler messageHandler = null;
+	protected IMessageHandler/*WeavingAdaptorMessageHandler*/ messageHandler = null;
 	protected GeneratedClassHandler generatedClassHandler;
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 
@@ -136,7 +134,6 @@ public class WeavingAdaptor {
 	private void init(List classPath, List aspectPath) {
 		messageHandler = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
 		if (verbose) messageHandler.dontIgnore(IMessage.INFO);
-		else messageHandler.ignore(IMessage.INFO);
 		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) messageHandler.dontIgnore(IMessage.WEAVEINFO);
 		
 		info("using classpath: " + classPath); 
@@ -211,8 +208,8 @@ public class WeavingAdaptor {
      * @param name
      * @return
      */
-	private boolean shouldWeaveAspect (String name) {
-		ResolvedType type = bcelWorld.resolve(name);
+	private boolean shouldWeaveAspect(String name) {
+		ResolvedType type = bcelWorld.resolve(UnresolvedType.forName(name), true);
         return (type == null || !type.isAspect() || type.isAnnotationStyleAspect());
 	}
 
@@ -307,6 +304,7 @@ public class WeavingAdaptor {
 			super(writer,true);
 			
 			ignore(IMessage.WEAVEINFO);
+            ignore(IMessage.INFO);
 			this.failKind = IMessage.ERROR;
 
 		}

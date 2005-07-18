@@ -134,7 +134,7 @@
                 methods). The following example shows a simple aop.xml file: </para>
             <programlisting><![CDATA[
           <aspectj>
-          
+
             <aspects>
               <!-- declare two existing aspects to the weaver -->
               <aspect name="com.MyAspect"/>
@@ -144,14 +144,14 @@
               <concrete-aspect name="com.xyz.tracing.MyTracing" extends="tracing.AbstractTracing">
                 <pointcut name="tracingScope" expression="within(org.maw.*)"/>
               </concrete-aspect>
-		  	  
+
               <!-- Of the set of aspects known to the weaver, use aspects matching
                    the type pattern "com..*" for weaving. -->
               <include within="com..*"/>
-			  
+
               <!-- Do not use any aspects with the @CoolAspect annotation for weaving -->
-              <exclude within="@CoolAspect *"/>    	
-			  
+              <exclude within="@CoolAspect *"/>
+
             </aspects>
 
             <weaver options="-verbose -XlazyTjp">
@@ -161,10 +161,11 @@
               <include within="javax.*"/>
               <include within="org.aspectj.*"/>
               <include within="(!@NoWeave foo.*) AND foo.*"/>
+              <dump within="somepack.*"/><!-- will dump weaved classes to the "./_ajdump" folder on disk (for diagnostic purpose) -->
             </weaver>
-          
+
           </aspectj>
-          
+
 		  ]]></programlisting>
           
             <para>
@@ -248,7 +249,9 @@
                 It will simply contain a (possibly empty) set of aspect elements, one for
                 each concrete aspect included in the JAR. </para>
         </sect2>
-        
+
+        <!-- TODO someone implement that -->
+        <!--
         <sect2>
             <title>Configuring Load-time Weaving with Properties Files</title>
             <para> For memory constrained environments or those without support for XML a simple
@@ -265,7 +268,8 @@
           weaver.include=javax.* OR org.aspectj.*
 		  ]]></programlisting>
         </sect2>
-        
+        -->
+
         <sect2>
             <title>Weaver Options</title>
             <para> The table below lists the AspectJ options supported by LTW. All other options
@@ -279,6 +283,16 @@
                         </row>
                     </thead>
                     <tbody>
+                        <row>
+                            <entry>
+                                <literal>-verbose</literal>
+                            </entry>
+                            <entry>Issue informational messages about the weaving process. If ever you need to have information
+                                   when the load time weaving engine is bootstrapped (hence its logger as per <literal>-XmessageHandlerClass:...</literal> not ready yet),
+                                   you can use the option <literal>-Daj.weaving.verbose=true</literal> on the JVM startup command line. Messages will then be printed
+                                   on stderr as long as the message handler class is not ready.
+                            </entry>
+                        </row>
                         <row>
                             <entry>
                                 <literal>-1.5</literal>
@@ -314,12 +328,6 @@
                         </row>
                         <row>
                             <entry>
-                                <literal>-verbose</literal>
-                            </entry>
-                            <entry>Issue informational messages about the weaving process</entry>
-                        </row>
-                        <row>
-                            <entry>
                                 <literal>-Xreweavable</literal>
                             </entry>
                             <entry>Produce class files that can subsequently be rewoven</entry>
@@ -338,11 +346,11 @@
                         </row>
                         <row>
                             <entry>
-                                <literal>-XmessageHolderClass:...</literal>
+                                <literal>-XmessageHandlerClass:...</literal>
                             </entry>
                             <entry>Provide alternative output destination to stdout/stderr for all weaver messages.
                             The given value must be the full qualified class name of a class that implements
-                            <literal>org.aspectj.weaver.loadtime</literal>
+                            <literal>org.aspectj.bridge.IMessageHandler</literal>
                             and that is visible from where the <literal>aop.xml</literal> is packed.
                             If more than one such options are used,
                             the first occurence only is taken into account.</entry>

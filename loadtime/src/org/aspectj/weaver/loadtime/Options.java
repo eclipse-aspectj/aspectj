@@ -38,9 +38,7 @@ public class Options {
     private final static String OPTION_reweavable = "-Xreweavable";
     private final static String OPTION_noinline = "-Xnoinline";
     private final static String OPTION_showWeaveInfo = "-showWeaveInfo";
-    private final static String OPTIONVALUED_messageHolder = "-XmessageHolderClass:";//TODO rename to Handler
-
-    //FIXME dump option - dump what - dump before/after ?
+    private final static String OPTIONVALUED_messageHandler = "-XmessageHandlerClass:";
 
     public static WeaverOption parse(String options, ClassLoader laoder) {
         if (LangUtil.isEmpty(options)) {
@@ -55,9 +53,9 @@ public class Options {
         // do a first round on the message handler since it will report the options themselves
         for (Iterator iterator = flags.iterator(); iterator.hasNext();) {
             String arg = (String) iterator.next();
-            if (arg.startsWith(OPTIONVALUED_messageHolder)) {
-                if (arg.length() > OPTIONVALUED_messageHolder.length()) {
-                    String handlerClass = arg.substring(OPTIONVALUED_messageHolder.length()).trim();
+            if (arg.startsWith(OPTIONVALUED_messageHandler)) {
+                if (arg.length() > OPTIONVALUED_messageHandler.length()) {
+                    String handlerClass = arg.substring(OPTIONVALUED_messageHandler.length()).trim();
                     try {
                         Class handler = Class.forName(handlerClass, false, laoder);
                         weaverOption.messageHandler = ((IMessageHandler) handler.newInstance());
@@ -94,7 +92,7 @@ public class Options {
                 weaverOption.showWeaveInfo = true;
             } else if (arg.equalsIgnoreCase(OPTION_verbose)) {
                 weaverOption.verbose = true;
-            } else if (arg.startsWith(OPTIONVALUED_messageHolder)) {
+            } else if (arg.startsWith(OPTIONVALUED_messageHandler)) {
                 ;// handled in first round
             } else {
                 weaverOption.messageHandler.handleMessage(

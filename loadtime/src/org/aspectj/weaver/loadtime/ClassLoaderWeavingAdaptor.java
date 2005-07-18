@@ -15,6 +15,7 @@ import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -87,6 +88,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
         // register the definitions
         registerDefinitions(weaver, loader);
+        messageHandler = bcelWorld.getMessageHandler();
 
         // after adding aspects
         weaver.prepareForWeave();
@@ -100,20 +102,23 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      */
     private void registerDefinitions(final BcelWeaver weaver, final ClassLoader loader) {
         try {
+            MessageUtil.info(messageHandler, "register classloader " + ((loader!=null)?loader.getClass().getName()+"@"+loader.hashCode():"null"));
             //TODO av underoptimized: we will parse each XML once per CL that see it
             Enumeration xmls = loader.getResources(AOP_XML);
             List definitions = new ArrayList();
 
             //TODO av dev mode needed ? TBD -Daj5.def=...
-            if (loader != null && loader != ClassLoader.getSystemClassLoader().getParent()) {
+            if (ClassLoader.getSystemClassLoader().equals(loader)) {
                 String file = System.getProperty("aj5.def", null);
                 if (file != null) {
+                    MessageUtil.info(messageHandler, "using (-Daj5.def) " + file);
                     definitions.add(DocumentParser.parse((new File(file)).toURL()));
                 }
             }
 
             while (xmls.hasMoreElements()) {
                 URL xml = (URL) xmls.nextElement();
+                MessageUtil.info(messageHandler, "using " + xml.getFile());
                 definitions.add(DocumentParser.parse(xml));
             }
             
