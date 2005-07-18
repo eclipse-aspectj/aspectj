@@ -972,6 +972,11 @@ public final class LazyClassGen {
 		myGen.addField(field);
 	}
 	
+	public void replaceField(Field oldF, Field newF){
+		myGen.removeField(oldF);
+		myGen.addField(newF);
+	}
+	
 	public void addField(Field field, ISourceLocation sourceLocation) {
 		addField(field);
 		if (!(field.isPrivate() 

@@ -605,8 +605,9 @@ public class AjcMemberMaker {
 	
 
 	/**
-	 * This method goes on the target type of the inter-type method. (and possibly the topmost-implemeters,
-	 * if the target type is an interface) 
+	 * This method goes on the target type of the inter-type method. (and possibly the topmost-implementors,
+	 * if the target type is an interface). The implementation will call the interMethodDispatch method on the
+	 * aspect.
 	 */
 	public static ResolvedMember interMethod(ResolvedMember meth, UnresolvedType aspectType, boolean onInterface) 
 	{
@@ -623,7 +624,8 @@ public class AjcMemberMaker {
 	}
 
 	/**
-	 * This static method goes on the declaring aspect of the inter-type method.
+	 * This static method goes on the declaring aspect of the inter-type method.  The implementation
+	 * calls the interMethodBody() method on the aspect.
 	 */
 	public static ResolvedMember interMethodDispatcher(ResolvedMember meth, UnresolvedType aspectType) 
 	{
@@ -639,7 +641,8 @@ public class AjcMemberMaker {
 	}
 
 	/**
-	 * This static method goes on the declaring aspect of the inter-type method.
+	 * This method goes on the declaring aspect of the inter-type method.
+	 * It contains the real body of the ITD method.
 	 */
 	public static ResolvedMember interMethodBody(ResolvedMember meth, UnresolvedType aspectType) 
 	{
