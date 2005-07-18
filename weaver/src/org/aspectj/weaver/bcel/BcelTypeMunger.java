@@ -707,7 +707,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	
 	private boolean mungeNewMethod(BcelClassWeaver weaver, NewMethodTypeMunger munger) {
 		ResolvedMember signature = munger.getSignature();
-		ResolvedMember dispatchMethod = munger.getDispatchMethod(aspectType);
+		// TODO asc I'm confused? Why do we treat the 'real method' (the inter method body) as the dispatch method?
+		ResolvedMember dispatchMethod = munger.getInterMethodBody(aspectType);
 
 		LazyClassGen gen = weaver.getLazyClassGen();
 		

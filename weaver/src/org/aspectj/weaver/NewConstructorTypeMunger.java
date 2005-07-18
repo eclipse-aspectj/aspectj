@@ -38,10 +38,10 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 
 	}
 	
-	//XXX horrible name clash here
-	public ResolvedMember getDispatchMethod(UnresolvedType aspectType) {
-		return AjcMemberMaker.interMethodBody(signature, aspectType);
-	}
+	// doesnt seem required....
+//	public ResolvedMember getDispatchMethod(UnresolvedType aspectType) {
+//		return AjcMemberMaker.interMethodBody(signature, aspectType);
+//	}
 
 	public void write(DataOutputStream s) throws IOException {
 		kind.write(s);

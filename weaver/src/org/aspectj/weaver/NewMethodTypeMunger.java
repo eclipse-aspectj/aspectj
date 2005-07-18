@@ -28,8 +28,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 
 	}
 	
-	//XXX horrible name clash here
-	public ResolvedMember getDispatchMethod(UnresolvedType aspectType) {
+	public ResolvedMember getInterMethodBody(UnresolvedType aspectType) {
 		return AjcMemberMaker.interMethodBody(signature, aspectType);
 	}
 
