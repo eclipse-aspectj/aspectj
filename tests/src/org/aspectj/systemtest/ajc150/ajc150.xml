@@ -54,6 +54,12 @@
    <ajc-test dir="bugs150" pr="83311" title="overriding/polymorphism error on interface method introduction">
      <compile files="pr83311.aj"/>
    </ajc-test>
+   
+   <ajc-test dir="bugs150" pr="103266" title="NPE on syntax error">
+     <compile files="pr103266.aj">
+          <message kind="error" line="41" text="ConnectionRequestContext cannot be resolved to a type"/>
+     </compile>
+   </ajc-test>
     
     <ajc-test dir="bugs150/pr84260" vm="1.5" title="static import failures">
         <compile files="A.java,I1.java,I2.java" options="-1.5"/>

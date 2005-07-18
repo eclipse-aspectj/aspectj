@@ -32,15 +32,18 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 public class MakeDeclsPublicVisitor extends ASTVisitor {
 
 	public void endVisit(ConstructorDeclaration decl, ClassScope scope) {
+		if (decl.binding==null) return; 
 		decl.binding.modifiers = AstUtil.makePublic(decl.binding.modifiers);
 	}
 
 	public void endVisit(FieldDeclaration decl, MethodScope scope) {
+		if (decl.binding==null) return; 
 		decl.binding.modifiers = AstUtil.makePublic(decl.binding.modifiers);
 	}
 
 
 	public void endVisit(MethodDeclaration decl, ClassScope scope) {
+		if (decl.binding==null) return; 
 		decl.binding.modifiers = AstUtil.makePublic(decl.binding.modifiers);
 	}
 
@@ -50,6 +53,7 @@ public class MakeDeclsPublicVisitor extends ASTVisitor {
 	public void endVisit(
 		TypeDeclaration localTypeDeclaration,
 		BlockScope scope) {
+		if (localTypeDeclaration.binding==null) return; 
 		localTypeDeclaration.binding.modifiers = AstUtil.makePublic(localTypeDeclaration.binding.modifiers);
 	}
 
@@ -59,6 +63,7 @@ public class MakeDeclsPublicVisitor extends ASTVisitor {
 	public void endVisit(
 		TypeDeclaration memberTypeDeclaration,
 		ClassScope scope) {
+		if (memberTypeDeclaration.binding==null) return; 
 		memberTypeDeclaration.binding.modifiers = AstUtil.makePublic(memberTypeDeclaration.binding.modifiers);
 	}
 

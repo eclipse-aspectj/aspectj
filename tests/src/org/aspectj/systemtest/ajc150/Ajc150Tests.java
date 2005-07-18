@@ -190,6 +190,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testItdGenerics_pr100227() {runTest("inner class with generic enclosing class");}
   public void testItdGenerics_pr100260() {runTest("methods inherited from a generic parent");}
   
+  public void testSyntaxErrorNPE_pr103266() {runTest("NPE on syntax error");}
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
