@@ -182,6 +182,12 @@ public class WildTypePattern extends TypePattern {
 	 * @return
 	 */
 	private boolean matchesExactlyByName(String targetTypeName) {
+		if (typeParameters == TypePatternList.EMPTY) {
+			// we can ignore anything after an < as we want raw matching
+			if (targetTypeName.indexOf('<') != -1) {
+				targetTypeName = targetTypeName.substring(0,targetTypeName.indexOf('<'));
+			}
+		}
 		//XXX hack
 		if (knownMatches == null && importedPrefixes == null) {
 			return innerMatchesExactly(targetTypeName);

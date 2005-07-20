@@ -213,7 +213,7 @@ public abstract class TypePattern extends PatternNode {
 		for (Iterator i = type.getDirectSupertypes(); i.hasNext(); ) {
 			ResolvedType superType = (ResolvedType)i.next();
 			// TODO asc generics, temporary whilst matching isnt aware..
-			if (superType.isParameterizedType()) superType = superType.getRawType().resolve(superType.getWorld());
+			//if (superType.isParameterizedType()) superType = superType.getRawType().resolve(superType.getWorld());
 			if (matchesSubtypes(superType,type)) return true;
 		}
 		return false;
