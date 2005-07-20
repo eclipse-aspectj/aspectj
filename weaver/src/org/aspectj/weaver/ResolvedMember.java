@@ -45,6 +45,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	// the case.  It is up to the caller to work out where that is!
 	// Once determined the caller may choose to stash the annotations in this member...
 	private boolean isAnnotatedElsewhere = false; // this field is not serialized.
+	private boolean isAjSynthetic = true;
     
     
     // these three fields hold the source location of this member
@@ -90,6 +91,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		{
 			this(kind, declaringType, modifiers, returnType, name, parameterTypes,checkedExceptions);
 			this.backingGenericMember = backingGenericMember;
+			this.isAjSynthetic = backingGenericMember.isAjSynthetic();
 		}
 	
 	public ResolvedMember(
@@ -130,7 +132,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     
     // ??? true or false?
     public boolean isAjSynthetic() {
-    	return true;
+    	return isAjSynthetic;
     }
 	
 	public boolean hasAnnotations() {
@@ -232,6 +234,8 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		  }
 		  annotationTypes = r;
 	    }
+        declaringType = declaringType.resolve(world);
+        if (declaringType.isRawType()) declaringType = ((ReferenceType)declaringType).getGenericType();
 		return this;
 	}
 	
@@ -333,7 +337,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	
 	// return a resolved member in which all type variables in the signature of this
 	// member have been replaced with the given bindings.
-	public ResolvedMember parameterizedWith(UnresolvedType[] typeParameters) {
+	public ResolvedMember parameterizedWith(UnresolvedType[] typeParameters,ResolvedType newDeclaringType) {
 		if (!this.getDeclaringType().isGenericType()) {
 			throw new IllegalStateException("Can't ask to parameterize a member of a non-generic type");
 		}
@@ -353,7 +357,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		}
 		return new ResolvedMember(
 					getKind(),
-					getDeclaringType(),
+					newDeclaringType,
 					getModifiers(),
 					parameterizedReturnType,
 					getName(),

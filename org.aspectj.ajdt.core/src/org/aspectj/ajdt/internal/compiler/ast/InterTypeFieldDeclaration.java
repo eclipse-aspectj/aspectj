@@ -169,9 +169,12 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		}
 		
 		//System.err.println("type: " + binding.returnType + ", " + returnType);
-		
-		ResolvedMember sig =
-			new ResolvedMember(Member.FIELD, world.fromBinding(onTypeBinding),
+		ResolvedType declaringType = world.fromBinding(onTypeBinding).resolve(world.getWorld());
+		if (declaringType.isRawType() || declaringType.isParameterizedType()) {
+			declaringType = declaringType.getGenericType();
+		}
+		ResolvedMember sig = 
+			new ResolvedMember(Member.FIELD, declaringType,
 					declaredModifiers, world.fromBinding(binding.returnType),
 					new String(declaredSelector), UnresolvedType.NONE);
 		

@@ -80,6 +80,7 @@ public abstract class World implements Dump.INode {
     }
 
     public ResolvedType[] resolve(UnresolvedType[] types) {
+    	if (types == null) return new ResolvedType[0];
         int len = types.length;
         ResolvedType[] ret = new ResolvedType[len];
         for (int i=0; i<len; i++) {
@@ -113,7 +114,12 @@ public abstract class World implements Dump.INode {
     
     // if we already have an rtx, don't re-resolve it
     public ResolvedType resolve(ResolvedType ty) {
-    	return ty;
+    	ResolvedType resolved = typeMap.get(ty.getSignature());
+    	if (resolved == null) {
+    		typeMap.put(ty.getSignature(), ty);
+    		resolved = ty;
+    	}
+    	return resolved;
     }
     
     public ResolvedType getCoreType(UnresolvedType tx) {
@@ -158,6 +164,7 @@ public abstract class World implements Dump.INode {
     public ResolvedType resolve(UnresolvedType ty, boolean allowMissing) {
     	if (ty instanceof ResolvedType) {
     		ResolvedType rty = (ResolvedType) ty;
+    		rty = resolve(rty);
     		rty.world = this; 
     		return rty;
     	}
@@ -212,9 +219,8 @@ public abstract class World implements Dump.INode {
     protected final ResolvedType resolveObjectType(UnresolvedType ty) {
 		if (ty.isParameterizedType()) {
 			ReferenceType genericType = (ReferenceType)resolveTheGenericType(ty,false);
-			ReferenceType parameterizedType = new ReferenceType(ty.getSignature(),this);
-			parameterizedType.setGenericType(genericType);
-			parameterizedType.setDelegate(genericType.getDelegate()); // move into setgenerictype
+			ReferenceType parameterizedType = 
+				TypeFactory.createParameterizedType(genericType, ty.typeParameters, this);
 			return parameterizedType;
 		} else if (ty.isGenericType()) {
 			ReferenceType genericType = (ReferenceType)resolveTheGenericType(ty,false);
@@ -562,6 +568,10 @@ public abstract class World implements Dump.INode {
         	typeMap.put(signature, ret);
         }
 		return ret;
+	}
+	
+	public ReferenceType lookupBySignature(String signature) {
+		return (ReferenceType) typeMap.get(signature);
 	}
 	
 

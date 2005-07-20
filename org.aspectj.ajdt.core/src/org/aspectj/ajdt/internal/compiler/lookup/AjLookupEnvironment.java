@@ -367,6 +367,8 @@ public class AjLookupEnvironment extends LookupEnvironment {
 	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, 
 			Collection declareParents, Collection declareAnnotationOnTypes, boolean skipInners) {
 		ResolvedType onType = factory.fromEclipse(sourceType);
+		// AMC we shouldn't need this when generic sigs are fixed??
+		if (onType.isRawType()) onType = onType.getGenericType();
 		WeaverStateInfo info = onType.getWeaverState();
 
 		if (info != null && !info.isOldStyle()) {		

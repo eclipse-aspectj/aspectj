@@ -27,6 +27,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -509,11 +510,11 @@ public class WildTypePattern extends TypePattern {
 		if (type == ResolvedType.MISSING) {
 			return resolveBindingsForMissingType(resolvedTypeInTheWorld, originalName, scope, bindings, allowBinding, requireExactType);
 		} else {
-			return resolveBindingsForExactRawType(scope,type,fullyQualifiedName);
+			return resolveBindingsForExactType(scope,type,fullyQualifiedName);
 		}
 	}
 	
-	private TypePattern resolveBindingsForExactRawType(IScope scope, UnresolvedType rawType, String fullyQualifiedName) {
+	private TypePattern resolveBindingsForExactType(IScope scope, UnresolvedType aType, String fullyQualifiedName) {
 		TypePattern ret = null;
 		if (typeParameters.size()>0) {
 			// Only if the type is exact *and* the type parameters are exact should we create an 
@@ -524,8 +525,9 @@ public class WildTypePattern extends TypePattern {
 				for (int i = 0; i < typeParameterTypes.length; i++) {
 					typeParameterTypes[i] = ((ExactTypePattern)typePats[i]).getExactType();
 				}
-				UnresolvedType tx = UnresolvedType.forParameterizedTypes(rawType,typeParameterTypes);
-				UnresolvedType type = scope.getWorld().resolve(tx,true); 
+				UnresolvedType type = TypeFactory.createParameterizedType(aType.resolve(scope.getWorld()), typeParameterTypes, scope.getWorld());
+//				UnresolvedType tx = UnresolvedType.forParameterizedTypes(aType,typeParameterTypes);
+//				UnresolvedType type = scope.getWorld().resolve(tx,true); 
 				if (dim != 0) type = UnresolvedType.makeArray(type, dim);
 				ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
 			} else {
@@ -537,8 +539,8 @@ public class WildTypePattern extends TypePattern {
 				return this;
 			}
 		} else {
-			if (dim != 0) rawType = UnresolvedType.makeArray(rawType, dim);
-			ret = new ExactTypePattern(rawType,includeSubtypes,isVarArgs);					
+			if (dim != 0) aType = UnresolvedType.makeArray(aType, dim);
+			ret = new ExactTypePattern(aType,includeSubtypes,isVarArgs);					
 		}
 		ret.setAnnotationTypePattern(annotationPattern);
 		ret.copyLocationFrom(this);

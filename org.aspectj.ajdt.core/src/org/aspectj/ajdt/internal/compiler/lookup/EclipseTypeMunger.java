@@ -53,6 +53,8 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			munger.setSourceLocation(sourceLocation);
 		}
 		targetTypeX = munger.getSignature().getDeclaringType().resolve(world.getWorld());
+		// AMC, needed until generic and raw have distinct sigs...
+		if (targetTypeX.isParameterizedType() || targetTypeX.isRawType()) targetTypeX = targetTypeX.getGenericType();
 		//targetBinding = (ReferenceBinding)world.makeTypeBinding(targetTypeX);
 	}
 	
@@ -71,7 +73,9 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	 * i.e. adds Method|FieldBindings, plays with inheritance, ...
 	 */
 	public boolean munge(SourceTypeBinding sourceType) {
-		if (!world.fromEclipse(sourceType).equals(targetTypeX)) return false; //??? move this test elsewhere
+		ResolvedType rt = world.fromEclipse(sourceType);
+		if (rt.isRawType() || rt.isParameterizedType()) rt = rt.getGenericType();
+		if (!rt.equals(targetTypeX)) return false; //??? move this test elsewhere
 		//System.out.println("munging: " + sourceType);
 //		System.out.println("match: " + world.fromEclipse(sourceType) +
 //				" with " + targetTypeX);

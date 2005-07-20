@@ -33,26 +33,17 @@ import org.aspectj.weaver.patterns.PerClause;
 public abstract class ResolvedType extends UnresolvedType implements AnnotatedElement {
 
 	private static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY  = new ResolvedType[0];
+	public static final String PARAMETERIZED_TYPE_IDENTIFIER = "P";
 	
     protected World world;
-	
-    // Factory methods
-    
-	public static UnresolvedType forGenericType(String name,TypeVariable[] tvbs,String genericSig) { 
-		// TODO asc generics needs a declared sig
-		UnresolvedType ret = UnresolvedType.forName(name);
-		ret.typeKind=GENERIC;
-		ret.typeVariables = tvbs;
-		ret.rawTypeSignature = ret.signature;
-		ret.genericSignature = genericSig;
-		return ret; // this cast will fail at runtime, temp refactoring issue
-	}
-	
-
-    
-
+	    
     protected ResolvedType(String signature, World world) {
         super(signature);
+        this.world = world;
+    }
+        
+    protected ResolvedType(String signature, String signatureErasure, World world) {
+        super(signature,signatureErasure);
         this.world = world;
     }
 
@@ -135,9 +126,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     public ResolvedType getResolvedComponentType() {
     	return null;
     }
-	public ResolvedType resolve(World world) {
-		return this;
-	}
+
 	public World getWorld() {
 		return world;
 	}
@@ -1307,6 +1296,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public void clearInterTypeMungers() {
+		if (isRawType()) getGenericType().clearInterTypeMungers();
 		interTypeMungers = new ArrayList();
 	}
 

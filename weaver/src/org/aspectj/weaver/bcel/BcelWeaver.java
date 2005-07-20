@@ -1154,7 +1154,8 @@ public class BcelWeaver implements IWeaver {
      * FIXME asc confirm that algorithm is optimal ??
      */
 	public void weaveParentTypeMungers(ResolvedType onType) {
-		onType.clearInterTypeMungers();
+		if (onType.isRawType()) onType = onType.getGenericType();
+		onType.clearInterTypeMungers(); 
 		
 		List decpToRepeat = new ArrayList();
 
@@ -1312,6 +1313,7 @@ public class BcelWeaver implements IWeaver {
 	}
     
     public void weaveNormalTypeMungers(ResolvedType onType) {
+    	if (onType.isRawType() || onType.isParameterizedType()) onType = onType.getGenericType();
 		for (Iterator i = typeMungerList.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			if (m.matches(onType)) {

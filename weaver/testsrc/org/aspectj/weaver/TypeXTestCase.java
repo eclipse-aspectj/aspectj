@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import junit.framework.TestCase;
 
 import org.aspectj.testing.util.TestUtil;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * This is a test case for all the portions of UnresolvedType that don't require a world.
@@ -65,16 +66,16 @@ public class TypeXTestCase extends TestCase {
 	public void testNameAndSigWithParameters() {
 		UnresolvedType t = UnresolvedType.forName("java.util.List<java.lang.String>");
 		assertEquals(t.getName(),"java.util.List<java.lang.String>");
-		assertEquals(t.getSignature(),"Ljava/util/List<Ljava/lang/String;>;");
-		t = new UnresolvedType("Ljava/util/List<Ljava/lang/String;>;");
+		assertEquals(t.getSignature(),"Pjava/util/List<Ljava/lang/String;>;");
+		t = UnresolvedType.forSignature("Pjava/util/List<Ljava/lang/String;>;");
 		assertEquals(t.getName(),"java.util.List<java.lang.String>");
-		assertEquals(t.getSignature(),"Ljava/util/List<Ljava/lang/String;>;");
+		assertEquals(t.getSignature(),"Pjava/util/List<Ljava/lang/String;>;");
 		t = UnresolvedType.forName("java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
 		assertEquals(t.getName(),"java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
-		assertEquals(t.getSignature(),"Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
-		t = new UnresolvedType("Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
+		assertEquals(t.getSignature(),"Pjava/util/Map<Ljava/util/String;Pjava/util/List<Ljava/lang/Integer;>;>;");
+		t = UnresolvedType.forSignature("Pjava/util/Map<Ljava/util/String;Pjava/util/List<Ljava/lang/Integer;>;>;");
 		assertEquals(t.getName(),"java.util.Map<java.util.String,java.util.List<java.lang.Integer>>");
-		assertEquals(t.getSignature(),"Ljava/util/Map<Ljava/util/String;Ljava/util/List<Ljava/lang/Integer;>;>;");
+		assertEquals(t.getSignature(),"Pjava/util/Map<Ljava/util/String;Pjava/util/List<Ljava/lang/Integer;>;>;");
 	}
 	
 	/**
@@ -91,13 +92,13 @@ public class TypeXTestCase extends TestCase {
 	public void testTypexGenericSignatureProcessing() {
 		UnresolvedType tx = null;
 		
-		tx = new UnresolvedType("Ljava/util/Set<Ljava/lang/String;>;");
+		tx = UnresolvedType.forSignature("Pjava/util/Set<Ljava/lang/String;>;");
 		checkTX(tx,true,1);
 		
-		tx = new UnresolvedType("Ljava/util/Set<Ljava/util/List<Ljava/lang/String;>;>;");
+		tx = UnresolvedType.forSignature("Pjava/util/Set<Pjava/util/List<Ljava/lang/String;>;>;");
 		checkTX(tx,true,1);
 		
-		tx = new UnresolvedType("Ljava/util/Map<Ljava/util/List<Ljava/lang/String;>;Ljava/lang/String;>;");
+		tx = UnresolvedType.forSignature("Pjava/util/Map<Pjava/util/List<Ljava/lang/String;>;Ljava/lang/String;>;");
 		checkTX(tx,true,2);
 		checkTX(tx.getTypeParameters()[0],true,1);
 		checkTX(tx.getTypeParameters()[1],false,0);
@@ -105,8 +106,13 @@ public class TypeXTestCase extends TestCase {
 	}
 	
 	public void testTypeXForParameterizedTypes() {
+		World world = new BcelWorld();
 		UnresolvedType stringType = UnresolvedType.forName("java/lang/String");
-		UnresolvedType listOfStringType = UnresolvedType.forParameterizedTypes(UnresolvedType.forName("java/util/List"), new UnresolvedType[] {stringType});
+		ResolvedType listOfStringType = 
+			TypeFactory.createParameterizedType(
+							UnresolvedType.forName("java/util/List").resolve(world), 
+							new UnresolvedType[] {stringType},
+							world);
 		assertEquals("1 type param",1,listOfStringType.typeParameters.length);
 		assertEquals(stringType,listOfStringType.typeParameters[0]);
 		assertTrue(listOfStringType.isParameterizedType());

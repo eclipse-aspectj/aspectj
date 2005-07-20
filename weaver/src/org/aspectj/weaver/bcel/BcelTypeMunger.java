@@ -180,7 +180,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                 
         List methods = newParent.getMethodsWithoutIterator();
         for (Iterator iter = methods.iterator(); iter.hasNext();) {
-		  BcelMethod    superMethod = (BcelMethod) iter.next();
+		  ResolvedMember    superMethod = (ResolvedMember) iter.next();
           if (!superMethod.getName().equals("<init>")) {
 		    LazyMethodGen   subMethod = findMatchingMethod(newParentTarget, superMethod);
             if (subMethod!=null) {
@@ -211,7 +211,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         if (!(newParentTarget.isAbstract() || newParentTarget.isInterface())) { // Ignore abstract classes or interfaces
             List methods = newParent.getMethodsWithoutIterator();
             for (Iterator i = methods.iterator(); i.hasNext();) {
-                BcelMethod o = (BcelMethod)i.next();
+                ResolvedMember o = (ResolvedMember)i.next();
                 if (o.isAbstract() && !o.getName().startsWith("ajc$interField")) { // Ignore abstract methods of ajc$interField prefixed methods
                     ResolvedMember discoveredImpl = null;
                     List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator();
@@ -270,7 +270,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	/**
      * Rule 3. Can't narrow visibility of methods when overriding
 	 */
-	private boolean enforceDecpRule3_visibilityChanges(BcelClassWeaver weaver, ResolvedType newParent, BcelMethod superMethod, LazyMethodGen subMethod) {
+	private boolean enforceDecpRule3_visibilityChanges(BcelClassWeaver weaver, ResolvedType newParent, ResolvedMember superMethod, LazyMethodGen subMethod) {
         boolean cont = true;
 		  if (superMethod.isPublic()) {
 		    if (subMethod.isProtected() || subMethod.isDefault() || subMethod.isPrivate()) {
@@ -300,7 +300,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
     /**
      * Rule 4. Can't have incompatible return types
      */
-    private boolean enforceDecpRule4_compatibleReturnTypes(BcelClassWeaver weaver, BcelMethod superMethod, LazyMethodGen subMethod) {
+    private boolean enforceDecpRule4_compatibleReturnTypes(BcelClassWeaver weaver, ResolvedMember superMethod, LazyMethodGen subMethod) {
         boolean cont = true;
         String superReturnTypeSig = superMethod.getReturnType().getSignature();
           String subReturnTypeSig   = subMethod.getReturnType().getSignature();
@@ -323,7 +323,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
      * Rule5. Method overrides can't change the staticality (word?) - you can't override and make an instance
      *        method static or override and make a static method an instance method.
      */
-    private boolean enforceDecpRule5_cantChangeFromStaticToNonstatic(BcelClassWeaver weaver,ISourceLocation mungerLoc,BcelMethod superMethod, LazyMethodGen subMethod ) {
+    private boolean enforceDecpRule5_cantChangeFromStaticToNonstatic(BcelClassWeaver weaver,ISourceLocation mungerLoc,ResolvedMember superMethod, LazyMethodGen subMethod ) {
       if (superMethod.isStatic() && !subMethod.isStatic()) { 
         error(weaver,"This instance method "+subMethod.getName()+subMethod.getParameterSignature()+
                      " cannot override the static method from "+superMethod.getDeclaringType().getName(),
@@ -344,7 +344,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
     }
    
 
-	private LazyMethodGen findMatchingMethod(LazyClassGen newParentTarget, BcelMethod m) {
+	private LazyMethodGen findMatchingMethod(LazyClassGen newParentTarget, ResolvedMember m) {
         LazyMethodGen found = null;
 		// Search the type for methods overriding super methods (methods that come from the new parent)
 		// Don't use the return value in the comparison as overriding doesnt
@@ -456,6 +456,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedMember member = munger.getMember();
 		
 		ResolvedType onType = weaver.getWorld().resolve(member.getDeclaringType(),munger.getSourceLocation());
+		if (onType.isRawType()) onType = onType.getGenericType();
+
 		//System.out.println("munging: " + gen + " with " + member);
 		if (onType.equals(gen.getType())) {
 			if (member.getKind() == Member.FIELD) {
@@ -713,6 +715,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		LazyClassGen gen = weaver.getLazyClassGen();
 		
 		ResolvedType onType = weaver.getWorld().resolve(signature.getDeclaringType(),munger.getSourceLocation());
+		if (onType.isRawType()) onType = onType.getGenericType();
+
 		boolean onInterface = onType.isInterface();
 		
 		if (onType.isAnnotation()) {
@@ -898,14 +902,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		final InstructionFactory fact = currentClass.getFactory();
 
 		ResolvedMember newConstructorMember = newConstructorTypeMunger.getSyntheticConstructor();
-		UnresolvedType          onType = newConstructorMember.getDeclaringType();
+		ResolvedType   onType = newConstructorMember.getDeclaringType().resolve(weaver.getWorld());
+		if (onType.isRawType()) onType = onType.getGenericType();
 		
-		if (onType.resolve(weaver.getWorld()).isAnnotation()) {
+		if (onType.isAnnotation()) {
 			signalError(WeaverMessages.ITDC_ON_ANNOTATION_NOT_ALLOWED,weaver,onType);
 			return false;
 		}
 		
-		if (onType.resolve(weaver.getWorld()).isEnum()) {
+		if (onType.isEnum()) {
 			signalError(WeaverMessages.ITDC_ON_ENUM_NOT_ALLOWED,weaver,onType);
 			return false;
 		}
@@ -1044,6 +1049,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		
 		ResolvedType onType = weaver.getWorld().resolve(field.getDeclaringType(),munger.getSourceLocation());
+		if (onType.isRawType()) onType = onType.getGenericType();
+
 		boolean onInterface = onType.isInterface();
 		
 		if (onType.isAnnotation()) {

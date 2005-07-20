@@ -19,22 +19,36 @@ import junit.framework.TestCase;
 // XXX - couldn't find any unit test cases for the rest of the ReferenceType class
 public class ReferenceTypeTestCase extends TestCase {
 
-	public void testIsGenericTrue() {
+	public void testIsRawTrue() {
 		BcelWorld world = new BcelWorld();
-		UnresolvedType javaLangClass = UnresolvedType.forName("java/lang/Class");
+		UnresolvedType javaLangClass = UnresolvedType.forName("java.lang.Class");
 		ResolvedType rtx = world.resolve(javaLangClass);
 		assertTrue("Resolves to reference type",(rtx instanceof ReferenceType));
 		ReferenceType rt = (ReferenceType) rtx;
-		assertTrue("java.lang.Class is generic",rt.isGenericType());
+		assertTrue("java.lang.Class is raw",rt.isRawType());
+	}
+	
+	public void testIsRawFalse() {
+		BcelWorld world = new BcelWorld();
+		UnresolvedType javaLangObject = UnresolvedType.forName("java.lang.Object");
+		ResolvedType rtx = world.resolve(javaLangObject);
+		assertTrue("Resolves to reference type",(rtx instanceof ReferenceType));
+		ReferenceType rt = (ReferenceType) rtx;
+		assertFalse("java.lang.Object is  not raw",rt.isRawType());		
+	}
+	
+	public void testIsGenericTrue() {
+		BcelWorld world = new BcelWorld();
+		UnresolvedType javaLangClass = UnresolvedType.forName("java.lang.Class");
+		ResolvedType rtx = world.resolve(javaLangClass);
+		assertTrue("java.lang.Class has underpinning generic type",rtx.getGenericType().isGenericType());
 	}
 	
 	public void testIsGenericFalse() {
 		BcelWorld world = new BcelWorld();
-		UnresolvedType javaLangObject = UnresolvedType.forName("java/lang/Object");
+		UnresolvedType javaLangObject = UnresolvedType.forName("java.lang.Object");
 		ResolvedType rtx = world.resolve(javaLangObject);
-		assertTrue("Resolves to reference type",(rtx instanceof ReferenceType));
-		ReferenceType rt = (ReferenceType) rtx;
-		assertFalse("java.lang.Object is  not generic",rt.isGenericType());		
+		assertFalse(rtx.isGenericType());
 	}
 	
 }

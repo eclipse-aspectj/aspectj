@@ -22,6 +22,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
@@ -72,11 +73,21 @@ public class BcelGenericSignatureToTypeXConverter {
 		if (innerType.typeArguments.length > 0) {
 			// we have to create a parameterized type
 			// type arguments may be array types, class types, or typevariable types
-			UnresolvedType[] typeArgumentTypes = new UnresolvedType[innerType.typeArguments.length];
+			ResolvedType[] typeArgumentTypes = new ResolvedType[innerType.typeArguments.length];
 			for (int i = 0; i < typeArgumentTypes.length; i++) {
 				typeArgumentTypes[i] = typeArgument2TypeX(innerType.typeArguments[i],typeParams,world,inProgressTypeVariableResolutions);
 			}
-			return world.resolve(UnresolvedType.forParameterizedTypes(UnresolvedType.forSignature(sig.toString()), typeArgumentTypes));
+			ResolvedType theBaseType = UnresolvedType.forSignature(sig.toString()).resolve(world);
+			return 
+				TypeFactory.createParameterizedType(
+									theBaseType,
+									typeArgumentTypes,
+									world);
+				
+			
+//				world.resolve(UnresolvedType.forParameterizedTypes(
+//						UnresolvedType.forSignature(sig.toString()).resolve(world), 
+//						typeArgumentTypes));
 		} else {
 			// we have a non-parameterized type
 			return world.resolve(UnresolvedType.forSignature(sig.toString()));

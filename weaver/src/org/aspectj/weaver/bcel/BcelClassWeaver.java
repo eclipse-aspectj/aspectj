@@ -230,6 +230,8 @@ class BcelClassWeaver implements IClassWeaver {
 	public void addInitializer(ConcreteTypeMunger cm) {
 		NewFieldTypeMunger m = (NewFieldTypeMunger) cm.getMunger();
 		ResolvedType onType = m.getSignature().getDeclaringType().resolve(world);
+		if (onType.isRawType()) onType = onType.getGenericType();
+
 		if (m.getSignature().isStatic()) {
 			addedClassInitializers.add(cm);
 		} else {

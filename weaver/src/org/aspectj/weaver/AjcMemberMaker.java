@@ -694,9 +694,12 @@ public class AjcMemberMaker {
 		}
 	}
 	public static Member interfaceConstructor(ResolvedType resolvedTypeX) {
+		// AMC next two lines should not be needed when sig for generic type is changed
+		ResolvedType declaringType = resolvedTypeX;
+		if (declaringType.isRawType()) declaringType = declaringType.getGenericType();
 		return new ResolvedMember(
 			Member.CONSTRUCTOR,
-			resolvedTypeX,
+			declaringType,
 			Modifier.PUBLIC,
 			"<init>",
 			"()V");

@@ -458,8 +458,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public boolean isGeneric() {
-		char[] sig =  binding.genericSignature();
-		return (sig==null?false:sig[0]=='<');
+		return binding.isGenericType();
 	}
 	
 	public TypeVariable[] getTypeVariables() {

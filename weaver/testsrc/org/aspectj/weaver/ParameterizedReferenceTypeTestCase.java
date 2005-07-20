@@ -62,7 +62,6 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 		super.setUp();
 		world = new BcelWorld();
 		listOfString = (ReferenceType)
-			world.resolve(UnresolvedType.forParameterizedTypeNames("java/util/List",
-					new String[] {"java/lang/String"}));
+			TypeFactory.createTypeFromSignature("Ljava/util/List<Ljava/lang/String;>;").resolve(world);
 	}
 }

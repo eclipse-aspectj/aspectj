@@ -150,7 +150,13 @@ public class CrosscuttingMembers {
 	
 	public void exposeType(UnresolvedType typeToExpose) {
 		if (typeToExpose == ResolvedType.MISSING) return;
-		
+		if (typeToExpose.isParameterizedType() || typeToExpose.isRawType()) {
+			if (typeToExpose instanceof ResolvedType) {
+				typeToExpose = ((ResolvedType)typeToExpose).getGenericType();
+			} else {
+				typeToExpose = UnresolvedType.forSignature(typeToExpose.getRawTypeSignature());
+			}
+		}
 		ResolvedMember member = new ResolvedMember(
 			Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "", UnresolvedType.NONE);
 		addTypeMunger(world.concreteTypeMunger(

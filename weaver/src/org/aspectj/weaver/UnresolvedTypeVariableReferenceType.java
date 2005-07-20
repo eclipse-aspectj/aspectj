@@ -37,6 +37,7 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType {
 	}
 	
 	public ResolvedType resolve(World world) {
+		if (typeVariable == null) return ResolvedType.MISSING;
 		typeVariable.resolve(world);
 		return new TypeVariableReferenceType(typeVariable,world);
 	}

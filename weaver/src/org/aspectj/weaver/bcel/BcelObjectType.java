@@ -181,6 +181,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     }
     
     public ResolvedMember[] getDeclaredMethods() {
+    	unpackGenericSignature();
         if (methods == null) {
 	        Method[] ms = javaClass.getMethods();
 			ResolvedMember[] ret = new ResolvedMember[ms.length];
@@ -193,6 +194,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     }			
     
     public ResolvedMember[] getDeclaredFields() {
+    	unpackGenericSignature();
         if (fields == null) {
             Field[] fs = javaClass.getFields();
             ResolvedMember[] ret = new ResolvedMember[fs.length];
@@ -528,6 +530,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 							cSig.formalTypeParameters, 
 							getResolvedTypeX().getWorld());
 			}
+		}
+		if (isGeneric()) {
+			// update resolved typex to point at generic type not raw type.
+			this.resolvedTypeX = (ReferenceType) this.resolvedTypeX.getGenericType();
 		}
 	}
 	

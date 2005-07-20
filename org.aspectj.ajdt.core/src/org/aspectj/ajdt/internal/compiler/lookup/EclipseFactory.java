@@ -34,6 +34,7 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
@@ -212,7 +213,11 @@ public class EclipseFactory {
 					}
 				}
 			}
-			return UnresolvedType.forParameterizedTypes(UnresolvedType.forName(getName(binding)), arguments);
+			ResolvedType baseType = UnresolvedType.forName(getName(binding)).resolve(getWorld());
+			return TypeFactory.createParameterizedType(
+						baseType,
+						arguments,
+						getWorld());			
 		}
 		
 		// Convert the source type binding for a generic type into a generic UnresolvedType
@@ -232,9 +237,9 @@ public class EclipseFactory {
 			//TODO asc generics - temporary guard....
 			if (!(binding instanceof SourceTypeBinding))
 				throw new RuntimeException("Cant get the generic sig for "+binding.debugName());
-			return ResolvedType.forGenericType(getName(binding),tVars,
+			return UnresolvedType.forGenericType(getName(binding),tVars,
 					CharOperation.charToString(((SourceTypeBinding)binding).genericSignature()));
-		}
+		} 
 		
 		return UnresolvedType.forName(getName(binding));
 	}
@@ -254,6 +259,7 @@ public class EclipseFactory {
 			superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
 		}
 		TypeVariable tv = new TypeVariable(name,superclassType,superinterfaces);
+		tv.resolve(world);
 		ret.setTypeVariable(tv);
 		typeVariableBindingsInProgress.remove(aTypeVariableBinding);
 		return ret;
@@ -343,9 +349,12 @@ public class EclipseFactory {
 
 	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
 		//System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
+		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
+		ResolvedType realDeclaringType = world.resolve(fromBinding(declaringType));
+		if (realDeclaringType.isRawType()) realDeclaringType = realDeclaringType.getGenericType();
 		ResolvedMember ret =  new ResolvedMember(
 			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
-			world.resolve(fromBinding(declaringType)),
+			realDeclaringType,
 			binding.modifiers,
 			world.resolve(fromBinding(binding.returnType)),
 			new String(binding.selector),
@@ -359,9 +368,12 @@ public class EclipseFactory {
 	}
 	
 	public ResolvedMember makeResolvedMember(FieldBinding binding, TypeBinding receiverType) {
+		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
+		ResolvedType realDeclaringType = world.resolve(fromBinding(receiverType));
+		if (realDeclaringType.isRawType()) realDeclaringType = realDeclaringType.getGenericType();
 		return new ResolvedMember(
 			Member.FIELD,
-			world.resolve(fromBinding(receiverType)),
+			realDeclaringType,
 			binding.modifiers,
 			world.resolve(fromBinding(binding.type)),
 			new String(binding.name),
@@ -521,6 +533,7 @@ public class EclipseFactory {
 			ReferenceType complexName = new ReferenceType(complexTx,world);//getWorld().lookupOrCreateName(complexTx);
 			name.setGenericType(complexName);
 			complexName.setDelegate(t);
+			complexName.setSourceContext(t.getResolvedTypeX().getSourceContext());
 		}
 				
 		name.setDelegate(t);

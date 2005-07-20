@@ -48,6 +48,11 @@ public abstract class ResolvedTypeMunger {
 	public ResolvedTypeMunger(Kind kind, ResolvedMember signature) {
 		this.kind = kind;
 		this.signature = signature;
+		UnresolvedType declaringType = signature != null ? signature.getDeclaringType() : null;
+		if (declaringType != null) {
+			if (declaringType.isRawType()) throw new IllegalStateException("Use generic type, not raw type");
+			if (declaringType.isParameterizedType()) throw new IllegalStateException("Use generic type, not parameterized type");
+		}
 	}
 	
 	public void setSourceLocation(ISourceLocation isl) {
@@ -62,6 +67,7 @@ public abstract class ResolvedTypeMunger {
 
     // fromType is guaranteed to be a non-abstract aspect
     public ConcreteTypeMunger concretize(World world, ResolvedType aspectType) {
+    	
 		ConcreteTypeMunger munger = world.concreteTypeMunger(this, aspectType);
         return munger;
     }
@@ -69,6 +75,7 @@ public abstract class ResolvedTypeMunger {
     
     public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
     	ResolvedType onType = matchType.getWorld().resolve(signature.getDeclaringType());
+    	if (onType.isRawType()) onType = onType.getGenericType();
     	//System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
    		if (matchType.equals(onType)) { 
    			if (!onType.isExposedToWeaver()) {

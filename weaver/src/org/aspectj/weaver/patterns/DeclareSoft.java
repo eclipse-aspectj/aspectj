@@ -100,7 +100,7 @@ public class DeclareSoft extends Declare {
 	        // ENH 42743 suggests that we don't soften runtime exceptions.
 			if (scope.getWorld().getCoreType(UnresolvedType.RUNTIME_EXCEPTION).isAssignableFrom(excType)) {
 			    scope.getWorld().getLint().runtimeExceptionNotSoftened.signal(
-			      		new String[]{exception.toString()},
+			      		new String[]{excType.getName()},
 			      		exception.getSourceLocation(),null);
 				pointcut = Pointcut.makeMatchesNothing(Pointcut.RESOLVED);
 				return;

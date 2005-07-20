@@ -117,7 +117,7 @@ public class UnresolvedType  {
     public static final UnresolvedType   AT_TARGET = forSignature("Ljava/lang/annotation/Target;");
 
     // this doesn't belong here and will get moved to ResolvedType later in the refactoring
-	public static final String MISSING_NAME = "<missing>";
+	public static final String MISSING_NAME = "@missing@";
 
     
     // constants indicating the base kind of the type
@@ -132,6 +132,18 @@ public class UnresolvedType  {
 	public final static int TYPE_VARIABLE = 5;    	// a type variable
 	public final static int WILDCARD = 6; 			// a generic wildcard type
 
+	public String getKind() {
+		switch (typeKind) {
+			case PRIMITIVE: return "PRIMITIVE";
+			case SIMPLE: return "SIMPLE";
+			case RAW: return "RAW";
+			case GENERIC: return "GENERIC";
+			case PARAMETERIZED: return "PARAMETERIZED";
+			case TYPE_VARIABLE: return "TYPE_VARIABLE";
+			case WILDCARD: return "WILDCARD";
+			default: return null;
+		}		
+	}
     protected int typeKind = SIMPLE; // what kind of type am I?
 
 	/**
@@ -144,7 +156,7 @@ public class UnresolvedType  {
      * with all supertype, superinterface, type variable, and parameter information
      * removed.
      */
-    protected String signatureErasure;
+	protected String signatureErasure;
 
     /**
      * Iff isParameterized(), then these are the type parameters 
@@ -225,13 +237,7 @@ public class UnresolvedType  {
     // -----------------------------
     // old stuff...
     
-    
-	/**
-	 * For parameterized types, this is the signature of the raw type (e.g. Ljava/util/List; )
-	 * For non-parameterized types, it is null.
-	 */
-	protected String rawTypeSignature;
-	
+    	
 	// For a generic type, this is the 'declared' signature
 	// e.g. for Enum: <E:Ljava/lang/Enum<TE;>;>Ljava/lang/Object;Ljava/lang/Comparable<TE;>;Ljava/io/Serializable;
 	// note: it doesnt include the name of the type!
@@ -242,82 +248,24 @@ public class UnresolvedType  {
 	 */
     protected UnresolvedType(String signature) {
         super();
+ //       if (signature.indexOf('<') != -1) throw new IllegalStateException("Shouldn't be calling simple signature based type constructor with generic info in signature");
         this.signature = signature;
-		// avoid treating '<missing>' as a parameterized type ...
-		if (signature.charAt(0)!='<' && signature.indexOf("<")!=-1 && !signature.startsWith("<missing>")) {
-			// anglies alert - parameterized type
-			processSignature(signature);
-		}
+        this.signatureErasure = signature;
     }
-	
-	/**
-	 * Called when processing a parameterized type, sets the raw type for this typeX and calls a subroutine
-	 * to handle sorting out the type parameters for the type.
-	 */
-	private void processSignature(String sig) {
-		// determine the raw type
-		//TODO asc generics tidy this bit up?
-		boolean skip=false;
-		if (sig.charAt(0)=='+') {/*isExtends=true;*/skip=true;}
-		if (sig.charAt(0)=='-') {/*isSuper=true;*/skip=true;}
-		int parameterTypesStart = signature.indexOf("<");
-		int parameterTypesEnd   = signature.lastIndexOf(">");
-		StringBuffer rawTypeSb = new StringBuffer();
-		String p = signature.substring(0,parameterTypesStart);
-		if (skip) p = p.substring(1);
-		rawTypeSb.append(p).append(";");
-		rawTypeSignature = rawTypeSb.toString();
-		typeParameters = processParameterization(signature,parameterTypesStart+1,parameterTypesEnd-1);
-		typeKind = PARAMETERIZED;
-	}
-	
-	/**
-	 * For a parameterized signature, e.g. <Ljava/lang/String;Ljava/util/List<Ljava/lang/String;>;>"
-	 * this routine will return an appropriate array of TypeXs representing the top level type parameters.
-	 * Where type parameters are themselves parameterized, we recurse.
-	 */
-	public UnresolvedType[] processParameterization(String paramSig,int startpos,int endpos) {
-		boolean debug = false;
-		if (debug) {
-			StringBuffer sb = new StringBuffer();
-			sb.append(paramSig).append("\n");
-			for(int i=0;i<paramSig.length();i++) {
-				if (i==startpos || i==endpos) sb.append("^");
-				else if (i<startpos || i>endpos) sb.append(" ");
-				else sb.append("-");
-			}
-			sb.append("\n");
-			System.err.println(sb.toString());
-		}
-		int posn = startpos;
-		List parameterTypes = new ArrayList();
-		while (posn<endpos && paramSig.charAt(posn)!='>') {
-			int nextAngly = paramSig.indexOf("<",posn);
-			int nextSemi  = paramSig.indexOf(";",posn);
-			if (nextAngly==-1 || nextSemi<nextAngly) { // the next type is not parameterized
-				// simple type
-				parameterTypes.add(UnresolvedType.forSignature(paramSig.substring(posn,nextSemi+1)));
-				posn=nextSemi+1; // jump to the next type
-			} else if (nextAngly!=-1 && nextSemi>nextAngly) {  // parameterized type, e.g. Ljava/util/Set<Ljava/util/String;>
-				int count=1;
-				int pos=nextAngly+1;
-				for (;count>0;pos++){
-					switch (paramSig.charAt(pos)) {
-						case '<':count++;break;
-						case '>':count--;break;
-						default:
-					}
-				}
-				String sub = paramSig.substring(posn,pos+1);
-				parameterTypes.add(UnresolvedType.forSignature(sub));
-				posn=pos+1;
-			} else {
-				throw new BCException("What the hell do i do with this? ["+paramSig.substring(posn)+"]");
-			} 
-		}
-		return (UnresolvedType[])parameterTypes.toArray(new UnresolvedType[]{});
-	}
-
+    
+    protected UnresolvedType(String signature, String signatureErasure) {
+    	this.signature = signature;
+    	this.signatureErasure = signatureErasure;
+    }
+    
+    // called from TypeFactory
+    public UnresolvedType(String signature, String signatureErasure, UnresolvedType[] typeParams) {
+    	this.signature = signature;
+    	this.signatureErasure = signatureErasure;
+    	this.typeParameters = typeParams;
+    	if (typeParams != null) this.typeKind = PARAMETERIZED;
+    }
+		
     // ---- Things we can do without a world
     
     /**
@@ -373,9 +321,19 @@ public class UnresolvedType  {
         return ret;
     }  
 	
-	
-    public static UnresolvedType forGenericTypeSignature(String nameSig,String declaredGenericSig) {
-    	UnresolvedType ret = UnresolvedType.forSignature(nameSig);
+	public static UnresolvedType forGenericType(String name,TypeVariable[] tvbs,String genericSig) { 
+		// TODO asc generics needs a declared sig
+		String sig = nameToSignature(name);
+		UnresolvedType ret = UnresolvedType.forSignature(sig);
+		ret.typeKind=GENERIC;
+		ret.typeVariables = tvbs;
+		ret.signatureErasure = sig;
+		ret.genericSignature = genericSig;
+		return ret; 
+	}
+		
+    public static UnresolvedType forGenericTypeSignature(String sig,String declaredGenericSig) {
+    	UnresolvedType ret = UnresolvedType.forSignature(sig);
     	ret.typeKind=GENERIC;
     	
     	ClassSignature csig = new GenericSignatureParser().parseAsClassSignature(declaredGenericSig);
@@ -387,46 +345,12 @@ public class UnresolvedType  {
 			Signature.ClassTypeSignature cts = (Signature.ClassTypeSignature)parameter.classBound;
 			ret.typeVariables[i]=new TypeVariable(ftps[i].identifier,UnresolvedType.forSignature(cts.outerType.identifier+";"));
 		}
-    	ret.rawTypeSignature = ret.signature;
-    	ret.signature = ret.rawTypeSignature;
+    	ret.signatureErasure = sig;
+    	ret.signature = ret.signatureErasure;
     	ret.genericSignature=declaredGenericSig;
     	return ret;
     }
     
-	/**
-	 * Makes a parameterized type with the given name
-	 * and parameterized type names.
-	 */
-    public static UnresolvedType forParameterizedTypeNames(String name, String[] paramTypeNames) {
-		UnresolvedType[] paramTypes = null;
-    	if (paramTypeNames!=null) {
-			paramTypes = new UnresolvedType[paramTypeNames.length];
-			for (int i = 0; i < paramTypeNames.length; i++) {
-				paramTypes[i] = UnresolvedType.forName(paramTypeNames[i]);
-			}
-		}
-    	return UnresolvedType.forParameterizedTypes(UnresolvedType.forName(name), paramTypes);
-    }
-    
-    public static UnresolvedType forParameterizedTypes(UnresolvedType rawType, UnresolvedType[] paramTypes) {
-		UnresolvedType ret = rawType;
-		ret.typeKind=PARAMETERIZED;
-		ret.typeParameters = paramTypes;
-		ret.rawTypeSignature = ret.signature;
-		// sig for e.g. List<String> is Ljava/util/List<Ljava/lang/String;>;
-		if (ret.typeParameters!=null) {
-			StringBuffer sigAddition = new StringBuffer();
-			sigAddition.append("<");
-			for (int i = 0; i < ret.typeParameters.length; i++) {
-				sigAddition.append(ret.typeParameters[i].signature);			
-			}
-			sigAddition.append(">");
-			sigAddition.append(";");
-			ret.signature = ret.signature.substring(0,ret.signature.length()-1) + sigAddition.toString();
-		}
-		return ret;    	
-    }
-	
 	public static UnresolvedType forRawTypeNames(String name) {
 		UnresolvedType ret = UnresolvedType.forName(name);
 		ret.typeKind = RAW;
@@ -488,11 +412,12 @@ public class UnresolvedType  {
             case 'F': return ResolvedType.FLOAT;
             case 'I': return ResolvedType.INT;
             case 'J': return ResolvedType.LONG;
-            case 'L': return new UnresolvedType(signature);
+            case 'L': return TypeFactory.createTypeFromSignature(signature);
+            case 'P': return TypeFactory.createTypeFromSignature(signature);
             case 'S': return ResolvedType.SHORT;
             case 'V': return ResolvedType.VOID;
             case 'Z': return ResolvedType.BOOLEAN;
-            case '[': return new UnresolvedType(signature);
+            case '[': return TypeFactory.createTypeFromSignature(signature);
             case '+': return new UnresolvedType(signature);
             case '-' : return new UnresolvedType(signature);
             case '?' : return GenericsWildcardTypeX.GENERIC_WILDCARD;
@@ -538,7 +463,7 @@ public class UnresolvedType  {
     }
     
     public String getRawName() {
-    	return signatureToName((rawTypeSignature==null?signature:rawTypeSignature));
+    	return signatureToName((signatureErasure==null?signature:signatureErasure));
     }
 	
 	public String getBaseName() {
@@ -595,8 +520,8 @@ public class UnresolvedType  {
 	 * For parameterized types, return the signature for the raw type
 	 */
 	public String getRawTypeSignature() {
-		if (rawTypeSignature==null) return signature;
-		return rawTypeSignature;
+		if (signatureErasure==null) return signature;
+		return signatureErasure;
 	}
 	
 	public UnresolvedType getRawType() {
@@ -642,7 +567,7 @@ public class UnresolvedType  {
      * Returns a java language string representation of this type.
      */
     public String toString() {
-        return getName();
+        return getName(); // + " - " + getKind();
     }
 
     // ---- requires worlds
@@ -669,59 +594,36 @@ public class UnresolvedType  {
             case 'J': return "long";
             case 'L':
                 String name =  signature.substring(1, signature.length() - 1).replace('/', '.');
-				if (name.indexOf("<") == -1) return name;
+				return name;
+            case 'P': // it's one of our parameterized type sigs
+				StringBuffer nameBuff = new StringBuffer();
 				// signature for parameterized types is e.g.
 				// List<String> -> Ljava/util/List<Ljava/lang/String;>;
 				// Map<String,List<Integer>> -> Ljava/util/Map<java/lang/String;Ljava/util/List<Ljava/lang/Integer;>;>;
-				StringBuffer nameBuff = new StringBuffer();
-				boolean justSeenLeftArrowChar = false;
-				boolean justSeenTypeParameter = false;
-				boolean justSeenSemiColon= false;
 				int paramNestLevel = 0;
-				for (int i = 0 ; i < name.length(); i++) {
-					char c = name.charAt(i);
+				for (int i = 1 ; i < signature.length(); i++) {
+					char c = signature.charAt(i);
 					switch (c) {
-						case '<' : 
-							justSeenLeftArrowChar = true;
+						case '/' : nameBuff.append('.'); break;
+						case '<' :
+							nameBuff.append("<");
 							paramNestLevel++;
-							nameBuff.append(c); 
-							break;
-						case ';' :
-							justSeenSemiColon = true;
-							break;
-						case '>' :
-							paramNestLevel--;
-							nameBuff.append(c);
-							break;
-						case 'L' :
-							if (justSeenLeftArrowChar) {
-								justSeenLeftArrowChar = false;
-								break;
+							StringBuffer innerBuff = new StringBuffer();
+							while(paramNestLevel > 0) {
+								c = signature.charAt(++i);
+								if (c == '<') paramNestLevel++;
+								if (c == '>') paramNestLevel--;
+								if (paramNestLevel > 0) innerBuff.append(c);
+								if (c == ';' && paramNestLevel == 1) {
+									nameBuff.append(signatureToName(innerBuff.toString()));
+									if (signature.charAt(i+1) != '>') nameBuff.append(',');
+									innerBuff = new StringBuffer();
+								} 
 							}
-							if (justSeenSemiColon) {
-								nameBuff.append(",");
-							} else {
-								nameBuff.append("L");
-							}
+							nameBuff.append(">");
 							break;
-						case 'T':
-							if (justSeenLeftArrowChar) {
-								justSeenLeftArrowChar = false;
-								justSeenTypeParameter = true;
-								break;
-							}
-							if (justSeenSemiColon) {
-								nameBuff.append(",");
-							} else {
-								nameBuff.append("T");
-							}
-							justSeenTypeParameter = true;
-							// type parameter
-							break;
+						case ';' : break;
 						default: 
-							justSeenSemiColon = false;
-							justSeenTypeParameter = false;
-							justSeenLeftArrowChar = false;
 							nameBuff.append(c);
 					}
 				}
@@ -764,14 +666,34 @@ public class UnresolvedType  {
 					return "L" + name.replace('.', '/') + ";";
 				} else {
 					StringBuffer nameBuff = new StringBuffer();
-					nameBuff.append("L");
+					int nestLevel = 0;
+					nameBuff.append("P");
 					for (int i = 0; i < name.length(); i++) {
 						char c = name.charAt(i);
 						switch (c) {
 						case '.' : nameBuff.append('/'); break;
-						case '<' : nameBuff.append("<L"); break;
-						case '>' : nameBuff.append(";>"); break;
-						case ',' : nameBuff.append(";L"); break;
+						case '<' :	
+							nameBuff.append("<");
+							nestLevel++;
+							StringBuffer innerBuff = new StringBuffer();
+							while(nestLevel > 0) {
+								c = name.charAt(++i);
+								if (c == '<') nestLevel++;
+								if (c == '>') nestLevel--;
+								if (c == ',' && nestLevel == 1) {
+									nameBuff.append(nameToSignature(innerBuff.toString()));
+									innerBuff = new StringBuffer();
+								} else {
+									if (nestLevel > 0) innerBuff.append(c);
+								}
+							}
+							nameBuff.append(nameToSignature(innerBuff.toString()));
+							nameBuff.append('>');
+							break;
+						case '>' : 
+							throw new IllegalStateException("Should by matched by <");
+						case ',' : 
+							throw new IllegalStateException("Should only happen inside <...>");
 						default: nameBuff.append(c);
 						}
 					}
@@ -861,32 +783,6 @@ public class UnresolvedType  {
 	}
 
 
-
-
-	public static UnresolvedType[] getInterfacesFromSignature(String sig) {
- 		// there is a declared signature - use it to work out the interfaces, rather than the stuff in the class file...
-		ClassSignature cSig = new GenericSignatureParser().parseAsClassSignature(sig);
-		Signature.ClassTypeSignature[] declaredInterfaces = cSig.superInterfaceSignatures;
-		UnresolvedType[] retVal = new UnresolvedType[declaredInterfaces.length];
-		for (int i = 0; i < declaredInterfaces.length; i++) {
-			Signature.ClassTypeSignature signature = declaredInterfaces[i];
-			retVal[i] = convertFromClassSignatureToTypeX(signature);
-		}
-		return retVal;
-	}
 	
-	private static UnresolvedType convertFromClassSignatureToTypeX(Signature.ClassTypeSignature signature) {
-		return new UnresolvedType(signature.classSignature);
-	}
-	
-		public String getKind() {
-		switch (typeKind) {
-			case 0: return "SIMPLE";
-			case 1: return "RAW";
-			case 2: return "GENERIC";
-			case 3: return "PARAMETERIZED";
-			default: return null;
-		}		
-	}
 }
 

@@ -57,6 +57,23 @@ public class ReferenceType extends ResolvedType {
     public ReferenceType(String signature, World world) {
         super(signature, world);
     }
+    
+    /**
+     * Constructor used when creating a parameterized type.
+     */
+    public ReferenceType(
+    			ResolvedType theGenericType, 
+    			ResolvedType[] theParameters, 
+    			World aWorld) {
+    	super(makeParameterizedSignature(theGenericType,theParameters),
+    			theGenericType.signatureErasure,
+    			aWorld);
+    	ReferenceType genericReferenceType = (ReferenceType) theGenericType;
+    	this.typeParameters = theParameters;
+    	this.genericType = genericReferenceType;
+    	this.typeKind = PARAMETERIZED;
+    	this.delegate = genericReferenceType.getDelegate();
+    }
 	
     /**
      * Create a reference type for a generic type
@@ -72,7 +89,7 @@ public class ReferenceType extends ResolvedType {
     }
     
     public final boolean isGenericType() {
-    	return delegate.isGeneric();
+    	return !isParameterizedType() && !isRawType() && delegate.isGeneric();
     }
 
     public AnnotationX[] getAnnotations() {
@@ -164,11 +181,11 @@ public class ReferenceType extends ResolvedType {
 
 	public ResolvedMember[] getDeclaredFields() {
 		if (parameterizedFields != null) return parameterizedFields;
-		if (isParameterizedType()) {
+		if (isParameterizedType() || isRawType()) {
 			ResolvedMember[] delegateFields = delegate.getDeclaredFields();
 			parameterizedFields = new ResolvedMember[delegateFields.length];
 			for (int i = 0; i < delegateFields.length; i++) {
-				parameterizedFields[i] = delegateFields[i].parameterizedWith(getTypeParameters());
+				parameterizedFields[i] = delegateFields[i].parameterizedWith(getTypesForMemberParameterization(),this);
 			}
 			return parameterizedFields;
 		} else {
@@ -183,11 +200,11 @@ public class ReferenceType extends ResolvedType {
 	 */
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (parameterizedInterfaces != null) return parameterizedInterfaces;
-		if (isParameterizedType()) {
+		if (isParameterizedType() || isRawType()) {
 			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < delegateInterfaces.length; i++) {
-				parameterizedInterfaces[i] = delegateInterfaces[i].parameterizedWith(getTypeParameters());
+				parameterizedInterfaces[i] = delegateInterfaces[i].parameterizedWith(getTypesForMemberParameterization());
 			}
 			return parameterizedInterfaces;
 		} else {
@@ -197,11 +214,12 @@ public class ReferenceType extends ResolvedType {
 
 	public ResolvedMember[] getDeclaredMethods() {
 		if (parameterizedMethods != null) return parameterizedMethods;
-		if (isParameterizedType()) {
+		if (isParameterizedType() || isRawType()) {
 			ResolvedMember[] delegateMethods = delegate.getDeclaredMethods();
+			UnresolvedType[] parameters = getTypesForMemberParameterization();
 			parameterizedMethods = new ResolvedMember[delegateMethods.length];
 			for (int i = 0; i < delegateMethods.length; i++) {
-				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(getTypeParameters());
+				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(parameters,this);
 			}
 			return parameterizedMethods;
 		} else {
@@ -211,16 +229,31 @@ public class ReferenceType extends ResolvedType {
 
 	public ResolvedMember[] getDeclaredPointcuts() {
 		if (parameterizedPointcuts != null) return parameterizedPointcuts;
-		if (isParameterizedType()) {
+		if (isParameterizedType() || isRawType()) {
 			ResolvedMember[] delegatePointcuts = delegate.getDeclaredPointcuts();
 			parameterizedPointcuts = new ResolvedMember[delegatePointcuts.length];
 			for (int i = 0; i < delegatePointcuts.length; i++) {
-				parameterizedPointcuts[i] = delegatePointcuts[i].parameterizedWith(getTypeParameters());
+				parameterizedPointcuts[i] = delegatePointcuts[i].parameterizedWith(getTypesForMemberParameterization(),this);
 			}
 			return parameterizedPointcuts;
 		} else {
 			return delegate.getDeclaredPointcuts();
 		}
+	}
+	
+	private UnresolvedType[] getTypesForMemberParameterization() {
+		UnresolvedType[] parameters = null;
+		if (isParameterizedType()) {
+			parameters = getTypeParameters();
+		} else if (isRawType()){
+			// raw type, use upper bounds of type variables on generic type
+			TypeVariable[] tvs = getGenericType().getTypeVariables();
+			parameters = new UnresolvedType[tvs.length];
+			for (int i = 0; i < tvs.length; i++) {
+				parameters[i] = tvs[i].getUpperBound();
+			}
+		}
+		return parameters;
 	}
 
 	public TypeVariable[] getTypeVariables() {
@@ -293,7 +326,7 @@ public class ReferenceType extends ResolvedType {
 		// makes sense if someone is specifying that it has a generic form
 		if ( typeKind == UnresolvedType.SIMPLE ) {
 			typeKind         = UnresolvedType.RAW;
-			rawTypeSignature = signature;
+			signatureErasure = signature;
 		}
 	}
 	
@@ -301,4 +334,25 @@ public class ReferenceType extends ResolvedType {
 		return genericType;
 	}
 
+	/**
+	 * a parameterized signature starts with a "P" in place of the "L",
+	 * see the comment on signatures in UnresolvedType.
+	 * @param aGenericType
+	 * @param someParameters
+	 * @return
+	 */
+	private static String makeParameterizedSignature(ResolvedType aGenericType, ResolvedType[] someParameters) {
+		String rawSignature = aGenericType.getRawTypeSignature();
+		String prefix = PARAMETERIZED_TYPE_IDENTIFIER + rawSignature.substring(1,rawSignature.length()-1);
+		
+		StringBuffer ret = new StringBuffer();
+		ret.append(prefix);
+		ret.append("<");
+		for (int i = 0; i < someParameters.length; i++) {
+			ret.append(someParameters[i].getSignature());			
+		}
+		ret.append(">;");
+		return ret.toString();
+	}
+	
 }

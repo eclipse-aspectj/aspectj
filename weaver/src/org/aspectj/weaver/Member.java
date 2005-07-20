@@ -27,7 +27,7 @@ import org.aspectj.util.TypeSafeEnum;
 public class Member implements Comparable, AnnotatedElement {
     
     private final Kind kind;
-    private final UnresolvedType declaringType;
+    protected UnresolvedType declaringType;
     protected final int modifiers; // protected because ResolvedMember uses it
     private final UnresolvedType returnType;
     private final String name;
@@ -154,7 +154,7 @@ public class Member implements Comparable, AnnotatedElement {
             if (c == ')') break; // break out when the hit the ')'
             int start = i;
             while (c == '[') c = sig.charAt(++i);
-            if (c == 'L') {
+            if (c == 'L' || c == 'P') {
 				int nextSemicolon = sig.indexOf(';',start);
 				int firstAngly = sig.indexOf('<',start);
 				if (firstAngly == -1 || firstAngly>nextSemicolon) {
@@ -389,9 +389,9 @@ public class Member implements Comparable, AnnotatedElement {
 
     public String toString() {
     	StringBuffer buf = new StringBuffer();
-    	buf.append(returnType);
+    	buf.append(returnType.getName());
     	buf.append(' ');
-   		buf.append(declaringType);
+   		buf.append(declaringType.getName());
         buf.append('.');
    		buf.append(name);
     	if (kind != FIELD) {
@@ -400,7 +400,7 @@ public class Member implements Comparable, AnnotatedElement {
                 buf.append(parameterTypes[0]);
         		for (int i=1, len = parameterTypes.length; i < len; i++) {
                     buf.append(", ");
-        		    buf.append(parameterTypes[i]);
+        		    buf.append(parameterTypes[i].getName());
         		}
             }
     		buf.append(")");
