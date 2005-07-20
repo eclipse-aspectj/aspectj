@@ -200,16 +200,34 @@ public class ReferenceType extends ResolvedType {
 	 */
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (parameterizedInterfaces != null) return parameterizedInterfaces;
-		if (isParameterizedType() || isRawType()) {
+		if (isParameterizedType()) {
 			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
+			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < delegateInterfaces.length; i++) {
-				parameterizedInterfaces[i] = delegateInterfaces[i].parameterizedWith(getTypesForMemberParameterization());
+				parameterizedInterfaces[i] = delegateInterfaces[i].parameterizedWith(paramTypes);
 			}
 			return parameterizedInterfaces;
-		} else {
-			return delegate.getDeclaredInterfaces();
-		}
+		} else if (isRawType()){
+			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
+			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
+			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
+			for (int i = 0; i < parameterizedInterfaces.length; i++) {
+				parameterizedInterfaces[i] = delegateInterfaces[i];
+				if (parameterizedInterfaces[i].isGenericType()) {
+					// a generic supertype of a raw type is replaced by its raw equivalent
+					parameterizedInterfaces[i] = 
+						parameterizedInterfaces[i].getRawType().resolve(getWorld());
+				} else if (parameterizedInterfaces[i].isParameterizedType()) {
+					// a parameterized supertype collapses any type vars to their upper
+					// bounds
+					parameterizedInterfaces[i] = 
+						parameterizedInterfaces[i].parameterizedWith(paramTypes);
+				}
+			}
+			return parameterizedInterfaces;
+		} 
+		return delegate.getDeclaredInterfaces();
 	}
 
 	public ResolvedMember[] getDeclaredMethods() {
@@ -256,6 +274,10 @@ public class ReferenceType extends ResolvedType {
 		return parameters;
 	}
 
+	public UnresolvedType getRawType() {
+		return super.getRawType().resolve(getWorld());
+	}
+	
 	public TypeVariable[] getTypeVariables() {
 		return delegate.getTypeVariables();
 	}
@@ -331,6 +353,7 @@ public class ReferenceType extends ResolvedType {
 	}
 	
 	public ResolvedType getGenericType() {
+		if (isGenericType()) return this;
 		return genericType;
 	}
 

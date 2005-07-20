@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -1406,7 +1407,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public ResolvedType parameterizedWith(UnresolvedType[] typeParameters) {
-		return this;
+		if (!(isGenericType() || isParameterizedType())) return this;
+		return TypeFactory.createParameterizedType(this.getGenericType(), typeParameters, getWorld());
 	}
 	
 	/**
