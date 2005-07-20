@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.Signature;
@@ -212,6 +213,15 @@ public class UnresolvedType  {
      */
     public final int hashCode() {
         return signature.hashCode();
+    }
+    
+    /**
+     * Return a version of this parameterized type in which any type parameters
+     * that are type variable references are replaced by their matching type variable
+     * binding.
+     */
+    public UnresolvedType parameterize(Map typeBindings) {
+    	throw new UnsupportedOperationException("resolve this type first");
     }
     
     /**

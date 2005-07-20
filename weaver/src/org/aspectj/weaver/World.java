@@ -114,6 +114,7 @@ public abstract class World implements Dump.INode {
     
     // if we already have an rtx, don't re-resolve it
     public ResolvedType resolve(ResolvedType ty) {
+    	if (ty.isTypeVariable()) return ty; // until type variables have proper sigs...
     	ResolvedType resolved = typeMap.get(ty.getSignature());
     	if (resolved == null) {
     		typeMap.put(ty.getSignature(), ty);

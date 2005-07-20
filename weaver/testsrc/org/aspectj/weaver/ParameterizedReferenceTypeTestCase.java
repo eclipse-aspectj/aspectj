@@ -58,10 +58,24 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 		
 	}
 	
+	public void testDeclaredMethodWithParameterizedReturnType() {
+		ResolvedMember[] methods = listOfString.getDeclaredMethods();
+		ResolvedMember iterator = null;
+		for (int i = 0; i < methods.length; i++) {
+			if (methods[i].getName().equals("iterator")) {
+				iterator = methods[i];
+				break;
+			}
+		}
+		UnresolvedType returnType = iterator.getReturnType();
+		assertEquals("Pjava/util/Iterator<Ljava/lang/String;>;",returnType.getSignature());
+		
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		world = new BcelWorld();
 		listOfString = (ReferenceType)
-			TypeFactory.createTypeFromSignature("Ljava/util/List<Ljava/lang/String;>;").resolve(world);
+			TypeFactory.createTypeFromSignature("Pjava/util/List<Ljava/lang/String;>;").resolve(world);
 	}
 }

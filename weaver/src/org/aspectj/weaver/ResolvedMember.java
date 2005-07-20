@@ -374,9 +374,10 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 				return aType; // if the type variable comes from the method (and not the type) thats OK
 			}
 			return (UnresolvedType) typeVariableMap.get(variableName);
-		} else {
-			return aType;
-		}
+		} else if (aType.isParameterizedType()) {
+			return aType.parameterize(typeVariableMap);
+		} 
+		return aType;		
 	}
 	
 	

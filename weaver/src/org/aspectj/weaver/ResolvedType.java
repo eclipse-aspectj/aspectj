@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -1407,6 +1408,35 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public ResolvedType parameterizedWith(UnresolvedType[] typeParameters) {
 		return this;
 	}
+	
+	/**
+	 * Iff I am a parameterized type, and any of my parameters are type variable
+	 * references, return a version with those type parameters replaced in accordance
+	 * with the passed bindings.
+	 */
+	public UnresolvedType parameterize(Map typeBindings) {
+	  	if (!isParameterizedType()) throw new IllegalStateException("Can't parameterize a type that is not a parameterized type");
+    	boolean workToDo = false;
+    	for (int i = 0; i < typeParameters.length; i++) {
+			if (typeParameters[i].isTypeVariable()) {
+				workToDo = true;
+			}
+		}
+    	if (!workToDo) {
+    		return this;
+    	} else {
+    		UnresolvedType[] newTypeParams = new UnresolvedType[typeParameters.length];
+    		for (int i = 0; i < newTypeParams.length; i++) {
+				newTypeParams[i] = typeParameters[i];
+				if (newTypeParams[i].isTypeVariable()) {
+					TypeVariableReferenceType tvrt = (TypeVariableReferenceType) newTypeParams[i];
+					UnresolvedType binding = (UnresolvedType) typeBindings.get(tvrt.getTypeVariable().getName());
+					if (binding != null) newTypeParams[i] = binding;
+				}
+			}
+    		return TypeFactory.createParameterizedType(getGenericType(), newTypeParams, getWorld());
+    	}
+    }
 	
 	public boolean hasParameterizedSuperType() {
 		getParameterizedSuperTypes();
