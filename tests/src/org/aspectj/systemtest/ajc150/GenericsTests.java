@@ -262,7 +262,6 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("annotation pcds with parameterized types");
 	}
 
-	// comment out due to temporary failing
 //	public void testAnnotationPatternsWithParameterizedTypes() {
 //		runTest("annotation patterns with parameterized types");
 //	}
@@ -271,12 +270,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("staticinitialization and parameterized types");
 	}
 
-	// temporary
-//	public void testStaticInitializationMatchingWithParameterizedTypes() {
-//		runTest("staticinitialization and parameterized type matching");
-//	}
+	public void testStaticInitializationMatchingWithParameterizedTypes() {
+		runTest("staticinitialization and parameterized type matching");
+	}
 
-	// temporary
 //	public void testStaticInitializationWithGenericTypes() {
 //		runTest("staticinitialization with generic types");
 //	}
