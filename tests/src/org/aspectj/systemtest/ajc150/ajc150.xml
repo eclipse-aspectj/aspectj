@@ -2536,6 +2536,8 @@
          <message kind="warning" line="1" text="clinit(GenericInterface&lt;Double&gt;+)"/>
          <message kind="warning" line="3" text="clinit(GenericInterface&lt;Double&gt;+)"/>
          <message kind="warning" line="3" text="clinit(GenericImplementingClass&lt;Double&gt;+)"/>
+         <message kind="warning" line="15" text="Type java.lang.String does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericInterface"/>
+         <message kind="warning" line="19" text="Type pattern does not match because the wrong number of type parameters are specified: Type GenericInterface requires 1 parameter(s)"/>
      </compile>
    </ajc-test>
    
@@ -2544,6 +2546,9 @@
          <message kind="warning" line="1" text="one generic param, correct bounds"/>
          <message kind="warning" line="1" text="doesn't matter what type variable name you use"/>
          <message kind="warning" line="1" text="works with classes too"/>
+         <message kind="warning" line="4" text="Type T does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericInterface"/>
+         <message kind="warning" line="20" text="Type pattern does not match because the wrong number of type parameters are specified: Type GenericImplementingClass requires 1 parameter(s)"/>
+         <message kind="warning" line="24" text="Type N extends java.lang.Name &amp; java.lang.Comparable does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericImplementingClass"/>
      </compile>
    </ajc-test>
    
