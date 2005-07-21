@@ -44,8 +44,8 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 					cSig.superInterfaceSignatures[0],
 					cSig.formalTypeParameters,
 					world
-					);			
-		assertEquals("Pjava/lang/Comparable<Pjava/lang/Enum<Ljava/lang/Object;>;>;",comparable.getSignature());
+					);		
+		assertEquals("Pjava/lang/Comparable<TE;>;",comparable.getSignature());
 		UnresolvedType serializable = 
 			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 					cSig.superInterfaceSignatures[1],

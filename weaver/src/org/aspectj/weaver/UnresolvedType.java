@@ -121,31 +121,8 @@ public class UnresolvedType  {
 	public static final String MISSING_NAME = "@missing@";
 
     
-    // constants indicating the base kind of the type
-	// Note: It is not sufficient to say that a parameterized type with no type parameters in fact
-	// represents a raw type - a parameterized type with no type parameters can represent
-	// an inner type of a parameterized type that specifies no type parameters of its own.
-	public final static int PRIMITIVE = 0;
-	public final static int SIMPLE       =1;            	// a type with NO type parameters/vars
-	public final static int RAW          =2;          	// the erasure of a generic type
-	public final static int GENERIC      =3;        	// a generic type
-	public final static int PARAMETERIZED=4;	 	// a parameterized type
-	public final static int TYPE_VARIABLE = 5;    	// a type variable
-	public final static int WILDCARD = 6; 			// a generic wildcard type
-
-	public String getKind() {
-		switch (typeKind) {
-			case PRIMITIVE: return "PRIMITIVE";
-			case SIMPLE: return "SIMPLE";
-			case RAW: return "RAW";
-			case GENERIC: return "GENERIC";
-			case PARAMETERIZED: return "PARAMETERIZED";
-			case TYPE_VARIABLE: return "TYPE_VARIABLE";
-			case WILDCARD: return "WILDCARD";
-			default: return null;
-		}		
-	}
-    protected int typeKind = SIMPLE; // what kind of type am I?
+	
+    protected TypeKind typeKind = TypeKind.SIMPLE; // what kind of type am I?
 
 	/**
 	 * THE SIGNATURE - see the comments above for how this is defined
@@ -171,7 +148,7 @@ public class UnresolvedType  {
 	 */
 	protected TypeVariable[] typeVariables;
 
-	   /**
+	/**
      * Determines if this represents a primitive type.  A primitive type
      * is one of nine predefined resolved types.
      *
@@ -187,13 +164,13 @@ public class UnresolvedType  {
      * @see     ResolvedType#Double
      * @see     ResolvedType#Void
      */   
-    public boolean isPrimitiveType() { return typeKind == PRIMITIVE; }
-    public boolean isSimpleType() { return typeKind == SIMPLE; }
-    public boolean isRawType() { return typeKind == RAW; }
-    public boolean isGenericType() { return typeKind == GENERIC; }
-    public boolean isParameterizedType() { return typeKind == PARAMETERIZED; }
-    public boolean isTypeVariable() { return typeKind == TYPE_VARIABLE; }
-    public boolean isGenericWildcard() { return typeKind == WILDCARD; }
+    public boolean isPrimitiveType() { return typeKind == TypeKind.PRIMITIVE; }
+    public boolean isSimpleType() { return typeKind == TypeKind.SIMPLE; }
+    public boolean isRawType() { return typeKind == TypeKind.RAW; }
+    public boolean isGenericType() { return typeKind == TypeKind.GENERIC; }
+    public boolean isParameterizedType() { return typeKind == TypeKind.PARAMETERIZED; }
+    public boolean isTypeVariable() { return typeKind == TypeKind.TYPE_VARIABLE; }
+    public boolean isGenericWildcard() { return typeKind == TypeKind.WILDCARD; }
 
     // for any reference type, we can get some extra information...
     public final boolean isArray() {  return signature.startsWith("["); } 
@@ -273,7 +250,7 @@ public class UnresolvedType  {
     	this.signature = signature;
     	this.signatureErasure = signatureErasure;
     	this.typeParameters = typeParams;
-    	if (typeParams != null) this.typeKind = PARAMETERIZED;
+    	if (typeParams != null) this.typeKind = TypeKind.PARAMETERIZED;
     }
 		
     // ---- Things we can do without a world
@@ -335,7 +312,7 @@ public class UnresolvedType  {
 		// TODO asc generics needs a declared sig
 		String sig = nameToSignature(name);
 		UnresolvedType ret = UnresolvedType.forSignature(sig);
-		ret.typeKind=GENERIC;
+		ret.typeKind=TypeKind.GENERIC;
 		ret.typeVariables = tvbs;
 		ret.signatureErasure = sig;
 		ret.genericSignature = genericSig;
@@ -344,7 +321,7 @@ public class UnresolvedType  {
 		
     public static UnresolvedType forGenericTypeSignature(String sig,String declaredGenericSig) {
     	UnresolvedType ret = UnresolvedType.forSignature(sig);
-    	ret.typeKind=GENERIC;
+    	ret.typeKind=TypeKind.GENERIC;
     	
     	ClassSignature csig = new GenericSignatureParser().parseAsClassSignature(declaredGenericSig);
     	
@@ -363,7 +340,7 @@ public class UnresolvedType  {
     
 	public static UnresolvedType forRawTypeNames(String name) {
 		UnresolvedType ret = UnresolvedType.forName(name);
-		ret.typeKind = RAW;
+		ret.typeKind = TypeKind.RAW;
 		return ret;
 	}
 	
@@ -431,6 +408,7 @@ public class UnresolvedType  {
             case '+': return new UnresolvedType(signature);
             case '-' : return new UnresolvedType(signature);
             case '?' : return GenericsWildcardTypeX.GENERIC_WILDCARD;
+            case 'T' : return new UnresolvedTypeVariableReferenceType(new TypeVariable(signature.substring(1)));
             default:  throw new BCException("Bad type signature " + signature);
         }      
     }
@@ -521,10 +499,11 @@ public class UnresolvedType  {
     public String getSignature() {
 		return signature;
     }
-	
-	public String getParameterizedSignature() {
-		return signature;
-	}
+    
+ 
+//	public String getParameterizedSignature() {
+//		return signature;
+//	}
 	
 	/**
 	 * For parameterized types, return the signature for the raw type
@@ -605,6 +584,12 @@ public class UnresolvedType  {
             case 'L':
                 String name =  signature.substring(1, signature.length() - 1).replace('/', '.');
 				return name;
+            case 'T':
+				StringBuffer nameBuff2 = new StringBuffer();
+            	int colon = signature.indexOf(";");
+            	String tvarName = signature.substring(1,colon);
+            	nameBuff2.append(tvarName);
+				return nameBuff2.toString();
             case 'P': // it's one of our parameterized type sigs
 				StringBuffer nameBuff = new StringBuffer();
 				// signature for parameterized types is e.g.
@@ -793,6 +778,28 @@ public class UnresolvedType  {
 	}
 
 
+	public static class TypeKind {
+		// Note: It is not sufficient to say that a parameterized type with no type parameters in fact
+		// represents a raw type - a parameterized type with no type parameters can represent
+		// an inner type of a parameterized type that specifies no type parameters of its own.
+		public final static TypeKind PRIMITIVE    = new TypeKind("primitive");
+		public final static TypeKind SIMPLE       = new TypeKind("simple");    			// a type with NO type parameters/vars
+		public final static TypeKind RAW          = new TypeKind("raw");    				// the erasure of a generic type
+		public final static TypeKind GENERIC      = new TypeKind("generic");    			// a generic type
+		public final static TypeKind PARAMETERIZED= new TypeKind("parameterized");	 	// a parameterized type
+		public final static TypeKind TYPE_VARIABLE= new TypeKind("type_variable");    	// a type variable
+		public final static TypeKind WILDCARD     = new TypeKind("wildcard");				// a generic wildcard type
+
+		public String toString() {
+			return type;
+		}
+		
+		private TypeKind(String type) {
+			this.type = type;
+		}
+		
+		private final String type;
+	}
 	
 }
 

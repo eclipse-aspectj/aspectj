@@ -45,4 +45,16 @@ public class TypeVariableReferenceType extends BoundedReferenceType {
 		return true;
 	}
 	
+	/**
+     * return the signature for a *REFERENCE* to a type variable, which is simply:
+     *   Tname;
+     * there is no bounds info included, that is in the signature of the type variable itself
+     */
+	public String getSignature() {
+	  StringBuffer sb = new StringBuffer();
+	  sb.append("T");
+	  sb.append(typeVariable.getName());
+	  sb.append(";");
+	  return sb.toString();
+	}
 }

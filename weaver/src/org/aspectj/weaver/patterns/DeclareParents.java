@@ -302,6 +302,7 @@ public class DeclareParents extends Declare {
 	
 
 	public List/*<ResolvedType>*/ findMatchingNewParents(ResolvedType onType,boolean reportErrors) {
+		if (onType.isRawType()) onType = onType.getGenericType();
 		if (!match(onType)) return Collections.EMPTY_LIST;
 		
 		List ret = new ArrayList();

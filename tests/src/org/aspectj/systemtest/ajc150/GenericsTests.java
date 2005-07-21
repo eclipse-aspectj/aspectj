@@ -178,7 +178,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	public void testPR96220_GenericDecp() {
 		runTest("generic decp - simple");
-		verifyClassSignature("Basic","Ljava/lang/Object;PJ<Ljava/lang/Double;>;PI<Ljava/lang/Double;>;");
+		verifyClassSignature("Basic","Ljava/lang/Object;LJ<Ljava/lang/Double;>;LI<Ljava/lang/Double;>;");
 	}
 	
 	// Both the existing type decl and the one adding via decp are parameterized
@@ -219,16 +219,20 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericDecpMultipleVariantsOfAParameterizedType4_binaryWeaving() {
 		runTest("generic decp binary - implementing two variants #4");
 	}
+
+	public void testGenericDecpParameterized() {
+		runTest("generic decp - with parameterized on the target");
+		verifyClassSignature("Basic6","<J:Ljava/lang/Object;>Ljava/lang/Object;LI<TJ;>;LK<Ljava/lang/Integer;>;");
+	}
 	
-//	
 //	public void testGenericDecpIncorrectNumberOfTypeParams() {
 //		runTest("generic decp - incorrect number of type parameters");
 //	}
-//	
-//	public void testGenericDecpSpecifyingBounds() {
-//		runTest("generic decp - specifying bounds");
-//	}
-//	
+	
+	public void testGenericDecpSpecifyingBounds() {
+		runTest("generic decp - specifying bounds");
+	}
+	
 //	public void testGenericDecpViolatingBounds() {
 //		runTest("generic decp - specifying bounds but breaking them");
 //	}

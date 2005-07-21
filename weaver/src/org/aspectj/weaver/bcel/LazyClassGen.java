@@ -62,6 +62,7 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -515,12 +516,22 @@ public final class LazyClassGen {
 		if (needAttribute) {
 			StringBuffer signature = new StringBuffer();
 			// first, the type variables...
-			// TODO asc generics implement this!
+			TypeVariable[] tVars = myType.getTypeVariables();
+			if (tVars.length>0) {
+				signature.append("<");
+				for (int i = 0; i < tVars.length; i++) {
+					TypeVariable variable = tVars[i];
+					if (i!=0) signature.append(",");
+					signature.append(variable.getSignature());
+				}
+				signature.append(">");
+			}
 			// now the supertype
 			signature.append(myType.getSuperclass().getSignature());
 			ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
 			for (int i = 0; i < interfaceRTXs.length; i++) {
-				signature.append(interfaceRTXs[i].getSignature());
+				String s = interfaceRTXs[i].getSignatureForAttribute();
+				signature.append(s);
 			}
 			myGen.addAttribute(createSignatureAttribute(signature.toString()));
 		}

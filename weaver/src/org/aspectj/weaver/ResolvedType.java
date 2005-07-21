@@ -1543,6 +1543,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public boolean needsNoConversionFrom(ResolvedType o) {
 	    return isAssignableFrom(o);
 	}
+	
+	/** 
+     * Implemented by ReferenceTypes
+     */
+	public String getSignatureForAttribute() {
+		throw new RuntimeException("Cannot ask this type "+this+" for a generic sig attribute");
+	}
 
 	    
 }

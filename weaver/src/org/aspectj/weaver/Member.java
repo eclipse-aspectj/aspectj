@@ -182,8 +182,14 @@ public class Member implements Comparable, AnnotatedElement {
 					UnresolvedType tx = UnresolvedType.forSignature(toProcess);
 					l.add(tx);					
 				}
+            } else if (c=='T') { // assumed 'reference' to a type variable, so just "Tname;"
+				int nextSemicolon = sig.indexOf(';',start);
+				String nextbit = sig.substring(start,nextSemicolon);
+				l.add(UnresolvedType.forSignature(nextbit));
+				i=nextSemicolon+1;
             } else {
-                l.add(UnresolvedType.forSignature(sig.substring(start, ++i)));
+            	i++;
+                l.add(UnresolvedType.forSignature(sig.substring(start, i)));
             }
         }
         UnresolvedType[] paramTypes = (UnresolvedType[]) l.toArray(new UnresolvedType[l.size()]);

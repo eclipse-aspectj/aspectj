@@ -138,4 +138,22 @@ public class TypeVariable {
 	public String toString() {
 		return "T" + upperBound.getSignature();
 	}
+	
+	/**
+	 * Return *full* signature for insertion in signature attribute, e.g. "T extends Number" would return "T:Ljava/lang/Number;"
+	 */
+	public String getSignature() {
+	  	StringBuffer sb = new StringBuffer();
+	  	sb.append(name);
+	  	sb.append(":");
+	  	sb.append(upperBound.getSignature());
+	  	if (additionalInterfaceBounds!=null) {
+		  	for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				UnresolvedType iBound = additionalInterfaceBounds[i];
+				sb.append(iBound.getSignature());
+			}
+	  	}
+		return sb.toString();
+	}
+	
 }

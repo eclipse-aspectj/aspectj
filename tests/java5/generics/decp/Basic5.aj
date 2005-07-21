@@ -1,9 +1,8 @@
-// fails, Number is not a subclass of double!
-interface I<T super Number> { }
+interface I<T extends Number> { }
 
 public class Basic5 {
 }
 
 aspect X {
-    declare parents: Basic5 implements I<Double>;
+    declare parents: Basic5 implements I<String>;
 }

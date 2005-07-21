@@ -311,6 +311,7 @@ public class SignaturePattern extends PatternNode {
 			  if (!checkReturnType) return true;
 			  ResolvedMember rm = type.lookupMethod(member);
 			  if (rm==null)  rm = type.lookupMethodInITDs(member); // It must be in here, or we have *real* problems
+			  if (rm==null) continue; // might be currently looking at the generic type and we need to continue searching in case we hit a parameterized version of this same type...
 			  UnresolvedType returnTypeX = rm.getReturnType();
 			  ResolvedType returnType = returnTypeX.resolve(world);
 			  if (returnTypePattern.matchesStatically(returnType)) return true;

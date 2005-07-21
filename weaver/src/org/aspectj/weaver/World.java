@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.aspectj.asm.IHierarchy;
@@ -645,6 +646,25 @@ public abstract class World implements Dump.INode {
 					  (!type.isPrimitiveType())
 					);
 		}
+		
+	    public String toString() {
+	    	StringBuffer sb = new StringBuffer();
+	    	sb.append("types:\n");
+	    	sb.append(dumpthem(tMap));
+	    	sb.append("expendables:\n");
+	    	sb.append(dumpthem(expendableMap));
+	    	return sb.toString();
+	    }
+	    
+	    private String dumpthem(Map m) {
+	    	StringBuffer sb = new StringBuffer();
+	    	Set keys = m.keySet();
+	    	for (Iterator iter = keys.iterator(); iter.hasNext();) {
+				String k = (String) iter.next();
+				sb.append(k+"="+m.get(k)).append("\n");
+			}
+	    	return sb.toString();
+	    }
 	}	
 	
 	public void setBehaveInJava5Way(boolean b) {

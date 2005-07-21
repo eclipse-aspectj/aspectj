@@ -2445,12 +2445,16 @@
    <ajc-test dir="java5/generics/decp/binary" title="generic decp binary - implementing two variants #4">
      <weave classesFiles="Base4.java" aspectsFiles="Asp4.aj" options="-1.5,-showWeaveInfo"/>
    </ajc-test>
-
-<!--                 -->
    
- <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
+   <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
      <compile files="Basic3.aj" options="-1.5"/>
      <run class="Basic3"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
+     <compile files="Basic3.aj" options="-1.5">
+       <message kind="error" line="10" text="Wrong number of type arguments; Type I requires 1"/>
+     </compile>
    </ajc-test>
    
    <ajc-test dir="java5/generics/decp" title="generic decp - specifying bounds">
@@ -2459,14 +2463,18 @@
    </ajc-test>
    
    <ajc-test dir="java5/generics/decp" title="generic decp - specifying bounds but breaking them">
-     <compile files="Basic5.aj" options="-1.5"/>
-     <run class="Basic5"/>
+     <compile files="Basic5.aj" options="-1.5">
+       <message kind="error" line="7" text="Type String does not meet the specification for type parameter 1 in generic type I&lt;T extends Number&gt;"/>
+     </compile>
    </ajc-test>
-   
-   <!--ajc-test dir="java5/generics/decp" title="illegal generic decp">
-     <compile files="Basic2.aj" options="-1.5"/>
-   </ajc-test-->
      
+   <ajc-test dir="java5/generics/decp" title="generic decp - with parameterized on the target">
+     <compile files="Basic6.aj" options="-1.5,-showWeaveInfo">
+       <message kind="weave" text="Extending interface set for type 'Basic6' (Basic6.aj) to include 'K&lt;java.lang.Integer&gt;' (Basic6.aj)"/>
+     </compile>
+     <run class="Basic6"/>
+   </ajc-test>
+
    <!-- end of generic decps -->
    
    <!-- generics and  pointcuts -->

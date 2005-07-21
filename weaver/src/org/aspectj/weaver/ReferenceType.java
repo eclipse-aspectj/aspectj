@@ -71,8 +71,12 @@ public class ReferenceType extends ResolvedType {
     	ReferenceType genericReferenceType = (ReferenceType) theGenericType;
     	this.typeParameters = theParameters;
     	this.genericType = genericReferenceType;
-    	this.typeKind = PARAMETERIZED;
+    	this.typeKind = TypeKind.PARAMETERIZED;
     	this.delegate = genericReferenceType.getDelegate();
+    }
+    
+    public String getSignatureForAttribute() {
+    	return makeDeclaredSignature(genericType,typeParameters);	
     }
 	
     /**
@@ -81,7 +85,7 @@ public class ReferenceType extends ResolvedType {
 	public ReferenceType(UnresolvedType genericType, World world) {
 		super(genericType.getSignature(),world);
 		genericSignature=genericType.genericSignature;
-		typeKind=GENERIC;
+		typeKind=TypeKind.GENERIC;
 	}
         
     public final boolean isClass() {
@@ -304,6 +308,12 @@ public class ReferenceType extends ResolvedType {
 
 	public void setDelegate(ReferenceTypeDelegate delegate) {
 		this.delegate = delegate;
+		
+		// If we are raw, we have a generic type - we should ensure it uses the
+		// same delegate
+		if (isRawType() && getGenericType()!=null) {
+			((ReferenceType)getGenericType()).setDelegate(delegate);
+		}
 		clearParameterizationCaches();
 	}
     
@@ -346,8 +356,8 @@ public class ReferenceType extends ResolvedType {
 		genericType = rt;
 		// Should we 'promote' this reference type from simple to raw?  
 		// makes sense if someone is specifying that it has a generic form
-		if ( typeKind == UnresolvedType.SIMPLE ) {
-			typeKind         = UnresolvedType.RAW;
+		if ( typeKind == TypeKind.SIMPLE ) {
+			typeKind         = TypeKind.RAW;
 			signatureErasure = signature;
 		}
 	}
@@ -370,6 +380,18 @@ public class ReferenceType extends ResolvedType {
 		
 		StringBuffer ret = new StringBuffer();
 		ret.append(prefix);
+		ret.append("<");
+		for (int i = 0; i < someParameters.length; i++) {
+			ret.append(someParameters[i].getSignature());			
+		}
+		ret.append(">;");
+		return ret.toString();
+	}
+	
+	private static String makeDeclaredSignature(ResolvedType aGenericType, UnresolvedType[] someParameters) {	
+		StringBuffer ret = new StringBuffer();
+		String rawSig = aGenericType.getRawTypeSignature();
+		ret.append(rawSig.substring(0,rawSig.length()-1));
 		ret.append("<");
 		for (int i = 0; i < someParameters.length; i++) {
 			ret.append(someParameters[i].getSignature());			
