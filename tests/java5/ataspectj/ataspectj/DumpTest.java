@@ -35,6 +35,11 @@ public class DumpTest extends TestCase {
         DumpTestTheDump forceLoad = new DumpTestTheDump();
         f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
         assertTrue(f.exists());
+        
+        // tidy up...
+        f.delete();
+        new File("_ajdump/ataspectj").delete();
+        new File("_ajdump").delete();
     }
 
 }
