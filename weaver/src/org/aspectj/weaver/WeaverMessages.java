@@ -132,6 +132,7 @@ public class WeaverMessages {
 	public static final String INCORRECT_NUMBER_OF_TYPE_ARGUMENTS = "incorrectNumberOfTypeArguments";
 	public static final String VIOLATES_TYPE_VARIABLE_BOUNDS = "violatesTypeVariableBounds";
 	public static final String NO_STATIC_INIT_JPS_FOR_PARAMETERIZED_TYPES = "noStaticInitJPsForParameterizedTypes";
+	public static final String NOT_A_GENERIC_TYPE="notAGenericType";
 	
 	public static String format(String key) {
 		return bundle.getString(key);
@@ -147,6 +148,10 @@ public class WeaverMessages {
 
 	public static String format(String key, Object insert1, Object insert2, Object insert3) {
 		return MessageFormat.format(bundle.getString(key),new Object[] {insert1, insert2, insert3});
+	}
+
+	public static String format(String key, Object insert1, Object insert2, Object insert3, Object insert4) {
+		return MessageFormat.format(bundle.getString(key),new Object[] {insert1, insert2, insert3, insert4});
 	}
 
 }
