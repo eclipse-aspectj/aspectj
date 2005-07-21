@@ -121,7 +121,7 @@ public class UnresolvedType  {
 	public static final String MISSING_NAME = "@missing@";
 
     
-	
+
     protected TypeKind typeKind = TypeKind.SIMPLE; // what kind of type am I?
 
 	/**
@@ -148,7 +148,7 @@ public class UnresolvedType  {
 	 */
 	protected TypeVariable[] typeVariables;
 
-	/**
+	   /**
      * Determines if this represents a primitive type.  A primitive type
      * is one of nine predefined resolved types.
      *
@@ -169,7 +169,7 @@ public class UnresolvedType  {
     public boolean isRawType() { return typeKind == TypeKind.RAW; }
     public boolean isGenericType() { return typeKind == TypeKind.GENERIC; }
     public boolean isParameterizedType() { return typeKind == TypeKind.PARAMETERIZED; }
-    public boolean isTypeVariable() { return typeKind == TypeKind.TYPE_VARIABLE; }
+    public boolean isTypeVariableReference() { return typeKind == TypeKind.TYPE_VARIABLE; }
     public boolean isGenericWildcard() { return typeKind == TypeKind.WILDCARD; }
 
     // for any reference type, we can get some extra information...
@@ -499,8 +499,8 @@ public class UnresolvedType  {
     public String getSignature() {
 		return signature;
     }
-    
- 
+	
+	
 //	public String getParameterizedSignature() {
 //		return signature;
 //	}
@@ -789,11 +789,11 @@ public class UnresolvedType  {
 		public final static TypeKind PARAMETERIZED= new TypeKind("parameterized");	 	// a parameterized type
 		public final static TypeKind TYPE_VARIABLE= new TypeKind("type_variable");    	// a type variable
 		public final static TypeKind WILDCARD     = new TypeKind("wildcard");				// a generic wildcard type
-
+	
 		public String toString() {
 			return type;
-		}
-		
+}
+
 		private TypeKind(String type) {
 			this.type = type;
 		}

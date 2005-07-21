@@ -100,7 +100,7 @@ public class ExactTypePattern extends TypePattern {
 		if (!typeMatch && (matchType.isParameterizedType() || matchType.isGenericType())) {
 			typeMatch = this.type.equals(matchType.getRawType());
 		}
-		if (!typeMatch && matchType.isTypeVariable()) {
+		if (!typeMatch && matchType.isTypeVariableReference()) {
 			typeMatch = matchesTypeVariable((TypeVariableReferenceType)matchType);
 		}
 		annotationPattern.resolve(matchType.getWorld());
@@ -117,7 +117,7 @@ public class ExactTypePattern extends TypePattern {
 		if (!typeMatch && (matchType.isParameterizedType() || matchType.isGenericType())) {
 			typeMatch = this.type.equals(matchType.getRawType());
 		}
-		if (!typeMatch && matchType.isTypeVariable()) {
+		if (!typeMatch && matchType.isTypeVariableReference()) {
 			typeMatch = matchesTypeVariable((TypeVariableReferenceType)matchType);
 		}
 		annotationPattern.resolve(matchType.getWorld());
