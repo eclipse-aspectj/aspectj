@@ -115,7 +115,7 @@ public abstract class World implements Dump.INode {
     
     // if we already have an rtx, don't re-resolve it
     public ResolvedType resolve(ResolvedType ty) {
-    	if (ty.isTypeVariable()) return ty; // until type variables have proper sigs...
+    	if (ty.isTypeVariableReference()) return ty; // until type variables have proper sigs...
     	ResolvedType resolved = typeMap.get(ty.getSignature());
     	if (resolved == null) {
     		typeMap.put(ty.getSignature(), ty);
@@ -151,7 +151,10 @@ public abstract class World implements Dump.INode {
     	// raw type from a source type, it won't if its been created just through
     	// being referenced, e.g. java.util.List
     	ResolvedType generic = ret.getGenericType();
-    	if (generic != null) { generic.world = this; return generic; } 
+    	if (generic != null) { 
+    		generic.world = this;
+    		return generic; 
+    	} 
 
     	// Fault in the generic that underpins the raw type ;)
     	ReferenceTypeDelegate thegen = resolveObjectType((ReferenceType)ret);

@@ -283,7 +283,13 @@ public class ReferenceType extends ResolvedType {
 	}
 	
 	public TypeVariable[] getTypeVariables() {
-		return delegate.getTypeVariables();
+		if (this.typeVariables == null) {
+			this.typeVariables = delegate.getTypeVariables();
+			for (int i = 0; i < this.typeVariables.length; i++) {
+				this.typeVariables[i].resolve(world);
+			}
+		} 
+		return this.typeVariables;
 	}
 	
 	public PerClause getPerClause() { return delegate.getPerClause(); }

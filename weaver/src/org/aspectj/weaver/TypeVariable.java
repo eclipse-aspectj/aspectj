@@ -105,7 +105,11 @@ public class TypeVariable {
 	 */
 	public boolean canBeBoundTo(ResolvedType aCandidateType) {
 		if (!isResolved) throw new IllegalStateException("Can't answer binding questions prior to resolving");
-		// can be bound iff...
+		if (aCandidateType.isTypeVariableReference()) {
+			return matchingBounds((TypeVariableReferenceType)aCandidateType);
+		}
+		
+		// otherwise can be bound iff...
 		//  aCandidateType is a subtype of upperBound
 		if (!isASubtypeOf(upperBound,aCandidateType)) {
 			return false;
@@ -123,20 +127,59 @@ public class TypeVariable {
 		return true;
 	}
 	
+	// can match any type in the range of the type variable...
+	// XXX what about interfaces?
+	private boolean matchingBounds(TypeVariableReferenceType tvrt) {
+		boolean upperMatch = canBeBoundTo(tvrt.getUpperBound());
+		boolean lowerMatch = true;
+		if (tvrt.hasLowerBound()) lowerMatch = canBeBoundTo(tvrt.getLowerBound());
+		return upperMatch && lowerMatch;
+	}
+	
 	private boolean isASubtypeOf(UnresolvedType candidateSuperType, UnresolvedType candidateSubType) {
 		ResolvedType superType = (ResolvedType) candidateSuperType;
 		ResolvedType subType = (ResolvedType) candidateSubType;
 		return superType.isAssignableFrom(subType);
 	}
 
-	// only used when resolving circular dependencies
+	// only used when resolving 
 	public void setUpperBound(UnresolvedType aTypeX) {
 		this.upperBound = aTypeX;
 	}
 	
+	// only used when resolving
+	public void setLowerBound(UnresolvedType aTypeX) {
+		this.lowerBound = aTypeX;
+	}
+	
+	// only used when resolving
+	public void setAdditionalInterfaceBounds(UnresolvedType[] someTypeXs) {
+		this.additionalInterfaceBounds = someTypeXs;
+	}
+	
+	public String getDisplayName() {
+		StringBuffer ret = new StringBuffer();
+		ret.append(name);
+		if (!upperBound.getName().equals("java.lang.Object")) {
+			ret.append(" extends ");
+			ret.append(upperBound.getName());
+			if (additionalInterfaceBounds != null) {
+				for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+					ret.append(" & ");
+					ret.append(additionalInterfaceBounds[i].getName());
+				}
+			}
+		}
+		if (lowerBound != null) {
+			ret.append(" super ");
+			ret.append(lowerBound.getName());
+		}
+		return ret.toString();
+	}
+	
 	// good enough approximation
 	public String toString() {
-		return "T" + upperBound.getSignature();
+		return "TypeVar " + getDisplayName();
 	}
 	
 	/**

@@ -28,7 +28,10 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeFactory;
+import org.aspectj.weaver.TypeVariable;
+import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
@@ -47,6 +50,10 @@ public class WildTypePattern extends TypePattern {
 	TypePattern[] additionalInterfaceBounds;  // extends Foo & A,B,C
 	TypePattern lowerBound;  // super Foo
 
+	// if we have type parameters, these fields indicate whether we should be a generic type pattern or a parameterized
+	// type pattern. We can only tell during resolve bindings.
+	private boolean isGeneric = true;
+	
 	WildTypePattern(NamePattern[] namePatterns, boolean includeSubtypes, int dim, boolean isVarArgs, TypePatternList typeParams) {
 		super(includeSubtypes,isVarArgs,typeParams);
 		this.namePatterns = namePatterns;
@@ -434,6 +441,19 @@ public class WildTypePattern extends TypePattern {
 		// resolve any type parameters
 		if (typeParameters!=null && typeParameters.size()>0) {
 			typeParameters.resolveBindings(scope,bindings,allowBinding,requireExactType);
+			// now we have to decide whether to create a "generic" type pattern or a "parameterized" type
+			// pattern
+			// start with the simple rule that if all parameters have resolved to a type variable based pattern
+			// then it is generic, otherwise it is parameterized
+			// if we have e.g. staticinitialization<T>(Foo<T,String>) then that's a parameterized type
+			isGeneric = true;
+			TypePattern[] tps = typeParameters.getTypePatterns();
+			for (int i = 0; i < tps.length; i++) {
+				if (!tps[i].getExactType().isTypeVariableReference()) {
+					isGeneric = false;
+					break;
+				}
+			}
 		}
 		
 		String fullyQualifiedName = maybeGetCleanName();
@@ -522,7 +542,11 @@ public class WildTypePattern extends TypePattern {
 	
 	private TypePattern resolveBindingsForExactType(IScope scope, UnresolvedType aType, String fullyQualifiedName) {
 		TypePattern ret = null;
-		if (typeParameters.size()>0) {
+		if (aType.isTypeVariableReference()) {
+			// we have to set the bounds on it based on the bounds of this pattern
+			ret = resolveBindingsForTypeVariable(scope, (UnresolvedTypeVariableReferenceType) aType);
+		} else if (typeParameters.size()>0) {
+			if (!verifyTypeParameters(aType.resolve(scope.getWorld()),scope)) return TypePattern.NO; // messages already isued
 			// Only if the type is exact *and* the type parameters are exact should we create an 
 			// ExactTypePattern for this WildTypePattern					
 			if (typeParameters.areAllExact()) {
@@ -531,14 +555,13 @@ public class WildTypePattern extends TypePattern {
 				for (int i = 0; i < typeParameterTypes.length; i++) {
 					typeParameterTypes[i] = ((ExactTypePattern)typePats[i]).getExactType();
 				}
-				UnresolvedType type = TypeFactory.createParameterizedType(aType.resolve(scope.getWorld()), typeParameterTypes, scope.getWorld());
+				ResolvedType type = TypeFactory.createParameterizedType(aType.resolve(scope.getWorld()), typeParameterTypes, scope.getWorld());
+				if (isGeneric) type = type.getGenericType();
 //				UnresolvedType tx = UnresolvedType.forParameterizedTypes(aType,typeParameterTypes);
 //				UnresolvedType type = scope.getWorld().resolve(tx,true); 
-				if (dim != 0) type = UnresolvedType.makeArray(type, dim);
+				if (dim != 0) type = ResolvedType.makeArray(type, dim);
 				ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
 			} else {
-			    // TODO generics not written yet - when the type parameters are not exact
-				//throw new RuntimeException("Type parameters are not exact");
 				// AMC... just leave it as a wild type pattern then?
 				importedPrefixes = scope.getImportedPrefixes();
 				knownMatches = preMatch(scope.getImportedNames());
@@ -573,6 +596,130 @@ public class WildTypePattern extends TypePattern {
 		importedPrefixes = scope.getImportedPrefixes();
 		knownMatches = preMatch(scope.getImportedNames());
 		return this;		
+	}
+	
+	/**
+	 * We resolved the type to a type variable declared in the pointcut designator.
+	 * Now we have to create either an exact type pattern or a wild type pattern for it,
+	 * with upper and lower bounds set accordingly.
+	 * XXX none of this stuff gets serialized yet
+	 * @param scope
+	 * @param tvrType
+	 * @return
+	 */
+	private TypePattern resolveBindingsForTypeVariable(IScope scope, UnresolvedTypeVariableReferenceType tvrType) {
+		Bindings emptyBindings = new Bindings(0);
+		if (upperBound != null) {
+			upperBound = upperBound.resolveBindings(scope, emptyBindings, false, false);
+		}
+		if (lowerBound != null) {
+			lowerBound = lowerBound.resolveBindings(scope, emptyBindings, false, false);
+		}
+		if (additionalInterfaceBounds != null) {
+			TypePattern[] resolvedIfBounds = new TypePattern[additionalInterfaceBounds.length];
+			for (int i = 0; i < resolvedIfBounds.length; i++) {
+				resolvedIfBounds[i] = additionalInterfaceBounds[i].resolveBindings(scope, emptyBindings, false, false);				
+			}
+			additionalInterfaceBounds = resolvedIfBounds;
+		}
+		if ( upperBound == null && lowerBound == null && additionalInterfaceBounds == null) {
+			// no bounds to worry about...
+			ResolvedType rType = tvrType.resolve(scope.getWorld());
+			if (dim != 0) rType = ResolvedType.makeArray(rType, dim);
+			return new ExactTypePattern(rType,includeSubtypes,isVarArgs);								
+		} else {
+			// we have to set bounds on the TypeVariable held by tvrType before resolving it
+			boolean canCreateExactTypePattern = true;
+			if (upperBound != null && upperBound.getExactType() == ResolvedType.MISSING) canCreateExactTypePattern = false;
+			if (lowerBound != null && lowerBound.getExactType() == ResolvedType.MISSING) canCreateExactTypePattern = false;
+			if (additionalInterfaceBounds != null) {
+				for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+					if (additionalInterfaceBounds[i].getExactType() == ResolvedType.MISSING) canCreateExactTypePattern = false;
+				}
+			}
+			if (canCreateExactTypePattern) {
+				TypeVariable tv = tvrType.getTypeVariable();
+				if (upperBound != null) tv.setUpperBound(upperBound.getExactType());
+				if (lowerBound != null) tv.setLowerBound(lowerBound.getExactType());
+				if (additionalInterfaceBounds != null) {
+					UnresolvedType[] ifBounds = new UnresolvedType[additionalInterfaceBounds.length];
+					for (int i = 0; i < ifBounds.length; i++) {
+						ifBounds[i] = additionalInterfaceBounds[i].getExactType();
+					}
+					tv.setAdditionalInterfaceBounds(ifBounds);
+				}
+				ResolvedType rType = tvrType.resolve(scope.getWorld());
+				if (dim != 0) rType = ResolvedType.makeArray(rType, dim);
+				return new ExactTypePattern(rType,includeSubtypes,isVarArgs);								
+			}
+			return this;  // leave as wild type pattern then
+		}
+	}
+	
+	/**
+	 * When this method is called, we have resolved the base type to an exact type.
+	 * We also have a set of type patterns for the parameters.
+	 * Time to perform some basic checks:
+	 *  - can the base type be parameterized? (is it generic)
+	 *  - can the type parameter pattern list match the number of parameters on the base type
+	 *  - do all parameter patterns meet the bounds of the respective type variables
+	 *  If any of these checks fail, a warning message is issued and we return false.
+	 * @return
+	 */
+	private boolean verifyTypeParameters(ResolvedType baseType,IScope scope) {
+		ResolvedType genericType = baseType.getGenericType();
+		if (genericType == null) {
+			// issue message "does not match because baseType.getName() is not generic"
+			scope.message(MessageUtil.warn(
+					WeaverMessages.format(WeaverMessages.NOT_A_GENERIC_TYPE,genericType.getName()),
+					getSourceLocation()));
+			return false;
+		}
+		int minRequiredTypeParameters = typeParameters.size();
+		boolean foundEllipsis = false;
+		TypePattern[] typeParamPatterns = typeParameters.getTypePatterns();
+		for (int i = 0; i < typeParamPatterns.length; i++) {
+			if (typeParamPatterns[i] instanceof WildTypePattern) {
+				WildTypePattern wtp = (WildTypePattern) typeParamPatterns[i];
+				if (wtp.ellipsisCount > 0) {
+					foundEllipsis = true;
+					minRequiredTypeParameters--;
+				}
+			}
+		}
+		TypeVariable[] tvs = genericType.getTypeVariables();
+		if ((tvs.length < minRequiredTypeParameters) ||
+			(!foundEllipsis && minRequiredTypeParameters != tvs.length))
+		{
+			// issue message "does not match because wrong no of type params"
+			scope.message(MessageUtil.warn(
+					WeaverMessages.format(WeaverMessages.INCORRECT_NUMBER_OF_TYPE_ARGUMENTS,genericType.getName(),new Integer(tvs.length)),
+					getSourceLocation()));
+			return false;
+		} 
+		
+		// now check that each typeParameter pattern, if exact, matches the bounds
+		// of the type variable.
+		if (typeParameters.areAllExact()) {
+			for (int i = 0; i < tvs.length; i++) {
+				UnresolvedType ut = typeParamPatterns[i].getExactType();
+				if (!tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
+					// issue message that type parameter does not meet specification
+					String parameterName = ut.getName();
+					if (ut.isTypeVariableReference()) parameterName = ((TypeVariableReference)ut).getTypeVariable().getDisplayName();
+					scope.message(MessageUtil.warn(
+							WeaverMessages.format(
+										WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS,
+										parameterName,
+										new Integer(i+1),
+										tvs[i].getDisplayName(),
+										genericType.getName()),
+							getSourceLocation()));					
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
 	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {

@@ -14,7 +14,7 @@ package org.aspectj.weaver;
 /**
  * Represents a type variable in a type or generic method declaration
  */
-public class TypeVariableReferenceType extends BoundedReferenceType {
+public class TypeVariableReferenceType extends BoundedReferenceType implements TypeVariableReference {
 
 	private TypeVariable typeVariable;
 	
@@ -41,7 +41,7 @@ public class TypeVariableReferenceType extends BoundedReferenceType {
 		return typeVariable;
 	}
 	
-	public boolean isTypeVariable() {
+	public boolean isTypeVariableReference() {
 		return true;
 	}
 	

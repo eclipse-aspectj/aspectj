@@ -616,6 +616,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     public static final Missing   MISSING = new Missing();
     
     // ---- types
+    public static ResolvedType makeArray(ResolvedType type, int dim) {
+    	if (dim == 0) return type;
+    	ResolvedType array = new Array("[" + type.getSignature(),type.getWorld(),type);
+    	return makeArray(array,dim-1);
+    }
     
     static class Array extends ResolvedType {
         ResolvedType componentType;
@@ -1405,7 +1410,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			throw new BCException("The type "+getBaseName()+" is not parameterized or raw - it has no generic type");
 		return null;
 	}
-
+	
 	public ResolvedType parameterizedWith(UnresolvedType[] typeParameters) {
 		if (!(isGenericType() || isParameterizedType())) return this;
 		return TypeFactory.createParameterizedType(this.getGenericType(), typeParameters, getWorld());
@@ -1420,7 +1425,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	  	if (!isParameterizedType()) throw new IllegalStateException("Can't parameterize a type that is not a parameterized type");
     	boolean workToDo = false;
     	for (int i = 0; i < typeParameters.length; i++) {
-			if (typeParameters[i].isTypeVariable()) {
+			if (typeParameters[i].isTypeVariableReference()) {
 				workToDo = true;
 			}
 		}
@@ -1430,7 +1435,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     		UnresolvedType[] newTypeParams = new UnresolvedType[typeParameters.length];
     		for (int i = 0; i < newTypeParams.length; i++) {
 				newTypeParams[i] = typeParameters[i];
-				if (newTypeParams[i].isTypeVariable()) {
+				if (newTypeParams[i].isTypeVariableReference()) {
 					TypeVariableReferenceType tvrt = (TypeVariableReferenceType) newTypeParams[i];
 					UnresolvedType binding = (UnresolvedType) typeBindings.get(tvrt.getTypeVariable().getName());
 					if (binding != null) newTypeParams[i] = binding;

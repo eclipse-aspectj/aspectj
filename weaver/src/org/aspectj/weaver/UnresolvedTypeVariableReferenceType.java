@@ -16,7 +16,7 @@ package org.aspectj.weaver;
  * Represents a type variable encountered in the Eclipse Source world,
  * which when resolved will turn into a TypeVariableReferenceType
  */
-public class UnresolvedTypeVariableReferenceType extends UnresolvedType {
+public class UnresolvedTypeVariableReferenceType extends UnresolvedType implements TypeVariableReference {
 
 	private TypeVariable typeVariable;
 	
@@ -42,10 +42,19 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType {
 		return new TypeVariableReferenceType(typeVariable,world);
 	}
 	
-	public boolean isTypeVariable() {
+	public boolean isTypeVariableReference() {
 		return true;
 	}
+	
+	public TypeVariable getTypeVariable() {
+		return typeVariable;
+	}
 
+//	public String getName() {
+//		if (typeVariable == null) return "<type variable not set!>";
+//		return typeVariable.getDisplayName();
+//	}
+	
 	public String toString() {
 		if (typeVariable == null) {
 			return "<type variable not set!>";
