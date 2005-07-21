@@ -16,6 +16,8 @@ package org.aspectj.weaver;
 import junit.framework.TestCase;
 
 import org.aspectj.testing.util.TestUtil;
+import org.aspectj.testingutil.UtilTests;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
@@ -106,17 +108,19 @@ public class TypeXTestCase extends TestCase {
 	}
 	
 	public void testTypeXForParameterizedTypes() {
-		World world = new BcelWorld();
-		UnresolvedType stringType = UnresolvedType.forName("java/lang/String");
-		ResolvedType listOfStringType = 
-			TypeFactory.createParameterizedType(
-							UnresolvedType.forName("java/util/List").resolve(world), 
-							new UnresolvedType[] {stringType},
-							world);
-		assertEquals("1 type param",1,listOfStringType.typeParameters.length);
-		assertEquals(stringType,listOfStringType.typeParameters[0]);
-		assertTrue(listOfStringType.isParameterizedType());
-		assertFalse(listOfStringType.isGenericType());
+		if (LangUtil.is15VMOrGreater()) { // no funny types pre 1.5
+			World world = new BcelWorld();
+			UnresolvedType stringType = UnresolvedType.forName("java/lang/String");
+			ResolvedType listOfStringType = 
+				TypeFactory.createParameterizedType(
+								UnresolvedType.forName("java/util/List").resolve(world), 
+								new UnresolvedType[] {stringType},
+								world);
+			assertEquals("1 type param",1,listOfStringType.typeParameters.length);
+			assertEquals(stringType,listOfStringType.typeParameters[0]);
+			assertTrue(listOfStringType.isParameterizedType());
+			assertFalse(listOfStringType.isGenericType());
+		}
 	}
 	
 	private void checkTX(UnresolvedType tx,boolean shouldBeParameterized,int numberOfTypeParameters) {
