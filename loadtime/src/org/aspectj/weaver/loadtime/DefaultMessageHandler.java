@@ -25,10 +25,14 @@ public class DefaultMessageHandler implements IMessageHandler {
     boolean showWarn = true;
 
     public boolean handleMessage(IMessage message) throws AbortException {
-        if (message.getKind().isSameOrLessThan(IMessage.INFO)) {
-            return SYSTEM_OUT.handleMessage(message);
-        } else {
-            return SYSTEM_ERR.handleMessage(message);
+        if (isIgnoring(message.getKind())) {
+    		return false;
+    	} else {
+            if (message.getKind().isSameOrLessThan(IMessage.INFO)) {
+                return SYSTEM_OUT.handleMessage(message);
+            } else {
+                return SYSTEM_ERR.handleMessage(message);
+            }
         }
     }
 

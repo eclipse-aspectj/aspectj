@@ -1,0 +1,6 @@
+<aspectj>
+    <weaver options="-XmessageHandlerClass:ataspectj.ltwlog.MessageHolder -showWeaveInfo -verbose"/>
+    <aspects>
+        <aspect name="ataspectj.ltwlog.Aspect1"/>
+    </aspects>
+</aspectj>

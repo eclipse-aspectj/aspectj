@@ -133,10 +133,6 @@ public class Options {
 
         public WeaverOption() {
             messageHandler = new DefaultMessageHandler();//default
-
-            //temp alex
-            messageHandler.dontIgnore(IMessage.WEAVEINFO);
-            messageHandler.dontIgnore(IMessage.INFO);
         }
     }
 }

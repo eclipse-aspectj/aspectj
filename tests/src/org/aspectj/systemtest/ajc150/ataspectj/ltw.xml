@@ -93,5 +93,10 @@
             outjar="main1.jar"/>
         <ant file="ajc-ant.xml" target="ltw.Aspect2MainTest" verbose="true"/>
     </ajc-test>
-    
+
+    <ajc-test dir="java5/ataspectj" title="LTW Log">
+        <ant file="ajc-ant.xml" target="ltwlog.LTWLog" verbose="true"/>
+    </ajc-test>
+
+
 </suite>

@@ -353,7 +353,11 @@
                             <literal>org.aspectj.bridge.IMessageHandler</literal>
                             and that is visible from where the <literal>aop.xml</literal> is packed.
                             If more than one such options are used,
-                            the first occurence only is taken into account.</entry>
+                            the first occurence only is taken into account.
+                            You must also be very cautious about using a custom handler since it is likely that it will be invoked
+                            (as well as all its third parties) while the weaving is done, which means that f.e. it cannot be weaved
+                            by the aspects that are configured within the same deployment unit.
+                            </entry>
                         </row>
                     </tbody>
                 </tgroup>

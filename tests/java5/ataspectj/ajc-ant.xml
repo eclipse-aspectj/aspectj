@@ -77,6 +77,28 @@
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj5.def=ataspectj/ltwreweavable/aop-ltwreweavable.xml"/>
         </java>
+    </target>
 
+    <target name="ltwlog.LTWLog">
+        <javac destdir="${aj.sandbox}" classpathref="aj.path"
+            srcdir="${basedir}"
+            includes="ataspectj/ltwlog/*"
+            debug="true">
+        </javac>
+        <java fork="yes" classname="ataspectj.ltwlog.MainSilent" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/ltwlog/aop-silent.xml"/>
+        </java>
+        <java fork="yes" classname="ataspectj.ltwlog.MainVerbose" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/ltwlog/aop-verbose.xml"/>
+        </java>
+        <java fork="yes" classname="ataspectj.ltwlog.MainVerboseAndShow" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/ltwlog/aop-verboseandshow.xml"/>
+        </java>
     </target>
 </project>
