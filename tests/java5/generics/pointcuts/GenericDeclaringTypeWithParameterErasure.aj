@@ -12,7 +12,7 @@ public aspect GenericDeclaringTypeWithParameterErasure {
 	}
 	
 	declare warning : 
-		execution<N>(* GenericInterface<N>.asInt(Number)) :
+		execution<N>(* GenericInterface<N extends Number>.asInt(Number)) :
 		"execution<N>(* GenericInterface<N>.asInt(Number))";
 	
 }
