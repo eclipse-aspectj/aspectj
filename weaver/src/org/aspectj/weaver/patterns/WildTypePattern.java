@@ -36,6 +36,102 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
 //XXX need to use dim in matching
+/**
+ * The PatternParser always creates WildTypePatterns for type patterns in pointcut
+ * expressions (apart from *, which is sometimes directly turned into TypePattern.ANY).
+ * resolveBindings() tries to work out what we've really got and turn it into a type
+ * pattern that we can use for matching. This will normally be either an ExactTypePattern
+ * or a WildTypePattern.
+ * 
+ * Here's how the process pans out for various generic and parameterized patterns:
+ * (see GenericsWildTypePatternResolvingTestCase)
+ * 
+ * Foo where Foo exists and is generic
+ *    Parser creates WildTypePattern namePatterns={Foo}
+ *    resolveBindings resolves Foo to RT(Foo - raw)
+ *                    return ExactTypePattern(LFoo;)
+ * 
+ * <E>... Foo<E>    where Foo exists and has one unbound type var
+ *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{E}
+ *    resolveBindings requireExactType = true | false
+ *                    resolves typeParameters to ExactTypePattern(TVRT(E))
+ *                    resolves Foo to RT(Foo - raw)
+ *                    returns ExactTypePattern(<1:>LFoo; - generic)  1=E
+ * 
+ * <E>... Foo<E>    where Foo exists and is not generic (or has different bounds)
+ *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{E}
+ *    resolveBindings resolves typeParameters to ExactTypePattern(TVRT(E))
+ *                    resolves Foo to RT(Foo)
+ *                    finds that Foo is not generic / type var mismatch
+ *                    requireExactType = true ->returns TypePattern.NO (and issues error)
+ *                                     = false -> XLint then return ExactTypePattern(<1:>LFoo;)
+ *                    
+ * <E>... Foo<E extends Number> where Foo exists and bounds match
+ *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{E},uB=WTP{Number}
+ *    resolveBindings resolves typeParameters to ExactTypePattern(TVRT(E extends Number))
+ *                    resolves Foo to RT(Foo)
+ *                    returns ExactTypePattern(<1:Ljava/lang/Number;>LFoo;)  1=E
+ *                    
+ * Foo<String> where Foo exists and String meets the bounds
+ *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{String}
+ *    resolveBindings resolves typeParameters to ExactTypePattern(String)
+ *                    resolves Foo to RT(Foo)
+ *                    returns ExactTypePattern(PFoo<String>; - parameterized)
+ *                    
+ * Foo<Str*> where Foo exists and takes one bound
+ *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{Str*}
+ *    resolveBindings resolves typeParameters to WTP{Str*}
+ *                    resolves Foo to RT(Foo)
+ *                    returns WildTypePattern(name = Foo, typeParameters = WTP{Str*} isGeneric=false)                    
+ * 
+ * Fo*<String> 
+ *    Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{String}
+ *    resolveBindings resolves typeParameters to ETP{String}
+ *                    returns WildTypePattern(name = Fo*, typeParameters = ETP{String} isGeneric=false)                    
+ *
+ * <E>... Fo*<E>                        
+ *    Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{E}
+ *    resolveBindings resolves typeParameters to ETP{TVRT(E)}
+ *                    returns WildTypePattern(name = Fo*, typeParameters = ETP{TVRT(E)} isGeneric=true)
+ *                    
+ * <E>... Fo*<E extends Number>
+ *    Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{E,uB=WTP(Number)}
+ *    resolveBindings resolves typeParameters to ETP{TVRT(E extends Number)}
+ *                    returns WildTypePattern(name = Fo*, typeParameters = ETP{TVRT(E extends Number)} isGeneric=true)
+ *                    
+ * <E>... Foo<E extends Number+> where Foo exists and takes one bound
+ *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{E,uB=WTP(Number+)}
+ *    resolveBindings resolves typeParameters to WildTypeVariableReferencePattern{TVP(name="E",uB=Number+)}
+ *    	              resolves Foo to RT(Foo)
+ *                    if requireExactType (but this doesn't allow + ? )
+ *                       if typeParameters.matches(RT(Foo - generic).getTypeVariables()
+ *                           return ETP(<1:Ljava/lang/Number;>LFoo;)
+ *                       else return TypePattern.NO and issue warning
+ *                    else 
+ *                       if !typeParameters.matches(RT(Foo - generic).getTypeVariables()
+ *                           issue warning (XLint?)
+ *                       return WildTypePattern(name=Foo, typeParameters=WTVRP{TVP(E,Number+)} isGeneric=true
+ * 
+ * <E>... Fo*<E extends Number+>                                         
+ *    Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{E,uB=WTP(Number+)}
+ *    resolveBindings resolves typeParameters to WildTypeVariableReferencePattern{TVP(name="E",uB=Number+)}
+ *                    returns WildTypePattern(name=Fo*, typeParamters = WTVRP{TVP(name="E" ub=Number+)} isGeneric=true)
+ * 
+ * TODO:
+ * 
+ * <E>... Foo<E,String>
+ * 
+ * <S,T>... Foo<S,T extends S>
+ * 
+ * Foo<?>
+ * 
+ * Foo<? extends Number>
+ * 
+ * Foo<? extends Number+>
+ * 
+ * Foo<? super Number>
+ * 
+ */
 public class WildTypePattern extends TypePattern {
 	private NamePattern[] namePatterns;
 	int ellipsisCount;
@@ -168,9 +264,24 @@ public class WildTypePattern extends TypePattern {
 		annotationPattern.resolve(type.getWorld());
 		
 		return matchesExactlyByName(targetTypeName) &&
+		       // matchesParameters(type) &&
 		       annotationPattern.matches(annotatedType).alwaysTrue();
 	}
 	
+	
+	// we've matched against the base (or raw) type, but if this type pattern specifies parameters or
+	// type variables we need to make sure we match against them too
+	private boolean matchesParameters(ResolvedType aType) {
+		if (isGeneric) {
+			if (!aType.isGenericType()) return false;
+			// we have to match type variables
+			
+		} else if (typeParameters.size() > 0) {
+			if(!aType.isParameterizedType()) return false;
+			// we have to match type parameters
+		}
+		return true;
+	}
 	
 	/**
 	 * Used in conjunction with checks on 'isStar()' to tell you if this pattern represents '*' or '*[]' which are 
@@ -479,7 +590,7 @@ public class WildTypePattern extends TypePattern {
 	    // use a special variant of Any TypePattern called
 	    // AnyWithAnnotation
 		if (annotationPattern == AnnotationTypePattern.ANY) {
-		  if (dim == 0 && !isVarArgs) { // pr72531
+		  if (dim == 0 && !isVarArgs && upperBound == null && lowerBound == null && (additionalInterfaceBounds == null || additionalInterfaceBounds.length==0)) { // pr72531
 			return TypePattern.ANY;  //??? loses source location
 		  } 
 		} else {
@@ -889,6 +1000,18 @@ public class WildTypePattern extends TypePattern {
 		FileUtil.writeStringArray(importedPrefixes, s);
 		writeLocation(s);
 		annotationPattern.write(s);
+		// generics info, new in M3
+		s.writeBoolean(isGeneric);
+		s.writeBoolean(upperBound != null);
+		if (upperBound != null) upperBound.write(s);
+		s.writeBoolean(lowerBound != null);
+		if (lowerBound != null) lowerBound.write(s);
+		s.writeInt(additionalInterfaceBounds == null ? 0 : additionalInterfaceBounds.length);
+		if (additionalInterfaceBounds != null) {
+			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				additionalInterfaceBounds[i].write(s);
+			}
+		}
 	}
 	
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
@@ -918,6 +1041,21 @@ public class WildTypePattern extends TypePattern {
 	  ret.importedPrefixes = FileUtil.readStringArray(s);
 	  ret.readLocation(context, s);
 	  ret.setAnnotationTypePattern(AnnotationTypePattern.read(s,context));
+	  // generics info, new in M3
+	  ret.isGeneric = s.readBoolean();
+	  if (s.readBoolean()) {
+		  ret.upperBound = TypePattern.read(s,context);
+	  }
+	  if (s.readBoolean()) {
+		  ret.lowerBound = TypePattern.read(s,context);
+	  }
+	  int numIfBounds = s.readInt();
+	  if (numIfBounds > 0) {
+		  ret.additionalInterfaceBounds = new TypePattern[numIfBounds];
+		  for (int i = 0; i < numIfBounds; i++) {
+			ret.additionalInterfaceBounds[i] = TypePattern.read(s,context);
+		}
+	  }
 	  return ret;
 	}
     
