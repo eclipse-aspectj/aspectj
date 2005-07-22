@@ -16,15 +16,15 @@ public aspect StaticInitializationWithGenericTypesAdvanced {
 		: "raw type should match";
 		
 	declare warning
-		: staticinitialization<X>(ClassWithInterfaceBounds<X>)
+		: staticinitialization<X>(ClassWithInterfaceBounds<X>) // CW L19
 		: "unbound type variable does not match";
 	
 	declare warning
-		: staticinitialization<Y>(ClassWithInterfaceBounds<Y extends Number>)
+		: staticinitialization<Y>(ClassWithInterfaceBounds<Y extends Number>) // CW L23
 		: "upper bound match on its own is not enough";
 		
     declare warning
-    	: staticinitialization<Z>(ClassWithInterfaceBounds<Z extends Number & Comparable>)
+    	: staticinitialization<Z>(ClassWithInterfaceBounds<Z extends Number & Comparable>) // CW L27
     	: "still no match, wrong number of i/f bounds";
     	
     declare warning
@@ -37,7 +37,7 @@ public aspect StaticInitializationWithGenericTypesAdvanced {
 	
 	// type variable inter-dependencies
 	declare warning
-		: staticinitialization<A,B>(TypeVariablesTiedInKnots<A,B>)
+		: staticinitialization<A,B>(TypeVariablesTiedInKnots<A,B>)  // CW L40
 		: "no match, wrong upper bound on B";
 		
 	declare warning
