@@ -2548,7 +2548,7 @@
          <message kind="warning" line="1" text="works with classes too"/>
          <message kind="warning" line="4" text="Type T does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericInterface"/>
          <message kind="warning" line="20" text="Type pattern does not match because the wrong number of type parameters are specified: Type GenericImplementingClass requires 1 parameter(s)"/>
-         <message kind="warning" line="24" text="Type N extends java.lang.Name &amp; java.lang.Comparable does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericImplementingClass"/>
+         <message kind="warning" line="24" text="Type N extends java.lang.Number &amp; java.lang.Comparable does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericImplementingClass"/>
      </compile>
    </ajc-test>
    
@@ -2565,6 +2565,9 @@
          <message kind="warning" line="63" text="matches a generic type with any upper bound and i/f bounds"/>
          <message kind="warning" line="76" text="matches a generic type with any upper bound and i/f bounds"/>
          <message kind="warning" line="82" text="matches a generic type with any upper bound and i/f bounds"/>
+         <message kind="warning" line="19" text="Type X does not meet the specification for type parameter 1 (T extends java.lang.Number &amp; java.lang.Comparable &amp; java.io.Serializable) in generic type ClassWithInterfaceBounds"/>
+         <message kind="warning" line="23" text="Type Y extends java.lang.Number does not meet the specification for type parameter 1 (T extends java.lang.Number &amp; java.lang.Comparable &amp; java.io.Serializable) in generic type ClassWithInterfaceBounds"/>
+         <message kind="warning" line="27" text="Type Z extends java.lang.Number &amp; java.lang.Comparable does not meet the specification for type parameter 1 (T extends java.lang.Number &amp; java.lang.Comparable &amp; java.io.Serializable) in generic type ClassWithInterfaceBounds"/>
      </compile>
    </ajc-test>
    
