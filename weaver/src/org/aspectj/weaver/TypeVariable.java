@@ -11,6 +11,9 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Represents a type variable with bounds
  */
@@ -130,10 +133,31 @@ public class TypeVariable {
 	// can match any type in the range of the type variable...
 	// XXX what about interfaces?
 	private boolean matchingBounds(TypeVariableReferenceType tvrt) {
-		boolean upperMatch = canBeBoundTo(tvrt.getUpperBound());
-		boolean lowerMatch = true;
-		if (tvrt.hasLowerBound()) lowerMatch = canBeBoundTo(tvrt.getLowerBound());
-		return upperMatch && lowerMatch;
+		if (tvrt.getUpperBound() != upperBound) return false;
+		if (tvrt.hasLowerBound() != (lowerBound != null)) return false;
+		if (tvrt.hasLowerBound() && tvrt.lowerBound != lowerBound) return false;
+		// either we both have bounds, or neither of us have bounds
+		if ((tvrt.additionalInterfaceBounds != null) != (additionalInterfaceBounds != null)) return false;
+		if (additionalInterfaceBounds != null) {
+			// we both have bounds, compare
+			if (tvrt.additionalInterfaceBounds.length != additionalInterfaceBounds.length) return false;
+			Set aAndNotB = new HashSet();
+			Set bAndNotA = new HashSet();
+			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				aAndNotB.add(additionalInterfaceBounds[i]);
+			}
+			for (int i = 0; i < tvrt.additionalInterfaceBounds.length; i++) {
+				bAndNotA.add(tvrt.additionalInterfaceBounds[i]);
+			}
+			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				bAndNotA.remove(additionalInterfaceBounds[i]);
+			}
+			for (int i = 0; i < tvrt.additionalInterfaceBounds.length; i++) {
+				aAndNotB.remove(tvrt.additionalInterfaceBounds[i]);
+			}
+			if (! (aAndNotB.isEmpty() && bAndNotA.isEmpty()) ) return false;
+		}
+		return true;
 	}
 	
 	private boolean isASubtypeOf(UnresolvedType candidateSuperType, UnresolvedType candidateSubType) {
