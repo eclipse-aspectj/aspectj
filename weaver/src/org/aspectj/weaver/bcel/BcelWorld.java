@@ -20,6 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Iterator;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -355,7 +356,7 @@ public class BcelWorld extends World implements Repository {
         
     }
 
-    public static Member makeMethodSignature(LazyClassGen cg, InvokeInstruction ii) {
+    public Member makeMethodSignature(LazyClassGen cg, InvokeInstruction ii) {
     	ConstantPoolGen cpg = cg.getConstantPoolGen();
         String declaring = ii.getClassName(cpg);
         String name = ii.getName(cpg);
@@ -369,6 +370,27 @@ public class BcelWorld extends World implements Repository {
               : (ii instanceof INVOKESPECIAL && ! name.equals("<init>"))
                 ? Modifier.PRIVATE
                 : 0;
+
+        // in Java 1.4 and after, static method call of super class within subclass method appears
+        // as declared by the subclass in the bytecode - but they are not
+        // see #104212
+        if (ii instanceof INVOKESTATIC) {
+            ResolvedType appearsDeclaredBy = resolve(declaring);
+            // look for the method there
+            for (Iterator iterator = appearsDeclaredBy.getMethods(); iterator.hasNext();) {
+                ResolvedMember method = (ResolvedMember) iterator.next();
+                if (method.isStatic()) {
+                    if (name.equals(method.getName()) && signature.equals(method.getSignature())) {
+                        // we found it
+                        declaring = method.getDeclaringType().getName();
+                        break;
+                    }
+                }
+
+            }
+        }
+        //FIXME if not found we ll end up again with the bug.. can this happen?
+
         return Member.method(UnresolvedType.forName(declaring), modifier, name, signature);
     }  
 

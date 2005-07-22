@@ -144,4 +144,10 @@
         <run class="ataspectj.MultipleBindingTest"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="Bug104212">
+        <compile files="ataspectj/Bug104212.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.Bug104212"/>
+    </ajc-test>
+
+
 </suite>

@@ -1626,7 +1626,7 @@ class BcelClassWeaver implements IClassWeaver {
 		String methodName = invoke.getName(cpg);
 		if (methodName.startsWith(NameMangler.PREFIX)) {
 			Member method =
-				BcelWorld.makeMethodSignature(clazz, invoke);
+				world.makeMethodSignature(clazz, invoke);
 			ResolvedMember declaredSig = method.resolve(world);
 			//System.err.println(method + ", declaredSig: "  +declaredSig);
 			if (declaredSig == null) return;

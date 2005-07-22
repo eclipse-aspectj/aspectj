@@ -116,4 +116,8 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
     public void testMultipleBinding() {
         runTest("MultipleBinding");
     }
+
+    public void testBug104212() {
+        runTest("Bug104212");
+    }
 }

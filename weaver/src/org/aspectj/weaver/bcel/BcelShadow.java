@@ -705,7 +705,7 @@ public class BcelShadow extends Shadow {
     {
         final InstructionList body = enclosingMethod.getBody();
         
-        Member sig = BcelWorld.makeMethodSignature(
+        Member sig = world.makeMethodSignature(
                     	enclosingMethod.getEnclosingClass(),
                     	(InvokeInstruction) callHandle.getInstruction());
                     
@@ -736,7 +736,7 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 MethodCall,
-                BcelWorld.makeMethodSignature(
+                world.makeMethodSignature(
                     enclosingMethod.getEnclosingClass(),
                     (InvokeInstruction) callHandle.getInstruction()),
                 enclosingMethod,
