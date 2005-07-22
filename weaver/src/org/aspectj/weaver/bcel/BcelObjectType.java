@@ -533,7 +533,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		}
 		if (isGeneric()) {
 			// update resolved typex to point at generic type not raw type.
-			this.resolvedTypeX = (ReferenceType) this.resolvedTypeX.getGenericType();
+			ReferenceType genericType = (ReferenceType) this.resolvedTypeX.getGenericType();
+			genericType.setSourceContext(this.resolvedTypeX.getSourceContext());
+			genericType.setStartPos(this.resolvedTypeX.getStartPos());
+			this.resolvedTypeX = genericType;
 		}
 	}
 	
