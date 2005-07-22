@@ -474,7 +474,15 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		String name = new String(aTypeParameter.name);
 		ReferenceBinding superclassBinding = aTypeParameter.binding.superclass;
 		UnresolvedType superclass = UnresolvedType.forSignature(new String(superclassBinding.signature()));
-		// TODO AMC - superinterfaces
-		return new TypeVariable(name,superclass);
+		UnresolvedType[] superinterfaces = null;
+		ReferenceBinding[] superInterfaceBindings = aTypeParameter.binding.superInterfaces;
+		if (superInterfaceBindings != null) {
+			superinterfaces = new UnresolvedType[superInterfaceBindings.length];
+			for (int i = 0; i < superInterfaceBindings.length; i++) {
+				superinterfaces[i] = UnresolvedType.forSignature(new String(superInterfaceBindings[i].signature()));
+			}
+		}
+		// XXX what about lower binding?
+		return new TypeVariable(name,superclass,superinterfaces);
 	}
 }
