@@ -125,7 +125,7 @@ public class KindedPointcut extends Pointcut {
 		if (shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.isEnabled()) {
 			ResolvedMember rm = shadow.getSignature().resolve(shadow.getIWorld());
 			if (rm!=null) {
-             	int shadowModifiers = shadow.getSignature().getModifiers(shadow.getIWorld());
+             	int shadowModifiers = rm.getModifiers(); //shadow.getSignature().getModifiers(shadow.getIWorld());
 			    if (ResolvedType.hasBridgeModifier(shadowModifiers)) {
 				  shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
 						new ISourceLocation[]{shadow.getSourceLocation()});
@@ -189,7 +189,7 @@ public class KindedPointcut extends Pointcut {
 
 		// if the method in the declaring type is *not* visible to the
 		// exact declaring type then warning not needed.
-		int shadowModifiers = shadow.getSignature().getModifiers(world);
+		int shadowModifiers = shadow.getSignature().resolve(world).getModifiers();
 		if (!ResolvedType
 			.isVisible(
 				shadowModifiers,

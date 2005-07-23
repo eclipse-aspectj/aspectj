@@ -1,0 +1,40 @@
+
+Current situation with respect to raw types...
+
+* We can create an unresolved type (typeKind = SIMPLE) by 
+   UnresolvedType.forSignature or forName
+   
+* We can create an unresolved type (typeKind = RAW) by calling 
+   UnresolvedType.forRawTypeName
+   
+   This method is called by...
+    
+   BcelWorld.addSourceObjectType when types in jar files or on the classpath are added to
+   the weaver for processing. If the JavaClass is determined to be generic then a raw
+   UnresolvedType is built and a ReferenceType constructed from that. A BcelObjectType is
+   built using the Resolved raw type (and when it's generic signature is unpacked later that will
+   be swapped out for the generic type). Then a generic type is created, the delegates of
+   the generic and raw types are set to point to the BcelObjectType, and the generic type
+   of the raw type is set to point to the generic type. The raw type is explicitly added into
+   the typeMap.
+   
+   EclipseFactory.addSourceTypeBinding when adding a binding for a generic type during 
+   completeTypeBindings. This is put into the world by calling world.lookupOrCreateName. 
+   Then a generic type is created and the raw type's generic type is set to refer to it.
+   
+   EclipseFactory.fromBinding when processing a RawTypeBinding. A later call to resolve
+   is responsible for adding this to the type map.
+   
+* World.resolve processing works as follows:
+
+   in resolveObjectType, if the typeKind of the UnresolvedType is neither parameterized
+   nor generic, then a new ReferenceType is created using the rawTypeSignature of the
+   unresolved type. Then the delegate is created, and if this turns out to be generic then a 
+   generic type is also built and set as the generic type of the reference type (but nothing
+   sets the type of the reference type to raw???).
+   
+   in resolveTheGenericType the rawTypeSignature is looked up in the typeMap.  If it
+   is not found, then a new UnresolvedType is created forSignature, resolved (see above),
+   and put in the type map. The generic type is then created and set as the generic type
+   of the raw type. 
+   

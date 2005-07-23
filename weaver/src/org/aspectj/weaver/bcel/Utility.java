@@ -310,7 +310,7 @@ public class Utility {
             throw new BCException("can't convert from " + fromType + " to " + toType);
         }
 	    // XXX I'm sure this test can be simpler but my brain hurts and this works
-        if (!toType.getWorld().behaveInJava5Way) {
+        if (!toType.getWorld().isInJava5Mode()) {
         	if (toType.needsNoConversionFrom(fromType)) return;
         } else {
         	if (toType.needsNoConversionFrom(fromType) && !(toType.isPrimitiveType()^fromType.isPrimitiveType())) return;
@@ -347,7 +347,7 @@ public class Utility {
                     Type.OBJECT,
                     new Type[] { from },
                     Constants.INVOKESTATIC));
-        } else if (toType.getWorld().behaveInJava5Way && validBoxing.get(toType.getSignature()+fromType.getSignature())!=null) {
+        } else if (toType.getWorld().isInJava5Mode() && validBoxing.get(toType.getSignature()+fromType.getSignature())!=null) {
         	// XXX could optimize by using any java boxing code that may be just before the call...
         	Type from   = BcelWorld.makeBcelType(fromType);
         	Type to     = BcelWorld.makeBcelType(toType);

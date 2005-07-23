@@ -338,7 +338,7 @@ public class UnresolvedType  {
     	return ret;
     }
     
-	public static UnresolvedType forRawTypeNames(String name) {
+	public static UnresolvedType forRawTypeName(String name) {
 		UnresolvedType ret = UnresolvedType.forName(name);
 		ret.typeKind = TypeKind.RAW;
 		return ret;
@@ -508,13 +508,13 @@ public class UnresolvedType  {
 	/**
 	 * For parameterized types, return the signature for the raw type
 	 */
-	public String getRawTypeSignature() {
+	public String getErasureSignature() {
 		if (signatureErasure==null) return signature;
 		return signatureErasure;
 	}
 	
 	public UnresolvedType getRawType() {
-		return UnresolvedType.forSignature(getRawTypeSignature());
+		return UnresolvedType.forSignature(getErasureSignature());
 	}
 	
 

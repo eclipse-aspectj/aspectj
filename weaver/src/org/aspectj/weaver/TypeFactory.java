@@ -48,6 +48,20 @@ public class TypeFactory {
 		return (ReferenceType) pType.resolve(inAWorld);
 	}
 	
+	public static ReferenceType createRawType(
+			ResolvedType aBaseType,
+			World inAWorld
+		) {
+		if (aBaseType.isRawType()) return (ReferenceType) aBaseType;
+		if (!aBaseType.isGenericType()) {
+			if (!aBaseType.isRawType()) throw new IllegalStateException("Expecting generic type");
+		}
+		ReferenceType rType = new ReferenceType(aBaseType,inAWorld);
+		rType.setSourceContext(aBaseType.getSourceContext());
+		return (ReferenceType) rType.resolve(inAWorld);
+	}
+	
+	
 	/**
 	 * Used by UnresolvedType.read, creates a type from a full signature.
 	 * @param signature

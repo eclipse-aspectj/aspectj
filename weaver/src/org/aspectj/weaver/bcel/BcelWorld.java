@@ -96,7 +96,7 @@ public class BcelWorld extends World implements Repository {
 		//this.aspectPath = new ClassPathManager(aspectPath, handler);
 		this.classPath = new ClassPathManager(classPath, handler);
 		setMessageHandler(handler);	
-		setXRefHandler(xrefHandler);
+		setCrossReferenceHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
         delegate = this;
 		// TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
@@ -106,7 +106,7 @@ public class BcelWorld extends World implements Repository {
 	public BcelWorld(ClassPathManager cpm, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
 		this.classPath = cpm;
 		setMessageHandler(handler);
-		setXRefHandler(xrefHandler);
+		setCrossReferenceHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
         delegate = this;
         // TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
@@ -123,7 +123,7 @@ public class BcelWorld extends World implements Repository {
     public BcelWorld(ClassLoader loader, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
         this.classPath = null;
         setMessageHandler(handler);
-        setXRefHandler(xrefHandler);
+        setCrossReferenceHandler(xrefHandler);
         // Tell BCEL to use us for resolving any classes
         delegate = new ClassLoaderRepository(loader);
         // TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
@@ -220,7 +220,7 @@ public class BcelWorld extends World implements Repository {
     }       
 
 
-	protected ReferenceTypeDelegate resolveObjectType(ReferenceType ty) {
+	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
         String name = ty.getName();
         JavaClass jc = null;
         //UnwovenClassFile classFile = (UnwovenClassFile)sourceJavaClasses.get(name);
@@ -275,7 +275,7 @@ public class BcelWorld extends World implements Repository {
 
         if (nameTypeX == null) {        	
 		    if (jc.isGeneric()) {
-		    	nameTypeX =  ReferenceType.fromTypeX(UnresolvedType.forRawTypeNames(jc.getClassName()),this);
+		    	nameTypeX =  ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()),this);
 		        ret = makeBcelObjectType(nameTypeX, jc, true);
 		    	ReferenceType genericRefType = new ReferenceType(
 		    			UnresolvedType.forGenericTypeSignature(signature,ret.getDeclaredGenericSignature()),this);
@@ -413,7 +413,7 @@ public class BcelWorld extends World implements Repository {
 		return buf.toString();
 	}
 
-    public Advice concreteAdvice(
+    public Advice createAdviceMunger(
        	AjAttribute.AdviceAttribute attribute,
     	Pointcut pointcut,
         Member signature)

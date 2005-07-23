@@ -479,8 +479,8 @@ public abstract class Shadow {
 			ShadowMunger munger = (ShadowMunger) iter.next();
 			munger.implementOn(this);
 			
-			if (world.xrefHandler != null) {
-				world.xrefHandler.addCrossReference(
+			if (world.getCrossReferenceHandler() != null) {
+				world.getCrossReferenceHandler().addCrossReference(
 				  munger.getSourceLocation(), // What is being applied
 				  this.getSourceLocation(),   // Where is it being applied
 				  determineRelKind(munger),   // What kind of advice?

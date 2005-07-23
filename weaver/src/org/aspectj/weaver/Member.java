@@ -76,7 +76,7 @@ public class Member implements Comparable, AnnotatedElement {
         this.name = name;
         this.parameterTypes = parameterTypes;
         if (kind == FIELD) {
-            this.signature         = returnType.getRawTypeSignature();
+            this.signature         = returnType.getErasureSignature();
 			this.declaredSignature = returnType.getSignature();
         } else {
             this.signature         = typesToSignature(returnType, parameterTypes,true);
@@ -108,11 +108,11 @@ public class Member implements Comparable, AnnotatedElement {
         StringBuffer buf = new StringBuffer();
         buf.append("(");
         for (int i = 0, len = paramTypes.length; i < len; i++) {
-			if (paramTypes[i].isParameterizedType() && useRawTypes) buf.append(paramTypes[i].getRawTypeSignature());
+			if (paramTypes[i].isParameterizedType() && useRawTypes) buf.append(paramTypes[i].getErasureSignature());
 			else                                                buf.append(paramTypes[i].getSignature());
         }
         buf.append(")");
-        if (returnType.isParameterizedType() && useRawTypes) buf.append(returnType.getRawTypeSignature());
+        if (returnType.isParameterizedType() && useRawTypes) buf.append(returnType.getErasureSignature());
         else 											 buf.append(returnType.getSignature());
         return buf.toString();        
     }
@@ -481,21 +481,21 @@ public class Member implements Comparable, AnnotatedElement {
     // ---- things we know only with resolution
     
     public int getModifiers(World world) {
-        return world.getModifiers(this);
+        return resolve(world).getModifiers();
     }
     
     public UnresolvedType[] getExceptions(World world) {
-        return world.getExceptions(this);
+        return resolve(world).getExceptions();
     }
     
     public final boolean isProtected(World world) {
-        return Modifier.isProtected(world.getModifiers(this));
+        return Modifier.isProtected(resolve(world).getModifiers());
     }
     public final boolean isStatic(World world) {
-        return Modifier.isStatic(world.getModifiers(this));
+        return Modifier.isStatic(resolve(world).getModifiers());
     }
     public final boolean isStrict(World world) {
-        return Modifier.isStrict(world.getModifiers(this));
+        return Modifier.isStrict(resolve(world).getModifiers());
     }
     
     public final boolean isStatic() {
@@ -854,7 +854,7 @@ public class Member implements Comparable, AnnotatedElement {
     }
 
 	public String[] getParameterNames(World world) {
-    	return world.getParameterNames(this);
+    	return resolve(world).getParameterNames();
     }
     
     

@@ -41,7 +41,7 @@ public class ReferenceType extends ResolvedType {
 	int endPos = 0;
     
     public static ReferenceType fromTypeX(UnresolvedType tx, World world) {
-    	ReferenceType rt = new ReferenceType(tx.getRawTypeSignature(),world);
+    	ReferenceType rt = new ReferenceType(tx.getErasureSignature(),world);
     	rt.typeKind = tx.typeKind;
     	return rt;
     }
@@ -73,6 +73,22 @@ public class ReferenceType extends ResolvedType {
     	this.genericType = genericReferenceType;
     	this.typeKind = TypeKind.PARAMETERIZED;
     	this.delegate = genericReferenceType.getDelegate();
+    }
+    
+    /**
+     * Constructor used when creating a raw type.
+     */
+    public ReferenceType(
+    		ResolvedType theGenericType,
+    		World aWorld) {
+    	super(theGenericType.getErasureSignature(),
+    		  theGenericType.getErasureSignature(),
+    		  aWorld);
+    	ReferenceType genericReferenceType = (ReferenceType) theGenericType;
+    	this.typeParameters = null;
+    	this.genericType = genericReferenceType;
+    	this.typeKind = TypeKind.RAW;
+    	this.delegate = genericReferenceType.getDelegate();    	
     }
     
     public String getSignatureForAttribute() {
@@ -156,7 +172,7 @@ public class ReferenceType extends ResolvedType {
     
     public final boolean isAssignableFrom(ResolvedType other) {
        	if (other.isPrimitiveType()) {
-    		if (!world.behaveInJava5Way) return false;
+    		if (!world.isInJava5Mode()) return false;
     		if (ResolvedType.validBoxing.contains(this.getSignature()+other.getSignature())) return true;
     	}      
        	if (this == other) return true;
@@ -381,7 +397,7 @@ public class ReferenceType extends ResolvedType {
 	 * @return
 	 */
 	private static String makeParameterizedSignature(ResolvedType aGenericType, ResolvedType[] someParameters) {
-		String rawSignature = aGenericType.getRawTypeSignature();
+		String rawSignature = aGenericType.getErasureSignature();
 		String prefix = PARAMETERIZED_TYPE_IDENTIFIER + rawSignature.substring(1,rawSignature.length()-1);
 		
 		StringBuffer ret = new StringBuffer();
@@ -396,7 +412,7 @@ public class ReferenceType extends ResolvedType {
 	
 	private static String makeDeclaredSignature(ResolvedType aGenericType, UnresolvedType[] someParameters) {	
 		StringBuffer ret = new StringBuffer();
-		String rawSig = aGenericType.getRawTypeSignature();
+		String rawSig = aGenericType.getErasureSignature();
 		ret.append(rawSig.substring(0,rawSig.length()-1));
 		ret.append("<");
 		for (int i = 0; i < someParameters.length; i++) {

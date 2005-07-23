@@ -509,7 +509,7 @@ public class BcelAdvice extends Advice {
 		World world = concreteAspect.getWorld();
 		
 		int ret =
-			concreteAspect.getWorld().compareByDominates(
+			concreteAspect.getWorld().compareByPrecedence(
 				concreteAspect,
 				o.concreteAspect);
 		if (ret != 0) return ret;

@@ -154,7 +154,7 @@ public class CrosscuttingMembers {
 			if (typeToExpose instanceof ResolvedType) {
 				typeToExpose = ((ResolvedType)typeToExpose).getGenericType();
 			} else {
-				typeToExpose = UnresolvedType.forSignature(typeToExpose.getRawTypeSignature());
+				typeToExpose = UnresolvedType.forSignature(typeToExpose.getErasureSignature());
 			}
 		}
 		ResolvedMember member = new ResolvedMember(

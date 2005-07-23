@@ -480,7 +480,7 @@ public abstract class AjAttribute {
 		}
 		
 		public Advice reify(Member signature, World world) {
-			return world.concreteAdvice(this, pointcut, signature);
+			return world.createAdviceMunger(this, pointcut, signature);
 		}
 		
 		public String toString() {

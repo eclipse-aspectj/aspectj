@@ -715,7 +715,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
         }
         public final boolean isAssignableFrom(ResolvedType other) {
             if (!other.isPrimitiveType()) {
-            	if (!world.behaveInJava5Way) return false;
+            	if (!world.isInJava5Mode()) return false;
             	return validBoxing.contains(this.getSignature()+other.getSignature());
             }
             return assignTable[((Primitive)other).index][index];
@@ -1085,7 +1085,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					//System.err.println("    is visible");
 					int c = compareMemberPrecedence(sig, existingMunger.getSignature());
 					if (c == 0) {
-						c = getWorld().comparePrecedence(munger.getAspectType(), existingMunger.getAspectType());
+						c = getWorld().compareByPrecedenceAndHierarchy(munger.getAspectType(), existingMunger.getAspectType());
 					}
 					//System.err.println("       compare: " + c);
 					if (c < 0) {
@@ -1481,7 +1481,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * Types may have pointcuts just as they have methods and fields.
 	 */
 	public ResolvedPointcutDefinition findPointcut(String name, World world) {
-	    return world.findPointcut(this, name);
+	    throw new UnsupportedOperationException("Not yet implemenented");
 	}
 
 	/**
@@ -1507,7 +1507,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     	 
     	 // version from ResolvedTypeX
     	 if (this.equals(OBJECT)) return true;
-    	 if (world.behaveInJava5Way) {
+    	 if (world.isInJava5Mode()) {
         	if (this.isPrimitiveType()^other.isPrimitiveType()) { // If one is primitive and the other isnt
         		if (validBoxing.contains(this.getSignature()+other.getSignature())) return true;
         	}

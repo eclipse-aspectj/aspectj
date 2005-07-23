@@ -1000,7 +1000,7 @@ public class BcelWeaver implements IWeaver {
         
 		// FIXME asc Should be factored out into Xlint code and done automatically for all xlint messages, ideally.
         // if a piece of advice hasn't matched anywhere and we are in -1.5 mode, put out a warning
-        if (world.behaveInJava5Way && 
+        if (world.isInJava5Mode() && 
             world.getLint().adviceDidNotMatch.isEnabled()) {
         	List l = world.getCrosscuttingMembersSet().getShadowMungers();
         	for (Iterator iter = l.iterator(); iter.hasNext();) {

@@ -737,7 +737,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// pr98901
 		    // For copying the annotations across, we have to discover the real member in the aspect
 		    // which is holding them.
-			if (weaver.getWorld().behaveInJava5Way && !onInterface && munger.getSignature().isPublic() && !munger.getSignature().isAbstract()) {
+			if (weaver.getWorld().isInJava5Mode() && !onInterface && munger.getSignature().isPublic() && !munger.getSignature().isAbstract()) {
 				ResolvedMember realMember = getRealMemberForITDFromAspect(aspectType,dispatchMethod);
 				if (realMember==null) throw new BCException("Couldn't find ITD holder member '"+
 						                                    dispatchMethod+"' on aspect "+aspectType);

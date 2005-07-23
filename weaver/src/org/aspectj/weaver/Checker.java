@@ -58,8 +58,8 @@ public class Checker extends ShadowMunger {
             
             world.getMessageHandler().handleMessage(message);
 			
-			if (world.xrefHandler != null) {
-				world.xrefHandler.addCrossReference(this.getSourceLocation(),
+			if (world.getCrossReferenceHandler() != null) {
+				world.getCrossReferenceHandler().addCrossReference(this.getSourceLocation(),
 				  shadow.getSourceLocation(),
 				  (this.isError?IRelationship.Kind.DECLARE_ERROR:IRelationship.Kind.DECLARE_WARNING),false);
 			

@@ -96,7 +96,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
 
     public void testIterator() {
         int abstractPublic = Modifier.ABSTRACT | Modifier.PUBLIC;
-        ResolvedType iter = world.getCoreType(UnresolvedType.forRawTypeNames("java.util.Iterator"));
+        ResolvedType iter = world.getCoreType(UnresolvedType.forRawTypeName("java.util.Iterator"));
       
         modifiersTest(iter, abstractPublic | Modifier.INTERFACE);
         fieldsTest(iter, ResolvedMember.NONE);
