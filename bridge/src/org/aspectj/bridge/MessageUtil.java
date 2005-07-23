@@ -175,6 +175,14 @@ public class MessageUtil {
         }
     }
 
+    /** @return WARNING_NOMESSAGE if message is empty or IMessage otherwise */ // 
+    public static IMessage warn(String message, ISourceLocation location) {
+        if (LangUtil.isEmpty(message)) {
+            return WARNING_NOMESSAGE;
+        } else {
+            return new Message(message, IMessage.WARNING, null, location);
+        }
+    }
     /** @return ERROR_NOMESSAGE if message is empty or IMessage otherwise */ // 
     public static IMessage error(String message) {
         if (LangUtil.isEmpty(message)) {
