@@ -196,7 +196,7 @@ public class EclipseFactory {
 		if (binding instanceof ParameterizedTypeBinding) {
 			if (binding instanceof RawTypeBinding) {
 				// special case where no parameters are specified!
-				return UnresolvedType.forRawTypeNames(getName(binding));
+				return UnresolvedType.forRawTypeName(getName(binding));
 			}
 			ParameterizedTypeBinding ptb = (ParameterizedTypeBinding) binding;
 			
@@ -519,7 +519,7 @@ public class EclipseFactory {
 		// Deal with the raw/basic type to give us an entry in the world type map
 		UnresolvedType simpleTx = null;
 		if (binding.isGenericType()) {
-		    simpleTx  = UnresolvedType.forRawTypeNames(getName(binding)); 
+		    simpleTx  = UnresolvedType.forRawTypeName(getName(binding)); 
 		} else {
 			simpleTx  = UnresolvedType.forName(getName(binding)); 
 		}
