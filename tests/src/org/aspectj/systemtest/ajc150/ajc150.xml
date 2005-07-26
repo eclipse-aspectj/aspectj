@@ -2377,6 +2377,15 @@
        </run>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/itds" title="more complex static member itd">
+     <compile files="StaticGenericMethodITD.aj" options="-1.5"/>
+     <run class="StaticGenericMethodITD">
+       <stderr>
+         <line text="First=10"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 1">
      <compile files="Parse1.java" options="-1.5"/>
    </ajc-test>
