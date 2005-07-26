@@ -257,6 +257,8 @@ public class AtAjAttributes {
                     break;
                 }
             }
+            // FIXME asc should check we aren't adding multiple versions... will do once I get the tests passing again...
+            struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
             struct.ajAttributes.addAll(mstruct.ajAttributes);
         }
 
@@ -443,6 +445,8 @@ public class AtAjAttributes {
                 return false;
             } else {
                 perClause.setLocation(struct.context, struct.context.getOffset(), struct.context.getOffset()+1);//FIXME AVASM
+                // FIXME asc see related comment way about about the version...
+                struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
                 struct.ajAttributes.add(new AjAttribute.Aspect(perClause));
                 return true;
             }
