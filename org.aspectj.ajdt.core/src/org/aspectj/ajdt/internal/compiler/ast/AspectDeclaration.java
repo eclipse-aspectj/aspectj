@@ -27,6 +27,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.HelperInterfaceBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
@@ -272,7 +273,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		
 		generateInlineAccessMembers(classFile);
 
-		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.WeaverVersionInfo()));
+		addVersionAttributeIfNecessary(classFile);
 		
 		classFile.extraAttributes.add(
 			new EclipseAttributeAdapter(new AjAttribute.Aspect(perClause)));
@@ -291,6 +292,18 @@ public class AspectDeclaration extends TypeDeclaration {
 
 		super.generateAttributes(classFile);		
 	}
+	
+	/**
+	 * A pointcut might have already added the attribute, let's not add it again.
+	 */
+	private void addVersionAttributeIfNecessary(ClassFile classFile) {
+		for (Iterator iter = classFile.extraAttributes.iterator(); iter.hasNext();) {
+			EclipseAttributeAdapter element = (EclipseAttributeAdapter) iter.next();
+			if (CharOperation.equals(element.getNameChars(),weaverVersionChars)) return;
+		}
+		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.WeaverVersionInfo()));
+	}
+	private static char[] weaverVersionChars = "org.aspectj.weaver.WeaverVersion".toCharArray();
 	
 	private void generateInlineAccessMembers(ClassFile classFile) {
 		for (Iterator i = superAccessForInline.values().iterator(); i.hasNext(); ) {

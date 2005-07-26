@@ -422,8 +422,15 @@ public final class LazyClassGen {
 //		}
         }
         
-        // Add a weaver version attribute to the file being produced
-        myGen.addAttribute(BcelAttributes.bcelAttribute(new AjAttribute.WeaverVersionInfo(),getConstantPoolGen()));
+        // Add a weaver version attribute to the file being produced (if necessary...)
+        boolean hasVersionAttribute = false;        
+        Attribute[] attrs = myGen.getAttributes();
+        for (int i = 0; i < attrs.length && !hasVersionAttribute; i++) {
+			Attribute attribute = attrs[i];
+			if (attribute.getName().equals("org.aspectj.weaver.WeaverVersion")) hasVersionAttribute=true;
+		}        
+        if (!hasVersionAttribute)
+        	myGen.addAttribute(BcelAttributes.bcelAttribute(new AjAttribute.WeaverVersionInfo(),getConstantPoolGen()));
 
         if (myType != null && myType.getWeaverState() != null) {
 			myGen.addAttribute(BcelAttributes.bcelAttribute(
