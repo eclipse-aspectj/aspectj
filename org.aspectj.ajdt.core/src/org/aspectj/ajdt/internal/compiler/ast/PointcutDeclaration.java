@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
+import java.util.Iterator;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
@@ -204,11 +205,29 @@ public class PointcutDeclaration extends AjMethodDeclaration {
     	this.world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		if (ignoreFurtherInvestigation) return ;
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(makeAttribute()));
+		addVersionAttributeIfNecessary(classFile);
+		
 		if (generateSyntheticPointcutMethod) {
 			super.generateCode(classScope,classFile);
 		}
 		return;
 	}
+	
+	/**
+	 * Normally, pointcuts occur in aspects - aspects are always tagged with a weaver version attribute,
+	 * see AspectDeclaration.  However, pointcuts can also occur in regular classes and in this case there
+	 * is no AspectDeclaration to ensure the attribute is added.  So, this method adds the attribute
+	 * if someone else hasn't already.
+	 */
+	private void addVersionAttributeIfNecessary(ClassFile classFile) {
+		for (Iterator iter = classFile.extraAttributes.iterator(); iter.hasNext();) {
+			EclipseAttributeAdapter element = (EclipseAttributeAdapter) iter.next();
+			if (CharOperation.equals(element.getNameChars(),weaverVersionChars)) return;
+		}
+		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.WeaverVersionInfo()));
+	}
+	private static char[] weaverVersionChars = "org.aspectj.weaver.WeaverVersion".toCharArray();
+	
 	
 	protected int generateInfoAttributes(ClassFile classFile) {
 		return super.generateInfoAttributes(classFile,true);

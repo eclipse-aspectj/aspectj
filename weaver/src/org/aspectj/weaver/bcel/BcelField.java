@@ -36,6 +36,7 @@ final class BcelField extends ResolvedMember {
 	private ResolvedType[] annotationTypes;
 	private AnnotationX[] annotations;
 	private World world;
+	private BcelObjectType bcelObjectType;
 
 	BcelField(BcelObjectType declaringType, Field field) {
 		super(
@@ -46,6 +47,7 @@ final class BcelField extends ResolvedMember {
 			field.getSignature());
 		this.field = field;
 		this.world = declaringType.getResolvedTypeX().getWorld();
+		this.bcelObjectType = declaringType;
 		unpackAttributes(world);
 		checkedExceptions = UnresolvedType.NONE;
 	}
@@ -54,7 +56,7 @@ final class BcelField extends ResolvedMember {
 	
 	private void unpackAttributes(World world) {
 		Attribute[] attrs = field.getAttributes();
-        List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),attrs, getSourceContext(world),world.getMessageHandler());
+        List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),attrs, getSourceContext(world),world.getMessageHandler(),bcelObjectType.getWeaverVersionAttribute());
         as.addAll(AtAjAttributes.readAj5FieldAttributes(field, world.resolve(getDeclaringType()), getSourceContext(world), world.getMessageHandler()));
 
 		for (Iterator iter = as.iterator(); iter.hasNext();) {

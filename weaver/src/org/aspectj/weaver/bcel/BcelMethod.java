@@ -104,7 +104,7 @@ final class BcelMethod extends ResolvedMember {
 
 	private void unpackAjAttributes(World world) {
 		associatedShadowMunger = null;
-        List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler());
+        List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler(),bcelObjectType.getWeaverVersionAttribute());
 		processAttributes(world, as);
 		as = AtAjAttributes.readAj5MethodAttributes(method, this, world.resolve(getDeclaringType()), preResolvedPointcut,getSourceContext(world), world.getMessageHandler());
 		processAttributes(world,as);

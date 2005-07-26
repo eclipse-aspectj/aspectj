@@ -72,7 +72,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     private ResolvedPointcutDefinition[] pointcuts = null;
 	private PerClause perClause = null;
 	private WeaverStateInfo weaverState = null;
-	private AjAttribute.WeaverVersionInfo wvInfo = null;
+	private AjAttribute.WeaverVersionInfo wvInfo = AjAttribute.WeaverVersionInfo.UNKNOWN;
 	private List typeMungers = Collections.EMPTY_LIST;
 	private List declares = Collections.EMPTY_LIST;
 	private ResolvedMember[] privilegedAccess = null;
@@ -247,23 +247,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
 		// Pass in empty list that can store things for readAj5 to process
-        List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler());
+        List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler(),AjAttribute.WeaverVersionInfo.UNKNOWN);
 		processAttributes(l,pointcuts,false);
 		l = AtAjAttributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler(),isCodeStyleAspect);
 		processAttributes(l,pointcuts,true);
 		
 		this.pointcuts = (ResolvedPointcutDefinition[]) 
 			pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
-		// Test isn't quite right, leaving this out for now...
-//		if (isAspect() && wvInfo.getMajorVersion() == WeaverVersionInfo.UNKNOWN.getMajorVersion()) {
-//			throw new BCException("Unable to continue, this version of AspectJ cannot use aspects as input that were built "+
-//					"with an AspectJ earlier than version 1.2.1.  Please rebuild class: "+javaClass.getClassName());
-//		}
-		
-//		this.typeMungers = (BcelTypeMunger[]) 
-//			typeMungers.toArray(new BcelTypeMunger[typeMungers.size()]);
-//		this.declares = (Declare[])
-//			declares.toArray(new Declare[declares.size()]);	
 	}
 
 

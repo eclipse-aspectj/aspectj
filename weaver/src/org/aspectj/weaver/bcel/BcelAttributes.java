@@ -23,6 +23,7 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 
@@ -30,29 +31,34 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 // bcel to AjAttribute.
 class BcelAttributes {
 
-	public static List readAjAttributes(String classname,Attribute[] as, ISourceContext context,IMessageHandler msgHandler) {
+	public static List readAjAttributes(String classname,Attribute[] as, ISourceContext context,IMessageHandler msgHandler,AjAttribute.WeaverVersionInfo version) {
 		List l = new ArrayList();
-		AjAttribute.WeaverVersionInfo version = new WeaverVersionInfo();
+		
+		// first pass, look for version
+		List forSecondPass = new ArrayList();
 		for (int i = as.length - 1; i >= 0; i--) {
 			Attribute a = as[i];
 			if (a instanceof Unknown) {
 				Unknown u = (Unknown) a;
 				String name = u.getName();
 				if (name.startsWith(AjAttribute.AttributePrefix)) {
-					AjAttribute attr = AjAttribute.read(version,name,u.getBytes(),context,msgHandler); 
-					if (attr!=null && attr instanceof AjAttribute.WeaverVersionInfo) {
-						version = (AjAttribute.WeaverVersionInfo)attr;
-						
-						// Do a version check, this weaver can't process versions 
-						// from a future AspectJ (where the major number has changed)
+					if (name.endsWith(WeaverVersionInfo.AttributeName)) {
+						version = (AjAttribute.WeaverVersionInfo)AjAttribute.read(version,name,u.getBytes(),context,msgHandler);
 						if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
 							throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
 									WeaverVersionInfo.toCurrentVersionString()+" but the class "+classname+" is version "+version.toString());
 						}
-					}
-					if (attr!=null) l.add(attr);
+                    }
+					forSecondPass.add(a);
 				}
 			}
+		}
+				
+		for (int i = forSecondPass.size()-1; i >= 0; i--) {
+			Unknown a = (Unknown)forSecondPass.get(i);
+			String name = a.getName();
+			AjAttribute attr = AjAttribute.read(version,name,a.getBytes(),context,msgHandler); 
+			if (attr!=null) l.add(attr);
 		}
 		return l;
 	}
