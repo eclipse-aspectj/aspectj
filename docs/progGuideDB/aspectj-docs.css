@@ -5,7 +5,8 @@ body {
 
 h1 {
   margin-bottom: 3px;
-  padding-bottom: 5px;
+  padding-bottom: 0px;
+  line-height: 1.1em;
 }
 
 h2 { 
