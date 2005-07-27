@@ -25,10 +25,22 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
+/**
+ * A special method binding representing an ITD that pretends to be a 
+ * member in some target type for matching purposes.
+ */
 public class InterTypeMethodBinding extends MethodBinding {
+	
+	/** The target type upon which the ITD is declared */
 	private ReferenceBinding targetType;
+	
+	/** 
+	 * This is the 'pretend' method that should be the target of any attempt
+	 * to call the ITD'd method.
+	 */
 	private MethodBinding syntheticMethod;
 		
+	
 	public MethodBinding postDispatchMethod;
 	
 	public AbstractMethodDeclaration sourceMethod;
@@ -36,11 +48,17 @@ public class InterTypeMethodBinding extends MethodBinding {
 	public InterTypeMethodBinding(EclipseFactory world, ResolvedMember signature, UnresolvedType withinType,
 									AbstractMethodDeclaration sourceMethod)
 	{
-		super(world.makeMethodBinding(signature), null);
-		this.sourceMethod = sourceMethod;
-		
-		targetType = (ReferenceBinding)world.makeTypeBinding(signature.getDeclaringType());
-		this.declaringClass = (ReferenceBinding)world.makeTypeBinding(withinType);
+		super();
+		MethodBinding mb = world.makeMethodBinding(signature);
+		this.modifiers        = mb.modifiers;
+		this.selector         = mb.selector;
+		this.returnType       = mb.returnType;
+		this.parameters       = mb.parameters;
+		this.thrownExceptions = mb.thrownExceptions;
+		this.typeVariables    = mb.typeVariables;
+		this.sourceMethod     = sourceMethod;		
+		this.targetType       = (ReferenceBinding)world.makeTypeBinding(signature.getDeclaringType());
+		this.declaringClass   = (ReferenceBinding)world.makeTypeBinding(withinType);
 		
 		if (signature.getKind() == Member.METHOD) {			
 			syntheticMethod = 
