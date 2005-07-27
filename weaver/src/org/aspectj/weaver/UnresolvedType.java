@@ -96,7 +96,7 @@ import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
  * The wildcard ? extends Foo has signature +LFoo;
  * The wildcard ? super Foo has signature -LFoo;
  */
-public class UnresolvedType  {
+public class UnresolvedType implements TypeVariableDeclaringElement {
 
 	// common types referred to by the weaver
     public static final UnresolvedType[] NONE         = new UnresolvedType[0];
@@ -148,7 +148,7 @@ public class UnresolvedType  {
 	 */
 	protected TypeVariable[] typeVariables;
 
-	   /**
+	/**
      * Determines if this represents a primitive type.  A primitive type
      * is one of nine predefined resolved types.
      *
@@ -792,8 +792,8 @@ public class UnresolvedType  {
 	
 		public String toString() {
 			return type;
-}
-
+		}
+		
 		private TypeKind(String type) {
 			this.type = type;
 		}
