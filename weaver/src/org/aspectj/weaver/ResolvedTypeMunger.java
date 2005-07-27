@@ -106,7 +106,7 @@ public abstract class ResolvedTypeMunger {
 
 	// ----
 
-	public static ResolvedTypeMunger read(DataInputStream s, ISourceContext context) throws IOException {
+	public static ResolvedTypeMunger read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		Kind kind = Kind.read(s);
 		if (kind == Field) {
 			return NewFieldTypeMunger.readField(s, context);
@@ -122,7 +122,7 @@ public abstract class ResolvedTypeMunger {
 
 
 	
-	protected static Set readSuperMethodsCalled(DataInputStream s) throws IOException {
+	protected static Set readSuperMethodsCalled(VersionedDataInputStream s) throws IOException {
 		
 		Set ret = new HashSet();
 		int n = s.readInt();

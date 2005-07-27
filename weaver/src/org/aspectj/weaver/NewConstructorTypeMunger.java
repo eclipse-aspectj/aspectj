@@ -52,7 +52,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		if (ResolvedTypeMunger.persistSourceLocation) writeSourceLocation(s);
 	}
 	
-	public static ResolvedTypeMunger readConstructor(DataInputStream s, ISourceContext context) throws IOException {
+	public static ResolvedTypeMunger readConstructor(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedTypeMunger munger = new NewConstructorTypeMunger(
 				ResolvedMember.readResolvedMember(s, context),
 				ResolvedMember.readResolvedMember(s, context),

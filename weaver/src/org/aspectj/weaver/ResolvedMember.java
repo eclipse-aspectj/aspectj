@@ -30,7 +30,7 @@ import org.aspectj.bridge.ISourceLocation;
  * This is the declared member, i.e. it will always correspond to an
  * actual method/... declaration
  */
-public class ResolvedMember extends Member implements IHasPosition, AnnotatedElement {
+public class ResolvedMember extends Member implements IHasPosition, AnnotatedElement, TypeVariableDeclaringElement {
     
     public String[] parameterNames = null;
     protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;
@@ -47,6 +47,8 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	private boolean isAnnotatedElsewhere = false; // this field is not serialized.
 	private boolean isAjSynthetic = true;
     
+    // generic methods have type variables
+	private UnresolvedType[] typeVariables;
     
     // these three fields hold the source location of this member
 	protected int start, end;
@@ -194,6 +196,15 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		s.writeInt(getStart());
 		s.writeInt(getEnd());
 
+		// Write out any type variables...
+		if (typeVariables==null) {
+			s.writeInt(0);
+		} else {
+			s.writeInt(typeVariables.length);
+			for (int i = 0; i < typeVariables.length; i++) {
+				typeVariables[i].write(s);
+			}
+		}
     }
 
     public static void writeArray(ResolvedMember[] members, DataOutputStream s) throws IOException {
@@ -204,16 +215,28 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
     }
 
     
-    public static ResolvedMember readResolvedMember(DataInputStream s, ISourceContext sourceContext) throws IOException {
+    public static ResolvedMember readResolvedMember(VersionedDataInputStream s, ISourceContext sourceContext) throws IOException {
     	ResolvedMember m = new ResolvedMember(Kind.read(s), UnresolvedType.read(s), s.readInt(), s.readUTF(), s.readUTF());
 		m.checkedExceptions = UnresolvedType.readArray(s);
+
 		m.start = s.readInt();
 		m.end = s.readInt();
 		m.sourceContext = sourceContext;
+		
+		// Read in the type variables...
+		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			int tvcount = s.readInt();
+			if (tvcount!=0) {
+				m.typeVariables = new UnresolvedType[tvcount];
+				for (int i=0;i<tvcount;i++) {
+					m.typeVariables[i]=UnresolvedType.read(s);
+				}
+			}
+		}
 		return m;
     }
     
-    public static ResolvedMember[] readResolvedMemberArray(DataInputStream s, ISourceContext context) throws IOException {
+    public static ResolvedMember[] readResolvedMemberArray(VersionedDataInputStream s, ISourceContext context) throws IOException {
     	int len = s.readInt();
 		ResolvedMember[] members = new ResolvedMember[len];
 		for (int i=0; i < len; i++) {
@@ -365,6 +388,15 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 					getExceptions(),
 					this
 				);
+	}
+	
+	
+	public void setTypeVariables(UnresolvedType[] types) {
+		typeVariables = types;
+	}
+	
+	public UnresolvedType[] getTypeVariables() {
+		return typeVariables;
 	}
 	
 	private UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap) {

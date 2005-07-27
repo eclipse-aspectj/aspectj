@@ -39,7 +39,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		if (ResolvedTypeMunger.persistSourceLocation) writeSourceLocation(s);
 	}
 	
-	public static ResolvedTypeMunger readMethod(DataInputStream s, ISourceContext context) throws IOException {
+	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedTypeMunger munger = new NewMethodTypeMunger(
 				ResolvedMember.readResolvedMember(s, context),
 				readSuperMethodsCalled(s));
