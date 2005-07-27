@@ -36,6 +36,8 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.TypeVariable;
+import org.aspectj.weaver.TypeVariableDeclaringElement;
+import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
@@ -49,6 +51,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -259,6 +262,8 @@ public class EclipseFactory {
 			superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
 		}
 		TypeVariable tv = new TypeVariable(name,superclassType,superinterfaces);
+		tv.setRank(aTypeVariableBinding.rank);
+		tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
 		tv.resolve(world);
 		ret.setTypeVariable(tv);
 		typeVariableBindingsInProgress.remove(aTypeVariableBinding);
@@ -384,7 +389,9 @@ public class EclipseFactory {
 		TypeBinding ret = (TypeBinding)typexToBinding.get(typeX);
 		if (ret == null) {
 			ret = makeTypeBinding1(typeX);
-			typexToBinding.put(typeX, ret);
+			// FIXME asc keep type variables *out* of the map for now, they go in typeVariableToTypeBinding
+			if (!(typeX instanceof TypeVariableReference)) 
+			  typexToBinding.put(typeX, ret);
 		}
 		if (ret == null) {
 			System.out.println("can't find: " + typeX);
@@ -422,6 +429,8 @@ public class EclipseFactory {
 			ParameterizedTypeBinding ptb = 
 				lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
 			return ptb;
+		} else if (typeX.isTypeVariableReference()) {
+			return makeTypeVariableBinding((TypeVariableReference)typeX);
 		} else if (typeX.isRawType()) {
 			ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
 			RawTypeBinding rtb = lookupEnvironment.createRawType(baseTypeBinding,baseTypeBinding.enclosingType());
@@ -475,16 +484,80 @@ public class EclipseFactory {
 
 
 	public MethodBinding makeMethodBinding(ResolvedMember member) {
-		return new MethodBinding(member.getModifiers(),
+		typeVariableToTypeBinding.clear();
+		MethodBinding mb =  new MethodBinding(member.getModifiers(), 
 				member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()),
 				makeTypeBindings(member.getParameterTypes()),
 				makeReferenceBindings(member.getExceptions()),
 				(ReferenceBinding)makeTypeBinding(member.getDeclaringType()));
+		if (member.getTypeVariables()!=null)  {
+			if (member.getTypeVariables().length==0) {
+				mb.typeVariables = MethodBinding.NoTypeVariables;
+			} else {
+				TypeVariableBinding[] tvbs = makeTypeVariableBindings(member.getTypeVariables());
+				mb.typeVariables = tvbs;
+			}
+		}
+		typeVariableToTypeBinding.clear();
+		return mb;
 	}
 
 
 	
+	private TypeVariableBinding[] makeTypeVariableBindings(UnresolvedType[] typeVariables) {
+		int len = typeVariables.length;
+		TypeVariableBinding[] ret = new TypeVariableBinding[len];
+		for (int i = 0; i < len; i++) {
+			TypeVariableReference tvReference = (TypeVariableReference)typeVariables[i];
+			TypeVariableBinding tvb = (TypeVariableBinding)typeVariableToTypeBinding.get(tvReference.getTypeVariable().getName());
+			if (tvb==null) {
+				tvb = makeTypeVariableBinding(tvReference);
+			}
+			ret[i] = tvb;
+		}
+		return ret;
+	}
+
+	// only accessed through private methods in this class.  Ensures all type variables we encounter
+	// map back to the same type binding - this is important later when Eclipse code is processing
+	// a methodbinding trying to come up with possible bindings for the type variables.
+	// key is currently the name of the type variable...is that ok?
+	private Map typeVariableToTypeBinding = new HashMap();
+	
+	/**
+	 * Converts from an TypeVariableReference to a TypeVariableBinding.  A TypeVariableReference
+	 * in AspectJ world holds a TypeVariable and it is this type variable that is converted
+	 * to the TypeVariableBinding.
+	 */
+	private TypeVariableBinding makeTypeVariableBinding(TypeVariableReference tvReference) {
+		TypeVariable tVar = tvReference.getTypeVariable();
+		TypeVariableBinding tvBinding = (TypeVariableBinding)typeVariableToTypeBinding.get(tVar);
+		if (tvBinding==null) {
+		  Binding declaringElement = null;
+		  // this will cause an infinite loop or NPE... not required yet luckily.
+//		  if (tVar.getDeclaringElement() instanceof Member) {
+//			declaringElement = makeMethodBinding((ResolvedMember)tVar.getDeclaringElement());
+//		  } else {
+//			declaringElement = makeTypeBinding((UnresolvedType)tVar.getDeclaringElement());
+//		  }
+		  tvBinding = new TypeVariableBinding(tVar.getName().toCharArray(),declaringElement,tVar.getRank());
+		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tVar.getUpperBound());
+		  if (tVar.getAdditionalInterfaceBounds()==null) {
+			tvBinding.superInterfaces=TypeVariableBinding.NoSuperInterfaces;
+		  } else {
+			TypeBinding tbs[] = makeTypeBindings(tVar.getAdditionalInterfaceBounds());
+			ReferenceBinding[] rbs= new ReferenceBinding[tbs.length];
+			for (int i = 0; i < tbs.length; i++) {
+				rbs[i] = (ReferenceBinding)tbs[i];
+			}
+			tvBinding.superInterfaces=rbs;
+			typeVariableToTypeBinding.put(tVar.getName(),tvBinding);
+		  }
+		}
+		return tvBinding;
+	}
+
 	public MethodBinding makeMethodBindingForCall(Member member) {
 		return new MethodBinding(member.getCallsiteModifiers(),
 				member.getName().toCharArray(),
@@ -552,5 +625,18 @@ public class EclipseFactory {
 	// exposing AjBuildManager (needed by AspectDeclaration).
 	public boolean isXSerializableAspects() {
 		return xSerializableAspects;
+	}
+	
+	public ResolvedMember fromBinding(MethodBinding binding) {
+		return new ResolvedMember(Member.METHOD,fromBinding(binding.declaringClass),binding.modifiers,
+				           fromBinding(binding.returnType),CharOperation.charToString(binding.selector),fromBindings(binding.parameters));
+	}
+
+	public TypeVariableDeclaringElement fromBinding(Binding declaringElement) {
+		if (declaringElement instanceof TypeBinding) {
+			return fromBinding(((TypeBinding)declaringElement));
+		} else {
+			return fromBinding((MethodBinding)declaringElement);
+		}
 	}
 }
