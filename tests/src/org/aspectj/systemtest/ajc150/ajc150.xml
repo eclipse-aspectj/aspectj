@@ -2386,6 +2386,15 @@
      </run>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/itds" title="generic intertype field declaration, sharing type variable">
+     <compile files="FieldITDOnGeneric.aj" options="-1.5"/>
+     <run class="FieldITDOnGeneric">
+       <stderr>
+         <line text="foo"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 1">
      <compile files="Parse1.java" options="-1.5"/>
    </ajc-test>
@@ -2456,13 +2465,8 @@
    </ajc-test>
    
    <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
-     <compile files="Basic3.aj" options="-1.5"/>
-     <run class="Basic3"/>
-   </ajc-test>
-
-   <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
      <compile files="Basic3.aj" options="-1.5">
-       <message kind="error" line="10" text="Wrong number of type arguments; Type I requires 1"/>
+       <message kind="error" line="10" text="Type pattern does not match because the wrong number of type parameters are specified: Type I requires 1 parameter(s)"/>
      </compile>
    </ajc-test>
    
@@ -2473,7 +2477,7 @@
    
    <ajc-test dir="java5/generics/decp" title="generic decp - specifying bounds but breaking them">
      <compile files="Basic5.aj" options="-1.5">
-       <message kind="error" line="7" text="Type String does not meet the specification for type parameter 1 in generic type I&lt;T extends Number&gt;"/>
+       <message kind="error" line="7" text="Type java.lang.String does not meet the specification for type parameter 1 (T extends java.lang.Number) in generic type I"/>
      </compile>
    </ajc-test>
      

@@ -647,17 +647,17 @@ public class WildTypePattern extends TypePattern {
 		if (type == ResolvedType.MISSING) {
 			return resolveBindingsForMissingType(resolvedTypeInTheWorld, originalName, scope, bindings, allowBinding, requireExactType);
 		} else {
-			return resolveBindingsForExactType(scope,type,fullyQualifiedName);
+			return resolveBindingsForExactType(scope,type,fullyQualifiedName,requireExactType);
 		}
 	}
 	
-	private TypePattern resolveBindingsForExactType(IScope scope, UnresolvedType aType, String fullyQualifiedName) {
+	private TypePattern resolveBindingsForExactType(IScope scope, UnresolvedType aType, String fullyQualifiedName,boolean requireExactType) {
 		TypePattern ret = null;
 		if (aType.isTypeVariableReference()) {
 			// we have to set the bounds on it based on the bounds of this pattern
 			ret = resolveBindingsForTypeVariable(scope, (UnresolvedTypeVariableReferenceType) aType);
 		} else if (typeParameters.size()>0) {
-			if (!verifyTypeParameters(aType.resolve(scope.getWorld()),scope)) return TypePattern.NO; // messages already isued
+			if (!verifyTypeParameters(aType.resolve(scope.getWorld()),scope,requireExactType)) return TypePattern.NO; // messages already isued
 			// Only if the type is exact *and* the type parameters are exact should we create an 
 			// ExactTypePattern for this WildTypePattern					
 			if (typeParameters.areAllExact()) {
@@ -777,7 +777,7 @@ public class WildTypePattern extends TypePattern {
 	 *  If any of these checks fail, a warning message is issued and we return false.
 	 * @return
 	 */
-	private boolean verifyTypeParameters(ResolvedType baseType,IScope scope) {
+	private boolean verifyTypeParameters(ResolvedType baseType,IScope scope, boolean requireExactType) {
 		ResolvedType genericType = baseType.getGenericType();
 		if (genericType == null) {
 			// issue message "does not match because baseType.getName() is not generic"
@@ -803,9 +803,10 @@ public class WildTypePattern extends TypePattern {
 			(!foundEllipsis && minRequiredTypeParameters != tvs.length))
 		{
 			// issue message "does not match because wrong no of type params"
-			scope.message(MessageUtil.warn(
-					WeaverMessages.format(WeaverMessages.INCORRECT_NUMBER_OF_TYPE_ARGUMENTS,genericType.getName(),new Integer(tvs.length)),
-					getSourceLocation()));
+			String msg = WeaverMessages.format(WeaverMessages.INCORRECT_NUMBER_OF_TYPE_ARGUMENTS,
+					                           genericType.getName(),new Integer(tvs.length));
+			if (requireExactType)   scope.message(MessageUtil.error(msg,getSourceLocation()));
+			else					scope.message(MessageUtil.warn(msg,getSourceLocation()));
 			return false;
 		} 
 		
@@ -818,14 +819,15 @@ public class WildTypePattern extends TypePattern {
 					// issue message that type parameter does not meet specification
 					String parameterName = ut.getName();
 					if (ut.isTypeVariableReference()) parameterName = ((TypeVariableReference)ut).getTypeVariable().getDisplayName();
-					scope.message(MessageUtil.warn(
-							WeaverMessages.format(
-										WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS,
-										parameterName,
-										new Integer(i+1),
-										tvs[i].getDisplayName(),
-										genericType.getName()),
-							getSourceLocation()));					
+					String msg = 
+						WeaverMessages.format(
+							WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS,
+							parameterName,
+							new Integer(i+1),
+							tvs[i].getDisplayName(),
+							genericType.getName());
+					if (requireExactType)  scope.message(MessageUtil.error(msg,getSourceLocation()));	
+					else				   scope.message(MessageUtil.warn(msg,getSourceLocation()));	
 					return false;
 				}
 			}

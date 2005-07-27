@@ -163,6 +163,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericITDComplex() {
 		runTest("more complex static member itd");
 	}
+	
+//	public void testGenericITFSharingTypeVariable() {
+//		runTest("generic intertype field declaration, sharing type variable");
+//	}
 
 //	public void testItdOnGenericType() {
 //		runTest("ITDs on generic type");
@@ -229,17 +233,17 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		verifyClassSignature("Basic6","<J:Ljava/lang/Object;>Ljava/lang/Object;LI<TJ;>;LK<Ljava/lang/Integer;>;");
 	}
 	
-//	public void testGenericDecpIncorrectNumberOfTypeParams() {
-//		runTest("generic decp - incorrect number of type parameters");
-//	}
+	public void testGenericDecpIncorrectNumberOfTypeParams() {
+		runTest("generic decp - incorrect number of type parameters");
+	}
 	
 	public void testGenericDecpSpecifyingBounds() {
 		runTest("generic decp - specifying bounds");
 	}
 	
-//	public void testGenericDecpViolatingBounds() {
-//		runTest("generic decp - specifying bounds but breaking them");
-//	}
+	public void testGenericDecpViolatingBounds() {
+		runTest("generic decp - specifying bounds but breaking them");
+	}
 	
 	// need separate compilation test to verify signatures are ok
 //
