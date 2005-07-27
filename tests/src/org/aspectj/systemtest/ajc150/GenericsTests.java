@@ -160,6 +160,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("itd of static member");
 	}
 
+	public void testGenericITDComplex() {
+		runTest("more complex static member itd");
+	}
+
 //	public void testItdOnGenericType() {
 //		runTest("ITDs on generic type");
 //	}
