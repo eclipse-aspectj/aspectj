@@ -483,6 +483,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			}
 		}
 		// XXX what about lower binding?
-		return new TypeVariable(name,superclass,superinterfaces);
+		TypeVariable tv = new TypeVariable(name,superclass,superinterfaces);
+		tv.setDeclaringElement(factory.fromBinding(aTypeParameter.binding.declaringElement));
+		tv.setRank(aTypeParameter.binding.rank);
+		return tv;
 	}
 }
