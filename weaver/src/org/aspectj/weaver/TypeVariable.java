@@ -30,6 +30,10 @@ public class TypeVariable {
 	 */
 	private String name;
 	
+	private int rank;
+	
+	private TypeVariableDeclaringElement declaringElement;
+	
 	/**
 	 * the upper bound of the type variable (default to Object).
 	 * From the extends clause, eg. T extends Number.
@@ -221,6 +225,22 @@ public class TypeVariable {
 			}
 	  	}
 		return sb.toString();
+	}
+
+	public void setRank(int rank) {
+		this.rank=rank;
+	}
+	
+	public int getRank() {
+		return rank;
+	}
+
+	public void setDeclaringElement(TypeVariableDeclaringElement element) {
+		this.declaringElement = element;
+	}
+	
+	public TypeVariableDeclaringElement getDeclaringElement() {
+		return declaringElement;
 	}
 	
 }
