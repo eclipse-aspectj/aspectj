@@ -8,13 +8,14 @@ class MathUtils<N> {
 
 }
 
-public class StaticFieldITDOnGenericType {
+public class FieldITDOnGenericType {
   public static void main(String[] argv) {
-    MathUtils<Integer>.n=42;
-    System.err.prinltn(">"+MathUtils<Integer>.n);
+    MathUtils<Integer> mu = new MathUtils<Integer>();
+    mu.n=42;
+    System.err.prinltn(">"+mu.n);
   }
 }
 
 aspect X {
-  static E MathUtils<E>.n;
+  E MathUtils<E>.n;
 }
