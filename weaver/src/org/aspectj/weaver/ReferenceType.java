@@ -100,7 +100,6 @@ public class ReferenceType extends ResolvedType {
      */
 	public ReferenceType(UnresolvedType genericType, World world) {
 		super(genericType.getSignature(),world);
-		genericSignature=genericType.genericSignature;
 		typeKind=TypeKind.GENERIC;
 	}
         

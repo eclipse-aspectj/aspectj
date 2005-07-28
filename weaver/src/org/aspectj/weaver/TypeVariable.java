@@ -116,6 +116,11 @@ public class TypeVariable {
 			return matchingBounds((TypeVariableReferenceType)aCandidateType);
 		}
 		
+		// wildcard can accept any binding
+		if (aCandidateType.isGenericWildcard()) {  // AMC - need a more robust test!
+			return true;
+		}
+		
 		// otherwise can be bound iff...
 		//  aCandidateType is a subtype of upperBound
 		if (!isASubtypeOf(upperBound,aCandidateType)) {
@@ -137,9 +142,9 @@ public class TypeVariable {
 	// can match any type in the range of the type variable...
 	// XXX what about interfaces?
 	private boolean matchingBounds(TypeVariableReferenceType tvrt) {
-		if (tvrt.getUpperBound() != upperBound) return false;
-		if (tvrt.hasLowerBound() != (lowerBound != null)) return false;
-		if (tvrt.hasLowerBound() && tvrt.lowerBound != lowerBound) return false;
+		if (tvrt.getUpperBound() != getUpperBound()) return false;
+		if (tvrt.hasLowerBound() != (getLowerBound() != null)) return false;
+		if (tvrt.hasLowerBound() && tvrt.getLowerBound() != getLowerBound()) return false;
 		// either we both have bounds, or neither of us have bounds
 		if ((tvrt.additionalInterfaceBounds != null) != (additionalInterfaceBounds != null)) return false;
 		if (additionalInterfaceBounds != null) {
@@ -226,7 +231,7 @@ public class TypeVariable {
 	  	}
 		return sb.toString();
 	}
-
+	
 	public void setRank(int rank) {
 		this.rank=rank;
 	}

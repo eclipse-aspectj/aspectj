@@ -37,6 +37,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY  = new ResolvedType[0];
 	public static final String PARAMETERIZED_TYPE_IDENTIFIER = "P";
 	
+	private ResolvedType[] resolvedTypeParams;
+	
     protected World world;
 	    
     protected ResolvedType(String signature, World world) {
@@ -252,6 +254,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	  }
     }
 
+    public ResolvedType[] getResolvedTypeParameters() {
+    	if (resolvedTypeParams == null) {
+    		resolvedTypeParams = world.resolve(typeParameters);
+    	}
+    	return resolvedTypeParams;
+    }
+    
     /** 
      * described in JVM spec 2ed 5.4.3.2
      */

@@ -23,9 +23,7 @@ import org.aspectj.weaver.patterns.PerClause;
  * specification in section 4.4 of JVM spec: *,+,- plus signature strings
  */
 public class BoundedReferenceType extends ReferenceType {
-	protected ReferenceType upperBound;
 	protected ReferenceType[] additionalInterfaceBounds = new ReferenceType[0];
-	protected ReferenceType lowerBound = null;
 	protected boolean isExtends = true;
 	protected boolean isSuper = false;
 	
@@ -33,12 +31,12 @@ public class BoundedReferenceType extends ReferenceType {
 		super((isExtends ? "+" : "-") + aBound.signature,world);
 		this.isExtends = isExtends; this.isSuper=!isExtends;
 		if (isExtends) { 
-			this.upperBound = aBound;
+			setUpperBound(aBound);
 		} else {
-			this.lowerBound = aBound;
-			this.upperBound = (ReferenceType) world.resolve(UnresolvedType.OBJECT);
+			setLowerBound(aBound);
+			setUpperBound(world.resolve(UnresolvedType.OBJECT));
 		}
-		setDelegate(new ReferenceTypeReferenceTypeDelegate(upperBound));
+		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)getUpperBound()));
 	}
 	
 	public BoundedReferenceType(ReferenceType aBound, boolean isExtends, World world, ReferenceType[] additionalInterfaces) {
@@ -51,18 +49,15 @@ public class BoundedReferenceType extends ReferenceType {
 	 */
 	BoundedReferenceType(String sig, World world) {
 		super(sig,world);
-		this.upperBound = (ReferenceType) world.resolve(UnresolvedType.OBJECT);
+		setUpperBound(world.resolve(UnresolvedType.OBJECT));
+		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)getUpperBound()));
 	}
-	
-	public ReferenceType getUpperBound() { return upperBound; }
 	
 	public ReferenceType[] getInterfaceBounds() { return additionalInterfaceBounds; }
 	
 	public boolean hasLowerBound() {
-		return lowerBound != null;
+		return getLowerBound() != null;
 	}
-	
-	public ReferenceType getLowerBound() { return lowerBound; }
 	
 	public boolean isExtends() { return isExtends; }
 	public boolean isSuper() { return isSuper; }
@@ -79,6 +74,10 @@ public class BoundedReferenceType extends ReferenceType {
 		} else {
 			return interfaces;
 		}
+	}
+	
+	public boolean isGenericWildcard() {
+		return true;
 	}
 	
 	protected static class ReferenceTypeReferenceTypeDelegate extends AbstractReferenceTypeDelegate {

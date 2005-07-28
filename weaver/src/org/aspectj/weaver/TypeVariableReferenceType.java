@@ -25,8 +25,8 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 		this.typeVariable = aTypeVariable;
 		this.isExtends = false;
 		this.isSuper = false;
-		this.upperBound = (ReferenceType) aTypeVariable.getUpperBound();
-		this.lowerBound = (ReferenceType) aTypeVariable.getLowerBound();
+		setUpperBound(aTypeVariable.getUpperBound());
+		setLowerBound(aTypeVariable.getLowerBound());
 		UnresolvedType[] ifBounds = aTypeVariable.getAdditionalInterfaceBounds();
 		if (ifBounds.length > 0) {
 			this.additionalInterfaceBounds = new ReferenceType[ifBounds.length];

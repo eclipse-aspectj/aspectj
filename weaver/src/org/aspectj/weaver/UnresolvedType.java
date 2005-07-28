@@ -113,6 +113,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     public static final UnresolvedType   JAVA_LANG_REFLECT_METHOD = forSignature("Ljava/lang/reflect/Method;");
     public static final UnresolvedType   SUPPRESS_AJ_WARNINGS = forSignature("Lorg/aspectj/lang/annotation/SuppressAjWarnings;");
     public static final UnresolvedType   AT_TARGET = forSignature("Ljava/lang/annotation/Target;");
+    public static final UnresolvedType   SOMETHING = new UnresolvedType("?");
 
     // this doesn't belong here and will get moved to ResolvedType later in the refactoring
 	public static final String MISSING_NAME = "@missing@";
@@ -146,6 +147,16 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	protected TypeVariable[] typeVariables;
 
 	/**
+	 * Iff isGenericWildcard, then this is the upper bound type for ? extends Foo
+	 */
+	private UnresolvedType upperBound;
+	
+	/**
+	 * Iff isGenericWildcard, then this is the lower bound type for ? super Foo
+	 */
+	private UnresolvedType lowerBound;
+	
+   /**
      * Determines if this represents a primitive type.  A primitive type
      * is one of nine predefined resolved types.
      *
@@ -168,6 +179,8 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     public boolean isParameterizedType() { return typeKind == TypeKind.PARAMETERIZED; }
     public boolean isTypeVariableReference() { return typeKind == TypeKind.TYPE_VARIABLE; }
     public boolean isGenericWildcard() { return typeKind == TypeKind.WILDCARD; }
+    public boolean isGenericWildcardExtends() { return isGenericWildcard() && upperBound != null; }
+    public boolean isGenericWildcardSuper() { return isGenericWildcard() && lowerBound != null; }
 
     // for any reference type, we can get some extra information...
     public final boolean isArray() {  return signature.startsWith("["); } 
@@ -221,11 +234,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     // -----------------------------
     // old stuff...
     
-    	
-	// For a generic type, this is the 'declared' signature
-	// e.g. for Enum: <E:Ljava/lang/Enum<TE;>;>Ljava/lang/Object;Ljava/lang/Comparable<TE;>;Ljava/io/Serializable;
-	// note: it doesnt include the name of the type!
-	protected String genericSignature;
+
 	
 	/**
 	 * @param      signature   the bytecode string representation of this Type
@@ -312,7 +321,6 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 		ret.typeKind=TypeKind.GENERIC;
 		ret.typeVariables = tvbs;
 		ret.signatureErasure = sig;
-		ret.genericSignature = genericSig;
 		return ret; 
 	}
 		
@@ -331,7 +339,6 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 		}
     	ret.signatureErasure = sig;
     	ret.signature = ret.signatureErasure;
-    	ret.genericSignature=declaredGenericSig;
     	return ret;
     }
     
@@ -402,9 +409,9 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
             case 'V': return ResolvedType.VOID;
             case 'Z': return ResolvedType.BOOLEAN;
             case '[': return TypeFactory.createTypeFromSignature(signature);
-            case '+': return new UnresolvedType(signature);
-            case '-' : return new UnresolvedType(signature);
-            case '?' : return GenericsWildcardTypeX.GENERIC_WILDCARD;
+            case '+': return TypeFactory.createTypeFromSignature(signature);
+            case '-' : return TypeFactory.createTypeFromSignature(signature);
+            case '?' : return TypeFactory.createTypeFromSignature(signature);
             case 'T' : return new UnresolvedTypeVariableReferenceType(new TypeVariable(signature.substring(1)));
             default:  throw new BCException("Bad type signature " + signature);
         }      
@@ -514,6 +521,33 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 		return UnresolvedType.forSignature(getErasureSignature());
 	}
 	
+	/**
+	 * Get the upper bound for a generic wildcard
+	 */
+	public UnresolvedType getUpperBound() {
+		return upperBound;
+	}
+	
+	/**
+	 * Get the lower bound for a generic wildcard
+	 */
+	public UnresolvedType getLowerBound() {
+		return lowerBound;
+	}
+	
+	/**
+	 * Set the upper bound for a generic wildcard
+	 */
+	public void setUpperBound(UnresolvedType aBound) {
+		this.upperBound = aBound;
+	}
+	
+	/**
+	 * Set the lower bound for a generic wildcard
+	 */
+	public void setLowerBound(UnresolvedType aBound) {
+		this.lowerBound = aBound;
+	}
 
  	
     /**
@@ -628,8 +662,9 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 //            case '<': 
 //            	// its a generic!
  //           	if (signature.charAt(1)=='>') return signatureToName(signature.substring(2));
-            case '+' : return signatureToName(signature.substring(1, signature.length()));
-            case '-' : return signatureToName(signature.substring(1, signature.length()));
+            case '+' : return "? extends " + signatureToName(signature.substring(1, signature.length()));
+            case '-' : return "? super " + signatureToName(signature.substring(1, signature.length()));
+            case '?' : return "?";
             default: 
                 throw new BCException("Bad type signature: " + signature);
         }      
@@ -645,6 +680,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
         if (name.equals("short")) return "S";
         if (name.equals("boolean")) return "Z";
         if (name.equals("void")) return "V";
+        if (name.equals("?")) return name;
         if (name.endsWith("[]")) 
             return "[" + nameToSignature(name.substring(0, name.length() - 2));
         if (name.length() != 0) {
@@ -789,8 +825,8 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	
 		public String toString() {
 			return type;
-		}
-		
+}
+
 		private TypeKind(String type) {
 			this.type = type;
 		}

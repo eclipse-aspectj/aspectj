@@ -14,6 +14,8 @@ package org.aspectj.weaver;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.weaver.UnresolvedType.TypeKind;
+
 /**
  * @author colyer
  *
@@ -77,9 +79,26 @@ public class TypeFactory {
 			String signatureErasure = "L" + signature.substring(1,startOfParams) + ";";
 			UnresolvedType[] typeParams = createTypeParams(signature.substring(startOfParams +1, endOfParams));
 			return new UnresolvedType(signature,signatureErasure,typeParams);
-		} else {
-			return new UnresolvedType(signature);
-		}		
+		} else if (signature.equals("?")){
+			UnresolvedType ret = UnresolvedType.SOMETHING;
+			ret.typeKind = TypeKind.WILDCARD;
+			return ret;
+		} else if(signature.startsWith("+")) {
+			// ? extends ...
+			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
+			UnresolvedType ret = new UnresolvedType(signature);
+			ret.typeKind = TypeKind.WILDCARD;
+			ret.setUpperBound(bound);
+			return ret;
+		} else if (signature.startsWith("-")) {
+			// ? super ...
+			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
+			UnresolvedType ret = new UnresolvedType(signature);
+			ret.typeKind = TypeKind.WILDCARD;
+			ret.setLowerBound(bound);
+			return ret;
+		}
+		return new UnresolvedType(signature);
 	}
 	
 	private static UnresolvedType[] createTypeParams(String typeParameterSpecification) {

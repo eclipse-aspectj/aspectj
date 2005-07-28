@@ -112,6 +112,7 @@ public abstract class World implements Dump.INode {
         }
     }
     
+    
     // =============================================================================
     // T Y P E   R E S O L U T I O N
     // =============================================================================
@@ -182,7 +183,12 @@ public abstract class World implements Dump.INode {
         if (ret != null) { 
         	ret.world = this;  // Set the world for the RTX
         	return ret; 
-        } 
+        } else if ( signature.equals("?")) {
+        	// fault in generic wildcard, can't be done earlier because of init issues
+        	ResolvedType something = new BoundedReferenceType("?",this);
+        	typeMap.put("?",something);
+        	return something;
+        }
         
         // no existing resolved type, create one
         if (ty.isArray()) {
@@ -256,7 +262,10 @@ public abstract class World implements Dump.INode {
 			ReferenceType genericType = (ReferenceType)resolveGenericTypeFor(ty,false);
 			return genericType;
 			
-		} else {
+		} else if (ty.isGenericWildcard()) {
+			// ======= generic wildcard types =============
+			return resolveGenericWildcardFor(ty);
+    	} else {
 			// ======= simple and raw types ===============
 			String erasedSignature = ty.getErasureSignature();
     		ReferenceType simpleOrRawType = new ReferenceType(erasedSignature, this);
@@ -313,6 +322,21 @@ public abstract class World implements Dump.INode {
     	}
     }
 
+    // we have a generic wildcard with either extends or super, resolves to a
+    // BoundedReferenceType
+    private ReferenceType resolveGenericWildcardFor(UnresolvedType aType) {
+    	BoundedReferenceType ret = null;
+    	if (aType.isGenericWildcardExtends()) {
+    		ReferenceType upperBound = (ReferenceType) resolve(aType.getUpperBound());
+    		ret = new BoundedReferenceType(upperBound,true,this);
+    	} else {
+    		ReferenceType lowerBound = (ReferenceType) resolve(aType.getLowerBound());
+    		ret = new BoundedReferenceType(lowerBound,false,this);
+    	}
+    	typeMap.put(aType.getSignature(),ret);
+    	return ret;
+    }
+    
     /**
      * Find the ReferenceTypeDelegate behind this reference type so that it can 
      * fulfill its contract.
