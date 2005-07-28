@@ -17,7 +17,6 @@ import java.util.Map;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Signature.SimpleClassTypeSignature;
 import org.aspectj.weaver.BoundedReferenceType;
-import org.aspectj.weaver.GenericsWildcardTypeX;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -153,7 +152,7 @@ public class BcelGenericSignatureToTypeXConverter {
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
 			Map inProgressTypeVariableResolutions) {
-		if (aTypeArgument.isWildcard) return GenericsWildcardTypeX.GENERIC_WILDCARD.resolve(world);
+		if (aTypeArgument.isWildcard) return UnresolvedType.SOMETHING.resolve(world);
 		if (aTypeArgument.isMinus) {
 			UnresolvedType bound = fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams,world,inProgressTypeVariableResolutions);
 			ReferenceType rBound = (ReferenceType) world.resolve(bound);

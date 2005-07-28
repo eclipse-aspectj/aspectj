@@ -25,7 +25,9 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BoundedReferenceType;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.TypeVariable;
@@ -35,7 +37,6 @@ import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 
-//XXX need to use dim in matching
 /**
  * The PatternParser always creates WildTypePatterns for type patterns in pointcut
  * expressions (apart from *, which is sometimes directly turned into TypePattern.ANY).
@@ -51,27 +52,6 @@ import org.aspectj.weaver.WeaverMessages;
  *    resolveBindings resolves Foo to RT(Foo - raw)
  *                    return ExactTypePattern(LFoo;)
  * 
- * <E>... Foo<E>    where Foo exists and has one unbound type var
- *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{E}
- *    resolveBindings requireExactType = true | false
- *                    resolves typeParameters to ExactTypePattern(TVRT(E))
- *                    resolves Foo to RT(Foo - raw)
- *                    returns ExactTypePattern(<1:>LFoo; - generic)  1=E
- * 
- * <E>... Foo<E>    where Foo exists and is not generic (or has different bounds)
- *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{E}
- *    resolveBindings resolves typeParameters to ExactTypePattern(TVRT(E))
- *                    resolves Foo to RT(Foo)
- *                    finds that Foo is not generic / type var mismatch
- *                    requireExactType = true ->returns TypePattern.NO (and issues error)
- *                                     = false -> XLint then return ExactTypePattern(<1:>LFoo;)
- *                    
- * <E>... Foo<E extends Number> where Foo exists and bounds match
- *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{E},uB=WTP{Number}
- *    resolveBindings resolves typeParameters to ExactTypePattern(TVRT(E extends Number))
- *                    resolves Foo to RT(Foo)
- *                    returns ExactTypePattern(<1:Ljava/lang/Number;>LFoo;)  1=E
- *                    
  * Foo<String> where Foo exists and String meets the bounds
  *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{String}
  *    resolveBindings resolves typeParameters to ExactTypePattern(String)
@@ -89,39 +69,6 @@ import org.aspectj.weaver.WeaverMessages;
  *    resolveBindings resolves typeParameters to ETP{String}
  *                    returns WildTypePattern(name = Fo*, typeParameters = ETP{String} isGeneric=false)                    
  *
- * <E>... Fo*<E>                        
- *    Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{E}
- *    resolveBindings resolves typeParameters to ETP{TVRT(E)}
- *                    returns WildTypePattern(name = Fo*, typeParameters = ETP{TVRT(E)} isGeneric=true)
- *                    
- * <E>... Fo*<E extends Number>
- *    Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{E,uB=WTP(Number)}
- *    resolveBindings resolves typeParameters to ETP{TVRT(E extends Number)}
- *                    returns WildTypePattern(name = Fo*, typeParameters = ETP{TVRT(E extends Number)} isGeneric=true)
- *                    
- * <E>... Foo<E extends Number+> where Foo exists and takes one bound
- *    Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{E,uB=WTP(Number+)}
- *    resolveBindings resolves typeParameters to WildTypeVariableReferencePattern{TVP(name="E",uB=Number+)}
- *    	              resolves Foo to RT(Foo)
- *                    if requireExactType (but this doesn't allow + ? )
- *                       if typeParameters.matches(RT(Foo - generic).getTypeVariables()
- *                           return ETP(<1:Ljava/lang/Number;>LFoo;)
- *                       else return TypePattern.NO and issue warning
- *                    else 
- *                       if !typeParameters.matches(RT(Foo - generic).getTypeVariables()
- *                           issue warning (XLint?)
- *                       return WildTypePattern(name=Foo, typeParameters=WTVRP{TVP(E,Number+)} isGeneric=true
- * 
- * <E>... Fo*<E extends Number+>                                         
- *    Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{E,uB=WTP(Number+)}
- *    resolveBindings resolves typeParameters to WildTypeVariableReferencePattern{TVP(name="E",uB=Number+)}
- *                    returns WildTypePattern(name=Fo*, typeParamters = WTVRP{TVP(name="E" ub=Number+)} isGeneric=true)
- * 
- * TODO:
- * 
- * <E>... Foo<E,String>
- * 
- * <S,T>... Foo<S,T extends S>
  * 
  * Foo<?>
  * 
@@ -133,6 +80,7 @@ import org.aspectj.weaver.WeaverMessages;
  * 
  */
 public class WildTypePattern extends TypePattern {
+	private static final String GENERIC_WILDCARD_CHARACTER = "?";
 	private NamePattern[] namePatterns;
 	int ellipsisCount;
 	String[] importedPrefixes;
@@ -192,6 +140,18 @@ public class WildTypePattern extends TypePattern {
 		this.upperBound = upperBound;
 		this.lowerBound = lowerBound;
 		this.additionalInterfaceBounds = additionalInterfaceBounds;
+	}
+	
+	public WildTypePattern(
+			List names, 
+			boolean includeSubtypes, 
+			int dim, 
+			int endPos, 
+			boolean isVarArg, 
+			TypePatternList typeParams)
+	{
+		this((NamePattern[])names.toArray(new NamePattern[names.size()]),includeSubtypes,dim,isVarArg,typeParams);
+		this.end = endPos;		
 	}
 	
     public NamePattern[] getNamePatterns() {
@@ -264,23 +224,35 @@ public class WildTypePattern extends TypePattern {
 		annotationPattern.resolve(type.getWorld());
 		
 		return matchesExactlyByName(targetTypeName) &&
-		       // matchesParameters(type) &&
+		        matchesParameters(type,STATIC) &&
+		        matchesBounds(type,STATIC) &&
 		       annotationPattern.matches(annotatedType).alwaysTrue();
 	}
 	
 	
 	// we've matched against the base (or raw) type, but if this type pattern specifies parameters or
 	// type variables we need to make sure we match against them too
-	private boolean matchesParameters(ResolvedType aType) {
-		if (isGeneric) {
-			if (!aType.isGenericType()) return false;
-			// we have to match type variables
-			
-		} else if (typeParameters.size() > 0) {
+	private boolean matchesParameters(ResolvedType aType, MatchKind staticOrDynamic) {
+		if (!isGeneric && typeParameters.size() > 0) {
 			if(!aType.isParameterizedType()) return false;
 			// we have to match type parameters
+			return typeParameters.matches(aType.getResolvedTypeParameters(), staticOrDynamic).alwaysTrue();
 		}
 		return true;
+	}
+	
+	// we've matched against the base (or raw) type, but if this type pattern specifies bounds because
+	// it is a ? extends or ? super deal then we have to match them too.
+	private boolean matchesBounds(ResolvedType aType, MatchKind staticOrDynamic) {
+		if (upperBound == null && lowerBound == null) return true;
+		if (!namePatterns[0].matches(GENERIC_WILDCARD_CHARACTER)) throw new IllegalStateException("Well, well, well. I really wasn't expecting *that* to happen. There's no excusing it, Adrian's screwed up an assumption here alright");
+		if (upperBound != null) {
+			// match ? extends
+			return upperBound.matches((ResolvedType)aType.getUpperBound(),staticOrDynamic).alwaysTrue();
+		} else {
+			// match ? super
+			return lowerBound.matches((ResolvedType)aType.getLowerBound(),staticOrDynamic).alwaysTrue();
+		}
 	}
 	
 	/**
@@ -300,11 +272,13 @@ public class WildTypePattern extends TypePattern {
 	 * @return
 	 */
 	private boolean matchesExactlyByName(String targetTypeName) {
-		if (typeParameters == TypePatternList.EMPTY) {
-			// we can ignore anything after an < as we want raw matching
-			if (targetTypeName.indexOf('<') != -1) {
-				targetTypeName = targetTypeName.substring(0,targetTypeName.indexOf('<'));
-			}
+		// we deal with parameter matching separately...
+		if (targetTypeName.indexOf('<') != -1) {
+			targetTypeName = targetTypeName.substring(0,targetTypeName.indexOf('<'));
+		}
+		// we deal with bounds matching separately too...
+		if (targetTypeName.startsWith(GENERIC_WILDCARD_CHARACTER)) {
+			targetTypeName = GENERIC_WILDCARD_CHARACTER;
 		}
 		//XXX hack
 		if (knownMatches == null && importedPrefixes == null) {
@@ -567,6 +541,11 @@ public class WildTypePattern extends TypePattern {
 			}
 		}
 		
+		// resolve any bounds
+		if (upperBound != null) upperBound = upperBound.resolveBindings(scope, bindings, allowBinding, requireExactType);
+		if (lowerBound != null) lowerBound = lowerBound.resolveBindings(scope, bindings, allowBinding, requireExactType);
+		// amc - additional interface bounds only needed if we support type vars again.
+		
 		String fullyQualifiedName = maybeGetCleanName();
 		if (fullyQualifiedName != null) {
 			return resolveBindingsFromFullyQualifiedTypeName(fullyQualifiedName, scope, bindings, allowBinding, requireExactType);
@@ -657,27 +636,10 @@ public class WildTypePattern extends TypePattern {
 			// we have to set the bounds on it based on the bounds of this pattern
 			ret = resolveBindingsForTypeVariable(scope, (UnresolvedTypeVariableReferenceType) aType);
 		} else if (typeParameters.size()>0) {
-			if (!verifyTypeParameters(aType.resolve(scope.getWorld()),scope,requireExactType)) return TypePattern.NO; // messages already isued
-			// Only if the type is exact *and* the type parameters are exact should we create an 
-			// ExactTypePattern for this WildTypePattern					
-			if (typeParameters.areAllExact()) {
-				TypePattern[] typePats = typeParameters.getTypePatterns();
-				UnresolvedType[] typeParameterTypes = new UnresolvedType[typePats.length];
-				for (int i = 0; i < typeParameterTypes.length; i++) {
-					typeParameterTypes[i] = ((ExactTypePattern)typePats[i]).getExactType();
-				}
-				ResolvedType type = TypeFactory.createParameterizedType(aType.resolve(scope.getWorld()), typeParameterTypes, scope.getWorld());
-				if (isGeneric) type = type.getGenericType();
-//				UnresolvedType tx = UnresolvedType.forParameterizedTypes(aType,typeParameterTypes);
-//				UnresolvedType type = scope.getWorld().resolve(tx,true); 
-				if (dim != 0) type = ResolvedType.makeArray(type, dim);
-				ret = new ExactTypePattern(type,includeSubtypes,isVarArgs);
-			} else {
-				// AMC... just leave it as a wild type pattern then?
-				importedPrefixes = scope.getImportedPrefixes();
-				knownMatches = preMatch(scope.getImportedNames());
-				return this;
-			}
+			ret = resolveParameterizedType(scope, aType, requireExactType);
+		} else if (upperBound != null || lowerBound != null) {
+			// this must be a generic wildcard with bounds
+			ret = resolveGenericWildcard(scope, aType);			
 		} else {
 			if (dim != 0) aType = UnresolvedType.makeArray(aType, dim);
 			ret = new ExactTypePattern(aType,includeSubtypes,isVarArgs);					
@@ -685,6 +647,65 @@ public class WildTypePattern extends TypePattern {
 		ret.setAnnotationTypePattern(annotationPattern);
 		ret.copyLocationFrom(this);
 		return ret;
+	}
+
+	private TypePattern resolveGenericWildcard(IScope scope, UnresolvedType aType) {
+		if (!aType.getSignature().equals(GENERIC_WILDCARD_CHARACTER)) throw new IllegalStateException("Can only have bounds for a generic wildcard");
+		boolean canBeExact = true;
+		if ((upperBound != null) && (upperBound.getExactType() == ResolvedType.MISSING)) canBeExact = false;
+		if ((lowerBound != null) && (lowerBound.getExactType() == ResolvedType.MISSING)) canBeExact = false;
+		if (canBeExact) {
+			ResolvedType type = null;
+			if (upperBound != null) {
+				if (upperBound.isIncludeSubtypes()) { 
+					canBeExact = false;
+				} else {
+					ReferenceType upper = (ReferenceType) upperBound.getExactType().resolve(scope.getWorld());
+					type = new BoundedReferenceType(upper,true,scope.getWorld());
+				}
+			} else {
+				if (lowerBound.isIncludeSubtypes()) {
+					canBeExact = false;
+				} else {
+					ReferenceType lower = (ReferenceType) lowerBound.getExactType().resolve(scope.getWorld());
+					type = new BoundedReferenceType(lower,false,scope.getWorld());
+				}
+			}
+			if (canBeExact) {
+				// might have changed if we find out include subtypes is set on one of the bounds...
+				return new ExactTypePattern(type,includeSubtypes,isVarArgs);
+			}
+		} 
+	
+		// we weren't able to resolve to an exact type pattern...
+		// leave as wild type pattern
+		importedPrefixes = scope.getImportedPrefixes();
+		knownMatches = preMatch(scope.getImportedNames());
+		return this;	
+	}
+
+	private TypePattern resolveParameterizedType(IScope scope, UnresolvedType aType, boolean requireExactType) {
+		if (!verifyTypeParameters(aType.resolve(scope.getWorld()),scope,requireExactType)) return TypePattern.NO; // messages already isued
+		// Only if the type is exact *and* the type parameters are exact should we create an 
+		// ExactTypePattern for this WildTypePattern					
+		if (typeParameters.areAllExact()) {
+			TypePattern[] typePats = typeParameters.getTypePatterns();
+			UnresolvedType[] typeParameterTypes = new UnresolvedType[typePats.length];
+			for (int i = 0; i < typeParameterTypes.length; i++) {
+				typeParameterTypes[i] = ((ExactTypePattern)typePats[i]).getExactType();
+			}
+			ResolvedType type = TypeFactory.createParameterizedType(aType.resolve(scope.getWorld()), typeParameterTypes, scope.getWorld());
+			if (isGeneric) type = type.getGenericType();
+//				UnresolvedType tx = UnresolvedType.forParameterizedTypes(aType,typeParameterTypes);
+//				UnresolvedType type = scope.getWorld().resolve(tx,true); 
+			if (dim != 0) type = ResolvedType.makeArray(type, dim);
+			return new ExactTypePattern(type,includeSubtypes,isVarArgs);
+		} else {
+			// AMC... just leave it as a wild type pattern then?
+			importedPrefixes = scope.getImportedPrefixes();
+			knownMatches = preMatch(scope.getImportedNames());
+			return this;
+		}
 	}
 	
 	private TypePattern resolveBindingsForMissingType(ResolvedType typeFoundInWholeWorldSearch, String nameWeLookedFor, IScope scope, Bindings bindings, 
@@ -934,6 +955,14 @@ public class WildTypePattern extends TypePattern {
     			if (i > 0) buf.append(".");
     			buf.append(name.toString());
     		}
+    	}
+    	if (upperBound != null) {
+    		buf.append(" extends ");
+    		buf.append(upperBound.toString());
+    	}
+    	if (lowerBound != null) {
+    		buf.append(" super ");
+    		buf.append(lowerBound.toString());
     	}
 		if (typeParameters!=null && typeParameters.size()!=0) {
 			buf.append("<");

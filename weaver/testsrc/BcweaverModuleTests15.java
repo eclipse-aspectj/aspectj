@@ -14,12 +14,12 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.aspectj.weaver.BoundedReferenceTypeTestCase;
-import org.aspectj.weaver.GenericsWildCardTypeXTestCase;
 import org.aspectj.weaver.MemberTestCase15;
 import org.aspectj.weaver.ReferenceTypeTestCase;
 import org.aspectj.weaver.TypeVariableReferenceTypeTestCase;
 import org.aspectj.weaver.TypeVariableTestCase;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
+import org.aspectj.weaver.patterns.WildTypePatternResolutionTestCase;
 
 public class BcweaverModuleTests15 extends TestCase {
 	   public static Test suite() { 
@@ -28,9 +28,9 @@ public class BcweaverModuleTests15 extends TestCase {
 	        suite.addTestSuite(ReferenceTypeTestCase.class);
 	        suite.addTestSuite(BoundedReferenceTypeTestCase.class);
 	        suite.addTestSuite(TypeVariableReferenceTypeTestCase.class);
-	        suite.addTestSuite(GenericsWildCardTypeXTestCase.class);
 	        suite.addTestSuite(MemberTestCase15.class);
 	        suite.addTestSuite(BcelGenericSignatureToTypeXTestCase.class);
+	        suite.addTestSuite(WildTypePatternResolutionTestCase.class);
 	        return suite;
 	    }
 
