@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Set;
@@ -30,6 +29,10 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	
 	public ResolvedMember getInterMethodBody(UnresolvedType aspectType) {
 		return AjcMemberMaker.interMethodBody(signature, aspectType);
+	}
+	
+	public ResolvedMember getInterMethodDispatcher(UnresolvedType aspectType) {
+		return AjcMemberMaker.interMethodDispatcher(signature, aspectType);
 	}
 
 	public void write(DataOutputStream s) throws IOException {
