@@ -2533,14 +2533,15 @@
    <ajc-test dir="java5/generics/pointcuts" title="annotation patterns with parameterized types">
      <compile files="ParameterizedTypesInAnnotationPatterns.aj" options="-1.5">
          <message kind="error" line="5" text="is not an annotation type"/>
-         <message kind="error" line="7" text="is not an annotation type"/>
      </compile>
    </ajc-test>
    
     <ajc-test dir="java5/generics/pointcuts" title="staticinitialization and parameterized types">
      <compile files="GenericInterface.java,GenericImplementingClass.java,StaticInitializationWithParameterizedTypes.aj" options="-1.5">
-         <message kind="error" line="4" text="no static initialization join points for parameterized types, use generic or raw type instead"/>
-         <message kind="error" line="9" text="no static initialization join points for parameterized types, use generic or raw type instead"/>
+         <message kind="error" line="4" text="no static initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="6" text="no static initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="9" text="no static initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="11" text="no static initialization join points for parameterized types, use raw type instead"/>
      </compile>
    </ajc-test>
    

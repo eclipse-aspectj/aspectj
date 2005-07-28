@@ -44,22 +44,22 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * 	  - @Foo<T>  should fail  PASS
 	 *   - @Foo<String> should fail PASS
 	 *   - @(Foo || Bar<T>) should fail  DEFERRED (not critical)
-	 * staticinitialization
-	 *   - error on parameterized type PASS
-	 *   - permit parameterized type + PASS
-	 *   - matching with parameterized type + 
-	 *   - wrong number of parameters in parameterized type  PASS
-	 *   - generic type with one type parameter
-	 *   - generic type with n type parameters
-	 *   - generic type with bounds [extends, extends + i/f's]
-	 *   - generic type with wrong number of type params
-	 *   - wildcards in bounds
+	 * staticinitialization PASS
+	 *   - error on parameterized type PASS N/A
+	 *   - permit parameterized type + PASS N/A
+	 *   - matching with parameterized type + N/A 
+	 *   - wrong number of parameters in parameterized type  PASS N/A
+	 *   - generic type with one type parameter N/A
+	 *   - generic type with n type parameters N/A
+	 *   - generic type with bounds [extends, extends + i/f's] N/A
+	 *   - generic type with wrong number of type params N/A
+	 *   - wildcards in bounds N/A
 	 * within
-	 *   - as above, but allows parameterized type
-	 *   - wildcards in type parameters
+	 *   - as above, but allows parameterized type  (disallowed is simplified plan)
+	 *   - wildcards in type parameters  N/A
 	 * this 
 	 *   - no type vars
-	 *   - parameterized types
+	 *   - parameterized types  - disallowed in simplification plan
 	 *        - implements
 	 *        - instanceof
 	 * target
@@ -282,14 +282,17 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("staticinitialization and parameterized types");
 	}
 
-	public void testStaticInitializationMatchingWithParameterizedTypes() {
-		runTest("staticinitialization and parameterized type matching");
-	}
+	// no longer a valid test with generics simplication
+//	public void testStaticInitializationMatchingWithParameterizedTypes() {
+//		runTest("staticinitialization and parameterized type matching");
+//	}
 
-	public void testStaticInitializationWithGenericTypes() {
-		runTest("staticinitialization with generic types");
-	}
-	
+// no longer a valid test in simplified design
+//	public void testStaticInitializationWithGenericTypes() {
+//		runTest("staticinitialization with generic types");
+//	}
+
+// no longer a valid test in simplified design
 //	public void testStaticInitializationWithGenericTypesAdvanced() {
 //		runTest("staticinitialization with generic types - advanced");		
 //	}
