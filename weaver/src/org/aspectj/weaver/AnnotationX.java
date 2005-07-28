@@ -158,4 +158,8 @@ public class AnnotationX {
   	return supportedTargets.contains("FIELD");
   }
 
+  public boolean isRuntimeVisible() {
+	return theRealAnnotation.isRuntimeVisible();
+  }
+
 }
