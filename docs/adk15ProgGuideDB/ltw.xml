@@ -379,7 +379,7 @@
             <para> When using Java 5 the JVMTI agent can be used by starting the JVM with the
                 following option (adapt according to the path to aspectjweaver.jar): </para>
             <programlisting><![CDATA[
-			-javaagent=pathto/aspectjweaver.jar
+			-javaagent:pathto/aspectjweaver.jar
 		  ]]></programlisting>
         </sect2>
         <sect2>

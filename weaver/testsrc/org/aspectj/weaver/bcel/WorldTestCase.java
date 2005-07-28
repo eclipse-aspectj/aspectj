@@ -113,7 +113,9 @@ public class WorldTestCase extends AbstractWorldTestCase {
 
         ResolvedMember clone = iter.lookupMethod(Member.method(UnresolvedType.OBJECT, 0, "clone", "()Ljava/lang/Object;"));
         assertNotNull("iterator doesn't have clone" , clone);
-        modifiersTest(clone, Modifier.PROTECTED | Modifier.NATIVE);
+        //AV: JRockit Object.clone() is not native.. corrupted test here:
+        //modifiersTest(clone, Modifier.PROTECTED | Modifier.NATIVE);
+        assertTrue("should be protected" + clone.toString(), clone.isProtected());
         exceptionsTest(clone, UnresolvedType.forNames(new String[] {"java.lang.CloneNotSupportedException"}));
 
         interfacesTest(iter, ResolvedType.NONE);

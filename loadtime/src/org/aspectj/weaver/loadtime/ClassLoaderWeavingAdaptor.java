@@ -251,7 +251,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         //TODO AV - optimize for className.startWith only
         ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(className), true);
-        //exclude
+        //exclude are "AND"ed
         for (Iterator iterator = m_excludeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
             if (typePattern.matchesStatically(classInfo)) {
@@ -259,14 +259,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 return false;
             }
         }
+        //include are "OR"ed
+        boolean accept = true;//defaults to true if no include
         for (Iterator iterator = m_includeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
-            if (!typePattern.matchesStatically(classInfo)) {
-                // include does not match - skip
-                return false;
+            accept = typePattern.matchesStatically(classInfo);
+            if (accept) {
+                break;
             }
+            // goes on if this include did not match ("OR"ed)
         }
-        return true;
+        return accept;
     }
 
     private boolean acceptAspect(String aspectClassName) {
@@ -276,7 +279,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         //TODO AV - optimize for className.startWith only
         ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(aspectClassName), true);
-        //exclude
+        //exclude are "AND"ed
         for (Iterator iterator = m_aspectExcludeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
             if (typePattern.matchesStatically(classInfo)) {

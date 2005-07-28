@@ -137,7 +137,12 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetMethods() {
 		Method[] ms = sa.getMethods();
 		assertEquals(10,ms.length);
-		assertEquals("aMethod",ms[0].getName());
+        //AV was corrupted, cannot rely on ordering
+        String match = "";
+        for (int i = 0; i < ms.length; i++) {
+            match = match + "--" + ms[i].getName();
+        }
+		assertTrue(match.indexOf("aMethod") >=0);
 	}
 	
 	public void testGetDeclaredPointcut() throws Exception {
@@ -185,8 +190,10 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetDeclaredPointcuts() {
 		Pointcut[] pcs = sa.getDeclaredPointcuts();
 		assertEquals(2,pcs.length);
-		assertEquals("simpleAspectMethodExecution",pcs[0].getName());
-		assertEquals("simpleAspectCall",pcs[1].getName());
+        // AV was corrupted, cannot rely on ordering
+        String match = "simpleAspectMethodExecution--simpleAspectCall";
+		assertTrue(match.indexOf(pcs[0].getName()) >= 0);
+		assertTrue(match.indexOf(pcs[1].getName()) >= 0);
 	}
 	
 	public void testGetPointcuts() {
@@ -212,11 +219,20 @@ public class AjTypeTestsWithAspects extends TestCase {
 		assertEquals(4,advice.length);
 
 		advice = sa.getDeclaredAdvice(AdviceType.BEFORE);
-		assertEquals("execution(* SimpleAspect.*(..))",advice[0].getPointcutExpression().toString());
-		assertEquals("logEntry",advice[0].getName());
-		assertEquals(AdviceType.BEFORE,advice[0].getKind());
-		assertEquals("execution(* SimpleAspect.*(..))",advice[1].getPointcutExpression().toString());
-		assertEquals("",advice[1].getName());
+		// AV: corrupted test: cannot rely on ordering since a Set is used behind
+        Advice aone, atwo;
+        if (advice[0].getName()!=null && advice[0].getName().length()>0) {
+            aone = advice[0];
+            atwo = advice[1];
+        } else {
+            aone = advice[1];
+            atwo = advice[0];
+        }
+        assertEquals("execution(* SimpleAspect.*(..))",aone.getPointcutExpression().toString());
+        assertEquals("logEntry",aone.getName());
+        assertEquals(AdviceType.BEFORE,aone.getKind());
+        assertEquals("execution(* SimpleAspect.*(..))",atwo.getPointcutExpression().toString());
+        assertEquals("",atwo.getName());
 	}
 	
 	public void testGetAdvice() {
