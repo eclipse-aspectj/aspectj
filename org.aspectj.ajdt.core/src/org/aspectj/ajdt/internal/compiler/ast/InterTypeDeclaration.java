@@ -164,7 +164,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	}
 	
 	protected int generateInfoAttributes(ClassFile classFile) {
-		List l;;
+		List l;
 		Shadow.Kind kind = getShadowKindForBody();
 		if (kind != null) {
 			l = makeEffectiveSignatureAttribute(munger.getSignature(), kind, true);
