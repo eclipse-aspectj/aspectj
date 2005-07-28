@@ -305,7 +305,7 @@ public class KindedPointcut extends Pointcut {
 		// only allow parameterized types with extends...
 		if (kind == Shadow.StaticInitialization) {
 			UnresolvedType exactType = signature.getDeclaringType().getExactType();
-			if (exactType.isParameterizedType() && !signature.getDeclaringType().isIncludeSubtypes()) {
+			if (exactType.isParameterizedType()) {
 				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_STATIC_INIT_JPS_FOR_PARAMETERIZED_TYPES),
 						getSourceLocation()));
 			}

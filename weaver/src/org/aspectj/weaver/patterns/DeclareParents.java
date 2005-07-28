@@ -35,7 +35,7 @@ public class DeclareParents extends Declare {
 	private TypePattern child;
 	private TypePatternList parents;
 	private boolean isWildChild = false;
-	private String[] typeVariablesInScope = new String[0]; // AspectJ 5 extension for generic types
+//	private String[] typeVariablesInScope = new String[0]; // AspectJ 5 extension for generic types
 	
 
 	public DeclareParents(TypePattern child, List parents) {
@@ -48,13 +48,13 @@ public class DeclareParents extends Declare {
 		if (child instanceof WildTypePattern) isWildChild = true;
 	}
 	
-	public String[] getTypeParameterNames() {
-		return this.typeVariablesInScope;
-	}
-	
-	public void setTypeParametersInScope(String[] typeParameters) {
-		this.typeVariablesInScope = typeParameters;
-	}
+//	public String[] getTypeParameterNames() {
+//		return this.typeVariablesInScope;
+//	}
+//	
+//	public void setTypeParametersInScope(String[] typeParameters) {
+//		this.typeVariablesInScope = typeParameters;
+//	}
 	
 	public boolean match(ResolvedType typeX) {
 		if (!child.matchesStatically(typeX)) return false;
@@ -100,22 +100,22 @@ public class DeclareParents extends Declare {
 		s.writeByte(Declare.PARENTS);
 		child.write(s);
 		parents.write(s);
-		s.writeInt(typeVariablesInScope.length);
-		for (int i = 0; i < typeVariablesInScope.length; i++) {
-			s.writeUTF(typeVariablesInScope[i]);
-		}
+//		s.writeInt(typeVariablesInScope.length);
+//		for (int i = 0; i < typeVariablesInScope.length; i++) {
+//			s.writeUTF(typeVariablesInScope[i]);
+//		}
 		writeLocation(s);
 	}
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		DeclareParents ret = new DeclareParents(TypePattern.read(s, context), TypePatternList.read(s, context));
-		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
-			int numTypeVariablesInScope = s.readInt();
-			ret.typeVariablesInScope = new String[numTypeVariablesInScope];
-			for (int i = 0; i < numTypeVariablesInScope; i++) {
-				ret.typeVariablesInScope[i] = s.readUTF();
-			}
-		}
+//		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+//			int numTypeVariablesInScope = s.readInt();
+//			ret.typeVariablesInScope = new String[numTypeVariablesInScope];
+//			for (int i = 0; i < numTypeVariablesInScope; i++) {
+//				ret.typeVariablesInScope[i] = s.readUTF();
+//			}
+//		}
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -134,9 +134,9 @@ public class DeclareParents extends Declare {
 	}
 	
     public void resolve(IScope scope) {
-		ScopeWithTypeVariables resolutionScope = new ScopeWithTypeVariables(typeVariablesInScope,scope);
-    	child = child.resolveBindings(resolutionScope, Bindings.NONE, false, false);
-    	parents = parents.resolveBindings(resolutionScope, Bindings.NONE, false, true); 
+//		ScopeWithTypeVariables resolutionScope = new ScopeWithTypeVariables(typeVariablesInScope,scope);
+    	child = child.resolveBindings(scope, Bindings.NONE, false, false);
+    	parents = parents.resolveBindings(scope, Bindings.NONE, false, true); 
 
 //    	 Could assert this ...
 //    	    	for (int i=0; i < parents.size(); i++) {
