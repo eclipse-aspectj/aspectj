@@ -618,7 +618,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	protected String genSourceSignature(FieldDeclaration fieldDeclaration) {	
 		StringBuffer output = new StringBuffer();
 		if (fieldDeclaration.type == null) { // This is an enum value
-			output.append(fieldDeclaration.name); // ajh02: the "," or ";" has to be put on by whatever uses the sourceSignature
+			output.append(fieldDeclaration.name); // the "," or ";" has to be put on by whatever uses the sourceSignature
 			return output.toString();
 		} else {
 			FieldDeclaration.printModifiers(fieldDeclaration.modifiers, output);
