@@ -204,7 +204,8 @@ public class ReferenceType extends ResolvedType {
 			ResolvedMember[] delegateFields = delegate.getDeclaredFields();
 			parameterizedFields = new ResolvedMember[delegateFields.length];
 			for (int i = 0; i < delegateFields.length; i++) {
-				parameterizedFields[i] = delegateFields[i].parameterizedWith(getTypesForMemberParameterization(),this);
+				parameterizedFields[i] = 
+					delegateFields[i].parameterizedWith(getTypesForMemberParameterization(),this, isParameterizedType());
 			}
 			return parameterizedFields;
 		} else {
@@ -256,7 +257,7 @@ public class ReferenceType extends ResolvedType {
 			UnresolvedType[] parameters = getTypesForMemberParameterization();
 			parameterizedMethods = new ResolvedMember[delegateMethods.length];
 			for (int i = 0; i < delegateMethods.length; i++) {
-				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(parameters,this);
+				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(parameters,this,isRawType());
 			}
 			return parameterizedMethods;
 		} else {
@@ -270,7 +271,7 @@ public class ReferenceType extends ResolvedType {
 			ResolvedMember[] delegatePointcuts = delegate.getDeclaredPointcuts();
 			parameterizedPointcuts = new ResolvedMember[delegatePointcuts.length];
 			for (int i = 0; i < delegatePointcuts.length; i++) {
-				parameterizedPointcuts[i] = delegatePointcuts[i].parameterizedWith(getTypesForMemberParameterization(),this);
+				parameterizedPointcuts[i] = delegatePointcuts[i].parameterizedWith(getTypesForMemberParameterization(),this,isRawType());
 			}
 			return parameterizedPointcuts;
 		} else {

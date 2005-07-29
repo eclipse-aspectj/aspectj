@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -360,7 +359,10 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 	
 	// return a resolved member in which all type variables in the signature of this
 	// member have been replaced with the given bindings.
-	public ResolvedMember parameterizedWith(UnresolvedType[] typeParameters,ResolvedType newDeclaringType) {
+	// the isParameterized flag tells us whether we are creating a raw type version or not
+	// if isParameterized List<T> will turn into List<String> (for example), 
+	// but if !isParameterized List<T> will turn into List.
+	public ResolvedMember parameterizedWith(UnresolvedType[] typeParameters,ResolvedType newDeclaringType, boolean isParameterized) {
 		if (!this.getDeclaringType().isGenericType()) {
 			throw new IllegalStateException("Can't ask to parameterize a member of a non-generic type");
 		}
@@ -372,11 +374,11 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		for (int i = 0; i < typeVariables.length; i++) {
 			typeMap.put(typeVariables[i].getName(), typeParameters[i]);
 		}
-		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(),typeMap);
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(),typeMap,isParameterized);
 		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
 			parameterizedParameterTypes[i] = 
-				parameterize(getGenericParameterTypes()[i], typeMap);
+				parameterize(getGenericParameterTypes()[i], typeMap,isParameterized);
 		}
 		return new ResolvedMember(
 					getKind(),
@@ -399,7 +401,7 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 		return typeVariables;
 	}
 	
-	private UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap) {
+	private UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType) {
 		if (aType instanceof TypeVariableReferenceType) {
 			String variableName = ((TypeVariableReferenceType)aType).getTypeVariable().getName();
 			if (!typeVariableMap.containsKey(variableName)) {
@@ -407,7 +409,11 @@ public class ResolvedMember extends Member implements IHasPosition, AnnotatedEle
 			}
 			return (UnresolvedType) typeVariableMap.get(variableName);
 		} else if (aType.isParameterizedType()) {
-			return aType.parameterize(typeVariableMap);
+			if (inParameterizedType) {
+				return aType.parameterize(typeVariableMap);
+			} else {
+				return aType.getRawType();
+			}
 		} 
 		return aType;		
 	}
