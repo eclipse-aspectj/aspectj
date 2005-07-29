@@ -244,15 +244,25 @@ public class WildTypePattern extends TypePattern {
 	// we've matched against the base (or raw) type, but if this type pattern specifies bounds because
 	// it is a ? extends or ? super deal then we have to match them too.
 	private boolean matchesBounds(ResolvedType aType, MatchKind staticOrDynamic) {
-		if (upperBound == null && lowerBound == null) return true;
-		if (!namePatterns[0].matches(GENERIC_WILDCARD_CHARACTER)) throw new IllegalStateException("Well, well, well. I really wasn't expecting *that* to happen. There's no excusing it, Adrian's screwed up an assumption here alright");
+		if (upperBound == null && aType.getUpperBound() != null) {
+			// for upper bound, null can also match against Object - but anything else and we're out.
+			if (!aType.getUpperBound().getName().equals(UnresolvedType.OBJECT.getName())) {
+				return false;
+			}
+		}
+		if (lowerBound == null && aType.getLowerBound() != null) return false;
 		if (upperBound != null) {
 			// match ? extends
+			if (aType.isGenericWildcardSuper()) return false;
+			if (aType.getUpperBound() == null) return false;
 			return upperBound.matches((ResolvedType)aType.getUpperBound(),staticOrDynamic).alwaysTrue();
-		} else {
+		}
+		if (lowerBound != null) {
 			// match ? super
+			if (!aType.isGenericWildcardSuper()) return false;
 			return lowerBound.matches((ResolvedType)aType.getLowerBound(),staticOrDynamic).alwaysTrue();
 		}
+		return true;
 	}
 	
 	/**
@@ -985,6 +995,19 @@ public class WildTypePattern extends TypePattern {
     	if (this.includeSubtypes != o.includeSubtypes) return false;
     	if (this.dim != o.dim) return false;
     	if (this.isVarArgs != o.isVarArgs) return false;
+    	if (this.upperBound != null) {
+    		if (o.upperBound == null) return false;
+    	   	if (!this.upperBound.equals(o.upperBound)) return false;
+    	} else {
+    		if (o.upperBound != null) return false;
+    	}
+    	if (this.lowerBound != null) {
+    		if (o.lowerBound == null) return false;
+    	   	if (!this.lowerBound.equals(o.lowerBound)) return false;
+    	} else {
+    		if (o.lowerBound != null) return false;
+    	}
+    	if (!typeParameters.equals(o.typeParameters)) return false;
     	for (int i=0; i < len; i++) {
     		if (!o.namePatterns[i].equals(this.namePatterns[i])) return false;
     	}
@@ -997,6 +1020,8 @@ public class WildTypePattern extends TypePattern {
             result = 37*result + namePatterns[i].hashCode();
         }
         result = 37*result + annotationPattern.hashCode();
+        if (upperBound != null) result = 37*result + upperBound.hashCode();
+        if (lowerBound != null) result = 37*result + lowerBound.hashCode();
         return result;
     }
 
