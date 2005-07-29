@@ -26,7 +26,6 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
-import org.aspectj.apache.bcel.classfile.Signature.ClassTypeSignature;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
@@ -43,8 +42,6 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.PerClause;
 
 

@@ -52,7 +52,6 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.WeaveMessage;
-import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -75,9 +74,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.Shadow.Kind;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
-import org.aspectj.weaver.patterns.FastMatchInfo;
 
 class BcelClassWeaver implements IClassWeaver {
     
@@ -166,7 +163,6 @@ class BcelClassWeaver implements IClassWeaver {
     	
     	perKindShadowMungers = new List[Shadow.MAX_SHADOW_KIND + 1];
     	for (int i = 0; i < perKindShadowMungers.length; i++) {
-			ArrayList mungers = new ArrayList(0);
 			perKindShadowMungers[i] = new ArrayList(0);
     	}
     	for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
@@ -197,15 +193,15 @@ class BcelClassWeaver implements IClassWeaver {
     	return perKindShadowMungers[kind.getKey()] != null;
     }
     
-   	private void fastMatchShadowMungers(List shadowMungers, ArrayList mungers, Kind kind) {
-		FastMatchInfo info = new FastMatchInfo(clazz.getType(), kind);
-		for (Iterator i = shadowMungers.iterator(); i.hasNext();) {
-			ShadowMunger munger = (ShadowMunger) i.next();
-			FuzzyBoolean fb = munger.getPointcut().fastMatch(info);
-			WeaverMetrics.recordFastMatchResult(fb);// Could pass: munger.getPointcut().toString()
-			if (fb.maybeTrue()) mungers.add(munger);
-		}
-	}
+//   	private void fastMatchShadowMungers(List shadowMungers, ArrayList mungers, Kind kind) {
+//		FastMatchInfo info = new FastMatchInfo(clazz.getType(), kind);
+//		for (Iterator i = shadowMungers.iterator(); i.hasNext();) {
+//			ShadowMunger munger = (ShadowMunger) i.next();
+//			FuzzyBoolean fb = munger.getPointcut().fastMatch(info);
+//			WeaverMetrics.recordFastMatchResult(fb);// Could pass: munger.getPointcut().toString()
+//			if (fb.maybeTrue()) mungers.add(munger);
+//		}
+//	}
 
 
 	private void initializeSuperInitializerMap(ResolvedType child) {
@@ -1563,7 +1559,7 @@ class BcelClassWeaver implements IClassWeaver {
 			// sets of synthetics aren't join points in 1.1
 			return;
 		} else {
-			match(BcelShadow.makeFieldGet(world, mg, ih, enclosingShadow), shadowAccumulator);
+			match(BcelShadow.makeFieldGet(world, resolvedField, mg, ih, enclosingShadow), shadowAccumulator);
 		}
 	}
 	
