@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
+import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.weaver.AjAttribute;
@@ -37,6 +39,8 @@ final class BcelField extends ResolvedMember {
 	private AnnotationX[] annotations;
 	private World world;
 	private BcelObjectType bcelObjectType;
+	private UnresolvedType genericFieldType = null;
+	private boolean unpackedGenericSignature = false;
 
 	BcelField(BcelObjectType declaringType, Field field) {
 		super(
@@ -133,5 +137,29 @@ final class BcelField extends ResolvedMember {
 		// object we keep a set - we should think about reducing this to one
 		// level??
 		field.addAnnotation(annotation.getBcelAnnotation());
+	}
+	
+	/**
+	 * Unpack the generic signature attribute if there is one and we haven't already 
+	 * done so, then find the true field type of this field (eg. List<String>).
+	 */
+	public UnresolvedType getGenericReturnType() {
+		unpackGenericSignature();
+		return genericFieldType;
+	}
+	
+	private void unpackGenericSignature() {
+		if (unpackedGenericSignature) return;
+		unpackedGenericSignature = true;
+		String gSig = field.getGenericSignature();
+		if (gSig != null) {
+		  // get from generic
+		  Signature.FieldTypeSignature fts = new GenericSignatureParser().parseAsFieldSignature(gSig);
+		  Signature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
+		  Signature.FormalTypeParameter[] typeVars = ((genericTypeSig == null) ? new Signature.FormalTypeParameter[0] : genericTypeSig.formalTypeParameters);
+		  genericFieldType = BcelGenericSignatureToTypeXConverter.fieldTypeSignature2TypeX(fts, typeVars, world);
+		} else {
+		  genericFieldType = getReturnType();
+		}	
 	}
 }
