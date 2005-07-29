@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
@@ -146,6 +147,14 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		type = type.resolveBindings(scope, bindings, true, true);
 		
+		// look for parameterized type patterns which are not supported...
+		HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+		type.traverse(visitor, null);
+		if (visitor.wellHasItThen/*?*/()) {
+			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.THIS_AND_TARGET_DONT_SUPPORT_PARAMETERS),
+				getSourceLocation()));
+		}		
 		// ??? handle non-formal
 	}
 	

@@ -133,6 +133,9 @@ public class WeaverMessages {
 	public static final String VIOLATES_TYPE_VARIABLE_BOUNDS = "violatesTypeVariableBounds";
 	public static final String NO_STATIC_INIT_JPS_FOR_PARAMETERIZED_TYPES = "noStaticInitJPsForParameterizedTypes";
 	public static final String NOT_A_GENERIC_TYPE="notAGenericType";
+	public static final String WITHIN_PCD_DOESNT_SUPPORT_PARAMETERS="noParameterizedTypePatternInWithin";
+	public static final String THIS_AND_TARGET_DONT_SUPPORT_PARAMETERS="noParameterizedTypesInThisAndTarget";
+	public static final String GET_AND_SET_DONT_SUPPORT_DEC_TYPE_PARAMETERS="noParameterizedTypesInGetAndSet";
 	
 	public static String format(String key) {
 		return bundle.getString(key);

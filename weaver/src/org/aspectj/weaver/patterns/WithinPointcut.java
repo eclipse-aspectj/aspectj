@@ -21,6 +21,7 @@ import java.util.Set;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
@@ -138,6 +139,15 @@ public class WithinPointcut extends Pointcut {
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		typePattern = typePattern.resolveBindings(scope, bindings, false, false);
+		
+		// look for parameterized type patterns which are not supported...
+		HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+		typePattern.traverse(visitor, null);
+		if (visitor.wellHasItThen/*?*/()) {
+			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.WITHIN_PCD_DOESNT_SUPPORT_PARAMETERS),
+				getSourceLocation()));
+		}		
 	}
 
 	public void resolveBindingsFromRTTI() {

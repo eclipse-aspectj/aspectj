@@ -302,13 +302,26 @@ public class KindedPointcut extends Pointcut {
 		  }
 		}
 		
-		// only allow parameterized types with extends...
+		// no parameterized types
 		if (kind == Shadow.StaticInitialization) {
-			UnresolvedType exactType = signature.getDeclaringType().getExactType();
-			if (exactType.isParameterizedType()) {
+			HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
+				visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+			signature.getDeclaringType().traverse(visitor, null);
+			if (visitor.wellHasItThen/*?*/()) {
 				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_STATIC_INIT_JPS_FOR_PARAMETERIZED_TYPES),
 						getSourceLocation()));
 			}
+		}
+		
+		// no parameterized types in declaring type position
+		if ((kind == Shadow.FieldGet) || (kind == Shadow.FieldSet)) {
+			HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
+				visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+			signature.getDeclaringType().traverse(visitor, null);
+			if (visitor.wellHasItThen/*?*/()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.GET_AND_SET_DONT_SUPPORT_DEC_TYPE_PARAMETERS),
+						getSourceLocation()));
+			}			
 		}
 	}
 	
