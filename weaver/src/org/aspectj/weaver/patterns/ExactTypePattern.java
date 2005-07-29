@@ -207,6 +207,7 @@ public class ExactTypePattern extends TypePattern {
     	ExactTypePattern o = (ExactTypePattern)other;
     	if (includeSubtypes != o.includeSubtypes) return false;
     	if (isVarArgs != o.isVarArgs) return false;   	
+    	if (!typeParameters.equals(o.typeParameters)) return false;
     	return (o.type.equals(this.type) && o.annotationPattern.equals(this.annotationPattern));
     }
     
