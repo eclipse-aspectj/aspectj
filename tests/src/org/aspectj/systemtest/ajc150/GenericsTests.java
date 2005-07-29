@@ -35,10 +35,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * @args PASS
      *   - does not permit type vars PASS
 	 *   - does not permit parameterized type PASS
-	 * 	 @annotation PASS
+	 * @annotation PASS
      *   - does not permit type vars PASS
 	 *   - does not permit parameterized type PASS
-	 *   @within, @within code - as above PASS
+	 * @within, @within code - as above PASS
 	 * annotation type pattern with generic and parameterized types  PASS
 	 *   - just make sure that annotation interfaces can never be generic first! VERIFIED
 	 * 	  - @Foo<T>  should fail  PASS
@@ -54,29 +54,31 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *   - generic type with bounds [extends, extends + i/f's] N/A
 	 *   - generic type with wrong number of type params N/A
 	 *   - wildcards in bounds N/A
-	 * within
-	 *   - as above, but allows parameterized type  (disallowed is simplified plan)
+	 * within  PASS
+	 *   - as above, but allows parameterized type  (disallowed in simplified plan)
 	 *   - wildcards in type parameters  N/A
-	 * this 
+	 * this  PASS 
 	 *   - no type vars
 	 *   - parameterized types  - disallowed in simplification plan
 	 *        - implements
 	 *        - instanceof
-	 * target
+	 * target PASS
 	 *   - as this
-	 * args
+	 * args  TODO
 	 *   - as this/target, plus...
 	 *   - known static match
 	 *   - known static match fail
 	 *   - maybe match with unchecked warning
-	 * get & set
-	 *   - parameterized type
-	 *   - generic type
-	 *   - return type is type variable
-	 *   - return type is parameterized
+	 * get & set PASS
+	 *   - parameterized declaring type PASS
+	 *   - generic declaring type  PASS
+	 *   - field type is type variable  PASS
+	 *   - field type is parameterized  PASS
 	 * initialization, preinitialization
-	 *   - type variables as type params
-	 *   - no join points for parameterized types
+	 *   - generic declaring type
+	 *   - type variables as params
+	 *   - parameterized types as params
+	 *   - no join points for init, preinit of parameterized types (as per staticinit)
 	 * execution, withincode
 	 *    - wait till we get there!
 	 * call
@@ -297,12 +299,40 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 //		runTest("staticinitialization with generic types - advanced");		
 //	}
 	
+	public void testWithinPointcutErrors() {
+		runTest("within pcd with various parameterizations and generic types - errors");
+	}
+
+	public void testWithinPointcutWarnings() {
+		runTest("within pcd with various parameterizations and generic types - warnings");
+	}
+	
+	public void testThisTargetPointcutErrors() {
+		runTest("this and target with various parameterizations and generic types - errors");
+	}
+
+	public void testThisTargetPointcutRuntime() {
+		runTest("this and target with various parameterizations and generic types - runtime");
+	}
+	
 	public void testExecutionWithRawType() {
 		runTest("execution pcd with raw type matching");
 	}
 	
 	public void testExecutionWithRawSignature() {
 		runTest("execution pcd with raw signature matching");
+	}
+	
+	public void testGetAndSetPointcutErrors() {
+		runTest("get and set with various parameterizations and generic types - errors");
+	}
+	
+	public void testGetAndSetPointcutMatchingWithGenericAndParameterizedTypes() {
+		runTest("get and set with various parameterizations and generic declaring types");
+	}
+	
+	public void testGetAndSetPointcutMatchingWithGenericAndParameterizedFieldTypes() {
+		runTest("get and set with various parameterizations and generic field types");
 	}
 	
 //	public void testExecutionWithGenericDeclaringTypeAndErasedParameterTypes() {

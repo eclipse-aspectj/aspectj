@@ -2542,6 +2542,7 @@
          <message kind="error" line="6" text="no static initialization join points for parameterized types, use raw type instead"/>
          <message kind="error" line="9" text="no static initialization join points for parameterized types, use raw type instead"/>
          <message kind="error" line="11" text="no static initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="14" text="no static initialization join points for parameterized types, use raw type instead"/>
      </compile>
    </ajc-test>
    
@@ -2585,7 +2586,98 @@
      </compile>
    </ajc-test>
    
-   
+   <ajc-test dir="java5/generics/pointcuts" title="within pcd with various parameterizations and generic types - errors">
+     <compile files="WithinPointcutMatching.aj" options="-1.5">
+         <message kind="warning" line="4" text="no match for this type name: T"/>
+         <message kind="error" line="4" text="parameterized type pattern not supported by 'within', use a raw type pattern instead"/>
+         <message kind="error" line="5" text="parameterized type pattern not supported by 'within', use a raw type pattern instead"/>
+         <message kind="error" line="6" text="parameterized type pattern not supported by 'within', use a raw type pattern instead"/>
+      </compile>
+   </ajc-test>
+
+  <ajc-test dir="java5/generics/pointcuts" title="within pcd with various parameterizations and generic types - warnings">
+     <compile files="WithinPointcutMatchingWarnings.aj" options="-1.5">
+         <message kind="warning" line="16" text="matched set correctly"/>
+         <message kind="warning" line="18" text="matched execution correctly"/>
+         <message kind="warning" line="24" text="init matched correctly"/>
+         <message kind="warning" line="32" text="matched parameterization ok"/>
+      </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/pointcuts" title="this and target with various parameterizations and generic types - errors">
+     <compile files="ThisAndTargetPointcutMatching.aj" options="-1.5">
+         <message kind="warning" line="4" text="no match for this type name: T"/>
+         <message kind="warning" line="5" text="no match for this type name: T"/>
+         <message kind="error" line="4" text="parameterized types not supported for this and target pointcuts (erasure limitation)"/>
+         <message kind="error" line="5" text="parameterized types not supported for this and target pointcuts (erasure limitation)"/>
+         <message kind="error" line="6" text="parameterized types not supported for this and target pointcuts (erasure limitation)"/>
+         <message kind="error" line="7" text="parameterized types not supported for this and target pointcuts (erasure limitation)"/>
+      </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/pointcuts" title="this and target with various parameterizations and generic types - runtime">
+     <compile files="ThisAndTargetPointcutMatchingRuntime.aj" options="-1.5">
+      </compile>
+      <run class="ThisAndTargetPointcutMatchingRuntime">
+          <stdout>
+              <line text="set and this matched ok"/>
+              <line text="set and target matched ok"/>
+              <line text="call and target matched ok"/>
+              <line text="execution and this matched ok"/>
+              <line text="execution and target matched ok"/>
+              <line text="parameterized call and target matched ok"/>
+              <line text="parameterized call and this matched ok"/>
+              <line text="parameterized call and target matched ok"/>
+          </stdout>
+      </run>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/pointcuts" title="get and set with various parameterizations and generic types - errors">
+     <compile files="GetAndSetPointcutMatching.aj" options="-1.5">
+         <message kind="warning" line="4" text="no match for this type name: T"/>
+         <message kind="warning" line="5" text="no match for this type name: T"/>
+         <message kind="error" line="4" text="can't use parameterized type patterns for the declaring type of a get or set pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="5" text="can't use parameterized type patterns for the declaring type of a get or set pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="6" text="can't use parameterized type patterns for the declaring type of a get or set pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="7" text="can't use parameterized type patterns for the declaring type of a get or set pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="8" text="can't use parameterized type patterns for the declaring type of a get or set pointcut expression (use the raw type instead)"/>
+      </compile>
+   </ajc-test>
+
+  <ajc-test dir="java5/generics/pointcuts" title="get and set with various parameterizations and generic declaring types">
+     <compile files="GetAndSetPointcutMatchingDeclaringType.aj" options="-1.5">
+         <message kind="warning" line="15" text="generic/param get matching ok"/>
+         <message kind="warning" line="33" text="generic/param get matching ok"/>
+         <message kind="warning" line="12" text="generic/param set matching ok"/>
+         <message kind="warning" line="32" text="generic/param set matching ok"/>
+      </compile>
+   </ajc-test>
+
+  <ajc-test dir="java5/generics/pointcuts" title="get and set with various parameterizations and generic field types">
+     <compile files="GetAndSetPointcutMatchingFieldType.aj" options="-1.5">
+         <message kind="warning" line="13" text="raw field type matching in get ok"/>
+         <message kind="warning" line="14" text="raw field type matching in set ok"/>
+         <message kind="warning" line="49" text="erasure matching in get ok"/>
+         <message kind="warning" line="45" text="erasure matching in set ok"/>
+         <message kind="warning" line="53" text="erasure matching in get with params ok"/>
+         <message kind="warning" line="46" text="erasure matching in set with params ok"/>
+         <message kind="warning" line="72" text="parameterized type matching in set ok"/>
+         <message kind="warning" line="73" text="parameterized type matching in get ok"/>
+         <message kind="warning" line="74" text="parameterized type matching in set ok x2"/>
+         <message kind="warning" line="75" text="parameterized type matching in get ok x2"/>
+         <message kind="warning" line="83" text="wildcard set matching ok"/>
+         <message kind="warning" line="84" text="wildcard get matching ok"/>
+         <message kind="warning" line="85" text="wildcard extends set matching ok"/>
+         <message kind="warning" line="86" text="wildcard extends get matching ok"/>
+         <message kind="warning" line="87" text="wildcard super set matching ok"/>
+         <message kind="warning" line="88" text="wildcard super get matching ok"/>
+         <message kind="warning" line="73" text="the really wild show"/>
+         <message kind="warning" line="84" text="the really wild show"/>
+         <message kind="warning" line="86" text="the really wild show"/>
+         <message kind="warning" line="88" text="the really wild show"/>
+      </compile>
+   </ajc-test>
+                                    
    <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw type matching">
      <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,RawTypeMatching.aj" options="-1.5">
          <message kind="warning" line="4" text="execution(* GenericInterface.*(..))"/>
