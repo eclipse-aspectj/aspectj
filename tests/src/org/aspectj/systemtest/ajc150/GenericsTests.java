@@ -74,11 +74,11 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *   - generic declaring type  PASS
 	 *   - field type is type variable  PASS
 	 *   - field type is parameterized  PASS
-	 * initialization, preinitialization
-	 *   - generic declaring type
-	 *   - type variables as params
-	 *   - parameterized types as params
-	 *   - no join points for init, preinit of parameterized types (as per staticinit)
+	 * initialization, preinitialization PASS
+	 *   - generic declaring type  PASS
+	 *   - type variables as params PASS
+	 *   - parameterized types as params PASS
+	 *   - no join points for init, preinit of parameterized types (as per staticinit) PASS
 	 * execution, withincode
 	 *    - wait till we get there!
 	 * call
@@ -313,6 +313,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 
 	public void testThisTargetPointcutRuntime() {
 		runTest("this and target with various parameterizations and generic types - runtime");
+	}
+	
+	public void testInitAndPreInitPointcutErrors() {
+		runTest("init and preinit with parameterized declaring types");
+	}
+	
+	public void testInitAndPreInitPointcutMatchingWithGenericDeclaringTypes() {
+		runTest("init and preinit with raw declaring type pattern");
+	}
+	
+	public void testInitAndPreInitPointcutMatchingWithParameterizedParameterTypes() {
+		runTest("init and preinit with parameterized parameter types");
 	}
 	
 	public void testExecutionWithRawType() {

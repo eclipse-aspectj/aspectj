@@ -2677,7 +2677,52 @@
          <message kind="warning" line="88" text="the really wild show"/>
       </compile>
    </ajc-test>
-                                    
+
+  <ajc-test dir="java5/generics/pointcuts" title="init and preinit with parameterized declaring types">
+     <compile files="InitializationPointcutMatching.aj" options="-1.5">
+         <message kind="warning" line="4" text="no match for this type name: T"/>
+         <message kind="warning" line="5" text="no match for this type name: T"/>
+         <message kind="error" line="4" text="no [pre]initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="5" text="no [pre]initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="6" text="no [pre]initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="7" text="no [pre]initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="8" text="no [pre]initialization join points for parameterized types, use raw type instead"/>
+         <message kind="error" line="9" text="invalid throws pattern: a generic class may not be a direct or indirect subclass of Throwable"/>
+      </compile>
+   </ajc-test>
+                     
+    <ajc-test dir="java5/generics/pointcuts" title="init and preinit with raw declaring type pattern">
+     <compile files="InitializationPointcutMatchingDeclaringType.aj" options="-1.5">
+         <message kind="warning" line="10" text="generic/param init matching ok"/>
+         <message kind="warning" line="10" text="generic/param preinit matching ok"/>
+      </compile>
+   </ajc-test>                     
+
+   <ajc-test dir="java5/generics/pointcuts" title="init and preinit with parameterized parameter types">
+     <compile files="InitializationPointcutMatchingParamTypes.aj" options="-1.5">
+         <message kind="warning" line="36" text="raw param type matching in init ok"/>
+         <message kind="warning" line="36" text="raw param type matching in preinit ok"/>
+         <message kind="warning" line="37" text="erasure matching in init ok"/>
+         <message kind="warning" line="37" text="erasure matching in preinit ok"/>
+         <message kind="warning" line="38" text="erasure matching in init with params ok"/>
+         <message kind="warning" line="38" text="erasure matching in preinit with params ok"/>
+         <message kind="warning" line="48" text="parameterized type matching in init ok"/>
+         <message kind="warning" line="48" text="parameterized type matching in preinit ok"/>
+         <message kind="warning" line="49" text="parameterized type matching in init ok x2"/>
+         <message kind="warning" line="49" text="parameterized type matching in preinit ok x2"/>
+         <message kind="warning" line="50" text="wildcard init matching ok"/>
+         <message kind="warning" line="50" text="wildcard preinit matching ok"/>
+         <message kind="warning" line="51" text="wildcard extends init matching ok"/>
+         <message kind="warning" line="51" text="wildcard extends preinit matching ok"/>
+         <message kind="warning" line="52" text="wildcard super init matching ok"/>
+         <message kind="warning" line="52" text="wildcard super preinit matching ok"/>
+         <message kind="warning" line="48" text="the really wild show"/>
+         <message kind="warning" line="50" text="the really wild show"/>
+         <message kind="warning" line="51" text="the really wild show"/>
+         <message kind="warning" line="52" text="the really wild show"/>
+      </compile>
+   </ajc-test>      
+                                       
    <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw type matching">
      <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,RawTypeMatching.aj" options="-1.5">
          <message kind="warning" line="4" text="execution(* GenericInterface.*(..))"/>
