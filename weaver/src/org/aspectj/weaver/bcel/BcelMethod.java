@@ -16,7 +16,6 @@ package org.aspectj.weaver.bcel;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
@@ -51,7 +50,6 @@ final class BcelMethod extends ResolvedMember {
 	
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
-	private ResolvedType[] resolvedAnnotations;
 	private World world;
 	private BcelObjectType bcelObjectType;
 
