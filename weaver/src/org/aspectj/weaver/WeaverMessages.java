@@ -136,6 +136,8 @@ public class WeaverMessages {
 	public static final String WITHIN_PCD_DOESNT_SUPPORT_PARAMETERS="noParameterizedTypePatternInWithin";
 	public static final String THIS_AND_TARGET_DONT_SUPPORT_PARAMETERS="noParameterizedTypesInThisAndTarget";
 	public static final String GET_AND_SET_DONT_SUPPORT_DEC_TYPE_PARAMETERS="noParameterizedTypesInGetAndSet";
+	public static final String NO_INIT_JPS_FOR_PARAMETERIZED_TYPES = "noInitJPsForParameterizedTypes";
+	public static final String NO_GENERIC_THROWABLES = "noGenericThrowables";
 	
 	public static String format(String key) {
 		return bundle.getString(key);

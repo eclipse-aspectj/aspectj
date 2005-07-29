@@ -323,6 +323,25 @@ public class KindedPointcut extends Pointcut {
 						getSourceLocation()));
 			}			
 		}
+		
+		// no join points for initialization and preinitialization of parameterized types
+		// no throwable parameterized types
+		if ((kind == Shadow.Initialization) || (kind == Shadow.PreInitialization)) {
+			HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+			signature.getDeclaringType().traverse(visitor, null);
+			if (visitor.wellHasItThen/*?*/()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_INIT_JPS_FOR_PARAMETERIZED_TYPES),
+						getSourceLocation()));
+			}						
+			
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+			signature.getThrowsPattern().traverse(visitor, null);
+			if (visitor.wellHasItThen/*?*/()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_GENERIC_THROWABLES),
+						getSourceLocation()));
+			}									
+		}
 	}
 	
 	public void resolveBindingsFromRTTI() {

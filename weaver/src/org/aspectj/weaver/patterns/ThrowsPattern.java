@@ -155,4 +155,11 @@ public class ThrowsPattern extends PatternNode {
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+    
+    public Object traverse(PatternNodeVisitor visitor, Object data) {
+    	Object ret = accept(visitor,data);
+    	forbidden.traverse(visitor, data);
+    	required.traverse(visitor, data);
+    	return ret;
+    }
 }

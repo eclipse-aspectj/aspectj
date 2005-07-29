@@ -813,7 +813,7 @@ public class WildTypePattern extends TypePattern {
 		if (genericType == null) {
 			// issue message "does not match because baseType.getName() is not generic"
 			scope.message(MessageUtil.warn(
-					WeaverMessages.format(WeaverMessages.NOT_A_GENERIC_TYPE,genericType.getName()),
+					WeaverMessages.format(WeaverMessages.NOT_A_GENERIC_TYPE,baseType.getName()),
 					getSourceLocation()));
 			return false;
 		}

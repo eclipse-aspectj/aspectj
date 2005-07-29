@@ -249,7 +249,10 @@ public class SignaturePattern extends PatternNode {
 					} 
 				} else {
 					// fail if there is no erasure as the params don't match
-					return false;
+					// try the true (generic) parameter types then
+					if (!parameterTypes.matches(world.resolve(sig.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
+						return false;
+					}
 				}
 			}
 			
@@ -270,7 +273,10 @@ public class SignaturePattern extends PatternNode {
 			return declaringTypeMatchAllowingForCovariance(member,world,returnType,sig.getReturnType().resolve(world));
 		} else if (kind == Member.CONSTRUCTOR) {
 			if (!parameterTypes.matches(world.resolve(sig.getParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
-				return false;
+				// try generic before giving up
+				if (!parameterTypes.matches(world.resolve(sig.getGenericParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
+					return false;
+				}
 			}
 			
 			// If we have matched on parameters, let's just check it isn't because the last parameter in the pattern
