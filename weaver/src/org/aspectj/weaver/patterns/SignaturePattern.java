@@ -210,7 +210,13 @@ public class SignaturePattern extends PatternNode {
 			return declaringType.matchesStatically(sig.getDeclaringType().resolve(world));
 		} else if (kind == Member.FIELD) {
 			
-			if (!returnType.matchesStatically(sig.getReturnType().resolve(world))) return false;
+			if (!returnType.matchesStatically(sig.getReturnType().resolve(world))) {
+				// looking bad, but there might be parameterization to consider...
+				if (!returnType.matchesStatically(sig.getGenericReturnType().resolve(world))) {
+					// ok, it's bad.
+					return false;
+				}
+			}
 			if (!name.matches(sig.getName())) return false;
 			boolean ret = declaringTypeMatch(member.getDeclaringType(), member, world);
 			//System.out.println("   ret: " + ret);
@@ -485,7 +491,7 @@ public class SignaturePattern extends PatternNode {
 			Class superType = onType;
 			while(superType != null) {
 				try {
-					Method m =  (superType.getDeclaredMethod(memberName,paramTypes));
+					superType.getDeclaredMethod(memberName,paramTypes);
 					l.add(superType);
 				} catch (NoSuchMethodException nsm) {}
 				superType = superType.getSuperclass();
