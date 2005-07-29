@@ -2402,6 +2402,18 @@
      </compile>
    </ajc-test>
 
+
+   <ajc-test dir="java5/generics/itds" title="parameterized method itd - 3">
+     <compile files="ParameterizedMethodITD3.aj" options="-1.5">
+       <message kind="error" line="9" text="The method simple(List&lt;? super A&gt;) in the type X is not applicable for the arguments (List&lt;B&gt;)"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="parameterized method itd - 4">
+     <compile files="ParameterizedMethodITD4.aj" options="-1.5"/>
+     <run class="ParameterizedMethodITD4"/>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 1">
      <compile files="GenericMethodITD1.aj" options="-1.5"/>
      <run class="GenericMethodITD1"/>
@@ -2413,7 +2425,28 @@
      <message kind="error" line="9" text="Bound mismatch: The generic method simple(List&lt;? extends E&gt;) of type X is not applicable for the arguments (List&lt;? extends A&gt;) since the type A is not a valid substitute for the bounded parameter &lt;E extends Number&gt;"/>
      </compile>
    </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 3">
+     <compile files="GenericMethodITD3.aj" options="-1.5"/>
+     <run class="GenericMethodITD3"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 4">
+     <compile files="GenericMethodITD4.aj" options="-1.5"/>
+     <run class="GenericMethodITD4"/>
+   </ajc-test>
 
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 5">
+     <compile files="GenericMethodITD5.aj" options="-1.5">
+     <message kind="error" line="10" text="The method simple(List&lt;E&gt;, List&lt;E&gt;) in the type X is not applicable for the arguments (List&lt;A&gt;, List&lt;B&gt;)"/>
+     </compile>
+   </ajc-test>
+ 
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 6">
+     <compile files="GenericMethodITD6.aj" options="-1.5"/>
+     <run class="GenericMethodITD6"/>
+   </ajc-test>
+   
    <ajc-test dir="java5/generics/itds" title="non static generic method itd - 2">
      <compile files="NonstaticGenericCtorITD2.aj" options="-1.5"/>
      <run class="NonstaticGenericCtorITD2"/>

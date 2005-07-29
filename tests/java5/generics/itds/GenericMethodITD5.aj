@@ -2,12 +2,12 @@ import java.util.*;
 
 class Base { }
 
-public class GenericMethodITD3 {
+public class GenericMethodITD5 {
 
   public static void main(String[] argv) {
-    List<A> as1 = new ArrayList<A>();
-    List<A> as2 = new ArrayList<A>();
-    new Base().simple(as1,as2); // ok, both List<A>
+    List<A> as = new ArrayList<A>();
+    List<B> bs = new ArrayList<B>();
+    new Base().simple(as,bs);// error, first is List<A>, second is List<B>
   }
 
 }

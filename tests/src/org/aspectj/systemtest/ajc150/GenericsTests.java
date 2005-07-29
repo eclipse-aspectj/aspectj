@@ -167,14 +167,22 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	}
 	
 	// non static
-//	public void testNonStaticGenericCtorITD1() {runTest("generic ctor itd - 1");}
 
-	public void testGenericMethodITD1() {runTest("generic method itd - 1");}
-	public void testGenericMethodITD2() {runTest("generic method itd - 2");}
-
-	public void testParameterizedMethodITD1() {runTest("parameterized method itd - 1");}
-	public void testParameterizedMethodITD2() {runTest("parameterized method itd - 2");}
+	public void testGenericMethodITD1() {runTest("generic method itd - 1");} // <E> ... (List<? extends E>)
+	public void testGenericMethodITD2() {runTest("generic method itd - 2");} // <E extends Number> ... (List<? extends E>) called incorrectly
+	public void testGenericMethodITD3() {runTest("generic method itd - 3");} // <E> ... (List<E>,List<E>)
+	public void testGenericMethodITD4() {runTest("generic method itd - 4");} // <A,B> ... (List<A>,List<B>)
+	public void testGenericMethodITD5() {runTest("generic method itd - 5");} // <E> ... (List<E>,List<E>) called incorrectly
+	public void testGenericMethodITD6() {runTest("generic method itd - 6");} // <E extends Number> ... (List<? extends E>)
 	
+
+	public void testParameterizedMethodITD1() {runTest("parameterized method itd - 1");} // (List<? extends Super>)
+	public void testParameterizedMethodITD2() {runTest("parameterized method itd - 2");} // (List<? extends Number>) called incorrectly
+	public void testParameterizedMethodITD3() {runTest("parameterized method itd - 3");} // (List<? super A>) called incorrectly
+	public void testParameterizedMethodITD4() {runTest("parameterized method itd - 4");} // (List<? super B>)
+	
+
+//	public void testNonStaticGenericCtorITD1() {runTest("generic ctor itd - 1");}
 //	public void testGenericITFSharingTypeVariable() {
 //		runTest("generic intertype field declaration, sharing type variable");
 //	}
