@@ -27,6 +27,7 @@ import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.weaver.BoundedReferenceType;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.Member;
@@ -48,6 +49,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclarati
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.EmptyStatement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
@@ -61,6 +63,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
  
@@ -196,6 +199,21 @@ public class EclipseFactory {
 			return fromTypeVariableBinding((TypeVariableBinding)binding);
 		}
 		
+		
+		if (binding instanceof WildcardBinding) {
+			WildcardBinding eWB = (WildcardBinding) binding;
+			UnresolvedType ut =  TypeFactory.createTypeFromSignature(CharOperation.charToString(eWB.genericTypeSignature()));
+			// If the bound for the wildcard is a typevariable, e.g. '? extends E' then
+			// the type variable in the unresolvedtype will be correct only in name.  In that
+			// case let's set it correctly based on the one in the eclipse WildcardBinding
+			if (eWB.bound instanceof TypeVariableBinding) {
+				UnresolvedType tVar = fromTypeVariableBinding((TypeVariableBinding)eWB.bound);
+				if (ut.isGenericWildcardSuper()) ut.setLowerBound(tVar);
+				if (ut.isGenericWildcardExtends()) ut.setUpperBound(tVar);
+			}
+			return ut;
+		}
+		
 		if (binding instanceof ParameterizedTypeBinding) {
 			if (binding instanceof RawTypeBinding) {
 				// special case where no parameters are specified!
@@ -208,12 +226,7 @@ public class EclipseFactory {
 			if (ptb.arguments!=null) { // null can mean this is an inner type of a Parameterized Type with no bounds of its own (pr100227)
 				arguments = new UnresolvedType[ptb.arguments.length];
 				for (int i = 0; i < arguments.length; i++) {
-					if (ptb.arguments[i] instanceof WildcardBinding) {
-						WildcardBinding wcb = (WildcardBinding) ptb.arguments[i];
-						arguments[i] = fromTypeVariableBinding(wcb.typeVariable());
-					}  else {
-						arguments[i] = fromBinding(ptb.arguments[i]);
-					}
+					arguments[i] = fromBinding(ptb.arguments[i]);
 				}
 			}
 			ResolvedType baseType = UnresolvedType.forName(getName(binding)).resolve(getWorld());
@@ -263,7 +276,10 @@ public class EclipseFactory {
 		}
 		TypeVariable tv = new TypeVariable(name,superclassType,superinterfaces);
 		tv.setRank(aTypeVariableBinding.rank);
-		tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
+		// getting things right for method declaring elements is tricky...
+		if (!(aTypeVariableBinding.declaringElement instanceof MethodBinding)) {
+			tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
+		}
 		tv.resolve(world);
 		ret.setTypeVariable(tv);
 		typeVariableBindingsInProgress.remove(aTypeVariableBinding);
@@ -435,6 +451,22 @@ public class EclipseFactory {
 			ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
 			RawTypeBinding rtb = lookupEnvironment.createRawType(baseTypeBinding,baseTypeBinding.enclosingType());
 			return rtb;
+		} else if (typeX.isGenericWildcard()) {
+		    // translate from boundedreferencetype to WildcardBinding
+			BoundedReferenceType brt = (BoundedReferenceType)typeX;
+			// Work out 'kind' for the WildcardBinding
+			int boundkind = Wildcard.UNBOUND;
+			if (brt.isGenericWildcardExtends()) boundkind = Wildcard.EXTENDS;
+			if (brt.isGenericWildcardSuper()) boundkind = Wildcard.SUPER;
+			// get the bound right
+			TypeBinding bound = null;
+			if (brt.isGenericWildcardExtends()) bound = makeTypeBinding(brt.getUpperBound());
+			if (brt.isGenericWildcardSuper())   bound = makeTypeBinding(brt.getLowerBound());
+			TypeBinding[] otherBounds = null;
+			if (brt.getAdditionalBounds()!=null && brt.getAdditionalBounds().length!=0) otherBounds = makeTypeBindings(brt.getAdditionalBounds());
+			// FIXME asc rank should not always be 0 ... 
+			WildcardBinding wb = lookupEnvironment.createWildcard(null,0,bound,otherBounds,boundkind);
+			return wb;
 		} else {
 			return lookupBinding(typeX.getName());
 		}
@@ -485,17 +517,27 @@ public class EclipseFactory {
 
 	public MethodBinding makeMethodBinding(ResolvedMember member) {
 		typeVariableToTypeBinding.clear();
+		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
 		MethodBinding mb =  new MethodBinding(member.getModifiers(), 
 				member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()),
 				makeTypeBindings(member.getParameterTypes()),
 				makeReferenceBindings(member.getExceptions()),
-				(ReferenceBinding)makeTypeBinding(member.getDeclaringType()));
+				declaringType);
 		if (member.getTypeVariables()!=null)  {
 			if (member.getTypeVariables().length==0) {
 				mb.typeVariables = MethodBinding.NoTypeVariables;
 			} else {
 				TypeVariableBinding[] tvbs = makeTypeVariableBindings(member.getTypeVariables());
+				// fixup the declaring element, we couldn't do it whilst processing the typevariables as we'll end up in recursion.
+				for (int i = 0; i < tvbs.length; i++) {
+					TypeVariableBinding binding = tvbs[i];
+					if (binding.declaringElement==null && ((TypeVariableReference)member.getTypeVariables()[i]).getTypeVariable().getDeclaringElement() instanceof Member) {
+						tvbs[i].declaringElement = mb;
+					} else {
+						tvbs[i].declaringElement = declaringType;
+					}
+				}
 				mb.typeVariables = tvbs;
 			}
 		}
@@ -543,6 +585,7 @@ public class EclipseFactory {
 //		  }
 		  tvBinding = new TypeVariableBinding(tVar.getName().toCharArray(),declaringElement,tVar.getRank());
 		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tVar.getUpperBound());
+		  tvBinding.firstBound=tvBinding.superclass; // FIXME asc is this correct? possibly it could be first superinterface
 		  if (tVar.getAdditionalInterfaceBounds()==null) {
 			tvBinding.superInterfaces=TypeVariableBinding.NoSuperInterfaces;
 		  } else {

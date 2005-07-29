@@ -162,9 +162,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("itd of static member");
 	}
 
-	public void testGenericITDComplex() {
-		runTest("more complex static member itd");
+	public void testStaticGenericMethodITD() {
+		runTest("static generic method itd");
 	}
+	
+	// non static
+//	public void testNonStaticGenericCtorITD1() {runTest("generic ctor itd - 1");}
+
+	public void testGenericMethodITD1() {runTest("generic method itd - 1");}
+	public void testGenericMethodITD2() {runTest("generic method itd - 2");}
+
+	public void testParameterizedMethodITD1() {runTest("parameterized method itd - 1");}
+	public void testParameterizedMethodITD2() {runTest("parameterized method itd - 2");}
 	
 //	public void testGenericITFSharingTypeVariable() {
 //		runTest("generic intertype field declaration, sharing type variable");

@@ -44,6 +44,10 @@ public class BoundedReferenceType extends ReferenceType {
 		this.additionalInterfaceBounds = additionalInterfaces;
 	}
 	
+	public ReferenceType[] getAdditionalBounds() {
+		return additionalInterfaceBounds;
+	}
+	
 	/**
 	 * only for use when resolving GenericsWildcardTypeX or a TypeVariableReferenceType
 	 */

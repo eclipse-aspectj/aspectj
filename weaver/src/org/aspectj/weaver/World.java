@@ -183,7 +183,9 @@ public abstract class World implements Dump.INode {
         if (ret != null) { 
         	ret.world = this;  // Set the world for the RTX
         	return ret; 
-        } else if ( signature.equals("?")) {
+        } else if ( signature.equals("?") || signature.equals("*")) {
+        // might be a problem here, not sure '?' should make it to here as a signature, the 
+        // proper signature for wildcard '?' is '*'
         	// fault in generic wildcard, can't be done earlier because of init issues
         	ResolvedType something = new BoundedReferenceType("?",this);
         	typeMap.put("?",something);
