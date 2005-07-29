@@ -264,7 +264,7 @@ public class BcelShadow extends Shadow {
 			// at a handler jp and only before advice is supported) (pr46298)
 	        argVars = new BcelVar[1];
 			int positionOffset = (hasTarget() ? 1 : 0) + ((hasThis() && !getKind().isTargetSameAsThis()) ? 1 : 0);
-            UnresolvedType tx = getArgType(0);
+			UnresolvedType tx = getArgType(0);
             argVars[0] = genTempVar(tx, "ajc$arg0");
             InstructionHandle insertedInstruction = 
             	range.insert(argVars[0].createStore(getFactory()), Range.OutsideBefore);
@@ -779,6 +779,7 @@ public class BcelShadow extends Shadow {
 
     public static BcelShadow makeFieldGet(
             BcelWorld world,
+            ResolvedMember field,
             LazyMethodGen enclosingMethod,
             InstructionHandle getHandle,
             BcelShadow enclosingShadow) 
@@ -788,9 +789,10 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 FieldGet,
-                BcelWorld.makeFieldSignature(
-                    enclosingMethod.getEnclosingClass(),
-                    (FieldInstruction) getHandle.getInstruction()),
+                field,
+//                BcelWorld.makeFieldSignature(
+//                    enclosingMethod.getEnclosingClass(),
+//                    (FieldInstruction) getHandle.getInstruction()),
                 enclosingMethod,
                 enclosingShadow);
         ShadowRange r = new ShadowRange(body);
@@ -1344,10 +1346,8 @@ public class BcelShadow extends Shadow {
     	
     	// FIXME asc Refactor this code, there is duplication
     	ResolvedType[] annotations = null;
-    	ResolvedMember itdMember =null;
     	Member relevantMember = getSignature();
     	ResolvedType  relevantType   = relevantMember.getDeclaringType().resolve(world);
-    	UnresolvedType aspect = null;
     	
     	if (getKind() == Shadow.StaticInitialization) {
     		annotations  = relevantType.resolve(world).getAnnotationTypes();
