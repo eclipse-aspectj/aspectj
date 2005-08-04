@@ -79,14 +79,14 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *   - type variables as params PASS
 	 *   - parameterized types as params PASS
 	 *   - no join points for init, preinit of parameterized types (as per staticinit) PASS
-	 * withincode
+	 * withincode  PASS
 	 *    - no generic or parameterized declaring type patterns  PASS
 	 *    - no parameterized throws patterns  PASS
-	 *    - return type as type variable
-	 *    - return type as parameterized type
-	 *    - parameter as type variable
-	 *    - parameter as parameterized type
-	 *    - no join points within bridge methods
+	 *    - return type as type variable PASS
+	 *    - return type as parameterized type PASS
+	 *    - parameter as type variable  PASS
+	 *    - parameter as parameterized type PASS
+	 *    - no join points within bridge methods PASS
 	 * execution
 	 *    - wait till we get there!
 	 * call

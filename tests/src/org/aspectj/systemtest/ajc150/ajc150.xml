@@ -2801,15 +2801,18 @@
 
     <ajc-test dir="java5/generics/pointcuts" title="withincode with various parameterizations and generic types - matching">
      <compile files="WithinCodePointcutMatchingParamAndReturnTypes.aj" options="-1.5">
-        <message kind="warning" line="31" text="raw param type matching in withincode ok"/>
-        <message kind="warning" line="32" text="raw param type matching in withincode ok"/>
-        <message kind="warning" line="63" text="raw return type matching in withincode ok"/>
-        <message kind="warning" line="34" text="erasure type matching in withincode ok"/>
-        <message kind="warning" line="35" text="erasure type matching in withincode ok"/>
+        <message kind="warning" line="35" text="raw param type matching in withincode ok"/>
+        <message kind="warning" line="36" text="raw param type matching in withincode ok"/>
+        <message kind="warning" line="67" text="raw return type matching in withincode ok"/>
         <message kind="warning" line="38" text="erasure type matching in withincode ok"/>
-        <message kind="warning" line="58" text="withincode and parameterized method ok"/>
-        <message kind="warning" line="58" text="withincode and generic interface ok"/>
-        <message kind="warning" line="61" text="withincode and interface control test"/>
+        <message kind="warning" line="39" text="erasure type matching in withincode ok"/>
+        <message kind="warning" line="42" text="erasure type matching in withincode ok"/>
+        <message kind="warning" line="62" text="withincode and parameterized method ok"/>
+        <message kind="warning" line="62" text="withincode and generic interface ok"/>
+        <message kind="warning" line="65" text="withincode and interface control test"/>
+        <message kind="warning" line="35" text="match on parameterized args"/>
+        <message kind="warning" line="36" text="match on parameterized args"/>
+        <message kind="warning" line="67" text="match on parameterized return type"/>
       </compile>
    </ajc-test>
 

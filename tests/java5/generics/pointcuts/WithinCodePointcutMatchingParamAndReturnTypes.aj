@@ -23,6 +23,10 @@ public aspect WithinCodePointcutMatchingParamAndReturnTypes {
 	                  : "withincode and interface control test";
 	declare warning : withincode(void UglyBuilding.iSee(Object))
 	                  : "should be no join points for bridge methods";
+	
+	// rule 6) parameterized types in return and args can be matched exactly
+	declare warning : withincode(Generic.new(List<String>)) : "match on parameterized args";
+	declare warning : withincode(List<Number> *(..)) : "match on parameterized return type";
 }
 
 
