@@ -11,6 +11,21 @@ public aspect WithinCodeOverriding {
 	
 	declare warning : withincode(void *.foo(Object))
 	                  : "wildcard declaring type match on erasure";
+	
+	declare warning : withincode(void Generic.foo(Object))
+	                  : "base declaring type match on erasure";
+	
+	declare warning : withincode(void SubGeneric.foo(Object))
+	                  : "not expecting any matches";
+	
+	declare warning : withincode(void SubGeneric.foo(Number))
+	                  : "sub type match on erasure";
+	
+	declare warning : withincode(void SubParameterized.foo(Object))
+					  : "not expecting any matches";
+	
+	declare warning : withincode(void SubParameterized.foo(String))
+					  : "parameterized match on erasure";
 }
 
 class Generic<T> {
@@ -63,6 +78,14 @@ class ParameterizedI implements I<Double> {
 	// !withincode(void ParameterizedI.bar(Object))
 	public void bar(Double d) {
 		x = 1;
+	}
+	
+	static aspect ParameterizedChecker {
+		
+		declare warning : withincode(void I.bar(Object)) : "erasure match on base interface";
+		declare warning : withincode(void *.bar(Object)) : "wildcard match on erasure";
+		declare warning : withincode(void ParameterizedI.bar(Double)) : "parameterized match";
+		declare warning : withincode(void ParameterizedI.bar(Object)) : "no match expected";
 	}
 }
 
