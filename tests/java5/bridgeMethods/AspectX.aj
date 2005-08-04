@@ -4,11 +4,11 @@ public aspect AspectX {
 
   static Set matchedJps = new HashSet();
 	
-  before(): call(* compareTo(..)) {
+  before(): call(* Number.compareTo(..)) {
   	matchedJps.add(new String("call() matched on "+thisJoinPoint.toString()));
   }
   
-  before(): execution(* compareTo(..)) {
+  before(): execution(* Number.compareTo(..)) {
   	matchedJps.add(new String("execution() matched on "+thisJoinPoint.toString()));
   }
 	
@@ -22,7 +22,7 @@ public aspect AspectX {
        n1.compareTo("abc");
           ^
        1 error
-     */
+     */ 
   	
   	Iterator i = matchedJps.iterator();
   	while (i.hasNext()) {

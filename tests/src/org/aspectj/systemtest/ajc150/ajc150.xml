@@ -12,6 +12,7 @@
     <ajc-test dir="java5/bridgeMethods" pr="72766" title="Ignore bridge methods">
         <compile files="AspectX.aj" inpath="testcode.jar" options="-showWeaveInfo">
           <message kind="warning" line="7" text="pointcut did not match on the method call to a bridge method."/>
+          <message kind="warning" line="7" text="does not match because declaring type is Number"/>
           <message kind="weave" text="(AspectX.aj:18) advised by before advice from 'AspectX'"/>
           <message kind="weave" text="(Number.java:5) advised by before advice from 'AspectX'"/>
         </compile>
@@ -1329,8 +1330,7 @@
      <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: @inherited">
         <compile files="AnnotationInheritance.aj" options="-1.5">
             <message kind="warning" line="16" text="annotatedMethodCall()"/>
-            <message kind="warning" line="16" text="c1MethodCall()"/>
-            <message kind="warning" line="17" text="c1MethodCall()"/>
+            <message kind="warning" line="17" text="annotatedMethodCall()"/>
         </compile>
     </ajc-test>
     
@@ -2789,7 +2789,38 @@
          <message kind="warning" line="52" text="the really wild show"/>
       </compile>
    </ajc-test>      
-                                       
+
+ <ajc-test dir="java5/generics/pointcuts" title="withincode with various parameterizations and generic types - errors">
+     <compile files="WithincodePointcutMatching.aj" options="-1.5">
+         <message kind="warning" line="4" text="no match for this type name: T"/>
+         <message kind="error" line="4" text="can't use parameterized type patterns for the declaring type of a withincode pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="5" text="can't use parameterized type patterns for the declaring type of a withincode pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="6" text="invalid throws pattern: a generic class may not be a direct or indirect subclass of Throwable"/>
+      </compile>
+   </ajc-test>
+
+    <ajc-test dir="java5/generics/pointcuts" title="withincode with various parameterizations and generic types - matching">
+     <compile files="WithinCodePointcutMatchingParamAndReturnTypes.aj" options="-1.5">
+        <message kind="warning" line="31" text="raw param type matching in withincode ok"/>
+        <message kind="warning" line="32" text="raw param type matching in withincode ok"/>
+        <message kind="warning" line="63" text="raw return type matching in withincode ok"/>
+        <message kind="warning" line="34" text="erasure type matching in withincode ok"/>
+        <message kind="warning" line="35" text="erasure type matching in withincode ok"/>
+        <message kind="warning" line="38" text="erasure type matching in withincode ok"/>
+        <message kind="warning" line="58" text="withincode and parameterized method ok"/>
+        <message kind="warning" line="58" text="withincode and generic interface ok"/>
+        <message kind="warning" line="61" text="withincode and interface control test"/>
+      </compile>
+   </ajc-test>
+
+    <ajc-test dir="java5/generics/pointcuts" title="withincode with overriding of inherited generic members">
+     <compile files="WithinCodeOverriding.aj" options="-1.5">
+        <message kind="warning" line="22" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="35" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="48" text="wildcard declaring type match on erasure"/>
+     </compile>
+    </ajc-test>
+                                                                           
    <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw type matching">
      <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,RawTypeMatching.aj" options="-1.5">
          <message kind="warning" line="4" text="execution(* GenericInterface.*(..))"/>

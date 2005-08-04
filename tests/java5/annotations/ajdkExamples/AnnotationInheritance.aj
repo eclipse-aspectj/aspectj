@@ -20,14 +20,14 @@
 	
 	aspect X {
 	
-	  pointcut annotatedMethodCall() : 
-	    call(@SomeAnnotation * C1.aMethod());  //CW L16
+	  pointcut annotatedC2MethodCall() : 
+	    call(@SomeAnnotation * C2.aMethod());  // matches nothing
 	
-	  pointcut c1MethodCall() :   // CW L16, L17
-	    call(* C1.aMethod());
+	  pointcut annotatedMethodCall() :   // CW L16, L17
+	    call(@SomeAnnotation * aMethod());
 	  
+	  declare warning : annotatedC2MethodCall() : "annotatedC2MethodCall()";
 	  declare warning : annotatedMethodCall() : "annotatedMethodCall()";
-	  declare warning : c1MethodCall() : "c1MethodCall()";
 	}
 	
 	@Inherited @interface SomeAnnotation {}

@@ -79,7 +79,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *   - type variables as params PASS
 	 *   - parameterized types as params PASS
 	 *   - no join points for init, preinit of parameterized types (as per staticinit) PASS
-	 * execution, withincode
+	 * withincode
+	 *    - no generic or parameterized declaring type patterns  PASS
+	 *    - no parameterized throws patterns  PASS
+	 *    - return type as type variable
+	 *    - return type as parameterized type
+	 *    - parameter as type variable
+	 *    - parameter as parameterized type
+	 *    - no join points within bridge methods
+	 * execution
 	 *    - wait till we get there!
 	 * call
 	 *   - wait till we get there!
@@ -342,6 +350,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	public void testInitAndPreInitPointcutMatchingWithParameterizedParameterTypes() {
 		runTest("init and preinit with parameterized parameter types");
+	}
+	
+	public void testWithinCodePointcutErrors() {
+		runTest("withincode with various parameterizations and generic types - errors");
+	}
+	
+	public void testWithinCodeMatching() {
+		runTest("withincode with various parameterizations and generic types - matching");
+	}
+	
+	public void testWithinCodeOverrideMatchingWithGenericMembers() {
+		runTest("withincode with overriding of inherited generic members");
 	}
 	
 	public void testExecutionWithRawType() {
