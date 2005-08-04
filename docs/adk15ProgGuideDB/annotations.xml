@@ -1165,23 +1165,27 @@
   	
   	aspect X {
   	
-  	  pointcut annotatedMethodCall() : 
-  	    call(@SomeAnnotation * C1.aMethod());
+  	  pointcut annotatedC2MethodCall() : 
+  	    call(@SomeAnnotation * C2.aMethod());
   	
-  	  pointcut c1MethodCall() :
-  	    call(* C1.aMethod());
+  	  pointcut annotatedMethodCall() :
+  	    call(@SomeAnnotation * aMethod());
   	}
 	]]></programlisting>
   	
   	<para>
-  	    The pointcut <literal>annotatedMethodCall</literal> will match the call
-  	    to <literal>c1.aMethod()</literal>, but not the call to 
-  	    <literal>c2.aMethod()</literal>.
+  	    The pointcut <literal>annotatedC2MethodCall</literal> will not match anything
+  	    since the definition of <literal>aMethod</literal> in <literal>C2</literal>
+  	    does not have the annotation.
   	</para>
   	
   	<para>
   	    The pointcut <literal>c1MethodCall</literal> matches both 
-  	    <literal>c1.aMethod()</literal> and <literal>c2.aMethod()</literal>.
+  	    <literal>c1.aMethod()</literal> and <literal>c2.aMethod()</literal>. The call
+  	    to <literal>c2.aMethod</literal> is matched because the call join point has
+  	    multiple signatures (<literal>@SomeAnnotation C1.aMethod()</literal> and
+  	    <literal>C2.aMethod()</literal>), and the former of those signatures is
+  	    exactly matched by the pattern.
   	</para>
   	
   </sect2>
