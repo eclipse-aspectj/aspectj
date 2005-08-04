@@ -2846,6 +2846,45 @@
      </compile>
    </ajc-test>
 
+ <ajc-test dir="java5/generics/pointcuts" title="execution with various parameterizations and generic types - errors">
+     <compile files="ExecutionPointcutMatchingErrorCases.aj" options="-1.5">
+         <message kind="warning" line="4" text="no match for this type name: T"/>
+         <message kind="error" line="4" text="can't use parameterized type patterns for the declaring type of an execution pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="5" text="can't use parameterized type patterns for the declaring type of an execution pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="6" text="invalid throws pattern: a generic class may not be a direct or indirect subclass of Throwable"/>
+      </compile>
+   </ajc-test>
+
+    <ajc-test dir="java5/generics/pointcuts" title="execution with various parameterizations and generic types - matching">
+     <compile files="ExecutionPointcutMatchingParamAndReturnTypes.aj" options="-1.5">
+        <message kind="warning" line="35" text="raw param type matching in execution ok"/>
+        <message kind="warning" line="67" text="raw return type matching in execution ok"/>
+        <message kind="warning" line="38" text="erasure type matching in execution ok"/>
+        <message kind="warning" line="42" text="erasure type matching in execution ok"/>
+        <message kind="warning" line="61" text="execution and parameterized method ok"/>
+        <message kind="warning" line="61" text="execution and generic interface ok"/>
+        <message kind="warning" line="65" text="execution and interface control test"/>
+        <message kind="warning" line="35" text="match on parameterized args"/>
+        <message kind="warning" line="67" text="match on parameterized return type"/>
+      </compile>
+   </ajc-test>
+
+    <ajc-test dir="java5/generics/pointcuts" title="execution with overriding of inherited generic members">
+     <compile files="ExecutionOverriding.aj" options="-1.5">
+        <message kind="warning" line="36" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="49" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="62" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="36" text="base declaring type match on erasure"/>
+        <message kind="warning" line="49" text="base declaring type match on erasure"/>
+        <message kind="warning" line="62" text="base declaring type match on erasure"/>
+        <message kind="warning" line="49" text="sub type match on erasure"/>
+        <message kind="warning" line="62" text="parameterized match on erasure"/>
+        <message kind="warning" line="79" text="erasure match on base interface"/>
+        <message kind="warning" line="79" text="wildcard match on erasure"/>
+        <message kind="warning" line="79" text="parameterized match"/>
+     </compile>
+    </ajc-test>
+
    <ajc-test dir="java5/generics/pointcuts" title="execution pcd with generic declaring type and erased parameter types">
      <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,GenericDeclaringTypeWithParameterErasure.aj" options="-1.5">
      </compile>

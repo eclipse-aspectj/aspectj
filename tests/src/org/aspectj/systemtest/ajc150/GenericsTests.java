@@ -87,8 +87,14 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *    - parameter as type variable  PASS
 	 *    - parameter as parameterized type PASS
 	 *    - no join points within bridge methods PASS
-	 * execution
-	 *    - wait till we get there!
+	 * execution PASS
+	 *    - no generic or parameterized declaring type patterns PASS
+	 *    - no parameterized throws patterns PASS
+	 *    - return type as type variable  PASS
+	 *    - return type as parameterized type  PASS
+	 *    - parameter as type variable   PASS
+	 *    - parameter as parameterized type  PASS
+	 *    - no join points for bridge methods  PASS
 	 * call
 	 *   - wait till we get there!
 	 */
@@ -372,6 +378,17 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("execution pcd with raw signature matching");
 	}
 	
+	public void testExecutionPointcutErrors() {
+		runTest("execution with various parameterizations and generic types - errors");
+	}
+	
+	public void testExecutionMatching() {
+		runTest("execution with various parameterizations and generic types - matching");
+	}
+	
+	public void testExecutionOverrideMatchingWithGenericMembers() {
+		runTest("execution with overriding of inherited generic members");
+	}
 	public void testGetAndSetPointcutErrors() {
 		runTest("get and set with various parameterizations and generic types - errors");
 	}
