@@ -342,6 +342,44 @@ public class KindedPointcut extends Pointcut {
 						getSourceLocation()));
 			}									
 		}
+		
+		// no parameterized types in declaring type position
+		// no throwable parameterized types
+		if ((kind == Shadow.MethodExecution) || (kind == Shadow.ConstructorExecution)) {
+			HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+			signature.getDeclaringType().traverse(visitor, null);
+			if (visitor.wellHasItThen/*?*/()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.EXECUTION_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES),
+						getSourceLocation()));
+			}						
+			
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+			signature.getThrowsPattern().traverse(visitor, null);
+			if (visitor.wellHasItThen/*?*/()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_GENERIC_THROWABLES),
+						getSourceLocation()));
+			}									
+		}
+		
+		// no parameterized types in declaring type position
+		// no throwable parameterized types
+		if ((kind == Shadow.MethodCall) || (kind == Shadow.ConstructorCall)) {
+			HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+			signature.getDeclaringType().traverse(visitor, null);
+			if (visitor.wellHasItThen/*?*/()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.CALL_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES),
+						getSourceLocation()));
+			}						
+			
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+			signature.getThrowsPattern().traverse(visitor, null);
+			if (visitor.wellHasItThen/*?*/()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_GENERIC_THROWABLES),
+						getSourceLocation()));
+			}									
+		}
 	}
 	
 	public void resolveBindingsFromRTTI() {

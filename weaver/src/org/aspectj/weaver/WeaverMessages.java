@@ -139,7 +139,8 @@ public class WeaverMessages {
 	public static final String NO_INIT_JPS_FOR_PARAMETERIZED_TYPES = "noInitJPsForParameterizedTypes";
 	public static final String NO_GENERIC_THROWABLES = "noGenericThrowables";
 	public static final String WITHINCODE_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES="noParameterizedDeclaringTypesWithinCode";
-	
+	public static final String EXECUTION_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES="noParameterizedDeclaringTypesInExecution";
+	public static final String CALL_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES="noParameterizedDeclaringTypesInCall";
 	public static String format(String key) {
 		return bundle.getString(key);
 	}
