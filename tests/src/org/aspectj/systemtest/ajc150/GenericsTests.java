@@ -99,6 +99,29 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *   - wait till we get there!
 	 */
 	
+	/* ==========================================
+	 * Generics test plan for ITDs.
+	 * 
+	 * think about:
+	 * - source/binary weaving
+	 * - visibility default/private/public
+	 * - static/nonstatic
+	 * - parameterized ITDs (methods/ctors/fields)
+	 * - ITD target: interface/class/aspect
+	 * - multiple type variables
+	 * - generic ITDs (like generic methods)
+	 * - constructor ITDs, method ITDs
+	 * - ITDs sharing type variables with generic types
+	 * -  relating to above point, this makes generic ITD fields possible
+	 * - signature attributes for generic ITDs (required? required only for public ITDs?)
+	 * - binary weaving when target type changes over time (might start out 'simple' then sometime later be 'generic')
+	 * - bridge methods - when to create them
+	 * - multiple 'separate' ITDs in a file that share a type variable by 'name'
+	 * - wildcards '?' 'extends' 'super' '&'
+	 * - do type variables assigned to members need to persist across serialization
+	 * - recursive type variable definitions eg. <R extends Comparable<? super R>>
+	 */
+	
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(GenericsTests.class);
 	}
@@ -182,12 +205,21 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	// non static
 
-	public void testGenericMethodITD1() {runTest("generic method itd - 1");} // <E> ... (List<? extends E>)
-	public void testGenericMethodITD2() {runTest("generic method itd - 2");} // <E extends Number> ... (List<? extends E>) called incorrectly
-	public void testGenericMethodITD3() {runTest("generic method itd - 3");} // <E> ... (List<E>,List<E>)
-	public void testGenericMethodITD4() {runTest("generic method itd - 4");} // <A,B> ... (List<A>,List<B>)
-	public void testGenericMethodITD5() {runTest("generic method itd - 5");} // <E> ... (List<E>,List<E>) called incorrectly
-	public void testGenericMethodITD6() {runTest("generic method itd - 6");} // <E extends Number> ... (List<? extends E>)
+	public void testGenericMethodITD1()  {runTest("generic method itd - 1"); }  // <E> ... (List<? extends E>)
+	public void testGenericMethodITD2()  {runTest("generic method itd - 2"); }  // <E extends Number> ... (List<? extends E>) called incorrectly
+	public void testGenericMethodITD3()  {runTest("generic method itd - 3"); }  // <E> ... (List<E>,List<E>)
+	public void testGenericMethodITD4()  {runTest("generic method itd - 4"); }  // <A,B> ... (List<A>,List<B>)
+	public void testGenericMethodITD5()  {runTest("generic method itd - 5"); }  // <E> ... (List<E>,List<E>) called incorrectly
+	public void testGenericMethodITD6()  {runTest("generic method itd - 6"); }  // <E extends Number> ... (List<? extends E>)
+	public void testGenericMethodITD7()  {runTest("generic method itd - 7"); }  // <E> ... (List<E>,List<? extends E>)
+	public void testGenericMethodITD8()  {runTest("generic method itd - 8"); }  // <E> ... (List<E>,List<? extends E>) called incorrectly
+	public void testGenericMethodITD9()  {runTest("generic method itd - 9"); }  // <R extends Comparable<? super R>> ... (List<R>)
+	public void testGenericMethodITD10() {runTest("generic method itd - 10");}  // <R extends Comparable<? super R>> ... (List<R>) called incorrectly
+	public void testGenericMethodITD11() {runTest("generic method itd - 11");}  // <R extends Comparable<? extends R>> ... (List<R>)
+	public void testGenericMethodITD12() {runTest("generic method itd - 12");}  // <R extends Comparable<? extends R>> ... (List<R>) called incorrectly
+	public void testGenericMethodITD13() {runTest("generic method itd - 13");}  // <R extends Comparable<? extends R>> ... (List<R>) called correctly in a clever way ;)
+	public void testGenericMethodITD14() {runTest("generic method itd - 14");}  // <R extends Comparable<? super R>> ... (List<R>) called incorrectly in a clever way
+	public void testGenericMethodITD15() {runTest("generic method itd - 15");}  // <R extends Comparable<? super R>> ... (List<R>) called correctly in a clever way
 	
 
 	public void testParameterizedMethodITD1() {runTest("parameterized method itd - 1");} // (List<? extends Super>)
@@ -196,8 +228,11 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testParameterizedMethodITD4() {runTest("parameterized method itd - 4");} // (List<? super B>)
 	
 
-//	public void testNonStaticGenericCtorITD1() {runTest("generic ctor itd - 1");}
-//	public void testGenericITFSharingTypeVariable() {
+	public void testGenericCtorITD1() {runTest("generic ctor itd - 1");} // <T> new(List<T>)
+	public void testGenericCtorITD2() {runTest("generic ctor itd - 2");} // <T> new(List<T>,List<? extends T>)
+	public void testGenericCtorITD3() {runTest("generic ctor itd - 3");} // <T> new(List<T>,Comparator<? super T>)
+
+	//	public void testGenericITFSharingTypeVariable() {
 //		runTest("generic intertype field declaration, sharing type variable");
 //	}
 

@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.Member.Kind;
 
 public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDeclaringElement {
 
@@ -135,5 +136,9 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	 * variable to match any other type variable regardless of bounds.
 	 */
 	public boolean matches(ResolvedMember aCandidateMatch);
-
+	
+	public void resetName(String newName);
+	public void resetKind(Kind newKind);
+    public void resetModifiers(int newModifiers);
+    public void resetReturnTypeToObjectArray();
 }

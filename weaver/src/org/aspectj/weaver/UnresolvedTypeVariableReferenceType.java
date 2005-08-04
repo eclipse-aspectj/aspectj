@@ -37,7 +37,9 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 	}
 	
 	public ResolvedType resolve(World world) {
-		if (typeVariable == null) return ResolvedType.MISSING;
+		if (typeVariable == null) {
+		    throw new BCException("Cannot resolve this type variable reference, the type variable has not been set!");
+		}
 		typeVariable.resolve(world);
 		return new TypeVariableReferenceType(typeVariable,world);
 	}

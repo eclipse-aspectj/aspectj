@@ -2386,9 +2386,19 @@
      </run>
    </ajc-test>
    
-   <ajc-test dir="java5/generics/itds" title="non static generic ctor itd - 1">
-     <compile files="NonstaticGenericCtorITD1.aj" options="-1.5"/>
-     <run class="NonstaticGenericCtorITD1"/>
+   <ajc-test dir="java5/generics/itds" title="generic ctor itd - 1">
+     <compile files="GenericCtorITD1.aj" options="-1.5"/>
+     <run class="GenericCtorITD1"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="generic ctor itd - 2">
+     <compile files="GenericCtorITD2.aj" options="-1.5"/>
+     <run class="GenericCtorITD2"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="generic ctor itd - 3">
+     <compile files="GenericCtorITD3.aj" options="-1.5"/>
+     <run class="GenericCtorITD3"/>
    </ajc-test>
    
    <ajc-test dir="java5/generics/itds" title="parameterized method itd - 1">
@@ -2445,6 +2455,55 @@
    <ajc-test dir="java5/generics/itds" title="generic method itd - 6">
      <compile files="GenericMethodITD6.aj" options="-1.5"/>
      <run class="GenericMethodITD6"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 7">
+     <compile files="GenericMethodITD7.aj" options="-1.5"/>
+     <run class="GenericMethodITD7"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 8">
+     <compile files="GenericMethodITD8.aj" options="-1.5">
+     <message kind="error" line="10" text="The method simple(List&lt;E&gt;, List&lt;? extends E&gt;) in the type X is not applicable for the arguments (List&lt;Number&gt;, List&lt;String&gt;)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 9">
+     <compile files="GenericMethodITD9.aj" options="-1.5"/>
+     <run class="GenericMethodITD9"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 10">
+     <compile files="GenericMethodITD10.aj" options="-1.5">
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;) since the type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Comparable&lt;? super R&gt;&gt;"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 11">
+     <compile files="GenericMethodITD11.aj" options="-1.5"/>
+     <run class="GenericMethodITD11"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 12">
+     <compile files="GenericMethodITD12.aj" options="-1.5">
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;) since the type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? extends R&gt;&gt;"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 13">
+     <compile files="GenericMethodITD13.aj" options="-1.5"/>
+     <run class="GenericMethodITD13"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 14">
+     <compile files="GenericMethodITD14.aj" options="-1.5">
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;) since the type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? super R&gt;&gt;"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="generic method itd - 15">
+     <compile files="GenericMethodITD15.aj" options="-1.5"/>
+     <run class="GenericMethodITD15"/>
    </ajc-test>
    
    <ajc-test dir="java5/generics/itds" title="non static generic method itd - 2">

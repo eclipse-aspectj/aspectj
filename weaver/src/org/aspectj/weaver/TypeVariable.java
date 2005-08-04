@@ -25,6 +25,9 @@ public class TypeVariable {
 	 */
 	private boolean isResolved = false;
 	
+	
+	private boolean beingResolved = false;
+	
 	/**
 	 * the name of the type variable as recorded in the generic signature
 	 */
@@ -93,6 +96,8 @@ public class TypeVariable {
 	 * resolve all the bounds of this type variable
 	 */
 	public void resolve(World inSomeWorld) {
+		if (beingResolved) { return; } // avoid spiral of death
+		beingResolved = true;
 		if (isResolved) return;
 		
 		upperBound = upperBound.resolve(inSomeWorld);
@@ -103,6 +108,7 @@ public class TypeVariable {
 		}
 		
 		isResolved = true;
+		beingResolved = false;
 	}
 	
 	/**

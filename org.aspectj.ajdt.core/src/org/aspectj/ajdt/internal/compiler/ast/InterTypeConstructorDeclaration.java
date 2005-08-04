@@ -13,6 +13,7 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
+import java.lang.reflect.Modifier;
 import org.aspectj.ajdt.internal.compiler.lookup.*;
 import org.aspectj.weaver.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
@@ -94,9 +95,16 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		pre.scope = new MethodScope(scope, pre, true);
 		//??? do we need to do anything with scope???
 		
-		pre.binding = world.makeMethodBinding(
-			AjcMemberMaker.preIntroducedConstructor(aspectTypeX, targetTypeX, 
-					world.fromBindings(binding.parameters)));
+		
+
+        // Use the factory to build a semi-correct resolvedmember - then patch it up with
+        // reset calls.  This is SAFE	
+		ResolvedMember preIntroducedConstructorRM = world.makeResolvedMember(binding);
+		preIntroducedConstructorRM.resetName(NameMangler.preIntroducedConstructor(aspectTypeX, targetTypeX));
+		preIntroducedConstructorRM.resetModifiers(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL);
+		preIntroducedConstructorRM.resetReturnTypeToObjectArray();
+		
+		pre.binding = world.makeMethodBinding(preIntroducedConstructorRM);
 		
 		pre.bindArguments();
 		pre.bindThrownExceptions();
@@ -218,12 +226,14 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		ResolvedType declaringTypeX = world.fromEclipse(onTypeBinding);
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		
-		ResolvedMember bindingAsMember = world.makeResolvedMember(binding);
 		
-		ResolvedMember signature =
-			new ResolvedMemberImpl(Member.CONSTRUCTOR, declaringTypeX, declaredModifiers, 
-					ResolvedType.VOID, "<init>", bindingAsMember.getParameterTypes(),
-					world.fromEclipse(binding.thrownExceptions));			
+
+		// This signature represents what we want consumers of the targetted type to 'see'
+		ResolvedMember signature = world.makeResolvedMember(binding,onTypeBinding);
+		signature.resetKind(Member.CONSTRUCTOR);
+		signature.resetName("<init>");
+		signature.resetModifiers(declaredModifiers);
+		
 		ResolvedMember syntheticInterMember =
 			AjcMemberMaker.interConstructor(declaringTypeX,  signature, aspectType);
 		

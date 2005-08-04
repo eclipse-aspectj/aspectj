@@ -21,14 +21,14 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class MemberImpl implements Comparable, AnnotatedElement, Member {
+public class MemberImpl implements Comparable, AnnotatedElement,Member {
     
-    private final Kind kind;
+    protected Kind kind;
     protected UnresolvedType declaringType;
-    protected final int modifiers; // protected because ResolvedMember uses it
-    private final UnresolvedType returnType;
-    private final String name;
-    private final UnresolvedType[] parameterTypes;
+    protected int modifiers; 
+    protected UnresolvedType returnType;
+    protected String name;
+    protected UnresolvedType[] parameterTypes;
     private final String signature;
 	private final String declaredSignature; // TODO asc Is this redundant? Is it needed for generics?
     private String paramSignature;

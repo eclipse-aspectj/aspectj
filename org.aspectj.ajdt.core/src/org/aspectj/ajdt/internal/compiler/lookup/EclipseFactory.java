@@ -24,26 +24,8 @@ import java.util.Map;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
-import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.weaver.BoundedReferenceType;
-import org.aspectj.weaver.ConcreteTypeMunger;
-import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ReferenceType;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedMemberImpl;
-import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.TypeFactory;
-import org.aspectj.weaver.TypeVariable;
-import org.aspectj.weaver.TypeVariableDeclaringElement;
-import org.aspectj.weaver.TypeVariableReference;
-import org.aspectj.weaver.TypeVariableReferenceType;
-import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
-import org.aspectj.weaver.World;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
@@ -64,9 +46,24 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import org.aspectj.weaver.BoundedReferenceType;
+import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeFactory;
+import org.aspectj.weaver.TypeVariable;
+import org.aspectj.weaver.TypeVariableDeclaringElement;
+import org.aspectj.weaver.TypeVariableReference;
+import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
+import org.aspectj.weaver.World;
  
 /**
  * @author Jim Hugunin
@@ -231,10 +228,14 @@ public class EclipseFactory {
 				}
 			}
 			ResolvedType baseType = UnresolvedType.forName(getName(binding)).resolve(getWorld());
-			return TypeFactory.createParameterizedType(
-						baseType,
-						arguments,
-						getWorld());			
+			
+			// Create an unresolved parameterized type.  We can't create a resolved one as the 
+			// act of resolution here may cause recursion problems since the parameters may
+			// be type variables that we haven't fixed up yet.
+			if (!baseType.isGenericType() && arguments!=null) baseType = baseType.getGenericType();
+			if (arguments==null) arguments=new UnresolvedType[0];
+			String parameterizedSig = ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER+CharOperation.charToString(binding.genericTypeSignature()).substring(1);
+			return TypeFactory.createUnresolvedParameterizedType(parameterizedSig,baseType.getErasureSignature(),arguments);
 		}
 		
 		// Convert the source type binding for a generic type into a generic UnresolvedType
@@ -261,27 +262,47 @@ public class EclipseFactory {
 		return UnresolvedType.forName(getName(binding));
 	}
 
+	/**
+	 * Some type variables refer to themselves recursively, this enables us to avoid
+	 * recursion problems.
+	 */
 	private static Map typeVariableBindingsInProgress = new HashMap();
+	
+	/**
+	 * Convert from the eclipse form of type variable (TypeVariableBinding) to the AspectJ
+	 * form (TypeVariable).
+	 */
 	private  UnresolvedType fromTypeVariableBinding(TypeVariableBinding aTypeVariableBinding) {
+	    // first, check for recursive call to this method for the same tvBinding
 		if (typeVariableBindingsInProgress.containsKey(aTypeVariableBinding)) {
 			return (UnresolvedType) typeVariableBindingsInProgress.get(aTypeVariableBinding);
 		}
+		if (typeVariablesForThisMember.containsKey(new Integer(aTypeVariableBinding.rank))) {
+			return (UnresolvedType)typeVariablesForThisMember.get(new Integer(aTypeVariableBinding.rank));
+		}
+		// Create the UnresolvedTypeVariableReferenceType for the type variable
+		String name = CharOperation.charToString(aTypeVariableBinding.sourceName());
+		
 		UnresolvedTypeVariableReferenceType ret = new UnresolvedTypeVariableReferenceType();
 		typeVariableBindingsInProgress.put(aTypeVariableBinding,ret);
+		
+		// Dont set any bounds here, you'll get in a recursive mess
 		// TODO -- what about lower bounds??
-		String name = new String(aTypeVariableBinding.sourceName());
-		UnresolvedType superclassType = fromBinding(aTypeVariableBinding.superclass());
+		UnresolvedType superclassType    = fromBinding(aTypeVariableBinding.superclass());
 		UnresolvedType[] superinterfaces = new UnresolvedType[aTypeVariableBinding.superInterfaces.length];
 		for (int i = 0; i < superinterfaces.length; i++) {
 			superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
 		}
 		TypeVariable tv = new TypeVariable(name,superclassType,superinterfaces);
+		tv.setUpperBound(superclassType);
+		tv.setAdditionalInterfaceBounds(superinterfaces);
 		tv.setRank(aTypeVariableBinding.rank);
-		// getting things right for method declaring elements is tricky...
-		if (!(aTypeVariableBinding.declaringElement instanceof MethodBinding)) {
-			tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
-		}
-		tv.resolve(world);
+// dont need the declaring element yet...
+//		if (aTypeVariableBinding.declaringElement instanceof MethodBinding) {
+//			tv.setDeclaringElement(fromBinding((MethodBinding)aTypeVariableBinding.declaringElement);
+//		} else {
+//		    //	tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
+//		}
 		ret.setTypeVariable(tv);
 		typeVariableBindingsInProgress.remove(aTypeVariableBinding);
 		return ret;
@@ -369,8 +390,30 @@ public class EclipseFactory {
 		return makeResolvedMember(binding, binding.declaringClass);
 	}
 
+    /** 
+     * Conversion from a methodbinding (eclipse) to a resolvedmember (aspectj) is now done
+     * in the scope of some type variables.  Before converting the parts of a methodbinding
+     * (params, return type) we store the type variables in this structure, then should any
+     * component of the method binding refer to them, we grab them from the map.
+     */
+	// FIXME asc convert to array, indexed by rank
+	private Map typeVariablesForThisMember = new HashMap(); 
+
 	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
 		//System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
+
+        // Convert the type variables and store them
+		UnresolvedType[] ajTypeRefs = null;
+		
+		// This is the set of type variables available whilst building the resolved member...
+		if (binding.typeVariables!=null) {
+			ajTypeRefs = new UnresolvedType[binding.typeVariables.length];
+			for (int i = 0; i < binding.typeVariables.length; i++) {
+				ajTypeRefs[i] = fromBinding(binding.typeVariables[i]);
+				typeVariablesForThisMember.put(new Integer(binding.typeVariables[i].rank),ajTypeRefs[i]);
+			}
+		}
+		
 		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
 		ResolvedType realDeclaringType = world.resolve(fromBinding(declaringType));
 		if (realDeclaringType.isRawType()) realDeclaringType = realDeclaringType.getGenericType();
@@ -378,10 +421,14 @@ public class EclipseFactory {
 			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
 			realDeclaringType,
 			binding.modifiers,
-			world.resolve(fromBinding(binding.returnType)),
+			fromBinding(binding.returnType),
 			new String(binding.selector),
-			world.resolve(fromBindings(binding.parameters)),
-			world.resolve(fromBindings(binding.thrownExceptions)));
+			fromBindings(binding.parameters),
+			fromBindings(binding.thrownExceptions)
+			);
+		if (ajTypeRefs!=null) ret.setTypeVariables(ajTypeRefs);
+		typeVariablesForThisMember.clear();
+		ret.resolve(world);
 		return ret;
 	}
 
@@ -407,7 +454,7 @@ public class EclipseFactory {
 		if (ret == null) {
 			ret = makeTypeBinding1(typeX);
 			// FIXME asc keep type variables *out* of the map for now, they go in typeVariableToTypeBinding
-			if (!(typeX instanceof TypeVariableReference)) 
+			if (!(typeX instanceof BoundedReferenceType)) 
 			  typexToBinding.put(typeX, ret);
 		}
 		if (ret == null) {
@@ -457,8 +504,8 @@ public class EclipseFactory {
 			BoundedReferenceType brt = (BoundedReferenceType)typeX;
 			// Work out 'kind' for the WildcardBinding
 			int boundkind = Wildcard.UNBOUND;
-			if (brt.isGenericWildcardExtends()) boundkind = Wildcard.EXTENDS;
-			if (brt.isGenericWildcardSuper()) boundkind = Wildcard.SUPER;
+			if (brt.isExtends()) boundkind = Wildcard.EXTENDS;
+			if (brt.isSuper()) boundkind = Wildcard.SUPER;
 			// get the bound right
 			TypeBinding bound = null;
 			if (brt.isGenericWildcardExtends()) bound = makeTypeBinding(brt.getUpperBound());
@@ -518,6 +565,25 @@ public class EclipseFactory {
 
 	public MethodBinding makeMethodBinding(ResolvedMember member) {
 		typeVariableToTypeBinding.clear();
+		TypeVariableBinding[] tvbs = null;
+		
+		if (member.getTypeVariables()!=null)  {
+			if (member.getTypeVariables().length==0) {
+				tvbs = MethodBinding.NoTypeVariables;
+			} else {
+				tvbs = makeTypeVariableBindings(member.getTypeVariables());
+				// fixup the declaring element, we couldn't do it whilst processing the typevariables as we'll end up in recursion.
+				for (int i = 0; i < tvbs.length; i++) {
+					TypeVariableBinding binding = tvbs[i];
+//					if (binding.declaringElement==null && ((TypeVariableReference)member.getTypeVariables()[i]).getTypeVariable().getDeclaringElement() instanceof Member) {
+//						tvbs[i].declaringElement = mb;
+//					} else {
+//						tvbs[i].declaringElement = declaringType;
+//					}
+				}
+			}
+		}		
+		
 		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
 		MethodBinding mb =  new MethodBinding(member.getModifiers(), 
 				member.getName().toCharArray(),
@@ -525,39 +591,22 @@ public class EclipseFactory {
 				makeTypeBindings(member.getParameterTypes()),
 				makeReferenceBindings(member.getExceptions()),
 				declaringType);
-		if (member.getTypeVariables()!=null)  {
-			if (member.getTypeVariables().length==0) {
-				mb.typeVariables = MethodBinding.NoTypeVariables;
-			} else {
-				TypeVariableBinding[] tvbs = makeTypeVariableBindings(member.getTypeVariables());
-				// fixup the declaring element, we couldn't do it whilst processing the typevariables as we'll end up in recursion.
-				for (int i = 0; i < tvbs.length; i++) {
-					TypeVariableBinding binding = tvbs[i];
-					if (binding.declaringElement==null && ((TypeVariableReference)member.getTypeVariables()[i]).getTypeVariable().getDeclaringElement() instanceof Member) {
-						tvbs[i].declaringElement = mb;
-					} else {
-						tvbs[i].declaringElement = declaringType;
-					}
-				}
-				mb.typeVariables = tvbs;
-			}
-		}
+
+		if (tvbs!=null) mb.typeVariables = tvbs;
 		typeVariableToTypeBinding.clear();
+		
 		return mb;
 	}
 
 
-	
+	/**
+	 * Convert a bunch of type variables in one go, from AspectJ form to Eclipse form.
+	 */
 	private TypeVariableBinding[] makeTypeVariableBindings(UnresolvedType[] typeVariables) {
 		int len = typeVariables.length;
 		TypeVariableBinding[] ret = new TypeVariableBinding[len];
 		for (int i = 0; i < len; i++) {
-			TypeVariableReference tvReference = (TypeVariableReference)typeVariables[i];
-			TypeVariableBinding tvb = (TypeVariableBinding)typeVariableToTypeBinding.get(tvReference.getTypeVariable().getName());
-			if (tvb==null) {
-				tvb = makeTypeVariableBinding(tvReference);
-			}
-			ret[i] = tvb;
+			ret[i] = makeTypeVariableBinding((TypeVariableReference)typeVariables[i]);
 		}
 		return ret;
 	}
@@ -575,7 +624,7 @@ public class EclipseFactory {
 	 */
 	private TypeVariableBinding makeTypeVariableBinding(TypeVariableReference tvReference) {
 		TypeVariable tVar = tvReference.getTypeVariable();
-		TypeVariableBinding tvBinding = (TypeVariableBinding)typeVariableToTypeBinding.get(tVar);
+		TypeVariableBinding tvBinding = (TypeVariableBinding)typeVariableToTypeBinding.get(tVar.getName());
 		if (tvBinding==null) {
 		  Binding declaringElement = null;
 		  // this will cause an infinite loop or NPE... not required yet luckily.
@@ -585,6 +634,7 @@ public class EclipseFactory {
 //			declaringElement = makeTypeBinding((UnresolvedType)tVar.getDeclaringElement());
 //		  }
 		  tvBinding = new TypeVariableBinding(tVar.getName().toCharArray(),declaringElement,tVar.getRank());
+		  typeVariableToTypeBinding.put(tVar.getName(),tvBinding);
 		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tVar.getUpperBound());
 		  tvBinding.firstBound=tvBinding.superclass; // FIXME asc is this correct? possibly it could be first superinterface
 		  if (tVar.getAdditionalInterfaceBounds()==null) {
@@ -596,7 +646,6 @@ public class EclipseFactory {
 				rbs[i] = (ReferenceBinding)tbs[i];
 			}
 			tvBinding.superInterfaces=rbs;
-			typeVariableToTypeBinding.put(tVar.getName(),tvBinding);
 		  }
 		}
 		return tvBinding;

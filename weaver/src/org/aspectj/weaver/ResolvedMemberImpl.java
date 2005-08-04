@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.Member.Kind;
 
 /**
  * This is the declared member, i.e. it will always correspond to an
@@ -266,7 +267,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
     public boolean hasAnnotation(UnresolvedType ofType) {
-         // The ctors don't allow annotations to be specified ... yet - but
+        // The ctors don't allow annotations to be specified ... yet - but
         // that doesn't mean it is an error to call this method.
         // Normally the weaver will be working with subtypes of 
         // this type - BcelField/BcelMethod
@@ -372,7 +373,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     
 	public ResolvedMember resolve(World world) {
-	    // FIXME asc guard with a check on resolution having happened !
+        // make sure all the pieces of a resolvedmember really are resolved
         if (annotationTypes!=null) {
           Set r = new HashSet();
           for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
@@ -383,7 +384,20 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	    }
         declaringType = declaringType.resolve(world);
         if (declaringType.isRawType()) declaringType = ((ReferenceType)declaringType).getGenericType();
-		return this;
+		if (typeVariables!=null && typeVariables.length>0) {
+			for (int i = 0; i < typeVariables.length; i++) {
+				UnresolvedType array_element = typeVariables[i];
+				typeVariables[i] = typeVariables[i].resolve(world);
+			}
+		}
+		if (parameterTypes!=null && parameterTypes.length>0) {
+			for (int i = 0; i < parameterTypes.length; i++) {
+				UnresolvedType array_element = parameterTypes[i];
+				parameterTypes[i] = parameterTypes[i].resolve(world);
+			}
+		}
+		
+		returnType = returnType.resolve(world);return this;
 	}
 	
 	public ISourceContext getSourceContext(World world) {
@@ -587,7 +601,20 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	private ResolvedMember myErasure = null;
 	private boolean calculatedMyErasure = false;
 	
-	
+
+
+     /**
+      * For ITDs, we use the default factory methods to build a resolved member, then alter a couple of characteristics
+      * using this method - this is safe.
+      */
+	public void resetName(String newName) {this.name = newName;}
+	public void resetKind(Kind newKind)   {this.kind=newKind;  }
+    public void resetModifiers(int newModifiers) {this.modifiers=newModifiers;}
+
+	public void resetReturnTypeToObjectArray() {
+		returnType = UnresolvedType.OBJECTARRAY;
+	}
+		
 	/**
 	 * Returns a copy of this member but with the declaring type swapped.
 	 * Copy only needs to be shallow.

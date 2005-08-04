@@ -19,17 +19,23 @@ import org.aspectj.weaver.patterns.PerClause;
 /**
  * A BoundedReferenceType is the result of a generics wildcard expression
  * ? extends String, ? super Foo etc..
+ * 
  * The "signature" for a bounded reference type follows the generic signature
- * specification in section 4.4 of JVM spec: *,+,- plus signature strings
+ * specification in section 4.4 of JVM spec: *,+,- plus signature strings.
+ * 
+ * The bound may be a type variable (e.g. ? super T)
  */
 public class BoundedReferenceType extends ReferenceType {
+
 	protected ReferenceType[] additionalInterfaceBounds = new ReferenceType[0];
+	
 	protected boolean isExtends = true;
-	protected boolean isSuper = false;
+	protected boolean isSuper   = false;
 	
 	public BoundedReferenceType(ReferenceType aBound, boolean isExtends, World world) {
 		super((isExtends ? "+" : "-") + aBound.signature,world);
-		this.isExtends = isExtends; this.isSuper=!isExtends;
+		this.isExtends = isExtends; 
+		this.isSuper   = !isExtends;
 		if (isExtends) { 
 			setUpperBound(aBound);
 		} else {
@@ -38,7 +44,7 @@ public class BoundedReferenceType extends ReferenceType {
 		}
 		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)getUpperBound()));
 	}
-	
+		
 	public BoundedReferenceType(ReferenceType aBound, boolean isExtends, World world, ReferenceType[] additionalInterfaces) {
 		this(aBound,isExtends,world);
 		this.additionalInterfaceBounds = additionalInterfaces;
@@ -51,20 +57,22 @@ public class BoundedReferenceType extends ReferenceType {
 	/**
 	 * only for use when resolving GenericsWildcardTypeX or a TypeVariableReferenceType
 	 */
-	BoundedReferenceType(String sig, World world) {
+	protected BoundedReferenceType(String sig, World world) {
 		super(sig,world);
 		setUpperBound(world.resolve(UnresolvedType.OBJECT));
 		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)getUpperBound()));
 	}
 	
-	public ReferenceType[] getInterfaceBounds() { return additionalInterfaceBounds; }
+	public ReferenceType[] getInterfaceBounds() { 
+		return additionalInterfaceBounds; 
+	}
 	
 	public boolean hasLowerBound() {
 		return getLowerBound() != null;
 	}
 	
 	public boolean isExtends() { return isExtends; }
-	public boolean isSuper() { return isSuper; }
+	public boolean isSuper()   { return isSuper;   }
 	
 	// override to include additional interface bounds...
 	public ResolvedType[] getDeclaredInterfaces() {

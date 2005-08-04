@@ -249,7 +249,7 @@ public abstract class World implements Dump.INode {
 	
 	/**
 	 * Resolve to a ReferenceType - simple, raw, parameterized, or generic.
-     * Raw, parmeterized, and generic versions of a type share a delegate.
+     * Raw, parameterized, and generic versions of a type share a delegate.
      */
     private final ResolvedType resolveToReferenceType(UnresolvedType ty) {
 		if (ty.isParameterizedType()) {
@@ -309,6 +309,17 @@ public abstract class World implements Dump.INode {
     	// raw type from a source type, it won't if its been created just through
     	// being referenced, e.g. java.util.List
     	ResolvedType genericType = rawType.getGenericType();
+    	
+    	// There is a special case to consider here (testGenericsBang_pr95993 highlights it)
+    	// You may have an unresolvedType for a parameterized type but it
+    	// is backed by a simple type rather than a generic type.  This occurs for
+    	// inner types of generic types that inherit their enclosing types
+    	// type variables.
+    	if (rawType.isSimpleType() && anUnresolvedType.typeParameters.length==0) {
+    		rawType.world = this;
+    		return rawType; 
+    	}
+    	
     	if (genericType != null) { 
     		genericType.world = this;
     		return genericType; 
@@ -324,18 +335,23 @@ public abstract class World implements Dump.INode {
     	}
     }
 
-    // we have a generic wildcard with either extends or super, resolves to a
-    // BoundedReferenceType
+    /**
+     * Go from an unresolved generic wildcard (represented by UnresolvedType) to a resolved version (BoundedReferenceType).
+     */
     private ReferenceType resolveGenericWildcardFor(UnresolvedType aType) {
     	BoundedReferenceType ret = null;
+    	// FIXME asc isExtends? isGenericWildcardExtends?  I dont like having two
+    	// FIXME asc doesnt take account of additional interface bounds (e.g. ? super R & Serializable - can you do that?)
     	if (aType.isGenericWildcardExtends()) {
-    		ReferenceType upperBound = (ReferenceType) resolve(aType.getUpperBound());
+    		ReferenceType upperBound = (ReferenceType)resolve(aType.getUpperBound());
     		ret = new BoundedReferenceType(upperBound,true,this);
-    	} else {
+       	} else {
     		ReferenceType lowerBound = (ReferenceType) resolve(aType.getLowerBound());
     		ret = new BoundedReferenceType(lowerBound,false,this);
     	}
-    	typeMap.put(aType.getSignature(),ret);
+    	// FIXME asc verify: I don't think these go in the typemap, it makes it potentially impossible to differentiate different uses of 'T',
+    	// for example '? super T' where T is representing different things in two places would have the same sig (-TT;)
+    	// typeMap.put(aType.getSignature(),ret);
     	return ret;
     }
     

@@ -38,7 +38,7 @@ public class TypeFactory {
 		ResolvedType baseType = aBaseType;
 		if (!aBaseType.isGenericType()) {
 			// try and find the generic type...
-			if (someTypeParameters != null) {
+			if (someTypeParameters != null && someTypeParameters.length>0) {
 				if (!aBaseType.isRawType()) throw new IllegalStateException("Expecting raw type");
 				baseType = baseType.getGenericType();
 				if (baseType == null) throw new IllegalStateException("Raw type does not have generic type set");
@@ -50,6 +50,13 @@ public class TypeFactory {
 		return (ReferenceType) pType.resolve(inAWorld);
 	}
 	
+	/**
+	 * Create an *unresolved* parameterized version of a generic type.
+	 */
+	public static UnresolvedType createUnresolvedParameterizedType(String sig,String erasuresig,UnresolvedType[] arguments) {
+	  return new UnresolvedType(sig,erasuresig,arguments);
+	}
+
 	public static ReferenceType createRawType(
 			ResolvedType aBaseType,
 			World inAWorld

@@ -17,16 +17,6 @@ import java.lang.reflect.Modifier;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.NewMethodTypeMunger;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedMemberImpl;
-import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -39,6 +29,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilationUnit;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewMethodTypeMunger;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.UnresolvedType;
 
 /**
  * An inter-type method declaration.
@@ -125,12 +123,13 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		if (isTargetAnnotation(classScope,"method")) return null; // Error message output in isTargetAnnotation
 		if (isTargetEnum(classScope,"method")) return null; // Error message output in isTargetEnum
 		
-		ResolvedMemberImpl sig = new ResolvedMemberImpl(Member.METHOD, world.fromBinding(onTypeBinding),
-			declaredModifiers, world.fromBinding(binding.returnType), new String(declaredSelector),
-			world.fromBindings(binding.parameters),
-			world.fromEclipse(binding.thrownExceptions));
-		
-		sig.setTypeVariables(world.fromBindings(binding.typeVariables));
+
+		// This signature represents what we want consumers of the targetted type to 'see'
+		// must use the factory method to build it since there may be typevariables from the binding
+		// referred to in the parameters/returntype
+		ResolvedMember sig = world.makeResolvedMember(binding,onTypeBinding);
+		sig.resetName(new String(declaredSelector));
+		sig.resetModifiers(declaredModifiers); 
 		
 		NewMethodTypeMunger myMunger = new NewMethodTypeMunger(sig, null);
 		setMunger(myMunger);

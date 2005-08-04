@@ -23,18 +23,29 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 			World aWorld) {
 		super(aTypeVariable.getUpperBound().getSignature(),aWorld);
 		this.typeVariable = aTypeVariable;
-		this.isExtends = false;
-		this.isSuper = false;
-		setUpperBound(aTypeVariable.getUpperBound());
-		setLowerBound(aTypeVariable.getLowerBound());
-		UnresolvedType[] ifBounds = aTypeVariable.getAdditionalInterfaceBounds();
-		if (ifBounds.length > 0) {
-			this.additionalInterfaceBounds = new ReferenceType[ifBounds.length];
+		this.isExtends    = false;
+		this.isSuper      = false;
+		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)aTypeVariable.getUpperBound()));
+	}
+	
+	public UnresolvedType getUpperBound() {
+		if (typeVariable==null) return super.getUpperBound();
+		return typeVariable.getUpperBound();
+	}
+	
+	public UnresolvedType getLowerBound() {
+		return typeVariable.getLowerBound();
+	}
+	
+	public ReferenceType[] getAdditionalBounds() {
+		if (additionalInterfaceBounds ==null && typeVariable.getAdditionalInterfaceBounds()!=null) {
+			UnresolvedType [] ifBounds = typeVariable.getAdditionalInterfaceBounds();
+			additionalInterfaceBounds = new ReferenceType[ifBounds.length];
 			for (int i = 0; i < ifBounds.length; i++) {
-				this.additionalInterfaceBounds[i] = (ReferenceType) ifBounds[i]; 
+				additionalInterfaceBounds[i] = (ReferenceType) ifBounds[i]; 
 			}
 		}
-		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)aTypeVariable.getUpperBound()));
+		return additionalInterfaceBounds;
 	}
 	
 	public TypeVariable getTypeVariable() {
@@ -44,6 +55,10 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	public boolean isTypeVariableReference() {
 		return true;
 	}
+	
+//	public ResolvedType resolve(World world) {
+	//	return super.resolve(world);
+	//}
 	
 	/**
      * return the signature for a *REFERENCE* to a type variable, which is simply:

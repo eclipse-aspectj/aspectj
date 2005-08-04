@@ -17,6 +17,7 @@ import java.util.Collection;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
+import org.aspectj.weaver.Member.Kind;
 
 /**
  * @author colyer
@@ -350,5 +351,21 @@ public class JoinPointSignature implements ResolvedMember {
     	}
     	return buf.toString();
     }
+
+   public void resetName(String newName) {
+	   realMember.resetName(newName);
+   }	
+
+	public void resetKind(Kind newKind) {
+		realMember.resetKind(newKind);
+	}
+	
+	public void resetModifiers(int newModifiers) {
+		realMember.resetModifiers(newModifiers);
+	}
+	
+	public void resetReturnTypeToObjectArray() {
+		realMember.resetReturnTypeToObjectArray();
+	}
 
 }
