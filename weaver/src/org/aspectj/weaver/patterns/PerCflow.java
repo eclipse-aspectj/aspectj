@@ -28,7 +28,7 @@ import org.aspectj.weaver.CrosscuttingMembers;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
@@ -88,7 +88,7 @@ public class PerCflow extends PerClause {
 		ret.inAspect = inAspect;
 		if (inAspect.isAbstract()) return ret;
 		
-		Member cflowStackField = new ResolvedMember(
+		Member cflowStackField = new ResolvedMemberImpl(
 			Member.FIELD, inAspect, Modifier.STATIC|Modifier.PUBLIC|Modifier.FINAL,
 						UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE), NameMangler.PERCFLOW_FIELD_NAME, UnresolvedType.NONE);
 						

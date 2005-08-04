@@ -19,7 +19,7 @@ import java.io.IOException;
 import org.aspectj.weaver.patterns.Pointcut;
 
 
-public class ResolvedPointcutDefinition extends ResolvedMember {
+public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 	private Pointcut pointcut;
 
     public ResolvedPointcutDefinition(

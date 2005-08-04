@@ -22,6 +22,7 @@ import java.util.List;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 
@@ -46,7 +47,7 @@ public class MegaZipTestCase extends WeaveTestCase {
     private BcelAdvice makeAroundMunger(final boolean matchOnlyPrintln) {
         // BcelWorld world = new BcelWorld();
         final Member sig = 
-            Member.method(
+            MemberImpl.method(
                 UnresolvedType.forName("fluffy.Aspect"),
                 Modifier.STATIC,
                 "aroundFun",

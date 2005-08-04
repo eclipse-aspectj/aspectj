@@ -33,6 +33,7 @@ import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeFactory;
@@ -373,7 +374,7 @@ public class EclipseFactory {
 		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
 		ResolvedType realDeclaringType = world.resolve(fromBinding(declaringType));
 		if (realDeclaringType.isRawType()) realDeclaringType = realDeclaringType.getGenericType();
-		ResolvedMember ret =  new ResolvedMember(
+		ResolvedMember ret =  new ResolvedMemberImpl(
 			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
 			realDeclaringType,
 			binding.modifiers,
@@ -392,7 +393,7 @@ public class EclipseFactory {
 		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
 		ResolvedType realDeclaringType = world.resolve(fromBinding(receiverType));
 		if (realDeclaringType.isRawType()) realDeclaringType = realDeclaringType.getGenericType();
-		return new ResolvedMember(
+		return new ResolvedMemberImpl(
 			Member.FIELD,
 			realDeclaringType,
 			binding.modifiers,
@@ -671,7 +672,7 @@ public class EclipseFactory {
 	}
 	
 	public ResolvedMember fromBinding(MethodBinding binding) {
-		return new ResolvedMember(Member.METHOD,fromBinding(binding.declaringClass),binding.modifiers,
+		return new ResolvedMemberImpl(Member.METHOD,fromBinding(binding.declaringClass),binding.modifiers,
 				           fromBinding(binding.returnType),CharOperation.charToString(binding.selector),fromBindings(binding.parameters));
 	}
 

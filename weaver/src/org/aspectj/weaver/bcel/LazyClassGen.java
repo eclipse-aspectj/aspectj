@@ -67,6 +67,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 /**
  * Lazy lazy lazy.
@@ -706,7 +707,7 @@ public final class LazyClassGen {
             LazyMethodGen gen = (LazyMethodGen) iter.next();
             // we skip empty clinits
             if (isEmptyClinit(gen)) continue;
-            gen.print(out);
+            gen.print(out, (myType != null ? myType.getWeaverVersionAttribute() : WeaverVersionInfo.UNKNOWN));
             if (iter.hasNext()) out.println();
         }
 //        out.println("  ATTRIBS: " + Arrays.asList(myGen.getAttributes()));

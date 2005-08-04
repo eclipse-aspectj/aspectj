@@ -47,9 +47,9 @@ import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
+import org.aspectj.weaver.ResolvedMember;
 //import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
 import org.aspectj.weaver.PrivilegedAccessMunger;
-import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -178,7 +178,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         cont = enforceDecpRule1_abstractMethodsImplemented(weaver, munger.getSourceLocation(),newParentTarget, newParent);
         cont = enforceDecpRule2_cantExtendFinalClass(weaver,munger.getSourceLocation(),newParentTarget,newParent) && cont;
                 
-        List methods = newParent.getMethodsWithoutIterator();
+        List methods = newParent.getMethodsWithoutIterator(false);
         for (Iterator iter = methods.iterator(); iter.hasNext();) {
 		  ResolvedMember    superMethod = (ResolvedMember) iter.next();
           if (!superMethod.getName().equals("<init>")) {
@@ -209,12 +209,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
     private boolean enforceDecpRule1_abstractMethodsImplemented(BcelClassWeaver weaver, ISourceLocation mungerLoc,LazyClassGen newParentTarget, ResolvedType newParent) {
         boolean ruleCheckingSucceeded = true;
         if (!(newParentTarget.isAbstract() || newParentTarget.isInterface())) { // Ignore abstract classes or interfaces
-            List methods = newParent.getMethodsWithoutIterator();
+            List methods = newParent.getMethodsWithoutIterator(false);
             for (Iterator i = methods.iterator(); i.hasNext();) {
                 ResolvedMember o = (ResolvedMember)i.next();
                 if (o.isAbstract() && !o.getName().startsWith("ajc$interField")) { // Ignore abstract methods of ajc$interField prefixed methods
                     ResolvedMember discoveredImpl = null;
-                    List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator();
+                    List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator(false);
                     for (Iterator ii = newParentTargetMethods.iterator(); ii.hasNext() && discoveredImpl==null;) {
                         ResolvedMember gen2 = (ResolvedMember) ii.next();
                         if (gen2.getName().equals(o.getName()) && 

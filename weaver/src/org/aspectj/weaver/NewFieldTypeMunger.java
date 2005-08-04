@@ -38,7 +38,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 
 	public static ResolvedTypeMunger readField(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedTypeMunger munger = new NewFieldTypeMunger(
-			ResolvedMember.readResolvedMember(s, context),
+			ResolvedMemberImpl.readResolvedMember(s, context),
 			readSuperMethodsCalled(s));
 		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
 		return munger;

@@ -27,6 +27,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
@@ -126,7 +127,7 @@ public class IfPointcut extends Pointcut {
 	}
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
         //FIXME Adrian, read may failt if testMethod happens to be null for @style if() from JDT stuff
-		IfPointcut ret = new IfPointcut(ResolvedMember.readResolvedMember(s, context), s.readByte());
+		IfPointcut ret = new IfPointcut(ResolvedMemberImpl.readResolvedMember(s, context), s.readByte());
 		ret.readLocation(context, s);
 		return ret;
 	}

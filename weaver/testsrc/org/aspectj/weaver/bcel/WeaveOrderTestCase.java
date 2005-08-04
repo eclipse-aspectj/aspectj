@@ -138,7 +138,7 @@ public class WeaveOrderTestCase extends WeaveTestCase {
 				UnresolvedType concreteAspect, int lexicalPosition)
 	{
 		Advice a1 = new BcelAdvice(kind, makeResolvedPointcut("this(*)"),  
-				Member.method(declaringAspect, 0, "foo", "()V"),
+				MemberImpl.method(declaringAspect, 0, "foo", "()V"),
 				0, lexicalPosition, lexicalPosition, null, null);
 		a1 = (Advice)a1.concretize(concreteAspect.resolve(world), world, null);
 		return a1;

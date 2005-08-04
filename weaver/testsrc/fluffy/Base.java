@@ -4,6 +4,9 @@ public class Base {
 
 	public static void onlyBase() {}
 	public static void both() {}
+	
+	public void onlyBaseNonStatic() {}
+	public void bothNonStatic() {}
 
 	public int onlyBase;
 	public int both;

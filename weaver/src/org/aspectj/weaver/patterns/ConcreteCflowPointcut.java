@@ -22,6 +22,7 @@ import java.util.Set;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
@@ -134,10 +135,10 @@ public class ConcreteCflowPointcut extends Pointcut {
 	}
 	
 	private static final Member cflowStackIsValidMethod = 
-		Member.method(UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE), 0, "isValid", "()Z");
+		MemberImpl.method(UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE), 0, "isValid", "()Z");
 
 	private static final Member cflowCounterIsValidMethod = 
-		Member.method(UnresolvedType.forName(NameMangler.CFLOW_COUNTER_TYPE), 0, "isValid", "()Z");
+		MemberImpl.method(UnresolvedType.forName(NameMangler.CFLOW_COUNTER_TYPE), 0, "isValid", "()Z");
 
 	
 	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {

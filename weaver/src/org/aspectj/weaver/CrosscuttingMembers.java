@@ -157,7 +157,7 @@ public class CrosscuttingMembers {
 				typeToExpose = UnresolvedType.forSignature(typeToExpose.getErasureSignature());
 			}
 		}
-		ResolvedMember member = new ResolvedMember(
+		ResolvedMember member = new ResolvedMemberImpl(
 			Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "", UnresolvedType.NONE);
 		addTypeMunger(world.concreteTypeMunger(
 			new PrivilegedAccessMunger(member), inAspect));

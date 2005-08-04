@@ -452,7 +452,7 @@ public abstract class AjAttribute {
 					s.readByte(),
 					s.readInt(), s.readInt(), context,
 					s.readBoolean(),
-					ResolvedMember.readResolvedMemberArray(s, context),
+					ResolvedMemberImpl.readResolvedMemberArray(s, context),
 					FileUtil.readBooleanArray(s),
 					UnresolvedType.readArray(s));
 			} else {
@@ -473,7 +473,7 @@ public abstract class AjAttribute {
 			
 			if (kind == AdviceKind.Around) {
 				s.writeBoolean(proceedInInners);
-				ResolvedMember.writeArray(proceedCallSignatures, s);
+				ResolvedMemberImpl.writeArray(proceedCallSignatures, s);
 				FileUtil.writeBooleanArray(formalsUnchangedToProceed, s);
 				UnresolvedType.writeArray(declaredExceptions, s);
 			}
@@ -563,7 +563,7 @@ public abstract class AjAttribute {
 			this.accessedMembers = accessedMembers;
 		}
 		public void write(DataOutputStream s) throws IOException {
-			ResolvedMember.writeArray(accessedMembers, s);
+			ResolvedMemberImpl.writeArray(accessedMembers, s);
 		}		
 		
 		public ResolvedMember[] getAccessedMembers() {
@@ -571,7 +571,7 @@ public abstract class AjAttribute {
 		}
 
 		public static PrivilegedAttribute read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-			return new PrivilegedAttribute(ResolvedMember.readResolvedMemberArray(s, context));
+			return new PrivilegedAttribute(ResolvedMemberImpl.readResolvedMemberArray(s, context));
 		}
 	}	
 	
@@ -599,7 +599,7 @@ public abstract class AjAttribute {
 
 		public static EffectiveSignatureAttribute read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 			return new EffectiveSignatureAttribute(
-					ResolvedMember.readResolvedMember(s, context),
+					ResolvedMemberImpl.readResolvedMember(s, context),
 					Shadow.Kind.read(s),
 					s.readBoolean());
 		}

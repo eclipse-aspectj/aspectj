@@ -48,7 +48,7 @@ public class AroundWeaveTestCase extends WeaveTestCase {
     private BcelAdvice makeAroundMunger(final boolean matchOnlyPrintln) {
         BcelWorld world = super.world;
         final Member sig =
-            Member.method(
+            MemberImpl.method(
                 UnresolvedType.forName("Aspect"),
                 Modifier.STATIC,
                 "ajc_around",

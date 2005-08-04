@@ -65,7 +65,7 @@ public class EclipseShadow extends Shadow {
 
 	public Member getEnclosingCodeSignature() {
 		if (context instanceof TypeDeclaration) {
-			return new Member(Member.STATIC_INITIALIZATION, getEnclosingType(), 0, 
+			return new MemberImpl(Member.STATIC_INITIALIZATION, getEnclosingType(), 0, 
 						ResolvedType.VOID, "<clinit>", UnresolvedType.NONE);
 		} else if (context instanceof AbstractMethodDeclaration) {
 			return world.makeResolvedMember(((AbstractMethodDeclaration)context).binding);
@@ -170,7 +170,7 @@ public class EclipseShadow extends Shadow {
 					world.makeResolvedMember(e.binding), astNode, context);
 		} else if (astNode instanceof TypeDeclaration) {
 			return new EclipseShadow(world, Shadow.StaticInitialization,
-							new Member(Member.STATIC_INITIALIZATION, 
+							new MemberImpl(Member.STATIC_INITIALIZATION, 
 								world.fromBinding(((TypeDeclaration)astNode).binding), 0, 
 								ResolvedType.VOID, "<clinit>", UnresolvedType.NONE),
 							astNode, context);

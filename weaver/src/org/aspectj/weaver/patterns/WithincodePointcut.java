@@ -19,6 +19,7 @@ import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.runtime.reflect.Factory;
 import org.aspectj.util.FuzzyBoolean;
@@ -27,6 +28,7 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
@@ -108,6 +110,22 @@ public class WithincodePointcut extends Pointcut {
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		signature = signature.resolveBindings(scope, bindings);
+		
+		// look for inappropriate use of parameterized types and tell user...
+		HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
+			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+		signature.getDeclaringType().traverse(visitor, null);
+		if (visitor.wellHasItThen/*?*/()) {
+			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.WITHINCODE_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES),
+					getSourceLocation()));
+		}						
+		
+		visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+		signature.getThrowsPattern().traverse(visitor, null);
+		if (visitor.wellHasItThen/*?*/()) {
+			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_GENERIC_THROWABLES),
+					getSourceLocation()));
+		}					
 	}
 	
 	public void resolveBindingsFromRTTI() {

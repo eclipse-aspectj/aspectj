@@ -15,7 +15,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
@@ -50,7 +50,7 @@ public class IfMethodDeclaration extends AjMethodDeclaration {
 			
 			//XXX this is where we should remove unavailable args if we're in a cflow
 			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(scope);
-			ifPointcut.testMethod = new ResolvedMember(
+			ifPointcut.testMethod = new ResolvedMemberImpl(
 				Member.METHOD,
 				factory.fromBinding(binding.declaringClass),
 				this.modifiers, ResolvedType.BOOLEAN,  

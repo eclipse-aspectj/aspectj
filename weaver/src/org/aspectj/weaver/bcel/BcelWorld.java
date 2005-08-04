@@ -44,9 +44,11 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -158,7 +160,7 @@ public class BcelWorld extends World implements Repository {
         start = ++i;        
         i = str.indexOf("->", i);
         Pointcut pointcut = Pointcut.fromString(str.substring(start, i).trim());
-        Member m = Member.methodFromString(str.substring(i+2, str.length()).trim());
+        Member m = MemberImpl.methodFromString(str.substring(i+2, str.length()).trim());
 
         // now, we resolve
         UnresolvedType[] types = m.getParameterTypes();
@@ -298,37 +300,36 @@ public class BcelWorld extends World implements Repository {
 		typeMap.remove(ty.getSignature());
 	}
 
-    public static Member makeFieldSignature(LazyClassGen cg, FieldInstruction fi) {
+    public static Member makeFieldJoinPointSignature(LazyClassGen cg, FieldInstruction fi) {
     	ConstantPoolGen cpg = cg.getConstantPoolGen();
-        return 
-            Member.field(
-                fi.getClassName(cpg),
-                (fi instanceof GETSTATIC || fi instanceof PUTSTATIC)
-                ? Modifier.STATIC
-                : 0, 
-                fi.getName(cpg),
-                fi.getSignature(cpg));
+        return            
+            	  MemberImpl.field(
+            			fi.getClassName(cpg),
+            			(fi instanceof GETSTATIC || fi instanceof PUTSTATIC)
+            			? Modifier.STATIC: 0, 
+            			fi.getName(cpg),
+            			fi.getSignature(cpg));
     }
 	
-    public static Member makeFieldSetSignature(LazyClassGen cg, FieldInstruction fi) {
-    	ConstantPoolGen cpg = cg.getConstantPoolGen();
-        return 
-            Member.field(
-                fi.getClassName(cpg),
-                (fi instanceof GETSTATIC || fi instanceof PUTSTATIC)
-                ? Modifier.STATIC
-                : 0, 
-                fi.getName(cpg),
-                "(" + fi.getSignature(cpg) + ")" +fi.getSignature(cpg));
-    }
+//    public static Member makeFieldSetSignature(LazyClassGen cg, FieldInstruction fi) {
+//    	ConstantPoolGen cpg = cg.getConstantPoolGen();
+//        return 
+//            MemberImpl.field(
+//                fi.getClassName(cpg),
+//                (fi instanceof GETSTATIC || fi instanceof PUTSTATIC)
+//                ? Modifier.STATIC
+//                : 0, 
+//                fi.getName(cpg),
+//                "(" + fi.getSignature(cpg) + ")" +fi.getSignature(cpg));
+//    }
 
-	public Member makeMethodSignature(LazyMethodGen mg) {
-		return makeMethodSignature(mg, null);
+	public Member makeJoinPointSignature(LazyMethodGen mg) {
+		return makeJoinPointSignatureFromMethod(mg, null);
 	}
 
 	
-	public Member makeMethodSignature(LazyMethodGen mg, Member.Kind kind) {
-		ResolvedMember ret = mg.getMemberView();
+	public Member makeJoinPointSignatureFromMethod(LazyMethodGen mg, MemberImpl.Kind kind) {
+		Member ret = mg.getMemberView();
 		if (ret == null) {
 	        int mods = mg.getAccessFlags();
 	        if (mg.getEnclosingClass().isInterface()) {
@@ -343,7 +344,7 @@ public class BcelWorld extends World implements Repository {
 		        	kind = Member.METHOD;
 		        }
 	        }
-	        return new ResolvedMember(kind,
+	        return new ResolvedMemberImpl(kind,
 	                UnresolvedType.forName(mg.getClassName()), 
 	                mods,
 	                fromBcel(mg.getReturnType()),
@@ -356,7 +357,7 @@ public class BcelWorld extends World implements Repository {
         
     }
 
-    public Member makeMethodSignature(LazyClassGen cg, InvokeInstruction ii) {
+    public Member makeJoinPointSignatureForMethodInvocation(LazyClassGen cg, InvokeInstruction ii) {
     	ConstantPoolGen cpg = cg.getConstantPoolGen();
         String declaring = ii.getClassName(cpg);
         String name = ii.getName(cpg);
@@ -391,7 +392,7 @@ public class BcelWorld extends World implements Repository {
         }
         //FIXME if not found we ll end up again with the bug.. can this happen?
 
-        return Member.method(UnresolvedType.forName(declaring), modifier, name, signature);
+        return MemberImpl.method(UnresolvedType.forName(declaring), modifier, name, signature);
     }  
 
     public static Member makeMungerMethodSignature(JavaClass javaClass, Method method) {
@@ -399,7 +400,7 @@ public class BcelWorld extends World implements Repository {
         if (method.isStatic()) mods = Modifier.STATIC;
         else if (javaClass.isInterface()) mods = Modifier.INTERFACE;
         else if (method.isPrivate()) mods = Modifier.PRIVATE;
-        return Member.method(
+        return MemberImpl.method(
             UnresolvedType.forName(javaClass.getClassName()), mods, method.getName(), method.getSignature()); 
     }
     

@@ -174,7 +174,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			declaringType = declaringType.getGenericType();
 		}
 		ResolvedMember sig = 
-			new ResolvedMember(Member.FIELD, declaringType,
+			new ResolvedMemberImpl(Member.FIELD, declaringType,
 					declaredModifiers, world.fromBinding(binding.returnType),
 					new String(declaredSelector), UnresolvedType.NONE);
 		

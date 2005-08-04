@@ -33,6 +33,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.JoinPointSignature;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -120,14 +121,159 @@ public class SignaturePattern extends PatternNode {
 		}
 	}
 	
-	public boolean matches(Member member, World world) {
-		return (matchesIgnoringAnnotations(member,world) &&
-				matchesAnnotations(member,world));
+	public boolean matches(Member joinPointSignature, World world) {
+		// fail (or succeed!) fast tests...
+		if (joinPointSignature == null) return false;
+		if (kind != joinPointSignature.getKind()) return false;
+		if (kind == Member.ADVICE) return true;
+		
+		// do the hard work then...
+		JoinPointSignature[] candidateMatches = joinPointSignature.getJoinPointSignatures(world);
+		for (int i = 0; i < candidateMatches.length; i++) {
+			if (matchesExactly(candidateMatches[i],world)) return true;
+		}
+		return false;
 	}
 	
-	public boolean matchesAnnotations(Member member,World world) {
-	  ResolvedMember rMember = member.resolve(world);
-	  if (rMember == null) {
+	// Does this pattern match this exact signature (no declaring type mucking about
+	// or chasing up the hierarchy)
+	private boolean matchesExactly(JoinPointSignature aMember, World inAWorld) {
+		// Java5 introduces bridge methods, we don't want to match on them at all...
+		if (aMember.isBridgeMethod()) {
+			return false;
+		}
+			
+		if (!modifiers.matches(aMember.getModifiers())) return false;
+		
+		boolean matchesIgnoringAnnotations = true;
+		if (kind == Member.STATIC_INITIALIZATION) {
+			matchesIgnoringAnnotations = matchesExactlyStaticInitialization(aMember, inAWorld);
+		} else if (kind == Member.FIELD) {
+			matchesIgnoringAnnotations = matchesExactlyField(aMember,inAWorld);
+		} else if (kind == Member.METHOD) {
+			matchesIgnoringAnnotations = matchesExactlyMethod(aMember,inAWorld);
+		} else if (kind == Member.CONSTRUCTOR) {
+			matchesIgnoringAnnotations = matchesExactlyConstructor(aMember, inAWorld);
+		}
+		if (!matchesIgnoringAnnotations) return false;
+		
+		return matchesAnnotations(aMember, inAWorld);
+	}
+	
+	/**
+	 * Matches on declaring type
+	 */
+	private boolean matchesExactlyStaticInitialization(JoinPointSignature aMember,World world) {
+		return declaringType.matchesStatically(aMember.getDeclaringType().resolve(world));
+	}
+	
+	/**
+	 * Matches on name, declaring type, field type
+	 */
+	private boolean matchesExactlyField(JoinPointSignature aField, World world) {
+		if (!name.matches(aField.getName())) return false;
+		if (!declaringType.matchesStatically(aField.getDeclaringType().resolve(world))) return false;
+		if (!returnType.matchesStatically(aField.getReturnType().resolve(world))) {
+			// looking bad, but there might be parameterization to consider...
+			if (!returnType.matchesStatically(aField.getGenericReturnType().resolve(world))) {
+				// ok, it's bad.
+				return false;
+			}
+		}
+		// passed all the guards...
+		return true;
+	}
+	
+	/**
+	 * Matches on name, declaring type, return type, parameter types, throws types
+	 */
+	private boolean matchesExactlyMethod(JoinPointSignature aMethod, World world) {
+		if (!name.matches(aMethod.getName())) return false;
+		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) return false;
+		if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
+			// looking bad, but there might be parameterization to consider...
+			if (!returnType.matchesStatically(aMethod.getGenericReturnType().resolve(world))) {
+				// ok, it's bad.
+				return false;
+			}
+		}
+		ResolvedType[] resolvedParameters = world.resolve(aMethod.getParameterTypes());
+		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
+			// It could still be a match based on the generic sig parameter types of a parameterized type
+			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
+				return false;
+				// It could STILL be a match based on the erasure of the parameter types??
+				// to be determined via test cases...
+			}
+		}
+		
+		// check that varargs specifications match
+		if (!matchesVarArgs(aMethod,world)) return false;
+		
+		// Check the throws pattern
+		if (!throwsPattern.matches(aMethod.getExceptions(), world)) return false;
+		
+		// passed all the guards..
+		return true;
+	}
+	
+	/**
+	 * match on declaring type, parameter types, throws types
+	 */
+	private boolean matchesExactlyConstructor(JoinPointSignature aConstructor, World world) {
+		if (!declaringType.matchesStatically(aConstructor.getDeclaringType().resolve(world))) return false;
+
+		ResolvedType[] resolvedParameters = world.resolve(aConstructor.getParameterTypes());
+		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
+			// It could still be a match based on the generic sig parameter types of a parameterized type
+			if (!parameterTypes.matches(world.resolve(aConstructor.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
+				return false;
+				// It could STILL be a match based on the erasure of the parameter types??
+				// to be determined via test cases...
+			}
+		}
+		
+		// check that varargs specifications match
+		if (!matchesVarArgs(aConstructor,world)) return false;
+		
+		// Check the throws pattern
+		if (!throwsPattern.matches(aConstructor.getExceptions(), world)) return false;
+		
+		// passed all the guards..
+		return true;		
+	}
+	
+	/**
+	 * We've matched against this method or constructor so far, but without considering
+	 * varargs (which has been matched as a simple array thus far). Now we do the additional
+	 * checks to see if the parties agree on whether the last parameter is varargs or a 
+	 * straight array. 
+	 */
+	private boolean matchesVarArgs(JoinPointSignature aMethodOrConstructor, World inAWorld) {
+		if (parameterTypes.size() == 0) return true;
+		
+		TypePattern lastPattern = parameterTypes.get(parameterTypes.size()-1);
+		boolean canMatchVarArgsSignature = lastPattern.isStar() || 
+		                                    lastPattern.isVarArgs() ||
+		                                    (lastPattern == TypePattern.ELLIPSIS);
+		
+		if (aMethodOrConstructor.isVarargsMethod()) {
+			// we have at least one parameter in the pattern list, and the method has a varargs signature
+			if (!canMatchVarArgsSignature) {
+				// XXX - Ideally the shadow would be included in the msg but we don't know it...
+				inAWorld.getLint().cantMatchArrayTypeOnVarargs.signal(aMethodOrConstructor.toString(),getSourceLocation());
+				return false;
+			}
+		} else {
+			// the method ends with an array type, check that we don't *require* a varargs
+			if (lastPattern.isVarArgs()) return false;
+		}
+
+		return true;
+	}
+		
+	private boolean matchesAnnotations(ResolvedMember member,World world) {
+	  if (member == null) {
 	        if (member.getName().startsWith(NameMangler.PREFIX)) {
 				return false;
 			}
@@ -141,10 +287,10 @@ public class SignaturePattern extends PatternNode {
 	  
 	  // fake members represent ITD'd fields - for their annotations we should go and look up the
 	  // relevant member in the original aspect
-	  if (rMember.isAnnotatedElsewhere() && member.getKind()==Member.FIELD) {
+	  if (member.isAnnotatedElsewhere() && member.getKind()==Member.FIELD) {
 	    // FIXME asc duplicate of code in AnnotationPattern.matchInternal()?  same fixmes apply here.
-	    ResolvedMember [] mems = rMember.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
-	    List mungers = rMember.getDeclaringType().resolve(world).getInterTypeMungers(); 
+	    ResolvedMember [] mems = member.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
+	    List mungers = member.getDeclaringType().resolve(world).getInterTypeMungers(); 
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
 	        BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
 			if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
@@ -152,13 +298,13 @@ public class SignaturePattern extends PatternNode {
 			  ResolvedMember ajcMethod = AjcMemberMaker.interFieldInitializer(fakerm,typeMunger.getAspectType());
 		  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
 			  if (fakerm.equals(member)) {
-				rMember = rmm;
+				member = rmm;
 			  }
 			}
 		}
 	  }
 	  
-	  return annotationPattern.matches(rMember).alwaysTrue();
+	  return annotationPattern.matches(member).alwaysTrue();
 	}
 	
 	private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {
@@ -168,137 +314,11 @@ public class SignaturePattern extends PatternNode {
 			if (member.equals(ajcMethod)) return member;
 	   }
 			return null;
-		}
-	
-	public boolean matchesIgnoringAnnotations(Member member, World world) {
-		//XXX performance gains would come from matching on name before resolving
-		//    to fail fast.  ASC 30th Nov 04 => Not necessarily, it didn't make it faster for me.
-		//    Here is the code I used:
-		//		String n1 = member.getName();
-		//		String n2 = this.getName().maybeGetSimpleName();
-		//		if (n2!=null && !n1.equals(n2)) return false;
-
-		if (member == null) return false;
-		ResolvedMember sig = member.resolve(world);
-		
-		if (sig == null) {
-			//XXX
-			if (member.getName().startsWith(NameMangler.PREFIX)) {
-				return false;
-			}
-			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
-			return false;
-		}
-		
-		// Java5 introduces bridge methods, we don't want to match on them at all...
-		if (sig.isBridgeMethod()) {
-			return false;
-		}
-		
-		// This check should only matter when used from WithincodePointcut as KindedPointcut
-		// has already effectively checked this with the shadows kind.
-		if (kind != member.getKind()) {
-			return false;
-		}
-		
-		if (kind == Member.ADVICE) return true;
-		
-		if (!modifiers.matches(sig.getModifiers())) return false;
-		
-		if (kind == Member.STATIC_INITIALIZATION) {
-			//System.err.println("match static init: " + sig.getDeclaringType() + " with " + this);
-			return declaringType.matchesStatically(sig.getDeclaringType().resolve(world));
-		} else if (kind == Member.FIELD) {
-			
-			if (!returnType.matchesStatically(sig.getReturnType().resolve(world))) {
-				// looking bad, but there might be parameterization to consider...
-				if (!returnType.matchesStatically(sig.getGenericReturnType().resolve(world))) {
-					// ok, it's bad.
-					return false;
-				}
-			}
-			if (!name.matches(sig.getName())) return false;
-			boolean ret = declaringTypeMatch(member.getDeclaringType(), member, world);
-			//System.out.println("   ret: " + ret);
-			return ret;
-		} else if (kind == Member.METHOD) {
-			// Change all this in the face of covariance...
-			
-			// Check the name
-			if (!name.matches(sig.getName())) return false;
-			
-			// Check the parameters
-			// AMC parameterized types make this more complex. Suppose I have a 
-	        // type that implements a parameterized interface. It might declare a method
-			// foo(Double). If foo is defined in I<T> and the type implements I<Double>,
-			// then the signature pattern I.foo(Object) (the erasure) *should* match.
-			// But [Object] does not match [Double] so we have some work to do...
-			ResolvedType[] resolvedParameters = world.resolve(sig.getParameterTypes());
-			if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
-				// It could still be a match based on the erasure of a parameterized type
-				// method in our hierarchy - this is only allowed if the declaring type pattern
-				// is raw.
-				// We need to find out as cheaply as possible.
-				if (declaringType.getTypeParameters().size() > 0) return false;
-				ResolvedMember sigErasure = sig.getErasure();
-				if (sigErasure != null) {
-					ResolvedType[] erasureParameters = world.resolve(sigErasure.getParameterTypes());
-					if (!parameterTypes.matches(erasureParameters,TypePattern.STATIC).alwaysTrue()) {
-						// fail if we don't match the erasure either
-						return false;
-					} 
-				} else {
-					// fail if there is no erasure as the params don't match
-					// try the true (generic) parameter types then
-					if (!parameterTypes.matches(world.resolve(sig.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
-						return false;
-					}
-				}
-			}
-			
-			// If we have matched on parameters, let's just check it isn't because the last parameter in the pattern
-			// is an array type and the method is declared with varargs
-			// XXX - Ideally the shadow would be included in the msg but we don't know it...
-			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,sig.getModifiers())) { 
-				world.getLint().cantMatchArrayTypeOnVarargs.signal(sig.toString(),getSourceLocation());
-				return false;
-			}
-
-			if (parameterTypes.size()>0 && (sig.isVarargsMethod()^parameterTypes.get(parameterTypes.size()-1).isVarArgs)) 
-				return false;
-			
-			// Check the throws pattern
-			if (!throwsPattern.matches(sig.getExceptions(), world)) return false;
-
-			return declaringTypeMatchAllowingForCovariance(member,world,returnType,sig.getReturnType().resolve(world));
-		} else if (kind == Member.CONSTRUCTOR) {
-			if (!parameterTypes.matches(world.resolve(sig.getParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
-				// try generic before giving up
-				if (!parameterTypes.matches(world.resolve(sig.getGenericParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
-					return false;
-				}
-			}
-			
-			// If we have matched on parameters, let's just check it isn't because the last parameter in the pattern
-			// is an array type and the method is declared with varargs
-			// XXX - Ideally the shadow would be included in the msg but we don't know it...
-			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,sig.getModifiers())) { 
-				world.getLint().cantMatchArrayTypeOnVarargs.signal(sig.toString(),getSourceLocation());
-				return false;
-			}
-			
-			if (!throwsPattern.matches(sig.getExceptions(), world)) return false;
-			return declaringType.matchesStatically(member.getDeclaringType().resolve(world));
-			//return declaringTypeMatch(member.getDeclaringType(), member, world);			
-		}
-		
-		return false;
 	}
 	
-	public boolean declaringTypeMatchAllowingForCovariance(Member member,World world,TypePattern returnTypePattern,ResolvedType sigReturn) {
-		UnresolvedType onTypeUnresolved = member.getDeclaringType();
+	public boolean declaringTypeMatchAllowingForCovariance(Member member, UnresolvedType shadowDeclaringType, World world,TypePattern returnTypePattern,ResolvedType sigReturn) {
 		
-		ResolvedType onType = onTypeUnresolved.resolve(world);
+		ResolvedType onType = shadowDeclaringType.resolve(world);
 			
 		// fastmatch
 		if (declaringType.matchesStatically(onType) && returnTypePattern.matchesStatically(sigReturn)) 
@@ -366,7 +386,7 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
-			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,msig.getModifiers())) { return false; }
+			if (matchedArrayAgainstVarArgs(parameterTypes,msig.getModifiers())) { return false; }
 			
 			if (!throwsPattern.matches(exceptionTypes)) return false;
 			return declaringTypeMatch(sig); // XXXAJ5 - Need to make this a covariant aware version for dynamic JP matching to work
@@ -377,7 +397,7 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
-			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,csig.getModifiers())) { return false; }
+			if (matchedArrayAgainstVarArgs(parameterTypes,csig.getModifiers())) { return false; }
 			
 			if (!throwsPattern.matches(exceptionTypes)) return false;
 			return declaringType.matchesStatically(sig.getDeclaringType());
@@ -417,7 +437,7 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
-			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,member.getModifiers())) { return false; }
+			if (matchedArrayAgainstVarArgs(parameterTypes,member.getModifiers())) { return false; }
 			if (!throwsPattern.matches(exceptionTypes)) return false;
 			return declaringTypeMatch(member.getDeclaringClass()); // XXXAJ5 - Need to make this a covariant aware version for dynamic JP matching to work
 		}
@@ -429,29 +449,13 @@ public class SignaturePattern extends PatternNode {
 			if (!parameterTypes.matches(params, TypePattern.STATIC).alwaysTrue()) {
 				return false;
 			}
-			if (isNotMatchBecauseOfVarargsIssue(parameterTypes,member.getModifiers())) { return false; }
+			if (matchedArrayAgainstVarArgs(parameterTypes,member.getModifiers())) { return false; }
 			if (!throwsPattern.matches(exceptionTypes)) return false;
 			return declaringType.matchesStatically(declaringClass);
 		}
 		return false;
 	}
 	
-// For methods, the above covariant aware version (declaringTypeMatchAllowingForCovariance) is used - this version is still here for fields
-	private boolean declaringTypeMatch(UnresolvedType onTypeUnresolved, Member member, World world) {
-		ResolvedType onType = onTypeUnresolved.resolve(world);
-		
-		// fastmatch
-		if (declaringType.matchesStatically(onType)) return true;
-		
-		Collection declaringTypes = member.getDeclaringTypes(world);
-		
-		for (Iterator i = declaringTypes.iterator(); i.hasNext(); ) {
-			ResolvedType type = (ResolvedType)i.next();
-			if (declaringType.matchesStatically(type)) return true;
-		}
-		return false;
-	}
-
 	private boolean declaringTypeMatch(Signature sig) {
 		Class onType = sig.getDeclaringType();
 		if (declaringType.matchesStatically(onType)) return true;
@@ -645,7 +649,7 @@ public class SignaturePattern extends PatternNode {
 	 * return true if last argument in params is an Object[] but the modifiers say this method
 	 * was declared with varargs (Object...).  We shouldn't be matching if this is the case.
 	 */
-	private boolean isNotMatchBecauseOfVarargsIssue(TypePatternList params,int modifiers) {
+	private boolean matchedArrayAgainstVarArgs(TypePatternList params,int modifiers) {
 		if (params.size()>0 && (modifiers & Constants.ACC_VARARGS)!=0) {
 			// we have at least one parameter in the pattern list, and the method has a varargs signature
 			TypePattern lastPattern = params.get(params.size()-1);

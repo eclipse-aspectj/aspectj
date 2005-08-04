@@ -61,11 +61,13 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -400,7 +402,7 @@ public class BcelShadow extends Shadow {
 			new BcelShadow(
 				world,
 				ConstructorExecution,
-				world.makeMethodSignature(enclosingMethod),
+				world.makeJoinPointSignature(enclosingMethod),
 				enclosingMethod,
 				null);
 		ShadowRange r = new ShadowRange(body);
@@ -443,7 +445,7 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 StaticInitialization,
-                world.makeMethodSignature(enclosingMethod),
+                world.makeJoinPointSignature(enclosingMethod),
                 enclosingMethod,
                 null);
         ShadowRange r = new ShadowRange(body);
@@ -470,10 +472,9 @@ public class BcelShadow extends Shadow {
 		UnresolvedType catchType = exceptionRange.getCatchType();
 		UnresolvedType inType = enclosingMethod.getEnclosingClass().getType();
 		
-		ResolvedMember sig = Member.makeExceptionHandlerSignature(inType, catchType);
-		
-			
+		ResolvedMemberImpl sig = MemberImpl.makeExceptionHandlerSignature(inType, catchType);					
 		sig.parameterNames = new String[] {findHandlerParamName(startOfHandler)};
+		
         BcelShadow s =
             new BcelShadow(
                 world,
@@ -594,7 +595,7 @@ public class BcelShadow extends Shadow {
 		return new BcelShadow(
 			world,
 			Initialization,
-			world.makeMethodSignature(constructor),
+			world.makeJoinPointSignature(constructor),
 			constructor,
 			null);
 	}
@@ -606,7 +607,7 @@ public class BcelShadow extends Shadow {
 		BcelShadow ret =  new BcelShadow(
 			world,
 			PreInitialization,
-			world.makeMethodSignature(constructor),
+			world.makeJoinPointSignature(constructor),
 			constructor,
 			null);
 		ret.fallsThrough = true;
@@ -683,7 +684,7 @@ public class BcelShadow extends Shadow {
 			new BcelShadow(
 				world,
 				AdviceExecution,
-				world.makeMethodSignature(enclosingMethod, Member.ADVICE),
+				world.makeJoinPointSignatureFromMethod(enclosingMethod, Member.ADVICE),
 				enclosingMethod,
 				null);
 		ShadowRange r = new ShadowRange(body);
@@ -705,7 +706,7 @@ public class BcelShadow extends Shadow {
     {
         final InstructionList body = enclosingMethod.getBody();
         
-        Member sig = world.makeMethodSignature(
+        Member sig = world.makeJoinPointSignatureForMethodInvocation(
                     	enclosingMethod.getEnclosingClass(),
                     	(InvokeInstruction) callHandle.getInstruction());
                     
@@ -736,7 +737,7 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 MethodCall,
-                world.makeMethodSignature(
+                world.makeJoinPointSignatureForMethodInvocation(
                     enclosingMethod.getEnclosingClass(),
                     (InvokeInstruction) callHandle.getInstruction()),
                 enclosingMethod,
@@ -815,7 +816,7 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 FieldSet,
-                BcelWorld.makeFieldSignature(
+                BcelWorld.makeFieldJoinPointSignature(
                     enclosingMethod.getEnclosingClass(),
                     (FieldInstruction) setHandle.getInstruction()),
                 enclosingMethod,
@@ -2474,7 +2475,7 @@ public class BcelShadow extends Shadow {
     			getEnclosingClass().getType(),
     			getEnclosingClass().getNewGeneratedNameTag());
     			
-    	Member constructorSig = new Member(Member.CONSTRUCTOR, 
+    	Member constructorSig = new MemberImpl(Member.CONSTRUCTOR, 
     								UnresolvedType.forName(closureClassName), 0, "<init>", 
     								"([Ljava/lang/Object;)V");
     	
@@ -2546,7 +2547,7 @@ public class BcelShadow extends Shadow {
             closureInstantiation.append(Utility.createInvoke(
                     getFactory(),
                     getWorld(),
-                    new Member(
+                    new MemberImpl(
                             Member.METHOD,
                             UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
                             Modifier.PUBLIC,

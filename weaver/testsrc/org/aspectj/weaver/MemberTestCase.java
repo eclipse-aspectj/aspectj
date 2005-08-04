@@ -30,10 +30,10 @@ public class MemberTestCase extends TestCase {
     }
 
     public void testMethodConstruction() {
-        Member s = Member.methodFromString("void Foo.goo(int)");
-        Member t = Member.method(UnresolvedType.forName("Foo"), 0, "goo", "(I)V");
-        Member u = Member.methodFromString("void Foo1.goo(int)");
-        Member v = Member.methodFromString("int Foo.goo(int)");
+        Member s = MemberImpl.methodFromString("void Foo.goo(int)");
+        Member t = MemberImpl.method(UnresolvedType.forName("Foo"), 0, "goo", "(I)V");
+        Member u = MemberImpl.methodFromString("void Foo1.goo(int)");
+        Member v = MemberImpl.methodFromString("int Foo.goo(int)");
 
         TestUtil.assertCommutativeEquals(s, s, true);
         TestUtil.assertCommutativeEquals(t, t, true);
@@ -46,10 +46,10 @@ public class MemberTestCase extends TestCase {
         TestUtil.assertCommutativeEquals(t, v, false);
         TestUtil.assertCommutativeEquals(u, v, false);
 
-        s = Member.fieldFromString("int Foo.goo");
-        t = Member.field("Foo", 0, "goo", "I");
-        u = Member.fieldFromString("int Foo.goo1");
-        v = Member.fieldFromString("long Foo.goo");
+        s = MemberImpl.fieldFromString("int Foo.goo");
+        t = MemberImpl.field("Foo", 0, "goo", "I");
+        u = MemberImpl.fieldFromString("int Foo.goo1");
+        v = MemberImpl.fieldFromString("long Foo.goo");
 
         TestUtil.assertCommutativeEquals(s, s, true);
         TestUtil.assertCommutativeEquals(t, t, true);
@@ -65,7 +65,7 @@ public class MemberTestCase extends TestCase {
 
 
     public void testMethodContents() {
-        Member m = Member.methodFromString("void Foo.goo(int)");
+        Member m = MemberImpl.methodFromString("void Foo.goo(int)");
         kindTest(m, Member.METHOD);
         declaringTypeTest(m, "Foo");
         nameTest(m, "goo");
@@ -76,7 +76,7 @@ public class MemberTestCase extends TestCase {
         isConstructorTest(m, false);
         isStaticTest(m, false);
 
-        m = Member.methodFromString("interface java.lang.Object java.util.Iterator.next()");
+        m = MemberImpl.methodFromString("interface java.lang.Object java.util.Iterator.next()");
         kindTest(m, Member.METHOD);
         declaringTypeTest(m, "java.util.Iterator");
         nameTest(m, "next");
@@ -87,7 +87,7 @@ public class MemberTestCase extends TestCase {
         isConstructorTest(m, false);
         isStaticTest(m, false);
 
-        m = Member.methodFromString("void Foo.<init>(int, java.lang.Object)");
+        m = MemberImpl.methodFromString("void Foo.<init>(int, java.lang.Object)");
         kindTest(m, Member.CONSTRUCTOR);
         declaringTypeTest(m, "Foo");
         nameTest(m, "<init>");
@@ -98,7 +98,7 @@ public class MemberTestCase extends TestCase {
         isConstructorTest(m, true);
         isStaticTest(m, false);
 
-        m = Member.methodFromString("private double Foo.sqrt(double)");
+        m = MemberImpl.methodFromString("private double Foo.sqrt(double)");
         kindTest(m, Member.METHOD);
         declaringTypeTest(m, "Foo");
         nameTest(m, "sqrt");
@@ -109,7 +109,7 @@ public class MemberTestCase extends TestCase {
         isConstructorTest(m, false);
         isStaticTest(m, false);
 
-        m = Member.methodFromString("static int java.lang.Math.max(int, int)");
+        m = MemberImpl.methodFromString("static int java.lang.Math.max(int, int)");
         kindTest(m, Member.METHOD);
         declaringTypeTest(m, "java.lang.Math");
         nameTest(m, "max");
@@ -122,7 +122,7 @@ public class MemberTestCase extends TestCase {
     }
 
     public void testFieldContents() {
-        Member m = Member.fieldFromString("int Foo.goo");
+        Member m = MemberImpl.fieldFromString("int Foo.goo");
         kindTest(m, Member.FIELD);
         declaringTypeTest(m, "Foo");
         nameTest(m, "goo");
@@ -133,7 +133,7 @@ public class MemberTestCase extends TestCase {
         isConstructorTest(m, false);
         isStaticTest(m, false);
 
-        m = Member.fieldFromString("static java.util.Iterator goo.Bar.i");
+        m = MemberImpl.fieldFromString("static java.util.Iterator goo.Bar.i");
         kindTest(m, Member.FIELD);
         declaringTypeTest(m, "goo.Bar");
         nameTest(m, "i");
@@ -169,7 +169,7 @@ public class MemberTestCase extends TestCase {
     private void declaringTypeTest(Member m, String declaringName) {
         assertEquals(m + " declared in", UnresolvedType.forName(declaringName), m.getDeclaringType());
     }
-    private void kindTest(Member m, Member.Kind kind) {
+    private void kindTest(Member m, MemberImpl.Kind kind) {
         assertEquals(m + " kind", kind, m.getKind());
     }   
    

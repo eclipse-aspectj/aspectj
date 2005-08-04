@@ -44,7 +44,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	
 	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedTypeMunger munger = new NewMethodTypeMunger(
-				ResolvedMember.readResolvedMember(s, context),
+				ResolvedMemberImpl.readResolvedMember(s, context),
 				readSuperMethodsCalled(s));
 		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
 		return munger;

@@ -31,6 +31,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
@@ -236,7 +237,7 @@ public class CflowPointcut extends Pointcut {
 		  } else {
 		  	
 		  	// Create a counter field in the aspect
-		  	localCflowField = new ResolvedMember(Member.FIELD,concreteAspect,Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
+		  	localCflowField = new ResolvedMemberImpl(Member.FIELD,concreteAspect,Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
 		  		NameMangler.cflowCounter(xcut),UnresolvedType.forName(NameMangler.CFLOW_COUNTER_TYPE).getSignature());
 		  
 		    // Create type munger to add field to the aspect
@@ -275,7 +276,7 @@ public class CflowPointcut extends Pointcut {
 				localCflowField = (ResolvedMember)field;
 			} else {
 		      
-			  localCflowField = new ResolvedMember(
+			  localCflowField = new ResolvedMemberImpl(
 				Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
 						NameMangler.cflowStack(xcut), 
 						UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE).getSignature());

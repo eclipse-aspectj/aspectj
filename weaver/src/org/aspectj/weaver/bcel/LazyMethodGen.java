@@ -57,10 +57,11 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 
 /** 
@@ -419,7 +420,8 @@ public final class LazyMethodGen {
     // =============================
 
 	public String toString() {
-		return toLongString();
+		WeaverVersionInfo weaverVersion = enclosingClass.getBcelObjectType().getWeaverVersionAttribute();
+		return toLongString(weaverVersion);
 	}
 
     public String toShortString() {
@@ -470,19 +472,19 @@ public final class LazyMethodGen {
         return buf.toString();
     }
 
-    public String toLongString() {
+    public String toLongString(WeaverVersionInfo weaverVersion) {
         ByteArrayOutputStream s = new ByteArrayOutputStream();
-        print(new PrintStream(s));
+        print(new PrintStream(s),weaverVersion);
         return new String(s.toByteArray());
     }
 
-    public void print() {
-        print(System.out);
+    public void print(WeaverVersionInfo weaverVersion) {
+        print(System.out,weaverVersion);
     }
 
-    public void print(PrintStream out) {
+    public void print(PrintStream out, WeaverVersionInfo weaverVersion) {
         out.print("  " + toShortString());
-        printAspectAttributes(out);
+        printAspectAttributes(out,weaverVersion);
         
         InstructionList body = getBody();
         if (body == null) {
@@ -495,12 +497,12 @@ public final class LazyMethodGen {
     }
 
 
-	private void printAspectAttributes(PrintStream out) {
+	private void printAspectAttributes(PrintStream out, WeaverVersionInfo weaverVersion) {
 		ISourceContext context = null;
 		if (enclosingClass != null && enclosingClass.getType() != null) {
 			context = enclosingClass.getType().getSourceContext();
 		}
-		List as = BcelAttributes.readAjAttributes(getClassName(),attributes, context,null,AjAttribute.WeaverVersionInfo.UNKNOWN);
+		List as = BcelAttributes.readAjAttributes(getClassName(),attributes, context,null,weaverVersion);
 		if (! as.isEmpty()) {
 			out.println("    " + as.get(0)); // XXX assuming exactly one attribute, munger...
 		}
@@ -1359,13 +1361,13 @@ public final class LazyMethodGen {
     
 	public String getSignature() {
 		if (memberView!=null) return memberView.getSignature();
-		return Member.typesToSignature(BcelWorld.fromBcel(getReturnType()), 
+		return MemberImpl.typesToSignature(BcelWorld.fromBcel(getReturnType()), 
 										BcelWorld.fromBcel(getArgumentTypes()),false);
 	}
     
     public String getParameterSignature() {
         if (memberView!=null) return memberView.getParameterSignature();
-        return Member.typesToSignature(BcelWorld.fromBcel(getArgumentTypes()));
+        return MemberImpl.typesToSignature(BcelWorld.fromBcel(getArgumentTypes()));
     }
 
 	public BcelMethod getMemberView() {

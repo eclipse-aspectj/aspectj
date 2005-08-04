@@ -127,7 +127,7 @@ public abstract class ResolvedTypeMunger {
 		Set ret = new HashSet();
 		int n = s.readInt();
 		for (int i=0; i < n; i++) {
-			ret.add(ResolvedMember.readResolvedMember(s, null));
+			ret.add(ResolvedMemberImpl.readResolvedMember(s, null));
 		}
 		return ret;
 	}

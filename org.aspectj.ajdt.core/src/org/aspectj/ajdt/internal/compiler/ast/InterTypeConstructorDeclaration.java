@@ -221,7 +221,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		ResolvedMember bindingAsMember = world.makeResolvedMember(binding);
 		
 		ResolvedMember signature =
-			new ResolvedMember(Member.CONSTRUCTOR, declaringTypeX, declaredModifiers, 
+			new ResolvedMemberImpl(Member.CONSTRUCTOR, declaringTypeX, declaredModifiers, 
 					ResolvedType.VOID, "<init>", bindingAsMember.getParameterTypes(),
 					world.fromEclipse(binding.thrownExceptions));			
 		ResolvedMember syntheticInterMember =
@@ -253,7 +253,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 				world.makeResolvedMember(explicitConstructor));
 		} else {
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
-				new ResolvedMember(Member.CONSTRUCTOR, 
+				new ResolvedMemberImpl(Member.CONSTRUCTOR, 
 					world.fromBinding(onTypeBinding.superclass()),
 					0, ResolvedType.VOID, "<init>", UnresolvedType.NONE));
 		}

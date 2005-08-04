@@ -14,6 +14,7 @@
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,21 +32,21 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
-final class BcelMethod extends ResolvedMember {
+final class BcelMethod extends ResolvedMemberImpl {
 
 	private Method method;
 	private boolean isAjSynthetic;
 	private ShadowMunger associatedShadowMunger;
 	private ResolvedPointcutDefinition preResolvedPointcut;  // used when ajc has pre-resolved the pointcut of some @Advice
 	
-    private ResolvedType[] annotationTypes = null;
+//    private ResolvedType[] annotationTypes = null;
     private AnnotationX[] annotations = null;
 	
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
@@ -185,9 +186,9 @@ final class BcelMethod extends ResolvedMember {
 	
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		ensureAnnotationTypesRetrieved();
-		for (int i=0; i<annotationTypes.length; i++) {
-			ResolvedType aType = annotationTypes[i];
-			if (aType.equals(ofType)) return true;
+		for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
+			ResolvedType aType = (ResolvedType) iter.next();
+			if (aType.equals(ofType)) return true;		
 		}
 		return false;
 	}
@@ -199,7 +200,9 @@ final class BcelMethod extends ResolvedMember {
 	
 	 public ResolvedType[] getAnnotationTypes() {
 	    ensureAnnotationTypesRetrieved();
-	    return annotationTypes;
+	    ResolvedType[] ret = new ResolvedType[annotationTypes.size()];
+	    annotationTypes.toArray(ret);
+	    return ret;
      }
 	 
 	 public void addAnnotation(AnnotationX annotation) {
@@ -212,11 +215,7 @@ final class BcelMethod extends ResolvedMember {
 		annotations = ret;
 		
 		// Add it to the set of annotation types
-		len = annotationTypes.length;
-		ResolvedType[] ret2 = new ResolvedType[len+1];
-		System.arraycopy(annotationTypes,0,ret2,0,len);
-		ret2[len] =world.resolve(UnresolvedType.forName(annotation.getTypeName()));
-		annotationTypes = ret2;
+		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(world));
 		// FIXME asc looks like we are managing two 'bunches' of annotations, one
 		// here and one in the real 'method' - should we reduce it to one layer?
 		method.addAnnotation(annotation.getBcelAnnotation());
@@ -225,12 +224,12 @@ final class BcelMethod extends ResolvedMember {
 	 private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null || method.getAnnotations().length!=annotations.length) { // sometimes the list changes underneath us!
     		Annotation annos[] = method.getAnnotations();
-    		annotationTypes = new ResolvedType[annos.length];
+    		annotationTypes = new HashSet();
     		annotations = new AnnotationX[annos.length];
     		for (int i = 0; i < annos.length; i++) {
 				Annotation annotation = annos[i];
 				ResolvedType rtx = world.resolve(UnresolvedType.forName(annotation.getTypeName()));
-				annotationTypes[i] = rtx;
+				annotationTypes.add(rtx);
 				annotations[i] = new AnnotationX(annotation,world);
 			}
     	}

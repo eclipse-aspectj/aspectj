@@ -38,7 +38,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
         ResolvedType trace = world.resolve(UnresolvedType.forName("Trace"),true);
         assertTrue("Couldnt find type Trace",trace!=ResolvedType.MISSING);
         fieldsTest(trace, Member.NONE);
-        /*Member constr = */Member.methodFromString("void Trace.<init>()"); 
+        /*Member constr = */MemberImpl.methodFromString("void Trace.<init>()"); 
         //XXX need attribute fix - 
         //methodsTest(trace, new Member[] { constr });
 
@@ -50,7 +50,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
 
         pointcutsTest(trace, 
             new Member[] {
-                Member.pointcut(trace, "traced", "(Ljava/lang/Object;)V"),
+                MemberImpl.pointcut(trace, "traced", "(Ljava/lang/Object;)V"),
             });
 
         modifiersTest(trace.findPointcut("traced"), 
@@ -83,7 +83,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
 
         pointcutsTest(trace, 
             new Member[] {
-                Member.pointcut(trace, "traced", "(Ljava/lang/Object;)V"),
+                MemberImpl.pointcut(trace, "traced", "(Ljava/lang/Object;)V"),
             });
 
         modifiersTest(myTrace.findPointcut("traced"), 
@@ -102,16 +102,16 @@ public class WorldTestCase extends AbstractWorldTestCase {
         fieldsTest(iter, ResolvedMember.NONE);
         methodsTest(iter, 
             new Member[] {
-                Member.method(iter, 0, "hasNext", "()Z"),
-                Member.method(iter, 0, "remove", "()V"),
-                Member.method(iter, 0, "next", "()Ljava/lang/Object;"),
+                MemberImpl.method(iter, 0, "hasNext", "()Z"),
+                MemberImpl.method(iter, 0, "remove", "()V"),
+                MemberImpl.method(iter, 0, "next", "()Ljava/lang/Object;"),
                 });
-        ResolvedMember remove = iter.lookupMethod(Member.method(iter, 0, "remove", "()V"));
+        ResolvedMember remove = iter.lookupMethod(MemberImpl.method(iter, 0, "remove", "()V"));
         assertNotNull("iterator doesn't have remove" , remove);
         modifiersTest(remove, abstractPublic | Modifier.INTERFACE);
         exceptionsTest(remove, UnresolvedType.NONE);
 
-        ResolvedMember clone = iter.lookupMethod(Member.method(UnresolvedType.OBJECT, 0, "clone", "()Ljava/lang/Object;"));
+        ResolvedMember clone = iter.lookupMethod(MemberImpl.method(UnresolvedType.OBJECT, 0, "clone", "()Ljava/lang/Object;"));
         assertNotNull("iterator doesn't have clone" , clone);
         //AV: JRockit Object.clone() is not native.. corrupted test here:
         //modifiersTest(clone, Modifier.PROTECTED | Modifier.NATIVE);

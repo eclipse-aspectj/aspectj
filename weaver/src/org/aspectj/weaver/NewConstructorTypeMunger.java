@@ -54,9 +54,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	
 	public static ResolvedTypeMunger readConstructor(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedTypeMunger munger = new NewConstructorTypeMunger(
-				ResolvedMember.readResolvedMember(s, context),
-				ResolvedMember.readResolvedMember(s, context),
-				ResolvedMember.readResolvedMember(s, context),
+				ResolvedMemberImpl.readResolvedMember(s, context),
+				ResolvedMemberImpl.readResolvedMember(s, context),
+				ResolvedMemberImpl.readResolvedMember(s, context),
 				readSuperMethodsCalled(s));
 		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
 		return munger;

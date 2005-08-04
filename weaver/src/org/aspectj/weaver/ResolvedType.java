@@ -234,22 +234,32 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
      * on the superinterfaces.  The getMethods() call above doesn't quite work the same as it will (through the iterator) return methods
      * declared on *this* class twice, once at the start and once at the end - I couldn't debug that problem, so created this alternative.
      */
-    public List getMethodsWithoutIterator() {
+    public List getMethodsWithoutIterator(boolean includeITDs) {
         List methods = new ArrayList();
         Set knowninterfaces = new HashSet();
-        addAndRecurse(knowninterfaces,methods,this);
+        addAndRecurse(knowninterfaces,methods,this,includeITDs);
         return methods;
     }
     
-    private void addAndRecurse(Set knowninterfaces,List collector, ResolvedType rtx) {
+    private void addAndRecurse(Set knowninterfaces,List collector, ResolvedType rtx, boolean includeITDs) {
       collector.addAll(Arrays.asList(rtx.getDeclaredMethods())); // Add the methods declared on this type
-      if (!rtx.equals(ResolvedType.OBJECT)) addAndRecurse(knowninterfaces,collector,rtx.getSuperclass()); // Recurse if we aren't at the top
+      // now add all the inter-typed members too
+      if (includeITDs && rtx.interTypeMungers != null) {
+    	  for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
+				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();	
+				ResolvedMember rm = tm.getSignature();
+				if (rm != null) {  // new parent type munger can have null signature...
+					collector.add(tm.getSignature());
+				} 
+			}
+      }
+      if (!rtx.equals(ResolvedType.OBJECT)) addAndRecurse(knowninterfaces,collector,rtx.getSuperclass(),includeITDs); // Recurse if we aren't at the top
       ResolvedType[] interfaces = rtx.getDeclaredInterfaces(); // Go through the interfaces on the way back down
       for (int i = 0; i < interfaces.length; i++) {
 		ResolvedType iface = interfaces[i];
 		if (!knowninterfaces.contains(iface)) { // Dont do interfaces more than once
           knowninterfaces.add(iface); 
-          addAndRecurse(knowninterfaces,collector,iface);
+          addAndRecurse(knowninterfaces,collector,iface,includeITDs);
         }
 	  }
     }
@@ -302,11 +312,38 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     private ResolvedMember lookupMember(Member m, ResolvedMember[] a) {
 		for (int i = 0; i < a.length; i++) {
 			ResolvedMember f = a[i];
-            if (matches(f, m)) return f;		
+            if (matches(f, m)) return f;	
 		}
 		return null;
     }      
     
+    
+    /**
+     * Looks for the first member in the hierarchy matching aMember. This method
+     * differs from lookupMember(Member) in that it takes into account parameters
+     * which are type variables - which clearly an unresolved Member cannot do since
+     * it does not know anything about type variables. 
+     */
+     public ResolvedMember lookupResolvedMember(ResolvedMember aMember) {
+    	Iterator toSearch = null;
+    	ResolvedMember found = null;
+    	if ((aMember.getKind() == Member.METHOD) || (aMember.getKind() == Member.CONSTRUCTOR)) {
+    		toSearch = getMethodsWithoutIterator(true).iterator();
+    	} else {
+    		if (aMember.getKind() != Member.FIELD) 
+    			throw new IllegalStateException("I didn't know you would look for members of kind " + aMember.getKind());
+    		toSearch = getFields();
+    	}
+    	while(toSearch.hasNext()) {
+			ResolvedMemberImpl candidate = (ResolvedMemberImpl) toSearch.next();			
+			if (candidate.matches(aMember)) {
+				found = candidate;
+				break;
+			} 
+		}
+    	
+    	return found;
+    }
     
     public static boolean matches(Member m1, Member m2) {
         if (m1 == null) return m2 == null;
@@ -1457,6 +1494,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public boolean hasParameterizedSuperType() {
 		getParameterizedSuperTypes();
 		return parameterizedSuperTypes.length > 0;
+	}
+	
+	public boolean hasGenericSuperType() {
+		ResolvedType[] superTypes = getDeclaredInterfaces();
+		for (int i = 0; i < superTypes.length; i++) {
+			if (superTypes[i].isGenericType()) return true;
+		}
+		return false;
 	}
 	
 	private ResolvedType[] parameterizedSuperTypes = null;

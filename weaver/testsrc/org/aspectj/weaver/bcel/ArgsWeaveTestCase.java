@@ -23,7 +23,7 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
@@ -103,7 +103,7 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
     	ResolvedType rtx = world.resolve(UnresolvedType.forName("Aspect"),true);
     	assertTrue("Cant find required type Aspect",rtx!=ResolvedType.MISSING);
         return new BcelAdvice(AdviceKind.stringToKind(kindx), makePointcutNoZeroArg(),
-        			Member.method(UnresolvedType.forName("Aspect"), 0, "foo", "()V"), 0, -1, -1, null,
+        			MemberImpl.method(UnresolvedType.forName("Aspect"), 0, "foo", "()V"), 0, -1, -1, null,
         			rtx) {
             public void specializeOn(Shadow shadow) {
                 super.specializeOn(shadow);

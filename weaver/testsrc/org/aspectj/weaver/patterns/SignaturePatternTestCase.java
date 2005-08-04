@@ -1,5 +1,6 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2005 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -32,13 +33,13 @@ public class SignaturePatternTestCase extends TestCase {
 	BcelWorld world = new BcelWorld();
 
 	public void testThrowsMatch() throws IOException {
-		Member onlyDerivedOnDerived = Member.methodFromString("static void fluffy.Derived.onlyDerived()");
-		Member mOnBase = Member.methodFromString("void fluffy.Base.m()");
-		Member mOnDerived = Member.methodFromString("void fluffy.Derived.m()");
+		Member onlyDerivedOnDerived = MemberImpl.methodFromString("static void fluffy.Derived.onlyDerived()");
+		Member mOnBase = MemberImpl.methodFromString("void fluffy.Base.m()");
+		Member mOnDerived = MemberImpl.methodFromString("void fluffy.Derived.m()");
 		
 		checkMatch(makeMethodPat("* fluffy.Base.*(..) throws java.lang.CloneNotSupportedException"),
-					new Member[] { mOnBase },
-					new Member[] { mOnDerived });
+					new Member[] { mOnBase, mOnDerived },
+					new Member[] { });
 					
 		checkMatch(makeMethodPat("* fluffy.Derived.*(..) throws java.lang.CloneNotSupportedException"),
 					new Member[] { },
@@ -52,7 +53,7 @@ public class SignaturePatternTestCase extends TestCase {
 		
 		checkMatch(makeMethodPat("* *(..)"), M, NONE);
 		checkMatch(makeMethodPat("* *(..) throws !*"), NO_EXCEPTIONS, M);
-		checkMatch(makeMethodPat("* *(..) throws *"), M, NO_EXCEPTIONS);
+		checkMatch(makeMethodPat("* *(..) throws *"), BOTH, NONE);
 		checkMatch(makeMethodPat("* *(..) throws *, !*"), NONE, BOTH);
 		
 		checkMatch(makeMethodPat("* *(..) throws (!*)"), NONE, BOTH);		
@@ -65,9 +66,9 @@ public class SignaturePatternTestCase extends TestCase {
 	}
 
 	public void testInstanceMethodMatch() throws IOException {
-		Member objectToString = Member.methodFromString("java.lang.String java.lang.Object.toString()");
-		Member integerToString = Member.methodFromString("java.lang.String java.lang.Integer.toString()");
-		Member integerIntValue = Member.methodFromString("int java.lang.Integer.intValue()");
+		Member objectToString = MemberImpl.methodFromString("java.lang.String java.lang.Object.toString()");
+		Member integerToString = MemberImpl.methodFromString("java.lang.String java.lang.Integer.toString()");
+		Member integerIntValue = MemberImpl.methodFromString("int java.lang.Integer.intValue()");
 		//Member objectToString = Member.methodFromString("java.lang.String java.lang.Object.toString()");
 		
 		checkMatch(makeMethodPat("* java.lang.Object.*(..)"),
@@ -81,11 +82,11 @@ public class SignaturePatternTestCase extends TestCase {
 
 	
 	public void testStaticMethodMatch() throws IOException {
-		Member onlyBaseOnBase = Member.methodFromString("static void fluffy.Base.onlyBase()");
-		Member onlyBaseOnDerived = Member.methodFromString("static void fluffy.Derived.onlyBase()");
-		Member onlyDerivedOnDerived = Member.methodFromString("static void fluffy.Derived.onlyDerived()");
-		Member bothOnBase = Member.methodFromString("static void fluffy.Base.both()");
-		Member bothOnDerived = Member.methodFromString("static void fluffy.Derived.both()");
+		Member onlyBaseOnBase = MemberImpl.methodFromString("static void fluffy.Base.onlyBase()");
+		Member onlyBaseOnDerived = MemberImpl.methodFromString("static void fluffy.Derived.onlyBase()");
+		Member onlyDerivedOnDerived = MemberImpl.methodFromString("static void fluffy.Derived.onlyDerived()");
+		Member bothOnBase = MemberImpl.methodFromString("static void fluffy.Base.both()");
+		Member bothOnDerived = MemberImpl.methodFromString("static void fluffy.Derived.both()");
 		
 		checkMatch(makeMethodPat("* fluffy.Base.*(..)"),
 					new Member[] { onlyBaseOnBase, onlyBaseOnDerived, bothOnBase },
@@ -97,11 +98,11 @@ public class SignaturePatternTestCase extends TestCase {
 	}
 	
 	public void testFieldMatch() throws IOException {
-		Member onlyBaseOnBase = Member.fieldFromString("int fluffy.Base.onlyBase");
-		Member onlyBaseOnDerived = Member.fieldFromString("int fluffy.Derived.onlyBase");
-		Member onlyDerivedOnDerived = Member.fieldFromString("int fluffy.Derived.onlyDerived");
-		Member bothOnBase = Member.fieldFromString("int fluffy.Base.both");
-		Member bothOnDerived = Member.fieldFromString("int fluffy.Derived.both");
+		Member onlyBaseOnBase = MemberImpl.fieldFromString("int fluffy.Base.onlyBase");
+		Member onlyBaseOnDerived = MemberImpl.fieldFromString("int fluffy.Derived.onlyBase");
+		Member onlyDerivedOnDerived = MemberImpl.fieldFromString("int fluffy.Derived.onlyDerived");
+		Member bothOnBase = MemberImpl.fieldFromString("int fluffy.Base.both");
+		Member bothOnDerived = MemberImpl.fieldFromString("int fluffy.Derived.both");
 		
 		checkMatch(makeFieldPat("* fluffy.Base.*"),
 					new Member[] { onlyBaseOnBase, onlyBaseOnDerived, bothOnBase },
@@ -113,9 +114,9 @@ public class SignaturePatternTestCase extends TestCase {
 	}
 	
 	public void testConstructorMatch() throws IOException {
-		Member onBase = Member.methodFromString("void fluffy.Base.<init>()");
-		Member onDerived = Member.methodFromString("void fluffy.Derived.<init>()");
-		Member onBaseWithInt = Member.methodFromString("void fluffy.Base.<init>(int)");
+		Member onBase = MemberImpl.methodFromString("void fluffy.Base.<init>()");
+		Member onDerived = MemberImpl.methodFromString("void fluffy.Derived.<init>()");
+		Member onBaseWithInt = MemberImpl.methodFromString("void fluffy.Base.<init>(int)");
 
 		
 		checkMatch(makeMethodPat("fluffy.Base.new(..)"),

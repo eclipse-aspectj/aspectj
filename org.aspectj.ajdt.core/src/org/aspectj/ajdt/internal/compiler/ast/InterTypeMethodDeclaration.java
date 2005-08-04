@@ -23,6 +23,7 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
@@ -124,7 +125,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		if (isTargetAnnotation(classScope,"method")) return null; // Error message output in isTargetAnnotation
 		if (isTargetEnum(classScope,"method")) return null; // Error message output in isTargetEnum
 		
-		ResolvedMember sig = new ResolvedMember(Member.METHOD, world.fromBinding(onTypeBinding),
+		ResolvedMemberImpl sig = new ResolvedMemberImpl(Member.METHOD, world.fromBinding(onTypeBinding),
 			declaredModifiers, world.fromBinding(binding.returnType), new String(declaredSelector),
 			world.fromBindings(binding.parameters),
 			world.fromEclipse(binding.thrownExceptions));

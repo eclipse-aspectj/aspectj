@@ -186,11 +186,11 @@ public class PointcutResidueTestCase extends WeaveTestCase {
             new BcelAdvice(
                 AdviceKind.Before,
                 rp,
-                Member.method(
+                MemberImpl.method(
                     UnresolvedType.forName("Aspect"),
                     Modifier.STATIC,
                     "ajc_before_0",
-                    Member.typesToSignature(
+                    MemberImpl.typesToSignature(
                         ResolvedType.VOID,
                         UnresolvedType.forNames(formalTypes),false)),
             	0, -1, -1, null, null);

@@ -34,7 +34,7 @@ public class WithinTestCase extends TestCase {
 	public void testMatch() throws IOException {
 		Shadow getOutFromArrayList = new TestShadow(
 			Shadow.FieldGet, 
-			Member.fieldFromString("java.io.PrintStream java.lang.System.out"),
+			MemberImpl.fieldFromString("java.io.PrintStream java.lang.System.out"),
 			UnresolvedType.forName("java.util.ArrayList"),
 			world);
 
@@ -50,7 +50,7 @@ public class WithinTestCase extends TestCase {
 		
 		Shadow getOutFromEntry = new TestShadow(
 			Shadow.FieldGet, 
-			Member.fieldFromString("java.io.PrintStream java.lang.System.out"),
+			MemberImpl.fieldFromString("java.io.PrintStream java.lang.System.out"),
 			UnresolvedType.forName("java.util.Map$Entry"),
 			world);
 			

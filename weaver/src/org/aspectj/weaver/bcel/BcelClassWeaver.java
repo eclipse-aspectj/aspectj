@@ -1435,7 +1435,7 @@ class BcelClassWeaver implements IClassWeaver {
 				InstructionHandle prevHandle = ih.getPrev();
 				Instruction prevI = prevHandle.getInstruction();
 				if (Utility.isConstantPushInstruction(prevI)) {
-					Member field = BcelWorld.makeFieldSignature(clazz, (FieldInstruction) i);
+					Member field = BcelWorld.makeFieldJoinPointSignature(clazz, (FieldInstruction) i);
 					ResolvedMember resolvedField = field.resolve(world);
 					if (resolvedField == null) {
 						// we can't find the field, so it's not a join point.
@@ -1519,7 +1519,7 @@ class BcelClassWeaver implements IClassWeaver {
 		BcelShadow enclosingShadow,
 		List shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
-		Member field = BcelWorld.makeFieldSignature(clazz, fi);
+		Member field = BcelWorld.makeFieldJoinPointSignature(clazz, fi);
 		
 		// synthetic fields are never join points
 		if (field.getName().startsWith(NameMangler.PREFIX)) return;
@@ -1546,7 +1546,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 	private void matchGetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
-		Member field = BcelWorld.makeFieldSignature(clazz, fi);
+		Member field = BcelWorld.makeFieldJoinPointSignature(clazz, fi);
 		
 		// synthetic fields are never join points
 		if (field.getName().startsWith(NameMangler.PREFIX)) return;
@@ -1621,15 +1621,15 @@ class BcelClassWeaver implements IClassWeaver {
 	{
 		String methodName = invoke.getName(cpg);
 		if (methodName.startsWith(NameMangler.PREFIX)) {
-			Member method =
-				world.makeMethodSignature(clazz, invoke);
-			ResolvedMember declaredSig = method.resolve(world);
+			Member jpSig =
+				world.makeJoinPointSignatureForMethodInvocation(clazz, invoke);
+			ResolvedMember declaredSig = jpSig.resolve(world);
 			//System.err.println(method + ", declaredSig: "  +declaredSig);
 			if (declaredSig == null) return;
 			
 			if (declaredSig.getKind() == Member.FIELD) {
 				Shadow.Kind kind;
-				if (method.getReturnType().equals(ResolvedType.VOID)) {
+				if (jpSig.getReturnType().equals(ResolvedType.VOID)) {
 					kind = Shadow.FieldSet;
 				} else {
 					kind = Shadow.FieldGet;
