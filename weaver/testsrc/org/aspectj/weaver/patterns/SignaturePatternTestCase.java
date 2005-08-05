@@ -147,7 +147,7 @@ public class SignaturePatternTestCase extends TestCase {
 	}
 
 	private void checkMatch(SignaturePattern p, Member member, boolean b) {
-		boolean matches = p.matches(member, world);
+		boolean matches = p.matches(member, world,false);
 		assertEquals(p.toString() + " matches " + member.toString(), b, matches);
 	}
 

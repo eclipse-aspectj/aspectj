@@ -108,11 +108,11 @@ public class KindedPointcut extends Pointcut {
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 
-		if (!signature.matches(shadow.getSignature(), shadow.getIWorld())){
+		if (!signature.matches(shadow.getSignature(), shadow.getIWorld(),this.kind == Shadow.MethodCall)){
 
             if(kind == Shadow.MethodCall) {
                 warnOnConfusingSig(shadow);
-                warnOnBridgeMethod(shadow);
+                //warnOnBridgeMethod(shadow);
             }
             return FuzzyBoolean.NO; 
         }
@@ -121,18 +121,18 @@ public class KindedPointcut extends Pointcut {
 	}
 	
 	
-	private void warnOnBridgeMethod(Shadow shadow) {
-		if (shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.isEnabled()) {
-			ResolvedMember rm = shadow.getSignature().resolve(shadow.getIWorld());
-			if (rm!=null) {
-             	int shadowModifiers = rm.getModifiers(); //shadow.getSignature().getModifiers(shadow.getIWorld());
-			    if (ResolvedType.hasBridgeModifier(shadowModifiers)) {
-				  shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
-						new ISourceLocation[]{shadow.getSourceLocation()});
-			    }
-            }
-        }
-	}
+//	private void warnOnBridgeMethod(Shadow shadow) {
+//		if (shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.isEnabled()) {
+//			ResolvedMember rm = shadow.getSignature().resolve(shadow.getIWorld());
+//			if (rm!=null) {
+//             	int shadowModifiers = rm.getModifiers(); //shadow.getSignature().getModifiers(shadow.getIWorld());
+//			    if (ResolvedType.hasBridgeModifier(shadowModifiers)) {
+//				  shadow.getIWorld().getLint().noJoinpointsForBridgeMethods.signal(new String[]{},getSourceLocation(),
+//						new ISourceLocation[]{shadow.getSourceLocation()});
+//			    }
+//            }
+//        }
+//	}
 	
 	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
 		if (jpsp.getKind().equals(kind.getName())) {
@@ -222,7 +222,7 @@ public class KindedPointcut extends Pointcut {
 				signature.getAnnotationPattern());
 
 		if (nonConfusingPattern
-			.matches(shadow.getSignature(), shadow.getIWorld())) {
+			.matches(shadow.getSignature(), shadow.getIWorld(),true)) {
                 shadow.getIWorld().getLint().unmatchedSuperTypeInCall.signal(
                     new String[] {
                         shadow.getSignature().getDeclaringType().toString(),

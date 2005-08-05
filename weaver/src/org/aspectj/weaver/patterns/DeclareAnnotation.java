@@ -214,7 +214,7 @@ public class DeclareAnnotation extends Declare {
      * For @constructor, @method, @field
      */
 	public boolean matches(ResolvedMember rm,World world) {
-		return sigPattern.matches(rm,world);
+		return sigPattern.matches(rm,world,false);
 	}
 	
     /**

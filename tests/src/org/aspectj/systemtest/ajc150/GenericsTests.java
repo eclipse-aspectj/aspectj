@@ -442,6 +442,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testCallOverrideMatchingWithGenericMembers() {
 		runTest("call with overriding of inherited generic members");
 	}
+	
+	public void testCallWithBridgeMethods() {
+		runTest("call with bridge methods");
+	}
 
 	public void testGetAndSetPointcutErrors() {
 		runTest("get and set with various parameterizations and generic types - errors");

@@ -11,9 +11,10 @@
 
     <ajc-test dir="java5/bridgeMethods" pr="72766" title="Ignore bridge methods">
         <compile files="AspectX.aj" inpath="testcode.jar" options="-showWeaveInfo">
-          <message kind="warning" line="7" text="pointcut did not match on the method call to a bridge method."/>
-          <message kind="warning" line="7" text="does not match because declaring type is Number"/>
+  <!--        <message kind="warning" line="7" text="pointcut did not match on the method call to a bridge method."/>
+          <message kind="warning" line="7" text="does not match because declaring type is Number"/>-->
           <message kind="weave" text="(AspectX.aj:18) advised by before advice from 'AspectX'"/>
+          <message kind="weave" text="(AspectX.aj:19) advised by before advice from 'AspectX'"/>
           <message kind="weave" text="(Number.java:5) advised by before advice from 'AspectX'"/>
         </compile>
     </ajc-test>
@@ -2994,6 +2995,13 @@
         <message kind="warning" line="87" text="parameterized match"/>
      </compile>
     </ajc-test>
+    
+   <ajc-test dir="java5/generics/pointcuts" title="call with bridge methods">
+     <compile files="CallWithBridgeMethods.aj" options="-1.5">
+         <message kind="warning" line="23" text="should match call to bridge method on L23, this is a real call!"/>
+     </compile>
+   </ajc-test>
+    
 
    <!-- end of generics and pointcuts tests -->
    

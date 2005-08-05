@@ -72,7 +72,7 @@ public class WithincodePointcut extends Pointcut {
 		//This will not match code in local or anonymous classes as if
 		//they were withincode of the outer signature
 		return FuzzyBoolean.fromBoolean(
-			signature.matches(shadow.getEnclosingCodeSignature(), shadow.getIWorld()));
+			signature.matches(shadow.getEnclosingCodeSignature(), shadow.getIWorld(), false));
 	}
 
 	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {

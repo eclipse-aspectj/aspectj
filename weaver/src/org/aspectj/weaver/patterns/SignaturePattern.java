@@ -121,7 +121,7 @@ public class SignaturePattern extends PatternNode {
 		}
 	}
 	
-	public boolean matches(Member joinPointSignature, World world) {
+	public boolean matches(Member joinPointSignature, World world, boolean allowBridgeMethods) {
 		// fail (or succeed!) fast tests...
 		if (joinPointSignature == null) return false;
 		if (kind != joinPointSignature.getKind()) return false;
@@ -130,16 +130,16 @@ public class SignaturePattern extends PatternNode {
 		// do the hard work then...
 		JoinPointSignature[] candidateMatches = joinPointSignature.getJoinPointSignatures(world);
 		for (int i = 0; i < candidateMatches.length; i++) {
-			if (matchesExactly(candidateMatches[i],world)) return true;
+			if (matchesExactly(candidateMatches[i],world,allowBridgeMethods)) return true;
 		}
 		return false;
 	}
 	
 	// Does this pattern match this exact signature (no declaring type mucking about
 	// or chasing up the hierarchy)
-	private boolean matchesExactly(JoinPointSignature aMember, World inAWorld) {
-		// Java5 introduces bridge methods, we don't want to match on them at all...
-		if (aMember.isBridgeMethod()) {
+	private boolean matchesExactly(JoinPointSignature aMember, World inAWorld, boolean allowBridgeMethods) {
+		// Java5 introduces bridge methods, we match a call to them but nothing else...
+		if (aMember.isBridgeMethod() && !allowBridgeMethods) {
 			return false;
 		}
 			
