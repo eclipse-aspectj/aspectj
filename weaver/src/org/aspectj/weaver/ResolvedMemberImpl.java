@@ -267,7 +267,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
     public boolean hasAnnotation(UnresolvedType ofType) {
-        // The ctors don't allow annotations to be specified ... yet - but
+         // The ctors don't allow annotations to be specified ... yet - but
         // that doesn't mean it is an error to call this method.
         // Normally the weaver will be working with subtypes of 
         // this type - BcelField/BcelMethod
@@ -388,7 +388,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			for (int i = 0; i < typeVariables.length; i++) {
 				UnresolvedType array_element = typeVariables[i];
 				typeVariables[i] = typeVariables[i].resolve(world);
-			}
+	}
 		}
 		if (parameterTypes!=null && parameterTypes.length>0) {
 			for (int i = 0; i < parameterTypes.length; i++) {
@@ -396,7 +396,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				parameterTypes[i] = parameterTypes[i].resolve(world);
 			}
 		}
-		
+	
 		returnType = returnType.resolve(world);return this;
 	}
 	
@@ -601,9 +601,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	private ResolvedMember myErasure = null;
 	private boolean calculatedMyErasure = false;
 	
-
-
-     /**
+	
+	/**
       * For ITDs, we use the default factory methods to build a resolved member, then alter a couple of characteristics
       * using this method - this is safe.
       */
@@ -675,7 +674,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getParameterTypes();
 		for (int i = 0; i < myParameterTypes.length; i++) {
-			sig.append(myParameterTypes[i].getSignature());
+			UnresolvedType thisParameter = myParameterTypes[i];
+			if (thisParameter.isTypeVariableReference()) {
+				sig.append(thisParameter.getUpperBound().getSignature());
+			} else {
+				sig.append(thisParameter.getSignature());
+			}
 		}
 		myParameterSignatureErasure = sig.toString();
 		return myParameterSignatureErasure;		

@@ -2390,7 +2390,7 @@
      <compile files="GenericCtorITD1.aj" options="-1.5"/>
      <run class="GenericCtorITD1"/>
    </ajc-test>
-
+   
    <ajc-test dir="java5/generics/itds" title="generic ctor itd - 2">
      <compile files="GenericCtorITD2.aj" options="-1.5"/>
      <run class="GenericCtorITD2"/>
@@ -2905,7 +2905,7 @@
      </compile>
    </ajc-test>
 
- <ajc-test dir="java5/generics/pointcuts" title="execution with various parameterizations and generic types - errors">
+  <ajc-test dir="java5/generics/pointcuts" title="execution with various parameterizations and generic types - errors">
      <compile files="ExecutionPointcutMatchingErrorCases.aj" options="-1.5">
          <message kind="warning" line="4" text="no match for this type name: T"/>
          <message kind="error" line="4" text="can't use parameterized type patterns for the declaring type of an execution pointcut expression (use the raw type instead)"/>
@@ -2955,6 +2955,46 @@
          <message kind="warning" line="5" text="execution&lt;T&gt;(* GenericInterface&lt;T extends Number&gt;.asInt(T))"/>
      </compile>
    </ajc-test>
+ 
+  <ajc-test dir="java5/generics/pointcuts" title="call with various parameterizations and generic types - errors">
+     <compile files="CallPointcutMatchingErrorCases.aj" options="-1.5">
+         <message kind="warning" line="4" text="no match for this type name: T"/>
+         <message kind="error" line="4" text="can't use parameterized type patterns for the declaring type of a call pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="5" text="can't use parameterized type patterns for the declaring type of a call pointcut expression (use the raw type instead)"/>
+         <message kind="error" line="6" text="invalid throws pattern: a generic class may not be a direct or indirect subclass of Throwable"/>
+      </compile>
+   </ajc-test>
+ 
+    <ajc-test dir="java5/generics/pointcuts" title="call with various parameterizations and generic types - matching">
+     <compile files="CallPointcutMatchingParamAndReturnTypes.aj" options="-1.5">
+        <message kind="warning" line="7" text="raw param type matching in call ok"/>
+        <message kind="warning" line="8" text="raw return type matching in call ok"/>
+        <message kind="warning" line="9" text="erasure type matching in call ok"/>
+        <message kind="warning" line="10" text="erasure type matching in call ok"/>
+        <message kind="warning" line="11" text="call and parameterized method ok"/>
+        <message kind="warning" line="11" text="call and generic interface ok"/>
+        <message kind="warning" line="12" text="call and interface control test"/>
+        <message kind="warning" line="7" text="match on parameterized args"/>
+        <message kind="warning" line="8" text="match on parameterized return type"/>
+      </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/pointcuts" title="call with overriding of inherited generic members">
+     <compile files="CallOverriding.aj" options="-1.5">
+        <message kind="warning" line="8" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="9" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="10" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="8" text="base declaring type match on erasure"/>
+        <message kind="warning" line="9" text="base declaring type match on erasure"/>
+        <message kind="warning" line="10" text="base declaring type match on erasure"/>
+        <message kind="warning" line="9" text="sub type match on erasure"/>
+        <message kind="warning" line="10" text="parameterized match on erasure"/>
+        <message kind="warning" line="87" text="erasure match on base interface"/>
+        <message kind="warning" line="87" text="wildcard match on erasure"/>
+        <message kind="warning" line="87" text="parameterized match"/>
+     </compile>
+    </ajc-test>
+
    <!-- end of generics and pointcuts tests -->
    
    <!-- ============================================================== -->

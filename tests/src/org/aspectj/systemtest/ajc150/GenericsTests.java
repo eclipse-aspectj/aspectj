@@ -96,7 +96,13 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *    - parameter as parameterized type  PASS
 	 *    - no join points for bridge methods  PASS
 	 * call
-	 *   - wait till we get there!
+	 *    - no generic or parameterized declaring type patterns 
+	 *    - no parameterized throws patterns 
+	 *    - return type as type variable  
+	 *    - return type as parameterized type  
+	 *    - parameter as type variable   
+	 *    - parameter as parameterized type  
+	 *    - a call to a bridge method is really a call to the method being bridged...	 (1.4/1.5 differences here?)
 	 */
 	
 	/* ==========================================
@@ -205,12 +211,12 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	// non static
 
-	public void testGenericMethodITD1()  {runTest("generic method itd - 1"); }  // <E> ... (List<? extends E>)
-	public void testGenericMethodITD2()  {runTest("generic method itd - 2"); }  // <E extends Number> ... (List<? extends E>) called incorrectly
-	public void testGenericMethodITD3()  {runTest("generic method itd - 3"); }  // <E> ... (List<E>,List<E>)
-	public void testGenericMethodITD4()  {runTest("generic method itd - 4"); }  // <A,B> ... (List<A>,List<B>)
-	public void testGenericMethodITD5()  {runTest("generic method itd - 5"); }  // <E> ... (List<E>,List<E>) called incorrectly
-	public void testGenericMethodITD6()  {runTest("generic method itd - 6"); }  // <E extends Number> ... (List<? extends E>)
+	public void testGenericMethodITD1() {runTest("generic method itd - 1");} // <E> ... (List<? extends E>)
+	public void testGenericMethodITD2() {runTest("generic method itd - 2");} // <E extends Number> ... (List<? extends E>) called incorrectly
+	public void testGenericMethodITD3() {runTest("generic method itd - 3");} // <E> ... (List<E>,List<E>)
+	public void testGenericMethodITD4() {runTest("generic method itd - 4");} // <A,B> ... (List<A>,List<B>)
+	public void testGenericMethodITD5() {runTest("generic method itd - 5");} // <E> ... (List<E>,List<E>) called incorrectly
+	public void testGenericMethodITD6() {runTest("generic method itd - 6");} // <E extends Number> ... (List<? extends E>)
 	public void testGenericMethodITD7()  {runTest("generic method itd - 7"); }  // <E> ... (List<E>,List<? extends E>)
 	public void testGenericMethodITD8()  {runTest("generic method itd - 8"); }  // <E> ... (List<E>,List<? extends E>) called incorrectly
 	public void testGenericMethodITD9()  {runTest("generic method itd - 9"); }  // <R extends Comparable<? super R>> ... (List<R>)
@@ -232,7 +238,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericCtorITD2() {runTest("generic ctor itd - 2");} // <T> new(List<T>,List<? extends T>)
 	public void testGenericCtorITD3() {runTest("generic ctor itd - 3");} // <T> new(List<T>,Comparator<? super T>)
 
-	//	public void testGenericITFSharingTypeVariable() {
+//	public void testGenericITFSharingTypeVariable() {
 //		runTest("generic intertype field declaration, sharing type variable");
 //	}
 
@@ -424,6 +430,19 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testExecutionOverrideMatchingWithGenericMembers() {
 		runTest("execution with overriding of inherited generic members");
 	}
+
+	public void testCallPointcutErrors() {
+		runTest("call with various parameterizations and generic types - errors");
+	}
+	
+	public void testCallMatching() {
+		runTest("call with various parameterizations and generic types - matching");
+	}
+	
+	public void testCallOverrideMatchingWithGenericMembers() {
+		runTest("call with overriding of inherited generic members");
+	}
+
 	public void testGetAndSetPointcutErrors() {
 		runTest("get and set with various parameterizations and generic types - errors");
 	}

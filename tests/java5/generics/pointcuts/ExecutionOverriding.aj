@@ -31,8 +31,8 @@ public aspect ExecutionOverriding {
 class Generic<T> {
 	int x = 0;
 	
-	// withincode (void Generic.foo(Object))
-	// withincode (void *.foo(Object))
+	// execution (void Generic.foo(Object))
+	// execution (void *.foo(Object))
 	public void foo(T someObject) {
 		x = 1;
 	}
@@ -42,10 +42,10 @@ class Generic<T> {
 class SubGeneric<N extends Number> extends Generic<N> {
 	int y = 0;
 	
-	// withincode(void Generic.foo(Object))
-	// withincode( void *.foo(Object))
-	// withincode(void SubGeneric.foo(Number))
-	// !withincode(void SubGeneric.foo(Object))
+	// execution(void Generic.foo(Object))
+	// execution( void *.foo(Object))
+	// execution(void SubGeneric.foo(Number))
+	// !execution(void SubGeneric.foo(Object))
 	public void foo(N someObject) {
 		y = 1;
 	}
@@ -55,10 +55,10 @@ class SubGeneric<N extends Number> extends Generic<N> {
 class SubParameterized extends Generic<String> {
 	int y = 0;
 	
-	// withincode(void Generic.foo(Object))
-	// withincode( void *.foo(Object))
-	// withincode(void SubParameterized.foo(String))
-	// !withincode(void SubGeneric.foo(Object))
+	// execution(void Generic.foo(Object))
+	// execution( void *.foo(Object))
+	// execution(void SubParameterized.foo(String))
+	// !execution(void SubGeneric.foo(Object))
 	public void foo(String someObject) {
 		y = 1;
 	}
@@ -72,10 +72,10 @@ interface I<E> {
 class ParameterizedI implements I<Double> {
 	int x;
 	
-	// withincode(void I.bar(Object))
-	// withincode(void *.bar(Object))
-	// withincode(void ParameterizedI.bar(Double))
-	// !withincode(void ParameterizedI.bar(Object))
+	// execution(void I.bar(Object))
+	// execution(void *.bar(Object))
+	// execution(void ParameterizedI.bar(Double))
+	// !execution(void ParameterizedI.bar(Object))
 	public void bar(Double d) {
 		x = 1;
 	}
