@@ -2507,11 +2507,52 @@
      <run class="GenericMethodITD15"/>
    </ajc-test>
    
+   <!-- visibility -->
+   
+   <ajc-test dir="java5/generics/itds/visibility" title="public itds">
+     <compile files="PublicITDs.aj" options="-1.5"/>
+     <run class="PublicITDs"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/visibility" title="private itds">
+     <compile files="PrivateITDs.aj" options="-1.5"/>
+     <run class="PrivateITDs"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/visibility" title="package itds">
+     <compile files="PackageITDs.aj" options="-1.5"/>
+     <run class="PackageITDs"/>
+   </ajc-test>
+      
+   <ajc-test dir="java5/generics/itds/visibility" title="public itds with errors">
+     <compile files="PublicITDsErrors.aj" options="-1.5">
+       <message kind="error" line="13" text="The method publicMethod2(List&lt;R&gt;, List&lt;R&gt;) in the type X is not applicable for the arguments (List&lt;Double&gt;, List&lt;Float&gt;)"/>
+       <message kind="error" line="15" text="The constructor Base(List&lt;Double&gt;, Map&lt;Integer,String&gt;) is undefined"/>
+     </compile>
+   </ajc-test>
+   
+   <!-- sharing type variables between the ITD and the generic type -->
+
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd sharing type variable with generic type">
+     <compile files="Simple.aj" options="-1.5"/>
+     <run class="Simple"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd sharing type variable with generic type">
+     <compile files="Simple2.aj" options="-1.5"/>
+     <run class="Simple2"/>
+   </ajc-test>
+   
+   
    <ajc-test dir="java5/generics/itds" title="non static generic method itd - 2">
      <compile files="NonstaticGenericCtorITD2.aj" options="-1.5"/>
      <run class="NonstaticGenericCtorITD2"/>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/itds" title="multiple generic itds in one file">
+     <compile files="BizarroSignatures.aj" options="-1.5"/>
+     <run class="BizarroSignatures"/>
+   </ajc-test>
    
    <ajc-test dir="java5/generics/itds" title="generic intertype field declaration, sharing type variable">
      <compile files="FieldITDOnGeneric.aj" options="-1.5"/>
@@ -2536,6 +2577,10 @@
 
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 4">
      <compile files="Parse4.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 6">
+     <compile files="Parse6.java" options="-1.5"/>
    </ajc-test>
    
    <!-- end of generic ITDs -->
