@@ -2578,6 +2578,10 @@
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 4">
      <compile files="Parse4.java" options="-1.5"/>
    </ajc-test>
+
+   <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 5">
+     <compile files="Parse5.java" options="-1.5"/>
+   </ajc-test>
    
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 6">
      <compile files="Parse6.java" options="-1.5"/>

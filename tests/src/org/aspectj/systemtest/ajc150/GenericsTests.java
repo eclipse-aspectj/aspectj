@@ -109,8 +109,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * Generics test plan for ITDs.
 	 * 
 	 * think about:
-	 * - source/binary weaving
-	 * - visibility default/private/public
+	 * - 'visibility' default/private/public
 	 * - static/nonstatic
 	 * - parameterized ITDs (methods/ctors/fields)
 	 * - ITD target: interface/class/aspect
@@ -126,6 +125,9 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * - wildcards '?' 'extends' 'super' '&'
 	 * - do type variables assigned to members need to persist across serialization
 	 * - recursive type variable definitions eg. <R extends Comparable<? super R>>
+	 * - super/extends with parameterized types <? extends List<String>>
+	 * - source/binary weaving
+	 * - multiple ITDs defined in one type that reuse type variable letters, specifying different bounds
 	 */
 	
 	public static Test suite() {
@@ -182,28 +184,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	}
 	
 	// Developers notebook
-	// ITD of generic members
 	
-	public void testItdNonStaticMethod() {
-		runTest("Parsing generic ITDs - 1");
-	}
-	public void testItdStaticMethod() {
-		runTest("Parsing generic ITDs - 2");
-	}
-	public void testItdCtor() {
-		runTest("Parsing generic ITDs - 3");
-	}
-	public void testItdComplexMethod() {
-		runTest("Parsing generic ITDs - 4");
-	}
-		
-	public void testItdNonStaticMember() {
-		runTest("itd of non static member");
-	}
+	// parsing of generic ITD members
 	
-	public void testItdStaticMember() {
-		runTest("itd of static member");
-	}
+	public void testParseItdNonStaticMethod() {runTest("Parsing generic ITDs - 1");}
+	public void testParseItdStaticMethod()    {runTest("Parsing generic ITDs - 2");}
+	public void testParseItdCtor()            {runTest("Parsing generic ITDs - 3");}
+	public void testParseItdComplexMethod()   {runTest("Parsing generic ITDs - 4");}
+//	public void testParseItdSharingVars1()    {runTest("Parsing generic ITDs - 5");}
+//	public void testParseItdSharingVars2()    {runTest("Parsing generic ITDs - 6");}
+
+	public void testItdNonStaticMember()      {runTest("itd of non static member");}
+	public void testItdStaticMember()         {runTest("itd of static member");}
 
 	public void testStaticGenericMethodITD() {
 		runTest("static generic method itd");
@@ -238,6 +230,20 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericCtorITD2() {runTest("generic ctor itd - 2");} // <T> new(List<T>,List<? extends T>)
 	public void testGenericCtorITD3() {runTest("generic ctor itd - 3");} // <T> new(List<T>,Comparator<? super T>)
 
+	
+/*	
+    public void testMultipleGenericITDsInOneFile() { runTest("multiple generic itds in one file");}
+	
+	// ITDs of differing visibilities
+	public void testPublicITDs()       {runTest("public itds");}
+	public void testPublicITDsErrors() {runTest("public itds with errors");}
+	public void testPrivateITDs()      {runTest("private itds");}
+	public void testPackageITDs()      {runTest("package itds");}
+	
+	// ITDs that share a type variable with the target generic type
+	public void testMethodITDsSharingTvar() {runTest("method itd sharing type variable with generic type");}
+	public void testFieldITDsSharingTvar()  {runTest("field itd sharing type variable with generic type");}
+*/
 //	public void testGenericITFSharingTypeVariable() {
 //		runTest("generic intertype field declaration, sharing type variable");
 //	}
