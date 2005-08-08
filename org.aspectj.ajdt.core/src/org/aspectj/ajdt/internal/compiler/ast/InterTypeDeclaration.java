@@ -24,6 +24,8 @@ import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.weaver.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
@@ -130,11 +132,28 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 	protected void resolveOnType(ClassScope classScope) {
 		checkSpec();		
+		if (onType instanceof ParameterizedSingleTypeReference) {
+			resolveTypeParametersForITDOnGenericType();
+		}
+
 		onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);
 		if (!onTypeBinding.isValidBinding()) {
 			classScope.problemReporter().invalidType(onType, onTypeBinding);
 			ignoreFurtherInvestigation = true;
 		}
+	}
+
+	private void resolveTypeParametersForITDOnGenericType() {
+		// we have to resolve this to the base type, and in the process 
+		// check that the number of type variables matches.
+		// Then we work out how the letters in the ITD map onto the letters in
+		// the type declaration and swap them.
+
+		// XXX will this mess up error reporting and independent compliation?
+		
+		ParameterizedSingleTypeReference pref = (ParameterizedSingleTypeReference) onType;
+		long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
+		onType = new SingleTypeReference(pref.token,pos);
 	}
 	
 	
