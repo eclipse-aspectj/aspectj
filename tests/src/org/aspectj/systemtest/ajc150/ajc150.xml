@@ -2531,6 +2531,23 @@
      </compile>
    </ajc-test>
    
+   <!-- targetting different types -->
+   
+   <ajc-test dir="java5/generics/itds/differingTargets" title="targetting interface">
+     <compile files="TargettingInterface.aj" options="-1.5"/>
+     <run class="TargettingInterface"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/differingTargets" title="targetting aspect">
+     <compile files="TargettingAspect.aj" options="-1.5"/>
+     <run class="TargettingAspect"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/differingTargets" title="targetting class">
+     <compile files="TargettingClass.aj" options="-1.5"/>
+     <run class="TargettingClass"/>
+   </ajc-test>
+   
    <!-- sharing type variables between the ITD and the generic type -->
 
    <ajc-test dir="java5/generics/itds/sharing" title="method itd sharing type variable with generic type">
@@ -2547,6 +2564,11 @@
    <ajc-test dir="java5/generics/itds" title="non static generic method itd - 2">
      <compile files="NonstaticGenericCtorITD2.aj" options="-1.5"/>
      <run class="NonstaticGenericCtorITD2"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds" title="reusing type variable letters">
+     <compile files="ReusingLetters.aj" options="-1.5"/>
+     <run class="ReusingLetters"/>
    </ajc-test>
    
    <ajc-test dir="java5/generics/itds" title="multiple generic itds in one file">
