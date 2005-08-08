@@ -1336,6 +1336,68 @@ public class BcelShadow extends Shadow {
 			// what the full set of annotations could be (due to static/dynamic type differences...)
 		}
     }
+    
+    protected Member getRelevantMember(Member relevantMember, ResolvedType relevantType){
+    	if (relevantMember != null){
+    		return relevantMember;
+    	}
+    	
+    	relevantMember = getSignature().resolve(world);
+    	
+    	// check the ITD'd dooberries
+    	List mungers = relevantType.resolve(world).getInterTypeMungers();
+    	for (Iterator iter = mungers.iterator(); iter.hasNext();) {
+    		BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+    		if (typeMunger.getMunger() instanceof NewMethodTypeMunger ||
+    				typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
+    			ResolvedMember fakerm = typeMunger.getSignature();
+    			if (fakerm.getName().equals(getSignature().getName()) &&
+    					fakerm.getParameterSignature().equals(getSignature().getParameterSignature())){
+    				if (relevantMember.getKind()==ResolvedMember.CONSTRUCTOR){
+    					relevantMember = AjcMemberMaker.interConstructor(
+    							relevantType,
+    							(ResolvedMember)relevantMember,
+    							typeMunger.getAspectType());
+    				} else {
+    					relevantMember = AjcMemberMaker.interMethod((ResolvedMember)relevantMember,
+        						typeMunger.getAspectType(), false);
+    				}
+    				// in the above.. what about if it's on an Interface? Can that happen?
+    		    	// then the last arg of the above should be true
+    				return relevantMember;
+    			}
+    		}
+    	}
+    	return null;
+    }
+    
+    protected ResolvedType [] getAnnotations(Member relevantMember, ResolvedType relevantType){
+    	if (relevantMember == null){
+    		// check the ITD'd dooberries
+    		List mungers = relevantType.resolve(world).getInterTypeMungers();
+    		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
+    			BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+    			if (typeMunger.getMunger() instanceof NewMethodTypeMunger ||
+    					typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
+    				ResolvedMember fakerm = typeMunger.getSignature();
+    				//if (fakerm.hasAnnotations()) 
+    				
+    				ResolvedMember ajcMethod = (getSignature().getKind()==ResolvedMember.CONSTRUCTOR?
+    						AjcMemberMaker.postIntroducedConstructor(typeMunger.getAspectType(),fakerm.getDeclaringType(),fakerm.getParameterTypes()):
+    							AjcMemberMaker.interMethodDispatcher(fakerm,typeMunger.getAspectType()));
+    				//AjcMemberMaker.interMethodBody(fakerm,typeMunger.getAspectType()));
+    				ResolvedMember rmm = findMethod(typeMunger.getAspectType(),ajcMethod);
+    				if (fakerm.getName().equals(getSignature().getName()) &&
+    						fakerm.getParameterSignature().equals(getSignature().getParameterSignature())) {
+    					relevantType = typeMunger.getAspectType();
+    					relevantMember = rmm;
+    					return relevantMember.getAnnotationTypes();
+    				}
+    			}
+    		}
+    	}
+    	return relevantMember.getAnnotationTypes();
+    }
 	
     public void initializeKindedAnnotationVars() {
     	if (kindedAnnotationVars != null) return;
@@ -1355,30 +1417,9 @@ public class BcelShadow extends Shadow {
     		
     	} else if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
             relevantMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());
-    		
-			if (relevantMember == null) {
-				// check the ITD'd dooberries
-				List mungers = relevantType.resolve(world).getInterTypeMungers();
-				for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-					BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
-					if (typeMunger.getMunger() instanceof NewMethodTypeMunger ||
-						typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
-					  ResolvedMember fakerm = typeMunger.getSignature();
-					  //if (fakerm.hasAnnotations()) 
-					   
-					  ResolvedMember ajcMethod = (getSignature().getKind()==ResolvedMember.CONSTRUCTOR?
-						  AjcMemberMaker.postIntroducedConstructor(typeMunger.getAspectType(),fakerm.getDeclaringType(),fakerm.getParameterTypes()):
-						  AjcMemberMaker.interMethodBody(fakerm,typeMunger.getAspectType()));
-				  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
-					  if (fakerm.getName().equals(getSignature().getName()) &&
-						  fakerm.getParameterSignature().equals(getSignature().getParameterSignature())) {
-						relevantType = typeMunger.getAspectType();
-						relevantMember = rmm;
-					  }
-					}
-				}
-			}
-    		annotations = relevantMember.getAnnotationTypes();
+       
+            annotations = getAnnotations(relevantMember,relevantType);
+            relevantMember = getRelevantMember(relevantMember,relevantType);
     		
     	} else if (getKind() == Shadow.FieldSet || getKind() == Shadow.FieldGet) {
     		relevantMember = findField(relevantType.getDeclaredFields(),getSignature());
@@ -1407,29 +1448,8 @@ public class BcelShadow extends Shadow {
     		ResolvedMember rm[] = relevantType.getDeclaredMethods();
     		relevantMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		
-			if (relevantMember == null) {
-				// check the ITD'd dooberries
-				List mungers = relevantType.resolve(world).getInterTypeMungers();
-				for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-					BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
-					if (typeMunger.getMunger() instanceof NewMethodTypeMunger ||
-						typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
-					  ResolvedMember fakerm = typeMunger.getSignature();
-					  //if (fakerm.hasAnnotations()) 
-					  
-					  ResolvedMember ajcMethod = (getSignature().getKind()==ResolvedMember.CONSTRUCTOR?
-						  AjcMemberMaker.postIntroducedConstructor(typeMunger.getAspectType(),fakerm.getDeclaringType(),fakerm.getParameterTypes()):
-						  AjcMemberMaker.interMethodBody(fakerm,typeMunger.getAspectType()));
-				  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
-					  if (fakerm.getName().equals(getSignature().getName()) &&
-						  fakerm.getParameterSignature().equals(getSignature().getParameterSignature())) {
-						relevantType = typeMunger.getAspectType();
-						relevantMember = rmm;
-					  }
-					}
-				}
-			}
-    		annotations = relevantMember.getAnnotationTypes();
+    		annotations = getAnnotations(relevantMember,relevantType);
+            relevantMember = getRelevantMember(relevantMember,relevantType);
     		
     	} else if (getKind() == Shadow.ExceptionHandler) {
     		relevantType = getSignature().getParameterTypes()[0].resolve(world);

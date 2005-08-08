@@ -27,9 +27,12 @@ import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.generic.BranchInstruction;
 import org.aspectj.apache.bcel.generic.CPInstruction;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
 import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
 import org.aspectj.apache.bcel.generic.IndexedInstruction;
@@ -41,6 +44,7 @@ import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.LocalVariableInstruction;
+import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.NEW;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.PUTFIELD;
@@ -49,6 +53,7 @@ import org.aspectj.apache.bcel.generic.RET;
 import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.WeaveMessage;
@@ -66,8 +71,8 @@ import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
@@ -463,46 +468,55 @@ class BcelClassWeaver implements IClassWeaver {
           for (int memberCounter = 0;memberCounter<members.size();memberCounter++) {
             LazyMethodGen mg = (LazyMethodGen)members.get(memberCounter);
             if (!mg.getName().startsWith(NameMangler.PREFIX)) {
-
-            // Single first pass
-            List worthRetrying = new ArrayList();
-            boolean modificationOccured = false;
-            
-            for (Iterator iter = decaMs.iterator(); iter.hasNext();) {
-				DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
-				
-				if (decaM.matches(mg.getMemberView(),world)) {
-	  				if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
-					mg.addAnnotation(decaM.getAnnotationX());
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
-                    
-					reportMethodCtorWeavingMessage(clazz, mg, decaM);
-					isChanged = true;
-					modificationOccured = true;
-				} else {
-					if (!decaM.isStarredAnnotationPattern()) 
-						worthRetrying.add(decaM); // an annotation is specified that might be put on by a subsequent decaf
-				}
-			}
-			
-            // Multiple secondary passes
-            while (!worthRetrying.isEmpty() && modificationOccured) {
-              modificationOccured = false;
-              // lets have another go
-              List forRemoval = new ArrayList();
-              for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
-				DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
-				if (decaM.matches(mg.getMemberView(),world)) {
-					if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
-					mg.addAnnotation(decaM.getAnnotationX());
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
-					isChanged = true;
-					modificationOccured = true;
-					forRemoval.add(decaM);
-				}
-			  }
-			  worthRetrying.removeAll(forRemoval);
-            }
+            	
+            	// Single first pass
+            	List worthRetrying = new ArrayList();
+            	boolean modificationOccured = false;
+            	
+            	for (Iterator iter = decaMs.iterator(); iter.hasNext();) {
+            		DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
+            		
+            		if (decaM.matches(mg.getMemberView(),world)) {
+            			if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
+            			
+            			Annotation a = decaM.getAnnotationX().getBcelAnnotation();
+            			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
+            			Method oldMethod = mg.getMethod();
+            			MethodGen myGen = new MethodGen(oldMethod,clazz.getClassName(),clazz.getConstantPoolGen());
+            			myGen.addAnnotation(ag);
+            			Method newMethod = myGen.getMethod();
+            			mg.addAnnotation(decaM.getAnnotationX());
+            			members.set(memberCounter,new LazyMethodGen(newMethod,clazz));
+            			
+            			AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
+            			
+            			reportMethodCtorWeavingMessage(clazz, mg, decaM);
+            			isChanged = true;
+            			modificationOccured = true;
+            		} else {
+            			if (!decaM.isStarredAnnotationPattern()) 
+            				worthRetrying.add(decaM); // an annotation is specified that might be put on by a subsequent decaf
+            		}
+            	}
+            	
+            	// Multiple secondary passes
+            	while (!worthRetrying.isEmpty() && modificationOccured) {
+            		modificationOccured = false;
+            		// lets have another go
+            		List forRemoval = new ArrayList();
+            		for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
+            			DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
+            			if (decaM.matches(mg.getMemberView(),world)) {
+            				if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
+            				mg.addAnnotation(decaM.getAnnotationX());
+            				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
+            				isChanged = true;
+            				modificationOccured = true;
+            				forRemoval.add(decaM);
+            			}
+            		}
+            		worthRetrying.removeAll(forRemoval);
+            	}
             }
           }
         }
@@ -599,14 +613,16 @@ class BcelClassWeaver implements IClassWeaver {
 	// FIXME asc refactor this to neaten it up
 	public LazyMethodGen locateAnnotationHolderForMethodCtorMunger(LazyClassGen clazz,BcelTypeMunger methodCtorMunger) {
 		if (methodCtorMunger.getMunger() instanceof NewMethodTypeMunger) {
-		NewMethodTypeMunger nftm = (NewMethodTypeMunger)methodCtorMunger.getMunger();
-		ResolvedMember lookingFor =AjcMemberMaker.interMethodBody(nftm.getSignature(),methodCtorMunger.getAspectType());
-		List meths = clazz.getMethodGens();
-		for (Iterator iter = meths.iterator(); iter.hasNext();) {
-			LazyMethodGen element = (LazyMethodGen) iter.next();
-			if (element.getName().equals(lookingFor.getName()) && element.getParameterSignature().equals(lookingFor.getParameterSignature())) return element;
-		}
-		return null;
+			NewMethodTypeMunger nftm = (NewMethodTypeMunger)methodCtorMunger.getMunger();
+			
+			ResolvedMember lookingFor = AjcMemberMaker.interMethodDispatcher(nftm.getSignature(),methodCtorMunger.getAspectType());
+			
+			List meths = clazz.getMethodGens();
+			for (Iterator iter = meths.iterator(); iter.hasNext();) {
+				LazyMethodGen element = (LazyMethodGen) iter.next();
+				if (element.getName().equals(lookingFor.getName()) && element.getParameterSignature().equals(lookingFor.getParameterSignature())) return element;
+			}
+			return null;
 		} else if (methodCtorMunger.getMunger() instanceof NewConstructorTypeMunger) {
 			NewConstructorTypeMunger nftm = (NewConstructorTypeMunger)methodCtorMunger.getMunger();
 			ResolvedMember lookingFor =AjcMemberMaker.postIntroducedConstructor(methodCtorMunger.getAspectType(),nftm.getSignature().getDeclaringType(),nftm.getSignature().getParameterTypes());
@@ -683,20 +699,20 @@ class BcelClassWeaver implements IClassWeaver {
 		boolean isChanged = false;
 		for (Iterator iter = itdMethodsCtors.iterator(); iter.hasNext();) {
 			BcelTypeMunger methodctorMunger = (BcelTypeMunger) iter.next();
-			ResolvedMember itdIsActually = methodctorMunger.getSignature();
+			ResolvedMember unMangledInterMethod = methodctorMunger.getSignature();
 			List worthRetrying = new ArrayList();
 			boolean modificationOccured = false;
 			
 			for (Iterator iter2 = decaMCs.iterator(); iter2.hasNext();) {
 				DeclareAnnotation decaMC = (DeclareAnnotation) iter2.next();
-				
-				if (decaMC.matches(itdIsActually,world)) {
+				if (decaMC.matches(unMangledInterMethod,world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForMethodCtorMunger(clazz,methodctorMunger);
-					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaMC,reportedErrors)) continue; // skip this one...
+					if (annotationHolder == null || doesAlreadyHaveAnnotation(annotationHolder,unMangledInterMethod,decaMC,reportedErrors)){
+						continue; // skip this one...
+					}
 					annotationHolder.addAnnotation(decaMC.getAnnotationX());
-					itdIsActually.addAnnotation(decaMC.getAnnotationX());
 					isChanged=true;
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),itdIsActually.getSourceLocation());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),unMangledInterMethod.getSourceLocation());
 					modificationOccured = true;					
 				} else {
 					if (!decaMC.isStarredAnnotationPattern()) 
@@ -709,12 +725,12 @@ class BcelClassWeaver implements IClassWeaver {
                 List forRemoval = new ArrayList();
                 for (Iterator iter2 = worthRetrying.iterator(); iter.hasNext();) {
 				  DeclareAnnotation decaMC = (DeclareAnnotation) iter2.next();
-				  if (decaMC.matches(itdIsActually,world)) {
+				  if (decaMC.matches(unMangledInterMethod,world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,methodctorMunger);
-					if (doesAlreadyHaveAnnotation(annotationHolder,itdIsActually,decaMC,reportedErrors)) continue; // skip this one...
+					if (doesAlreadyHaveAnnotation(annotationHolder,unMangledInterMethod,decaMC,reportedErrors)) continue; // skip this one...
 					annotationHolder.addAnnotation(decaMC.getAnnotationX());
-					itdIsActually.addAnnotation(decaMC.getAnnotationX());
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),itdIsActually.getSourceLocation());
+					unMangledInterMethod.addAnnotation(decaMC.getAnnotationX());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),unMangledInterMethod.getSourceLocation());
 					isChanged = true;
 					modificationOccured = true;
 					forRemoval.add(decaMC);
@@ -726,6 +742,16 @@ class BcelClassWeaver implements IClassWeaver {
 	      return isChanged;
 	}
 	
+	private boolean dontAddTwice(DeclareAnnotation decaF, Annotation [] dontAddMeTwice){
+		for (int i = 0; i < dontAddMeTwice.length; i++){
+			Annotation ann = dontAddMeTwice[i];
+			if (ann != null && decaF.getAnnotationX().getTypeName().equals(ann.getTypeName())){
+				dontAddMeTwice[i] = null; // incase it really has been added twice!
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * Weave any declare @field statements into the fields of the supplied class
@@ -769,12 +795,37 @@ class BcelClassWeaver implements IClassWeaver {
             // Single first pass
             List worthRetrying = new ArrayList();
             boolean modificationOccured = false;
+            
+            Annotation [] dontAddMeTwice = fields[fieldCounter].getAnnotations();
+            
             // go through all the declare @field statements
             for (Iterator iter = decaFs.iterator(); iter.hasNext();) {
 				DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
 				if (decaF.matches(aBcelField,world)) {
-					if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)) continue; // skip this one...
-					aBcelField.addAnnotation(decaF.getAnnotationX());
+					
+					if (!dontAddTwice(decaF,dontAddMeTwice)){
+						if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)){
+							continue;
+						}
+						
+						if(decaF.getAnnotationX().isRuntimeVisible()){ // isAnnotationWithRuntimeRetention(clazz.getJavaClass(world))){
+						//if(decaF.getAnnotationTypeX().isAnnotationWithRuntimeRetention(world)){						
+							// it should be runtime visible, so put it on the Field
+							Annotation a = decaF.getAnnotationX().getBcelAnnotation();
+							AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
+							FieldGen myGen = new FieldGen(fields[fieldCounter],clazz.getConstantPoolGen());
+							myGen.addAnnotation(ag);
+							Field newField = myGen.getField();
+							
+							aBcelField.addAnnotation(decaF.getAnnotationX());
+							clazz.replaceField(fields[fieldCounter],newField);
+							fields[fieldCounter]=newField;
+							
+						} else{
+							aBcelField.addAnnotation(decaF.getAnnotationX());
+						}
+					}
+					
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
 					reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);		
 					isChanged = true;
@@ -793,6 +844,7 @@ class BcelClassWeaver implements IClassWeaver {
               for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
 				DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
 				if (decaF.matches(aBcelField,world)) {
+					// below code is for recursive things
 					if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)) continue; // skip this one...
 					aBcelField.addAnnotation(decaF.getAnnotationX());
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
@@ -846,7 +898,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 	
 	private boolean doesAlreadyHaveAnnotation(LazyMethodGen rm,ResolvedMember itdfieldsig,DeclareAnnotation deca,List reportedProblems) {
-		  if (rm.hasAnnotation(deca.getAnnotationTypeX())) {
+		  if (rm != null && rm.hasAnnotation(deca.getAnnotationTypeX())) {
 			  if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
 				  Integer uniqueID = new Integer(rm.hashCode()*deca.hashCode());
 				  if (!reportedProblems.contains(uniqueID)) {
@@ -1592,7 +1644,7 @@ class BcelClassWeaver implements IClassWeaver {
 					ResolvedMember resolvedDooberry = world.resolve(declaredSig);
 					annotations = resolvedDooberry.getAnnotationTypes();
 				} else {
-					ResolvedMember realthing = AjcMemberMaker.interMethodBody(rm,memberHostType);
+					ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm,memberHostType);
 					ResolvedMember resolvedDooberry = world.resolve(realthing);
 					annotations = resolvedDooberry.getAnnotationTypes();
 				}

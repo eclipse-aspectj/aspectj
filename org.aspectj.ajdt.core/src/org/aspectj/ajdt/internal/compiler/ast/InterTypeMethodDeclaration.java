@@ -156,9 +156,10 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(makeAttribute()));
 		
 		if (!Modifier.isAbstract(declaredModifiers)) {
-			super.generateCode(classScope, classFile);
+			super.generateCode(classScope, classFile); // this makes the interMethodBody
 		}
 		
+		// annotations on the ITD declaration get put on this method 
 		generateDispatchMethod(classScope, classFile);
 	}
 	
@@ -176,7 +177,13 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		
 		classFile.generateMethodInfoHeader(dispatchBinding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(dispatchBinding,
+		
+		
+		// Watch out!  We are passing in 'binding' here (instead of dispatchBinding) so that
+		// the dispatch binding attributes will include the annotations from the 'binding'.
+		// There is a chance that something else on the binding (e.g. throws clause) might
+		// damage the attributes generated for the dispatch binding.
+		int attributeNumber = classFile.generateMethodInfoAttribute(binding,
 				false,
 				makeEffectiveSignatureAttribute(signature, Shadow.MethodCall, false));
 		int codeAttributeOffset = classFile.contentsOffset;

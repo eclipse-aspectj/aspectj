@@ -42,6 +42,7 @@ public class AllTestsAspectJ150 {
 		suite.addTest(Autoboxing.suite());		
 		suite.addTest(Annotations.suite());
 		suite.addTest(AnnotationBinding.suite());
+		suite.addTest(RuntimeAnnotations.suite());
 		
 		suite.addTest(SuppressedWarnings.suite());
 		suite.addTest(DeclareAnnotationTests.suite());
