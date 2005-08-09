@@ -40,6 +40,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
@@ -76,7 +77,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		FuzzyBoolean ret =
-			arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()), TypePattern.DYNAMIC);
+			arguments.matches(shadow.getIWorld().resolve(shadow.getGenericArgTypes()), TypePattern.DYNAMIC);
 		return ret;
 	}
 	
@@ -242,10 +243,10 @@ public class ArgsPointcut extends NameBindingPointcut {
 		Test ret = Literal.TRUE;
 		
 		for (int i=0; i < len; i++) {
-			UnresolvedType argType = shadow.getArgType(i);
+			UnresolvedType argType = shadow.getGenericArgTypes()[i];
 			TypePattern type = patterns[i];
+            ResolvedType argRTX = shadow.getIWorld().resolve(argType,true);
 			if (!(type instanceof BindingTypePattern)) {
-                ResolvedType argRTX = shadow.getIWorld().resolve(argType,true);
                 if (argRTX == ResolvedType.MISSING) {
                   IMessage msg = new Message(
                     WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
@@ -268,6 +269,29 @@ public class ArgsPointcut extends NameBindingPointcut {
 				state.setErroneousVar(btp.getFormalIndex());
 			  }
 			}
+
+			World world = shadow.getIWorld();
+			ResolvedType typeToExpose = type.getExactType().resolve(world);
+			if (typeToExpose.isParameterizedType()) {
+				boolean inDoubt = (type.matchesInstanceof(argRTX) == FuzzyBoolean.MAYBE);				
+				if (inDoubt && world.getLint().uncheckedArgument.isEnabled()) {
+					String uncheckedMatchWith = typeToExpose.getSimpleBaseName();
+					if (argRTX.isParameterizedType() && (argRTX.getRawType() == typeToExpose.getRawType())) {
+						uncheckedMatchWith = argRTX.getSimpleName();
+					}
+					if (!isUncheckedArgumentWarningSuppressed()) {
+						world.getLint().uncheckedArgument.signal(
+								new String[] {
+										typeToExpose.getSimpleName(),
+										uncheckedMatchWith,
+										typeToExpose.getSimpleBaseName(),
+										shadow.toResolvedString(world)},
+								getSourceLocation(),
+								new ISourceLocation[] {shadow.getSourceLocation()});
+						}
+				}
+			}			
+			
 			ret = Test.makeAnd(ret,
 				exposeStateForVar(shadow.getArgVar(i), type, state,shadow.getIWorld()));
 		}
@@ -275,8 +299,18 @@ public class ArgsPointcut extends NameBindingPointcut {
 		return ret;		
 	}
 
+	/**
+	 * We need to find out if someone has put the @SuppressAjWarnings{"uncheckedArgument"}
+	 * annotation somewhere. That somewhere is going to be an a piece of advice that uses this
+	 * pointcut. But how do we find it???
+	 * @return
+	 */
+	private boolean isUncheckedArgumentWarningSuppressed() {
+		return false;
+	}
+	
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-		if (arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()), TypePattern.DYNAMIC).alwaysFalse()) {
+		if (arguments.matches(shadow.getIWorld().resolve(shadow.getGenericArgTypes()), TypePattern.DYNAMIC).alwaysFalse()) {
 			return Literal.FALSE;
 		}
 		int ellipsisCount = arguments.ellipsisCount;
