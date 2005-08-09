@@ -1273,9 +1273,25 @@ public class PatternParser {
 	}
 	
 	private void eat(String expectedValue,String expectedMessage) {
-		IToken next = tokenSource.next();
+		IToken next = nextToken();
 		if (next.getString() != expectedValue) {
+			if (expectedValue.equals(">") && next.getString().startsWith(">")) {
+				// handle problem of >> and >>> being lexed as single tokens
+				pendingRightArrows = BasicToken.makeLiteral(next.getString().substring(1).intern(), "string", next.getStart()+1, next.getEnd());
+				return;
+			}
 			throw new ParserException(expectedMessage, next);
+		}
+	}
+
+	private IToken pendingRightArrows;
+	private IToken nextToken() {
+		if (pendingRightArrows != null) {
+			IToken ret = pendingRightArrows;
+			pendingRightArrows = null;
+			return ret;
+		} else {
+			return tokenSource.next();
 		}
 	}
 	
