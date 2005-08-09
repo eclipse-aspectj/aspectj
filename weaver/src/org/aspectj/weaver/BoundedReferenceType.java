@@ -71,8 +71,59 @@ public class BoundedReferenceType extends ReferenceType {
 		return getLowerBound() != null;
 	}
 	
-	public boolean isExtends() { return isExtends; }
+	public boolean isExtends() { return (isExtends && !getUpperBound().getSignature().equals("Ljava/lang/Object;")); }
 	public boolean isSuper()   { return isSuper;   }
+	
+	public boolean alwaysMatches(ResolvedType aCandidateType) {
+		if (isExtends()) {
+			// aCandidateType must be a subtype of upperBound
+			return ((ReferenceType)getUpperBound()).isAssignableFrom(aCandidateType);
+		} else if (isSuper()) {
+			// aCandidateType must be a supertype of lowerBound
+			return aCandidateType.isAssignableFrom((ReferenceType)getLowerBound());
+		} else {
+			return true; // straight '?'
+		}
+	}
+	
+	// this "maybe matches" that
+	public boolean canBeCoercedTo(ResolvedType aCandidateType) {
+		if (alwaysMatches(aCandidateType)) return true;
+		if (aCandidateType.isGenericWildcard()) {
+			ResolvedType myUpperBound = (ResolvedType) getUpperBound();
+			ResolvedType myLowerBound = (ResolvedType) getLowerBound();
+			if (isExtends()) {
+				if (aCandidateType.isExtends()) {
+					return myUpperBound.isAssignableFrom((ResolvedType)aCandidateType.getUpperBound()); 
+				} else if (aCandidateType.isSuper()) {
+					return myUpperBound == aCandidateType.getLowerBound();
+				} else {
+					return true;  // it's '?'
+				}
+			} else if (isSuper()) {
+				if (aCandidateType.isSuper()) {
+					return ((ResolvedType)aCandidateType.getLowerBound()).isAssignableFrom(myLowerBound);
+				} else if (aCandidateType.isExtends()) {
+					return myLowerBound == aCandidateType.getUpperBound();
+				} else {
+					return true;
+				}
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	public String getSimpleName() {
+		if (!isExtends() && !isSuper()) return "?";
+		if (isExtends()) {
+			return ("? extends " + getUpperBound().getSimpleName());
+		} else {
+			return ("? super " + getLowerBound().getSimpleName());
+		}
+	}
 	
 	// override to include additional interface bounds...
 	public ResolvedType[] getDeclaredInterfaces() {
