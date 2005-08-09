@@ -2327,6 +2327,16 @@
      </run>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 4">
+     <compile files="ParentChildRelationship.aj" options="-1.5"/>
+   </ajc-test>
+   
+   <!-- ajdk example -->
+   <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 5 (ajdk)">
+     <compile files="Blob.java,BlobContainment.aj,ParentChildRelationship.aj" options="-1.5"/>
+     <run class="BlobContainment"/>
+   </ajc-test>
+   
    <!-- end of generic aspects -->
    
    <!-- generic ITDs -->

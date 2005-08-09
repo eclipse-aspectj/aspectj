@@ -206,8 +206,8 @@ public class EclipseFactory {
 			// case let's set it correctly based on the one in the eclipse WildcardBinding
 			if (eWB.bound instanceof TypeVariableBinding) {
 				UnresolvedType tVar = fromTypeVariableBinding((TypeVariableBinding)eWB.bound);
-				if (ut.isGenericWildcardSuper()) ut.setLowerBound(tVar);
-				if (ut.isGenericWildcardExtends()) ut.setUpperBound(tVar);
+				if (ut.isGenericWildcard() && ut.isSuper()) ut.setLowerBound(tVar);
+				if (ut.isGenericWildcard() && ut.isExtends()) ut.setUpperBound(tVar);
 			}
 			return ut;
 		}
@@ -297,12 +297,13 @@ public class EclipseFactory {
 		tv.setUpperBound(superclassType);
 		tv.setAdditionalInterfaceBounds(superinterfaces);
 		tv.setRank(aTypeVariableBinding.rank);
-// dont need the declaring element yet...
-//		if (aTypeVariableBinding.declaringElement instanceof MethodBinding) {
+		if (aTypeVariableBinding.declaringElement instanceof MethodBinding) {
+			tv.setDeclaringElementKind(TypeVariable.METHOD);
 //			tv.setDeclaringElement(fromBinding((MethodBinding)aTypeVariableBinding.declaringElement);
-//		} else {
+		} else {
+			tv.setDeclaringElementKind(TypeVariable.TYPE);
 //		    //	tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
-//		}
+		}
 		ret.setTypeVariable(tv);
 		typeVariableBindingsInProgress.remove(aTypeVariableBinding);
 		return ret;
@@ -504,12 +505,14 @@ public class EclipseFactory {
 			BoundedReferenceType brt = (BoundedReferenceType)typeX;
 			// Work out 'kind' for the WildcardBinding
 			int boundkind = Wildcard.UNBOUND;
-			if (brt.isExtends()) boundkind = Wildcard.EXTENDS;
-			if (brt.isSuper()) boundkind = Wildcard.SUPER;
-			// get the bound right
 			TypeBinding bound = null;
-			if (brt.isGenericWildcardExtends()) bound = makeTypeBinding(brt.getUpperBound());
-			if (brt.isGenericWildcardSuper())   bound = makeTypeBinding(brt.getLowerBound());
+			if (brt.isExtends()) {
+				boundkind = Wildcard.EXTENDS;
+				bound = makeTypeBinding(brt.getUpperBound());
+			} else if (brt.isSuper()) {
+				boundkind = Wildcard.SUPER;
+				bound = makeTypeBinding(brt.getLowerBound());
+			}
 			TypeBinding[] otherBounds = null;
 			if (brt.getAdditionalBounds()!=null && brt.getAdditionalBounds().length!=0) otherBounds = makeTypeBindings(brt.getAdditionalBounds());
 			// FIXME asc rank should not always be 0 ... 

@@ -34,7 +34,17 @@ public class TypeVariable {
 	private String name;
 	
 	private int rank;
-	
+
+    // It would be nice to push this field onto the TypeVariableDeclaringElement
+    // interface (a getKind()) but at the moment we don't always guarantee
+    // to set the declaring element (eclipse seems to utilise the knowledge of
+    // what declared the type variable, but we dont yet...)
+	/**
+	 * What kind of element declared this type variable?
+	 */
+	private int declaringElementKind = TYPE;
+	public static final int METHOD  = 1;
+	public static final int TYPE    = 2;
 	private TypeVariableDeclaringElement declaringElement;
 	
 	/**
@@ -252,6 +262,15 @@ public class TypeVariable {
 	
 	public TypeVariableDeclaringElement getDeclaringElement() {
 		return declaringElement;
+	}
+	
+	public void setDeclaringElementKind(int kind) {
+		this.declaringElementKind = kind;
+	}
+	
+	public int getDeclaringElementKind() {
+//		if (declaringElementKind==UNKNOWN) throw new RuntimeException("Dont know declarer of this tvar : "+this);
+		return declaringElementKind;
 	}
 	
 }

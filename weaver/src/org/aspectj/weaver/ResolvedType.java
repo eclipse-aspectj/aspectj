@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
@@ -1609,6 +1609,69 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public String getSignatureForAttribute() {
 		throw new RuntimeException("Cannot ask this type "+this+" for a generic sig attribute");
 	}
-
+	
+	private FuzzyBoolean parameterizedWithAMemberTypeVariable = FuzzyBoolean.MAYBE;
+	
+	/**
+	 * return true if the parameterization of this type includes a member type variable.  Member
+	 * type variables occur in generic methods/ctors.
+	 */
+	public boolean isParameterizedWithAMemberTypeVariable() {
+		// MAYBE means we haven't worked it out yet...
+		if (parameterizedWithAMemberTypeVariable==FuzzyBoolean.MAYBE) {
+			
+			// if there are no type parameters then we cant be...
+			if (typeParameters==null || typeParameters.length==0) {
+				parameterizedWithAMemberTypeVariable = FuzzyBoolean.NO;
+				return false;
+			}
+			
+			for (int i = 0; i < typeParameters.length; i++) {
+				UnresolvedType aType = (ResolvedType)typeParameters[i];
+				if (aType.isTypeVariableReference()  && ((TypeVariableReference)aType).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
+					parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
+					return true;
+				}
+				if (aType.isParameterizedType()) {
+					boolean b = aType.isParameterizedWithAMemberTypeVariable();
+					if (b) {
+						parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
+						return true;
+					}
+				}
+				if (aType.isGenericWildcard()) {
+					if (aType.isExtends()) {
+						boolean b = false;
+						UnresolvedType upperBound = aType.getUpperBound();
+						if (upperBound.isParameterizedType()) {
+							b = upperBound.isParameterizedWithAMemberTypeVariable();
+						} else if (upperBound.isTypeVariableReference() && ((TypeVariableReference)upperBound).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
+							b = true;
+						}
+						if (b) {
+							parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
+							return true;
+						}
+						// FIXME asc need to check additional interface bounds
+					}
+					if (aType.isSuper()) {
+						boolean b = false;
+						UnresolvedType lowerBound = aType.getLowerBound();
+						if (lowerBound.isParameterizedType()) {
+							b = lowerBound.isParameterizedWithAMemberTypeVariable();
+						} else if (lowerBound.isTypeVariableReference() && ((TypeVariableReference)lowerBound).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
+							b = true;
+						}
+						if (b) {
+							parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
+							return true;
+						}
+					}
+				}
+			}
+			parameterizedWithAMemberTypeVariable=FuzzyBoolean.NO;
+		}
+		return parameterizedWithAMemberTypeVariable.alwaysTrue();
+	}
 	    
 }

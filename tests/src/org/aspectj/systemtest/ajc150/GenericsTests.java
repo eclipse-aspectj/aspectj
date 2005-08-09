@@ -114,7 +114,6 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * - parameterized ITDs (methods/ctors/fields)
 	 * - ITD target: interface/class/aspect
 	 * - multiple type variables
-	 * - generic ITDs (like generic methods)
 	 * - constructor ITDs, method ITDs
 	 * - ITDs sharing type variables with generic types
 	 * -  relating to above point, this makes generic ITD fields possible
@@ -126,8 +125,32 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * - do type variables assigned to members need to persist across serialization
 	 * - recursive type variable definitions eg. <R extends Comparable<? super R>>
 	 * - super/extends with parameterized types <? extends List<String>>
-	 * - source/binary weaving
 	 * - multiple ITDs defined in one type that reuse type variable letters, specifying different bounds
+	 * - generic aspects
+	 * 
+	 * PASS parsing generic ITDs
+	 * PASS generic methods
+	 * PASS generic constructors
+	 * PASS ITD visibility
+	 * PASS static/nonstatic
+	 * PASS parameterizedITDs
+	 * PASS differing targets (interface/class/aspect)
+	 * PASS multiple type variables in an ITD
+     * TODO using type variables from the target type in your ITD (no type vars of your own)
+	 * TODO parsing ITDs that share type variables with target type
+	 * TODO sharing type variables (methods)
+	 * TODO sharing type variables (fields)
+	 * TODO sharing type variables (constructors)
+	 * TODO sharing type variables and having your own type variables (methods/constructors)
+	 * TODO signature attributes for generic ITDs (public only?)
+	 * TODO binary weaving with changing types (moving between generic and simple)
+	 * TODO bridge method creation
+	 * TODO reusing type variable letter but differing spec across multiple ITDs in one aspect
+	 * PASS wildcards
+	 * TODO exotic class/interface bounds ('? extends List<String>')
+	 * PASS recursive type variable definitions
+	 * TODO generic aspects
+	 * TODO parameterizing ITDs with type variables
 	 */
 	
 	public static Test suite() {
@@ -171,44 +194,33 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     }    
 	
 	// generic aspects
-	public void testPR96220_GenericAspects1() {
-		runTest("generic aspects - 1");
-	}
+	public void testPR96220_GenericAspects1() {runTest("generic aspects - 1");}
+	public void testPR96220_GenericAspects2() {runTest("generic aspects - 2");}
+	public void testPR96220_GenericAspects3() {runTest("generic aspects - 3");}
+//	public void testGenericAspects4()         {runTest("generic aspects - 4");}
+//	public void testGenericAspects5()         {runTest("generic aspects - 5 (ajdk)");}
 	
-	public void testPR96220_GenericAspects2() {
-		runTest("generic aspects - 2");
-	}
+    //////////////////////////////////////////////////////////////////////////////
+    // Generic/Parameterized ITDs - includes scenarios from developers notebook //
+    //////////////////////////////////////////////////////////////////////////////
 	
-	public void testPR96220_GenericAspects3() {
-		runTest("generic aspects - 3");
-	}
-	
-	// Developers notebook
 	
 	// parsing of generic ITD members
-	
 	public void testParseItdNonStaticMethod() {runTest("Parsing generic ITDs - 1");}
 	public void testParseItdStaticMethod()    {runTest("Parsing generic ITDs - 2");}
 	public void testParseItdCtor()            {runTest("Parsing generic ITDs - 3");}
 	public void testParseItdComplexMethod()   {runTest("Parsing generic ITDs - 4");}
 //	public void testParseItdSharingVars1()    {runTest("Parsing generic ITDs - 5");}
 //	public void testParseItdSharingVars2()    {runTest("Parsing generic ITDs - 6");}
-
-	public void testItdNonStaticMember()      {runTest("itd of non static member");}
-	public void testItdStaticMember()         {runTest("itd of static member");}
-
-	public void testStaticGenericMethodITD() {
-		runTest("static generic method itd");
-	}
+	
 	
 	// non static
-
-	public void testGenericMethodITD1() {runTest("generic method itd - 1");} // <E> ... (List<? extends E>)
-	public void testGenericMethodITD2() {runTest("generic method itd - 2");} // <E extends Number> ... (List<? extends E>) called incorrectly
-	public void testGenericMethodITD3() {runTest("generic method itd - 3");} // <E> ... (List<E>,List<E>)
-	public void testGenericMethodITD4() {runTest("generic method itd - 4");} // <A,B> ... (List<A>,List<B>)
-	public void testGenericMethodITD5() {runTest("generic method itd - 5");} // <E> ... (List<E>,List<E>) called incorrectly
-	public void testGenericMethodITD6() {runTest("generic method itd - 6");} // <E extends Number> ... (List<? extends E>)
+	public void testGenericMethodITD1()  {runTest("generic method itd - 1");}   // <E> ... (List<? extends E>)
+	public void testGenericMethodITD2()  {runTest("generic method itd - 2");}   // <E extends Number> ... (List<? extends E>) called incorrectly
+	public void testGenericMethodITD3()  {runTest("generic method itd - 3");}   // <E> ... (List<E>,List<E>)
+	public void testGenericMethodITD4()  {runTest("generic method itd - 4");}   // <A,B> ... (List<A>,List<B>)
+	public void testGenericMethodITD5()  {runTest("generic method itd - 5");}   // <E> ... (List<E>,List<E>) called incorrectly
+	public void testGenericMethodITD6()  {runTest("generic method itd - 6");}   // <E extends Number> ... (List<? extends E>)
 	public void testGenericMethodITD7()  {runTest("generic method itd - 7"); }  // <E> ... (List<E>,List<? extends E>)
 	public void testGenericMethodITD8()  {runTest("generic method itd - 8"); }  // <E> ... (List<E>,List<? extends E>) called incorrectly
 	public void testGenericMethodITD9()  {runTest("generic method itd - 9"); }  // <R extends Comparable<? super R>> ... (List<R>)
@@ -220,30 +232,48 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericMethodITD15() {runTest("generic method itd - 15");}  // <R extends Comparable<? super R>> ... (List<R>) called correctly in a clever way
 	
 
-	public void testParameterizedMethodITD1() {runTest("parameterized method itd - 1");} // (List<? extends Super>)
-	public void testParameterizedMethodITD2() {runTest("parameterized method itd - 2");} // (List<? extends Number>) called incorrectly
-	public void testParameterizedMethodITD3() {runTest("parameterized method itd - 3");} // (List<? super A>) called incorrectly
-	public void testParameterizedMethodITD4() {runTest("parameterized method itd - 4");} // (List<? super B>)
-	
 
+	// generic ctors
 	public void testGenericCtorITD1() {runTest("generic ctor itd - 1");} // <T> new(List<T>)
 	public void testGenericCtorITD2() {runTest("generic ctor itd - 2");} // <T> new(List<T>,List<? extends T>)
 	public void testGenericCtorITD3() {runTest("generic ctor itd - 3");} // <T> new(List<T>,Comparator<? super T>)
 
 	
-/*	
-    public void testMultipleGenericITDsInOneFile() { runTest("multiple generic itds in one file");}
+	// parameterized ITDs
+	public void testParameterizedMethodITD1() {runTest("parameterized method itd - 1");} // (List<? extends Super>)
+	public void testParameterizedMethodITD2() {runTest("parameterized method itd - 2");} // (List<? extends Number>) called incorrectly
+	public void testParameterizedMethodITD3() {runTest("parameterized method itd - 3");} // (List<? super A>) called incorrectly
+	public void testParameterizedMethodITD4() {runTest("parameterized method itd - 4");} // (List<? super B>)
 	
-	// ITDs of differing visibilities
+	
+	// differing visibilities
 	public void testPublicITDs()       {runTest("public itds");}
 	public void testPublicITDsErrors() {runTest("public itds with errors");}
 	public void testPrivateITDs()      {runTest("private itds");}
 	public void testPackageITDs()      {runTest("package itds");}
 	
-	// ITDs that share a type variable with the target generic type
-	public void testMethodITDsSharingTvar() {runTest("method itd sharing type variable with generic type");}
-	public void testFieldITDsSharingTvar()  {runTest("field itd sharing type variable with generic type");}
-*/
+	
+	// targetting different types (interface/class/aspect)
+	public void testTargettingInterface() {runTest("targetting interface");}
+	public void testTargettingAspect()    {runTest("targetting aspect");}
+	public void testTargettingClass()     {runTest("targetting class");}
+	
+	
+	
+	// sharing a type variable between the ITD and the target generic type	
+//	public void testMethodITDsSharingTvar() {runTest("method itd sharing type variable with generic type");}
+//	public void testFieldITDsSharingTvar()  {runTest("field itd sharing type variable with generic type");}
+
+	
+	// general tests ... usually just more complex scenarios
+	public void testReusingTypeVariableLetters()   {runTest("reusing type variable letters");}
+    public void testMultipleGenericITDsInOneFile() {runTest("multiple generic itds in one file");}
+	public void testItdNonStaticMember()           {runTest("itd of non static member");}
+	public void testItdStaticMember()              {runTest("itd of static member");}
+	public void testStaticGenericMethodITD()       {runTest("static generic method itd");}
+	
+	
+
 //	public void testGenericITFSharingTypeVariable() {
 //		runTest("generic intertype field declaration, sharing type variable");
 //	}

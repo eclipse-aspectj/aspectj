@@ -340,18 +340,16 @@ public abstract class World implements Dump.INode {
      */
     private ReferenceType resolveGenericWildcardFor(UnresolvedType aType) {
     	BoundedReferenceType ret = null;
-    	// FIXME asc isExtends? isGenericWildcardExtends?  I dont like having two
     	// FIXME asc doesnt take account of additional interface bounds (e.g. ? super R & Serializable - can you do that?)
-    	if (aType.isGenericWildcardExtends()) {
+    	if (aType.isExtends()) {
     		ReferenceType upperBound = (ReferenceType)resolve(aType.getUpperBound());
     		ret = new BoundedReferenceType(upperBound,true,this);
-       	} else {
+       	} else if (aType.isSuper()) {
     		ReferenceType lowerBound = (ReferenceType) resolve(aType.getLowerBound());
     		ret = new BoundedReferenceType(lowerBound,false,this);
+    	} else {
+    		// must be ? on its own!
     	}
-    	// FIXME asc verify: I don't think these go in the typemap, it makes it potentially impossible to differentiate different uses of 'T',
-    	// for example '? super T' where T is representing different things in two places would have the same sig (-TT;)
-    	// typeMap.put(aType.getSignature(),ret);
     	return ret;
     }
     
@@ -593,9 +591,42 @@ public abstract class World implements Dump.INode {
 		private Map tMap = new HashMap();
 		/** Map of types that may be ejected from the cache if we need space */
 		private Map expendableMap = new WeakHashMap();
-					
-		/** Add a new type into the map, the key is the type signature */
+		
+		private static final boolean debug = false;
+		/** 
+		 * Add a new type into the map, the key is the type signature.
+		 * Some types do *not* go in the map, these are ones involving
+		 * *member* type variables.  The reason is that when all you have is the
+		 * signature which gives you a type variable name, you cannot 
+		 * guarantee you are using the type variable in the same way 
+		 * as someone previously working with a similarly
+		 * named type variable.  So, these do not go into the map:
+		 * - TypeVariableReferenceType.
+		 * - ParameterizedType where a member type variable is involved.
+		 * - BoundedReferenceType when one of the bounds is a type variable.
+		 * 
+		 * definition: "member type variables" - a tvar declared on a generic 
+		 * method/ctor as opposed to those you see declared on a generic type.
+		 */
 		public ResolvedType put(String key, ResolvedType type) { 
+			if (type.isParameterizedType() && type.isParameterizedWithAMemberTypeVariable()) {
+				if (debug) 
+					System.err.println("Not putting a parameterized type that utilises member declared type variables into the typemap: key="+key+" type="+type);
+				return type;
+			}
+			if (type.isTypeVariableReference()) {
+				if (debug) 
+					System.err.println("Not putting a type variable reference type into the typemap: key="+key+" type="+type);
+				return type;
+			}
+			// this test should be improved - only avoid putting them in if one of the
+			// bounds is a member type variable
+			if (type instanceof BoundedReferenceType) {
+				if (debug) 
+					System.err.println("Not putting a bounded reference type into the typemap: key="+key+" type="+type);
+				return type;
+			}
+						
 			if (isExpendable(type))  {
 				return (ResolvedType) expendableMap.put(key,type);
 			} else {

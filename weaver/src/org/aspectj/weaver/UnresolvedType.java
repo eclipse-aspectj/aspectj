@@ -156,6 +156,12 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	 */
 	private UnresolvedType lowerBound;
 	
+	/**
+	 * for wildcards '? extends' or for type variables 'T extends'
+	 */
+	private boolean isSuper   = false;
+	private boolean isExtends = false;
+	
    /**
      * Determines if this represents a primitive type.  A primitive type
      * is one of nine predefined resolved types.
@@ -172,16 +178,16 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
      * @see     ResolvedType#Double
      * @see     ResolvedType#Void
      */   
-    public boolean isPrimitiveType() { return typeKind == TypeKind.PRIMITIVE; }
-    public boolean isSimpleType() { return typeKind == TypeKind.SIMPLE; }
-    public boolean isRawType() { return typeKind == TypeKind.RAW; }
-    public boolean isGenericType() { return typeKind == TypeKind.GENERIC; }
-    public boolean isParameterizedType() { return typeKind == TypeKind.PARAMETERIZED; }
-    public boolean isTypeVariableReference() { return typeKind == TypeKind.TYPE_VARIABLE; }
-    public boolean isGenericWildcard() { return typeKind == TypeKind.WILDCARD; }
-    public boolean isGenericWildcardExtends() { return isGenericWildcard() && upperBound != null; }
-    public boolean isGenericWildcardSuper() { return isGenericWildcard() && lowerBound != null; }
-
+    public boolean isPrimitiveType()          { return typeKind == TypeKind.PRIMITIVE; }
+    public boolean isSimpleType()             { return typeKind == TypeKind.SIMPLE; }
+    public boolean isRawType()                { return typeKind == TypeKind.RAW; }
+    public boolean isGenericType()            { return typeKind == TypeKind.GENERIC; }
+    public boolean isParameterizedType()      { return typeKind == TypeKind.PARAMETERIZED; }
+    public boolean isTypeVariableReference()  { return typeKind == TypeKind.TYPE_VARIABLE; }
+    public boolean isGenericWildcard()        { return typeKind == TypeKind.WILDCARD; }
+    public boolean isExtends() { return isExtends;}
+    public boolean isSuper()   { return isSuper;  }
+    
     // for any reference type, we can get some extra information...
     public final boolean isArray() {  return signature.startsWith("["); } 
 
@@ -241,14 +247,17 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	 */
     protected UnresolvedType(String signature) {
         super();
- //       if (signature.indexOf('<') != -1) throw new IllegalStateException("Shouldn't be calling simple signature based type constructor with generic info in signature");
         this.signature = signature;
         this.signatureErasure = signature;
+        if (signature.charAt(0)=='-') isSuper   = true;
+        if (signature.charAt(0)=='+') isExtends = true;
     }
     
     protected UnresolvedType(String signature, String signatureErasure) {
     	this.signature = signature;
     	this.signatureErasure = signatureErasure;
+        if (signature.charAt(0)=='-') isSuper   = true;
+        if (signature.charAt(0)=='+') isExtends = true;
     }
     
     // called from TypeFactory
@@ -825,13 +834,22 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	
 		public String toString() {
 			return type;
-}
+		}
 
 		private TypeKind(String type) {
 			this.type = type;
 		}
 		
 		private final String type;
+	}
+	
+	/**
+	 * Will return true if the type being represented is parameterized with a type variable
+	 * from a generic method/ctor rather than a type variable from a generic type.  
+	 * Only subclasses know the answer...
+	 */
+	public boolean isParameterizedWithAMemberTypeVariable() {
+		throw new RuntimeException("I dont know - you should ask a resolved version of me: "+this);
 	}
 	
 }

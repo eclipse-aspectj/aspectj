@@ -253,13 +253,13 @@ public class WildTypePattern extends TypePattern {
 		if (lowerBound == null && aType.getLowerBound() != null) return false;
 		if (upperBound != null) {
 			// match ? extends
-			if (aType.isGenericWildcardSuper()) return false;
+			if (aType.isGenericWildcard() && aType.isSuper()) return false;
 			if (aType.getUpperBound() == null) return false;
 			return upperBound.matches((ResolvedType)aType.getUpperBound(),staticOrDynamic).alwaysTrue();
 		}
 		if (lowerBound != null) {
 			// match ? super
-			if (!aType.isGenericWildcardSuper()) return false;
+			if (!(aType.isGenericWildcard() && aType.isSuper())) return false;
 			return lowerBound.matches((ResolvedType)aType.getLowerBound(),staticOrDynamic).alwaysTrue();
 		}
 		return true;
