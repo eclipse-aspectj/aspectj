@@ -127,6 +127,7 @@ public class ExactTypePattern extends TypePattern {
 	
 	public UnresolvedType getType() { return type; }
 
+	// true if (matchType instanceof this.type)
 	public FuzzyBoolean matchesInstanceof(ResolvedType matchType) {
 		// in our world, Object is assignable from anything
 		if (type.equals(ResolvedType.OBJECT)) 
