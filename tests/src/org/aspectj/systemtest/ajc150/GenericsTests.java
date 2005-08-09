@@ -64,11 +64,23 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *        - instanceof
 	 * target PASS
 	 *   - as this
-	 * args  TODO
-	 *   - as this/target, plus...
-	 *   - known static match
-	 *   - known static match fail
-	 *   - maybe match with unchecked warning
+	 * args
+	 *   - args(List) matches List, List<T>, List<String>   PASS
+	 *   - args(List<T>) -> invalid absolute type T
+	 *   - args(List<String>) matches List<String> but not List<Number> PASS
+	 *   - args(List<String>) matches List with unchecked warning PASS
+	 *   - args(List<String>) matches List<?> with unchecked warning PASS
+	 *   - args(List<Double>) matches List, List<?>, List<? extends Number> with unchecked warning PASS
+	 *                        matches List<Double> PASS, List<? extends Double> PASS(with warning)
+	 *   - args(List<?>) matches List, List<String>, List<?>, ...  PASS
+	 *   - args(List<? extends Number) matches List<Number>, List<Double>, not List<String>  PASS
+	 *                                 matches List, List<?> with unchecked warning  PASS
+	 *   - args(List<? super Number>) matches List<Object>, List<Number>
+	 *                                does not match List<Double>
+	 *                                matches List, List<?> with unchecked warning
+	 *                                matches List<? super Number>
+	 *                                matches List<? extends Object> with unchecked warning
+	 *                                matches List<? extends Number> with unchecked warning
 	 * get & set PASS
 	 *   - parameterized declaring type PASS
 	 *   - generic declaring type  PASS
@@ -95,14 +107,16 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *    - parameter as type variable   PASS
 	 *    - parameter as parameterized type  PASS
 	 *    - no join points for bridge methods  PASS
-	 * call
-	 *    - no generic or parameterized declaring type patterns 
-	 *    - no parameterized throws patterns 
-	 *    - return type as type variable  
-	 *    - return type as parameterized type  
-	 *    - parameter as type variable   
-	 *    - parameter as parameterized type  
-	 *    - a call to a bridge method is really a call to the method being bridged...	 (1.4/1.5 differences here?)
+	 * call PASS
+	 *    - no generic or parameterized declaring type patterns PASS 
+	 *    - no parameterized throws patterns PASS
+	 *    - return type as type variable  PASS
+	 *    - return type as parameterized type PASS 
+	 *    - parameter as type variable   PASS
+	 *    - parameter as parameterized type  PASS
+	 *    - calls to a bridge methods PASS
+	 * after throwing - can't use parameterized type pattern
+	 * after returning - same as for args
 	 */
 	
 	/* ==========================================
@@ -206,6 +220,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	
 	// parsing of generic ITD members
+	
 	public void testParseItdNonStaticMethod() {runTest("Parsing generic ITDs - 1");}
 	public void testParseItdStaticMethod()    {runTest("Parsing generic ITDs - 2");}
 	public void testParseItdCtor()            {runTest("Parsing generic ITDs - 3");}
@@ -213,14 +228,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 //	public void testParseItdSharingVars1()    {runTest("Parsing generic ITDs - 5");}
 //	public void testParseItdSharingVars2()    {runTest("Parsing generic ITDs - 6");}
 	
-	
+
 	// non static
-	public void testGenericMethodITD1()  {runTest("generic method itd - 1");}   // <E> ... (List<? extends E>)
-	public void testGenericMethodITD2()  {runTest("generic method itd - 2");}   // <E extends Number> ... (List<? extends E>) called incorrectly
-	public void testGenericMethodITD3()  {runTest("generic method itd - 3");}   // <E> ... (List<E>,List<E>)
-	public void testGenericMethodITD4()  {runTest("generic method itd - 4");}   // <A,B> ... (List<A>,List<B>)
-	public void testGenericMethodITD5()  {runTest("generic method itd - 5");}   // <E> ... (List<E>,List<E>) called incorrectly
-	public void testGenericMethodITD6()  {runTest("generic method itd - 6");}   // <E extends Number> ... (List<? extends E>)
+
+	public void testGenericMethodITD1() {runTest("generic method itd - 1");} // <E> ... (List<? extends E>)
+	public void testGenericMethodITD2() {runTest("generic method itd - 2");} // <E extends Number> ... (List<? extends E>) called incorrectly
+	public void testGenericMethodITD3() {runTest("generic method itd - 3");} // <E> ... (List<E>,List<E>)
+	public void testGenericMethodITD4() {runTest("generic method itd - 4");} // <A,B> ... (List<A>,List<B>)
+	public void testGenericMethodITD5() {runTest("generic method itd - 5");} // <E> ... (List<E>,List<E>) called incorrectly
+	public void testGenericMethodITD6() {runTest("generic method itd - 6");} // <E extends Number> ... (List<? extends E>)
 	public void testGenericMethodITD7()  {runTest("generic method itd - 7"); }  // <E> ... (List<E>,List<? extends E>)
 	public void testGenericMethodITD8()  {runTest("generic method itd - 8"); }  // <E> ... (List<E>,List<? extends E>) called incorrectly
 	public void testGenericMethodITD9()  {runTest("generic method itd - 9"); }  // <R extends Comparable<? super R>> ... (List<R>)
@@ -232,7 +248,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericMethodITD15() {runTest("generic method itd - 15");}  // <R extends Comparable<? super R>> ... (List<R>) called correctly in a clever way
 	
 
-
+	
 	// generic ctors
 	public void testGenericCtorITD1() {runTest("generic ctor itd - 1");} // <T> new(List<T>)
 	public void testGenericCtorITD2() {runTest("generic ctor itd - 2");} // <T> new(List<T>,List<? extends T>)
@@ -495,14 +511,37 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("get and set with various parameterizations and generic field types");
 	}
 	
-//	public void testExecutionWithGenericDeclaringTypeAndErasedParameterTypes() {
-//		runTest("execution pcd with generic declaring type and erased parameter types");
-//	}
+	public void testArgsWithRawType() {
+		runTest("args with raw type and generic / parameterized sigs");
+	}
 	
-// not passing yet...
-//	public void testExecutionWithGenericSignature() {
-//		runTest("execution pcd with generic signature matching");
-//	}
+	public void testArgsParameterizedType() {
+		runTest("args with parameterized type and generic / parameterized sigs");
+	}
+	
+	public void testArgsParameterizedAndWildcards() {
+		runTest("args with parameterized type and wildcards");
+	}
+	
+	public void testArgsWithWildcardVar() {
+		runTest("args with generic wildcard");
+	}
+	
+	public void testArgsWithWildcardExtendsVar() {
+		runTest("args with generic wildcard extends");
+	}
+	
+	public void testArgsWithWildcardSuperVar() {
+		runTest("args with generic wildcard super");
+	}
+	
+	public void testGenericMethodMatching() {
+		runTest("generic method matching");
+	}
+	
+	public void testGenericWildcardsInSignatureMatching() {
+		runTest("generic wildcards in signature matching");
+	}
 	
 	// --- helpers
 		

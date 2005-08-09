@@ -2610,7 +2610,7 @@
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 4">
      <compile files="Parse4.java" options="-1.5"/>
    </ajc-test>
-
+   
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 5">
      <compile files="Parse5.java" options="-1.5"/>
    </ajc-test>
@@ -2883,6 +2883,7 @@
          <message kind="warning" line="84" text="the really wild show"/>
          <message kind="warning" line="86" text="the really wild show"/>
          <message kind="warning" line="88" text="the really wild show"/>
+         <message kind="warning" line="53" text="the really wild show"/>
       </compile>
    </ajc-test>
 
@@ -3080,6 +3081,124 @@
    <ajc-test dir="java5/generics/pointcuts" title="call with bridge methods">
      <compile files="CallWithBridgeMethods.aj" options="-1.5">
          <message kind="warning" line="23" text="should match call to bridge method on L23, this is a real call!"/>
+     </compile>
+   </ajc-test>
+    
+    
+   <ajc-test dir="java5/generics/pointcuts" title="args with raw type and generic / parameterized sigs">
+     <compile files="RawArgs.aj" options="-1.5">
+     </compile>
+     <run class="RawArgs">
+         <stdout>
+             <line text="args(List) match at call(void Generic.foo(List))"/>
+             <line text="args(List) match at call(void Generic.bar(List))"/>
+             <line text="args(List) match at call(void Generic.tada(List))"/>
+             <line text="args(List) match at call(void Generic.tada(List))"/>
+             <line text="args(List) match at call(void Generic.tada(List))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+
+  <ajc-test dir="java5/generics/pointcuts" title="args with parameterized type and generic / parameterized sigs">
+     <compile files="ArgsParameterized.aj" options="-1.5">
+        <message kind="warning" line="28" text="unchecked match of List&lt;String&gt; with List"/>
+     </compile>
+     <run class="ArgsParameterized">
+         <stdout>
+            <line text="args(List&lt;String&gt; matched at call(void Generic.foo(List))"/>
+            <line text="args(List&lt;String&gt; matched at call(void Generic.bar(List))"/>
+            <line text="args(List&lt;String&gt; matched at call(void Generic.tada(List))"/>
+            <line text="args(List&lt;String&gt; matched at call(void Generic.something(List))"/>
+            <line text="args(List&lt;String&gt; matched at call(void MustBeString.listit(List))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+
+  <ajc-test dir="java5/generics/pointcuts" title="args with parameterized type and wildcards">
+     <compile files="ArgsParameterizedWithWildcards.aj" options="-1.5">
+        <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Double&gt; when argument is an instance of List"/>
+        <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Number&gt; when argument is an instance of List"/>
+        <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;?&gt; when argument is an instance of List"/>
+     </compile>
+     <run class="ArgsParameterizedWithWildcards">
+         <stdout>
+            <line text="List&lt;Double&gt; matched at execution(void C.rawList(List))"/>
+            <line text="List&lt;Double&gt; matched at execution(void C.listOfSomething(List))"/>
+            <line text="List&lt;Double&gt; matched at execution(void C.listOfSomeNumber(List))"/>
+            <line text="List&lt;Double&gt; matched at execution(void C.listOfDouble(List))"/>
+            <line text="List&lt;Double&gt; matched at execution(void C.listOfSomeDouble(List))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+
+  <ajc-test dir="java5/generics/pointcuts" title="args with generic wildcard">
+     <compile files="ArgsListOfSomething.aj" options="-1.5">
+     </compile>
+     <run class="ArgsListOfSomething">
+         <stdout>
+            <line text="List&lt;?&gt; matches execution(void ArgsListOfSomething.rawList(List))"/>
+            <line text="List&lt;?&gt; matches execution(void ArgsListOfSomething.listOfString(List))"/>
+            <line text="List&lt;?&gt; matches execution(void ArgsListOfSomething.listOfSomething(List))"/>
+            <line text="List&lt;?&gt; matches execution(void ArgsListOfSomething.listOfSomethingExtends(List))"/>
+            <line text="List&lt;?&gt; matches execution(void ArgsListOfSomething.listOfSomethingSuper(List))"/>
+            <line text="wild map matches execution(void ArgsListOfSomething.mapit(Map))"/>
+            <line text="exact wild map matches execution(void ArgsListOfSomething.mapit(Map))"/>
+            <line text="super type exact matches execution(void ArgsListOfSomething.setOf(HashSet))"/>
+            <line text="super wild type matches execution(void ArgsListOfSomething.setOf(HashSet))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+
+  <ajc-test dir="java5/generics/pointcuts" title="args with generic wildcard extends">
+     <compile files="ArgsListOfSomethingExtends.aj" options="-1.5">
+         <message kind="warning" line="27" text="unchecked match of List&lt;? extends Number&gt; with List"/>
+         <message kind="warning" line="27" text="unchecked match of List&lt;? extends Number&gt; with List&lt;?&gt;"/>
+     </compile>
+     <run class="ArgsListOfSomethingExtends">
+         <stdout>
+            <line text="List&lt;? extends Number&gt; matches execution(void ArgsListOfSomethingExtends.rawList(List))"/>
+            <line text="List&lt;? extends Number&gt; matches execution(void ArgsListOfSomethingExtends.listOfNumber(List))"/>
+            <line text="List&lt;? extends Number&gt; matches execution(void ArgsListOfSomethingExtends.listOfDouble(List))"/>
+            <line text="List&lt;? extends Number&gt; matches execution(void ArgsListOfSomethingExtends.listOfSomething(List))"/>
+            <line text="List&lt;? extends Number&gt; matches execution(void ArgsListOfSomethingExtends.listOfSomethingExtends(List))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+   
+  <ajc-test dir="java5/generics/pointcuts" title="args with generic wildcard super">
+     <compile files="ArgsListOfSomethingSuper.aj" options="-1.5">
+         <message kind="warning" line="32" text="unchecked match of List&lt;? super Number&gt; with List"/>
+         <message kind="warning" line="32" text="unchecked match of List&lt;? super Number&gt; with List&lt;?&gt;"/>
+         <message kind="warning" line="32" text="unchecked match of List&lt;? super Number&gt; with List&lt;? extends Number&gt;"/>
+     </compile>
+     <run class="ArgsListOfSomethingSuper">
+         <stdout>
+            <line text="List&lt;? super Number&gt; matches execution(void ArgsListOfSomethingSuper.rawList(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(void ArgsListOfSomethingSuper.listOfObject(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(void ArgsListOfSomethingSuper.listOfNumber(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(void ArgsListOfSomethingSuper.listOfSomething(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(void ArgsListOfSomethingSuper.listOfSomethingSuper(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(void ArgsListOfSomethingSuper.listOfSomethingExtendsNumber(List))"/>
+          </stdout>
+     </run>
+   </ajc-test>
+      
+   <ajc-test dir="java5/generics/pointcuts" title="generic method matching">
+     <compile files="GenericMethods.aj" options="-1.5">
+         <message kind="warning" line="19" text="static generic method match"/>
+         <message kind="warning" line="34" text="static generic method match"/>
+         <message kind="warning" line="24" text="instance generic method match"/>         
+         <message kind="warning" line="39" text="instance generic method match"/>         
+     </compile>
+   </ajc-test>
+    
+   <ajc-test dir="java5/generics/pointcuts" title="generic wildcards in signature matching">
+     <compile files="GenericWildcardsInSignatureMatching.aj" options="-1.5">
+         <message kind="warning" line="5" text="set of a list"/>
+         <message kind="warning" line="7" text="exact nested wildcard match"/>
+         <message kind="warning" line="7" text="wildcard nested wildcard match"/>
+         <message kind="warning" line="11" text="super"/>
+         <message kind="warning" line="15" text="super wild match"/>
      </compile>
    </ajc-test>
     
@@ -3316,7 +3435,7 @@
        </run>
    </ajc-test>
    
-<ajc-test dir="bugs150/pr98901" title="public ITD field with declare @field">
+    <ajc-test dir="bugs150/pr98901" title="public ITD field with declare @field">
      <compile files="Case26.aj" options="-1.5 -Xlint:error"/>
      <run class="B26">
          <stdout>
@@ -3325,7 +3444,7 @@
        </run>
    </ajc-test>
 
-<ajc-test dir="bugs150/pr98901" title="public annotated ITD field">
+    <ajc-test dir="bugs150/pr98901" title="public annotated ITD field">
      <compile files="Case27.aj" options="-1.5 -Xlint:error"/>
      <run class="B27">
          <stdout>
@@ -3334,7 +3453,7 @@
        </run>
    </ajc-test>
    
-<ajc-test dir="bugs150/pr98901" title="public ITD-on-itself field with declare @field">
+    <ajc-test dir="bugs150/pr98901" title="public ITD-on-itself field with declare @field">
      <compile files="Case28.aj" options="-1.5 -Xlint:error"/>
      <run class="B28">
          <stdout>
@@ -3343,7 +3462,7 @@
        </run>
    </ajc-test>
    
-<ajc-test dir="bugs150/pr98901" title="public annotated ITD-on-itself field">
+    <ajc-test dir="bugs150/pr98901" title="public annotated ITD-on-itself field">
      <compile files="Case29.aj" options="-1.5 -Xlint:error"/>
      <run class="B29">
          <stdout>
