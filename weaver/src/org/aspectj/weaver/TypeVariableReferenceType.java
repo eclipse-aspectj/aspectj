@@ -56,6 +56,9 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 		return true;
 	}
 	
+	public boolean isGenericWildcard() {
+		return false;
+	}
     //public ResolvedType resolve(World world) {
 	//	return super.resolve(world);
 	//}
