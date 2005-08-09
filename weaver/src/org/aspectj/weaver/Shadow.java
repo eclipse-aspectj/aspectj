@@ -46,6 +46,7 @@ public abstract class Shadow {
 	
 	private final Kind kind; 
     private final Member signature;
+    private ResolvedMember resolvedSignature;
 	protected final Shadow enclosingShadow;
     protected List mungers = new ArrayList(1);
 
@@ -139,6 +140,11 @@ public abstract class Shadow {
         return getSignature().getParameterTypes();
     }
     
+    public UnresolvedType[] getGenericArgTypes() {
+    	if (getKind() == FieldSet) return new UnresolvedType[] { getResolvedSignature().getGenericReturnType() };
+        return getResolvedSignature().getGenericParameterTypes();    	
+    }
+    
     public UnresolvedType getArgType(int arg) {
     	if (getKind() == FieldSet) return getSignature().getReturnType();
         return getSignature().getParameterTypes()[arg];
@@ -179,6 +185,17 @@ public abstract class Shadow {
      */
     public Member getSignature() {
         return signature;
+    }
+    
+    /**
+     * returns the resolved signature of the thing under this shadow
+     * 
+     */
+    public ResolvedMember getResolvedSignature() {
+    	if (resolvedSignature == null) {
+    		resolvedSignature = signature.resolve(getIWorld());
+    	}
+    	return resolvedSignature;
     }
     
 	
@@ -510,5 +527,9 @@ public abstract class Shadow {
     
     public String toString() {
         return getKind() + "(" + getSignature() + ")"; // + getSourceLines();
+    }
+    
+    public String toResolvedString(World world) {
+    	return getKind() + "(" + world.resolve(getSignature()).toGenericString() + ")";
     }
 }
