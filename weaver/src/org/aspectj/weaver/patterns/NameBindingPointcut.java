@@ -15,7 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.util.List;
 
-import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
@@ -37,8 +37,11 @@ public abstract class NameBindingPointcut extends Pointcut {
 			BindingTypePattern b = (BindingTypePattern)type;
 			state.set(b.getFormalIndex(), var);
 		}
-		UnresolvedType myType = type.getExactType(); //should have failed earlier 
-		
+		ResolvedType myType = type.getExactType().resolve(world);
+		if (myType.isParameterizedType()) {
+			// unchecked warning already issued...
+			myType = (ResolvedType) myType.getRawType();
+		}
 		return Test.makeInstanceof(var, myType.resolve(world));
 	}
 	
