@@ -406,6 +406,7 @@ public abstract class World implements Dump.INode {
      */
     public ResolvedMember resolve(Member member) {
         ResolvedType declaring = member.getDeclaringType().resolve(this);
+        if (declaring.isRawType()) declaring = declaring.getGenericType();
         ResolvedMember ret;
         if (member.getKind() == Member.FIELD) {
             ret = declaring.lookupField(member);
