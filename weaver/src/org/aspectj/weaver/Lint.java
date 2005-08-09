@@ -86,6 +86,9 @@ public class Lint {
 	public final Kind runtimeExceptionNotSoftened = 
 		new Kind("runtimeExceptionNotSoftened","{0} will not be softened as it is already a RuntimeException");
 	
+	public final Kind uncheckedArgument =
+		new Kind("uncheckedArgument","unchecked match of {0} with {1} when argument is an instance of {2} at join point {3}");
+	
     public Lint(World world) {
 		this.world = world;
 	}
