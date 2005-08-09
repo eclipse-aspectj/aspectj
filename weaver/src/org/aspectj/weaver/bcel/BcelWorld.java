@@ -194,7 +194,7 @@ public class BcelWorld extends World implements Repository {
     // ---- various interactions with bcel
 
     public static Type makeBcelType(UnresolvedType type) {
-        return Type.getType(type.getSignature());
+        return Type.getType(type.getErasureSignature());
     }
 
     static Type[] makeBcelTypes(UnresolvedType[] types) {
