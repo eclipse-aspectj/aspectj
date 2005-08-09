@@ -351,6 +351,10 @@ public class JoinPointSignature implements ResolvedMember {
     	}
     	return buf.toString();
     }
+   
+   public String toGenericString() {
+	   return realMember.toGenericString();
+   }
 
    public void resetName(String newName) {
 	   realMember.resetName(newName);

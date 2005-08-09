@@ -91,6 +91,9 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public void setAnnotatedElsewhere(boolean b);
 
 	public boolean isAnnotatedElsewhere();
+	
+	// like toString but include generic signature info
+	public String toGenericString();
 
 	/**
 	 * Get the UnresolvedType for the return type, taking generic signature into account

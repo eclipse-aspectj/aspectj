@@ -701,5 +701,27 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			toBuffer.append(aType.getSignature());
 		}
 	}
+	
+   public String toGenericString() {
+    	StringBuffer buf = new StringBuffer();
+    	buf.append(getGenericReturnType().getSimpleName());
+    	buf.append(' ');
+   		buf.append(declaringType.getName());
+        buf.append('.');
+   		buf.append(name);
+    	if (kind != FIELD) {
+    		buf.append("(");
+    		UnresolvedType[] params = getGenericParameterTypes();
+            if (params.length != 0) {
+                buf.append(params[0].getSimpleName());
+        		for (int i=1, len = params.length; i < len; i++) {
+                    buf.append(", ");
+        		    buf.append(params[i].getSimpleName());
+        		}
+            }
+    		buf.append(")");
+    	}
+    	return buf.toString();    	
+    }
 }
    

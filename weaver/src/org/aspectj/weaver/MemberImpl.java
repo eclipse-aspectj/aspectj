@@ -424,6 +424,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     	return buf.toString();
     }
     
+    
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#toLongString()
 	 */
