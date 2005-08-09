@@ -146,12 +146,18 @@ public class ReferenceType extends ResolvedType {
         return delegate.isAnnotationWithRuntimeRetention();
     }
       
+    // true iff the statement "this = (ThisType) other" would compile
     public final boolean isCoerceableFrom(ResolvedType o) {
         ResolvedType other = o.resolve(world);
 
         if (this.isAssignableFrom(other) || other.isAssignableFrom(this)) {
             return true;
         }          
+       	
+        if (this.isParameterizedType() && other.isParameterizedType()) {
+        	return isCoerceableFromParameterizedType(other);
+       	}
+        
         if (!this.isInterface() && !other.isInterface()) {
             return false;
         }
@@ -169,12 +175,92 @@ public class ReferenceType extends ResolvedType {
         return true;
     }
     
+    private final boolean isCoerceableFromParameterizedType(ResolvedType other) {
+    	if (!other.isParameterizedType()) return false;
+   		ResolvedType myRawType = (ResolvedType) getRawType();
+   		ResolvedType theirRawType = (ResolvedType) other.getRawType();
+   		if (myRawType == theirRawType) {  
+   			if (getTypeParameters().length == other.getTypeParameters().length) {
+   				// there's a chance it can be done
+   				ResolvedType[] myTypeParameters = getResolvedTypeParameters();
+   				ResolvedType[] theirTypeParameters = other.getResolvedTypeParameters();
+   				for (int i = 0; i < myTypeParameters.length; i++) {
+					if (myTypeParameters[i] != theirTypeParameters[i]) {
+						// thin ice now... but List<String> may still be coerceable from e.g. List<T>
+						if (myTypeParameters[i].isGenericWildcard()) {
+							BoundedReferenceType wildcard = (BoundedReferenceType) myTypeParameters[i];
+							if (!wildcard.canBeCoercedTo(theirTypeParameters[i])) return false;
+						} else if (myTypeParameters[i].isTypeVariableReference()) {
+							TypeVariableReferenceType tvrt = (TypeVariableReferenceType) myTypeParameters[i];
+							TypeVariable tv = tvrt.getTypeVariable();
+							tv.resolve(world);
+							if (!tv.canBeBoundTo(theirTypeParameters[i])) return false;
+						} else {
+							return false;
+						}
+					}
+				}
+   				return true;
+   			}
+   		} else {
+   			// we do this walk for situations like the following:
+   			// Base<T>, Sub<S,T> extends Base<S>
+   			// is Sub<Y,Z> coerceable from Base<X> ???
+   	        for(Iterator i = getDirectSupertypes(); i.hasNext(); ) {
+   	        	ReferenceType parent = (ReferenceType) i.next();
+   	            if (parent.isCoerceableFromParameterizedType(other)) return true;
+   	        }          			
+   		}
+    	return false;
+    }
+    
+    // true iff the statement "this = other" would compile.
     public final boolean isAssignableFrom(ResolvedType other) {
        	if (other.isPrimitiveType()) {
     		if (!world.isInJava5Mode()) return false;
     		if (ResolvedType.validBoxing.contains(this.getSignature()+other.getSignature())) return true;
     	}      
        	if (this == other) return true;
+
+       	if (this.isRawType() && other.isParameterizedType()) {
+       		if (isAssignableFrom((ResolvedType)other.getRawType())) return true;
+       	}
+       	
+       	if (this.isParameterizedType()) {
+       		// look at wildcards...
+       		if (((ReferenceType)this.getRawType()).isAssignableFrom(other)) {
+       			boolean wildcardsAllTheWay = true;
+       			ResolvedType[] myParameters = this.getResolvedTypeParameters();
+       			for (int i = 0; i < myParameters.length; i++) {
+					if (!myParameters[i].isGenericWildcard()) {
+						wildcardsAllTheWay = false;
+					} else if (myParameters[i].isExtends() || myParameters[i].isSuper()) {
+						wildcardsAllTheWay = false;
+					}
+				}
+       			if (wildcardsAllTheWay && !other.isParameterizedType()) return true;
+       			// we have to match by parameters one at a time
+       			ResolvedType[] theirParameters = other.getResolvedTypeParameters();
+       			boolean parametersAssignable = true;
+       			if (myParameters.length == theirParameters.length) {
+       				for (int i = 0; i < myParameters.length; i++) {
+						if (myParameters[i] == theirParameters[i]) continue;
+						if (!myParameters[i].isGenericWildcard()) {
+							parametersAssignable = false;
+							break;
+						} else {
+							BoundedReferenceType wildcardType = (BoundedReferenceType) myParameters[i];
+							if (!wildcardType.alwaysMatches(theirParameters[i])) {
+								parametersAssignable = false;
+								break;
+							}
+						}
+					}
+       			}
+       			if (parametersAssignable) return true;
+       		}
+       	}
+
         for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
             if (this.isAssignableFrom((ResolvedType) i.next())) return true;
         }       
@@ -257,7 +343,7 @@ public class ReferenceType extends ResolvedType {
 			UnresolvedType[] parameters = getTypesForMemberParameterization();
 			parameterizedMethods = new ResolvedMember[delegateMethods.length];
 			for (int i = 0; i < delegateMethods.length; i++) {
-				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(parameters,this,isRawType());
+				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(parameters,this,isParameterizedType());
 			}
 			return parameterizedMethods;
 		} else {
@@ -271,7 +357,7 @@ public class ReferenceType extends ResolvedType {
 			ResolvedMember[] delegatePointcuts = delegate.getDeclaredPointcuts();
 			parameterizedPointcuts = new ResolvedMember[delegatePointcuts.length];
 			for (int i = 0; i < delegatePointcuts.length; i++) {
-				parameterizedPointcuts[i] = delegatePointcuts[i].parameterizedWith(getTypesForMemberParameterization(),this,isRawType());
+				parameterizedPointcuts[i] = delegatePointcuts[i].parameterizedWith(getTypesForMemberParameterization(),this,isParameterizedType());
 			}
 			return parameterizedPointcuts;
 		} else {
