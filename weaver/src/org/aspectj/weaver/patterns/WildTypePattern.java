@@ -26,6 +26,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.BoundedReferenceType;
+import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedType;
@@ -36,6 +37,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 
 /**
  * The PatternParser always creates WildTypePatterns for type patterns in pointcut
@@ -625,19 +627,40 @@ public class WildTypePattern extends TypePattern {
 		
 		//System.out.println("resolve: " + cleanName);
 		//??? this loop has too many inefficiencies to count
-		resolvedTypeInTheWorld = scope.getWorld().resolve(UnresolvedType.forName(fullyQualifiedName),true);
-		while ((type = scope.lookupType(fullyQualifiedName, this)) == ResolvedType.MISSING) {
-			int lastDot = fullyQualifiedName.lastIndexOf('.');
-			if (lastDot == -1) break;
-			fullyQualifiedName = fullyQualifiedName.substring(0, lastDot) + '$' + fullyQualifiedName.substring(lastDot+1);
-			if (resolvedTypeInTheWorld == ResolvedType.MISSING)
-				resolvedTypeInTheWorld = scope.getWorld().resolve(UnresolvedType.forName(fullyQualifiedName),true);					
+		resolvedTypeInTheWorld = lookupTypeInWorld(scope.getWorld(), fullyQualifiedName);
+		if (resolvedTypeInTheWorld.isGenericWildcard()) {
+			type = resolvedTypeInTheWorld;
+		} else {
+			type = lookupTypeInScope(scope, fullyQualifiedName, this);
 		}
 		if (type == ResolvedType.MISSING) {
 			return resolveBindingsForMissingType(resolvedTypeInTheWorld, originalName, scope, bindings, allowBinding, requireExactType);
 		} else {
 			return resolveBindingsForExactType(scope,type,fullyQualifiedName,requireExactType);
 		}
+	}
+	
+	
+	
+	private UnresolvedType lookupTypeInScope(IScope scope, String typeName, IHasPosition location) {
+		UnresolvedType type = null;
+		while ((type = scope.lookupType(typeName, location)) == ResolvedType.MISSING) {
+			int lastDot = typeName.lastIndexOf('.');
+			if (lastDot == -1) break;
+			typeName = typeName.substring(0, lastDot) + '$' + typeName.substring(lastDot+1);
+		}
+		return type;
+	}
+	
+	private ResolvedType lookupTypeInWorld(World world, String typeName) {
+		ResolvedType ret = world.resolve(UnresolvedType.forName(typeName),true);
+		while (ret == ResolvedType.MISSING) {
+			int lastDot = typeName.lastIndexOf('.');
+			if (lastDot == -1) break;
+			typeName = typeName.substring(0, lastDot) + '$' + typeName.substring(lastDot+1);
+			ret = world.resolve(UnresolvedType.forName(typeName),true);
+		}
+		return ret;
 	}
 	
 	private TypePattern resolveBindingsForExactType(IScope scope, UnresolvedType aType, String fullyQualifiedName,boolean requireExactType) {
@@ -698,7 +721,7 @@ public class WildTypePattern extends TypePattern {
 		if (!verifyTypeParameters(aType.resolve(scope.getWorld()),scope,requireExactType)) return TypePattern.NO; // messages already isued
 		// Only if the type is exact *and* the type parameters are exact should we create an 
 		// ExactTypePattern for this WildTypePattern					
-		if (typeParameters.areAllExact()) {
+		if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
 			TypePattern[] typePats = typeParameters.getTypePatterns();
 			UnresolvedType[] typeParameterTypes = new UnresolvedType[typePats.length];
 			for (int i = 0; i < typeParameterTypes.length; i++) {
@@ -843,7 +866,7 @@ public class WildTypePattern extends TypePattern {
 		
 		// now check that each typeParameter pattern, if exact, matches the bounds
 		// of the type variable.
-		if (typeParameters.areAllExact()) {
+		if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
 			for (int i = 0; i < tvs.length; i++) {
 				UnresolvedType ut = typeParamPatterns[i].getExactType();
 				if (!tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
