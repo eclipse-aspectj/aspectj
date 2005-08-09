@@ -463,6 +463,26 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
         return signatureToName(signature);
     }
     
+    public String getSimpleName() {
+    	String name = getRawName();
+    	int lastDot = name.lastIndexOf('.');
+    	if (lastDot != -1) {
+    		name = name.substring(lastDot+1);
+    	}
+    	if (isParameterizedType()) {
+    		StringBuffer sb = new StringBuffer(name);
+    		sb.append("<");
+    		for (int i = 0; i < (typeParameters.length -1); i++) {
+				sb.append(typeParameters[i].getSimpleName());
+				sb.append(",");
+			}
+    		sb.append(typeParameters[typeParameters.length -1].getSimpleName());
+    		sb.append(">");
+        	name = sb.toString();
+    	}
+    	return name;
+    }
+    
     public String getRawName() {
     	return signatureToName((signatureErasure==null?signature:signatureErasure));
     }
@@ -475,6 +495,15 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 		} else {
 			return name;
 		}
+	}
+	
+	public String getSimpleBaseName() {
+    	String name = getBaseName();
+    	int lastDot = name.lastIndexOf('.');
+    	if (lastDot != -1) {
+    		name = name.substring(lastDot+1);
+    	}
+    	return name;		
 	}
 
     /**
