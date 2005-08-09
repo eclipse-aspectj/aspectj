@@ -515,10 +515,15 @@ public class TypePatternList extends PatternNode {
 		return ret;
 	}
 
-	public boolean areAllExact() {
+	public boolean areAllExactWithNoSubtypesAllowed() {
 		for (int i = 0; i < typePatterns.length; i++) {
 			TypePattern array_element = typePatterns[i];
-			if (!(array_element instanceof ExactTypePattern)) return false;
+			if (!(array_element instanceof ExactTypePattern)) {
+				return false;
+			} else {
+				ExactTypePattern etp = (ExactTypePattern) array_element;
+				if (etp.isIncludeSubtypes()) return false;
+			}
 		}
 		return true;
 	}
