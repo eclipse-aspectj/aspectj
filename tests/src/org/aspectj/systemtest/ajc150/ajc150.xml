@@ -3116,6 +3116,7 @@
 
   <ajc-test dir="java5/generics/pointcuts" title="args with parameterized type and wildcards">
      <compile files="ArgsParameterizedWithWildcards.aj" options="-1.5">
+        <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List when argument is an instance of List"/>
         <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Double&gt; when argument is an instance of List"/>
         <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Number&gt; when argument is an instance of List"/>
         <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;?&gt; when argument is an instance of List"/>
@@ -3202,9 +3203,113 @@
      </compile>
    </ajc-test>
     
-
    <!-- end of generics and pointcuts tests -->
+
+    <ajc-test dir="java5/generics/afterAdvice" title="after throwing with parameterized throw type">
+        <compile files="AfterThrowing.aj" options="-1.5">
+            <message kind="error" line="6" text="cannot convert from List&lt;String&gt; to Throwable"/>
+        </compile>
+    </ajc-test>
+
+
+   <ajc-test dir="java5/generics/afterAdvice" title="after returning with raw type and generic / parameterized sigs">
+     <compile files="AfterReturningRawType.aj" options="-1.5">
+     </compile>
+     <run class="AfterReturningRawType">
+         <stdout>
+             <line text="returning(List) match at call(List Generic.foo(List))"/>
+             <line text="returning(List) match at call(List Generic.bar(List))"/>
+             <line text="returning(List) match at call(List Generic.tada(List))"/>
+             <line text="returning(List) match at call(List Generic.tada(List))"/>
+             <line text="returning(List) match at call(List Generic.tada(List))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+
+ <ajc-test dir="java5/generics/afterAdvice" title="after returning with parameterized type and generic / parameterized sigs">
+     <compile files="AfterReturningParameterized.aj" options="-1.5">
+        <message kind="warning" line="28" text="unchecked match of List&lt;String&gt; with List"/>
+     </compile>
+     <run class="AfterReturningParameterized">
+         <stdout>
+            <line text="returning(List&lt;String&gt; matched at call(List Generic.foo(List))"/>
+            <line text="returning(List&lt;String&gt; matched at call(List Generic.bar(List))"/>
+            <line text="returning(List&lt;String&gt; matched at call(List Generic.tada(List))"/>
+            <line text="returning(List&lt;String&gt; matched at call(List Generic.something(List))"/>
+            <line text="returning(List&lt;String&gt; matched at call(List MustBeString.listit(List))"/>
+         </stdout>
+     </run>
+   </ajc-test>   
    
+   <ajc-test dir="java5/generics/afterAdvice" title="after returning with parameterized type and wildcards">
+     <compile files="AfterReturningParameterizedWithWildcards.aj" options="-1.5">
+        <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List when argument is an instance of List"/>
+        <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Double&gt; when argument is an instance of List"/>
+        <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Number&gt; when argument is an instance of List"/>
+        <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List&lt;?&gt; when argument is an instance of List"/>
+     </compile>
+     <run class="AfterReturningParameterizedWithWildcards">
+         <stdout>
+            <line text="List&lt;Double&gt; matched at call(List C.rawList(List))"/>
+            <line text="List&lt;Double&gt; matched at call(List C.listOfSomething(List))"/>
+            <line text="List&lt;Double&gt; matched at call(List C.listOfSomeNumber(List))"/>
+            <line text="List&lt;Double&gt; matched at call(List C.listOfDouble(List))"/>
+            <line text="List&lt;Double&gt; matched at call(List C.listOfSomeDouble(List))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/afterAdvice" title="after returning with generic wildcard">
+     <compile files="AfterReturningListOfSomething.aj" options="-1.5">
+     </compile>
+     <run class="AfterReturningListOfSomething">
+         <stdout>
+            <line text="List&lt;?&gt; matches execution(List AfterReturningListOfSomething.rawList(List))"/>
+            <line text="List&lt;?&gt; matches execution(List AfterReturningListOfSomething.listOfString(List))"/>
+            <line text="List&lt;?&gt; matches execution(List AfterReturningListOfSomething.listOfSomething(List))"/>
+            <line text="List&lt;?&gt; matches execution(List AfterReturningListOfSomething.listOfSomethingExtends(List))"/>
+            <line text="List&lt;?&gt; matches execution(List AfterReturningListOfSomething.listOfSomethingSuper(List))"/>
+            <line text="wild map matches execution(Map AfterReturningListOfSomething.mapit(Map))"/>
+            <line text="exact wild map matches execution(Map AfterReturningListOfSomething.mapit(Map))"/>
+            <line text="super type exact matches execution(HashSet AfterReturningListOfSomething.setOf(HashSet))"/>
+            <line text="super wild type matches execution(HashSet AfterReturningListOfSomething.setOf(HashSet))"/>
+         </stdout>
+     </run>
+   </ajc-test>   
+
+   <ajc-test dir="java5/generics/afterAdvice" title="after returning with generic wildcard extends">
+     <compile files="AfterReturningListOfSomethingExtends.aj" options="-1.5">
+         <message kind="warning" line="27" text="unchecked match of List&lt;? extends Number&gt; with List"/>
+         <message kind="warning" line="27" text="unchecked match of List&lt;? extends Number&gt; with List&lt;?&gt;"/>
+     </compile>
+     <run class="AfterReturningListOfSomethingExtends">
+         <stdout>
+            <line text="List&lt;? extends Number&gt; matches execution(List AfterReturningListOfSomethingExtends.rawList(List))"/>
+            <line text="List&lt;? extends Number&gt; matches execution(List AfterReturningListOfSomethingExtends.listOfNumber(List))"/>
+            <line text="List&lt;? extends Number&gt; matches execution(List AfterReturningListOfSomethingExtends.listOfDouble(List))"/>
+            <line text="List&lt;? extends Number&gt; matches execution(List AfterReturningListOfSomethingExtends.listOfSomething(List))"/>
+            <line text="List&lt;? extends Number&gt; matches execution(List AfterReturningListOfSomethingExtends.listOfSomethingExtends(List))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/afterAdvice" title="after returning with generic wildcard super">
+     <compile files="AfterReturningListOfSomethingSuper.aj" options="-1.5">
+         <message kind="warning" line="32" text="unchecked match of List&lt;? super Number&gt; with List"/>
+         <message kind="warning" line="32" text="unchecked match of List&lt;? super Number&gt; with List&lt;?&gt;"/>
+         <message kind="warning" line="32" text="unchecked match of List&lt;? super Number&gt; with List&lt;? extends Number&gt;"/>
+     </compile>
+     <run class="AfterReturningListOfSomethingSuper">
+         <stdout>
+            <line text="List&lt;? super Number&gt; matches execution(List AfterReturningListOfSomethingSuper.rawList(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(List AfterReturningListOfSomethingSuper.listOfObject(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(List AfterReturningListOfSomethingSuper.listOfNumber(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(List AfterReturningListOfSomethingSuper.listOfSomething(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(List AfterReturningListOfSomethingSuper.listOfSomethingSuper(List))"/>
+            <line text="List&lt;? super Number&gt; matches execution(List AfterReturningListOfSomethingSuper.listOfSomethingExtendsNumber(List))"/>
+          </stdout>
+     </run>
+   </ajc-test>
    <!-- ============================================================== -->
    <!--     End of generics tests                                      -->
    <!-- ============================================================== -->

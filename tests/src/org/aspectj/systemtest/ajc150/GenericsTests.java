@@ -543,6 +543,34 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("generic wildcards in signature matching");
 	}
 	
+	public void testAfterThrowing() {
+		runTest("after throwing with parameterized throw type");
+	}
+
+	public void testAfterReturningWithRawType() {
+		runTest("after returning with raw type and generic / parameterized sigs");
+	}
+	
+	public void testAfterReturningParameterizedType() {
+		runTest("after returning with parameterized type and generic / parameterized sigs");
+	}
+	
+	public void testAfterReturningParameterizedAndWildcards() {
+		runTest("after returning with parameterized type and wildcards");
+	}
+	
+	public void testAfterReturningWithWildcardVar() {
+		runTest("after returning with generic wildcard");
+	}
+	
+	public void testAfterReturningWithWildcardExtendsVar() {
+		runTest("after returning with generic wildcard extends");
+	}
+	
+	public void testAfterReturningWithWildcardSuperVar() {
+		runTest("after returning with generic wildcard super");
+	}
+	
 	// --- helpers
 		
 	// Check the signature attribute on a class is correct
