@@ -202,7 +202,7 @@ public abstract class Shadow {
 	public UnresolvedType getReturnType() {
 		if (kind == ConstructorCall) return getSignature().getDeclaringType();
 		else if (kind == FieldSet) return ResolvedType.VOID;
-		return getSignature().getReturnType();
+		return getResolvedSignature().getGenericReturnType();
 	}
 
     

@@ -195,6 +195,11 @@ public class ReferenceType extends ResolvedType {
 							TypeVariable tv = tvrt.getTypeVariable();
 							tv.resolve(world);
 							if (!tv.canBeBoundTo(theirTypeParameters[i])) return false;
+						} else if (theirTypeParameters[i].isTypeVariableReference()) {
+							TypeVariableReferenceType tvrt = (TypeVariableReferenceType) theirTypeParameters[i];
+							TypeVariable tv = tvrt.getTypeVariable();
+							tv.resolve(world);
+							if (!tv.canBeBoundTo(myTypeParameters[i])) return false;							
 						} else {
 							return false;
 						}
@@ -256,6 +261,8 @@ public class ReferenceType extends ResolvedType {
 							}
 						}
 					}
+       			} else {
+       				parametersAssignable = false;
        			}
        			if (parametersAssignable) return true;
        		}

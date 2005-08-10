@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.bcel.Utility;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -106,7 +109,13 @@ public abstract class Advice extends ShadowMunger {
 			
 			
     		if (hasExtraParameter() && kind == AdviceKind.AfterReturning) {
-    			return getExtraParameterType().resolve(world).isConvertableFrom(shadow.getReturnType().resolve(world));
+    			ResolvedType resolvedExtraParameterType = getExtraParameterType().resolve(world);
+    			ResolvedType shadowReturnType = shadow.getReturnType().resolve(world);
+    			boolean matches = resolvedExtraParameterType.isConvertableFrom(shadowReturnType);
+    			if (matches && resolvedExtraParameterType.isParameterizedType()) {
+    				maybeIssueUncheckedMatchWarning(resolvedExtraParameterType,shadowReturnType,shadow,world);
+    			}
+    			return matches;
     		} else if (kind == AdviceKind.PerTargetEntry) {
     			return shadow.hasTarget();
     		} else if (kind == AdviceKind.PerThisEntry) {
@@ -155,6 +164,32 @@ public abstract class Advice extends ShadowMunger {
     	}
 	}
 
+	/**
+	 * In after returning advice if we are binding the extra parameter to a parameterized
+	 * type we may not be able to do a type-safe conversion.
+	 * @param resolvedExtraParameterType  the type in the after returning declaration
+	 * @param shadowReturnType the type at the shadow
+	 * @param world
+	 */
+	private void maybeIssueUncheckedMatchWarning(ResolvedType afterReturningType, ResolvedType shadowReturnType, Shadow shadow, World world) {
+		boolean inDoubt = !afterReturningType.isAssignableFrom(shadowReturnType);				
+		if (inDoubt && world.getLint().uncheckedArgument.isEnabled()) {
+			String uncheckedMatchWith = afterReturningType.getSimpleBaseName();
+			if (shadowReturnType.isParameterizedType() && (shadowReturnType.getRawType() == afterReturningType.getRawType())) {
+				uncheckedMatchWith = shadowReturnType.getSimpleName();
+			}
+			if (!Utility.isSuppressing(getSignature().getAnnotations(), "uncheckedArgument")) {
+				world.getLint().uncheckedArgument.signal(
+						new String[] {
+								afterReturningType.getSimpleName(),
+								uncheckedMatchWith,
+								afterReturningType.getSimpleBaseName(),
+								shadow.toResolvedString(world)},
+						getSourceLocation(),
+						new ISourceLocation[] {shadow.getSourceLocation()});
+			}			
+		}		
+	}
 
 	// ----
 
@@ -204,7 +239,11 @@ public abstract class Advice extends ShadowMunger {
 	
 	public UnresolvedType getExtraParameterType() {
 		if (!hasExtraParameter()) return ResolvedType.MISSING;
-		return signature.getParameterTypes()[getBaseParameterCount()];
+		if (signature instanceof ResolvedMember) {
+			return ((ResolvedMember)signature).getGenericParameterTypes()[getBaseParameterCount()];
+		} else {
+			return signature.getParameterTypes()[getBaseParameterCount()];
+		}
 	}
 	
 	public UnresolvedType getDeclaringAspect() {
