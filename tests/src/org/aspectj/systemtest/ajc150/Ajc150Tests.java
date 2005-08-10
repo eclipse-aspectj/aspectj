@@ -192,6 +192,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void testSyntaxErrorNPE_pr103266() {runTest("NPE on syntax error");}
   
+  public void testMissingNamePattern_pr106461() { runTest("missing name pattern"); }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

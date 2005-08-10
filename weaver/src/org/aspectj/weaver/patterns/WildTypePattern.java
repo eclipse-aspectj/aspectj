@@ -455,6 +455,11 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public NamePattern extractName() {
+		if (isIncludeSubtypes() || isVarArgs() || isArray()) {
+			// we can't extract a name, the pattern is something like Foo+ and therefore
+			// it is not ok to treat Foo as a method name!
+			return null;
+		}
 		//System.err.println("extract from : " + Arrays.asList(namePatterns));
 		int len = namePatterns.length;
 		NamePattern ret = namePatterns[len-1];

@@ -173,6 +173,14 @@
     <ajc-test dir="bugs150" title="bad asm for enums" vm="1.5">
         <compile files="Rainbow.java" options="-emacssym,-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" title="missing name pattern">
+        <compile files="PR106461.aj">
+            <message kind="error" line="3" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>
+            <message kind="error" line="5" text="Syntax error on token &quot;)&quot;, &quot;name pattern&quot; expected"/>
+            <message kind="error" line="7" text="Syntax error on token &quot;.&quot;, &quot;name pattern&quot; expected"/>
+        </compile>
+    </ajc-test>
         
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
         <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5"/>

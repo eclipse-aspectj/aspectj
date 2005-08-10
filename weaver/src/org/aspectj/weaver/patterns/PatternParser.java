@@ -1111,6 +1111,7 @@ public class PatternParser {
 		    name = parseNamePattern();
 	    } else {
 	    	name = tryToExtractName(declaringType);
+	    	if (name == null) throw new ParserException("name pattern",tokenSource.peek());
 	    	if (declaringType.toString().equals("")) {
 	    		declaringType = TypePattern.ANY;
 	    	}
