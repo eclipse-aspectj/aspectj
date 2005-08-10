@@ -98,7 +98,9 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		
 		ClassScope upperScope = (ClassScope)scope.parent;  //!!! safety
 		
-		modifiers = binding.modifiers = checkAndSetModifiers(modifiers, upperScope);
+		modifiers = checkAndSetModifiers(modifiers, upperScope);
+		int bindingModifiers = (modifiers | (binding.modifiers & AccGenericSignature));
+		binding.modifiers = bindingModifiers;
 		
 		if (kind == AdviceKind.AfterThrowing && extraArgument != null) {
 			TypeBinding argTb = extraArgument.binding.type;
