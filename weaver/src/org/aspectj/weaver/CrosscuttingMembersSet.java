@@ -135,22 +135,24 @@ public class CrosscuttingMembersSet {
 
 	public List getDeclareSofts() {
 		if (declareSofts == null) {
-			ArrayList ret = new ArrayList();
+			Set ret = new HashSet();
 			for (Iterator i = members.values().iterator(); i.hasNext(); ) {
 				ret.addAll(((CrosscuttingMembers)i.next()).getDeclareSofts());
 			}
-			declareSofts = ret;
+			declareSofts = new ArrayList();
+			declareSofts.addAll(ret);
 		}
 		return declareSofts;
 	}
 	
 	public List getDeclareParents() {
 		if (declareParents == null) {
-			ArrayList ret = new ArrayList();
+			Set ret = new HashSet();
 			for (Iterator i = members.values().iterator(); i.hasNext(); ) {
 				ret.addAll(((CrosscuttingMembers)i.next()).getDeclareParents());
 			}
-			declareParents = ret;
+			declareParents = new ArrayList();
+			declareParents.addAll(ret);
 		}
 		return declareParents;
 	}
@@ -158,22 +160,24 @@ public class CrosscuttingMembersSet {
 	// DECAT Merge multiple together
 	public List getDeclareAnnotationOnTypes() {
 		if (declareAnnotationOnTypes == null) {
-			ArrayList ret = new ArrayList();
+			Set ret = new HashSet();
 			for (Iterator i = members.values().iterator(); i.hasNext(); ) {
 				ret.addAll(((CrosscuttingMembers)i.next()).getDeclareAnnotationOnTypes());
 			}
-			declareAnnotationOnTypes = ret;
+			declareAnnotationOnTypes = new ArrayList();
+			declareAnnotationOnTypes.addAll(ret);
 		}
 		return declareAnnotationOnTypes;
 	}
 	
 	public List getDeclareAnnotationOnFields() {
 		if (declareAnnotationOnFields == null) {
-			ArrayList ret = new ArrayList();
+			Set ret = new HashSet();
 			for (Iterator i = members.values().iterator(); i.hasNext(); ) {
 				ret.addAll(((CrosscuttingMembers)i.next()).getDeclareAnnotationOnFields());
 			}
-			declareAnnotationOnFields = ret;
+			declareAnnotationOnFields = new ArrayList();
+			declareAnnotationOnFields.addAll(ret);
 		}
 		return declareAnnotationOnFields;
 	}
@@ -183,11 +187,12 @@ public class CrosscuttingMembersSet {
 	 */
 	public List getDeclareAnnotationOnMethods() {
 		if (declareAnnotationOnMethods == null) {
-			ArrayList ret = new ArrayList();
+			Set ret = new HashSet();
 			for (Iterator i = members.values().iterator(); i.hasNext(); ) {
 				ret.addAll(((CrosscuttingMembers)i.next()).getDeclareAnnotationOnMethods());
 			}
-			declareAnnotationOnMethods = ret;
+			declareAnnotationOnMethods = new ArrayList();
+			declareAnnotationOnMethods.addAll(ret);
 		}
 		return declareAnnotationOnMethods;
 	}
@@ -205,13 +210,12 @@ public class CrosscuttingMembersSet {
 
 
 	public ResolvedType findAspectDeclaringParents(DeclareParents p) {
-		Set result = new HashSet();
 		Set keys = this.members.keySet();
 		for (Iterator iter = keys.iterator(); iter.hasNext();) {
 			ResolvedType element = (ResolvedType) iter.next();
 			for (Iterator i = ((CrosscuttingMembers)members.get(element)).getDeclareParents().iterator(); i.hasNext(); ) {
 				DeclareParents dp = (DeclareParents)i.next();
-				return element;
+				if (dp.equals(p)) return element;
 			}
 		}
 		return null;
