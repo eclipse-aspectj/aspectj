@@ -144,6 +144,12 @@ public class AspectDeclaration extends TypeDeclaration {
 					}
 				}
 			}
+			
+			// check the aspect was not declared generic, only abstract aspects can have type params
+			if (typeParameters != null && typeParameters.length > 0) {
+				scope.problemReporter().signalError(sourceStart(), sourceEnd(),
+				"only abstract aspects can have type parameters");				
+			}
 		}
 		
 		if (this.enclosingType != null) {
@@ -182,6 +188,14 @@ public class AspectDeclaration extends TypeDeclaration {
 			if (!superType.isAbstract()) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd,
 								"can not extend a concrete aspect");
+				ignoreFurtherInvestigation = true;
+				return;
+			}
+			
+			// if super type is generic, check that we have fully parameterized it
+			if (superType.isRawType()) {
+				scope.problemReporter().signalError(sourceStart, sourceEnd,
+				"a generic super-aspect must be fully parameterized in an extends clause");
 				ignoreFurtherInvestigation = true;
 				return;
 			}
