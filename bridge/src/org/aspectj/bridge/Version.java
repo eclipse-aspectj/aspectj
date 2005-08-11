@@ -37,7 +37,7 @@ public class Version {
       * Time text set by build script using SIMPLE_DATE_FORMAT.
       * (if DEVELOPMENT version, invalid)
       */
-    public static final String time_text = "mardi juil. 5, 2005 at 09:56:18 GMT";
+    public static final String time_text = "";
 
     /** 
       * time in seconds-since-... format, used by programmatic clients.
@@ -51,13 +51,13 @@ public class Version {
     // if not DEVELOPMENT version, read time text using format used to set time 
     static {
         long foundTime = NOTIME;
-	    try {
-	        SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
-	        ParsePosition pos = new ParsePosition(0);
-	        Date date = format.parse(time_text, pos);
-	        foundTime = date.getTime();
-	    } catch (Throwable t) {            
-	    }
+	        try {
+	            SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
+	            ParsePosition pos = new ParsePosition(0);
+	            Date date = format.parse(time_text, pos);
+	            foundTime = date.getTime();
+	        } catch (Throwable t) {            
+	        }
         time = foundTime;
     }
 
