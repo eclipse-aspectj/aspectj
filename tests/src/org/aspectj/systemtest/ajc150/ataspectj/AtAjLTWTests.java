@@ -36,8 +36,7 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 	public void testAjcLTWPerClauseTest_XnoWeave() {
 		runTest("AjcLTW PerClauseTest -XnoWeave");
 	}
-//FIXME AV - fails with ?? ataspectj\PerClauseTestAspects.java::0 the parameter jp is not bound in [all branches of] pointcut
-//
+
 	public void testAjcLTWPerClauseTest_Xreweavable() {
 		runTest("AjcLTW PerClauseTest -Xreweavable");
 	}
@@ -76,6 +75,11 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 
     public void testLTWLog() {
         runTest("LTW Log");
+    }
+
+    public void testLTWUnweavable() {
+        // actually test that we do LTW proxy and jit classes
+        runTest("LTW Unweavable");
     }
 
 }

@@ -49,6 +49,7 @@ import org.aspectj.weaver.patterns.PerTypeWithin;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.lang.JoinPoint;
 
 /**
  * Annotation defined aspect reader.

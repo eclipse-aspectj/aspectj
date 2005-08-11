@@ -42,7 +42,7 @@ public class MessageWriter implements IMessageHandler {
             if (null != result) {
                 writer.println(result);
                 writer.flush();
-                if (abortOnFailure 
+                if (abortOnFailure
                     && (message.isFailed() || message.isAbort())) {
                     throw new AbortException(message);
                 }

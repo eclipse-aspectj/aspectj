@@ -364,6 +364,28 @@
             </informaltable>
         </sect2>
     </sect1>
+
+    <sect1 id="ltw-specialcases">
+        <title>Special cases</title>
+        <para>
+            Those classes are not exposed to the LTW infrastructure, no matter
+            the configuration of the <literal>aop.xml</literal> file(s):
+            <itemizedlist>
+                <listitem>All <literal>org.aspectj.*</literal> classes (and subpackages) - as those are needed by the infrastructure itself</listitem>
+                <listitem>All <literal>java.*</literal> and <literal>javax.*</literal> classes (and subpackages)</listitem>
+                <listitem>All <literal>sun.reflect.*</literal> classes - as those are JDK specific classes used when reflective calls occurs</listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            Despite those special cases, it is perfectly possible to have call pointcut on those classes members providing the callee
+            class is not itself a speciall case, as well as execution pointcut on subclasses of those providing subclasses are not themselves
+            a special case.
+        </para>
+        <para>
+            It is also worth understanding that dynamic proxy representations are exposed to the LTW infrastructure and are not considered
+            a special case.
+        </para>
+    </sect1>
     
     <sect1 id="ltw-packaging">
         <title>Runtime Requirements for Load-time Weaving</title>

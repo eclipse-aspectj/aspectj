@@ -197,7 +197,7 @@ public class WeavingAdaptor {
                 ||*/ name.startsWith("org.aspectj.")
                 || name.startsWith("java.")
                 || name.startsWith("javax."))
-                || name.startsWith("$Proxy")//JDK proxies
+                //|| name.startsWith("$Proxy")//JDK proxies//FIXME AV is that 1.3 proxy ? fe. ataspect.$Proxy0 is a java5 proxy...
                 || name.startsWith("sun.reflect."));//JDK reflect
 	}
 

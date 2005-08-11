@@ -7,10 +7,11 @@
         value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
 
     <target name="compile:javac">
-        <!-- compile only javac compilable stuff -->
+        <!-- compile only javac compilable stuff, exclude the one that needs other dependencies -->
         <javac destdir="${aj.sandbox}" classpathref="aj.path"
             srcdir="${basedir}"
             includes="ataspectj/*"
+            excludes="ataspectj/UnweavableTest.java"
             debug="true">
         </javac>
     </target>
@@ -99,6 +100,26 @@
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj5.def=ataspectj/ltwlog/aop-verboseandshow.xml"/>
+        </java>
+    </target>
+
+    <target name="ltw.Unweavable">
+        <javac destdir="${aj.sandbox}"
+            srcdir="${basedir}"
+            includes="ataspectj/UnweavableTest.java, ataspectj/TestHelper.java"
+            debug="true">
+            <classpath>
+                <path refid="aj.path"/>
+                <pathelement path="${aj.root}/lib/asm/asm-2.0.jar"/>
+            </classpath>
+        </javac>
+        <java fork="yes" classname="ataspectj.UnweavableTest" failonerror="yes">
+            <classpath>
+                <path refid="aj.path"/>
+                <pathelement path="${aj.root}/lib/asm/asm-2.0.jar"/>
+            </classpath>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop-unweavabletest.xml"/>
         </java>
     </target>
 </project>
