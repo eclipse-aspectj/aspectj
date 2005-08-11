@@ -109,6 +109,13 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 		return true;
 	}
 	
+	/**
+	 * Called when asking a parameterized super-aspect for its pointcuts.
+	 */
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType, boolean isParameterized) {
+		return this;
+	}
+	
 	// for testing
 	public static final ResolvedPointcutDefinition DUMMY =
 	    new ResolvedPointcutDefinition(UnresolvedType.OBJECT, 0, "missing", 
