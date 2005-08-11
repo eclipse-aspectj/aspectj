@@ -1,9 +1,9 @@
-// illegal, super aspect is not abstract
+// error, must parameterize super aspect
 
-public aspect GenericAspect2<S,T> {
+public abstract aspect GenericAspect2<S,T> {
 
   public void doSomething(S s,T t) { }
 
 }
 
-aspect Sub extends GenericAspect2<String,String> { }
+aspect Sub extends GenericAspect2 { }
