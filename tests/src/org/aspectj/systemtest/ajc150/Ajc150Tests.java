@@ -192,6 +192,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void testSyntaxErrorNPE_pr103266() {runTest("NPE on syntax error");}
   
+  public void testIllegalStateExceptionOnNestedParameterizedType_pr106634() { 
+	  runTest("IllegalStateException unpacking signature of nested parameterized type");
+  }
+  
   public void testMissingNamePattern_pr106461() { runTest("missing name pattern"); }
   
   // helper methods.....

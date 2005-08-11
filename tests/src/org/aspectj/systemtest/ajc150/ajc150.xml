@@ -174,12 +174,16 @@
         <compile files="Rainbow.java" options="-emacssym,-1.5"/>
     </ajc-test>
     
-    <ajc-test dir="bugs150" title="missing name pattern">
+    <ajc-test dir="bugs150" pr="10461" title="missing name pattern">
         <compile files="PR106461.aj">
             <message kind="error" line="3" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>
             <message kind="error" line="5" text="Syntax error on token &quot;)&quot;, &quot;name pattern&quot; expected"/>
             <message kind="error" line="7" text="Syntax error on token &quot;.&quot;, &quot;name pattern&quot; expected"/>
         </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="106634" title="IllegalStateException unpacking signature of nested parameterized type">
+        <compile files="pr106634.aj" options="-1.5"/>
     </ajc-test>
         
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
@@ -2316,12 +2320,14 @@
    <!-- generic aspects -->
    
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 1">
-     <compile files="GenericAspect1.aj" options="-1.5"/>
+     <compile files="GenericAspect1.aj" options="-1.5">
+         <message kind="error" line="2" text="only abstract aspects can have type parameters"/>
+     </compile>
    </ajc-test>
    
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 2">
      <compile files="GenericAspect2.aj" options="-1.5">
-       <message kind="error" line="9" text="can not extend"/>
+       <message kind="error" line="9" text="a generic super-aspect must be fully parameterized in an extends clause"/>
      </compile>
    </ajc-test>
    
@@ -2339,6 +2345,32 @@
      <compile files="ParentChildRelationship.aj" options="-1.5"/>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/genericaspects" title="generic aspect with declare warning using type vars">
+     <compile files="DeclareWarningInGenericAspect.aj" options="-1.5">
+         <message kind="warning" line="16" text="this method takes a T!"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/genericaspects" title="generic aspect with execution advice using type vars">
+     <compile files="ExecutionAdviceInGenericAspect.aj" options="-1.5">
+     </compile>
+     <run class="ExecutionAdviceInGenericAspect">
+         <stdout>
+             <line text="I matched at execution(void C.foo(String))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+
+  <ajc-test dir="java5/generics/genericaspects" title="generic aspect with anonymous pointcut">
+     <compile files="AnonymousPointcutInGenericAspect.aj" options="-1.5">
+     </compile>
+     <run class="AnonymousPointcutInGenericAspect">
+         <stdout>
+             <line text="I matched at execution(void C.foo(String))"/>
+         </stdout>
+     </run>
+   </ajc-test>
+            
    <!-- ajdk example -->
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 5 (ajdk)">
      <compile files="Blob.java,BlobContainment.aj,ParentChildRelationship.aj" options="-1.5"/>
