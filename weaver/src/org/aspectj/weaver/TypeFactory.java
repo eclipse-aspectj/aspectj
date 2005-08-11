@@ -104,6 +104,12 @@ public class TypeFactory {
 			ret.typeKind = TypeKind.WILDCARD;
 			ret.setLowerBound(bound);
 			return ret;
+		} else if (signature.startsWith("T")) {
+			String typeVariableName = signature.substring(1);
+			if (typeVariableName.endsWith(";")) {
+				typeVariableName = typeVariableName.substring(0, typeVariableName.length() -1);
+			}
+			return new UnresolvedTypeVariableReferenceType(new TypeVariable(typeVariableName));
 		}
 		return new UnresolvedType(signature);
 	}

@@ -421,7 +421,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
             case '+': return TypeFactory.createTypeFromSignature(signature);
             case '-' : return TypeFactory.createTypeFromSignature(signature);
             case '?' : return TypeFactory.createTypeFromSignature(signature);
-            case 'T' : return new UnresolvedTypeVariableReferenceType(new TypeVariable(signature.substring(1)));
+            case 'T' : return TypeFactory.createTypeFromSignature(signature);
             default:  throw new BCException("Bad type signature " + signature);
         }      
     }
@@ -773,7 +773,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     }
     
 	public void write(DataOutputStream s) throws IOException {
-		s.writeUTF(signature);
+		s.writeUTF(getSignature());
 	}
 	
 	public static UnresolvedType read(DataInputStream s) throws IOException {
