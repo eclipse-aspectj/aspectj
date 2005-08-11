@@ -24,6 +24,8 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeVariableDeclaringElement;
+import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -283,6 +285,29 @@ public class ExactTypePattern extends TypePattern {
 		throw new IllegalStateException("trying to re-resolve");
 	}
 
+	/**
+	 * return a version of this type pattern with all type variables references replaced
+	 * by the corresponding entry in the map.
+	 */
+	public TypePattern parameterizeWith(Map typeVariableMap) {
+		UnresolvedType newType = type;
+		if (type.isTypeVariableReference()) {
+			TypeVariableReference t = (TypeVariableReference) type;
+			String key = t.getTypeVariable().getName();
+			if (typeVariableMap.containsKey(key)) {
+				newType = (UnresolvedType) typeVariableMap.get(key);
+			}
+		} else if (type.isParameterizedType()) {
+			newType = type.parameterize(typeVariableMap);
+		}
+		ExactTypePattern ret = new ExactTypePattern(newType,includeSubtypes,isVarArgs);
+		ret.annotationPattern = annotationPattern;
+		ret.start = start;
+		ret.end = end;
+		ret.sourceContext = sourceContext;
+		return ret;
+	}
+	
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

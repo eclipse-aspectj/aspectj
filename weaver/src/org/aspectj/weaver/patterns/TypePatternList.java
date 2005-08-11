@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
@@ -413,7 +414,19 @@ public class TypePatternList extends PatternNode {
 		}
 	}
   
-
+    /**
+     * Return a version of this type pattern list in which all type variable references
+     * are replaced by their corresponding entry in the map
+     * @param typeVariableMap
+     * @return
+     */
+    public TypePatternList parameterizeWith(Map typeVariableMap) {
+    	TypePattern[] parameterizedPatterns = new TypePattern[typePatterns.length];
+    	for (int i = 0; i < parameterizedPatterns.length; i++) {
+			parameterizedPatterns[i] = typePatterns[i].parameterizeWith(typeVariableMap);
+		}
+    	return new TypePatternList(parameterizedPatterns);
+    }
     
 	public TypePatternList resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		for (int i=0; i<typePatterns.length; i++) {

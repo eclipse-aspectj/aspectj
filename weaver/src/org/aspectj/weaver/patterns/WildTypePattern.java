@@ -543,19 +543,7 @@ public class WildTypePattern extends TypePattern {
 		// resolve any type parameters
 		if (typeParameters!=null && typeParameters.size()>0) {
 			typeParameters.resolveBindings(scope,bindings,allowBinding,requireExactType);
-			// now we have to decide whether to create a "generic" type pattern or a "parameterized" type
-			// pattern
-			// start with the simple rule that if all parameters have resolved to a type variable based pattern
-			// then it is generic, otherwise it is parameterized
-			// if we have e.g. staticinitialization<T>(Foo<T,String>) then that's a parameterized type
-			isGeneric = true;
-			TypePattern[] tps = typeParameters.getTypePatterns();
-			for (int i = 0; i < tps.length; i++) {
-				if (!tps[i].getExactType().isTypeVariableReference()) {
-					isGeneric = false;
-					break;
-				}
-			}
+			isGeneric = false;
 		}
 		
 		// resolve any bounds

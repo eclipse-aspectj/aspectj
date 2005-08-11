@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
@@ -276,6 +277,15 @@ public abstract class TypePattern extends PatternNode {
     
     public void resolve(World world) {
         annotationPattern.resolve(world);
+    }
+    
+    /**
+     * return a version of this type pattern in which all type variable references have been
+     * replaced by their corresponding entry in the map.
+     * Should ultimately be made abstract and all subtypes forced to implement.
+     */
+    public TypePattern parameterizeWith(Map typeVariableMap) {
+    	throw new UnsupportedOperationException("add test cases for the sub-type in question and then override this method in it");
     }
     
 	public void postRead(ResolvedType enclosingType) {
@@ -580,7 +590,7 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 	public boolean equals(Object obj) {
 		if  (!(obj instanceof AnyWithAnnotationTypePattern)) return false;
 		AnyWithAnnotationTypePattern awatp = (AnyWithAnnotationTypePattern) obj;
-		return (annotationPattern.equals(awatp));
+		return (annotationPattern.equals(awatp.annotationPattern));
 	}
 	
 	public int hashCode() {

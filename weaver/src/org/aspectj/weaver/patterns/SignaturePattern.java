@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -119,6 +120,22 @@ public class SignaturePattern extends PatternNode {
 		if (parameterTypes != null) {
 			parameterTypes.postRead(enclosingType);
 		}
+	}
+	
+	/**
+	 * return a copy of this signature pattern in which every type variable reference
+	 * is replaced by the corresponding entry in the map.
+	 */
+	public SignaturePattern parameterizeWith(Map typeVariableMap) {
+		return new SignaturePattern(
+						kind,
+						modifiers,
+						returnType,
+						declaringType,
+						name,
+						parameterTypes.parameterizeWith(typeVariableMap),
+						throwsPattern,
+						annotationPattern);		
 	}
 	
 	public boolean matches(Member joinPointSignature, World world, boolean allowBridgeMethods) {
