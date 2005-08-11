@@ -3,7 +3,7 @@
     <!-- *********************************************************************** -->
     <!-- compliance for Alex build -->
     <!-- *********************************************************************** -->
-    <import file="../build/build-common.xml"/>
+    <!--<import file="../build/build-common.xml"/>-->
 
     <path id="bcel-builder.test.src.path">
         <fileset dir="${basedir}/../lib">
@@ -24,6 +24,8 @@
         <!-- FIXME: not consistent with Alex policy -->
         <mkdir dir="bin"/>
     </target>
+
+    <target name="init"/>
 
     <target name="compile" depends="init">
         <srccompile project="bcel-builder" path="bcel-builder.src.path"/>
