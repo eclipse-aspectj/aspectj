@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -42,6 +43,11 @@ public class ReferencePointcut extends Pointcut {
 	public TypePattern onTypeSymbolic; 
 	public String name;
 	public TypePatternList arguments;
+	
+	/**
+	 * if this is non-null then when the pointcut is concretized the result will be parameterized too.
+	 */
+	private Map typeVariableMap;
 	
 	//public ResolvedPointcut binding;
 	
@@ -287,7 +293,9 @@ public class ReferencePointcut extends Pointcut {
 			newBindings.copyContext(bindings);
 			newBindings.pushEnclosingDefinition(pointcutDec);
 			try {
-				return pointcutDec.getPointcut().concretize(searchStart, newBindings);
+				Pointcut ret = pointcutDec.getPointcut();
+				if (typeVariableMap != null) ret = ret.parameterizeWith(typeVariableMap);
+				return ret.concretize(searchStart, newBindings);
 			} finally {
 				newBindings.popEnclosingDefinitition();
 			}
@@ -296,7 +304,19 @@ public class ReferencePointcut extends Pointcut {
 			concretizing = false;
 		}
 	}
-    
+
+	/**
+	 * make a version of this pointcut with any refs to typeVariables replaced by their entry in the map.
+	 * Tricky thing is, we can't do this at the point in time this method will be called, so we make a
+	 * version that will parameterize the pointcut it ultimately resolves to.
+	 */
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		ReferencePointcut ret = new ReferencePointcut(onType,name,arguments);
+		ret.onTypeSymbolic = onTypeSymbolic;
+		ret.typeVariableMap = typeVariableMap;
+		return ret;
+	}
+	
     // We want to keep the original source location, not the reference location
     protected boolean shouldCopyLocationForConcretize() {
         return false;

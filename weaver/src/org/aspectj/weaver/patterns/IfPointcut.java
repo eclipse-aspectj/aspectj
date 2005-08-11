@@ -18,6 +18,7 @@ import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -379,6 +380,11 @@ public class IfPointcut extends Pointcut {
 		return ret;
 	}
 
+	// we can't touch "if" methods
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		return this;
+	}
+	
 //	public static Pointcut MatchesNothing = new MatchesNothingPointcut();
 //	??? there could possibly be some good optimizations to be done at this point
 	public static IfPointcut makeIfFalsePointcut(State state) {

@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
@@ -133,6 +134,12 @@ public class NotPointcut extends Pointcut {
 	
 	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		Pointcut ret = new NotPointcut(body.concretize(inAspect, bindings));
+		ret.copyLocationFrom(this);
+		return ret;
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		Pointcut ret = new NotPointcut(body.parameterizeWith(typeVariableMap));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

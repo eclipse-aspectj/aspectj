@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
@@ -140,6 +141,13 @@ public class OrPointcut extends Pointcut {
 	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		Pointcut ret = new OrPointcut(left.concretize(inAspect, bindings),
 								right.concretize(inAspect, bindings));
+		ret.copyLocationFrom(this);
+		return ret;
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		Pointcut ret = new OrPointcut(left.parameterizeWith(typeVariableMap),
+									  right.parameterizeWith(typeVariableMap));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

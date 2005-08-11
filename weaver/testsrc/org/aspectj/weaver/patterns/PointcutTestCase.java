@@ -12,6 +12,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
@@ -57,6 +58,10 @@ public class PointcutTestCase extends TestCase {
 			protected void resolveBindingsFromRTTI() {}
 
 			protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+				return null;
+			}
+			
+			public Pointcut parameterizeWith(Map typeVariableMap) {
 				return null;
 			}
 

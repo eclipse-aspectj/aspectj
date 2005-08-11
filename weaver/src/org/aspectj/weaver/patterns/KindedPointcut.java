@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -392,6 +393,12 @@ public class KindedPointcut extends Pointcut {
 	
 	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
 		Pointcut ret = new KindedPointcut(kind, signature, bindings.getEnclosingAdvice());
+        ret.copyLocationFrom(this);
+        return ret;
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		Pointcut ret = new KindedPointcut(kind, signature.parameterizeWith(typeVariableMap), munger );
         ret.copyLocationFrom(this);
         return ret;
 	}

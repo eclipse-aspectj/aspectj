@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Member;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.lang.JoinPoint;
@@ -438,6 +439,10 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
         public Object accept(PatternNodeVisitor visitor, Object data) {
             return visitor.visit(this, data);
         }
+        
+        public Pointcut parameterizeWith(Map typeVariableMap) {
+        	return this;
+        }
 	}
     
     //public static Pointcut MatchesNothing = new MatchesNothingPointcut();
@@ -453,6 +458,10 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 		if (this.state != state) {
 			throw new BCException("expected state: " + state + " got: " + this.state);
 		}
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		throw new UnsupportedOperationException("this method needs to be defined in all subtypes and then made abstract when the work is complete");
 	}
 
 
