@@ -19,3 +19,9 @@ public abstract aspect AbstractA {
     
     declare parents: *..*MarkMe implements Marker;
 }
+
+aspect SubAbstractA extends AbstractA {
+	// amc - make a concrete sub-aspect so that the declare parents in the super aspect can
+	// take effect!
+	protected pointcut scope();
+}

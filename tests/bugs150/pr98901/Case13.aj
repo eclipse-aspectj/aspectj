@@ -11,6 +11,10 @@ abstract aspect A13{
 	declare @method : abstract void A13.a(..) : @anInterface;
 }
 
+aspect A13Concrete extends A13 {
+	public void a() {};
+}
+
 aspect B13 {
 	
 	public static void main(String [] args){
