@@ -56,7 +56,7 @@ public class BcelGenericSignatureToTypeXConverter {
 		StringBuffer sig = new StringBuffer();
 		sig.append(aClassTypeSignature.outerType.identifier.replace(';',' ').trim());
 		for (int i = 0; i < aClassTypeSignature.nestedTypes.length; i++) {
-			sig.append("/"); 
+			sig.append("$"); 
 			sig.append(aClassTypeSignature.nestedTypes[i].identifier.replace(';',' ').trim());
 		}
 		sig.append(";");
@@ -70,11 +70,11 @@ public class BcelGenericSignatureToTypeXConverter {
 		if (innerType.typeArguments.length > 0) {
 			// we have to create a parameterized type
 			// type arguments may be array types, class types, or typevariable types
+			ResolvedType theBaseType = UnresolvedType.forSignature(sig.toString()).resolve(world);
 			ResolvedType[] typeArgumentTypes = new ResolvedType[innerType.typeArguments.length];
 			for (int i = 0; i < typeArgumentTypes.length; i++) {
 				typeArgumentTypes[i] = typeArgument2TypeX(innerType.typeArguments[i],typeParams,world,inProgressTypeVariableResolutions);
 			}
-			ResolvedType theBaseType = UnresolvedType.forSignature(sig.toString()).resolve(world);
 			return 
 				TypeFactory.createParameterizedType(
 									theBaseType,
