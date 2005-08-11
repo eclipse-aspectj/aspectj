@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<aspectj>
+    <weaver options="-verbose -showWeaveInfo"/>
+    <aspects>
+        <aspect name="ataspectj.UnweavableTest.TestAspect"/>
+        <aspect name="ataspectj.UnweavableTest.TestAspect2"/>
+    </aspects>
+</aspectj>
