@@ -14,6 +14,7 @@
 package org.aspectj.weaver.patterns;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -47,6 +48,12 @@ public abstract class Declare extends PatternNode {
      * Returns this declare mutated
      */
     public abstract void resolve(IScope scope);
+    
+    /**
+     * Returns a version of this declare element in which all references to type variables
+     * are replaced with their bindings given in the map.
+     */
+    public abstract Declare parameterizeWith(Map typeVariableBindingMap);
     
     /**
      * Indicates if this declare should be treated like advice.  If true, the

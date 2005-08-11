@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
-import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -69,6 +69,15 @@ public class DeclareParents extends Declare {
 	
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this,data);
+	}
+	
+	public Declare parameterizeWith(Map typeVariableBindingMap) {
+		DeclareParents ret = 
+			new DeclareParents(
+					child.parameterizeWith(typeVariableBindingMap),
+					parents.parameterizeWith(typeVariableBindingMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public String toString() {

@@ -14,6 +14,8 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ISourceContext;
@@ -112,6 +114,11 @@ public class DeclareAnnotation extends Declare {
 		}
 	}
 
+	public Declare parameterizeWith(Map typeVariableBindingMap) {
+		// TODO Auto-generated method stub
+		return this;
+	}
+	
 	public boolean isAdviceLike() {
 		return false;
 	}
@@ -258,12 +265,11 @@ public class DeclareAnnotation extends Declare {
 	 */
 	private void ensureAnnotationDiscovered() {
 		if (annotation!=null) return;
-		ResolvedMember rms[] = containingAspect.getDeclaredMethods();
-		for (int i = 0; i < rms.length; i++) {
-			ResolvedMember member = rms[i];
+		for (Iterator iter = containingAspect.getMethods(); iter.hasNext();) {
+			ResolvedMember member = (ResolvedMember) iter.next();
 			if (member.getName().equals(annotationMethod)) {
 				annotation = member.getAnnotations()[0];
-			}
+			}			
 		}
 	}
 

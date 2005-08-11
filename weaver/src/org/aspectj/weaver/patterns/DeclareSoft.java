@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
@@ -34,6 +35,11 @@ public class DeclareSoft extends Declare {
 	
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this,data);
+	}
+	
+	public Declare parameterizeWith(Map typeVariableBindingMap) {
+		// TODO Auto-generated method stub
+		return this;
 	}
 	
 	public String toString() {

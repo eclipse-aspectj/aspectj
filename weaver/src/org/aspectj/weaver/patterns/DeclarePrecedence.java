@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
@@ -37,6 +38,11 @@ public class DeclarePrecedence extends Declare {
 	
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this,data);
+	}
+	
+	public Declare parameterizeWith(Map typeVariableBindingMap) {
+		// TODO Auto-generated method stub
+		return this;
 	}
 	
 	public String toString() {
@@ -63,7 +69,7 @@ public class DeclarePrecedence extends Declare {
 		patterns.write(s);
 		writeLocation(s);
 	}
-
+	
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		Declare ret = new DeclarePrecedence(TypePatternList.read(s, context));
 		ret.readLocation(context, s);

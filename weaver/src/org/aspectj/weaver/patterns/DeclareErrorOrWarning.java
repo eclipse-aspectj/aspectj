@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -95,6 +96,12 @@ public class DeclareErrorOrWarning extends Declare {
 	
     public void resolve(IScope scope) {
     	pointcut = pointcut.resolve(scope);  	
+    }
+    
+    public Declare parameterizeWith(Map typeVariableBindingMap) {
+    	Declare ret = new DeclareErrorOrWarning(isError,pointcut.parameterizeWith(typeVariableBindingMap),message);
+    	ret.copyLocationFrom(this);
+    	return ret;
     }
     
 	public boolean isAdviceLike() {
