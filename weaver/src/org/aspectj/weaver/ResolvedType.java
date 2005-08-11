@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -459,12 +460,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		
 		ArrayList ret = new ArrayList();
 		//if (this.isAbstract()) {
-		for (Iterator i = getDeclares().iterator(); i.hasNext();) {
-			Declare dec = (Declare) i.next();
-			if (!dec.isAdviceLike()) ret.add(dec);
-		}
-        
-        if (!includeAdviceLike) return ret;
+//		for (Iterator i = getDeclares().iterator(); i.hasNext();) {
+//			Declare dec = (Declare) i.next();
+//			if (!dec.isAdviceLike()) ret.add(dec);
+//		}
+//        
+//        if (!includeAdviceLike) return ret;
         
 		if (!this.isAbstract()) {
 			//ret.addAll(getDeclares());
@@ -483,7 +484,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	        	//System.out.println("super: " + ty + ", " + );
 	        	for (Iterator i = ty.getDeclares().iterator(); i.hasNext();) {
 					Declare dec = (Declare) i.next();
-					if (dec.isAdviceLike()) ret.add(dec);
+					if (dec.isAdviceLike()) {
+						if (includeAdviceLike) ret.add(dec);
+					} else {
+						ret.add(dec);
+					}
 				}
 	        }
 		}
@@ -596,30 +601,39 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
         return Modifier.isFinal(getModifiers());
     }
 
+	protected Map /*Type variable name -> UnresolvedType*/ getMemberParameterizationMap() {
+		if (!isParameterizedType()) return Collections.EMPTY_MAP;
+		TypeVariable[] tvs = getGenericType().getTypeVariables();
+		Map parameterizationMap = new HashMap();
+		for (int i = 0; i < tvs.length; i++) {
+			parameterizationMap.put(tvs[i].getName(), typeParameters[i]);
+		}
+		return parameterizationMap;
+	}
+
+	
 	public Collection getDeclaredAdvice() {
 		List l = new ArrayList();
 		ResolvedMember[] methods = getDeclaredMethods();
+		if (isParameterizedType()) methods = getGenericType().getDeclaredMethods();
+		Map typeVariableMap = getMemberParameterizationMap();
 		for (int i=0, len = methods.length; i < len; i++) {
 			ShadowMunger munger = methods[i].getAssociatedShadowMunger();
-			if (munger != null) l.add(munger);
+			if (munger != null) {
+				if (this.isParameterizedType()) {
+					munger.setPointcut(munger.getPointcut().parameterizeWith(typeVariableMap));
+				}
+				l.add(munger);
+			}
 		}
 		return l;
 	}
 	
-	private List shadowMungers = new ArrayList(0);
-
 	public Collection getDeclaredShadowMungers() {
 		Collection c = getDeclaredAdvice();
-		c.addAll(shadowMungers);
 		return c;
 	}
 	
-	
-	public void addShadowMunger(ShadowMunger munger) {
-		shadowMungers.add(munger);
-	}
-
-
 	// ---- only for testing!
 
 
