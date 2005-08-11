@@ -12,10 +12,14 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
@@ -52,6 +56,7 @@ public class ReferenceType extends ResolvedType {
 	ResolvedMember[] parameterizedFields = null;
 	ResolvedMember[] parameterizedPointcuts = null;
 	ResolvedType[] parameterizedInterfaces = null;
+	Collection parameterizedDeclares = null;
 	
 	//??? should set delegate before any use
     public ReferenceType(String signature, World world) {
@@ -360,7 +365,7 @@ public class ReferenceType extends ResolvedType {
 
 	public ResolvedMember[] getDeclaredPointcuts() {
 		if (parameterizedPointcuts != null) return parameterizedPointcuts;
-		if (isParameterizedType() || isRawType()) {
+		if (isParameterizedType()) {
 			ResolvedMember[] delegatePointcuts = delegate.getDeclaredPointcuts();
 			parameterizedPointcuts = new ResolvedMember[delegatePointcuts.length];
 			for (int i = 0; i < delegatePointcuts.length; i++) {
@@ -372,7 +377,7 @@ public class ReferenceType extends ResolvedType {
 		}
 	}
 	
-	private UnresolvedType[] getTypesForMemberParameterization() {
+	private  UnresolvedType[] getTypesForMemberParameterization() {
 		UnresolvedType[] parameters = null;
 		if (isParameterizedType()) {
 			parameters = getTypeParameters();
@@ -386,7 +391,7 @@ public class ReferenceType extends ResolvedType {
 		}
 		return parameters;
 	}
-
+	
 	public UnresolvedType getRawType() {
 		return super.getRawType().resolve(getWorld());
 	}
@@ -402,7 +407,24 @@ public class ReferenceType extends ResolvedType {
 	}
 	
 	public PerClause getPerClause() { return delegate.getPerClause(); }
-	protected Collection getDeclares() { return delegate.getDeclares(); }
+	
+	
+	protected Collection getDeclares() {
+		if (parameterizedDeclares != null) return parameterizedDeclares;
+		if (isParameterizedType()) {
+			Collection genericDeclares = delegate.getDeclares();
+			parameterizedDeclares = new ArrayList();
+			Map parameterizationMap = getMemberParameterizationMap();
+			for (Iterator iter = genericDeclares.iterator(); iter.hasNext();) {
+				Declare declareStatement = (Declare) iter.next();
+				parameterizedDeclares.add(declareStatement.parameterizeWith(parameterizationMap));
+			}
+			return parameterizedDeclares;
+		} else {
+			return delegate.getDeclares();
+		}
+	}
+	
 	protected Collection getTypeMungers() { return delegate.getTypeMungers(); }
 	
 	protected Collection getPrivilegedAccesses() { return delegate.getPrivilegedAccesses(); }
