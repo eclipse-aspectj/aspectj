@@ -216,8 +216,14 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testPR96220_GenericAspects3() {runTest("generic aspects - 3");}
 //	public void testGenericAspects4()         {runTest("generic aspects - 4");}
 //	public void testGenericAspects5()         {runTest("generic aspects - 5 (ajdk)");}
+	public void testTypeVariablesInDeclareWarning() { runTest("generic aspect with declare warning using type vars");}
+	public void testTypeVariablesInExecutionAdvice() { runTest("generic aspect with execution advice using type vars");}
+	public void testTypeVariablesInAnonymousPointcut() { runTest("generic aspect with anonymous pointcut");}
+	public void testDeclareParentWithParameterizedInterface() {
+		runTest("generic aspect declare parents");
+	}
 	
-    //////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
     // Generic/Parameterized ITDs - includes scenarios from developers notebook //
     //////////////////////////////////////////////////////////////////////////////
 	
