@@ -39,6 +39,9 @@ public class Options {
     private final static String OPTION_noinline = "-Xnoinline";
     private final static String OPTION_showWeaveInfo = "-showWeaveInfo";
     private final static String OPTIONVALUED_messageHandler = "-XmessageHandlerClass:";
+    private static final String OPTIONVALUED_Xlintfile = "-Xlintfile:";
+    private static final String OPTIONVALUED_Xlint = "-Xlint:";
+
 
     public static WeaverOption parse(String options, ClassLoader laoder) {
         if (LangUtil.isEmpty(options)) {
@@ -94,6 +97,14 @@ public class Options {
                 weaverOption.verbose = true;
             } else if (arg.startsWith(OPTIONVALUED_messageHandler)) {
                 ;// handled in first round
+            } else if (arg.startsWith(OPTIONVALUED_Xlintfile)) {
+                if (arg.length() > OPTIONVALUED_Xlintfile.length()) {
+                    weaverOption.lintFile = arg.substring(OPTIONVALUED_Xlintfile.length()).trim();
+                }
+            } else if (arg.startsWith(OPTIONVALUED_Xlint)) {
+                if (arg.length() > OPTIONVALUED_Xlint.length()) {
+                    weaverOption.lint = arg.substring(OPTIONVALUED_Xlint.length()).trim();
+                }
             } else {
                 weaverOption.messageHandler.handleMessage(
                         new Message(
@@ -130,6 +141,8 @@ public class Options {
         boolean noInline;
         boolean showWeaveInfo;
         IMessageHandler messageHandler;
+        String lint;
+        String lintFile;
 
         public WeaverOption() {
             messageHandler = new DefaultMessageHandler();//default

@@ -309,9 +309,15 @@
                         </row>
                         <row>
                             <entry>
-                                <literal>-Xlint, -Xlint:ignore, ...</literal>
+                                <literal>-Xlintfile:pathToAResource</literal>
                             </entry>
-                            <entry>Configure lint messages</entry><!--FIXME AV - default to blabla, see link X -->
+                            <entry>Configure lint messages as specified in the given resource (visible from this aop.xml file' classloader)</entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>-Xlint:default, -Xlint:ignore, ...</literal>
+                            </entry>
+                            <entry>Configure lint messages, refer to documentation for meaningfull values</entry>
                         </row>
                         <row>
                             <entry>

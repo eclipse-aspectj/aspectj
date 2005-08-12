@@ -30,11 +30,14 @@ import org.aspectj.weaver.tools.GeneratedClassHandler;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -121,7 +124,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 MessageUtil.info(messageHandler, "using " + xml.getFile());
                 definitions.add(DocumentParser.parse(xml));
             }
-            
+
             // still go thru if definitions is empty since we will configure
             // the default message handler in there
             registerOptions(weaver, loader, definitions);
@@ -161,6 +164,39 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         weaver.setReweavableMode(weaverOption.reWeavable, false);
         world.setXnoInline(weaverOption.noInline);
         world.setBehaveInJava5Way(weaverOption.java5);//TODO should be autodetected ?
+        //-Xlintfile: first so that lint wins
+        if (weaverOption.lintFile != null) {
+            InputStream resource = null;
+            try {
+                resource = loader.getResourceAsStream(weaverOption.lintFile);
+                Exception failure = null;
+                if (resource != null) {
+                    try {
+                        Properties properties = new Properties();
+                        properties.load(resource);
+                        world.getLint().setFromProperties(properties);
+                    } catch (IOException e) {
+                        failure = e;
+                    }
+                }
+                if (failure != null || resource == null) {
+                    world.getMessageHandler().handleMessage(new Message(
+                            "Cannot access resource for -Xlintfile:"+weaverOption.lintFile,
+                            IMessage.WARNING,
+                            failure,
+                            null));
+                }
+            } finally {
+                try { resource.close(); } catch (Throwable t) {;}
+            }
+        }
+        if (weaverOption.lint != null) {
+            if (weaverOption.lint.equals("default")) {//FIXME should be AjBuildConfig.AJLINT_DEFAULT but yetanother deps..
+                bcelWorld.getLint().loadDefaultProperties();
+            } else {
+                bcelWorld.getLint().setAll(weaverOption.lint);
+            }
+        }
         //TODO proceedOnError option
     }
 
