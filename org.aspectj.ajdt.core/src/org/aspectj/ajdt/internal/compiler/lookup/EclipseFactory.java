@@ -451,11 +451,17 @@ public class EclipseFactory {
 	}
 	
 	public TypeBinding makeTypeBinding(UnresolvedType typeX) {
-		TypeBinding ret = (TypeBinding)typexToBinding.get(typeX);
+		
+		TypeBinding ret = null;
+		
+		// looking up type variables can get us into trouble
+		if (!typeX.isTypeVariableReference())
+			ret = (TypeBinding)typexToBinding.get(typeX);
+			
 		if (ret == null) {
 			ret = makeTypeBinding1(typeX);
 			// FIXME asc keep type variables *out* of the map for now, they go in typeVariableToTypeBinding
-			if (!(typeX instanceof BoundedReferenceType)) 
+			if (!(typeX instanceof BoundedReferenceType) && !(typeX instanceof UnresolvedTypeVariableReferenceType)) 
 			  typexToBinding.put(typeX, ret);
 		}
 		if (ret == null) {
