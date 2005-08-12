@@ -21,14 +21,22 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
-import org.aspectj.weaver.*;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
-import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.Shadow;
 
 /**
  * Base type for all inter-type declarations including methods, fields and constructors.
@@ -38,6 +46,7 @@ import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	public TypeReference onType;
 	protected ReferenceBinding onTypeBinding;
+	protected List phantomTypeVariableToRealIndex;
 
 	protected ResolvedTypeMunger munger;
 	protected int declaredModifiers;
@@ -133,27 +142,86 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	protected void resolveOnType(ClassScope classScope) {
 		checkSpec();		
 		if (onType instanceof ParameterizedSingleTypeReference) {
-			resolveTypeParametersForITDOnGenericType();
-		}
-
-		onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);
-		if (!onTypeBinding.isValidBinding()) {
-			classScope.problemReporter().invalidType(onType, onTypeBinding);
-			ignoreFurtherInvestigation = true;
+			resolveTypeParametersForITDOnGenericType(classScope);
+		} else {
+			onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);
+			if (!onTypeBinding.isValidBinding()) {
+				classScope.problemReporter().invalidType(onType, onTypeBinding);
+				ignoreFurtherInvestigation = true;
+			}
 		}
 	}
 
-	private void resolveTypeParametersForITDOnGenericType() {
+    /**
+     * Here we build a map from the 'names' the user specified in the target type for their
+     * ITD to the positions of the real type variables in the target generic type.  This will
+     * enable us later (when parameterizing the ITD in the InterTypeMemberFinder) to modify
+     * anywhere else the declaration uses these same letters to the correct type variable
+     * in the generic type.
+     * 
+     * This method also performs some checks to verify the ITD is well-formed.
+     */
+	private void resolveTypeParametersForITDOnGenericType(ClassScope classScope) {
 		// we have to resolve this to the base type, and in the process 
 		// check that the number of type variables matches.
 		// Then we work out how the letters in the ITD map onto the letters in
 		// the type declaration and swap them.
-
-		// XXX will this mess up error reporting and independent compliation?
 		
+		// we need to build a map from type variable names to arguments in the real generic type
+		
+		TypeReference original = onType;
 		ParameterizedSingleTypeReference pref = (ParameterizedSingleTypeReference) onType;
 		long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
 		onType = new SingleTypeReference(pref.token,pos);
+		
+		onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);		
+		if (!onTypeBinding.isValidBinding()) {
+			classScope.problemReporter().invalidType(onType, onTypeBinding);
+			ignoreFurtherInvestigation = true;
+		}
+		
+		// Cannot specify a parameterized target type for the ITD if the target
+		// type is not generic.
+		if (typeParameters.length!=0 && !onTypeBinding.isGenericType()) {
+			scope.problemReporter().signalError(sourceStart,sourceEnd,
+					"Type parameters can not be specified in the ITD target type - the target type "+onTypeBinding.debugName()+" is not generic.");
+			ignoreFurtherInvestigation = true;
+			return;
+		}
+		
+		// Check they have supplied the right number of type parameters on the ITD target type
+		if (onTypeBinding.typeVariables().length != typeParameters.length) {
+			scope.problemReporter().signalError(sourceStart, sourceEnd,
+				"Incorrect number of type parameters supplied.  The generic type "+onTypeBinding.debugName()+" has "+
+				onTypeBinding.typeVariables().length+" type parameters, not "+typeParameters.length+".");
+			ignoreFurtherInvestigation = true;
+			return;
+		}
+		
+		// check if they used stupid names for type variables
+		for (int i = 0; i < typeParameters.length; i++) {
+			TypeParameter array_element = typeParameters[i];
+			SingleTypeReference str = new SingleTypeReference(array_element.name,0);
+			TypeBinding tb = str.getTypeBindingPublic(classScope);
+			if (tb!=null && !(tb instanceof ProblemReferenceBinding)) {
+				scope.problemReporter().signalError(sourceStart,sourceEnd,
+						"Intertype declarations can only be made on the generic type, not on a parameterized type. The name '"+
+						CharOperation.charToString(array_element.name)+"' cannot be used as a type parameter, since it refers to a real type.");
+				ignoreFurtherInvestigation = true;
+				return;
+				
+			}
+		}
+		
+		TypeVariableBinding[] tVarsInGenericType = onTypeBinding.typeVariables();
+		phantomTypeVariableToRealIndex = new ArrayList(); /* Name>GenericTypeVariablePosition */
+		TypeReference[] targs = pref.typeArguments;
+    	if (targs!=null) {
+    		for (int i = 0; i < targs.length; i++) {
+    			TypeReference tref = targs[i];
+    			phantomTypeVariableToRealIndex.add(CharOperation.toString(tref.getTypeName()));//tVarsInGenericType[i]); 
+    		}
+		}
 	}
 	
 	
