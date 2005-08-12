@@ -45,7 +45,6 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.PerClause;
 
-import sun.reflect.generics.tree.FormalTypeParameter;
 
 
 // ??? exposed for testing
@@ -514,8 +513,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				Signature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
 				if (extraFormals.length > 0) {
 					List allFormals = new ArrayList();
-					Collections.addAll(allFormals, formalsForResolution);
-					Collections.addAll(allFormals, extraFormals);
+					for (int i = 0; i < formalsForResolution.length; i++) {
+						allFormals.add(formalsForResolution[i]);
+					}
+					for (int i = 0; i < extraFormals.length; i++) {
+						allFormals.add(extraFormals[i]);
+					}
 					formalsForResolution = new Signature.FormalTypeParameter[allFormals.size()];
 					allFormals.toArray(formalsForResolution);
 				}
