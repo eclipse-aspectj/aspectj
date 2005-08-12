@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * IINC - Increment local variable by constant
  *
- * @version $Id: IINC.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: IINC.java,v 1.3 2005/08/12 15:58:50 acolyer Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class IINC extends LocalVariableInstruction {
@@ -106,7 +106,7 @@ public class IINC extends LocalVariableInstruction {
   }
 
   private final void setWide() {
-    if(wide = ((n > org.aspectj.apache.bcel.Constants.MAX_SHORT) ||
+    if(wide = ((n > org.aspectj.apache.bcel.Constants.MAX_BYTE) ||
 	       (Math.abs(c) > Byte.MAX_VALUE)))
       length = 6; // wide byte included  
     else
