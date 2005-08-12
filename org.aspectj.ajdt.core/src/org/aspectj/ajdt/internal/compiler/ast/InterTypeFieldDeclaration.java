@@ -18,6 +18,7 @@ import java.lang.reflect.Modifier;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.weaver.*;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
@@ -41,6 +42,23 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	
 	public InterTypeFieldDeclaration(CompilationResult result, TypeReference onType) {
 		super(result, onType);
+		if (onType!=null && onType instanceof ParameterizedSingleTypeReference) {
+			// Here we fill in the type parameters with *something* so that the compiler doesn't
+			// think there is a missing type. For example, if the declaration is 'List<Z> Base<Z>.i'
+			// then we need to put in a type parameter called 'Z' so that the compiler understands
+			// we don't mean a type called 'Z'.
+			ParameterizedSingleTypeReference paramRef = (ParameterizedSingleTypeReference) onType;
+			// The type arguments are SingleTypeReferences - they were transformed when the ITD
+			// was built from type parameters to get them through the parser.  Here we know
+			// what they are.
+			TypeReference[] rb = paramRef.typeArguments;
+			typeParameters = new TypeParameter[rb.length];
+			for (int i = 0; i < rb.length; i++) {
+				TypeReference reference = rb[i];
+				typeParameters[i]      = new TypeParameter();
+				typeParameters[i].name = CharOperation.toString(rb[i].getTypeName()).toCharArray();
+			}
+		}
 	}
 	
 	
@@ -60,8 +78,13 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 				"static inter-type field on interface not supported");
 			ignoreFurtherInvestigation = true;
 		}
-	}
 		
+		if (Modifier.isStatic(declaredModifiers) && typeParameters!=null && typeParameters.length>0 && onTypeBinding.isGenericType()) {
+			scope.problemReporter().signalError(sourceStart,sourceEnd,
+					"static intertype field declarations cannot refer to type variables from the target generic type");
+		}
+		
+	}
 	
 	public void resolve(ClassScope upperScope) {
 		if (munger == null) ignoreFurtherInvestigation = true;
@@ -178,7 +201,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 					declaredModifiers, world.fromBinding(binding.returnType),
 					new String(declaredSelector), UnresolvedType.NONE);
 		
-		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null);
+		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null, phantomTypeVariableToRealIndex);
 		setMunger(myMunger);
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me = 
