@@ -195,7 +195,7 @@ public class GenericSignatureParser {
 					  ret.append(".");
 					  SimpleClassTypeSignature sig = parseSimpleClassTypeSignature();
 					  ret.append(sig.toString());
-					  nestedTypeList.add(ret);
+					  nestedTypeList.add(sig);
 				  } while(maybeEat("."));
 				  nestedTypes = new SimpleClassTypeSignature[nestedTypeList.size()];
 				  nestedTypeList.toArray(nestedTypes);
