@@ -2600,6 +2600,91 @@
    
    <!-- sharing type variables between the ITD and the generic type -->
 
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 1">
+     <compile files="FieldA.aj" options="-1.5"/>
+     <run class="FieldA"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 2">
+     <compile files="FieldB.aj" options="-1.5">
+       <message kind="error" line="16" text="Incorrect number of type parameters supplied.  The generic type Base&lt;N,M&gt; has 2 type parameters, not 1."/>
+     </compile>
+   </ajc-test>
+    
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 3">
+     <compile files="FieldC.aj" options="-1.5"/>
+     <run class="FieldC"/>   
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 4">
+     <compile files="FieldD.aj" options="-1.5"/>
+     <run class="FieldD"/>   
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 5">
+     <compile files="FieldE.aj" options="-1.5"/>
+     <run class="FieldE"/>   
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 6">
+     <compile files="FieldF.aj" options="-1.5"/>
+     <run class="FieldF"/>   
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 7">
+     <compile files="FieldG.aj" options="-1.5"/>
+     <run class="FieldG"/>   
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 8">
+     <compile files="FieldH.aj" options="-1.5"/>
+     <run class="FieldH"/>   
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 9">
+     <compile files="FieldI.aj" options="-1.5">
+     	<message kind="error" line="7" text="Type mismatch: cannot convert from List&lt;String&gt; to List&lt;Integer&gt;"/>
+     </compile>
+   </ajc-test>
+  
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -10">
+     <compile files="FieldJ.aj" options="-1.5"/>
+     <run class="FieldJ"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -11">
+     <compile files="FieldK.aj" options="-1.5"/>
+     <run class="FieldK"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -12">
+     <compile files="FieldL.aj" options="-1.5"/>
+     <run class="FieldL"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -13">
+     <compile files="FieldM.aj" options="-1.5"/>
+     <run class="FieldM"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -14">
+     <compile files="FieldN.aj" options="-1.5">
+       <message kind="error" line="11" text="Type parameters can not be specified in the ITD target type - the target type I is not generic."/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -15">
+     <compile files="FieldO.aj" options="-1.5">
+       <message kind="error" line="11" text="Intertype declarations can only be made on the generic type, not on a parameterized type. The name 'String' cannot be used as a type parameter, since it refers to a real type."/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -16">
+     <compile files="FieldP.aj" options="-1.5">
+       <message kind="error" line="10" text="static intertype field declarations cannot refer to type variables from the target generic type"/>
+     </compile>
+   </ajc-test>
+   
    <ajc-test dir="java5/generics/itds/sharing" title="method itd sharing type variable with generic type">
      <compile files="Simple.aj" options="-1.5"/>
      <run class="Simple"/>
