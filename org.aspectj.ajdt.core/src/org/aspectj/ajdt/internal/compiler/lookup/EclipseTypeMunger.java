@@ -116,16 +116,17 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		}
 
 	}
+	
 
 	private void mungeNewField(SourceTypeBinding sourceType, NewFieldTypeMunger munger) {		
 		if (shouldTreatAsPublic() && !targetTypeX.isInterface()) {
 			FieldBinding binding = world.makeFieldBinding(munger.getSignature());
-			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding,munger);
 			//classScope.referenceContext.binding.addField(binding);
 		} else {
 			InterTypeFieldBinding binding =
 				new InterTypeFieldBinding(world, munger.getSignature(), aspectType, sourceMethod);
-			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding,munger);
 		}
 	}
 	
