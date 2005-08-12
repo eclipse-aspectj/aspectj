@@ -221,6 +221,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private boolean addSuperInitializer(ResolvedType onType) {
+		if (onType.isRawType() || onType.isParameterizedType()) onType = onType.getGenericType();
 		IfaceInitList l = (IfaceInitList) addedSuperInitializers.get(onType);
 		if (l != null) return false;
 		l = new IfaceInitList(onType);

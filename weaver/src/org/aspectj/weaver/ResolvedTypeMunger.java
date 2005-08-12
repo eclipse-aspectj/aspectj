@@ -39,6 +39,14 @@ public abstract class ResolvedTypeMunger {
 	protected Kind kind;
 	protected ResolvedMember signature;
 	
+	// This list records the occurences (in order) of any names specified in the <> 
+	// for a target type for the ITD.  So for example, for List<C,B,A> this list
+	// will be C,B,A - the list is used later to map other occurrences of C,B,A
+	// across the intertype declaration to the right type variables in the generic
+	// type upon which the itd is being made.
+	// might need serializing the class file for binary weaving.
+	protected List /*String*/ typeVariableToGenericTypeVariableIndex;
+	
 	public static transient boolean persistSourceLocation = true;
 	
 	private Set /* resolvedMembers */ superMethodsCalled = Collections.EMPTY_SET;
@@ -273,6 +281,14 @@ public abstract class ResolvedTypeMunger {
 		} else {
 			return false;
 		}
+	}
+	
+	public int getGenericTypeVariableIndexFor(String name) {
+		return typeVariableToGenericTypeVariableIndex.indexOf(name);
+	}
+	
+	public boolean hasGenericTypeVariableMap() {
+		return typeVariableToGenericTypeVariableIndex!=null && typeVariableToGenericTypeVariableIndex.size()!=0;
 	}
 
 }

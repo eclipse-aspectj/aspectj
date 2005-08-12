@@ -13,16 +13,18 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 public class NewFieldTypeMunger extends ResolvedTypeMunger {
-	public NewFieldTypeMunger(ResolvedMember signature, Set superMethodsCalled) {
+
+	public NewFieldTypeMunger(ResolvedMember signature, Set superMethodsCalled, List phantomTypeVariableToRealIndex) {
 		super(Field, signature);
 		signature.setAnnotatedElsewhere(true);
 		this.setSuperMethodsCalled(superMethodsCalled);
+		this.typeVariableToGenericTypeVariableIndex = phantomTypeVariableToRealIndex;
 	}
 
 	public ResolvedMember getInitMethod(UnresolvedType aspectType) {
@@ -39,7 +41,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	public static ResolvedTypeMunger readField(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedTypeMunger munger = new NewFieldTypeMunger(
 			ResolvedMemberImpl.readResolvedMember(s, context),
-			readSuperMethodsCalled(s));
+			readSuperMethodsCalled(s),null);
 		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
 		return munger;
 	}

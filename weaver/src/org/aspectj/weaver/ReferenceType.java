@@ -232,8 +232,14 @@ public class ReferenceType extends ResolvedType {
     	}      
        	if (this == other) return true;
 
-       	if (this.isRawType() && other.isParameterizedType()) {
+       	if ((this.isRawType() || this.isGenericType()) && other.isParameterizedType()) {
        		if (isAssignableFrom((ResolvedType)other.getRawType())) return true;
+       	}
+       	if (this.isRawType() && other.isGenericType()) {
+       		if (isAssignableFrom((ResolvedType)other.getRawType())) return true;
+       	}
+       	if (this.isGenericType() && other.isRawType()) {
+       		if (isAssignableFrom((ResolvedType)other.getGenericType())) return true;
        	}
        	
        	if (this.isParameterizedType()) {
