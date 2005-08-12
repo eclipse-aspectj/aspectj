@@ -587,7 +587,9 @@ public class PatternParser {
 			p = setAnnotationPatternForTypePattern(p,ap);
 			eat(")");
 			boolean isVarArgs = maybeEat("...");
-			p.setIsVarArgs(isVarArgs);
+			if (isVarArgs) p.setIsVarArgs(isVarArgs);
+			boolean isIncludeSubtypes = maybeEat("+");
+			if (isIncludeSubtypes) p.includeSubtypes = true;  // need the test because (A+) should not set subtypes to false!
 			return p;
 		}
 		int startPos = tokenSource.peek().getStart();

@@ -196,6 +196,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("IllegalStateException unpacking signature of nested parameterized type");
   }
   
+  public void testParseErrorOnAnnotationStarPlusPattern() {
+	  runTest("(@Foo *)+ type pattern parse error");
+  }
+  
   public void testMissingNamePattern_pr106461() { runTest("missing name pattern"); }
   
   // helper methods.....

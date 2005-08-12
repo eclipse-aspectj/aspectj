@@ -186,6 +186,10 @@
         <compile files="pr106634.aj" options="-1.5"/>
     </ajc-test>
         
+    <ajc-test dir="bugs150" title="(@Foo *)+ type pattern parse error">
+        <compile files="AnnotationPlusPatternParseError.aj" options="-1.5"/>
+    </ajc-test>
+        
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
         <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5"/>
     </ajc-test>
@@ -2371,6 +2375,13 @@
      </run>
    </ajc-test>
             
+  <ajc-test dir="java5/generics/genericaspects" title="generic aspect declare parents">
+     <compile files="DeclareParentsWithTypeVars.aj" options="-1.5">
+     </compile>
+     <run class="DeclareParentsWithTypeVars">
+     </run>
+   </ajc-test>
+               
    <!-- ajdk example -->
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 5 (ajdk)">
      <compile files="Blob.java,BlobContainment.aj,ParentChildRelationship.aj" options="-1.5"/>
