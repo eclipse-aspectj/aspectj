@@ -25,15 +25,17 @@ public class AtItd4 {
       Annotation[] as = m.getDeclaredAnnotations();
       System.err.println("Number of annotations "+
         (as==null?"0":new Integer(as.length).toString()));
-      Annotation aa = m.getAnnotation(Ann.class);
+      Ann aa = m.getAnnotation(Ann.class);
       System.err.println("Ann.class retrieved is: "+aa);
 
       String exp = 
-        "@Ann(strings=[a, b], enumval=A, aLong=6, id=goodbye, anInt=4)";
+//        "@Ann(strings=[a, b], enumval=A, aLong=6, id=goodbye, anInt=4)";
+        "@Ann(id=goodbye, anInt=4, aLong=6, strings=[a,b], enumval=A)";
 
-      if (!aa.toString().equals(exp)) 
+      if(!matches(aa)) {
         throw new RuntimeException("Incorrect output, expected:"+exp+
           " but got "+aa.toString());
+      }
  
       if (as.length==0) 
         throw new RuntimeException("Couldn't find annotation on member!");
@@ -42,5 +44,29 @@ public class AtItd4 {
       throw new RuntimeException(e);
     }
   }
+  
+  private static boolean matches(Ann anotayshun){
+	  if(!anotayshun.id().equals("goodbye")){
+		  return false;
+	  }
+	  if(anotayshun.anInt() != 4){
+		  return false;
+	  }
+	  if(anotayshun.aLong() != 6){
+		  return false;
+	  }
+	  if(anotayshun.strings().length != 2){
+		  return false;
+	  }
+	  if(!anotayshun.strings()[0].equals("a") || !anotayshun.strings()[1].equals("b")) {
+		  return false;
+	  }
+	  if(anotayshun.enumval() != SimpleEnum.A){
+		  return false;
+	  }
+	  //they all match
+	  return true;
+  }
+  
   
 }
