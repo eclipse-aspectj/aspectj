@@ -3,7 +3,7 @@ import java.util.*;
 public class MethodJ {
   public static void main(String []argv) {
     One o = new One();
-	List l = o.m();
+    List l = o.m();
   }
 }
 
