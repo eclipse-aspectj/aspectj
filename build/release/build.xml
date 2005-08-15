@@ -116,6 +116,7 @@
 	        </condition>
 	        	
 			<antcall target="do-run-ant">
+				<param name="verbose" value="true"/>
 				<param name="ant.dir" location="${aspectj.modules.build.dir}"/>
 				<param name="run.ant.file" value="build.xml"/>
 				<param name="ant.target" value="@{target}"/>
