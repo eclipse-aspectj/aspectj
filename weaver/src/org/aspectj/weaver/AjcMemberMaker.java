@@ -178,15 +178,14 @@ public class AjcMemberMaker {
 	
 	// PTWIMPL ResolvedMember for getInstance() method, declared in aspect
 	public static ResolvedMember perTypeWithinGetInstance(UnresolvedType declaringType) {
-//		private static a.X ajc$getInstance(java.lang.Class) throws java/lang/Exception
+//		private static a.X ajc$getInstance(java.lang.Class)
 		ResolvedMemberImpl rm = new ResolvedMemberImpl(
 			Member.METHOD, 
 			declaringType,
 			PRIVATE_STATIC,
 			declaringType, // return value
 			NameMangler.PERTYPEWITHIN_GETINSTANCE_METHOD,
-			new UnresolvedType[]{UnresolvedType.JAVA_LANG_CLASS},
-			new UnresolvedType[]{UnresolvedType.JAVA_LANG_EXCEPTION}
+			new UnresolvedType[]{UnresolvedType.JAVA_LANG_CLASS}
 			);	
 		return rm;
 	}

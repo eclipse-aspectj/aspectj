@@ -749,9 +749,9 @@ public class AspectDeclaration extends TypeDeclaration {
 					exc.placeEnd();
 					codeStream.areturn();
 					exc.place();
-					codeStream.astore_1();
-					codeStream.aload_1();
-					codeStream.athrow();					
+					// this just returns null now - the old version used to throw the caught exception!
+					codeStream.aconst_null();
+					codeStream.areturn();
 				}});
 		}
 	
