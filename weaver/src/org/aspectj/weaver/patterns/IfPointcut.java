@@ -122,13 +122,18 @@ public class IfPointcut extends Pointcut {
 	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.IF);
-		testMethod.write(s);//FIXME Adrian, do something if this one happens to be null for @style if() from JDT stuff
+		s.writeBoolean(testMethod != null);  // do we have a test method?
+		if (testMethod != null) testMethod.write(s);
 		s.writeByte(extraParameterFlags);
 		writeLocation(s);
 	}
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-        //FIXME Adrian, read may failt if testMethod happens to be null for @style if() from JDT stuff
-		IfPointcut ret = new IfPointcut(ResolvedMemberImpl.readResolvedMember(s, context), s.readByte());
+		boolean hasTestMethod = s.readBoolean();
+		ResolvedMember resolvedTestMethod = null;  
+		if (hasTestMethod) {  // should always have a test method unless @AJ style
+			resolvedTestMethod = ResolvedMemberImpl.readResolvedMember(s, context);
+		}
+		IfPointcut ret = new IfPointcut(resolvedTestMethod, s.readByte());
 		ret.readLocation(context, s);
 		return ret;
 	}

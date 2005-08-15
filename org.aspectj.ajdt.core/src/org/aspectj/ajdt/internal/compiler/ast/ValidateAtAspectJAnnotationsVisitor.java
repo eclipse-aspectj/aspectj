@@ -40,7 +40,9 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.patterns.AbstractPatternNodeVisitor;
 import org.aspectj.weaver.patterns.FormalBinding;
+import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -57,6 +59,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	private static final char[] adviceNameSig = "Lorg/aspectj/lang/annotation/AdviceName;".toCharArray();
 	private static final char[] orgAspectJLangAnnotation = "org/aspectj/lang/annotation/".toCharArray();
 	private static final char[] voidType = "void".toCharArray();
+	private static final char[] booleanType = "boolean".toCharArray();
 	private static final char[] joinPoint = "Lorg/aspectj/lang/JoinPoint;".toCharArray();
 	private static final char[] joinPointStaticPart = "Lorg/aspectj/lang/JoinPoint$StaticPart;".toCharArray();
 	private static final char[] joinPointEnclosingStaticPart = "Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;".toCharArray();
@@ -431,28 +434,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.adviceNameAnnotation);			
 		}
 	
-
-		boolean returnsVoid = true;
-		if ((methodDeclaration.returnType instanceof SingleTypeReference)) {
-			SingleTypeReference retType = (SingleTypeReference) methodDeclaration.returnType;
-			if (!CharOperation.equals(voidType,retType.token)) {
-				returnsVoid = false;
-			}
-		} else {
-			returnsVoid = false;
-		}
-		if (!returnsVoid) {
-			methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
-																					  methodDeclaration.returnType.sourceEnd, 
-																					  "Methods annotated with @Pointcut must return void");
-		}
-		
-		if (methodDeclaration.statements != null && methodDeclaration.statements.length > 0) {
-			methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
-					  methodDeclaration.returnType.sourceEnd, 
-					  "Pointcuts should have an empty method body");			
-		}
-		
+		boolean containsIfPcd = false;
 		int[] pcLocation = new int[2];
 		String pointcutExpression = getStringLiteralFor("value",ajAnnotations.pointcutAnnotation,pcLocation);
 		try {
@@ -473,6 +455,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	        }
 			swap(onType,methodDeclaration,pcDecl);
 			pc.resolve(new EclipseScope(bindings,methodDeclaration.scope));
+			HasIfPCDVisitor ifFinder = new HasIfPCDVisitor();
+			pc.traverse(ifFinder, null);
+			containsIfPcd = ifFinder.containsIfPcd;
 		} catch(ParserException pEx) {
 			methodDeclaration.scope.problemReporter().parseError(
 					pcLocation[0] + pEx.getLocation().getStart(),
@@ -481,6 +466,30 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 					pointcutExpression.toCharArray(), 
 					pointcutExpression, 
 					new String[] {pEx.getMessage()});
+		}
+		
+		boolean returnsVoid = false;
+		boolean returnsBoolean = false;
+		if ((methodDeclaration.returnType instanceof SingleTypeReference)) {
+			SingleTypeReference retType = (SingleTypeReference) methodDeclaration.returnType;
+			if (CharOperation.equals(voidType,retType.token)) returnsVoid = true;
+			if (CharOperation.equals(booleanType,retType.token)) returnsBoolean = true;
+		} 
+		if (!returnsVoid && !containsIfPcd) {
+			methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
+																					  methodDeclaration.returnType.sourceEnd, 
+																					  "Methods annotated with @Pointcut must return void unless the pointcut contains an if() expression");
+		}
+		if (!returnsBoolean && containsIfPcd) {
+			methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
+																					  methodDeclaration.returnType.sourceEnd, 
+																					  "Methods annotated with @Pointcut must return boolean when the pointcut contains an if() expression");
+		}
+		
+		if (methodDeclaration.statements != null && methodDeclaration.statements.length > 0 && !containsIfPcd) {
+			methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
+					  methodDeclaration.returnType.sourceEnd, 
+					  "Pointcuts without an if() expression should have an empty method body");			
 		}
 	}
 	
@@ -595,6 +604,15 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 				hasMultipleAdviceAnnotations = true;
 				duplicateAdviceAnnotation = annotation;
 			}
+		}
+	}
+	
+	private static class HasIfPCDVisitor extends AbstractPatternNodeVisitor {
+		public boolean containsIfPcd = false;
+		
+		public Object visit(IfPointcut node, Object data) {
+			containsIfPcd = true;
+			return data;
 		}
 	}
 }
