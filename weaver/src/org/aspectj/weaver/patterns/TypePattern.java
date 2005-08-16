@@ -427,6 +427,10 @@ class EllipsisTypePattern extends TypePattern {
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+    
+    public TypePattern parameterizeWith(Map typeVariableMap) {
+    	return this;
+    }
 
 
 }
