@@ -1,8 +1,6 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[
-]>
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <!-- AspectJ v1.5.0 Tests -->
-
 <suite>
 
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
@@ -44,6 +42,22 @@
 	   <compile files="MethodCalledAroundAspect.java">
 	       <message kind="error" line="2"/>
 	   </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="107059" title="parser crashes on call(void (@a *)(..)">
+        <compile files="pr107059.aj">
+            <message line="3" kind="error" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150/pr106130" pr="106130" title="test weaving with > 256 locals">
+        <compile files="AroundLotsOfVars.java LotsOfVars.java" options="-preserveAllLocals"/>
+        <run class="LotsOfVars">
+            <stdout>
+                <line text="hello"/>
+                <line text="2"/>
+            </stdout>
+        </run>
     </ajc-test>
     
     <ajc-test dir="bugs150/pr87376" title="structure model npe on type not found">
@@ -2381,7 +2395,18 @@
      <run class="DeclareParentsWithTypeVars">
      </run>
    </ajc-test>
-               
+
+  <ajc-test dir="java5/generics/genericaspects" title="generic aspect declare soft">
+     <compile files="DeclareSoftWithTypeVars.aj" options="-1.5">
+     </compile>
+     <run class="DeclareSoftWithTypeVars">
+         <stderr>
+             <line text="handled exception: io, io, it's off to work we go..."/>
+             <line text="Successfully converted to domain exception"/>
+         </stderr>
+     </run>
+   </ajc-test>
+                  
    <!-- ajdk example -->
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 5 (ajdk)">
      <compile files="Blob.java,BlobContainment.aj,ParentChildRelationship.aj" options="-1.5"/>
