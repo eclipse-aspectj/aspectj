@@ -45,6 +45,8 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	
 	public abstract void resolve(World world);
 	
+	public boolean isAny() { return false; }
+	
 	/**
 	 * This can modify in place, or return a new TypePattern if the type changes.
 	 */
@@ -104,6 +106,7 @@ class AnyAnnotationTypePattern extends AnnotationTypePattern {
         return visitor.visit(this, data);
     }
     
+    public boolean isAny() { return true; }
 }
 
 class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
