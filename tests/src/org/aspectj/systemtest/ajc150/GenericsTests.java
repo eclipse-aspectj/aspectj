@@ -222,6 +222,9 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testDeclareParentWithParameterizedInterface() {
 		runTest("generic aspect declare parents");
 	}
+	public void testDeclareSoftInGenericAspect() {
+		runTest("generic aspect declare soft");
+	}
 	
 	//////////////////////////////////////////////////////////////////////////////
     // Generic/Parameterized ITDs - includes scenarios from developers notebook //
