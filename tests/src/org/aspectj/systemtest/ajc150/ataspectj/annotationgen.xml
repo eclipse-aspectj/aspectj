@@ -123,7 +123,7 @@
         <compile files="PointcutAssortment.java" options="-1.5">
             <message kind="error" line="9" text="Methods annotated with @Pointcut must return void"/>
             <message kind="error" line="9" text="This method must return a result of type String"/>
-            <message kind="error" line="15" text="Pointcuts should have an empty method body"/>
+            <message kind="error" line="15" text="Pointcuts without an if() expression should have an empty method body"/>
             <message kind="error" line="28" text="Duplicate annotation @Pointcut"/>
             <message kind="error" line="29" text="Duplicate annotation @Pointcut"/>
             <message kind="error" line="11" text="can't find referenced pointcut foo"/>
