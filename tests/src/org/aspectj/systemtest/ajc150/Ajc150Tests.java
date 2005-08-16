@@ -200,7 +200,15 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("(@Foo *)+ type pattern parse error");
   }
   
+  public void test_pr106130_tooManyLocals() {
+	  runTest("test weaving with > 256 locals");
+  }
+  
   public void testMissingNamePattern_pr106461() { runTest("missing name pattern"); }
+  
+  public void testMissingNamePattern_pr107059() {
+	  runTest("parser crashes on call(void (@a *)(..)");
+  }
   
   // helper methods.....
   
