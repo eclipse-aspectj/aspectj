@@ -462,6 +462,7 @@ public class WildTypePattern extends TypePattern {
 		}
 		//System.err.println("extract from : " + Arrays.asList(namePatterns));
 		int len = namePatterns.length;
+		if (len ==1 && !annotationPattern.isAny()) return null; // can't extract
 		NamePattern ret = namePatterns[len-1];
 		NamePattern[] newNames = new NamePattern[len-1];
 		System.arraycopy(namePatterns, 0, newNames, 0, len-1);
