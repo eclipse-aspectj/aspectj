@@ -38,8 +38,12 @@ public class DeclareSoft extends Declare {
 	}
 	
 	public Declare parameterizeWith(Map typeVariableBindingMap) {
-		// TODO Auto-generated method stub
-		return this;
+		DeclareSoft ret = 
+			new DeclareSoft(
+					exception.parameterizeWith(typeVariableBindingMap),
+					pointcut.parameterizeWith(typeVariableBindingMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public String toString() {
@@ -96,6 +100,10 @@ public class DeclareSoft extends Declare {
     	exception = exception.resolveBindings(scope, null, false, true);
     	ResolvedType excType = exception.getExactType().resolve(scope.getWorld());
     	if (excType != ResolvedType.MISSING) {
+    		if (excType.isTypeVariableReference()) {
+    			// a declare soft in a generic abstract aspect, we need to check the upper bound
+    			excType = excType.getUpperBound().resolve(scope.getWorld());
+    		}
     		if (!scope.getWorld().getCoreType(UnresolvedType.THROWABLE).isAssignableFrom(excType)) {
     			scope.getWorld().showMessage(IMessage.ERROR,
     					WeaverMessages.format(WeaverMessages.NOT_THROWABLE,excType.getName()),
