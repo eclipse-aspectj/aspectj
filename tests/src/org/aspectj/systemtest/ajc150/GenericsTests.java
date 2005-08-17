@@ -595,6 +595,30 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("after returning with generic wildcard super");
 	}
 	
+	public void testAJDKErasureMatchingExamples() {
+		runTest("ajdk notebook: erasure matching examples");
+	}
+	
+	public void testAJDKParameterizedMatchingSimpleExamples() {
+		runTest("ajdk notebook: simple parameterized type matching examples");
+	}
+	
+	public void testAJDKMixedTypeVarsAndParametersExample() {
+		runTest("ajdk notebook: mixed parameterized types and generic methods");
+	}
+	
+	public void testAJDKSignatureAndWildcardExamples() {
+		runTest("ajdk notebook: signature matching with generic wildcards");
+	}
+	
+	public void testAJDKBridgeMethodExamples() {
+		runTest("ajdk notebook: bridge method examples");
+	}
+	
+	public void testAJDKArgsExamples() {
+		runTest("ajdk notebook: args examples");
+	}
+	
 	// --- helpers
 		
 	// Check the signature attribute on a class is correct

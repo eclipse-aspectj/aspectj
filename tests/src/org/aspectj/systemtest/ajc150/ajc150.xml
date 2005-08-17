@@ -17,6 +17,17 @@
         </compile>
     </ajc-test>
 
+    <ajc-test title="intermediate annotation matching" dir="bugs150">
+        <compile files="AnnotationPlusPatternMatchingError.aj" options="-1.5">
+            <message kind="warning" line="28" text="matched"/>
+        </compile>
+        <run class="AnnotationPlusPatternMatchingError">
+            <stdout>
+                <line text="In advice"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
     <ajc-test dir="migration" title="load aspectj 1.2.1 aspects in aspectj 5">
         <compile files="Program.java" aspectpath="aspects121.jar">
         </compile>
@@ -3471,6 +3482,83 @@
           </stdout>
      </run>
    </ajc-test>
+   
+   <ajc-test title="ajdk notebook: erasure matching examples" dir="java5/generics/ajdk">
+       <compile files="ErasureMatching.aj" options="-1.5">
+           <message kind="warning" line="18" text="static generic method match"/>
+           <message kind="warning" line="21" text="instance generic method match"/>
+           <message kind="warning" line="31" text="method in generic type match"/>
+           <message kind="warning" line="28" text="field in generic type match"/>
+       </compile>
+   </ajc-test>
+   
+   <ajc-test title="ajdk notebook: simple parameterized type matching examples" dir="java5/generics/ajdk">
+       <compile files="SimpleParameterizedTypeExamples.aj" options="-1.5">
+           <message kind="warning" line="34" text="get myStrings 1"/>           
+           <message kind="warning" line="34" text="get myStrings 2"/>           
+           <message kind="warning" line="38" text="get myStrings 1"/>           
+           <message kind="warning" line="38" text="get myStrings 2"/>           
+           <message kind="warning" line="35" text="get myFloats 1"/>           
+           <message kind="warning" line="35" text="get myFloats 2"/>           
+           <message kind="warning" line="35" text="get myFloats 3"/>           
+           <message kind="warning" line="34" text="getter 1"/>           
+           <message kind="warning" line="35" text="getter 1"/>           
+           <message kind="warning" line="34" text="getter 2"/>           
+           <message kind="warning" line="35" text="getter 2"/>           
+           <message kind="warning" line="34" text="getter 3"/>           
+           <message kind="warning" line="35" text="getter 4"/>           
+           <message kind="warning" line="25" text="call 1"/>           
+           <message kind="warning" line="25" text="call 2"/>           
+        </compile>
+   </ajc-test>
+   
+   <ajc-test title="ajdk notebook: mixed parameterized types and generic methods" dir="java5/generics/ajdk">
+       <compile files="MixedParameterizedAndTypeVariables.aj" options="-1.5">
+           <message kind="warning" line="13" text="erasure match"/>
+           <message kind="warning" line="13" text="mixed match"/>
+           <message kind="warning" line="13" text="params only match"/>
+       </compile>
+   </ajc-test>
+
+   <ajc-test title="ajdk notebook: signature matching with generic wildcards" dir="java5/generics/ajdk">
+       <compile files="SignatureWildcards.aj" options="-1.5">
+           <message kind="warning" line="13" text="any list"/>
+           <message kind="warning" line="15" text="any list"/>
+           <message kind="warning" line="17" text="any list"/>
+           <message kind="warning" line="13" text="only foo"/>
+           <message kind="warning" line="15" text="some list"/>
+           <message kind="warning" line="13" text="any list with upper bound"/>
+           <message kind="warning" line="15" text="any list with upper bound"/>
+       </compile>
+   </ajc-test>
+
+   <ajc-test title="ajdk notebook: bridge method examples" dir="java5/generics/ajdk">
+       <compile files="BridgeMethodExamples.aj" options="-1.5">
+           <message kind="warning" line="17" text="double match"/>
+           <message kind="warning" line="25" text="double match"/>
+           <message kind="warning" line="9" text="match"/>
+           <message kind="warning" line="11" text="match"/>
+       </compile>
+   </ajc-test>
+   
+   <ajc-test title="ajdk notebook: args examples" dir="java5/generics/ajdk">
+       <compile files="ArgsExamples.aj" options="-1.5">
+           <message kind="warning" line="15" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Number&gt; when argument is an instance of List at join point method-execution(void C.goo(List&lt;? extends Number&gt;)) [Xlint:uncheckedArgument]"/>
+           <message kind="warning" line="53" text="unchecked match"/>
+       </compile>
+       <run class="ArgsExamples">
+           <stdout>
+               <line text="args(List)"/>
+               <line text="args List of String"/>
+               <line text="args(List)"/>
+               <line text="args List of Double"/>
+               <line text="args(List)"/>
+               <line text="args List of Double"/>
+           </stdout>
+       </run>
+   </ajc-test>   
+   
+   
    <!-- ============================================================== -->
    <!--     End of generics tests                                      -->
    <!-- ============================================================== -->

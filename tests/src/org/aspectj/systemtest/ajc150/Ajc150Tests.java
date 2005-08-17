@@ -210,6 +210,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("parser crashes on call(void (@a *)(..)");
   }
   
+  public void testIntermediateAnnotationMatching() {
+	  runTest("intermediate annotation matching");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
