@@ -72,16 +72,16 @@
         <compile files="ataspectj/IfPointcutTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
         <run class="ataspectj.IfPointcutTest"/>
         <!-- FIXME AV - Adrian in JDT stuff -->
-<!--        <compile files="ataspectj/IfPointcutTest.java,ataspectj/TestHelper.java" options="-1.5"/>-->
-<!--        <run class="ataspectj.IfPointcutTest"/>-->
+        <!--<compile files="ataspectj/IfPointcutTest.java,ataspectj/TestHelper.java" options="-1.5"/>-->
+        <!--<run class="ataspectj.IfPointcutTest"/>-->
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="IfPointcut2Test">
         <compile files="ataspectj/IfPointcut2Test.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
         <run class="ataspectj.IfPointcut2Test"/>
         <!-- FIXME AV - Adrian in JDT stuff -->
-<!--        <compile files="ataspectj/IfPointcut2Test.java,ataspectj/TestHelper.java" options="-1.5"/>-->
-<!--        <run class="ataspectj.IfPointcut2Test"/>-->
+        <!--<compile files="ataspectj/IfPointcut2Test.java,ataspectj/TestHelper.java" options="-1.5"/>-->
+        <!--<run class="ataspectj.IfPointcut2Test"/>-->
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="BindingTest">

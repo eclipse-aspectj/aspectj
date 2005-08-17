@@ -494,8 +494,8 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         il.append(InstructionConstants.ARETURN);
 
         InstructionHandle handler = il.append(InstructionConstants.ASTORE_1);
-        il.append(InstructionConstants.ALOAD_1);
-        il.append(InstructionConstants.ATHROW);
+        il.append(InstructionConstants.ACONST_NULL);
+        il.append(InstructionConstants.ARETURN);
 
         method.addExceptionHandler(
             tryStart, handler.getPrev(), handler, new ObjectType("java.lang.Exception"), false
