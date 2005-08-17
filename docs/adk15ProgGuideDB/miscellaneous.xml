@@ -49,7 +49,7 @@
        	<programlisting><![CDATA[
        	  declare soft : SomeRuntimeException : execution(* *(..));
        	  
-       	  &gt;&gt; "SomeRuntimeException will not be softened as it is already a RuntimeException" [XLint:runtimeExceptionNotSoftened]
+       	  >> "SomeRuntimeException will not be softened as it is already a RuntimeException" [XLint:runtimeExceptionNotSoftened]
 		]]></programlisting>
 	
 	   <para>
@@ -58,7 +58,7 @@
 	
 	   <para>
 	      If the exception type specified in a declare soft statement is a super type of <literal>RuntimeException</literal>
-	      (such as <literal>Exception</literal> for example) then any <i>checked</i> exception thrown at a matched join point, 
+	      (such as <literal>Exception</literal> for example) then any <emphasis>checked</emphasis> exception thrown at a matched join point, 
 	      where the exception is an instance of the softened exception, will be softened to an 
 	      <literal>org.aspectj.lang.SoftException</literal>. 
       </para>
