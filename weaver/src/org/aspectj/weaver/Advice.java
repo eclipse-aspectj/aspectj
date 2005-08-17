@@ -39,6 +39,8 @@ public abstract class Advice extends ShadowMunger {
     protected int nFreeVars; // just for cflow*Entry kinds
     
     protected TypePattern exceptionType; // just for Softener kind
+    
+    protected List/*Lint.Kind*/ suppressedLintKinds = null; // based on annotations on this advice
 
     public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars, List innerCflowEntries, ResolvedType inAspect){
     	Advice ret = world.createAdviceMunger(isBelow ? AdviceKind.CflowBelowEntry : AdviceKind.CflowEntry,
