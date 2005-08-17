@@ -18,6 +18,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -52,6 +54,7 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -708,4 +711,34 @@ public class Utility {
         }
         return suppressed;
     }
+    
+    public static List/*Lint.Kind*/ getSuppressedWarnings(AnnotationX[] anns, Lint lint) {
+      	if (anns == null) return Collections.EMPTY_LIST;
+        // Go through the annotation types
+      	List suppressedWarnings = new ArrayList();
+      	boolean found = false;
+        for (int i = 0;!found && i<anns.length;i++) {
+          // Check for the SuppressAjWarnings annotation
+          if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getBcelAnnotation().getTypeSignature())) {
+        	found = true;
+            // Two possibilities:
+            // 1. there are no values specified (i.e. @SuppressAjWarnings)
+            // 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
+            List vals = anns[i].getBcelAnnotation().getValues();
+            if (vals == null || vals.size()==0) { // (1)
+               suppressedWarnings.addAll(lint.allKinds());
+            } else { // (2)
+            	// We know the value is an array value
+            	ArrayElementValue array = (ArrayElementValue)((ElementNameValuePair)vals.get(0)).getValue();
+            	ElementValue[] values = array.getElementValuesArray();
+            	for (int j = 0; j < values.length; j++) {
+            		// We know values in the array are strings
+					SimpleElementValue value = (SimpleElementValue)values[j];
+					suppressedWarnings.add(lint.getLintKind(value.getValueString()));
+				}
+            }
+          }
+        }
+        return suppressedWarnings;
+     }
 }
