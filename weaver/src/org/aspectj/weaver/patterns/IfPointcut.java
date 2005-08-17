@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -289,9 +290,8 @@ public class IfPointcut extends Pointcut {
             ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();
             if (def != null) {
                 ResolvedType aspect = inAspect.getWorld().resolve(def.getDeclaringType());
-                ResolvedMember[] methods = aspect.getDeclaredJavaMethods();
-                for (int i = 0; i < methods.length; i++) {
-                    ResolvedMember method = methods[i];
+                for (Iterator memberIter = aspect.getMethods(); memberIter.hasNext();) {
+                    ResolvedMember method = (ResolvedMember) memberIter.next();
                     if (def.getName().equals(method.getName())
                         && def.getParameterTypes().length == method.getParameterTypes().length) {
                         boolean sameSig = true;

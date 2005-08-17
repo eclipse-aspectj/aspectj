@@ -444,15 +444,16 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			pcDecl.setGenerateSyntheticPointcutMethod();
 			TypeDeclaration onType = (TypeDeclaration) typeStack.peek();
 			pcDecl.postParse(onType);
-			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(methodDeclaration.scope);
-			int argsLength = methodDeclaration.arguments == null ? 0 : methodDeclaration.arguments.length;
- 		    FormalBinding[] bindings = new FormalBinding[argsLength];
-	        for (int i = 0, len = bindings.length; i < len; i++) {
-	            Argument arg = methodDeclaration.arguments[i];
-	            String name = new String(arg.name);
-	            UnresolvedType type = factory.fromBinding(methodDeclaration.binding.parameters[i]);
-	            bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
-	        }
+//			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(methodDeclaration.scope);
+//			int argsLength = methodDeclaration.arguments == null ? 0 : methodDeclaration.arguments.length;
+			FormalBinding[] bindings = buildFormalAdviceBindingsFrom(methodDeclaration);
+// 		    FormalBinding[] bindings = new FormalBinding[argsLength];
+//	        for (int i = 0, len = bindings.length; i < len; i++) {
+//	            Argument arg = methodDeclaration.arguments[i];
+//	            String name = new String(arg.name);
+//	            UnresolvedType type = factory.fromBinding(methodDeclaration.binding.parameters[i]);
+//	            bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
+//	        }
 			swap(onType,methodDeclaration,pcDecl);
 			pc.resolve(new EclipseScope(bindings,methodDeclaration.scope));
 			HasIfPCDVisitor ifFinder = new HasIfPCDVisitor();
