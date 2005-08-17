@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -151,6 +152,30 @@ public class Lint {
 			}
 		}
 	}
+	
+	public Collection allKinds() {
+		return kinds.values();
+	}
+	
+	public Kind getLintKind(String name) {
+		return (Kind) kinds.get(name);
+	}
+	
+	// temporarily suppress the given lint messages
+	public void suppressKinds(Collection lintKind) {
+		for (Iterator iter = lintKind.iterator(); iter.hasNext();) {
+			Kind k = (Kind) iter.next();
+			k.setSuppressed(true);
+		}
+	}
+	
+	// remove any suppression of lint warnings in place
+	public void clearSuppressions() {
+		for (Iterator iter = kinds.values().iterator(); iter.hasNext();) {
+			Kind k = (Kind) iter.next();
+			k.setSuppressed(false);
+		}		
+	}
 
 	private IMessage.Kind getMessageKind(String v) {
 		if (v.equals("ignore")) return null;
@@ -168,14 +193,19 @@ public class Lint {
 		private String name;
 		private String message;
 		private IMessage.Kind kind = IMessage.WARNING;
+		private boolean isSupressed = false; // by SuppressAjWarnings
 		public Kind(String name, String message) {
 			this.name = name;
 			this.message = message;
 			kinds.put(this.name, this);
 		}
 		
+		public void setSuppressed(boolean shouldBeSuppressed) {
+			this.isSupressed = shouldBeSuppressed;
+		}
+		
 		public boolean isEnabled() {
-			return kind != null;
+			return (kind != null) && !isSupressed;
 		}
 		
 		public String getName() {
