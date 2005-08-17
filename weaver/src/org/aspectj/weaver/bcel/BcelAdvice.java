@@ -96,7 +96,18 @@ public class BcelAdvice extends Advice {
     		exposedState = new ExposedState(0);
     		return;  //XXX this case is just here for supporting lazy test code
     	}
+    	
+    	World world = shadow.getIWorld();
+    	if (suppressedLintKinds == null) {
+    		if (signature instanceof BcelMethod) {
+    			this.suppressedLintKinds = Utility.getSuppressedWarnings(signature.getAnnotations(), world.getLint());
+    		} else {
+    			this.suppressedLintKinds = Collections.EMPTY_LIST;
+    		}
+    	}
+    	world.getLint().suppressKinds(suppressedLintKinds);
 		pointcutTest = getPointcut().findResidue(shadow, exposedState);
+		world.getLint().clearSuppressions();
 		
 		// these initializations won't be performed by findResidue, but need to be
 		// so that the joinpoint is primed for weaving
