@@ -225,6 +225,26 @@
             <message kind="warning" line="9" text="should match"/>        
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="java5/varargs" title="Varargs with .. in pointcut" vm="1.5">
+        <compile files="pr93356.aj" options="-1.5">  
+        	<message kind="warning" line="5" text="a"/>
+        	<message kind="warning" line="5" text="b"/>    
+        	<message kind="warning" line="5" text="c"/>    
+        	<message kind="warning" line="5" text="d"/>    
+        	<message kind="warning" line="5" text="e"/>  
+        	<message kind="warning" line="5" text="k"/> 
+        	<message kind="warning" line="5" text="l"/>
+        	
+        	<message kind="warning" line="4" text="f"/>
+        	<message kind="warning" line="4" text="g"/>    
+        	<message kind="warning" line="4" text="h"/>    
+        	<message kind="warning" line="4" text="i"/>    
+        	<message kind="warning" line="4" text="j"/>  
+        	
+        	<message kind="warning" line="7" text="f"/>      
+        </compile>
+    </ajc-test>
 
     <ajc-test dir="java5/varargs" title="star varargs pattern" vm="1.5">
         <compile files="StarVarargsPattern.aj" options="-1.5">
@@ -2869,6 +2889,43 @@
    </ajc-test>
 
    <!-- end of generic decps -->
+   
+   <!-- generics/itds and binary weaving -->
+   
+   <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 1">
+   	   <compile files="BaseClass.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
+       <compile files="A1.aj" inpath="code.jar" options="-1.5,-Xreweavable"/>
+        <run class="BaseClass">
+        <stderr>
+             <line text="Advice from A1 ran successfully"/>
+        </stderr>
+        </run>
+    </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 2">
+   	   <compile files="BaseClass.java,A1.aj" outjar="code.jar" options="-1.5,-Xreweavable"/>
+       <compile files="A2.aj" inpath="code.jar" options="-1.5,-Xreweavable"/>
+        <run class="BaseClass">
+        <stderr>
+             <line text="Advice from A1 ran successfully"/>
+             <line text="Advice from A2 ran successfully"/>
+        </stderr>
+        </run>
+    </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 3">
+   	   <compile files="BaseClass.java,A1.aj,A2.aj" outjar="code.jar" options="-1.5,-Xreweavable"/>
+       <compile files="A3.aj" inpath="code.jar" options="-1.5,-Xreweavable"/>
+        <run class="BaseClass">
+        <stderr>
+             <line text="Advice from A1 ran successfully"/>
+             <line text="Advice from A2 ran successfully"/>
+             <line text="Advice from A3 ran successfully"/>
+        </stderr>
+        </run>
+    </ajc-test>
+
+   <!-- end of generics/itds and binary weaving -->
    
    <!-- generics and  pointcuts -->
 
