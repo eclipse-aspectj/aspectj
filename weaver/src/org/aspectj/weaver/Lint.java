@@ -205,7 +205,12 @@ public class Lint {
 		}
 		
 		public boolean isEnabled() {
-			return (kind != null) && !isSupressed;
+			return (kind != null) && !isSupressed();
+		}
+		
+		private boolean isSupressed() {
+			// can't suppress errors!
+			return isSupressed && (kind != IMessage.ERROR);
 		}
 		
 		public String getName() {
