@@ -72,5 +72,9 @@ public class VarargsTests extends XMLBasedAjcTestCase {
   public void testStarVarargs() {
 	  runTest("star varargs pattern");
   }
+  
+  public void testVarargsWithDotDotInPointcut() {
+	  runTest("Varargs with .. in pointcut");
+  }
 
 }
