@@ -263,7 +263,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     }
 	
 	public boolean hasAnnotations() {
-		return  (annotationTypes==null);
+		return  (annotationTypes!=null);
 	}
 
     public boolean hasAnnotation(UnresolvedType ofType) {
