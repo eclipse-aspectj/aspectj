@@ -100,6 +100,13 @@ public class LangUtilTest extends TestCase {
         resultString = "" + extracted;
         assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
     }
+    
+    public void testVersion() {
+        assertTrue(LangUtil.is13VMOrGreater()); // min vm now - floor may change
+        if (LangUtil.is15VMOrGreater()) {
+            assertTrue(LangUtil.is14VMOrGreater());
+        }
+    }
         
     /** @see LangUtil.extractOptions(String[], String[][]) */
     public void testExtractOptionsArrayCollector() {
