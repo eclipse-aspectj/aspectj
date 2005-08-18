@@ -61,6 +61,12 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150" pr="107059" title="target(@Foo *)">
+        <compile files="pr107059_2.aj" options="-1.5">
+            <message kind="error" line="4" text="wildcard type pattern not allowed"></message>
+        </compile>
+    </ajc-test>
+       
     <ajc-test dir="bugs150/pr106130" pr="106130" title="test weaving with > 256 locals">
         <compile files="AroundLotsOfVars.java LotsOfVars.java" options="-preserveAllLocals"/>
         <run class="LotsOfVars">
@@ -3615,7 +3621,57 @@
        </run>
    </ajc-test>   
    
-   
+   <ajc-test title="ajdk notebook: after returning examples" dir="java5/generics/ajdk">
+       <compile files="AfterReturningExamples.aj" options="-1.5">
+           <message kind="warning" line="20" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Number&gt;"/>
+       </compile>
+       <run class="AfterReturningExamples">
+           <stdout>
+               <line text="execution(List C.foo(List))"/>
+               <line text="raw s1"/>
+               <line text="raw s2"/>
+               <line text="execution(List C.bar(List))"/>
+               <line text="raw 5.0"/>
+               <line text="raw 10.0"/>
+               <line text="a1 5.0"/>
+               <line text="a1 10.0"/>
+               <line text="a2 5.0"/>
+               <line text="a2 10.0"/>
+               <line text="a3 5.0"/>
+               <line text="a3 10.0"/>
+               <line text="execution(List C.goo(List))"/>
+               <line text="raw 5.0"/>
+               <line text="raw 10.0"/>
+               <line text="a1 5.0"/>
+               <line text="a1 10.0"/>
+               <line text="a3 5.0"/>
+               <line text="a3 10.0"/>          
+            </stdout>
+       </run>
+   </ajc-test>   
+ 
+   <ajc-test title="ajdk notebook: args and wildcards examples" dir="java5/generics/ajdk">
+       <compile files="WildcardArgsExamples.aj" options="-1.5">
+           <message kind="warning" line="6" text="unchecked match of List&lt;? extends Number&gt; with List"/>
+       </compile>
+       <run class="WildcardArgsExamples">
+           <stdout>
+               <line text="advice match at call(void C.foo(Object))"/>
+               <line text="advice match at call(void C.foo(Object))"/>
+               <line text="advice match 2 at call(void C.goo1(List))"/>
+               <line text="advice match 2 at call(void C.goo2(List))"/>
+               <line text="advice match 2 at call(void C.goo4(List))"/>
+           </stdout>
+       </run>
+   </ajc-test>  
+
+   <ajc-test title="ajdk notebook: pointcut in generic class example" dir="java5/generics/ajdk">
+       <compile files="PointcutInGenericClassExample.aj" options="-1.5">
+           <message kind="warning" line="23" text="parameterized with C"/>
+           <message kind="warning" line="29" text="parameterized with D"/>
+       </compile>
+   </ajc-test>  
+
    <!-- ============================================================== -->
    <!--     End of generics tests                                      -->
    <!-- ============================================================== -->

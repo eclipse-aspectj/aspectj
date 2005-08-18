@@ -619,6 +619,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("ajdk notebook: args examples");
 	}
 	
+	public void testAJDKArgsAndWildcardsExamples() {
+		runTest("ajdk notebook: args and wildcards examples");
+	}
+	
+	public void testAJDKAfterReturningExamples() {
+		runTest("ajdk notebook: after returning examples");
+	}
+	
+	public void testAJDKPointcutInGenericClassExample() {
+		runTest("ajdk notebook: pointcut in generic class example");
+	}
+	
 	// --- helpers
 		
 	// Check the signature attribute on a class is correct

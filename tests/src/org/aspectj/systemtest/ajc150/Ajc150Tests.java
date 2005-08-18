@@ -214,6 +214,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("intermediate annotation matching");
   }
   
+  public void testBadRuntimeTestGeneration() {
+	  runTest("target(@Foo *)");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
