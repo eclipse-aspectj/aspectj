@@ -301,10 +301,8 @@ public class ExactTypePattern extends TypePattern {
 			newType = type.parameterize(typeVariableMap);
 		}
 		ExactTypePattern ret = new ExactTypePattern(newType,includeSubtypes,isVarArgs);
-		ret.annotationPattern = annotationPattern;
-		ret.start = start;
-		ret.end = end;
-		ret.sourceContext = sourceContext;
+		ret.annotationPattern = annotationPattern.parameterizeWith(typeVariableMap);
+		ret.copyLocationFrom(this);
 		return ret;
 	}
 	
