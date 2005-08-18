@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -282,11 +283,8 @@ public abstract class TypePattern extends PatternNode {
     /**
      * return a version of this type pattern in which all type variable references have been
      * replaced by their corresponding entry in the map.
-     * Should ultimately be made abstract and all subtypes forced to implement.
      */
-    public TypePattern parameterizeWith(Map typeVariableMap) {
-    	throw new UnsupportedOperationException("add test cases for the sub-type in question and then override this method in it");
-    }
+    public abstract TypePattern parameterizeWith(Map typeVariableMap);
     
 	public void postRead(ResolvedType enclosingType) {
 	}
@@ -521,6 +519,10 @@ class AnyTypePattern extends TypePattern {
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+    
+    public TypePattern parameterizeWith(Map arg0) {
+    	return this;
+    }
 }
 
 /**
@@ -553,7 +555,10 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 	}
 
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
-		return FuzzyBoolean.YES;
+		if (Modifier.isFinal(type.getModifiers())) {
+			return FuzzyBoolean.fromBoolean(matchesExactly(type));
+		}
+		return FuzzyBoolean.MAYBE;
 	}
 
 	protected boolean matchesExactly(Class type) {
@@ -564,6 +569,10 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		return FuzzyBoolean.YES;
 	}
 
+	public TypePattern parameterizeWith(Map typeVariableMap) {
+		return this;
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.ANY_WITH_ANNO);
 		annotationPattern.write(s);
@@ -690,6 +699,10 @@ class NoTypePattern extends TypePattern {
 
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
+    }
+    
+    public TypePattern parameterizeWith(Map arg0) {
+    	return this;
     }
 }
 
