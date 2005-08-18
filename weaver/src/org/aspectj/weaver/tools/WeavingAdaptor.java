@@ -256,7 +256,9 @@ public class WeavingAdaptor {
 	 */
 	private void addAspectLibrary(String aspectLibraryName) {
 		File aspectLibrary = new File(aspectLibraryName);
-		if (aspectLibrary.isFile() && aspectLibraryName.endsWith(".jar")) {
+		if (aspectLibrary.isDirectory()
+                || (aspectLibrary.isFile() 
+                        && FileUtil.hasZipSuffix(aspectLibraryName))) {
 			try {
 				info("adding aspect library: '" + aspectLibrary + "'");
 				weaver.addLibraryJarFile(aspectLibrary);
