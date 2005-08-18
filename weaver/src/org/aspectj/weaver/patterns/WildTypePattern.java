@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
@@ -455,7 +456,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public NamePattern extractName() {
-		if (isIncludeSubtypes() || isVarArgs() || isArray()) {
+		if (isIncludeSubtypes() || isVarArgs() || isArray() || (typeParameters.size() > 0)) {
 			// we can't extract a name, the pattern is something like Foo+ and therefore
 			// it is not ok to treat Foo as a method name!
 			return null;
@@ -520,6 +521,27 @@ public class WildTypePattern extends TypePattern {
 		return buf.toString();
 	}		
 
+	public TypePattern parameterizeWith(Map typeVariableMap) {
+		WildTypePattern ret = new WildTypePattern(
+				namePatterns,
+				includeSubtypes,
+				dim,
+				isVarArgs,
+				typeParameters.parameterizeWith(typeVariableMap)
+			);
+		ret.annotationPattern = this.annotationPattern.parameterizeWith(typeVariableMap);
+		ret.additionalInterfaceBounds = new TypePattern[additionalInterfaceBounds.length];
+		for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+			ret.additionalInterfaceBounds[i] = additionalInterfaceBounds[i].parameterizeWith(typeVariableMap);
+		}
+		ret.upperBound = upperBound.parameterizeWith(typeVariableMap);
+		ret.lowerBound = lowerBound.parameterizeWith(typeVariableMap);
+		ret.isGeneric = isGeneric;
+		ret.knownMatches = knownMatches;
+		ret.importedPrefixes = importedPrefixes;
+		ret.copyLocationFrom(this);
+		return ret;
+	}
 
 	/**
 	 * Need to determine if I'm really a pattern or a reference to a formal
@@ -533,7 +555,16 @@ public class WildTypePattern extends TypePattern {
     { 		
     	if (isNamePatternStar()) {
     		TypePattern anyPattern = maybeResolveToAnyPattern(scope, bindings, allowBinding, requireExactType);
-    		if (anyPattern != null) return anyPattern;
+    		if (anyPattern != null) {
+    			if (requireExactType) {
+    				scope.getWorld().getMessageHandler().handleMessage(
+						MessageUtil.error(WeaverMessages.format(WeaverMessages.WILDCARD_NOT_ALLOWED),
+											getSourceLocation()));
+					return NO;
+    			} else {
+    				return anyPattern;
+    			}
+    		}
 		}
 
     	TypePattern bindingTypePattern = maybeResolveToBindingTypePattern(scope, bindings, allowBinding, requireExactType);
