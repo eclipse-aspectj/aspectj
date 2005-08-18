@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
@@ -79,6 +80,14 @@ public class ThrowsPattern extends PatternNode {
     	required = required.resolveBindingsFromRTTI(false,false);
     	forbidden = forbidden.resolveBindingsFromRTTI(false,false);
     	return this;
+    }
+    
+    public ThrowsPattern parameterizeWith(Map/*name -> resolved type*/ typeVariableMap) {
+    	ThrowsPattern ret = new ThrowsPattern(
+    			required.parameterizeWith(typeVariableMap),
+    			forbidden.parameterizeWith(typeVariableMap));
+    	ret.copyLocationFrom(this);
+    	return ret;
     }
     
 	public boolean matches(UnresolvedType[] tys, World world) {

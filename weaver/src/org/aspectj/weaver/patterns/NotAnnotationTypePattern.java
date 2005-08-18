@@ -11,6 +11,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
@@ -50,6 +51,14 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 
+	
+	public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
+		AnnotationTypePattern newNegatedPattern = negatedPattern.parameterizeWith(typeVariableMap);
+		NotAnnotationTypePattern ret = new NotAnnotationTypePattern(newNegatedPattern);
+		ret.copyLocationFrom(this);
+		return ret;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */

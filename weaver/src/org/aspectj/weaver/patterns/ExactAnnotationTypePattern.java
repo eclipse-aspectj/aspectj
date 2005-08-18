@@ -11,6 +11,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
@@ -19,6 +20,7 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -155,6 +157,24 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		
 		verifyIsAnnotationType((ResolvedType)annotationType,scope);
 		return this;
+	}
+	
+	public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
+		UnresolvedType newAnnotationType = annotationType;
+		if (annotationType.isTypeVariableReference()) {
+			TypeVariableReference t = (TypeVariableReference) annotationType;
+			String key = t.getTypeVariable().getName();
+			if (typeVariableMap.containsKey(key)) {
+				newAnnotationType = (UnresolvedType) typeVariableMap.get(key);
+			}
+		} else if (annotationType.isParameterizedType()) {
+			newAnnotationType = annotationType.parameterize(typeVariableMap);
+		}
+		ExactAnnotationTypePattern ret = new ExactAnnotationTypePattern(newAnnotationType);
+		ret.formalName = formalName;
+		ret.bindingPattern = bindingPattern;
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	private String maybeGetSimpleName() {

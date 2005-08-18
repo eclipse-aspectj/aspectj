@@ -11,6 +11,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
@@ -52,6 +53,14 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 		left = left.resolveBindings(scope,bindings,allowBinding);
 		right =right.resolveBindings(scope,bindings,allowBinding);
 		return this;
+	}
+	
+	public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
+		AnnotationTypePattern newLeft = left.parameterizeWith(typeVariableMap);
+		AnnotationTypePattern newRight = right.parameterizeWith(typeVariableMap);
+		AndAnnotationTypePattern ret = new AndAnnotationTypePattern(newLeft,newRight);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {

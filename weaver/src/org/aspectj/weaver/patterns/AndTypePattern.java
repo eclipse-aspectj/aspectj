@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
@@ -118,6 +119,14 @@ public class AndTypePattern extends TypePattern {
 		left = left.resolveBindings(scope, bindings, false, false);
 		right = right.resolveBindings(scope, bindings, false, false);
 		return this;
+	}
+	
+	public TypePattern parameterizeWith(Map typeVariableMap) {
+		TypePattern newLeft = left.parameterizeWith(typeVariableMap);
+		TypePattern newRight = right.parameterizeWith(typeVariableMap);
+		AndTypePattern ret = new AndTypePattern(newLeft,newRight);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {

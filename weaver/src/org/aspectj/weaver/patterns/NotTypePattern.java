@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
@@ -112,6 +113,13 @@ public class NotTypePattern extends TypePattern {
 		if (requireExactType) return notExactType(scope);
 		negatedPattern = negatedPattern.resolveBindings(scope, bindings, false, false);
 		return this;
+	}
+	
+	public TypePattern parameterizeWith(Map typeVariableMap) {
+		TypePattern newNegatedPattern = negatedPattern.parameterizeWith(typeVariableMap);
+		NotTypePattern ret = new NotTypePattern(newNegatedPattern);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {

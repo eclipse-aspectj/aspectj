@@ -11,6 +11,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
@@ -95,6 +96,13 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
     	} else {
     		return this;
     	}
+    }
+    
+    public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
+    	WildAnnotationTypePattern ret = new WildAnnotationTypePattern(typePattern.parameterizeWith(typeVariableMap));
+    	ret.copyLocationFrom(this);
+    	ret.resolved = resolved;
+    	return ret;
     }
 
 	private static final byte VERSION = 1; // rev if ser. form changes

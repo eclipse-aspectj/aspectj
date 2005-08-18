@@ -11,6 +11,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
@@ -44,6 +45,8 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	}
 	
 	public abstract void resolve(World world);
+	
+	public abstract AnnotationTypePattern parameterizeWith(Map/*name -> ResolvedType*/ typeVariableMap);
 	
 	public boolean isAny() { return false; }
 	
@@ -107,6 +110,10 @@ class AnyAnnotationTypePattern extends AnnotationTypePattern {
     }
     
     public boolean isAny() { return true; }
+    
+    public AnnotationTypePattern parameterizeWith(Map arg0) {
+    	return this;
+    }
 }
 
 class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
@@ -126,6 +133,10 @@ class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
 
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
+    }
+    
+    public AnnotationTypePattern parameterizeWith(Map arg0) {
+    	return this;
     }
     
 }
