@@ -172,6 +172,11 @@ public class BcelWeaver implements IWeaver {
     
 
 
+    /**
+     * 
+     * @param inFile File path to class directory or zip/jar class archive
+     * @throws IOException
+     */
 	public void addLibraryJarFile(File inFile) throws IOException  {
 		List addedAspects = null;
 		if (inFile.isDirectory()) {
