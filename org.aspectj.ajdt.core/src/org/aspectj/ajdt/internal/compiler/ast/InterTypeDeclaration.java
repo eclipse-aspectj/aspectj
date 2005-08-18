@@ -44,7 +44,7 @@ import org.aspectj.weaver.Shadow;
  * @author Jim Hugunin
  */
 public abstract class InterTypeDeclaration extends AjMethodDeclaration {
-	public TypeReference onType;
+	protected TypeReference onType;
 	protected ReferenceBinding onTypeBinding;
 	protected List phantomTypeVariableToRealIndex;
 
@@ -272,6 +272,14 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 	public char[] getDeclaredSelector() {
 		return declaredSelector;
+	}
+	
+	public void setOnType(TypeReference onType) {
+		this.onType = onType;
+	}
+	
+	public TypeReference getOnType() {
+		return onType;
 	}
 
 }

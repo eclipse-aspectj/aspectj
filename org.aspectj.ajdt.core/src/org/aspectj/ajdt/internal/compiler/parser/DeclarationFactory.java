@@ -258,7 +258,7 @@ public class DeclarationFactory implements IDeclarationFactory {
 	 * @see org.eclipse.jdt.internal.compiler.parser.Parser.IDeclarationFactory#setOnType(org.eclipse.jdt.internal.compiler.ast.MethodDeclaration, org.eclipse.jdt.internal.compiler.ast.TypeReference)
 	 */
 	public void setOnType(MethodDeclaration interTypeDecl, TypeReference onType) {
-		((InterTypeDeclaration)interTypeDecl).onType = onType;	
+		((InterTypeDeclaration)interTypeDecl).setOnType(onType);	
 	}
 
 	/* (non-Javadoc)

@@ -185,7 +185,7 @@ public class AsmElementFormatter {
 			
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
 			InterTypeDeclaration itd = (InterTypeDeclaration)methodDeclaration;
-			String name = itd.onType.toString() + "." + new String(itd.getDeclaredSelector()); 
+			String name = itd.getOnType().toString() + "." + new String(itd.getDeclaredSelector()); 
 			if (methodDeclaration instanceof InterTypeFieldDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_FIELD);
 				node.setName(name);
@@ -206,7 +206,7 @@ public class AsmElementFormatter {
 //				}
 //				argumentsSignature.append(")");
 //				InterTypeConstructorDeclaration itcd = (InterTypeConstructorDeclaration)methodDeclaration;				
-				node.setName(itd.onType.toString() + "." + itd.onType.toString()/*+argumentsSignature.toString()*/);
+				node.setName(itd.getOnType().toString() + "." + itd.getOnType().toString()/*+argumentsSignature.toString()*/);
 			} else {
 				node.setKind(IProgramElement.Kind.ERROR);
 				node.setName(name);
