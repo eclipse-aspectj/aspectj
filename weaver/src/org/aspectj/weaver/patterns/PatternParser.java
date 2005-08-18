@@ -493,7 +493,13 @@ public class PatternParser {
 
 	private Pointcut parseReferencePointcut() {
 		TypePattern onType = parseTypePattern();
-		NamePattern name = tryToExtractName(onType);
+		NamePattern name = null;
+		if (onType.typeParameters.size() > 0) {
+			eat(".");
+			name = parseNamePattern();
+		} else {
+			name = tryToExtractName(onType);
+		}
 		if (name == null) {
     		throw new ParserException("name pattern", tokenSource.peek());
     	}
