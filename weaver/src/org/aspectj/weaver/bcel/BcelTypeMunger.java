@@ -47,6 +47,7 @@ import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 //import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
 import org.aspectj.weaver.PrivilegedAccessMunger;
@@ -743,7 +744,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		    // which is holding them.
 			if (weaver.getWorld().isInJava5Mode()){
 				AnnotationX annotationsOnRealMember[] = null;
-				ResolvedMember realMember = getRealMemberForITDFromAspect(aspectType,interMethodDispatcher);
+				ResolvedType toLookOn = aspectType;
+				if (aspectType.isRawType()) toLookOn = aspectType.getGenericType();
+				ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn,interMethodDispatcher);
 				if (realMember==null) throw new BCException("Couldn't find ITD holder member '"+
 						interMethodDispatcher+"' on aspect "+aspectType);
 				annotationsOnRealMember = realMember.getAnnotations();
@@ -1136,7 +1139,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	    // which is holding them.
 		if (weaver.getWorld().isInJava5Mode()){
 				// the below line just gets the method with the same name in aspectType.getDeclaredMethods();
-				ResolvedMember realMember = getRealMemberForITDFromAspect(aspectType,interMethodBody);
+				ResolvedType toLookOn = aspectType;
+				if (aspectType.isRawType()) toLookOn = aspectType.getGenericType();
+				ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn,interMethodBody);
 				if (realMember==null) throw new BCException("Couldn't find ITD init member '"+
 						interMethodBody+"' on aspect "+aspectType);
 				annotationsOnRealMember = realMember.getAnnotations();
