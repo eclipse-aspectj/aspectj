@@ -1,0 +1,65 @@
+
+<!--
+	bug 106736 (classes dir); also permitting .zip variants
+	To upgrade binary input form, reset ${aspectj.lib.dir} below.
+-->
+<project name="WeavingURLClassLoaderTest" default="all" basedir=".">
+
+    <target name="all"     depends="init"
+        description="build libs, test that failure works">
+        <property name="out.lib.dir"
+            location="${basedir}/builtLibs"/>
+        <iajc outjar="${out.lib.dir}/main.zip" 
+            srcdir="${basedir}"
+            classpath="${aspectjrt.jar}"
+            includes="packag/Main.java"/>
+        <iajc outjar="${out.lib.dir}/aspect.zip"
+            classpath="${aspectjrt.jar}"
+            srcdir="${basedir}"
+            includes="packag/Aspect.aj"/>
+        <iajc outjar="${out.lib.dir}/aspect.jar"
+            classpath="${aspectjrt.jar}"
+            srcdir="${basedir}"
+            includes="packag/Aspect.aj"/>
+        <iajc destDir="${out.lib.dir}/classes"
+            classpath="${aspectjrt.jar}"
+            srcdir="${basedir}"
+            includes="packag/Aspect.aj"/>
+        
+        <iajc outjar="${out.lib.dir}/test.jar"
+            classpath="${aspectjrt.jar}"
+            aspectpath="${out.lib.dir}/aspect.jar"
+            inpath="${out.lib.dir}/main.zip"/>
+        <java classname="packag.Main">
+            <classpath>
+                <pathelement location="${out.lib.dir}/test.jar"/>
+                <pathelement location="${out.lib.dir}/aspect.jar"/>
+                <pathelement location="${aspectjrt.jar}"/>
+        	</classpath>
+        </java>
+        <delete file="${out.lib.dir}/test.jar"/>
+        
+    </target>
+
+    <target name="init"     depends="">
+        <!-- 
+        	warning: checked-in aspectjtools.jar is from last release,
+        	but current (HEAD) ltw requires aspect binaries to be built 
+        	with the current weaver, not last release.  I use
+	        location="${basedir}/../../../lib/aspectj/lib"/>
+        -->
+        <property name="aspectj.lib.dir"
+	        location="${basedir}/../../../aj-build/install/lib"/>
+        <property name="aspectjtools.jar"
+            location="${aspectj.lib.dir}/aspectjtools.jar"/>
+        <property name="aspectjrt.jar"
+            location="${aspectj.lib.dir}/aspectjrt.jar"/>
+        <taskdef 
+            resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+             <classpath> 
+               <pathelement path="${aspectjtools.jar}"/> 
+             </classpath>
+         </taskdef>
+    </target>
+
+</project>

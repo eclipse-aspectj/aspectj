@@ -22,6 +22,7 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.aspectj.bridge.AbortException;
+import org.aspectj.testing.util.TestUtil.TestError;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
@@ -43,6 +44,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	private final static String AROUNDCLOSURE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-acaspects.jar";
 	private final static String ITD_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-itdaspects.jar";
 	private final static String PER_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-peraspects.jar";
+    private final static String TEST_BASE = BcweaverTests.TESTDATA_PATH + "/WeavingURLClassLoaderTest/builtLibs";
 
 	private final static String NULL = "null";
 
@@ -86,7 +88,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
 		try {
-			Class clazz = loader.loadClass("LTWHelloWorld");
+			loader.loadClass("LTWHelloWorld");
 			fail("Expecting org.aspectj.bridge.AbortException");
 		}
 		catch (Exception ex) {
@@ -262,7 +264,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(classURLs,aspectURLs,getClass().getClassLoader());
 
 		try {
-			Class clazz = loader.loadClass("LTWHelloWorld");
+			loader.loadClass("LTWHelloWorld");
 			fail("Expecting java.lang.ClassNotFoundException");
 		}
 		catch (Exception ex) {
@@ -279,7 +281,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		URL[] aspectURLs = new URL[] { aspects };
 		
 		try {
-			WeavingURLClassLoader loader = new WeavingURLClassLoader(classURLs,aspectURLs,getClass().getClassLoader());
+			new WeavingURLClassLoader(classURLs,aspectURLs,getClass().getClassLoader());
 			fail("Expecting org.aspectj.bridge.AbortException");
 		}
 		catch (Exception ex) {
@@ -363,7 +365,91 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			fail(ex.toString());
 		}
 	}
+    
+    public void testZipAspects() {
+        try {
+            doTestZipAspects(TEST_BASE + "/aspect.zip");
+        } catch (Error ex) {
+            failWithException(ex);
+        } catch (Exception ex) {
+            failWithException(ex);
+        }
+    }
+    
+    public void testJarAspects() {
+        try {
+            doTestZipAspects(TEST_BASE + "/aspect.jar");
+        } catch (Error ex) {
+            failWithException(ex);
+        } catch (Exception ex) {
+            failWithException(ex);
+        }
+    }
+    
+    /** PR#106736 */
+    public void testClassAspects() {
+        try {
+            doTestZipAspects(TEST_BASE + "/classes");
+        } catch (Error ex) {
+            failWithException(ex);
+        } catch (Exception ex) {
+            failWithException(ex);
+        }
+    }
+    
+    public void testZipJarAspectsTest() {
+        try {
+            doTestZipAspectsTest();            
+            // bug: doTestZipAspects("") attempts to load packag.Aspect?
+            fail("expected error to be thrown");
+        } catch (InvocationTargetException ex) {
+            // expecting error
+            assertTrue(ex.getTargetException() instanceof Error);
+        } catch (RuntimeException ex) {
+            // expecting error
+            String message = ex.getMessage();
+            // expecting error - seems to be wrapped wrong
+            if (-1 == message.indexOf("around advice")) {
+                failWithException(ex);
+            }
+        } catch (Error ex) {
+            failWithException(ex);
+        } catch (Exception ex) {
+            failWithException(ex);
+        }
+    }
+    
+    private void doTestZipAspects(String aspectLib) throws Exception {
+        File classZip = new File(TEST_BASE + "/main.zip");        
+        File zipLib = new File(aspectLib);  
+        URL classes = FileUtil.getFileURL(classZip);
+        URL aspectjrt = FileUtil.getFileURL(new File(ASPECTJRT));
+        URL aspects = FileUtil.getFileURL(zipLib);
+        URL[] classURLs = new URL[] { aspects, classes, aspectjrt };
+        URL[] aspectURLs = new URL[] { aspects };
+        ClassLoader parent = getClass().getClassLoader();
+        WeavingURLClassLoader loader 
+            = new WeavingURLClassLoader(classURLs, aspectURLs, parent);
+        Class clazz = loader.loadClass("packag.Main");
+        invokeMain(clazz,new String[] { }); 
+        // throws Error unless advice applies
+    }
 
+    private void doTestZipAspectsTest() throws Exception {
+        URL classes = FileUtil.getFileURL(new File(TEST_BASE + "/main.zip"));
+        URL aspectjrt = FileUtil.getFileURL(new File(ASPECTJRT));
+        URL[] classURLs = new URL[] { classes, aspectjrt };
+        ClassLoader parent = getClass().getClassLoader();
+        WeavingURLClassLoader loader 
+            = new WeavingURLClassLoader(classURLs, new URL[] { }, parent);
+        Class clazz = loader.loadClass("packag.Main");
+        invokeMain(clazz,new String[] { }); 
+        // throws Error because advice does not apply
+    }
+
+    private void failWithException(Throwable t) {
+        throw new TestError(t.getMessage(), t);      
+    }
 	public static void invokeMain (Class clazz, String[] args)
 	{
 		Class[] paramTypes = new Class[1];
