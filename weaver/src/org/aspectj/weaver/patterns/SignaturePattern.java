@@ -127,15 +127,17 @@ public class SignaturePattern extends PatternNode {
 	 * is replaced by the corresponding entry in the map.
 	 */
 	public SignaturePattern parameterizeWith(Map typeVariableMap) {
-		return new SignaturePattern(
+		SignaturePattern ret = new SignaturePattern(
 						kind,
 						modifiers,
-						returnType,
-						declaringType,
+						returnType.parameterizeWith(typeVariableMap),
+						declaringType.parameterizeWith(typeVariableMap),
 						name,
 						parameterTypes.parameterizeWith(typeVariableMap),
-						throwsPattern,
-						annotationPattern);		
+						throwsPattern.parameterizeWith(typeVariableMap),
+						annotationPattern.parameterizeWith(typeVariableMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public boolean matches(Member joinPointSignature, World world, boolean allowBridgeMethods) {
