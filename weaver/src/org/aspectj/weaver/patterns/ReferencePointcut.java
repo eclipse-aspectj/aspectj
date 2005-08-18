@@ -16,6 +16,8 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +31,7 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -215,6 +218,23 @@ public class ReferencePointcut extends Pointcut {
 				return;
 			}
 		}
+		
+		if (onType != null) {
+			if (onType.isParameterizedType()) {
+				// build a type map mapping type variable names in the generic type to
+				// the type parameters presented
+				typeVariableMap = new HashMap();
+				ResolvedType underlyingGenericType = ((ResolvedType) onType).getGenericType();
+				TypeVariable[] tVars = underlyingGenericType.getTypeVariables();
+				ResolvedType[] typeParams = ((ResolvedType)onType).getResolvedTypeParameters();
+				for (int i = 0; i < tVars.length; i++) {
+					typeVariableMap.put(tVars[i].getName(),typeParams[i]);
+				}
+			} else if (onType.isGenericType()) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_REFERENCE_POINTCUT_IN_RAW_TYPE),
+						getSourceLocation()));
+			}
+		}
 	}
 	
 	public void resolveBindingsFromRTTI() {
@@ -290,6 +310,18 @@ public class ReferencePointcut extends Pointcut {
 			    }
 			}
 			
+			if (searchStart.isParameterizedType()) {
+				// build a type map mapping type variable names in the generic type to
+				// the type parameters presented
+				typeVariableMap = new HashMap();
+				ResolvedType underlyingGenericType = searchStart.getGenericType();
+				TypeVariable[] tVars = underlyingGenericType.getTypeVariables();
+				ResolvedType[] typeParams = searchStart.getResolvedTypeParameters();
+				for (int i = 0; i < tVars.length; i++) {
+					typeVariableMap.put(tVars[i].getName(),typeParams[i]);
+				}
+			}
+			
 			newBindings.copyContext(bindings);
 			newBindings.pushEnclosingDefinition(pointcutDec);
 			try {
@@ -324,6 +356,7 @@ public class ReferencePointcut extends Pointcut {
 
     public boolean equals(Object other) { 
         if (!(other instanceof ReferencePointcut)) return false;
+        if (this == other) return true;
         ReferencePointcut o = (ReferencePointcut)other;
         return o.name.equals(name) && o.arguments.equals(arguments)
             && ((o.onType == null) ? (onType == null) : o.onType.equals(onType));
