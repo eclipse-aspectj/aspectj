@@ -144,6 +144,11 @@ public class InterTypeMethodBinding extends MethodBinding {
 		return targetType;
 	}
 	
+	// override method in MethodBinding to ensure correct behaviour in some of JDTs generics checks.
+	public ReferenceBinding getOwningClass() {
+		return targetType;
+	}
+	
 	public String toString() {
 		return "InterTypeMethodBinding(" + super.toString() + ", " + getTargetType() +")";
 	}
