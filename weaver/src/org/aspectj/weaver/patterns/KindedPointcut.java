@@ -322,7 +322,14 @@ public class KindedPointcut extends Pointcut {
 			if (visitor.wellHasItThen/*?*/()) {
 				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.GET_AND_SET_DONT_SUPPORT_DEC_TYPE_PARAMETERS),
 						getSourceLocation()));
-			}			
+			}	
+			
+			// fields can't have a void type!
+			UnresolvedType returnType = signature.getReturnType().getExactType();
+			if (returnType == ResolvedType.VOID) {
+				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.FIELDS_CANT_HAVE_VOID_TYPE),
+						getSourceLocation()));				
+			}
 		}
 		
 		// no join points for initialization and preinitialization of parameterized types
