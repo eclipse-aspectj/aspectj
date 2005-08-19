@@ -71,7 +71,13 @@
         <compile files="pr91114.aj">
         </compile>
     </ajc-test>
-                
+
+    <ajc-test dir="bugs150" pr="78621" title="void field type in pointcut expression">
+        <compile files="pr78261.aj">
+            <message line="3" kind="error" text="fields cannot have a void type"/>
+        </compile>
+    </ajc-test>
+                                
    <ajc-test dir="bugs150" pr="78707" title="before returning advice not allowed!">
         <compile files="pr78707.aj">
             <message line="3" kind="error" text="Syntax error on token &quot;returning&quot;, delete this token"/>

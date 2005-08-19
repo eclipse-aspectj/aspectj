@@ -234,6 +234,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("before returning advice not allowed!");
   }
   
+  public void testDetectVoidFieldType() {
+	  runTest("void field type in pointcut expression");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
