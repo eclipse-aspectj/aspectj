@@ -55,6 +55,18 @@
 	   </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150" pr="64568" title="clear error message on itd with type pattern">
+        <compile files="pr64568.aj">
+            <message line="4" kind="error" text="Syntax error on token &quot;*&quot;, delete this token"/>
+            <message line="4" kind="error" text="foo cannot be resolved to a type"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs150" pr="74562" title="before and after are valid identifiers in classes">
+        <compile files="pr74562.aj">
+        </compile>
+    </ajc-test>
+            
     <ajc-test dir="bugs150" pr="107059" title="parser crashes on call(void (@a *)(..)">
         <compile files="pr107059.aj">
             <message line="3" kind="error" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>

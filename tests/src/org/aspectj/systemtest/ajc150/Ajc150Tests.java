@@ -218,6 +218,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("target(@Foo *)");
   }
   
+  public void testErrorMessageOnITDWithTypePatterns() {
+	  runTest("clear error message on itd with type pattern");
+  }
+  
+  public void testAjKeywordsAsIdentifiers() {
+	  runTest("before and after are valid identifiers in classes");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
