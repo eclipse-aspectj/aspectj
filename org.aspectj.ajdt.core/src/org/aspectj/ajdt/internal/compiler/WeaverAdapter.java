@@ -13,6 +13,7 @@ package org.aspectj.ajdt.internal.compiler;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.weaver.IClassFileProvider;
@@ -175,7 +176,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	 */
 	public void acceptResult(UnwovenClassFile result) {
 		char[] key = result.getClassName().replace('.','/').toCharArray();
-		removeFromHashtable(lastReturnedResult.result().compiledTypes,key);
+		removeFromMap(lastReturnedResult.result().compiledTypes,key);
 		String className = result.getClassName().replace('.', '/');
 		AjClassFile ajcf = new AjClassFile(className.toCharArray(),
 										   result.getBytes());
@@ -203,20 +204,20 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		compilerAdapter.acceptResult(result.result());
 	}
 	
-	private void removeFromHashtable(Hashtable table, char[] key) {
+	private void removeFromMap(Map aMap, char[] key) {
 		// jdt uses char[] as a key in the hashtable, which is not very useful as equality is based on being
 		// the same array, not having the same content.
 		String skey = new String(key);
 		char[] victim = null;
-		for (Enumeration iter = table.keys(); iter.hasMoreElements();) {
-			char[] thisKey = (char[]) iter.nextElement();
+		for (Iterator iter = aMap.keySet().iterator(); iter.hasNext();) {
+			char[] thisKey = (char[]) iter.next();
 			if (skey.equals(new String(thisKey))) {
 				victim = thisKey;
 				break;
 			}
 		}
 		if (victim != null) {
-			table.remove(victim);
+			aMap.remove(victim);
 		}
 	}
 	

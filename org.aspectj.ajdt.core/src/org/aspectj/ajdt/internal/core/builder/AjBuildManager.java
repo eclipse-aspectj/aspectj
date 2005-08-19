@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -738,7 +739,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	 */
 	public IIntermediateResultsRequestor getInterimResultRequestor() {
 		return new IIntermediateResultsRequestor() {
-			int lineDelta = 0;
 			public void acceptResult(InterimCompilationResult result) {
 				if (progressListener != null) {
 					compiledCount++;
@@ -761,10 +761,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			public void acceptResult(CompilationResult unitResult) {
 				// end of compile, must now write the results to the output destination
 				// this is either a jar file or a file in a directory
-				if (!(unitResult.hasErrors() && !proceedOnError())) {
-					Enumeration classFiles = unitResult.compiledTypes.elements();
-					while (classFiles.hasMoreElements()) {
-						ClassFile classFile = (ClassFile) classFiles.nextElement();
+				if (!(unitResult.hasErrors() && !proceedOnError())) {					
+					Collection classFiles = unitResult.compiledTypes.values();
+					for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
+						ClassFile classFile = (ClassFile) iter.next();					
 						String filename = new String(classFile.fileName());
 						filename = filename.replace('/', File.separatorChar) + ".class";
 						try {
