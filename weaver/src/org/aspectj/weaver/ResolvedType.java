@@ -1233,9 +1233,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	
 	/**
 	 * @return true if the override is legal
+	 * note: calling showMessage with two locations issues TWO messages, not ONE message
+	 * with an additional source location.
 	 */
 	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child) {
 		//System.err.println("check: " + child.getDeclaringType() + " overrides " + parent.getDeclaringType());
+		if (Modifier.isFinal(parent.getModifiers())) {
+			world.showMessage(Message.ERROR,
+					WeaverMessages.format(WeaverMessages.CANT_OVERRIDE_FINAL_MEMBER,parent),
+					child.getSourceLocation(),null);
+			return false;
+		}
+		
 		if (!parent.getReturnType().equals(child.getReturnType())) {
 			world.showMessage(IMessage.ERROR,
 					WeaverMessages.format(WeaverMessages.ITD_RETURN_TYPE_MISMATCH,parent,child),

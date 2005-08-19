@@ -77,6 +77,12 @@
             <message line="3" kind="error" text="fields cannot have a void type"/>
         </compile>
     </ajc-test>
+
+    <ajc-test dir="bugs150" pr="86057" title="overriding final pointcut from super-aspect">
+        <compile files="pr86057.aj">
+            <message line="9" kind="error" text="can't override final pointcut Base.foo()"/>
+        </compile>
+    </ajc-test>
                                 
    <ajc-test dir="bugs150" pr="78707" title="before returning advice not allowed!">
         <compile files="pr78707.aj">

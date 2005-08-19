@@ -238,6 +238,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("void field type in pointcut expression");
   }
   
+  public void testPointcutOverriding() {
+	  runTest("overriding final pointcut from super-aspect");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
