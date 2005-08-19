@@ -66,7 +66,12 @@
         <compile files="pr74562.aj">
         </compile>
     </ajc-test>
-            
+
+    <ajc-test dir="bugs150" pr="91114" title="before and after are valid identifiers in classes, part 2">
+        <compile files="pr91114.aj">
+        </compile>
+    </ajc-test>
+                
    <ajc-test dir="bugs150" pr="78707" title="before returning advice not allowed!">
         <compile files="pr78707.aj">
             <message line="3" kind="error" text="Syntax error on token &quot;returning&quot;, delete this token"/>

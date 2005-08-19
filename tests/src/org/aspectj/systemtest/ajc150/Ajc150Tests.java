@@ -226,6 +226,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("before and after are valid identifiers in classes");
   }
   
+  public void testAjKeywordsAsIdentifiers2() {
+	  runTest("before and after are valid identifiers in classes, part 2");	  
+  }
+  
   public void testNoBeforeReturningAdvice() {
 	  runTest("before returning advice not allowed!");
   }
