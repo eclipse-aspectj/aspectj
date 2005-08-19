@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ Bring-up Tests -->
+<suite>
+
+ <ajc-test title="empty class" dir="bringup">
+  <compile files="EmptyClass.java"></compile>
+ </ajc-test>
+
+ <ajc-test title="empty aspect" dir="bringup">
+  <compile files="EmptyAspect.aj"></compile>
+ </ajc-test>
+ 
+</suite>
