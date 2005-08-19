@@ -298,6 +298,7 @@ public class ReferencePointcut extends Pointcut {
 			IntMap newBindings = new IntMap();
 			for (int i=0,len=arguments.size(); i < len; i++) {
 				TypePattern p = arguments.get(i);
+				if (p == TypePattern.NO) continue;
 				//we are allowed to bind to pointcuts which use subtypes as this is type safe
 				if (!p.matchesSubtypes(parameterTypes[i])  && 
 					!p.getExactType().equals(UnresolvedType.OBJECT))

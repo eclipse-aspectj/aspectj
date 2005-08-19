@@ -246,6 +246,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("@SuppressWarnings should suppress");
   }
   
+  public void testDEOWWithBindingPointcut() {
+	  runTest("declare warning : foo(str) : ...;");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

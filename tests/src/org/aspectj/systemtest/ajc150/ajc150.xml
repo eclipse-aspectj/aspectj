@@ -97,7 +97,14 @@
         </compile>
     </ajc-test>
             
-            
+    <ajc-test dir="bugs150" pr="79523" title="declare warning : foo(str) : ...;">
+        <compile files="pr79523.aj">
+            <message line="4" kind="warning" text="no match for this type name: str"/>
+            <message line="4" kind="error" text="bad parameter"/>
+            <message line="4" kind="error" text="args() pointcut designator cannot be used in declare statement"/>
+        </compile>
+    </ajc-test>
+                        
     <ajc-test dir="bugs150" pr="107059" title="parser crashes on call(void (@a *)(..)">
         <compile files="pr107059.aj">
             <message line="3" kind="error" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>
