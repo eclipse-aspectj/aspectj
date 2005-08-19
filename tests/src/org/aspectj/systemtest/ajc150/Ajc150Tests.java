@@ -242,6 +242,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("overriding final pointcut from super-aspect");
   }
   
+  public void testAtSuppressWarnings() {
+	  runTest("@SuppressWarnings should suppress");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

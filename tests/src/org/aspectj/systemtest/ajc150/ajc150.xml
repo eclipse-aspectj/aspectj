@@ -91,6 +91,13 @@
          </compile>
     </ajc-test>        
             
+    <ajc-test dir="bugs150" pr="104529" title="@SuppressWarnings should suppress">
+        <compile files="pr104529.aj" options = "-1.5 -warn:+unchecked">
+            <message line="11" kind="warning" text="needs unchecked conversion"/>
+        </compile>
+    </ajc-test>
+            
+            
     <ajc-test dir="bugs150" pr="107059" title="parser crashes on call(void (@a *)(..)">
         <compile files="pr107059.aj">
             <message line="3" kind="error" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>
