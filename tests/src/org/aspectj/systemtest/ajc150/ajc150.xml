@@ -2555,8 +2555,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 2">
      <compile files="GenericMethodITD2.aj" options="-1.5">
-     <!-- this next line might contain a 'bad message' that is fixed in the final 3.1 compiler, I don't think the middle bit should say List&lt;? extends A&gt; - it should probably say List&lt;A&gt; -->
-     <message kind="error" line="9" text="Bound mismatch: The generic method simple(List&lt;? extends E&gt;) of type X is not applicable for the arguments (List&lt;? extends A&gt;) since the type A is not a valid substitute for the bounded parameter &lt;E extends Number&gt;"/>
+     <message kind="error" line="9" text="Bound mismatch: The generic method simple(List&lt;? extends E&gt;) of type X is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;E extends Number&gt;"/>
      </compile>
    </ajc-test>
    
@@ -2599,7 +2598,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 10">
      <compile files="GenericMethodITD10.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;) since the type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Comparable&lt;? super R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Comparable&lt;? super R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
@@ -2610,7 +2609,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 12">
      <compile files="GenericMethodITD12.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;) since the type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? extends R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? extends R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
@@ -2621,7 +2620,7 @@
 
    <ajc-test dir="java5/generics/itds" title="generic method itd - 14">
      <compile files="GenericMethodITD14.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;) since the type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? super R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? super R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
