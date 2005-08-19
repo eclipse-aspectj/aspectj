@@ -226,6 +226,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("before and after are valid identifiers in classes");
   }
   
+  public void testNoBeforeReturningAdvice() {
+	  runTest("before returning advice not allowed!");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

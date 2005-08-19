@@ -67,6 +67,13 @@
         </compile>
     </ajc-test>
             
+   <ajc-test dir="bugs150" pr="78707" title="before returning advice not allowed!">
+        <compile files="pr78707.aj">
+            <message line="3" kind="error" text="Syntax error on token &quot;returning&quot;, delete this token"/>
+            <message line="3" kind="error" text="Syntax error on token &quot;throwing&quot;, delete this token"/>
+         </compile>
+    </ajc-test>        
+            
     <ajc-test dir="bugs150" pr="107059" title="parser crashes on call(void (@a *)(..)">
         <compile files="pr107059.aj">
             <message line="3" kind="error" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>
