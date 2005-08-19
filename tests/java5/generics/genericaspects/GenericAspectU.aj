@@ -17,10 +17,32 @@ abstract aspect ParentChildRelationship<Parent,Child> {
     return Collections.unmodifiableList(children);  
   }
 
+  public P ChildHasParent<P>.getParent() {
+    return parent;
+  }
+
+  public void ChildHasParent<R>.setParent(R parent) {
+//    parent.addChild(this);
+  }
+
+  public void ParentHasChildren<X>.addChild(X child) {
+    //if (child.parent != null) {
+      //child.parent.removeChild(child);
+   // }
+    children.add(child);
+  }
+
+/*
+  public void ParentHasChildren<Y>.removeChild(Y child) {
+    if (children.remove(child)) {
+      child.parent = null;
+    }
+  }
+*/
 
 }
 
-aspect GenericAspectR extends ParentChildRelationship<Top,Bottom> { 
+aspect GenericAspectT extends ParentChildRelationship<Top,Bottom> { 
 
   public static void main(String []argv) {
 
@@ -64,6 +86,28 @@ aspect GenericAspectR extends ParentChildRelationship<Top,Bottom> {
     check(kids2.get(0).equals(b),
       "Expected one child of the Top which was what we put in there!"+kids2.get(0));
 
+    // and the parent methods
+    Top retrievedParent = b.getParent();
+    check(retrievedParent==t,
+      "parent check 1 failed "+
+      "retrieved="+retrievedParent+"  expected="+t);
+
+/*
+    Top top2 = new Top();
+    b.setParent(top2);
+    Top retrievedParent2 = b.getParent();
+    check(retrievedParent2==top2,
+      "parent check 2 failed "+
+      "retrieved="+retrievedParent2+"  expected="+top2);
+    
+    Bottom bot2 = new Bottom();
+    top2.addChild(bot2);
+    //Bottom aBottom = top2.getChildren().get(0);
+    //check(aBottom==bot2,"Incorrect child? expected="+bot2+" found="+aBottom);
+    //top2.removeChild(bot2);
+    //int size=top2.getChildren().size();
+    //check(size==0,"Should be no children but there were "+size);
+*/
 
   }
 
@@ -84,33 +128,13 @@ class Bottom {}
    TestO promoted the fields up - a parent knows its children, a 
          child knows its parents - but then used them incorrectly
    TestP uses the fields correctly
-   TestQ ... tests some stumbling blocks I encountered...
+   TestQ ... tests some stumbling blocks I encountered before R...
    TestR promoted getChildren() method
+   TestS promoted getParent() and setParent()
+   TestT ... tests some stumbling blocks I encountered before U...
+   TestU promoted addChild and removeChild
 
 public abstract aspect ParentChildRelationship<Parent,Child> {
-
-
-  public P ChildHasParent<P>.getParent() {
-       return parent;
-  }
-
-  public void ParentHasChildren<C>.addChild(C child) {
-       if (child.parent != null) {
-         child.parent.removeChild(child);
-       }
-       children.add(child);
-       child.parent = this;
-    }
-
-   public void ParentHasChildren<C>.removeChild(C child) {
-       if (children.remove(child)) {
-         child.parent = null;
-       }
-    }
-
-    public void ChildHasParent<P>.setParent(P parent) {
-       parent.addChild(this);
-    }
 
     @SuppressAjWarnings
     public pointcut addingChild(Parent p, Child c) :

@@ -17,10 +17,18 @@ abstract aspect ParentChildRelationship<Parent,Child> {
     return Collections.unmodifiableList(children);  
   }
 
+  public P ChildHasParent<P>.getParent() {
+    return parent;
+  }
+
+  public void ChildHasParent<P>.setParent(P parent) {
+    this.parent = parent;
+    //parent.addChild(this);
+  }
 
 }
 
-aspect GenericAspectR extends ParentChildRelationship<Top,Bottom> { 
+aspect GenericAspectS extends ParentChildRelationship<Top,Bottom> { 
 
   public static void main(String []argv) {
 
@@ -64,6 +72,19 @@ aspect GenericAspectR extends ParentChildRelationship<Top,Bottom> {
     check(kids2.get(0).equals(b),
       "Expected one child of the Top which was what we put in there!"+kids2.get(0));
 
+    // and the parent methods
+    Top retrievedParent = b.getParent();
+    check(retrievedParent==t,
+      "parent check 1 failed "+
+      "retrieved="+retrievedParent+"  expected="+t);
+
+    Top top2 = new Top();
+    b.setParent(top2);
+    Top retrievedParent2 = b.getParent();
+    check(retrievedParent2==top2,
+      "parent check 2 failed "+
+      "retrieved="+retrievedParent2+"  expected="+top2);
+    
 
   }
 
@@ -86,15 +107,13 @@ class Bottom {}
    TestP uses the fields correctly
    TestQ ... tests some stumbling blocks I encountered...
    TestR promoted getChildren() method
+   TestS promoted getParent() and setParent()
 
 public abstract aspect ParentChildRelationship<Parent,Child> {
 
 
-  public P ChildHasParent<P>.getParent() {
-       return parent;
-  }
 
-  public void ParentHasChildren<C>.addChild(C child) {
+    public void ParentHasChildren<C>.addChild(C child) {
        if (child.parent != null) {
          child.parent.removeChild(child);
        }
@@ -108,9 +127,6 @@ public abstract aspect ParentChildRelationship<Parent,Child> {
        }
     }
 
-    public void ChildHasParent<P>.setParent(P parent) {
-       parent.addChild(this);
-    }
 
     @SuppressAjWarnings
     public pointcut addingChild(Parent p, Child c) :
