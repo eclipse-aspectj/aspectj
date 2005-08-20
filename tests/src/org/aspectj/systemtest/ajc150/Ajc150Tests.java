@@ -250,6 +250,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("declare warning : foo(str) : ...;");
   }
   
+  public void testAroundAdviceAndInterfaceInitializer() {
+	  runTest("around advice on interface initializer");
+  }
+  
+  public void testGoodErrorMessageOnUnmatchedMemberSyntax() {
+	  runTest("good error message for unmatched member syntax");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

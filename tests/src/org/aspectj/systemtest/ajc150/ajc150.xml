@@ -270,7 +270,28 @@
     <ajc-test dir="bugs150" title="(@Foo *)+ type pattern parse error">
         <compile files="AnnotationPlusPatternParseError.aj" options="-1.5"/>
     </ajc-test>
-        
+
+    <ajc-test dir="bugs150" pr="80571" title="around advice on interface initializer">
+        <compile files="pr80571.aj"/>
+        <run class="pr80571">
+            <stdout>
+                <line text="before"/>
+                <line text="after"/>
+            </stdout>
+        </run>
+    </ajc-test>
+ 
+     <ajc-test dir="bugs150" pr="78314" title="good error message for unmatched member syntax">
+        <compile files="pr78314.aj" options="-1.5">
+           <message kind="error" line="5" text="Syntax error, insert &quot;body&quot;"/>
+            <message kind="error" line="5" text="Syntax error on tokens, valid member declaration expected instead"/>
+         </compile>
+        <compile files="pr78314.aj">
+            <message kind="error" line="5" text="Syntax error, insert &quot;body&quot;"/>
+            <message kind="error" line="5" text="Syntax error on tokens, valid member declaration expected instead"/>
+        </compile>
+    </ajc-test>
+               
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
         <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5"/>
     </ajc-test>
