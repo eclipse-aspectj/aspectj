@@ -143,6 +143,10 @@
           <message kind="error" line="41" text="ConnectionRequestContext cannot be resolved to a type"/>
      </compile>
    </ajc-test>
+   
+   <ajc-test title="itd override with no exception clause" dir="bugs150">
+       <compile files="pr83377.aj"></compile>
+   </ajc-test>
     
     <ajc-test dir="bugs150/pr84260" vm="1.5" title="static import failures">
         <compile files="A.java,I1.java,I2.java" options="-1.5"/>
@@ -335,7 +339,51 @@
             <message kind="error" line="3" text="Syntax error on token &quot;new&quot;, &quot;method name (not constructor)&quot; expected"/>
         </compile>
     </ajc-test>
-        
+
+    <!-- hasmethod / hasfield tests -->
+
+    <ajc-test title="declare parents : hasmethod(..) - 1" dir="hasmember">
+        <compile files="HasMethod.aj">
+        </compile>
+        <run class="HasMethod"></run>
+    </ajc-test>
+
+    <ajc-test title="declare parents : hasmethod(..) - 2" dir="hasmember">
+        <compile files="HasMethodInherited.aj">
+        </compile>
+        <run class="HasMethodInherited"></run>
+    </ajc-test>
+
+    <ajc-test title="declare parents : hasmethod(..) - 3" dir="hasmember">
+        <compile files="HasPrivateMethodInherited.aj">
+        </compile>
+        <run class="HasPrivateMethodInherited"></run>
+    </ajc-test>
+
+    <ajc-test title="declare parents : hasmethod(..) - 4" dir="hasmember">
+        <compile files="HasMethodViaITD.aj">
+            <message kind="warning" line="15" text="hasmethod matched on ITD ok"/>
+        </compile>
+    </ajc-test>
+         
+    <ajc-test title="declare parents : hasfield(..) - 1" dir="hasmember">
+        <compile files="HasField.aj">
+        </compile>
+        <run class="HasField"></run>
+    </ajc-test>
+
+    <ajc-test title="declare parents : hasfield(..) - 2" dir="hasmember">
+        <compile files="HasFieldInherited.aj">
+        </compile>
+        <run class="HasFieldInherited"></run>
+    </ajc-test>
+
+    <ajc-test title="declare parents : hasfield(..) - 3" dir="hasmember">
+        <compile files="HasPrivateFieldInherited.aj">
+        </compile>
+        <run class="HasPrivateFieldInherited"></run>
+    </ajc-test>
+                              
     <!-- Annotation binding tests -->
     
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 1">
@@ -2603,14 +2651,14 @@
    
    <ajc-test dir="java5/generics/itds" title="parameterized method itd - 2">
      <compile files="ParameterizedMethodITD2.aj" options="-1.5">
-       <message kind="error" line="9" text="The method simple(List&lt;? extends Number&gt;) in the type X is not applicable for the arguments (List&lt;A&gt;)"/>
+       <message kind="error" line="9" text="The method simple(List&lt;? extends Number&gt;) in the type Base is not applicable for the arguments (List&lt;A&gt;)"/>
      </compile>
    </ajc-test>
 
 
    <ajc-test dir="java5/generics/itds" title="parameterized method itd - 3">
      <compile files="ParameterizedMethodITD3.aj" options="-1.5">
-       <message kind="error" line="9" text="The method simple(List&lt;? super A&gt;) in the type X is not applicable for the arguments (List&lt;B&gt;)"/>
+       <message kind="error" line="9" text="The method simple(List&lt;? super A&gt;) in the type Base is not applicable for the arguments (List&lt;B&gt;)"/>
      </compile>
    </ajc-test>
 
@@ -2626,7 +2674,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 2">
      <compile files="GenericMethodITD2.aj" options="-1.5">
-     <message kind="error" line="9" text="Bound mismatch: The generic method simple(List&lt;? extends E&gt;) of type X is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;E extends Number&gt;"/>
+     <message kind="error" line="9" text="Bound mismatch: The generic method simple(List&lt;? extends E&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;E extends Number&gt;"/>
      </compile>
    </ajc-test>
    
@@ -2642,7 +2690,7 @@
 
    <ajc-test dir="java5/generics/itds" title="generic method itd - 5">
      <compile files="GenericMethodITD5.aj" options="-1.5">
-     <message kind="error" line="10" text="The method simple(List&lt;E&gt;, List&lt;E&gt;) in the type X is not applicable for the arguments (List&lt;A&gt;, List&lt;B&gt;)"/>
+     <message kind="error" line="10" text="The method simple(List&lt;E&gt;, List&lt;E&gt;) in the type Base is not applicable for the arguments (List&lt;A&gt;, List&lt;B&gt;)"/>
      </compile>
    </ajc-test>
  
@@ -2658,7 +2706,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 8">
      <compile files="GenericMethodITD8.aj" options="-1.5">
-     <message kind="error" line="10" text="The method simple(List&lt;E&gt;, List&lt;? extends E&gt;) in the type X is not applicable for the arguments (List&lt;Number&gt;, List&lt;String&gt;)"/>
+     <message kind="error" line="10" text="The method simple(List&lt;E&gt;, List&lt;? extends E&gt;) in the type Base is not applicable for the arguments (List&lt;Number&gt;, List&lt;String&gt;)"/>
      </compile>
    </ajc-test>
    
@@ -2669,7 +2717,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 10">
      <compile files="GenericMethodITD10.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Comparable&lt;? super R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Comparable&lt;? super R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
@@ -2680,7 +2728,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 12">
      <compile files="GenericMethodITD12.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? extends R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? extends R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
@@ -2691,7 +2739,7 @@
 
    <ajc-test dir="java5/generics/itds" title="generic method itd - 14">
      <compile files="GenericMethodITD14.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type X is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? super R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? super R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
@@ -2719,7 +2767,7 @@
       
    <ajc-test dir="java5/generics/itds/visibility" title="public itds with errors">
      <compile files="PublicITDsErrors.aj" options="-1.5">
-       <message kind="error" line="13" text="The method publicMethod2(List&lt;R&gt;, List&lt;R&gt;) in the type X is not applicable for the arguments (List&lt;Double&gt;, List&lt;Float&gt;)"/>
+       <message kind="error" line="13" text="The method publicMethod2(List&lt;R&gt;, List&lt;R&gt;) in the type Base is not applicable for the arguments (List&lt;Double&gt;, List&lt;Float&gt;)"/>
        <message kind="error" line="15" text="The constructor Base(List&lt;Double&gt;, Map&lt;Integer,String&gt;) is undefined"/>
      </compile>
    </ajc-test>

@@ -258,6 +258,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("good error message for unmatched member syntax");
   }
   
+  public void testITDWithNoExceptionAndIntermediary() {
+	  runTest("itd override with no exception clause");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
