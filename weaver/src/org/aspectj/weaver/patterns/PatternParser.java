@@ -28,6 +28,10 @@ public class PatternParser {
 		
 	private ITokenSource tokenSource;	
 	private ISourceContext sourceContext;
+	
+	private static final boolean HASMEMBER_PATTERNS_ENABLED = false;
+	/** not thread-safe, but this class is not intended to be... */
+	private boolean allowHasTypePatterns = false;
 
 	/**
 	 * Constructor for PatternParser.
@@ -154,7 +158,10 @@ public class PatternParser {
 	}
 	
 	public DeclareAnnotation parseDeclareAtType() {
-		return new DeclareAnnotation(DeclareAnnotation.AT_TYPE,parseTypePattern());
+		if (HASMEMBER_PATTERNS_ENABLED) allowHasTypePatterns = true;
+		TypePattern p = parseTypePattern();
+		allowHasTypePatterns = false;
+		return new DeclareAnnotation(DeclareAnnotation.AT_TYPE,p);
 	}
 
 	public DeclareAnnotation parseDeclareAtMethod(boolean isMethod) {
@@ -189,7 +196,9 @@ public class PatternParser {
 		 * String[] typeParameters = maybeParseSimpleTypeVariableList();
 		 */
 		eat(":");
+		if (HASMEMBER_PATTERNS_ENABLED) allowHasTypePatterns = true;
 		TypePattern p = parseTypePattern(false);
+		allowHasTypePatterns = false;
 		IToken t = tokenSource.next();
 		if (!(t.getString().equals("extends") || t.getString().equals("implements"))) {
 			throw new ParserException("extends or implements", t);
@@ -678,6 +687,10 @@ public class PatternParser {
 	
 	public TypePattern parseSingleTypePattern(boolean insideTypeParameters) {
 		if (insideTypeParameters && maybeEat("?")) return parseGenericsWildcardTypePattern();
+		if (allowHasTypePatterns) {
+			if (maybeEatIdentifier("hasmethod")) return parseHasMethodTypePattern();
+			if (maybeEatIdentifier("hasfield")) return parseHasFieldTypePattern();
+		}
 		
 		List names = parseDottedNamePattern(); 
 		
@@ -705,6 +718,28 @@ public class PatternParser {
 		// during shadow matching, we confirm that the varargs flags match up before calling it a successful
 		// match.
 		return new WildTypePattern(names, includeSubtypes, dim+(isVarArgs?1:0), endPos,isVarArgs,typeParameters);
+	}
+	
+	public TypePattern parseHasMethodTypePattern() {
+		int startPos = tokenSource.peek(-1).getStart();
+		eat("(");
+		SignaturePattern sp = parseMethodOrConstructorSignaturePattern();
+		eat(")");
+	    int endPos = tokenSource.peek(-1).getEnd();
+		HasMemberTypePattern ret = new HasMemberTypePattern(sp);
+		ret.setLocation(sourceContext, startPos, endPos);
+		return ret;
+	}
+	
+	public TypePattern parseHasFieldTypePattern() {
+		int startPos = tokenSource.peek(-1).getStart();
+		eat("(");
+		SignaturePattern sp = parseFieldSignaturePattern();
+		eat(")");
+	    int endPos = tokenSource.peek(-1).getEnd();
+		HasMemberTypePattern ret = new HasMemberTypePattern(sp);
+		ret.setLocation(sourceContext, startPos, endPos);
+		return ret;
 	}
 	
 	public TypePattern parseGenericsWildcardTypePattern() {

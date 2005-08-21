@@ -239,4 +239,8 @@ public class IdentityPointcutVisitor implements PatternNodeVisitor {
 	public Object visit(TypeVariablePatternList node, Object data) {
 		return node;
 	}
+	
+	public Object visit(HasMemberTypePattern node, Object data) {
+		return node;
+	}
 }

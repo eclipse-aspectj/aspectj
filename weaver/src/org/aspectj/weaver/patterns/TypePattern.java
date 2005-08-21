@@ -328,6 +328,7 @@ public abstract class TypePattern extends PatternNode {
 	public static final byte AND = 8;
 	public static final byte NO_KEY = 9;
 	public static final byte ANY_WITH_ANNO = 10;
+	public static final byte HAS_MEMBER = 11;
 
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte key = s.readByte();
@@ -342,6 +343,7 @@ public abstract class TypePattern extends PatternNode {
 			case OR: return OrTypePattern.read(s, context);
 			case AND: return AndTypePattern.read(s, context);
 			case ANY_WITH_ANNO: return AnyWithAnnotationTypePattern.read(s,context);
+			case HAS_MEMBER: return HasMemberTypePattern.read(s,context);
 		}
 		throw new BCException("unknown TypePattern kind: " + key);
 	}

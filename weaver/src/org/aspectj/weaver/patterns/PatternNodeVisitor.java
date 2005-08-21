@@ -44,6 +44,7 @@ public interface PatternNodeVisitor {
     Object visit(OrTypePattern node, Object data);
     Object visit(WildTypePattern node, Object data);
     Object visit(TypePatternList node, Object data);
+    Object visit(HasMemberTypePattern node, Object data);
 
     // Pointcuts
 	Object visit(AndPointcut node, Object data);
@@ -555,6 +556,11 @@ public interface PatternNodeVisitor {
 		}
 		
 		public Object visit(TypeVariablePatternList node, Object data) {
+			append(node);
+			return null;
+		}
+
+		public Object visit(HasMemberTypePattern node, Object data) {
 			append(node);
 			return null;
 		}
