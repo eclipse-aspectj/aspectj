@@ -354,7 +354,19 @@ public class InterTypeMemberFinder implements IMemberFinder {
 //		return m2.declaringClass;
 //	}
 
-
+	public MethodBinding[] methods(SourceTypeBinding sourceTypeBinding) {
+		MethodBinding[] orig = sourceTypeBinding.methods();
+		if (interTypeMethods.isEmpty()) return orig;
+		
+		List ret = new ArrayList(Arrays.asList(orig));
+		for (int i=0, len=interTypeMethods.size(); i < len; i++) {
+			MethodBinding method = (MethodBinding)interTypeMethods.get(i);
+			ret.add(method);
+		}
+		
+		if (ret.isEmpty()) return SourceTypeBinding.NoMethods;
+		return (MethodBinding[])ret.toArray(new MethodBinding[ret.size()]);	
+	}
 	
 	//XXX conflicts
 	public MethodBinding[] getMethods(
