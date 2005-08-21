@@ -1284,9 +1284,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				if (parentExceptions[j].isAssignableFrom(childExceptions[i])) continue outer;
 			}
 			
-			world.showMessage(IMessage.ERROR,
-					WeaverMessages.format(WeaverMessages.ITD_DOESNT_THROW,childExceptions[i].getName()),
-					child.getSourceLocation(), null);
+			// this message is now better handled my MethodVerifier in JDT core.
+//			world.showMessage(IMessage.ERROR,
+//					WeaverMessages.format(WeaverMessages.ITD_DOESNT_THROW,childExceptions[i].getName()),
+//					child.getSourceLocation(), null);
 						
 			return false;
 		}
@@ -1294,10 +1295,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			world.showMessage(IMessage.ERROR,
 					WeaverMessages.format(WeaverMessages.ITD_OVERRIDDEN_STATIC,child,parent),
 					child.getSourceLocation(),null);
+			return false;
 		} else if (child.isStatic() && !parent.isStatic()) {
 			world.showMessage(IMessage.ERROR,
 					WeaverMessages.format(WeaverMessages.ITD_OVERIDDING_STATIC,child,parent),
 					child.getSourceLocation(),null);
+			return false;
 		}
 		return true;
 		
