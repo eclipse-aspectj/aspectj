@@ -16,29 +16,20 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IMemberFinder;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
-import org.aspectj.weaver.NewFieldTypeMunger;
 
 /**
  * The member finder looks after intertype declared members on a type, there is
@@ -46,7 +37,6 @@ import org.aspectj.weaver.NewFieldTypeMunger;
  */
 public class InterTypeMemberFinder implements IMemberFinder {
 	private List interTypeFields = new ArrayList();
-	private Map /* intertypefield > NewFieldTypeMunger */ interTypeFieldMungers = new HashMap();
 	private List interTypeMethods = new ArrayList();
 	
 	public SourceTypeBinding sourceTypeBinding;
@@ -59,114 +49,12 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		for (int i=0, len=interTypeFields.size(); i < len; i++) {
 			FieldBinding field = (FieldBinding)interTypeFields.get(i);
 			if (field.name.length == fieldLength 	&& CharOperation.prefixEquals(field.name, fieldName)) {
-				retField = resolveConflicts(sourceTypeBinding, retField, field, site, scope);
-				
-				// If the intertype field was declared upon a generic type, it is here that we need
-				// to fix up the field we have and return a ParameterizedFieldBinding which has been
-				// parameterized such that it matches the chosen parameterization of the generic type
-				// that is asking for the field (clear?).
-				retField = fixAnyParameterization(site,retField,sourceTypeBinding);
+				retField = resolveConflicts(sourceTypeBinding, retField, field, site, scope);	
 			}
 		}
 		
 		return retField;
 	}
-
-	/**
-	 * Modifies a field if required to fix up its type parameters such that they refer to real type
-	 * variables in the target generic type.  This method exits fast if it determines there is
-	 * nothing to do. 
-	 */
-	private FieldBinding fixAnyParameterization(InvocationSite site,FieldBinding field, SourceTypeBinding sourceTypeBinding) {
-		
-		// Nothing to do if its not targetting a parameterized type
-		if (!(field.type instanceof ParameterizedTypeBinding) || 
-			 (field.type instanceof RawTypeBinding)) return field; // In eclipse world raw is a subclass of parameterized, doh!
-		
-		if (!(site instanceof QualifiedNameReference)) return field;
-		
-		NewFieldTypeMunger nfMunger = (NewFieldTypeMunger)interTypeFieldMungers.get(field);
-		
-		if (!nfMunger.hasGenericTypeVariableMap()) return field;
-		
-		TypeBinding bindingAtInvocationSite = ((LocalVariableBinding)((QualifiedNameReference)site).binding).type;
-		
-		ParameterizedTypeBinding pBinding = null;
-		
-		if (bindingAtInvocationSite instanceof ParameterizedTypeBinding) {
-			pBinding = (ParameterizedTypeBinding)bindingAtInvocationSite;
-		} else if (bindingAtInvocationSite instanceof SourceTypeBinding) {
-			pBinding = (ParameterizedTypeBinding)discoverCorrectBinding(bindingAtInvocationSite,((InterTypeFieldBinding)field).targetType);
-		}
-
-		if (pBinding.arguments == null) return field;
-		// 1. go through it looking for single type references whose names match type parameters
-		// 2. for any you find, you need to replace it with a type variable binding for the matcing thing in the
-		//    parameterized instance that is being used.
-		
-		// IF we start reporting error messages with the wrong letter when reporting information about the ITD, we might need a subtype of 
-		// typevariablebinding that knows the alternative name for the variable (i.e. the letter that was used in the ITD...)
-		patchUp(field.type,nfMunger);
-		
-		return new ParameterizedInterTypeFieldBinding(pBinding,field);
-	}
-	
-	private ReferenceBinding discoverCorrectBinding(TypeBinding tBinding,ReferenceBinding binding) {
-		if (tBinding instanceof ParameterizedTypeBinding) {
-			ParameterizedTypeBinding ptBinding = (ParameterizedTypeBinding)tBinding;
-			if (ptBinding.type.equals(binding)) {
-				return ptBinding;
-			}
-		}
-		ReferenceBinding superclassBinding = null;
-		ReferenceBinding[] superinterfaceBindings = null;
-	    if (tBinding instanceof SourceTypeBinding) {
-			SourceTypeBinding stBinding = (SourceTypeBinding)tBinding;
-			superclassBinding = stBinding.superclass();
-			superinterfaceBindings = stBinding.superInterfaces();
-	    } else if (tBinding instanceof BinaryTypeBinding) {
-			BinaryTypeBinding stBinding = (BinaryTypeBinding)tBinding;
-			superclassBinding = stBinding.superclass();
-			superinterfaceBindings = stBinding.superInterfaces();
-	    }
-	    if (superclassBinding!=null) {
-			ReferenceBinding foundit = discoverCorrectBinding(superclassBinding,binding);
-			if (foundit!=null) return foundit;
-	    }
-	    if (superinterfaceBindings!=null) {
-			for (int i = 0; i < superinterfaceBindings.length; i++) {
-				ReferenceBinding binding2 = superinterfaceBindings[i];
-				ReferenceBinding foundit2 = discoverCorrectBinding(binding2,binding);
-				if (foundit2!=null) return foundit2;
-			}
-	    }
-		return null;
-	}
-	
-	/**
-	 * Recurses over a type binding, looking for type variable bindings and replacing these 'placeholder' ones
-	 * with references to the real type variables for the generic type.
-	 * 
-	 * FIXME asc - can do this just once when the field is first added to the member finder and then keep it around? surely?
-	 */
-	private void patchUp(TypeBinding typeBinding,NewFieldTypeMunger nfMunger) {
-		if (!(typeBinding instanceof ParameterizedTypeBinding)) return;
-		TypeBinding [] args = ((ParameterizedTypeBinding)typeBinding).arguments;
-		if (args!=null) {
-			for (int i = 0; i < args.length; i++) {
-				TypeBinding binding = args[i];
-				if (binding instanceof TypeVariableBinding) {
-					int replacement = nfMunger.getGenericTypeVariableIndexFor(CharOperation.charToString(((TypeVariableBinding)binding).sourceName));
-					if (replacement!=-1) {
-						((ParameterizedTypeBinding)typeBinding).arguments[i] = sourceTypeBinding.typeVariables()[replacement];
-					}
-				} else if (binding instanceof ParameterizedTypeBinding) {
-					patchUp(binding,nfMunger);
-				}
-			}
-		}
-	}
-	
 	
 	private FieldBinding resolveConflicts(
 		SourceTypeBinding sourceTypeBinding,
@@ -507,10 +395,9 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	
 	
 
-	public void addInterTypeField(FieldBinding binding, NewFieldTypeMunger munger) {
+	public void addInterTypeField(FieldBinding binding) {
 		//System.err.println("adding: " + binding + " to " + this);
 		interTypeFields.add(binding);
-		interTypeFieldMungers.put(binding,munger);
 	}
 	
 	public void addInterTypeMethod(MethodBinding binding) {
