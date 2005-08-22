@@ -63,7 +63,7 @@
 	    <save-build-id id="min-vm-${min.vm}"/>
 	    <build-aspectj vm="${min.vm}" target="echo-properties"/>
 	    <build-aspectj vm="${min.vm}" target="all"/>
-	    <!-- ANDYANDYANDY build-aspectj vm="${min.vm}" target="test-each-module"/-->
+	    <build-aspectj vm="${min.vm}" target="test-each-module"/>
 		<build-aspectj vm="${max.vm}" target="junitreport"/>
 		<build-aspectj vm="${max.vm}" target="save-result"/>
 	    
