@@ -19,6 +19,7 @@ import java.util.Iterator;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -171,6 +172,13 @@ public class AjProblemReporter extends ProblemReporter {
 		super.inheritedMethodReducesVisibility(type,concreteMethod,abstractMethods);
 	}
 
+	// if either of the MethodBinding is an ITD, we have already reported it.
+	public void staticAndInstanceConflict(MethodBinding currentMethod, MethodBinding inheritedMethod) {
+		if (currentMethod instanceof InterTypeMethodBinding) return;
+		if (inheritedMethod instanceof InterTypeMethodBinding) return;
+		super.staticAndInstanceConflict(currentMethod, inheritedMethod);
+	}
+	
 	public void abstractMethodMustBeImplemented(
 		SourceTypeBinding type,
 		MethodBinding abstractMethod)
