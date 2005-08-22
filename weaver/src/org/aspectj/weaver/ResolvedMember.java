@@ -17,7 +17,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.Member.Kind;
 
 public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDeclaringElement {
 

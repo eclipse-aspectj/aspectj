@@ -10,17 +10,15 @@
  *******************************************************************************/
 package org.aspectj.ajdt.internal.compiler;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.bridge.IProgressListener;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 
 /**
  * @author colyer
