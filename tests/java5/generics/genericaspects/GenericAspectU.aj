@@ -3,6 +3,8 @@ import java.lang.reflect.*;
 import org.aspectj.lang.annotation.*;
 
 
+// JUST DONT ASK HOW THIS WORKS
+
 abstract aspect ParentChildRelationship<Parent,Child> {
 
   interface ParentHasChildren<C>{}
@@ -11,7 +13,7 @@ abstract aspect ParentChildRelationship<Parent,Child> {
   declare parents: Parent implements ParentHasChildren<Child>;
   declare parents: Child  implements ChildHasParent<Parent>;
 
-  public List<E> ParentHasChildren<E>.children;
+  public List<E> ParentHasChildren<E>.children = new ArrayList<E>();
   public P ChildHasParent<P>.parent;
 
   public List<D> ParentHasChildren<D>.getChildren() {
@@ -23,6 +25,7 @@ abstract aspect ParentChildRelationship<Parent,Child> {
   }
 
   public void ChildHasParent<R>.setParent(R parent) {
+    this.parent = parent;
     ((ParentHasChildren)parent).addChild(this);
   }
 
@@ -99,12 +102,13 @@ aspect GenericAspectU extends ParentChildRelationship<Top,Bottom> {
       "parent check 2 failed "+
       "retrieved="+retrievedParent2+"  expected="+top2);
     
+    Top top3 = new Top();
     Bottom bot2 = new Bottom();
-    top2.addChild(bot2);
-    Bottom aBottom = top2.getChildren().get(0);
+    top3.addChild(bot2);
+    Bottom aBottom = top3.getChildren().get(0);
     check(aBottom==bot2,"Incorrect child? expected="+bot2+" found="+aBottom);
-    top2.removeChild(bot2);
-    int size=top2.getChildren().size();
+    top3.removeChild(bot2);
+    int size=top3.getChildren().size();
     check(size==0,"Should be no children but there were "+size);
 
 

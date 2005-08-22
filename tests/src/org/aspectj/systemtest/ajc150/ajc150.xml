@@ -3087,27 +3087,32 @@
      <run class="GenericAspectJ"/>
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - K">
-     <compile files="GenericAspectK.aj" options="-1.5"/>
-     <!-- will need error messages in here -->
-     <run class="GenericAspectK"/>
+     <compile files="GenericAspectK.aj" options="-1.5">
+       <message kind="error" line="16" text="The method m4(String) is undefined for the type Base"/>
+     </compile>
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - L">
      <compile files="GenericAspectL.aj" options="-1.5"/>
      <run class="GenericAspectL"/>
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - M">
-     <compile files="GenericAspectM.aj" options="-1.5"/>
-     <!-- will need error messages in here -->
-     <run class="GenericAspectM"/>
+     <compile files="GenericAspectM.aj" options="-1.5">
+       <message kind="error" line="23" text="The method m0(Integer) in the type GenericAspect&lt;A,B&gt;.SimpleI&lt;L&gt; is not applicable for the arguments (String)"/>
+       <message kind="error" line="24" text="The method m1(List&lt;Integer&gt;) in the type GenericAspect&lt;A,B&gt;.SimpleI&lt;L&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
+       <message kind="error" line="25" text="Type mismatch: cannot convert from String to Integer"/>
+       <message kind="error" line="26" text="Type mismatch: cannot convert from List&lt;String&gt; to List&lt;Integer&gt;"/>
+     </compile>
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - N">
      <compile files="GenericAspectN.aj" options="-1.5"/>
      <run class="GenericAspectN"/>
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - O">
-     <compile files="GenericAspectO.aj" options="-1.5"/>
-     <!-- will need error messages in here -->
-     <run class="GenericAspectO"/>
+     <compile files="GenericAspectO.aj" options="-1.5">
+       <message kind="error" line="24" text="Cannot make a static reference to the non-static field Bottom.parent"/>
+       <message kind="error" line="26" text="The method add(Bottom) in the type List&lt;E&gt; is not applicable for the arguments (Top)"/>
+       <message kind="error" line="27" text="Cannot make a static reference to the non-static field Top.children"/>
+     </compile>
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - P">
      <compile files="GenericAspectP.aj" options="-1.5"/>

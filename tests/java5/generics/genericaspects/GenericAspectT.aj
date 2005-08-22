@@ -4,7 +4,7 @@ import org.aspectj.lang.annotation.*;
 
 aspect ParentChildRelationship {
 
-  interface I<P extends I>{}
+  interface I<P extends I>{} // scary!
 
   public String I.parent;
 

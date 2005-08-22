@@ -20,7 +20,7 @@ aspect GenericAspectO extends ParentChildRelationship<Top,Bottom> {
 
   public static void main(String []argv) {
 
-    // Field fiddling
+    Top t = new Top();
     Bottom.parent = t; // error - its not a static field
     List<Bottom> kids = new ArrayList<Bottom>();
     kids.add(t);

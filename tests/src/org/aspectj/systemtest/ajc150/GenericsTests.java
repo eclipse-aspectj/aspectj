@@ -353,18 +353,19 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testSophisticatedAspectsH() {runTest("uberaspects - H");}
 	public void testSophisticatedAspectsI() {runTest("uberaspects - I");}
 	public void testSophisticatedAspectsJ() {runTest("uberaspects - J");}
-//	public void testSophisticatedAspectsK() {runTest("uberaspects - K");} // FIXME asc needs some error messages writing
+	// next test commented out, error message is less than ideal - see 
+	// comment in test program as to what should be expected
+    //public void testSophisticatedAspectsK() {runTest("uberaspects - K");}
 	public void testSophisticatedAspectsL() {runTest("uberaspects - L");}
-//	public void testSophisticatedAspectsM() {runTest("uberaspects - M");} // FIXME asc needs some error messages writing
+    public void testSophisticatedAspectsM() {runTest("uberaspects - M");}
 	public void testSophisticatedAspectsN() {runTest("uberaspects - N");}
-//	public void testSophisticatedAspectsO() {runTest("uberaspects - O");} // FIXME asc needs some error messages writing
+    public void testSophisticatedAspectsO() {runTest("uberaspects - O");}
 	public void testSophisticatedAspectsP() {runTest("uberaspects - P");}
 	public void testSophisticatedAspectsQ() {runTest("uberaspects - Q");}
 	public void testSophisticatedAspectsR() {runTest("uberaspects - R");}
 	public void testSophisticatedAspectsS() {runTest("uberaspects - S");}
 	public void testSophisticatedAspectsT() {runTest("uberaspects - T");}
-
-	//public void testSophisticatedAspectsU() {runTest("uberaspects - U");}
+	public void testSophisticatedAspectsU() {runTest("uberaspects - U");} //  includes nasty casts
 	
 	public void testBinaryWeavingITDsA() {runTest("binary weaving ITDs - A");}
 	
