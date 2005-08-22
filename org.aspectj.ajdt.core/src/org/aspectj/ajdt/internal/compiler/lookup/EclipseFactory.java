@@ -277,8 +277,8 @@ public class EclipseFactory {
 		if (typeVariableBindingsInProgress.containsKey(aTypeVariableBinding)) {
 			return (UnresolvedType) typeVariableBindingsInProgress.get(aTypeVariableBinding);
 		}
-		if (typeVariablesForThisMember.containsKey(new Integer(aTypeVariableBinding.rank))) {
-			return (UnresolvedType)typeVariablesForThisMember.get(new Integer(aTypeVariableBinding.rank));
+		if (typeVariablesForThisMember.containsKey(new String(aTypeVariableBinding.sourceName))) {
+			return (UnresolvedType)typeVariablesForThisMember.get(new String(aTypeVariableBinding.sourceName));
 		}
 		// Create the UnresolvedTypeVariableReferenceType for the type variable
 		String name = CharOperation.charToString(aTypeVariableBinding.sourceName());
@@ -305,6 +305,8 @@ public class EclipseFactory {
 //		    //	tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
 		}
 		ret.setTypeVariable(tv);
+		if (aTypeVariableBinding.declaringElement instanceof MethodBinding) 
+			typeVariablesForThisMember.put(new String(aTypeVariableBinding.sourceName),ret);
 		typeVariableBindingsInProgress.remove(aTypeVariableBinding);
 		return ret;
 	}
@@ -405,13 +407,13 @@ public class EclipseFactory {
 
         // Convert the type variables and store them
 		UnresolvedType[] ajTypeRefs = null;
-		
+		typeVariablesForThisMember.clear();
 		// This is the set of type variables available whilst building the resolved member...
 		if (binding.typeVariables!=null) {
 			ajTypeRefs = new UnresolvedType[binding.typeVariables.length];
 			for (int i = 0; i < binding.typeVariables.length; i++) {
 				ajTypeRefs[i] = fromBinding(binding.typeVariables[i]);
-				typeVariablesForThisMember.put(new Integer(binding.typeVariables[i].rank),ajTypeRefs[i]);
+				typeVariablesForThisMember.put(new String(binding.typeVariables[i].sourceName),/*new Integer(binding.typeVariables[i].rank),*/ajTypeRefs[i]);
 			}
 		}
 		
@@ -427,7 +429,14 @@ public class EclipseFactory {
 			fromBindings(binding.parameters),
 			fromBindings(binding.thrownExceptions)
 			);
-		if (ajTypeRefs!=null) ret.setTypeVariables(ajTypeRefs);
+		if (typeVariablesForThisMember.size()!=0) {
+			UnresolvedType[] tvars = new UnresolvedType[typeVariablesForThisMember.size()];
+			int i =0;
+			for (Iterator iter = typeVariablesForThisMember.values().iterator(); iter.hasNext();) {
+				tvars[i++] = (UnresolvedType)iter.next();
+			}
+			ret.setTypeVariables(tvars);
+		}
 		typeVariablesForThisMember.clear();
 		ret.resolve(world);
 		return ret;
@@ -564,13 +573,17 @@ public class EclipseFactory {
 
 	
 	public FieldBinding makeFieldBinding(ResolvedMember member) {
-		return new FieldBinding(member.getName().toCharArray(),
+		currentType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
+		FieldBinding fb =  new FieldBinding(member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()),
 				member.getModifiers(),
-				(ReferenceBinding)makeTypeBinding(member.getDeclaringType()),
+				currentType,
 				Constant.NotAConstant);
+		currentType = null;
+		return fb;
 	}
 
+	private ReferenceBinding currentType = null;
 
 	public MethodBinding makeMethodBinding(ResolvedMember member) {
 		typeVariableToTypeBinding.clear();
@@ -594,6 +607,7 @@ public class EclipseFactory {
 		}		
 		
 		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
+		currentType = declaringType;
 		MethodBinding mb =  new MethodBinding(member.getModifiers(), 
 				member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()),
@@ -603,7 +617,7 @@ public class EclipseFactory {
 
 		if (tvbs!=null) mb.typeVariables = tvbs;
 		typeVariableToTypeBinding.clear();
-		
+		currentType = null;
 		return mb;
 	}
 
@@ -634,6 +648,10 @@ public class EclipseFactory {
 	private TypeVariableBinding makeTypeVariableBinding(TypeVariableReference tvReference) {
 		TypeVariable tVar = tvReference.getTypeVariable();
 		TypeVariableBinding tvBinding = (TypeVariableBinding)typeVariableToTypeBinding.get(tVar.getName());
+		if (currentType!=null) {
+			TypeVariableBinding tvb = currentType.getTypeVariable(tVar.getName().toCharArray());			
+			if (tvb!=null) return tvb;
+		}
 		if (tvBinding==null) {
 		  Binding declaringElement = null;
 		  // this will cause an infinite loop or NPE... not required yet luckily.
