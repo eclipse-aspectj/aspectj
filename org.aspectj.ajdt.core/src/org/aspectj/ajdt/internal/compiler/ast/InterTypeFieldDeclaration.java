@@ -17,14 +17,33 @@ import java.lang.reflect.Modifier;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
-import org.aspectj.weaver.*;
-import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.UnresolvedType;
 
 
 /**
@@ -42,23 +61,6 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	
 	public InterTypeFieldDeclaration(CompilationResult result, TypeReference onType) {
 		super(result, onType);
-		if (onType!=null && onType instanceof ParameterizedSingleTypeReference) {
-			// Here we fill in the type parameters with *something* so that the compiler doesn't
-			// think there is a missing type. For example, if the declaration is 'List<Z> Base<Z>.i'
-			// then we need to put in a type parameter called 'Z' so that the compiler understands
-			// we don't mean a type called 'Z'.
-			ParameterizedSingleTypeReference paramRef = (ParameterizedSingleTypeReference) onType;
-			// The type arguments are SingleTypeReferences - they were transformed when the ITD
-			// was built from type parameters to get them through the parser.  Here we know
-			// what they are.
-			TypeReference[] rb = paramRef.typeArguments;
-			typeParameters = new TypeParameter[rb.length];
-			for (int i = 0; i < rb.length; i++) {
-				TypeReference reference = rb[i];
-				typeParameters[i]      = new TypeParameter();
-				typeParameters[i].name = CharOperation.toString(rb[i].getTypeName()).toCharArray();
-			}
-		}
 	}
 	
 	
@@ -79,7 +81,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			ignoreFurtherInvestigation = true;
 		}
 		
-		if (Modifier.isStatic(declaredModifiers) && typeParameters!=null && typeParameters.length>0 && onTypeBinding.isGenericType()) {
+		if (Modifier.isStatic(declaredModifiers) && typeVariableAliases!=null && typeVariableAliases.size()>0 && onTypeBinding.isGenericType()) {
 			scope.problemReporter().signalError(sourceStart,sourceEnd,
 					"static intertype field declarations cannot refer to type variables from the target generic type");
 		}
@@ -169,7 +171,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		this.initialization = initialization;
 
 	}
-	
+
 	public EclipseTypeMunger build(ClassScope classScope) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		resolveOnType(classScope);
@@ -196,12 +198,14 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		if (declaringType.isRawType() || declaringType.isParameterizedType()) {
 			declaringType = declaringType.getGenericType();
 		}
-		ResolvedMember sig = 
-			new ResolvedMemberImpl(Member.FIELD, declaringType,
-					declaredModifiers, world.fromBinding(binding.returnType),
-					new String(declaredSelector), UnresolvedType.NONE);
 		
-		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null, phantomTypeVariableToRealIndex);
+		// Build a half correct resolvedmember (makeResolvedMember understands tvars) then build a fully correct sig from it
+		ResolvedMember sigtemp = world.makeResolvedMember(binding,onTypeBinding);
+		ResolvedMember sig = new ResolvedMemberImpl(Member.FIELD,declaringType,declaredModifiers,
+				                  sigtemp.getReturnType(),new String(declaredSelector),UnresolvedType.NONE);
+		sig.setTypeVariables(sigtemp.getTypeVariables());
+		
+		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null);
 		setMunger(myMunger);
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me = 
@@ -328,4 +332,5 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	protected Shadow.Kind getShadowKindForBody() {
 		return null;
 	}
+
 }
