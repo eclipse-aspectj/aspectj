@@ -283,12 +283,4 @@ public abstract class ResolvedTypeMunger {
 		}
 	}
 	
-	public int getGenericTypeVariableIndexFor(String name) {
-		return typeVariableToGenericTypeVariableIndex.indexOf(name);
-	}
-	
-	public boolean hasGenericTypeVariableMap() {
-		return typeVariableToGenericTypeVariableIndex!=null && typeVariableToGenericTypeVariableIndex.size()!=0;
-	}
-
 }

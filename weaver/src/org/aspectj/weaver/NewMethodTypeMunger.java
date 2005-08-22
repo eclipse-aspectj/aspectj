@@ -20,11 +20,9 @@ import java.util.Set;
 public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	public NewMethodTypeMunger(
 		ResolvedMember signature,
-		Set superMethodsCalled)
-	{
+		Set superMethodsCalled) {
 		super(Method, signature);
 		this.setSuperMethodsCalled(superMethodsCalled);
-
 	}
 	
 	public ResolvedMember getInterMethodBody(UnresolvedType aspectType) {
@@ -44,8 +42,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	
 	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedTypeMunger munger = new NewMethodTypeMunger(
-				ResolvedMemberImpl.readResolvedMember(s, context),
-				readSuperMethodsCalled(s));
+				ResolvedMemberImpl.readResolvedMember(s, context),readSuperMethodsCalled(s));
 		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
 		return munger;
 	}
