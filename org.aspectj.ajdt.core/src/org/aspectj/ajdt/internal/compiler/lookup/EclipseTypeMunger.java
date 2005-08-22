@@ -16,18 +16,16 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import java.lang.reflect.Modifier;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
-//import org.aspectj.weaver.TypeX;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-//import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.weaver.ResolvedTypeMunger;
 
 
 public class EclipseTypeMunger extends ConcreteTypeMunger {
@@ -121,12 +119,12 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	private void mungeNewField(SourceTypeBinding sourceType, NewFieldTypeMunger munger) {		
 		if (shouldTreatAsPublic() && !targetTypeX.isInterface()) {
 			FieldBinding binding = world.makeFieldBinding(munger.getSignature());
-			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding,munger);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
 			//classScope.referenceContext.binding.addField(binding);
 		} else {
 			InterTypeFieldBinding binding =
 				new InterTypeFieldBinding(world, munger.getSignature(), aspectType, sourceMethod);
-			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding,munger);
+			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
 		}
 	}
 	
