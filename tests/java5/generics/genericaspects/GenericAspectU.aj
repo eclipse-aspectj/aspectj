@@ -2,6 +2,7 @@ import java.util.*;
 import java.lang.reflect.*;
 import org.aspectj.lang.annotation.*;
 
+
 abstract aspect ParentChildRelationship<Parent,Child> {
 
   interface ParentHasChildren<C>{}
@@ -22,27 +23,25 @@ abstract aspect ParentChildRelationship<Parent,Child> {
   }
 
   public void ChildHasParent<R>.setParent(R parent) {
-//    parent.addChild(this);
+    ((ParentHasChildren)parent).addChild(this);
   }
 
   public void ParentHasChildren<X>.addChild(X child) {
-    //if (child.parent != null) {
-      //child.parent.removeChild(child);
-   // }
+    if (((ChildHasParent)child).parent != null) {
+      ((ParentHasChildren)((ChildHasParent)child).parent).removeChild(child);
+    }
     children.add(child);
   }
 
-/*
   public void ParentHasChildren<Y>.removeChild(Y child) {
     if (children.remove(child)) {
-      child.parent = null;
+      ((ChildHasParent)child).parent = null;
     }
   }
-*/
 
 }
 
-aspect GenericAspectT extends ParentChildRelationship<Top,Bottom> { 
+aspect GenericAspectU extends ParentChildRelationship<Top,Bottom> { 
 
   public static void main(String []argv) {
 
@@ -92,7 +91,7 @@ aspect GenericAspectT extends ParentChildRelationship<Top,Bottom> {
       "parent check 1 failed "+
       "retrieved="+retrievedParent+"  expected="+t);
 
-/*
+
     Top top2 = new Top();
     b.setParent(top2);
     Top retrievedParent2 = b.getParent();
@@ -102,12 +101,12 @@ aspect GenericAspectT extends ParentChildRelationship<Top,Bottom> {
     
     Bottom bot2 = new Bottom();
     top2.addChild(bot2);
-    //Bottom aBottom = top2.getChildren().get(0);
-    //check(aBottom==bot2,"Incorrect child? expected="+bot2+" found="+aBottom);
-    //top2.removeChild(bot2);
-    //int size=top2.getChildren().size();
-    //check(size==0,"Should be no children but there were "+size);
-*/
+    Bottom aBottom = top2.getChildren().get(0);
+    check(aBottom==bot2,"Incorrect child? expected="+bot2+" found="+aBottom);
+    top2.removeChild(bot2);
+    int size=top2.getChildren().size();
+    check(size==0,"Should be no children but there were "+size);
+
 
   }
 

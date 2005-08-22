@@ -2,6 +2,8 @@ import java.util.*;
 
 aspect A3 {
 
+//  declare precedence: A3,A2;
+
   public List<Z> BaseClass<Z>.m(List<Z> lz) {
     return lz;
   }
@@ -10,7 +12,7 @@ aspect A3 {
     List<String> myLs = new ArrayList<String>();
     BaseClass<String> bStr = new BaseClass<String>();
     List<String> ls2 = bStr.m(myLs);
-    System.err.println("Advice from A3 ran successfully");
+    bStr.count++;
   }
 
 }

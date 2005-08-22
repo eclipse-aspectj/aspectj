@@ -12,6 +12,8 @@ class Base<N extends Number> { }
 aspect X {
   public List<Z> Base<Z>.m() { // OK, Z becomes N in return type
     List<Z> lz = new ArrayList<Z>();
+    List<String> ls;
+
     return lz;
   }; 
 }

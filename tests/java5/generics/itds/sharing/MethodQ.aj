@@ -9,7 +9,7 @@ public class MethodQ {
   }
 }
 
-class SimpleClass<N extends Number> { 
+class SimpleClass<N> {// extends Number> { 
  // This is what we are trying to mimic with our ITD
  //public <L extends Number> void m(List<L> ll1, List<N> lz,List<L> ll2) {} 
 }

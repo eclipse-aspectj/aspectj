@@ -2876,6 +2876,265 @@
      </compile>
    </ajc-test>
    
+   <!-- Now intertype declared methods on generic types that use the target types type vars -->
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A1">
+     <compile files="MethodA.aj" options="-1.5"/>
+     <run class="MethodA"/>   
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A2">
+     <compile files="MethodA2.aj" options="-1.5"/>
+     <run class="MethodA2"/>   
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A3">
+     <compile files="MethodA3.aj" options="-1.5"/>
+     <run class="MethodA3"/>   
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A4">
+     <compile files="MethodA4.aj" options="-1.5"/>
+     <run class="MethodA4"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - B1">
+     <compile files="MethodB.aj" options="-1.5">
+       <message kind="error" line="16" text="Incorrect number of type parameters supplied.  The generic type Base&lt;N,M&gt; has 2 type parameters, not 1."/>
+     </compile>
+   </ajc-test>
+    
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - C1">
+     <compile files="MethodC.aj" options="-1.5"/>
+     <run class="MethodC"/>   
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - D1">
+     <compile files="MethodD.aj" options="-1.5"/>
+     <run class="MethodD"/>   
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - E1">
+     <compile files="MethodE.aj" options="-1.5"/>
+     <run class="MethodE"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - F1">
+     <compile files="MethodF.aj" options="-1.5"/>
+     <run class="MethodF"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - G1">
+     <compile files="MethodG.aj" options="-1.5"/>
+     <run class="MethodG"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - H1">
+     <compile files="MethodH.aj" options="-1.5"/>
+     <run class="MethodH"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - I1">
+     <compile files="MethodI.aj" options="-1.5">
+       <message kind="error" line="6" text="Type mismatch: cannot convert from List&lt;Integer&gt; to List&lt;String&gt;"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - I2">
+     <compile files="MethodI2.aj" options="-1.5">
+       <message kind="error" line="7" text="The method m(List&lt;Integer&gt;) in the type Base&lt;N&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - J1">
+     <compile files="MethodJ.aj" options="-1.5"/>
+     <run class="MethodJ"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - K1">
+     <compile files="MethodK.aj" options="-1.5"/>
+     <run class="MethodK"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - L1">
+     <compile files="MethodL.aj" options="-1.5"/>
+     <run class="MethodL"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - M1">
+     <compile files="MethodM.aj" options="-1.5"/>
+     <run class="MethodM"/>   
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - M2">
+     <compile files="MethodM2.aj" options="-1.5"/>
+     <run class="MethodM2"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - N1">
+     <compile files="MethodN.aj" options="-1.5">
+            <message kind="error" line="11" text="Type parameters can not be specified in the ITD target type - the target type I is not generic."/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - O1">
+     <compile files="MethodO.aj" options="-1.5">
+       <message kind="error" line="11" text="Intertype declarations can only be made on the generic type, not on a parameterized type. The name 'String' cannot be used as a type parameter, since it refers to a real type."/>
+     </compile>   
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - O2">
+     <compile files="MethodO2.aj" options="-1.5">
+       <message kind="error" line="11" text="Intertype declarations can only be made on the generic type, not on a parameterized type. The name 'String' cannot be used as a type parameter, since it refers to a real type."/>
+     </compile>   
+   </ajc-test>  
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - P1">
+     <compile files="MethodP.aj" options="-1.5"/>
+     <run class="MethodP"/>   
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - Q1">
+     <compile files="MethodQ.aj" options="-1.5"/>
+     <run class="MethodQ"/>   
+   </ajc-test> 
+   
+   <!-- Now intertype declared constructors on generic types that use the target types type vars -->
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - A1">
+     <compile files="CtorA.aj" options="-1.5"/>
+     <run class="CtorA"/>   
+   </ajc-test> 
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - B1">
+     <compile files="CtorB.aj" options="-1.5">
+        <message kind="error" line="15" text="Incorrect number of type parameters supplied.  The generic type Base&lt;N,M&gt; has 2 type parameters, not 1."/>
+     </compile>
+   </ajc-test> 
+   
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - C1">
+     <compile files="CtorC.aj" options="-1.5"/>
+     <run class="CtorC"/>   
+   </ajc-test> 
+     
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - D1">
+     <compile files="CtorD.aj" options="-1.5"/>
+     <run class="CtorD"/>   
+   </ajc-test> 
+     
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - E1">
+     <compile files="CtorE.aj" options="-1.5"/>
+     <run class="CtorE"/>   
+   </ajc-test> 
+     
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - F1">
+     <compile files="CtorF.aj" options="-1.5"/>
+     <run class="CtorF"/>   
+   </ajc-test> 
+     
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - G1">
+     <compile files="CtorG.aj" options="-1.5"/>
+     <run class="CtorG"/>   
+   </ajc-test> 
+     
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - H1">
+     <compile files="CtorH.aj" options="-1.5"/>
+     <run class="CtorH"/>   
+   </ajc-test> 
+     
+   <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - I1">
+     <compile files="CtorI.aj" options="-1.5"/>
+     <run class="CtorI"/>   
+   </ajc-test> 
+ 
+   <!-- putting it all together, fields/methods/ctors and decps -->    
+  
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - A">
+     <compile files="GenericAspectA.aj" options="-1.5"/>
+     <run class="GenericAspectA"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - B">
+     <compile files="GenericAspectB.aj" options="-1.5"/>
+     <run class="GenericAspectB"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - C">
+     <compile files="GenericAspectC.aj" options="-1.5"/>
+     <run class="GenericAspectC"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - D">
+     <compile files="GenericAspectD.aj" options="-1.5"/>
+     <run class="GenericAspectD"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - E">
+     <compile files="GenericAspectE.aj" options="-1.5"/>
+     <run class="GenericAspectE"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - F">
+     <compile files="GenericAspectF.aj" options="-1.5"/>
+     <run class="GenericAspectF"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - G">
+     <compile files="GenericAspectG.aj" options="-1.5"/>
+     <run class="GenericAspectG"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - H">
+     <compile files="GenericAspectH.aj" options="-1.5">
+       <message kind="error" line="7" text="Type java.lang.String does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericAspect$SimpleI"/>
+       <message kind="error" line="16" text="The method m4(String) is undefined for the type Base"/>
+     </compile>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - I">
+     <compile files="GenericAspectI.aj" options="-1.5"/>
+     <run class="GenericAspectI"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - J">
+     <compile files="GenericAspectJ.aj" options="-1.5"/>
+     <run class="GenericAspectJ"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - K">
+     <compile files="GenericAspectK.aj" options="-1.5"/>
+     <!-- will need error messages in here -->
+     <run class="GenericAspectK"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - L">
+     <compile files="GenericAspectL.aj" options="-1.5"/>
+     <run class="GenericAspectL"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - M">
+     <compile files="GenericAspectM.aj" options="-1.5"/>
+     <!-- will need error messages in here -->
+     <run class="GenericAspectM"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - N">
+     <compile files="GenericAspectN.aj" options="-1.5"/>
+     <run class="GenericAspectN"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - O">
+     <compile files="GenericAspectO.aj" options="-1.5"/>
+     <!-- will need error messages in here -->
+     <run class="GenericAspectO"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - P">
+     <compile files="GenericAspectP.aj" options="-1.5"/>
+     <run class="GenericAspectP"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - Q">
+     <compile files="GenericAspectQ.aj" options="-1.5"/>
+     <run class="GenericAspectQ"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - R">
+     <compile files="GenericAspectR.aj" options="-1.5"/>
+     <run class="GenericAspectR"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - S">
+     <compile files="GenericAspectS.aj" options="-1.5"/>
+     <run class="GenericAspectS"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - T">
+     <compile files="GenericAspectT.aj" options="-1.5"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - U">
+     <compile files="GenericAspectU.aj" options="-1.5"/>
+     <run class="GenericAspectU"/>
+   </ajc-test>
+      
+   
+   
    <ajc-test dir="java5/generics/itds/sharing" title="method itd sharing type variable with generic type">
      <compile files="Simple.aj" options="-1.5"/>
      <run class="Simple"/>
@@ -2928,7 +3187,11 @@
    </ajc-test>
    
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 5">
-     <compile files="Parse5.java" options="-1.5"/>
+     <compile files="Parse5.java" options="-1.5">
+       <message kind="error" line="11" text="Incorrect number of type parameters supplied.  The generic type Parse5&lt;T,S&gt; has 2 type parameters, not 3."/>
+       <message kind="error" line="13" text="Incorrect number of type parameters supplied.  The generic type Parse5&lt;T,S&gt; has 2 type parameters, not 1."/>
+       <message kind="error" line="15" text="Intertype declarations can only be made on the generic type, not on a parameterized type. The name 'String' cannot be used as a type parameter, since it refers to a real type."/>
+     </compile>
    </ajc-test>
    
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 6">
@@ -3016,23 +3279,36 @@
    
    <!-- generics/itds and binary weaving -->
    
+   <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - A">
+   	   <compile files="TestA_generictype.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
+       <compile files="TestA_aspect.aj,TestA_class.java" inpath="code.jar" options="-1.5,-Xreweavable"/>
+       <run class="TestA_class"/>
+    </ajc-test>
+    
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 1">
    	   <compile files="BaseClass.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
        <compile files="A1.aj" inpath="code.jar" options="-1.5,-Xreweavable"/>
         <run class="BaseClass">
         <stderr>
-             <line text="Advice from A1 ran successfully"/>
+            <line text="Advice count=1"/>
         </stderr>
         </run>
     </ajc-test>
    
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 2">
-   	   <compile files="BaseClass.java,A1.aj" outjar="code.jar" options="-1.5,-Xreweavable"/>
-       <compile files="A2.aj" inpath="code.jar" options="-1.5,-Xreweavable"/>
+   	   <compile files="BaseClass.java,A1.aj" outjar="code.jar" options="-1.5,-Xreweavable,-showWeaveInfo">
+   	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List BaseClass.list1')"/>
+   	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java:12) advised by after advice from 'A1' (A1.aj:7)"/>
+   	   </compile>
+       <compile files="A2.aj" inpath="code.jar" options="-1.5,-Xreweavable,-showWeaveInfo">
+         <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List BaseClass.list1')"/>
+   	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java:12) advised by after advice from 'A1' (A1.aj:7)"/>
+	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A2' (A2.aj:'java.util.List BaseClass.list2')"/>
+         <message kind="weave" text="Type 'BaseClass' (BaseClass.java:13) advised by after advice from 'A2' (A2.aj:8)"/>
+       </compile>
         <run class="BaseClass">
         <stderr>
-             <line text="Advice from A1 ran successfully"/>
-             <line text="Advice from A2 ran successfully"/>
+             <line text="Advice count=2"/>
         </stderr>
         </run>
     </ajc-test>
@@ -3042,9 +3318,7 @@
        <compile files="A3.aj" inpath="code.jar" options="-1.5,-Xreweavable"/>
         <run class="BaseClass">
         <stderr>
-             <line text="Advice from A1 ran successfully"/>
-             <line text="Advice from A2 ran successfully"/>
-             <line text="Advice from A3 ran successfully"/>
+             <line text="Advice count=3"/>
         </stderr>
         </run>
     </ajc-test>

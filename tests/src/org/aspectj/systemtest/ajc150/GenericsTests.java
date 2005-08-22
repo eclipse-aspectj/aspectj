@@ -152,22 +152,26 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * PASS multiple type variables in an ITD
 	 * PASS parsing ITDs that share type variables with target type
      * PASS using type variables from the target type in your field ITD
-     * TODO using type variables from the target type in your method ITD (but no type vars of your own)
-     * TODO using type variables from the target type in your ctor ITD (but no type vars of your own)
-     * TODO using type variables from the target type in your *STATIC* ITD (field/method/ctor)
-	 * TODO binary weaving with changing types (moving between generic and simple)
-	 * TODO bridge method creation
-	 * TODO reusing type variable letter but differing spec across multiple ITDs in one aspect
+     * PASS using type variables from the target type in your method ITD (but no type vars of your own)
+     * PASS using type variables from the target type in your ctor ITD (but no type vars of your own)
+	 * PASS using type variables from the target type and having your own too (methods)
+	 * PASS using type variables from the target type and having your own too (ctors)
+	 * PASS reusing type variable letter but differing spec across multiple ITDs in one aspect
 	 * PASS wildcards
-	 * TODO exotic class/interface bounds ('? extends List<String>')
 	 * PASS recursive type variable definitions
-	 * TODO generic aspects
-	 * TODO parameterizing ITDs with type variables
-	 * 
-	 * defer?
-	 * TODO using type variables from the target type and having your own too (methods)
-	 * TODO using type variables from the target type and having your own too (ctors)
+	 * PASS generic aspects
+	 * PASS parameterizing ITDs with type variables
+     * TODO using type variables from the target type in your *STATIC* ITD (field/method/ctor) (error scenario)
+	 * TODO binary weaving with changing types (moving between generic and simple)
+	 * TODO bridge method creation (also relates to covariance overrides..)
+	 * TODO exotic class/interface bounds ('? extends List<String>','? super anything')
 	 * TODO signature attributes for generic ITDs (public only?)
+	 * TODO generic aspect binary weaving (or at least multi source file weaving)
+	 * 
+	 * 
+	 * strangeness:
+	 * 
+	 *   adding declare precedence into the itds/binaryweaving A2.aj, A3.aj causes a bizarre classfile inconsistent message
 	 */
 	
 	public static Test suite() {
@@ -236,8 +240,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testParseItdStaticMethod()    {runTest("Parsing generic ITDs - 2");}
 	public void testParseItdCtor()            {runTest("Parsing generic ITDs - 3");}
 	public void testParseItdComplexMethod()   {runTest("Parsing generic ITDs - 4");}
-//	public void testParseItdSharingVars1()    {runTest("Parsing generic ITDs - 5");}
-//	public void testParseItdSharingVars2()    {runTest("Parsing generic ITDs - 6");}
+	public void testParseItdSharingVars1()    {runTest("Parsing generic ITDs - 5");}
+	public void testParseItdSharingVars2()    {runTest("Parsing generic ITDs - 6");}
 	
 	
 	// non static
@@ -303,6 +307,74 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testFieldITDsUsingTargetTypeVars14(){runTest("field itd using type variable from target type -14");}
 	public void testFieldITDsUsingTargetTypeVars15(){runTest("field itd using type variable from target type -15");}
 	public void testFieldITDsUsingTargetTypeVars16(){runTest("field itd using type variable from target type -16");}
+	
+
+	public void testMethodITDsUsingTargetTypeVarsA1() {runTest("method itd using type variable from target type - A1");}
+	public void testMethodITDsUsingTargetTypeVarsA2() {runTest("method itd using type variable from target type - A2");}
+	public void testMethodITDsUsingTargetTypeVarsA3() {runTest("method itd using type variable from target type - A3");}
+	public void testMethodITDsUsingTargetTypeVarsA4() {runTest("method itd using type variable from target type - A4");}
+	public void testMethodITDsUsingTargetTypeVarsB1() {runTest("method itd using type variable from target type - B1");}
+	public void testMethodITDsUsingTargetTypeVarsC1() {runTest("method itd using type variable from target type - C1");}
+	public void testMethodITDsUsingTargetTypeVarsD1() {runTest("method itd using type variable from target type - D1");}
+	public void testMethodITDsUsingTargetTypeVarsE1() {runTest("method itd using type variable from target type - E1");}
+	public void testMethodITDsUsingTargetTypeVarsF1() {runTest("method itd using type variable from target type - F1");}
+	public void testMethodITDsUsingTargetTypeVarsG1() {runTest("method itd using type variable from target type - G1");}
+	public void testMethodITDsUsingTargetTypeVarsH1() {runTest("method itd using type variable from target type - H1");}
+	public void testMethodITDsUsingTargetTypeVarsI1() {runTest("method itd using type variable from target type - I1");}
+	public void testMethodITDsUsingTargetTypeVarsI2() {runTest("method itd using type variable from target type - I2");}
+	public void testMethodITDsUsingTargetTypeVarsJ1() {runTest("method itd using type variable from target type - J1");}
+	public void testMethodITDsUsingTargetTypeVarsK1() {runTest("method itd using type variable from target type - K1");}
+	public void testMethodITDsUsingTargetTypeVarsL1() {runTest("method itd using type variable from target type - L1");}
+	public void testMethodITDsUsingTargetTypeVarsM1() {runTest("method itd using type variable from target type - M1");}
+	public void testMethodITDsUsingTargetTypeVarsM2() {runTest("method itd using type variable from target type - M2");}
+	public void testMethodITDsUsingTargetTypeVarsN1() {runTest("method itd using type variable from target type - N1");}
+	public void testMethodITDsUsingTargetTypeVarsO1() {runTest("method itd using type variable from target type - O1");}
+	public void testMethodITDsUsingTargetTypeVarsO2() {runTest("method itd using type variable from target type - O2");}
+	public void testMethodITDsUsingTargetTypeVarsP1() {runTest("method itd using type variable from target type - P1");}
+	public void testMethodITDsUsingTargetTypeVarsQ1() {runTest("method itd using type variable from target type - Q1");}
+	
+	public void testCtorITDsUsingTargetTypeVarsA1() {runTest("ctor itd using type variable from target type - A1");}
+	public void testCtorITDsUsingTargetTypeVarsB1() {runTest("ctor itd using type variable from target type - B1");}
+	public void testCtorITDsUsingTargetTypeVarsC1() {runTest("ctor itd using type variable from target type - C1");}
+	public void testCtorITDsUsingTargetTypeVarsD1() {runTest("ctor itd using type variable from target type - D1");}
+	public void testCtorITDsUsingTargetTypeVarsE1() {runTest("ctor itd using type variable from target type - E1");}
+	public void testCtorITDsUsingTargetTypeVarsF1() {runTest("ctor itd using type variable from target type - F1");}
+	public void testCtorITDsUsingTargetTypeVarsG1() {runTest("ctor itd using type variable from target type - G1");}
+	public void testCtorITDsUsingTargetTypeVarsH1() {runTest("ctor itd using type variable from target type - H1");}
+	public void testCtorITDsUsingTargetTypeVarsI1() {runTest("ctor itd using type variable from target type - I1");}
+	
+	public void testSophisticatedAspectsA() {runTest("uberaspects - A");}
+	public void testSophisticatedAspectsB() {runTest("uberaspects - B");}
+	public void testSophisticatedAspectsC() {runTest("uberaspects - C");}
+	public void testSophisticatedAspectsD() {runTest("uberaspects - D");}
+	public void testSophisticatedAspectsE() {runTest("uberaspects - E");}
+	public void testSophisticatedAspectsF() {runTest("uberaspects - F");}
+	public void testSophisticatedAspectsG() {runTest("uberaspects - G");}
+	public void testSophisticatedAspectsH() {runTest("uberaspects - H");}
+	public void testSophisticatedAspectsI() {runTest("uberaspects - I");}
+	public void testSophisticatedAspectsJ() {runTest("uberaspects - J");}
+//	public void testSophisticatedAspectsK() {runTest("uberaspects - K");} // FIXME asc needs some error messages writing
+	public void testSophisticatedAspectsL() {runTest("uberaspects - L");}
+//	public void testSophisticatedAspectsM() {runTest("uberaspects - M");} // FIXME asc needs some error messages writing
+	public void testSophisticatedAspectsN() {runTest("uberaspects - N");}
+//	public void testSophisticatedAspectsO() {runTest("uberaspects - O");} // FIXME asc needs some error messages writing
+	public void testSophisticatedAspectsP() {runTest("uberaspects - P");}
+	public void testSophisticatedAspectsQ() {runTest("uberaspects - Q");}
+	public void testSophisticatedAspectsR() {runTest("uberaspects - R");}
+	public void testSophisticatedAspectsS() {runTest("uberaspects - S");}
+	public void testSophisticatedAspectsT() {runTest("uberaspects - T");}
+
+	//public void testSophisticatedAspectsU() {runTest("uberaspects - U");}
+	
+	public void testBinaryWeavingITDsA() {runTest("binary weaving ITDs - A");}
+	
+	// ?? Looks like reweavable files dont process their type mungers correctly.
+	// See AjLookupEnvironment.weaveInterTypeDeclarations(SourceTypeBinding,typeMungers,declareparents,...)
+	//   it seems to process any it discovers from the weaver state info then not apply new ones (the ones
+	//   passed in!)
+//	public void testBinaryWeavingITDs1() {runTest("binary weaving ITDs - 1");}
+//	public void testBinaryWeavingITDs2() {runTest("binary weaving ITDs - 2");}
+//	public void testBinaryWeavingITDs3() {runTest("binary weaving ITDs - 3");}
 	
 	
 	// general tests ... usually just more complex scenarios
@@ -405,10 +477,6 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 //		runTest("Problems resolving type name inside generic class");
 //	}
 	
-	// missing tests in here:
-	
-	// 1. public ITDs and separate compilation - are the signatures correct for the new public members?
-	// 2. ITDF
 
 	// -- Pointcut tests...
 
@@ -630,6 +698,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testAJDKPointcutInGenericClassExample() {
 		runTest("ajdk notebook: pointcut in generic class example");
 	}
+	
 	
 	// --- helpers
 		
