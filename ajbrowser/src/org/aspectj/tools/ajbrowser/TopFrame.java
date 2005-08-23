@@ -33,7 +33,9 @@ import org.aspectj.asm.IProgramElement;
  */
 public class TopFrame extends JFrame {
 
-    private static final File CURRENT_DIR = new File(".");
+	private static final long serialVersionUID = 1007473581156451702L;
+
+	private static final File CURRENT_DIR = new File(".");
 
     JLabel statusText_label = new JLabel();
 
@@ -46,8 +48,6 @@ public class TopFrame extends JFrame {
     private JMenu jMenu2 = new JMenu();
     private JMenuItem projectBuild_menuItem = new JMenuItem();
     private FlowLayout left_flowLayout = new FlowLayout();
-    private Border border1;
-    private Border border2;
     private JMenuItem jMenuItem1 = new JMenuItem();
     private JMenuItem exit_menuItem = new JMenuItem();
     private JSplitPane top_splitPane = new JSplitPane();
@@ -56,7 +56,6 @@ public class TopFrame extends JFrame {
     private BorderLayout borderLayout3 = new BorderLayout();
     private JMenuItem projectRun_menuItem = new JMenuItem();
     private JMenuItem projectRunOther_menuItem = new JMenuItem();
-    private Border border3;
     private JPanel status_panel = new JPanel();
     private BorderLayout borderLayout4 = new BorderLayout();
     private Border emptyBorder = BorderFactory.createEmptyBorder();
@@ -66,10 +65,6 @@ public class TopFrame extends JFrame {
     private JMenu tools_menu = new JMenu();
     private JMenuItem joinpointProbe_menuItem = new JMenuItem();
     private JMenuItem projectDebug_menuItem = new JMenuItem();
-    private Border border4;
-    private Border border5;
-    private Border border6;
-    private Border border7;
     private JMenuItem svProperties_menuItem = new JMenuItem();
     private File lastChosenDir = CURRENT_DIR;
     
@@ -92,19 +87,6 @@ public class TopFrame extends JFrame {
     JPanel multiView_panel;
 
 	private AJButtonMenuCombo buildCombo;
-    //JPanel view_panel;
-    //JSplitPane structureView_pane = new JSplitPane();
-    //JPanel browser_panel = null;
-
-//    public final BuildConfigListener CONFIGURATION_LISTENER = new BuildConfigListener() {
-//        public void currConfigChanged(String configFilePath) {
-//        	AjdeUIManager.getDefault().getViewManager().updateView();
-//        }
-//        
-//        public void configsListUpdated(java.util.List configsList) { 
-//	       	//AjdeUIManager.getDefault().getViewManager().updateConfigsList();
-//        }
-//    };
 
     public void init(MultiStructureViewPanel multiViewPanel, JPanel compilerMessagesPanel, JPanel editorPanel) {
         try {
@@ -132,7 +114,10 @@ public class TopFrame extends JFrame {
             messages_panel.setVisible(false);
 
 			JPopupMenu orderMenu = new BuildConfigPopupMenu(new AbstractAction() {
-	    		public void actionPerformed(ActionEvent arg0) {
+
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent arg0) {
 			        BrowserManager.getDefault().saveAll();
 				}
 	    	});
@@ -154,7 +139,9 @@ public class TopFrame extends JFrame {
   
 	private void refreshBuildMenu() {
 		JPopupMenu orderMenu = new BuildConfigPopupMenu(new AbstractAction() {
-    		public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = -3204840278758386318L;
+
+			public void actionPerformed(ActionEvent arg0) {
 		        BrowserManager.getDefault().saveAll();
 			}
     	});
@@ -181,36 +168,7 @@ public class TopFrame extends JFrame {
         editConfig_button.setBorder(null);
     }
 
-//    private void bindKeys() { // XXX broken?
-//        this.addKeyListener(new KeyAdapter() {
-//            public void keyPressed(KeyEvent e) {
-//                if (e.getModifiers() == java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) {
-//                    if (e.getKeyCode() == KeyEvent.VK_F11) {
-//                        if (e.isShiftDown()) {
-//                            buildFresh();
-//                        } else {
-//                            build();
-//                        }
-//                    } else if (e.getKeyCode() == KeyEvent.VK_S) {
-//                        Ajde.getDefault().getEditorManager().saveContents();
-//                    } else if (e.getKeyCode() == KeyEvent.VK_P) {
-//                        AjdeUIManager.getDefault().showOptionsFrame();
-//                    } else if (e.getKeyCode() == KeyEvent.VK_R) {
-//                        runInSameVM();
-//                    }
-//                }
-//            }
-//        });
-//    }
-
     private void jbInit() throws Exception {
-        border1 = BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
-        border2 = BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140));
-        border3 = BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
-        border4 = BorderFactory.createBevelBorder(BevelBorder.RAISED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
-        border5 = BorderFactory.createEmptyBorder();
-        border6 = BorderFactory.createEmptyBorder();
-        border7 = BorderFactory.createBevelBorder(BevelBorder.RAISED,Color.white,Color.white,new Color(148, 145, 140),new Color(103, 101, 98));
         border8 = BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158)),BorderFactory.createEmptyBorder(2,2,2,2));
         emptyBorder = BorderFactory.createEmptyBorder(2,2,2,2);
         jMenu1.setFont(new java.awt.Font("Dialog", 0, 11));

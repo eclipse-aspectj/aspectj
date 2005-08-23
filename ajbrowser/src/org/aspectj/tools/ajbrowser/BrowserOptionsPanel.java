@@ -25,6 +25,7 @@ import org.aspectj.ajde.ui.swing.*;
  */
 public class BrowserOptionsPanel extends OptionsPanel {
 	
+	private static final long serialVersionUID = 4491319302490183151L;
 	private JPanel runOptions_panel = new JPanel();
 	private JPanel build_panel = new JPanel();
 	private FlowLayout flowLayout1 = new FlowLayout();

@@ -31,7 +31,9 @@ import org.aspectj.bridge.IMessage.Kind;
  * @author Mik Kersten
  */
 public class CompilerMessagesPanel extends JPanel implements TaskListManager {
-    private JScrollPane jScrollPane1 = new JScrollPane();
+    
+	private static final long serialVersionUID = -2251912345065588977L;
+	private JScrollPane jScrollPane1 = new JScrollPane();
     //private JScrollPane jScrollPane2 = new JScrollPane();
     private JList list = new JList();
     private DefaultListModel listModel = new DefaultListModel();
