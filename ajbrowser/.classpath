@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="src" path="testsrc"/>
-    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
-    <classpathentry kind="src" path="/ajde"/>
-    <classpathentry kind="src" path="/util"/>
-    <classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
-    <classpathentry kind="src" path="/bridge"/>
-    <classpathentry kind="src" path="/asm"/>
-    <classpathentry kind="src" path="/taskdefs"/>
-    <classpathentry kind="src" path="/ajdoc"/>
-    <classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="testsrc"/>
+	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
+	<classpathentry kind="src" path="/ajde"/>
+	<classpathentry kind="src" path="/util"/>
+	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry kind="src" path="/bridge"/>
+	<classpathentry kind="src" path="/asm"/>
+	<classpathentry kind="src" path="/taskdefs"/>
+	<classpathentry kind="src" path="/ajdoc"/>
+	<classpathentry kind="src" path="/loadtime"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
