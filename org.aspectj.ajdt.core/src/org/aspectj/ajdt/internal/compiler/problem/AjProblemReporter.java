@@ -15,6 +15,7 @@
 
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
@@ -342,18 +343,27 @@ public class AjProblemReporter extends ProblemReporter {
     	
     	// ignore ajc$ methods
     	if (new String(method.selector).startsWith("ajc$")) return;
+		ResolvedMember possiblyErroneousRm = factory.makeResolvedMember(method.binding);
     	
     	ResolvedType onTypeX =  factory.fromEclipse(method.binding.declaringClass);
-    	for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext(); ) {
-			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
-			ResolvedMember sig = m.getSignature();
-			if (ResolvedType.matches(AjcMemberMaker.interMethod(sig,m.getAspectType(),
-						sig.getDeclaringType().resolve(factory.getWorld()).isInterface()),
-					    factory.makeResolvedMember(method.binding))) {
-				// match, so dont need to report a problem!
-				return;
+    	// Can't use 'getInterTypeMungersIncludingSupers()' since that will exclude abstract ITDs
+    	// on any super classes - so we have to trawl up ourselves.. I wonder if this problem
+    	// affects other code in the problem reporter that looks through ITDs...
+    	ResolvedType supertypeToLookAt = onTypeX.getSuperclass();
+    	while (supertypeToLookAt!=null) {
+    		List itMungers = supertypeToLookAt.getInterTypeMungers();
+	    	for (Iterator i = itMungers.iterator(); i.hasNext(); ) {
+				ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
+				ResolvedMember sig = m.getSignature();
+				ResolvedMember rm = AjcMemberMaker.interMethod(sig,m.getAspectType(),
+						sig.getDeclaringType().resolve(factory.getWorld()).isInterface());
+				if (ResolvedType.matches(rm,possiblyErroneousRm)) {
+					// match, so dont need to report a problem!
+					return;
+				}
 			}
-		}
+	    	supertypeToLookAt = supertypeToLookAt.getSuperclass();
+    	}
     	// report the error...
     	super.methodMustOverride(method);
     }
