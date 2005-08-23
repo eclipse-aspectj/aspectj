@@ -311,7 +311,37 @@
             <message kind="error" line="5" text="Syntax error on tokens, valid member declaration expected instead"/>
         </compile>
     </ajc-test>
+    
+    <!-- atOverride tests with ITDs -->
+    
+    <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs">
+      <compile files="AtOverride.aj" options="-1.5"/>
+    </ajc-test>
+    <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 1">
+      <compile files="AtOverride1.aj" options="-1.5">
+        <message kind="error" line="9" text="The method method() of type Child must override a superclass method"/>
+      </compile>
+    </ajc-test>
+    <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 2">
+      <compile files="AtOverride2.aj" options="-1.5"/>
+    </ajc-test>
+    <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 3">
+      <compile files="AtOverride3.aj" options="-1.5"/>
+    </ajc-test>
+    <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 4">
+      <compile files="AtOverride4.aj" options="-1.5"/>
+    </ajc-test>
+    <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 5">
+      <compile files="AtOverride5.aj" options="-1.5">
+        <message kind="error" line="11" text="The method method() of type Child must override a superclass method"/>
+      </compile>
+    </ajc-test>
+    <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 6">
+      <compile files="AtOverride6.aj" options="-1.5"/>
+    </ajc-test>
                
+    <!-- end of atOverride tests with ITDs -->
+
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
         <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5"/>
     </ajc-test>
@@ -3189,10 +3219,10 @@
    </ajc-test>
    
    <ajc-test dir="java5/generics/itds" title="generic intertype field declaration, sharing type variable">
-     <compile files="FieldITDOnGeneric.aj" options="-1.5"/>
-     <run class="FieldITDOnGeneric">
+     <compile files="FieldITDOnGenericType.aj" options="-1.5"/>
+     <run class="FieldITDOnGenericType">
        <stderr>
-         <line text="foo"/>
+         <line text=">42"/>
        </stderr>
      </run>
    </ajc-test>
@@ -3310,7 +3340,13 @@
    	   <compile files="TestA_generictype.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
        <compile files="TestA_aspect.aj,TestA_class.java" inpath="code.jar" options="-1.5,-Xreweavable"/>
        <run class="TestA_class"/>
-    </ajc-test>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - B">
+   	   <compile files="TestB_generictype.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
+       <compile files="TestB_aspect1.aj,TestB_aspect2.aj,TestB_class.java" inpath="code.jar" options="-1.5,-Xreweavable"/>
+       <run class="TestB_class"/>
+   </ajc-test>
     
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 1">
    	   <compile files="BaseClass.java" outjar="code.jar" options="-1.5,-Xreweavable"/>

@@ -161,12 +161,13 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * PASS recursive type variable definitions
 	 * PASS generic aspects
 	 * PASS parameterizing ITDs with type variables
-     * TODO using type variables from the target type in your *STATIC* ITD (field/method/ctor) (error scenario)
+     * PASS using type variables from the target type in your *STATIC* ITD (field/method/ctor) (error scenario)
+     * PASS basic binary weaving of generic itds
+	 * TODO generic aspect binary weaving (or at least multi source file weaving)
 	 * TODO binary weaving with changing types (moving between generic and simple)
 	 * TODO bridge method creation (also relates to covariance overrides..)
 	 * TODO exotic class/interface bounds ('? extends List<String>','? super anything')
 	 * TODO signature attributes for generic ITDs (public only?)
-	 * TODO generic aspect binary weaving (or at least multi source file weaving)
 	 * 
 	 * 
 	 * strangeness:
@@ -218,8 +219,9 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testPR96220_GenericAspects1() {runTest("generic aspects - 1");}
 	public void testPR96220_GenericAspects2() {runTest("generic aspects - 2");}
 	public void testPR96220_GenericAspects3() {runTest("generic aspects - 3");}
-//	public void testGenericAspects4()         {runTest("generic aspects - 4");}
-//	public void testGenericAspects5()         {runTest("generic aspects - 5 (ajdk)");}
+	public void testGenericAspects4()         {runTest("generic aspects - 4");} 
+    // TODO FREAKYGENERICASPECTPROBLEM why does everything have to be in one source file?
+	// public void testGenericAspects5()         {runTest("generic aspects - 5 (ajdk)");} 
 	public void testTypeVariablesInDeclareWarning() { runTest("generic aspect with declare warning using type vars");}
 	public void testTypeVariablesInExecutionAdvice() { runTest("generic aspect with execution advice using type vars");}
 	public void testTypeVariablesInAnonymousPointcut() { runTest("generic aspect with anonymous pointcut");}
@@ -367,13 +369,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testSophisticatedAspectsT() {runTest("uberaspects - T");}
 	public void testSophisticatedAspectsU() {runTest("uberaspects - U");} //  includes nasty casts
 	
-	public void testBinaryWeavingITDsA() {runTest("binary weaving ITDs - A");}
+	// FIXME asc these two tests have peculiar error messages - generic aspect related
+//	public void testItdUsingTypeParameter() {runTest("itd using type parameter");}
+//	public void testItdIncorrectlyUsingTypeParameter() {runTest("itd incorrectly using type parameter");}
 	
+
+	public void testBinaryWeavingITDsA() {runTest("binary weaving ITDs - A");}
+	public void testBinaryWeavingITDsB() {runTest("binary weaving ITDs - B");}
+	public void testBinaryWeavingITDs1() {runTest("binary weaving ITDs - 1");}
 	// ?? Looks like reweavable files dont process their type mungers correctly.
 	// See AjLookupEnvironment.weaveInterTypeDeclarations(SourceTypeBinding,typeMungers,declareparents,...)
 	//   it seems to process any it discovers from the weaver state info then not apply new ones (the ones
 	//   passed in!)
-//	public void testBinaryWeavingITDs1() {runTest("binary weaving ITDs - 1");}
 //	public void testBinaryWeavingITDs2() {runTest("binary weaving ITDs - 2");}
 //	public void testBinaryWeavingITDs3() {runTest("binary weaving ITDs - 3");}
 	
@@ -386,22 +393,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testStaticGenericMethodITD()       {runTest("static generic method itd");}
 	
 	
-
-//	public void testGenericITFSharingTypeVariable() {
-//		runTest("generic intertype field declaration, sharing type variable");
-//	}
-
-//	public void testItdOnGenericType() {
-//		runTest("ITDs on generic type");
-//	}
-//	
-//	public void testItdUsingTypeParameter() {
-//		runTest("itd using type parameter");
-//	}
-//	
-//	public void testItdIncorrectlyUsingTypeParameter() {
-//		runTest("itd incorrectly using type parameter");
-//	}
+	public void testAtOverride0()  {runTest("atOverride used with ITDs");}
+	public void testAtOverride1()  {runTest("atOverride used with ITDs - 1");}
+	public void testAtOverride2()  {runTest("atOverride used with ITDs - 2");}
+	public void testAtOverride3()  {runTest("atOverride used with ITDs - 3");}
+	public void testAtOverride4()  {runTest("atOverride used with ITDs - 4");}
+	public void testAtOverride5()  {runTest("atOverride used with ITDs - 5");}
+	public void testAtOverride6()  {runTest("atOverride used with ITDs - 6");}
+	
+	public void testGenericITFSharingTypeVariable() {runTest("generic intertype field declaration, sharing type variable");}
 
 	// ----------------------------------------------------------------------------------------
 	// generic declare parents tests

@@ -17,6 +17,7 @@ import java.lang.reflect.Modifier;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
+import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -26,6 +27,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilationUnit;
@@ -83,6 +86,8 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			
 		super.resolve(upperScope);
 	}
+	
+	
 	public void resolveStatements() {
         if ((modifiers & AccSemicolonBody) != 0) {
             if ((declaredModifiers & AccAbstract) == 0)
@@ -93,6 +98,45 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
                 scope.problemReporter().methodNeedingNoBody(this);
         }        
         
+        // check @Override annotation - based on MethodDeclaration.resolveStatements() @Override processing
+		checkOverride: {
+			if (this.binding == null) break checkOverride;
+			if (this.scope.compilerOptions().sourceLevel < JDK1_5) break checkOverride;
+			int bindingModifiers = this.binding.modifiers;
+			boolean hasOverrideAnnotation = (this.binding.tagBits & TagBits.AnnotationOverride) != 0;
+			
+			// Need to verify
+			if (hasOverrideAnnotation) {
+				
+				// Work out the real method binding that we can use for comparison
+				EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
+				MethodBinding realthing = world.makeMethodBinding(munger.getSignature());
+				
+				boolean reportError = true;				
+				// Go up the hierarchy, looking for something we override
+				ReferenceBinding supertype = onTypeBinding.superclass();
+				while (supertype!=null && reportError) {
+					MethodBinding[] possibles = supertype.getMethods(declaredSelector);
+					for (int i = 0; i < possibles.length; i++) {
+						MethodBinding mb = possibles[i];
+
+						boolean couldBeMatch = true;
+						if (mb.parameters.length!=realthing.parameters.length) couldBeMatch=false;
+						else {
+							for (int j = 0; j < mb.parameters.length && couldBeMatch; j++) {
+								if (!mb.parameters[j].equals(realthing.parameters[j])) couldBeMatch=false;
+							}
+						}
+						// return types compatible? (allow for covariance)
+						if (couldBeMatch && !returnType.resolvedType.isCompatibleWith(mb.returnType)) couldBeMatch=false;
+						if (couldBeMatch) reportError = false;
+					}
+					supertype = supertype.superclass(); // superclass of object is null
+				}
+				// If we couldn't find something we override, report the error
+				if (reportError) ((AjProblemReporter)this.scope.problemReporter()).itdMethodMustOverride(this,realthing);			
+			}
+		}
         
 		if (!Modifier.isAbstract(declaredModifiers)) super.resolveStatements();
 		if (Modifier.isStatic(declaredModifiers)) {

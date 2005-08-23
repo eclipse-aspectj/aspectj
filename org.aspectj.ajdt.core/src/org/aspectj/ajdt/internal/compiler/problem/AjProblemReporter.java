@@ -31,6 +31,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -312,6 +313,64 @@ public class AjProblemReporter extends ProblemReporter {
     		methodDecl.sourceStart,
     		methodDecl.sourceEnd,this.referenceContext, 
 			this.referenceContext == null ? null : this.referenceContext.compilationResult());
+    }
+    
+    
+    /**
+     * Called when there is an ITD marked @override that doesn't override a supertypes method.
+     * The method and the binding are passed - some information is useful from each.  The 'method'
+     * knows about source offsets for the message, the 'binding' has the signature of what the
+     * ITD is trying to be in the target class.
+     */
+    public void itdMethodMustOverride(AbstractMethodDeclaration method,MethodBinding binding) {
+		this.handle(
+				IProblem.MethodMustOverride,
+				new String[] {new String(binding.selector), typesAsString(binding.isVarargs(), binding.parameters, false), new String(binding.declaringClass.readableName()), },
+				new String[] {new String(binding.selector), typesAsString(binding.isVarargs(), binding.parameters, true), new String(binding.declaringClass.shortReadableName()),},
+				method.sourceStart,
+				method.sourceEnd,
+				this.referenceContext, 
+				this.referenceContext == null ? null : this.referenceContext.compilationResult());
+	}
+    
+    /**
+     * Overrides the implementation in ProblemReporter and is ITD aware.
+     * To report a *real* problem with an ITD marked @override, the other methodMustOverride() method is used.
+     */
+    public void methodMustOverride(AbstractMethodDeclaration method) {
+    	MethodBinding binding = method.binding;
+    	
+    	// ignore ajc$ methods
+    	if (new String(method.selector).startsWith("ajc$")) return;
+    	
+    	ResolvedType onTypeX =  factory.fromEclipse(method.binding.declaringClass);
+    	for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext(); ) {
+			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
+			ResolvedMember sig = m.getSignature();
+			if (ResolvedType.matches(AjcMemberMaker.interMethod(sig,m.getAspectType(),
+						sig.getDeclaringType().resolve(factory.getWorld()).isInterface()),
+					    factory.makeResolvedMember(method.binding))) {
+				// match, so dont need to report a problem!
+				return;
+			}
+		}
+    	// report the error...
+    	super.methodMustOverride(method);
+    }
+    
+    
+    private String typesAsString(boolean isVarargs, TypeBinding[] types, boolean makeShort) {
+    	StringBuffer buffer = new StringBuffer(10);
+    	for (int i = 0, length = types.length; i < length; i++) {
+    		if (i != 0)
+    			buffer.append(", "); //$NON-NLS-1$
+    		TypeBinding type = types[i];
+    		boolean isVarargType = isVarargs && i == length-1;
+    		if (isVarargType) type = ((ArrayBinding)type).elementsType();
+    		buffer.append(new String(makeShort ? type.shortReadableName() : type.readableName()));
+    		if (isVarargType) buffer.append("..."); //$NON-NLS-1$
+    	}
+    	return buffer.toString();
     }
 
 }

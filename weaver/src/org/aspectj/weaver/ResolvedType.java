@@ -1122,7 +1122,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		
 		//System.err.println("add: " + munger + " to " + this.getClassName() + " with " + interTypeMungers);
 		if (sig.getKind() == Member.METHOD) {
-			if (!compareToExistingMembers(munger, getMethods())) return;
+			if (!compareToExistingMembers(munger, getMethodsWithoutIterator(false) /*getMethods()*/)) return;
 			if (this.isInterface()) {
 				if (!compareToExistingMembers(munger, 
 						Arrays.asList(world.getCoreType(OBJECT).getDeclaredMethods()).iterator())) return;
@@ -1169,6 +1169,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		interTypeMungers.add(munger);
 	}
 	
+	private boolean compareToExistingMembers(ConcreteTypeMunger munger, List existingMembersList) {
+		return compareToExistingMembers(munger,existingMembersList.iterator());
+	}
 	
 	//??? returning too soon
 	private boolean compareToExistingMembers(ConcreteTypeMunger munger, Iterator existingMembers) {
@@ -1194,12 +1197,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						//??? might need list of these overridden abstracts
 						continue;
 					} else {
-						//XXX dual errors possible if (this instanceof BcelObjectType) return false;  //XXX ignores separate comp
-						getWorld().getMessageHandler().handleMessage(
+					  // bridge methods can differ solely in return type.
+					  // FIXME this whole method seems very hokey - unaware of covariance/varargs/bridging - it
+					  // could do with a rewrite !
+					  boolean sameReturnTypes = (existingMember.getReturnType().equals(sig.getReturnType()));
+					  if (sameReturnTypes)
+						  getWorld().getMessageHandler().handleMessage(
 							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT,munger.getAspectType().getName(),
 									existingMember),
 							munger.getSourceLocation())
-						);
+						  );
 					}
 				} else if (isDuplicateMemberWithinTargetType(existingMember,this,sig)) {
 				    	getWorld().getMessageHandler().handleMessage(
@@ -1245,7 +1252,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return false;
 		}
 		
-		if (!parent.getReturnType().equals(child.getReturnType())) {
+		boolean incompatibleReturnTypes = false;
+		
+		// In 1.5 mode, allow for covariance on return type
+		if (world.isInJava5Mode() && parent.getKind()==Member.METHOD) {
+	      ResolvedType rtParentReturnType = parent.getReturnType().resolve(world);
+		  ResolvedType rtChildReturnType  = child.getReturnType().resolve(world);
+		  incompatibleReturnTypes = !rtParentReturnType.isAssignableFrom(rtChildReturnType);
+		} else {
+		  incompatibleReturnTypes =!parent.getReturnType().equals(child.getReturnType());
+		}
+		
+		if (incompatibleReturnTypes) {
 			world.showMessage(IMessage.ERROR,
 					WeaverMessages.format(WeaverMessages.ITD_RETURN_TYPE_MISMATCH,parent,child),
 					child.getSourceLocation(), parent.getSourceLocation());

@@ -8,4 +8,6 @@ public abstract aspect D<T> {
                 
 }
 
+aspect E extends D<String> {}
+
 class Goo<P> {}

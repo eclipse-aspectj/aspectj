@@ -12,7 +12,7 @@ public class FieldITDOnGenericType {
   public static void main(String[] argv) {
     MathUtils<Integer> mu = new MathUtils<Integer>();
     mu.n=42;
-    System.err.prinltn(">"+mu.n);
+    System.err.println(">"+mu.n);
   }
 }
 

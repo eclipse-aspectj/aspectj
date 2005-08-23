@@ -7,5 +7,7 @@ public abstract aspect C<T> {
   }
 }
 
+public aspect C<String> { }
+
 class Foo {
 }
