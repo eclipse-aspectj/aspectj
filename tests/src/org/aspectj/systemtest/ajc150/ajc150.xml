@@ -67,6 +67,22 @@
         </compile>
     </ajc-test>
 
+   <ajc-test dir="bugs150" pr="107486" title="anonymous inner classes">
+        <compile files="pr107486.aj">
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="bugs150" pr="107486" title="multiple anonymous inner classes">
+        <compile files="pr107486part2.aj">
+        </compile>
+        <run class="pr107486part2">
+            <stdout>
+                <line text="[advised] f"/>
+                <line text="[advised] g"/>
+            </stdout>
+        </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs150" pr="91114" title="before and after are valid identifiers in classes, part 2">
         <compile files="pr91114.aj">
         </compile>
@@ -342,44 +358,50 @@
 
     <!-- hasmethod / hasfield tests -->
 
-    <ajc-test title="declare parents : hasmethod(..) - 1" dir="hasmember">
+   <ajc-test title="declare parents : hasmethod(..) - 1" dir="hasmember">
         <compile files="HasMethod.aj">
+            <message kind="error" line="5" text="the type pattern hasmethod(* print(..)) can only be used when the -XhasMember option is set"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test title="declare parents : hasmethod(..) - 1" dir="hasmember">
+        <compile files="HasMethod.aj" options="-XhasMember">
         </compile>
         <run class="HasMethod"></run>
     </ajc-test>
 
     <ajc-test title="declare parents : hasmethod(..) - 2" dir="hasmember">
-        <compile files="HasMethodInherited.aj">
+        <compile files="HasMethodInherited.aj" options="-XhasMember">
         </compile>
         <run class="HasMethodInherited"></run>
     </ajc-test>
 
     <ajc-test title="declare parents : hasmethod(..) - 3" dir="hasmember">
-        <compile files="HasPrivateMethodInherited.aj">
+        <compile files="HasPrivateMethodInherited.aj" options="-XhasMember">
         </compile>
         <run class="HasPrivateMethodInherited"></run>
     </ajc-test>
 
     <ajc-test title="declare parents : hasmethod(..) - 4" dir="hasmember">
-        <compile files="HasMethodViaITD.aj">
+        <compile files="HasMethodViaITD.aj" options="-XhasMember">
             <message kind="warning" line="15" text="hasmethod matched on ITD ok"/>
         </compile>
     </ajc-test>
          
     <ajc-test title="declare parents : hasfield(..) - 1" dir="hasmember">
-        <compile files="HasField.aj">
+        <compile files="HasField.aj" options="-XhasMember">
         </compile>
         <run class="HasField"></run>
     </ajc-test>
 
     <ajc-test title="declare parents : hasfield(..) - 2" dir="hasmember">
-        <compile files="HasFieldInherited.aj">
+        <compile files="HasFieldInherited.aj"  options="-XhasMember">
         </compile>
         <run class="HasFieldInherited"></run>
     </ajc-test>
 
     <ajc-test title="declare parents : hasfield(..) - 3" dir="hasmember">
-        <compile files="HasPrivateFieldInherited.aj">
+        <compile files="HasPrivateFieldInherited.aj" options="-XhasMember">
         </compile>
         <run class="HasPrivateFieldInherited"></run>
     </ajc-test>

@@ -50,6 +50,7 @@ public class AllTestsAspectJ150 {
 		suite.addTest(AtAjSyntaxTests.suite());
         suite.addTest(AtAjMisuseTests.suite());
         suite.addTest(AtAjLTWTests.suite());
+        suite.addTest(HasMember.suite());
 		//$JUnit-END$
 		return suite;
 	}

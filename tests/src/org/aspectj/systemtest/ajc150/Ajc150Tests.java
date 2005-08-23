@@ -262,6 +262,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("itd override with no exception clause");
   }
   
+  public void testAnonymousInnerClasses() {
+	  runTest("anonymous inner classes");
+  }
+
+  public void testMultipleAnonymousInnerClasses() {
+	  runTest("multiple anonymous inner classes");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
