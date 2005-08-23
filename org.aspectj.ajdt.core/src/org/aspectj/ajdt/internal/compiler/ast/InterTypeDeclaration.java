@@ -32,7 +32,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;

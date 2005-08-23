@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;

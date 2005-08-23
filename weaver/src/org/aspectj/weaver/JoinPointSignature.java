@@ -17,7 +17,6 @@ import java.util.Collection;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
-import org.aspectj.weaver.Member.Kind;
 
 /**
  * @author colyer

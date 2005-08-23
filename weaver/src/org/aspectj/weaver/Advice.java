@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.bcel.Utility;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.PerClause;

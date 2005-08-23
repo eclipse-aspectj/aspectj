@@ -18,7 +18,6 @@ package org.aspectj.weaver;
 import junit.framework.TestCase;
 
 import org.aspectj.testing.util.TestUtil;
-import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * This is a test case for all the portions of Member that don't require a world.

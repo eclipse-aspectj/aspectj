@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.Member.Kind;
 
 /**
  * This is the declared member, i.e. it will always correspond to an

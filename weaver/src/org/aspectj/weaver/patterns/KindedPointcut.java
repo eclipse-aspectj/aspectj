@@ -27,7 +27,6 @@ import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
