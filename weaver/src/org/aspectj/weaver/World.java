@@ -66,6 +66,9 @@ public abstract class World implements Dump.INode {
     /** XlazyTjp option setting passed down to weaver */
     private boolean XlazyTjp;
 
+    /** XhasMember option setting passed down to weaver */
+    private boolean XhasMember = false;
+    
     /** When behaving in a Java 5 way autoboxing is considered */
     private boolean behaveInJava5Way = false;
     
@@ -572,6 +575,14 @@ public abstract class World implements Dump.INode {
 
 	public void setXlazyTjp(boolean b) {
 		XlazyTjp = b;
+	}
+	
+	public boolean isHasMemberSupportEnabled() {
+		return XhasMember;
+	}
+	
+	public void setXHasMemberSupportEnabled(boolean b) {
+		XhasMember = b;
 	}
 
 	public void setBehaveInJava5Way(boolean b) {

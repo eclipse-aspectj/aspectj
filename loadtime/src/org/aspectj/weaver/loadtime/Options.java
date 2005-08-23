@@ -37,6 +37,7 @@ public class Options {
     private final static String OPTION_verbose = "-verbose";
     private final static String OPTION_reweavable = "-Xreweavable";
     private final static String OPTION_noinline = "-Xnoinline";
+    private final static String OPTION_hasMember = "-XhasMember";
     private final static String OPTION_showWeaveInfo = "-showWeaveInfo";
     private final static String OPTIONVALUED_messageHandler = "-XmessageHandlerClass:";
     private static final String OPTIONVALUED_Xlintfile = "-Xlintfile:";
@@ -93,6 +94,8 @@ public class Options {
                 weaverOption.reWeavable = true;
             } else if (arg.equalsIgnoreCase(OPTION_showWeaveInfo)) {
                 weaverOption.showWeaveInfo = true;
+            } else if (arg.equalsIgnoreCase(OPTION_hasMember)) {
+                weaverOption.hasMember = true;
             } else if (arg.equalsIgnoreCase(OPTION_verbose)) {
                 weaverOption.verbose = true;
             } else if (arg.startsWith(OPTIONVALUED_messageHandler)) {
@@ -134,6 +137,7 @@ public class Options {
     public static class WeaverOption {
         boolean java5;
         boolean lazyTjp;
+        boolean hasMember;
         boolean noWarn;
         boolean proceedOnError;
         boolean verbose;

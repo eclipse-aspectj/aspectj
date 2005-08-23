@@ -29,7 +29,6 @@ public class PatternParser {
 	private ITokenSource tokenSource;	
 	private ISourceContext sourceContext;
 	
-	private static final boolean HASMEMBER_PATTERNS_ENABLED = false;
 	/** not thread-safe, but this class is not intended to be... */
 	private boolean allowHasTypePatterns = false;
 
@@ -158,7 +157,7 @@ public class PatternParser {
 	}
 	
 	public DeclareAnnotation parseDeclareAtType() {
-		if (HASMEMBER_PATTERNS_ENABLED) allowHasTypePatterns = true;
+		allowHasTypePatterns = true;
 		TypePattern p = parseTypePattern();
 		allowHasTypePatterns = false;
 		return new DeclareAnnotation(DeclareAnnotation.AT_TYPE,p);
@@ -196,7 +195,7 @@ public class PatternParser {
 		 * String[] typeParameters = maybeParseSimpleTypeVariableList();
 		 */
 		eat(":");
-		if (HASMEMBER_PATTERNS_ENABLED) allowHasTypePatterns = true;
+		allowHasTypePatterns = true;
 		TypePattern p = parseTypePattern(false);
 		allowHasTypePatterns = false;
 		IToken t = tokenSource.next();

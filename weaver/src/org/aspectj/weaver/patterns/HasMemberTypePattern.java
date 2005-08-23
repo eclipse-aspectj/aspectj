@@ -17,12 +17,16 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 
 /**
@@ -107,6 +111,15 @@ public class HasMemberTypePattern extends TypePattern {
 		HasMemberTypePattern ret = new HasMemberTypePattern(signaturePattern.parameterizeWith(typeVariableMap));
 		ret.copyLocationFrom(this);
 		return ret;
+	}
+
+	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
+		// check that hasmember type patterns are allowed!
+		if (!scope.getWorld().isHasMemberSupportEnabled()) {
+			String msg = WeaverMessages.format(WeaverMessages.HAS_MEMBER_NOT_ENABLED,this.toString());
+			scope.message(IMessage.ERROR, this, msg);
+		}
+		return this;
 	}
 
 	public boolean equals(Object obj) {

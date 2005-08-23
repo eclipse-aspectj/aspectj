@@ -145,6 +145,8 @@ public class WeaverMessages {
 	public static final String CALL_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES="noParameterizedDeclaringTypesInCall";
 	public static final String CANT_REFERENCE_POINTCUT_IN_RAW_TYPE="noRawTypePointcutReferences";
 	
+	public static final String HAS_MEMBER_NOT_ENABLED="hasMemberNotEnabled";
+	
 	public static String format(String key) {
 		return bundle.getString(key);
 	}

@@ -42,6 +42,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public static final String OPTION_XNoInline               = "org.aspectj.ajdt.core.compiler.weaver.XNoInline";
 	public static final String OPTION_XReweavable             = "org.aspectj.ajdt.core.compiler.weaver.XReweavable";
 	public static final String OPTION_XReweavableCompress     = "org.aspectj.ajdt.core.compiler.weaver.XReweavableCompress";
+	public static final String OPTION_XHasMember              = "org.aspectj.ajdt.core.compiler.weaver.XHasMember";
 	
 	// these next four not exposed by IDEs
 	public static final String OPTION_XDevNoAtAspectJProcessing = "org.aspectj.ajdt.core.compiler.ast.NoAtAspectJProcessing";
@@ -66,6 +67,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean xNoInline = false;
 	public boolean xReweavable = false;
 	public boolean xReweavableCompress = false;
+	public boolean xHasMember = false;
 	public boolean showWeavingInformation = false;
 	
 	// If true - autoboxing behaves differently ...
@@ -119,6 +121,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		map.put(OPTION_XNoInline,this.xNoInline ? ENABLED : DISABLED);
 		map.put(OPTION_XReweavable,this.xReweavable ? ENABLED : DISABLED);
 		map.put(OPTION_XReweavableCompress,this.xReweavableCompress ? ENABLED : DISABLED);
+		map.put(OPTION_XHasMember, this.xHasMember ? ENABLED : DISABLED);
 
 		map.put(OPTION_GenerateModel,this.generateModel ? ENABLED : DISABLED);
 		map.put(OPTION_GenerateJavaDocsInModel,this.generateJavaDocsInModel ? ENABLED : DISABLED);
@@ -186,6 +189,13 @@ public class AjCompilerOptions extends CompilerOptions {
 				this.xReweavableCompress = false;
 			}
 		}
+		if ((optionValue = optionsMap.get(OPTION_XHasMember)) != null) {
+			if (ENABLED.equals(optionValue)) {
+				this.xHasMember = true;
+			} else if (DISABLED.equals(optionValue)) {
+				this.xHasMember = false;
+			}
+		}
 		
 		if ((optionValue = optionsMap.get(OPTION_GenerateModel)) != null) {
 			if (ENABLED.equals(optionValue)) {
@@ -244,6 +254,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		buf.append("\n\t- lazy thisJoinPoint (X option): ").append(this.xLazyThisJoinPoint ? ENABLED : DISABLED); //$NON-NLS-1$
 		buf.append("\n\t- generate reweavable class files (X option): ").append(this.xReweavable ? ENABLED : DISABLED); //$NON-NLS-1$
 		buf.append("\n\t- compress reweavable class files (X option): ").append(this.xReweavableCompress ? ENABLED : DISABLED); //$NON-NLS-1$		
+		buf.append("\n\t- has member support (X option): ").append(this.xHasMember ? ENABLED : DISABLED); //$NON-NLS-1$
 
 		buf.append("\n\t- generate AJDE model: ").append(this.generateModel ? ENABLED : DISABLED); //$NON-NLS-1$		
 		buf.append("\n\t- generate Javadocs in AJDE model: ").append(this.generateJavaDocsInModel ? ENABLED : DISABLED); //$NON-NLS-1$		

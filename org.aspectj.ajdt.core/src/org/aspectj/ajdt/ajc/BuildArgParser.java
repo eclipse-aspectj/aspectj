@@ -529,7 +529,9 @@ public class BuildArgParser extends Main {
             	}
 			} else if (arg.equals("-XnoInline")) {
 				buildConfig.setXnoInline(true);
-            } else if (arg.startsWith("-showWeaveInfo")) {
+            } else if (arg.equals("-XhasMember")) {
+            	buildConfig.setXHasMemberSupport(true);
+            }	else if (arg.startsWith("-showWeaveInfo")) {            	
             	 buildConfig.setShowWeavingInformation(true);
 			} else if (arg.equals("-Xlintfile")) { 
 				if (args.size() > nextArgIndex) {

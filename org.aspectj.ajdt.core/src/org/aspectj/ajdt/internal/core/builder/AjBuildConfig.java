@@ -477,6 +477,14 @@ public class AjBuildConfig {
 		options.xReweavable = b;
 	}
 	
+	public void setXHasMemberSupport(boolean enabled) {
+		options.xHasMember = enabled;
+	}
+	
+	public boolean isXHasMemberEnabled() {
+		return options.xHasMember;
+	}
+	
 	public boolean isXreweavable() {
 		return options.xReweavable;
 	}
