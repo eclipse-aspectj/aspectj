@@ -713,7 +713,9 @@ public class EclipseFactory {
 		UnresolvedType simpleTx = null;
 		if (binding.isGenericType()) {
 		    simpleTx  = UnresolvedType.forRawTypeName(getName(binding)); 
-		} else {
+		} else if (binding.isLocalType()) { 
+			simpleTx = UnresolvedType.forSignature(new String(binding.signature()));
+		}else {
 			simpleTx  = UnresolvedType.forName(getName(binding)); 
 		}
 		ReferenceType name  = getWorld().lookupOrCreateName(simpleTx);

@@ -41,6 +41,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ITypeRequestor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
@@ -73,7 +74,7 @@ import org.aspectj.weaver.patterns.DeclareParents;
  * 
  * @author Jim Hugunin
  */
-public class AjLookupEnvironment extends LookupEnvironment {
+public class AjLookupEnvironment extends LookupEnvironment implements AnonymousClassCreationListener {
 	public  EclipseFactory factory = null;
 	
 //	private boolean builtInterTypesAndPerClauses = false;
@@ -115,6 +116,10 @@ public class AjLookupEnvironment extends LookupEnvironment {
 				factory.addSourceTypeBinding(b[j]);
 			}
 		}
+		
+		// We won't find out about anonymous types until later though, so register to be
+		// told about them when they turn up.
+		AnonymousClassPublisher.aspectOf().setAnonymousClassCreationListener(this);
 		
 		// need to build inter-type declarations for all AspectDeclarations at this point
         for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
@@ -774,6 +779,15 @@ public class AjLookupEnvironment extends LookupEnvironment {
 				processingTheQueue = false;
 			}
 		}		
+	}
+
+	/**
+	 * Callback driven when the compiler detects an anonymous type during block resolution.
+	 * We need to add it to the weaver so that we don't trip up later.
+	 * @param aBinding
+	 */
+	public void anonymousTypeBindingCreated(LocalTypeBinding aBinding) {
+		factory.addSourceTypeBinding(aBinding);
 	}
 }
 
