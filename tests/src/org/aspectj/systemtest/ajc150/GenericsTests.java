@@ -383,6 +383,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	//   passed in!)
 //	public void testBinaryWeavingITDs2() {runTest("binary weaving ITDs - 2");}
 //	public void testBinaryWeavingITDs3() {runTest("binary weaving ITDs - 3");}
+	public void testGenericITFSharingTypeVariable() {runTest("generic intertype field declaration, sharing type variable");}	
 	
 	
 	// general tests ... usually just more complex scenarios
@@ -400,8 +401,19 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testAtOverride4()  {runTest("atOverride used with ITDs - 4");}
 	public void testAtOverride5()  {runTest("atOverride used with ITDs - 5");}
 	public void testAtOverride6()  {runTest("atOverride used with ITDs - 6");}
+	public void testAtOverride7()  {runTest("atOverride used with ITDs - 7");}
 	
-	public void testGenericITFSharingTypeVariable() {runTest("generic intertype field declaration, sharing type variable");}
+	
+	// bridge methods
+//	public void testITDBridgeMethodsCovariance1() {runTest("bridging with covariance 1 normal");}
+//	public void testITDBridgeMethodsCovariance2() {runTest("bridging with covariance 1 itd");}
+//	public void testITDBridgeMethodsCovariance3() {runTest("bridging with covariance 1 itd binary weaving");}
+//	public void testITDBridgeMethods1Normal() {runTest("basic bridging with type vars - 1 - normal");}
+//	public void testITDBridgeMethods1Itd()    {runTest("basic bridging with type vars - 1 - itd");}
+//	public void testITDBridgeMethods2() {runTest("basic bridging with type vars - 2");}
+//	public void testITDBridgeMethodsPr91381() {runTest("Abstract intertype method and covariant returns");}
+	 	
+	
 
 	// ----------------------------------------------------------------------------------------
 	// generic declare parents tests
