@@ -38,6 +38,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
@@ -258,6 +259,14 @@ public class EclipseFactory {
 			return UnresolvedType.forGenericType(getName(binding),tVars,
 					CharOperation.charToString(((SourceTypeBinding)binding).genericSignature()));
 		} 
+		
+		// LocalTypeBinding have a name $Local$, we can get the real name by using the signature.... 
+		if (binding.isLocalType()) {
+			LocalTypeBinding ltb = (LocalTypeBinding) binding;
+			if (ltb.constantPoolName() != null && ltb.constantPoolName().length > 0) {
+				return UnresolvedType.forSignature(new String(binding.signature()));
+			} 
+		}
 		
 		return UnresolvedType.forName(getName(binding));
 	}
@@ -714,7 +723,12 @@ public class EclipseFactory {
 		if (binding.isGenericType()) {
 		    simpleTx  = UnresolvedType.forRawTypeName(getName(binding)); 
 		} else if (binding.isLocalType()) { 
-			simpleTx = UnresolvedType.forSignature(new String(binding.signature()));
+			LocalTypeBinding ltb = (LocalTypeBinding) binding;
+			if (ltb.constantPoolName() != null && ltb.constantPoolName().length > 0) {
+				simpleTx = UnresolvedType.forSignature(new String(binding.signature()));
+			} else {
+				simpleTx = UnresolvedType.forName(getName(binding));
+			}
 		}else {
 			simpleTx  = UnresolvedType.forName(getName(binding)); 
 		}
