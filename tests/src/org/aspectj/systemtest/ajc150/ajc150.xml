@@ -339,6 +339,9 @@
     <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 6">
       <compile files="AtOverride6.aj" options="-1.5"/>
     </ajc-test>
+    <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 7">
+      <compile files="AtOverride7.aj" options="-1.5"/>
+    </ajc-test>
                
     <!-- end of atOverride tests with ITDs -->
 
@@ -3387,6 +3390,60 @@
     </ajc-test>
 
    <!-- end of generics/itds and binary weaving -->
+   
+   <!-- generics/itds and bridge methods -->
+   
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridging with covariance 1 normal">
+     <compile files="Bridging1.aj,Util.java" options="-1.5"/>
+     <run class="Bridging1"/>
+   </ajc-test>   
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridging with covariance 1 itd">
+     <compile files="BridgingITD1.aj,Util.java" options="-1.5"/>
+     <run class="BridgingITD1"/>
+   </ajc-test>
+
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="basic bridging with type vars - 1 - normal">
+     <compile files="Bridging2.aj,Util.java" options="-1.5"/>
+     <run class="Bridging2"> 
+	     <stderr>
+	       <line text="Number of methods defined for D is 2"/>
+	       <line text="java.lang.Object D.next() [BridgeMethod]"/>
+	       <line text="java.lang.String D.next()"/>
+	     </stderr>
+     </run>
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="basic bridging with type vars - 1 - itd">
+     <compile files="BridgingITD2.aj,Util.java" options="-1.5"/>
+     <run class="BridgingITD2"> 
+	     <stderr>
+	       <line text="Number of methods defined for D is 2"/>
+	       <line text="java.lang.Object D.next() [BridgeMethod]"/>
+	       <line text="java.lang.String D.next()"/>
+	     </stderr>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="basic bridging with type vars - 2">
+     <compile files="Bridging3.aj,Util.java" options="-1.5"/>
+     <run class="Bridging3"> 
+	     <stderr>
+	       <line text="Number of methods defined for D is 2"/>
+	       <line text="java.lang.Object D.id(java.lang.Object) [BridgeMethod]"/>
+	       <line text="java.lang.String D.id(java.lang.String)"/>
+	     </stderr>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="Abstract intertype method and covariant returns" pr="91381">
+     <compile files="pr91381.aj" options="-1.5,-showWeaveInfo">
+       <message kind="weave" text="Type 'A' (pr91381.aj) has intertyped method from 'pr91381' (pr91381.aj:'java.lang.Object A.foo()')"/>
+     </compile>
+     <run class="pr91381"/>
+   </ajc-test>
+   
+   
+   
+   <!-- end of generics/itds and bridge methods -->   
    
    <!-- generics and  pointcuts -->
 
