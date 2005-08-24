@@ -23,7 +23,6 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 

@@ -24,7 +24,6 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.TypeVariableDeclaringElement;
 import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
