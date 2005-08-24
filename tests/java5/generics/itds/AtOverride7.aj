@@ -6,7 +6,7 @@ abstract class Parent {
 
 class Child extends Parent {
 
-  @Override String method1() {return null;}
+  @Override public String method1() {return null;}
 
 }
 
