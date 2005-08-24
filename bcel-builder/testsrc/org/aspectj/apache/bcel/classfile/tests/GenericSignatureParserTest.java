@@ -234,6 +234,12 @@ public class GenericSignatureParserTest extends TestCase {
 		}
 	}
 	
+	public void testPr107784() {
+		parser.parseAsMethodSignature(
+			"(Lcom/cibc/responders/mapping/CommonDataBeanScenario;Ljava/lang/Object;)Lcom/cibc/responders/response/Formatter<[BLjava/lang/Object;>;");
+		parser.parseAsClassSignature("<Parent:Ljava/lang/Object;Child:Ljava/lang/Object;>Ljava/lang/Object;");
+	}
+	
 	private void assertEquals(String[] expected, String[] actual) {
 		if (actual.length != expected.length) {
 			int shorter = Math.min(expected.length,actual.length);

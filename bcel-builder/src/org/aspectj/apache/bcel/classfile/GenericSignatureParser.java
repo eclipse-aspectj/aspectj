@@ -306,6 +306,7 @@ public class GenericSignatureParser {
 		  List tokens = new ArrayList();
 		  StringBuffer identifier = new StringBuffer();
 		  boolean inParens = false;
+		  boolean inArray = false;
 		  boolean couldSeePrimitive = false;
 		  do {
 			switch (chars[index]) {
@@ -335,6 +336,7 @@ public class GenericSignatureParser {
 					identifier = new StringBuffer();
 					tokens.add(";");
 					couldSeePrimitive = true;
+					inArray = false;
 					break;
 				case '^':
 					if (identifier.length() > 0) tokens.add(identifier.toString());
@@ -366,6 +368,8 @@ public class GenericSignatureParser {
 					break;
 				case '[' :
 					tokens.add("[");
+					couldSeePrimitive = true;
+					inArray = true;
 					break;
 				case 'B' :
 				case 'C' :
@@ -376,11 +380,13 @@ public class GenericSignatureParser {
 				case 'S' :
 				case 'V' :
 				case 'Z' :
-					if (inParens && couldSeePrimitive && identifier.length() == 0) {
+					if ((inParens || inArray) && couldSeePrimitive && identifier.length() == 0) {
 						tokens.add(new String("" + chars[index]));
 					} else {
 						identifier.append(chars[index]);
 					}
+					couldSeePrimitive = false;
+					inArray = false;
 					break;
 				default : 
 					identifier.append(chars[index]);
