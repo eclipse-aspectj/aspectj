@@ -223,11 +223,16 @@ public class AsmHierarchyBuilder extends ASTVisitor {
             }
         }
 
+        int typeModifiers = typeDeclaration.modifiers;
+        if (typeDeclaration instanceof AspectDeclaration) {
+        	typeModifiers = ((AspectDeclaration)typeDeclaration).getDeclaredModifiers();
+        }
+
 		IProgramElement peNode = new ProgramElement(
 			name,
 			kind,
 			makeLocation(typeDeclaration),
-			typeDeclaration.modifiers,			
+			typeModifiers,			
 			"",
 			new ArrayList());
 		peNode.setSourceSignature(genSourceSignature(typeDeclaration));
@@ -261,12 +266,17 @@ public class AsmHierarchyBuilder extends ASTVisitor {
                 }
             }
         }
+        
+        int typeModifiers = memberTypeDeclaration.modifiers;
+        if (memberTypeDeclaration instanceof AspectDeclaration) {
+        	typeModifiers = ((AspectDeclaration)memberTypeDeclaration).getDeclaredModifiers();
+        }
 
 		IProgramElement peNode = new ProgramElement(
 			name,
 			kind,
 			makeLocation(memberTypeDeclaration),
-			memberTypeDeclaration.modifiers,
+			typeModifiers,
 			"",
 			new ArrayList());
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
@@ -311,7 +321,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
                 }
             }
         }
-
+        
 		IProgramElement peNode = new ProgramElement(
 			fullName,
 			kind,

@@ -81,6 +81,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	public Map superAccessForInline = new HashMap();
 	
 	public boolean isPrivileged;
+	private int declaredModifiers;
 	
 	public EclipseSourceType concreteName;
 	
@@ -104,6 +105,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 	
 	public void resolve() {
+		declaredModifiers = modifiers; // remember our modifiers, we're going to be public in generateCode
 		if (binding == null) {
 			ignoreFurtherInvestigation = true;
 			return;
@@ -1114,6 +1116,16 @@ public class AspectDeclaration extends TypeDeclaration {
 		}
 		return output;		
 		//XXX we should append the per-clause
+	}
+	
+	/**
+	 * All aspects are made public after type checking etc. and before generating code
+	 * (so that the advice can be called!).
+	 * This method returns the modifiers as specified in the original source code declaration
+	 * so that the structure model sees the right thing.
+	 */
+	public int getDeclaredModifiers() {
+		return declaredModifiers;
 	}
 }
 
