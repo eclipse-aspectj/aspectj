@@ -130,7 +130,11 @@ public class AjProblemReporter extends ProblemReporter {
 	private boolean isPointcutDeclaration(MethodBinding binding) {
 		return CharOperation.prefixEquals(PointcutDeclaration.mangledPrefix, binding.selector);
 	}
-
+	
+    private boolean isIntertypeDeclaration(MethodBinding binding) {
+    	return (binding instanceof InterTypeMethodBinding);
+    }
+    
 	public void abstractMethodCannotBeOverridden(
 		SourceTypeBinding type,
 		MethodBinding concreteMethod)
@@ -186,9 +190,9 @@ public class AjProblemReporter extends ProblemReporter {
 		MethodBinding abstractMethod)
 	{
 		// if this is a PointcutDeclaration then there is no error
-		if (isPointcutDeclaration(abstractMethod)) {
-			return;
-		}
+		if (isPointcutDeclaration(abstractMethod)) return;
+		
+		if (isIntertypeDeclaration(abstractMethod)) return; // when there is a problem with an ITD not being implemented, it will be reported elsewhere
 		
 		if (CharOperation.prefixEquals("ajc$interField".toCharArray(), abstractMethod.selector)) {
 			//??? think through how this could go wrong
@@ -381,6 +385,18 @@ public class AjProblemReporter extends ProblemReporter {
     		if (isVarargType) buffer.append("..."); //$NON-NLS-1$
     	}
     	return buffer.toString();
+    }
+    
+    public void visibilityConflict(MethodBinding currentMethod, MethodBinding inheritedMethod) {
+    	// Not quite sure if the conditions on this test are right - basically I'm saying
+    	// DONT WORRY if its ITDs since the error will be reported another way...
+    	if (isIntertypeDeclaration(currentMethod) && 
+    		isIntertypeDeclaration(inheritedMethod) && 
+    		Modifier.isPrivate(currentMethod.modifiers) && 
+    		Modifier.isPrivate(inheritedMethod.modifiers)) {
+    		return;
+    	}
+    	super.visibilityConflict(currentMethod,inheritedMethod);
     }
 
 }
