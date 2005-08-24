@@ -3428,6 +3428,12 @@
        <run class="pr91381"/>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/itds/bridgeMethods" title="abstract intertype methods and covariant returns - error">
+   	   <compile files="pr91381_2.aj">
+   	     <message kind="error" line="15" text="The return type is incompatible with A.foo()"/>
+   	   </compile>
+   </ajc-test>
+   
 
  <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridging with covariance 1 normal">
      <compile files="Bridging1.aj,Util.java" options="-1.5"/>
@@ -4229,6 +4235,10 @@
            <line text="@anInterface()"/>
          </stdout>
        </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150" title="Compiler error due to a wrong exception check in try blocks">
+     <compile files="pr82989.aj" options="-1.5"/>
    </ajc-test>
    
    <ajc-test dir="bugs150/pr98901" title="public method on the aspect that declares @method on it">

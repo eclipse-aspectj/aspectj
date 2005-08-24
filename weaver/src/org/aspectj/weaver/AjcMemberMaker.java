@@ -286,14 +286,14 @@ public class AjcMemberMaker {
 	// -- privileged accessors
 	
 	public static ResolvedMember privilegedAccessMethodForMethod(UnresolvedType aspectType, ResolvedMember method) {
-		String sig = method.getDeclaredSignature();
-		return new ResolvedMemberImpl(Member.METHOD,
-			method.getDeclaringType(),
-			Modifier.PUBLIC | (method.isStatic() ? Modifier.STATIC : 0),
-			NameMangler.privilegedAccessMethodForMethod(method.getName(),
-												method.getDeclaringType(), aspectType),
-			sig);
-			//XXX needs thrown exceptions to be correct
+		return new ResolvedMemberImpl(
+				Member.METHOD,
+				method.getDeclaringType(),
+				Modifier.PUBLIC | (method.isStatic() ? Modifier.STATIC : 0),
+				method.getReturnType(),
+				NameMangler.privilegedAccessMethodForMethod(method.getName(),method.getDeclaringType(), aspectType),
+				method.getParameterTypes(),
+				method.getExceptions());				
 	}
 	
 	public static ResolvedMember privilegedAccessMethodForFieldGet(UnresolvedType aspectType, Member field) {

@@ -421,6 +421,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 //	public void testGenericITDsBridgeMethods3binary()  {runTest("bridge methods -3binary");}
 	
 	public void testGenericITDsBridgeMethodsPR91381()  {runTest("abstract intertype methods and covariant returns");}
+	public void testGenericITDsBridgeMethodsPR91381_2()  {runTest("abstract intertype methods and covariant returns - error");}
 
 	// ----------------------------------------------------------------------------------------
 	// generic declare parents tests

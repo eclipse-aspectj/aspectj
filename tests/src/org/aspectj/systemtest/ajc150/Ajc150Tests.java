@@ -270,6 +270,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("multiple anonymous inner classes");
   }
   
+  public void testPrivilegedMethodAccessorsGetRightExceptions_pr82989() {
+	  runTest("Compiler error due to a wrong exception check in try blocks");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
