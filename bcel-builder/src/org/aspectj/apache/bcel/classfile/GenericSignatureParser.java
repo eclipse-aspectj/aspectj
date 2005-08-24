@@ -30,6 +30,7 @@ import org.aspectj.apache.bcel.classfile.Signature.BaseTypeSignature;
  */
 public class GenericSignatureParser {
 
+	  private String inputString;
 	  private String[] tokenStream;  // for parse in flight
 	  private int tokenIndex = 0;
 
@@ -39,6 +40,7 @@ public class GenericSignatureParser {
 	   * the grammar defined in Section 4.4.4 of the JVM specification.
 	   */
 	  public Signature.ClassSignature parseAsClassSignature(String sig) {
+		  this.inputString = sig;
 		  tokenStream = tokenize(sig);
 		  tokenIndex = 0;
 		  Signature.ClassSignature classSig = new Signature.ClassSignature();
@@ -67,6 +69,7 @@ public class GenericSignatureParser {
 	   * the grammar defined in Section 4.4.4 of the JVM specification.
 	   */
 	  public MethodTypeSignature parseAsMethodSignature(String sig) {
+		  this.inputString = sig;
 		  tokenStream = tokenize(sig);
 		  tokenIndex = 0;
 		  FormalTypeParameter[] formals = new FormalTypeParameter[0];
@@ -115,6 +118,7 @@ public class GenericSignatureParser {
 	   * the grammar defined in Section 4.4.4 of the JVM specification.
 	   */
 	  public FieldTypeSignature parseAsFieldSignature(String sig) {
+		  this.inputString = sig;
 		  tokenStream = tokenize(sig);
 		  tokenIndex = 0;
 		  return parseFieldTypeSignature(false);
@@ -156,8 +160,8 @@ public class GenericSignatureParser {
 		  } else if (tokenStream[tokenIndex].startsWith("T")) {
 			  return parseTypeVariableSignature();
 		  } else {
-			  throw new IllegalStateException("Expection [,L, or T, but found " +
-					  tokenStream[tokenIndex]);
+			  throw new IllegalStateException("Expecting [,L, or T, but found " +
+					  tokenStream[tokenIndex] + " while unpacking " + inputString);
 		  }
 	  }
 	  
@@ -218,7 +222,7 @@ public class GenericSignatureParser {
 				  nestedTypes = new SimpleClassTypeSignature[nestedTypeList.size()];
 				  nestedTypeList.toArray(nestedTypes);
 			  } else {
-				  throw new IllegalStateException("Expecting .,<, or ;, but found " + tokenStream[tokenIndex]);
+				  throw new IllegalStateException("Expecting .,<, or ;, but found " + tokenStream[tokenIndex] + " while unpacking " + inputString);
 			  }
 		  }
 		  ret.append(";");
@@ -282,7 +286,7 @@ public class GenericSignatureParser {
 	  
 	  private void eat(String token) {
 		  if (!tokenStream[tokenIndex].equals(token)) {
-			  throw new IllegalStateException("Expecting " + token + " but found " + tokenStream[tokenIndex]);
+			  throw new IllegalStateException("Expecting " + token + " but found " + tokenStream[tokenIndex] + " while unpacking " + inputString);
 		  }
 		  tokenIndex++;
 	  }

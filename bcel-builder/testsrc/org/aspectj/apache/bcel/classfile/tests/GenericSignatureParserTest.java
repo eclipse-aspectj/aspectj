@@ -225,6 +225,15 @@ public class GenericSignatureParserTest extends TestCase {
 		}		
 	}
 	
+	public void testFullyQualifiedSuperclassAfterTypeParams() {
+		try {
+			Signature.FieldTypeSignature cSig = parser.parseAsFieldSignature("Ljava/util/List</;");
+			fail("Expected IllegalStateException");
+		} catch (IllegalStateException ex) {
+			assertTrue(ex.getMessage().contains("Ljava/util/List</;"));
+		}
+	}
+	
 	private void assertEquals(String[] expected, String[] actual) {
 		if (actual.length != expected.length) {
 			int shorter = Math.min(expected.length,actual.length);
