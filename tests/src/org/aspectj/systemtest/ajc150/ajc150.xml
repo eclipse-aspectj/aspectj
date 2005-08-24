@@ -3393,7 +3393,43 @@
    
    <!-- generics/itds and bridge methods -->
    
-   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridging with covariance 1 normal">
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -1">
+   	   <compile files="Sub1.java,Super1.java,X1.aj,Util.java" options="-1.5"/>
+       <run class="X1"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -1binary">
+   	 <compile files="Sub1.java,Super1.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
+   	 <compile files="X1.aj,Util.java" inpath="code.jar" options ="-1.5,-Xreweavable"/>
+     <run class="X1"/>
+   </ajc-test>
+ 
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -2">
+   	   <compile files="Sub2.java,Super2.java,X2.aj,Util.java" options="-1.5"/>
+       <run class="X2"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -2binary">
+   	 <compile files="Sub2.java,Super2.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
+   	 <compile files="X2.aj,Util.java" inpath="code.jar" options ="-1.5,-Xreweavable"/>
+     <run class="X2"/>
+   </ajc-test>
+      
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -3">
+   	 <compile files="Sub3.java,Super3.java,X3.aj,Util.java" options="-1.5"/>
+     <run class="X3"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -3binary">
+   	 <compile files="Sub3.java,Super3.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
+   	 <compile files="X3.aj,Util.java" inpath="code.jar" options ="-1.5,-Xreweavable"/>
+     <run class="X3"/>
+   </ajc-test>
+      
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="abstract intertype methods and covariant returns">
+   	   <compile files="pr91381.aj" options="-1.5"/>
+       <run class="pr91381"/>
+   </ajc-test>
+   
+
+ <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridging with covariance 1 normal">
      <compile files="Bridging1.aj,Util.java" options="-1.5"/>
      <run class="Bridging1"/>
    </ajc-test>   
@@ -3440,10 +3476,8 @@
      </compile>
      <run class="pr91381"/>
    </ajc-test>
+   <!-- end of generics/itds and bridge methods -->
    
-   
-   
-   <!-- end of generics/itds and bridge methods -->   
    
    <!-- generics and  pointcuts -->
 
