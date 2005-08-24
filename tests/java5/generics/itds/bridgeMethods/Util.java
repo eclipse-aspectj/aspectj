@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Util {
 	
-	public static void dumpMethods(String clazzname,String[] expectedMethods) {
+	public static void checkMethods(String clazzname,String[] expectedMethods) {
 		List methodsFound = new ArrayList();
 		try {
 			java.lang.Class clz = Class.forName(clazzname);
