@@ -1100,14 +1100,14 @@
           public abstract aspect ParentChildRelationship<Parent,Child> {
 
             /** generic interface implemented by parents */   
-            interface ParentHasChildren<C>{
+            interface ParentHasChildren<C extends ChildHasParent>{
               List<C> getChildren();
               void addChild(C child);
               void removeChild(C child);
             }
 
             /** generic interface implemented by children */
-            interface ChildHasParent<P>{
+            interface ChildHasParent<P extends ParentHasChildren>{
               P getParent();
               void setParent(P parent);
             }

@@ -84,11 +84,12 @@
                         <para>AspectJ 5 ships with a number of load-time weaving agents that
                             enable load-time weaving. These agents and their configuration
                             are execution environment dependent. Configuration for the supported environments is discussed
-                            later in this chapter.<br/>
-                            Using Java 5 JVMTI you can specify the <code>-javaagent:pathto/aspectjweaver.jar</code> option
-                            to the JVM.<br/>
+                            later in this chapter.</para>
+                            <para>
+                            Using Java 5 JVMTI you can specify the <literal>-javaagent:pathto/aspectjweaver.jar</literal> option
+                            to the JVM.</para><para>
                             Using BEA JRockit and Java 1.3/1.4, the very same behavior can be obtained using BEA JRockit JMAPI features with
-                            the <code>-Xmanagement:class=org.aspectj.weaver.loadtime.JRockitAgent</code>
+                            the <literal>-Xmanagement:class=org.aspectj.weaver.loadtime.JRockitAgent</literal>
                         </para>
                     </listitem>
                 </varlistentry>
@@ -189,7 +190,9 @@
             </para>
 
             <para>
+                <emphasis>
                 Note: concrete-aspect is not available in AspectJ 1.5 M3.
+                </emphasis>
             </para>
 
             <para>
@@ -383,12 +386,11 @@
             </itemizedlist>
         </para>
         <para>
-            Despite those special cases, it is perfectly possible to have call pointcut on those classes members providing the callee
-            class is not itself a speciall case, as well as execution pointcut on subclasses of those providing subclasses are not themselves
-            a special case.
+            Despite these restrictions, it is perfectly possible to match call join points for calls to these types providing the calling
+            class is exposed to the weaver. Subtypes of these excluded types that are exposed to the weaver may of course be woven.
         </para>
         <para>
-            It is also worth understanding that dynamic proxy representations are exposed to the LTW infrastructure and are not considered
+            Note that dynamic proxy representations are exposed to the LTW infrastructure and are not considered
             a special case.
         </para>
     </sect1>
