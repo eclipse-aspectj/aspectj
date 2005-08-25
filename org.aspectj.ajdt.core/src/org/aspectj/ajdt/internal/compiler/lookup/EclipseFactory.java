@@ -261,11 +261,13 @@ public class EclipseFactory {
 		} 
 		
 		// LocalTypeBinding have a name $Local$, we can get the real name by using the signature.... 
-		if (binding.isLocalType()) {
+		if (binding instanceof LocalTypeBinding) {
 			LocalTypeBinding ltb = (LocalTypeBinding) binding;
 			if (ltb.constantPoolName() != null && ltb.constantPoolName().length > 0) {
 				return UnresolvedType.forSignature(new String(binding.signature()));
-			} 
+			} else {
+				return UnresolvedType.forSignature(new String(ltb.genericTypeSignature()));
+			}
 		}
 		
 		return UnresolvedType.forName(getName(binding));
