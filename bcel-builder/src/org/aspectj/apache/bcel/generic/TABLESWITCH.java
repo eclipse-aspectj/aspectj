@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /** 
  * TABLESWITCH - Switch within given range of values, i.e., low..high
  *
- * @version $Id: TABLESWITCH.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: TABLESWITCH.java,v 1.3 2005/08/25 11:35:49 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */
@@ -80,6 +80,10 @@ public class TABLESWITCH extends Select {
 		     InstructionHandle target) {
     super(org.aspectj.apache.bcel.Constants.TABLESWITCH, match, targets, target);
     
+//    if (match_length==0) {
+//    	throw new RuntimeException("A tableswitch with no targets should be represented as a LOOKUPSWITCH");
+//    }
+    
     length = (short)(13 + match_length * 4); /* Alignment remainder assumed
 					      * 0 here, until dump time */
     fixed_length = length;
@@ -98,6 +102,9 @@ public class TABLESWITCH extends Select {
     int high = (match_length > 0)? match[match_length - 1] : 0;
     out.writeInt(high);
 
+//  See aj bug pr104720
+//    if (match_length==0) out.writeInt(0); // following the switch you need to supply "HIGH-LOW+1" entries
+    
     for(int i=0; i < match_length; i++)     // jump offsets
       out.writeInt(indices[i] = getTargetOffset(targets[i]));
   }

@@ -59,7 +59,7 @@ package org.aspectj.apache.bcel.generic;
  * TABLESWITCH instruction, depending on whether the match values (int[]) can be
  * sorted with no gaps between the numbers.
  *
- * @version $Id: SWITCH.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: SWITCH.java,v 1.3 2005/08/25 11:35:49 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class SWITCH implements CompoundInstruction {
@@ -89,7 +89,11 @@ public final class SWITCH implements CompoundInstruction {
     this.targets = (InstructionHandle[])targets.clone();
 
     if((match_length = match.length) < 2) // (almost) empty switch, or just default
-      instruction = new TABLESWITCH(match, targets, target);
+      if (match.length==0) {
+    	  instruction = new LOOKUPSWITCH(match,targets,target);
+      } else {
+    	  instruction = new TABLESWITCH(match,targets,target);
+      }
     else {
       sort(0, match_length - 1);
       
