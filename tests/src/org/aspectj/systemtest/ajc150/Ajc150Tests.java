@@ -274,6 +274,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("Compiler error due to a wrong exception check in try blocks");
   }
   
+  public void testAnonymousInnerClassWithMethodReturningTypeParameter_pr107898() {
+	  runTest("anonymous inner class with method returning type parameter");
+  }
+  
+  public void testMatchingOfObjectArray() {
+	  runTest("matching against Object[]");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

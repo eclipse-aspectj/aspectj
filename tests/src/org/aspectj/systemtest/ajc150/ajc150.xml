@@ -178,6 +178,17 @@
         </run>
     </ajc-test>
     
+    <ajc-test title="anonymous inner class with method returning type parameter"  pr="107898" dir="bugs150">
+        <compile files="pr107898.aj" options="-1.5"></compile>
+    </ajc-test>
+
+    <ajc-test title="matching against Object[]"  pr="72668" dir="bugs150">
+        <compile files="pr72668.aj" options="-1.5">
+            <message kind="error" line="3" text="incompatible return type applying to method-execution(java.lang.Number[] pr72668.getThoseInts())"></message>
+            <message kind="error" line="10" text="incompatible return type applying to method-execution(java.lang.Number[] pr72668.getThoseInts())"></message>
+        </compile>
+    </ajc-test>
+    
     <ajc-test dir="decp" pr="80249" title="Order of types passed to compiler determines weaving behavior">
         <compile files="A.java,B.java,AspectX.java"/>
         <run class="B"/>
