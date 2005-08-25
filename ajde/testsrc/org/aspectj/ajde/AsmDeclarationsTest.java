@@ -10,20 +10,16 @@
 
 package org.aspectj.ajde;
 
-//import java.util.Iterator;
-
-//import org.aspectj.ajdt.internal.core.builder.AsmElementFormatter;
 import org.aspectj.asm.*;
-//import org.aspectj.asm.IProgramElement.Kind;
 
-
-// TODO: add tests for java kinds, expand coverage
+/**
+ * @author Mik Kersten
+ */ 
 public class AsmDeclarationsTest extends AjdeTestCase {
 
 	private IHierarchy model = null;
     // TODO-path
 	private static final String CONFIG_FILE_PATH = "../examples/coverage/coverage.lst";
-//	private static final int DEC_MESSAGE_LENGTH = AsmElementFormatter.MAX_MESSAGE_LENGTH;
 
 	public AsmDeclarationsTest(String name) {
 		super(name);  
@@ -35,6 +31,12 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		assertEquals(root.toLabelString(), "coverage.lst");	
 	}
 
+	public void testAspectAccessibility() {
+		IProgramElement packageAspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AdviceNamingCoverage");
+		assertNotNull(packageAspect);
+		assertEquals(IProgramElement.Accessibility.PACKAGE, packageAspect.getAccessibility());
+	}
+	
 	public void testStaticModifiers() {
 		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "ModifiersCoverage");
 		assertNotNull(aspect);
@@ -119,7 +121,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 //		assertNotNull(constructorNode);		
 //		assertEquals(constructorNode.toLabelString(), constructorMsg);
 	}
-
+	
 	public void testPointcuts() {
 		IProgramElement node = (IProgramElement)model.getRoot();
 		assertNotNull(node);
@@ -136,8 +138,6 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		IProgramElement paramsNode = model.findElementForSignature(aspect, IProgramElement.Kind.POINTCUT, params);
 		assertNotNull(paramsNode);		
 		assertEquals(paramsNode.toLabelString(), params);	
-
-
 	}
 
 	public void testAbstract() {

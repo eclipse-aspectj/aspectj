@@ -11,7 +11,6 @@
  *     Andy Clement    Extensions for better IDE representation
  * ******************************************************************/
 
-
 package org.aspectj.asm.internal;
 
 import java.util.ArrayList;
@@ -76,7 +75,6 @@ public class ProgramElement implements IProgramElement {
 		this.name = name;
 		this.kind = kind;
 		setChildren(children);
-//		System.err.println("> created: " + name + ", children: " + children);
 	}
 	
 	public ProgramElement(
@@ -340,14 +338,6 @@ public class ProgramElement implements IProgramElement {
 	public void setName(String string) {
 		name = string;
 	}
-
-//	private void setParents() {
-////		System.err.println(">> setting parents on: " + name);
-//		if (children == null) return;
-//		for (Iterator it = children.iterator(); it.hasNext(); ) {
-//			((IProgramElement)it.next()).setParent(this);	
-//		}	
-//	}
 
 	public IProgramElement walk(HierarchyWalker walker) {
 		if (children!=null) {
