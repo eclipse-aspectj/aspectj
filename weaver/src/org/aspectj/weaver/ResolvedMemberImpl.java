@@ -151,7 +151,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     	accumulateTypesInBetween(originalDeclaringType, 
     							 firstDefiningType,
     							 declaringTypes);
-    	List memberSignatures = new ArrayList();
+    	Set memberSignatures = new HashSet();
     	for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
 			ResolvedType declaringType = (ResolvedType) iter.next();
 			ResolvedMember member = firstDefiningMember.withSubstituteDeclaringType(declaringType);
@@ -204,7 +204,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     		ResolvedMemberImpl memberToMatch,
     		Iterator typesToLookIn,
     		List typesAlreadyVisited,
-    		List foundMembers) {
+    		Set foundMembers) {
     	while(typesToLookIn.hasNext()) {
     		ResolvedType toLookIn = (ResolvedType) typesToLookIn.next();
 			if (!typesAlreadyVisited.contains(toLookIn)) {
@@ -217,7 +217,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 					accumulateTypesInBetween(toLookIn, resolvedDeclaringType, declaringTypes);
 				   	for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
 						ResolvedType declaringType = (ResolvedType) iter.next();
-						typesAlreadyVisited.add(declaringType);
+//						typesAlreadyVisited.add(declaringType);
 						ResolvedMember member = foundMember.withSubstituteDeclaringType(declaringType);
 						foundMembers.add(member);
 					}				   	

@@ -137,7 +137,15 @@
         <compile files="pr108104.aj" options="-1.5">
         </compile>
     </ajc-test>
-       
+
+    <ajc-test dir="bugs150" pr="108050" title="signature matching in override scenario">
+        <compile files="pr108050.aj" options="-1.5">
+            <message kind="warning" line = "2" text="servlet request"></message>
+            <message kind="warning" line = "7" text="servlet request"></message>
+            <message kind="warning" line = "21" text="servlet request"></message>
+        </compile>
+    </ajc-test>
+           
     <ajc-test dir="bugs150/pr106130" pr="106130" title="test weaving with > 256 locals">
         <compile files="AroundLotsOfVars.java LotsOfVars.java" options="-preserveAllLocals"/>
         <run class="LotsOfVars">

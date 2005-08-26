@@ -286,6 +286,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("multiple anonymous inner classes 2");
   }
   
+  public void testSignatureMatchingInMultipleOverrideScenario() {
+	  runTest("signature matching in override scenario");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

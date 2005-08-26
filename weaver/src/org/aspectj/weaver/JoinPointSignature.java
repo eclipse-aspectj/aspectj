@@ -371,4 +371,15 @@ public class JoinPointSignature implements ResolvedMember {
 		realMember.resetReturnTypeToObjectArray();
 	}
 
+	public boolean equals(Object obj) {
+		if (! (obj instanceof JoinPointSignature)) return false;
+		JoinPointSignature other = (JoinPointSignature) obj;
+		if (!realMember.equals(other.realMember)) return false;
+		if (!substituteDeclaringType.equals(other.substituteDeclaringType)) return false;
+		return true;
+	}
+	
+	public int hashCode() {
+		return 17 + (37 * realMember.hashCode()) + (37 * substituteDeclaringType.hashCode());
+	}
 }
