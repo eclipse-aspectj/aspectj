@@ -265,8 +265,10 @@ public class EclipseFactory {
 			LocalTypeBinding ltb = (LocalTypeBinding) binding;
 			if (ltb.constantPoolName() != null && ltb.constantPoolName().length > 0) {
 				return UnresolvedType.forSignature(new String(binding.signature()));
-			} else {
-				return UnresolvedType.forSignature(new String(ltb.genericTypeSignature()));
+			} else {			
+				// we're reporting a problem and don't have a resolved name for an 
+				// anonymous local type yet, report the issue on the enclosing type
+				return UnresolvedType.forSignature(new String(ltb.enclosingType.signature()));
 			}
 		}
 		
