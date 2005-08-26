@@ -132,6 +132,11 @@
             <message kind="error" line="4" text="wildcard type pattern not allowed"></message>
         </compile>
     </ajc-test>
+ 
+    <ajc-test dir="bugs150" pr="108104" title="multiple anonymous inner classes 2">
+        <compile files="pr108104.aj" options="-1.5">
+        </compile>
+    </ajc-test>
        
     <ajc-test dir="bugs150/pr106130" pr="106130" title="test weaving with > 256 locals">
         <compile files="AroundLotsOfVars.java LotsOfVars.java" options="-preserveAllLocals"/>

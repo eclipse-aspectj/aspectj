@@ -282,6 +282,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("matching against Object[]");
   }
   
+  public void testMultipleAnonymousInnerClasses_pr108104() {
+	  runTest("multiple anonymous inner classes 2");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
