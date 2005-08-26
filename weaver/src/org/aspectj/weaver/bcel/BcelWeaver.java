@@ -947,8 +947,12 @@ public class BcelWeaver implements IWeaver {
 		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
 		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
 			String className = classFile.getClassName();
-		    BcelObjectType classType = getClassType(className);			            
-			processReweavableStateIfPresent(className, classType);
+		    BcelObjectType classType = getClassType(className);
+		    
+		    // null return from getClassType() means the delegate is an eclipse source type - so
+		    // there *cant* be any reweavable state... (he bravely claimed...)
+		    if (classType !=null)
+		    	processReweavableStateIfPresent(className, classType);
 		}
 
 		requestor.addingTypeMungers();
@@ -1120,7 +1124,7 @@ public class BcelWeaver implements IWeaver {
 		}
     }
     
-	// helper method
+	/** helper method - will return NULL if the underlying delegate is an EclipseSourceType and not a BcelObjectType */
     public BcelObjectType getClassType(String forClass) {
         return BcelWorld.getBcelObjectType(world.resolve(forClass));    	
     }

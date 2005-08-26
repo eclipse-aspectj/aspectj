@@ -448,9 +448,18 @@ public class BcelWorld extends World implements Repository {
         return new BcelPerClauseAspectAdder(aspect, kind);
     }
 
+    /**
+     * Retrieve a bcel delegate for an aspect - this will return NULL if the
+     * delegate is an EclipseSourceType and not a BcelObjectType - this happens
+     * quite often when incrementally compiling.
+     */
 	public static BcelObjectType getBcelObjectType(ResolvedType concreteAspect) {
-		//XXX need error checking
-		return (BcelObjectType) ((ReferenceType)concreteAspect).getDelegate();
+		ReferenceTypeDelegate rtDelegate = ((ReferenceType)concreteAspect).getDelegate();
+		if (rtDelegate instanceof BcelObjectType) {
+			return (BcelObjectType)rtDelegate;
+		} else {
+			return null;
+		}
 	}
 
 	public void tidyUp() {
