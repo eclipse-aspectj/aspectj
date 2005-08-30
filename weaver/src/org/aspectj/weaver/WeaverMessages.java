@@ -148,6 +148,10 @@ public class WeaverMessages {
 	
 	public static final String HAS_MEMBER_NOT_ENABLED="hasMemberNotEnabled";
 	
+	// @AspectJ
+	public static final String RETURNING_FORMAL_NOT_DECLARED_IN_ADVICE = "returningFormalNotDeclaredInAdvice";
+	public static final String THROWN_FORMAL_NOT_DECLARED_IN_ADVICE = "thrownFormalNotDeclaredInAdvice";
+	
 	public static String format(String key) {
 		return bundle.getString(key);
 	}

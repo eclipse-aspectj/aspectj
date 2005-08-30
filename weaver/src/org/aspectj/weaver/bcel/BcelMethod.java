@@ -68,8 +68,8 @@ final class BcelMethod extends ResolvedMemberImpl {
 		this.sourceContext = declaringType.getResolvedTypeX().getSourceContext();
 		this.world = declaringType.getResolvedTypeX().getWorld();
 		this.bcelObjectType = declaringType;
-		unpackAjAttributes(world);
 		unpackJavaAttributes();
+		unpackAjAttributes(world);
 	}
 
 	// ----

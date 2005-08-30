@@ -46,6 +46,7 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
@@ -341,26 +342,43 @@ public class AtAjAttributes {
         boolean hasAtAspectJAnnotationMustReturnVoid = false;
         for (int i = 0; i < attributes.length; i++) {
             Attribute attribute = attributes[i];
-            if (acceptAttribute(attribute)) {
-                RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-                hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleBeforeAnnotation(
-                        rvs, struct, preResolvedPointcut
-                );
-                hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterAnnotation(
-                        rvs, struct, preResolvedPointcut
-                );
-                hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterReturningAnnotation(
-                        rvs, struct, preResolvedPointcut
-                );
-                hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterThrowingAnnotation(
-                        rvs, struct, preResolvedPointcut
-                );
-                hasAtAspectJAnnotation = hasAtAspectJAnnotation || handleAroundAnnotation(
-                        rvs, struct, preResolvedPointcut
-                );
-                // there can only be one RuntimeVisible bytecode attribute
-                break;
-            }
+            try {
+				if (acceptAttribute(attribute)) {
+				    RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
+				    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleBeforeAnnotation(
+				            rvs, struct, preResolvedPointcut
+				    );
+				    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterAnnotation(
+				            rvs, struct, preResolvedPointcut
+				    );
+				    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterReturningAnnotation(
+				            rvs, struct, preResolvedPointcut, bMethod
+				    );
+				    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterThrowingAnnotation(
+				            rvs, struct, preResolvedPointcut, bMethod
+				    );
+				    hasAtAspectJAnnotation = hasAtAspectJAnnotation || handleAroundAnnotation(
+				            rvs, struct, preResolvedPointcut
+				    );
+				    // there can only be one RuntimeVisible bytecode attribute
+				    break;
+				}
+			} catch (ReturningFormalNotDeclaredInAdviceSignatureException e) {
+				msgHandler.handleMessage(
+					new Message(
+							WeaverMessages.format(WeaverMessages.RETURNING_FORMAL_NOT_DECLARED_IN_ADVICE,e.getFormalName()),
+							IMessage.ERROR,
+							null,
+							bMethod.getSourceLocation())
+				);
+			} catch (ThrownFormalNotDeclaredInAdviceSignatureException e) {
+				msgHandler.handleMessage(
+						new Message(
+								WeaverMessages.format(WeaverMessages.THROWN_FORMAL_NOT_DECLARED_IN_ADVICE,e.getFormalName()),
+								IMessage.ERROR,
+								null,
+								bMethod.getSourceLocation())
+					);			}
         }
         hasAtAspectJAnnotation = hasAtAspectJAnnotation || hasAtAspectJAnnotationMustReturnVoid;
 
@@ -402,8 +420,7 @@ public class AtAjAttributes {
             );
             ;// go ahead
         }
-
-
+        
         return struct.ajAttributes;
     }
 
@@ -664,7 +681,13 @@ public class AtAjAttributes {
      * @param struct
      * @return true if found
      */
-    private static boolean handleAfterReturningAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
+    private static boolean handleAfterReturningAnnotation(
+    		RuntimeAnnotations runtimeAnnotations, 
+    		AjAttributeMethodStruct struct, 
+    		ResolvedPointcutDefinition preResolvedPointcut,
+    		BcelMethod owningMethod) 
+    throws ReturningFormalNotDeclaredInAdviceSignatureException
+    {
         Annotation after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTERRETURNING_ANNOTATION);
         if (after != null) {
             ElementNameValuePair annValue = getAnnotationElement(after, VALUE);
@@ -689,8 +712,16 @@ public class AtAjAttributes {
             }
             if (annReturned != null) {
                 returned = annReturned.getValue().stringifyValue();
-                if (isNullOrEmpty(returned))
+                if (isNullOrEmpty(returned)) {
                     returned = null;
+                } else {
+                   	// check that thrownFormal exists as the last parameter in the advice
+                	String[] pNames = owningMethod.getParameterNames();
+                	if (pNames == null || pNames.length == 0 || !pNames[pNames.length -1].equals(returned)) {
+                		throw new ReturningFormalNotDeclaredInAdviceSignatureException(returned);
+                	}
+                	
+                }
             }
 
             // this/target/args binding
@@ -748,16 +779,22 @@ public class AtAjAttributes {
      * @param struct
      * @return true if found
      */
-    private static boolean handleAfterThrowingAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
+    private static boolean handleAfterThrowingAnnotation(
+    		RuntimeAnnotations runtimeAnnotations, 
+    		AjAttributeMethodStruct struct, 
+    		ResolvedPointcutDefinition preResolvedPointcut, 
+    		BcelMethod owningMethod)
+    throws ThrownFormalNotDeclaredInAdviceSignatureException
+    {
         Annotation after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTERTHROWING_ANNOTATION);
         if (after != null) {
             ElementNameValuePair annValue = getAnnotationElement(after, VALUE);
             ElementNameValuePair annPointcut = getAnnotationElement(after, POINTCUT);
-            ElementNameValuePair annThrowned = getAnnotationElement(after, THROWING);
+            ElementNameValuePair annThrown = getAnnotationElement(after, THROWING);
 
             // extract the pointcut and throwned type/binding - do some checks
             String pointcut = null;
-            String throwned = null;
+            String thrownFormal = null;
             if ((annValue != null && annPointcut != null) || (annValue == null && annPointcut == null)) {
                 reportError("@AfterThrowing: either 'value' or 'poincut' must be provided, not both", struct);
                 return false;
@@ -771,17 +808,24 @@ public class AtAjAttributes {
                 reportError("@AfterThrowing: either 'value' or 'poincut' must be provided, not both", struct);
                 return false;
             }
-            if (annThrowned != null) {
-                throwned = annThrowned.getValue().stringifyValue();
-                if (isNullOrEmpty(throwned))
-                    throwned = null;
+            if (annThrown != null) {
+                thrownFormal = annThrown.getValue().stringifyValue();
+                if (isNullOrEmpty(thrownFormal)) {
+                    thrownFormal = null;
+                } else {
+                	// check that thrownFormal exists as the last parameter in the advice
+                	String[] pNames = owningMethod.getParameterNames();
+                	if (pNames == null || pNames.length == 0 || !pNames[pNames.length -1].equals(thrownFormal)) {
+                		throw new ThrownFormalNotDeclaredInAdviceSignatureException(thrownFormal);
+                	}
+                }
             }
 
             // this/target/args binding
             // exclude the throwned binding from the pointcut binding since it is an extraArg binding
             FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
             try {
-                bindings = (throwned == null ? extractBindings(struct) : extractBindings(struct, throwned));
+                bindings = (thrownFormal == null ? extractBindings(struct) : extractBindings(struct, thrownFormal));
             } catch (UnreadableDebugInfoException unreadableDebugInfoException) {
                 return false;
             }
@@ -795,7 +839,7 @@ public class AtAjAttributes {
             int extraArgument = extractExtraArgument(struct.method);
 
             // return binding
-            if (throwned != null) {
+            if (thrownFormal != null) {
                 extraArgument |= Advice.ExtraArgument;
             }
 
@@ -1456,5 +1500,27 @@ public class AtAjAttributes {
             if (!hasIf) node.getLeft().accept(this, data);
             return node;
         }
+    }
+    
+    static class ThrownFormalNotDeclaredInAdviceSignatureException extends Exception {
+    	
+    	private String formalName;
+    	
+    	public ThrownFormalNotDeclaredInAdviceSignatureException(String formalName) {
+    		this.formalName = formalName;
+    	}
+    	
+    	public String getFormalName() { return formalName; }
+    }
+    
+    static class ReturningFormalNotDeclaredInAdviceSignatureException extends Exception {
+    	
+    	private String formalName;
+    	
+    	public ReturningFormalNotDeclaredInAdviceSignatureException(String formalName) {
+    		this.formalName = formalName;
+    	}
+    	
+    	public String getFormalName() { return formalName; }
     }
 }

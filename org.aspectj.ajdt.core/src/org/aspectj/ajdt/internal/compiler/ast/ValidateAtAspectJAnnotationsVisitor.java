@@ -260,6 +260,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	 * 1) Advice must be public
 	 * 2) Advice must have a void return type if not around advice
 	 * 3) Advice must not have any other @AspectJ annotations
+	 * 4) After throwing advice must declare the thrown formal
+	 * 5) After returning advice must declare the returning formal
 	 */
 	private void validateAdvice(MethodDeclaration methodDeclaration) {
 		
@@ -290,6 +292,42 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		if (ajAnnotations.adviceKind != AdviceKind.Around) {
 			ensureVoidReturnType(methodDeclaration);
 		}	  
+		
+		if (ajAnnotations.adviceKind == AdviceKind.AfterThrowing) {
+			int[] throwingLocation = new int[2];
+			String thrownFormal = getStringLiteralFor("throwing",ajAnnotations.adviceAnnotation,throwingLocation);
+			if (thrownFormal != null) {
+				Argument[] arguments = methodDeclaration.arguments;
+				if (arguments != null && arguments.length > 0) {
+					Argument lastArgument = arguments[arguments.length - 1];
+					if (!thrownFormal.equals(new String(lastArgument.name))) {
+						methodDeclaration.scope.problemReporter()
+							.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"throwing formal '" + thrownFormal + "' must be declared as the last parameter in the advice signature");
+					}
+				} else {
+					methodDeclaration.scope.problemReporter()
+					.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"throwing formal '" + thrownFormal + "' must be declared as the last parameter in the advice signature");
+				}
+			}
+		}
+		
+		if (ajAnnotations.adviceKind == AdviceKind.AfterReturning) {
+			int[] throwingLocation = new int[2];
+			String returningFormal = getStringLiteralFor("returning",ajAnnotations.adviceAnnotation,throwingLocation);
+			if (returningFormal != null) {
+				Argument[] arguments = methodDeclaration.arguments;
+				if (arguments != null && arguments.length > 0) {
+					Argument lastArgument = arguments[arguments.length - 1];
+					if (!returningFormal.equals(new String(lastArgument.name))) {
+						methodDeclaration.scope.problemReporter()
+							.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"returning formal '" + returningFormal + "' must be declared as the last parameter in the advice signature");
+					}
+				} else {
+					methodDeclaration.scope.problemReporter()
+					.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"returning formal '" + returningFormal + "' must be declared as the last parameter in the advice signature");
+				}
+			}
+		}
 
 		resolveAndSetPointcut(methodDeclaration, ajAnnotations.adviceAnnotation);
 		
