@@ -289,6 +289,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testSignatureMatchingInMultipleOverrideScenario() {
 	  runTest("signature matching in override scenario");
   }
+ 
+  public void testWildcardAnnotationMatching_pr108245() {
+	  runTest("wildcard annotation matching - pr108245");
+  }
+  
+  public void testInnerTypesAndTypeVariables() {
+	  runTest("inner types and type variables");
+  }
   
   // helper methods.....
   
