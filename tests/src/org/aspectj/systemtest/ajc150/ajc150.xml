@@ -133,6 +133,12 @@
         </compile>
     </ajc-test>
  
+     <ajc-test dir="bugs150"  title="varargs with type variable">
+        <compile files="ParameterizedVarArgMatch.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+ 
+ 
     <ajc-test dir="bugs150" pr="108104" title="multiple anonymous inner classes 2">
         <compile files="pr108104.aj" options="-1.5">
         </compile>
@@ -155,7 +161,13 @@
         <compile files="ShapeCommandMap.java" options="-1.5">
         </compile>
     </ajc-test>
-           
+
+    <ajc-test dir="bugs150/" pr="107953" title="@AfterThrowing with no formal specified">
+        <compile files="pr107953.java" options="-1.5">
+            <message kind="error" line="8" text="throwing formal 'RuntimeException' must be declared as the last parameter in the advice signature"></message>
+        </compile>
+    </ajc-test>
+               
     <ajc-test dir="bugs150/pr106130" pr="106130" title="test weaving with > 256 locals">
         <compile files="AroundLotsOfVars.java LotsOfVars.java" options="-preserveAllLocals"/>
         <run class="LotsOfVars">

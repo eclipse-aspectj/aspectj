@@ -6,6 +6,6 @@ import org.aspectj.lang.annotation.*;
 @Aspect
 public class Test019 {
   @AfterReturning(value="call(* *..*(..))",returning="f")
-  public void itsAFoo(Object f, int x) {
+  public void itsAFoo(int x, Object f) {
   }        
 }

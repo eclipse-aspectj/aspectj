@@ -55,11 +55,13 @@
     </ajc-test>
 
     <comment>very dirty hack - can't get this location to work properly so added match all error..</comment>
+    <comment>amc - with new checks for binding of returning this was giving a different message, so I 
+             tweaked the test slightly by swapping the order of the args</comment>
     <ajc-test dir="java5/ataspectj"
         pr="" title="@AfterReturning with wrong number of args">
         <compile files="ataspectj/misuse/Test019.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
             <message kind="error" line="1" text="the parameter x is not bound"/>
-            <message kind="error"/>
+            <message kind="error" line="1" text="formal unbound in pointcut"/>
         </compile>
     </ajc-test>
 

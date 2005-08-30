@@ -298,6 +298,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("inner types and type variables");
   }
   
+  public void testAtAfterThrowingWithNoFormal() {
+	  runTest("@AfterThrowing with no formal specified");
+  }
+  
+  public void testParameterizedVarArgsMatch() {
+	  runTest("varargs with type variable");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
