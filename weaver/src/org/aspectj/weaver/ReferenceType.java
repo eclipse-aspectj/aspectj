@@ -278,6 +278,11 @@ public class ReferenceType extends ResolvedType {
        		}
        	}
 
+       	if (other.isTypeVariableReference()) {
+       		TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
+       		return this.isAssignableFrom(otherType.getUpperBound().resolve(world));
+       	}
+       	
         for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
             if (this.isAssignableFrom((ResolvedType) i.next())) return true;
         }       
