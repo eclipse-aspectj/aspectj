@@ -254,7 +254,17 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				} 
 			}
       }
-      if (!rtx.equals(ResolvedType.OBJECT)) addAndRecurse(knowninterfaces,collector,rtx.getSuperclass(),includeITDs); // Recurse if we aren't at the top
+      if (!rtx.equals(ResolvedType.OBJECT)) {
+    	  ResolvedType superType = rtx.getSuperclass();
+    	  if (rtx == null || rtx == ResolvedType.MISSING) {
+    		  // can't find type message - with context!
+    		  world.showMessage(Message.ERROR,
+					WeaverMessages.format(WeaverMessages.CANT_FIND_PARENT_TYPE,rtx.getSignature()),
+					null,null);
+    	  } else {
+    		  addAndRecurse(knowninterfaces,collector,superType,includeITDs); // Recurse if we aren't at the top
+    	  }
+      }
       ResolvedType[] interfaces = rtx.getDeclaredInterfaces(); // Go through the interfaces on the way back down
       for (int i = 0; i < interfaces.length; i++) {
 		ResolvedType iface = interfaces[i];
