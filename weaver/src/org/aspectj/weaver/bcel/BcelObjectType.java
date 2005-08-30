@@ -501,13 +501,14 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	private boolean genericSignatureUnpacked = false;
+	private Signature.FormalTypeParameter[] formalsForResolution = null;
 		
 	private void unpackGenericSignature() {
 		if (genericSignatureUnpacked) return;
 		genericSignatureUnpacked = true;
 		Signature.ClassSignature cSig = getGenericClassTypeSignature();
 		if (cSig != null) {
-			Signature.FormalTypeParameter[] formalsForResolution = cSig.formalTypeParameters;
+			formalsForResolution = cSig.formalTypeParameters;
 			if (isNestedClass()) {
 				// we have to find any type variables from the outer type before proceeding with resolution.
 				Signature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
@@ -542,6 +543,15 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			genericType.setSourceContext(this.resolvedTypeX.getSourceContext());
 			genericType.setStartPos(this.resolvedTypeX.getStartPos());
 			this.resolvedTypeX = genericType;
+		}
+	}
+	
+	public Signature.FormalTypeParameter[] getAllFormals() {
+		unpackGenericSignature();
+		if (formalsForResolution == null) {
+			return new Signature.FormalTypeParameter[0];
+		} else {
+			return formalsForResolution;
 		}
 	}
 	

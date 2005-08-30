@@ -272,8 +272,7 @@ final class BcelMethod extends ResolvedMemberImpl {
 				// generic method declaration
 				canBeParameterized = true;
 			 }
- 			 Signature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
- 			 Signature.FormalTypeParameter[] parentFormals = (genericTypeSig != null ? genericTypeSig.formalTypeParameters : new Signature.FormalTypeParameter[0]);
+ 			 Signature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
  			 Signature.FormalTypeParameter[] formals = new
  			 	Signature.FormalTypeParameter[parentFormals.length + mSig.formalTypeParameters.length];
  			 // put method formal in front of type formals for overriding in lookup
