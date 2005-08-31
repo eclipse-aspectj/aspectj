@@ -367,7 +367,17 @@
         <compile files="pr108054.aj" options="-1.5"/>
         <compile files="ISequence.java,ICounter.java,ASequence.java" options="-1.5"/>
     </ajc-test>
-        
+
+    <ajc-test dir="bugs150/pr108370" pr="108370" title="switch on enum inside ITD method">
+        <compile files="et/Q.java" options="-1.5"/>
+        <compile files="EnumTest.aj" options="-1.5 -inpath et"/>
+        <run class="EnumTest">
+            <stdout>
+                <line text="B!"/>
+            </stdout>
+        </run>
+    </ajc-test>
+                
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

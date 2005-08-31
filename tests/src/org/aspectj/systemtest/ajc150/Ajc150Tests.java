@@ -314,6 +314,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("type variable with type variable bound");
   }
   
+  public void testEnumSwitchInITD() {
+	  runTest("switch on enum inside ITD method");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
