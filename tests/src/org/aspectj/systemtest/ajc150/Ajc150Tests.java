@@ -318,6 +318,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("switch on enum inside ITD method");
   }
   
+  public void testInnerTypeOfGeneric() {
+	  runTest("inner type of generic interface reference from parameterized type");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
