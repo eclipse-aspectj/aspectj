@@ -249,6 +249,11 @@ public abstract class World implements Dump.INode {
     public ResolvedType resolve(String name) {
     	return resolve(UnresolvedType.forName(name));
     }
+    
+    public ResolvedType resolve(String name,boolean allowMissing) {
+    	return resolve(UnresolvedType.forName(name),allowMissing);
+    }
+    
 	
 	/**
 	 * Resolve to a ReferenceType - simple, raw, parameterized, or generic.
