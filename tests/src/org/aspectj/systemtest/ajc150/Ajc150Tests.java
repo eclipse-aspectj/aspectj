@@ -306,6 +306,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("varargs with type variable");
   }
   
+  public void testFieldAccessInsideITDM() {
+	  runTest("itd field access inside itd method");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

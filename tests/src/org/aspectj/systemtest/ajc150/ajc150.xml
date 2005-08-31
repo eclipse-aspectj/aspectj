@@ -358,6 +358,14 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150" pr="108377" title="itd field access inside itd method">
+        <compile files="pr108377.aj"/>
+        <run class="pr108377"/>
+    </ajc-test>
+    
+    <!-- ============================================================================ -->
+    <!-- ============================================================================ -->
+    
     <!-- atOverride tests with ITDs -->
     
     <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs">
