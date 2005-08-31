@@ -309,6 +309,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testFieldAccessInsideITDM() {
 	  runTest("itd field access inside itd method");
   }
+
+  public void testTypeVarWithTypeVarBound() {
+	  runTest("type variable with type variable bound");
+  }
   
   // helper methods.....
   

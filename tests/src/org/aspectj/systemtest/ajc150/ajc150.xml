@@ -362,7 +362,12 @@
         <compile files="pr108377.aj"/>
         <run class="pr108377"/>
     </ajc-test>
-    
+
+    <ajc-test dir="bugs150/pr108054" pr="108054" title="type variable with type variable bound">
+        <compile files="pr108054.aj" options="-1.5"/>
+        <compile files="ISequence.java,ICounter.java,ASequence.java" options="-1.5"/>
+    </ajc-test>
+        
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

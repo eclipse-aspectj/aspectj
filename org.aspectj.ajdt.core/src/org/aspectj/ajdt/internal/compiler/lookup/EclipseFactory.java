@@ -228,15 +228,24 @@ public class EclipseFactory {
 					arguments[i] = fromBinding(ptb.arguments[i]);
 				}
 			}
-			ResolvedType baseType = UnresolvedType.forName(getName(binding)).resolve(getWorld());
+			
+			String baseTypeSignature = null;
+			
+			ResolvedType baseType = getWorld().resolve(UnresolvedType.forName(getName(binding)),true);
+			if (baseType != ResolvedType.MISSING) {
+				// can legitimately be missing if a bound refers to a type we haven't added to the world yet...
+				if (!baseType.isGenericType() && arguments!=null) baseType = baseType.getGenericType();
+				baseTypeSignature = baseType.getErasureSignature();
+			} else {
+				baseTypeSignature = UnresolvedType.forName(getName(binding)).getSignature();
+			}
 			
 			// Create an unresolved parameterized type.  We can't create a resolved one as the 
 			// act of resolution here may cause recursion problems since the parameters may
 			// be type variables that we haven't fixed up yet.
-			if (!baseType.isGenericType() && arguments!=null) baseType = baseType.getGenericType();
 			if (arguments==null) arguments=new UnresolvedType[0];
 			String parameterizedSig = ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER+CharOperation.charToString(binding.genericTypeSignature()).substring(1);
-			return TypeFactory.createUnresolvedParameterizedType(parameterizedSig,baseType.getErasureSignature(),arguments);
+			return TypeFactory.createUnresolvedParameterizedType(parameterizedSig,baseTypeSignature,arguments);
 		}
 		
 		// Convert the source type binding for a generic type into a generic UnresolvedType
