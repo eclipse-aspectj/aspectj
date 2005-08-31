@@ -330,6 +330,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("inner class passed as argument to varargs method");
   }
   
+  public void testInlinedFieldAccessInProceedCall() {
+	  runTest("inlined field access in proceed call");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

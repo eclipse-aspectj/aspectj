@@ -142,7 +142,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 	
 	private FieldBinding getAccessibleField(FieldBinding binding, TypeBinding receiverType) {
 		//System.err.println("checking field: " + binding);
-		if (!binding.isValidBinding()) return binding;
+		if (binding == null || !binding.isValidBinding()) return binding;
 		
 		makePublic(receiverType);
 		if (isPublic(binding)) return binding;
