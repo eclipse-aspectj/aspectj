@@ -326,6 +326,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("declare parents introducing override with covariance");
   }
   
+  public void testInnerClassPassedToVarargs() {
+	  runTest("inner class passed as argument to varargs method");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

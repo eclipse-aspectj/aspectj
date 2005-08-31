@@ -385,6 +385,11 @@
     <ajc-test dir="bugs150" pr="105479" title="declare parents introducing override with covariance">
         <compile files="pr105479.aj" options="-1.5"/>
     </ajc-test>                   
+
+    <ajc-test dir="bugs150" pr="104024" title="inner class passed as argument to varargs method">
+        <compile files="pr104024.aj" options="-1.5"/>
+    </ajc-test>  
+    
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
