@@ -308,7 +308,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             // Allow for covariance - wish I could test this (need Java5...)
             ResolvedType subType   = weaver.getWorld().resolve(subMethod.getReturnType());
             ResolvedType superType = weaver.getWorld().resolve(superMethod.getReturnType());
-            if (!subType.isAssignableFrom(superType)) {
+            if (!superType.isAssignableFrom(subType)) {
                 ISourceLocation sloc = subMethod.getSourceLocation();
                 weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
                         "The return type is incompatible with "+superMethod.getDeclaringType()+"."+superMethod.getName()+superMethod.getParameterSignature(),

@@ -381,7 +381,10 @@
     <ajc-test dir="bugs150" pr="95992" title="inner type of generic interface reference from parameterized type">
         <compile files="pr95992.aj" options="-1.5"/>
     </ajc-test>
-                   
+
+    <ajc-test dir="bugs150" pr="105479" title="declare parents introducing override with covariance">
+        <compile files="pr105479.aj" options="-1.5"/>
+    </ajc-test>                   
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

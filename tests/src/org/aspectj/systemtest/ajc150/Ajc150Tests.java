@@ -322,6 +322,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("inner type of generic interface reference from parameterized type");
   }
   
+  public void testDeclareParentsIntroducingCovariantReturnType() {
+	  runTest("declare parents introducing override with covariance");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
