@@ -210,7 +210,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			if (!typesAlreadyVisited.contains(toLookIn)) {
 				typesAlreadyVisited.add(toLookIn);
 				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn.lookupResolvedMember(memberToMatch);
-				if (foundMember != null) {
+				if (foundMember != null && isVisibleTo(memberToMatch,foundMember)) {
 					List declaringTypes = new ArrayList();
 					// declaring type can be unresolved if the member can from an ITD...
 					ResolvedType resolvedDeclaringType = foundMember.getDeclaringType().resolve(toLookIn.getWorld());
@@ -231,6 +231,22 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		}
     }
 
+    /**
+     * Returns true if the parent member is visible to the child member 
+     * In the same declaring type this is always true, otherwise if parent is private
+     * it is false.
+     * @param childMember
+     * @param parentMember
+     * @return
+     */
+    private static boolean isVisibleTo(ResolvedMember childMember, ResolvedMember parentMember) {
+    	if (childMember.getDeclaringType().equals(parentMember.getDeclaringType())) return true;
+    	if (Modifier.isPrivate(parentMember.getModifiers())) {
+    		return false;
+    	} else {
+    		return true;
+    	}
+    }
     
     // ----
 

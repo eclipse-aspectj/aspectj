@@ -397,6 +397,24 @@
         </compile>
     </ajc-test>  
  
+    <ajc-test dir="bugs150/pr71159" pr="71159" title="visibility in signature matching with overrides - 1">
+        <compile files="pr71159.aj">
+            <message kind="warning" line="26" text="should match"/>
+        </compile>
+    </ajc-test>  
+
+    <ajc-test dir="bugs150/pr71159" pr="71159" title="visibility in signature matching with overrides - 2">
+        <compile files="PrivateITD.aj">
+            <message kind="warning" line="28" text="should match"/>
+        </compile>
+    </ajc-test>  
+
+    <ajc-test dir="bugs150/pr71159" pr="71159" title="visibility in signature matching with overrides - 3">
+        <compile files="pkg1/A.java,pkg1/B.java,pkg1/C.java,pkg2/ITDInDiffPackage.aj">
+            <message kind="warning" line="10" text="should match"/>
+        </compile>
+    </ajc-test>  
+  
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

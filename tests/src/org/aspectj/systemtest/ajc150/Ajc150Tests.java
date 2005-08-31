@@ -334,6 +334,18 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("inlined field access in proceed call");
   }
   
+  public void testVisibiltyInSignatureMatchingWithOverridesPart1() {
+	  runTest("visibility in signature matching with overrides - 1");
+  }
+
+  public void testVisibiltyInSignatureMatchingWithOverridesPart2() {
+	  runTest("visibility in signature matching with overrides - 2");
+  }
+
+  public void testVisibiltyInSignatureMatchingWithOverridesPart3() {
+	  runTest("visibility in signature matching with overrides - 3");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
