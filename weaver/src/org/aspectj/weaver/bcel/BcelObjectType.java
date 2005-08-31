@@ -43,6 +43,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 import org.aspectj.weaver.patterns.PerClause;
 
 
@@ -137,10 +138,18 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	    	typeVars = new TypeVariable[classSig.formalTypeParameters.length];
 	    	for (int i = 0; i < typeVars.length; i++) {
 				Signature.FormalTypeParameter ftp = classSig.formalTypeParameters[i];
-				typeVars[i] = BcelGenericSignatureToTypeXConverter.formalTypeParameter2TypeVariable(
-						ftp, 
-						classSig.formalTypeParameters,
-						getResolvedTypeX().getWorld());
+				try {
+					typeVars[i] = BcelGenericSignatureToTypeXConverter.formalTypeParameter2TypeVariable(
+							ftp, 
+							classSig.formalTypeParameters,
+							getResolvedTypeX().getWorld());
+				} catch (GenericSignatureFormatException e) {
+					// this is a development bug, so fail fast with good info
+					throw new IllegalStateException(
+							"While getting the type variables for type " + this.toString()
+							+ " with generic signature " + classSig + 
+							" the following error condition was detected: " + e.getMessage());
+				}
 			}
     	}
     	return typeVars;
@@ -525,16 +534,32 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				}
 			}
 			Signature.ClassTypeSignature superSig = cSig.superclassSignature;
-			this.superClass = 
-				BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-						superSig, formalsForResolution, getResolvedTypeX().getWorld());
+			try {
+				this.superClass = 
+					BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+							superSig, formalsForResolution, getResolvedTypeX().getWorld());
+			} catch (GenericSignatureFormatException e) {
+				// development bug, fail fast with good info
+				throw new IllegalStateException(
+						"While determing the generic superclass of " + this.javaClass.getClassName()
+						+ " with generic signature " + this.javaClass.getGenericSignature() + " the following error was detected: "
+						+ e.getMessage());
+			}
 			this.interfaces = new ResolvedType[cSig.superInterfaceSignatures.length];
 			for (int i = 0; i < cSig.superInterfaceSignatures.length; i++) {
-				this.interfaces[i] = 
-					BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-							cSig.superInterfaceSignatures[i],
-							formalsForResolution, 
-							getResolvedTypeX().getWorld());
+				try {
+					this.interfaces[i] = 
+						BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+								cSig.superInterfaceSignatures[i],
+								formalsForResolution, 
+								getResolvedTypeX().getWorld());
+				} catch (GenericSignatureFormatException e) {
+					// development bug, fail fast with good info
+					throw new IllegalStateException(
+							"While determing the generic superinterfaces of " + this.javaClass.getClassName()
+							+ " with generic signature " + this.javaClass.getGenericSignature() + " the following error was detected: "
+							+ e.getMessage());
+				}
 			}
 		}
 		if (isGeneric()) {
@@ -568,18 +593,29 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	private Signature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
+		List typeParameters = new ArrayList();
 		ReferenceType outer = getOuterClass();
 		ReferenceTypeDelegate outerDelegate = outer.getDelegate();
 		if (!(outerDelegate instanceof BcelObjectType)) {
 			throw new IllegalStateException("How come we're in BcelObjectType resolving an inner type of something that is NOT a BcelObjectType??");
 		}
 		BcelObjectType outerObjectType = (BcelObjectType) outerDelegate;
+		if (outerObjectType.isNestedClass()) {
+			Signature.FormalTypeParameter[] parentParams = outerObjectType.getFormalTypeParametersFromOuterClass();
+			for (int i = 0; i < parentParams.length; i++) {
+				typeParameters.add(parentParams[i]);
+			}
+		}
 		Signature.ClassSignature outerSig = outerObjectType.getGenericClassTypeSignature();
 		if (outerSig != null) {
-			return outerSig.formalTypeParameters;
-		} else {
-			return new Signature.FormalTypeParameter[0];
-		}
+			for (int i = 0; i < outerSig.formalTypeParameters .length; i++) {
+				typeParameters.add(outerSig.formalTypeParameters[i]);
+			}
+		} 
+		
+		Signature.FormalTypeParameter[] ret = new Signature.FormalTypeParameter[typeParameters.size()];
+		typeParameters.toArray(ret);
+		return ret;
 	}
 	
 	private void ensureGenericInfoProcessed() { getDeclaredGenericSignature();}

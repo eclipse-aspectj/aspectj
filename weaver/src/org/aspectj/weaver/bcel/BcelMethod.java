@@ -38,6 +38,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 
 final class BcelMethod extends ResolvedMemberImpl {
 
@@ -279,15 +280,31 @@ final class BcelMethod extends ResolvedMemberImpl {
  			 System.arraycopy(mSig.formalTypeParameters,0,formals,0,mSig.formalTypeParameters.length);
  			 System.arraycopy(parentFormals,0,formals,mSig.formalTypeParameters.length,parentFormals.length);
  			 Signature.TypeSignature returnTypeSignature = mSig.returnType;
-			 genericReturnType = BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
-					 returnTypeSignature, formals,
-					 world);
+			 try {
+				genericReturnType = BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
+						 returnTypeSignature, formals,
+						 world);
+			} catch (GenericSignatureFormatException e) {
+//				 development bug, fail fast with good info
+				throw new IllegalStateException(
+						"While determing the generic return type of " + this.toString()
+						+ " with generic signature " + gSig + " the following error was detected: "
+						+ e.getMessage());
+			}
 			 Signature.TypeSignature[] paramTypeSigs = mSig.parameters;
 			 genericParameterTypes = new UnresolvedType[paramTypeSigs.length];
 			 for (int i = 0; i < paramTypeSigs.length; i++) {
-				genericParameterTypes[i] = 
-					BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
-							paramTypeSigs[i],formals,world);
+				try {
+					genericParameterTypes[i] = 
+						BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
+								paramTypeSigs[i],formals,world);
+				} catch (GenericSignatureFormatException e) {
+//					 development bug, fail fast with good info
+					throw new IllegalStateException(
+							"While determing the generic parameter types of " + this.toString()
+							+ " with generic signature " + gSig + " the following error was detected: "
+							+ e.getMessage());
+				}
 				if (paramTypeSigs[i] instanceof TypeVariableSignature) {
 					canBeParameterized = true;
 				}

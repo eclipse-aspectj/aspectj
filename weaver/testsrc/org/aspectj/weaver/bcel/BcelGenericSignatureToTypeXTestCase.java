@@ -25,7 +25,7 @@ import org.aspectj.weaver.UnresolvedType;
  */
 public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 
-	public void testEnumFromHell() {
+	public void testEnumFromHell() throws Exception {
 		BcelWorld world = new BcelWorld();
 		JavaClass javaLangEnum = Repository.lookupClass("java/lang/Enum");
 		Signature.ClassSignature cSig = javaLangEnum.getGenericClassTypeSignature();
@@ -53,7 +53,7 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 		assertEquals("Ljava/io/Serializable;",serializable.getSignature());
 	}
 	
-	public void testColonColon() {
+	public void testColonColon() throws Exception {
 		BcelWorld world = new BcelWorld();
 		Signature.ClassSignature cSig = new GenericSignatureParser().parseAsClassSignature("<T::Ljava/io/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable<TT;>;");
 		UnresolvedType resolved = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(

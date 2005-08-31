@@ -35,7 +35,9 @@ public class BcelGenericSignatureToTypeXConverter {
 	public static ResolvedType classTypeSignature2TypeX(
 			Signature.ClassTypeSignature aClassTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
-			World world) {
+			World world) 
+	throws GenericSignatureFormatException
+	{
 		Map typeMap = new HashMap();
 		ResolvedType ret = classTypeSignature2TypeX(aClassTypeSignature,typeParams,world,typeMap);
 		fixUpCircularDependencies(ret, typeMap);
@@ -47,7 +49,9 @@ public class BcelGenericSignatureToTypeXConverter {
 			Signature.ClassTypeSignature aClassTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
-			Map inProgressTypeVariableResolutions) {
+			Map inProgressTypeVariableResolutions) 
+	throws GenericSignatureFormatException
+	{
 		// class type sig consists of an outer type, and zero or more nested types
 		// the fully qualified name is outer-type.nested-type1.nested-type2....
 		// each type in the hierarchy may have type arguments
@@ -94,7 +98,9 @@ public class BcelGenericSignatureToTypeXConverter {
 	public static ResolvedType fieldTypeSignature2TypeX(
 			Signature.FieldTypeSignature aFieldTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
-			World world) {
+			World world) 
+	throws GenericSignatureFormatException
+	{
 		Map typeMap = new HashMap();
 		ResolvedType ret = fieldTypeSignature2TypeX(aFieldTypeSignature,typeParams,world,typeMap);
 		fixUpCircularDependencies(ret, typeMap);
@@ -105,7 +111,9 @@ public class BcelGenericSignatureToTypeXConverter {
 			Signature.FieldTypeSignature aFieldTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
-			Map inProgressTypeVariableResolutions) {
+			Map inProgressTypeVariableResolutions) 
+	throws GenericSignatureFormatException
+	{
 		if (aFieldTypeSignature.isClassTypeSignature()) {
 			return classTypeSignature2TypeX((Signature.ClassTypeSignature)aFieldTypeSignature,typeParams,world,inProgressTypeVariableResolutions);
 		} else if (aFieldTypeSignature.isArrayTypeSignature()) {
@@ -120,14 +128,16 @@ public class BcelGenericSignatureToTypeXConverter {
 			ResolvedType rtx = typeVariableSignature2TypeX((Signature.TypeVariableSignature)aFieldTypeSignature,typeParams,world,inProgressTypeVariableResolutions);
 			return rtx;
 		} else {
-			throw new IllegalStateException("Cant understand field type signature: "  + aFieldTypeSignature);
+			throw new GenericSignatureFormatException("Cant understand field type signature: "  + aFieldTypeSignature);
 		}
 	}
 
 	public static TypeVariable formalTypeParameter2TypeVariable(
 			Signature.FormalTypeParameter aFormalTypeParameter,
 			Signature.FormalTypeParameter[] typeParams,
-			World world) {
+			World world) 
+	throws GenericSignatureFormatException
+	{
 		Map typeMap = new HashMap();
 		return formalTypeParameter2TypeVariable(aFormalTypeParameter,typeParams,world,typeMap);
 	}
@@ -136,7 +146,9 @@ public class BcelGenericSignatureToTypeXConverter {
 			Signature.FormalTypeParameter aFormalTypeParameter,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
-			Map inProgressTypeVariableResolutions) {
+			Map inProgressTypeVariableResolutions) 
+	throws GenericSignatureFormatException
+	{
 			UnresolvedType upperBound = fieldTypeSignature2TypeX(aFormalTypeParameter.classBound,typeParams,world,inProgressTypeVariableResolutions);
 			UnresolvedType[] ifBounds = new UnresolvedType[aFormalTypeParameter.interfaceBounds.length];
 			for (int i = 0; i < ifBounds.length; i++) {
@@ -149,7 +161,9 @@ public class BcelGenericSignatureToTypeXConverter {
 			Signature.TypeArgument aTypeArgument,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
-			Map inProgressTypeVariableResolutions) {
+			Map inProgressTypeVariableResolutions) 
+	throws GenericSignatureFormatException
+	{
 		if (aTypeArgument.isWildcard) return UnresolvedType.SOMETHING.resolve(world);
 		if (aTypeArgument.isMinus) {
 			UnresolvedType bound = fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams,world,inProgressTypeVariableResolutions);
@@ -168,7 +182,9 @@ public class BcelGenericSignatureToTypeXConverter {
 	public static ResolvedType typeSignature2TypeX(
 			Signature.TypeSignature aTypeSig,
 			Signature.FormalTypeParameter[] typeParams,
-			World world) {
+			World world) 
+	throws GenericSignatureFormatException
+	{
 		Map typeMap = new HashMap();
 		ResolvedType ret = typeSignature2TypeX(aTypeSig,typeParams,world,typeMap);
 		fixUpCircularDependencies(ret, typeMap);
@@ -179,7 +195,9 @@ public class BcelGenericSignatureToTypeXConverter {
 			Signature.TypeSignature aTypeSig,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
-			Map inProgressTypeVariableResolutions) {
+			Map inProgressTypeVariableResolutions) 
+	throws GenericSignatureFormatException
+	{
 		if (aTypeSig.isBaseType()) {
 			return world.resolve(UnresolvedType.forSignature(((Signature.BaseTypeSignature)aTypeSig).toString()));
 		} else {
@@ -191,7 +209,9 @@ public class BcelGenericSignatureToTypeXConverter {
 			Signature.TypeVariableSignature aTypeVarSig,
 			Signature.FormalTypeParameter[] typeParams,
 			World world,
-			Map inProgressTypeVariableResolutions) {
+			Map inProgressTypeVariableResolutions) 
+	throws GenericSignatureFormatException
+	{
 		Signature.FormalTypeParameter typeVarBounds = null;
 		for (int i = 0; i < typeParams.length; i++) {
 			if (typeParams[i].identifier.equals(aTypeVarSig.typeVariableName)) {
@@ -200,7 +220,7 @@ public class BcelGenericSignatureToTypeXConverter {
 			}
 		}
 		if (typeVarBounds == null) {
-			throw new IllegalStateException("Undeclared type variable in signature: " + aTypeVarSig.typeVariableName);
+			throw new GenericSignatureFormatException("Undeclared type variable in signature: " + aTypeVarSig.typeVariableName);
 		}
 		if (inProgressTypeVariableResolutions.containsKey(typeVarBounds)) {
 			return (ResolvedType) inProgressTypeVariableResolutions.get(typeVarBounds);
@@ -237,6 +257,12 @@ public class BcelGenericSignatureToTypeXConverter {
 		}
 		public ResolvedType resolve(World world) {
 			return this;
+		}
+	}
+	
+	public static class GenericSignatureFormatException extends Exception {
+		public GenericSignatureFormatException(String explanation) {
+			super(explanation);
 		}
 	}
 }

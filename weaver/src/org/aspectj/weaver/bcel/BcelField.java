@@ -30,6 +30,7 @@ import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 
 final class BcelField extends ResolvedMemberImpl {
 
@@ -155,7 +156,16 @@ final class BcelField extends ResolvedMemberImpl {
 		  Signature.FieldTypeSignature fts = new GenericSignatureParser().parseAsFieldSignature(gSig);
 		  Signature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
 		  Signature.FormalTypeParameter[] typeVars = ((genericTypeSig == null) ? new Signature.FormalTypeParameter[0] : genericTypeSig.formalTypeParameters);
-		  genericFieldType = BcelGenericSignatureToTypeXConverter.fieldTypeSignature2TypeX(fts, typeVars, world);
+		  try {
+			genericFieldType = 
+				  BcelGenericSignatureToTypeXConverter.fieldTypeSignature2TypeX(fts, typeVars, world);
+		} catch (GenericSignatureFormatException e) {
+			// development bug, fail fast with good info
+			throw new IllegalStateException(
+					"While determing the generic field type of " + this.toString()
+					+ " with generic signature " + gSig + " the following error was detected: "
+					+ e.getMessage());
+		}
 		} else {
 		  genericFieldType = getReturnType();
 		}	
