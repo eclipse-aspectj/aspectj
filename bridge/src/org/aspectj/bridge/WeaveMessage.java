@@ -22,9 +22,9 @@ public class WeaveMessage extends Message {
 	public static WeaveMessageKind WEAVEMESSAGE_ITD =
 	  new WeaveMessageKind(2,"Type '%1' (%2) has intertyped %3 from '%4' (%5)");
       
-    // %6 is information like "[with runtime test]"
+    // %7 is information like "[with runtime test]"
 	public static WeaveMessageKind WEAVEMESSAGE_ADVISES = 
-	  new WeaveMessageKind(3,"Type '%1' (%2) advised by %3 advice from '%4' (%5)%6");
+	  new WeaveMessageKind(3,"Join point '%1' in Type '%2' (%3) advised by %4 advice from '%5' (%6)%7");
 
 	public static WeaveMessageKind WEAVEMESSAGE_DECLAREPARENTSEXTENDS = 
 	  new WeaveMessageKind(4,"Setting superclass of type '%1' (%2) to '%3' (%4)");

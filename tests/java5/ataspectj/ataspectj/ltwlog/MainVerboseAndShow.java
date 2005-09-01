@@ -25,7 +25,7 @@ public class MainVerboseAndShow {
         new MainVerboseAndShow().target();
         if (!MessageHolder.startsAs(Arrays.asList(new String[]{
                 "info weaving 'ataspectj/ltwlog/MainVerboseAndShow'",
-                "weaveinfo Type 'ataspectj.ltwlog.MainVerboseAndShow' (MainVerboseAndShow.java:22) advised by before advice from 'ataspectj.ltwlog.Aspect1' (Aspect1.java)",
+                "weaveinfo Join point 'method-execution(void ataspectj.ltwlog.MainVerboseAndShow.target())' in Type 'ataspectj.ltwlog.MainVerboseAndShow' (MainVerboseAndShow.java:22) advised by before advice from 'ataspectj.ltwlog.Aspect1' (Aspect1.java)",
                 "info weaving 'ataspectj/ltwlog/Aspect1'"}))) {
             MessageHolder.dump();
             throw new RuntimeException("failed");

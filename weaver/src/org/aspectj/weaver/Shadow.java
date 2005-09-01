@@ -462,8 +462,9 @@ public abstract class Shadow {
 				advisingType);
 		} else {
 			boolean runtimeTest = ((BcelAdvice)advice).hasDynamicTests();
+			String joinPointDescription = this.toString();
 		    msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES,
-		    		new String[]{ advisedType, beautifyLocation(getSourceLocation()),
+		    		new String[]{ joinPointDescription, advisedType, beautifyLocation(getSourceLocation()),
 				            description,
 				            advisingType,beautifyLocation(munger.getSourceLocation()),
 				            (runtimeTest?" [with runtime test]":"")},
