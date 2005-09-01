@@ -58,9 +58,12 @@ import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 
@@ -90,6 +93,7 @@ public final class LazyMethodGen {
     private List  newAnnotations;
     private final LazyClassGen enclosingClass;   
     private BcelMethod memberView;
+    private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
     int highestLineNumber = 0;
 
 	/** This is nonnull if this method is the result of an "inlining".  We currently
@@ -1356,7 +1360,13 @@ public final class LazyMethodGen {
     
     public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature() {
     	//if (memberView == null) return null;
+    	if (effectiveSignature != null) return effectiveSignature;
     	return memberView.getEffectiveSignature();
+    }
+    
+    public void setEffectiveSignature(ResolvedMember member, Shadow.Kind kind, boolean shouldWeave) {
+    	this.effectiveSignature = 
+    		new AjAttribute.EffectiveSignatureAttribute(member,kind,shouldWeave);
     }
     
 	public String getSignature() {
