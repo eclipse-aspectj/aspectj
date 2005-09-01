@@ -108,7 +108,7 @@ public class KindedPointcut extends Pointcut {
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 
-		if (!signature.matches(shadow.getSignature(), shadow.getIWorld(),this.kind == Shadow.MethodCall)){
+		if (!signature.matches(shadow.getMatchingSignature(), shadow.getIWorld(),this.kind == Shadow.MethodCall)){
 
             if(kind == Shadow.MethodCall) {
                 warnOnConfusingSig(shadow);
