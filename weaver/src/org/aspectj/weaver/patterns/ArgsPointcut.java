@@ -51,7 +51,10 @@ import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
-public class ArgsPointcut extends NameBindingPointcut { 
+public class ArgsPointcut extends NameBindingPointcut {
+	private static final String ASPECTJ_JP_SIGNATURE_PREFIX = "Lorg/aspectj/lang/JoinPoint";
+	private static final String ASPECTJ_SYNTHETIC_SIGNATURE_PREFIX = "Lorg/aspectj/runtime/internal/";
+	
 	private TypePatternList arguments;
 	
 	public ArgsPointcut(TypePatternList arguments) {
@@ -76,9 +79,37 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
+		ResolvedType[] argumentsToMatchAgainst = getArgumentsToMatchAgainst(shadow);
 		FuzzyBoolean ret =
-			arguments.matches(shadow.getIWorld().resolve(shadow.getGenericArgTypes()), TypePattern.DYNAMIC);
+			arguments.matches(argumentsToMatchAgainst, TypePattern.DYNAMIC);
 		return ret;
+	}
+	
+	private ResolvedType[] getArgumentsToMatchAgainst(Shadow shadow) {
+		ResolvedType[] argumentsToMatchAgainst = shadow.getIWorld().resolve(shadow.getGenericArgTypes());
+
+		// special treatment for adviceexecution which may have synthetic arguments we
+		// want to ignore.
+		if (shadow.getKind() == Shadow.AdviceExecution) {
+			int numExtraArgs = 0;
+			for (int i = 0; i < argumentsToMatchAgainst.length; i++) {
+				String argumentSignature = argumentsToMatchAgainst[i].getSignature();
+				if (argumentSignature.startsWith(ASPECTJ_JP_SIGNATURE_PREFIX) || argumentSignature.startsWith(ASPECTJ_SYNTHETIC_SIGNATURE_PREFIX)) {
+					numExtraArgs++;
+				} else {
+					// normal arg after AJ type means earlier arg was NOT synthetic
+					numExtraArgs = 0;
+				}
+			}
+			if (numExtraArgs > 0) {
+				int newArgLength = argumentsToMatchAgainst.length - numExtraArgs;
+				ResolvedType[] argsSubset = new ResolvedType[newArgLength];
+				System.arraycopy(argumentsToMatchAgainst, 0, argsSubset, 0, newArgLength);
+				argumentsToMatchAgainst = argsSubset;
+			}
+		}
+		
+		return argumentsToMatchAgainst;
 	}
 	
 	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart jpsp) {
@@ -234,7 +265,8 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 
 	private Test findResidueNoEllipsis(Shadow shadow, ExposedState state, TypePattern[] patterns) {
-		int len = shadow.getArgCount();
+		ResolvedType[] argumentsToMatchAgainst = getArgumentsToMatchAgainst(shadow);
+		int len = argumentsToMatchAgainst.length;
 		//System.err.println("boudn to : " + len + ", " + patterns.length);
 		if (patterns.length != len) {
 			return Literal.FALSE;
@@ -310,7 +342,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 	
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-		if (arguments.matches(shadow.getIWorld().resolve(shadow.getGenericArgTypes()), TypePattern.DYNAMIC).alwaysFalse()) {
+		if (arguments.matches(getArgumentsToMatchAgainst(shadow), TypePattern.DYNAMIC).alwaysFalse()) {
 			return Literal.FALSE;
 		}
 		int ellipsisCount = arguments.ellipsisCount;

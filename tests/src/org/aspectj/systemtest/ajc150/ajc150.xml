@@ -414,6 +414,10 @@
             <message kind="warning" line="10" text="should match"/>
         </compile>
     </ajc-test>  
+ 
+    <ajc-test dir="bugs150" pr="59196" title="args generated correctly for advice execution join point">
+        <compile files="pr59196.aj" options="-XnoInline -1.5"/>
+    </ajc-test>  
   
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->

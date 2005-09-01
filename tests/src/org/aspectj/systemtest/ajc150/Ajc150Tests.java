@@ -346,6 +346,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("visibility in signature matching with overrides - 3");
   }
   
+  public void testArgsGeneratedCorrectlyForAdviceExecution() {
+	  runTest("args generated correctly for advice execution join point");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
