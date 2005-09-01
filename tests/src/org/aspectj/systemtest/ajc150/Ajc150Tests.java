@@ -350,6 +350,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("args generated correctly for advice execution join point");
   }
   
+  public void testNoUnusedWarningsOnAspectTypes() {
+	  runTest("no unused warnings on aspect types");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

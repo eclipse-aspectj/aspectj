@@ -419,6 +419,10 @@
         <compile files="pr59196.aj" options="-XnoInline -1.5"/>
     </ajc-test>  
   
+    <ajc-test dir="bugs150" pr="74048" title="no unused warnings on aspect types">
+        <compile files="pr74048.aj" options="-warn:unusedPrivate"/>
+    </ajc-test>  
+  
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
