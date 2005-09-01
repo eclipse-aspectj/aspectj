@@ -107,6 +107,14 @@ public class ArgsPointcut extends NameBindingPointcut {
 				System.arraycopy(argumentsToMatchAgainst, 0, argsSubset, 0, newArgLength);
 				argumentsToMatchAgainst = argsSubset;
 			}
+		} else if (shadow.getKind() == Shadow.ConstructorExecution) {		
+			if (shadow.getMatchingSignature().getParameterTypes().length < argumentsToMatchAgainst.length) {
+				// there are one or more synthetic args on the end, caused by non-public itd constructor 
+				int newArgLength = shadow.getMatchingSignature().getParameterTypes().length;
+				ResolvedType[] argsSubset = new ResolvedType[newArgLength];
+				System.arraycopy(argumentsToMatchAgainst, 0, argsSubset, 0, newArgLength);
+				argumentsToMatchAgainst = argsSubset;				
+			}
 		}
 		
 		return argumentsToMatchAgainst;
