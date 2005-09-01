@@ -544,7 +544,7 @@
       </varlistentry>
     </variablelist>
 
-    <sect2>
+    <sect2 id="pointcut-definition" xreflabel="pointcut-definition">
       <title>Pointcut definition</title>
 
       <para>
@@ -625,7 +625,7 @@
 </programlisting>
     </sect2>
 
-    <sect2>
+    <sect2 id="context-exposure" xreflabel="context-exposure">
       <title>Context exposure</title>
 
       <para>
@@ -736,7 +736,7 @@
 
     </sect2>
 
-    <sect2>
+    <sect2 id="primitive-pointcuts" xreflabel="primitive-pointcuts">
       <title>Primitive pointcuts</title>
 
       <sect3>
@@ -1089,7 +1089,7 @@ aspect A {
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="signatures" xreflabel="signatures">
       <title>Signatures</title>
 
       <para>
@@ -1180,7 +1180,7 @@ aspect A {
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="matching" xreflabel="matching">
       <title>Matching</title>
 
       <para>
@@ -1503,7 +1503,7 @@ aspect A {
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="type-patterns" xreflabel="type-patterns">
       <title>Type patterns</title>
 
       <para>
@@ -1705,7 +1705,7 @@ aspect A {
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="pattern-summary" xreflabel="pattern-summary">
       <title>Pattern Summary</title>
 
       <para>
@@ -1974,7 +1974,7 @@ ModifiersPattern =
       advice.
     </para>
 
-    <sect2>
+    <sect2 id="advice-modifiers" xreflabel="advice-modifiers">
       <title>Advice modifiers</title>
 
       <para>
@@ -1984,7 +1984,7 @@ ModifiersPattern =
       </para>
     </sect2>
 
-    <sect2>
+    <sect2 id="advice-and-checked-exceptions" xreflabel="advice-and-checked-exceptions">
       <title>Advice and checked exceptions</title>
 
       <para>
@@ -2083,7 +2083,7 @@ ModifiersPattern =
 
     </sect2>
 
-    <sect2>
+    <sect2 id="advice-precedence" xreflabel="advice-precedence">
       <title>Advice precedence</title>
 
       <para>
@@ -2185,7 +2185,7 @@ ModifiersPattern =
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="reflective-access-to-the-join-point" xreflabel="reflective-access-to-the-join-point">
       <title>Reflective access to the join point</title>
 
       <para>
@@ -2255,7 +2255,7 @@ ModifiersPattern =
       inter-type member declarations and other <literal>declare</literal> forms.
     </para>
 
-    <sect2>
+    <sect2 id="inter-type-member-declarations" xreflabel="inter-type-member-declarations">
       <title>Inter-type member declarations</title>
 
         <para>
@@ -2383,7 +2383,7 @@ ModifiersPattern =
         declaration.
       </para>
 
-    <sect2>
+    <sect2 id="access-modifiers" xreflabel="access-modifiers">
       <title>Access modifiers</title>
 
       <para>
@@ -2424,7 +2424,7 @@ ModifiersPattern =
       </para>
     </sect2>
 
-    <sect2>
+    <sect2 id="conflicts" xreflabel="conflicts">
       <title>Conflicts</title>
 
       <para>
@@ -2511,7 +2511,7 @@ ModifiersPattern =
 
     </sect2>
 
-    <sect2>
+    <sect2 id="extension-and-implementation" xreflabel="extension-and-implementation">
       <title>Extension and Implementation</title>
 
       <para>
@@ -2543,7 +2543,7 @@ ModifiersPattern =
 
     </sect2>
 
-    <sect2>
+    <sect2 id="interfaces-with-members" xreflabel="interfaces-with-members">
       <title>Interfaces with members</title>
 
       <para>
@@ -2589,7 +2589,7 @@ ModifiersPattern =
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="warnings-and-errors" xreflabel="warnings-and-errors">
       <title>Warnings and Errors</title>
 
       <para>An aspect may specify that a particular join point should never be
@@ -2607,7 +2607,7 @@ ModifiersPattern =
 
     </sect2>
 
-    <sect2>
+    <sect2 id="softened-exceptions" xreflabel="softened-exceptions">
       <title>Softened exceptions</title>
 
       <para>An aspect may specify that a particular kind of exception, if
@@ -2669,7 +2669,7 @@ ModifiersPattern =
 
     </sect2>
 
-    <sect2>
+    <sect2 id="advice-precedence" xreflabel="advice-precedence">
       <title>Advice Precedence</title>
 
       <para>
@@ -2823,7 +2823,7 @@ ModifiersPattern =
     </sect2>
 
 
-    <sect2>
+    <sect2 id="statically-determinable-pointcuts" xreflabel="statically-determinable-pointcuts">
       <title>Statically determinable pointcuts</title>
 
       <para>Pointcuts that appear inside of <literal>declare</literal> forms
@@ -2856,7 +2856,7 @@ ModifiersPattern =
       declaration. 
     </para>
 
-    <sect2>
+    <sect2 id="aspect-declaration" xreflabel="aspect-declaration">
       <title>Aspect Declaration</title>
 
       <para>
@@ -2902,7 +2902,7 @@ ModifiersPattern =
       </sect3> 
     </sect2>
 
-    <sect2>
+    <sect2 id="aspect-extension" xreflabel="aspect-extension">
       <title>Aspect Extension</title>
 
       <para>
@@ -2942,7 +2942,7 @@ ModifiersPattern =
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="aspect-instantiation" xreflabel="aspect-instantiation">
       <title>Aspect instantiation</title>
 
       <para>
@@ -3106,7 +3106,7 @@ ModifiersPattern =
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="aspect-privilege" xreflabel="aspect-privilege">
       <title>Aspect privilege</title>
 
       <itemizedlist>
@@ -3181,5 +3181,6 @@ ModifiersPattern =
     </sect2>
   </sect1>
 </appendix>
+
 
 

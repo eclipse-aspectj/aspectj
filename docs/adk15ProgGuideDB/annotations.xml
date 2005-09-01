@@ -12,8 +12,8 @@
 		documentation for the Java 5 SDK.
 	</para>
 
-	<sect2>
-		<title>Using Annotations</title>
+	<sect2 id="using-annotations" xreflabel="using-annotations">
+			<title>Using Annotations</title>
 	
 	    <para>
 	      Java 5 introduces <emphasis>annotation types</emphasis> which can
@@ -70,8 +70,8 @@
 		
 	</sect2>
 
-	<sect2>
-	 <title>Retention Policies</title>			
+	<sect2 id="retention-policies" xreflabel="retention-policies">
+		 <title>Retention Policies</title>			
 	 
 	    <para>
 	      Annotations can have one of three retention policies:
@@ -119,8 +119,8 @@
 	    regardless of the retention policy set on the annotation type. See JLS 9.6.1.2.</para>
     </sect2>		
 
-    <sect2>
-    	<title>Accessing Annotations at Runtime</title>
+    <sect2 id="accessing-annotations-at-runtime" xreflabel="accessing-annotations-at-runtime">
+        	<title>Accessing Annotations at Runtime</title>
     	
     	<para>
     		Java 5 supports a new interface, 
@@ -138,7 +138,7 @@
     	
     </sect2>
     
-    <sect2>
+    <sect2 id="annotation-inheritance" xreflabel="annotation-inheritance">
     	<title>Annotation Inheritance</title>
     	
     	<para>
@@ -305,7 +305,7 @@
   	of advice.
   </para>
   	
-  <sect2>
+  <sect2 id="annotation-patterns" xreflabel="annotation-patterns">
     <title>Annotation Patterns</title>
   
       <para>
@@ -402,7 +402,7 @@
     
   </sect2>
   
-  <sect2>
+  <sect2 id="type-patterns" xreflabel="type-patterns">
   	<title>Type Patterns</title>
   	
 	<para>AspectJ 1.5 extends type patterns to allow an optional <literal>AnnotationPattern</literal>
@@ -690,7 +690,7 @@
 
   </sect2>
   
-  <sect2>
+  <sect2 id="example-pointcuts" xreflabel="example-pointcuts">
   	<title>Example Pointcuts</title>
 
    <variablelist>
@@ -763,7 +763,7 @@
 
   </sect2>
 
-   <sect2>
+   <sect2 id="runtime-type-matching-and-context-exposure" xreflabel="runtime-type-matching-and-context-exposure">
   	<title>Runtime type matching and context exposure</title>
 
     <para>AspectJ 5 supports a set of "@" pointcut designators which
@@ -1005,7 +1005,7 @@
     
   </sect2>
 
-  <sect2>
+  <sect2 id="package-and-parameter-annotations" xreflabel="package-and-parameter-annotations">
       <title>Package and Parameter Annotations</title>
 
       <para>
@@ -1133,7 +1133,7 @@
      
   </sect2>
 
-  <sect2>
+  <sect2 id="annotation-inheritance-and-pointcut-matching" xreflabel="annotation-inheritance-and-pointcut-matching">
   	<title>Annotation Inheritance and pointcut matching</title>
   	
   	<para>
@@ -1190,7 +1190,7 @@
   	
   </sect2>
   
-  <sect2>
+  <sect2 id="limitations" xreflabel="limitations">
     <title>Limitations</title>
     <para>
         It would be useful to be able to match join points based on  
@@ -1210,7 +1210,7 @@
   <sect1 id="annotations-decp">
     <title>Using Annotations with declare statements</title>
   
-   <sect2>
+   <sect2 id="declare-error-and-declare-warning" xreflabel="declare-error-and-declare-warning">
   	<title>Declare error and declare warning</title>
   	
   	<para>
@@ -1235,7 +1235,7 @@
   </sect2>
     
   
-  	<sect2>
+  	<sect2 id="declare-parents" xreflabel="declare-parents">
   		<title>declare parents</title>
   
   	<para>
@@ -1288,7 +1288,7 @@
 
   	</sect2>
 
-	<sect2>
+	<sect2 id="declare-precedence" xreflabel="declare-precedence">
 		<title>declare precedence</title>
 
 	<para>
@@ -1409,4 +1409,5 @@
     </sect1>  
   
 </chapter>
+
 

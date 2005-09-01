@@ -31,7 +31,7 @@
       be exposed to the new terminology introduced by AspectJ.
     </para>
 
-    <sect2>
+    <sect2 id="an-example-aspect" xreflabel="an-example-aspect">
       <title>An Example Aspect</title>
 
       <para>
@@ -81,7 +81,7 @@
       </para>
     </sect2>
 
-    <sect2>
+    <sect2 id="pointcuts" xreflabel="pointcuts">
       <title>Pointcuts</title>
 
       <para>
@@ -149,7 +149,7 @@ pointcut services(Server s): target(s) && call(public * *(..))
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="advice" xreflabel="advice">
       <title>Advice</title>
 
       <para>
@@ -291,7 +291,7 @@ pointcut ioHandler(): within(MyClass) && handler(IOException);
       happen).  The right-hand side consists of the pointcut itself.
     </para>
 
-    <sect2>
+    <sect2 id="some-example-pointcuts" xreflabel="some-example-pointcuts">
       <title>Some Example Pointcuts</title>
 
       <para>
@@ -549,7 +549,7 @@ interface MyInterface { ... }
       </itemizedlist>
     </sect2>
 
-    <sect2>
+    <sect2 id="call-vs-execution" xreflabel="call-vs-execution">
       <title>call vs. execution</title>
 
       <para>
@@ -601,7 +601,7 @@ interface MyInterface { ... }
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="pointcut-composition" xreflabel="pointcut-composition">
       <title>Pointcut composition</title>
 
       <para>
@@ -724,7 +724,7 @@ aspect A  {
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="pointcut-parameters" xreflabel="pointcut-parameters">
       <title>Pointcut Parameters</title>
 
       <para>
@@ -841,7 +841,7 @@ pointcut setter(Point p, int newval): target(p) &&
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="example" xreflabel="example">
       <title>Example: <literal>HandleLiveness</literal></title>
 
       <para>
@@ -1139,7 +1139,7 @@ void around(Point p, int x): target(p)
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="inter-type-scope" xreflabel="inter-type-scope">
       <title>Inter-type Scope</title>
 
       <para>
@@ -1169,7 +1169,7 @@ void around(Point p, int x): target(p)
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="example-pointassertions" xreflabel="example-pointassertions">
       <title>Example: <literal>PointAssertions</literal></title>
 
       <para>
@@ -1307,3 +1307,4 @@ void around(Point p, int x): target(p)
 
   </sect1>
 </chapter>
+

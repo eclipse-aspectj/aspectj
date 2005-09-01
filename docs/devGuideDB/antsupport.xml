@@ -904,7 +904,7 @@
 		</para>
   	</sect2>
 
-  	<sect2>
+  	<sect2 id="programmatically-handling-compiler-messages" xreflabel="programmatically-handling-compiler-messages">
     <title>Programmatically handling compiler messages</title>
     <para>
 	Users may specify a message holder to which the compiler will pass 
@@ -1605,3 +1605,4 @@
 <!-- sgml-local-ecat-files: devguide.ced -->
 <!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
 <!-- End: -->
+

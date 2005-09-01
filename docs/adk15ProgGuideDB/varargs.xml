@@ -21,7 +21,7 @@
             this must always be the last declared argument in the signature.
         </para>
 
-        <sect2>
+        <sect2 id="calling-methods-and-constructors-with-variable-length-arguments" xreflabel="calling-methods-and-constructors-with-variable-length-arguments">
             <title>Calling Methods and Constructors with variable-length arguments</title>
             
             <para>
@@ -71,7 +71,7 @@
         bound as formals in advice.
         </para>
         
-        <sect2>
+        <sect2 id="matching-signatures-based-on-variable-length-argument-types" xreflabel="matching-signatures-based-on-variable-length-argument-types">
             <title>Matching signatures based on variable length argument types</title>
             
             <para>
@@ -155,7 +155,7 @@
                
         </sect2>
         
-        <sect2>
+        <sect2 id="exposing-variable-length-arguments-as-context-in-pointcuts-and-advice" xreflabel="exposing-variable-length-arguments-as-context-in-pointcuts-and-advice">
             <title>Exposing variable-length arguments as context in pointcuts and advice</title>
             
             <para>
@@ -205,4 +205,5 @@
     </sect1>
   
 </chapter>
+
 

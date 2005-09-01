@@ -39,7 +39,7 @@
 
     <sect1>
         <title>Building Programs</title>
-	    <sect2>
+	    <sect2 id="build-configurations" xreflabel="build-configurations">
         <title>Build Configurations</title>
 
         <para>A build configuration is a set of files to compile for a
@@ -81,7 +81,7 @@
         <para>The following sections walk through a build.
         </para>
 	    </sect2>
-	    <sect2>
+	    <sect2 id="compiling-a-program-build-configuration" xreflabel="compiling-a-program-build-configuration">
     	<title>Compiling a Program Build Configuration</title>
 
     <para>
@@ -133,7 +133,7 @@
 		</inlinemediaobject>
     </para>
 
-  	<sect2>
+  	<sect2 id="example" xreflabel="example">
         <title>Example: Exploring the "Spacewar" sample code </title>
         <para>
         <itemizedlist>
@@ -412,3 +412,4 @@
 <!-- sgml-local-ecat-files: devguide.ced -->
 <!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
 <!-- End: -->
+

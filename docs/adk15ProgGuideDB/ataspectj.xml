@@ -75,7 +75,7 @@
      public aspect Foo perthis(execution(* abc..*(..))) {}
          ]]></programlisting>
 
-    <sect2>
+    <sect2 id="limitations" xreflabel="limitations">
       <title>Limitations</title>
       
        <para>Privileged aspects are not supported by the annotation style.</para>
@@ -105,7 +105,7 @@
             <literal>Around</literal> annotations.
         </para>
 
-        <sect2>
+        <sect2 id="pointcuts" xreflabel="pointcuts">
             <title>Pointcuts</title>
 
             <para>
@@ -307,7 +307,7 @@
 
         </sect2>
 
-        <sect2>
+        <sect2 id="advice" xreflabel="advice">
             <title>Advice</title>
 
             <para>In this section we first discuss the use of annotations for
@@ -830,4 +830,5 @@
         -->
     </sect1>
 </chapter>
+
 

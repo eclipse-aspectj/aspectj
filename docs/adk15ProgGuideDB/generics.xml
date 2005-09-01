@@ -14,7 +14,7 @@
 		documentation for the Java 5 SDK.
 	</para>
 
-	<sect2>
+	<sect2 id="declaring-generic-types" xreflabel="declaring-generic-types">
 		<title>Declaring Generic Types</title>
 		
         <para>
@@ -99,7 +99,7 @@
                 
 	</sect2>
 	
-	<sect2>
+	<sect2 id="using-generic-and-parameterized-types" xreflabel="using-generic-and-parameterized-types">
 	    <title>Using Generic and Parameterized Types</title>
 	    
 	    <para>You declare a variable (or a method/constructor argument) of a parameterized type  by specifying a concrete type specfication for each type parameter in
@@ -223,7 +223,7 @@
 	    be a subtype of two interface types which are different parameterizations of the same interface.</para>
 	</sect2>
 	
-	<sect2>
+	<sect2 id="subtypes-supertypes-and-assignability" xreflabel="subtypes-supertypes-and-assignability">
 	    <title>Subtypes, Supertypes, and Assignability</title>
 	    
 	    <para>
@@ -263,7 +263,7 @@
 	    
 	</sect2>
 	
-	<sect2>
+	<sect2 id="generic-methods-and-constructors" xreflabel="generic-methods-and-constructors">
 	    <title>Generic Methods and Constructors</title>
 	    <para>
 	      A static method may be declared with one or more type parameters as in the following declaration:
@@ -290,7 +290,7 @@
 	    	    
 	</sect2>
 	
-	<sect2>
+	<sect2 id="erasure" xreflabel="erasure">
 	  <title>Erasure</title>
 	  <para>Generics in Java are implemented using a technique called <emphasis>erasure</emphasis>. All
 	  type parameter information is erased from the run-time type system. Asking an object of a parameterized
@@ -312,7 +312,7 @@
         also provided for generic <emphasis>abstract</emphasis> aspects.
       </para>
       
-      <sect2>
+      <sect2 id="matching-generic-and-parameterized-types-in-pointcut-expressions" xreflabel="matching-generic-and-parameterized-types-in-pointcut-expressions">
           <title>Matching generic and parameterized types in pointcut expressions</title>
           
           <para>
@@ -899,7 +899,7 @@
   
       </sect2>
       
-      <sect2>
+      <sect2 id="inter-type-declarations" xreflabel="inter-type-declarations">
           <title>Inter-type Declarations</title>
           
           <para>
@@ -996,7 +996,7 @@
       
       </sect2>
  
-      <sect2>
+      <sect2 id="declare-parents" xreflabel="declare-parents">
           <title>Declare Parents</title>
           
           <para>Both generic and parameterized types can be used as the parent type in a <literal>declare parents</literal>
@@ -1020,13 +1020,13 @@
 
       </sect2>
       
-      <sect2>
+      <sect2 id="declare-soft" xreflabel="declare-soft">
           <title>Declare Soft</title>
           <para>It is an error to use a generic or parameterized type as the softened exception type in a declare soft statement. Java 5 does
           not permit a generic class to be a direct or indirect subtype of <literal>Throwable</literal> (JLS 8.1.2).</para>
       </sect2>
 
-      <sect2>
+      <sect2 id="generic-aspects" xreflabel="generic-aspects">
           <title>Generic Aspects</title>
           
           <para><emphasis>This feature will not be fully implemented until AspectJ5 M4.</emphasis></para>
@@ -1301,4 +1301,5 @@
   </sect1>
   
 </chapter>
+
 

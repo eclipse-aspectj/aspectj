@@ -203,7 +203,7 @@
         <para>The following sections examine signatures for these join points 
         in more detail.</para>
         
-        <sect2>
+        <sect2 id="method-call-join-point-signatures" xreflabel="method-call-join-point-signatures">
             <title>Method call join point signatures</title>
 
         <para>
@@ -276,7 +276,7 @@
         
        </sect2>
       
-      <sect2>
+      <sect2 id="method-execution-join-point-signatures" xreflabel="method-execution-join-point-signatures">
           <title>Method execution join point signatures</title>
           
           <para>Join point signatures for execution join points are defined
@@ -325,7 +325,7 @@
 
       </sect2>
 
-       <sect2>
+       <sect2 id="field-get-and-set-join-point-signatures" xreflabel="field-get-and-set-join-point-signatures">
             <title>Field get and set join point signatures</title>
 
         <para>
@@ -536,3 +536,4 @@
       </sect1>
   
 </chapter>
+

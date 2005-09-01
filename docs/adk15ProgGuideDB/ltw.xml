@@ -29,7 +29,7 @@
             classes). AspectJ 5 does not provide explicit support for run-time weaving although
             simple coding patterns can support dynamically enabling and disabling advice in aspects. </para>
         
-        <sect2>
+        <sect2 id="weaving-class-files-more-than-once" xreflabel="weaving-class-files-more-than-once">
             <title>Weaving class files more than once</title>
         
             <para> By default a class file that has been woven by the AspectJ compiler cannot
@@ -72,7 +72,7 @@
         types will be woven. Additional diagnostic options allow the user to debug the configuration and 
         weaving process. </para>
         
-        <sect2>
+        <sect2 id="enabling-load-time-weaving" xreflabel="enabling-load-time-weaving">
             <title>Enabling Load-time Weaving</title>
             <para> AspectJ 5 supports several different ways of enabling load-time weaving for
             an application: agents, a command-line launch script, and a set of interfaces for
@@ -122,7 +122,7 @@
             </variablelist>
         </sect2>
         
-        <sect2>
+        <sect2 id="configuring-load-time-weaving-with-aopxml-files" xreflabel="configuring-load-time-weaving-with-aopxml-files">
             <title>Configuring Load-time Weaving with aop.xml files</title>
             
             <para>The weaver is configured using one or more <literal>META-INF/aop.xml</literal>
@@ -255,7 +255,7 @@
 
         <!-- TODO someone implement that -->
         <!--
-        <sect2>
+        <sect2 id="configuring-load-time-weaving-with-properties-files" xreflabel="configuring-load-time-weaving-with-properties-files">
             <title>Configuring Load-time Weaving with Properties Files</title>
             <para> For memory constrained environments or those without support for XML a simple
                 Java Properties file can be used to configure LTW. Just like XML files,
@@ -273,7 +273,7 @@
         </sect2>
         -->
 
-        <sect2>
+        <sect2 id="weaver-options" xreflabel="weaver-options">
             <title>Weaver Options</title>
             <para> The table below lists the AspectJ options supported by LTW. All other options
                 will be ignored and a warning issued. </para>
@@ -404,7 +404,7 @@
     
     <sect1 id="ltw-agents">
         <title>Supported Agents</title>
-        <sect2>
+        <sect2 id="jvmti" xreflabel="jvmti">
             <title>JVMTI</title>
             <para> When using Java 5 the JVMTI agent can be used by starting the JVM with the
                 following option (adapt according to the path to aspectjweaver.jar): </para>
@@ -412,7 +412,7 @@
 			-javaagent:pathto/aspectjweaver.jar
 		  ]]></programlisting>
         </sect2>
-        <sect2>
+        <sect2 id="jrockit" xreflabel="jrockit">
             <title>JRockit with Java 1.3/1.4 (use JVMTI on Java 5)</title>
             <para> The JRockit agent is configured with the following JVM option: </para>
             <programlisting><![CDATA[
@@ -421,3 +421,4 @@
         </sect2>
     </sect1>
 </chapter>
+

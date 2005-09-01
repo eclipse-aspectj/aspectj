@@ -620,7 +620,7 @@ public aspect HashablePoint {
   <sect1 id="examples-development">
     <title>Development Aspects</title>
 
-    <sect2>
+    <sect2 id="tracing-using-aspects" xreflabel="tracing-using-aspects">
       <title>Tracing using aspects</title>
 
       <para>
@@ -1086,7 +1086,7 @@ abstract aspect Trace {
 
     <!--  ==================== -->
 
-    <sect2><!-- A Bean Aspect -->
+    <sect2 id="a-bean-aspect" xreflabel="a-bean-aspect"><!-- A Bean Aspect -->
       <title>A Bean Aspect</title>
 
       <para>
@@ -1367,7 +1367,7 @@ java bean.Demo
 
     <!--  ==================== -->
 
-    <sect2>
+    <sect2 id="the-subject-observer-protocol" xreflabel="the-subject-observer-protocol">
       <title>The Subject/Observer Protocol</title>
 
       <para>
@@ -1607,7 +1607,7 @@ aspect SubjectObserverProtocolImpl extends SubjectObserverProtocol {
 
     <!--  ==================== -->
 
-    <sect2>
+    <sect2 id="a-simple-telecom-simulation" xreflabel="a-simple-telecom-simulation">
       <title>A Simple Telecom Simulation</title>
 
       <para>
@@ -2166,7 +2166,7 @@ public aspect Billing {
   <sect1 id="examples-reusable">
     <title>Reusable Aspects</title>
 
-    <sect2>
+    <sect2 id="tracing-using-aspects-revisited" xreflabel="tracing-using-aspects-revisited">
       <title>Tracing using Aspects, Revisited</title>
 
       <para>
@@ -2436,3 +2436,4 @@ s1.toString(): Square side = 1.0 @ (1.0, 2.0)
     </sect2>
   </sect1>
 </chapter>
+

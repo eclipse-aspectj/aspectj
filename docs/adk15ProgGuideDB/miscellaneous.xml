@@ -5,7 +5,7 @@
   <sect1>
       <title>Pointcuts</title>
       
-      <sect2>
+      <sect2 id="binding-of-formals" xreflabel="binding-of-formals">
           <title>Binding of formals</title>
           <para>
            AspectJ 5 is more liberal than AspectJ 1.2.1 in accepting pointcut expressions
@@ -28,7 +28,7 @@
            
       </sect2>
       
-      <sect2>
+      <sect2 id="additional-lint-warnings" xreflabel="additional-lint-warnings">
           <title>Additional lint warnings</title>
           <para>
             Discuss detection of common errors -> warning/error, eg. conjunction of more than one
@@ -95,7 +95,7 @@
    <sect1>
       <title>Tools</title>
       
-      <sect2>
+      <sect2 id="aspectpath" xreflabel="aspectpath">
           <title>Aspectpath</title>
           
           <para>AspectJ 5 allows the specification of directories (containing .class files) on the aspectpath in
@@ -104,4 +104,5 @@
       
     </sect1>
 </chapter>
+
 

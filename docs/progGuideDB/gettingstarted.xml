@@ -183,7 +183,7 @@
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="the-dynamic-join-point-model" xreflabel="the-dynamic-join-point-model">
       <title>The Dynamic Join Point Model</title>
 
       <para>
@@ -217,7 +217,7 @@
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="pointcuts" xreflabel="pointcuts">
       <title>Pointcuts</title>
 
       <para>
@@ -350,7 +350,7 @@ cflow(move())
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="advice" xreflabel="advice">
       <title>Advice</title>
 
       <para>
@@ -501,7 +501,7 @@ after(FigureElement fe, int x, int y) returning: setXY(fe, x, y) {
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="inter-type-declarations" xreflabel="inter-type-declarations">
       <title>Inter-type declarations</title>
 
       <para>
@@ -612,7 +612,7 @@ aspect PointObserving {
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="aspects" xreflabel="aspects">
       <title>Aspects</title>
 
       <para>
@@ -674,7 +674,7 @@ aspect Logging {
       possible to easily enable and disable the functionality when desired.
     </para>
 
-    <sect2>
+    <sect2 id="tracing" xreflabel="tracing">
       <title>Tracing</title>
 
       <para>
@@ -744,7 +744,7 @@ Entering: call(void FigureElement.draw(GraphicsContext))
       </para>
     </sect2>
 
-    <sect2>
+    <sect2 id="profiling-and-logging" xreflabel="profiling-and-logging">
       <title>Profiling and Logging</title>
 
       <para>
@@ -807,7 +807,7 @@ aspect SetsInRotateCounting {
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="pre-and-post-conditions" xreflabel="pre-and-post-conditions">
       <title>Pre- and Post-Conditions</title>
 
       <para>
@@ -873,7 +873,7 @@ aspect PointBoundsChecking {
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="contract-enforcement" xreflabel="contract-enforcement">
       <title>Contract Enforcement</title>
 
       <para>
@@ -944,7 +944,7 @@ aspect RegistrationProtection {
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="configuration-management" xreflabel="configuration-management">
       <title>Configuration Management</title>
 
       <para>
@@ -984,7 +984,7 @@ aspect RegistrationProtection {
         maintain.
       </para>
 
-    <sect2>
+    <sect2 id="change-monitoring" xreflabel="change-monitoring">
       <title>Change Monitoring</title>
 
       <para>
@@ -1098,7 +1098,7 @@ aspect MoveTracking {
 
 <!-- ============================== -->
 
-    <sect2>
+    <sect2 id="context-passing" xreflabel="context-passing">
       <title>Context Passing</title>
 
       <para>
@@ -1308,3 +1308,4 @@ aspect ContextFilling {
     </para>
   </sect1>
 </chapter>
+

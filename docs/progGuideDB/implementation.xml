@@ -148,7 +148,7 @@
 <sect1>
   <title>Bytecode Notes</title>
 
-  <sect2>
+  <sect2 id="the-class-expression-and-string" xreflabel="the-class-expression-and-string">
     <title>The .class expression and String +</title>
 
     <para> The java language form <literal>Foo.class</literal> is
@@ -186,7 +186,7 @@
 
   </sect2>
 
-  <sect2>
+  <sect2 id="the-handler-join-point" xreflabel="the-handler-join-point">
     <title>The Handler join point</title>
 
 
@@ -249,7 +249,7 @@
 
   </sect2>
 
-  <sect2>
+  <sect2 id="initializers-and-inter-type-constructors" xreflabel="initializers-and-inter-type-constructors">
     <title>Initializers and Inter-type Constructors</title>
 
   <para>
@@ -356,5 +356,6 @@
  </itemizedlist>
 </sect1>
 </appendix>
+
 
 
