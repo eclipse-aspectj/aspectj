@@ -17,7 +17,6 @@ package org.aspectj.runtime.reflect;
 import org.aspectj.lang.Signature;
 
 import java.lang.ref.SoftReference;
-import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 abstract class SignatureImpl implements Signature {
@@ -155,44 +154,10 @@ abstract class SignatureImpl implements Signature {
     
     Class extractType(int n) {
         String s = extractString(n);
-        return makeClass(s);
+        return Factory.makeClass(s,getLookupClassLoader());
     }
     
-    static Hashtable prims = new Hashtable();
-    static {
-        prims.put("void", Void.TYPE);
-        prims.put("boolean", Boolean.TYPE);
-        prims.put("byte", Byte.TYPE);
-        prims.put("char", Character.TYPE);
-        prims.put("short", Short.TYPE);
-        prims.put("int", Integer.TYPE);
-        prims.put("long", Long.TYPE);
-        prims.put("float", Float.TYPE);
-        prims.put("double", Double.TYPE);
-    }
-        
-    Class makeClass(String s) {
-        if (s.equals("*")) return null;
-        Class ret = (Class)prims.get(s);
-        if (ret != null) return ret;
-        try {
-            /* The documentation of Class.forName explains why this is the right thing
-             * better than I could here.
-             */
-            ClassLoader loader = getLookupClassLoader();
-            if (loader == null) {
-                return Class.forName(s);
-            } else {
-            	// used to be 'return loader.loadClass(s)' but that didn't cause
-            	// array types to be created and loaded correctly. (pr70404)
-                return Class.forName(s,false,loader);
-            }
-        } catch (ClassNotFoundException e) {
-            //System.out.println("null for: " + s);
-            //XXX there should be a better return value for this
-            return ClassNotFoundException.class;
-        }
-    }
+ 
     
     static String[] EMPTY_STRING_ARRAY = new String[0];
     static Class[] EMPTY_CLASS_ARRAY = new Class[0];
@@ -212,7 +177,7 @@ abstract class SignatureImpl implements Signature {
         StringTokenizer st = new StringTokenizer(s, INNER_SEP);
         final int N = st.countTokens();
         Class[] ret = new Class[N];
-        for (int i = 0; i < N; i++) ret[i]= makeClass(st.nextToken());
+        for (int i = 0; i < N; i++) ret[i]= Factory.makeClass(st.nextToken(),getLookupClassLoader());
         return ret;
     }
 

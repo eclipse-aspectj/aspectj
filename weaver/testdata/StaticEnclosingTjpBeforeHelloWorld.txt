@@ -41,16 +41,26 @@ public class HelloWorld extends java.lang.Object:
                     ALOAD_0
                     LDC "constructor-execution"
                     ALOAD_0
-                    LDC "1--HelloWorld----"
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeConstructorSig (Ljava/lang/String;)Lorg/aspectj/lang/reflect/ConstructorSignature;
+                    LDC "1"
+                    LDC "HelloWorld"
+                    LDC ""
+                    LDC ""
+                    LDC ""
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeConstructorSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/ConstructorSignature;
                     BIPUSH 5
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeESJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;
                     PUTSTATIC HelloWorld.ajc$tjp_0 Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;
                     ALOAD_0
                     LDC "method-execution"
                     ALOAD_0
-                    LDC "9-main-HelloWorld-[Ljava.lang.String;:-args:--void-"
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;
+                    LDC "9"
+                    LDC "main"
+                    LDC "HelloWorld"
+                    LDC "[Ljava.lang.String;:"
+                    LDC "args:"
+                    LDC ""
+                    LDC "void"
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;
                     BIPUSH 8
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeESJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;
                     PUTSTATIC HelloWorld.ajc$tjp_1 Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;

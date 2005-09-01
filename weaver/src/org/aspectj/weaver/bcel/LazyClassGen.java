@@ -945,13 +945,87 @@ public final class LazyClassGen {
     	
     	// create the signature
     	list.append(InstructionFactory.createLoad(factoryType, 0));
-    	list.append(new PUSH(getConstantPoolGen(), sig.getSignatureString(shadow.getWorld())));
-    	list.append(fact.createInvoke(factoryType.getClassName(), 
-    					sig.getSignatureMakerName(),
-    					new ObjectType(sig.getSignatureType()),
-    					new Type[] { Type.STRING },
-    					Constants.INVOKEVIRTUAL));
     	
+    	if (sig.getKind().equals(Member.METHOD)) {
+    		BcelWorld w = shadow.getWorld();
+    		// For methods, push the parts of the signature on.
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
+    		list.append(new PUSH(getConstantPoolGen(),sig.getName()));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getExceptions(w))));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getReturnType())));
+    		// And generate a call to the variant of makeMethodSig() that takes 7 strings
+    		list.append(fact.createInvoke(factoryType.getClassName(), 
+    				sig.getSignatureMakerName(),
+    				new ObjectType(sig.getSignatureType()),
+    				new Type[] { Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING },
+    				Constants.INVOKEVIRTUAL));
+    	} else if (sig.getKind().equals(Member.HANDLER)) {
+    		BcelWorld w = shadow.getWorld();
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
+    		list.append(fact.createInvoke(factoryType.getClassName(),
+    				sig.getSignatureMakerName(),
+    				new ObjectType(sig.getSignatureType()),
+    				new Type[] { Type.STRING, Type.STRING, Type.STRING },
+    				Constants.INVOKEVIRTUAL));    	
+    	} else if(sig.getKind().equals(Member.CONSTRUCTOR)) {
+    		BcelWorld w = shadow.getWorld();
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));	
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getExceptions(w))));
+    		list.append(fact.createInvoke(factoryType.getClassName(),
+    				sig.getSignatureMakerName(),
+    				new ObjectType(sig.getSignatureType()),
+    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
+    				Constants.INVOKEVIRTUAL));    	
+    	} else if(sig.getKind().equals(Member.FIELD)) {
+    		BcelWorld w = shadow.getWorld();
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
+    		list.append(new PUSH(getConstantPoolGen(),sig.getName()));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getReturnType())));
+    		list.append(fact.createInvoke(factoryType.getClassName(),
+    				sig.getSignatureMakerName(),
+    				new ObjectType(sig.getSignatureType()),
+    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING },
+    				Constants.INVOKEVIRTUAL));    	
+    	} else if(sig.getKind().equals(Member.ADVICE)) {
+    		BcelWorld w = shadow.getWorld();
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
+    		list.append(new PUSH(getConstantPoolGen(),sig.getName()));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getExceptions(w))));
+    		list.append(new PUSH(getConstantPoolGen(),makeString((sig.getReturnType()))));    		
+    		list.append(fact.createInvoke(factoryType.getClassName(),
+    				sig.getSignatureMakerName(),
+    				new ObjectType(sig.getSignatureType()),
+    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
+    				Constants.INVOKEVIRTUAL));    	
+    	} else if(sig.getKind().equals(Member.STATIC_INITIALIZATION)) {
+    		BcelWorld w = shadow.getWorld();
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(fact.createInvoke(factoryType.getClassName(),
+    				sig.getSignatureMakerName(),
+    				new ObjectType(sig.getSignatureType()),
+    				new Type[] { Type.STRING, Type.STRING },
+    				Constants.INVOKEVIRTUAL));
+    	} else {
+    	  list.append(new PUSH(getConstantPoolGen(), sig.getSignatureString(shadow.getWorld())));
+    	  list.append(fact.createInvoke(factoryType.getClassName(), 
+			  	   sig.getSignatureMakerName(),
+			  	   new ObjectType(sig.getSignatureType()),
+			  	   new Type[] { Type.STRING },
+			  	   Constants.INVOKEVIRTUAL));
+    	}   	
     	//XXX should load source location from shadow
     	list.append(Utility.createConstant(fact, shadow.getSourceLine()));
 
@@ -973,7 +1047,42 @@ public final class LazyClassGen {
     		field.getType(), Constants.PUTSTATIC));
     }
     
-
+    
+    protected String makeString(int i) {
+    	return Integer.toString(i, 16);  //??? expensive
+    }
+    
+    
+    protected String makeString(UnresolvedType t) {
+    	// this is the inverse of the odd behavior for Class.forName w/ arrays
+    	if (t.isArray()) {
+    		// this behavior matches the string used by the eclipse compiler for Foo.class literals
+    		return t.getSignature().replace('/', '.');
+    	} else {
+    		return t.getName();
+    	}
+    }
+          
+    protected String makeString(UnresolvedType[] types) {
+    	if (types == null) return "";
+    	StringBuffer buf = new StringBuffer();
+    	for (int i = 0, len=types.length; i < len; i++) {
+    		buf.append(makeString(types[i]));
+    		buf.append(':');
+    	}
+    	return buf.toString();
+    }
+       
+    protected String makeString(String[] names) {
+    	if (names == null) return "";
+    	StringBuffer buf = new StringBuffer();
+    	for (int i = 0, len=names.length; i < len; i++) {
+    		buf.append(names[i]);
+    		buf.append(':');
+    	}
+    	return buf.toString();
+    } 
+       
 	public ResolvedType getType() {
 		if (myType == null) return null;
 		return myType.getResolvedTypeX();
