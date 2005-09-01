@@ -51,9 +51,11 @@ import org.aspectj.weaver.PrivilegedAccessMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -953,6 +955,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		//int declaredParameterCount = newConstructorTypeMunger.getDeclaredParameterCount();
 		LazyMethodGen mg = 
 			makeMethodGen(currentClass, newConstructorMember);
+		mg.setEffectiveSignature(newConstructorTypeMunger.getSignature(),Shadow.ConstructorExecution,true);
 		
 //		 pr98901
 	    // For copying the annotations across, we have to discover the real member in the aspect
