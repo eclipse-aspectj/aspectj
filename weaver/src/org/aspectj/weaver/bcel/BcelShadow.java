@@ -592,12 +592,16 @@ public class BcelShadow extends Shadow {
 		BcelWorld world,
 		LazyMethodGen constructor) 
 	{
-		return new BcelShadow(
+		BcelShadow ret =  new BcelShadow(
 			world,
 			Initialization,
 			world.makeJoinPointSignature(constructor),
 			constructor,
 			null);
+		if (constructor.getEffectiveSignature() != null) {
+			ret.setMatchingSignature(constructor.getEffectiveSignature().getEffectiveSignature());
+		}
+		return ret;
 	}
 
 	public static BcelShadow makeUnfinishedPreinitialization(
@@ -611,6 +615,9 @@ public class BcelShadow extends Shadow {
 			constructor,
 			null);
 		ret.fallsThrough = true;
+		if (constructor.getEffectiveSignature() != null) {
+			ret.setMatchingSignature(constructor.getEffectiveSignature().getEffectiveSignature());
+		}
 		return ret;
 	}
 	

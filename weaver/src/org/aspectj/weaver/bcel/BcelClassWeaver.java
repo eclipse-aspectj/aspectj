@@ -1375,6 +1375,9 @@ class BcelClassWeaver implements IClassWeaver {
 		if (superOrThisCall == null) return false;
 
 		enclosingShadow = BcelShadow.makeConstructorExecution(world, mg, superOrThisCall);
+		if (mg.getEffectiveSignature() != null) {
+			enclosingShadow.setMatchingSignature(mg.getEffectiveSignature().getEffectiveSignature());
+		}
 		
 		// walk the body
 		boolean beforeSuperOrThisCall = true;
