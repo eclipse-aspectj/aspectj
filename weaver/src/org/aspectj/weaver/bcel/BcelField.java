@@ -148,26 +148,38 @@ final class BcelField extends ResolvedMemberImpl {
 	}
 	
 	private void unpackGenericSignature() {
-		if (unpackedGenericSignature) return;
+		if (unpackedGenericSignature)
+			return;
 		unpackedGenericSignature = true;
 		String gSig = field.getGenericSignature();
 		if (gSig != null) {
-		  // get from generic
-		  Signature.FieldTypeSignature fts = new GenericSignatureParser().parseAsFieldSignature(gSig);
-		  Signature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
-		  Signature.FormalTypeParameter[] typeVars = ((genericTypeSig == null) ? new Signature.FormalTypeParameter[0] : genericTypeSig.formalTypeParameters);
-		  try {
-			genericFieldType = 
-				  BcelGenericSignatureToTypeXConverter.fieldTypeSignature2TypeX(fts, typeVars, world);
-		} catch (GenericSignatureFormatException e) {
-			// development bug, fail fast with good info
-			throw new IllegalStateException(
-					"While determing the generic field type of " + this.toString()
-					+ " with generic signature " + gSig + " the following error was detected: "
-					+ e.getMessage());
-		}
+			// get from generic
+			Signature.FieldTypeSignature fts = new GenericSignatureParser().parseAsFieldSignature(gSig);
+			Signature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
+
+			Signature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
+			Signature.FormalTypeParameter[] typeVars = 
+				((genericTypeSig == null) ? new Signature.FormalTypeParameter[0] : genericTypeSig.formalTypeParameters);
+			Signature.FormalTypeParameter[] formals = 
+				new Signature.FormalTypeParameter[parentFormals.length + typeVars.length];
+			// put method formal in front of type formals for overriding in
+			// lookup
+			System.arraycopy(typeVars, 0, formals, 0, typeVars.length);
+			System.arraycopy(parentFormals, 0, formals, typeVars.length,parentFormals.length);
+
+			try {
+				genericFieldType = BcelGenericSignatureToTypeXConverter
+						.fieldTypeSignature2TypeX(fts, formals, world);
+			} catch (GenericSignatureFormatException e) {
+				// development bug, fail fast with good info
+				throw new IllegalStateException(
+						"While determing the generic field type of "
+								+ this.toString() + " with generic signature "
+								+ gSig + " the following error was detected: "
+								+ e.getMessage());
+			}
 		} else {
-		  genericFieldType = getReturnType();
-		}	
+			genericFieldType = getReturnType();
+		}
 	}
 }
