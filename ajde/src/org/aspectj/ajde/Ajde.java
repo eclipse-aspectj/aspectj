@@ -21,6 +21,7 @@ import org.aspectj.ajde.ui.StructureSearchManager;
 import org.aspectj.ajde.ui.StructureViewManager;
 import org.aspectj.ajde.ui.StructureViewNodeFactory;
 import org.aspectj.asm.AsmManager;
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.LangUtil;
 import org.aspectj.util.Reflection;
@@ -53,6 +54,7 @@ public class Ajde {
 	private IdeUIAdapter ideUIAdapter;
 	private ErrorHandler errorHandler;
 	private PrintStream logPrintStream = null;
+	private IMessageHandler messageHandler = null; // allow provision of custom handler
 	
 	/**
 	 * This class can only be constructured by itself (as a singleton) or by sub-classes. 
@@ -113,6 +115,19 @@ public class Ajde {
 	 */ 
 	public void setConfigurationManager(BuildConfigManager configurationManager) {
 		this.configurationManager = configurationManager;	
+	}
+	
+	/**
+	 * Call this method with a custom IMessageHandler to override the default message
+	 * handling.
+	 * @param aHandler
+	 */
+	public void setMessageHandler(IMessageHandler aHandler) {
+		this.messageHandler = aHandler;
+	}
+	
+	public IMessageHandler getMessageHandler() {
+		return messageHandler;
 	}
 
 	public BuildManager getBuildManager() {

@@ -45,7 +45,7 @@ public class CompilerAdapter {
 	
 //	private Map optionsMap;
 	private AjBuildManager buildManager = null;
-    private MessageHandlerAdapter messageHandler = null;
+    private IMessageHandler messageHandler = null;
     private BuildNotifierAdapter currNotifier = null;
 	private boolean initialized = false;
 	private boolean structureDirty = true;
@@ -99,7 +99,6 @@ public class CompilerAdapter {
 			buildConfig.setGenerateModelMode(buildModel);
 			currNotifier = new BuildNotifierAdapter(progressMonitor, buildManager);		
 			buildManager.setProgressListener(currNotifier);
-			messageHandler.setBuildNotifierAdapter(currNotifier);
 			
 			String rtInfo = buildManager.checkRtJar(buildConfig); // !!! will get called twice
 			if (rtInfo != null) {
@@ -600,7 +599,11 @@ public class CompilerAdapter {
 	private void init() {
 		if (!initialized) {  // XXX plug into AJDE initialization
 //			Ajde.getDefault().setErrorHandler(new DebugErrorHandler());
-			this.messageHandler = new MessageHandlerAdapter();
+			if (Ajde.getDefault().getMessageHandler() != null) {
+				this.messageHandler = Ajde.getDefault().getMessageHandler();
+			} else {
+				this.messageHandler = new MessageHandlerAdapter();
+			}
 			buildManager = new AjBuildManager(messageHandler);
             // XXX need to remove the properties file each time!
 			initialized = true;
@@ -609,8 +612,7 @@ public class CompilerAdapter {
 	
 	class MessageHandlerAdapter extends MessageHandler {
 		private TaskListManager taskListManager;
-		private BuildNotifierAdapter buildNotifierAdapter;
-		
+
 		public MessageHandlerAdapter() {
 			this.taskListManager = Ajde.getDefault().getTaskListManager();
 		}	
@@ -624,10 +626,6 @@ public class CompilerAdapter {
 			
 			taskListManager.addSourcelineTask(message);
 			return super.handleMessage(message); // also store...	
-		}
-        // --------------- adje methods
-		public void setBuildNotifierAdapter(BuildNotifierAdapter buildNotifierAdapter) {
-			this.buildNotifierAdapter = buildNotifierAdapter;
 		}
 	}
 
