@@ -435,7 +435,7 @@
         <programlisting><![CDATA[
           class G<T> {
   	
-	        List<T> foo(List<String ls) { return null; }
+	        List<T> foo(List<String> ls) { return null; }
 	
           }
 		]]></programlisting>
@@ -804,7 +804,7 @@
           <!-- see java5/generics/ajdk/AfterReturningExamples.aj -->
           <para>The pointcut uses the raw type pattern <literal>List</literal>, and hence it
           matches methods returning any kind of list (<literal>List&lt;String&gt;, List&lt;Double&gt;</literal>, 
-          and so on. We've chosen to bind the returned list as the parameterized type 
+          and so on). We've chosen to bind the returned list as the parameterized type 
           <literal>List&lt;?&gt;</literal> in the advice since Java's type checking will now ensure
           that we only perform safe operations on the list.</para>
           
