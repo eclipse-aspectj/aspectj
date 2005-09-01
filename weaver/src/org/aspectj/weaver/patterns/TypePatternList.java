@@ -101,6 +101,10 @@ public class TypePatternList extends PatternNode {
 			} else if (typePatterns[i] == TypePattern.ANY) {
 				argsIndex++;
 			} else {
+				// be defensive, might see a type-pattern NO
+				if (! (typePatterns[i] instanceof ExactTypePattern)) {
+					return FuzzyBoolean.NO;
+				}
 				// match the argument type at argsIndex with the ExactTypePattern
 				// we it is exact because nothing else is allowed in args
 				ExactTypePattern tp = (ExactTypePattern)typePatterns[i];
