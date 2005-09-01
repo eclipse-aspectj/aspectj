@@ -210,6 +210,14 @@ public final class LazyMethodGen {
     	}
     }
     
+	public int getDeclarationOffset() {
+    	if (hasDeclaredLineNumberInfo()) {
+    		return memberView.getDeclarationOffset();
+    	} else {
+    		return 0;
+    	}
+	}
+    
     public void addAnnotation(AnnotationX ax) {
     	initialize();
 		if (memberView==null) {
@@ -1407,4 +1415,5 @@ public final class LazyMethodGen {
         newAttributes[attributes.length] = attr;
         attributes = newAttributes;
     }
+
 }

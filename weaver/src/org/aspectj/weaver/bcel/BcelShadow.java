@@ -3040,10 +3040,23 @@ public class BcelShadow extends Shadow {
 			return getEnclosingClass().getType().getSourceLocation();
 		} else {
 		    // For staticinitialization, if we have a nice offset, don't build a new source loc
-			if (getKind()==Shadow.StaticInitialization && getEnclosingClass().getType().getSourceLocation().getOffset()!=0)
+			if (getKind()==Shadow.StaticInitialization && getEnclosingClass().getType().getSourceLocation().getOffset()!=0) {
 				return getEnclosingClass().getType().getSourceLocation();
-			else 
-			    return getEnclosingClass().getType().getSourceContext().makeSourceLocation(sourceLine, 0);
+			} else {
+				int offset = 0;
+				Kind kind = getKind();
+		    	if ( (kind == MethodExecution)  ||
+		    		 (kind == ConstructorExecution) ||
+					 (kind == AdviceExecution) || 
+					 (kind == StaticInitialization) ||
+					 (kind == PreInitialization) ||
+					 (kind == Initialization)) {
+		    		if (getEnclosingMethod().hasDeclaredLineNumberInfo()) {
+		    			offset = getEnclosingMethod().getDeclarationOffset();
+		    		}
+		    	}
+			    return getEnclosingClass().getType().getSourceContext().makeSourceLocation(sourceLine, offset);
+			}
 		}
 	}
 
