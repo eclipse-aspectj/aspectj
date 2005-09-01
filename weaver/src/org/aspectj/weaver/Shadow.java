@@ -46,6 +46,7 @@ public abstract class Shadow {
 	
 	private final Kind kind; 
     private final Member signature;
+    private Member matchingSignature;
     private ResolvedMember resolvedSignature;
 	protected final Shadow enclosingShadow;
     protected List mungers = new ArrayList(1);
@@ -185,6 +186,18 @@ public abstract class Shadow {
      */
     public Member getSignature() {
         return signature;
+    }
+    
+    /**
+     * returns the signature of the thing under this shadow, with
+     * any synthetic arguments removed
+     */
+    public Member getMatchingSignature() {
+    	return matchingSignature != null ? matchingSignature : signature;
+    }
+    
+    public void setMatchingSignature(Member member) {
+    	this.matchingSignature = member;
     }
     
     /**
