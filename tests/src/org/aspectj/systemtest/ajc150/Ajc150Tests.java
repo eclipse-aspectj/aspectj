@@ -354,6 +354,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("no unused warnings on aspect types");
   }
   
+  public void testSyntheticArgumentsOnITDConstructorsNotUsedInMatching() {
+	  runTest("synthetic arguments on itd cons are not used in matching");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

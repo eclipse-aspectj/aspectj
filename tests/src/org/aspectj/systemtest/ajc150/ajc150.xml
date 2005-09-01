@@ -423,6 +423,12 @@
         <compile files="pr74048.aj" options="-warn:unusedPrivate"/>
     </ajc-test>  
   
+    <ajc-test dir="bugs150" pr="59397" title="synthetic arguments on itd cons are not used in matching">
+        <compile files="pr59397.aj">
+            <message line="6" kind="warning" text="should match"/>
+        </compile>
+    </ajc-test>  
+  
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

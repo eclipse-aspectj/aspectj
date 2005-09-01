@@ -430,7 +430,6 @@
     	pr="59397"
 		title="NPE in compiler when using (an unusual) declare warning against a ctor ITD">
         <compile files="DecwInitializationITD.java">
-        	<message kind="warning" line="16"/>
         </compile>
     </ajc-test>
 	
