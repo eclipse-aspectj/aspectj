@@ -473,6 +473,18 @@
         <compile files="pr101606.aj" options="-warn:unusedPrivate">
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs150/pr99125" pr="99125" title="itd interface method already existing on interface">
+        <compile files="p/pr99125.aj,p/I.java,p/J.java" options="-1.5">
+        </compile>
+        <compile files="Aspects.aj" options="-inpath p"/>
+        <run class="p.pr99125"/>
+        <compile files="p2/pr99125.aj,p/I.java,p/J.java"/> <!-- actually in package p, introduces incompatible change -->
+        <compile files="Aspects.aj" options="-inpath p">
+            <message kind="error" line="7" text="inter-type declaration from X conflicts with existing member"/>
+        </compile>
+    </ajc-test>
+    
              
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->

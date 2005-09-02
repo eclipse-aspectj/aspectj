@@ -382,6 +382,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("unused private pointcuts");
   }
   
+  public void testITDOnInterfaceWithExistingMember() {
+	  runTest("itd interface method already existing on interface");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

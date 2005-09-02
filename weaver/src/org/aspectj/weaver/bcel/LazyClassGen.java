@@ -1126,18 +1126,26 @@ public final class LazyClassGen {
     }
 
 	public LazyMethodGen getLazyMethodGen(Member m) {
-		return getLazyMethodGen(m.getName(), m.getSignature());
+		return getLazyMethodGen(m.getName(), m.getSignature(),false);
 	}
 
 	public LazyMethodGen getLazyMethodGen(String name, String signature) {
+		return getLazyMethodGen(name,signature,false);
+	}
+	
+	public LazyMethodGen getLazyMethodGen(String name, String signature,boolean allowMissing) {
 		for (Iterator i = methodGens.iterator(); i.hasNext();) {
 			LazyMethodGen gen = (LazyMethodGen) i.next();
 			if (gen.getName().equals(name) && gen.getSignature().equals(signature))
 				return gen;
 		}
 		
-		throw new BCException("Class " + this.getName() + " does not have a method " 	
-			+ name + " with signature " + signature);
+		if (!allowMissing) {
+			throw new BCException("Class " + this.getName() + " does not have a method " 	
+				+ name + " with signature " + signature);
+		} 
+		
+		return null;
 	}
 	
 	public void forcePublic() {

@@ -733,6 +733,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			return false;
 		}
 		
+		if (onInterface && gen.getLazyMethodGen(unMangledInterMethod.getName(), unMangledInterMethod.getSignature(),true) != null) {
+				// this is ok, we could be providing the default implementation of a method
+				// that the target has already declared
+				return false;
+		}
+		
 		if (onType.equals(gen.getType())) {
 			ResolvedMember mangledInterMethod =
 					AjcMemberMaker.interMethod(unMangledInterMethod, aspectType, onInterface);
