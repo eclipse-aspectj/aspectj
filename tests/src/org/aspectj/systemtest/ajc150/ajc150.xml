@@ -456,6 +456,12 @@
             </stdout>
         </run>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="102212" title="abstract synchronized itdms not detected">
+        <compile files="pr102212.aj">
+            <message line="7" kind="error" text="The abstract method _abstract in type Parent can only set a visibility modifier, one of public or protected"/>
+        </compile>
+    </ajc-test>
          
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->

@@ -369,6 +369,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testOverrideAndCovarianceWithDecPRuntimeMultiFiles() {
 	  runTest("override and covariance with decp - runtime separate files");
   }
+  
+  public void testAbstractSynchronizedITDMethods() {
+	  runTest("abstract synchronized itdms not detected");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

@@ -28,6 +28,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowCont
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
@@ -89,6 +90,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	
 	
 	public void resolveStatements() {
+		checkAndSetModifiersForMethod();
         if ((modifiers & AccSemicolonBody) != 0) {
             if ((declaredModifiers & AccAbstract) == 0)
                 scope.problemReporter().methodNeedBody(this);
@@ -274,5 +276,69 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	
 	protected Shadow.Kind getShadowKindForBody() {
 		return Shadow.MethodExecution;
+	}
+	
+	// XXX this code is copied from MethodScope, with a few adjustments for ITDs...
+	private void checkAndSetModifiersForMethod() {
+		
+		// for reported problems, we want the user to see the declared selector
+		char[] realSelector = this.selector;
+		this.selector = declaredSelector;
+		
+		final ReferenceBinding declaringClass = this.binding.declaringClass;
+		if ((declaredModifiers & AccAlternateModifierProblem) != 0)
+			scope.problemReporter().duplicateModifierForMethod(onTypeBinding, this);
+
+		// after this point, tests on the 16 bits reserved.
+		int realModifiers = declaredModifiers & AccJustFlag;
+
+		// check for abnormal modifiers
+		int unexpectedModifiers = ~(AccPublic | AccPrivate | AccProtected
+			| AccAbstract | AccStatic | AccFinal | AccSynchronized | AccNative | AccStrictfp);
+		if ((realModifiers & unexpectedModifiers) != 0) {
+			scope.problemReporter().illegalModifierForMethod(this);
+			declaredModifiers &= ~AccJustFlag | ~unexpectedModifiers;
+		}
+
+		// check for incompatible modifiers in the visibility bits, isolate the visibility bits
+		int accessorBits = realModifiers & (AccPublic | AccProtected | AccPrivate);
+		if ((accessorBits & (accessorBits - 1)) != 0) {
+			scope.problemReporter().illegalVisibilityModifierCombinationForMethod(onTypeBinding, this);
+
+			// need to keep the less restrictive so disable Protected/Private as necessary
+			if ((accessorBits & AccPublic) != 0) {
+				if ((accessorBits & AccProtected) != 0)
+					declaredModifiers &= ~AccProtected;
+				if ((accessorBits & AccPrivate) != 0)
+					declaredModifiers &= ~AccPrivate;
+			} else if ((accessorBits & AccProtected) != 0 && (accessorBits & AccPrivate) != 0) {
+				declaredModifiers &= ~AccPrivate;
+			}
+		}
+
+		// check for modifiers incompatible with abstract modifier
+		if ((declaredModifiers & AccAbstract) != 0) {
+			int incompatibleWithAbstract = AccStatic | AccFinal | AccSynchronized | AccNative | AccStrictfp;
+			if ((declaredModifiers & incompatibleWithAbstract) != 0)
+				scope.problemReporter().illegalAbstractModifierCombinationForMethod(onTypeBinding, this);
+			if (!onTypeBinding.isAbstract())
+				scope.problemReporter().abstractMethodInAbstractClass((SourceTypeBinding) onTypeBinding, this);
+		}
+
+		/* DISABLED for backward compatibility with javac (if enabled should also mark private methods as final)
+		// methods from a final class are final : 8.4.3.3 
+		if (methodBinding.declaringClass.isFinal())
+			modifiers |= AccFinal;
+		*/
+		// native methods cannot also be tagged as strictfp
+		if ((declaredModifiers & AccNative) != 0 && (declaredModifiers & AccStrictfp) != 0)
+			scope.problemReporter().nativeMethodsCannotBeStrictfp(onTypeBinding, this);
+
+		// static members are only authorized in a static member or top level type
+		if (((realModifiers & AccStatic) != 0) && declaringClass.isNestedType() && !declaringClass.isStatic())
+			scope.problemReporter().unexpectedStaticModifierForMethod(onTypeBinding, this);
+
+		// restore the true selector now that any problems have been reported
+		this.selector = realSelector;		
 	}
 }
