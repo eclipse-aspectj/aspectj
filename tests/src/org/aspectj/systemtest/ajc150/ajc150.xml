@@ -468,7 +468,12 @@
         </compile>
         <run class="SynchronizedInterfaceMethods"/>
     </ajc-test>
-         
+
+    <ajc-test dir="bugs150" pr="101606" title="unused private pointcuts">
+        <compile files="pr101606.aj" options="-warn:unusedPrivate">
+        </compile>
+    </ajc-test>
+             
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

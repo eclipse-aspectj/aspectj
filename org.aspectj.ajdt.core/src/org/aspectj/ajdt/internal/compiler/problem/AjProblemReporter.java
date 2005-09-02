@@ -407,4 +407,9 @@ public class AjProblemReporter extends ProblemReporter {
     		super.unusedPrivateType(typeDecl);
     }
 
+    public void unusedPrivateMethod(AbstractMethodDeclaration methodDecl) {
+    	// don't output unused warnings for pointcuts...
+    	if (!(methodDecl instanceof PointcutDeclaration))
+    			super.unusedPrivateMethod(methodDecl);
+    }
 }

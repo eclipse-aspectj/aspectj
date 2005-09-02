@@ -378,6 +378,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("synchronized itd interface methods");
   }
   
+  public void testNoWarningOnUnusedPointcut() {
+	  runTest("unused private pointcuts");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
