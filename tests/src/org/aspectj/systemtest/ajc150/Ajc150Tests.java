@@ -374,6 +374,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("abstract synchronized itdms not detected");
   }
   
+  public void testSynchronizedITDInterfaceMethods() {
+	  runTest("synchronized itd interface methods");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

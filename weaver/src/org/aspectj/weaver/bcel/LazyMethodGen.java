@@ -782,6 +782,10 @@ public final class LazyMethodGen {
     public int getAccessFlags() {
         return accessFlags;
     }
+    
+    public void setAccessFlags(int newFlags) {
+    	this.accessFlags = newFlags;
+    }
 
     public Type[] getArgumentTypes() {
     	initialize();

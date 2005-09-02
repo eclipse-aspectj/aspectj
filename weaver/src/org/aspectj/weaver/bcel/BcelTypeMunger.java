@@ -716,6 +716,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedMember interMethodDispatcher = munger.getInterMethodDispatcher(aspectType);
 		
 		LazyClassGen gen = weaver.getLazyClassGen();
+		boolean mungingInterface = gen.isInterface();
 		
 		ResolvedType onType = weaver.getWorld().resolve(unMangledInterMethod.getDeclaringType(),munger.getSourceLocation());
 		if (onType.isRawType()) onType = onType.getGenericType();
@@ -738,6 +739,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             
 			
 			LazyMethodGen mg = makeMethodGen(gen, mangledInterMethod);
+			if (mungingInterface) {
+				// we want the modifiers of the ITD to be used for all *implementors* of the
+				// interface, but the method itself we add to the interface must be public abstract
+				mg.setAccessFlags(Modifier.PUBLIC | Modifier.ABSTRACT);
+			}
 			
 			// pr98901
 		    // For copying the annotations across, we have to discover the real member in the aspect
@@ -829,6 +835,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					AjcMemberMaker.interMethod(unMangledInterMethod, aspectType, false);
 			
 			  LazyMethodGen mg = makeMethodGen(gen, mangledInterMethod);
+			  if (mungingInterface) {
+				// we want the modifiers of the ITD to be used for all *implementors* of the
+				// interface, but the method itself we add to the interface must be public abstract
+				mg.setAccessFlags(Modifier.PUBLIC | Modifier.ABSTRACT);
+			  }
 						
 			  Type[] paramTypes = BcelWorld.makeBcelTypes(mangledInterMethod.getParameterTypes());
 			  Type returnType = BcelWorld.makeBcelType(mangledInterMethod.getReturnType());
