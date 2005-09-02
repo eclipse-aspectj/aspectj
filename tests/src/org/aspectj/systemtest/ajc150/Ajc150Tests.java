@@ -358,6 +358,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("synthetic arguments on itd cons are not used in matching");
   }
   
+  public void testParsingOfGenericTypeSignature() {
+	  runTest("parse generic type signature with parameterized type in interface");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

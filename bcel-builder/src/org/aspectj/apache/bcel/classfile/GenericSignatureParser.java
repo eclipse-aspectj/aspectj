@@ -384,10 +384,12 @@ public class GenericSignatureParser {
 						tokens.add(new String("" + chars[index]));
 					} else {
 						identifier.append(chars[index]);
-					}
-					couldSeePrimitive = false;
+					}					
 					inArray = false;
 					break;
+				case 'L' :
+					couldSeePrimitive = false;
+					// deliberate fall-through
 				default : 
 					identifier.append(chars[index]);
 			}

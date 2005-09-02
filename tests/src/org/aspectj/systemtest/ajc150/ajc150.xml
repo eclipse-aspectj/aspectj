@@ -428,7 +428,11 @@
             <message line="6" kind="warning" text="should match"/>
         </compile>
     </ajc-test>  
-  
+ 
+    <ajc-test dir="bugs150" pr="108602" title="parse generic type signature with parameterized type in interface">
+        <compile files="pr108602.java" options="-1.5"/>
+    </ajc-test>
+     
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
