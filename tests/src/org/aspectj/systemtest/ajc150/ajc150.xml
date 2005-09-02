@@ -432,7 +432,31 @@
     <ajc-test dir="bugs150" pr="108602" title="parse generic type signature with parameterized type in interface">
         <compile files="pr108602.java" options="-1.5"/>
     </ajc-test>
-     
+
+    <ajc-test dir="bugs150" pr="105479" title="override and covariance with decp - runtime">
+        <compile files="pr105479part2.aj" options="-1.5"/>
+        <run class="pr105479part2">
+            <stdout>
+                <line text="in Test.hashCode()"/>
+                <line text="in Test.hashCode()"/>
+                <line text="id"/>
+                <line text="in Test.hashCode()"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs150/pr105479" pr="105479" title="override and covariance with decp - runtime separate files">
+        <compile files="ReturnTypeTest.aj,ReturnTypeTester.java,Driver.java" options="-1.5"/>
+        <run class="Driver">
+            <stdout>
+                <line text="in Test.hashCode()"/>
+                <line text="in Test.hashCode()"/>
+                <line text="id"/>
+                <line text="in Test.hashCode()"/>
+            </stdout>
+        </run>
+    </ajc-test>
+         
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

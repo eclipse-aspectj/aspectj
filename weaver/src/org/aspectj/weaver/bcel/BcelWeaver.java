@@ -1007,11 +1007,47 @@ public class BcelWeaver implements IWeaver {
 		deletedTypenames = new ArrayList();
 		
         
+		warnOnUnmatchedAdvice();
+
+        requestor.weaveCompleted();
+    	return wovenClassNames;
+    }
+
+    /**
+     * In 1.5 mode and with XLint:adviceDidNotMatch enabled, put out messages for any
+     * mungers that did not match anything.
+     */
+	private void warnOnUnmatchedAdvice() {
+		
+		class AdviceLocation {
+			private  int lineNo;
+			private UnresolvedType inAspect;
+
+			public AdviceLocation(BcelAdvice advice) {
+				this.lineNo = advice.getSourceLocation().getLine();
+				this.inAspect = advice.getDeclaringAspect();
+			}
+			
+			public boolean equals(Object obj) {
+				if (!(obj instanceof AdviceLocation)) return false;
+				AdviceLocation other = (AdviceLocation) obj;
+				if (this.lineNo != other.lineNo) return false;
+				if (!this.inAspect.equals(other.inAspect)) return false;
+				return true;
+			}
+			
+			public int hashCode() {
+				return 37 + 17*lineNo + 17*inAspect.hashCode();
+			};
+		}
+		
 		// FIXME asc Should be factored out into Xlint code and done automatically for all xlint messages, ideally.
         // if a piece of advice hasn't matched anywhere and we are in -1.5 mode, put out a warning
         if (world.isInJava5Mode() && 
             world.getLint().adviceDidNotMatch.isEnabled()) {
         	List l = world.getCrosscuttingMembersSet().getShadowMungers();
+        	Set alreadyWarnedLocations = new HashSet();
+        	
         	for (Iterator iter = l.iterator(); iter.hasNext();) {
         		ShadowMunger element = (ShadowMunger) iter.next();
         		if (element instanceof BcelAdvice) { // This will stop us incorrectly reporting deow Checkers
@@ -1020,6 +1056,16 @@ public class BcelWeaver implements IWeaver {
 					 // Because we implement some features of AJ itself by creating our own kind of mungers, you sometimes
  				     // find that ba.getSignature() is not a BcelMethod - for example it might be a cflow entry munger.
 	                 if (ba.getSignature()!=null) {
+	                	 
+	                   // check we haven't already warned on this advice and line
+	                   // (cflow creates multiple mungers for the same advice)
+	                   AdviceLocation loc = new AdviceLocation(ba);
+	                   if (alreadyWarnedLocations.contains(loc)) {
+	                	   continue;
+	                   } else {
+	                	   alreadyWarnedLocations.add(loc);
+	                   }
+	                	 
 					   if (!(ba.getSignature() instanceof BcelMethod)
 					       || !Utility.isSuppressing((AnnotationX[])ba.getSignature().getAnnotations(),"adviceDidNotMatch")) {
 					        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().toString(),element.getSourceLocation());
@@ -1029,10 +1075,7 @@ public class BcelWeaver implements IWeaver {
         		}
         	}
         }
-
-        requestor.weaveCompleted();
-    	return wovenClassNames;
-    }
+	}
     
     /**
      * 'typeToWeave' is one from the 'typesForWeaving' list.  This routine ensures we process

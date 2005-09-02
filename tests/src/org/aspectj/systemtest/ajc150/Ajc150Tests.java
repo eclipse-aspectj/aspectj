@@ -362,6 +362,13 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("parse generic type signature with parameterized type in interface");
   }
   
+  public void testOverrideAndCovarianceWithDecPRuntime() {
+	  runTest("override and covariance with decp - runtime");
+  }
+  
+  public void testOverrideAndCovarianceWithDecPRuntimeMultiFiles() {
+	  runTest("override and covariance with decp - runtime separate files");
+  }
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

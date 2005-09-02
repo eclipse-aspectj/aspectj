@@ -178,5 +178,12 @@
   </compile>
   </ajc-test>
 -->
+
+    <ajc-test dir="harness" 
+        title="Two Xlint warnings wth cflow?">
+        <compile files="XLintcflow.java" options="-1.5">
+        	<message kind="warning" line="4"  text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
+    </ajc-test>
 	
  
