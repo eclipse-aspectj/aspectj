@@ -1,0 +1,58 @@
+Index: src/org/aspectj/bridge/Message.java
+===================================================================
+RCS file: /home/technology/org.aspectj/modules/bridge/src/org/aspectj/bridge/Message.java,v
+retrieving revision 1.12
+diff -u -r1.12 Message.java
+--- src/org/aspectj/bridge/Message.java	5 May 2005 10:36:02 -0000	1.12
++++ src/org/aspectj/bridge/Message.java	2 Sep 2005 07:39:19 -0000
+@@ -110,6 +110,26 @@
+           this(message, "", kind, sourceLocation, thrown, null );              
+     }
+     
++    
++    /**
++     * Create a copy of the source message, but with the locations updated
++     * @param source
++     * @param newLocation
++     * @param newExtraLocations
++     */
++    public Message(IMessage source, ISourceLocation newLocation, List newExtraLocations) {
++    	this.id = source.getID();
++    	this.kind = source.getKind();
++    	this.message = source.getMessage();
++    	this.sourceEnd = source.getSourceEnd();
++    	this.sourceStart = source.getSourceStart();
++    	this.thrown = source.getThrown();
++    	this.details = source.getDetails();
++    	this.declared  =source.getDeclared();
++    	this.sourceLocation = newLocation;
++    	this.extraSourceLocations = newExtraLocations;
++    }
++    
+     /** @return the kind of this message */
+     public IMessage.Kind getKind() {
+         return kind;
+Index: src/org/aspectj/bridge/SourceLocation.java
+===================================================================
+RCS file: /home/technology/org.aspectj/modules/bridge/src/org/aspectj/bridge/SourceLocation.java,v
+retrieving revision 1.9
+diff -u -r1.9 SourceLocation.java
+--- src/org/aspectj/bridge/SourceLocation.java	5 Jul 2005 11:46:21 -0000	1.9
++++ src/org/aspectj/bridge/SourceLocation.java	2 Sep 2005 07:39:19 -0000
+@@ -101,6 +101,16 @@
+         this.context = context;
+     }
+     
++    // return a clone of the source location, with the source file updated
++    public SourceLocation(ISourceLocation source, File newSourceFile) {
++    	this.sourceFile = newSourceFile;
++    	this.column = source.getColumn();
++    	this.context = source.getContext();
++    	this.endLine = source.getEndLine();
++    	this.startLine = source.getLine();
++    	this.offset = source.getOffset();
++    }
++    
+     public File getSourceFile() {
+         return sourceFile;
+     }
