@@ -17,6 +17,7 @@ import java.lang.reflect.Modifier;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -24,6 +25,7 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 
@@ -70,17 +72,29 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	 * Modifies signatures of a TypeBinding through its ClassScope,
 	 * i.e. adds Method|FieldBindings, plays with inheritance, ...
 	 */
-	public boolean munge(SourceTypeBinding sourceType) {
-		ResolvedType rt = world.fromEclipse(sourceType);
+	public boolean munge(SourceTypeBinding sourceType, ResolvedType onType) {
+		ResolvedType rt = onType;
 		if (rt.isRawType() || rt.isParameterizedType()) rt = rt.getGenericType();
-		if (!rt.equals(targetTypeX)) return false; //??? move this test elsewhere
+		boolean isExactTargetType = rt.equals(targetTypeX);
+		if (!isExactTargetType) {
+			// might be the topmost implementor of an interface we care about
+			if (munger.getKind() != ResolvedTypeMunger.Method) return false;
+			if (onType.isInterface()) return false;
+			if (!munger.needsAccessToTopmostImplementor()) return false;
+			// so we do need access, and this type could be it...
+			if (!onType.isTopmostImplementor(targetTypeX)) return false;
+			// we are the topmost implementor of an interface type that needs munging
+			// but we only care about public methods here (we only do this at all to 
+			// drive the JDT MethodVerifier correctly)
+			if (!Modifier.isPublic(munger.getSignature().getModifiers())) return false;
+		}
 		//System.out.println("munging: " + sourceType);
 //		System.out.println("match: " + world.fromEclipse(sourceType) +
 //				" with " + targetTypeX);
 		if (munger.getKind() == ResolvedTypeMunger.Field) {
 			mungeNewField(sourceType, (NewFieldTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Method) {
-			mungeNewMethod(sourceType, (NewMethodTypeMunger)munger);
+			return mungeNewMethod(sourceType, onType, (NewMethodTypeMunger)munger, isExactTargetType);
 		} else if (munger.getKind() == ResolvedTypeMunger.Constructor) {
 			mungeNewConstructor(sourceType, (NewConstructorTypeMunger)munger);
 		} else {
@@ -90,18 +104,39 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	}
 	
 
-	private void mungeNewMethod(SourceTypeBinding sourceType, NewMethodTypeMunger munger) {
-//		if (shouldTreatAsPublic()) {
-//			MethodBinding binding = world.makeMethodBinding(munger.getSignature());
-//			findOrCreateInterTypeMemberFinder(classScope).addInterTypeMethod(binding);
-//			//classScope.referenceContext.binding.addMethod(binding);
-//		} else {
-			InterTypeMethodBinding binding =
-				new InterTypeMethodBinding(world, munger.getSignature(), aspectType, sourceMethod);
-			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
-//		}
+	private boolean mungeNewMethod(SourceTypeBinding sourceType, ResolvedType onType, NewMethodTypeMunger munger, boolean isExactTargetType) {
+		InterTypeMethodBinding binding =
+			new InterTypeMethodBinding(world, munger.getSignature(), aspectType, sourceMethod);
 
+		if (!isExactTargetType) {
+			// we're munging an interface ITD onto a topmost implementor
+			ResolvedMember existingMember = onType.lookupMemberIncludingITDsOnInterfaces(getSignature()); 
+			if (existingMember != null) {
+				// already have an implementation, so don't do anything
+				if (onType == existingMember.getDeclaringType() && Modifier.isFinal(munger.getSignature().getModifiers())) {
+					// final modifier on default implementation is taken to mean that
+					// no-one else can provide an implementation
+					MethodBinding offendingBinding = sourceType.getExactMethod(binding.selector, binding.parameters, sourceType.scope.compilationUnitScope());
+					sourceType.scope.problemReporter().finalMethodCannotBeOverridden(offendingBinding, binding);
+				}
+				// so that we find methods from our superinterfaces later on...
+				findOrCreateInterTypeMemberFinder(sourceType);
+				return false;
+			} 
+		}
+		
+		// retain *only* the visibility modifiers and abstract when putting methods on an interface...
+		if (sourceType.isInterface()) {
+			boolean isAbstract = (binding.modifiers & IConstants.AccAbstract) != 0;
+			binding.modifiers = (binding.modifiers & (IConstants.AccPublic | IConstants.AccProtected | IConstants.AccPrivate));
+			if (isAbstract) binding.modifiers |= IConstants.AccAbstract;
+		}
+		
+		findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
+		return true;
 	}
+	
+	
 	private void mungeNewConstructor(SourceTypeBinding sourceType, NewConstructorTypeMunger munger) {		
 		if (shouldTreatAsPublic()) {
 			MethodBinding binding = world.makeMethodBinding(munger.getSignature());

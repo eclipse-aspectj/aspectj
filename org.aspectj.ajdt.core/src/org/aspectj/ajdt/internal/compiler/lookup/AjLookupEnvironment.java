@@ -384,7 +384,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			for (Iterator i = mungers.iterator(); i.hasNext(); ) {
 				ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 				EclipseTypeMunger munger = factory.makeEclipseTypeMunger(m);
-				if (munger.munge(sourceType)) {
+				if (munger.munge(sourceType,onType)) {
 					if (onType.isInterface() &&
 						munger.getMunger().needsAccessToTopmostImplementor())
 					{
@@ -509,7 +509,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
 			//System.out.println("applying: " + munger + " to " + new String(sourceType.sourceName));
-			munger.munge(sourceType);
+			munger.munge(sourceType,onType);
 		}
 		
 		// Call if you would like to do source weaving of declare @method/@constructor 

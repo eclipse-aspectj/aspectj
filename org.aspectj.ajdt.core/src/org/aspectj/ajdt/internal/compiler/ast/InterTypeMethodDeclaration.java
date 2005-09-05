@@ -63,6 +63,10 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	protected char[] getPrefix() {
 		return (NameMangler.ITD_PREFIX + "interMethod$").toCharArray();
 	}
+	
+	public boolean isFinal() {
+		return  (declaredModifiers & AccFinal) != 0;		
+	}
 
 	public void analyseCode(
 		ClassScope currentScope,

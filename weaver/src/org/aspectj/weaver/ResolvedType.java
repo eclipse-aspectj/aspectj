@@ -905,6 +905,24 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
      * Look up a member, takes into account any ITDs on this type.
      * return null if not found */
 	public ResolvedMember lookupMemberNoSupers(Member member) {
+		ResolvedMember ret = lookupDirectlyDeclaredMemberNoSupers(member);
+		if (ret == null && interTypeMungers != null) {
+			for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
+				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();
+				if (matches(tm.getSignature(), member)) {
+					return tm.getSignature();
+				}
+			}
+		}
+		return ret;
+	}
+	
+	/**
+	 * as lookupMemberNoSupers, but does not include ITDs
+	 * @param member
+	 * @return
+	 */
+	public ResolvedMember lookupDirectlyDeclaredMemberNoSupers(Member member) {
 		ResolvedMember ret;
 		if (member.getKind() == Member.FIELD) {
 			ret = lookupMember(member, getDeclaredFields());
@@ -912,11 +930,35 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// assert member.getKind() == Member.METHOD || member.getKind() == Member.CONSTRUCTOR
 			ret = lookupMember(member, getDeclaredMethods());
 		}
-		if (ret == null && interTypeMungers != null) {
-			for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
-				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();
-				if (matches(tm.getSignature(), member)) {
-					return tm.getSignature();
+		return ret;
+	}
+	
+	/**
+	 * This lookup has specialized behaviour - a null result tells the
+	 * EclipseTypeMunger that it should make a default implementation of a
+	 * method on this type.
+	 * @param member
+	 * @return
+	 */
+	public ResolvedMember lookupMemberIncludingITDsOnInterfaces(Member member) {
+		return lookupMemberIncludingITDsOnInterfaces(member, this);
+	}
+	
+	private ResolvedMember lookupMemberIncludingITDsOnInterfaces(Member member, ResolvedType onType) {
+		ResolvedMember ret = onType.lookupMemberNoSupers(member);
+		if (ret != null) {
+			return ret;
+		} else {
+			ResolvedType superType = onType.getSuperclass();
+			if (superType != null) {
+				ret = lookupMemberIncludingITDsOnInterfaces(member,superType);
+			}
+			if (ret == null) {
+				// try interfaces then, but only ITDs now...
+				ResolvedType[] superInterfaces = onType.getDeclaredInterfaces();
+				for (int i = 0; i < superInterfaces.length; i++) {
+					ret = superInterfaces[i].lookupMethodInITDs(member);
+					if (ret != null) return ret;
 				}
 			}
 		}
@@ -1256,6 +1298,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child) {
 		//System.err.println("check: " + child.getDeclaringType() + " overrides " + parent.getDeclaringType());
 		if (Modifier.isFinal(parent.getModifiers())) {
+			// XXX horrible test, if we're in eclipes, child.getSourceLocation will be
+			// null, and this message will have already been issued.
+			if (child.getSourceLocation() == null) return false;
 			world.showMessage(Message.ERROR,
 					WeaverMessages.format(WeaverMessages.CANT_OVERRIDE_FINAL_MEMBER,parent),
 					child.getSourceLocation(),null);

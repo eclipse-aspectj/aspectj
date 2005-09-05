@@ -412,4 +412,14 @@ public class AjProblemReporter extends ProblemReporter {
     	if (!(methodDecl instanceof PointcutDeclaration))
     			super.unusedPrivateMethod(methodDecl);
     }
+
+    /**
+     * A side-effect of the way that we handle itds on default methods on top-most implementors
+     * of interfaces is that a class acquiring a final default ITD will erroneously report
+     * that it can't override its own member. This method detects that situation.
+     */
+    public void finalMethodCannotBeOverridden(MethodBinding currentMethod, MethodBinding inheritedMethod) {
+    	if (currentMethod == inheritedMethod) return;
+    	super.finalMethodCannotBeOverridden(currentMethod, inheritedMethod);
+    }
 }

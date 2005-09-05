@@ -17,6 +17,7 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -128,7 +129,11 @@ public class InterTypeMethodBinding extends MethodBinding {
 		return false;
 	}
 
-
+	public boolean isFinal() {
+		if (sourceMethod == null || !(sourceMethod instanceof InterTypeMethodDeclaration)) return super.isFinal();
+		return ((InterTypeMethodDeclaration)sourceMethod).isFinal();
+	}
+	
 	public MethodBinding getAccessMethod(boolean staticReference) {
 		if (staticReference) return postDispatchMethod;
 		else return syntheticMethod;

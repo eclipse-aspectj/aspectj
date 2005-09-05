@@ -14,8 +14,10 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
@@ -242,9 +244,11 @@ public class InterTypeMemberFinder implements IMemberFinder {
 //		return m2.declaringClass;
 //	}
 
+	// find all of my methods, including ITDs
+	// PLUS: any public ITDs made on interfaces that I implement
 	public MethodBinding[] methods(SourceTypeBinding sourceTypeBinding) {
 		MethodBinding[] orig = sourceTypeBinding.methods();
-		if (interTypeMethods.isEmpty()) return orig;
+//		if (interTypeMethods.isEmpty()) return orig;
 		
 		List ret = new ArrayList(Arrays.asList(orig));
 		for (int i=0, len=interTypeMethods.size(); i < len; i++) {
@@ -252,8 +256,32 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			ret.add(method);
 		}
 		
+		ReferenceBinding [] interfaces = sourceTypeBinding.superInterfaces();
+		for (int i = 0; i < interfaces.length; i++) {
+			if (interfaces[i] instanceof SourceTypeBinding) {
+				SourceTypeBinding intSTB = (SourceTypeBinding) interfaces[i];
+				addPublicITDSFrom(intSTB,ret);
+			}
+		}
+		
 		if (ret.isEmpty()) return SourceTypeBinding.NoMethods;
 		return (MethodBinding[])ret.toArray(new MethodBinding[ret.size()]);	
+	}
+	
+	private void addPublicITDSFrom(SourceTypeBinding anInterface,List toAList) {
+		if (anInterface.memberFinder != null) {
+			InterTypeMemberFinder finder = (InterTypeMemberFinder) anInterface.memberFinder;
+			for (Iterator iter = finder.interTypeMethods.iterator(); iter.hasNext();) {
+				MethodBinding aBinding = (MethodBinding) iter.next();
+				if (Modifier.isPublic(aBinding.modifiers)) {
+					toAList.add(aBinding);
+				}
+			}
+		}
+		ReferenceBinding superType = anInterface.superclass;
+		if (superType instanceof SourceTypeBinding && superType.isInterface()) {
+			addPublicITDSFrom((SourceTypeBinding)superType,toAList);
+		}
 	}
 	
 	//XXX conflicts
