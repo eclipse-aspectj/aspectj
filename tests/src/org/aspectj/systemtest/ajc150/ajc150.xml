@@ -485,7 +485,15 @@
         </compile>
     </ajc-test>
     
-             
+    <ajc-test dir="bugs150/pr87530" pr="87530" title="final itd methods on interfaces">
+        <compile files="FinalITDMOnInterface.aj">
+            <message kind="error" line="12" text="Cannot override the final method from A.TestInterface"></message>
+        </compile>
+        <compile files="FinalITDMOnInterface2.aj">
+            <message kind="error" line="8" text="Cannot override the final method from A.TestInterface"></message>
+        </compile>
+    </ajc-test>
+
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

@@ -386,6 +386,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("itd interface method already existing on interface");
   }
   
+  public void testFinalITDMOnInterface() {
+	  runTest("final itd methods on interfaces");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
