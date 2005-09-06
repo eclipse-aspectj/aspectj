@@ -500,7 +500,11 @@
             <message kind="warning" line="21" text="matched join point from sub advice"/>
         </compile>
     </ajc-test>
-    
+ 
+    <ajc-test dir="bugs150" pr="108816" title="advising cflow advice execution">
+        <compile files="pr108816.aj" >
+        </compile>
+    </ajc-test>   
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

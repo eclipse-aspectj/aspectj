@@ -393,6 +393,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testPrivatePointcutOverriding() {
 	  runTest("can't override private pointcut in abstract aspect");
   }
+
+  public void testAdviceOnCflow() {
+	  runTest("advising cflow advice execution");
+  }
   
   // helper methods.....
   

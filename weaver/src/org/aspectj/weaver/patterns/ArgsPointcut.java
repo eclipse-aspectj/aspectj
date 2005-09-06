@@ -350,7 +350,8 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 	
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-		if (arguments.matches(getArgumentsToMatchAgainst(shadow), TypePattern.DYNAMIC).alwaysFalse()) {
+		ResolvedType[] argsToMatch = getArgumentsToMatchAgainst(shadow);
+		if (arguments.matches(argsToMatch, TypePattern.DYNAMIC).alwaysFalse()) {
 			return Literal.FALSE;
 		}
 		int ellipsisCount = arguments.ellipsisCount;
@@ -358,7 +359,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 			return findResidueNoEllipsis(shadow, state, arguments.getTypePatterns());		
 		} else if (ellipsisCount == 1) {
 			TypePattern[] patternsWithEllipsis = arguments.getTypePatterns();
-			TypePattern[] patternsWithoutEllipsis = new TypePattern[shadow.getArgCount()];
+			TypePattern[] patternsWithoutEllipsis = new TypePattern[argsToMatch.length];
 			int lenWithEllipsis = patternsWithEllipsis.length;
 			int lenWithoutEllipsis = patternsWithoutEllipsis.length;
 			// l1+1 >= l0
