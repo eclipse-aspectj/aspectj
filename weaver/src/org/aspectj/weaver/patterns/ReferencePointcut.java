@@ -251,7 +251,10 @@ public class ReferencePointcut extends Pointcut {
 
 	//??? This is not thread safe, but this class is not designed for multi-threading
 	private boolean concretizing = false;
-	public Pointcut concretize1(ResolvedType searchStart, IntMap bindings) {
+	// declaring type is the type that declared the member referencing this pointcut.
+	// If it declares a matching private pointcut, then that pointcut should be used
+	// and not one in a subtype that happens to have the same name.
+	public Pointcut concretize1(ResolvedType searchStart, ResolvedType declaringType, IntMap bindings) {
 		if (concretizing) {
 			//Thread.currentThread().dumpStack();
 			searchStart.getWorld().getMessageHandler().handleMessage(
@@ -270,13 +273,19 @@ public class ReferencePointcut extends Pointcut {
 					return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 				}
 			}
-			pointcutDec = searchStart.findPointcut(name);
-			if (pointcutDec == null) {
-				searchStart.getWorld().getMessageHandler().handleMessage(
-					MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_POINTCUT,name,searchStart.getName()), 
-									getSourceLocation())
-				);
-				return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+			
+			if (declaringType == null) declaringType = searchStart;
+			pointcutDec = declaringType.findPointcut(name);
+			boolean foundMatchingPointcut = (pointcutDec != null && pointcutDec.isPrivate());
+			if (!foundMatchingPointcut) {				
+				pointcutDec = searchStart.findPointcut(name);
+				if (pointcutDec == null) {
+					searchStart.getWorld().getMessageHandler().handleMessage(
+						MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_POINTCUT,name,searchStart.getName()), 
+										getSourceLocation())
+					);
+					return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+				}
 			}
 			
 			if (pointcutDec.isAbstract()) {
@@ -327,7 +336,7 @@ public class ReferencePointcut extends Pointcut {
 			try {
 				Pointcut ret = pointcutDec.getPointcut();
 				if (typeVariableMap != null) ret = ret.parameterizeWith(typeVariableMap);
-				return ret.concretize(searchStart, newBindings);
+				return ret.concretize(searchStart, declaringType, newBindings);
 			} finally {
 				newBindings.popEnclosingDefinitition();
 			}
