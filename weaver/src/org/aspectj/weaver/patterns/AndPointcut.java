@@ -136,9 +136,9 @@ public class AndPointcut extends Pointcut {
 		return Test.makeAnd(left.findResidue(shadow, state), right.findResidue(shadow, state));
 	}
 
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
-		AndPointcut ret =  new AndPointcut(left.concretize(inAspect, bindings),
-										   right.concretize(inAspect, bindings));
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
+		AndPointcut ret =  new AndPointcut(left.concretize(inAspect, declaringType, bindings),
+										   right.concretize(inAspect, declaringType, bindings));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

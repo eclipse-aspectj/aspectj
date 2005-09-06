@@ -33,7 +33,7 @@ public abstract class PerClause extends Pointcut {
 		throw new BCException("unknown kind: " + kind);
 	}
 
-    public final Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+    public final Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
     	throw new RuntimeException("unimplemented: wrong concretize");
     }
 

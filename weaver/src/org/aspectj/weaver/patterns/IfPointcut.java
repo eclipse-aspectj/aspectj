@@ -268,7 +268,7 @@ public class IfPointcut extends Pointcut {
 	}
 	
 	private IfPointcut partiallyConcretized = null;
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType,  IntMap bindings) {
 		//System.err.println("concretize: " + this + " already: " + partiallyConcretized);
 		
 		if (isDeclare(bindings.getEnclosingAdvice())) {
@@ -349,7 +349,7 @@ public class IfPointcut extends Pointcut {
 			} else {
 				ret.baseArgsCount = 0;
 			}
-			ret.residueSource = advice.getPointcut().concretize(inAspect, ret.baseArgsCount, advice);
+			ret.residueSource = advice.getPointcut().concretize(inAspect, inAspect, ret.baseArgsCount, advice);
 		} else {
 			ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();
 			if (def == CflowPointcut.CFLOW_MARKER) {
@@ -379,7 +379,7 @@ public class IfPointcut extends Pointcut {
 
 			IntMap newBindings = IntMap.idMap(ret.baseArgsCount);
 			newBindings.copyContext(bindings);
-			ret.residueSource = def.getPointcut().concretize(inAspect, newBindings);
+			ret.residueSource = def.getPointcut().concretize(inAspect, declaringType, newBindings);
 		}
 		
 		return ret;
@@ -444,6 +444,7 @@ public class IfPointcut extends Pointcut {
 
 		public Pointcut concretize1(
 			ResolvedType inAspect,
+			ResolvedType declaringType,
 			IntMap bindings) {
 			if (isDeclare(bindings.getEnclosingAdvice())) {
 				// Enforce rule about which designators are supported in declare
@@ -515,6 +516,7 @@ public class IfPointcut extends Pointcut {
 
 		public Pointcut concretize1(
 			ResolvedType inAspect,
+			ResolvedType declaringType,
 			IntMap bindings) {
 			if (isDeclare(bindings.getEnclosingAdvice())) {
 				// Enforce rule about which designators are supported in declare

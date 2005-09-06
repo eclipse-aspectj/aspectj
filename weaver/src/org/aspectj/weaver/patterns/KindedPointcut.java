@@ -397,7 +397,7 @@ public class KindedPointcut extends Pointcut {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 	
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType,  IntMap bindings) {
 		Pointcut ret = new KindedPointcut(kind, signature, bindings.getEnclosingAdvice());
         ret.copyLocationFrom(this);
         return ret;

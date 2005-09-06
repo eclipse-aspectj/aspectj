@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 public class DeclareErrorOrWarning extends Declare {

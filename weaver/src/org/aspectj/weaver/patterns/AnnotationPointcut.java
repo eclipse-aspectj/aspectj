@@ -174,7 +174,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
-	protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	protected Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		ExactAnnotationTypePattern newType = (ExactAnnotationTypePattern) annotationTypePattern.remapAdviceFormals(bindings);		
 		Pointcut ret = new AnnotationPointcut(newType, bindings.getEnclosingAdvice());
         ret.copyLocationFrom(this);

@@ -97,7 +97,7 @@ public class PerCflow extends PerClause {
 		CrosscuttingMembers xcut = inAspect.crosscuttingMembers;
 		
 		Collection previousCflowEntries = xcut.getCflowEntries();
-		Pointcut concreteEntry = entry.concretize(inAspect, 0, null); //IntMap.EMPTY);
+		Pointcut concreteEntry = entry.concretize(inAspect, inAspect, 0, null); //IntMap.EMPTY);
 		List innerCflowEntries = new ArrayList(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 					

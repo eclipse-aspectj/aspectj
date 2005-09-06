@@ -168,7 +168,7 @@ public class HandlerPointcut extends Pointcut {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 	
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		Pointcut ret = new HandlerPointcut(exceptionType);
 		ret.copyLocationFrom(this);
 		return ret;

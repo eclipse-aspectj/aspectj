@@ -106,7 +106,7 @@ public class PerObject extends PerClause {
 		
 		World world = inAspect.getWorld();
 		
-		Pointcut concreteEntry = entry.concretize(inAspect, 0, null);
+		Pointcut concreteEntry = entry.concretize(inAspect, inAspect, 0, null);
 		//concreteEntry = new AndPointcut(this, concreteEntry);
 		//concreteEntry.state = Pointcut.CONCRETE;
 		inAspect.crosscuttingMembers.addConcreteShadowMunger(

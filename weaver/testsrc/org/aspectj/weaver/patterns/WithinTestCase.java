@@ -100,7 +100,7 @@ public class WithinTestCase extends TestCase {
         
         pointcut0.resolveBindings(scope, bindingTable);		
 		Pointcut pointcut1 = pointcut0;
-		return pointcut1.concretize1(null, new IntMap());
+		return pointcut1.concretize1(null, null, new IntMap());
 	}
 
 	

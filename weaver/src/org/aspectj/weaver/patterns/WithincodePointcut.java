@@ -156,7 +156,7 @@ public class WithincodePointcut extends Pointcut {
 	}
 	
 	
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		Pointcut ret = new WithincodePointcut(signature);
 		ret.copyLocationFrom(this);
 		return ret;

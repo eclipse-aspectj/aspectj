@@ -255,7 +255,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 
 
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 		  // Enforce rule about which designators are supported in declare
 		  inAspect.getWorld().showMessage(IMessage.ERROR,

@@ -138,7 +138,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
-	protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	protected Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
 			  // Enforce rule about which designators are supported in declare
 			  if (!alreadyWarnedAboutDEoW) {

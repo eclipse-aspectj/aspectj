@@ -173,7 +173,7 @@ public class CflowPointcut extends Pointcut {
 		throw new RuntimeException("unimplemented");
 	}
 	
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 
 		// Enforce rule about which designators are supported in declare
 		if (isDeclare(bindings.getEnclosingAdvice())) {
@@ -206,7 +206,7 @@ public class CflowPointcut extends Pointcut {
 		entryBindings.pushEnclosingDefinition(CFLOW_MARKER);
 		// This block concretizes the pointcut within the cflow pointcut
 		try {
-			concreteEntry = entry.concretize(inAspect, entryBindings);
+			concreteEntry = entry.concretize(inAspect, declaringType, entryBindings);
 		} finally {
 			entryBindings.popEnclosingDefinitition();
 		}

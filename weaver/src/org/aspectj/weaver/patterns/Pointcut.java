@@ -253,8 +253,8 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 * Returns a new pointcut
 	 * Only used by test cases
 	 */
-    public final Pointcut concretize(ResolvedType inAspect, int arity) {
-        Pointcut ret = concretize(inAspect, IntMap.idMap(arity));
+    public final Pointcut concretize(ResolvedType inAspect, ResolvedType declaringType, int arity) {
+        Pointcut ret = concretize(inAspect, declaringType, IntMap.idMap(arity));
         // copy the unbound ignore list
         ret.m_ignoreUnboundBindingForNames = m_ignoreUnboundBindingForNames;
         return ret;
@@ -262,12 +262,12 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	
 	
 	//XXX this is the signature we're moving to
-	public final Pointcut concretize(ResolvedType inAspect, int arity, ShadowMunger advice) {
+	public final Pointcut concretize(ResolvedType inAspect, ResolvedType declaringType, int arity, ShadowMunger advice) {
 		//if (state == CONCRETE) return this; //???
 		IntMap map = IntMap.idMap(arity);
 		map.setEnclosingAdvice(advice);
 		map.setConcreteAspect(inAspect);
-		return concretize(inAspect, map);
+		return concretize(inAspect, declaringType, map);
 	}
 	
 	public boolean isDeclare(ShadowMunger munger) {
@@ -278,9 +278,9 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	}
 	
 	
-	public final Pointcut concretize(ResolvedType inAspect, IntMap bindings) {
+	public final Pointcut concretize(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		//!!! add this test -- assertState(RESOLVED);
-		Pointcut ret = this.concretize1(inAspect, bindings);
+		Pointcut ret = this.concretize1(inAspect, declaringType, bindings);
         if (shouldCopyLocationForConcretize()) ret.copyLocationFrom(this);
 		ret.state = CONCRETE;
         // copy the unbound ignore list
@@ -306,7 +306,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 * assumed in many places.
 	 * XXX fix implementors to handle state
 	 */
-	protected abstract Pointcut concretize1(ResolvedType inAspect, IntMap bindings);
+	protected abstract Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings);
 	
 	
 	//XXX implementors need to handle state
@@ -425,6 +425,7 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 
 		public Pointcut concretize1(
 			ResolvedType inAspect,
+			ResolvedType declaringType, 
 			IntMap bindings) {
 			return makeMatchesNothing(state);
 		}

@@ -57,7 +57,7 @@ public class PointcutTestCase extends TestCase {
 			
 			protected void resolveBindingsFromRTTI() {}
 
-			protected Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+			protected Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 				return null;
 			}
 			

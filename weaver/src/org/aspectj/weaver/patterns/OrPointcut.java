@@ -138,9 +138,9 @@ public class OrPointcut extends Pointcut {
 		return Test.makeOr(left.findResidue(shadow, state), right.findResidue(shadow, state));
 	}
 	
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
-		Pointcut ret = new OrPointcut(left.concretize(inAspect, bindings),
-								right.concretize(inAspect, bindings));
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
+		Pointcut ret = new OrPointcut(left.concretize(inAspect, declaringType, bindings),
+								right.concretize(inAspect, declaringType, bindings));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

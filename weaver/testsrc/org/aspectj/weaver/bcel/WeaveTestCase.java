@@ -267,7 +267,7 @@ public abstract class WeaveTestCase extends TestCase {
 	
 	
 	public Pointcut makeConcretePointcut(String s) {
-		return makeResolvedPointcut(s).concretize(null, 0);
+		return makeResolvedPointcut(s).concretize(null, null, 0);
 	}
 	
 	public Pointcut makeResolvedPointcut(String s) {

@@ -132,8 +132,8 @@ public class NotPointcut extends Pointcut {
 		return Test.makeNot(body.findResidue(shadow, state));
 	}
 	
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
-		Pointcut ret = new NotPointcut(body.concretize(inAspect, bindings));
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
+		Pointcut ret = new NotPointcut(body.concretize(inAspect, declaringType, bindings));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

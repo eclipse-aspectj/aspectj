@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 public abstract class Declare extends PatternNode {
@@ -25,6 +26,9 @@ public abstract class Declare extends PatternNode {
 	public static final byte SOFT = 3;
 	public static final byte DOMINATES = 4;
 	public static final byte ANNOTATION = 5;
+	
+	// set when reading declare from aspect 
+	private ResolvedType declaringType;
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte kind = s.readByte();
@@ -71,4 +75,12 @@ public abstract class Declare extends PatternNode {
 	 * want to easily differentiate between the declare methods.
 	 */
 	public abstract String getNameSuffix();
+	
+	public void setDeclaringType(ResolvedType aType) {
+		this.declaringType = aType;
+	}
+	
+	public ResolvedType getDeclaringType() {
+		return declaringType;
+	}
 }

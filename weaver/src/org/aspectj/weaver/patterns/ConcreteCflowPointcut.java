@@ -141,7 +141,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		MemberImpl.method(UnresolvedType.forName(NameMangler.CFLOW_COUNTER_TYPE), 0, "isValid", "()Z");
 
 	
-	public Pointcut concretize1(ResolvedType inAspect, IntMap bindings) {
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		throw new RuntimeException("unimplemented");
 	}
 
