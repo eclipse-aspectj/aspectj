@@ -633,6 +633,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				if (this.isParameterizedType()) {
 					munger.setPointcut(munger.getPointcut().parameterizeWith(typeVariableMap));
 				}
+				munger.setDeclaringType(this);
 				l.add(munger);
 			}
 		}

@@ -270,7 +270,7 @@ public abstract class Advice extends ShadowMunger {
      */
     public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
     	// assert !fromType.isAbstract();
-        Pointcut p = pointcut.concretize(fromType, signature.getArity(), this);
+        Pointcut p = pointcut.concretize(fromType, getDeclaringType(), signature.getArity(), this);
         if (clause != null) {
         	Pointcut oldP = p;
         	p = new AndPointcut(clause, p);

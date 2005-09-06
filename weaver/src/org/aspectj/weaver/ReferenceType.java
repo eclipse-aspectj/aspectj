@@ -421,6 +421,7 @@ public class ReferenceType extends ResolvedType {
 	
 	protected Collection getDeclares() {
 		if (parameterizedDeclares != null) return parameterizedDeclares;
+		Collection declares = null;
 		if (isParameterizedType()) {
 			Collection genericDeclares = delegate.getDeclares();
 			parameterizedDeclares = new ArrayList();
@@ -429,10 +430,15 @@ public class ReferenceType extends ResolvedType {
 				Declare declareStatement = (Declare) iter.next();
 				parameterizedDeclares.add(declareStatement.parameterizeWith(parameterizationMap));
 			}
-			return parameterizedDeclares;
+			declares = parameterizedDeclares;
 		} else {
-			return delegate.getDeclares();
+			declares = delegate.getDeclares();
 		}
+		for (Iterator iter = declares.iterator(); iter.hasNext();) {
+			Declare d = (Declare) iter.next();
+			d.setDeclaringType(this);
+		}
+		return declares;
 	}
 	
 	protected Collection getTypeMungers() { return delegate.getTypeMungers(); }

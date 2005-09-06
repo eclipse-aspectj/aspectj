@@ -111,6 +111,7 @@ public class CrosscuttingMembers {
 		// this is not extensible, oh well
 		if (declare instanceof DeclareErrorOrWarning) {
 			ShadowMunger m = new Checker((DeclareErrorOrWarning)declare);
+			m.setDeclaringType(declare.getDeclaringType());
 			addShadowMunger(m);
 		} else if (declare instanceof DeclarePrecedence) {
 			declareDominates.add(declare);
@@ -122,7 +123,8 @@ public class CrosscuttingMembers {
 			DeclareSoft d = (DeclareSoft)declare;
 			// Ordered so that during concretization we can check the related munger
 			ShadowMunger m = Advice.makeSoftener(world, d.getPointcut(), d.getException(),inAspect,d);
-			Pointcut concretePointcut = d.getPointcut().concretize(inAspect, 0,m);
+			m.setDeclaringType(d.getDeclaringType());
+			Pointcut concretePointcut = d.getPointcut().concretize(inAspect, d.getDeclaringType(), 0,m);
 			m.pointcut = concretePointcut;
 			declareSofts.add(new DeclareSoft(d.getException(), concretePointcut));
 			addConcreteShadowMunger(m);

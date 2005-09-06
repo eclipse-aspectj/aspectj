@@ -41,6 +41,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	protected ISourceContext sourceContext;
 	private ISourceLocation sourceLocation;
 	private String handle = null;
+	private ResolvedType declaringType;  // the type that declared this munger.
 
 	
 	public ShadowMunger(Pointcut pointcut, int start, int end, ISourceContext sourceContext) {
@@ -112,7 +113,18 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		this.pointcut = pointcut;
 	}
 
-
+	/**
+	 * Invoked when the shadow munger of a resolved type are processed.
+	 * @param aType
+	 */
+	public void setDeclaringType(ResolvedType aType) {
+		this.declaringType = aType;
+	}
+	
+	public ResolvedType getDeclaringType() {
+		return this.declaringType;
+	}
+	
 	/**
 	 * @return a Collection of ResolvedType for all checked exceptions that
 	 *          might be thrown by this munger
