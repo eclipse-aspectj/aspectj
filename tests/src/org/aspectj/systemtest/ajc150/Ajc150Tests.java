@@ -390,6 +390,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("final itd methods on interfaces");
   }
   
+  public void testPrivatePointcutOverriding() {
+	  runTest("can't override private pointcut in abstract aspect");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

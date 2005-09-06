@@ -494,6 +494,13 @@
         </compile>
     </ajc-test>
 
+   <ajc-test dir="bugs150" pr="108818" title="can't override private pointcut in abstract aspect">
+        <compile files="PrivatePointcutOverriding.aj">
+            <message kind="warning" line="19" text="matched join point from super advice"/>
+            <message kind="warning" line="21" text="matched join point from sub advice"/>
+        </compile>
+    </ajc-test>
+    
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
