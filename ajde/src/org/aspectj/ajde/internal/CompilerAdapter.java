@@ -292,11 +292,13 @@ public class CompilerAdapter {
 			if (sourceLevel.equals(CompilerOptions.VERSION_1_5)) {
 			    optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5);	
 			} else {
-				String setCompliance = (String) optionsToSet.get( CompilerOptions.OPTION_Compliance);
-				if ( ! (setCompliance.equals(CompilerOptions.VERSION_1_4 )
-			         && slVersion.equals(CompilerOptions.VERSION_1_3)) ) {
-				    optionsToSet.put(CompilerOptions.OPTION_Source, slVersion);		
-				} 
+				if (optionsToSet.containsKey(CompilerOptions.OPTION_Compliance)) {
+					String setCompliance = (String) optionsToSet.get(CompilerOptions.OPTION_Compliance);
+					if ( ! (setCompliance.equals(CompilerOptions.VERSION_1_4 )
+				         && slVersion.equals(CompilerOptions.VERSION_1_3)) ) {
+					    optionsToSet.put(CompilerOptions.OPTION_Source, slVersion);		
+					} 
+				}
 			}
 		}
 	
