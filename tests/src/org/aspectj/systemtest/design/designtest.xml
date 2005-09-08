@@ -29,6 +29,8 @@
       keywords="from-design">
         <compile files="MultiInheritCF.java">
 			<message kind="error" line="0"/>
+			<message kind="error" line="17"/>
+			<message kind="error" line="18"/>
             <message kind="error" line="21"/>
             <message kind="error" line="41"/>
             <message kind="error" line="42"/>

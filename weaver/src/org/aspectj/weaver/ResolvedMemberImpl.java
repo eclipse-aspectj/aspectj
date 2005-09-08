@@ -534,7 +534,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			parameterizedParameterTypes[i] = 
 				parameterize(getGenericParameterTypes()[i], typeMap,isParameterized);
 		}
-		return new ResolvedMemberImpl(
+		ResolvedMemberImpl ret = new ResolvedMemberImpl(
 					getKind(),
 					newDeclaringType,
 					getModifiers(),
@@ -544,6 +544,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 					getExceptions(),
 					this
 				);
+		ret.setSourceContext(getSourceContext());
+		return ret;
 	}
 	
 	

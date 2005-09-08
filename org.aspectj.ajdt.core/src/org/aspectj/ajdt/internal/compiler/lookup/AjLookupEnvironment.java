@@ -113,7 +113,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
 			for (int j = 0; j < b.length; j++) {
-				factory.addSourceTypeBinding(b[j]);
+				factory.addSourceTypeBinding(b[j],units[i]);
 			}
 		}
 		
@@ -787,7 +787,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 * @param aBinding
 	 */
 	public void anonymousTypeBindingCreated(LocalTypeBinding aBinding) {
-		factory.addSourceTypeBinding(aBinding);
+		factory.addSourceTypeBinding(aBinding,null);
 	}
 }
 

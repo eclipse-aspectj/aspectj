@@ -1299,9 +1299,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child) {
 		//System.err.println("check: " + child.getDeclaringType() + " overrides " + parent.getDeclaringType());
 		if (Modifier.isFinal(parent.getModifiers())) {
-			// XXX horrible test, if we're in eclipes, child.getSourceLocation will be
-			// null, and this message will have already been issued.
-			if (child.getSourceLocation() == null) return false;
 			world.showMessage(Message.ERROR,
 					WeaverMessages.format(WeaverMessages.CANT_OVERRIDE_FINAL_MEMBER,parent),
 					child.getSourceLocation(),null);

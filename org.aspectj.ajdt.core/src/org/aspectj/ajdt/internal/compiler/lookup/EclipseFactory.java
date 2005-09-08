@@ -27,6 +27,7 @@ import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -728,7 +729,7 @@ public class EclipseFactory {
 		return EclipseShadow.makeShadow(this, (ASTNode) context, context);
 	}
 	
-	public void addSourceTypeBinding(SourceTypeBinding binding) {
+	public void addSourceTypeBinding(SourceTypeBinding binding, CompilationUnitDeclaration unit) {
 		TypeDeclaration decl = binding.scope.referenceContext;
 		
 		// Deal with the raw/basic type to give us an entry in the world type map
@@ -746,7 +747,7 @@ public class EclipseFactory {
 			simpleTx  = UnresolvedType.forName(getName(binding)); 
 		}
 		ReferenceType name  = getWorld().lookupOrCreateName(simpleTx);
-		EclipseSourceType t = new EclipseSourceType(name, this, binding, decl);
+		EclipseSourceType t = new EclipseSourceType(name, this, binding, decl, unit);
 		
 		// For generics, go a bit further - build a typex for the generic type
 		// give it the same delegate and link it to the raw type
@@ -766,7 +767,7 @@ public class EclipseFactory {
 		
 		ReferenceBinding[] memberTypes = binding.memberTypes;
 		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			addSourceTypeBinding((SourceTypeBinding) memberTypes[i]);
+			addSourceTypeBinding((SourceTypeBinding) memberTypes[i], unit);
 		}
 	}
 	

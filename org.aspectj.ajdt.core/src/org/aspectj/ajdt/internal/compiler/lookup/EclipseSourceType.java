@@ -27,6 +27,7 @@ import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
@@ -52,6 +53,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	
 	private SourceTypeBinding binding;
 	private TypeDeclaration declaration;
+	private CompilationUnitDeclaration unit;
 	private boolean annotationsResolved = false;
 	private ResolvedType[] resolvedAnnotations = null;
 	
@@ -60,12 +62,14 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	public EclipseSourceType(ReferenceType resolvedTypeX, EclipseFactory factory,
-								SourceTypeBinding binding, TypeDeclaration declaration)
+								SourceTypeBinding binding, TypeDeclaration declaration,
+								CompilationUnitDeclaration unit)
 	{
 		super(resolvedTypeX, true);
 		this.factory = factory;
 		this.binding = binding;
 		this.declaration = declaration;
+		this.unit = unit;
 		
 		resolvedTypeX.setSourceContext(new EclipseSourceContext(declaration.compilationResult));
 		resolvedTypeX.setStartPos(declaration.sourceStart);
@@ -151,7 +155,12 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					declaredPointcuts.add(df);
 				} else {
 					if (amd.binding == null || !amd.binding.isValidBinding()) continue;
-					declaredMethods.add(factory.makeResolvedMember(amd.binding));
+					ResolvedMember member = factory.makeResolvedMember(amd.binding);
+					if (unit != null) {
+						member.setSourceContext(new EclipseSourceContext(unit.compilationResult,amd.binding.sourceStart()));
+						member.setPosition(amd.binding.sourceStart(),amd.binding.sourceEnd());
+					}
+					declaredMethods.add(member);
 				}
 			}
 		}
