@@ -505,6 +505,17 @@
         <compile files="pr108816.aj" >
         </compile>
     </ajc-test>   
+
+    <ajc-test dir="bugs150/pr108902" pr="108902" title="no type mismatch on generic types in itds">
+        <compile files="Subject.java,Observer.java,ObserverProtocol.aj" >
+        </compile>
+    </ajc-test>   
+
+    <ajc-test dir="bugs150" pr="108903" title="super call in ITD">
+        <compile files="pr108903.aj" >
+            <message kind="error" line="14" text="The method print() is undefined for the type Object"/>
+        </compile>
+    </ajc-test>  
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

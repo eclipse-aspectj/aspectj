@@ -398,6 +398,13 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("advising cflow advice execution");
   }
   
+  public void testNoTypeMismatchOnSameGenericTypes() {
+	  runTest("no type mismatch on generic types in itds");
+  }
+  
+  public void testSuperCallInITD() {
+	  runTest("super call in ITD");
+  }
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

@@ -103,12 +103,21 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
             if (((declaredModifiers & AccAbstract) != 0))
                 scope.problemReporter().methodNeedingNoBody(this);
         }        
+
+        // XXX AMC we need to do this, but I'm not 100% comfortable as I don't
+        // know why the return type is wrong in this case. Also, we don't seem to need
+        // to do it for args...
+        if (munger.getSignature().getReturnType().isRawType()) {
+        	if (!binding.returnType.isRawType()) {
+				EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
+        		binding.returnType = world.makeTypeBinding(munger.getSignature().getReturnType()); 
+        	}
+        }
         
         // check @Override annotation - based on MethodDeclaration.resolveStatements() @Override processing
 		checkOverride: {
 			if (this.binding == null) break checkOverride;
 			if (this.scope.compilerOptions().sourceLevel < JDK1_5) break checkOverride;
-			int bindingModifiers = this.binding.modifiers;
 			boolean hasOverrideAnnotation = (this.binding.tagBits & TagBits.AnnotationOverride) != 0;
 			
 			// Need to verify
