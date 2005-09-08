@@ -516,6 +516,11 @@
             <message kind="error" line="14" text="The method print() is undefined for the type Object"/>
         </compile>
     </ajc-test>  
+
+    <ajc-test dir="bugs150" pr="109042" title="no unused parameter warnings for synthetic advice args">
+        <compile files="pr109042.aj" options="-warn:+unusedArgument -warn:+unusedPrivate -warn:+unusedImport -1.5">
+        </compile>
+    </ajc-test>  
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

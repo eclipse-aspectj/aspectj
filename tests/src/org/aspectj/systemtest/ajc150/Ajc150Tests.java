@@ -405,6 +405,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testSuperCallInITD() {
 	  runTest("super call in ITD");
   }
+  
+  public void testNoUnusedParameterWarningsForSyntheticAdviceArgs() {
+	  runTest("no unused parameter warnings for synthetic advice args");
+  }
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

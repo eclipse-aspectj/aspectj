@@ -31,6 +31,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
@@ -411,6 +412,13 @@ public class AjProblemReporter extends ProblemReporter {
     	// don't output unused warnings for pointcuts...
     	if (!(methodDecl instanceof PointcutDeclaration))
     			super.unusedPrivateMethod(methodDecl);
+    }
+    
+    public void unusedArgument(LocalDeclaration localDecl) {
+    	// don't warn if this is an aj synthetic arg
+    	String argType = new String(localDecl.type.resolvedType.signature());
+    	if (argType.startsWith("Lorg/aspectj/runtime/internal")) return;
+    	super.unusedArgument(localDecl);
     }
 
     /**
