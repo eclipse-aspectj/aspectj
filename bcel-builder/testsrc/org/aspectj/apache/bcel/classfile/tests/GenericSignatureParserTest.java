@@ -230,7 +230,7 @@ public class GenericSignatureParserTest extends TestCase {
 			Signature.FieldTypeSignature cSig = parser.parseAsFieldSignature("Ljava/util/List</;");
 			fail("Expected IllegalStateException");
 		} catch (IllegalStateException ex) {
-			assertTrue(ex.getMessage().contains("Ljava/util/List</;"));
+			assertTrue(ex.getMessage().indexOf("Ljava/util/List</;") != -1);
 		}
 	}
 	
