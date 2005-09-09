@@ -484,7 +484,10 @@
         <term><literal>args(<replaceable>Type</replaceable> or <replaceable>Id</replaceable>, ...)</literal></term>
         <listitem>
           Picks out each join point where the arguments are instances of
-          a type of the appropriate type pattern or identifier.
+          the appropriate type (or type of the identifier if using that form). A
+          <literal>null</literal> argument is matched iff the static type of the 
+          argument (declared parameter type or field type) is the same as, or a subtype of,
+          the specified args type. 
         </listitem>
       </varlistentry>
 
