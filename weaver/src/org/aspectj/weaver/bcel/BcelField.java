@@ -34,6 +34,8 @@ import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSigna
 
 final class BcelField extends ResolvedMemberImpl {
 
+	private static int AccSynthetic = 0x1000;
+	
 	private Field field;
 	private boolean isAjSynthetic;
 	private boolean isSynthetic = false;
@@ -78,6 +80,12 @@ final class BcelField extends ResolvedMemberImpl {
 		for (int i = attrs.length - 1; i >= 0; i--) {
 			if (attrs[i] instanceof Synthetic) isSynthetic = true;
 		}
+		
+		// in 1.5, synthetic is a modifier, not an attribute
+		if ((field.getModifiers() & AccSynthetic) != 0) {
+			isSynthetic = true;
+		}
+		
 	}
 	
 	

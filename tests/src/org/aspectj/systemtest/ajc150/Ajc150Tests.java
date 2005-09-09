@@ -409,6 +409,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testNoUnusedParameterWarningsForSyntheticAdviceArgs() {
 	  runTest("no unused parameter warnings for synthetic advice args");
   }
+  
+  public void testNoVerifyErrorWithSetOnInnerType() {
+	  runTest("no verify error with set on inner type");
+  }
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

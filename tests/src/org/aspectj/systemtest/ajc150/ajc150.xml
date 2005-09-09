@@ -522,6 +522,14 @@
         <compile files="pr109042.aj" options="-warn:+unusedArgument -warn:+unusedPrivate -warn:+unusedImport -1.5">
         </compile>
     </ajc-test>  
+    
+    <ajc-test dir="bugs150" pr="109124" title="no verify error with set on inner type">
+        <compile files="VerifyErrorOnSet.aj" options="-1.5" >
+        </compile>
+        <run class="test.VerifyErrorOnSet"/>
+    </ajc-test>  
+        
+    
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
