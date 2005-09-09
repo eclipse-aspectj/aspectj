@@ -36,6 +36,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
@@ -199,6 +200,12 @@ public class EclipseFactory {
 			return fromTypeVariableBinding((TypeVariableBinding)binding);
 		}
 		
+		// handle arrays since the component type may need special treatment too...
+		if (binding instanceof ArrayBinding) {
+			ArrayBinding aBinding = (ArrayBinding) binding;
+			UnresolvedType componentType = fromBinding(aBinding.leafComponentType);
+			return UnresolvedType.makeArray(componentType, aBinding.dimensions);
+		}
 		
 		if (binding instanceof WildcardBinding) {
 			WildcardBinding eWB = (WildcardBinding) binding;

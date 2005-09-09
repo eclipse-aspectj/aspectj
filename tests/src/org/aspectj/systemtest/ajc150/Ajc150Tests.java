@@ -413,6 +413,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testNoVerifyErrorWithSetOnInnerType() {
 	  runTest("no verify error with set on inner type");
   }
+  
+  public void testCantFindTypeErrorWithGenericReturnTypeOrParameter() {
+	  runTest("cant find type error with generic return type or parameter");
+  }
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

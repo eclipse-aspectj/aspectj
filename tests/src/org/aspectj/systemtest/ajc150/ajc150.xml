@@ -527,9 +527,15 @@
         <compile files="VerifyErrorOnSet.aj" options="-1.5" >
         </compile>
         <run class="test.VerifyErrorOnSet"/>
+        <compile files="pr106874.aj" options="-1.5" >
+        </compile>
+        <run class="pr106874"/>    
     </ajc-test>  
         
-    
+    <ajc-test dir="bugs150" pr="108826" title="cant find type error with generic return type or parameter">
+        <compile files="pr108826.aj" options="-1.5 -emacssym" >
+        </compile>
+    </ajc-test> 
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
