@@ -417,6 +417,12 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCantFindTypeErrorWithGenericReturnTypeOrParameter() {
 	  runTest("cant find type error with generic return type or parameter");
   }
+  
+// currently failing...
+//  public void testNoVerifyErrorOnGenericCollectionMemberAccess() {
+//	  runTest("no verify error on generic collection member access");
+//  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

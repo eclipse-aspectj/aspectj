@@ -536,6 +536,13 @@
         <compile files="pr108826.aj" options="-1.5 -emacssym" >
         </compile>
     </ajc-test> 
+ 
+     <ajc-test dir="bugs150" pr="105181" title="no verify error on generic collection member access">
+        <compile files="pr105181.aj" options="-1.5">
+        </compile>
+        <run class="pr105181"/>
+    </ajc-test> 
+       
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
