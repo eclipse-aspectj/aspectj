@@ -405,11 +405,15 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testSuperCallInITD() {
 	  runTest("super call in ITD");
   }
-
+  
   public void testSuperCallInITDPart2() {
 	  runTest("super call in ITD - part 2");
   }
-
+  
+  public void testAtAnnotationBadTest_pr103740() {
+	  runTest("Compiler failure on at_annotation");
+  }
+  
   public void testNoUnusedParameterWarningsForSyntheticAdviceArgs() {
 	  runTest("no unused parameter warnings for synthetic advice args");
   }

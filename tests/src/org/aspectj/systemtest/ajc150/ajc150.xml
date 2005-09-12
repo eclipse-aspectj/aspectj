@@ -548,6 +548,13 @@
         </compile>
     </ajc-test> 
         
+    <ajc-test dir="bugs150/pr103740" pr="103740" title="Compiler failure on at_annotation">
+     <compile files="AroundAdvice.aj" options="-1.5,-showWeaveInfo">
+       <message kind="weave" text="Join point 'method-execution(void C.m1())' in Type 'C' (AroundAdvice.aj:12) advised by before advice from 'ErrorHandling' (AroundAdvice.aj:8)"/>
+	   <message kind="weave" text="Join point 'method-execution(void C.m3())' in Type 'C' (AroundAdvice.aj:14) advised by before advice from 'ErrorHandling' (AroundAdvice.aj:8)"/>
+	 </compile>
+    </ajc-test>
+
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

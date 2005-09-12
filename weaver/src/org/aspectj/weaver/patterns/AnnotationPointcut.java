@@ -185,9 +185,6 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-
-
-
 		
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
@@ -212,8 +209,11 @@ public class AnnotationPointcut extends NameBindingPointcut {
 				state.setErroneousVar(btp.getFormalIndex());
 			}
 			state.set(btp.getFormalIndex(),var);
-		} 
-		return Literal.TRUE;
+		}
+		if (matchInternal(shadow).alwaysTrue()) 
+			return Literal.TRUE;
+		else 
+			return Literal.FALSE;
 	}
 
 	/* (non-Javadoc)
