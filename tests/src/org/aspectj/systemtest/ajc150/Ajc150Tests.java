@@ -405,7 +405,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testSuperCallInITD() {
 	  runTest("super call in ITD");
   }
-  
+
+  public void testSuperCallInITDPart2() {
+	  runTest("super call in ITD - part 2");
+  }
+
   public void testNoUnusedParameterWarningsForSyntheticAdviceArgs() {
 	  runTest("no unused parameter warnings for synthetic advice args");
   }
@@ -417,6 +421,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCantFindTypeErrorWithGenericReturnTypeOrParameter() {
 	  runTest("cant find type error with generic return type or parameter");
   }
+
+ 
   
 // currently failing...
 //  public void testNoVerifyErrorOnGenericCollectionMemberAccess() {

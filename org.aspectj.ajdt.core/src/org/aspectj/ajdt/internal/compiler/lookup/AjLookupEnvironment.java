@@ -122,14 +122,22 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		AnonymousClassPublisher.aspectOf().setAnonymousClassCreationListener(this);
 		
 		// need to build inter-type declarations for all AspectDeclarations at this point
-        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-            SourceTypeBinding[] b = units[i].scope.topLevelTypes;
-            for (int j = 0; j < b.length; j++) {
-                buildInterTypeAndPerClause(b[j].scope);
-                addCrosscuttingStructures(b[j].scope);
-            }
-        }        
+		// this MUST be done in order from super-types to subtypes
+		List typesToProcess = new ArrayList();
+		for (int i=lastCompletedUnitIndex+1; i<=lastUnitIndex; i++) {
+			CompilationUnitScope cus = units[i].scope;
+			SourceTypeBinding[] stbs = cus.topLevelTypes;
+			for (int j=0; j<stbs.length; j++) {
+				SourceTypeBinding stb = stbs[j];
+				typesToProcess.add(stb);
+			}
+		}
 
+		while (typesToProcess.size()>0) {
+			// removes types from the list as they are processed...
+			collectAllITDsAndDeclares((SourceTypeBinding)typesToProcess.get(0),typesToProcess);
+		}		
+				
 		factory.finishTypeMungers();
 	
 		// now do weaving
@@ -156,7 +164,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		boolean typeProcessingOrderIsImportant = declareParents.size()>0 || declareAnnotationOnTypes.size()>0; //DECAT
 		
 		if (typeProcessingOrderIsImportant) {
-			List typesToProcess = new ArrayList();
+			typesToProcess = new ArrayList();
 			for (int i=lastCompletedUnitIndex+1; i<=lastUnitIndex; i++) {
 				CompilationUnitScope cus = units[i].scope;
 				SourceTypeBinding[] stbs = cus.topLevelTypes;
@@ -199,6 +207,24 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
                 
 		stepCompleted = BUILD_FIELDS_AND_METHODS;
 		lastCompletedUnitIndex = lastUnitIndex;
+	}
+	
+	
+	/**
+	 * Find all the ITDs and Declares, but it is important we do this from the supertypes
+	 * down to the subtypes.
+	 * @param sourceType
+	 * @param yetToProcess
+	 */
+	private void collectAllITDsAndDeclares(SourceTypeBinding sourceType, Collection yetToProcess) {
+		// Look at the supertype first
+	    ReferenceBinding superType = sourceType.superclass();
+	    if (yetToProcess.contains(superType) && superType instanceof SourceTypeBinding) {
+	    	collectAllITDsAndDeclares((SourceTypeBinding)superType, yetToProcess);
+	    }
+        buildInterTypeAndPerClause(sourceType.scope);
+        addCrosscuttingStructures(sourceType.scope);
+        yetToProcess.remove(sourceType);
 	}
 	
 	/**

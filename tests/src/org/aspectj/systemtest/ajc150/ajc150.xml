@@ -542,7 +542,12 @@
         </compile>
         <run class="pr105181"/>
     </ajc-test> 
-       
+
+    <ajc-test dir="bugs150/pr108903" pr="108903" title="super call in ITD - part 2">
+        <compile files="com/designpattern/decorator/HeaderDecorator.aj,com/designpattern/decorator/Main.java,com/designpattern/decorator/Order.java,com/designpattern/decorator/OrderDecorator.aj,com/designpattern/decorator/SalesOrder.java" options="-1.5" >
+        </compile>
+    </ajc-test> 
+        
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
