@@ -112,5 +112,10 @@ public class InterTypeFieldBinding extends FieldBinding {
 	public ReferenceBinding getTargetType() {
 		return targetType;
 	}
+	
+	// overrides ITD'd method in FieldBinding...
+	public ReferenceBinding getOwningClass() {
+		return targetType;
+	}
 
 }

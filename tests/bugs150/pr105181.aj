@@ -21,4 +21,14 @@ public class pr105181 {
      */
     Foo f2 = source.get(0).foo();
   }
+  
+  public void worksOK() {
+	  java.util.Vector<Bar> source = new java.util.Vector<Bar>();
+	  source.add(new Bar());
+	  Bar b = source.get(0).field;
+  }
+}
+
+class Bar {
+	Bar field;
 }

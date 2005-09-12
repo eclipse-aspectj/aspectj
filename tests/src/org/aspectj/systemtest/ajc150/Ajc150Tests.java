@@ -405,7 +405,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testSuperCallInITD() {
 	  runTest("super call in ITD");
   }
-  
+
   public void testSuperCallInITDPart2() {
 	  runTest("super call in ITD - part 2");
   }
@@ -426,12 +426,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("cant find type error with generic return type or parameter");
   }
 
- 
-  
-// currently failing...
-//  public void testNoVerifyErrorOnGenericCollectionMemberAccess() {
-//	  runTest("no verify error on generic collection member access");
-//  }
+  public void testNoVerifyErrorOnGenericCollectionMemberAccess() {
+	  runTest("no verify error on generic collection member access");
+  }
   
   // helper methods.....
   
