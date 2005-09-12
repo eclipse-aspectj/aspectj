@@ -555,6 +555,10 @@
 	 </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs150/SimpleInsuranceFailure" title="raw and generic type conversion with itd cons">
+        <compile files="" options=" -emacssym, -sourceroots ." >
+        </compile>
+    </ajc-test> 
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

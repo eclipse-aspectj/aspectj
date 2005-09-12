@@ -282,7 +282,7 @@ public abstract class World implements Dump.INode {
 	    	ReferenceTypeDelegate delegate = resolveDelegate(simpleOrRawType);
 	    	if (delegate == null) return ResolvedType.MISSING;
 	    	
-	    	if (delegate.isGeneric()) {
+	    	if (delegate.isGeneric() && behaveInJava5Way) {
 	    		// ======== raw type ===========
 	    		simpleOrRawType.typeKind = TypeKind.RAW;
 	        	ReferenceType genericType = new ReferenceType(

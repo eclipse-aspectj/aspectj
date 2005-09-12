@@ -2722,7 +2722,8 @@ public class BcelShadow extends Shadow {
 			                                     superClassName, 
                                                  getEnclosingClass().getFileName(),
 			                                     Modifier.PUBLIC,
-			                                     new String[] {});
+			                                     new String[] {},
+			                                     getWorld());
         InstructionFactory fact = new InstructionFactory(closureClass.getConstantPoolGen());
         				
         // constructor

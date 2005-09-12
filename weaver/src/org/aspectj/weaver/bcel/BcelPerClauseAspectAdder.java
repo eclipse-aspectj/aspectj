@@ -69,7 +69,8 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
                         "java.lang.Object",
                         null,
                         Constants.ACC_INTERFACE + Constants.ACC_PUBLIC + Constants.ACC_ABSTRACT,
-                        new String[0]
+                        new String[0],
+                        getWorld()
                 );
                 interfaceGen.addMethodGen(makeMethodGen(interfaceGen, AjcMemberMaker.perObjectInterfaceGet(aspectType)));
                 interfaceGen.addMethodGen(makeMethodGen(interfaceGen, AjcMemberMaker.perObjectInterfaceSet(aspectType)));

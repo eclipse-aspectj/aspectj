@@ -87,6 +87,7 @@ public final class LazyClassGen {
 	private BcelObjectType myType; // XXX is not set for types we create
 	private ClassGen myGen;
 	private ConstantPoolGen constantPoolGen;
+	private World world;
 
     private List /*LazyMethodGen*/ methodGens  = new ArrayList();
     private List /*LazyClassGen*/  classGens   = new ArrayList();
@@ -236,12 +237,14 @@ public final class LazyClassGen {
         String super_class_name,
         String file_name,
         int access_flags,
-        String[] interfaces) 
+        String[] interfaces,
+        World world) 
     {
         myGen = new ClassGen(class_name, super_class_name, file_name, access_flags, interfaces);
 		constantPoolGen = myGen.getConstantPool();
         fact = new InstructionFactory(myGen, constantPoolGen);
         regenerateGenericSignatureAttribute = true;
+        this.world = world;
     }
 
 	//Non child type, so it comes from a real type in the world.
@@ -250,6 +253,7 @@ public final class LazyClassGen {
     	constantPoolGen = myGen.getConstantPool();
 		fact = new InstructionFactory(myGen, constantPoolGen);        
 		this.myType = myType;
+		this.world = myType.getResolvedTypeX().getWorld();
 
 		/* Does this class support serialization */
 		if (UnresolvedType.SERIALIZABLE.resolve(getType().getWorld()).isAssignableFrom(getType())) {
@@ -386,7 +390,7 @@ public final class LazyClassGen {
 	}
 
 	public World getWorld () {
-		return myType.getResolvedTypeX().getWorld();
+		return world;
 	}
 
     public List getMethodGens() {
@@ -484,6 +488,8 @@ public final class LazyClassGen {
      *   4. Build the new attribute which includes all typevariable, supertype and superinterface information
      */
 	private void fixupGenericSignatureAttribute () {
+		
+		if (getWorld() != null && !getWorld().isInJava5Mode()) return;
 		
 		// TODO asc generics Temporarily assume that types we generate dont need a signature attribute (closure/etc).. will need revisiting no doubt...
 		if (myType==null) return;

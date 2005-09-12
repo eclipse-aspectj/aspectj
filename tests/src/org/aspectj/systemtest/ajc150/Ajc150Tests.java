@@ -430,6 +430,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("no verify error on generic collection member access");
   }
   
+  public void testRawAndGenericTypeConversionITDCons() {
+	  runTest("raw and generic type conversion with itd cons");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

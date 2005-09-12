@@ -43,6 +43,10 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 		return munger.getSignature();
 	}
 	
+	public World getWorld() {
+		return aspectType.getWorld();
+	}
+	
 	public ISourceLocation getSourceLocation() {
 		if (munger == null) return null;
 		return munger.getSourceLocation(); //XXX

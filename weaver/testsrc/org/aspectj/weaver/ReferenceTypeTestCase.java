@@ -21,6 +21,7 @@ public class ReferenceTypeTestCase extends TestCase {
 
 	public void testIsRawTrue() {
 		BcelWorld world = new BcelWorld();
+		world.setBehaveInJava5Way(true);
 		UnresolvedType javaLangClass = UnresolvedType.forName("java.lang.Class");
 		ResolvedType rtx = world.resolve(javaLangClass);
 		assertTrue("Resolves to reference type",(rtx instanceof ReferenceType));
@@ -30,6 +31,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	
 	public void testIsRawFalse() {
 		BcelWorld world = new BcelWorld();
+		world.setBehaveInJava5Way(true);
 		UnresolvedType javaLangObject = UnresolvedType.forName("java.lang.Object");
 		ResolvedType rtx = world.resolve(javaLangObject);
 		assertTrue("Resolves to reference type",(rtx instanceof ReferenceType));
@@ -39,6 +41,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	
 	public void testIsGenericTrue() {
 		BcelWorld world = new BcelWorld();
+		world.setBehaveInJava5Way(true);
 		UnresolvedType javaLangClass = UnresolvedType.forName("java.lang.Class");
 		ResolvedType rtx = world.resolve(javaLangClass);
 		assertTrue("java.lang.Class has underpinning generic type",rtx.getGenericType().isGenericType());
@@ -46,6 +49,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	
 	public void testIsGenericFalse() {
 		BcelWorld world = new BcelWorld();
+		world.setBehaveInJava5Way(true);
 		UnresolvedType javaLangObject = UnresolvedType.forName("java.lang.Object");
 		ResolvedType rtx = world.resolve(javaLangObject);
 		assertFalse(rtx.isGenericType());

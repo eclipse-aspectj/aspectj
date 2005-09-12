@@ -450,6 +450,7 @@ import org.aspectj.weaver.bcel.BcelWorld;
 	 protected void setUp() throws Exception {
 		super.setUp();
 		this.world = new BcelWorld();
+		this.world.setBehaveInJava5Way(true);
 		this.bindings = new Bindings(0);
 		this.scope = new SimpleScope(world , new FormalBinding[] {});		
 		this.scope.setImportedPrefixes(new String[] {"java.io.","java.util.","java.lang."});
