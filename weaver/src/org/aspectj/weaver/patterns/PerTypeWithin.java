@@ -84,6 +84,12 @@ public class PerTypeWithin extends PerClause {
 					shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
     		shadow.getIWorld().getMessageHandler().handleMessage(msg);
     	}
+    	
+    	// See pr106554 - we can't put advice calls in an interface when the advice is defined
+    	// in a pertypewithin aspect - the JPs only exist in the static initializer and can't 
+    	// call the localAspectOf() method.
+    	if (enclosingType.isInterface()) return FuzzyBoolean.NO;
+    	
     	typePattern.resolve(shadow.getIWorld());
     	return isWithinType(enclosingType);
     }
