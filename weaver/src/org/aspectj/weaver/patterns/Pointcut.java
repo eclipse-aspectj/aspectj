@@ -211,9 +211,10 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	public static final byte ATWITHIN = 17;
 	public static final byte ATWITHINCODE = 18;
 	public static final byte ATTHIS_OR_TARGET = 19;
-	public static final byte ATARGS = 20;
 	
-	public static final byte NONE = 40;
+	public static final byte NONE = 20; // DO NOT CHANGE OR REORDER THIS SEQUENCE, THIS VALUE CAN BE PUT OUT BY ASPECTJ1.2.1
+
+	public static final byte ATARGS = 21;
 
 	public byte getPointcutKind() { return pointcutKind; }
 
