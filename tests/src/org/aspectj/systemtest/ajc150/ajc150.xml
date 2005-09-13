@@ -554,6 +554,17 @@
 	   <message kind="weave" text="Join point 'method-execution(void C.m3())' in Type 'C' (AroundAdvice.aj:14) advised by before advice from 'ErrorHandling' (AroundAdvice.aj:8)"/>
 	 </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs150/pr106554" pr="106554" title="Problem in staticinitialization with pertypewithin aspect">
+        <compile files="A.aj" options="-showWeaveInfo">
+          <message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.aj:1) advised by before advice from 'StopsInit' (A.aj:21)"/>
+        </compile>
+        <run class="A">
+          <stdout>
+            <line text="test = 1"/>
+          </stdout>
+        </run>
+    </ajc-test> 
 
     <ajc-test dir="bugs150/SimpleInsuranceFailure" title="raw and generic type conversion with itd cons">
         <compile files="" options=" -emacssym, -sourceroots ." >

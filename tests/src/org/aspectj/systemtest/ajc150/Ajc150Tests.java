@@ -97,6 +97,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	runTest("compiler error when mixing inheritance, overriding and polymorphism");
   }
   
+  public void testPerTypeWithin_pr106554() {runTest("Problem in staticinitialization with pertypewithin aspect");}
+  
   public void testPerTypeWithinMissesNamedInnerTypes() {
   	runTest("pertypewithin() handing of inner classes (1)");
   }
