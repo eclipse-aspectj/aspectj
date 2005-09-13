@@ -21,6 +21,8 @@ import org.aspectj.tools.ajc.AjcTests;
 
 public class BcweaverJarMaker {
 
+	private static String cp = "../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" + File.pathSeparator + System.getProperty("aspectjrt.path");
+	
 	public BcweaverJarMaker() {
 		super();
 	}
@@ -42,6 +44,8 @@ public class BcweaverJarMaker {
 		makeDuplicateManifestTestJars();
 
 		makeOutjarTestJars();
+		makeAspectPathTestJars();
+		makeAjc11TestJars();
 	}
 	
 	public static void makeJar0() throws IOException {
@@ -353,6 +357,30 @@ public class BcweaverJarMaker {
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/TraceHello.java");
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 	}	
+	
+	public static void makeAspectPathTestJars() throws IOException {
+		List args = new ArrayList();
+
+		args.clear();
+		args.add("-classpath"); 
+		args.add(cp);
+		args.add("-outjar");
+		args.add("../tests/bugs/perCflowAndJar/lib.jar");
+		args.add("../tests/bugs/perCflowAndJar/PerCFlowCompileFromJar.java");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+	}
+	
+	public static void makeAjc11TestJars() throws IOException {
+		List args = new ArrayList();
+
+		args.clear();
+		args.add("-classpath"); 
+		args.add(cp);
+		args.add("-outjar");
+		args.add("../tests/bugs/cflowAndJar/lib.jar");
+		args.add("../tests/bugs/cflowAndJar/AbstractAspect.aj");
+		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
+	}
 	
 	public static void makeOutjarTestJars() throws IOException {
 		List args = new ArrayList();
