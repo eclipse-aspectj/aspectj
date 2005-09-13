@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.UnresolvedType;
@@ -60,7 +61,13 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 	}
 	
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		TypePattern ret = new BindingTypePattern(UnresolvedType.read(s), s.readShort(), s.readBoolean());
+		UnresolvedType  type = UnresolvedType.read(s);
+		int            index = s.readShort();
+		boolean   isVarargs = false;
+		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			isVarargs = s.readBoolean();
+		}
+		TypePattern ret = new BindingTypePattern(type,index,isVarargs);
 		ret.readLocation(context, s);
 		return ret;
 	}
