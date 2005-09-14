@@ -70,7 +70,21 @@
    <ajc-test dir="bugs150" pr="107486" title="anonymous inner classes">
         <compile files="pr107486.aj">
         </compile>
-    </ajc-test>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150" pr="102210" title="NullPointerException trying to compile">
+        <compile files="PR102210.java"/>
+        <run class="PR102210">
+          <stderr>
+            <line text="List size is 1"/>
+            <line text="m1 running"/>
+            <line text="List size is 2"/>
+            <line text="m2 running"/>
+            <line text="List size is 3"/>
+            <line text="m3 running"/>
+          </stderr>
+        </run>
+   </ajc-test>
 
    <ajc-test dir="bugs150" pr="107486" title="multiple anonymous inner classes">
         <compile files="pr107486part2.aj">
