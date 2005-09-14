@@ -63,7 +63,6 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 
