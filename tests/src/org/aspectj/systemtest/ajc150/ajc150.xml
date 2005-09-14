@@ -523,6 +523,12 @@
         </compile>
     </ajc-test>  
     
+    <ajc-test dir="bugs150" pr="109486" title="Internal compiler error (ClassParser.java:242)">
+        <compile files="PR109486.java" >
+          <message kind="error" line="1" text="The class PR109486 can be either abstract or final, not both"/>
+        </compile>
+    </ajc-test>  
+    
     <ajc-test dir="bugs150" pr="109124" title="no verify error with set on inner type">
         <compile files="VerifyErrorOnSet.aj" options="-1.5" >
         </compile>
