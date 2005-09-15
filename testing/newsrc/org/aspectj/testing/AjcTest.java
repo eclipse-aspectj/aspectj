@@ -29,11 +29,10 @@ public class AjcTest {
 	private static boolean is14VMOrGreater = true;
 	private static boolean is15VMOrGreater = false;
 	
-	static {
-		String vm = System.getProperty("java.runtime.version");
-        if (vm == null) {
-            vm = System.getProperty("java.vm.version");
-        }
+	static { // matching logic is also in org.aspectj.util.LangUtil
+        String vm = System.getProperty("java.version"); // JLS 20.18.7
+        if (vm==null) vm = System.getProperty("java.runtime.version");
+		if (vm==null) vm = System.getProperty("java.vm.version");
 		if (vm.startsWith("1.3")) {
 			is14VMOrGreater = false;
 		} else if (vm.startsWith("1.5")) {
