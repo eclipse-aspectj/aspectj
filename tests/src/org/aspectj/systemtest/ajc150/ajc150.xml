@@ -4775,4 +4775,8 @@
        </run>
    </ajc-test>
    
+   <ajc-test dir="bugs150" title="Unable to build shadows">
+     <compile files="pr109728.java" options="-1.5"/>
+   </ajc-test>
+   
 </suite>
