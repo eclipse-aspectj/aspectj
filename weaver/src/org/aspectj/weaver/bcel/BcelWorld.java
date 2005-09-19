@@ -18,9 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Iterator;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -34,9 +34,9 @@ import org.aspectj.apache.bcel.generic.INVOKESTATIC;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.Repository;
-import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
@@ -49,14 +49,14 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.FormalBinding;
+import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
-import org.aspectj.weaver.patterns.PerClause;
 
 public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
@@ -359,10 +359,12 @@ public class BcelWorld extends World implements Repository {
 
     public Member makeJoinPointSignatureForMethodInvocation(LazyClassGen cg, InvokeInstruction ii) {
     	ConstantPoolGen cpg = cg.getConstantPoolGen();
+    	String name = ii.getName(cpg);
         String declaring = ii.getClassName(cpg);
-        String name = ii.getName(cpg);
-        String signature = ii.getSignature(cpg);
+        UnresolvedType declaringType = null;
         
+        String signature = ii.getSignature(cpg);
+       
         int modifier = 
             (ii instanceof INVOKEINTERFACE)
             ? Modifier.INTERFACE
@@ -383,16 +385,19 @@ public class BcelWorld extends World implements Repository {
                 if (method.isStatic()) {
                     if (name.equals(method.getName()) && signature.equals(method.getSignature())) {
                         // we found it
-                        declaring = method.getDeclaringType().getName();
+                        declaringType = method.getDeclaringType();
                         break;
                     }
                 }
 
             }
         }
-        //FIXME if not found we ll end up again with the bug.. can this happen?
-
-        return MemberImpl.method(UnresolvedType.forName(declaring), modifier, name, signature);
+        
+        if (declaringType == null) {
+        	if (declaring.charAt(0)=='[') declaringType = UnresolvedType.forSignature(declaring);
+        	else 						  declaringType = UnresolvedType.forName(declaring);
+        }
+        return MemberImpl.method(declaringType, modifier, name, signature);
     }  
 
     public static Member makeMungerMethodSignature(JavaClass javaClass, Method method) {
