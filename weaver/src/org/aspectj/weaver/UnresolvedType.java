@@ -441,21 +441,8 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     }  
 
     /**
-     * Returns the name of this type in java language form.  For all 
-     * UnresolvedType t:
-     *
-     * <blockquote><pre>
-     *   UnresolvedType.forName(t.getName()).equals(t)
-     * </pre></blockquote>
-     *
-     * and for all String s where s is a lexically valid java language typename:
-     * 
-     * <blockquote><pre>
-     *   UnresolvedType.forName(s).getName().equals(s)
-     * </pre></blockquote>
-     * 
-     * This produces a more esthetically pleasing string than 
-     * {@link java.lang.Class#getName()}.
+     * Returns the name of this type in java language form (e.g. java.lang.Thread or boolean[]).
+     * This produces a more esthetically pleasing string than {@link java.lang.Class#getName()}.
      *
      * @return  the java language name of this type.
      */
@@ -723,50 +710,51 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
             return "[" + nameToSignature(name.substring(0, name.length() - 2));
         if (name.length() != 0) {
         	// lots more tests could be made here...
-        	
-        	// 1) If it is already an array type, do not mess with it.
-        	if (name.charAt(0)=='[' && name.charAt(name.length()-1)==';') return name;
-        	else {
-				if (name.indexOf("<") == -1) {
-					// not parameterised
-					return "L" + name.replace('.', '/') + ";";
-				} else {
-					StringBuffer nameBuff = new StringBuffer();
-					int nestLevel = 0;
-					nameBuff.append("P");
-					for (int i = 0; i < name.length(); i++) {
-						char c = name.charAt(i);
-						switch (c) {
-						case '.' : nameBuff.append('/'); break;
-						case '<' :	
-							nameBuff.append("<");
-							nestLevel++;
-							StringBuffer innerBuff = new StringBuffer();
-							while(nestLevel > 0) {
-								c = name.charAt(++i);
-								if (c == '<') nestLevel++;
-								if (c == '>') nestLevel--;
-								if (c == ',' && nestLevel == 1) {
-									nameBuff.append(nameToSignature(innerBuff.toString()));
-									innerBuff = new StringBuffer();
-								} else {
-									if (nestLevel > 0) innerBuff.append(c);
-								}
-							}
-							nameBuff.append(nameToSignature(innerBuff.toString()));
-							nameBuff.append('>');
-							break;
-						case '>' : 
-							throw new IllegalStateException("Should by matched by <");
-						case ',' : 
-							throw new IllegalStateException("Should only happen inside <...>");
-						default: nameBuff.append(c);
-						}
-					}
-					nameBuff.append(";");
-					return nameBuff.toString();
-				}
+
+        	// check if someone is calling us with something that is a signature already
+        	if (name.charAt(0)=='[') {
+        		throw new BCException("Do not call nameToSignature with something that looks like a signature (descriptor): '"+name+"'");
         	}
+    	
+			if (name.indexOf("<") == -1) {
+				// not parameterised
+				return "L" + name.replace('.', '/') + ";";
+			} else {
+				StringBuffer nameBuff = new StringBuffer();
+				int nestLevel = 0;
+				nameBuff.append("P");
+				for (int i = 0; i < name.length(); i++) {
+					char c = name.charAt(i);
+					switch (c) {
+					case '.' : nameBuff.append('/'); break;
+					case '<' :	
+						nameBuff.append("<");
+						nestLevel++;
+						StringBuffer innerBuff = new StringBuffer();
+						while(nestLevel > 0) {
+							c = name.charAt(++i);
+							if (c == '<') nestLevel++;
+							if (c == '>') nestLevel--;
+							if (c == ',' && nestLevel == 1) {
+								nameBuff.append(nameToSignature(innerBuff.toString()));
+								innerBuff = new StringBuffer();
+							} else {
+								if (nestLevel > 0) innerBuff.append(c);
+							}
+						}
+						nameBuff.append(nameToSignature(innerBuff.toString()));
+						nameBuff.append('>');
+						break;
+					case '>' : 
+						throw new IllegalStateException("Should by matched by <");
+					case ',' : 
+						throw new IllegalStateException("Should only happen inside <...>");
+					default: nameBuff.append(c);
+					}
+				}
+				nameBuff.append(";");
+				return nameBuff.toString();
+			}
         }
         else 
             throw new BCException("Bad type name: " + name);
