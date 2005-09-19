@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
  * Super class for InvokeInstruction and FieldInstruction, since they have
  * some methods in common!
  *
- * @version $Id: FieldOrMethod.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.4 2005/09/19 15:12:36 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends CPInstruction implements LoadClass {
@@ -103,7 +103,9 @@ public abstract class FieldOrMethod extends CPInstruction implements LoadClass {
   public String getClassName(ConstantPoolGen cpg) {
     ConstantPool cp  = cpg.getConstantPool();
     ConstantCP   cmr = (ConstantCP)cp.getConstant(index);
-    return cp.getConstantString(cmr.getClassIndex(), org.aspectj.apache.bcel.Constants.CONSTANT_Class).replace('/', '.');
+    String str = cp.getConstantString(cmr.getClassIndex(), org.aspectj.apache.bcel.Constants.CONSTANT_Class);
+    if (str.charAt(0)=='[') return str;
+    else return str.replace('/', '.');
   }
 
   /** @return type of the referenced class/interface
