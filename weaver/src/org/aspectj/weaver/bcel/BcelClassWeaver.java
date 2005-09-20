@@ -1603,7 +1603,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private void matchGetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
 		Member field = BcelWorld.makeFieldJoinPointSignature(clazz, fi);
-		
+
 		// synthetic fields are never join points
 		if (field.getName().startsWith(NameMangler.PREFIX)) return;
 		
@@ -1615,7 +1615,12 @@ class BcelClassWeaver implements IClassWeaver {
 			// sets of synthetics aren't join points in 1.1
 			return;
 		} else {
-			match(BcelShadow.makeFieldGet(world, resolvedField, mg, ih, enclosingShadow), shadowAccumulator);
+			BcelShadow bs = BcelShadow.makeFieldGet(world,resolvedField,mg,ih,enclosingShadow);
+			String cname = fi.getClassName(cpg);
+			if (!resolvedField.getDeclaringType().getName().equals(cname)) {
+				bs.setActualTargetType(cname);
+			}
+			match(bs, shadowAccumulator);
 		}
 	}
 	

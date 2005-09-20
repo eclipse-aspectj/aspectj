@@ -133,6 +133,10 @@ public class BcelShadow extends Shadow {
     private final BcelWorld world;  
     private final LazyMethodGen enclosingMethod;
 	private boolean fallsThrough;  //XXX not used anymore
+	
+	// Some instructions have a target type that will vary 
+    // from the signature (pr109728) (1.4 declaring type issue)
+	private String actualInstructionTargetType; 
 
 	// ---- initialization
 	
@@ -1221,6 +1225,8 @@ public class BcelShadow extends Shadow {
      * are true, it has a sneak peek at the code before the call to see what is on the stack.
      */
     public UnresolvedType ensureTargetTypeIsCorrect(UnresolvedType tx) {
+    	
+    	
     	if (tx.equals(ResolvedType.OBJECT) && getKind() == MethodCall && 
     	    getSignature().getReturnType().equals(ResolvedType.OBJECT) && 
 			getSignature().getArity()==0 && 
@@ -2938,6 +2944,15 @@ public class BcelShadow extends Shadow {
         if (targetVar != null && targetVar != thisVar) {
             UnresolvedType targetType = getTargetType();
             targetType = ensureTargetTypeIsCorrect(targetType);
+            // see pr109728 - this fixes the case when the declaring class is sometype 'X' but the getfield
+            // in the bytecode refers to a subtype of 'X'.  This makes sure we use the type originally
+            // mentioned in the fieldget instruction as the method parameter and *not* the type upon which the
+            // field is declared because when the instructions are extracted into the new around body,
+            // they will still refer to the subtype.
+            if (getKind()==FieldGet && getActualTargetType()!=null && 
+            	!getActualTargetType().equals(targetType.getName())) {
+        		targetType =  UnresolvedType.forName(getActualTargetType()).resolve(world);
+        	}
             ResolvedMember resolvedMember = getSignature().resolve(world);
             
             if (resolvedMember != null && Modifier.isProtected(resolvedMember.getModifiers()) && 
@@ -3071,5 +3086,13 @@ public class BcelShadow extends Shadow {
 
 	public boolean isFallsThrough() {
 		return !terminatesWithReturn(); //fallsThrough;
+	}
+
+	public void setActualTargetType(String className) {
+		this.actualInstructionTargetType = className;
+	}
+	
+	public String getActualTargetType() {
+		return actualInstructionTargetType;
 	}
 }
