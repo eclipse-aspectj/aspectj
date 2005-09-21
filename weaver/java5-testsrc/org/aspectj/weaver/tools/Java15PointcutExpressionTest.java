@@ -17,7 +17,9 @@ import java.lang.reflect.Method;
 
 import org.aspectj.lang.annotation.Pointcut;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
  * @author colyer
@@ -25,6 +27,12 @@ import junit.framework.TestCase;
  */
 public class Java15PointcutExpressionTest extends TestCase {
 
+	public static Test suite() {
+		TestSuite suite = new TestSuite("Java15PointcutExpressionTest");
+		suite.addTestSuite(Java15PointcutExpressionTest.class);
+		return suite;
+	}
+	
 	private PointcutParser parser;
 	private Method a;
 	private Method b;

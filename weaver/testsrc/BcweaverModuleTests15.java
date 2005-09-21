@@ -13,6 +13,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.aspectj.testing.util.TestUtil;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.BoundedReferenceTypeTestCase;
 import org.aspectj.weaver.MemberTestCase15;
 import org.aspectj.weaver.ReferenceTypeTestCase;
@@ -20,7 +22,6 @@ import org.aspectj.weaver.TypeVariableReferenceTypeTestCase;
 import org.aspectj.weaver.TypeVariableTestCase;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
 import org.aspectj.weaver.patterns.WildTypePatternResolutionTestCase;
-import org.aspectj.weaver.tools.Java15PointcutExpressionTest;
 
 public class BcweaverModuleTests15 extends TestCase {
 	   public static Test suite() { 
@@ -32,7 +33,9 @@ public class BcweaverModuleTests15 extends TestCase {
 	        suite.addTestSuite(MemberTestCase15.class);
 	        suite.addTestSuite(BcelGenericSignatureToTypeXTestCase.class);
 	        suite.addTestSuite(WildTypePatternResolutionTestCase.class);
-	        suite.addTestSuite(Java15PointcutExpressionTest.class);
+	        if (LangUtil.is15VMOrGreater()) {
+	            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.tools.Java15PointcutExpressionTest", false);
+	        }
 	        return suite;
 	    }
 
