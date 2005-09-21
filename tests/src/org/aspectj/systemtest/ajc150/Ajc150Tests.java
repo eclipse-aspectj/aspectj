@@ -444,7 +444,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("@annotation binding with around advice");
   }
   
-    public void testUnableToBuildShadows_pr109728() { runTest("Unable to build shadows");}
+  public void testUnableToBuildShadows_pr109728() { runTest("Unable to build shadows");}
+
+  public void testMessageOnMissingTypeInDecP() {
+	  runTest("declare parents on a missing type");
+  }
   
   // helper methods.....
   

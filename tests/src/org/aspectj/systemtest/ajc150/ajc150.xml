@@ -595,6 +595,13 @@
         <compile files="AnnotationBinding.aj" options="-1.5"/>
         <run class="AnnotationBinding"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" title="declare parents on a missing type">
+        <compile files="Pr76374.aj" options="-1.5">
+            <message kind="warning" line="3" text="no match for this type name"/>
+        </compile>
+    </ajc-test>
+    
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
