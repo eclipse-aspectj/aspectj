@@ -683,7 +683,21 @@ public class BcelWeaver implements IWeaver {
     // the effects of itds (on within for example), interfaces, the fact that
     // join points can have multiple signatures and so on.
     private boolean couldEverMatchSameJoinPoints(Pointcut left, Pointcut right) {
-    	if ((left instanceof OrPointcut) || (right instanceof OrPointcut)) return true;
+    	
+    	if (left instanceof OrPointcut) {
+    	  OrPointcut leftOrPointcut = (OrPointcut)left;
+    	  if (couldEverMatchSameJoinPoints(leftOrPointcut.getLeft(),right)) return true;
+    	  if (couldEverMatchSameJoinPoints(leftOrPointcut.getRight(),right)) return true;
+    	  return false;
+    	}
+    	
+    	if (right instanceof OrPointcut) {
+    	  OrPointcut rightOrPointcut = (OrPointcut)right;
+    	  if (couldEverMatchSameJoinPoints(left,rightOrPointcut.getLeft())) return true;
+    	  if (couldEverMatchSameJoinPoints(left,rightOrPointcut.getRight())) return true;
+    	  return false;
+    	}
+
     	// look for withins
     	WithinPointcut leftWithin = (WithinPointcut) findFirstPointcutIn(left,WithinPointcut.class);
     	WithinPointcut rightWithin = (WithinPointcut) findFirstPointcutIn(right,WithinPointcut.class);

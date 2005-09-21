@@ -195,7 +195,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testSyntaxErrorNPE_pr103266() {runTest("NPE on syntax error");}
   
   public void testFinalAbstractClass_pr109486() { runTest("Internal compiler error (ClassParser.java:242)");}
-  //public void testComplexBinding_pr102210() { runTest("NullPointerException trying to compile");}
+ 
+  public void testComplexBinding_pr102210() { runTest("NullPointerException trying to compile");}
   
   public void testIllegalStateExceptionOnNestedParameterizedType_pr106634() { 
 	  runTest("IllegalStateException unpacking signature of nested parameterized type");

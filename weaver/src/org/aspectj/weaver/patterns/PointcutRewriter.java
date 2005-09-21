@@ -27,17 +27,18 @@ public class PointcutRewriter {
 	private static final boolean WATCH_PROGRESS = false;
 	
 	public Pointcut rewrite(Pointcut pc) {
-		if (WATCH_PROGRESS) System.out.println(pc);
+		if (WATCH_PROGRESS) System.out.println("Initial pointcut is        ==> " + pc);
 		Pointcut result = distributeNot(pc);
-		if (WATCH_PROGRESS) System.out.println("==> " + result);
+		if (WATCH_PROGRESS) System.out.println("Distributing NOT gives     ==> " + result);
 		result = pullUpDisjunctions(result);
-		if (WATCH_PROGRESS) System.out.println("==> " + result);
+		if (WATCH_PROGRESS) System.out.println("Pull up disjunctions gives ==> " + result);
 		result = simplifyAnds(result);
-		if (WATCH_PROGRESS) System.out.println("==> " + result);
+		if (WATCH_PROGRESS) System.out.println("Simplifying ANDs gives     ==> " + result);
 		result = sortOrs(result);
-		if (WATCH_PROGRESS) System.out.println("==> " + result);
+		if (WATCH_PROGRESS) System.out.println("Sorting ORs gives          ==> " + result);
 		return result;
 	}
+	
 	
 	
 	// !!X => X
@@ -95,16 +96,20 @@ public class PointcutRewriter {
 				// (A || B) && C => (A && C) || (B && C)
 				Pointcut leftLeft = ((OrPointcut)left).getLeft();
 				Pointcut leftRight = ((OrPointcut)left).getRight();
-				return new OrPointcut(
-							new AndPointcut(leftLeft,right),
-							new AndPointcut(leftRight,right));
+				return pullUpDisjunctions(
+							new OrPointcut(
+									new AndPointcut(leftLeft,right),
+									new AndPointcut(leftRight,right))
+							);
 			} else if (isOr(right) && !isOr(left)) {
 				// A && (B || C) => (A && B) || (A && C)
 				Pointcut rightLeft = ((OrPointcut)right).getLeft();
 				Pointcut rightRight = ((OrPointcut)right).getRight();
-				return new OrPointcut(
-							new AndPointcut(left,rightLeft),
-							new AndPointcut(left,rightRight));
+				return pullUpDisjunctions(
+							new OrPointcut(
+									new AndPointcut(left,rightLeft),
+									new AndPointcut(left,rightRight))
+							);
 				
 			} else {
 				return new AndPointcut(left,right);
