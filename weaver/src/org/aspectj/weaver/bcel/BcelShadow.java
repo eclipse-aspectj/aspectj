@@ -1350,12 +1350,16 @@ public class BcelShadow extends Shadow {
 		}
     }
     
-    protected Member getRelevantMember(Member relevantMember, ResolvedType relevantType){
-    	if (relevantMember != null){
-    		return relevantMember;
+    protected Member getRelevantMember(Member foundMember, Member relevantMember, ResolvedType relevantType){
+    	if (foundMember != null){
+    		return foundMember;
     	}
     	
-    	relevantMember = getSignature().resolve(world);
+
+    	foundMember = getSignature().resolve(world);
+    	if (foundMember == null && relevantMember != null) {
+    		foundMember = relevantType.lookupMemberWithSupersAndITDs(relevantMember);
+    	}
     	
     	// check the ITD'd dooberries
     	List mungers = relevantType.resolve(world).getInterTypeMungers();
@@ -1366,26 +1370,26 @@ public class BcelShadow extends Shadow {
     			ResolvedMember fakerm = typeMunger.getSignature();
     			if (fakerm.getName().equals(getSignature().getName()) &&
     					fakerm.getParameterSignature().equals(getSignature().getParameterSignature())){
-    				if (relevantMember.getKind()==ResolvedMember.CONSTRUCTOR){
-    					relevantMember = AjcMemberMaker.interConstructor(
+    				if (foundMember.getKind()==ResolvedMember.CONSTRUCTOR){
+    					foundMember = AjcMemberMaker.interConstructor(
     							relevantType,
-    							(ResolvedMember)relevantMember,
+    							(ResolvedMember)foundMember,
     							typeMunger.getAspectType());
     				} else {
-    					relevantMember = AjcMemberMaker.interMethod((ResolvedMember)relevantMember,
+    					foundMember = AjcMemberMaker.interMethod((ResolvedMember)foundMember,
         						typeMunger.getAspectType(), false);
     				}
     				// in the above.. what about if it's on an Interface? Can that happen?
     		    	// then the last arg of the above should be true
-    				return relevantMember;
+    				return foundMember;
     			}
     		}
     	}
-    	return null;
+    	return foundMember;
     }
     
-    protected ResolvedType [] getAnnotations(Member relevantMember, ResolvedType relevantType){
-    	if (relevantMember == null){
+    protected ResolvedType [] getAnnotations(Member foundMember, Member relevantMember, ResolvedType relevantType){
+    	if (foundMember == null){
     		// check the ITD'd dooberries
     		List mungers = relevantType.resolve(world).getInterTypeMungers();
     		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
@@ -1403,13 +1407,18 @@ public class BcelShadow extends Shadow {
     				if (fakerm.getName().equals(getSignature().getName()) &&
     						fakerm.getParameterSignature().equals(getSignature().getParameterSignature())) {
     					relevantType = typeMunger.getAspectType();
-    					relevantMember = rmm;
-    					return relevantMember.getAnnotationTypes();
+    					foundMember = rmm;
+    					return foundMember.getAnnotationTypes();
     				}
     			}
     		}
+    		// didn't find in ITDs, look in supers
+    		foundMember = relevantType.lookupMemberWithSupersAndITDs(relevantMember);
+    		if (foundMember == null) {
+    			throw new IllegalStateException("Couldn't find member " + relevantMember + " for type " + relevantType);
+    		}
     	}
-    	return relevantMember.getAnnotationTypes();
+    	return foundMember.getAnnotationTypes();
     }
 	
     public void initializeKindedAnnotationVars() {
@@ -1429,10 +1438,10 @@ public class BcelShadow extends Shadow {
     		annotations  = relevantType.resolve(world).getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
-            relevantMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());
-       
-            annotations = getAnnotations(relevantMember,relevantType);
-            relevantMember = getRelevantMember(relevantMember,relevantType);
+            Member foundMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());            
+            annotations = getAnnotations(foundMember, relevantMember, relevantType);
+            relevantMember = getRelevantMember(foundMember,relevantMember,relevantType);
+            relevantType = relevantMember.getDeclaringType().resolve(world);
     		
     	} else if (getKind() == Shadow.FieldSet || getKind() == Shadow.FieldGet) {
     		relevantMember = findField(relevantType.getDeclaredFields(),getSignature());
@@ -1459,11 +1468,12 @@ public class BcelShadow extends Shadow {
     	} else if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution || 
     		        getKind() == Shadow.AdviceExecution) {
     		ResolvedMember rm[] = relevantType.getDeclaredMethods();
-    		relevantMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
+    		Member foundMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		
-    		annotations = getAnnotations(relevantMember,relevantType);
-            relevantMember = getRelevantMember(relevantMember,relevantType);
-    		
+    		annotations = getAnnotations(foundMember, relevantMember,relevantType);
+    		relevantMember = foundMember;
+            relevantMember = getRelevantMember(foundMember, relevantMember,relevantType);
+            
     	} else if (getKind() == Shadow.ExceptionHandler) {
     		relevantType = getSignature().getParameterTypes()[0].resolve(world);
     		annotations  =  relevantType.getAnnotationTypes();

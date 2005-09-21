@@ -918,6 +918,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return ret;
 	}
 	
+	public ResolvedMember lookupMemberWithSupersAndITDs(Member member) {
+		ResolvedMember ret = lookupMemberNoSupers(member);
+		if (ret != null) return ret;
+		
+		ResolvedType supert = getSuperclass();
+		if (supert != null) {
+			ret = supert.lookupMemberNoSupers(member);
+		}
+		
+		return ret;
+	}
+	
 	/**
 	 * as lookupMemberNoSupers, but does not include ITDs
 	 * @param member
@@ -1442,6 +1454,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				return ret;
 			}
 		}
+		
+//		if (this.getSuperclass() != ResolvedType.OBJECT && this.getSuperclass() != null) {
+//			return getSuperclass().lookupSyntheticMember(member);
+//		}
+		
 		return null;
 	}
 
