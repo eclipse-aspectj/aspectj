@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -242,11 +243,13 @@ public abstract class Shadow {
     	AdviceExecution, Initialization, ExceptionHandler,
     };
 
-    public static final Set ALL_SHADOW_KINDS = new HashSet();   
+    public static final Set ALL_SHADOW_KINDS;   
     static {
+    	HashSet aSet = new HashSet();
     	for (int i = 0; i < SHADOW_KINDS.length; i++) {
-			ALL_SHADOW_KINDS.add(SHADOW_KINDS[i]);
+			aSet.add(SHADOW_KINDS[i]);
 		}
+    	ALL_SHADOW_KINDS = Collections.unmodifiableSet(aSet);
     }
 
     /** A type-safe enum representing the kind of shadows

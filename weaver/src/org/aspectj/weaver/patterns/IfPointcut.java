@@ -14,7 +14,6 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -26,6 +25,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedMember;
@@ -34,10 +34,9 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -81,11 +80,7 @@ public class IfPointcut extends Pointcut {
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
-	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-    
+	    
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//??? this is not maximally efficient
 		return FuzzyBoolean.MAYBE;
@@ -102,23 +97,6 @@ public class IfPointcut extends Pointcut {
 	// enh 76055
 	public Pointcut getResidueSource() {
 		return residueSource;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		throw new UnsupportedOperationException("If pointcut matching not supported by this operation");
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(
-			String joinpointKind, Member member, Class thisClass,
-			Class targetClass, Member withinCode) {
-		throw new UnsupportedOperationException("If pointcut matching not supported by this operation");
 	}
 	
 	public void write(DataOutputStream s) throws IOException {
@@ -142,9 +120,7 @@ public class IfPointcut extends Pointcut {
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		//??? all we need is good error messages in here in cflow contexts
 	}
-	
-	public void resolveBindingsFromRTTI() {}
-	
+		
 	public boolean equals(Object other) {
 		if (!(other instanceof IfPointcut)) return false;
 		IfPointcut o = (IfPointcut)other;
@@ -436,9 +412,6 @@ public class IfPointcut extends Pointcut {
 		public void resolveBindings(IScope scope, Bindings bindings) {
 		}
 		
-		public void resolveBindingsFromRTTI() {
-		}
-
 		public void postRead(ResolvedType enclosingType) {
 		}
 
@@ -508,9 +481,6 @@ public class IfPointcut extends Pointcut {
 		public void resolveBindings(IScope scope, Bindings bindings) {
 		}
 		
-		public void resolveBindingsFromRTTI() {
-		}
-
 		public void postRead(ResolvedType enclosingType) {
 		}
 

@@ -15,13 +15,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.runtime.reflect.Factory;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -62,12 +59,7 @@ public class WithincodePointcut extends Pointcut {
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
-	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-
-    
+	 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//This will not match code in local or anonymous classes as if
 		//they were withincode of the outer signature
@@ -75,27 +67,6 @@ public class WithincodePointcut extends Pointcut {
 			signature.matches(shadow.getEnclosingCodeSignature(), shadow.getIWorld(), false));
 	}
 
-	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
-		return FuzzyBoolean.fromBoolean(signature.matches(encJP));
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		return true;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
-			Class thisClass, Class targetClass, Member withinCode) {
-		if (withinCode == null) return FuzzyBoolean.NO;
-		return FuzzyBoolean.fromBoolean(signature.matches(Factory.makeEncSJP(withinCode)));
-	}
-	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.WITHINCODE);
 		signature.write(s);
@@ -128,10 +99,6 @@ public class WithincodePointcut extends Pointcut {
 		}					
 	}
 	
-	public void resolveBindingsFromRTTI() {
-		signature = signature.resolveBindingsFromRTTI();
-	}
-
 	public void postRead(ResolvedType enclosingType) {
 		signature.postRead(enclosingType);
 	}

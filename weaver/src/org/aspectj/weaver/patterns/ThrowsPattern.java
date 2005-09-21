@@ -75,13 +75,7 @@ public class ThrowsPattern extends PatternNode {
     	forbidden = forbidden.resolveBindings(scope, bindings, false, false);
     	return this;
     }
-    
-    public ThrowsPattern resolveBindingsFromRTTI() {
-    	required = required.resolveBindingsFromRTTI(false,false);
-    	forbidden = forbidden.resolveBindingsFromRTTI(false,false);
-    	return this;
-    }
-    
+       
     public ThrowsPattern parameterizeWith(Map/*name -> resolved type*/ typeVariableMap) {
     	ThrowsPattern ret = new ThrowsPattern(
     			required.parameterizeWith(typeVariableMap),
@@ -110,25 +104,6 @@ public class ThrowsPattern extends PatternNode {
 		return true;
 	}
 	
-	public boolean matches(Class[] onTypes) {
-		if (this == ANY) return true;
-		
-		//System.out.println("matching: " + this + " with " + Arrays.asList(tys));
-		
-		for (int j=0, lenj = required.size(); j < lenj; j++) {
-			if (! matchesAny(required.get(j), onTypes)) {
-				return false;
-			}
-		}
-		for (int j=0, lenj = forbidden.size(); j < lenj; j++) {
-			if (matchesAny(forbidden.get(j), onTypes)) {
-				return false;
-			}
-		}
-		return true;
-		
-	}
-
 	private boolean matchesAny(
 		TypePattern typePattern,
 		ResolvedType[] types) 
@@ -139,13 +114,6 @@ public class ThrowsPattern extends PatternNode {
 		return false;
 	}
 	
-	private boolean matchesAny(TypePattern typePattern, Class[] types) {
-		for (int i = types.length - 1; i >= 0; i--) {
-			if (typePattern.matchesStatically(types[i])) return true;	
-		}
-		return false;
-	}
-
 	public static ThrowsPattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		TypePatternList required = TypePatternList.read(s, context);
 		TypePatternList forbidden = TypePatternList.read(s, context);

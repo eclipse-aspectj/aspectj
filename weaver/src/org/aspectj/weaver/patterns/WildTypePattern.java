@@ -914,58 +914,6 @@ public class WildTypePattern extends TypePattern {
 		return true;
 	}
 	
-	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
-	   	if (isStar()) {
-			return TypePattern.ANY;  //??? loses source location
-		}
-
-		String cleanName = maybeGetCleanName();
-		if (cleanName != null) {
-			Class clazz = null;
-			clazz = maybeGetPrimitiveClass(cleanName);
-
-			while (clazz == null) {
-				try {
-					clazz = Class.forName(cleanName);
-				} catch (ClassNotFoundException cnf) {
-					int lastDotIndex = cleanName.lastIndexOf('.');
-					if (lastDotIndex == -1) break;
-					cleanName = cleanName.substring(0, lastDotIndex) + '$' + cleanName.substring(lastDotIndex+1);
-				}
-			}
-			
-			if (clazz == null) {
-				try {
-					clazz = Class.forName("java.lang." + cleanName);
-				} catch (ClassNotFoundException cnf) {
-				}
-			}
-
-			if (clazz == null) {
-				if (requireExactType) {
-					return NO;
-				}
-			} else {
-				UnresolvedType type = UnresolvedType.forName(clazz.getName());
-				if (dim != 0) type = UnresolvedType.makeArray(type,dim);
-				TypePattern ret = new ExactTypePattern(type, includeSubtypes,isVarArgs);
-				ret.copyLocationFrom(this);
-				return ret;
-			}
-		} else if (requireExactType) {
-		 	return NO;
-		}
-					
-		importedPrefixes = SimpleScope.javaLangPrefixArray;
-		knownMatches = new String[0];
-		
-		return this;	
-	}
-
-	private Class maybeGetPrimitiveClass(String typeName) {
-		return (Class) ExactTypePattern.primitiveTypesMap.get(typeName);
-	}
-	
 	public boolean isStar() {
 		boolean annPatternStar = annotationPattern == AnnotationTypePattern.ANY;
 		return (isNamePatternStar() && annPatternStar);
@@ -1072,16 +1020,6 @@ public class WildTypePattern extends TypePattern {
         if (lowerBound != null) result = 37*result + lowerBound.hashCode();
         return result;
     }
-
-    
-    public FuzzyBoolean matchesInstanceof(Class type) {
-    	return FuzzyBoolean.NO;
-    }
-    
-    public boolean matchesExactly(Class type) {
-    	return matchesExactlyByName(type.getName());
-    }
-    
     
     private static final byte VERSION = 1; // rev on change
 	/**

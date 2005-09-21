@@ -15,12 +15,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -53,42 +51,10 @@ public class AndPointcut extends Pointcut {
 		return left.fastMatch(type).and(right.fastMatch(type));
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return left.fastMatch(targetType).and(right.fastMatch(targetType));
-	}
-
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		FuzzyBoolean leftMatch = left.match(shadow);
 		if (leftMatch.alwaysFalse()) return leftMatch;
 		return leftMatch.and(right.match(shadow));
-	}
-	
-	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
-		return left.match(jp,encJP).and(right.match(jp,encJP));
-	}
-	
-	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
-		return left.match(jpsp).and(right.match(jpsp));
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		return left.matchesDynamically(thisObject,targetObject,args) &&
-		       right.matchesDynamically(thisObject,targetObject,args);
-	}	
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(
-			String joinpointKind, Member member, Class thisClass,
-			Class targetClass, Member withinCode) {
-		return left.matchesStatically(joinpointKind,member,thisClass,targetClass,withinCode)
-		       .and(
-		       right.matchesStatically(joinpointKind,member,thisClass,targetClass,withinCode));
 	}
 	
 	public String toString() {
@@ -111,11 +77,6 @@ public class AndPointcut extends Pointcut {
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		left.resolveBindings(scope, bindings);
 		right.resolveBindings(scope, bindings);
-	}
-	
-	public void resolveBindingsFromRTTI() {
-		left.resolveBindingsFromRTTI();
-		right.resolveBindingsFromRTTI();
 	}
 
 	public void write(DataOutputStream s) throws IOException {

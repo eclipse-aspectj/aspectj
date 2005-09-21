@@ -10,11 +10,16 @@
  *******************************************************************************/
 package org.aspectj.weaver.patterns;
 
+import java.lang.reflect.Method;
+
 import junit.framework.TestCase;
 
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.runtime.reflect.Factory;
-import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.tools.JoinPointMatch;
+import org.aspectj.weaver.tools.PointcutExpression;
+import org.aspectj.weaver.tools.PointcutParameter;
+import org.aspectj.weaver.tools.PointcutParser;
+import org.aspectj.weaver.tools.ShadowMatch;
 
 /**
  * @author colyer
@@ -22,92 +27,135 @@ import org.aspectj.util.FuzzyBoolean;
  */
 public class ArgsTestCase extends TestCase {
 	
-	Pointcut wildcardArgs;
-	Pointcut oneA;
-	Pointcut oneAandaC;
-	Pointcut BthenAnything;
-	Pointcut singleArg;
+	PointcutExpression wildcardArgs;
+	PointcutExpression oneA;
+	PointcutExpression oneAandaC;
+	PointcutExpression BthenAnything;
+	PointcutExpression singleArg;
 	
-	public void testMatchJP() {
-		Factory f = new Factory("ArgsTestCase.java",ArgsTestCase.A.class);
+	public void testMatchJP() throws Exception {
 		
-		JoinPoint.StaticPart jpsp1 = f.makeSJP(JoinPoint.METHOD_EXECUTION,f.makeMethodSig(0,"aMethod",A.class,new Class[] {A.class},new String[] {"a"},new Class[] {},null) ,1);
-		JoinPoint.StaticPart jpsp2 = f.makeSJP(JoinPoint.METHOD_EXECUTION,f.makeMethodSig(0,"aMethod",A.class,new Class[] {B.class},new String[] {"b"},new Class[] {},null),1);
-		JoinPoint.StaticPart jpsp3 = f.makeSJP(JoinPoint.METHOD_EXECUTION,f.makeMethodSig(0,"aMethod",A.class,new Class[] {A.class,C.class},new String[] {"a","c"},new Class[] {},null),1);
-		JoinPoint.StaticPart jpsp4 = f.makeSJP(JoinPoint.METHOD_EXECUTION,f.makeMethodSig(0,"aMethod",A.class,new Class[] {A.class,A.class},new String[] {"a","a2"},new Class[] {},null),1);
-		JoinPoint oneAArg = Factory.makeJP(jpsp1,new A(),new A(),new A());
-		JoinPoint oneBArg = Factory.makeJP(jpsp2,new A(), new A(), new B());
-		JoinPoint acArgs = Factory.makeJP(jpsp3,new A(), new A(), new A(), new C());
-		JoinPoint baArgs = Factory.makeJP(jpsp4,new A(), new A(), new B(), new A());
+		Method oneAArg = B.class.getMethod("x", new Class[] {A.class});
+		Method oneBArg = B.class.getMethod("y",new Class[] {B.class});
+		Method acArgs = C.class.getMethod("z",new Class[] {A.class,C.class});
+		Method baArgs = C.class.getMethod("t",new Class[] {B.class, A.class});
 		
-		checkMatches(wildcardArgs,oneAArg,null,FuzzyBoolean.YES);
-		checkMatches(wildcardArgs,oneBArg,null,FuzzyBoolean.YES);
-		checkMatches(wildcardArgs,acArgs,null,FuzzyBoolean.YES);
-		checkMatches(wildcardArgs,baArgs,null,FuzzyBoolean.YES);
-		
-		checkMatches(oneA,oneAArg,null,FuzzyBoolean.YES);
-		checkMatches(oneA,oneBArg,null,FuzzyBoolean.YES);
-		checkMatches(oneA,acArgs,null,FuzzyBoolean.NO);
-		checkMatches(oneA,baArgs,null,FuzzyBoolean.NO);
+		checkMatches(wildcardArgs.matchesMethodExecution(oneAArg),new B(), new B(), new Object[] {new A()} );
+		checkMatches(wildcardArgs.matchesMethodExecution(oneBArg),new B(), new B(), new Object[] {new B()} );
+		checkMatches(wildcardArgs.matchesMethodExecution(acArgs),new C(), new C(), new Object[] {new B(), new C()} );
+		checkMatches(wildcardArgs.matchesMethodExecution(baArgs),new C(), new C(), new Object[] {new B(), new B()} );
 
-		checkMatches(oneAandaC,oneAArg,null,FuzzyBoolean.NO);
-		checkMatches(oneAandaC,oneBArg,null,FuzzyBoolean.NO);
-		checkMatches(oneAandaC,acArgs,null,FuzzyBoolean.YES);
-		checkMatches(oneAandaC,baArgs,null,FuzzyBoolean.NO);
-		
-		checkMatches(BthenAnything,oneAArg,null,FuzzyBoolean.NO);
-		checkMatches(BthenAnything,oneBArg,null,FuzzyBoolean.YES);
-		checkMatches(BthenAnything,acArgs,null,FuzzyBoolean.NO);
-		checkMatches(BthenAnything,baArgs,null,FuzzyBoolean.YES);
+		checkMatches(oneA.matchesMethodExecution(oneAArg),new B(), new B(), new Object[] {new A()} );
+		checkMatches(oneA.matchesMethodExecution(oneBArg),new B(), new B(), new Object[] {new B()} );
+		checkNoMatch(oneA.matchesMethodExecution(acArgs),new C(), new C(), new Object[] {new B(), new C()});
+		checkNoMatch(oneA.matchesMethodExecution(baArgs),new C(), new C(), new Object[] {new B(), new B()});
 
-		checkMatches(singleArg,oneAArg,null,FuzzyBoolean.YES);
-		checkMatches(singleArg,oneBArg,null,FuzzyBoolean.YES);
-		checkMatches(singleArg,acArgs,null,FuzzyBoolean.NO);
-		checkMatches(singleArg,baArgs,null,FuzzyBoolean.NO);
+		checkNoMatch(oneAandaC.matchesMethodExecution(oneAArg),new B(), new B(), new Object[] {new A()} );
+		checkNoMatch(oneAandaC.matchesMethodExecution(oneBArg),new B(), new B(), new Object[] {new B()} );
+		checkMatches(oneAandaC.matchesMethodExecution(acArgs),new C(), new C(), new Object[] {new B(), new C()});
+		checkNoMatch(oneAandaC.matchesMethodExecution(baArgs),new C(), new C(), new Object[] {new B(), new B()});
+
+		checkNoMatch(BthenAnything.matchesMethodExecution(oneAArg),new B(), new B(), new Object[] {new A()} );
+		checkMatches(BthenAnything.matchesMethodExecution(oneBArg),new B(), new B(), new Object[] {new B()} );
+		checkNoMatch(BthenAnything.matchesMethodExecution(acArgs),new C(), new C(), new Object[] {new A(), new C()});
+		checkMatches(BthenAnything.matchesMethodExecution(baArgs),new C(), new C(), new Object[] {new B(), new B()});
+
+		checkMatches(singleArg.matchesMethodExecution(oneAArg),new B(), new B(), new Object[] {new A()} );
+		checkMatches(singleArg.matchesMethodExecution(oneBArg),new B(), new B(), new Object[] {new B()} );
+		checkNoMatch(singleArg.matchesMethodExecution(acArgs),new C(), new C(), new Object[] {new B(), new C()});
+		checkNoMatch(singleArg.matchesMethodExecution(baArgs),new C(), new C(), new Object[] {new B(), new B()});
 
 	}
 	
-	public void testMatchJPWithPrimitiveTypes() {
+	public void testBinding() throws Exception {
+		
+		PointcutParser parser = new PointcutParser();
+		PointcutParameter a = parser.createPointcutParameter("a",A.class);
+		A theParameter = new A();
+		PointcutExpression bindA = parser.parsePointcutExpression("args(a,*)",A.class,new PointcutParameter[] {a});
+
+		Method acArgs = C.class.getMethod("z",new Class[] {A.class,C.class});
+		ShadowMatch sMatch = bindA.matchesMethodExecution(acArgs);
+		JoinPointMatch jpMatch = sMatch.matchesJoinPoint(new A(),new A(), new Object[] {theParameter});
+		assertTrue("should match", jpMatch.matches());
+		PointcutParameter[] bindings = jpMatch.getParameterBindings();
+		assertTrue("one parameter",bindings.length == 1);
+		assertEquals("should be bound to the arg value",theParameter, bindings[0].getBinding());
+		
+		PointcutParameter c = parser.createPointcutParameter("c", C.class);
+		C cParameter = new C();
+		PointcutExpression bindAandC = parser.parsePointcutExpression("args(a,c)",A.class,new PointcutParameter[] {a,c});
+		sMatch = bindAandC.matchesMethodExecution(acArgs);
+		jpMatch = sMatch.matchesJoinPoint(new A(),new A(), new Object[] {theParameter,cParameter});
+		assertTrue("should match", jpMatch.matches());
+		bindings = jpMatch.getParameterBindings();
+		assertTrue("two parameters",bindings.length == 2);
+		assertEquals("should be bound to the a arg value",theParameter, bindings[0].getBinding());		
+		assertEquals("should be bound to the c arg value",cParameter, bindings[1].getBinding());
+		assertEquals("a",bindings[0].getName());
+		assertEquals("c",bindings[1].getName());
+	}
+	
+	public void testMatchJPWithPrimitiveTypes() throws Exception {
 		try {
-			Factory f = new Factory("ArgsTestCase.java",ArgsTestCase.A.class);
-			
-			Pointcut oneInt = new PatternParser("args(int)").parsePointcut().resolve();
-			Pointcut oneInteger = new PatternParser("args(Integer)").parsePointcut().resolve();
 
-			JoinPoint.StaticPart oneIntjp = f.makeSJP(JoinPoint.METHOD_EXECUTION,f.makeMethodSig(0,"aMethod",A.class,new Class[] {int.class},new String[] {"i"},new Class[] {},null) ,1);
-			JoinPoint.StaticPart oneIntegerjp = f.makeSJP(JoinPoint.METHOD_EXECUTION,f.makeMethodSig(0,"aMethod",A.class,new Class[] {Integer.class},new String[] {"i"},new Class[] {},null),1);
+			PointcutParser parser = new PointcutParser();
+			PointcutExpression oneInt = parser.parsePointcutExpression("args(int)");
+			PointcutExpression oneInteger = parser.parsePointcutExpression("args(Integer)");
 
-			JoinPoint oneIntArg = Factory.makeJP(oneIntjp,new A(),new A(),new Integer(3));
-			JoinPoint oneIntegerArg = Factory.makeJP(oneIntegerjp,new A(), new A(), new Integer(7));
+			Method oneIntM = A.class.getMethod("anInt",new Class[] {int.class});
+			Method oneIntegerM = A.class.getMethod("anInteger",new Class[] {Integer.class});
 			
-			checkMatches(oneInt,oneIntArg,null,FuzzyBoolean.YES);
-			checkMatches(oneInt,oneIntegerArg,null,FuzzyBoolean.NO);
-			checkMatches(oneInteger,oneIntArg,null,FuzzyBoolean.NO);
-			checkMatches(oneInteger,oneIntegerArg,null,FuzzyBoolean.YES);
+			if (LangUtil.is15VMOrGreater()) {
+				checkMatches(oneInt.matchesMethodExecution(oneIntM),new A(), new A(), new Object[] {new Integer(5)});
+				checkMatches(oneInt.matchesMethodExecution(oneIntegerM),new A(), new A(), new Object[] {new Integer(5)});
+				checkMatches(oneInteger.matchesMethodExecution(oneIntM),new A(), new A(), new Object[] {new Integer(5)});
+				checkMatches(oneInteger.matchesMethodExecution(oneIntegerM),new A(), new A(), new Object[] {new Integer(5)});
+			} else {
+				checkMatches(oneInt.matchesMethodExecution(oneIntM),new A(), new A(), new Object[] {new Integer(5)});
+				checkNoMatch(oneInt.matchesMethodExecution(oneIntegerM),new A(), new A(), new Object[] {new Integer(5)});
+				checkNoMatch(oneInteger.matchesMethodExecution(oneIntM),new A(), new A(), new Object[] {new Integer(5)});
+				checkMatches(oneInteger.matchesMethodExecution(oneIntegerM),new A(), new A(), new Object[] {new Integer(5)});				
+			}
 			
 		} catch( Exception ex) {
 			fail("Unexpected exception " + ex);
 		}
 		
 	}
-	
-	private void checkMatches(Pointcut p, JoinPoint jp, JoinPoint.StaticPart jpsp, FuzzyBoolean expected) {
-		assertEquals(expected,p.match(jp,jpsp));
+
+	private void checkMatches(ShadowMatch sMatch,Object thisOjb, Object targetObj, Object[] args) {
+		assertTrue("match expected",sMatch.matchesJoinPoint(thisOjb, targetObj, args).matches());
 	}
 	
-	private static class A {};
-	private static class B extends A {};
-	private static class C {};
+	private void checkNoMatch(ShadowMatch sMatch,Object thisOjb, Object targetObj, Object[] args) {
+		assertFalse("no match expected",sMatch.matchesJoinPoint(thisOjb, targetObj, args).matches());
+	}
+	
+	private static class A {
+		public void anInt(int i) {}
+		public void anInteger(Integer i) {}
+		
+	};
+	private static class B extends A {
+		public void x(A a) {}
+		public void y(B b) {}
+	};
+	private static class C {
+		public void z(A a, C c) {}
+		public void t(B b, A a) {}
+	};
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		wildcardArgs = new PatternParser("args(..)").parsePointcut().resolve();
-		oneA = new PatternParser("args(org.aspectj.weaver.patterns.ArgsTestCase.A)").parsePointcut().resolve();
-		oneAandaC = new PatternParser("args(org.aspectj.weaver.patterns.ArgsTestCase.A,org.aspectj.weaver.patterns.ArgsTestCase.C)").parsePointcut().resolve();
-		BthenAnything = new PatternParser("args(org.aspectj.weaver.patterns.ArgsTestCase.B,..)").parsePointcut().resolve();
-		singleArg = new PatternParser("args(*)").parsePointcut().resolve();
+		PointcutParser parser = new PointcutParser();
+		wildcardArgs = parser.parsePointcutExpression("args(..)");
+		oneA = parser.parsePointcutExpression("args(org.aspectj.weaver.patterns.ArgsTestCase.A)");
+		oneAandaC = parser.parsePointcutExpression("args(org.aspectj.weaver.patterns.ArgsTestCase.A,org.aspectj.weaver.patterns.ArgsTestCase.C)");
+		BthenAnything = parser.parsePointcutExpression("args(org.aspectj.weaver.patterns.ArgsTestCase.B,..)");
+		singleArg = parser.parsePointcutExpression("args(*)");
 	}
 }

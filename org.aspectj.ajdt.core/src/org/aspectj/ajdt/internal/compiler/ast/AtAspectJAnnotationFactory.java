@@ -115,9 +115,18 @@ public class AtAspectJAnnotationFactory {
 		return makeSingleStringMemberAnnotation(typeName, pos, pointcutExpression);
 	}
 
-	public static Annotation createPointcutAnnotation(String pointcutExpression, int pos) {
+	public static Annotation createPointcutAnnotation(String pointcutExpression, String argNames, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,lang,annotation,pointcut};
-		return makeSingleStringMemberAnnotation(typeName, pos, pointcutExpression);
+		long[] positions = new long[] {pos,pos,pos,pos,pos};
+		TypeReference annType = new QualifiedTypeReference(typeName,positions);
+		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		MemberValuePair[] mvps = new MemberValuePair[2];
+		mvps[0] = new MemberValuePair("value".toCharArray(),pos,pos,pcExpr);
+		Expression argExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argExpr);
+		ann.memberValuePairs = mvps;
+		return ann;	
 	}
 
 	public static Annotation createDeclareErrorOrWarningAnnotation(String pointcutExpression, String message, boolean isError, int pos) {

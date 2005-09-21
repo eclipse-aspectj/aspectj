@@ -14,6 +14,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.aspectj.util.LangUtil;
+
 import junit.framework.TestCase;
 
 public class PointcutExpressionTest extends TestCase {
@@ -22,6 +24,7 @@ public class PointcutExpressionTest extends TestCase {
 	Constructor asCons;
 	Constructor bsCons;
 	Constructor bsStringCons;
+	Constructor clientCons;
 	Method a;
 	Method aa;
 	Method aaa;
@@ -35,434 +38,467 @@ public class PointcutExpressionTest extends TestCase {
 	
 	public void testMatchesMethodCall() {
 		PointcutExpression ex = p.parsePointcutExpression("call(* *..A.a*(..))");
-		assertEquals("Should match call to A.a()",FuzzyBoolean.YES,ex.matchesMethodCall(a,Client.class,A.class,null));
-		assertEquals("Should match call to A.aaa()",FuzzyBoolean.YES,ex.matchesMethodCall(aaa,Client.class,A.class,null));
-		assertEquals("Should match call to B.aa()",FuzzyBoolean.YES,ex.matchesMethodCall(bsaa,Client.class,A.class,null));
-		assertEquals("Should not match call to B.b()",FuzzyBoolean.NO,ex.matchesMethodCall(b,Client.class,A.class,null));
+		assertTrue("Should match call to A.a()",ex.matchesMethodCall(a,a).alwaysMatches());
+		assertTrue("Should match call to A.aaa()",ex.matchesMethodCall(aaa,a).alwaysMatches());
+		assertTrue("Should match call to B.aa()",ex.matchesMethodCall(bsaa,a).alwaysMatches());
+		assertTrue("Should not match call to B.b()",ex.matchesMethodCall(b,a).neverMatches());
 		ex = p.parsePointcutExpression("call(* *..A.a*(int))");
-		assertEquals("Should match call to A.aa()",FuzzyBoolean.YES,ex.matchesMethodCall(aa,Client.class,A.class,null));
-		assertEquals("Should not match call to A.a()",FuzzyBoolean.NO,ex.matchesMethodCall(a,Client.class,A.class,null));
+		assertTrue("Should match call to A.aa()",ex.matchesMethodCall(aa,a).alwaysMatches());
+		assertTrue("Should not match call to A.a()",ex.matchesMethodCall(a,a).neverMatches());
 		ex = p.parsePointcutExpression("call(void aaa(..)) && this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should match call to A.aaa() from Client",FuzzyBoolean.YES,ex.matchesMethodCall(aaa,Client.class,A.class,null));
+		assertTrue("Should match call to A.aaa() from Client",ex.matchesMethodCall(aaa,foo).alwaysMatches());
 		ex = p.parsePointcutExpression("call(void aaa(..)) && this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Should match call to A.aaa() from B",FuzzyBoolean.YES,ex.matchesMethodCall(aaa,B.class,A.class,null));
-		assertEquals("May match call to A.aaa() from A",FuzzyBoolean.MAYBE,ex.matchesMethodCall(aaa,A.class,A.class,null));
+		assertTrue("Should match call to A.aaa() from B",ex.matchesMethodCall(aaa,b).alwaysMatches());
+		assertTrue("May match call to A.aaa() from A",ex.matchesMethodCall(aaa,a).maybeMatches());
+		assertFalse("May match call to A.aaa() from A",ex.matchesMethodCall(aaa,a).alwaysMatches());
 		ex = p.parsePointcutExpression("execution(* *.*(..))");
-		assertEquals("Should not match call to A.aa",FuzzyBoolean.NO,ex.matchesMethodCall(aa,A.class,A.class,null));
+		assertTrue("Should not match call to A.aa",ex.matchesMethodCall(aa,a).neverMatches());
 		// this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should match Client",FuzzyBoolean.YES,ex.matchesMethodCall(a,Client.class,A.class,null));
-		assertEquals("Should not match A",FuzzyBoolean.NO,ex.matchesMethodCall(a,A.class,A.class,null));
+		assertTrue("Should match Client",ex.matchesMethodCall(a,foo).alwaysMatches());
+		assertTrue("Should not match A",ex.matchesMethodCall(a,a).neverMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Should maybe match B",FuzzyBoolean.MAYBE,ex.matchesMethodCall(bsaa,A.class,B.class,null));
+		assertTrue("Should maybe match B",ex.matchesMethodCall(bsaa,a).maybeMatches());
+		assertFalse("Should maybe match B",ex.matchesMethodCall(bsaa,a).alwaysMatches());
 		// target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should not match Client",FuzzyBoolean.NO,ex.matchesMethodCall(a,Client.class,A.class,null));
+		assertTrue("Should not match Client",ex.matchesMethodCall(a,a).neverMatches());
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesMethodCall(a,Client.class,A.class,null));
+		assertTrue("Should match A",ex.matchesMethodCall(a,a).alwaysMatches());
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Should maybe match A",FuzzyBoolean.MAYBE,ex.matchesMethodCall(aa,A.class,A.class,null));		
+		assertTrue("Should maybe match A",ex.matchesMethodCall(aa,a).maybeMatches());		
+		assertFalse("Should maybe match A",ex.matchesMethodCall(aa,a).alwaysMatches());		
 		// test args
 		ex = p.parsePointcutExpression("args(..,int)");
-		assertEquals("Should match A.aa",FuzzyBoolean.YES,ex.matchesMethodCall(aa,A.class,A.class,null));
-		assertEquals("Should match A.aaa",FuzzyBoolean.YES,ex.matchesMethodCall(aaa,A.class,A.class,null));
-		assertEquals("Should not match A.a",FuzzyBoolean.NO,ex.matchesMethodCall(a,A.class,A.class,null));
+		assertTrue("Should match A.aa",ex.matchesMethodCall(aa,a).alwaysMatches());
+		assertTrue("Should match A.aaa",ex.matchesMethodCall(aaa,a).alwaysMatches());
+		assertTrue("Should not match A.a",ex.matchesMethodCall(a,a).neverMatches());
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesMethodCall(a,A.class,A.class,null));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesMethodCall(a,B.class,A.class,null));
+		assertTrue("Matches in class A",ex.matchesMethodCall(a,a).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesMethodCall(a,b).neverMatches());
+		assertTrue("Matches in class A",ex.matchesMethodCall(a,A.class).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesMethodCall(a,B.class).neverMatches());
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Should match",FuzzyBoolean.YES,ex.matchesMethodCall(b,B.class,B.class,bsaa));
-		assertEquals("Should not match",FuzzyBoolean.NO,ex.matchesMethodCall(b,B.class,B.class,b));
+		assertTrue("Should match",ex.matchesMethodCall(b,bsaa).alwaysMatches());
+		assertTrue("Should not match",ex.matchesMethodCall(b,b).neverMatches());
 	}
 
 	public void testMatchesMethodExecution() {
 		PointcutExpression ex = p.parsePointcutExpression("execution(* *..A.aa(..))");
-		assertEquals("Should match execution of A.aa",FuzzyBoolean.YES,ex.matchesMethodExecution(aa,A.class));
-		assertEquals("Should match execution of B.aa",FuzzyBoolean.YES,ex.matchesMethodExecution(bsaa,B.class));
-		assertEquals("Should not match execution of A.a",FuzzyBoolean.NO,ex.matchesMethodExecution(a,B.class));
+		assertTrue("Should match execution of A.aa",ex.matchesMethodExecution(aa).alwaysMatches());
+		assertTrue("Should match execution of B.aa",ex.matchesMethodExecution(bsaa).alwaysMatches());
+		assertTrue("Should not match execution of A.a",ex.matchesMethodExecution(a).neverMatches());
 		ex = p.parsePointcutExpression("call(* *..A.a*(int))");
-		assertEquals("Should not match execution of A.a",FuzzyBoolean.NO,ex.matchesMethodExecution(a,B.class));
+		assertTrue("Should not match execution of A.a",ex.matchesMethodExecution(a).neverMatches());
+
 		// test this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesMethodExecution(a,A.class));
+		assertTrue("Should match A",ex.matchesMethodExecution(a).alwaysMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesMethodExecution(a,A.class));
-		assertEquals("Should match B",FuzzyBoolean.YES,ex.matchesMethodExecution(a,B.class));
-		assertEquals("Does not match client",FuzzyBoolean.NO,ex.matchesMethodExecution(a,Client.class));
+		assertTrue("Maybe matches B",ex.matchesMethodExecution(a).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesMethodExecution(a).alwaysMatches());
+
 		// test target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesMethodExecution(a,A.class));
+		assertTrue("Should match A",ex.matchesMethodExecution(a).alwaysMatches());
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesMethodExecution(a,A.class));
-		assertEquals("Should match B",FuzzyBoolean.YES,ex.matchesMethodExecution(a,B.class));
-		assertEquals("Does not match client",FuzzyBoolean.NO,ex.matchesMethodExecution(a,Client.class));
+		assertTrue("Maybe matches B",ex.matchesMethodExecution(a).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesMethodExecution(a).alwaysMatches());
+		
 		// test args
 		ex = p.parsePointcutExpression("args(..,int)");
-		assertEquals("Should match A.aa",FuzzyBoolean.YES,ex.matchesMethodExecution(aa,A.class));
-		assertEquals("Should match A.aaa",FuzzyBoolean.YES,ex.matchesMethodExecution(aaa,A.class));
-		assertEquals("Should not match A.a",FuzzyBoolean.NO,ex.matchesMethodExecution(a,A.class));
+		assertTrue("Should match A.aa",ex.matchesMethodExecution(aa).alwaysMatches());
+		assertTrue("Should match A.aaa",ex.matchesMethodExecution(aaa).alwaysMatches());
+		assertTrue("Should not match A.a",ex.matchesMethodExecution(a).neverMatches());
+
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesMethodExecution(a,A.class));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesMethodExecution(bsaa,B.class));
+		assertTrue("Matches in class A",ex.matchesMethodExecution(a).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesMethodExecution(bsaa).neverMatches());
+
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Should not match",FuzzyBoolean.NO,ex.matchesMethodExecution(a,A.class));
+		assertTrue("Should not match",ex.matchesMethodExecution(a).neverMatches());
 	}
 
 	public void testMatchesConstructorCall() {
 		PointcutExpression ex = p.parsePointcutExpression("call(new(String))");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesConstructorCall(asCons,A.class,null));
-		assertEquals("Should match B(String)", FuzzyBoolean.YES, ex.matchesConstructorCall(bsStringCons,Client.class,null));
-		assertEquals("Should not match B()", FuzzyBoolean.NO,ex.matchesConstructorCall(bsCons,Client.class,null));
+		assertTrue("Should match A(String)", ex.matchesConstructorCall(asCons,b).alwaysMatches());
+		assertTrue("Should match B(String)", ex.matchesConstructorCall(bsStringCons,b).alwaysMatches());
+		assertTrue("Should not match B()",ex.matchesConstructorCall(bsCons,foo).neverMatches());
 		ex = p.parsePointcutExpression("call(*..A.new(String))");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesConstructorCall(asCons,A.class,null));
-		assertEquals("Should not match B(String)", FuzzyBoolean.NO, ex.matchesConstructorCall(bsStringCons,Client.class,null));
+		assertTrue("Should match A(String)", ex.matchesConstructorCall(asCons,b).alwaysMatches());
+		assertTrue("Should not match B(String)",ex.matchesConstructorCall(bsStringCons,foo).neverMatches());
 		// this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should match Client",FuzzyBoolean.YES,ex.matchesConstructorCall(asCons,Client.class,null));
-		assertEquals("Should not match A",FuzzyBoolean.NO,ex.matchesConstructorCall(asCons,A.class,null));
+		assertTrue("Should match Client",ex.matchesConstructorCall(asCons,foo).alwaysMatches());
+		assertTrue("Should not match A",ex.matchesConstructorCall(asCons,a).neverMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Should maybe match B",FuzzyBoolean.MAYBE,ex.matchesConstructorCall(asCons,A.class,null));
+		assertTrue("Should maybe match B",ex.matchesConstructorCall(asCons,a).maybeMatches());
+		assertFalse("Should maybe match B",ex.matchesConstructorCall(asCons,a).alwaysMatches());
 		// target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should not match Client",FuzzyBoolean.NO,ex.matchesConstructorCall(asCons,Client.class,null));
+		assertTrue("Should not match Client",ex.matchesConstructorCall(asCons,foo).neverMatches());
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesConstructorCall(asCons,A.class,null));
-		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Should maybe match A",FuzzyBoolean.MAYBE,ex.matchesConstructorCall(asCons,A.class,null));		
+		assertTrue("Should not match A (no target)",ex.matchesConstructorCall(asCons,a).neverMatches());
 		// args
 		ex = p.parsePointcutExpression("args(String)");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesConstructorCall(asCons,A.class,null));
-		assertEquals("Should match B(String)", FuzzyBoolean.YES, ex.matchesConstructorCall(bsStringCons,Client.class,null));
-		assertEquals("Should not match B()", FuzzyBoolean.NO,ex.matchesConstructorCall(bsCons,Client.class,null));
+		assertTrue("Should match A(String)", ex.matchesConstructorCall(asCons,b).alwaysMatches());
+		assertTrue("Should match B(String)", ex.matchesConstructorCall(bsStringCons,foo).alwaysMatches());
+		assertTrue("Should not match B()", ex.matchesConstructorCall(bsCons,foo).neverMatches());
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesConstructorCall(asCons,A.class,null));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesConstructorCall(asCons,B.class,null));
+		assertTrue("Matches in class A",ex.matchesConstructorCall(asCons,a).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesConstructorCall(asCons,b).neverMatches());
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Should match",FuzzyBoolean.YES,ex.matchesConstructorCall(bsCons,B.class,aa));
-		assertEquals("Should not match",FuzzyBoolean.NO,ex.matchesConstructorCall(bsCons,B.class,b));
+		assertTrue("Should match",ex.matchesConstructorCall(bsCons,aa).alwaysMatches());
+		assertTrue("Should not match",ex.matchesConstructorCall(bsCons,b).neverMatches());
 	}
 
 	public void testMatchesConstructorExecution() {
 		PointcutExpression ex = p.parsePointcutExpression("execution(new(String))");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesConstructorExecution(asCons,A.class));
-		assertEquals("Should match B(String)", FuzzyBoolean.YES, ex.matchesConstructorExecution(bsStringCons,Client.class));
-		assertEquals("Should not match B()", FuzzyBoolean.NO,ex.matchesConstructorExecution(bsCons,Client.class));
+		assertTrue("Should match A(String)", ex.matchesConstructorExecution(asCons).alwaysMatches());
+		assertTrue("Should match B(String)", ex.matchesConstructorExecution(bsStringCons).alwaysMatches());
+		assertTrue("Should not match B()", ex.matchesConstructorExecution(bsCons).neverMatches());
 		ex = p.parsePointcutExpression("execution(*..A.new(String))");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesConstructorExecution(asCons,A.class));
-		assertEquals("Should not match B(String)", FuzzyBoolean.NO, ex.matchesConstructorExecution(bsStringCons,Client.class));
+		assertTrue("Should match A(String)",ex.matchesConstructorExecution(asCons).alwaysMatches());
+		assertTrue("Should not match B(String)",ex.matchesConstructorExecution(bsStringCons).neverMatches());
+
 		// test this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesConstructorExecution(asCons,A.class));
+		assertTrue("Should match A",ex.matchesConstructorExecution(asCons).alwaysMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesConstructorExecution(asCons,A.class));
-		assertEquals("Should match B",FuzzyBoolean.YES,ex.matchesConstructorExecution(asCons,B.class));
-		assertEquals("Does not match client",FuzzyBoolean.NO,ex.matchesConstructorExecution(asCons,Client.class));
+		assertTrue("Maybe matches B",ex.matchesConstructorExecution(asCons).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesConstructorExecution(asCons).alwaysMatches());
+		assertTrue("Should match B",ex.matchesConstructorExecution(bsCons).alwaysMatches());
+		assertTrue("Does not match client",ex.matchesConstructorExecution(clientCons).neverMatches());
+
 		// test target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesConstructorExecution(asCons,A.class));
+		assertTrue("Should match A",ex.matchesConstructorExecution(asCons).alwaysMatches());
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesConstructorExecution(asCons,A.class));
-		assertEquals("Should match B",FuzzyBoolean.YES,ex.matchesConstructorExecution(asCons,B.class));
-		assertEquals("Does not match client",FuzzyBoolean.NO,ex.matchesConstructorExecution(asCons,Client.class));
+		assertTrue("Maybe matches B",ex.matchesConstructorExecution(asCons).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesConstructorExecution(asCons).alwaysMatches());
+		assertTrue("Should match B",ex.matchesConstructorExecution(bsCons).alwaysMatches());
+		assertTrue("Does not match client",ex.matchesConstructorExecution(clientCons).neverMatches());
+
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesConstructorExecution(asCons,B.class));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesConstructorExecution(bsCons,B.class));
+		assertTrue("Matches in class A",ex.matchesConstructorExecution(asCons).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesConstructorExecution(bsCons).neverMatches());
+
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Does not match",FuzzyBoolean.NO,ex.matchesConstructorExecution(bsCons,B.class));
+		assertTrue("Does not match",ex.matchesConstructorExecution(bsCons).neverMatches());
+
 		// args
 		ex = p.parsePointcutExpression("args(String)");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesConstructorExecution(asCons,A.class));
-		assertEquals("Should match B(String)", FuzzyBoolean.YES, ex.matchesConstructorExecution(bsStringCons,Client.class));
-		assertEquals("Should not match B()", FuzzyBoolean.NO,ex.matchesConstructorExecution(bsCons,Client.class));
+		assertTrue("Should match A(String)",ex.matchesConstructorExecution(asCons).alwaysMatches());
+		assertTrue("Should match B(String)", ex.matchesConstructorExecution(bsStringCons).alwaysMatches());
+		assertTrue("Should not match B()", ex.matchesConstructorExecution(bsCons).neverMatches());
 	}
 
 	public void testMatchesAdviceExecution() {
 		PointcutExpression ex = p.parsePointcutExpression("adviceexecution()");
-		assertEquals("Should match (advice) A.a",FuzzyBoolean.YES,ex.matchesAdviceExecution(a,A.class));
+		assertTrue("Should match (advice) A.a",ex.matchesAdviceExecution(a).alwaysMatches());
 		// test this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should match Client",FuzzyBoolean.YES,ex.matchesAdviceExecution(a,Client.class));
+		assertTrue("Should match Client",ex.matchesAdviceExecution(foo).alwaysMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesAdviceExecution(a,A.class));
-		assertEquals("Does not match client",FuzzyBoolean.NO,ex.matchesAdviceExecution(a,Client.class));
+		assertTrue("Maybe matches B",ex.matchesAdviceExecution(a).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesAdviceExecution(a).alwaysMatches());
+		assertTrue("Does not match client",ex.matchesAdviceExecution(foo).neverMatches());
+
 		// test target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should match Client",FuzzyBoolean.YES,ex.matchesAdviceExecution(a,Client.class));
+		assertTrue("Should match Client",ex.matchesAdviceExecution(foo).alwaysMatches());
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesAdviceExecution(a,A.class));
-		assertEquals("Does not match client",FuzzyBoolean.NO,ex.matchesAdviceExecution(a,Client.class));
+		assertTrue("Maybe matches B",ex.matchesAdviceExecution(a).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesAdviceExecution(a).alwaysMatches());
+		assertTrue("Does not match client",ex.matchesAdviceExecution(foo).neverMatches());
+
 		// test within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesAdviceExecution(a,A.class));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesAdviceExecution(b,B.class));		
+		assertTrue("Matches in class A",ex.matchesAdviceExecution(a).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesAdviceExecution(b).neverMatches());		
+
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Does not match",FuzzyBoolean.NO,ex.matchesAdviceExecution(a,A.class));
+		assertTrue("Does not match",ex.matchesAdviceExecution(a).neverMatches());
+
 		// test args
 		ex = p.parsePointcutExpression("args(..,int)");
-		assertEquals("Should match A.aa",FuzzyBoolean.YES,ex.matchesAdviceExecution(aa,A.class));
-		assertEquals("Should match A.aaa",FuzzyBoolean.YES,ex.matchesAdviceExecution(aaa,A.class));
-		assertEquals("Should not match A.a",FuzzyBoolean.NO,ex.matchesAdviceExecution(a,A.class));
+		assertTrue("Should match A.aa",ex.matchesAdviceExecution(aa).alwaysMatches());
+		assertTrue("Should match A.aaa",ex.matchesAdviceExecution(aaa).alwaysMatches());
+		assertTrue("Should not match A.a",ex.matchesAdviceExecution(a).neverMatches());
 	}
 
 	public void testMatchesHandler() {
 		PointcutExpression ex = p.parsePointcutExpression("handler(Exception)");
-		assertEquals("Should match catch(Exception)",FuzzyBoolean.YES,ex.matchesHandler(Exception.class,Client.class,null));
-		assertEquals("Should not match catch(Throwable)",FuzzyBoolean.NO,ex.matchesHandler(Throwable.class,Client.class,null));
+		assertTrue("Should match catch(Exception)",ex.matchesHandler(Exception.class,Client.class).alwaysMatches());
+		assertTrue("Should not match catch(Throwable)",ex.matchesHandler(Throwable.class,Client.class).neverMatches());
 		// test this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should match Client",FuzzyBoolean.YES,ex.matchesHandler(Exception.class,Client.class,null));
+		assertTrue("Should match Client",ex.matchesHandler(Exception.class,foo).alwaysMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesHandler(Exception.class,A.class,null));
-		assertEquals("Does not match client",FuzzyBoolean.NO,ex.matchesHandler(Exception.class,Client.class,null));
-		// target
+		assertTrue("Maybe matches B",ex.matchesHandler(Exception.class,a).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesHandler(Exception.class,a).alwaysMatches());
+		assertTrue("Does not match client",ex.matchesHandler(Exception.class,foo).neverMatches());
+		// target - no target for exception handlers
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("Should match Client",FuzzyBoolean.YES,ex.matchesHandler(Exception.class,Client.class,null));
-		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesHandler(Exception.class,A.class,null));
-		assertEquals("Does not match client",FuzzyBoolean.NO,ex.matchesHandler(Exception.class,Client.class,null));
+		assertTrue("Should match Client",ex.matchesHandler(Exception.class,foo).neverMatches());
 		// args
 		ex = p.parsePointcutExpression("args(Exception)");
-		assertEquals("Should match Exception",FuzzyBoolean.YES, ex.matchesHandler(Exception.class,Client.class,null));
-		assertEquals("Should match RuntimeException",FuzzyBoolean.YES, ex.matchesHandler(RuntimeException.class,Client.class,null));
-		assertEquals("Should not match String",FuzzyBoolean.NO,ex.matchesHandler(String.class,Client.class,null));
-		assertEquals("Maybe matches Throwable",FuzzyBoolean.MAYBE,ex.matchesHandler(Throwable.class,Client.class,null));
+		assertTrue("Should match Exception",ex.matchesHandler(Exception.class,foo).alwaysMatches());
+		assertTrue("Should match RuntimeException",ex.matchesHandler(RuntimeException.class,foo).alwaysMatches());
+		assertTrue("Should not match String",ex.matchesHandler(String.class,foo).neverMatches());
+		assertTrue("Maybe matches Throwable",ex.matchesHandler(Throwable.class,foo).maybeMatches());
+		assertFalse("Maybe matches Throwable",ex.matchesHandler(Throwable.class,foo).alwaysMatches());
 		// within
 		ex = p.parsePointcutExpression("within(*..Client)");
-		assertEquals("Matches in class Client",FuzzyBoolean.YES,ex.matchesHandler(Exception.class,Client.class,null));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesHandler(Exception.class,B.class,null));
+		assertTrue("Matches in class Client",ex.matchesHandler(Exception.class,foo).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesHandler(Exception.class,b).neverMatches());
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Matches within aa",FuzzyBoolean.YES,ex.matchesHandler(Exception.class,Client.class,aa));
-		assertEquals("Does not match within b",FuzzyBoolean.NO,ex.matchesHandler(Exception.class,Client.class,b));
+		assertTrue("Matches within aa",ex.matchesHandler(Exception.class,aa).alwaysMatches());
+		assertTrue("Does not match within b",ex.matchesHandler(Exception.class,b).neverMatches());
 	}
 
 	public void testMatchesInitialization() {
 		PointcutExpression ex = p.parsePointcutExpression("initialization(new(String))");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesInitialization(asCons));
-		assertEquals("Should match B(String)", FuzzyBoolean.YES, ex.matchesInitialization(bsStringCons));
-		assertEquals("Should not match B()", FuzzyBoolean.NO,ex.matchesInitialization(bsCons));
+		assertTrue("Should match A(String)",ex.matchesInitialization(asCons).alwaysMatches());
+		assertTrue("Should match B(String)", ex.matchesInitialization(bsStringCons).alwaysMatches());
+		assertTrue("Should not match B()",ex.matchesInitialization(bsCons).neverMatches());
 		ex = p.parsePointcutExpression("initialization(*..A.new(String))");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesInitialization(asCons));
-		assertEquals("Should not match B(String)", FuzzyBoolean.NO, ex.matchesInitialization(bsStringCons));
+		assertTrue("Should match A(String)", ex.matchesInitialization(asCons).alwaysMatches());
+		assertTrue("Should not match B(String)", ex.matchesInitialization(bsStringCons).neverMatches());
 		// test this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesInitialization(asCons));
+		assertTrue("Should match A",ex.matchesInitialization(asCons).alwaysMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesInitialization(asCons));
+		assertTrue("Maybe matches B",ex.matchesInitialization(asCons).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesInitialization(asCons).alwaysMatches());
+		
 		// test target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesInitialization(asCons));
+		assertTrue("Should match A",ex.matchesInitialization(asCons).alwaysMatches());
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesInitialization(asCons));
+		assertTrue("Maybe matches B",ex.matchesInitialization(asCons).maybeMatches());
+		assertFalse("Maybe matches B",ex.matchesInitialization(asCons).alwaysMatches());
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesInitialization(asCons));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesInitialization(bsCons));
+		assertTrue("Matches in class A",ex.matchesInitialization(asCons).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesInitialization(bsCons).neverMatches());
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Does not match",FuzzyBoolean.NO,ex.matchesInitialization(bsCons));
+		assertTrue("Does not match",ex.matchesInitialization(bsCons).neverMatches());
 		// args
 		ex = p.parsePointcutExpression("args(String)");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesInitialization(asCons));
-		assertEquals("Should match B(String)", FuzzyBoolean.YES, ex.matchesInitialization(bsStringCons));
-		assertEquals("Should not match B()", FuzzyBoolean.NO,ex.matchesInitialization(bsCons));
+		assertTrue("Should match A(String)", ex.matchesInitialization(asCons).alwaysMatches());
+		assertTrue("Should match B(String)", ex.matchesInitialization(bsStringCons).alwaysMatches());
+		assertTrue("Should not match B()",ex.matchesInitialization(bsCons).neverMatches());
 	}
 
 	public void testMatchesPreInitialization() {
 		PointcutExpression ex = p.parsePointcutExpression("preinitialization(new(String))");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesPreInitialization(asCons));
-		assertEquals("Should match B(String)", FuzzyBoolean.YES, ex.matchesPreInitialization(bsStringCons));
-		assertEquals("Should not match B()", FuzzyBoolean.NO,ex.matchesPreInitialization(bsCons));
+		assertTrue("Should match A(String)",ex.matchesPreInitialization(asCons).alwaysMatches());
+		assertTrue("Should match B(String)", ex.matchesPreInitialization(bsStringCons).alwaysMatches());
+		assertTrue("Should not match B()",ex.matchesPreInitialization(bsCons).neverMatches());
 		ex = p.parsePointcutExpression("preinitialization(*..A.new(String))");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesPreInitialization(asCons));
-		assertEquals("Should not match B(String)", FuzzyBoolean.NO, ex.matchesPreInitialization(bsStringCons));
+		assertTrue("Should match A(String)", ex.matchesPreInitialization(asCons).alwaysMatches());
+		assertTrue("Should not match B(String)", ex.matchesPreInitialization(bsStringCons).neverMatches());
 		// test this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesPreInitialization(asCons));
-		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesPreInitialization(asCons));
+		assertTrue("No match, no this at preinit",ex.matchesPreInitialization(asCons).neverMatches());
+		
 		// test target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("Should match A",FuzzyBoolean.YES,ex.matchesPreInitialization(asCons));
-		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("Maybe matches B",FuzzyBoolean.MAYBE,ex.matchesPreInitialization(asCons));
+		assertTrue("No match, no target at preinit",ex.matchesPreInitialization(asCons).neverMatches());
+
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesPreInitialization(asCons));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesPreInitialization(bsCons));
+		assertTrue("Matches in class A",ex.matchesPreInitialization(asCons).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesPreInitialization(bsCons).neverMatches());
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Does not match",FuzzyBoolean.NO,ex.matchesPreInitialization(bsCons));
+		assertTrue("Does not match",ex.matchesPreInitialization(bsCons).neverMatches());
 		// args
 		ex = p.parsePointcutExpression("args(String)");
-		assertEquals("Should match A(String)",FuzzyBoolean.YES, ex.matchesPreInitialization(asCons));
-		assertEquals("Should match B(String)", FuzzyBoolean.YES, ex.matchesPreInitialization(bsStringCons));
-		assertEquals("Should not match B()", FuzzyBoolean.NO,ex.matchesPreInitialization(bsCons));	}
+		assertTrue("Should match A(String)", ex.matchesPreInitialization(asCons).alwaysMatches());
+		assertTrue("Should match B(String)", ex.matchesPreInitialization(bsStringCons).alwaysMatches());
+		assertTrue("Should not match B()",ex.matchesPreInitialization(bsCons).neverMatches());
+	}
 
 	public void testMatchesStaticInitialization() {
 		// staticinit
 		PointcutExpression ex = p.parsePointcutExpression("staticinitialization(*..A+)");
-		assertEquals("Matches A",FuzzyBoolean.YES,ex.matchesStaticInitialization(A.class));
-		assertEquals("Matches B",FuzzyBoolean.YES,ex.matchesStaticInitialization(B.class));
-		assertEquals("Doesn't match Client",FuzzyBoolean.NO,ex.matchesStaticInitialization(Client.class));
+		assertTrue("Matches A",ex.matchesStaticInitialization(A.class).alwaysMatches());
+		assertTrue("Matches B",ex.matchesStaticInitialization(B.class).alwaysMatches());
+		assertTrue("Doesn't match Client",ex.matchesStaticInitialization(Client.class).neverMatches());
 		// this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("No this",FuzzyBoolean.NO,ex.matchesStaticInitialization(A.class));
+		assertTrue("No this",ex.matchesStaticInitialization(A.class).neverMatches());
 		// target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertEquals("No target",FuzzyBoolean.NO,ex.matchesStaticInitialization(A.class));		
+		assertTrue("No target",ex.matchesStaticInitialization(A.class).neverMatches());		
+
 		// args
 		ex = p.parsePointcutExpression("args()");
-		assertEquals("No args",FuzzyBoolean.NO,ex.matchesStaticInitialization(A.class));
+		assertTrue("No args",ex.matchesStaticInitialization(A.class).alwaysMatches());
+		ex = p.parsePointcutExpression("args(String)");
+		assertTrue("No args",ex.matchesStaticInitialization(A.class).neverMatches());
+
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesStaticInitialization(A.class));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesStaticInitialization(B.class));		
+		assertTrue("Matches in class A",ex.matchesStaticInitialization(A.class).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesStaticInitialization(B.class).neverMatches());		
+
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Does not match",FuzzyBoolean.NO,ex.matchesStaticInitialization(A.class));
+		assertTrue("Does not match",ex.matchesStaticInitialization(A.class).neverMatches());
 	}
 
 	public void testMatchesFieldSet() {
 		PointcutExpression ex = p.parsePointcutExpression("set(* *..A+.*)");
-		assertEquals("matches x",FuzzyBoolean.YES,ex.matchesFieldSet(x,Client.class,A.class,null));
-		assertEquals("matches y",FuzzyBoolean.YES,ex.matchesFieldSet(y,Client.class,B.class,null));
-		assertEquals("does not match n",FuzzyBoolean.NO,ex.matchesFieldSet(n,A.class,Client.class,null));
+		assertTrue("matches x",ex.matchesFieldSet(x,a).alwaysMatches());
+		assertTrue("matches y",ex.matchesFieldSet(y,foo).alwaysMatches());
+		assertTrue("does not match n",ex.matchesFieldSet(n,foo).neverMatches());
 		// this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("matches Client",FuzzyBoolean.YES,ex.matchesFieldSet(x,Client.class,A.class,null));
-		assertEquals("does not match A",FuzzyBoolean.NO,ex.matchesFieldSet(n,A.class,Client.class,null));
+		assertTrue("matches Client",ex.matchesFieldSet(x,foo).alwaysMatches());
+		assertTrue("does not match A",ex.matchesFieldSet(n,a).neverMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("maybe matches A",FuzzyBoolean.MAYBE,ex.matchesFieldSet(x,A.class,A.class,null));
+		assertTrue("maybe matches A",ex.matchesFieldSet(x,a).maybeMatches());
+		assertFalse("maybe matches A",ex.matchesFieldSet(x,a).alwaysMatches());
 		// target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("matches B",FuzzyBoolean.YES,ex.matchesFieldSet(y,Client.class,B.class,null));
-		assertEquals("maybe matches A",FuzzyBoolean.MAYBE,ex.matchesFieldSet(x,Client.class,A.class,null));		
+		assertTrue("matches B",ex.matchesFieldSet(y,foo).alwaysMatches());
+		assertTrue("maybe matches A",ex.matchesFieldSet(x,foo).maybeMatches());		
+		assertFalse("maybe matches A",ex.matchesFieldSet(x,foo).alwaysMatches());		
 		// args
 		ex = p.parsePointcutExpression("args(int)");
-		assertEquals("matches x",FuzzyBoolean.YES,ex.matchesFieldSet(x,Client.class,A.class,null));
-		assertEquals("matches y",FuzzyBoolean.YES,ex.matchesFieldSet(y,Client.class,B.class,null));
-		assertEquals("does not match n",FuzzyBoolean.NO,ex.matchesFieldSet(n,A.class,Client.class,null));
+		assertTrue("matches x",ex.matchesFieldSet(x,a).alwaysMatches());
+		assertTrue("matches y",ex.matchesFieldSet(y,a).alwaysMatches());
+		assertTrue("does not match n",ex.matchesFieldSet(n,a).neverMatches());
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesFieldSet(x,A.class,A.class,null));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesFieldSet(x,B.class,A.class,null));
+		assertTrue("Matches in class A",ex.matchesFieldSet(x,a).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesFieldSet(x,b).neverMatches());
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Should match",FuzzyBoolean.YES,ex.matchesFieldSet(x,A.class,A.class,aa));
-		assertEquals("Should not match",FuzzyBoolean.NO,ex.matchesFieldSet(x,A.class,A.class,b));
+		assertTrue("Should match",ex.matchesFieldSet(x,aa).alwaysMatches());
+		assertTrue("Should not match",ex.matchesFieldSet(x,b).neverMatches());
 	}
 
 	public void testMatchesFieldGet() {
 		PointcutExpression ex = p.parsePointcutExpression("get(* *..A+.*)");
-		assertEquals("matches x",FuzzyBoolean.YES,ex.matchesFieldGet(x,Client.class,A.class,null));
-		assertEquals("matches y",FuzzyBoolean.YES,ex.matchesFieldGet(y,Client.class,B.class,null));
-		assertEquals("does not match n",FuzzyBoolean.NO,ex.matchesFieldGet(n,A.class,Client.class,null));
+		assertTrue("matches x",ex.matchesFieldGet(x,a).alwaysMatches());
+		assertTrue("matches y",ex.matchesFieldGet(y,foo).alwaysMatches());
+		assertTrue("does not match n",ex.matchesFieldGet(n,foo).neverMatches());
 		// this
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-		assertEquals("matches Client",FuzzyBoolean.YES,ex.matchesFieldGet(x,Client.class,A.class,null));
-		assertEquals("does not match A",FuzzyBoolean.NO,ex.matchesFieldGet(n,A.class,Client.class,null));
+		assertTrue("matches Client",ex.matchesFieldGet(x,foo).alwaysMatches());
+		assertTrue("does not match A",ex.matchesFieldGet(n,a).neverMatches());
 		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("maybe matches A",FuzzyBoolean.MAYBE,ex.matchesFieldGet(x,A.class,A.class,null));
+		assertTrue("maybe matches A",ex.matchesFieldGet(x,a).maybeMatches());
+		assertFalse("maybe matches A",ex.matchesFieldGet(x,a).alwaysMatches());
 		// target
 		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-		assertEquals("matches B",FuzzyBoolean.YES,ex.matchesFieldGet(y,Client.class,B.class,null));
-		assertEquals("maybe matches A",FuzzyBoolean.MAYBE,ex.matchesFieldGet(x,Client.class,A.class,null));		
-		// args
+		assertTrue("matches B",ex.matchesFieldGet(y,foo).alwaysMatches());
+		assertTrue("maybe matches A",ex.matchesFieldGet(x,foo).maybeMatches());		
+		assertFalse("maybe matches A",ex.matchesFieldGet(x,foo).alwaysMatches());		
+		// args - no args at get join point
 		ex = p.parsePointcutExpression("args(int)");
-		assertEquals("matches x",FuzzyBoolean.NO,ex.matchesFieldGet(x,Client.class,A.class,null));
-		assertEquals("matches y",FuzzyBoolean.NO,ex.matchesFieldGet(y,Client.class,B.class,null));
-		assertEquals("does not match n",FuzzyBoolean.NO,ex.matchesFieldGet(n,A.class,Client.class,null));
+		assertTrue("matches x",ex.matchesFieldGet(x,a).neverMatches());
 		// within
 		ex = p.parsePointcutExpression("within(*..A)");
-		assertEquals("Matches in class A",FuzzyBoolean.YES,ex.matchesFieldGet(x,A.class,A.class,null));
-		assertEquals("Does not match in class B",FuzzyBoolean.NO,ex.matchesFieldGet(x,B.class,A.class,null));
+		assertTrue("Matches in class A",ex.matchesFieldGet(x,a).alwaysMatches());
+		assertTrue("Does not match in class B",ex.matchesFieldGet(x,b).neverMatches());
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertEquals("Should match",FuzzyBoolean.YES,ex.matchesFieldGet(x,A.class,A.class,aa));
-		assertEquals("Should not match",FuzzyBoolean.NO,ex.matchesFieldGet(x,A.class,A.class,b));
+		assertTrue("Should match",ex.matchesFieldGet(x,aa).alwaysMatches());
+		assertTrue("Should not match",ex.matchesFieldGet(x,b).neverMatches());
 	}
 	
 	public void testArgsMatching() {
 		// too few args
 		PointcutExpression ex = p.parsePointcutExpression("args(*,*,*,*)");
-		assertEquals("Too few args",FuzzyBoolean.NO,ex.matchesMethodExecution(foo,Client.class));
-		assertEquals("Matching #args",FuzzyBoolean.YES,ex.matchesMethodExecution(bar,Client.class));
+		assertTrue("Too few args",ex.matchesMethodExecution(foo).neverMatches());
+		assertTrue("Matching #args",ex.matchesMethodExecution(bar).alwaysMatches());
 		// one too few + ellipsis
 		ex = p.parsePointcutExpression("args(*,*,*,..)");
-		assertEquals("Matches with ellipsis",FuzzyBoolean.YES,ex.matchesMethodExecution(foo,Client.class));
+		assertTrue("Matches with ellipsis",ex.matchesMethodExecution(foo).alwaysMatches());
 		// exact number + ellipsis
-		assertEquals("Matches with ellipsis",FuzzyBoolean.YES,ex.matchesMethodExecution(bar,Client.class));
-		assertEquals("Does not match with ellipsis",FuzzyBoolean.NO,ex.matchesMethodExecution(a,A.class));		
+		assertTrue("Matches with ellipsis",ex.matchesMethodExecution(bar).alwaysMatches());
+		assertTrue("Does not match with ellipsis",ex.matchesMethodExecution(a).neverMatches());		
 		// too many + ellipsis
 		ex = p.parsePointcutExpression("args(*,..,*)");
-		assertEquals("Matches with ellipsis",FuzzyBoolean.YES,ex.matchesMethodExecution(bar,Client.class));
-		assertEquals("Does not match with ellipsis",FuzzyBoolean.NO,ex.matchesMethodExecution(a,A.class));		
-		assertEquals("Matches with ellipsis",FuzzyBoolean.YES,ex.matchesMethodExecution(aaa,A.class));
+		assertTrue("Matches with ellipsis",ex.matchesMethodExecution(bar).alwaysMatches());
+		assertTrue("Does not match with ellipsis",ex.matchesMethodExecution(a).neverMatches());		
+		assertTrue("Matches with ellipsis",ex.matchesMethodExecution(aaa).alwaysMatches());
 		// exact match
 		ex = p.parsePointcutExpression("args(String,int,Number)");
-		assertEquals("Matches exactly",FuzzyBoolean.YES,ex.matchesMethodExecution(foo,Client.class));
+		assertTrue("Matches exactly",ex.matchesMethodExecution(foo).alwaysMatches());
 		// maybe match
 		ex = p.parsePointcutExpression("args(String,int,Double)");
-		assertEquals("Matches maybe",FuzzyBoolean.MAYBE,ex.matchesMethodExecution(foo,Client.class));
+		assertTrue("Matches maybe",ex.matchesMethodExecution(foo).maybeMatches());
+		assertFalse("Matches maybe",ex.matchesMethodExecution(foo).alwaysMatches());
 		// never match
 		ex = p.parsePointcutExpression("args(String,Integer,Number)");
-		assertEquals("Does not match",FuzzyBoolean.NO,ex.matchesMethodExecution(foo,Client.class));
+		if (LangUtil.is15VMOrGreater()) {
+			assertTrue("matches",ex.matchesMethodExecution(foo).alwaysMatches());
+		} else {
+			assertTrue("Does not match",ex.matchesMethodExecution(foo).neverMatches());
+		}
 	}
 	
-	public void testMatchesDynamically() {
-		// everything other than this,target,args should just return true
-		PointcutExpression ex = p.parsePointcutExpression("call(* *.*(..)) && execution(* *.*(..)) &&" +
-				"get(* *) && set(* *) && initialization(new(..)) && preinitialization(new(..)) &&" +
-				"staticinitialization(X) && adviceexecution() && within(Y) && withincode(* *.*(..)))");
-		assertTrue("Matches dynamically",ex.matchesDynamically(a,b,new Object[0]));		
-		// this
-		ex = p.parsePointcutExpression("this(String)");
-		assertTrue("String matches",ex.matchesDynamically("",this,new Object[0]));
-		assertFalse("Object doesn't match",ex.matchesDynamically(new Object(),this,new Object[0]));
-		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertTrue("A matches",ex.matchesDynamically(new A(""),this,new Object[0]));
-		assertTrue("B matches",ex.matchesDynamically(new B(""),this,new Object[0]));
-		// target
-		ex = p.parsePointcutExpression("target(String)");
-		assertTrue("String matches",ex.matchesDynamically(this,"",new Object[0]));
-		assertFalse("Object doesn't match",ex.matchesDynamically(this,new Object(),new Object[0]));
-		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
-		assertTrue("A matches",ex.matchesDynamically(this,new A(""),new Object[0]));
-		assertTrue("B matches",ex.matchesDynamically(this,new B(""),new Object[0]));		
-		// args
-		ex = p.parsePointcutExpression("args(*,*,*,*)");
-		assertFalse("Too few args",ex.matchesDynamically(null,null,new Object[]{a,b}));
-		assertTrue("Matching #args",ex.matchesDynamically(null,null,new Object[]{a,b,aa,aaa}));
-		// one too few + ellipsis
-		ex = p.parsePointcutExpression("args(*,*,*,..)");
-		assertTrue("Matches with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b,aa,aaa}));
-		// exact number + ellipsis
-		assertTrue("Matches with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b,aa}));
-		assertFalse("Does not match with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b}));		
-		// too many + ellipsis
-		ex = p.parsePointcutExpression("args(*,..,*)");
-		assertTrue("Matches with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b,aa,aaa}));
-		assertFalse("Does not match with ellipsis",ex.matchesDynamically(null,null,new Object[]{a}));		
-		assertTrue("Matches with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b}));
-		// exact match
-		ex = p.parsePointcutExpression("args(String,int,Number)");
-		assertTrue("Matches exactly",ex.matchesDynamically(null,null,new Object[]{"",new Integer(5),new Double(5.0)}));
-		ex = p.parsePointcutExpression("args(String,Integer,Number)");
-		assertTrue("Matches exactly",ex.matchesDynamically(null,null,new Object[]{"",new Integer(5),new Double(5.0)}));
-		// never match
-		ex = p.parsePointcutExpression("args(String,Integer,Number)");
-		assertFalse("Does not match",ex.matchesDynamically(null,null,new Object[]{a,b,aa}));		
-}
+//	public void testMatchesDynamically() {
+//		// everything other than this,target,args should just return true
+//		PointcutExpression ex = p.parsePointcutExpression("call(* *.*(..)) && execution(* *.*(..)) &&" +
+//				"get(* *) && set(* *) && initialization(new(..)) && preinitialization(new(..)) &&" +
+//				"staticinitialization(X) && adviceexecution() && within(Y) && withincode(* *.*(..)))");
+//		assertTrue("Matches dynamically",ex.matchesDynamically(a,b,new Object[0]));		
+//		// this
+//		ex = p.parsePointcutExpression("this(String)");
+//		assertTrue("String matches",ex.matchesDynamically("",this,new Object[0]));
+//		assertFalse("Object doesn't match",ex.matchesDynamically(new Object(),this,new Object[0]));
+//		ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
+//		assertTrue("A matches",ex.matchesDynamically(new A(""),this,new Object[0]));
+//		assertTrue("B matches",ex.matchesDynamically(new B(""),this,new Object[0]));
+//		// target
+//		ex = p.parsePointcutExpression("target(String)");
+//		assertTrue("String matches",ex.matchesDynamically(this,"",new Object[0]));
+//		assertFalse("Object doesn't match",ex.matchesDynamically(this,new Object(),new Object[0]));
+//		ex = p.parsePointcutExpression("target(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
+//		assertTrue("A matches",ex.matchesDynamically(this,new A(""),new Object[0]));
+//		assertTrue("B matches",ex.matchesDynamically(this,new B(""),new Object[0]));		
+//		// args
+//		ex = p.parsePointcutExpression("args(*,*,*,*)");
+//		assertFalse("Too few args",ex.matchesDynamically(null,null,new Object[]{a,b}));
+//		assertTrue("Matching #args",ex.matchesDynamically(null,null,new Object[]{a,b,aa,aaa}));
+//		// one too few + ellipsis
+//		ex = p.parsePointcutExpression("args(*,*,*,..)");
+//		assertTrue("Matches with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b,aa,aaa}));
+//		// exact number + ellipsis
+//		assertTrue("Matches with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b,aa}));
+//		assertFalse("Does not match with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b}));		
+//		// too many + ellipsis
+//		ex = p.parsePointcutExpression("args(*,..,*)");
+//		assertTrue("Matches with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b,aa,aaa}));
+//		assertFalse("Does not match with ellipsis",ex.matchesDynamically(null,null,new Object[]{a}));		
+//		assertTrue("Matches with ellipsis",ex.matchesDynamically(null,null,new Object[]{a,b}));
+//		// exact match
+//		ex = p.parsePointcutExpression("args(String,int,Number)");
+//		assertTrue("Matches exactly",ex.matchesDynamically(null,null,new Object[]{"",new Integer(5),new Double(5.0)}));
+//		ex = p.parsePointcutExpression("args(String,Integer,Number)");
+//		assertTrue("Matches exactly",ex.matchesDynamically(null,null,new Object[]{"",new Integer(5),new Double(5.0)}));
+//		// never match
+//		ex = p.parsePointcutExpression("args(String,Integer,Number)");
+//		assertFalse("Does not match",ex.matchesDynamically(null,null,new Object[]{a,b,aa}));		
+//}
 
 	public void testGetPointcutExpression() {
 		PointcutExpression ex = p.parsePointcutExpression("staticinitialization(*..A+)");
@@ -471,15 +507,17 @@ public class PointcutExpressionTest extends TestCase {
 	
 	public void testCouldMatchJoinPointsInType() {
 		PointcutExpression ex = p.parsePointcutExpression("execution(* org.aspectj.weaver.tools.PointcutExpressionTest.B.*(..))");
-		assertFalse("Could never match String",ex.couldMatchJoinPointsInType(String.class));
+		assertTrue("Could maybe match String (as best we know at this point)",ex.couldMatchJoinPointsInType(String.class));
 		assertTrue("Will always match B",ex.couldMatchJoinPointsInType(B.class));
-		assertFalse("Does not match A",ex.couldMatchJoinPointsInType(A.class));
+		ex = p.parsePointcutExpression("within(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
+		assertFalse("Will never match String",ex.couldMatchJoinPointsInType(String.class));
+		assertTrue("Will always match B",ex.couldMatchJoinPointsInType(B.class));
 	}
 	
 	public void testMayNeedDynamicTest() {
 		PointcutExpression ex = p.parsePointcutExpression("execution(* org.aspectj.weaver.tools.PointcutExpressionTest.B.*(..))");
 		assertFalse("No dynamic test needed",ex.mayNeedDynamicTest());
-		ex = p.parsePointcutExpression("execution(* org.aspectj.weaver.tools.PointcutExpressionTest.B.*(..)) && args(X)");
+		ex = p.parsePointcutExpression("execution(* org.aspectj.weaver.tools.PointcutExpressionTest.B.*(..)) && args(org.aspectj.weaver.tools.PointcutExpressionTest.X)");
 		assertTrue("Dynamic test needed",ex.mayNeedDynamicTest());
 	}
 
@@ -496,6 +534,7 @@ public class PointcutExpressionTest extends TestCase {
 		y = B.class.getDeclaredField("y");
 		b = B.class.getMethod("b",new Class[0]);
 		bsaa = B.class.getMethod("aa",new Class[]{int.class});
+		clientCons = Client.class.getConstructor(new Class[0]);
 		n = Client.class.getDeclaredField("n");
 		foo = Client.class.getDeclaredMethod("foo",new Class[]{String.class,int.class,Number.class});
 		bar = Client.class.getDeclaredMethod("bar",new Class[]{String.class,int.class,Integer.class,Number.class});
@@ -518,8 +557,11 @@ public class PointcutExpressionTest extends TestCase {
 	}
 	
 	static class Client {
+		public Client() {}
 		Number n;
 		public void foo(String s, int i, Number n) {}
 		public void bar(String s, int i, Integer i2, Number n) {}
 	}
+	
+	static class X {}
 }

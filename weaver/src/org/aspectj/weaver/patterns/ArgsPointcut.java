@@ -15,10 +15,6 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,8 +25,6 @@ import java.util.Set;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BetaException;
 import org.aspectj.weaver.ISourceContext;
@@ -43,7 +37,6 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
 
 /**
  * args(arguments)
@@ -74,10 +67,6 @@ public class ArgsPointcut extends NameBindingPointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		ResolvedType[] argumentsToMatchAgainst = getArgumentsToMatchAgainst(shadow);
 		FuzzyBoolean ret =
@@ -120,19 +109,6 @@ public class ArgsPointcut extends NameBindingPointcut {
 		return argumentsToMatchAgainst;
 	}
 	
-	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart jpsp) {
-		FuzzyBoolean ret = arguments.matches(jp.getArgs(),TypePattern.DYNAMIC);
-		// this may have given a false match (e.g. args(int) may have matched a call to doIt(Integer x)) due to boxing
-		// check for this...
-		if (ret == FuzzyBoolean.YES) {
-			// are the sigs compatible too...
-			CodeSignature sig = (CodeSignature)jp.getSignature();
-			Class[] pTypes = sig.getParameterTypes();
-			ret = checkSignatureMatch(pTypes);
-		}
-		return ret;
-	}
-	
 	/**
 	 * @param ret
 	 * @param pTypes
@@ -157,34 +133,6 @@ public class ArgsPointcut extends NameBindingPointcut {
 		return FuzzyBoolean.YES;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		return (arguments.matches(args,TypePattern.DYNAMIC) == FuzzyBoolean.YES);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
-			Class thisClass, Class targetClass, Member withinCode) {
-		Class[] paramTypes = new Class[0];
-		if (member instanceof Method) {
-			paramTypes = ((Method)member).getParameterTypes();
-		} else if (member instanceof Constructor) {
-			paramTypes = ((Constructor)member).getParameterTypes();
-		} else if (member instanceof PointcutExpressionImpl.Handler){
-			paramTypes = new Class[] {((PointcutExpressionImpl.Handler)member).getHandledExceptionType()};
-		} else if (member instanceof Field) {
-			if (joinpointKind.equals(Shadow.FieldGet.getName())) return FuzzyBoolean.NO; // no args here
-			paramTypes = new Class[] {((Field)member).getType()};
-		} else {
-			return FuzzyBoolean.NO;
-		}
-		return arguments.matchesArgsPatternSubset(paramTypes);
-	}
 	private Class getPossiblyBoxed(UnresolvedType tp) {
 		Class ret = (Class) ExactTypePattern.primitiveTypesMap.get(tp.getName());
 		if (ret == null) ret = (Class) ExactTypePattern.boxedPrimitivesMap.get(tp.getName());
@@ -241,13 +189,6 @@ public class ArgsPointcut extends NameBindingPointcut {
 			scope.message(IMessage.ERROR, this,
 					"uses more than one .. in args (compiler limitation)");
 		}
-	}
-	
-	public void resolveBindingsFromRTTI() {
-		arguments.resolveBindingsFromRTTI(true, true);
-		if (arguments.ellipsisCount > 1) {
-			throw new UnsupportedOperationException("uses more than one .. in args (compiler limitation)");
-		}		
 	}
 	
 	public void postRead(ResolvedType enclosingType) {

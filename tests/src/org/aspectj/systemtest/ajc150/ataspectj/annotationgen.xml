@@ -142,5 +142,11 @@
         </compile>
         <run class="Deow"/>
     </ajc-test>          
+
+   <ajc-test dir="java5/ataspectj/annotationGen" title="runtime pointcut resolution referencing compiled pointcuts">
+        <compile files="PCLib.aj,RuntimePointcuts.java" options="-1.5">
+        </compile>
+        <run class="RuntimePointcuts"/>
+    </ajc-test>          
     
 </suite>

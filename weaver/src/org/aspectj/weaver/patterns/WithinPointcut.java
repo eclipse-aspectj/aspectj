@@ -15,14 +15,12 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -65,11 +63,7 @@ public class WithinPointcut extends Pointcut {
 	    }
 	    return FuzzyBoolean.MAYBE;
 	}
-	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-    
+	   
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
 		if (enclosingType == ResolvedType.MISSING) {
@@ -82,48 +76,6 @@ public class WithinPointcut extends Pointcut {
 		typePattern.resolve(shadow.getIWorld());
 		return isWithinType(enclosingType);
 	}
-
-	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJp) {
-		return isWithinType(encJp.getSignature().getDeclaringType());
-	}
-		
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		return true;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(
-			String joinpointKind, Member member, Class thisClass,
-			Class targetClass, Member withinCode) {
-		if ((member != null) &&
-			!(joinpointKind.equals(Shadow.ConstructorCall.getName()) ||
-			  joinpointKind.equals(Shadow.MethodCall.getName()) ||
-			  joinpointKind.equals(Shadow.FieldGet.getName()) ||
-			  joinpointKind.equals(Shadow.FieldSet.getName()))
-			) {
-			return isWithinType(member.getDeclaringClass());
-		} else {
-			return isWithinType(thisClass);
-		}
-	}
-		
-	private FuzzyBoolean isWithinType(Class type) {
-		while (type != null) {
-			if (typePattern.matchesStatically(type)) {
-				return FuzzyBoolean.YES;
-			} 
-			type = type.getDeclaringClass();
-		}		
-		return FuzzyBoolean.NO;
-	}
-
 	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.WITHIN);
@@ -150,10 +102,6 @@ public class WithinPointcut extends Pointcut {
 		}		
 	}
 
-	public void resolveBindingsFromRTTI() {
-		typePattern = typePattern.resolveBindingsFromRTTI(false,false);
-	}
-	
 	public void postRead(ResolvedType enclosingType) {
 		typePattern.postRead(enclosingType);
 	}

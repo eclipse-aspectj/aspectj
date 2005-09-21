@@ -285,8 +285,7 @@ public abstract class World implements Dump.INode {
 	    	if (delegate.isGeneric() && behaveInJava5Way) {
 	    		// ======== raw type ===========
 	    		simpleOrRawType.typeKind = TypeKind.RAW;
-	        	ReferenceType genericType = new ReferenceType(
-	        			UnresolvedType.forGenericTypeSignature(erasedSignature,delegate.getDeclaredGenericSignature()),this);
+	        	ReferenceType genericType = makeGenericTypeFrom(delegate,simpleOrRawType); 
 	    		// name =  ReferenceType.fromTypeX(UnresolvedType.forRawTypeNames(ty.getName()),this);
 		    	simpleOrRawType.setDelegate(delegate);
 		    	genericType.setDelegate(delegate);
@@ -334,12 +333,22 @@ public abstract class World implements Dump.INode {
     	} else {
 	    	// Fault in the generic that underpins the raw type ;)
 	    	ReferenceTypeDelegate delegate = resolveDelegate((ReferenceType)rawType);
-	    	ReferenceType genericRefType = new ReferenceType(
-	    			UnresolvedType.forGenericTypeSignature(rawType.getSignature(),delegate.getDeclaredGenericSignature()),this);
+	    	ReferenceType genericRefType = makeGenericTypeFrom(delegate,((ReferenceType)rawType));
 	    	((ReferenceType)rawType).setGenericType(genericRefType);
 	    	genericRefType.setDelegate(delegate);
 	    	((ReferenceType)rawType).setDelegate(delegate);
 	    	return genericRefType;
+    	}
+    }
+    
+    private ReferenceType makeGenericTypeFrom(ReferenceTypeDelegate delegate, ReferenceType rawType) {
+    	String genericSig = delegate.getDeclaredGenericSignature();
+    	if (genericSig != null) {
+    		return new ReferenceType(
+	    			UnresolvedType.forGenericTypeSignature(rawType.getSignature(),delegate.getDeclaredGenericSignature()),this);
+    	} else {
+    		return new ReferenceType(
+    				UnresolvedType.forGenericTypeVariables(rawType.getSignature(), delegate.getTypeVariables()),this);
     	}
     }
 

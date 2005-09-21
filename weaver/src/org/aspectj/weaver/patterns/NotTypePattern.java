@@ -63,19 +63,7 @@ public class NotTypePattern extends TypePattern {
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return (!negatedPattern.matchesExactly(type,annotatedType) && annotationPattern.matches(annotatedType).alwaysTrue());
 	}
-	
-	public boolean matchesStatically(Class type) {
-		return !negatedPattern.matchesStatically(type);
-	}
-
-	public FuzzyBoolean matchesInstanceof(Class type) {
-		return negatedPattern.matchesInstanceof(type).not();
-	}
-
-	protected boolean matchesExactly(Class type) {
-		return !negatedPattern.matchesExactly(type);
-	}
-	
+		
 	public boolean matchesStatically(ResolvedType type) {
 		return !negatedPattern.matchesStatically(type);
 	}
@@ -122,12 +110,6 @@ public class NotTypePattern extends TypePattern {
 		return ret;
 	}
 	
-	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
-		if (requireExactType) return TypePattern.NO;
-		negatedPattern = negatedPattern.resolveBindingsFromRTTI(allowBinding,requireExactType);
-		return this;
-	}
-
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		if (annotationPattern != AnnotationTypePattern.ANY) {

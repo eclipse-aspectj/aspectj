@@ -20,6 +20,7 @@ import org.aspectj.weaver.TypeVariableReferenceTypeTestCase;
 import org.aspectj.weaver.TypeVariableTestCase;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
 import org.aspectj.weaver.patterns.WildTypePatternResolutionTestCase;
+import org.aspectj.weaver.tools.Java15PointcutExpressionTest;
 
 public class BcweaverModuleTests15 extends TestCase {
 	   public static Test suite() { 
@@ -31,6 +32,7 @@ public class BcweaverModuleTests15 extends TestCase {
 	        suite.addTestSuite(MemberTestCase15.class);
 	        suite.addTestSuite(BcelGenericSignatureToTypeXTestCase.class);
 	        suite.addTestSuite(WildTypePatternResolutionTestCase.class);
+	        suite.addTestSuite(Java15PointcutExpressionTest.class);
 	        return suite;
 	    }
 

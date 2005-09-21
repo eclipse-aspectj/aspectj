@@ -141,65 +141,7 @@ public abstract class TypePattern extends PatternNode {
 			throw new IllegalArgumentException("kind must be DYNAMIC or STATIC");
 		}
 	}
-	
-	
-	// methods for dynamic pc matching...
-	public final FuzzyBoolean matches(Class toMatch, MatchKind kind) {
-		if (kind == STATIC) {
-			return FuzzyBoolean.fromBoolean(matchesStatically(toMatch));
-		} else if (kind == DYNAMIC) {
-			//System.err.println("matching: " + this + " with " + type);
-			FuzzyBoolean ret = matchesInstanceof(toMatch);
-			//System.err.println("    got: " + ret);
-			return ret;
-		} else {
-			throw new IllegalArgumentException("kind must be DYNAMIC or STATIC");
-		}
-	}
 		
-	/**
-	 * This variant is only called by the args and handler pcds when doing runtime
-	 * matching. We need to handle primitive types correctly in this case (an Integer
-	 * should match an int,...).
-	 */
-	public final FuzzyBoolean matches(Object o, MatchKind kind) {
-		if (kind == STATIC) {  // handler pcd
-			return FuzzyBoolean.fromBoolean(matchesStatically(o.getClass()));
-		} else if (kind == DYNAMIC) {  // args pcd
-//			Class clazz = o.getClass();
-//			FuzzyBoolean ret = FuzzyBoolean.fromBoolean(matchesSubtypes(clazz));
-//			if (ret == FuzzyBoolean.NO) {
-//				// try primitive type instead
-//				if (clazz == Integer.class) ret = FuzzyBoolean.fromBoolean(matchesExactly(int.class));
-//			}
-//			return ret;
-			return matchesInstanceof(o.getClass());
-		} else {
-			throw new IllegalArgumentException("kind must be DYNAMIC or STATIC");			
-		}
-	}
-	
-	public boolean matchesStatically(Class toMatch) {
-		if (includeSubtypes) {
-			return matchesSubtypes(toMatch);
-		} else {
-			return matchesExactly(toMatch);
-		}
-	}
-	public abstract FuzzyBoolean matchesInstanceof(Class toMatch);	
-	
-	protected abstract boolean matchesExactly(Class toMatch);
-	protected boolean matchesSubtypes(Class toMatch) {
-		if (matchesExactly(toMatch)) {
-			return true;
-		} 
-		Class superClass = toMatch.getSuperclass();
-		if (superClass != null) {
-			return matchesSubtypes(superClass);
-		}
-		return false;
-	}
-	
 	protected abstract boolean matchesExactly(ResolvedType type);
 	
 	protected abstract boolean matchesExactly(ResolvedType type, ResolvedType annotatedType);
@@ -269,10 +211,6 @@ public abstract class TypePattern extends PatternNode {
     								boolean allowBinding, boolean requireExactType)
     { 
     	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
-    	return this;
-    }
-    
-    public TypePattern resolveBindingsFromRTTI(boolean allowBindng, boolean requireExactType) {
     	return this;
     }
     
@@ -389,19 +327,6 @@ class EllipsisTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
-	 */
-	protected boolean matchesExactly(Class type) {
-		return false;
-	}
-
-	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
-	 */
-	public FuzzyBoolean matchesInstanceof(Class type) {
-		return FuzzyBoolean.NO;
-	}
-	/**
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
 	 */
 	public void write(DataOutputStream s) throws IOException {
@@ -469,19 +394,6 @@ class AnyTypePattern extends TypePattern {
 		return FuzzyBoolean.YES;
 	}
 
-	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
-	 */
-	protected boolean matchesExactly(Class type) {
-		return true;
-	}
-
-	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
-	 */
-	public FuzzyBoolean matchesInstanceof(Class type) {
-		return FuzzyBoolean.YES;
-	}
 	/**
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
 	 */
@@ -563,14 +475,6 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		return FuzzyBoolean.MAYBE;
 	}
 
-	protected boolean matchesExactly(Class type) {
-		return true;
-	}
-
-	public FuzzyBoolean matchesInstanceof(Class type) {
-		return FuzzyBoolean.YES;
-	}
-
 	public TypePattern parameterizeWith(Map typeVariableMap) {
 		return this;
 	}
@@ -644,19 +548,6 @@ class NoTypePattern extends TypePattern {
 		return FuzzyBoolean.NO;
 	}
 
-	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
-	 */
-	protected boolean matchesExactly(Class type) {
-		return false;
-	}
-
-	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
-	 */
-	public FuzzyBoolean matchesInstanceof(Class type) {
-		return FuzzyBoolean.NO;
-	}
 	/**
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
 	 */

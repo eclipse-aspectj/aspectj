@@ -126,5 +126,9 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 	public void testDeows() {
 		runTest("ann gen for deows");
 	}
+	
+	public void testRuntimePointcutsReferencingCompiledPointcuts() {
+		runTest("runtime pointcut resolution referencing compiled pointcuts");
+	}
 }
 

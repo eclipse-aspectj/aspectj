@@ -81,7 +81,7 @@ import org.aspectj.weaver.ast.Test;
  * match the shadow.
  * 
  */
-public abstract class Pointcut extends PatternNode implements PointcutExpressionMatching {
+public abstract class Pointcut extends PatternNode {
 	public static final class State extends TypeSafeEnum {
 		public State(String name, int key) {
 			super(name, key);
@@ -104,7 +104,6 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 
 	protected int lastMatchedShadowId;
 	private FuzzyBoolean lastMatchedShadowResult;
-	private Test lastMatchedShadowResidue;
 	private String[] typeVariablesInScope = new String[0];
 	
 	/**
@@ -121,11 +120,6 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	 */
 	public abstract FuzzyBoolean fastMatch(FastMatchInfo info);
 	
-	/**
-	 * Could I match any shadows defined in this type?
-	 */
-	public abstract FuzzyBoolean fastMatch(Class targetType);
-
 	/**
 	 * The set of ShadowKinds that this Pointcut could possibly match  
 	 */
@@ -159,40 +153,6 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	
 	protected abstract FuzzyBoolean matchInternal(Shadow shadow);
 	
-	/*
-	 * for runtime / dynamic pointcuts.
-	 * Default implementation delegates to StaticPart matcher
-	 */
-	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart enclosingJoinPoint) {
-		return match(jp.getStaticPart());
-	}
-
-	/*
-	 * for runtime / dynamic pointcuts.
-	 * Not all pointcuts can be matched at runtime, those that can should overide either
-	 * match(JoinPoint), or this method, or both.
-	 */
-	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
-		throw new UnsupportedOperationException("Pointcut expression " + this.toString() + "cannot be matched at runtime");
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesDynamically(java.lang.String, java.lang.reflect.Member, java.lang.Object, java.lang.Object, java.lang.reflect.Member)
-	 */
-	public boolean matchesDynamically(
-			Object thisObject, Object targetObject, Object[] args) {
-		throw new UnsupportedOperationException("Pointcut expression " + this.toString() + "cannot be matched by this operation");
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(
-			String joinpointKind, Member member, Class thisClass,
-			Class targetClass, Member withinCode) {
-		throw new UnsupportedOperationException("Pointcut expression " + this.toString() + "cannot be matched by this operation");
-	}
-	
 	public static final byte KINDED = 1;
 	public static final byte WITHIN = 2;
 	public static final byte THIS_OR_TARGET = 3;
@@ -221,9 +181,6 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 	// internal, only called from resolve
 	protected abstract void resolveBindings(IScope scope, Bindings bindings);
 	
-	// internal, only called from resolve
-	protected abstract void resolveBindingsFromRTTI();
-	
     /**
      * Returns this pointcut mutated
      */
@@ -240,16 +197,6 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
         return this;  	
     }
     
-    /**
-     * Returns this pointcut with type patterns etc resolved based on available RTTI 
-     */
-    public Pointcut resolve() {
-    	assertState(SYMBOLIC);
-    	this.resolveBindingsFromRTTI();
-    	this.state = RESOLVED;
-    	return this;
-    }
-	
 	/**
 	 * Returns a new pointcut
 	 * Only used by test cases
@@ -386,41 +333,13 @@ public abstract class Pointcut extends PatternNode implements PointcutExpression
 			return FuzzyBoolean.NO;
 		}
 		
-		public FuzzyBoolean fastMatch(Class targetType) {
-			return FuzzyBoolean.NO;
-		}
-		
 		protected FuzzyBoolean matchInternal(Shadow shadow) {
 			return FuzzyBoolean.NO;
 		}
-		
-		public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
-			return FuzzyBoolean.NO;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-		 */
-		public boolean matchesDynamically(Object thisObject,
-				Object targetObject, Object[] args) {
-			return false;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-		 */
-		public FuzzyBoolean matchesStatically(
-				String joinpointKind, Member member, Class thisClass,
-				Class targetClass, Member withinCode) {
-			return FuzzyBoolean.NO;
-		}
-		
+				
 		public void resolveBindings(IScope scope, Bindings bindings) {
 		}
 		
-		public void resolveBindingsFromRTTI() {
-		}
-	
 		public void postRead(ResolvedType enclosingType) {
 		}
 

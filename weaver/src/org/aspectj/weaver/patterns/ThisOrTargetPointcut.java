@@ -86,10 +86,6 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-	
 	private boolean couldMatch(Shadow shadow) {
 		return isThis ? shadow.hasThis() : shadow.hasTarget();
 	}
@@ -102,34 +98,6 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return type.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);
 	}
 
-	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
-		Object toMatch = isThis ? jp.getThis() : jp.getTarget(); 
-		if (toMatch == null) return FuzzyBoolean.NO;
-		return type.matches(toMatch.getClass(), TypePattern.DYNAMIC);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		Object toMatch = isThis ? thisObject : targetObject; 
-		if (toMatch == null) return false;
-		return type.matchesSubtypes(toMatch.getClass());
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
-			Class thisClass, Class targetClass, Member withinCode) {
-		Class staticType = isThis ? thisClass : targetClass; 
-		if (joinpointKind.equals(Shadow.StaticInitialization.getName())) {
-			return FuzzyBoolean.NO;  // no this or target at these jps
-		}
-		return(((ExactTypePattern)type).willMatchDynamically(staticType));
-	}
-	
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.THIS_OR_TARGET);
 		s.writeBoolean(isThis);
@@ -156,10 +124,6 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 				getSourceLocation()));
 		}		
 		// ??? handle non-formal
-	}
-	
-	public void resolveBindingsFromRTTI() {
-		type = type.resolveBindingsFromRTTI(true,true);
 	}
 	
 	public void postRead(ResolvedType enclosingType) {

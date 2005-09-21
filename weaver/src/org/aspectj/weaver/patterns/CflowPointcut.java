@@ -89,31 +89,9 @@ public class CflowPointcut extends Pointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-    
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//??? this is not maximally efficient
 		return FuzzyBoolean.MAYBE;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		throw new UnsupportedOperationException("cflow pointcut matching not supported by this operation");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(
-			String joinpointKind, java.lang.reflect.Member member,
-			Class thisClass, Class targetClass,
-			java.lang.reflect.Member withinCode) {
-		throw new UnsupportedOperationException("cflow pointcut matching not supported by this operation");
 	}
 
 	public void write(DataOutputStream s) throws IOException {
@@ -145,12 +123,6 @@ public class CflowPointcut extends Pointcut {
 			freeVars = entryBindings.getUsedFormals();
 			
 			bindings.mergeIn(entryBindings, scope);
-		}
-	}
-	
-	public void resolveBindingsFromRTTI() {
-		if (entry.state != RESOLVED) {
-			entry.resolveBindingsFromRTTI();
 		}
 	}
 	

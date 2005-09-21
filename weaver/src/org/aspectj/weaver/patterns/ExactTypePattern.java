@@ -145,65 +145,7 @@ public class ExactTypePattern extends TypePattern {
 		    return matchType.isCoerceableFrom(type.resolve(matchType.getWorld())) ? FuzzyBoolean.MAYBE : FuzzyBoolean.NO;
 		}
 	}
-	
-	public boolean matchesExactly(Class matchType) {
-		try {
-			Class toMatchAgainst = getClassFor(type.getName());
-			return matchType == toMatchAgainst;
-		} catch (ClassNotFoundException cnfEx) {
-			return false;			
-		}
-	}
-	
-	public FuzzyBoolean matchesInstanceof(Class matchType) {
-		if (matchType.equals(Object.class)) return FuzzyBoolean.YES;
 		
-		try {
-			String typeName = type.getName();
-			Class toMatchAgainst = getClassFor(typeName);
-			FuzzyBoolean ret = FuzzyBoolean.fromBoolean(toMatchAgainst.isAssignableFrom(matchType));
-			if (ret == FuzzyBoolean.NO) {
-				if (boxedTypesMap.containsKey(typeName)) {
-					// try again with 'boxed' alternative
-					toMatchAgainst = (Class) boxedTypesMap.get(typeName);
-					ret = FuzzyBoolean.fromBoolean(toMatchAgainst.isAssignableFrom(matchType));
-				}
-			}
-			return ret;
-		} catch (ClassNotFoundException cnfEx) {
-			return FuzzyBoolean.NO;			
-		}
-	}
-	
-	/**
-	 * Return YES if any subtype of the static type would match,
-	 *        MAYBE if some subtypes could match
-	 *        NO if there could never be a match
-	 * @param staticType
-	 * @return
-	 */
-	public FuzzyBoolean willMatchDynamically(Class staticType) {
-		if (matchesExactly(staticType)) return FuzzyBoolean.YES;
-		if (matchesInstanceof(staticType) == FuzzyBoolean.YES) return FuzzyBoolean.YES;
-		
-		try {
-			String typeName = type.getName();
-			Class toMatchAgainst = getClassFor(typeName);
-			if (toMatchAgainst.isInterface()) return FuzzyBoolean.MAYBE;
-			if (staticType.isAssignableFrom(toMatchAgainst)) return FuzzyBoolean.MAYBE;
-			return FuzzyBoolean.NO;
-		} catch (ClassNotFoundException cnfEx) {
-			return FuzzyBoolean.NO;			
-		}
-	}
-	
-	private Class getClassFor(String typeName) throws ClassNotFoundException {
-		Class ret = null;
-		ret = (Class) primitiveTypesMap.get(typeName);
-		if (ret == null) ret = Class.forName(typeName);
-		return ret;
-	}
-	
     public boolean equals(Object other) {
     	if (!(other instanceof ExactTypePattern)) return false;
     	ExactTypePattern o = (ExactTypePattern)other;
@@ -280,10 +222,6 @@ public class ExactTypePattern extends TypePattern {
 		
 	}
 	
-	public TypePattern resolveBindingsFromRTTI(boolean allowBinding, boolean requireExactType) {
-		throw new IllegalStateException("trying to re-resolve");
-	}
-
 	/**
 	 * return a version of this type pattern with all type variables references replaced
 	 * by the corresponding entry in the map.

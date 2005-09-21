@@ -30,7 +30,7 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 public class PointcutDesignator extends ASTNode {
 	private Pointcut pointcut;
-    private PseudoTokens tokens; //XXX redundant
+    private PseudoTokens tokens; 
     private boolean isError = false;
 
 	public PointcutDesignator(Parser parser, PseudoTokens tokens) {
@@ -87,6 +87,16 @@ public class PointcutDesignator extends ASTNode {
 
     public Pointcut getPointcut() {
         return pointcut;
+    }
+    
+    public String getPointcutDeclarationText() {
+    	StringBuffer sb = new StringBuffer();
+    	PseudoToken[] toks = tokens.tokens;
+    	for (int i = 0; i < (toks.length -1); i++) {
+			sb.append(toks[i].getString());
+			sb.append(" ");
+		}
+    	return sb.toString();
     }
     
 	public boolean isError() {

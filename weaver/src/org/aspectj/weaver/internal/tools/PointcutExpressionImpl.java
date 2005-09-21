@@ -14,35 +14,52 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
-import org.aspectj.lang.JoinPoint;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.ast.Literal;
+import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.AbstractPatternNodeVisitor;
 import org.aspectj.weaver.patterns.ArgsAnnotationPointcut;
 import org.aspectj.weaver.patterns.ArgsPointcut;
 import org.aspectj.weaver.patterns.CflowPointcut;
+import org.aspectj.weaver.patterns.ExposedState;
+import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.NotAnnotationTypePattern;
 import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
-import org.aspectj.weaver.tools.FuzzyBoolean;
+import org.aspectj.weaver.reflect.ReflectionShadow;
+import org.aspectj.weaver.reflect.ShadowMatchImpl;
 import org.aspectj.weaver.tools.PointcutExpression;
+import org.aspectj.weaver.tools.PointcutParameter;
+import org.aspectj.weaver.tools.ShadowMatch;
 
 /**
  * Map from weaver.tools interface to internal Pointcut implementation...
  */
 public class PointcutExpressionImpl implements PointcutExpression {
 	
+	private World world;
 	private Pointcut pointcut;
 	private String expression;
+	private PointcutParameter[] parameters;
 	
-	public PointcutExpressionImpl(Pointcut pointcut, String expression) {
+	public PointcutExpressionImpl(Pointcut pointcut, String expression, PointcutParameter[] params, World inWorld) {
 		this.pointcut = pointcut;
 		this.expression = expression;
+		this.world = inWorld;
+		this.parameters = params;
+		if (this.parameters == null) this.parameters = new PointcutParameter[0];
+	}
+	
+	public Pointcut getUnderlyingPointcut() {
+		return this.pointcut;
 	}
 	
 	public boolean couldMatchJoinPointsInType(Class aClass) {
-		return pointcut.fastMatch(aClass).maybeTrue();
+		return pointcut.fastMatch(new FastMatchInfo(world.resolve(aClass.getName()),null)).maybeTrue();
 	}
 	
 	public boolean mayNeedDynamicTest() {
@@ -50,152 +67,162 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		pointcut.traverse(visitor, null);
 		return visitor.hasDynamicContent();
 	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesMethodCall(java.lang.reflect.Method, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesMethodCall(Method aMethod, Class thisClass,
-			Class targetClass, Member withinCode) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.METHOD_CALL,
-				aMethod,
-				thisClass,
-				targetClass,
-				withinCode));
+	
+	private ExposedState getExposedState() {
+		return new ExposedState(parameters.length);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesMethodExecution(java.lang.reflect.Method, java.lang.Class)
-	 */
-	public FuzzyBoolean matchesMethodExecution(Method aMethod, Class thisClass) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.METHOD_EXECUTION,
-				aMethod,
-				thisClass,
-				thisClass,
-				null));
+	public ShadowMatch matchesMethodExecution(Method aMethod) {
+		return matchesExecution(aMethod);
+	}
+	
+	public ShadowMatch matchesConstructorExecution(Constructor aConstructor) {
+		return matchesExecution(aConstructor);
+	}
+	
+	private ShadowMatch matchesExecution(Member aMember) {
+		Shadow s = ReflectionShadow.makeExecutionShadow(world, aMember);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aMember);
+		sm.setWithinCode(null);
+		sm.setWithinType(aMember.getDeclaringClass());
+		return sm;
+	}
+	
+	public ShadowMatch matchesStaticInitialization(Class aClass) {
+		Shadow s = ReflectionShadow.makeStaticInitializationShadow(world, aClass);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(null);
+		sm.setWithinCode(null);
+		sm.setWithinType(aClass);
+		return sm;
+	}	
+	
+	public ShadowMatch matchesAdviceExecution(Method aMethod) {
+		Shadow s = ReflectionShadow.makeAdviceExecutionShadow(world, aMethod);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aMethod);
+		sm.setWithinCode(null);
+		sm.setWithinType(aMethod.getDeclaringClass());
+		return sm;
+	}
+	
+	public ShadowMatch matchesInitialization(Constructor aConstructor) {
+		Shadow s = ReflectionShadow.makeInitializationShadow(world, aConstructor);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aConstructor);
+		sm.setWithinCode(null);
+		sm.setWithinType(aConstructor.getDeclaringClass());
+		return sm;
+	}
+	
+	public ShadowMatch matchesPreInitialization(Constructor aConstructor) {
+		Shadow s = ReflectionShadow.makePreInitializationShadow(world, aConstructor);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aConstructor);
+		sm.setWithinCode(null);
+		sm.setWithinType(aConstructor.getDeclaringClass());
+		return sm;
+	}
+	
+	public ShadowMatch matchesMethodCall(Method aMethod, Member withinCode) {
+		Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, withinCode);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aMethod);
+		sm.setWithinCode(withinCode);
+		sm.setWithinType(withinCode.getDeclaringClass());
+		return sm;
+	}
+	
+	public ShadowMatch matchesMethodCall(Method aMethod, Class callerType) {
+		Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, callerType);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aMethod);
+		sm.setWithinCode(null);
+		sm.setWithinType(callerType);
+		return sm;
+	}
+	
+	public ShadowMatch matchesConstructorCall(Constructor aConstructor, Class callerType) {
+		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, callerType);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aConstructor);
+		sm.setWithinCode(null);
+		sm.setWithinType(callerType);
+		return sm;
+	}
+	
+	public ShadowMatch matchesConstructorCall(Constructor aConstructor, Member withinCode) {
+		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor,withinCode);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aConstructor);
+		sm.setWithinCode(withinCode);
+		sm.setWithinType(withinCode.getDeclaringClass());
+		return sm;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesConstructorCall(java.lang.reflect.Constructor, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesConstructorCall(Constructor aConstructor,
-			Class thisClass, Member withinCode) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.CONSTRUCTOR_CALL,
-				aConstructor,
-				thisClass,
-				aConstructor.getDeclaringClass(),
-				withinCode));
+	public ShadowMatch matchesHandler(Class exceptionType, Class handlingType) {
+		Shadow s = ReflectionShadow.makeHandlerShadow(world,exceptionType,handlingType);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(null);
+		sm.setWithinCode(null);
+		sm.setWithinType(handlingType);
+		return sm;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesConstructorExecution(java.lang.reflect.Constructor)
-	 */
-	public FuzzyBoolean matchesConstructorExecution(Constructor aConstructor, Class thisClass) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.CONSTRUCTOR_EXECUTION,
-				aConstructor,
-				thisClass,
-				thisClass,
-				null));
+	
+	public ShadowMatch matchesHandler(Class exceptionType, Member withinCode) {
+		Shadow s = ReflectionShadow.makeHandlerShadow(world,exceptionType,withinCode);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(null);
+		sm.setWithinCode(withinCode);
+		sm.setWithinType(withinCode.getDeclaringClass());
+		return sm;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesAdviceExecution(java.lang.reflect.Method, java.lang.Class)
-	 */
-	public FuzzyBoolean matchesAdviceExecution(Method anAdviceMethod,
-			Class thisClass) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.ADVICE_EXECUTION,
-				anAdviceMethod,
-				thisClass,
-				thisClass,
-				null));
+	
+	public ShadowMatch matchesFieldGet(Field aField, Class withinType) {
+		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinType);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aField);
+		sm.setWithinCode(null);
+		sm.setWithinType(withinType);
+		return sm;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesHandler(java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesHandler(Class exceptionType, Class inClass,
-			Member withinCode) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.EXCEPTION_HANDLER,
-				new Handler(inClass,exceptionType),
-				inClass,
-				inClass,
-				withinCode));
+	
+	public ShadowMatch matchesFieldGet(Field aField, Member withinCode) {
+		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinCode);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aField);
+		sm.setWithinCode(withinCode);
+		sm.setWithinType(withinCode.getDeclaringClass());
+		return sm;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesInitialization(java.lang.reflect.Constructor)
-	 */
-	public FuzzyBoolean matchesInitialization(Constructor aConstructor) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.INITIALIZATION,
-				aConstructor,
-				aConstructor.getDeclaringClass(),
-				aConstructor.getDeclaringClass(),
-				null));
+	
+	public ShadowMatch matchesFieldSet(Field aField, Class withinType) {
+		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinType);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aField);
+		sm.setWithinCode(null);
+		sm.setWithinType(withinType);
+		return sm;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesPreInitialization(java.lang.reflect.Constructor)
-	 */
-	public FuzzyBoolean matchesPreInitialization(Constructor aConstructor) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.PREINTIALIZATION,
-				aConstructor,
-				aConstructor.getDeclaringClass(),
-				aConstructor.getDeclaringClass(),
-				null));
+	
+	public ShadowMatch matchesFieldSet(Field aField, Member withinCode) {
+		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinCode);
+		ShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aField);
+		sm.setWithinCode(withinCode);
+		sm.setWithinType(withinCode.getDeclaringClass());
+		return sm;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesStaticInitialization(java.lang.Class)
-	 */
-	public FuzzyBoolean matchesStaticInitialization(Class aClass) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.STATICINITIALIZATION,
-				null,
-				aClass,
-				aClass,
-				null
-				));
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesFieldSet(java.lang.reflect.Field, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesFieldSet(Field aField, Class thisClass,
-			Class targetClass, Member withinCode) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.FIELD_SET,
-				aField,
-				thisClass,
-				targetClass,
-				withinCode));
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesFieldGet(java.lang.reflect.Field, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesFieldGet(Field aField, Class thisClass,
-			Class targetClass, Member withinCode) {
-		return fuzzyMatch(pointcut.matchesStatically(
-				JoinPoint.FIELD_GET,
-				aField,
-				thisClass,
-				targetClass,
-				withinCode));
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.tools.PointcutExpression#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		return pointcut.matchesDynamically(thisObject,targetObject,args);
+	
+	private ShadowMatchImpl getShadowMatch(Shadow forShadow) {
+		org.aspectj.util.FuzzyBoolean match = pointcut.match(forShadow);
+		Test residueTest = Literal.TRUE;
+		ExposedState state = getExposedState();
+		if (match.maybeTrue()) {
+			residueTest = pointcut.findResidue(forShadow, state);
+		}
+		return new ShadowMatchImpl(match,residueTest,state,parameters);				
 	}
 
 	/* (non-Javadoc)
@@ -205,13 +232,6 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return expression;
 	}
 
-	private FuzzyBoolean fuzzyMatch(org.aspectj.util.FuzzyBoolean fb) {
-		if (fb == org.aspectj.util.FuzzyBoolean.YES) return FuzzyBoolean.YES;
-		if (fb == org.aspectj.util.FuzzyBoolean.NO) return FuzzyBoolean.NO;
-		if (fb == org.aspectj.util.FuzzyBoolean.MAYBE) return FuzzyBoolean.MAYBE;
-		throw new IllegalArgumentException("Cant match FuzzyBoolean " + fb);
-	}
-	
 	private static class HasPossibleDynamicContentVisitor extends AbstractPatternNodeVisitor {
 		private boolean hasDynamicContent = false;
 		
@@ -254,6 +274,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 			hasDynamicContent = true;
 			return null;
 		}
+		
 	}
 	
 	public static class Handler implements Member {

@@ -62,6 +62,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		super();
 		this.isThis = isThis;
 		this.annotationTypePattern = type;
+		this.pointcutKind = ATTHIS_OR_TARGET;
 	}
 
 	public ThisOrTargetAnnotationPointcut(boolean isThis, ExactAnnotationTypePattern type, ShadowMunger munger) {
@@ -84,10 +85,6 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
@@ -125,14 +122,6 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 			scope.getMessageHandler().handleMessage(m);
 		}
 		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindingsFromRTTI()
-	 */
-	protected void resolveBindingsFromRTTI() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/* (non-Javadoc)

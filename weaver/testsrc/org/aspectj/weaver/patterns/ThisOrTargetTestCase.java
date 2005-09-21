@@ -1,5 +1,6 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2005 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -7,21 +8,25 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC     initial implementation
+ *     Adrian Colyer, runtime reflection extensions 
  * ******************************************************************/
 
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.runtime.reflect.Factory;
-import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.bcel.*;
+import java.io.IOException;
+import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
-import org.aspectj.weaver.*;
+
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.tools.JoinPointMatch;
+import org.aspectj.weaver.tools.PointcutExpression;
+import org.aspectj.weaver.tools.PointcutParameter;
+import org.aspectj.weaver.tools.PointcutParser;
+import org.aspectj.weaver.tools.ShadowMatch;
 
 /**
  * @author hugunin
@@ -50,77 +55,71 @@ public class ThisOrTargetTestCase extends TestCase {
 		
 	}
 	
-	public void testMatchJP() {
-		Factory f = new Factory("ThisOrTargetTestCase.java",ThisOrTargetTestCase.class);
+	public void testMatchJP() throws Exception {
+		PointcutParser parser = new PointcutParser();
+		PointcutExpression thisEx = parser.parsePointcutExpression("this(Exception)");
+		PointcutExpression thisIOEx = parser.parsePointcutExpression("this(java.io.IOException)");
+
+		PointcutExpression targetEx = parser.parsePointcutExpression("target(Exception)");
+		PointcutExpression targetIOEx = parser.parsePointcutExpression("target(java.io.IOException)");
+
+		Method toString = Object.class.getMethod("toString",new Class[0]);
 		
-		Pointcut thisEx = new PatternParser("this(Exception)").parsePointcut().resolve();
-		Pointcut thisIOEx = new PatternParser("this(java.io.IOException)").parsePointcut().resolve();
+		checkMatches(thisEx.matchesMethodCall(toString, toString),new Exception(),null,null);
+		checkNoMatch(thisIOEx.matchesMethodCall(toString, toString),new Exception(),null,null);
+		checkNoMatch(targetEx.matchesMethodCall(toString, toString),new Exception(),new Object(),null);
+		checkNoMatch(targetIOEx.matchesMethodCall(toString, toString),new Exception(),new Exception(),null);
 
-		Pointcut targetEx = new PatternParser("target(Exception)").parsePointcut().resolve();
-		Pointcut targetIOEx = new PatternParser("target(java.io.IOException)").parsePointcut().resolve();
+		checkMatches(thisEx.matchesMethodCall(toString, toString),new IOException(),null,null);
+		checkMatches(thisIOEx.matchesMethodCall(toString, toString),new IOException(),null,null);
 
-		JoinPoint.StaticPart jpsp1 = f.makeSJP(JoinPoint.EXCEPTION_HANDLER,f.makeCatchClauseSig(HandlerTestCase.class,Exception.class,"ex"),1);
-		JoinPoint thisExJP = Factory.makeJP(jpsp1,new Exception(),this);
-		JoinPoint thisIOExJP = Factory.makeJP(jpsp1,new IOException(),this);
-		JoinPoint targetExJP = Factory.makeJP(jpsp1,this,new Exception());
-		JoinPoint targetIOExJP = Factory.makeJP(jpsp1,this,new IOException());
-		
-		checkMatches(thisEx,thisExJP,null,FuzzyBoolean.YES);
-		checkMatches(thisIOEx,thisExJP,null,FuzzyBoolean.NO);
-		checkMatches(targetEx,thisExJP,null,FuzzyBoolean.NO);
-		checkMatches(targetIOEx,thisExJP,null,FuzzyBoolean.NO);
+		checkNoMatch(thisEx.matchesMethodCall(toString, toString),new Object(),null,null);
+		checkNoMatch(thisIOEx.matchesMethodCall(toString, toString),new Exception(),null,null);
+		checkMatches(targetEx.matchesMethodCall(toString, toString),new Exception(),new Exception(),null);
+		checkNoMatch(targetIOEx.matchesMethodCall(toString, toString),new Exception(),new Exception(),null);
 
-		checkMatches(thisEx,thisIOExJP,null,FuzzyBoolean.YES);
-		checkMatches(thisIOEx,thisIOExJP,null,FuzzyBoolean.YES);
-		checkMatches(targetEx,thisIOExJP,null,FuzzyBoolean.NO);
-		checkMatches(targetIOEx,thisIOExJP,null,FuzzyBoolean.NO);
-
-		checkMatches(thisEx,targetExJP,null,FuzzyBoolean.NO);
-		checkMatches(thisIOEx,targetExJP,null,FuzzyBoolean.NO);
-		checkMatches(targetEx,targetExJP,null,FuzzyBoolean.YES);
-		checkMatches(targetIOEx,targetExJP,null,FuzzyBoolean.NO);
-
-		checkMatches(thisEx,targetIOExJP,null,FuzzyBoolean.NO);
-		checkMatches(thisIOEx,targetIOExJP,null,FuzzyBoolean.NO);
-		checkMatches(targetEx,targetIOExJP,null,FuzzyBoolean.YES);
-		checkMatches(targetIOEx,targetIOExJP,null,FuzzyBoolean.YES);
+		checkMatches(targetIOEx.matchesMethodCall(toString, toString),new Exception(),new IOException(),null);
 	}
 	
-	private void checkMatches(Pointcut p, JoinPoint jp, JoinPoint.StaticPart jpsp, FuzzyBoolean expected) {
-		assertEquals(expected,p.match(jp,jpsp));
+	public void testBinding() throws Exception {
+		PointcutParser parser = new PointcutParser();
+		PointcutParameter ex = parser.createPointcutParameter("ex", Exception.class);
+		PointcutParameter ioEx = parser.createPointcutParameter("ioEx", IOException.class);
+
+		PointcutExpression thisEx = parser.parsePointcutExpression("this(ex)",Exception.class,new PointcutParameter[] {ex});
+
+		PointcutExpression targetIOEx = parser.parsePointcutExpression("target(ioEx)",Exception.class,new PointcutParameter[] {ioEx});
+
+		Method toString = Object.class.getMethod("toString",new Class[0]);
+				
+		ShadowMatch sMatch = thisEx.matchesMethodCall(toString, toString);
+		Exception exceptionParameter = new Exception();
+		IOException ioExceptionParameter = new IOException();
+		JoinPointMatch jpMatch = sMatch.matchesJoinPoint(exceptionParameter, null, null);
+		assertTrue("should match",jpMatch.matches());
+		PointcutParameter[] bindings = jpMatch.getParameterBindings();
+		assertEquals("one binding",1,bindings.length);
+		assertEquals("should be exceptionParameter",exceptionParameter,bindings[0].getBinding());
+		assertEquals("ex",bindings[0].getName());
+
+		sMatch = targetIOEx.matchesMethodCall(toString,toString);
+		jpMatch = sMatch.matchesJoinPoint(exceptionParameter, ioExceptionParameter, null);
+		assertTrue("should match",jpMatch.matches());
+		bindings = jpMatch.getParameterBindings();
+		assertEquals("one binding",1,bindings.length);
+		assertEquals("should be ioExceptionParameter",ioExceptionParameter,bindings[0].getBinding());
+		assertEquals("ioEx",bindings[0].getName());
+		
+		
 	}
-
-//	private Pointcut makePointcut(String pattern) {
-//		return new PatternParser(pattern).parsePointcut();
-//	}
 	
-//	private void checkEquals(String pattern, Pointcut p) throws IOException {
-//		assertEquals(pattern, p, makePointcut(pattern));
-//		checkSerialization(pattern);
-//	}
-
+	private void checkMatches(ShadowMatch sMatch, Object thisObj, Object targetObj, Object[] args) {
+		assertTrue("match expected",sMatch.matchesJoinPoint(thisObj, targetObj, args).matches());
+	}
 	
-//	private void checkMatch(Pointcut p, Signature[] matches, boolean shouldMatch) {
-//		for (int i=0; i<matches.length; i++) {
-//			boolean result = p.matches(matches[i]);
-//			String msg = "matches " + p + " to " + matches[i] + " expected ";
-//			if (shouldMatch) {
-//				assertTrue(msg + shouldMatch, result);
-//			} else {
-//				assertTrue(msg + shouldMatch, !result);
-//			}
-//		}
-//	}
-//	
-//	public void testSerialization() throws IOException {
-//		String[] patterns = new String[] {
-//			"public * *(..)", "void *.foo(A, B)", "A b()"
-//		};
-//		
-//		for (int i=0, len=patterns.length; i < len; i++) {
-//			checkSerialization(patterns[i]);
-//		}
-//	}
+	private void checkNoMatch(ShadowMatch sMatch, Object thisObj, Object targetObj, Object[] args) {
+		assertFalse("no match expected",sMatch.matchesJoinPoint(thisObj, targetObj, args).matches());
+	}
 
 	/**
 	 * Method checkSerialization.

@@ -51,36 +51,8 @@ public class NotPointcut extends Pointcut {
 		return body.fastMatch(type).not();
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return body.fastMatch(targetType).not();
-	}
-
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		return body.match(shadow).not();
-	}
-
-	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart encJP) {
-		return body.match(jp,encJP).not();
-	}
-
-	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
-		return body.match(jpsp).not();
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		return !body.matchesDynamically(thisObject,targetObject,args);
-	}
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(
-			String joinpointKind, Member member, Class thisClass,
-			Class targetClass, Member withinCode) {
-		return body.matchesStatically(joinpointKind,member,thisClass,targetClass,withinCode).not();
 	}
 
 	public String toString() {
@@ -111,11 +83,6 @@ public class NotPointcut extends Pointcut {
 		
 	}
 	
-	public void resolveBindingsFromRTTI() {
-		body.resolveBindingsFromRTTI();
-	}
-	
-
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.NOT);
 		body.write(s);

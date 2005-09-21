@@ -44,10 +44,6 @@ public class PerSingleton extends PerClause {
 		return FuzzyBoolean.YES;
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.YES;
-	}
-	
     protected FuzzyBoolean matchInternal(Shadow shadow) {
         return FuzzyBoolean.YES;
     }

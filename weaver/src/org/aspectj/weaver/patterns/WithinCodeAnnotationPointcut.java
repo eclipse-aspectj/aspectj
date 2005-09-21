@@ -56,12 +56,13 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	public WithinCodeAnnotationPointcut(ExactAnnotationTypePattern type) {
 		super();
 		this.annotationTypePattern =  type;
-		this.pointcutKind = Pointcut.ANNOTATION;
+		this.pointcutKind = Pointcut.ATWITHINCODE;
 	}
 
 	public WithinCodeAnnotationPointcut(ExactAnnotationTypePattern type, ShadowMunger munger) {
 		this(type);
 		this.munger = munger;
+		this.pointcutKind = Pointcut.ATWITHINCODE;
 	}
 
     public ExactAnnotationTypePattern getAnnotationTypePattern() {
@@ -76,10 +77,6 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
-		return FuzzyBoolean.MAYBE;
-	}
-
-	public FuzzyBoolean fastMatch(Class targetType) {
 		return FuzzyBoolean.MAYBE;
 	}
 
@@ -110,14 +107,6 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	protected void resolveBindings(IScope scope, Bindings bindings) {
 		annotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern.resolveBindings(scope,bindings,true);
 		// must be either a Var, or an annotation type pattern
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindingsFromRTTI()
-	 */
-	protected void resolveBindingsFromRTTI() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/* (non-Javadoc)

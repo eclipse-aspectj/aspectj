@@ -12,6 +12,11 @@ package org.aspectj.weaver.tools;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessage.Kind;
+
 import junit.framework.TestCase;
 
 /**
@@ -21,7 +26,7 @@ public class PointcutParserTest extends TestCase {
 
 	public void testGetAllSupportedPointcutPrimitives() {
 		Set s = PointcutParser.getAllSupportedPointcutPrimitives();
-		assertEquals("Should be 14 elements in the set",14,s.size());
+		assertEquals("Should be 21 elements in the set",21,s.size());
 		assertFalse("Should not contain if pcd",s.contains(PointcutPrimitive.IF));
 		assertFalse("Should not contain cflow pcd",s.contains(PointcutPrimitive.CFLOW));
 		assertFalse("Should not contain cflowbelow pcd",s.contains(PointcutPrimitive.CFLOW_BELOW));
@@ -30,7 +35,7 @@ public class PointcutParserTest extends TestCase {
 	public void testEmptyConstructor() {
 		PointcutParser parser = new PointcutParser();
 		Set s = parser.getSupportedPrimitives();
-		assertEquals("Should be 14 elements in the set",14,s.size());
+		assertEquals("Should be 21 elements in the set",21,s.size());
 		assertFalse("Should not contain if pcd",s.contains(PointcutPrimitive.IF));
 		assertFalse("Should not contain cflow pcd",s.contains(PointcutPrimitive.CFLOW));
 		assertFalse("Should not contain cflowbelow pcd",s.contains(PointcutPrimitive.CFLOW_BELOW));
@@ -50,14 +55,19 @@ public class PointcutParserTest extends TestCase {
 	
 	public void testParsePointcutExpression() {
 		PointcutParser p = new PointcutParser();
-		PointcutExpression pEx = p.parsePointcutExpression(
-				"(adviceexecution() || execution(* *.*(..)) || handler(Exception) || " +
-				"call(Foo Bar+.*(Goo)) || get(* foo) || set(Foo+ (Goo||Moo).s*) || " +
-				"initialization(Foo.new(..)) || preinitialization(*.new(Foo,..)) || " +
-				"staticinitialization(org.xzy.abc..*)) && (this(Foo) || target(Boo) ||" +
-				"args(A,B,C)) && !handler(X)");
+		IMessageHandler current = p.setCustomMessageHandler(new IgnoreWarningsMessageHandler());
+		try {			
+			p.parsePointcutExpression(
+					"(adviceexecution() || execution(* *.*(..)) || handler(Exception) || " +
+					"call(Foo Bar+.*(Goo)) || get(* foo) || set(Foo+ (Goo||Moo).s*) || " +
+					"initialization(Foo.new(..)) || preinitialization(*.new(Foo,..)) || " +
+					"staticinitialization(org.xzy.abc..*)) && (this(Foo) || target(Boo) ||" +
+					"args(A,B,C)) && !handler(X)");
+		} finally {
+			p.setCustomMessageHandler(current);
+		}
 		try {
-			pEx = p.parsePointcutExpression("gobble-de-gook()");
+			p.parsePointcutExpression("gobble-de-gook()");
 			fail("Expected IllegalArgumentException");
 		} catch (IllegalArgumentException ex) {}
 	}
@@ -65,7 +75,7 @@ public class PointcutParserTest extends TestCase {
 	public void testParseExceptionErrorMessages() {
 		PointcutParser p = new PointcutParser();
 		try {
-			PointcutExpression pEx = p.parsePointcutExpression("execution(int Foo.*(..) && args(Double)");
+			p.parsePointcutExpression("execution(int Foo.*(..) && args(Double)");
 			fail("Expected IllegalArgumentException");
 		} catch (IllegalArgumentException ex) {
 			assertTrue("Pointcut is not well-formed message",ex.getMessage().startsWith("Pointcut is not well-formed: expecting ')' at character position 24"));
@@ -99,9 +109,11 @@ public class PointcutParserTest extends TestCase {
 	}
 	
 	public void testParseReferencePCDs() {
-		PointcutParser p = new PointcutParser();
+		Set pcKinds = PointcutParser.getAllSupportedPointcutPrimitives();
+		pcKinds.remove(PointcutPrimitive.REFERENCE);
+		PointcutParser p = new PointcutParser(pcKinds);
 		try {
-			p.parsePointcutExpression("bananas(x)");
+			p.parsePointcutExpression("bananas(String)");
 			fail("Expected UnsupportedPointcutPrimitiveException");
 		} catch(UnsupportedPointcutPrimitiveException ex) {
 			assertTrue(ex.getUnsupportedPrimitive() == PointcutPrimitive.REFERENCE);
@@ -208,4 +220,42 @@ public class PointcutParserTest extends TestCase {
 			assertEquals("Staticinit",PointcutPrimitive.STATIC_INITIALIZATION,ex.getUnsupportedPrimitive());
 		}	
 	}	
+	
+	public void testFormals() {
+		PointcutParser parser = new PointcutParser();
+		PointcutParameter param = parser.createPointcutParameter("x",String.class);
+		PointcutExpression pc = parser.parsePointcutExpression("args(x)", null, new PointcutParameter[] {param} );
+		assertEquals("args(x)",pc.getPointcutExpression());
+		
+		try {
+			pc = parser.parsePointcutExpression("args(String)", null, new PointcutParameter[] {param} );
+			fail("Expecting IllegalArgumentException");
+		} catch (IllegalArgumentException ex) {
+			assertTrue("formal unbound",ex.getMessage().indexOf("formal unbound") != -1);
+		}
+		
+		try {
+			pc = parser.parsePointcutExpression("args(y)");
+			fail("Expecting IllegalArgumentException");
+		} catch(IllegalArgumentException ex) {
+			assertTrue("no match for type name",ex.getMessage().indexOf("warning no match for this type name: y") != -1);
+		}
+	}
+	
+	private static class IgnoreWarningsMessageHandler implements IMessageHandler {
+
+		public boolean handleMessage(IMessage message) throws AbortException {
+			if (message.getKind() != IMessage.WARNING) throw new RuntimeException("unexpected message: " + message.toString());
+			return true;
+		}
+
+		public boolean isIgnoring(Kind kind) {
+			if (kind != IMessage.ERROR) return true;
+			return false;
+		}
+
+		public void dontIgnore(Kind kind) {
+		}
+		
+	}
 }

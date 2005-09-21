@@ -36,6 +36,12 @@ public class PointcutPrimitive extends TypeSafeEnum {
 	public static final PointcutPrimitive TARGET = new PointcutPrimitive("target",16);
 	public static final PointcutPrimitive ARGS = new PointcutPrimitive("args",17);
 	public static final PointcutPrimitive REFERENCE = new PointcutPrimitive("reference pointcut",18);
+	public static final PointcutPrimitive AT_ANNOTATION = new PointcutPrimitive("@annotation",19);
+	public static final PointcutPrimitive AT_THIS = new PointcutPrimitive("@this",20);
+	public static final PointcutPrimitive AT_TARGET = new PointcutPrimitive("@target",21);
+	public static final PointcutPrimitive AT_ARGS = new PointcutPrimitive("@args",22);
+	public static final PointcutPrimitive AT_WITHIN = new PointcutPrimitive("@within",23);
+	public static final PointcutPrimitive AT_WITHINCODE = new PointcutPrimitive("@withincode",24);
 
 	private PointcutPrimitive(String name, int key) {
 		super(name, key);

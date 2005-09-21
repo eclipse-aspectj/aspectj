@@ -12,6 +12,7 @@
 package org.aspectj.internal.lang.reflect;
 
 import java.lang.reflect.Method;
+import java.util.StringTokenizer;
 
 import org.aspectj.lang.reflect.AjType;
 import org.aspectj.lang.reflect.Pointcut;
@@ -27,12 +28,14 @@ public class PointcutImpl implements Pointcut {
 	private final PointcutExpression pc;
 	private final Method baseMethod;
 	private final AjType declaringType;
+	private String[] parameterNames = new String[0];
 	
-	protected PointcutImpl(String name, String pc, Method method, AjType declaringType) {
+	protected PointcutImpl(String name, String pc, Method method, AjType declaringType, String pNames) {
 		this.name = name;
 		this.pc = new PointcutExpressionImpl(pc);
 		this.baseMethod = method;
 		this.declaringType = declaringType;
+		this.parameterNames = splitOnComma(pNames);
 	}
 	
 	/* (non-Javadoc)
@@ -57,5 +60,17 @@ public class PointcutImpl implements Pointcut {
 	public AjType getDeclaringType() {
 		return declaringType;
 	}
+	
+	public String[] getParameterNames() {
+		return parameterNames;
+	}
 
+	private String[] splitOnComma(String s) {
+		StringTokenizer strTok = new StringTokenizer(s,",");
+		String[] ret = new String[strTok.countTokens()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = strTok.nextToken().trim();
+		}
+		return ret;
+	}
 }

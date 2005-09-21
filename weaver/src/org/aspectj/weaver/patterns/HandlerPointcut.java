@@ -15,12 +15,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -31,7 +29,6 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
 
 /**
  * This is a kind of KindedPointcut.  This belongs either in 
@@ -61,10 +58,6 @@ public class HandlerPointcut extends Pointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-	
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != Shadow.ExceptionHandler) return FuzzyBoolean.NO;
 		
@@ -74,39 +67,6 @@ public class HandlerPointcut extends Pointcut {
 		return exceptionType.matches(
 				shadow.getSignature().getParameterTypes()[0].resolve(shadow.getIWorld()), 
 				TypePattern.STATIC);
-	}
-	
- 	public FuzzyBoolean match(JoinPoint jp, JoinPoint.StaticPart jpsp) {
-		if (!jp.getKind().equals(JoinPoint.EXCEPTION_HANDLER)) return FuzzyBoolean.NO;
-		if (jp.getArgs().length > 0) {
-			Object caughtException = jp.getArgs()[0];
-			return exceptionType.matches(caughtException,TypePattern.STATIC);
-		} else {
-			return FuzzyBoolean.NO;
-		}
-	}
-	
- 	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		if (args.length > 0) {
-			return (exceptionType.matches(args[0],TypePattern.STATIC) == FuzzyBoolean.YES);
-		} else return false;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(String joinpointKind, Member member,
-			Class thisClass, Class targetClass, Member withinCode) {
-		if (!(member instanceof PointcutExpressionImpl.Handler)) {
-			return FuzzyBoolean.NO;
-		} else {
-			Class exceptionClass = ((PointcutExpressionImpl.Handler)member).getHandledExceptionType();
-			return exceptionType.matches(exceptionClass,TypePattern.STATIC);
-		}
 	}
 	
 	public boolean equals(Object other) {
@@ -158,10 +118,6 @@ public class HandlerPointcut extends Pointcut {
 									getSourceLocation()));
 		}
 		//XXX add error if exact binding and not an exception
-	}
-	
-	public void resolveBindingsFromRTTI() {
-		exceptionType = exceptionType.resolveBindingsFromRTTI(false,false);
 	}
 	
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {

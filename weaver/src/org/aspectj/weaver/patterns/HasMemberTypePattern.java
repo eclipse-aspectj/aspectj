@@ -98,14 +98,6 @@ public class HasMemberTypePattern extends TypePattern {
 		throw new UnsupportedOperationException("hasmethod/field do not support instanceof matching");
 	}
 
-	public FuzzyBoolean matchesInstanceof(Class toMatch) {
-		return FuzzyBoolean.NO;
-	}
-
-	protected boolean matchesExactly(Class toMatch) {
-		return false;
-	}
-
 	public TypePattern parameterizeWith(Map typeVariableMap) {
 		HasMemberTypePattern ret = new HasMemberTypePattern(signaturePattern.parameterizeWith(typeVariableMap));
 		ret.copyLocationFrom(this);

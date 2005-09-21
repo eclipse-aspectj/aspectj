@@ -418,7 +418,7 @@ public class AjTypeImpl<T> implements AjType {
 				int nextDollar = name.indexOf("$");
 				if (nextDollar != -1) name = name.substring(0,nextDollar);
 			}
-			return new PointcutImpl(name,pcAnn.value(),method,AjTypeSystem.getAjType(method.getDeclaringClass()));
+			return new PointcutImpl(name,pcAnn.value(),method,AjTypeSystem.getAjType(method.getDeclaringClass()),pcAnn.argNames());
 		} else {
 			return null;
 		}

@@ -44,11 +44,7 @@ public class PerFromSuper extends PerClause {
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		throw new RuntimeException("unimplemented");
 	}
-	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		throw new RuntimeException("unimplemented");
-	}
-	
+		
     protected FuzzyBoolean matchInternal(Shadow shadow) {
         throw new RuntimeException("unimplemented");
     }

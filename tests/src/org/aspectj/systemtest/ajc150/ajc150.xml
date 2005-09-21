@@ -590,6 +590,11 @@
         <compile files="" options=" -emacssym, -sourceroots ." >
         </compile>
     </ajc-test> 
+    
+    <ajc-test dir="bugs150" title="@annotation binding with around advice">
+        <compile files="AnnotationBinding.aj" options="-1.5"/>
+        <run class="AnnotationBinding"/>
+    </ajc-test>
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

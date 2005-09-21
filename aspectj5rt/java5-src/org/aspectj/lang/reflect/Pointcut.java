@@ -21,5 +21,7 @@ public interface Pointcut {
 	
 	Class<?>[] getParameterTypes();
 	
+	String[] getParameterNames();
+	
 	AjType getDeclaringType();
 }

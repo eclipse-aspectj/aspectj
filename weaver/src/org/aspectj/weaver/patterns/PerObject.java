@@ -64,12 +64,7 @@ public class PerObject extends PerClause {
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
-	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-	
-	
+		
     protected FuzzyBoolean matchInternal(Shadow shadow) {
     	//System.err.println("matches " + this + " ? " + shadow + ", " + shadow.hasTarget());
     	//??? could probably optimize this better by testing could match

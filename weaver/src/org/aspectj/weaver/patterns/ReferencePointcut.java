@@ -76,11 +76,7 @@ public class ReferencePointcut extends Pointcut {
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
-	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-	
+		
 	/**
 	 * Do I really match this shadow?
 	 */
@@ -234,10 +230,6 @@ public class ReferencePointcut extends Pointcut {
 						getSourceLocation()));
 			}
 		}
-	}
-	
-	public void resolveBindingsFromRTTI() {
-		throw new UnsupportedOperationException("Referenced pointcuts are not supported in runtime evaluation");
 	}
 	
 	public void postRead(ResolvedType enclosingType) {

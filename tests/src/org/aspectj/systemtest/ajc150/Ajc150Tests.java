@@ -439,7 +439,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("raw and generic type conversion with itd cons");
   }
   
-  public void testUnableToBuildShadows_pr109728() { runTest("Unable to build shadows");}
+  public void testAtAnnotationBindingWithAround() {
+	  runTest("@annotation binding with around advice");
+  }
+  
+    public void testUnableToBuildShadows_pr109728() { runTest("Unable to build shadows");}
   
   // helper methods.....
   

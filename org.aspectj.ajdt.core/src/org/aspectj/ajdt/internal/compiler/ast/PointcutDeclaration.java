@@ -115,7 +115,9 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 	 *
 	 */
 	public void addAtAspectJAnnotations() {
-		Annotation pcutAnnotation = AtAspectJAnnotationFactory.createPointcutAnnotation(getPointcut().toString(),declarationSourceStart);;
+		String argNames = buildArgNameRepresentation();
+		Annotation pcutAnnotation = 
+			AtAspectJAnnotationFactory.createPointcutAnnotation(getPointcutText(),argNames,declarationSourceStart);;
 		if (annotations == null) {
 			annotations = new Annotation[] { pcutAnnotation };
 		} else {
@@ -126,6 +128,28 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		}		
 		generateSyntheticPointcutMethod = true;
 	}
+	
+	private String getPointcutText() {
+		String text = getPointcut().toString();
+		if (text.indexOf("BindingTypePattern") == -1) return text;
+		// has been wrecked by resolution, try to reconstruct from tokens
+		if (pointcutDesignator != null) {
+			text = pointcutDesignator.getPointcutDeclarationText();
+		}
+		return text;
+	}
+	
+	private String buildArgNameRepresentation() {
+		StringBuffer args = new StringBuffer();
+		if (this.arguments != null) {
+			for (int i = 0; i < this.arguments.length; i++) {
+				if (i != 0) args.append(",");
+				args.append(new String(this.arguments[i].name));
+			}
+		}
+		return args.toString();
+	}
+	
 	
 	// coming from an @Pointcut declaration
 	public void setGenerateSyntheticPointcutMethod() {

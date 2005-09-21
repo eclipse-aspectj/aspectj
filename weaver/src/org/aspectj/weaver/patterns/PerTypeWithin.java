@@ -69,12 +69,7 @@ public class PerTypeWithin extends PerClause {
 		}
 		return FuzzyBoolean.MAYBE;
 	}
-	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-	
-	
+		
     protected FuzzyBoolean matchInternal(Shadow shadow) {
     	ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
     	if (enclosingType == ResolvedType.MISSING) {

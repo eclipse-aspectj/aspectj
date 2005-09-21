@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
@@ -99,12 +98,7 @@ public class KindedPointcut extends Pointcut {
 
 		return FuzzyBoolean.MAYBE;
 	}	
-	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.fromBoolean(signature.couldMatch(targetType));
-	}
-
-	
+		
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow.getKind() != kind) return FuzzyBoolean.NO;
 
@@ -133,35 +127,6 @@ public class KindedPointcut extends Pointcut {
 //            }
 //        }
 //	}
-	
-	public FuzzyBoolean match(JoinPoint.StaticPart jpsp) {
-		if (jpsp.getKind().equals(kind.getName())) {
-			if (signature.matches(jpsp)) {
-				return FuzzyBoolean.YES;
-			}
-		}
-		return FuzzyBoolean.NO;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesDynamically(java.lang.Object, java.lang.Object, java.lang.Object[])
-	 */
-	public boolean matchesDynamically(Object thisObject, Object targetObject,
-			Object[] args) {
-		return true;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#matchesStatically(java.lang.String, java.lang.reflect.Member, java.lang.Class, java.lang.Class, java.lang.reflect.Member)
-	 */
-	public FuzzyBoolean matchesStatically(String joinpointKind,
-			java.lang.reflect.Member member, Class thisClass,
-			Class targetClass, java.lang.reflect.Member withinCode) {
-		if (joinpointKind.equals(kind.getName()))  {
-			return FuzzyBoolean.fromBoolean(signature.matches(targetClass,member));			
-		}
-		return FuzzyBoolean.NO;
-	}
 	
 	private void warnOnConfusingSig(Shadow shadow) {
 		// Don't do all this processing if we don't need to !
@@ -387,10 +352,6 @@ public class KindedPointcut extends Pointcut {
 						getSourceLocation()));
 			}									
 		}
-	}
-	
-	public void resolveBindingsFromRTTI() {
-		signature = signature.resolveBindingsFromRTTI();
 	}
 	
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {

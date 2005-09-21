@@ -351,6 +351,15 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     	return ret;
     }
     
+    public static UnresolvedType forGenericTypeVariables(String sig, TypeVariable[] tVars) {
+      	UnresolvedType ret = UnresolvedType.forSignature(sig);
+    	ret.typeKind=TypeKind.GENERIC; 	
+    	ret.typeVariables = tVars;
+    	ret.signatureErasure = sig;
+    	ret.signature = ret.signatureErasure;
+    	return ret;
+    }
+    
 	public static UnresolvedType forRawTypeName(String name) {
 		UnresolvedType ret = UnresolvedType.forName(name);
 		ret.typeKind = TypeKind.RAW;

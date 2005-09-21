@@ -47,6 +47,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	public ArgsAnnotationPointcut(AnnotationPatternList arguments) {
 		super();
 		this.arguments = arguments;
+		this.pointcutKind = ATARGS;
 	}
 
     public AnnotationPatternList getArguments() {
@@ -64,10 +65,6 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		return FuzzyBoolean.MAYBE;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
@@ -87,13 +84,6 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 			scope.message(IMessage.ERROR, this,
 					"uses more than one .. in args (compiler limitation)");
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindingsFromRTTI()
-	 */
-	protected void resolveBindingsFromRTTI() {
-		// TODO Auto-generated method stub
 	}
 
 	/* (non-Javadoc)
@@ -154,7 +144,10 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 				}
 				if (!ap.matches(rArgType).alwaysTrue()) {
 					// we need a test...
-					ret = Test.makeAnd(ret,Test.makeHasAnnotation(shadow.getArgVar(argsIndex),rAnnType));
+					ret = Test.makeAnd(ret,
+								Test.makeHasAnnotation(
+										shadow.getArgVar(argsIndex),
+										rAnnType));
 				}			
 				argsIndex++;
 			}

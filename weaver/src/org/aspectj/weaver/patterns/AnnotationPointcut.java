@@ -93,11 +93,6 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		}
 	}
 	
-	public FuzzyBoolean fastMatch(Class targetType) {
-		// TODO AMC
-		return FuzzyBoolean.MAYBE;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
@@ -161,14 +156,6 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	protected void resolveBindings(IScope scope, Bindings bindings) {
 		annotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern.resolveBindings(scope,bindings,true);
 		// must be either a Var, or an annotation type pattern
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindingsFromRTTI()
-	 */
-	protected void resolveBindingsFromRTTI() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/* (non-Javadoc)
