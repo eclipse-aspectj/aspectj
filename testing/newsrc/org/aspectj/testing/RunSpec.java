@@ -76,6 +76,7 @@ public class RunSpec implements ITestStep {
 	}
 	
 	public String getClasspath() {
+		if (cpath == null) return null;
 		return this.cpath.replace('/', File.separatorChar);
 	}
  	
