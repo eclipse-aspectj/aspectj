@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.testing;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -29,6 +30,7 @@ public class RunSpec implements ITestStep {
 	private String classToRun;
 	private String baseDir;
 	private String options;
+	private String cpath;
 	private AjcTest myTest;
 	private OutputSpec stdErrSpec;
 	private OutputSpec stdOutSpec;
@@ -44,7 +46,7 @@ public class RunSpec implements ITestStep {
 			System.err.println("Warning, message spec for run command is currently ignored (org.aspectj.testing.RunSpec)");
 		}
 		String[] args = buildArgs();
-		AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(),args,null);
+		AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(),args,getClasspath());
 		if (stdErrSpec != null) {
 			stdErrSpec.matchAgainst(rr.getStdErr());
 		}
@@ -71,6 +73,14 @@ public class RunSpec implements ITestStep {
 	
 	public void setOptions(String options) {
 		this.options = options;
+	}
+	
+	public String getClasspath() {
+		return this.cpath.replace('/', File.separatorChar);
+	}
+ 	
+	public void setClasspath(String cpath) {
+		this.cpath = cpath;
 	}
 	
 	public void addStdErrSpec(OutputSpec spec) {
