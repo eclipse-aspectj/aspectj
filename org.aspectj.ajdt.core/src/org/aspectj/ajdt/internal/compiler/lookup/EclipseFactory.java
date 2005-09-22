@@ -570,12 +570,6 @@ public class EclipseFactory {
 	private ReferenceBinding lookupBinding(String sname) {
 		char[][] name = CharOperation.splitOn('.', sname.toCharArray());
 		ReferenceBinding rb = lookupEnvironment.getType(name);
-		// XXX We do this because the pertypewithin aspectOf(Class) generated method needs it.  Without this
-		// we don't get a 'rawtype' as the argument type for a messagesend to aspectOf() and this leads to 
-		// a compile error if some client class calls aspectOf(A.class) or similar as it says Class<A> isn't
-		// compatible with Class<T>
-		if (sname.equals("java.lang.Class")) 
-			rb = lookupEnvironment.createRawType(rb,rb.enclosingType());
 		return rb;		
 	}
 	

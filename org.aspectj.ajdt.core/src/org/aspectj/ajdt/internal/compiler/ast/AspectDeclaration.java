@@ -1015,8 +1015,8 @@ public class AspectDeclaration extends TypeDeclaration {
 				hasAspectMethod = AjcMemberMaker.perObjectHasAspectMethod(typeX);
 			} else if (perClause.getKind() == PerClause.PERTYPEWITHIN) {
 			    // PTWIMPL Use these variants of aspectOf()/hasAspect()
-				aspectOfMethod  = AjcMemberMaker.perTypeWithinAspectOfMethod(typeX);
-				hasAspectMethod = AjcMemberMaker.perTypeWithinHasAspectMethod(typeX);
+				aspectOfMethod  = AjcMemberMaker.perTypeWithinAspectOfMethod(typeX,world.getWorld().isInJava5Mode());
+				hasAspectMethod = AjcMemberMaker.perTypeWithinHasAspectMethod(typeX,world.getWorld().isInJava5Mode());
 			} else {
 				throw new RuntimeException("bad per clause: " + perClause);	
 			}

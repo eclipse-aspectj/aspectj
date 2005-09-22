@@ -450,6 +450,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("declare parents on a missing type");
   }
   
+  public void testParameterizedGenericMethods() {
+	  runTest("parameterized generic methods");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

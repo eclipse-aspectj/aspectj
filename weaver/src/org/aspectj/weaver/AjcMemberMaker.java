@@ -270,17 +270,45 @@ public class AjcMemberMaker {
 	};
 	
 	// PTWIMPL ResolvedMember for aspectOf(), declared in aspect
-	public static ResolvedMember perTypeWithinAspectOfMethod(UnresolvedType declaringType) {
-		return new ResolvedMemberImpl(Member.METHOD,
-				declaringType, PUBLIC_STATIC, "aspectOf", 
-				"(Ljava/lang/Class;)" + declaringType.getSignature());		
+	public static ResolvedMember perTypeWithinAspectOfMethod(UnresolvedType declaringType,boolean inJava5Mode) {
+		UnresolvedType parameterType = null;
+		if (inJava5Mode) {
+			parameterType = UnresolvedType.forRawTypeName("java.lang.Class");
+		} else {
+			parameterType = UnresolvedType.forSignature("Ljava/lang/Class;");
+		}
+		return new ResolvedMemberImpl(
+				Member.METHOD,
+				declaringType,
+				PUBLIC_STATIC,
+				declaringType,
+				"aspectOf",
+				new UnresolvedType[] {parameterType}
+				);
+//		return new ResolvedMemberImpl(Member.METHOD,
+//				declaringType, PUBLIC_STATIC, "aspectOf", 
+//				"(Ljava/lang/Class;)" + declaringType.getSignature());		
 	}
 	
 	// PTWIMPL ResolvedMember for hasAspect(), declared in aspect
-	public static ResolvedMember perTypeWithinHasAspectMethod(UnresolvedType declaringType) {
-		return new ResolvedMemberImpl(Member.METHOD,
-			declaringType, PUBLIC_STATIC, "hasAspect", 
-			"(Ljava/lang/Class;)Z");		
+	public static ResolvedMember perTypeWithinHasAspectMethod(UnresolvedType declaringType, boolean inJava5Mode) {
+		UnresolvedType parameterType = null;
+		if (inJava5Mode) {
+			parameterType = UnresolvedType.forRawTypeName("java.lang.Class");
+		} else {
+			parameterType = UnresolvedType.forSignature("Ljava/lang/Class;");
+		}
+		return new ResolvedMemberImpl(
+				Member.METHOD,
+				declaringType,
+				PUBLIC_STATIC,
+				ResolvedType.BOOLEAN,
+				"hasAspect",
+				new UnresolvedType[] {parameterType}
+				);
+//		return new ResolvedMemberImpl(Member.METHOD,
+//			declaringType, PUBLIC_STATIC, "hasAspect", 
+//			"(Ljava/lang/Class;)Z");		
 	};
 	
 	// -- privileged accessors

@@ -602,6 +602,11 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150" title="parameterized generic methods">
+        <compile files="Pr109283.aj" options="-1.5 -warn:indirectStatic">
+        </compile>
+    </ajc-test> 
+    
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
@@ -3287,7 +3292,7 @@
    
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - I2">
      <compile files="MethodI2.aj" options="-1.5">
-       <message kind="error" line="7" text="The method m(List&lt;Integer&gt;) in the type Base&lt;N&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
+       <message kind="error" line="7" text="The method m(List&lt;Integer&gt;) in the type Base&lt;Integer&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
      </compile>
    </ajc-test>
    
@@ -3445,8 +3450,8 @@
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - M">
      <compile files="GenericAspectM.aj" options="-1.5">
-       <message kind="error" line="23" text="The method m0(Integer) in the type GenericAspect&lt;A,B&gt;.SimpleI&lt;L&gt; is not applicable for the arguments (String)"/>
-       <message kind="error" line="24" text="The method m1(List&lt;Integer&gt;) in the type GenericAspect&lt;A,B&gt;.SimpleI&lt;L&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
+       <message kind="error" line="23" text="The method m0(Integer) in the type GenericAspect&lt;A,B&gt;.SimpleI&lt;Integer&gt; is not applicable for the arguments (String)"/>
+       <message kind="error" line="24" text="The method m1(List&lt;Integer&gt;) in the type GenericAspect&lt;A,B&gt;.SimpleI&lt;Integer&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
        <message kind="error" line="25" text="Type mismatch: cannot convert from String to Integer"/>
        <message kind="error" line="26" text="Type mismatch: cannot convert from List&lt;String&gt; to List&lt;Integer&gt;"/>
      </compile>
@@ -3458,7 +3463,7 @@
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - O">
      <compile files="GenericAspectO.aj" options="-1.5">
        <message kind="error" line="24" text="Cannot make a static reference to the non-static field Bottom.parent"/>
-       <message kind="error" line="26" text="The method add(Bottom) in the type List&lt;E&gt; is not applicable for the arguments (Top)"/>
+       <message kind="error" line="26" text="The method add(Bottom) in the type List&lt;Bottom&gt; is not applicable for the arguments (Top)"/>
        <message kind="error" line="27" text="Cannot make a static reference to the non-static field Top.children"/>
      </compile>
    </ajc-test>

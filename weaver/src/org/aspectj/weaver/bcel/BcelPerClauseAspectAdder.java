@@ -398,7 +398,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
     private void generatePerTWAspectOfMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
-        LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinAspectOfMethod(aspectType));
+        LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinAspectOfMethod(aspectType,classGen.getWorld().isInJava5Mode()));
         flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
@@ -437,7 +437,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
     private void generatePerTWHasAspectMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();
-        LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinHasAspectMethod(aspectType));
+        LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinHasAspectMethod(aspectType,classGen.getWorld().isInJava5Mode()));
         flagAsSynthetic(method, false);
         classGen.addMethodGen(method);
 
