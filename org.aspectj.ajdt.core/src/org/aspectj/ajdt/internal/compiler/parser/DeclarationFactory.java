@@ -95,6 +95,8 @@ public class DeclarationFactory implements IDeclarationFactory {
 		AspectDeclaration aspect = (AspectDeclaration) aspectDecl;
 		PseudoTokens tok = (PseudoTokens) pseudoTokens;
 		aspect.perClause = tok.parsePerClause(parser);
+		// For the ast support: currently the below line is not finished! The start is set incorrectly
+		((AspectDeclaration)aspectDecl).perClause.setLocation(null,1,parser.getCurrentTokenStart()+1);
 	}
 
 	/* (non-Javadoc)
