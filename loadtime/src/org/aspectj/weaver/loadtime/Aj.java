@@ -28,6 +28,17 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
  */
 public class Aj implements ClassPreProcessor {
 
+	private IWeavingContext weavingContext;
+	
+	public Aj(){
+		this(null);
+	}
+	
+	
+	public Aj(IWeavingContext context){
+		weavingContext = context;
+	}
+
     /**
      * Initialization
      */
@@ -51,7 +62,7 @@ public class Aj implements ClassPreProcessor {
         }
 
         try {
-            WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader);
+            WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
             byte[] weaved = weavingAdaptor.weaveClass(className, bytes);
             if (weavingAdaptor.shouldDump(className.replace('/', '.'))) {
                 dump(className, weaved);
@@ -73,12 +84,12 @@ public class Aj implements ClassPreProcessor {
 
         private static Map weavingAdaptors = new WeakHashMap();
 
-        static WeavingAdaptor getWeaver(ClassLoader loader) {
+        static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
             synchronized(loader) {//FIXME AV - temp fix for #99861
                 synchronized (weavingAdaptors) {
                     WeavingAdaptor weavingAdaptor = (WeavingAdaptor) weavingAdaptors.get(loader);
                     if (weavingAdaptor == null) {
-                        weavingAdaptor = new ClassLoaderWeavingAdaptor(loader);
+                        weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
                         weavingAdaptors.put(loader, weavingAdaptor);
                     }
                     return weavingAdaptor;
@@ -135,6 +146,32 @@ public class Aj implements ClassPreProcessor {
         FileOutputStream os = new FileOutputStream(fileName);
         os.write(b);
         os.close();
+    }
+    
+    /*
+     * Shared classes methods
+     */
+
+    /**
+     * Returns a namespace based on the contest of the aspects available
+     */
+    public String getNamespace (ClassLoader loader) {
+        ClassLoaderWeavingAdaptor weavingAdaptor = (ClassLoaderWeavingAdaptor)WeaverContainer.getWeaver(loader, weavingContext);
+    	return weavingAdaptor.getNamespace();
+    }
+    
+    /**
+     * Check to see if any classes have been generated for a particular classes loader.
+     * Calls ClassLoaderWeavingAdaptor.generatedClassesExist()
+     * @param loader the class cloder
+     * @return       true if classes have been generated.
+     */
+    public boolean generatedClassesExist(ClassLoader loader){
+    	return ((ClassLoaderWeavingAdaptor)WeaverContainer.getWeaver(loader, weavingContext)).generatedClassesExist();
+    }
+    
+    public void flushGeneratedClasses(ClassLoader loader){
+    	((ClassLoaderWeavingAdaptor)WeaverContainer.getWeaver(loader, weavingContext)).flushGeneratedClasses();
     }
 
 }

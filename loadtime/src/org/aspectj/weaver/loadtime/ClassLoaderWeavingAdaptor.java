@@ -8,6 +8,7 @@
  *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
+ *   David Knibb		       weaving context enhancments
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
@@ -35,9 +36,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -50,8 +53,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private List m_includeTypePattern = new ArrayList();
     private List m_excludeTypePattern = new ArrayList();
     private List m_aspectExcludeTypePattern = new ArrayList();
+    
+    private StringBuffer namespace;
+    private IWeavingContext weavingContext;
 
-    public ClassLoaderWeavingAdaptor(final ClassLoader loader) {
+    public ClassLoaderWeavingAdaptor(final ClassLoader loader, IWeavingContext wContext) {
         super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
         this.generatedClassHandler = new GeneratedClassHandler() {
             /**
@@ -72,6 +78,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 Aj.defineClass(loader, name, bytes);// could be done lazily using the hook
             }
         };
+        
+        if(wContext==null){
+        	weavingContext = new DefaultWeavingContext(loader);
+        }else{
+        	weavingContext = wContext ;
+        }
 
         bcelWorld = new BcelWorld(
                 loader, messageHandler, new ICrossReferenceHandler() {
@@ -107,7 +119,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         try {
             MessageUtil.info(messageHandler, "register classloader " + ((loader!=null)?loader.getClass().getName()+"@"+loader.hashCode():"null"));
             //TODO av underoptimized: we will parse each XML once per CL that see it
-            Enumeration xmls = loader.getResources(AOP_XML);
             List definitions = new ArrayList();
 
             //TODO av dev mode needed ? TBD -Daj5.def=...
@@ -118,12 +129,21 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     definitions.add(DocumentParser.parse((new File(file)).toURL()));
                 }
             }
+            
+            String resourcePath = System.getProperty("org.aspectj.weaver.loadtime.configuration",AOP_XML);
+    		StringTokenizer st = new StringTokenizer(resourcePath,";");
 
-            while (xmls.hasMoreElements()) {
-                URL xml = (URL) xmls.nextElement();
-                MessageUtil.info(messageHandler, "using " + xml.getFile());
-                definitions.add(DocumentParser.parse(xml));
-            }
+    		while(st.hasMoreTokens()){
+    			Enumeration xmls = weavingContext.getResources(st.nextToken());
+//    			System.out.println("? registerDefinitions: found-aop.xml=" + xmls.hasMoreElements() + ", loader=" + loader);
+
+
+    			while (xmls.hasMoreElements()) {
+    			    URL xml = (URL) xmls.nextElement();
+    			    MessageUtil.info(messageHandler, "using " + xml.getFile());
+    			    definitions.add(DocumentParser.parse(xml));
+    			}
+    		}
 
             // still go thru if definitions is empty since we will configure
             // the default message handler in there
@@ -231,6 +251,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 String aspectClassName = (String) aspects.next();
                 if (acceptAspect(aspectClassName)) {
                     weaver.addLibraryAspect(aspectClassName);
+                	
+                	//generate key for SC
+                	String aspectCode = readAspect(aspectClassName, loader);
+                    if(namespace==null){
+                    	namespace=new StringBuffer(aspectCode);
+                    }else{
+                    	namespace = namespace.append(";"+aspectCode);
+                    }
                 }
             }
         }
@@ -344,4 +372,63 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         return false;
     }
+    
+    /*
+     *  shared classes methods
+     */
+    
+    /**
+	 * @return Returns the key.
+	 */
+	public String getNamespace() {
+		if(namespace==null) return "";
+		else return new String(namespace);
+	}
+
+    /**
+     * Check to see if any classes are stored in the generated classes cache.
+     * Then flush the cache if it is not empty
+     * @return true if a class has been generated and is stored in the cache
+     */
+    public boolean generatedClassesExist(){
+    	if(generatedClasses.size()>0) {
+    		return true;
+    	}
+    	return false;
+    }
+    
+    /**
+     * Flush the generated classes cache
+     */
+    public void flushGeneratedClasses(){
+    	generatedClasses = new HashMap();
+    }
+    
+
+    /**
+     * Read in an aspect from the disk and return its bytecode as a String
+     * @param name	the name of the aspect to read in
+     * @return the bytecode representation of the aspect
+     */
+    private String readAspect(String name, ClassLoader loader){
+    	try {
+    		String result = "";
+        	InputStream is = loader.getResourceAsStream(name.replace('.','/')+".class");
+			int b = is.read();
+			while(b!=-1){
+				result = result + b;
+				b=is.read();
+			}
+			is.close();
+	    	return result;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "";
+		}catch (NullPointerException e) {
+			//probably tried to read in a "non aspect @missing@" aspect
+			System.err.println("ClassLoaderWeavingAdaptor.readAspect() name: "+name+"  Exception: "+e);
+			return "";
+		}
+    }
+    
 }
