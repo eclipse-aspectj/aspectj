@@ -516,6 +516,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		node.getName().accept(this);
 		buffer.append("():");
 		buffer.append(((DefaultPointcut)node.getDesignator()).getDetail());
+		buffer.append(";\n");
 		return false;
 	}
 
