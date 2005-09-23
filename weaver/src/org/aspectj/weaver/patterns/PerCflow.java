@@ -133,6 +133,10 @@ public class PerCflow extends PerClause {
 		return PERCFLOW;
 	}
 	
+	public Pointcut getEntry(){
+		return entry;
+	}
+	
 	public String toString() {
 		return "percflow(" + inAspect + " on " + entry + ")";
 	}

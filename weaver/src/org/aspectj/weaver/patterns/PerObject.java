@@ -157,4 +157,8 @@ public class PerObject extends PerClause {
 	public String toDeclarationString() {
 		return toString();
 	}
+	
+	public Pointcut getEntry() {
+		return entry;
+	}
 }
