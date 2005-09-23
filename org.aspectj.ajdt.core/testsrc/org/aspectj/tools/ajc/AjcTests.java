@@ -26,6 +26,7 @@ public class AjcTests extends TestCase {
     public static Test suite() { 
         TestSuite suite = new TestSuite(AjcTests.class.getName());
         suite.addTestSuite(org.aspectj.tools.ajc.MainTest.class);
+        suite.addTestSuite(ASTVisitorTest.class);
         return suite;
     }
 
