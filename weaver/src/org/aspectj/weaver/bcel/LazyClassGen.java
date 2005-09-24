@@ -256,7 +256,7 @@ public final class LazyClassGen {
 		this.world = myType.getResolvedTypeX().getWorld();
 
 		/* Does this class support serialization */
-		if (UnresolvedType.SERIALIZABLE.resolve(getType().getWorld()).isAssignableFrom(getType())) {
+		if (implementsSerializable(getType())) {
 			isSerializable = true;       
 
 //			ResolvedMember[] fields = getType().getDeclaredFields();
@@ -1178,6 +1178,31 @@ public final class LazyClassGen {
 		if (!hasAnnotation(UnresolvedType.forSignature(a.getTypeSignature()))) {
 		  annotations.add(new AnnotationGen(a,getConstantPoolGen(),true));
 		}
+	}
+	
+	// this test is like asking:
+	// if (UnresolvedType.SERIALIZABLE.resolve(getType().getWorld()).isAssignableFrom(getType())) {
+    // only we don't do that because this forces us to find all the supertypes of the type,
+	// and if one of them is missing we fail, and it's not worth failing just to put out
+	// a warning message!
+	private boolean implementsSerializable(ResolvedType aType) {
+		ResolvedType[] interfaces = aType.getDeclaredInterfaces();
+		for (int i = 0; i < interfaces.length; i++) {
+			if (interfaces[i].getSignature().equals(UnresolvedType.SERIALIZABLE.getSignature())) {
+				return true;
+			} else {
+				if (interfaces[i].isMissing()) continue;
+				ResolvedType superInterface = interfaces[i].getSuperclass();
+				if (superInterface != null && !superInterface.isMissing()) {
+					if (implementsSerializable(superInterface)) return true;
+				}
+			}
+		}
+		ResolvedType superType = aType.getSuperclass();
+		if (superType != null && !superType.isMissing()) {
+			return implementsSerializable(superType);
+		}
+		return false;
 	}
 
 }

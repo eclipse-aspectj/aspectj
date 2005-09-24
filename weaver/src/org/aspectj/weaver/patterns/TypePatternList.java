@@ -75,6 +75,18 @@ public class TypePatternList extends PatternNode {
     	return buf.toString();
     }
        
+    /*
+     * return true iff this pattern could ever match a signature with the
+     * given number of parameters
+     */
+    public boolean canMatchSignatureWithNParameters(int numParams) {
+    	if (ellipsisCount == 0) {
+    		return numParams == size();
+    	} else {
+    		return (size() -ellipsisCount) <= numParams;
+    	}
+    }
+    
     //XXX shares much code with WildTypePattern and with NamePattern
     /**
      * When called with TypePattern.STATIC this will always return either

@@ -14,6 +14,7 @@ package org.aspectj.weaver;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
@@ -325,7 +326,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getSignatureString(world);
 	}
 
-	public JoinPointSignature[] getJoinPointSignatures(World world) {
+	public Iterator getJoinPointSignatures(World world) {
 		return realMember.getJoinPointSignatures(world);
 	}
 	

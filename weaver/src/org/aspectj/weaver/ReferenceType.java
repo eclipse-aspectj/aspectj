@@ -223,13 +223,18 @@ public class ReferenceType extends ResolvedType {
     	return false;
     }
     
-    // true iff the statement "this = other" would compile.
     public final boolean isAssignableFrom(ResolvedType other) {
+    	return isAssignableFrom(other,false);
+    }
+    
+    // true iff the statement "this = other" would compile.
+    public final boolean isAssignableFrom(ResolvedType other,boolean allowMissing) {
        	if (other.isPrimitiveType()) {
     		if (!world.isInJava5Mode()) return false;
     		if (ResolvedType.validBoxing.contains(this.getSignature()+other.getSignature())) return true;
     	}      
        	if (this == other) return true;
+       	if (this.getSignature().equals(ResolvedType.OBJECT.getSignature())) return true;
 
        	if ((this.isRawType() || this.isGenericType()) && other.isParameterizedType()) {
        		if (isAssignableFrom((ResolvedType)other.getRawType())) return true;
@@ -283,8 +288,10 @@ public class ReferenceType extends ResolvedType {
        		return this.isAssignableFrom(otherType.getUpperBound().resolve(world));
        	}
        	
+       	if (allowMissing && other.isMissing()) return false;
+       	
         for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
-            if (this.isAssignableFrom((ResolvedType) i.next())) return true;
+            if (this.isAssignableFrom((ResolvedType) i.next(),allowMissing)) return true;
         }       
         return false;
     }

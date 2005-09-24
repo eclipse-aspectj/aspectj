@@ -15,21 +15,17 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.reflect.AdviceSignature;
-import org.aspectj.lang.reflect.ConstructorSignature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Constants;
@@ -129,24 +125,36 @@ public class SignaturePattern extends PatternNode {
 		if (kind == Member.ADVICE) return true;
 		
 		// do the hard work then...
-		JoinPointSignature[] candidateMatches = joinPointSignature.getJoinPointSignatures(world);
-		for (int i = 0; i < candidateMatches.length; i++) {
-			if (matchesExactly(candidateMatches[i],world,allowBridgeMethods)) return true;
+		Iterator candidateMatches = joinPointSignature.getJoinPointSignatures(world);
+		while(candidateMatches.hasNext()) {
+			JoinPointSignature aSig = (JoinPointSignature) candidateMatches.next();
+			FuzzyBoolean matchResult = matchesExactly(aSig,world,allowBridgeMethods); 
+			if (matchResult.alwaysTrue()) {
+				return true;
+			} else if (matchResult.alwaysFalse()) {
+				return false;
+			}
+			// if we got a "MAYBE" it's worth looking at the other signatures
 		}
 		return false;
 	}
 	
 	// Does this pattern match this exact signature (no declaring type mucking about
 	// or chasing up the hierarchy)
-	private boolean matchesExactly(JoinPointSignature aMember, World inAWorld, boolean allowBridgeMethods) {
+	// return YES if it does, NO if it doesn't and no ancester member could match either,
+	// and MAYBE if it doesn't but an ancester member could.
+	private FuzzyBoolean matchesExactly(JoinPointSignature aMember, World inAWorld, boolean allowBridgeMethods) {
 		// Java5 introduces bridge methods, we match a call to them but nothing else...
 		if (aMember.isBridgeMethod() && !allowBridgeMethods) {
-			return false;
+			return FuzzyBoolean.MAYBE;
 		}
 			
-		if (!modifiers.matches(aMember.getModifiers())) return false;
+		if (!modifiers.matches(aMember.getModifiers())) {
+			if (aMember.isPrivate()) return FuzzyBoolean.NO;
+			else return FuzzyBoolean.MAYBE;
+		}
 		
-		boolean matchesIgnoringAnnotations = true;
+		FuzzyBoolean matchesIgnoringAnnotations = FuzzyBoolean.YES;
 		if (kind == Member.STATIC_INITIALIZATION) {
 			matchesIgnoringAnnotations = matchesExactlyStaticInitialization(aMember, inAWorld);
 		} else if (kind == Member.FIELD) {
@@ -156,7 +164,7 @@ public class SignaturePattern extends PatternNode {
 		} else if (kind == Member.CONSTRUCTOR) {
 			matchesIgnoringAnnotations = matchesExactlyConstructor(aMember, inAWorld);
 		}
-		if (!matchesIgnoringAnnotations) return false;
+		if (!matchesIgnoringAnnotations.alwaysTrue()) return matchesIgnoringAnnotations;
 		
 		return matchesAnnotations(aMember, inAWorld);
 	}
@@ -164,84 +172,89 @@ public class SignaturePattern extends PatternNode {
 	/**
 	 * Matches on declaring type
 	 */
-	private boolean matchesExactlyStaticInitialization(JoinPointSignature aMember,World world) {
-		return declaringType.matchesStatically(aMember.getDeclaringType().resolve(world));
+	private FuzzyBoolean matchesExactlyStaticInitialization(JoinPointSignature aMember,World world) {
+		return FuzzyBoolean.fromBoolean(declaringType.matchesStatically(aMember.getDeclaringType().resolve(world)));
 	}
 	
 	/**
 	 * Matches on name, declaring type, field type
 	 */
-	private boolean matchesExactlyField(JoinPointSignature aField, World world) {
-		if (!name.matches(aField.getName())) return false;
-		if (!declaringType.matchesStatically(aField.getDeclaringType().resolve(world))) return false;
+	private FuzzyBoolean matchesExactlyField(JoinPointSignature aField, World world) {
+		if (!name.matches(aField.getName())) return FuzzyBoolean.NO;
+		ResolvedType fieldDeclaringType = aField.getDeclaringType().resolve(world);
+		if (!declaringType.matchesStatically(fieldDeclaringType)) {
+			return FuzzyBoolean.MAYBE;
+		}
 		if (!returnType.matchesStatically(aField.getReturnType().resolve(world))) {
 			// looking bad, but there might be parameterization to consider...
 			if (!returnType.matchesStatically(aField.getGenericReturnType().resolve(world))) {
 				// ok, it's bad.
-				return false;
+				return FuzzyBoolean.MAYBE;
 			}
 		}
 		// passed all the guards...
-		return true;
+		return FuzzyBoolean.YES;
 	}
 	
 	/**
 	 * Matches on name, declaring type, return type, parameter types, throws types
 	 */
-	private boolean matchesExactlyMethod(JoinPointSignature aMethod, World world) {
-		if (!name.matches(aMethod.getName())) return false;
-		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) return false;
+	private FuzzyBoolean matchesExactlyMethod(JoinPointSignature aMethod, World world) {
+		if (!name.matches(aMethod.getName())) return FuzzyBoolean.NO;
+		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) return FuzzyBoolean.MAYBE;
 		if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
 			// looking bad, but there might be parameterization to consider...
 			if (!returnType.matchesStatically(aMethod.getGenericReturnType().resolve(world))) {
 				// ok, it's bad.
-				return false;
+				return FuzzyBoolean.MAYBE;
 			}
 		}
+		if (!parameterTypes.canMatchSignatureWithNParameters(aMethod.getParameterTypes().length)) return FuzzyBoolean.NO;
 		ResolvedType[] resolvedParameters = world.resolve(aMethod.getParameterTypes());
 		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
 			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
-				return false;
+				return FuzzyBoolean.MAYBE;
 				// It could STILL be a match based on the erasure of the parameter types??
 				// to be determined via test cases...
 			}
 		}
 		
 		// check that varargs specifications match
-		if (!matchesVarArgs(aMethod,world)) return false;
+		if (!matchesVarArgs(aMethod,world)) return FuzzyBoolean.MAYBE;
 		
 		// Check the throws pattern
-		if (!throwsPattern.matches(aMethod.getExceptions(), world)) return false;
+		if (!throwsPattern.matches(aMethod.getExceptions(), world)) return FuzzyBoolean.MAYBE;
 		
 		// passed all the guards..
-		return true;
+		return FuzzyBoolean.YES;
 	}
 	
 	/**
 	 * match on declaring type, parameter types, throws types
 	 */
-	private boolean matchesExactlyConstructor(JoinPointSignature aConstructor, World world) {
-		if (!declaringType.matchesStatically(aConstructor.getDeclaringType().resolve(world))) return false;
+	private FuzzyBoolean matchesExactlyConstructor(JoinPointSignature aConstructor, World world) {
+		if (!declaringType.matchesStatically(aConstructor.getDeclaringType().resolve(world))) return FuzzyBoolean.NO;
 
+		if (!parameterTypes.canMatchSignatureWithNParameters(aConstructor.getParameterTypes().length)) return FuzzyBoolean.NO;
 		ResolvedType[] resolvedParameters = world.resolve(aConstructor.getParameterTypes());
 		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
 			if (!parameterTypes.matches(world.resolve(aConstructor.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
-				return false;
+				return FuzzyBoolean.MAYBE;
 				// It could STILL be a match based on the erasure of the parameter types??
 				// to be determined via test cases...
 			}
 		}
 		
 		// check that varargs specifications match
-		if (!matchesVarArgs(aConstructor,world)) return false;
+		if (!matchesVarArgs(aConstructor,world)) return FuzzyBoolean.NO;
 		
 		// Check the throws pattern
-		if (!throwsPattern.matches(aConstructor.getExceptions(), world)) return false;
+		if (!throwsPattern.matches(aConstructor.getExceptions(), world)) return FuzzyBoolean.NO;
 		
 		// passed all the guards..
-		return true;		
+		return FuzzyBoolean.YES;		
 	}
 	
 	/**
@@ -273,18 +286,18 @@ public class SignaturePattern extends PatternNode {
 		return true;
 	}
 		
-	private boolean matchesAnnotations(ResolvedMember member,World world) {
+	private FuzzyBoolean matchesAnnotations(ResolvedMember member,World world) {
 	  if (member == null) {
 	        if (member.getName().startsWith(NameMangler.PREFIX)) {
-				return false;
+				return FuzzyBoolean.NO;
 			}
 			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
-			return false;
+			return FuzzyBoolean.NO;
 	  }
 	  annotationPattern.resolve(world);
 	 
 	  // optimization before we go digging around for annotations on ITDs
-	  if (annotationPattern instanceof AnyAnnotationTypePattern) return true;
+	  if (annotationPattern instanceof AnyAnnotationTypePattern) return FuzzyBoolean.YES;
 	  
 	  // fake members represent ITD'd fields - for their annotations we should go and look up the
 	  // relevant member in the original aspect
@@ -305,7 +318,11 @@ public class SignaturePattern extends PatternNode {
 		}
 	  }
 	  
-	  return annotationPattern.matches(member).alwaysTrue();
+	  if (annotationPattern.matches(member).alwaysTrue()) {
+		  return FuzzyBoolean.YES;
+	  } else {
+		  return FuzzyBoolean.MAYBE;  // need to look at ancestor members too...
+	  }
 	}
 	
 	private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {

@@ -179,7 +179,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         cont = enforceDecpRule1_abstractMethodsImplemented(weaver, munger.getSourceLocation(),newParentTarget, newParent);
         cont = enforceDecpRule2_cantExtendFinalClass(weaver,munger.getSourceLocation(),newParentTarget,newParent) && cont;
                 
-        List methods = newParent.getMethodsWithoutIterator(false);
+        List methods = newParent.getMethodsWithoutIterator(false,true);
         for (Iterator iter = methods.iterator(); iter.hasNext();) {
 		  ResolvedMember    superMethod = (ResolvedMember) iter.next();
           if (!superMethod.getName().equals("<init>")) {
@@ -210,12 +210,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
     private boolean enforceDecpRule1_abstractMethodsImplemented(BcelClassWeaver weaver, ISourceLocation mungerLoc,LazyClassGen newParentTarget, ResolvedType newParent) {
         boolean ruleCheckingSucceeded = true;
         if (!(newParentTarget.isAbstract() || newParentTarget.isInterface())) { // Ignore abstract classes or interfaces
-            List methods = newParent.getMethodsWithoutIterator(false);
+            List methods = newParent.getMethodsWithoutIterator(false,true);
             for (Iterator i = methods.iterator(); i.hasNext();) {
                 ResolvedMember o = (ResolvedMember)i.next();
                 if (o.isAbstract() && !o.getName().startsWith("ajc$interField")) { // Ignore abstract methods of ajc$interField prefixed methods
                     ResolvedMember discoveredImpl = null;
-                    List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator(false);
+                    List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator(false,true);
                     for (Iterator ii = newParentTargetMethods.iterator(); ii.hasNext() && discoveredImpl==null;) {
                         ResolvedMember gen2 = (ResolvedMember) ii.next();
                         if (gen2.getName().equals(o.getName()) && 

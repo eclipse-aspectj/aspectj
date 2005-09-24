@@ -74,6 +74,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.Dump;
+import org.aspectj.weaver.MissingResolvedTypeWithKnownSignature;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -591,7 +593,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		bcelWeaver.setReweavableMode(buildConfig.isXreweavable(),buildConfig.getXreweavableCompressClasses());
 
 		//check for org.aspectj.runtime.JoinPoint
-		bcelWorld.resolve("org.aspectj.lang.JoinPoint");
+		ResolvedType joinPoint = bcelWorld.resolve("org.aspectj.lang.JoinPoint");
+		if (joinPoint.isMissing()) {
+			IMessage message = 
+				new Message("classpath error: unable to find org.aspectj.lang.JoinPoint (check that aspectjrt.jar is in your classpath)",
+							null,
+							true);
+				handler.handleMessage(message);
+		}
 	}
 	
 	public World getWorld() {

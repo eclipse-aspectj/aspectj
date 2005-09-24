@@ -38,7 +38,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
      * The fact that this has to go on MemberImpl and not ResolvedMemberImpl says a lot about
      * how broken the Member/ResolvedMember distinction currently is.
      */
-    private JoinPointSignature[] joinPointSignatures = null;
+    private JoinPointSignatureIterator joinPointSignatures = null;
 
     public MemberImpl(
         Kind kind, 
@@ -912,10 +912,11 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     /**
      * All the signatures that a join point with this member as its signature has.
      */
-	public JoinPointSignature[] getJoinPointSignatures(World inAWorld) {
+	public Iterator getJoinPointSignatures(World inAWorld) {
 		if (joinPointSignatures == null) {
-			joinPointSignatures = ResolvedMemberImpl.getJoinPointSignatures(this, inAWorld);
+			joinPointSignatures = new JoinPointSignatureIterator(this,inAWorld);
 		}
+		joinPointSignatures.reset();
 		return joinPointSignatures;
 	}
     

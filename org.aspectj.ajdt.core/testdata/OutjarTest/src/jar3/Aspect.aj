@@ -13,7 +13,7 @@ package jar3;
 public aspect Aspect {
 
 	pointcut main () :
-		execution(* *.main(..));
+		execution(* Parent+.main(..));
 	
 	after () : main () {
 		System.out.println("? Aspect.main()");

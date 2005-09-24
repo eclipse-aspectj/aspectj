@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.aspectj.util.TypeSafeEnum;
 
@@ -75,7 +76,7 @@ public interface Member {
     /**
      * All the signatures that a join point with this member as its signature has.
      */
-    public JoinPointSignature[] getJoinPointSignatures(World world);
+    public Iterator getJoinPointSignatures(World world);
 
 	/** TODO ASC Should return the non-erased version of the signature... untested */
 	public String getDeclaredSignature();

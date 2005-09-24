@@ -204,7 +204,7 @@ public abstract class World implements Dump.INode {
         } else {
             ret = resolveToReferenceType(ty);
             if (!allowMissing && ret == ResolvedType.MISSING) {
-                handleRequiredMissingTypeDuringResolution(ty);
+                ret = handleRequiredMissingTypeDuringResolution(ty);
             }
         }        
   
@@ -218,13 +218,16 @@ public abstract class World implements Dump.INode {
     /**
      * We tried to resolve a type and couldn't find it...
      */
-	private void handleRequiredMissingTypeDuringResolution(UnresolvedType ty) {
-		MessageUtil.error(messageHandler, 
-				WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
+	private ResolvedType handleRequiredMissingTypeDuringResolution(UnresolvedType ty) {
+		// defer the message until someone asks a question of the type that we can't answer
+		// just from the signature.
+//		MessageUtil.error(messageHandler, 
+//				WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
 		if (dumpState_cantFindTypeExceptions==null) {
 		  dumpState_cantFindTypeExceptions = new ArrayList();   
 		}
 		dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type "+ty.getName()));
+		return new MissingResolvedTypeWithKnownSignature(ty.getSignature(),this);
 	}
     
     /**

@@ -110,7 +110,7 @@ public class OutjarTest extends AjcTestCase {
 	 */
 	public void testOutjarDeletedOnError () {
 		String[] args = new String[] {"-aspectpath", aspectjarName, "-injars", injarName, "-outjar", outjarName};
-		Message error = new Message(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,"jar1.Parent"));
+		Message error = new Message(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_INTERFACES,"jar1.Parent"));
 		MessageSpec spec = new MessageSpec(null,newMessageList(error));
 		CompilationResult result = ajc(baseDir,args);
 //		System.out.println(result);

@@ -209,7 +209,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     		ResolvedType toLookIn = (ResolvedType) typesToLookIn.next();
 			if (!typesAlreadyVisited.contains(toLookIn)) {
 				typesAlreadyVisited.add(toLookIn);
-				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn.lookupResolvedMember(memberToMatch);
+				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn.lookupResolvedMember(memberToMatch,true);
 				if (foundMember != null && isVisibleTo(memberToMatch,foundMember)) {
 					List declaringTypes = new ArrayList();
 					// declaring type can be unresolved if the member can from an ITD...
@@ -636,7 +636,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * Copy only needs to be shallow.
 	 * @param newDeclaringType
 	 */
-	private JoinPointSignature withSubstituteDeclaringType(ResolvedType newDeclaringType) {
+	public JoinPointSignature withSubstituteDeclaringType(ResolvedType newDeclaringType) {
 		JoinPointSignature ret = new JoinPointSignature(this,newDeclaringType);
 		return ret;
 	}

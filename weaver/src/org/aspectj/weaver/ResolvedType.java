@@ -92,6 +92,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
      */
     public abstract int getModifiers();
 
+    // return true if this resolved type couldn't be found (but we know it's name maybe)
+    public boolean isMissing() { return false; }
+    
     public ResolvedType[] getAnnotationTypes() {
     	return EMPTY_RESOLVED_TYPE_ARRAY;
     }
@@ -235,14 +238,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
      * on the superinterfaces.  The getMethods() call above doesn't quite work the same as it will (through the iterator) return methods
      * declared on *this* class twice, once at the start and once at the end - I couldn't debug that problem, so created this alternative.
      */
-    public List getMethodsWithoutIterator(boolean includeITDs) {
+    public List getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing) {
         List methods = new ArrayList();
         Set knowninterfaces = new HashSet();
-        addAndRecurse(knowninterfaces,methods,this,includeITDs);
+        addAndRecurse(knowninterfaces,methods,this,includeITDs,allowMissing);
         return methods;
     }
     
-    private void addAndRecurse(Set knowninterfaces,List collector, ResolvedType rtx, boolean includeITDs) {
+    private void addAndRecurse(Set knowninterfaces,List collector, ResolvedType rtx, boolean includeITDs, boolean allowMissing) {
       collector.addAll(Arrays.asList(rtx.getDeclaredMethods())); // Add the methods declared on this type
       // now add all the inter-typed members too
       if (includeITDs && rtx.interTypeMungers != null) {
@@ -256,13 +259,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
       }
       if (!rtx.equals(ResolvedType.OBJECT)) {
     	  ResolvedType superType = rtx.getSuperclass();
-    	  if (rtx == null || rtx == ResolvedType.MISSING) {
-    		  // can't find type message - with context!
-    		  world.showMessage(Message.ERROR,
-					WeaverMessages.format(WeaverMessages.CANT_FIND_PARENT_TYPE,rtx.getSignature()),
-					null,null);
-    	  } else {
-    		  addAndRecurse(knowninterfaces,collector,superType,includeITDs); // Recurse if we aren't at the top
+    	  if (superType != null && !superType.isMissing()) {
+    		  addAndRecurse(knowninterfaces,collector,superType,includeITDs,allowMissing); // Recurse if we aren't at the top
     	  }
       }
       ResolvedType[] interfaces = rtx.getDeclaredInterfaces(); // Go through the interfaces on the way back down
@@ -270,7 +268,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		ResolvedType iface = interfaces[i];
 		if (!knowninterfaces.contains(iface)) { // Dont do interfaces more than once
           knowninterfaces.add(iface); 
-          addAndRecurse(knowninterfaces,collector,iface,includeITDs);
+          if (allowMissing && iface.isMissing()) {
+        	if (iface instanceof MissingResolvedTypeWithKnownSignature) {
+        		((MissingResolvedTypeWithKnownSignature)iface).raiseWarningOnMissingInterfaceWhilstFindingMethods();
+        	}
+          } else {
+        	  addAndRecurse(knowninterfaces,collector,iface,includeITDs,allowMissing);
+          }
         }
 	  }
     }
@@ -335,11 +339,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
      * which are type variables - which clearly an unresolved Member cannot do since
      * it does not know anything about type variables. 
      */
-     public ResolvedMember lookupResolvedMember(ResolvedMember aMember) {
+     public ResolvedMember lookupResolvedMember(ResolvedMember aMember,boolean allowMissing) {
     	Iterator toSearch = null;
     	ResolvedMember found = null;
     	if ((aMember.getKind() == Member.METHOD) || (aMember.getKind() == Member.CONSTRUCTOR)) {
-    		toSearch = getMethodsWithoutIterator(true).iterator();
+    		toSearch = getMethodsWithoutIterator(true,allowMissing).iterator();
     	} else {
     		if (aMember.getKind() != Member.FIELD) 
     			throw new IllegalStateException("I didn't know you would look for members of kind " + aMember.getKind());
@@ -736,6 +740,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
                 return getComponentType().resolve(world).isAssignableFrom(o.getComponentType().resolve(world));
             }
         }
+        
+        public boolean isAssignableFrom(ResolvedType o, boolean allowMissing) {
+        	return isAssignableFrom(o);
+        }
+        
         public final boolean isCoerceableFrom(ResolvedType o) {
             if (o.equals(UnresolvedType.OBJECT) || 
                     o.equals(UnresolvedType.SERIALIZABLE) ||
@@ -791,6 +800,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
             }
             return assignTable[((Primitive)other).index][index];
         }
+        public final boolean isAssignableFrom(ResolvedType other, boolean allowMissing) {
+        	return isAssignableFrom(other);
+        }        
         public final boolean isCoerceableFrom(ResolvedType other) {
             if (this == other) return true;
             if (! other.isPrimitiveType()) return false;
@@ -865,6 +877,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
         public final String getName() {
         	return MISSING_NAME;
         }
+        
+        public final boolean isMissing() { return true; }
+        
         public boolean hasAnnotation(UnresolvedType ofType) {
         	return false;
         }
@@ -888,6 +903,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
             return 0;
         }
         public final boolean isAssignableFrom(ResolvedType other) {
+            return false;
+        }   
+        public final boolean isAssignableFrom(ResolvedType other, boolean allowMissing) {
             return false;
         }   
         public final boolean isCoerceableFrom(ResolvedType other) {
@@ -1019,7 +1037,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     }
         
         
-    private void collectInterTypeMungers(List collector) {
+    protected void collectInterTypeMungers(List collector) {
         for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
 			ResolvedType superType = (ResolvedType) iter.next();
             superType.collectInterTypeMungers(collector);
@@ -1187,7 +1205,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		
 		//System.err.println("add: " + munger + " to " + this.getClassName() + " with " + interTypeMungers);
 		if (sig.getKind() == Member.METHOD) {
-			if (!compareToExistingMembers(munger, getMethodsWithoutIterator(false) /*getMethods()*/)) return;
+			if (!compareToExistingMembers(munger, getMethodsWithoutIterator(false,true) /*getMethods()*/)) return;
 			if (this.isInterface()) {
 				if (!compareToExistingMembers(munger, 
 						Arrays.asList(world.getCoreType(OBJECT).getDeclaredMethods()).iterator())) return;
@@ -1470,9 +1488,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public boolean isTopmostImplementor(ResolvedType interfaceType) {
 		if (isInterface()) return false;
-		if (!interfaceType.isAssignableFrom(this)) return false;
+		if (!interfaceType.isAssignableFrom(this,true)) return false;
 		// check that I'm truly the topmost implementor
-		if (interfaceType.isAssignableFrom(this.getSuperclass())) {
+		if (this.getSuperclass().isMissing()) return true; // we don't know anything about supertype, and it can't be exposed to weaver
+		if (interfaceType.isAssignableFrom(this.getSuperclass(),true)) {
 			return false;
 		}
 		return true;
@@ -1695,6 +1714,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * @exception NullPointerException if other is null
 	 */
 	public abstract boolean isAssignableFrom(ResolvedType other);
+	
+	public abstract boolean isAssignableFrom(ResolvedType other, boolean allowMissing);
 
 	/**
 	 * Determines if values of another type could possibly be cast to

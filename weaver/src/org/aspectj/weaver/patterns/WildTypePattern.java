@@ -658,7 +658,7 @@ public class WildTypePattern extends TypePattern {
 		} else {
 			type = lookupTypeInScope(scope, fullyQualifiedName, this);
 		}
-		if (type == ResolvedType.MISSING) {
+		if ((type instanceof ResolvedType) && ((ResolvedType)type).isMissing()) {
 			return resolveBindingsForMissingType(resolvedTypeInTheWorld, originalName, scope, bindings, allowBinding, requireExactType);
 		} else {
 			return resolveBindingsForExactType(scope,type,fullyQualifiedName,requireExactType);

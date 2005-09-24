@@ -80,6 +80,18 @@ public class WeaverMessages {
     public static final String CANT_FIND_TYPE_EXCEPTION_TYPE = "cftExceptionType";
     public static final String CANT_FIND_TYPE_ARG_TYPE = "cftArgType";
     public static final String CANT_FIND_PARENT_TYPE = "cantFindParentType";
+    public static final String CANT_FIND_PARENT_TYPE_NO_SUB = "cantFindParentTypeNoSub";
+    public static final String CANT_FIND_TYPE_FIELDS = "cantFindTypeFields";
+    public static final String CANT_FIND_TYPE_SUPERCLASS = "cantFindTypeSuperclass";
+    public static final String CANT_FIND_TYPE_INTERFACES = "cantFindTypeInterfaces";
+    public static final String CANT_FIND_TYPE_METHODS = "cantFindTypeMethods";
+    public static final String CANT_FIND_TYPE_POINTCUTS = "cantFindTypePointcuts";
+    public static final String CANT_FIND_TYPE_MODIFIERS = "cantFindTypeModifiers";
+    public static final String CANT_FIND_TYPE_ANNOTATION = "cantFindTypeAnnotation";
+    public static final String CANT_FIND_TYPE_ASSIGNABLE = "cantFindTypeAssignable";
+    public static final String CANT_FIND_TYPE_COERCEABLE = "cantFindTypeCoerceable";
+    public static final String CANT_FIND_TYPE_JOINPOINT = "cantFindTypeJoinPoint";
+    public static final String CANT_FIND_TYPE_INTERFACE_METHODS = "cantFindTypeInterfaceMethods";
 	
 	public static final String DECP_BINARY_LIMITATION = "decpBinaryLimitation";
 	public static final String OVERWRITE_JSR45 = "overwriteJSR45";
