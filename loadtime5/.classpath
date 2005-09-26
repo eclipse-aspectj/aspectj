@@ -1,44 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="java5-src">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="java5-testsrc">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="testsrc">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/asm">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/bridge">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/loadtime">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/weaver">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/testing-util">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/JRE15_SRC" kind="var" path="JRE15_LIB">
-		<attributes>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="src" path="java5-src"/>
+	<classpathentry kind="src" path="java5-testsrc"/>
+	<classpathentry kind="src" path="testsrc"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/asm"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bridge"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/loadtime"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
+	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/testing-util"/>
+	<classpathentry sourcepath="/JRE15_SRC" kind="var" path="JRE15_LIB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/weaver5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
