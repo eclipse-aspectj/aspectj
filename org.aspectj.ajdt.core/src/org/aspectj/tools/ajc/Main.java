@@ -144,7 +144,7 @@ public class Main {
         String m = thrown.getMessage();
         return THROWN_PREFIX 
             + (null != m ? m + "\n": "") 
-            + CompilationAndWeavingContext.getCurrentContext() 
+            + "\n" + CompilationAndWeavingContext.getCurrentContext() 
             + LangUtil.renderException(thrown, true);
     }
         

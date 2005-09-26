@@ -27,7 +27,7 @@ public class CompilationAndWeavingContextTest extends TestCase {
 	public void testDoubleEntry() {
 		CompilationAndWeavingContext.enteringPhase(1,"XYZ");
 		CompilationAndWeavingContext.enteringPhase(2, "ABC");
-		assertEquals("when fiddling XYZ\nwhen mucking about with ABC\n",CompilationAndWeavingContext.getCurrentContext());		
+		assertEquals("when mucking about with ABC\nwhen fiddling XYZ\n",CompilationAndWeavingContext.getCurrentContext());		
 	}
 	
 	public void testEntryEntryExit() {

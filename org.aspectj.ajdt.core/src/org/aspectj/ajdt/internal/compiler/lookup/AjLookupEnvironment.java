@@ -568,7 +568,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// future generations to enjoy.  Method source is commented out at the end of this module
 		// doDeclareAnnotationOnFields();
 
-		if (skipInners) return;
+		if (skipInners) {
+			CompilationAndWeavingContext.leavingPhase(tok);
+			return;
+		}
 
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
 		for (int i = 0, length = memberTypes.length; i < length; i++) {

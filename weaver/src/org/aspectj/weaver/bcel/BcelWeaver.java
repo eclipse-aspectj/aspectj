@@ -1455,14 +1455,15 @@ public class BcelWeaver implements IWeaver {
 					return clazz;
 				}
 			} catch (RuntimeException re) {
-				System.err.println("trouble in: ");
-                clazz.print(System.err);
-                re.printStackTrace();
-				throw re;
+				String messageText = "trouble in: \n" + clazz.toLongString();
+				getWorld().getMessageHandler().handleMessage(
+						new Message(messageText,IMessage.ABORT,re,null)
+						);
 			} catch (Error re) {
-				System.err.println("trouble in: ");
-				clazz.print(System.err);
-				throw re;
+				String messageText = "trouble in: \n" + clazz.toLongString();
+				getWorld().getMessageHandler().handleMessage(
+						new Message(messageText,IMessage.ABORT,re,null)
+						);
 			}
 		}
 		

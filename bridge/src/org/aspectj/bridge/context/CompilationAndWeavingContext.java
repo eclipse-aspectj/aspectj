@@ -150,11 +150,11 @@ public class CompilationAndWeavingContext {
 			explanationStack.push(getFormatter(entry).formatEntry(entry.phaseId,entry.data));
 		}
 		StringBuffer sb = new StringBuffer();
-		for (Iterator iter = explanationStack.iterator(); iter.hasNext();) {
+		while (!explanationStack.isEmpty()) {
 			sb.append("when ");
-			sb.append(iter.next().toString());
+			sb.append(explanationStack.pop().toString());
 			sb.append("\n");
-		}		
+		}
 		return sb.toString();
 	}
 	
@@ -214,6 +214,10 @@ public class CompilationAndWeavingContext {
 			this.contextToken = ct;
 			this.phaseId = phase;
 			this.data = data;
+		}
+		
+		public String toString() {
+			return CompilationAndWeavingContext.getFormatter(this).formatEntry(phaseId, data);
 		}
 	}
 	

@@ -176,7 +176,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         	
             boolean canIncremental = state.prepareForNextBuild(buildConfig);
             if (!canIncremental && !batch) { // retry as batch?
-                return doBuild(buildConfig, baseHandler, true);
+               	CompilationAndWeavingContext.leavingPhase(ct);
+            	return doBuild(buildConfig, baseHandler, true);
             }
             this.handler = 
                 CountingMessageHandler.makeCountingMessageHandler(baseHandler);
@@ -185,6 +186,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             if (check != null) {
                 if (FAIL_IF_RUNTIME_NOT_FOUND) {
                     MessageUtil.error(handler, check);
+                   	CompilationAndWeavingContext.leavingPhase(ct);
                     return false;
                 } else {
                     MessageUtil.warn(handler, check);
@@ -202,11 +204,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 initBcelWorld(handler);
             }
             if (handler.hasErrors()) {
+               	CompilationAndWeavingContext.leavingPhase(ct);
                 return false;
             }
             
             if (buildConfig.getOutputJar() != null) {
-            	if (!openOutputStream(buildConfig.getOutputJar())) return false;
+            	if (!openOutputStream(buildConfig.getOutputJar())) {
+                   	CompilationAndWeavingContext.leavingPhase(ct);
+                   	return false;
+            	}
             }
             
             if (batch) {
@@ -218,6 +224,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
                 performCompilation(buildConfig.getFiles());
                 if (handler.hasErrors()) {
+                   	CompilationAndWeavingContext.leavingPhase(ct);
                     return false;
                 }
 
@@ -241,6 +248,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                
                     performCompilation(files);
                     if (handler.hasErrors() || (progressListener!=null && progressListener.isCancelledRequested())) {
+                       	CompilationAndWeavingContext.leavingPhase(ct);
                         return false;
                     } 
                     binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(false);
@@ -257,6 +265,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 						  AsmManager.getDefault().processDelta(files,state.addedFiles,state.deletedFiles);
                 }
                 if (!files.isEmpty()) {
+                   	CompilationAndWeavingContext.leavingPhase(ct);
                     return batchBuild(buildConfig, baseHandler);
                 } else {                
                 	if (AsmManager.isReporting()) 
@@ -279,8 +288,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             if (buildConfig.isGenerateModelMode()) {
                 AsmManager.getDefault().fireModelUpdated();  
             }
+           	CompilationAndWeavingContext.leavingPhase(ct);
+            
         } finally {
-        	CompilationAndWeavingContext.leavingPhase(ct);
         	if (zos != null) {
         		closeOutputStream(buildConfig.getOutputJar());
         	}
