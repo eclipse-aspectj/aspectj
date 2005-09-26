@@ -64,7 +64,6 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.ResolvedType#getDeclaredMethods()
 	 */
-	@Override
 	public ResolvedMember[] getDeclaredMethods() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_METHODS);
 		return NO_MEMBERS;
