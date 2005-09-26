@@ -109,7 +109,7 @@
 		<property name="aspectj.tools.modules.13"
 			value="ajbrowser,ajde,ajdoc,asm,bridge,loadtime,org.aspectj.ajdt.core,runtime,taskdefs,util,weaver"/>
 		<property name="aspectj.tools.modules.15"
-			value="loadtime5,aspectj5rt"/>
+			value="loadtime5,aspectj5rt,weaver5"/>
 		<condition property="aspectj.tools.modules"
 			value="${aspectj.tools.modules.13},${aspectj.tools.modules.15}">
 			<equals arg1="1.5" arg2="${ant.java.version}"/>			
