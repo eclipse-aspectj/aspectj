@@ -49,6 +49,7 @@ public class AllTests extends TestCase {
             TestUtil.loadTestsReflectively(suite, "Loadtime5ModuleTests", false);
             // this next one is built normally, but needs 1.5 rt.jar to pass
             suite.addTest(BcweaverModuleTests15.suite());
+            TestUtil.loadTestsReflectively(suite, "Weaver5ModuleTests",false);
         } else {
             suite.addTest(TestUtil.skipTest("for 1.5"));
         } 
