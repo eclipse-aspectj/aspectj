@@ -55,6 +55,9 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 	
 	public static final ChildPropertyDescriptor aroundBODY_PROPERTY = 
 		new ChildPropertyDescriptor(AroundAdviceDeclaration.class, "body", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+
+	protected static List aroundPROPERTY_DESCRIPTORS_2_0;
+	protected static List aroundPROPERTY_DESCRIPTORS_3_0;
 	
 	static {
 		List propertyList = new ArrayList(6);
@@ -79,8 +82,6 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		aroundPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
 	}
 	
-	protected static List aroundPROPERTY_DESCRIPTORS_2_0;
-	protected static List aroundPROPERTY_DESCRIPTORS_3_0;
 	
 	public static List propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
