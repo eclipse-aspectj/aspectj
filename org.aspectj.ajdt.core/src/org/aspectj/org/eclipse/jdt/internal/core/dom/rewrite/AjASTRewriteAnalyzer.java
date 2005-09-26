@@ -11,7 +11,7 @@
 package org.aspectj.org.eclipse.jdt.internal.core.dom.rewrite;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +92,7 @@ public final class AjASTRewriteAnalyzer extends AjASTVisitor {
 		this.nodeInfos= nodeInfos;
 		this.tokenScanner= null;
 		this.currentEdit= rootEdit;
-		this.sourceCopyInfoToEdit= new IdentityHashMap();
+		this.sourceCopyInfoToEdit= new HashMap(); /// fixme xxx was IdentityHashMap but that doesnt exist on 1.3 !!!!!!!!
 		this.sourceCopyEndNodes= new Stack();
 
 		this.formatter= new ASTRewriteFormatter(nodeInfos, eventStore, options, TextUtilities.getDefaultLineDelimiter(document));
@@ -3615,7 +3615,7 @@ public final class AjASTRewriteAnalyzer extends AjASTVisitor {
 	
 	final void handleException(Throwable e) {
 		IllegalArgumentException runtimeException= new IllegalArgumentException("Document does not match the AST"); //$NON-NLS-1$
-		runtimeException.initCause(e);
+	//	runtimeException.initCause(e);
 		throw runtimeException;
 	}
 }
