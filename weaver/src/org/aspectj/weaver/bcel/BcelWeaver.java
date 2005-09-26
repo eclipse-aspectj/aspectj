@@ -52,6 +52,8 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.WeaveMessage;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
@@ -952,10 +954,12 @@ public class BcelWeaver implements IWeaver {
     
     // variation of "weave" that sources class files from an external source.
     public Collection weave(IClassFileProvider input) throws IOException {
+    	ContextToken weaveToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING, "");
     	Collection wovenClassNames = new ArrayList();
     	IWeaveRequestor requestor = input.getRequestor();
 
     	requestor.processingReweavableState();
+    	ContextToken reweaveToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_REWEAVABLE_STATE,"");
 		prepareToProcessReweavableState();
 		// clear all state from files we'll be reweaving
 		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
@@ -965,10 +969,16 @@ public class BcelWeaver implements IWeaver {
 		    
 		    // null return from getClassType() means the delegate is an eclipse source type - so
 		    // there *cant* be any reweavable state... (he bravely claimed...)
-		    if (classType !=null)
+		    if (classType !=null) {
+		    	ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_REWEAVABLE_STATE, className);
 		    	processReweavableStateIfPresent(className, classType);
+		    	CompilationAndWeavingContext.leavingPhase(tok);
+		    }
 		}
 
+		CompilationAndWeavingContext.leavingPhase(reweaveToken);
+		
+		ContextToken typeMungingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_TYPE_MUNGERS,"");
 		requestor.addingTypeMungers();
         
         // We process type mungers in two groups, first mungers that change the type
@@ -993,7 +1003,10 @@ public class BcelWeaver implements IWeaver {
             addNormalTypeMungers(className);
         }
 
+        CompilationAndWeavingContext.leavingPhase(typeMungingToken);
+        
 		requestor.weavingAspects();
+		ContextToken aspectToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_ASPECTS, "");
 		// first weave into aspects
 		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
 		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
@@ -1004,8 +1017,10 @@ public class BcelWeaver implements IWeaver {
 		        wovenClassNames.add(className);
 		    }
 		}
+		CompilationAndWeavingContext.leavingPhase(aspectToken);
 
 		requestor.weavingClasses();
+		ContextToken classToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_CLASSES, "");
 		// then weave into non-aspects
 		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
 		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
@@ -1016,6 +1031,7 @@ public class BcelWeaver implements IWeaver {
 		        wovenClassNames.add(className);
 		    }
 		}
+		CompilationAndWeavingContext.leavingPhase(classToken);
 		
 		addedClasses = new ArrayList();
 		deletedTypenames = new ArrayList();
@@ -1024,6 +1040,7 @@ public class BcelWeaver implements IWeaver {
 		warnOnUnmatchedAdvice();
 
         requestor.weaveCompleted();
+        CompilationAndWeavingContext.leavingPhase(weaveToken);
     	return wovenClassNames;
     }
 
@@ -1119,7 +1136,9 @@ public class BcelWeaver implements IWeaver {
 		       weaveParentsFor(typesForWeaving,rtxI.getName());
 		     }
 		   }
+		   ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS,rtx.getName());
            weaveParentTypeMungers(rtx); // Now do this type
+           CompilationAndWeavingContext.leavingPhase(tok);
            typesForWeaving.remove(typeToWeave); // and remove it from the list of those to process
     }
     
@@ -1168,6 +1187,7 @@ public class BcelWeaver implements IWeaver {
 
     private void weaveAndNotify(UnwovenClassFile classFile, BcelObjectType classType,
     		                    IWeaveRequestor requestor) throws IOException {
+    	ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_TYPE, classType.getResolvedTypeX().getName());
     	LazyClassGen clazz = weaveWithoutDump(classFile,classType);
     	classType.finishedWith();
 		//clazz is null if the classfile was unchanged by weaving...
@@ -1179,6 +1199,7 @@ public class BcelWeaver implements IWeaver {
 		} else {
 			requestor.acceptResult(classFile);
 		}
+		CompilationAndWeavingContext.leavingPhase(tok);
     }
     
 	/** helper method - will return NULL if the underlying delegate is an EclipseSourceType and not a BcelObjectType */
@@ -1379,6 +1400,7 @@ public class BcelWeaver implements IWeaver {
 	}
     
     public void weaveNormalTypeMungers(ResolvedType onType) {
+    	ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_TYPE_MUNGERS, onType.getName());
     	if (onType.isRawType() || onType.isParameterizedType()) onType = onType.getGenericType();
 		for (Iterator i = typeMungerList.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
@@ -1386,6 +1408,7 @@ public class BcelWeaver implements IWeaver {
 				onType.addInterTypeMunger(m);
 			}
 		}
+		CompilationAndWeavingContext.leavingPhase(tok);
 	}
 
 

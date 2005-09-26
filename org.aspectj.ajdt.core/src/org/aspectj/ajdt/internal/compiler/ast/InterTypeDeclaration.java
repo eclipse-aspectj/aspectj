@@ -21,6 +21,8 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -138,10 +140,12 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 	private void fixSuperCallsForInterfaceContext(ClassScope scope) {
 		if (onTypeBinding.isInterface()) {
+			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.FIXING_SUPER_CALLS, selector);
 			InterSuperFixerVisitor v =
 				new InterSuperFixerVisitor(this, 
 						EclipseFactory.fromScopeLookupEnvironment(scope), scope);
 			this.traverse(v, scope);
+			CompilationAndWeavingContext.leavingPhase(tok);
 		}
 	}
 
@@ -151,9 +155,11 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	public abstract EclipseTypeMunger build(ClassScope classScope);
 
 	public void fixSuperCallsInBody() {
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.FIXING_SUPER_CALLS_IN_ITDS, selector);
 		SuperFixerVisitor v = new SuperFixerVisitor(this, onTypeBinding);
 		this.traverse(v, (ClassScope)null);
 		munger.setSuperMethodsCalled(v.superMethodsCalled);
+		CompilationAndWeavingContext.leavingPhase(tok);
 	}
 
 	protected void resolveOnType(ClassScope classScope) {

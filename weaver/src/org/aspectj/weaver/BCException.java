@@ -16,6 +16,8 @@ package org.aspectj.weaver;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+
 /**
  * Exception to use inside the bcweaver.
  */
@@ -26,10 +28,10 @@ public class BCException extends RuntimeException {
     }
 
     public BCException(String s) {
-        super(s);
+        super(s + "\n" + CompilationAndWeavingContext.getCurrentContext());
     }
     public BCException(String s, Throwable thrown) {
-        super(s);
+        this(s);
         this.thrown = thrown;
     }
     public void printStackTrace() {

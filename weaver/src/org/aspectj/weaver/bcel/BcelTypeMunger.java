@@ -34,6 +34,8 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.WeaveMessage;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.AnnotationX;
@@ -71,6 +73,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 	public boolean munge(BcelClassWeaver weaver) {
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MUNGING_WITH, this);
 		boolean changed = false;
 		boolean worthReporting = true;
 		
@@ -150,6 +153,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         	}	
 		}
 		
+		CompilationAndWeavingContext.leavingPhase(tok);
 		return changed;
 	}
 

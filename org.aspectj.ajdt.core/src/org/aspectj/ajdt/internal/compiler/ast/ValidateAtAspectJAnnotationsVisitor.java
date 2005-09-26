@@ -17,6 +17,8 @@ import java.util.Stack;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
@@ -109,6 +111,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 	
 	private void checkTypeDeclaration(TypeDeclaration typeDecl) {
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.VALIDATING_AT_ASPECTJ_ANNOTATIONS, typeDecl.name);
 		if (!(typeDecl instanceof AspectDeclaration)) {
 			if (ajAnnotations.hasAspectAnnotation) {
 				validateAspectDeclaration(typeDecl);
@@ -138,9 +141,11 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 							);
 			}
 		}
+		CompilationAndWeavingContext.leavingPhase(tok);
 	}
 	
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.VALIDATING_AT_ASPECTJ_ANNOTATIONS, methodDeclaration.selector);
 		ajAnnotations = new AspectJAnnotations(methodDeclaration.annotations);
 		if (!methodDeclaration.getClass().equals(AjMethodDeclaration.class)) {
 			// simply test for innapropriate use of annotations on code-style members
@@ -171,6 +176,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 							"@AspectJ annotations cannot be declared on this aspect member");					
 				}
 			}
+			CompilationAndWeavingContext.leavingPhase(tok);
 			return false;
 		}
 		
@@ -179,6 +185,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		} else if (ajAnnotations.hasPointcutAnnotation) {
 			convertToPointcutDeclaration(methodDeclaration,scope);
 		}
+		CompilationAndWeavingContext.leavingPhase(tok);
 		return false;
 	}
 	

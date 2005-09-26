@@ -2822,7 +2822,7 @@ public class BcelShadow extends Shadow {
 
     public LazyMethodGen extractMethod(String newMethodName, int visibilityModifier, ShadowMunger munger) {
 		LazyMethodGen.assertGoodBody(range.getBody(), newMethodName);
-        if (!getKind().allowsExtraction()) throw new BCException();
+        if (!getKind().allowsExtraction()) throw new BCException("Attempt to extract method from a shadow kind that does not support this operation (" + getKind() + ")");
         LazyMethodGen freshMethod = createMethodGen(newMethodName,visibilityModifier);
 
 //        System.err.println("******");

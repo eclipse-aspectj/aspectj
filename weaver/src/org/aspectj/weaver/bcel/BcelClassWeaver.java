@@ -57,6 +57,8 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.WeaveMessage;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -1726,9 +1728,11 @@ class BcelClassWeaver implements IClassWeaver {
 	
     private boolean match(BcelShadow shadow, List shadowAccumulator) {
     	//System.err.println("match: " + shadow);
+    	ContextToken shadowMatchToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MATCHING_SHADOW, shadow);
         boolean isMatched = false;
         for (Iterator i = shadowMungers.iterator(); i.hasNext(); ) {
             ShadowMunger munger = (ShadowMunger)i.next();
+            ContextToken mungerMatchToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MATCHING_POINTCUT, munger.getPointcut());
             if (munger.match(shadow, world)) {
             	
 				WeaverMetrics.recordMatchResult(true);// Could pass: munger
@@ -1741,9 +1745,11 @@ class BcelClassWeaver implements IClassWeaver {
             } else {
             	WeaverMetrics.recordMatchResult(false); // Could pass: munger
         	}
+            CompilationAndWeavingContext.leavingPhase(mungerMatchToken);
         }       
 
         if (isMatched) shadowAccumulator.add(shadow);
+        CompilationAndWeavingContext.leavingPhase(shadowMatchToken);
         return isMatched;
     }
     
@@ -1759,7 +1765,9 @@ class BcelClassWeaver implements IClassWeaver {
         
         for (Iterator i = shadows.iterator(); i.hasNext(); ) {
             BcelShadow shadow = (BcelShadow)i.next();
+            ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.IMPLEMENTING_ON_SHADOW,shadow);
             shadow.implement();
+            CompilationAndWeavingContext.leavingPhase(tok);
         }
         mg.matchedShadows = null;
     }

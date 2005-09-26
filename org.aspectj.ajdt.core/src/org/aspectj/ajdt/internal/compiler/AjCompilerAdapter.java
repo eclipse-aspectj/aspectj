@@ -25,6 +25,8 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
@@ -59,6 +61,11 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	private WeaverMessageHandler weaverMessageHandler;
 	private Map /* fileName |-> List<UnwovenClassFile> */ binarySourceSetForFullWeave = new HashMap();
 	private Collection /*InterimCompilationResult*/ resultSetForFullWeave = Collections.EMPTY_LIST;
+	
+	private ContextToken processingToken = null;
+	private ContextToken resolvingToken = null;
+	private ContextToken analysingToken = null;
+	private ContextToken generatingToken = null;
 	
 	List /*InterimResult*/ resultsPendingWeave = new ArrayList();
 
@@ -122,22 +129,26 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 
 	public void beforeProcessing(CompilationUnitDeclaration unit) {
 		eWorld.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
+		processingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_COMPILATION_UNIT,unit.getFileName());
 		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
+			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ADDING_AT_ASPECTJ_ANNOTATIONS, unit.getFileName());
 			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit);
 			unit.traverse(atAspectJVisitor, unit.scope);
+			CompilationAndWeavingContext.leavingPhase(tok);
 		}		
 	}
 
 	public void beforeResolving(CompilationUnitDeclaration unit) {
-		// no-op
+		resolvingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.RESOLVING_COMPILATION_UNIT, unit.getFileName());
 	}
 
 	public void afterResolving(CompilationUnitDeclaration unit) {
-		// no-op
-		
+		if (resolvingToken != null)
+			CompilationAndWeavingContext.leavingPhase(resolvingToken);
 	}
 
 	public void beforeAnalysing(CompilationUnitDeclaration unit) {
+		analysingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ANALYSING_COMPILATION_UNIT, unit.getFileName());
 		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
 			ValidateAtAspectJAnnotationsVisitor atAspectJVisitor = new ValidateAtAspectJAnnotationsVisitor(unit);
 			unit.traverse(atAspectJVisitor, unit.scope);
@@ -145,15 +156,17 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	}
 
 	public void afterAnalysing(CompilationUnitDeclaration unit) {
-		// no-op
+		if (analysingToken != null)
+			CompilationAndWeavingContext.leavingPhase(analysingToken);
 	}
 
 	public void beforeGenerating(CompilationUnitDeclaration unit) {
-		// no-op		
+		generatingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.GENERATING_UNWOVEN_CODE_FOR_COMPILATION_UNIT, unit.getFileName());
 	}
 
 	public void afterGenerating(CompilationUnitDeclaration unit) {
-		// no-op		
+		if (generatingToken != null)
+			CompilationAndWeavingContext.leavingPhase(generatingToken);
 	}
 
 	public void afterCompiling(CompilationUnitDeclaration[] units) {

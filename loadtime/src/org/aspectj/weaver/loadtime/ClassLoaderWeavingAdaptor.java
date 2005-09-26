@@ -182,6 +182,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         world.setMessageHandler(weaverOption.messageHandler);
         world.setXlazyTjp(weaverOption.lazyTjp);
         world.setXHasMemberSupportEnabled(weaverOption.hasMember);
+        world.setPinpointMode(weaverOption.pinpoint);
         weaver.setReweavableMode(weaverOption.reWeavable, false);
         world.setXnoInline(weaverOption.noInline);
         world.setBehaveInJava5Way(weaverOption.java5);//TODO should be autodetected ?

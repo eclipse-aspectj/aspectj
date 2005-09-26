@@ -14,6 +14,8 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.weaver.Advice;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
@@ -135,6 +137,7 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 	boolean inBlockThatCantRun = false;
 
 	public boolean visit(MessageSend call, BlockScope scope) {
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.OPTIMIZING_THIS_JOIN_POINT_CALLS, call.selector);
 		Expression receiver = call.receiver;
 		if (isRef(receiver, thisJoinPointDec)) {
 			if (canTreatAsStatic(new String(call.selector))) {
@@ -148,12 +151,15 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 						for (int i = 0; i < argumentsLength; i++)
 							call.arguments[i].traverse(this, scope);
 					}
+					CompilationAndWeavingContext.leavingPhase(tok);
 					return false;
 				}
 			}
 		}
 
-		return super.visit(call, scope);
+		boolean ret = super.visit(call, scope);
+		CompilationAndWeavingContext.leavingPhase(tok);
+		return ret;
 	}
 
 	private void replaceEffectivelyStaticRef(MessageSend call) {

@@ -29,6 +29,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.PerClause;
@@ -68,6 +69,9 @@ public abstract class World implements Dump.INode {
 
     /** XhasMember option setting passed down to weaver */
     private boolean XhasMember = false;
+    
+    /** Xpinpoint controls whether we put out developer info showing the source of messages */
+    private boolean Xpinpoint = false;
     
     /** When behaving in a Java 5 way autoboxing is considered */
     private boolean behaveInJava5Way = false;
@@ -504,7 +508,11 @@ public abstract class World implements Dump.INode {
 	}
 
 	public void setMessageHandler(IMessageHandler messageHandler) {
-		this.messageHandler = messageHandler;
+		if (this.isInPinpointMode()) {
+			this.messageHandler = new PinpointingMessageHandler(messageHandler);
+		} else {
+			this.messageHandler = messageHandler;			
+		}
 	}
 
 	/**
@@ -602,6 +610,14 @@ public abstract class World implements Dump.INode {
 		XhasMember = b;
 	}
 
+	public boolean isInPinpointMode() {
+		return Xpinpoint;
+	}
+	
+	public void setPinpointMode(boolean b) {
+		this.Xpinpoint = b;
+	}
+	
 	public void setBehaveInJava5Way(boolean b) {
     	behaveInJava5Way = b;
     }

@@ -516,7 +516,9 @@ public class BuildArgParser extends Main {
 				buildConfig.setGenerateJavadocsInModelMode(true);
 			} else if (arg.equals("-Xdev:NoAtAspectJProcessing")) { 
 				buildConfig.setNoAtAspectJAnnotationProcessing(true);
-        	}else if (arg.equals("-noweave") || arg.equals( "-XnoWeave")) {
+        	} else if (arg.equals("-Xdev:Pinpoint")) { 
+				buildConfig.setXdevPinpointMode(true);
+        	} else if (arg.equals("-noweave") || arg.equals( "-XnoWeave")) {
 				buildConfig.setNoWeave(true);
 			} else if (arg.equals("-XserializableAspects")) {
 				buildConfig.setXserializableAspects(true);

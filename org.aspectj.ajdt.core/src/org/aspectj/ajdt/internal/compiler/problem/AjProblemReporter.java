@@ -13,6 +13,8 @@
  
  package org.aspectj.ajdt.internal.compiler.problem;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +24,7 @@ import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -429,5 +432,65 @@ public class AjProblemReporter extends ProblemReporter {
     public void finalMethodCannotBeOverridden(MethodBinding currentMethod, MethodBinding inheritedMethod) {
     	if (currentMethod == inheritedMethod) return;
     	super.finalMethodCannotBeOverridden(currentMethod, inheritedMethod);
+    }
+    
+    /**
+     * All problems end up routed through here at some point...
+     */
+    public IProblem createProblem(char[] fileName, int problemId, String[] problemArguments, String[] messageArguments, int severity, int problemStartPosition, int problemEndPosition, int lineNumber) {
+    	IProblem problem = super.createProblem(fileName, problemId, problemArguments,
+    			messageArguments, severity, problemStartPosition, problemEndPosition,
+    			lineNumber);
+    	if (factory.getWorld().isInPinpointMode()) {
+    		MessageIssued ex = new MessageIssued();
+    		ex.fillInStackTrace();
+    		StringWriter sw = new StringWriter();
+    		ex.printStackTrace(new PrintWriter(sw));
+    		StringBuffer sb = new StringBuffer();
+    		sb.append(CompilationAndWeavingContext.getCurrentContext());
+    		sb.append(sw.toString());
+    		problem = new PinpointedProblem(problem,sb.toString());
+    	}
+    	return problem;
+    }
+    
+    private static class MessageIssued extends RuntimeException {
+    	public String getMessage() {
+    		return "message issued...";
+    	}
+    }
+    
+    private static class PinpointedProblem implements IProblem {
+    	
+    	private IProblem delegate;
+    	private String message;
+    	
+    	public PinpointedProblem(IProblem aProblem, String pinpoint) { 
+    		this.delegate = aProblem; 
+    		// if this was a problem that came via the weaver, it will already have
+    		// pinpoint info, don't do it twice...
+    		if (delegate.getMessage().indexOf("message issued...") == -1) {
+    			this.message = delegate.getMessage() + "\n" + pinpoint;
+    		} else {
+    			this.message = delegate.getMessage();
+    		}
+    	}
+
+		public String[] getArguments() {return delegate.getArguments();}
+		public int getID() {return delegate.getID();}
+		public String getMessage() { return message; }
+		public char[] getOriginatingFileName() {return delegate.getOriginatingFileName();}
+		public int getSourceEnd() { return delegate.getSourceEnd();}
+		public int getSourceLineNumber() { return delegate.getSourceLineNumber();}
+		public int getSourceStart() { return delegate.getSourceStart();}
+		public boolean isError() { return delegate.isError();}
+		public boolean isWarning() { return delegate.isWarning();}
+		public void setSourceEnd(int sourceEnd) { delegate.setSourceEnd(sourceEnd); }
+		public void setSourceLineNumber(int lineNumber) { delegate.setSourceLineNumber(lineNumber);}
+		public void setSourceStart(int sourceStart) { delegate.setSourceStart(sourceStart);}
+		public void setSeeAlsoProblems(IProblem[] problems) { delegate.setSeeAlsoProblems(problems);}
+		public IProblem[] seeAlso() { return delegate.seeAlso();}
+		public void setSupplementaryMessageInfo(String msg) { delegate.setSupplementaryMessageInfo(msg);}
+		public String getSupplementaryMessageInfo() { return delegate.getSupplementaryMessageInfo();}
     }
 }

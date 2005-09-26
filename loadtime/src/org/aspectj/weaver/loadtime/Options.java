@@ -38,6 +38,7 @@ public class Options {
     private final static String OPTION_reweavable = "-Xreweavable";
     private final static String OPTION_noinline = "-Xnoinline";
     private final static String OPTION_hasMember = "-XhasMember";
+    private final static String OPTION_pinpoint = "-Xdev:pinpoint";
     private final static String OPTION_showWeaveInfo = "-showWeaveInfo";
     private final static String OPTIONVALUED_messageHandler = "-XmessageHandlerClass:";
     private static final String OPTIONVALUED_Xlintfile = "-Xlintfile:";
@@ -96,8 +97,10 @@ public class Options {
                 weaverOption.showWeaveInfo = true;
             } else if (arg.equalsIgnoreCase(OPTION_hasMember)) {
                 weaverOption.hasMember = true;
-            } else if (arg.equalsIgnoreCase(OPTION_verbose)) {
+            }  else if (arg.equalsIgnoreCase(OPTION_verbose)) {
                 weaverOption.verbose = true;
+            } else if (arg.equalsIgnoreCase(OPTION_pinpoint)) {
+                weaverOption.pinpoint = true;
             } else if (arg.startsWith(OPTIONVALUED_messageHandler)) {
                 ;// handled in first round
             } else if (arg.startsWith(OPTIONVALUED_Xlintfile)) {
@@ -144,6 +147,7 @@ public class Options {
         boolean reWeavable;
         boolean noInline;
         boolean showWeaveInfo;
+        boolean pinpoint;
         IMessageHandler messageHandler;
         String lint;
         String lintFile;

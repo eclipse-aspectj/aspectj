@@ -485,6 +485,14 @@ public class AjBuildConfig {
 		return options.xHasMember;
 	}
 	
+	public void setXdevPinpointMode(boolean enabled) {
+		options.xdevPinpoint = enabled;
+	}
+	
+	public boolean isXdevPinpoint() {
+		return options.xdevPinpoint;
+	}
+	
 	public boolean isXreweavable() {
 		return options.xReweavable;
 	}

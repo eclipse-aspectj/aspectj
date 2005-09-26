@@ -20,6 +20,8 @@ import java.util.List;
 import org.aspectj.ajdt.internal.compiler.lookup.AjTypeConstants;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -166,7 +168,9 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 				this.traverse(new MakeDeclsPublicVisitor(), (ClassScope)null);
 				
 				AccessForInlineVisitor v = new AccessForInlineVisitor((AspectDeclaration)upperScope.referenceContext, handler);
+				ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ACCESS_FOR_INLINE, selector);
 				this.traverse(v, (ClassScope) null);
+				CompilationAndWeavingContext.leavingPhase(tok);
 				
 				// ??? if we found a construct that we can't inline, set
 				//     proceedInInners so that we won't try to inline this body

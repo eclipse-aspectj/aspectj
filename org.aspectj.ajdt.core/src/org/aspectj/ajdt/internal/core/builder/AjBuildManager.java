@@ -56,6 +56,9 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.Version;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextFormatter;
+import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
@@ -74,7 +77,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.Dump;
-import org.aspectj.weaver.MissingResolvedTypeWithKnownSignature;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWeaver;
@@ -101,7 +103,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	 * the latter will get used.
 	 */
 	private static AsmHierarchyBuilder asmHierarchyBuilder = new AsmHierarchyBuilder();
-			
+	
+	static {
+		CompilationAndWeavingContext.registerFormatter(
+				CompilationAndWeavingContext.BATCH_BUILD, new AjBuildContexFormatter());
+		CompilationAndWeavingContext.registerFormatter(
+				CompilationAndWeavingContext.INCREMENTAL_BUILD, new AjBuildContexFormatter());		
+	}
+	
 	private IProgressListener progressListener = null;
 	
 	private int compiledCount;
@@ -158,6 +167,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         boolean ret = true;
     	batchCompile = batch;
     	
+    	int phase = batch ? CompilationAndWeavingContext.BATCH_BUILD : CompilationAndWeavingContext.INCREMENTAL_BUILD;
+    	ContextToken ct = CompilationAndWeavingContext.enteringPhase(phase ,buildConfig);
         try {
         	if (batch) {
         		this.state = new AjState(this);
@@ -269,6 +280,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 AsmManager.getDefault().fireModelUpdated();  
             }
         } finally {
+        	CompilationAndWeavingContext.leavingPhase(ct);
         	if (zos != null) {
         		closeOutputStream(buildConfig.getOutputJar());
         	}
@@ -538,6 +550,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		bcelWorld.setXnoInline(buildConfig.isXnoInline());
 		bcelWorld.setXlazyTjp(buildConfig.isXlazyTjp());
 		bcelWorld.setXHasMemberSupportEnabled(buildConfig.isXHasMemberEnabled());
+		bcelWorld.setPinpointMode(buildConfig.isXdevPinpoint());
 		BcelWeaver bcelWeaver = new BcelWeaver(bcelWorld);
 		state.setWorld(bcelWorld);
 		state.setWeaver(bcelWeaver);
@@ -1055,6 +1068,27 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 
 	public void setState(AjState buildState) {
 		state = buildState;
+	}
+	
+	private static class AjBuildContexFormatter implements ContextFormatter {
+
+		public String formatEntry(int phaseId, Object data) {
+			StringBuffer sb = new StringBuffer();
+			if (phaseId == CompilationAndWeavingContext.BATCH_BUILD) {
+				sb.append("batch building ");
+			} else {
+				sb.append("incrementally building ");
+			}
+			AjBuildConfig config = (AjBuildConfig) data;
+			List classpath = config.getClasspath();
+			sb.append("with classpath: ");
+			for (Iterator iter = classpath.iterator(); iter.hasNext();) {
+				sb.append(iter.next().toString());
+				sb.append(File.pathSeparator);				
+			}
+			return sb.toString();
+		}
+		
 	}
 }
 

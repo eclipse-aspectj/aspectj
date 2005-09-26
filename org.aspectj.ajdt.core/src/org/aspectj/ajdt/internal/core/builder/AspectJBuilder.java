@@ -159,6 +159,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		myBcelWorld.setXnoInline(options.xNoInline);
 		myBcelWorld.setXlazyTjp(options.xLazyThisJoinPoint);
 		myBcelWorld.setXHasMemberSupportEnabled(options.xHasMember);
+		myBcelWorld.setPinpointMode(options.xdevPinpoint);
 		setLintProperties(myBcelWorld,options);
 		myWeaver = new BcelWeaver(myBcelWorld);
 		myWeaver.setReweavableMode(options.xReweavable,options.xReweavableCompress);

@@ -33,6 +33,7 @@ import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.ReflectionFactory;
 import org.aspectj.bridge.Version;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
@@ -143,6 +144,7 @@ public class Main {
         String m = thrown.getMessage();
         return THROWN_PREFIX 
             + (null != m ? m + "\n": "") 
+            + CompilationAndWeavingContext.getCurrentContext() 
             + LangUtil.renderException(thrown, true);
     }
         

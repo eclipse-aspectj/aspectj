@@ -148,7 +148,7 @@ public class ClassPathManager {
 			try {
 				if (fis!=null) fis.close();
 			} catch (IOException ioe) {
-				throw new BCException("Can't close class file : "+file.getName()+": "+ioe.toString());
+				throw new BCException("Can't close class file : "+file.getName(),ioe);
 			}   finally {
 				fis = null;
 			}
@@ -250,7 +250,7 @@ public class ClassPathManager {
 				zipFile = new ZipFile(file);
 				openArchives.add(zipFile);
 			} catch (IOException ioe) {
-				throw new BCException("Can't open archive: "+file.getName()+": "+ioe.toString());
+				throw new BCException("Can't open archive: "+file.getName(),ioe);
 			}
 		}
 		
@@ -272,7 +272,7 @@ public class ClassPathManager {
 				openArchives.remove(zipFile);
 				zipFile.close();
 			} catch (IOException ioe) {
-				throw new BCException("Can't close archive: "+file.getName()+": "+ioe.toString());
+				throw new BCException("Can't close archive: "+file.getName(),ioe);
 			} finally {
 				zipFile = null;
 			}

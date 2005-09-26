@@ -43,6 +43,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public static final String OPTION_XReweavable             = "org.aspectj.ajdt.core.compiler.weaver.XReweavable";
 	public static final String OPTION_XReweavableCompress     = "org.aspectj.ajdt.core.compiler.weaver.XReweavableCompress";
 	public static final String OPTION_XHasMember              = "org.aspectj.ajdt.core.compiler.weaver.XHasMember";
+	public static final String OPTION_XdevPinpoint            = "org.aspectj.ajdt.core.compiler.weaver.XdevPinpoint";
 	
 	// these next four not exposed by IDEs
 	public static final String OPTION_XDevNoAtAspectJProcessing = "org.aspectj.ajdt.core.compiler.ast.NoAtAspectJProcessing";
@@ -68,6 +69,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean xReweavable = false;
 	public boolean xReweavableCompress = false;
 	public boolean xHasMember = false;
+	public boolean xdevPinpoint = false;
 	public boolean showWeavingInformation = false;
 	
 	// If true - autoboxing behaves differently ...
@@ -122,6 +124,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		map.put(OPTION_XReweavable,this.xReweavable ? ENABLED : DISABLED);
 		map.put(OPTION_XReweavableCompress,this.xReweavableCompress ? ENABLED : DISABLED);
 		map.put(OPTION_XHasMember, this.xHasMember ? ENABLED : DISABLED);
+		map.put(OPTION_XdevPinpoint, this.xdevPinpoint ? ENABLED : DISABLED);
 
 		map.put(OPTION_GenerateModel,this.generateModel ? ENABLED : DISABLED);
 		map.put(OPTION_GenerateJavaDocsInModel,this.generateJavaDocsInModel ? ENABLED : DISABLED);
@@ -196,7 +199,15 @@ public class AjCompilerOptions extends CompilerOptions {
 				this.xHasMember = false;
 			}
 		}
-		
+
+		if ((optionValue = optionsMap.get(OPTION_XdevPinpoint)) != null) {
+			if (ENABLED.equals(optionValue)) {
+				this.xdevPinpoint = true;
+			} else if (DISABLED.equals(optionValue)) {
+				this.xdevPinpoint = false;
+			}
+		}
+
 		if ((optionValue = optionsMap.get(OPTION_GenerateModel)) != null) {
 			if (ENABLED.equals(optionValue)) {
 				this.generateModel = true;
