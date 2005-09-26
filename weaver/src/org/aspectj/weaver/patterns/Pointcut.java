@@ -15,12 +15,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.Advice;

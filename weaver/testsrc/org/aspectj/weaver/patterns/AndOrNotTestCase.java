@@ -13,16 +13,16 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
-
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.Signature;
-import org.aspectj.runtime.reflect.Factory;
-import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.bcel.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import junit.framework.TestCase;
-import org.aspectj.weaver.*;
+
+import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * @author hugunin
