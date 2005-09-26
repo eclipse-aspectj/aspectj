@@ -69,6 +69,7 @@ public class AjcTestCase extends TestCase {
 		File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"junit"+File.separator+"junit.jar"
         + File.pathSeparator+ ".."+File.separator+"loadtime"+File.separator+"bin" 
         + File.pathSeparator+ ".."+File.separator+"weaver"+File.separator+"bin" 
+        + File.pathSeparator+ ".."+File.separator+"weaver5"+File.separator+"bin" 
         
         // When the build machine executes the tests, it is using code built into jars rather than code build into
         // bin directories.  This means for the necessary types to be found we have to put these jars on the classpath:
@@ -76,6 +77,7 @@ public class AjcTestCase extends TestCase {
         + File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"util.jar"
 		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"loadtime.jar"
 		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"weaver.jar"
+		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"weaver5.jar"
 		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"asm.jar"
 		+ File.pathSeparator+".."+File.separator+"lib"     +File.separator+"test"+File.separator+"testing-client.jar"
 		// hmmm, this next one should perhaps point to an aj-build jar...
