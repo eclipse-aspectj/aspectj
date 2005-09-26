@@ -10,8 +10,6 @@
 	<classpathentry kind="src" path="/testing-util"/>
 	<classpathentry kind="src" path="/bridge"/>
 	<classpathentry kind="src" path="/asm"/>
-	<classpathentry kind="src" path="java5-src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aspectj5rt"/>
-	<classpathentry kind="src" path="java5-testsrc"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
