@@ -35,6 +35,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocArgumentExpressi
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocFieldReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocMessageSend;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
@@ -292,7 +293,7 @@ public class AjASTConverter extends ASTConverter {
 			}
 			if (block != null && (statements != null || explicitConstructorCall != null)) {
 				if (explicitConstructorCall != null && explicitConstructorCall.accessMode != org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall.ImplicitSuper) {
-					block.statements().add(convert(explicitConstructorCall));
+					block.statements().add(super.convert(explicitConstructorCall));
 				}
 				int statementsLength = statements == null ? 0 : statements.length;
 				for (int i = 0; i < statementsLength; i++) {
@@ -491,7 +492,7 @@ public class AjASTConverter extends ASTConverter {
 		convert(annotationTypeMemberDeclaration.javadoc, annotationTypeMemberDeclaration2);
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression memberValue = annotationTypeMemberDeclaration.defaultValue;
 		if (memberValue != null) {
-			annotationTypeMemberDeclaration2.setDefault(convert(memberValue));
+			annotationTypeMemberDeclaration2.setDefault(super.convert(memberValue));
 		}
 		if (this.resolveBindings) {
 			recordNodes(annotationTypeMemberDeclaration2, annotationTypeMemberDeclaration);
@@ -553,65 +554,67 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	
-	public Annotation convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation) {
-		if (annotation instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation) annotation);
-		} else if (annotation instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation) annotation);
-		} else {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation) annotation);
-		}
-	}
+//	public Annotation convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation) {
+//		if (annotation instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation) annotation);
+//		} else if (annotation instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation) {
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation ma = 
+//				(org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation) annotation;
+//			return convert( ma);//(org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation) annotation);
+//		} else {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation) annotation);
+//		}
+//	}
 
-	public ArrayCreation convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression expression) {
-		ArrayCreation arrayCreation = new ArrayCreation(this.ast);
-		if (this.resolveBindings) {
-			recordNodes(arrayCreation, expression);
-		}
-		arrayCreation.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] dimensions = expression.dimensions;
-		
-		int dimensionsLength = dimensions.length;
-		for (int i = 0; i < dimensionsLength; i++) {
-			if (dimensions[i] != null) {
-				Expression dimension = convert(dimensions[i]);
-				if (this.resolveBindings) {
-					recordNodes(dimension, dimensions[i]);
-				}
-				arrayCreation.dimensions().add(dimension);
-			}
-		}
-		Type type = convertType(expression.type);
-		if (this.resolveBindings) {
-			recordNodes(type, expression.type);
-		}		
-		ArrayType arrayType = null;
-		if (type.isArrayType()) {
-			arrayType = (ArrayType) type;
-		} else {
-			arrayType = this.ast.newArrayType(type, dimensionsLength);
-			if (this.resolveBindings) {
-				completeRecord(arrayType, expression);
-			}			
-			int start = type.getStartPosition();
-			int end = type.getStartPosition() + type.getLength();
-			int previousSearchStart = end;
-			ArrayType componentType = (ArrayType) type.getParent();
-			for (int i = 0; i < dimensionsLength; i++) {
-				previousSearchStart = retrieveRightBracketPosition(previousSearchStart + 1, this.compilationUnitSourceLength);
-				componentType.setSourceRange(start, previousSearchStart - start + 1);
-				componentType = (ArrayType) componentType.getParent();
-			}
-		}
-		arrayCreation.setType(arrayType);
-		if (this.resolveBindings) {
-			recordNodes(arrayType, expression);
-		}	
-		if (expression.initializer != null) {
-			arrayCreation.setInitializer(convert(expression.initializer));
-		}
-		return arrayCreation;
-	}
+//	public ArrayCreation convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression expression) {
+//		ArrayCreation arrayCreation = new ArrayCreation(this.ast);
+//		if (this.resolveBindings) {
+//			recordNodes(arrayCreation, expression);
+//		}
+//		arrayCreation.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
+//		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] dimensions = expression.dimensions;
+//		
+//		int dimensionsLength = dimensions.length;
+//		for (int i = 0; i < dimensionsLength; i++) {
+//			if (dimensions[i] != null) {
+//				Expression dimension = convert(dimensions[i]);
+//				if (this.resolveBindings) {
+//					recordNodes(dimension, dimensions[i]);
+//				}
+//				arrayCreation.dimensions().add(dimension);
+//			}
+//		}
+//		Type type = convertType(expression.type);
+//		if (this.resolveBindings) {
+//			recordNodes(type, expression.type);
+//		}		
+//		ArrayType arrayType = null;
+//		if (type.isArrayType()) {
+//			arrayType = (ArrayType) type;
+//		} else {
+//			arrayType = this.ast.newArrayType(type, dimensionsLength);
+//			if (this.resolveBindings) {
+//				completeRecord(arrayType, expression);
+//			}			
+//			int start = type.getStartPosition();
+//			int end = type.getStartPosition() + type.getLength();
+//			int previousSearchStart = end;
+//			ArrayType componentType = (ArrayType) type.getParent();
+//			for (int i = 0; i < dimensionsLength; i++) {
+//				previousSearchStart = retrieveRightBracketPosition(previousSearchStart + 1, this.compilationUnitSourceLength);
+//				componentType.setSourceRange(start, previousSearchStart - start + 1);
+//				componentType = (ArrayType) componentType.getParent();
+//			}
+//		}
+//		arrayCreation.setType(arrayType);
+//		if (this.resolveBindings) {
+//			recordNodes(arrayType, expression);
+//		}	
+//		if (expression.initializer != null) {
+//			arrayCreation.setInitializer(convert(expression.initializer));
+//		}
+//		return arrayCreation;
+//	}
 
 	public ArrayInitializer convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer expression) {
 		ArrayInitializer arrayInitializer = new ArrayInitializer(this.ast);
@@ -623,7 +626,7 @@ public class AjASTConverter extends ASTConverter {
 		if (expressions != null) {
 			int length = expressions.length;
 			for (int i = 0; i < length; i++) {
-				Expression expr = convert(expressions[i]);
+				Expression expr = super.convert(expressions[i]);
 				if (this.resolveBindings) {
 					recordNodes(expr, expressions[i]);
 				}
@@ -633,45 +636,45 @@ public class AjASTConverter extends ASTConverter {
 		return arrayInitializer;
 	}
 
-	public ArrayAccess convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayReference reference) {
-		ArrayAccess arrayAccess = new ArrayAccess(this.ast);
-		if (this.resolveBindings) {
-			recordNodes(arrayAccess, reference);
-		}
-		arrayAccess.setSourceRange(reference.sourceStart, reference.sourceEnd - reference.sourceStart + 1);
-		arrayAccess.setArray(convert(reference.receiver));
-		arrayAccess.setIndex(convert(reference.position));
-		return arrayAccess;
-	}
+//	public ArrayAccess convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayReference reference) {
+//		ArrayAccess arrayAccess = new ArrayAccess(this.ast);
+//		if (this.resolveBindings) {
+//			recordNodes(arrayAccess, reference);
+//		}
+//		arrayAccess.setSourceRange(reference.sourceStart, reference.sourceEnd - reference.sourceStart + 1);
+//		arrayAccess.setArray(convert(reference.receiver));
+//		arrayAccess.setIndex(convert(reference.position));
+//		return arrayAccess;
+//	}
 
-	public AssertStatement convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.AssertStatement statement) {
-		AssertStatement assertStatement = new AssertStatement(this.ast);
-		int end = statement.assertExpression.sourceEnd + 1;
-		assertStatement.setExpression(convert(statement.assertExpression));
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression exceptionArgument = statement.exceptionArgument;
-		if (exceptionArgument != null) {
-			end = exceptionArgument.sourceEnd + 1;
-			assertStatement.setMessage(convert(exceptionArgument));
-		}
-		int start = statement.sourceStart;
-		int sourceEnd = retrieveEndingSemiColonPosition(end, this.compilationUnitSourceLength);
-		assertStatement.setSourceRange(start, sourceEnd - start + 1);
-		return assertStatement;
-	}
+//	public AssertStatement convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.AssertStatement statement) {
+//		AssertStatement assertStatement = new AssertStatement(this.ast);
+//		int end = statement.assertExpression.sourceEnd + 1;
+//		assertStatement.setExpression(convert(statement.assertExpression));
+//		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression exceptionArgument = statement.exceptionArgument;
+//		if (exceptionArgument != null) {
+//			end = exceptionArgument.sourceEnd + 1;
+//			assertStatement.setMessage(convert(exceptionArgument));
+//		}
+//		int start = statement.sourceStart;
+//		int sourceEnd = retrieveEndingSemiColonPosition(end, this.compilationUnitSourceLength);
+//		assertStatement.setSourceRange(start, sourceEnd - start + 1);
+//		return assertStatement;
+//	}
 	
-	public Assignment convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Assignment expression) {
-		Assignment assignment = new Assignment(this.ast);
-		if (this.resolveBindings) {
-			recordNodes(assignment, expression);
-		}
-		Expression lhs = convert(expression.lhs);
-		assignment.setLeftHandSide(lhs);
-		assignment.setOperator(Assignment.Operator.ASSIGN);
-		assignment.setRightHandSide(convert(expression.expression));
-		int start = lhs.getStartPosition();
-		assignment.setSourceRange(start, expression.sourceEnd - start + 1);
-		return assignment;
-	}
+//	public Assignment convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Assignment expression) {
+//		Assignment assignment = new Assignment(this.ast);
+//		if (this.resolveBindings) {
+//			recordNodes(assignment, expression);
+//		}
+//		Expression lhs = convert(expression.lhs);
+//		assignment.setLeftHandSide(lhs);
+//		assignment.setOperator(Assignment.Operator.ASSIGN);
+//		assignment.setRightHandSide(convert(expression.expression));
+//		int start = lhs.getStartPosition();
+//		assignment.setSourceRange(start, expression.sourceEnd - start + 1);
+//		return assignment;
+//	}
 
 	/*
 	 * Internal use only
@@ -724,153 +727,153 @@ public class AjASTConverter extends ASTConverter {
 		return typeDecl;
 	}
 	
-	public Expression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression expression) {
-		InfixExpression infixExpression = new InfixExpression(this.ast);
-		if (this.resolveBindings) {
-			this.recordNodes(infixExpression, expression);
-		}
-
-		int expressionOperatorID = (expression.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorMASK) >> org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorSHIFT;
-		switch (expressionOperatorID) {
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.EQUAL_EQUAL :
-				infixExpression.setOperator(InfixExpression.Operator.EQUALS);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.LESS_EQUAL :
-				infixExpression.setOperator(InfixExpression.Operator.LESS_EQUALS);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.GREATER_EQUAL :
-				infixExpression.setOperator(InfixExpression.Operator.GREATER_EQUALS);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.NOT_EQUAL :
-				infixExpression.setOperator(InfixExpression.Operator.NOT_EQUALS);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.LEFT_SHIFT :
-				infixExpression.setOperator(InfixExpression.Operator.LEFT_SHIFT);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.RIGHT_SHIFT :
-				infixExpression.setOperator(InfixExpression.Operator.RIGHT_SHIFT_SIGNED);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.UNSIGNED_RIGHT_SHIFT :
-				infixExpression.setOperator(InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.OR_OR :
-				infixExpression.setOperator(InfixExpression.Operator.CONDITIONAL_OR);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.AND_AND :
-				infixExpression.setOperator(InfixExpression.Operator.CONDITIONAL_AND);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.PLUS :
-				infixExpression.setOperator(InfixExpression.Operator.PLUS);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.MINUS :
-				infixExpression.setOperator(InfixExpression.Operator.MINUS);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.REMAINDER :
-				infixExpression.setOperator(InfixExpression.Operator.REMAINDER);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.XOR :
-				infixExpression.setOperator(InfixExpression.Operator.XOR);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.AND :
-				infixExpression.setOperator(InfixExpression.Operator.AND);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.MULTIPLY :
-				infixExpression.setOperator(InfixExpression.Operator.TIMES);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.OR :
-				infixExpression.setOperator(InfixExpression.Operator.OR);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.DIVIDE :
-				infixExpression.setOperator(InfixExpression.Operator.DIVIDE);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.GREATER :
-				infixExpression.setOperator(InfixExpression.Operator.GREATER);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.LESS :
-				infixExpression.setOperator(InfixExpression.Operator.LESS);
-		}
-		
-		if (expression.left instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression
-				&& ((expression.left.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0)) {
-			// create an extended string literal equivalent => use the extended operands list
-			infixExpression.extendedOperands().add(convert(expression.right));
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression leftOperand = expression.left;
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression rightOperand = null;
-			do {
-				rightOperand = ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression) leftOperand).right;
-				if ((((leftOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorMASK) >> org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorSHIFT) != expressionOperatorID
-							&& ((leftOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0))
-					 || ((rightOperand instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression
-				 			&& ((rightOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorMASK) >> org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorSHIFT) != expressionOperatorID)
-							&& ((rightOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0))) {
-				 	List extendedOperands = infixExpression.extendedOperands();
-				 	InfixExpression temp = new InfixExpression(this.ast);
-					if (this.resolveBindings) {
-						this.recordNodes(temp, expression);
-					}
-				 	temp.setOperator(getOperatorFor(expressionOperatorID));
-				 	Expression leftSide = convert(leftOperand);
-					temp.setLeftOperand(leftSide);
-					temp.setSourceRange(leftSide.getStartPosition(), leftSide.getLength());
-					int size = extendedOperands.size();
-				 	for (int i = 0; i < size - 1; i++) {
-				 		Expression expr = temp;
-				 		temp = new InfixExpression(this.ast);
-				 		
-						if (this.resolveBindings) {
-							this.recordNodes(temp, expression);
-						}				 	
-				 		temp.setLeftOperand(expr);
-					 	temp.setOperator(getOperatorFor(expressionOperatorID));
-						temp.setSourceRange(expr.getStartPosition(), expr.getLength());
-				 	}
-				 	infixExpression = temp;
-				 	for (int i = 0; i < size; i++) {
-				 		Expression extendedOperand = (Expression) extendedOperands.remove(size - 1 - i);
-				 		temp.setRightOperand(extendedOperand);
-				 		int startPosition = temp.getLeftOperand().getStartPosition();
-				 		temp.setSourceRange(startPosition, extendedOperand.getStartPosition() + extendedOperand.getLength() - startPosition);
-				 		if (temp.getLeftOperand().getNodeType() == ASTNode.INFIX_EXPRESSION) {
-				 			temp = (InfixExpression) temp.getLeftOperand();
-				 		}
-				 	}
-					int startPosition = infixExpression.getLeftOperand().getStartPosition();
-					infixExpression.setSourceRange(startPosition, expression.sourceEnd - startPosition + 1);
-					if (this.resolveBindings) {
-						this.recordNodes(infixExpression, expression);
-					}
-					return infixExpression;
-				}
-				infixExpression.extendedOperands().add(0, convert(rightOperand));
-				leftOperand = ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression) leftOperand).left;
-			} while (leftOperand instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression && ((leftOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0));
-			Expression leftExpression = convert(leftOperand);
-			infixExpression.setLeftOperand(leftExpression);
-			infixExpression.setRightOperand((Expression)infixExpression.extendedOperands().remove(0));
-			int startPosition = leftExpression.getStartPosition();
-			infixExpression.setSourceRange(startPosition, expression.sourceEnd - startPosition + 1);
-			return infixExpression;
-		} else if (expression.left instanceof StringLiteralConcatenation
-				&& ((expression.left.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0)) {
-			StringLiteralConcatenation literal = (StringLiteralConcatenation) expression.left;
-			final org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] stringLiterals = literal.literals;
-			infixExpression.setLeftOperand(convert(stringLiterals[0]));
-			infixExpression.setRightOperand(convert(stringLiterals[1]));
-			for (int i = 2; i < literal.counter; i++) {
-				infixExpression.extendedOperands().add(convert(stringLiterals[i]));
-			}
-			infixExpression.extendedOperands().add(convert(expression.right));
-			int startPosition = literal.sourceStart;
-			infixExpression.setSourceRange(startPosition, expression.sourceEnd - startPosition + 1);
-			return infixExpression;
-		}
-		Expression leftExpression = convert(expression.left);
-		infixExpression.setLeftOperand(leftExpression);
-		infixExpression.setRightOperand(convert(expression.right));
-		int startPosition = leftExpression.getStartPosition();
-		infixExpression.setSourceRange(startPosition, expression.sourceEnd - startPosition + 1);
-		return infixExpression;
-	}
+//	public Expression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression expression) {
+//		InfixExpression infixExpression = new InfixExpression(this.ast);
+//		if (this.resolveBindings) {
+//			this.recordNodes(infixExpression, expression);
+//		}
+//
+//		int expressionOperatorID = (expression.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorMASK) >> org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorSHIFT;
+//		switch (expressionOperatorID) {
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.EQUAL_EQUAL :
+//				infixExpression.setOperator(InfixExpression.Operator.EQUALS);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.LESS_EQUAL :
+//				infixExpression.setOperator(InfixExpression.Operator.LESS_EQUALS);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.GREATER_EQUAL :
+//				infixExpression.setOperator(InfixExpression.Operator.GREATER_EQUALS);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.NOT_EQUAL :
+//				infixExpression.setOperator(InfixExpression.Operator.NOT_EQUALS);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.LEFT_SHIFT :
+//				infixExpression.setOperator(InfixExpression.Operator.LEFT_SHIFT);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.RIGHT_SHIFT :
+//				infixExpression.setOperator(InfixExpression.Operator.RIGHT_SHIFT_SIGNED);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.UNSIGNED_RIGHT_SHIFT :
+//				infixExpression.setOperator(InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.OR_OR :
+//				infixExpression.setOperator(InfixExpression.Operator.CONDITIONAL_OR);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.AND_AND :
+//				infixExpression.setOperator(InfixExpression.Operator.CONDITIONAL_AND);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.PLUS :
+//				infixExpression.setOperator(InfixExpression.Operator.PLUS);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.MINUS :
+//				infixExpression.setOperator(InfixExpression.Operator.MINUS);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.REMAINDER :
+//				infixExpression.setOperator(InfixExpression.Operator.REMAINDER);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.XOR :
+//				infixExpression.setOperator(InfixExpression.Operator.XOR);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.AND :
+//				infixExpression.setOperator(InfixExpression.Operator.AND);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.MULTIPLY :
+//				infixExpression.setOperator(InfixExpression.Operator.TIMES);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.OR :
+//				infixExpression.setOperator(InfixExpression.Operator.OR);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.DIVIDE :
+//				infixExpression.setOperator(InfixExpression.Operator.DIVIDE);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.GREATER :
+//				infixExpression.setOperator(InfixExpression.Operator.GREATER);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.LESS :
+//				infixExpression.setOperator(InfixExpression.Operator.LESS);
+//		}
+//		
+//		if (expression.left instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression
+//				&& ((expression.left.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0)) {
+//			// create an extended string literal equivalent => use the extended operands list
+//			infixExpression.extendedOperands().add(convert(expression.right));
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression leftOperand = expression.left;
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression rightOperand = null;
+//			do {
+//				rightOperand = ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression) leftOperand).right;
+//				if ((((leftOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorMASK) >> org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorSHIFT) != expressionOperatorID
+//							&& ((leftOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0))
+//					 || ((rightOperand instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression
+//				 			&& ((rightOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorMASK) >> org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.OperatorSHIFT) != expressionOperatorID)
+//							&& ((rightOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0))) {
+//				 	List extendedOperands = infixExpression.extendedOperands();
+//				 	InfixExpression temp = new InfixExpression(this.ast);
+//					if (this.resolveBindings) {
+//						this.recordNodes(temp, expression);
+//					}
+//				 	temp.setOperator(getOperatorFor(expressionOperatorID));
+//				 	Expression leftSide = convert(leftOperand);
+//					temp.setLeftOperand(leftSide);
+//					temp.setSourceRange(leftSide.getStartPosition(), leftSide.getLength());
+//					int size = extendedOperands.size();
+//				 	for (int i = 0; i < size - 1; i++) {
+//				 		Expression expr = temp;
+//				 		temp = new InfixExpression(this.ast);
+//				 		
+//						if (this.resolveBindings) {
+//							this.recordNodes(temp, expression);
+//						}				 	
+//				 		temp.setLeftOperand(expr);
+//					 	temp.setOperator(getOperatorFor(expressionOperatorID));
+//						temp.setSourceRange(expr.getStartPosition(), expr.getLength());
+//				 	}
+//				 	infixExpression = temp;
+//				 	for (int i = 0; i < size; i++) {
+//				 		Expression extendedOperand = (Expression) extendedOperands.remove(size - 1 - i);
+//				 		temp.setRightOperand(extendedOperand);
+//				 		int startPosition = temp.getLeftOperand().getStartPosition();
+//				 		temp.setSourceRange(startPosition, extendedOperand.getStartPosition() + extendedOperand.getLength() - startPosition);
+//				 		if (temp.getLeftOperand().getNodeType() == ASTNode.INFIX_EXPRESSION) {
+//				 			temp = (InfixExpression) temp.getLeftOperand();
+//				 		}
+//				 	}
+//					int startPosition = infixExpression.getLeftOperand().getStartPosition();
+//					infixExpression.setSourceRange(startPosition, expression.sourceEnd - startPosition + 1);
+//					if (this.resolveBindings) {
+//						this.recordNodes(infixExpression, expression);
+//					}
+//					return infixExpression;
+//				}
+//				infixExpression.extendedOperands().add(0, convert(rightOperand));
+//				leftOperand = ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression) leftOperand).left;
+//			} while (leftOperand instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression && ((leftOperand.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0));
+//			Expression leftExpression = convert(leftOperand);
+//			infixExpression.setLeftOperand(leftExpression);
+//			infixExpression.setRightOperand((Expression)infixExpression.extendedOperands().remove(0));
+//			int startPosition = leftExpression.getStartPosition();
+//			infixExpression.setSourceRange(startPosition, expression.sourceEnd - startPosition + 1);
+//			return infixExpression;
+//		} else if (expression.left instanceof StringLiteralConcatenation
+//				&& ((expression.left.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) == 0)) {
+//			StringLiteralConcatenation literal = (StringLiteralConcatenation) expression.left;
+//			final org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] stringLiterals = literal.literals;
+//			infixExpression.setLeftOperand(convert(stringLiterals[0]));
+//			infixExpression.setRightOperand(convert(stringLiterals[1]));
+//			for (int i = 2; i < literal.counter; i++) {
+//				infixExpression.extendedOperands().add(convert(stringLiterals[i]));
+//			}
+//			infixExpression.extendedOperands().add(convert(expression.right));
+//			int startPosition = literal.sourceStart;
+//			infixExpression.setSourceRange(startPosition, expression.sourceEnd - startPosition + 1);
+//			return infixExpression;
+//		}
+//		Expression leftExpression = convert(expression.left);
+//		infixExpression.setLeftOperand(leftExpression);
+//		infixExpression.setRightOperand(convert(expression.right));
+//		int startPosition = leftExpression.getStartPosition();
+//		infixExpression.setSourceRange(startPosition, expression.sourceEnd - startPosition + 1);
+//		return infixExpression;
+//	}
 
 	public Block convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Block statement) {
 		Block block = new Block(this.ast);
@@ -905,35 +908,35 @@ public class AjASTConverter extends ASTConverter {
 	}
 		
 		
-	public SwitchCase convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.CaseStatement statement) {
-		SwitchCase switchCase = new SwitchCase(this.ast);
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression constantExpression = statement.constantExpression;
-		if (constantExpression == null) {
-			switchCase.setExpression(null);
-		} else {
-			switchCase.setExpression(convert(constantExpression));
-		}
-		switchCase.setSourceRange(statement.sourceStart, statement.sourceEnd - statement.sourceStart + 1);
-		retrieveColonPosition(switchCase);
-		return switchCase;
-	}
+//	public SwitchCase convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.CaseStatement statement) {
+//		SwitchCase switchCase = new SwitchCase(this.ast);
+//		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression constantExpression = statement.constantExpression;
+//		if (constantExpression == null) {
+//			switchCase.setExpression(null);
+//		} else {
+//			switchCase.setExpression(convert(constantExpression));
+//		}
+//		switchCase.setSourceRange(statement.sourceStart, statement.sourceEnd - statement.sourceStart + 1);
+//		retrieveColonPosition(switchCase);
+//		return switchCase;
+//	}
 
-	public CastExpression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.CastExpression expression) {
-		CastExpression castExpression = new CastExpression(this.ast);
-		castExpression.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression type = expression.type;
-		trimWhiteSpacesAndComments(type);
-		if (type instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference ) {
-			castExpression.setType(convertType((org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference)type));
-		} else if (type instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference) {
-			castExpression.setType(convertToType((org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference)type));
-		}
-		castExpression.setExpression(convert(expression.expression));
-		if (this.resolveBindings) {
-			recordNodes(castExpression, expression);
-		}
-		return castExpression;
-	}
+//	public CastExpression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.CastExpression expression) {
+//		CastExpression castExpression = new CastExpression(this.ast);
+//		castExpression.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
+//		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression type = expression.type;
+//		trimWhiteSpacesAndComments(type);
+//		if (type instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference ) {
+//			castExpression.setType(convertType((org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference)type));
+//		} else if (type instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference) {
+//			castExpression.setType(convertToType((org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference)type));
+//		}
+//		castExpression.setExpression(convert(expression.expression));
+//		if (this.resolveBindings) {
+//			recordNodes(castExpression, expression);
+//		}
+//		return castExpression;
+//	}
 
 	public CharacterLiteral convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.CharLiteral expression) {
 		int length = expression.sourceEnd - expression.sourceStart + 1;	
@@ -1025,244 +1028,244 @@ public class AjASTConverter extends ASTConverter {
 		return compilationUnit;
 	}
 
-	public Assignment convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompoundAssignment expression) {
-		Assignment assignment = new Assignment(this.ast);
-		Expression lhs = convert(expression.lhs);
-		assignment.setLeftHandSide(lhs);
-		int start = lhs.getStartPosition();
-		assignment.setSourceRange(start, expression.sourceEnd - start + 1);
-		switch (expression.operator) {
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.PLUS :
-				assignment.setOperator(Assignment.Operator.PLUS_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.MINUS :
-				assignment.setOperator(Assignment.Operator.MINUS_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.MULTIPLY :
-				assignment.setOperator(Assignment.Operator.TIMES_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.DIVIDE :
-				assignment.setOperator(Assignment.Operator.DIVIDE_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.AND :
-				assignment.setOperator(Assignment.Operator.BIT_AND_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.OR :
-				assignment.setOperator(Assignment.Operator.BIT_OR_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.XOR :
-				assignment.setOperator(Assignment.Operator.BIT_XOR_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.REMAINDER :
-				assignment.setOperator(Assignment.Operator.REMAINDER_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.LEFT_SHIFT :
-				assignment.setOperator(Assignment.Operator.LEFT_SHIFT_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.RIGHT_SHIFT :
-				assignment.setOperator(Assignment.Operator.RIGHT_SHIFT_SIGNED_ASSIGN);
-				break;
-			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.UNSIGNED_RIGHT_SHIFT :
-				assignment.setOperator(Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN);
-				break;
-		}
-		assignment.setRightHandSide(convert(expression.expression));
-		if (this.resolveBindings) {
-			recordNodes(assignment, expression);
-		}
-		return assignment;
-	}
+//	public Assignment convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompoundAssignment expression) {
+//		Assignment assignment = new Assignment(this.ast);
+//		Expression lhs = convert(expression.lhs);
+//		assignment.setLeftHandSide(lhs);
+//		int start = lhs.getStartPosition();
+//		assignment.setSourceRange(start, expression.sourceEnd - start + 1);
+//		switch (expression.operator) {
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.PLUS :
+//				assignment.setOperator(Assignment.Operator.PLUS_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.MINUS :
+//				assignment.setOperator(Assignment.Operator.MINUS_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.MULTIPLY :
+//				assignment.setOperator(Assignment.Operator.TIMES_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.DIVIDE :
+//				assignment.setOperator(Assignment.Operator.DIVIDE_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.AND :
+//				assignment.setOperator(Assignment.Operator.BIT_AND_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.OR :
+//				assignment.setOperator(Assignment.Operator.BIT_OR_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.XOR :
+//				assignment.setOperator(Assignment.Operator.BIT_XOR_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.REMAINDER :
+//				assignment.setOperator(Assignment.Operator.REMAINDER_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.LEFT_SHIFT :
+//				assignment.setOperator(Assignment.Operator.LEFT_SHIFT_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.RIGHT_SHIFT :
+//				assignment.setOperator(Assignment.Operator.RIGHT_SHIFT_SIGNED_ASSIGN);
+//				break;
+//			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.UNSIGNED_RIGHT_SHIFT :
+//				assignment.setOperator(Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN);
+//				break;
+//		}
+//		assignment.setRightHandSide(convert(expression.expression));
+//		if (this.resolveBindings) {
+//			recordNodes(assignment, expression);
+//		}
+//		return assignment;
+//	}
 
-	public ConditionalExpression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConditionalExpression expression) {
-		ConditionalExpression conditionalExpression = new ConditionalExpression(this.ast);
-		if (this.resolveBindings) {
-			recordNodes(conditionalExpression, expression);
-		}
-		conditionalExpression.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
-		conditionalExpression.setExpression(convert(expression.condition));
-		conditionalExpression.setThenExpression(convert(expression.valueIfTrue));
-		conditionalExpression.setElseExpression(convert(expression.valueIfFalse));
-		return conditionalExpression;
-	}
+//	public ConditionalExpression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConditionalExpression expression) {
+//		ConditionalExpression conditionalExpression = new ConditionalExpression(this.ast);
+//		if (this.resolveBindings) {
+//			recordNodes(conditionalExpression, expression);
+//		}
+//		conditionalExpression.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
+//		conditionalExpression.setExpression(convert(expression.condition));
+//		conditionalExpression.setThenExpression(convert(expression.valueIfTrue));
+//		conditionalExpression.setElseExpression(convert(expression.valueIfFalse));
+//		return conditionalExpression;
+//	}
 		
-	public Statement convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall statement) {
-		Statement newStatement;
-		int sourceStart = statement.sourceStart;
-		if (statement.isSuperAccess() || statement.isSuper()) {
-			SuperConstructorInvocation superConstructorInvocation = new SuperConstructorInvocation(this.ast);
-			if (statement.qualification != null) {
-				superConstructorInvocation.setExpression(convert(statement.qualification));
-			}
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] arguments = statement.arguments;
-			if (arguments != null) {
-				int length = arguments.length;
-				for (int i = 0; i < length; i++) {
-					superConstructorInvocation.arguments().add(convert(arguments[i]));
-				}
-			}
-			if (statement.typeArguments != null) {
-				if (sourceStart > statement.typeArgumentsSourceStart) {
-					sourceStart = statement.typeArgumentsSourceStart;
-				}
-				switch(this.ast.apiLevel) {
-					case AST.JLS2_INTERNAL :
-						superConstructorInvocation.setFlags(superConstructorInvocation.getFlags() | ASTNode.MALFORMED);
-						break;
-					case AST.JLS3 :
-						for (int i = 0, max = statement.typeArguments.length; i < max; i++) {
-							superConstructorInvocation.typeArguments().add(convertType(statement.typeArguments[i]));
-						}
-						break;
-				}
-			}
-			newStatement = superConstructorInvocation;
-		} else {
-			ConstructorInvocation constructorInvocation = new ConstructorInvocation(this.ast);
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] arguments = statement.arguments;
-			if (arguments != null) {
-				int length = arguments.length;
-				for (int i = 0; i < length; i++) {
-					constructorInvocation.arguments().add(convert(arguments[i]));
-				}
-			}
-			if (statement.typeArguments != null) {
-				if (sourceStart > statement.typeArgumentsSourceStart) {
-					sourceStart = statement.typeArgumentsSourceStart;
-				}
-				switch(this.ast.apiLevel) {
-					case AST.JLS2_INTERNAL :
-						constructorInvocation.setFlags(constructorInvocation.getFlags() | ASTNode.MALFORMED);
-						break;
-					case AST.JLS3 :
-						for (int i = 0, max = statement.typeArguments.length; i < max; i++) {
-							constructorInvocation.typeArguments().add(convertType(statement.typeArguments[i]));
-						}
-					break;
-				}
-			}
-			if (statement.qualification != null) {
-				// this is an error
-				constructorInvocation.setFlags(constructorInvocation.getFlags() | ASTNode.MALFORMED);
-			}
-			newStatement = constructorInvocation;
-		}
-		newStatement.setSourceRange(sourceStart, statement.sourceEnd - sourceStart + 1);
-		retrieveSemiColonPosition(newStatement);
-		if (this.resolveBindings) {
-			recordNodes(newStatement, statement);
-		}
-		return newStatement;
-	}
+//	public Statement convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall statement) {
+//		Statement newStatement;
+//		int sourceStart = statement.sourceStart;
+//		if (statement.isSuperAccess() || statement.isSuper()) {
+//			SuperConstructorInvocation superConstructorInvocation = new SuperConstructorInvocation(this.ast);
+//			if (statement.qualification != null) {
+//				superConstructorInvocation.setExpression(convert(statement.qualification));
+//			}
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] arguments = statement.arguments;
+//			if (arguments != null) {
+//				int length = arguments.length;
+//				for (int i = 0; i < length; i++) {
+//					superConstructorInvocation.arguments().add(convert(arguments[i]));
+//				}
+//			}
+//			if (statement.typeArguments != null) {
+//				if (sourceStart > statement.typeArgumentsSourceStart) {
+//					sourceStart = statement.typeArgumentsSourceStart;
+//				}
+//				switch(this.ast.apiLevel) {
+//					case AST.JLS2_INTERNAL :
+//						superConstructorInvocation.setFlags(superConstructorInvocation.getFlags() | ASTNode.MALFORMED);
+//						break;
+//					case AST.JLS3 :
+//						for (int i = 0, max = statement.typeArguments.length; i < max; i++) {
+//							superConstructorInvocation.typeArguments().add(convertType(statement.typeArguments[i]));
+//						}
+//						break;
+//				}
+//			}
+//			newStatement = superConstructorInvocation;
+//		} else {
+//			ConstructorInvocation constructorInvocation = new ConstructorInvocation(this.ast);
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] arguments = statement.arguments;
+//			if (arguments != null) {
+//				int length = arguments.length;
+//				for (int i = 0; i < length; i++) {
+//					constructorInvocation.arguments().add(convert(arguments[i]));
+//				}
+//			}
+//			if (statement.typeArguments != null) {
+//				if (sourceStart > statement.typeArgumentsSourceStart) {
+//					sourceStart = statement.typeArgumentsSourceStart;
+//				}
+//				switch(this.ast.apiLevel) {
+//					case AST.JLS2_INTERNAL :
+//						constructorInvocation.setFlags(constructorInvocation.getFlags() | ASTNode.MALFORMED);
+//						break;
+//					case AST.JLS3 :
+//						for (int i = 0, max = statement.typeArguments.length; i < max; i++) {
+//							constructorInvocation.typeArguments().add(convertType(statement.typeArguments[i]));
+//						}
+//					break;
+//				}
+//			}
+//			if (statement.qualification != null) {
+//				// this is an error
+//				constructorInvocation.setFlags(constructorInvocation.getFlags() | ASTNode.MALFORMED);
+//			}
+//			newStatement = constructorInvocation;
+//		}
+//		newStatement.setSourceRange(sourceStart, statement.sourceEnd - sourceStart + 1);
+//		retrieveSemiColonPosition(newStatement);
+//		if (this.resolveBindings) {
+//			recordNodes(newStatement, statement);
+//		}
+//		return newStatement;
+//	}
 
-	public Expression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression) {
-		if ((expression.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) != 0) {
-			return convertToParenthesizedExpression(expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation) expression);
-		}		
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.CastExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.CastExpression) expression);
-		}
-		// switch between all types of expression
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AllocationExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AllocationExpression) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.PrefixExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.PrefixExpression) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.PostfixExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.PostfixExpression) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompoundAssignment) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompoundAssignment) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Assignment) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Assignment) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.NullLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.NullLiteral) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.CharLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.CharLiteral) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.DoubleLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.DoubleLiteral) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FloatLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.FloatLiteral) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteralMinValue) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteralMinValue) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteral) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.LongLiteralMinValue) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.LongLiteralMinValue) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.LongLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.LongLiteral) expression);
-		}
-		if (expression instanceof StringLiteralConcatenation) {
-			return convert((StringLiteralConcatenation) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral) expression);
-		}	
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.EqualExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.EqualExpression) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.UnaryExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.UnaryExpression) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConditionalExpression) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConditionalExpression) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend) expression);
-		}				
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Reference) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Reference) expression);
-		}
-		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) expression);
-		}
-		return null;
-	}
+//	public Expression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression) {
+//		if ((expression.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) != 0) {
+//			return convertToParenthesizedExpression(expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation) expression);
+//		}		
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.CastExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.CastExpression) expression);
+//		}
+//		// switch between all types of expression
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AllocationExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AllocationExpression) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.PrefixExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.PrefixExpression) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.PostfixExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.PostfixExpression) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompoundAssignment) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompoundAssignment) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Assignment) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Assignment) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.NullLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.NullLiteral) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.CharLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.CharLiteral) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.DoubleLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.DoubleLiteral) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FloatLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.FloatLiteral) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteralMinValue) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteralMinValue) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteral) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.LongLiteralMinValue) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.LongLiteralMinValue) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.LongLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.LongLiteral) expression);
+//		}
+//		if (expression instanceof StringLiteralConcatenation) {
+//			return convert((StringLiteralConcatenation) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral) expression);
+//		}	
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.EqualExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.EqualExpression) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.UnaryExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.UnaryExpression) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConditionalExpression) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConditionalExpression) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend) expression);
+//		}				
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Reference) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Reference) expression);
+//		}
+//		if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) expression);
+//		}
+//		return null;
+//	}
 
 	public StringLiteral convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral expression) {
 		expression.computeConstant();
@@ -1314,7 +1317,7 @@ public class AjASTConverter extends ASTConverter {
 			if (this.resolveBindings) {
 				recordNodes(fieldAccess, reference);
 			}
-			Expression receiver = convert(reference.receiver);
+			Expression receiver = super.convert(reference.receiver);
 			fieldAccess.setExpression(receiver);
 			final SimpleName simpleName = new SimpleName(this.ast);
 			simpleName.internalSetIdentifier(new String(reference.token));
@@ -1350,7 +1353,7 @@ public class AjASTConverter extends ASTConverter {
 			case AST.JLS3 :
 				EnhancedForStatement enhancedForStatement = new EnhancedForStatement(this.ast);
 				enhancedForStatement.setParameter(convertToSingleVariableDeclaration(statement.elementVariable));
-				enhancedForStatement.setExpression(convert(statement.collection));
+				enhancedForStatement.setExpression(super.convert(statement.collection));
 				enhancedForStatement.setBody(convert(statement.action));
 				int start = statement.sourceStart;
 				int end = statement.sourceEnd;
@@ -1392,7 +1395,7 @@ public class AjASTConverter extends ASTConverter {
 			}
 		}
 		if (statement.condition != null) {
-			forStatement.setExpression(convert(statement.condition));
+			forStatement.setExpression(super.convert(statement.condition));
 		}
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] increments = statement.increments;
 		if (increments != null) {
@@ -1408,7 +1411,7 @@ public class AjASTConverter extends ASTConverter {
 	public IfStatement convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.IfStatement statement) {
 		IfStatement ifStatement = new IfStatement(this.ast);
 		ifStatement.setSourceRange(statement.sourceStart, statement.sourceEnd - statement.sourceStart + 1);
-		ifStatement.setExpression(convert(statement.condition));
+		ifStatement.setExpression(super.convert(statement.condition));
 		ifStatement.setThenStatement(convert(statement.thenStatement));
 		if (statement.elseStatement != null) {
 			ifStatement.setElseStatement(convert(statement.elseStatement));
@@ -1421,7 +1424,7 @@ public class AjASTConverter extends ASTConverter {
 		if (this.resolveBindings) {
 			recordNodes(instanceOfExpression, expression);
 		}
-		Expression leftExpression = convert(expression.expression);
+		Expression leftExpression = super.convert(expression.expression);
 		instanceOfExpression.setLeftOperand(leftExpression);
 		instanceOfExpression.setRightOperand(convertType(expression.type));
 		int startPosition = leftExpression.getStartPosition();
@@ -1520,10 +1523,10 @@ public class AjASTConverter extends ASTConverter {
 		final InfixExpression infixExpression = new InfixExpression(this.ast);
 		infixExpression.setOperator(InfixExpression.Operator.PLUS);
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] stringLiterals = expression.literals;
-		infixExpression.setLeftOperand(convert(stringLiterals[0]));
-		infixExpression.setRightOperand(convert(stringLiterals[1]));
+		infixExpression.setLeftOperand(super.convert(stringLiterals[0]));
+		infixExpression.setRightOperand(super.convert(stringLiterals[1]));
 		for (int i = 2; i < expression.counter; i++) {
-			infixExpression.extendedOperands().add(convert(stringLiterals[i]));
+			infixExpression.extendedOperands().add(super.convert(stringLiterals[i]));
 		}
 		if (this.resolveBindings) {
 			this.recordNodes(infixExpression, expression);
@@ -1564,9 +1567,9 @@ public class AjASTConverter extends ASTConverter {
 		if (this.resolveBindings) {
 			recordNodes(infixExpression, expression);
 		}
-		Expression leftExpression = convert(expression.left);
+		Expression leftExpression = super.convert(expression.left);
 		infixExpression.setLeftOperand(leftExpression);
-		infixExpression.setRightOperand(convert(expression.right));
+		infixExpression.setRightOperand(super.convert(expression.right));
 		infixExpression.setOperator(InfixExpression.Operator.CONDITIONAL_OR);
 		int sourceStart = leftExpression.getStartPosition();
 		infixExpression.setSourceRange(sourceStart, expression.sourceEnd - sourceStart + 1);
@@ -1579,7 +1582,7 @@ public class AjASTConverter extends ASTConverter {
 			recordNodes(postfixExpression, expression);
 		}
 		postfixExpression.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
-		postfixExpression.setOperand(convert(expression.lhs));
+		postfixExpression.setOperand(super.convert(expression.lhs));
 		switch (expression.operator) {
 			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.PLUS :
 				postfixExpression.setOperator(PostfixExpression.Operator.INCREMENT);
@@ -1597,7 +1600,7 @@ public class AjASTConverter extends ASTConverter {
 			recordNodes(prefixExpression, expression);
 		}
 		prefixExpression.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
-		prefixExpression.setOperand(convert(expression.lhs));
+		prefixExpression.setOperand(super.convert(expression.lhs));
 		switch (expression.operator) {
 			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorIds.PLUS :
 				prefixExpression.setOperator(PrefixExpression.Operator.INCREMENT);
@@ -1612,7 +1615,7 @@ public class AjASTConverter extends ASTConverter {
 	public Expression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression allocation) {
 		final ClassInstanceCreation classInstanceCreation = new ClassInstanceCreation(this.ast);
 		if (allocation.enclosingInstance != null) {
-			classInstanceCreation.setExpression(convert(allocation.enclosingInstance));
+			classInstanceCreation.setExpression(super.convert(allocation.enclosingInstance));
 		}
 		switch(this.ast.apiLevel) {
 			case AST.JLS2_INTERNAL :
@@ -1625,7 +1628,7 @@ public class AjASTConverter extends ASTConverter {
 		if (arguments != null) {
 			int length = arguments.length;
 			for (int i = 0; i < length; i++) {
-				Expression argument = convert(arguments[i]);
+				Expression argument = super.convert(arguments[i]);
 				if (this.resolveBindings) {
 					recordNodes(argument, arguments[i]);
 				}
@@ -1689,13 +1692,13 @@ public class AjASTConverter extends ASTConverter {
 	
 	public Expression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Reference reference) {
 		if (reference instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference) reference);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference) reference);
 		}
 		if (reference instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ThisReference) {
 			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ThisReference) reference);
 		}
 		if (reference instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayReference) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayReference) reference);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayReference) reference);
 		}
 		if (reference instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldReference) {
 			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldReference) reference);
@@ -1707,7 +1710,7 @@ public class AjASTConverter extends ASTConverter {
 		final ReturnStatement returnStatement = new ReturnStatement(this.ast);
 		returnStatement.setSourceRange(statement.sourceStart, statement.sourceEnd - statement.sourceStart + 1);	
 		if (statement.expression != null) {
-			returnStatement.setExpression(convert(statement.expression));
+			returnStatement.setExpression(super.convert(statement.expression));
 		}
 		retrieveSemiColonPosition(returnStatement);
 		return returnStatement;
@@ -1716,7 +1719,7 @@ public class AjASTConverter extends ASTConverter {
 	public SingleMemberAnnotation convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation annotation) {
 		final SingleMemberAnnotation singleMemberAnnotation = new SingleMemberAnnotation(this.ast);
 		setTypeNameForAnnotation(annotation, singleMemberAnnotation);
-		singleMemberAnnotation.setValue(convert(annotation.memberValue));
+		singleMemberAnnotation.setValue(super.convert(annotation.memberValue));
 		int start = annotation.sourceStart;
 		int end = annotation.declarationSourceEnd;
 		singleMemberAnnotation.setSourceRange(start, end - start + 1);
@@ -1744,28 +1747,28 @@ public class AjASTConverter extends ASTConverter {
 			return convertToVariableDeclarationStatement((org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration)statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AssertStatement) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AssertStatement) statement);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AssertStatement) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Block) {
 			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Block) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.BreakStatement) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.BreakStatement) statement);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.BreakStatement) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ContinueStatement) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ContinueStatement) statement);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ContinueStatement) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.CaseStatement) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.CaseStatement) statement);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.CaseStatement) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.DoStatement) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.DoStatement) statement);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.DoStatement) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.EmptyStatement) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.EmptyStatement) statement);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.EmptyStatement) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall) statement);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.ForStatement) {
 			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.ForStatement) statement);
@@ -1843,10 +1846,10 @@ public class AjASTConverter extends ASTConverter {
 			}
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.WhileStatement) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.WhileStatement) statement);
+			return super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.WhileStatement) statement);
 		}
 		if (statement instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression) {
-			final Expression expr = convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression) statement);
+			final Expression expr = super.convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression) statement);
 			final ExpressionStatement stmt = new ExpressionStatement(this.ast);
 			stmt.setExpression(expr);
 			stmt.setSourceRange(expr.getStartPosition(), expr.getLength());
@@ -1874,7 +1877,7 @@ public class AjASTConverter extends ASTConverter {
 	public SwitchStatement convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.SwitchStatement statement) {
 		SwitchStatement switchStatement = new SwitchStatement(this.ast);
 		switchStatement.setSourceRange(statement.sourceStart, statement.sourceEnd - statement.sourceStart + 1);	
-		switchStatement.setExpression(convert(statement.expression));
+		switchStatement.setExpression(super.convert(statement.expression));
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] statements = statement.statements;
 		if (statements != null) {
 			int statementsLength = statements.length;
@@ -1889,7 +1892,7 @@ public class AjASTConverter extends ASTConverter {
 		SynchronizedStatement synchronizedStatement = new SynchronizedStatement(this.ast);
 		synchronizedStatement.setSourceRange(statement.sourceStart, statement.sourceEnd - statement.sourceStart + 1);	
 		synchronizedStatement.setBody(convert(statement.block));
-		synchronizedStatement.setExpression(convert(statement.expression));
+		synchronizedStatement.setExpression(super.convert(statement.expression));
 		return synchronizedStatement;
 	}
 	
@@ -1915,7 +1918,7 @@ public class AjASTConverter extends ASTConverter {
 	public ThrowStatement convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ThrowStatement statement) {
 		final ThrowStatement throwStatement = new ThrowStatement(this.ast);
 		throwStatement.setSourceRange(statement.sourceStart, statement.sourceEnd - statement.sourceStart + 1);	
-		throwStatement.setExpression(convert(statement.exception));
+		throwStatement.setExpression(super.convert(statement.exception));
 		retrieveSemiColonPosition(throwStatement);
 		return throwStatement;
 	}
@@ -2119,32 +2122,32 @@ public class AjASTConverter extends ASTConverter {
 		return fieldDeclaration;
 	}
 
-	public ParenthesizedExpression convertToParenthesizedExpression(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression) {
-		final ParenthesizedExpression parenthesizedExpression = new ParenthesizedExpression(this.ast);
-		if (this.resolveBindings) {
-			recordNodes(parenthesizedExpression, expression);
-		}
-		parenthesizedExpression.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
-		adjustSourcePositionsForParent(expression);
-		trimWhiteSpacesAndComments(expression);
-		// decrement the number of parenthesis
-		int numberOfParenthesis = (expression.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) >> org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedSHIFT;
-		expression.bits &= ~org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK;
-		expression.bits |= (numberOfParenthesis - 1) << org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedSHIFT;
-		parenthesizedExpression.setExpression(convert(expression));
-		return parenthesizedExpression;
-	}
+//	public ParenthesizedExpression convertToParenthesizedExpression(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression) {
+//		final ParenthesizedExpression parenthesizedExpression = new ParenthesizedExpression(this.ast);
+//		if (this.resolveBindings) {
+//			recordNodes(parenthesizedExpression, expression);
+//		}
+//		parenthesizedExpression.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
+//		adjustSourcePositionsForParent(expression);
+//		trimWhiteSpacesAndComments(expression);
+//		// decrement the number of parenthesis
+//		int numberOfParenthesis = (expression.bits & org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK) >> org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedSHIFT;
+//		expression.bits &= ~org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedMASK;
+//		expression.bits |= (numberOfParenthesis - 1) << org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode.ParenthesizedSHIFT;
+//		parenthesizedExpression.setExpression(convert(expression));
+//		return parenthesizedExpression;
+//	}
 		
-	public Type convertToType(org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference reference) {
-		Name name = convert(reference);
-		final SimpleType type = new SimpleType(this.ast);
-		type.setName(name);
-		type.setSourceRange(name.getStartPosition(), name.getLength());
-		if (this.resolveBindings) {
-			this.recordNodes(type, reference);
-		}
-		return type;
-	}
+//	public Type convertToType(org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference reference) {
+//		Name name = convert(reference);
+//		final SimpleType type = new SimpleType(this.ast);
+//		type.setName(name);
+//		type.setSourceRange(name.getStartPosition(), name.getLength());
+//		if (this.resolveBindings) {
+//			this.recordNodes(type, reference);
+//		}
+//		return type;
+//	}
 	
 	protected VariableDeclarationExpression convertToVariableDeclarationExpression(org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration localDeclaration) {
 		final VariableDeclarationFragment variableDeclarationFragment = convertToVariableDeclarationFragment(localDeclaration);
@@ -2199,7 +2202,7 @@ public class AjASTConverter extends ASTConverter {
 		variableDeclarationFragment.setName(name);
 		int start = fieldDeclaration.sourceEnd;
 		if (fieldDeclaration.initialization != null) {
-			final Expression expression = convert(fieldDeclaration.initialization);
+			final Expression expression = super.convert(fieldDeclaration.initialization);
 			variableDeclarationFragment.setInitializer(expression);
 			start = expression.getStartPosition() + expression.getLength();
 		}
@@ -2227,7 +2230,7 @@ public class AjASTConverter extends ASTConverter {
 		variableDeclarationFragment.setName(name);
 		int start = fieldDeclaration.sourceEnd;
 		if (fieldDeclaration.initialization != null) {
-			final Expression expression = convert(fieldDeclaration.initialization);
+			final Expression expression = super.convert(fieldDeclaration.initialization);
 			variableDeclarationFragment.setInitializer(expression);
 			start = expression.getStartPosition() + expression.getLength();
 		}
@@ -2255,7 +2258,7 @@ public class AjASTConverter extends ASTConverter {
 		variableDeclarationFragment.setName(name);
 		int start = localDeclaration.sourceEnd;
 		if (localDeclaration.initialization != null) {
-			final Expression expression = convert(localDeclaration.initialization);
+			final Expression expression = super.convert(localDeclaration.initialization);
 			variableDeclarationFragment.setInitializer(expression);
 			start = expression.getStartPosition() + expression.getLength();
 		}
@@ -3513,7 +3516,7 @@ public class AjASTConverter extends ASTConverter {
 						// we have an annotation
 						if (annotations != null && indexInAnnotations < annotations.length) {
 							org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation = annotations[indexInAnnotations++];
-							modifier = convert(annotation);
+							modifier = super.convert(annotation);
 							this.scanner.resetTo(annotation.declarationSourceEnd + 1, this.compilationUnitSourceLength);
 						}
 						break;
@@ -3694,7 +3697,7 @@ public class AjASTConverter extends ASTConverter {
 								// we have an annotation
 								if (annotations != null && indexInAnnotations < annotations.length) {
 									org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation = annotations[indexInAnnotations++];
-									modifier = convert(annotation);
+									modifier = super.convert(annotation);
 									this.scanner.resetTo(annotation.declarationSourceEnd + 1, this.compilationUnitSourceLength);
 								}
 								break;
@@ -3769,7 +3772,7 @@ public class AjASTConverter extends ASTConverter {
 							// we have an annotation
 							if (annotations != null && indexInAnnotations < annotations.length) {
 								org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation = annotations[indexInAnnotations++];
-								modifier = convert(annotation);
+								modifier = super.convert(annotation);
 								this.scanner.resetTo(annotation.declarationSourceEnd + 1, this.compilationUnitSourceLength);
 							}
 							break;
@@ -3871,7 +3874,7 @@ public class AjASTConverter extends ASTConverter {
 								// we have an annotation
 								if (annotations != null && indexInAnnotations < annotations.length) {
 									org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation = annotations[indexInAnnotations++];
-									modifier = convert(annotation);
+									modifier = super.convert(annotation);
 									this.scanner.resetTo(annotation.declarationSourceEnd + 1, this.compilationUnitSourceLength);
 								}
 								break;
@@ -3952,7 +3955,7 @@ public class AjASTConverter extends ASTConverter {
 								// we have an annotation
 								if (annotations != null && indexInAnnotations < annotations.length) {
 									org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation = annotations[indexInAnnotations++];
-									modifier = convert(annotation);
+									modifier = super.convert(annotation);
 									this.scanner.resetTo(annotation.declarationSourceEnd + 1, this.compilationUnitSourceLength);
 								}
 								break;
