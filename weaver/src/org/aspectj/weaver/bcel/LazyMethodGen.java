@@ -373,7 +373,7 @@ public final class LazyMethodGen {
                     InstructionTargeter targeter = targeters[i];
                     if (targeter instanceof LocalVariableGen) {
                         LocalVariableGen lng = (LocalVariableGen) targeter;
-                        LocalVariableTag lr = new LocalVariableTag(BcelWorld.fromBcel(lng.getType()), lng.getName(), lng.getIndex());
+                        LocalVariableTag lr = new LocalVariableTag(BcelWorld.fromBcel(lng.getType()), lng.getName(), lng.getIndex(), lng.getStart().getPosition());
                         if (lng.getStart() == ih) {
                             locals.add(lr);
                         } else {
@@ -896,35 +896,18 @@ public final class LazyMethodGen {
      * inspired by InstructionList.copy()
      */
     public void packBody(MethodGen gen) {
-        HashMap map = new HashMap();
         InstructionList fresh = gen.getInstructionList();
+        Map map = copyAllInstructionsExceptRangeInstructionsInto(fresh);
         
-        /* Make copies of all instructions, append them to the new list
-         * and associate old instruction references with the new ones, i.e.,
-         * a 1:1 mapping.
-         */
-        for (InstructionHandle ih = getBody().getStart(); ih != null; ih = ih.getNext()) {
-            if (Range.isRangeHandle(ih)) {
-                continue;
-            }
-            Instruction i = ih.getInstruction();
-            Instruction c = Utility.copyInstruction(i);
-
-            if (c instanceof BranchInstruction)
-                map.put(ih, fresh.append((BranchInstruction) c));
-            else
-                map.put(ih, fresh.append(c));
-        }
         // at this point, no rangeHandles are in fresh.  Let's use that...
 
         /* Update branch targets and insert various attributes.  
          * Insert our exceptionHandlers
          * into a sorted list, so they can be added in order later.
          */
-        InstructionHandle ih = getBody().getStart();
-        InstructionHandle jh = fresh.getStart();
-
-        LinkedList exnList = new LinkedList();   
+        InstructionHandle oldInstructionHandle = getBody().getStart();
+        InstructionHandle newInstructionHandle = fresh.getStart();
+        LinkedList exceptionList = new LinkedList();   
 
 		// map from localvariabletag to instruction handle
         Map localVariableStarts = new HashMap();
@@ -932,102 +915,64 @@ public final class LazyMethodGen {
 
         int currLine = -1;
         
-        while (ih != null) {
-            if (map.get(ih) == null) {
-                // we're a range instruction
-                Range r = Range.getRange(ih);
-                if (r instanceof ExceptionRange) {
-                    ExceptionRange er = (ExceptionRange) r;
-                    if (er.getStart() == ih) {
-                    	//System.err.println("er " + er);
-                    	if (!er.isEmpty()){
-                        	// order is important, insert handlers in order of start
-                        	insertHandler(er, exnList);
-                    	}
-                    }
-                } else {
-                    // we must be a shadow range or something equally useless, 
-                    // so forget about doing anything
-                }
+        while (oldInstructionHandle != null) {
+            if (map.get(oldInstructionHandle) == null) {
+            	// must be a range instruction since they're the only things we didn't copy across
+                handleRangeInstruction(oldInstructionHandle, exceptionList);
                 // just increment ih. 
-                ih = ih.getNext();
+                oldInstructionHandle = oldInstructionHandle.getNext();
             } else {
                 // assert map.get(ih) == jh
-                Instruction i = ih.getInstruction();
-                Instruction j = jh.getInstruction();
+                Instruction oldInstruction = oldInstructionHandle.getInstruction();
+                Instruction newInstruction = newInstructionHandle.getInstruction();
     
-                if (i instanceof BranchInstruction) {
-                    BranchInstruction bi = (BranchInstruction) i;
-                    BranchInstruction bj = (BranchInstruction) j;
-                    InstructionHandle itarget = bi.getTarget(); // old target
-    
-//    				try {
-                    // New target is in hash map
-                    bj.setTarget(remap(itarget, map));
-//    				} catch (NullPointerException e) {
-//    					print();
-//    					System.out.println("Was trying to remap " + bi);
-//    					System.out.println("who's target was supposedly " + itarget);
-//    					throw e;
-//    				}
-    
-                    if (bi instanceof Select) { 
-                        // Either LOOKUPSWITCH or TABLESWITCH
-                        InstructionHandle[] itargets = ((Select) bi).getTargets();
-                        InstructionHandle[] jtargets = ((Select) bj).getTargets();
-    
-                        for (int k = itargets.length - 1; k >= 0; k--) { 
-                            // Update all targets
-                            jtargets[k] = remap(itargets[k], map);
-                            jtargets[k].addTargeter(bj);
-                        }
-                    }
-                }
+        		if (oldInstruction instanceof BranchInstruction) {
+        			handleBranchInstruction(map, oldInstruction, newInstruction);
+        		}
                 
                 // now deal with line numbers 
                 // and store up info for local variables
-                InstructionTargeter[] targeters = ih.getTargeters();
-				int lineNumberOffset =
-					(fromFilename == null)
-						? 0
-						: getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
+                InstructionTargeter[] targeters = oldInstructionHandle.getTargeters();
+				int lineNumberOffset = (fromFilename == null) ? 0: getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
                 if (targeters != null) {
                     for (int k = targeters.length - 1; k >= 0; k--) {
                         InstructionTargeter targeter = targeters[k];
                         if (targeter instanceof LineNumberTag) {
                             int line = ((LineNumberTag)targeter).getLineNumber();
                             if (line != currLine) {
-                                gen.addLineNumber(jh, line + lineNumberOffset);
+                                gen.addLineNumber(newInstructionHandle, line + lineNumberOffset);
                                 currLine = line;
                             }
                         } else if (targeter instanceof LocalVariableTag) {
                             LocalVariableTag lvt = (LocalVariableTag) targeter;
-			    if (localVariableStarts.get(lvt) == null) {
-				localVariableStarts.put(lvt, jh);
-			    }
-			    localVariableEnds.put(lvt, jh);
+                            if (localVariableStarts.get(lvt) == null) {
+                            	localVariableStarts.put(lvt, newInstructionHandle);
+                            }
+                            localVariableEnds.put(lvt, newInstructionHandle);
                         }
                     }
                 }
+                
                 // now continue
-                ih = ih.getNext();
-                jh = jh.getNext();
+                oldInstructionHandle = oldInstructionHandle.getNext();
+                newInstructionHandle = newInstructionHandle.getNext();
             }
         }
 	
-        // now add exception handlers
-        for (Iterator iter = exnList.iterator(); iter.hasNext();) {
-            ExceptionRange r = (ExceptionRange) iter.next();
-            if (r.isEmpty()) continue;
-            gen.addExceptionHandler(
-                remap(r.getRealStart(), map), 
-                remap(r.getRealEnd(), map),
-                remap(r.getHandler(), map),
-                (r.getCatchType() == null)
-                ? null 
-                : (ObjectType) BcelWorld.makeBcelType(r.getCatchType()));
+        addExceptionHandlers(gen, map, exceptionList);       
+        addLocalVariables(gen, localVariableStarts, localVariableEnds);
+        
+        // JAVAC adds line number tables (with just one entry) to generated accessor methods - this
+        // keeps some tools that rely on finding at least some form of linenumbertable happy.
+        // Let's check if we have one - if we don't then let's add one.
+        // TODO Could be made conditional on whether line debug info is being produced
+        if (gen.getLineNumbers().length==0) { 
+        	gen.addLineNumber(gen.getInstructionList().getStart(),1);
         }
-        // now add local variables
+    }
+
+	private void addLocalVariables(MethodGen gen, Map localVariableStarts, Map localVariableEnds) {
+		// now add local variables
         gen.removeLocalVariables();
 
 		// this next iteration _might_ be overkill, but we had problems with
@@ -1061,16 +1006,90 @@ public final class LazyMethodGen {
                 (InstructionHandle) localVariableStarts.get(tag),
                 (InstructionHandle) localVariableEnds.get(tag));
         }
-        
-        // JAVAC adds line number tables (with just one entry) to generated accessor methods - this
-        // keeps some tools that rely on finding at least some form of linenumbertable happy.
-        // Let's check if we have one - if we don't then let's add one.
-        // TODO Could be made conditional on whether line debug info is being produced
-        if (gen.getLineNumbers().length==0) { 
-        	gen.addLineNumber(gen.getInstructionList().getStart(),1);
-        }
-    }
+	}
 
+	private void addExceptionHandlers(MethodGen gen, Map map, LinkedList exnList) {
+		// now add exception handlers
+        for (Iterator iter = exnList.iterator(); iter.hasNext();) {
+            ExceptionRange r = (ExceptionRange) iter.next();
+            if (r.isEmpty()) continue;
+            gen.addExceptionHandler(
+                remap(r.getRealStart(), map), 
+                remap(r.getRealEnd(), map),
+                remap(r.getHandler(), map),
+                (r.getCatchType() == null)
+                ? null 
+                : (ObjectType) BcelWorld.makeBcelType(r.getCatchType()));
+        }
+	}
+
+	private void handleBranchInstruction(Map map, Instruction oldInstruction, Instruction newInstruction) {
+	    BranchInstruction oldBranchInstruction = (BranchInstruction) oldInstruction;
+	    BranchInstruction newBranchInstruction = (BranchInstruction) newInstruction;
+	    InstructionHandle oldTarget = oldBranchInstruction.getTarget(); // old target
+   
+//    				try {
+	    // New target is in hash map
+	    newBranchInstruction.setTarget(remap(oldTarget, map));
+//    				} catch (NullPointerException e) {
+//    					print();
+//    					System.out.println("Was trying to remap " + bi);
+//    					System.out.println("who's target was supposedly " + itarget);
+//    					throw e;
+//    				}
+   
+		    if (oldBranchInstruction instanceof Select) { 
+		        // Either LOOKUPSWITCH or TABLESWITCH
+		        InstructionHandle[] oldTargets = ((Select) oldBranchInstruction).getTargets();
+		        InstructionHandle[] newTargets = ((Select) newBranchInstruction).getTargets();
+   
+		        for (int k = oldTargets.length - 1; k >= 0; k--) { 
+		            // Update all targets
+	            newTargets[k] = remap(oldTargets[k], map);
+	            newTargets[k].addTargeter(newBranchInstruction);
+	        }
+	    }
+	}
+
+	private void handleRangeInstruction(InstructionHandle ih, LinkedList exnList) {
+		// we're a range instruction
+		Range r = Range.getRange(ih);
+		if (r instanceof ExceptionRange) {
+		    ExceptionRange er = (ExceptionRange) r;
+		    if (er.getStart() == ih) {
+		    	//System.err.println("er " + er);
+		    	if (!er.isEmpty()){
+		        	// order is important, insert handlers in order of start
+		        	insertHandler(er, exnList);
+		    	}
+		    }
+		} else {
+		    // we must be a shadow range or something equally useless, 
+		    // so forget about doing anything
+		}
+	}
+
+    /* Make copies of all instructions, append them to the new list
+     * and associate old instruction references with the new ones, i.e.,
+     * a 1:1 mapping.
+     */
+   private Map copyAllInstructionsExceptRangeInstructionsInto(InstructionList intoList) {
+    	HashMap map = new HashMap();
+    	for (InstructionHandle ih = getBody().getStart(); ih != null; ih = ih.getNext()) {
+            if (Range.isRangeHandle(ih)) {
+                continue;
+            }
+            Instruction i = ih.getInstruction();
+            Instruction c = Utility.copyInstruction(i);
+
+            if (c instanceof BranchInstruction)
+                map.put(ih, intoList.append((BranchInstruction) c));
+            else
+                map.put(ih, intoList.append(c));
+        }
+    	return map;
+    }
+    
 	/** This procedure should not currently be used.
 	 */
 //	public void killNops() {

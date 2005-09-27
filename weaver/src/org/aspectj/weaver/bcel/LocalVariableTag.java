@@ -19,11 +19,15 @@ public final class LocalVariableTag extends Tag {
     private final UnresolvedType type;
     private final String name;
     private final int slot;
+    private final int startPos;
 
-    public LocalVariableTag(UnresolvedType type, String name, int slot) {
+    // AMC - pr101047, two local vars with the same name can share the same slot, but must in that case
+    // have different start positions.
+    public LocalVariableTag(UnresolvedType type, String name, int slot, int startPosition) {
         this.type = type;
         this.name = name;
         this.slot = slot;
+        this.startPos = startPosition;
     }
 
     public String getName() {
@@ -44,7 +48,7 @@ public final class LocalVariableTag extends Tag {
     public boolean equals(Object other) {
         if (!(other instanceof LocalVariableTag)) return false;
         LocalVariableTag o = (LocalVariableTag)other;
-        return o.type.equals(type) && o.name.equals(name) && o.slot == slot;
+        return o.type.equals(type) && o.name.equals(name) && o.slot == slot && o.startPos == startPos;
     }
     private volatile int hashCode = 0;
     public int hashCode() {
@@ -53,6 +57,7 @@ public final class LocalVariableTag extends Tag {
             ret = 37*ret + type.hashCode();
             ret = 37*ret + name.hashCode();
             ret = 37*ret + slot;
+            ret = 37*ret + startPos;
             hashCode = ret;
         }
         return hashCode;

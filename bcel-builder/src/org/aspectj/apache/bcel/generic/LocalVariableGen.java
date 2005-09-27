@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
  * with getLocalVariable which needs the instruction list and the constant
  * pool as parameters.
  *
- * @version $Id: LocalVariableGen.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: LocalVariableGen.java,v 1.4 2005/09/27 21:08:24 acolyer Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LocalVariable
  * @see     MethodGen
@@ -118,8 +118,15 @@ public class LocalVariableGen
     int start_pc        = start.getPosition();
     int length          = end.getPosition() - start_pc;
 
-    if(length > 0)
+    if(length > 0) {
       length += end.getInstruction().getLength();
+      // AMC - the above calculation is off by one. The spec says that the variable
+      // must have a range from start pos to start pos + length INCLUSIVE.
+      // but the calculation above puts start pos + length as the address of 
+      // the first instruction outside of the range. 
+      // So we need to subtract 1... which gives the very end of the last inst in the range
+      length = length - 1; 
+    }
     
     int name_index      = cp.addUtf8(name);
     int signature_index = cp.addUtf8(type.getSignature());
