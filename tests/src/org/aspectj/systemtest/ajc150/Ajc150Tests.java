@@ -462,6 +462,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("default impl of Runnable");
   }
   
+  public void testArrayCloneCallJoinPoints() {
+	  runTest("array clone call join points in 1.4 vs 1.3");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
