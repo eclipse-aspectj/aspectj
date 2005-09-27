@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
 
 /**
  * When we try to resolve a type in the world that we require to be present,
@@ -173,29 +174,33 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	
 	public void raiseWarningOnJoinPointSignature(String signature) {
 		if (issuedJoinPointWarning) return;
-		MessageUtil.warn(world.getMessageHandler(), 
-			WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_JOINPOINT,getName(),signature));
+		String message = WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_JOINPOINT,getName(),signature);
+		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
+		MessageUtil.warn(world.getMessageHandler(),message); 
 		issuedJoinPointWarning = true;		
 	}
 	
 	public void raiseWarningOnMissingInterfaceWhilstFindingMethods() {
 		if (issuedMissingInterfaceWarning) return;
-		MessageUtil.warn(world.getMessageHandler(), 
-				WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_INTERFACE_METHODS,getName(),signature));
-			issuedMissingInterfaceWarning = true;				
+		String message = WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_INTERFACE_METHODS,getName(),signature);
+		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
+		MessageUtil.warn(world.getMessageHandler(),message); 
+		issuedMissingInterfaceWarning = true;				
 	}
 	
 	private void raiseCantFindType(String key) {
 		if (issuedCantFindTypeError) return;
-		MessageUtil.error(world.getMessageHandler(), 
-				WeaverMessages.format(key,getName()));
+		String message = WeaverMessages.format(key,getName());
+		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
+		MessageUtil.error(world.getMessageHandler(),message);
 		issuedCantFindTypeError = true;
 	}
 
 	private void raiseCantFindType(String key,String insert) {
 		if (issuedCantFindTypeError) return;
-		MessageUtil.error(world.getMessageHandler(), 
-				WeaverMessages.format(key,getName(),insert));
+		String message = WeaverMessages.format(key,getName(),insert);
+		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
+		MessageUtil.error(world.getMessageHandler(),message);
 		issuedCantFindTypeError = true;
 	}
 
