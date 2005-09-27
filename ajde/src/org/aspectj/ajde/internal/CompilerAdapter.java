@@ -23,6 +23,7 @@ import org.aspectj.ajde.*;
 import org.aspectj.ajdt.ajc.*;
 import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.*;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.util.LangUtil;
 //import org.eclipse.core.runtime.OperationCanceledException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -92,6 +93,7 @@ public class CompilerAdapter {
 		}
 		init();
 		try { 
+			CompilationAndWeavingContext.reset();
 			AjBuildConfig buildConfig = genBuildConfig(configFile);
 			if (buildConfig == null) {
                 return false;
@@ -127,14 +129,11 @@ public class CompilerAdapter {
 //            return false;
 		} catch (AbortException e) {
             final IMessage message = e.getIMessage();
-            if (null == message) {
-                signalThrown(e);
-            } else if (null != message.getMessage()) {
-				Ajde.getDefault().getErrorHandler().handleWarning(message.getMessage());
-            } else if (null != message.getThrown()) {
-                signalThrown(message.getThrown());
+            if (message == null) {
+            	signalThrown(e);
             } else {
-                signalThrown(e);
+            	String messageText = message.getMessage() + "\n" + CompilationAndWeavingContext.getCurrentContext();
+            	Ajde.getDefault().getErrorHandler().handleError(messageText, message.getThrown());
             }
 			return false;
 		} catch (Throwable t) {
@@ -621,6 +620,7 @@ public class CompilerAdapter {
 
 		public boolean handleMessage(IMessage message) throws AbortException {
             IMessage.Kind kind = message.getKind(); 
+            if (kind == IMessage.ABORT) return handleAbort(message);
             if (isIgnoring(kind) 
                 || (!showInfoMessages && IMessage.INFO.equals(kind))) {
                     return true;
@@ -628,6 +628,10 @@ public class CompilerAdapter {
 			
 			taskListManager.addSourcelineTask(message);
 			return super.handleMessage(message); // also store...	
+		}
+		
+		private boolean handleAbort(IMessage abortMessage) {
+			throw new AbortException(abortMessage);
 		}
 	}
 

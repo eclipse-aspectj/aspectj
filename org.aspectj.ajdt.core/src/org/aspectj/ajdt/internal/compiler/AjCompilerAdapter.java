@@ -191,6 +191,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	}
 
 	public void afterProcessing(CompilationUnitDeclaration unit, int unitIndex) {
+		CompilationAndWeavingContext.leavingPhase(processingToken);
 		eWorld.finishedCompilationUnit(unit);
 		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult,outputFileNameProvider);
 		if (unit.compilationResult.hasErrors()) reportedErrors = true;
