@@ -607,6 +607,25 @@
         </compile>
     </ajc-test> 
     
+    <ajc-test dir="bugs150" title="call join points in anonymous inner classes">
+        <compile files="pr104229.aj" options="-1.5">
+            <message kind="warning" line="54" text="bingo"/>
+            <message kind="warning" line="115" text="bingo"/>
+            <message kind="warning" line="130" text="bingo"/>
+        </compile>
+        <run class="pr104229">
+            <stdout>
+                <line text="call match class pr104229"/>
+                <line text="OK it worked!"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs150" title="default impl of Runnable">
+        <compile files="pr88900.aj" options="-Xdev:Pinpoint">
+        </compile>
+    </ajc-test> 
+    
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     

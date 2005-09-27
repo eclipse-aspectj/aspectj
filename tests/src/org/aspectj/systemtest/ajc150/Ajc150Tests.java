@@ -454,6 +454,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("parameterized generic methods");
   }
   
+  public void testCallJoinPointsInAnonymousInnerClasses() {
+	  runTest("call join points in anonymous inner classes");
+  }
+  
+  public void testNoRequirementForUnwovenTypesToBeExposedToWeaver() {
+	  runTest("default impl of Runnable");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
