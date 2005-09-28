@@ -12,6 +12,7 @@
 
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.tools.PointcutExpressionTest;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -24,10 +25,8 @@ public class Weaver5ModuleTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite(Weaver5ModuleTests.class.getName());
         if (TestUtil.is15VMOrGreater()) {
-//        	if (LangUtil.is15VMOrGreater()) {
 	            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.tools.Java15PointcutExpressionTest", false);
-//	        }
-//            TestUtil.loadTestsReflectively(suite, "Weaver515ModuleTests", true);
+	            suite.addTestSuite(PointcutExpressionTest.class);
         } else {
             suite.addTest(TestUtil.testNamed("all tests require 1.5"));
         }

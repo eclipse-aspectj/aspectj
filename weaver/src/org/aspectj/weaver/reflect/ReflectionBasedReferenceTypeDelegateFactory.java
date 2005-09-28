@@ -38,10 +38,10 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		try {
 			Class c = Class.forName(forReferenceType.getName());
 			if (LangUtil.is15VMOrGreater()) {
-				return create15Delegate(forReferenceType,c,inWorld);
-			} else {
-				return new ReflectionBasedReferenceTypeDelegate(c,inWorld,forReferenceType);
+				ReflectionBasedReferenceTypeDelegate rbrtd = create15Delegate(forReferenceType,c,inWorld);
+				if (rbrtd!=null) return rbrtd; // can be null if we didn't find the class the delegate logic loads
 			}
+			return new ReflectionBasedReferenceTypeDelegate(c,inWorld,forReferenceType);
 		} catch (ClassNotFoundException cnfEx) {
 			return null;
 		}
