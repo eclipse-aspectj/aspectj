@@ -180,40 +180,9 @@ public class DeclareParents extends Declare {
 		// Ensure the target doesn't already have an 
 		// alternate parameterization of the generic type on it
 		if (parentType.isParameterizedType() || parentType.isRawType()) {
-			ResolvedType newParentGenericType = parentType.getGenericType();
 			// Let's take a look at the parents we already have
-			Iterator iter = targetType.getDirectSupertypes();
-			while (iter.hasNext()) {
-				ResolvedType supertype = (ResolvedType)iter.next();
-				if ( ((supertype.isRawType() && parentType.isParameterizedType()) || 
-					  (supertype.isParameterizedType() && parentType.isRawType())) && newParentGenericType.equals(supertype.getGenericType())) {
-					// new parent is a parameterized type, but this is a raw type
-					world.getMessageHandler().handleMessage(new Message(
-							WeaverMessages.format(WeaverMessages.CANT_DECP_MULTIPLE_PARAMETERIZATIONS,parentType.getName(),targetType.getName(),supertype.getName()),
-							getSourceLocation(), 
-							true,
-							new ISourceLocation[]{targetType.getSourceLocation()}));
-					return null;
-				}
-				if (supertype.isParameterizedType()) {
-					ResolvedType generictype = supertype.getGenericType();
-					if (newParentGenericType.equals(generictype)) {
-						// Have to verify the parameterizations match, otherwise its a no-go
-						boolean isOk = true;
-						for (int pNum = 0;pNum<parentType.getTypeParameters().length && isOk;pNum++) {
-						  if (!parentType.getTypeParameters()[pNum].equals(supertype.getTypeParameters()[pNum])) isOk=false;
-						}
-						if (!isOk) {
-							world.getMessageHandler().handleMessage(new Message(
-									WeaverMessages.format(WeaverMessages.CANT_DECP_MULTIPLE_PARAMETERIZATIONS,parentType.getName(),targetType.getName(),supertype.getName()),
-									getSourceLocation(), 
-									true,
-									new ISourceLocation[]{targetType.getSourceLocation()}));
-							return null;
-						}
-					}
-				}
-			}
+			boolean isOK = verifyNoInheritedAlternateParameterization(targetType,parentType,world);
+			if (!isOK) return null;
 		}
 
 		if (parentType.isAssignableFrom(targetType)) return null;  // already a parent
@@ -309,6 +278,50 @@ public class DeclareParents extends Declare {
 		}
 	}
 	
+	/**
+	 * This method looks through the type hierarchy for some target type - it is attempting to
+	 * find an existing parameterization that clashes with the new parent that the user
+	 * wants to apply to the type.  If it finds an existing parameterization that matches the
+	 * new one, it silently completes, if it finds one that clashes (e.g. a type already has
+	 * A<String> when the user wants to add A<Number>) then it will produce an error.
+	 * 
+	 * It uses recursion and exits recursion on hitting 'jlObject'
+     *
+	 * Related bugzilla entries: pr110788
+	 */
+	private boolean verifyNoInheritedAlternateParameterization(ResolvedType typeToVerify,ResolvedType newParent,World world) {
+		
+
+		if (typeToVerify.equals(ResolvedType.OBJECT)) return true;
+
+		ResolvedType newParentGenericType = newParent.getGenericType();
+		Iterator iter = typeToVerify.getDirectSupertypes();
+		while (iter.hasNext()) {
+			ResolvedType supertype = (ResolvedType)iter.next();
+			if ( ((supertype.isRawType() && newParent.isParameterizedType()) || 
+			      (supertype.isParameterizedType() && newParent.isRawType())) && newParentGenericType.equals(supertype.getGenericType())) {
+				// new parent is a parameterized type, but this is a raw type
+				world.getMessageHandler().handleMessage(new Message(
+					WeaverMessages.format(WeaverMessages.CANT_DECP_MULTIPLE_PARAMETERIZATIONS,newParent.getName(),typeToVerify.getName(),supertype.getName()),
+					getSourceLocation(), true, new ISourceLocation[]{typeToVerify.getSourceLocation()}));
+				return false;
+			}
+			if (supertype.isParameterizedType()) {
+				ResolvedType generictype = supertype.getGenericType();
+				
+				// If the generic types are compatible but the parameterizations aren't then we have a problem
+				if (generictype.isAssignableFrom(newParentGenericType) && 
+						!supertype.isAssignableFrom(newParent)) {
+					world.getMessageHandler().handleMessage(new Message(
+							WeaverMessages.format(WeaverMessages.CANT_DECP_MULTIPLE_PARAMETERIZATIONS,newParent.getName(),typeToVerify.getName(),supertype.getName()),
+							getSourceLocation(), true, new ISourceLocation[]{typeToVerify.getSourceLocation()}));
+					return false;
+				}
+			}
+			return verifyNoInheritedAlternateParameterization(supertype,newParent,world);
+		}
+		return true;
+	}
 
 	public List/*<ResolvedType>*/ findMatchingNewParents(ResolvedType onType,boolean reportErrors) {
 		if (onType.isRawType()) onType = onType.getGenericType();
