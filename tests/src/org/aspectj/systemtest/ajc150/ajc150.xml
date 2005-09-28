@@ -178,7 +178,7 @@
 
     <ajc-test dir="bugs150/" pr="107953" title="@AfterThrowing with no formal specified">
         <compile files="pr107953.java" options="-1.5">
-            <message kind="error" line="8" text="throwing formal 'RuntimeException' must be declared as the last parameter in the advice signature"></message>
+            <message kind="error" line="8" text="throwing formal 'RuntimeException' must be declared as a parameter in the advice signature"></message>
         </compile>
     </ajc-test>
                
