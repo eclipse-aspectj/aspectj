@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.4 2005/03/10 12:15:04 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.5 2005/09/28 20:10:19 acolyer Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -263,6 +263,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 	      LocalVariable     l     = lv[k];
 	      InstructionHandle start = il.findHandle(l.getStartPC());
 	      InstructionHandle end   = il.findHandle(l.getStartPC() + l.getLength());
+	      // AMC, this actually gives us the first instruction AFTER the range,
+	      // so move back one... (findHandle can't cope with mid-instruction indices)
+	      if (end != null) end = end.getPrev();
 
 	      // Repair malformed handles
 	      if(null == start) {
