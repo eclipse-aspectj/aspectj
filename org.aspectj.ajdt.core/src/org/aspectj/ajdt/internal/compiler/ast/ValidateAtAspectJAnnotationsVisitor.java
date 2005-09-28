@@ -13,6 +13,8 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
 import java.util.Stack;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
@@ -305,15 +307,13 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			String thrownFormal = getStringLiteralFor("throwing",ajAnnotations.adviceAnnotation,throwingLocation);
 			if (thrownFormal != null) {
 				Argument[] arguments = methodDeclaration.arguments;
-				if (arguments != null && arguments.length > 0) {
-					Argument lastArgument = arguments[arguments.length - 1];
-					if (!thrownFormal.equals(new String(lastArgument.name))) {
+				if (methodDeclaration.arguments != null
+                        && !toArgumentNames(methodDeclaration.arguments).contains(thrownFormal)) {
 						methodDeclaration.scope.problemReporter()
-							.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"throwing formal '" + thrownFormal + "' must be declared as the last parameter in the advice signature");
-					}
+							.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"throwing formal '" + thrownFormal + "' must be declared as a parameter in the advice signature");
 				} else {
 					methodDeclaration.scope.problemReporter()
-					.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"throwing formal '" + thrownFormal + "' must be declared as the last parameter in the advice signature");
+					.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"throwing formal '" + thrownFormal + "' must be declared as a parameter in the advice signature");
 				}
 			}
 		}
@@ -322,16 +322,13 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			int[] throwingLocation = new int[2];
 			String returningFormal = getStringLiteralFor("returning",ajAnnotations.adviceAnnotation,throwingLocation);
 			if (returningFormal != null) {
-				Argument[] arguments = methodDeclaration.arguments;
-				if (arguments != null && arguments.length > 0) {
-					Argument lastArgument = arguments[arguments.length - 1];
-					if (!returningFormal.equals(new String(lastArgument.name))) {
+				if (methodDeclaration.arguments.length > 0
+                        && !toArgumentNames(methodDeclaration.arguments).contains(returningFormal)) {
 						methodDeclaration.scope.problemReporter()
-							.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"returning formal '" + returningFormal + "' must be declared as the last parameter in the advice signature");
-					}
+							.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"returning formal '" + returningFormal + "' must be declared as a parameter in the advice signature");
 				} else {
 					methodDeclaration.scope.problemReporter()
-					.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"returning formal '" + returningFormal + "' must be declared as the last parameter in the advice signature");
+					.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"returning formal '" + returningFormal + "' must be declared as a parameter in the advice signature");
 				}
 			}
 		}
@@ -340,7 +337,24 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		
 	}
 
-	private void resolveAndSetPointcut(MethodDeclaration methodDeclaration, Annotation adviceAnn) {
+    /**
+     * Get the argument names as a string list
+     * @param arguments
+     * @return argument names (possibly empty)
+     */
+    private List toArgumentNames(Argument[] arguments) {
+        List names = new ArrayList();
+        if (arguments == null) {
+            return names;
+        } else {
+            for (int i = 0; i < arguments.length; i++) {
+                names.add(new String(arguments[i].name));
+            }
+            return names;
+        }
+    }
+
+    private void resolveAndSetPointcut(MethodDeclaration methodDeclaration, Annotation adviceAnn) {
 		int[] pcLocation = new int[2];
 		String pointcutExpression = getStringLiteralFor("pointcut",adviceAnn,pcLocation);
 		if (pointcutExpression == null) pointcutExpression = getStringLiteralFor("value",adviceAnn,pcLocation);

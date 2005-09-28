@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Arrays;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -717,10 +718,9 @@ public class AtAjAttributes {
                 } else {
                    	// check that thrownFormal exists as the last parameter in the advice
                 	String[] pNames = owningMethod.getParameterNames();
-                	if (pNames == null || pNames.length == 0 || !pNames[pNames.length -1].equals(returned)) {
-                		throw new ReturningFormalNotDeclaredInAdviceSignatureException(returned);
-                	}
-                	
+                    if (pNames == null || pNames.length == 0 || !Arrays.asList(pNames).contains(returned)) {
+                        throw new ReturningFormalNotDeclaredInAdviceSignatureException(returned);
+                    }
                 }
             }
 
@@ -815,7 +815,7 @@ public class AtAjAttributes {
                 } else {
                 	// check that thrownFormal exists as the last parameter in the advice
                 	String[] pNames = owningMethod.getParameterNames();
-                	if (pNames == null || pNames.length == 0 || !pNames[pNames.length -1].equals(thrownFormal)) {
+                	if (pNames == null || pNames.length == 0 || !Arrays.asList(pNames).contains(thrownFormal)) {
                 		throw new ThrownFormalNotDeclaredInAdviceSignatureException(thrownFormal);
                 	}
                 }
