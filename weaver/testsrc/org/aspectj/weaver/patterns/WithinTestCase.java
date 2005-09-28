@@ -13,15 +13,22 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.runtime.reflect.Factory;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TestShadow;
+import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 public class WithinTestCase extends TestCase {		
 
