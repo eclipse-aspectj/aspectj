@@ -10,6 +10,7 @@ import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.tools.ajc.Ajc;
 
 public class GenericsTests extends XMLBasedAjcTestCase {
 
@@ -429,7 +430,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	public void testPR96220_GenericDecp() {
 		runTest("generic decp - simple");
-		verifyClassSignature("Basic","Ljava/lang/Object;LJ<Ljava/lang/Double;>;LI<Ljava/lang/Double;>;");
+		verifyClassSignature(ajc,"Basic","Ljava/lang/Object;LJ<Ljava/lang/Double;>;LI<Ljava/lang/Double;>;");
 	}
 	
 	// Both the existing type decl and the one adding via decp are parameterized
@@ -473,7 +474,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 
 	public void testGenericDecpParameterized() {
 		runTest("generic decp - with parameterized on the target");
-		verifyClassSignature("Basic6","<J:Ljava/lang/Object;>Ljava/lang/Object;LI<TJ;>;LK<Ljava/lang/Integer;>;");
+		verifyClassSignature(ajc,"Basic6","<J:Ljava/lang/Object;>Ljava/lang/Object;LI<TJ;>;LK<Ljava/lang/Integer;>;");
 	}
 	
 	public void testGenericDecpIncorrectNumberOfTypeParams() {
@@ -723,8 +724,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	// --- helpers
 		
-	// Check the signature attribute on a class is correct
-	private void verifyClassSignature(String classname,String sig) {
+	public static Signature getClassSignature(Ajc ajc,String classname) {
 		try {
 			ClassPath cp = 
 				new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
@@ -736,12 +736,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 				Attribute attribute = attrs[i];
 				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
 			}
-			assertTrue("Failed to find signature attribute for class "+classname,sigAttr!=null);
-			assertTrue("Expected signature to be '"+sig+"' but was '"+sigAttr.getSignature()+"'",
-					sigAttr.getSignature().equals(sig));
+			return sigAttr;
 		} catch (ClassNotFoundException e) {
 			fail("Couldn't find class "+classname+" in the sandbox directory.");
 		}
+		return null;
+	}
+	// Check the signature attribute on a class is correct
+	public static void verifyClassSignature(Ajc ajc,String classname,String sig) {
+		Signature sigAttr = getClassSignature(ajc,classname);
+		assertTrue("Failed to find signature attribute for class "+classname,sigAttr!=null);
+		assertTrue("Expected signature to be '"+sig+"' but was '"+sigAttr.getSignature()+"'",
+				sigAttr.getSignature().equals(sig));		
 	}
 		
 

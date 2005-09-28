@@ -19,6 +19,7 @@ import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.asm.AsmManager;
@@ -39,6 +40,17 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}
   public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
   public void testBadDecp_pr110788_4() { runTest("bad generic decp - 4");}
+  
+  public void testBadGenericSigAttribute_pr110927() { 
+	runTest("cant create signature attribute");
+	Signature sig = GenericsTests.getClassSignature(ajc,"I");
+	if (sig==null) fail("Couldn't find signature attribute for type I");
+	String sigString = sig.getSignature();
+	if (!(sigString.equals("Ljava/lang/Object;LIE2;LIE1<Ljava/lang/String;>;") ||
+          sigString.equals("Ljava/lang/Object;LIE1<Ljava/lang/String;>;LIE2;"))) {
+		fail("Signature was "+sigString+" when should have been something like Ljava/lang/Object;LIE1<Ljava/lang/String;>;LIE2;");
+	}
+  }
 
   public void test_typeProcessingOrderWhenDeclareParents() {
 	runTest("Order of types passed to compiler determines weaving behavior");

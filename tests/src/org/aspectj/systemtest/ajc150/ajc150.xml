@@ -4846,4 +4846,8 @@
    <ajc-test dir="bugs150/pr110788" title="bad generic decp - 4">
      <compile files="Case4.java" options="-1.5"/>
    </ajc-test>
+   
+   <ajc-test dir="bugs150/pr110927" title="cant create signature attribute">
+     <compile files="Case1.java" options="-1.5"/>
+   </ajc-test>
 </suite>

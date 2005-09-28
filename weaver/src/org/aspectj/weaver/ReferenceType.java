@@ -96,6 +96,7 @@ public class ReferenceType extends ResolvedType {
     }
     
     public String getSignatureForAttribute() {
+    	if (genericType == null || typeParameters == null) return getSignature();
     	return makeDeclaredSignature(genericType,typeParameters);	
     }
 	
