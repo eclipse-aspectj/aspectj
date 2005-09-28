@@ -78,7 +78,21 @@ public class PerClauseTestAspects {
         public void before(JoinPoint jp) {
             ;
         }
+    }
 
+    @Aspect("perthis(this(ataspectj.PerClauseTest.PerThis))")
+    public static class TestAspectPerThis {
+        static int s_count;
+        static int a_count;
+
+        public TestAspectPerThis() {
+            s_count++;
+        }
+
+        @Before("execution(* ataspectj.PerClauseTest.PerThis.foo())")
+        public void before(JoinPoint jp) {
+            a_count++;
+        }
     }
 
 
