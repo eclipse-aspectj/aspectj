@@ -12,13 +12,8 @@ package org.aspectj.ajdt.core.dom.rewrite;
 
 import java.util.Map;
 
-import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTVisitor;
-import org.aspectj.org.eclipse.jdt.core.dom.AjTypeDeclaration;
-import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration.ITypeDeclFactory;
 import org.aspectj.org.eclipse.jdt.core.dom.rewrite.TargetSourceRangeComputer;
-import org.aspectj.org.eclipse.jdt.internal.core.dom.rewrite.ASTRewriteAnalyzer;
 import org.aspectj.org.eclipse.jdt.internal.core.dom.rewrite.AjASTRewriteAnalyzer;
 import org.aspectj.org.eclipse.jdt.internal.core.dom.rewrite.NodeInfoStore;
 import org.aspectj.org.eclipse.jdt.internal.core.dom.rewrite.RewriteEventStore;
