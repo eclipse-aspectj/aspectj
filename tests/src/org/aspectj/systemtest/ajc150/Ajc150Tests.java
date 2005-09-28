@@ -25,9 +25,6 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.LangUtil;
 
-/**
- * These are tests that will run on Java 1.4 and use the old harness format for test specification.
- */
 public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  
   public static Test suite() {
@@ -37,6 +34,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
+  
+  public void testBadDecp_pr110788_1() { runTest("bad generic decp - 1");}
+  public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}
+  public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
+  public void testBadDecp_pr110788_4() { runTest("bad generic decp - 4");}
 
   public void test_typeProcessingOrderWhenDeclareParents() {
 	runTest("Order of types passed to compiler determines weaving behavior");
@@ -172,10 +174,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("overriding/polymorphism error on interface method introduction");
   }
 
-  /**
-   * IfPointcut.findResidueInternal() was modified to make this test complete in a short amount
-   * of time - if you see it hanging, someone has messed with the optimization.
-   */
+  
+   // IfPointcut.findResidueInternal() was modified to make this test complete in a short amount
+   // of time - if you see it hanging, someone has messed with the optimization.
   public void testIfEvaluationExplosion_pr94086() {
 	  runTest("Exploding compile time with if() statements in pointcut");
   }

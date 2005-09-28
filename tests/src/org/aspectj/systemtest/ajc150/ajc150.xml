@@ -4827,4 +4827,23 @@
      <compile files="pr109728.java" options="-1.5"/>
    </ajc-test>
    
+   <ajc-test dir="bugs150/pr110788" title="bad generic decp - 1">
+     <compile files="Case1.java" options="-1.5">
+       <message kind="error" line="10" text="Cannot declare parent B&lt;java.lang.Number&gt; onto type C since it already has A&lt;java.lang.String&gt; in its hierarchy"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr110788" title="bad generic decp - 2">
+     <compile files="Case2.java" options="-1.5">
+       <message kind="error" line="8" text="Cannot declare parent A&lt;java.lang.Number&gt; onto type C since it already has A&lt;java.lang.String&gt; in its hierarchy"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr110788" title="bad generic decp - 3">
+     <compile files="Case3.java" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs150/pr110788" title="bad generic decp - 4">
+     <compile files="Case4.java" options="-1.5"/>
+   </ajc-test>
 </suite>
