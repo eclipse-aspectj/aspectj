@@ -57,7 +57,7 @@ import org.aspectj.lang.reflect.Pointcut;
  * @author colyer
  *
  */
-public class AjTypeImpl<T> implements AjType {
+public class AjTypeImpl<T> implements AjType<T> {
 	
 	private static final String ajcMagic = "ajc$";
 	
@@ -170,11 +170,11 @@ public class AjTypeImpl<T> implements AjType {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#isAnnotationPresent(java.lang.Class)
 	 */
-	public boolean isAnnotationPresent(Class annotationType) {
+	public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
 		return clazz.isAnnotationPresent(annotationType);
 	}
 
-	public Annotation getAnnotation(Class annotationType) {
+	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		return clazz.getAnnotation(annotationType);
 	}
 	
@@ -714,14 +714,14 @@ public class AjTypeImpl<T> implements AjType {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getEnumConstants()
 	 */
-	public Object[] getEnumConstants() {
+	public T[] getEnumConstants() {
 		return clazz.getEnumConstants();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getTypeParameters()
 	 */
-	public TypeVariable[] getTypeParameters() {
+	public TypeVariable<Class<T>>[] getTypeParameters() {
 		return clazz.getTypeParameters();
 	}
 

@@ -19,7 +19,7 @@ import org.aspectj.internal.lang.reflect.AjTypeImpl;
  */
 public class AjTypeSystem {
 
-		public static AjType getAjType(Class fromClass) {
-			return new AjTypeImpl(fromClass);
+		public static <T> AjType<T> getAjType(Class<T> fromClass) {
+			return new AjTypeImpl<T>(fromClass);
 		}
 }
