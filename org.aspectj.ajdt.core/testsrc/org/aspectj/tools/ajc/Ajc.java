@@ -22,10 +22,13 @@ import java.util.StringTokenizer;
 
 import junit.framework.AssertionFailedError;
 
+import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.util.FileUtil;
 
 /**
@@ -185,6 +188,7 @@ public class Ajc {
 			}
 			args = adjustToSandbox(args,!isIncremental);
 			MessageHandler holder = new MessageHandler();
+			holder.setInterceptor(new AbortInterceptor());
 			main.setHolder(holder);
 			if (incrementalStage==10 && hasSpecifiedIncremental(args)) {
 			  // important to sleep after preparing the sandbox on first incremental stage (see notes in pr90806)
@@ -439,5 +443,29 @@ class AjcCommandController extends Main.CommandController {
 	public void doIncremental(IMessageHandler handler) {
 		if (command == null) throw new IllegalArgumentException("Can't repeat command until it has executed at least once!");
 		command.repeatCommand(handler);
+	}
+}
+
+class AbortInterceptor implements IMessageHandler {
+
+	public boolean handleMessage(IMessage message) throws AbortException {
+		if (message.getKind() == IMessage.ABORT) {
+			System.err.println("***** Abort Message Received ******");
+			System.err.println(CompilationAndWeavingContext.getCurrentContext());
+			System.err.println(message.getMessage());
+			if (message.getThrown() != null) {
+				System.err.println("caused by " + message.getThrown().toString());
+			}
+			
+		}  // allow message to accumulate... 
+		return false;
+	}
+
+	public boolean isIgnoring(Kind kind) {
+		if (kind != IMessage.ABORT) return true;
+		return false;
+	}
+
+	public void dontIgnore(Kind kind) {
 	}
 }
