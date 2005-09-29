@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="java5-src"/>
 	<classpathentry kind="src" path="testsrc"/>
 	<classpathentry kind="src" path="java5-testsrc"/>
@@ -12,5 +11,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aspectj5rt"/>
 	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry sourcepath="/JRE15_SRC" kind="var" path="JRE15_LIB"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
