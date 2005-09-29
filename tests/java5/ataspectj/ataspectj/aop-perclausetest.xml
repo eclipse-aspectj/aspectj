@@ -6,5 +6,6 @@
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerTarget"/>
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerCflow"/>
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPTW"/>
+        <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerThis"/>
     </aspects>
 </aspectj>

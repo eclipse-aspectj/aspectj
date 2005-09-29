@@ -483,6 +483,14 @@ public class AtAjAttributes {
                 // FIXME asc see related comment way about about the version...
                 struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
                 struct.ajAttributes.add(new AjAttribute.Aspect(perClause));
+                FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+                final IScope binding;
+                binding = new BindingScope(
+                        	struct.enclosingType,
+                        	struct.context,
+                        	bindings
+                		);
+                perClause.resolve(binding);
                 return true;
             }
         }
@@ -599,7 +607,7 @@ public class AtAjAttributes {
                 } else {
                     pc = parsePointcut(beforeAdvice.getValue().stringifyValue(), struct, false);
                     if (pc == null) return false;//parse error
-                    pc.resolve(binding);
+                    pc = pc.resolve(binding);
                 }
                 setIgnoreUnboundBindingNames(pc, bindings);
 
