@@ -479,6 +479,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("array clone call join points in 1.4 vs 1.3");
   }
   
+  public void testDebugInfoForAroundAdvice() {
+	  runTest("debug info in around advice inlining");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

@@ -127,8 +127,20 @@ final class ShadowRange extends Range {
                 for (int j = sources.length - 1; j >= 0; j--) {
                     InstructionTargeter source = sources[j];
                     if (source instanceof LocalVariableTag) {
-                        // XXX destroying local variable info
-                        source.updateTarget(oldIh, null);
+                    	Shadow.Kind kind = getKind();
+                    	if (kind == Shadow.AdviceExecution ||
+                    		kind == Shadow.ConstructorExecution ||
+                    		kind == Shadow.MethodExecution ||
+                    		kind == Shadow.PreInitialization ||
+                    		kind == Shadow.Initialization ||
+                    		kind == Shadow.StaticInitialization) {
+                    		// if we're extracting a whole block we can do this...
+                    		source.updateTarget(oldIh, freshIh);
+                    	} else {
+                            // XXX destroying local variable info
+                    		// but only for a call or get join point, so no big deal
+                    		source.updateTarget(oldIh, null);
+                    	}
                     } else if (source instanceof Range) {
                         // exceptions and shadows are just moved
                         ((Range)source).updateTarget(oldIh, freshIh, freshBody);
