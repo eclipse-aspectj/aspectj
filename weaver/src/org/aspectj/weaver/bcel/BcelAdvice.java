@@ -33,6 +33,7 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -40,6 +41,7 @@ import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.ExactTypePattern;
 import org.aspectj.weaver.patterns.ExposedState;
+import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 
 /**
@@ -76,6 +78,20 @@ public class BcelAdvice extends Advice {
 
     // ---- implementations of ShadowMunger's methods
     
+	public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
+		suppressLintWarnings(world);
+		ShadowMunger ret = super.concretize(fromType, world, clause);
+		clearLintSuppressions(world);
+		return ret;
+	}
+	
+	public boolean match(Shadow shadow, World world) {
+		suppressLintWarnings(world);
+		boolean ret = super.match(shadow, world);
+		clearLintSuppressions(world);
+		return ret;
+	}
+	
     public void specializeOn(Shadow shadow) {
 	  	if (getKind() == AdviceKind.Around) {
 	  		((BcelShadow)shadow).initializeForAroundClosure();
@@ -98,16 +114,9 @@ public class BcelAdvice extends Advice {
     	}
     	
     	World world = shadow.getIWorld();
-    	if (suppressedLintKinds == null) {
-    		if (signature instanceof BcelMethod) {
-    			this.suppressedLintKinds = Utility.getSuppressedWarnings(signature.getAnnotations(), world.getLint());
-    		} else {
-    			this.suppressedLintKinds = Collections.EMPTY_LIST;
-    		}
-    	}
-    	world.getLint().suppressKinds(suppressedLintKinds);
+    	suppressLintWarnings(world);
 		pointcutTest = getPointcut().findResidue(shadow, exposedState);
-		world.getLint().clearSuppressions();
+		clearLintSuppressions(world);
 		
 		// these initializations won't be performed by findResidue, but need to be
 		// so that the joinpoint is primed for weaving
@@ -566,4 +575,18 @@ public class BcelAdvice extends Advice {
 		return hasMatchedAtLeastOnce;
 	}
 
+	protected void suppressLintWarnings(World inWorld) {
+		if (suppressedLintKinds == null) {
+    		if (signature instanceof BcelMethod) {
+    			this.suppressedLintKinds = Utility.getSuppressedWarnings(signature.getAnnotations(), inWorld.getLint());
+    		} else {
+    			this.suppressedLintKinds = Collections.EMPTY_LIST;
+    		}
+    	}
+    	inWorld.getLint().suppressKinds(suppressedLintKinds);
+	}
+	
+	protected void clearLintSuppressions(World inWorld) {
+		inWorld.getLint().clearSuppressions();
+	}
 }

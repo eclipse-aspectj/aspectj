@@ -46,4 +46,8 @@ public class SuppressedWarnings extends XMLBasedAjcTestCase {
   public void testSuppressionWithCflow_pr93345() {
     runTest("XLint warning for advice not applied with cflow(execution)");
   }
+  
+  public void testSuppressionOfMessagesIssuedDuringMatching() {
+	  runTest("SuppressAjWarnings raised during matching");
+  }
 }

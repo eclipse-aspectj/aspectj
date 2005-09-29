@@ -734,7 +734,8 @@ public class Utility {
             	for (int j = 0; j < values.length; j++) {
             		// We know values in the array are strings
 					SimpleElementValue value = (SimpleElementValue)values[j];
-					suppressedWarnings.add(lint.getLintKind(value.getValueString()));
+					Lint.Kind lintKind = lint.getLintKind(value.getValueString());
+					if (lintKind != null) suppressedWarnings.add(lintKind);
 				}
             }
           }

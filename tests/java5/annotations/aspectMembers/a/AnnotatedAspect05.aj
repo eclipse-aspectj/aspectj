@@ -21,7 +21,7 @@ public aspect AnnotatedAspect05 {
 	after() : handler(*) {}
 	
 	@MethodAnnotation
-	@SuppressAjWarnings
+	@SuppressAjWarnings("adviceDidNotMatch")
 	Object around() : call(new(..)) { return proceed(); }
 	
 	public static void main(String[] args) {

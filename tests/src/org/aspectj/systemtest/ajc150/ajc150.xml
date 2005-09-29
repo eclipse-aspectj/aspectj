@@ -2783,6 +2783,11 @@
         </stderr>
       </run>
    </ajc-test>
+   
+   <ajc-test dir="java5/suppressedWarnings" title="SuppressAjWarnings raised during matching">
+       <compile files="SuppressionDuringMatching.aj" options="-1.5">
+       </compile>
+   </ajc-test>
 
    <!-- ============================================================== -->
     
