@@ -62,7 +62,7 @@ public class PerClauseTest extends TestCase {
         log("perTarget");
     }
 
-    public void xtestPerTarget() {
+    public void testPerTarget() {
         s_log = new StringBuffer();
         perTarget();
         assertEquals("AOP.perTarget perTarget ", s_log.toString());
@@ -121,7 +121,7 @@ public class PerClauseTest extends TestCase {
         log("perCflow");
     }
 
-    public void xtestPerCflow() throws Throwable {
+    public void testPerCflow() throws Throwable {
         s_log = new StringBuffer();
 
         // no aspect bound yet
@@ -177,7 +177,7 @@ public class PerClauseTest extends TestCase {
         assertEquals(2, PerClauseTestAspects.TestAspectPerCflow.s_count);
     }
 
-    public void xtestPerTypeWithin() {
+    public void testPerTypeWithin() {
         assertTrue(Aspects.hasAspect(PerClauseTestAspects.TestAspectPTW.class, PTW1.class));
         assertTrue(Aspects.hasAspect(PerClauseTestAspects.TestAspectPTW.class, PTW2.class));
         assertFalse(Aspects.hasAspect(PerClauseTestAspects.TestAspectPTW.class, PTWNoMatch.class));

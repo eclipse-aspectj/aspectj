@@ -307,13 +307,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			String thrownFormal = getStringLiteralFor("throwing",ajAnnotations.adviceAnnotation,throwingLocation);
 			if (thrownFormal != null) {
 				Argument[] arguments = methodDeclaration.arguments;
-				if (methodDeclaration.arguments != null
-                        && !toArgumentNames(methodDeclaration.arguments).contains(thrownFormal)) {
+				if (!toArgumentNames(methodDeclaration.arguments).contains(thrownFormal)) {
 						methodDeclaration.scope.problemReporter()
 							.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"throwing formal '" + thrownFormal + "' must be declared as a parameter in the advice signature");
-				} else {
-					methodDeclaration.scope.problemReporter()
-					.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"throwing formal '" + thrownFormal + "' must be declared as a parameter in the advice signature");
 				}
 			}
 		}
@@ -322,13 +318,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			int[] throwingLocation = new int[2];
 			String returningFormal = getStringLiteralFor("returning",ajAnnotations.adviceAnnotation,throwingLocation);
 			if (returningFormal != null) {
-				if (methodDeclaration.arguments.length > 0
-                        && !toArgumentNames(methodDeclaration.arguments).contains(returningFormal)) {
+				if (!toArgumentNames(methodDeclaration.arguments).contains(returningFormal)) {
 						methodDeclaration.scope.problemReporter()
 							.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"returning formal '" + returningFormal + "' must be declared as a parameter in the advice signature");
-				} else {
-					methodDeclaration.scope.problemReporter()
-					.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"returning formal '" + returningFormal + "' must be declared as a parameter in the advice signature");
 				}
 			}
 		}

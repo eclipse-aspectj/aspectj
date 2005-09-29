@@ -93,7 +93,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		UnresolvedType typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType(); 
 		//if (typeToMatch == ResolvedType.MISSING) return FuzzyBoolean.NO;
 		
-		return type.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);
+		return type.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);//AVPT was DYNAMIC
 	}
 
 	public void write(DataOutputStream s) throws IOException {

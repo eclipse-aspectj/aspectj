@@ -447,7 +447,8 @@ public class WildTypePattern extends TypePattern {
 	 */
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		//XXX hack to let unmatched types just silently remain so
-		if (maybeGetSimpleName() != null) return FuzzyBoolean.NO;
+		if (maybeGetSimpleName() != null) return
+                FuzzyBoolean.NO;
 		
 		type.getWorld().getMessageHandler().handleMessage(
 			new Message("can't do instanceof matching on patterns with wildcards",

@@ -137,7 +137,8 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
             //pertarget(target(Foo)) => Foo+ for type pattern matching
             //perthis(this(Foo)) => Foo+ for type pattern matching
             // TODO AV - we do like a deep copy by parsing it again.. quite dirty, would need a clean deep copy
-            TypePattern copy = new PatternParser(node.getType().toString()).parseTypePattern();
+            TypePattern copy = new PatternParser(node.getType().toString().replace('$', '.')).parseTypePattern();
+            // TODO AV - see dirty replace from $ to . here as inner classes are with $ instead (#108488)
             copy.includeSubtypes = true;
             return copy;
         } else {
