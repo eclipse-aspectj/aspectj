@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <aspectj>
-    <weaver options="-XmessageHolderClass:ataspectj.TestHelper"/>
+    <weaver options="-XmessageHandlerClass:ataspectj.TestHelper"/>
     <aspects>
         <!-- see here nested class with ".", "$" is accepted as well -->
         <aspect name="ataspectj.SingletonAspectBindingsTest.TestAspect"/>
@@ -20,6 +20,7 @@
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerTarget"/>
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerCflow"/>
         <aspect name="ataspectj.PerClauseTestAspects.TestAspectPTW"/>
+        <aspect name="ataspectj.PerClauseTestAspects.TestAspectPerThis"/>
 
         <aspect name="ataspectj.AroundInlineMungerTestAspects.Open"/>
 
