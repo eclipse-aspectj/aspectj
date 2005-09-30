@@ -740,9 +740,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 	private void addParent(SourceTypeBinding sourceType, ResolvedType parent) {
 		ReferenceBinding parentBinding = (ReferenceBinding)factory.makeTypeBinding(parent); 
-		
+		if (parentBinding == null) return; // The parent is missing, it will be reported elsewhere.
         sourceType.rememberTypeHierarchy();
-		if (parentBinding.isClass()) {
+        if (parentBinding.isClass()) {
 			sourceType.superclass = parentBinding;
 			
             // this used to be true, but I think I've fixed it now, decp is done at weave time!			
