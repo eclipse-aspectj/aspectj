@@ -4860,4 +4860,29 @@
    <ajc-test dir="bugs150/pr110927" title="cant create signature attribute">
      <compile files="Case1.java" options="-1.5"/>
    </ajc-test>
+   
+   <ajc-test dir="bugs150/pr72834" title="broken dispatch">
+     <compile files="Trouble.java">
+       <message kind="error" line="7" text="package visible abstract inter-type declarations are not allowed"/>
+       <message kind="error" line="9" text="The method getName() is undefined for the type A"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr73856" title="missing accessor">
+     <compile files="MissingAccessor.java"/>
+     <run class="MissingAccessor"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr90143" title="cant call super methods">
+     <compile files="A.aj"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150" title="cunning declare parents">
+     <compile files="pr92311.aj"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150" title="generic itds and abstract method error">
+     <compile files="pr102357.aj"/>
+     <run class="pr102357"/>
+   </ajc-test>
 </suite>

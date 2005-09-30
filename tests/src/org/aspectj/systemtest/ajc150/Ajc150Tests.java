@@ -35,7 +35,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
-  
+  /*
+    Andys bug area - enter at your own risk...
+  public void testBrokenDispatchByITD_pr72834() { runTest("broken dispatch");}
+  public void testMissingAccessor_pr73856() { runTest("missing accessor");}
+  public void testCantCallSuperMethods_pr90143() { runTest("cant call super methods");}
+  public void testCunningDeclareParents_pr92311() { runTest("cunning declare parents");}
+  public void testGenericITDsAndAbstractMethodError_pr102357() { runTest("generic itds and abstract method error");}
+  */
   public void testBadDecp_pr110788_1() { runTest("bad generic decp - 1");}
   public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}
   public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
