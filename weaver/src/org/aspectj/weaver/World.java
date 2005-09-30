@@ -516,7 +516,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * convenenience method for creating and issuing messages via the message handler
+	 * convenenience method for creating and issuing messages via the message handler - 
+	 * if you supply two locations you will get two messages.
 	 */
 	public void showMessage(
 			Kind kind,
