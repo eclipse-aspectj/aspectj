@@ -27,7 +27,7 @@ import org.aspectj.lang.reflect.AjTypeSystem;
 
 public class AjTypeTests extends TestCase {
 
-	private AjType stringType;
+	private AjType<String> stringType;
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -49,10 +49,10 @@ public class AjTypeTests extends TestCase {
 	
 	public void testGetInterfaces() {
 		Class[] i1 = String.class.getInterfaces();
-		Class[] i2 = stringType.getInterfaces();
+		AjType<?>[] i2 = stringType.getInterfaces();
 		assertEquals(i1.length,i2.length);
 		for (int i = 0; i < i1.length; i++)
-			assertEquals(i1[i],i2[i]);
+			assertEquals(i1[i],i2[i].getJavaClass());
 	}
 	
 	public void testGetModifiers() {
@@ -135,7 +135,7 @@ public class AjTypeTests extends TestCase {
 	
 	public void testGetConstructor() throws Exception {
 		Constructor c1 = String.class.getConstructor(String.class);
-		Constructor c2 = stringType.getConstructor(String.class);
+		Constructor c2 = stringType.getConstructor(stringType);
 		assertEquals(c1,c2);
 	}
 	
@@ -149,7 +149,7 @@ public class AjTypeTests extends TestCase {
 	
 	public void testGetDeclaredConstructor() throws Exception {
 		Constructor c1 = String.class.getDeclaredConstructor(String.class);
-		Constructor c2 = stringType.getDeclaredConstructor(String.class);
+		Constructor c2 = stringType.getDeclaredConstructor(stringType);
 		assertEquals(c1,c2);
 	}
 	

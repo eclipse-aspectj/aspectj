@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.util.StringTokenizer;
 
 import org.aspectj.lang.reflect.AjType;
+import org.aspectj.lang.reflect.AjTypeSystem;
 import org.aspectj.lang.reflect.Pointcut;
 import org.aspectj.lang.reflect.PointcutExpression;
 
@@ -53,8 +54,13 @@ public class PointcutImpl implements Pointcut {
 		return baseMethod.getModifiers();
 	}
 
-	public Class<?>[] getParameterTypes() {
-		return baseMethod.getParameterTypes();
+	public AjType<?>[] getParameterTypes() {
+		Class<?>[] baseParamTypes =  baseMethod.getParameterTypes();
+		AjType<?>[] ajParamTypes = new AjType<?>[baseParamTypes.length];
+		for (int i = 0; i < ajParamTypes.length; i++) {
+			ajParamTypes[i] = AjTypeSystem.getAjType(baseParamTypes[i]);
+		}
+		return ajParamTypes;
 	}
 
 	public AjType getDeclaringType() {

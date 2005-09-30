@@ -11,11 +11,32 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
+/**
+ * Runtime representation of an advice declaration inside an aspect
+ */
 public interface Advice {
 
-	AdviceType getKind();
+	/**
+	 * The declaring aspect
+	 */
+	AjType getDeclaringType();
 	
+	/**
+	 * The kind of advice (before, after-returning, after-throwing, etc.)
+	 */
+	AdviceKind getKind();
+	
+	/**
+	 * Returns the advice name, or the empty string if the advice is anonymous.
+	 * If using the @AspectJ annotations, the advice name is the name of the
+	 * annotated advice method. If using the code style, the advice is
+	 * anonymous, unless the advice is annotated with the @AdviceName annotation,
+	 * in which case the name given in the annotation is returned. 
+	 */
 	String getName();
 	
+	/**
+	 * The pointcut expression associated with the advice declaration.
+	 */
 	PointcutExpression getPointcutExpression();
 }

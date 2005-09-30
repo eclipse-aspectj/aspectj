@@ -12,23 +12,14 @@
 package org.aspectj.lang.reflect;
 
 /**
- * Thrown when AjType.getDeclaredPointcut is called with a pointcut name, and no
- * matching pointcut declaration can be found.
+ * Representation of a pointcut based per-clause associated with an aspect
+ * (perthis/target/cflow/cflowbelow)
+ *
  */
-public class NoSuchPointcutException extends Exception {
+public interface PointcutBasedPerClause extends PerClause {
 
-	private static final long serialVersionUID = 3256444698657634352L;
-	private String name;
-	
-	public NoSuchPointcutException(String name) {
-		this.name = name;
-	}
-	
 	/**
-	 * The name of the pointcut that could not be found.
+	 * Get the associated pointcut expression
 	 */
-	public String getName() {
-		return name;
-	}
-
+	PointcutExpression getPointcutExpression();
 }

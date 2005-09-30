@@ -203,14 +203,14 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			pointcuts = new ResolvedMember[pcs.length];
 			PointcutParser parser = new PointcutParser();
 			for (int i = 0; i < pcs.length; i++) {
-				Class[] ptypes = pcs[i].getParameterTypes();
+				AjType<?>[] ptypes = pcs[i].getParameterTypes();
 				String[] pnames = pcs[i].getParameterNames();
 				if (pnames.length != ptypes.length) {
 					throw new IllegalStateException("Required parameter names not available when parsing pointcut " + pcs[i].getName() + " in type " + getResolvedTypeX().getName());
 				}
 				PointcutParameter[] parameters = new PointcutParameter[ptypes.length];
 				for (int j = 0; j < parameters.length; j++) {
-					parameters[j] = parser.createPointcutParameter(pnames[j],ptypes[j]);
+					parameters[j] = parser.createPointcutParameter(pnames[j],ptypes[j].getJavaClass());
 				}
 				String pcExpr = pcs[i].getPointcutExpression().toString();
 				PointcutExpressionImpl pEx = (PointcutExpressionImpl) parser.parsePointcutExpression(pcExpr,getBaseClass(),parameters);

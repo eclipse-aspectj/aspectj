@@ -12,8 +12,8 @@
 package org.aspectj.lang.reflect;
 
 /**
- * @author colyer
- * The different perclauses (aspect instantiation models)
+ * The different per-clauses (aspect instantiation models)
+ * supported by AspectJ
  */
 public enum PerClauseKind {
 	SINGLETON,

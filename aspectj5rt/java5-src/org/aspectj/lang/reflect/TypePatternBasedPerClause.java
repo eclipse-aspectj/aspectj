@@ -12,13 +12,15 @@
 package org.aspectj.lang.reflect;
 
 /**
- * The different types of advice in AspectJ
+ * AspectJ runtime representation of a type pattern based per-clause associated
+ * with an aspect (pertypewithin).
  *
  */
-public enum AdviceType {
-	BEFORE,
-	AFTER,
-	AFTER_RETURNING,
-	AFTER_THROWING,
-	AROUND;
+public interface TypePatternBasedPerClause {
+
+	/**
+	 * Get the associated type pattern
+	 */
+	TypePattern getTypePattern();
+	
 }

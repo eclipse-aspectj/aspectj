@@ -12,8 +12,8 @@
 package org.aspectj.lang.reflect;
 
 /**
- * @author colyer
- *
+ * Thrown when AjType.getDeclaredAdvice is called with an advice name and no matching
+ * advice declaration can be found.
  */
 public class NoSuchAdviceException extends Exception {
 
@@ -24,6 +24,9 @@ public class NoSuchAdviceException extends Exception {
 		this.name = name;
 	}
 	
+	/**
+	 * The advice name that could not be found.
+	 */
 	public String getName() {
 		return name;
 	}

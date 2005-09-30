@@ -20,5 +20,5 @@ public interface PointcutExpression {
 	/**
 	 * Returns a String representation of the pointcut expression 
 	 */
-	String toString();
+	String asString();
 }

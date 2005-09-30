@@ -12,12 +12,29 @@
 package org.aspectj.lang.reflect;
 
 /**
- * @author colyer
- *
+ * AspectJ runtime representation of a declare error or declare warning member
+ * in an aspect.
  */
 public interface DeclareErrorOrWarning {
+	
+	/**
+	 * The type that declared this declare warning or declare error member. 
+	 */
+	AjType getDeclaringType();
+	
+	/**
+	 * The pointcut expression associated with the warning or error
+	 */
 	PointcutExpression getPointcutExpression();
+	
+	/**
+	 * The message associated with the declare warning / declare error
+	 */
 	String getMessage();
+	
+	/**
+	 * True if this is a declare error member, false if it is declare warning
+	 */
 	boolean isError();
 	
 }

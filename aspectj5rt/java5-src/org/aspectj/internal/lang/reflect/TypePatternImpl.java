@@ -9,26 +9,29 @@
  * Contributors: 
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
-package org.aspectj.lang.reflect;
+package org.aspectj.internal.lang.reflect;
+
+import org.aspectj.lang.reflect.TypePattern;
 
 /**
- * Thrown when AjType.getDeclaredPointcut is called with a pointcut name, and no
- * matching pointcut declaration can be found.
+ * Default impl of a type pattern.
+ *
  */
-public class NoSuchPointcutException extends Exception {
+public class TypePatternImpl implements TypePattern {
 
-	private static final long serialVersionUID = 3256444698657634352L;
-	private String name;
+	private String typePattern;
 	
-	public NoSuchPointcutException(String name) {
-		this.name = name;
+	public TypePatternImpl(String pattern) {
+		this.typePattern = pattern;
 	}
-	
-	/**
-	 * The name of the pointcut that could not be found.
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.lang.reflect.TypePattern#asString()
 	 */
-	public String getName() {
-		return name;
+	public String asString() {
+		return this.typePattern;
 	}
+	
+	public String toString() { return asString(); }
 
 }

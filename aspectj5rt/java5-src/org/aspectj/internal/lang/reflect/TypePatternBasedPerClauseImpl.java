@@ -11,26 +11,29 @@
  * ******************************************************************/
 package org.aspectj.internal.lang.reflect;
 
-import org.aspectj.lang.reflect.PerClause;
 import org.aspectj.lang.reflect.PerClauseKind;
+import org.aspectj.lang.reflect.TypePattern;
+import org.aspectj.lang.reflect.TypePatternBasedPerClause;
 
 /**
  * @author colyer
  *
  */
-public class PerClauseImpl implements PerClause {
+public class TypePatternBasedPerClauseImpl extends PerClauseImpl implements
+		TypePatternBasedPerClause {
 
-	private final PerClauseKind kind;
-	
-	protected PerClauseImpl(PerClauseKind kind) {
-		this.kind = kind;
+	private TypePattern typePattern;
+
+	public TypePatternBasedPerClauseImpl(PerClauseKind kind, String pattern) {
+		super(kind);
+		this.typePattern = new TypePatternImpl(pattern);
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.PerClause#getKind()
+	 * @see org.aspectj.lang.reflect.TypePatternBasedPerClause#getTypePattern()
 	 */
-	public PerClauseKind getKind() {
-		return kind;
+	public TypePattern getTypePattern() {
+		return this.typePattern;
 	}
 
 }

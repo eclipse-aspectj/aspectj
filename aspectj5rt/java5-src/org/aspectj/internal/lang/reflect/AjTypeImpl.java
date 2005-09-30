@@ -35,7 +35,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.DeclareError;
 import org.aspectj.lang.annotation.DeclareWarning;
 import org.aspectj.lang.reflect.Advice;
-import org.aspectj.lang.reflect.AdviceType;
+import org.aspectj.lang.reflect.AdviceKind;
 import org.aspectj.lang.reflect.AjType;
 import org.aspectj.lang.reflect.AjTypeSystem;
 import org.aspectj.lang.reflect.DeclareAnnotation;
@@ -88,8 +88,9 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getInterfaces()
 	 */
-	public Class[] getInterfaces() {
-		return clazz.getInterfaces();
+	public AjType<?>[] getInterfaces() {
+		Class<?>[] baseInterfaces = clazz.getInterfaces();
+		return toAjTypeArray(baseInterfaces);
 	}
 
 	/* (non-Javadoc)
@@ -98,11 +99,15 @@ public class AjTypeImpl<T> implements AjType<T> {
 	public int getModifiers() {
 		return clazz.getModifiers();
 	}
+	
+	public Class<T> getJavaClass() {
+		return clazz;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getSupertype()
 	 */
-	public AjType getSupertype() {
+	public AjType<?> getSupertype() {
 		return new AjTypeImpl(clazz.getSuperclass());
 	}
 
@@ -130,7 +135,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getEnclosingType()
 	 */
-	public AjType getEnclosingType() {
+	public AjType<?> getEnclosingType() {
 		Class<?> enc = clazz.getEnclosingClass();
 		return enc != null ? new AjTypeImpl(enc) : null;
 	}
@@ -138,7 +143,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaringType()
 	 */
-	public AjType getDeclaringType() {
+	public AjType<?> getDeclaringType() {
 		Class dec = clazz.getDeclaringClass();
 		return dec != null ? new AjTypeImpl(dec) : null;
 	}
@@ -148,17 +153,20 @@ public class AjTypeImpl<T> implements AjType<T> {
 			Aspect aspectAnn = clazz.getAnnotation(Aspect.class);
 			String perClause = aspectAnn.value();
 			if (perClause.equals("")) {
-				return new PerClauseImpl(PerClauseKind.SINGLETON,"");
+				if (getSupertype().isAspect()) {
+					return getSupertype().getPerClause();
+				} 
+				return new PerClauseImpl(PerClauseKind.SINGLETON);
 			} else if (perClause.startsWith("perthis(")) {
-				return new PerClauseImpl(PerClauseKind.PERTHIS,perClause.substring("perthis(".length(),perClause.length() - 1));
+				return new PointcutBasedPerClauseImpl(PerClauseKind.PERTHIS,perClause.substring("perthis(".length(),perClause.length() - 1));
 			} else if (perClause.startsWith("pertarget(")) {
-				return new PerClauseImpl(PerClauseKind.PERTARGET,perClause.substring("pertarget(".length(),perClause.length() - 1));				
+				return new PointcutBasedPerClauseImpl(PerClauseKind.PERTARGET,perClause.substring("pertarget(".length(),perClause.length() - 1));				
 			} else if (perClause.startsWith("percflow(")) {
-				return new PerClauseImpl(PerClauseKind.PERCFLOW,perClause.substring("percflow(".length(),perClause.length() - 1));								
+				return new PointcutBasedPerClauseImpl(PerClauseKind.PERCFLOW,perClause.substring("percflow(".length(),perClause.length() - 1));								
 			} else if (perClause.startsWith("percflowbelow(")) {
-				return new PerClauseImpl(PerClauseKind.PERCFLOWBELOW,perClause.substring("percflowbelow(".length(),perClause.length() - 1));
+				return new PointcutBasedPerClauseImpl(PerClauseKind.PERCFLOWBELOW,perClause.substring("percflowbelow(".length(),perClause.length() - 1));
 			} else if (perClause.startsWith("pertypewithin")) {
-				return new PerClauseImpl(PerClauseKind.PERTYPEWITHIN,perClause.substring("pertypewithin(".length(),perClause.length() - 1));				
+				return new TypePatternBasedPerClauseImpl(PerClauseKind.PERTYPEWITHIN,perClause.substring("pertypewithin(".length(),perClause.length() - 1));				
 			} else {
 				throw new IllegalStateException("Per-clause not recognized: " + perClause);
 			}
@@ -195,32 +203,24 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getAspects()
 	 */
-	public AjType[] getAjTypes() {
+	public AjType<?>[] getAjTypes() {
 		Class[] classes = clazz.getClasses();
-		AjType[] ret = new AjType[classes.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = new AjTypeImpl(classes[i]);
-		}
-		return ret;
+		return toAjTypeArray(classes);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredAspects()
 	 */
-	public AjType[] getDeclaredAjTypes() {
+	public AjType<?>[] getDeclaredAjTypes() {
 		Class[] classes = clazz.getDeclaredClasses();
-		AjType[] ret = new AjType[classes.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = new AjTypeImpl(classes[i]);
-		}
-		return ret;
+		return toAjTypeArray(classes);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getConstructor(java.lang.Class...)
 	 */
-	public Constructor getConstructor(Class... parameterTypes) throws NoSuchMethodException {
-		return clazz.getConstructor(parameterTypes);
+	public Constructor getConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException {
+		return clazz.getConstructor(toClassArray(parameterTypes));
 	}
 
 	/* (non-Javadoc)
@@ -233,8 +233,8 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredConstructor(java.lang.Class...)
 	 */
-	public Constructor getDeclaredConstructor(Class... parameterTypes) throws NoSuchMethodException {
-		return clazz.getDeclaredConstructor(parameterTypes);
+	public Constructor getDeclaredConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException {
+		return clazz.getDeclaredConstructor(toClassArray(parameterTypes));
 	}
 
 	/* (non-Javadoc)
@@ -274,7 +274,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getField(java.lang.String)
 	 */
 	public Field getField(String name)  throws NoSuchFieldException {
-		Field f =  clazz.getDeclaredField(name);
+		Field f =  clazz.getField(name);
 		if (f.getName().startsWith(ajcMagic)) throw new NoSuchFieldException(name);
 		return f;
 	}
@@ -299,8 +299,8 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredMethod(java.lang.String, java.lang.Class...)
 	 */
-	public Method getDeclaredMethod(String name, Class... parameterTypes) throws NoSuchMethodException {
-		Method m =  clazz.getDeclaredMethod(name,parameterTypes);
+	public Method getDeclaredMethod(String name, AjType<?>... parameterTypes) throws NoSuchMethodException {
+		Method m =  clazz.getDeclaredMethod(name,toClassArray(parameterTypes));
 		if (!isReallyAMethod(m)) throw new NoSuchMethodException(name);
 		return m;
 	}
@@ -308,8 +308,8 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getMethod(java.lang.String, java.lang.Class...)
 	 */
-	public Method getMethod(String name, Class... parameterTypes) throws NoSuchMethodException {
-		Method m =  clazz.getMethod(name,parameterTypes);
+	public Method getMethod(String name, AjType<?>... parameterTypes) throws NoSuchMethodException {
+		Method m =  clazz.getMethod(name,toClassArray(parameterTypes));
 		if (!isReallyAMethod(m)) throw new NoSuchMethodException(name);
 		return m;
 	}
@@ -367,7 +367,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getPointcut(java.lang.String)
 	 */
 	public Pointcut getPointcut(String name) throws NoSuchPointcutException {
-		Pointcut[] pcs = getDeclaredPointcuts();
+		Pointcut[] pcs = getPointcuts();
 		for (Pointcut pc : pcs)
 			if (pc.getName().equals(name)) return pc;
 		throw new NoSuchPointcutException(name);
@@ -425,23 +425,23 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 	
 	
-	public Advice[] getDeclaredAdvice(AdviceType... ofType) {
-		Set<AdviceType> types;
+	public Advice[] getDeclaredAdvice(AdviceKind... ofType) {
+		Set<AdviceKind> types;
 		if (ofType.length == 0) {
-			types = EnumSet.allOf(AdviceType.class);
+			types = EnumSet.allOf(AdviceKind.class);
 		} else {
-			types = EnumSet.noneOf(AdviceType.class);
+			types = EnumSet.noneOf(AdviceKind.class);
 			types.addAll(Arrays.asList(ofType));
 		}
 		return getDeclaredAdvice(types);
 	}
 	
-	public Advice[] getAdvice(AdviceType... ofType) {
-		Set<AdviceType> types;
+	public Advice[] getAdvice(AdviceKind... ofType) {
+		Set<AdviceKind> types;
 		if (ofType.length == 0) {
-			types = EnumSet.allOf(AdviceType.class);
+			types = EnumSet.allOf(AdviceKind.class);
 		} else {
-			types = EnumSet.noneOf(AdviceType.class);
+			types = EnumSet.noneOf(AdviceKind.class);
 			types.addAll(Arrays.asList(ofType));
 		}
 		return getAdvice(types);
@@ -487,7 +487,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	private void initAdvice() {
-		Method[] methods = clazz.getDeclaredMethods();
+		Method[] methods = clazz.getMethods();
 		List<Advice> adviceList = new ArrayList<Advice>();
 		for (Method method : methods) {
 			Advice advice = asAdvice(method);
@@ -519,23 +519,23 @@ public class AjTypeImpl<T> implements AjType<T> {
 	private Advice asAdvice(Method method) {
 		if (method.getAnnotations().length == 0) return null;
 		Before beforeAnn = method.getAnnotation(Before.class);
-		if (beforeAnn != null) return new AdviceImpl(method,beforeAnn.value(),AdviceType.BEFORE);
+		if (beforeAnn != null) return new AdviceImpl(method,beforeAnn.value(),AdviceKind.BEFORE);
 		After afterAnn = method.getAnnotation(After.class);
-		if (afterAnn != null) return new AdviceImpl(method,afterAnn.value(),AdviceType.AFTER);
+		if (afterAnn != null) return new AdviceImpl(method,afterAnn.value(),AdviceKind.AFTER);
 		AfterReturning afterReturningAnn = method.getAnnotation(AfterReturning.class);
 		if (afterReturningAnn != null) {
 			String pcExpr = afterReturningAnn.pointcut();
 			if (pcExpr.equals("")) pcExpr = afterReturningAnn.value();
-			return new AdviceImpl(method,pcExpr,AdviceType.AFTER_RETURNING);
+			return new AdviceImpl(method,pcExpr,AdviceKind.AFTER_RETURNING);
 		}
 		AfterThrowing afterThrowingAnn = method.getAnnotation(AfterThrowing.class);
 		if (afterThrowingAnn != null) {
 			String pcExpr = afterThrowingAnn.pointcut();
 			if (pcExpr == null) pcExpr = afterThrowingAnn.value();
-			return new AdviceImpl(method,pcExpr,AdviceType.AFTER_THROWING);
+			return new AdviceImpl(method,pcExpr,AdviceKind.AFTER_THROWING);
 		}
 		Around aroundAnn = method.getAnnotation(Around.class);
-		if (aroundAnn != null) return new AdviceImpl(method,aroundAnn.value(),AdviceType.AROUND);
+		if (aroundAnn != null) return new AdviceImpl(method,aroundAnn.value(),AdviceKind.AROUND);
 		return null;
 	}
 	
@@ -543,7 +543,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDMethod(java.lang.String, java.lang.Class, java.lang.Class...)
 	 */
 	public InterTypeMethodDeclaration getDeclaredITDMethod(String name,
-			Class target, Class... parameterTypes) {
+			AjType<?> target, AjType<?>... parameterTypes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -559,8 +559,8 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDMethod(java.lang.String, java.lang.Class, java.lang.Class...)
 	 */
-	public InterTypeMethodDeclaration getITDMethod(String name, Class target,
-			Class... parameterTypes) {
+	public InterTypeMethodDeclaration getITDMethod(String name, AjType<?> target,
+			AjType<?>... parameterTypes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -577,7 +577,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDConstructor(java.lang.Class, java.lang.Class...)
 	 */
 	public InterTypeConstructorDeclaration getDeclaredITDConstructor(
-			Class target, Class... parameterTypes) {
+			AjType<?> target, AjType<?>... parameterTypes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -593,8 +593,8 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDConstructor(java.lang.Class, java.lang.Class...)
 	 */
-	public InterTypeConstructorDeclaration getITDConstructor(Class target,
-			Class... parameterTypes) {
+	public InterTypeConstructorDeclaration getITDConstructor(AjType<?> target,
+			AjType<?>... parameterTypes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -611,7 +611,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDField(java.lang.String, java.lang.Class)
 	 */
 	public InterTypeFieldDeclaration getDeclaredITDField(String name,
-			Class target) {
+			AjType<?> target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -627,7 +627,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDField(java.lang.String, java.lang.Class)
 	 */
-	public InterTypeFieldDeclaration getITDField(String name, Class target) {
+	public InterTypeFieldDeclaration getITDField(String name, AjType<?> target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -651,14 +651,14 @@ public class AjTypeImpl<T> implements AjType<T> {
 					 DeclareWarning dw = field.getAnnotation(DeclareWarning.class);
 					 if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
 						 String message = (String) field.get(null);
-						 DeclareErrorOrWarningImpl deow = new DeclareErrorOrWarningImpl(dw.value(),message,false);
+						 DeclareErrorOrWarningImpl deow = new DeclareErrorOrWarningImpl(dw.value(),message,false,this);
 						 deows.add(deow);
 					 } 
 				} else if (field.isAnnotationPresent(DeclareError.class)) {
 					 DeclareError de = field.getAnnotation(DeclareError.class);
 					 if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
 						 String message = (String) field.get(null);
-						 DeclareErrorOrWarningImpl deow = new DeclareErrorOrWarningImpl(de.value(),message,true);
+						 DeclareErrorOrWarningImpl deow = new DeclareErrorOrWarningImpl(de.value(),message,true,this);
 						 deows.add(deow);
 					 } 				
 				}
@@ -671,7 +671,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 		for (Method method : clazz.getDeclaredMethods()) {
 			if (method.isAnnotationPresent(ajcDeclareEoW.class)) {
 				ajcDeclareEoW deowAnn = method.getAnnotation(ajcDeclareEoW.class);
-				DeclareErrorOrWarning deow = new DeclareErrorOrWarningImpl(deowAnn.pointcut(),deowAnn.message(),deowAnn.isError());
+				DeclareErrorOrWarning deow = new DeclareErrorOrWarningImpl(deowAnn.pointcut(),deowAnn.message(),deowAnn.isError(),this);
 				deows.add(deow);
 			}
 		}
@@ -802,6 +802,22 @@ public class AjTypeImpl<T> implements AjType<T> {
 	@Override
 	public int hashCode() {
 		return clazz.hashCode();
+	}
+	
+	private AjType<?>[] toAjTypeArray(Class<?>[] classes) {
+		AjType<?>[] ajtypes = new AjType<?>[classes.length];
+		for (int i = 0; i < ajtypes.length; i++) {
+			ajtypes[i] = AjTypeSystem.getAjType(classes[i]);
+		}
+		return ajtypes;
+	}
+	
+	private Class<?>[] toClassArray(AjType<?>[] ajTypes) {
+		Class<?>[] classes = new Class<?>[ajTypes.length];
+		for (int i = 0; i < classes.length; i++) {
+			classes[i] = ajTypes[i].getJavaClass();
+		}
+		return classes;
 	}
 
 }

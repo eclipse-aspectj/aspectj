@@ -28,7 +28,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.DeclareError;
 import org.aspectj.lang.annotation.DeclareWarning;
 import org.aspectj.lang.reflect.Advice;
-import org.aspectj.lang.reflect.AdviceType;
+import org.aspectj.lang.reflect.AdviceKind;
 import org.aspectj.lang.reflect.AjType;
 import org.aspectj.lang.reflect.AjTypeSystem;
 import org.aspectj.lang.reflect.DeclareErrorOrWarning;
@@ -37,6 +37,8 @@ import org.aspectj.lang.reflect.NoSuchPointcutException;
 import org.aspectj.lang.reflect.PerClause;
 import org.aspectj.lang.reflect.PerClauseKind;
 import org.aspectj.lang.reflect.Pointcut;
+import org.aspectj.lang.reflect.PointcutBasedPerClause;
+import org.aspectj.lang.reflect.TypePatternBasedPerClause;
 
 public class AjTypeTestsWithAspects extends TestCase {
 
@@ -56,23 +58,23 @@ public class AjTypeTestsWithAspects extends TestCase {
 		
 		PerClause pc = perThisA.getPerClause();
 		assertEquals(PerClauseKind.PERTHIS,pc.getKind());
-		assertEquals("pc()",pc.getPointcutExpression().toString());
+		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
 		
 		pc= perTargetA.getPerClause();
 		assertEquals(PerClauseKind.PERTARGET,pc.getKind());
-		assertEquals("pc()",pc.getPointcutExpression().toString());
+		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
 
 		pc= perCflowA.getPerClause();
 		assertEquals(PerClauseKind.PERCFLOW,pc.getKind());
-		assertEquals("pc()",pc.getPointcutExpression().toString());
+		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
 
 		pc= perCflowbelowA.getPerClause();
 		assertEquals(PerClauseKind.PERCFLOWBELOW,pc.getKind());
-		assertEquals("pc()",pc.getPointcutExpression().toString());
+		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
 
 		pc= perTypeWithinA.getPerClause();
 		assertEquals(PerClauseKind.PERTYPEWITHIN,pc.getKind());
-		assertEquals("org.aspectj..*",pc.getPointcutExpression().toString());
+		assertEquals("org.aspectj..*",((TypePatternBasedPerClause)pc).getTypePattern().asString());
 
 	}
 	
@@ -148,13 +150,13 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetDeclaredPointcut() throws Exception {
 		Pointcut p1 = sa.getDeclaredPointcut("simpleAspectMethodExecution");
 		assertEquals("simpleAspectMethodExecution",p1.getName());
-		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression().toString());
+		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression().asString());
 		assertEquals(sa,p1.getDeclaringType());
 		assertEquals(0,p1.getParameterTypes().length);
 		assertTrue(Modifier.isPublic(p1.getModifiers()));
 		Pointcut p2 = sa.getDeclaredPointcut("simpleAspectCall");
 		assertEquals("simpleAspectCall",p2.getName());
-		assertEquals("call(* SimpleAspect.*(..))",p2.getPointcutExpression().toString());
+		assertEquals("call(* SimpleAspect.*(..))",p2.getPointcutExpression().asString());
 		assertEquals(sa,p2.getDeclaringType());
 		assertEquals(1,p2.getParameterTypes().length);
 		assertTrue(Modifier.isPrivate(p2.getModifiers()));
@@ -169,13 +171,13 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetPointcut() throws Exception {
 		Pointcut p1 = sa.getPointcut("simpleAspectMethodExecution");
 		assertEquals("simpleAspectMethodExecution",p1.getName());
-		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression().toString());
+		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression().asString());
 		assertEquals(sa,p1.getDeclaringType());
 		assertEquals(0,p1.getParameterTypes().length);
 		assertTrue(Modifier.isPublic(p1.getModifiers()));
-		Pointcut p2 = sa.getPointcut("simpleAspectCall");
+		Pointcut p2 = sa.getDeclaredPointcut("simpleAspectCall");
 		assertEquals("simpleAspectCall",p2.getName());
-		assertEquals("call(* SimpleAspect.*(..))",p2.getPointcutExpression().toString());
+		assertEquals("call(* SimpleAspect.*(..))",p2.getPointcutExpression().asString());
 		assertEquals(sa,p2.getDeclaringType());
 		assertEquals(1,p2.getParameterTypes().length);
 		assertTrue(Modifier.isPrivate(p2.getModifiers()));
@@ -205,20 +207,20 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetDeclaredAdvice() {
 		Advice[] advice = sa.getDeclaredAdvice();
 		assertEquals(10,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.BEFORE);
+		advice = sa.getDeclaredAdvice(AdviceKind.BEFORE);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.AFTER);
+		advice = sa.getDeclaredAdvice(AdviceKind.AFTER);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.AFTER_RETURNING);
+		advice = sa.getDeclaredAdvice(AdviceKind.AFTER_RETURNING);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.AFTER_THROWING);
+		advice = sa.getDeclaredAdvice(AdviceKind.AFTER_THROWING);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.AROUND);
+		advice = sa.getDeclaredAdvice(AdviceKind.AROUND);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.BEFORE,AdviceType.AFTER);
+		advice = sa.getDeclaredAdvice(AdviceKind.BEFORE,AdviceKind.AFTER);
 		assertEquals(4,advice.length);
 
-		advice = sa.getDeclaredAdvice(AdviceType.BEFORE);
+		advice = sa.getDeclaredAdvice(AdviceKind.BEFORE);
 		// AV: corrupted test: cannot rely on ordering since a Set is used behind
         Advice aone, atwo;
         if (advice[0].getName()!=null && advice[0].getName().length()>0) {
@@ -230,7 +232,7 @@ public class AjTypeTestsWithAspects extends TestCase {
         }
         assertEquals("execution(* SimpleAspect.*(..))",aone.getPointcutExpression().toString());
         assertEquals("logEntry",aone.getName());
-        assertEquals(AdviceType.BEFORE,aone.getKind());
+        assertEquals(AdviceKind.BEFORE,aone.getKind());
         assertEquals("execution(* SimpleAspect.*(..))",atwo.getPointcutExpression().toString());
         assertEquals("",atwo.getName());
 	}
@@ -238,27 +240,27 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetAdvice() {
 		Advice[] advice = sa.getDeclaredAdvice();
 		assertEquals(10,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.BEFORE);
+		advice = sa.getDeclaredAdvice(AdviceKind.BEFORE);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.AFTER);
+		advice = sa.getDeclaredAdvice(AdviceKind.AFTER);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.AFTER_RETURNING);
+		advice = sa.getDeclaredAdvice(AdviceKind.AFTER_RETURNING);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.AFTER_THROWING);
+		advice = sa.getDeclaredAdvice(AdviceKind.AFTER_THROWING);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.AROUND);
+		advice = sa.getDeclaredAdvice(AdviceKind.AROUND);
 		assertEquals(2,advice.length);
-		advice = sa.getDeclaredAdvice(AdviceType.BEFORE,AdviceType.AFTER);
+		advice = sa.getDeclaredAdvice(AdviceKind.BEFORE,AdviceKind.AFTER);
 		assertEquals(4,advice.length);		
 	}
 	
 	public void testGetNamedAdvice() throws Exception {
 		Advice a = sa.getAdvice("logItAll");
 		assertEquals("logItAll",a.getName());
-		assertEquals(AdviceType.AROUND,a.getKind());
+		assertEquals(AdviceKind.AROUND,a.getKind());
 		a = sa.getAdvice("whatGoesAround");
 		assertEquals("whatGoesAround",a.getName());
-		assertEquals(AdviceType.AROUND,a.getKind());
+		assertEquals(AdviceKind.AROUND,a.getKind());
 		try {
 			a = sa.getAdvice("ajc$after$123");
 			fail("Expecting NoSuchAdviceException");
@@ -276,10 +278,10 @@ public class AjTypeTestsWithAspects extends TestCase {
 	public void testGetNamedDeclaredAdvice() throws Exception {
 		Advice a = sa.getDeclaredAdvice("logItAll");
 		assertEquals("logItAll",a.getName());
-		assertEquals(AdviceType.AROUND,a.getKind());
+		assertEquals(AdviceKind.AROUND,a.getKind());
 		a = sa.getDeclaredAdvice("whatGoesAround");
 		assertEquals("whatGoesAround",a.getName());
-		assertEquals(AdviceType.AROUND,a.getKind());
+		assertEquals(AdviceKind.AROUND,a.getKind());
 		try {
 			a = sa.getDeclaredAdvice("ajc$after$123");
 			fail("Expecting NoSuchAdviceException");

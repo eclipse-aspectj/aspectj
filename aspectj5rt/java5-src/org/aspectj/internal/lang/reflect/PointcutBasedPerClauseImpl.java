@@ -11,26 +11,27 @@
  * ******************************************************************/
 package org.aspectj.internal.lang.reflect;
 
-import org.aspectj.lang.reflect.PerClause;
 import org.aspectj.lang.reflect.PerClauseKind;
+import org.aspectj.lang.reflect.PointcutBasedPerClause;
+import org.aspectj.lang.reflect.PointcutExpression;
 
 /**
  * @author colyer
  *
  */
-public class PerClauseImpl implements PerClause {
+public class PointcutBasedPerClauseImpl extends PerClauseImpl implements
+		PointcutBasedPerClause {
 
-	private final PerClauseKind kind;
-	
-	protected PerClauseImpl(PerClauseKind kind) {
-		this.kind = kind;
+	private final PointcutExpression pointcutExpression;
+
+	public PointcutBasedPerClauseImpl(PerClauseKind kind,
+			String pointcutExpression) {
+		super(kind);
+		this.pointcutExpression = new PointcutExpressionImpl(pointcutExpression);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.PerClause#getKind()
-	 */
-	public PerClauseKind getKind() {
-		return kind;
+	public PointcutExpression getPointcutExpression() {
+		return pointcutExpression;
 	}
 
 }

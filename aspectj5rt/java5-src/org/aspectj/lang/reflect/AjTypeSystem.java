@@ -11,15 +11,43 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
+import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.WeakHashMap;
+
 import org.aspectj.internal.lang.reflect.AjTypeImpl;
 
 /**
- * @author colyer
- *
+ * This is the anchor for the AspectJ runtime type system. 
+ * Typical usage to get the AjType representation of a given type
+ * at runtime is to call <code>AjType<Foo> fooType = AjTypeSystem.getAjType(Foo.class);</code>
  */
 public class AjTypeSystem {
+	
+		private static Map<Class, WeakReference<AjType>> ajTypes = new WeakHashMap<Class,WeakReference<AjType>>();
 
+		/**
+		 * Return the AspectJ runtime type representation of the given Java type.
+		 * Unlike java.lang.Class, AjType understands pointcuts, advice, declare statements,
+		 * and other AspectJ type members. AjType is the recommended reflection API for
+		 * AspectJ programs as it offers everything that java.lang.reflect does, with 
+		 * AspectJ-awareness on top.
+		 */
 		public static <T> AjType<T> getAjType(Class<T> fromClass) {
-			return new AjTypeImpl<T>(fromClass);
+			if (ajTypes.containsKey(fromClass)) {
+				WeakReference<AjType> weakRefToAjType = ajTypes.get(fromClass);
+				AjType<T> theAjType = weakRefToAjType.get();
+				if (theAjType != null) {
+					return theAjType;
+				} else {
+					theAjType = new AjTypeImpl<T>(fromClass);
+					ajTypes.put(fromClass, new WeakReference<AjType>(theAjType));
+					return theAjType;
+				}
+			}
+			// neither key nor value was found
+			AjType<T> theAjType =  new AjTypeImpl<T>(fromClass);
+			ajTypes.put(fromClass, new WeakReference<AjType>(theAjType));
+			return theAjType;
 		}
 }

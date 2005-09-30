@@ -9,26 +9,29 @@
  * Contributors: 
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
-package org.aspectj.lang.reflect;
+package org.aspectj.internal.lang.reflect;
+
+import org.aspectj.lang.reflect.SignaturePattern;
 
 /**
- * Thrown when AjType.getDeclaredPointcut is called with a pointcut name, and no
- * matching pointcut declaration can be found.
+ * Basic implementation of signature pattern
+ *
  */
-public class NoSuchPointcutException extends Exception {
+public class SignaturePatternImpl implements SignaturePattern {
 
-	private static final long serialVersionUID = 3256444698657634352L;
-	private String name;
+	private String sigPattern;
 	
-	public NoSuchPointcutException(String name) {
-		this.name = name;
+	public SignaturePatternImpl(String pattern) {
+		this.sigPattern = pattern;
 	}
-	
-	/**
-	 * The name of the pointcut that could not be found.
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.lang.reflect.SignaturePattern#asString()
 	 */
-	public String getName() {
-		return name;
+	public String asString() {
+		return sigPattern;
 	}
+	
+	public String toString() { return asString(); }
 
 }

@@ -12,10 +12,12 @@
 package org.aspectj.lang.reflect;
 
 /**
- * @author colyer
- *
+ * AspectJ runtime representation of the per-clause associated with an aspect.
  */
 public interface PerClause {
+	/**
+	 * The kind of per-clause (singleton, perthis, pertarget,...)
+	 */
 	PerClauseKind getKind();
-	PointcutExpression getPointcutExpression();
+
 }

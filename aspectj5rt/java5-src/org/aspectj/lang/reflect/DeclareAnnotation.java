@@ -12,7 +12,7 @@
 package org.aspectj.lang.reflect;
 
 /**
- * @author colyer
+ * The AspectJ runtime representation of a declare annotation member in an aspect.
  *
  */
 public interface DeclareAnnotation {

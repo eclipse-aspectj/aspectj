@@ -12,23 +12,12 @@
 package org.aspectj.lang.reflect;
 
 /**
- * Thrown when AjType.getDeclaredPointcut is called with a pointcut name, and no
- * matching pointcut declaration can be found.
+ * The different kinds of advice in AspectJ
  */
-public class NoSuchPointcutException extends Exception {
-
-	private static final long serialVersionUID = 3256444698657634352L;
-	private String name;
-	
-	public NoSuchPointcutException(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * The name of the pointcut that could not be found.
-	 */
-	public String getName() {
-		return name;
-	}
-
+public enum AdviceKind {
+	BEFORE,
+	AFTER,
+	AFTER_RETURNING,
+	AFTER_THROWING,
+	AROUND;
 }

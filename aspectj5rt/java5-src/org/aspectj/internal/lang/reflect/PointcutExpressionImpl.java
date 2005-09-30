@@ -24,7 +24,9 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		this.expression = aPointcutExpression;
 	}
 	
-	public String toString() {
+	public String asString() {
 		return expression;
 	}
+	
+	public String toString() { return asString(); }
 }

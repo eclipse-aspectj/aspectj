@@ -12,23 +12,12 @@
 package org.aspectj.lang.reflect;
 
 /**
- * Thrown when AjType.getDeclaredPointcut is called with a pointcut name, and no
- * matching pointcut declaration can be found.
+ * AspectJ runtime representation of a signature pattern as used in various
+ * aspect members (for example, declare @method, declare @field).
  */
-public class NoSuchPointcutException extends Exception {
+public interface SignaturePattern {
 
-	private static final long serialVersionUID = 3256444698657634352L;
-	private String name;
+	/** return a String representation of this pattern */
+	String asString();
 	
-	public NoSuchPointcutException(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * The name of the pointcut that could not be found.
-	 */
-	public String getName() {
-		return name;
-	}
-
 }

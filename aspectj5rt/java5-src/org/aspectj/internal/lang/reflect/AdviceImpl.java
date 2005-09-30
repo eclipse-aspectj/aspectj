@@ -15,7 +15,9 @@ import java.lang.reflect.Method;
 
 import org.aspectj.lang.annotation.AdviceName;
 import org.aspectj.lang.reflect.Advice;
-import org.aspectj.lang.reflect.AdviceType;
+import org.aspectj.lang.reflect.AdviceKind;
+import org.aspectj.lang.reflect.AjType;
+import org.aspectj.lang.reflect.AjTypeSystem;
 import org.aspectj.lang.reflect.PointcutExpression;
 
 /**
@@ -24,17 +26,21 @@ import org.aspectj.lang.reflect.PointcutExpression;
  */
 public class AdviceImpl implements Advice {
 
-	private final AdviceType kind;
+	private final AdviceKind kind;
 	private final Method adviceMethod;
 	private PointcutExpression pointcutExpression;
 	
-	protected AdviceImpl(Method method, String pointcut, AdviceType type) {
+	protected AdviceImpl(Method method, String pointcut, AdviceKind type) {
 		this.kind = type;
 		this.adviceMethod = method;
 		this.pointcutExpression = new PointcutExpressionImpl(pointcut);
 	}
 	
-	public AdviceType getKind() {
+	public AjType getDeclaringType() {
+		return AjTypeSystem.getAjType(adviceMethod.getDeclaringClass());
+	}
+	
+	public AdviceKind getKind() {
 		return kind;
 	}
 	
