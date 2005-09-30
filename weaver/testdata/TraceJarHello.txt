@@ -64,11 +64,11 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
   end String doit(String, java.util.List)
 
   private static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List):
-                    ALOAD_2   (line 21)
-                    ALOAD_1
+                    ALOAD_2     // java.util.List l   (line 21)
+                    ALOAD_1     // java.lang.String s
                     INVOKEINTERFACE java.util.List.add (Ljava/lang/Object;)Z
                     POP
-                    ALOAD_2   (line 22)
+                    ALOAD_2     // java.util.List l   (line 22)
                     INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
                     ARETURN
   end private static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List)

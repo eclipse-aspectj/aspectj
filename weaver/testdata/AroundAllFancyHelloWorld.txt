@@ -216,7 +216,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
   static final String getName_aroundBody20():
                     ICONST_0   (line 20)
                     ISTORE_0
-                    ILOAD_0   (line 21)
+                    ILOAD_0     // int x   (line 21)
                     LDC "name"
                     ASTORE_2
     method-call(int java.lang.String.hashCode())
@@ -235,7 +235,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               INVOKESTATIC org.aspectj.runtime.internal.Conversions.intValue (Ljava/lang/Object;)I
     method-call(int java.lang.String.hashCode())
                     IADD
-                    ISTORE_0
+                    ISTORE_0     // int x
                     LDC "name"   (line 22)
                     ASTORE 6
     constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
@@ -253,7 +253,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
     |               CHECKCAST java.lang.StringBuffer
     constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
-                    ILOAD_0
+                    ILOAD_0     // int x
                     ISTORE 10
                     ASTORE 12
     method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
