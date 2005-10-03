@@ -256,5 +256,12 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	    copyFileAndDoIncrementalBuild("changes/X.20.aj","src/X.aj");
   }
   
+  public void testPersistingDeow_pr84033() throws Exception {
+	  runTest("incremental declare error persists after fix");
+	  copyFileAndDoIncrementalBuild("changes/Aspect.20.java", "src/pack/Aspect.java");
+      nextIncrement(true);
+	  RunResult before = run("pack.Main");
+  }
+  
 }
 
