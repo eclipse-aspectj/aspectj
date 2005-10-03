@@ -162,8 +162,10 @@ public abstract class ResolvedTypeMunger {
 		
 	}
 
-	protected static ISourceLocation readSourceLocation(DataInputStream s) throws IOException {
+	protected static ISourceLocation readSourceLocation(VersionedDataInputStream s) throws IOException {
 		if (!persistSourceLocation) return null;
+		// Location persistence for type mungers was added after 1.2.1 was shipped...
+		if (s.getMajorVersion()<AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) return null;
 		SourceLocation ret = null;
 		ObjectInputStream ois = null;
 		try {
