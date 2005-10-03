@@ -378,12 +378,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testBinaryWeavingITDsA() {runTest("binary weaving ITDs - A");}
 	public void testBinaryWeavingITDsB() {runTest("binary weaving ITDs - B");}
 	public void testBinaryWeavingITDs1() {runTest("binary weaving ITDs - 1");}
-	// ?? Looks like reweavable files dont process their type mungers correctly.
-	// See AjLookupEnvironment.weaveInterTypeDeclarations(SourceTypeBinding,typeMungers,declareparents,...)
-	//   it seems to process any it discovers from the weaver state info then not apply new ones (the ones
-	//   passed in!)
-//	public void testBinaryWeavingITDs2() {runTest("binary weaving ITDs - 2");}
-//	public void testBinaryWeavingITDs3() {runTest("binary weaving ITDs - 3");}
+	public void testBinaryWeavingITDs2() {runTest("binary weaving ITDs - 2");}
+	public void testBinaryWeavingITDs3() {runTest("binary weaving ITDs - 3");}
 	public void testGenericITFSharingTypeVariable() {runTest("generic intertype field declaration, sharing type variable");}	
 	
 	

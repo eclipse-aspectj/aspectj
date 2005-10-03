@@ -81,6 +81,23 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	
 //	private boolean builtInterTypesAndPerClauses = false;
 	private List pendingTypesToWeave = new ArrayList();
+	
+	// Q: What are dangerousInterfaces?
+	// A: An interface is considered dangerous if an ITD has been made upon it and that ITD
+	//    requires the top most implementors of the interface to be woven *and yet* the aspect
+	//    responsible for the ITD is not in the 'world'.
+	// Q: Err, how can that happen?
+	// A: When a type is on the inpath, it is 'processed' when completing type bindings.  At this
+	//    point we look at any type mungers it was affected by previously (stored in the weaver
+	//    state info attribute).  Effectively we are working with a type munger and yet may not have its
+	//    originating aspect in the world.  This is a problem if, for example, the aspect supplied
+	//    a 'body' for a method targetting an interface - since the top most implementors should
+	//    be woven by the munger from the aspect.  When this happens we store the interface name here
+	//    in the map - if we later process a type that is the topMostImplementor of a dangerous
+	//    interface then we put out an error message.
+	
+	/** interfaces targetted by ITDs that have to be implemented by accessing the topMostImplementor
+	 *  of the interface, yet the aspect where the ITD originated is not in the world */
 	private Map dangerousInterfaces = new HashMap();
 	
 	public AjLookupEnvironment(
@@ -416,39 +433,29 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	
 	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, 
 			Collection declareParents, Collection declareAnnotationOnTypes, boolean skipInners) {
+
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS, sourceType.sourceName);
+		
 		ResolvedType onType = factory.fromEclipse(sourceType);
 		// AMC we shouldn't need this when generic sigs are fixed??
 		if (onType.isRawType()) onType = onType.getGenericType();
+		
 		WeaverStateInfo info = onType.getWeaverState();
-
-		if (info != null && !info.isOldStyle()) {		
-			Collection mungers = 
-				onType.getWeaverState().getTypeMungers(onType);
-				
-			//System.out.println(onType + " mungers: " + mungers);
-			for (Iterator i = mungers.iterator(); i.hasNext(); ) {
-				ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
-				EclipseTypeMunger munger = factory.makeEclipseTypeMunger(m);
-				if (munger.munge(sourceType,onType)) {
-					if (onType.isInterface() &&
-						munger.getMunger().needsAccessToTopmostImplementor())
-					{
-						if (!onType.getWorld().getCrosscuttingMembersSet().containsAspect(munger.getAspectType())) {
-							dangerousInterfaces.put(onType, 
-								"implementors of " + onType + " must be woven by " +
-								munger.getAspectType());
-						}
-					}
-				}
-				
-			}
+		
+		// this test isnt quite right - there will be a case where we fail to flag a problem
+		// with a 'dangerous interface' because the type is reweavable when we should have
+		// because the type wasn't going to be rewoven... if that happens, we should perhaps
+		// move this test and dangerous interface processing to the end of this method and
+		// make it conditional on whether any of the typeMungers passed into here actually
+		// matched this type.
+		if (info != null && !info.isOldStyle() 	&& !info.isReweavable()) {
+			processTypeMungersFromExistingWeaverState(sourceType,onType);
 			CompilationAndWeavingContext.leavingPhase(tok);
 			return;
 		}
 		
-		//System.out.println("dangerousInterfaces: " + dangerousInterfaces);
-		
+		// Check if the type we are looking at is the topMostImplementor of a dangerous interface - 
+		// report a problem if it is.
 		for (Iterator i = dangerousInterfaces.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
 			ResolvedType interfaceType = (ResolvedType)entry.getKey();
@@ -568,6 +575,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// future generations to enjoy.  Method source is commented out at the end of this module
 		// doDeclareAnnotationOnFields();
 
+		
 		if (skipInners) {
 			CompilationAndWeavingContext.leavingPhase(tok);
 			return;
@@ -580,6 +588,31 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 		}
 		CompilationAndWeavingContext.leavingPhase(tok);
+	}
+
+	/**
+	 * Called when we discover we are weaving intertype declarations on some type that has
+	 * an existing 'WeaverStateInfo' object - this is typically some previously woven type
+	 * that has been passed on the inpath.
+	 * 
+	 * sourceType and onType are the 'same type' - the former is the 'Eclipse' version and
+	 * the latter is the 'Weaver' version.
+	 */
+	private void processTypeMungersFromExistingWeaverState(SourceTypeBinding sourceType,ResolvedType onType) {
+		Collection previouslyAppliedMungers = onType.getWeaverState().getTypeMungers(onType);
+		
+		for (Iterator i = previouslyAppliedMungers.iterator(); i.hasNext(); ) {
+			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
+			EclipseTypeMunger munger = factory.makeEclipseTypeMunger(m);
+			if (munger.munge(sourceType,onType)) {
+				if (onType.isInterface() &&	munger.getMunger().needsAccessToTopmostImplementor()) {
+					if (!onType.getWorld().getCrosscuttingMembersSet().containsAspect(munger.getAspectType())) {
+						dangerousInterfaces.put(onType, "implementors of "+onType+" must be woven by "+munger.getAspectType());
+					}
+				}
+			}
+			
+		}
 	}
 	
 	private boolean doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
