@@ -79,4 +79,22 @@ public class PointcutImpl implements Pointcut {
 		}
 		return ret;
 	}
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getName());
+		sb.append("(");
+		AjType<?>[] ptypes = getParameterTypes();
+		for (int i = 0; i < ptypes.length; i++) {
+			sb.append(ptypes[i].getName());
+			if (this.parameterNames != null && this.parameterNames[i] != null) {
+				sb.append(" ");
+				sb.append(this.parameterNames[i]);
+			}
+			if (i+1 < ptypes.length) sb.append(",");
+		}
+		sb.append(") : ");
+		sb.append(getPointcutExpression().asString());
+		return sb.toString();
+	}
 }

@@ -130,5 +130,25 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 	public void testRuntimePointcutsReferencingCompiledPointcuts() {
 		runTest("runtime pointcut resolution referencing compiled pointcuts");
 	}
+	
+	public void testDecP() {
+		runTest("ann gen for decp");
+	}
+	
+	public void testDecPAdvanced() {
+		runTest("ann gen for decp 2");
+	}
+	
+	public void testDecS() {
+		runTest("ann gen for decs");
+	}
+	
+	public void testDecPrecedence() {
+		runTest("ann gen for dec precedence");
+	}
+
+	public void testDecAnnotation() {
+		runTest("ann gen for dec annotation");
+	}
 }
 

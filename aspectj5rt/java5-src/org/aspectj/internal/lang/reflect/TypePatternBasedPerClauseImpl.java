@@ -35,5 +35,9 @@ public class TypePatternBasedPerClauseImpl extends PerClauseImpl implements
 	public TypePattern getTypePattern() {
 		return this.typePattern;
 	}
+	
+	public String toString() {
+		return "pertypewithin(" + typePattern.asString() + ")";
+	}
 
 }

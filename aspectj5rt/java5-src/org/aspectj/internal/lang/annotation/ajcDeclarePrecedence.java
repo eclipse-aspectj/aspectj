@@ -19,12 +19,14 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author colyer
- * Marker annotation for declare soft declarations
+ * Marker annotation for code style declare precedence declarations
  * ajc prefix used to indicate that this annotation is *internal*
+ * Can't use DeclarePrecedence as that has target = type and we
+ * need method to cope with the (rare) case of multiple declare
+ * precendence statements in the same aspect.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ajcDeclareSoft {
-	String exceptionType();
-	String pointcut();
+public @interface ajcDeclarePrecedence {
+	String value();
 }

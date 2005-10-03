@@ -35,16 +35,18 @@ public class DeclareParents extends Declare {
 	private TypePattern child;
 	private TypePatternList parents;
 	private boolean isWildChild = false;
+	private boolean isExtends = true;
 //	private String[] typeVariablesInScope = new String[0]; // AspectJ 5 extension for generic types
 	
 
-	public DeclareParents(TypePattern child, List parents) {
-		this(child, new TypePatternList(parents));
+	public DeclareParents(TypePattern child, List parents, boolean isExtends) {
+		this(child, new TypePatternList(parents),isExtends);
 	}
 	
-	private DeclareParents(TypePattern child, TypePatternList parents) {
+	private DeclareParents(TypePattern child, TypePatternList parents, boolean isExtends) {
 		this.child = child;
 		this.parents = parents;
+		this.isExtends = isExtends;
 		if (child instanceof WildTypePattern) isWildChild = true;
 	}
 	
@@ -75,7 +77,8 @@ public class DeclareParents extends Declare {
 		DeclareParents ret = 
 			new DeclareParents(
 					child.parameterizeWith(typeVariableBindingMap),
-					parents.parameterizeWith(typeVariableBindingMap));
+					parents.parameterizeWith(typeVariableBindingMap),
+					isExtends);
 		ret.copyLocationFrom(this);
 		return ret;
 	}
@@ -84,7 +87,7 @@ public class DeclareParents extends Declare {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare parents: ");
 		buf.append(child);
-		buf.append(" extends ");  //extends and implements are treated equivalently
+		buf.append(isExtends ? " extends " : " implements ");  //extends and implements are treated equivalently
 		buf.append(parents);
 		buf.append(";");
 		return buf.toString();
@@ -117,7 +120,7 @@ public class DeclareParents extends Declare {
 	}
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		DeclareParents ret = new DeclareParents(TypePattern.read(s, context), TypePatternList.read(s, context));
+		DeclareParents ret = new DeclareParents(TypePattern.read(s, context), TypePatternList.read(s, context),true);
 //		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
 //			int numTypeVariablesInScope = s.readInt();
 //			ret.typeVariablesInScope = new String[numTypeVariablesInScope];
@@ -159,6 +162,11 @@ public class DeclareParents extends Declare {
 
 	public TypePattern getChild() {
 		return child;
+	}
+	
+	// note - will always return true after deserialization, this doesn't affect weaver
+	public boolean isExtends() {
+		return this.isExtends;
 	}
 	
 	public boolean isAdviceLike() {

@@ -24,7 +24,7 @@ public interface DeclareSoft {
 	/**
 	 * The softened exception type
 	 */
-	AjType getSoftenedExceptionType();
+	AjType getSoftenedExceptionType() throws ClassNotFoundException;
 	
 	/**
 	 * The pointcut determining the join points at which the exception is to be softened.

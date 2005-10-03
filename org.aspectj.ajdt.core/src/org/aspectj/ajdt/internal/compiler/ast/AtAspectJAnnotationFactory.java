@@ -20,6 +20,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 
 /**
@@ -44,6 +45,10 @@ public class AtAspectJAnnotationFactory {
 	static final char[] around = "Around".toCharArray();
     static final char[] pointcut = "Pointcut".toCharArray(); 
 	static final char[] declareErrorOrWarning = "ajcDeclareEoW".toCharArray();
+	static final char[] declareParents = "ajcDeclareParents".toCharArray();
+	static final char[] declareSoft = "ajcDeclareSoft".toCharArray();
+	static final char[] declarePrecedence = "ajcDeclarePrecedence".toCharArray();
+	static final char[] declareAnnotation = "ajcDeclareAnnotation".toCharArray();
 
 	/**
 	 * Create an @Aspect annotation for a code style aspect declaration starting at
@@ -151,6 +156,66 @@ public class AtAspectJAnnotationFactory {
 		return ann;
 	}
 	
+	public static Annotation createDeclareParentsAnnotation(String childPattern, String parentPatterns, boolean isExtends, int pos) {
+		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declareParents};
+		long[] positions = new long[typeName.length];
+		for (int i = 0; i < positions.length; i++) positions[i] = pos;
+		TypeReference annType = new QualifiedTypeReference(typeName,positions);
+		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+		Expression targetExpression = new StringLiteral(childPattern.toCharArray(),pos,pos);
+		Expression parentsExpression = new StringLiteral(parentPatterns.toCharArray(),pos,pos);
+		Expression isExtendsExpression;
+		if (isExtends) {
+			isExtendsExpression = new TrueLiteral(pos,pos);
+		} else {
+			isExtendsExpression = new FalseLiteral(pos,pos);
+		}
+		MemberValuePair[] mvps = new MemberValuePair[3];
+		mvps[0] = new MemberValuePair("targetTypePattern".toCharArray(),pos,pos,targetExpression);
+		mvps[1] = new MemberValuePair("parentTypes".toCharArray(),pos,pos,parentsExpression);
+		mvps[2] = new MemberValuePair("isExtends".toCharArray(),pos,pos,isExtendsExpression);
+		ann.memberValuePairs = mvps;
+		return ann;
+	}
+	
+	public static Annotation createDeclareSoftAnnotation(String pointcutExpression, String exceptionType, int pos) {
+		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declareSoft};
+		long[] positions = new long[typeName.length];
+		for (int i = 0; i < positions.length; i++) positions[i] = pos;
+		TypeReference annType = new QualifiedTypeReference(typeName,positions);
+		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+		Expression pcutExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		Expression exExpr = new StringLiteral(exceptionType.toCharArray(),pos,pos);
+		MemberValuePair[] mvps = new MemberValuePair[2];
+		mvps[0] = new MemberValuePair("pointcut".toCharArray(),pos,pos,pcutExpr);
+		mvps[1] = new MemberValuePair("exceptionType".toCharArray(),pos,pos,exExpr);
+		ann.memberValuePairs = mvps;
+		return ann;
+	}
+	
+	public static Annotation createDeclareAnnAnnotation(String patternString, String annString, String kind, int pos) {
+		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declareAnnotation};
+		long[] positions = new long[typeName.length];
+		for (int i = 0; i < positions.length; i++) positions[i] = pos;
+		TypeReference annType = new QualifiedTypeReference(typeName,positions);
+		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+		Expression pattExpr = new StringLiteral(patternString.toCharArray(),pos,pos);
+		Expression annExpr = new StringLiteral(annString.toCharArray(),pos,pos);
+		Expression kindExpr = new StringLiteral(kind.toCharArray(),pos,pos);
+		MemberValuePair[] mvps = new MemberValuePair[3];
+		mvps[0] = new MemberValuePair("pattern".toCharArray(),pos,pos,pattExpr);
+		mvps[1] = new MemberValuePair("annotation".toCharArray(),pos,pos,annExpr);
+		mvps[2] = new MemberValuePair("kind".toCharArray(),pos,pos,kindExpr);
+		ann.memberValuePairs = mvps;
+		return ann;
+	}
+	
+	public static Annotation createDeclarePrecedenceAnnotation(String pointcutExpression, int pos) {
+		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declarePrecedence};
+		return makeSingleStringMemberAnnotation(typeName, pos, pointcutExpression);
+
+	}
+	
 	private static Annotation makeSingleStringMemberAnnotation(char[][] name, int pos, String annValue) {
 		long[] positions = new long[name.length];
 		for (int i = 0; i < positions.length; i++) positions[i] = pos;
@@ -163,7 +228,7 @@ public class AtAspectJAnnotationFactory {
 		return ann;		
 	}
 
-	public static void addAnnotation(AjMethodDeclaration decl, Annotation annotation) {
+	public static void addAnnotation(AjMethodDeclaration decl, Annotation annotation, BlockScope scope) {
 		if (decl.annotations == null) {
 			decl.annotations = new Annotation[] { annotation };
 		} else {
@@ -173,7 +238,9 @@ public class AtAspectJAnnotationFactory {
 			decl.annotations[old.length] = annotation;
 		}
 		if (decl.binding!= null) {
-			decl.binding.tagBits -= TagBits.AnnotationResolved;
+			if ((decl.binding.tagBits & TagBits.AnnotationResolved) != 0) {
+				annotation.resolve(scope);
+			}
 		}
 	}
 

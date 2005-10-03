@@ -297,7 +297,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		} else if (kind == AdviceKind.Around) {
 			adviceAnnotation = AtAspectJAnnotationFactory.createAroundAnnotation(pointcutExpression,declarationSourceStart);
 		}
-		AtAspectJAnnotationFactory.addAnnotation(this, adviceAnnotation);
+		AtAspectJAnnotationFactory.addAnnotation(this, adviceAnnotation,this.scope);
 	}
 	
 	// override, Called by ClassScope.postParse

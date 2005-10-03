@@ -34,4 +34,16 @@ public class PointcutBasedPerClauseImpl extends PerClauseImpl implements
 		return pointcutExpression;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		switch(getKind()) {
+		case PERCFLOW: sb.append("percflow("); break;
+		case PERCFLOWBELOW: sb.append("percflowbelow("); break;
+		case PERTARGET: sb.append("pertarget("); break;
+		case PERTHIS: sb.append("perthis("); break;
+		}
+		sb.append(this.pointcutExpression.asString());
+		sb.append(")");
+		return sb.toString();
+	}
 }

@@ -59,22 +59,27 @@ public class AjTypeTestsWithAspects extends TestCase {
 		PerClause pc = perThisA.getPerClause();
 		assertEquals(PerClauseKind.PERTHIS,pc.getKind());
 		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
+		assertEquals("perthis(pc())",pc.toString());
 		
 		pc= perTargetA.getPerClause();
 		assertEquals(PerClauseKind.PERTARGET,pc.getKind());
 		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
+		assertEquals("pertarget(pc())",pc.toString());
 
 		pc= perCflowA.getPerClause();
 		assertEquals(PerClauseKind.PERCFLOW,pc.getKind());
 		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
+		assertEquals("percflow(pc())",pc.toString());
 
 		pc= perCflowbelowA.getPerClause();
 		assertEquals(PerClauseKind.PERCFLOWBELOW,pc.getKind());
 		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
+		assertEquals("percflowbelow(pc())",pc.toString());
 
 		pc= perTypeWithinA.getPerClause();
 		assertEquals(PerClauseKind.PERTYPEWITHIN,pc.getKind());
 		assertEquals("org.aspectj..*",((TypePatternBasedPerClause)pc).getTypePattern().asString());
+		assertEquals("pertypewithin(org.aspectj..*)",pc.toString());
 
 	}
 	
@@ -151,6 +156,7 @@ public class AjTypeTestsWithAspects extends TestCase {
 		Pointcut p1 = sa.getDeclaredPointcut("simpleAspectMethodExecution");
 		assertEquals("simpleAspectMethodExecution",p1.getName());
 		assertEquals("execution(* SimpleAspect.*(..))",p1.getPointcutExpression().asString());
+		assertEquals("simpleAspectMethodExecution() : execution(* SimpleAspect.*(..))",p1.toString());
 		assertEquals(sa,p1.getDeclaringType());
 		assertEquals(0,p1.getParameterTypes().length);
 		assertTrue(Modifier.isPublic(p1.getModifiers()));
@@ -231,10 +237,12 @@ public class AjTypeTestsWithAspects extends TestCase {
             atwo = advice[0];
         }
         assertEquals("execution(* SimpleAspect.*(..))",aone.getPointcutExpression().toString());
+        assertEquals("@AdviceName(\"logEntry\") before() : execution(* SimpleAspect.*(..))",aone.toString());
         assertEquals("logEntry",aone.getName());
         assertEquals(AdviceKind.BEFORE,aone.getKind());
         assertEquals("execution(* SimpleAspect.*(..))",atwo.getPointcutExpression().toString());
         assertEquals("",atwo.getName());
+        assertEquals("before() : execution(* SimpleAspect.*(..))",atwo.toString());
 	}
 	
 	public void testGetAdvice() {
@@ -320,7 +328,10 @@ public class AjTypeTestsWithAspects extends TestCase {
 		boolean foundAnnError = false;
 		for (DeclareErrorOrWarning deow : deows) {
 			if (deow.isError()) {
-				if (deow.getMessage().equals("dont call this method code")) foundCodeError = true;
+				if (deow.getMessage().equals("dont call this method code")) {
+					foundCodeError = true;
+					assertEquals("declare error : call(* DontDoIt.*(..)) : \"dont call this method code\"",deow.toString());
+				}
 				if (deow.getMessage().equals("dont call this method ann")) foundAnnError = true;
 				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression().toString());
 			} else {

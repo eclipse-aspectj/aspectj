@@ -11,6 +11,8 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
+import java.lang.reflect.Type;
+
 /**
  * Runtime representation of an advice declaration inside an aspect
  */
@@ -34,6 +36,21 @@ public interface Advice {
 	 * in which case the name given in the annotation is returned. 
 	 */
 	String getName();
+	
+	/**
+	 * The advice parameters
+	 */
+	AjType<?>[] getParameterTypes();
+	
+	/**
+	 * The generic parameter types, @see java.lang.reflect.Method.getGenericParameterTypes
+	 */
+	Type[] getGenericParameterTypes();
+	
+	/**
+	 * The declared thrown exceptions by the advice
+	 */
+	AjType<?>[] getExceptionTypes();
 	
 	/**
 	 * The pointcut expression associated with the advice declaration.

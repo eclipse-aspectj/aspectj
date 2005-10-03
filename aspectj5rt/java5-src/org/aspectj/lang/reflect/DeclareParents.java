@@ -11,6 +11,8 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
+import java.lang.reflect.Type;
+
 /**
  * A declare parents member defined inside an aspect
  */
@@ -40,6 +42,6 @@ public interface DeclareParents {
 	 * The set of types that the types matching getTargetTypesPattern are 
 	 * declared to implement or extend
 	 */
-	AjType[] getParentTypes();
+	Type[] getParentTypes() throws ClassNotFoundException;
 	
 }

@@ -15,6 +15,9 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 //import java.util.List;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -25,6 +28,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -58,19 +62,38 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 	public void addAtAspectJAnnotations() {
 		Annotation annotation = null;
 		if (declareDecl instanceof DeclareAnnotation) {
-			
+			DeclareAnnotation da = (DeclareAnnotation) declareDecl;
+			String patternString = da.getPatternAsString();
+			String annString = da.getAnnotationString();
+			String kind = da.getKind().toString();
+			annotation = AtAspectJAnnotationFactory.createDeclareAnnAnnotation(
+							patternString,annString,kind,declarationSourceStart);
 		} else if (declareDecl instanceof DeclareErrorOrWarning) {
 			DeclareErrorOrWarning dd = (DeclareErrorOrWarning) declareDecl;
 			annotation = AtAspectJAnnotationFactory
 									.createDeclareErrorOrWarningAnnotation(dd.getPointcut().toString(),dd.getMessage(),dd.isError(),declarationSourceStart);
 		} else if (declareDecl instanceof DeclareParents) {
-			
+			DeclareParents dp = (DeclareParents) declareDecl;
+			String childPattern = dp.getChild().toString();
+			Collection parentPatterns = dp.getParents().getExactTypes();
+			StringBuffer parents = new StringBuffer();
+			for (Iterator iter = parentPatterns.iterator(); iter.hasNext();) {
+				UnresolvedType  urt = ((UnresolvedType) iter.next());
+				parents.append(urt.getName());
+				if (iter.hasNext()) parents.append(", ");
+			}		
+			annotation = AtAspectJAnnotationFactory
+									.createDeclareParentsAnnotation(childPattern,parents.toString(),dp.isExtends(),declarationSourceStart);
 		} else if (declareDecl instanceof DeclarePrecedence) {
-			
+			DeclarePrecedence dp = (DeclarePrecedence) declareDecl;
+			String precedenceList = dp.getPatterns().toString();
+			annotation = AtAspectJAnnotationFactory.createDeclarePrecedenceAnnotation(precedenceList,declarationSourceStart);
 		} else if (declareDecl instanceof DeclareSoft) {
-			
+			DeclareSoft ds = (DeclareSoft) declareDecl;
+			annotation = AtAspectJAnnotationFactory
+				.createDeclareSoftAnnotation(ds.getPointcut().toString(),ds.getException().getExactType().getName(),declarationSourceStart);			
 		}
-		if (annotation != null) AtAspectJAnnotationFactory.addAnnotation(this,annotation);
+		if (annotation != null) AtAspectJAnnotationFactory.addAnnotation(this,annotation,this.scope);
 	}
 
 	/**

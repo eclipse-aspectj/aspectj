@@ -2408,7 +2408,7 @@
     </ajc-test>
     
      <ajc-test dir="java5/annotations/declare" title="declare @type - covering enum and class element values - binary weaving">
-        <weave aspectsFiles="EnumAndClassValues.aj" classesFiles="FunkyAnnotations.java" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
+        <weave aspectsFiles="EnumAndClassValues.aj" classesFiles="FunkyAnnotations.java" options="-1.5 -Xdev:Pinpoint" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="FunkyAnnotations">
         	<stderr>
                <line text="advice running: Red"/>

@@ -9,31 +9,17 @@
  * Contributors: 
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
-package org.aspectj.internal.lang.reflect;
+package org.aspectj.internal.lang.annotation;
 
-import org.aspectj.lang.reflect.PerClause;
-import org.aspectj.lang.reflect.PerClauseKind;
+import java.lang.annotation.*;
 
 /**
- * @author colyer
- *
+ * internal representation of declare annotation statement, used by reflect api
  */
-public class PerClauseImpl implements PerClause {
-
-	private final PerClauseKind kind;
-	
-	protected PerClauseImpl(PerClauseKind kind) {
-		this.kind = kind;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.PerClause#getKind()
-	 */
-	public PerClauseKind getKind() {
-		return kind;
-	}
-
-	public String toString() {
-		return "issingleton()";
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ajcDeclareAnnotation {
+	String pattern();
+	String annotation();
+	String kind();
 }

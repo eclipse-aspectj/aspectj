@@ -202,6 +202,7 @@ public class PatternParser {
 		if (!(t.getString().equals("extends") || t.getString().equals("implements"))) {
 			throw new ParserException("extends or implements", t);
 		}
+		boolean isExtends = t.getString().equals("extends");
 		
 		List l = new ArrayList();
 		do {
@@ -210,7 +211,7 @@ public class PatternParser {
 		
 		//XXX somewhere in the chain we need to enforce that we have only ExactTypePatterns
 		
-		DeclareParents decp = new DeclareParents(p, l);
+		DeclareParents decp = new DeclareParents(p, l,isExtends);
 		return decp;
 	}
 

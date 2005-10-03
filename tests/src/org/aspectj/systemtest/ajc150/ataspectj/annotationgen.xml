@@ -148,5 +148,34 @@
         </compile>
         <run class="RuntimePointcuts" classpath="../lib/bcel/bcel.jar"/>
     </ajc-test>          
+
+   <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decp">
+        <compile files="DeclareParentsTest.aj" options="-1.5">
+        </compile>
+        <run class="DeclareParentsTest"/>
+    </ajc-test>          
     
+      <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decp 2">
+        <compile files="DeclareParentsTestAdvanced.aj" options="-1.5">
+        </compile>
+        <run class="a.b.c.DeclareParentsTestAdvanced"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decs">
+        <compile files="DeclareSoftTest.aj" options="-1.5">
+        </compile>
+        <run class="DeclareSoftTest"/>
+    </ajc-test>     
+    
+    <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for dec precedence">
+        <compile files="DeclarePrecedenceTest.aj" options="-1.5">
+        </compile>
+        <run class="DeclarePrecedenceTest"/>
+    </ajc-test>     
+    
+     <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for dec annotation">
+        <compile files="DeclareAnnotationTest.aj" options="-1.5">
+        </compile>
+        <run class="DeclareAnnotationTest"/>
+    </ajc-test>  
 </suite>

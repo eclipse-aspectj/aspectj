@@ -24,7 +24,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.internal.lang.annotation.ajcDeclareAnnotation;
 import org.aspectj.internal.lang.annotation.ajcDeclareEoW;
+import org.aspectj.internal.lang.annotation.ajcDeclareParents;
+import org.aspectj.internal.lang.annotation.ajcDeclarePrecedence;
+import org.aspectj.internal.lang.annotation.ajcDeclareSoft;
 import org.aspectj.internal.lang.annotation.ajcPrivileged;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -526,13 +530,13 @@ public class AjTypeImpl<T> implements AjType<T> {
 		if (afterReturningAnn != null) {
 			String pcExpr = afterReturningAnn.pointcut();
 			if (pcExpr.equals("")) pcExpr = afterReturningAnn.value();
-			return new AdviceImpl(method,pcExpr,AdviceKind.AFTER_RETURNING);
+			return new AdviceImpl(method,pcExpr,AdviceKind.AFTER_RETURNING,afterReturningAnn.returning());
 		}
 		AfterThrowing afterThrowingAnn = method.getAnnotation(AfterThrowing.class);
 		if (afterThrowingAnn != null) {
 			String pcExpr = afterThrowingAnn.pointcut();
 			if (pcExpr == null) pcExpr = afterThrowingAnn.value();
-			return new AdviceImpl(method,pcExpr,AdviceKind.AFTER_THROWING);
+			return new AdviceImpl(method,pcExpr,AdviceKind.AFTER_THROWING,afterThrowingAnn.throwing());
 		}
 		Around aroundAnn = method.getAnnotation(Around.class);
 		if (aroundAnn != null) return new AdviceImpl(method,aroundAnn.value(),AdviceKind.AROUND);
@@ -684,31 +688,121 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getDeclareParents()
 	 */
 	public DeclareParents[] getDeclareParents() {
-		// TODO Auto-generated method stub
-		return null;
+		List<DeclareParents> decps = new ArrayList<DeclareParents>();
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (method.isAnnotationPresent(ajcDeclareParents.class)) {
+				ajcDeclareParents decPAnn = method.getAnnotation(ajcDeclareParents.class);
+				DeclareParentsImpl decp = new DeclareParentsImpl(
+						decPAnn.targetTypePattern(),
+						decPAnn.parentTypes(),
+						decPAnn.isExtends(),
+						this
+						);
+				decps.add(decp);
+			}
+		}
+		if (getSupertype().isAspect()) {
+			decps.addAll(Arrays.asList(getSupertype().getDeclareParents()));
+		}
+		DeclareParents[] ret = new DeclareParents[decps.size()];
+		decps.toArray(ret);
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclareSofts()
 	 */
 	public DeclareSoft[] getDeclareSofts() {
-		return null;
+		List<DeclareSoft> decs = new ArrayList<DeclareSoft>();
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (method.isAnnotationPresent(ajcDeclareSoft.class)) {
+				ajcDeclareSoft decSAnn = method.getAnnotation(ajcDeclareSoft.class);
+				DeclareSoftImpl ds = new DeclareSoftImpl(
+						this,
+						decSAnn.pointcut(),
+						decSAnn.exceptionType()
+						);
+				decs.add(ds);
+			}
+		}
+		if (getSupertype().isAspect()) {
+			decs.addAll(Arrays.asList(getSupertype().getDeclareSofts()));
+		}
+		DeclareSoft[] ret = new DeclareSoft[decs.size()];
+		decs.toArray(ret);
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclareAnnotations()
 	 */
 	public DeclareAnnotation[] getDeclareAnnotations() {
-		// TODO Auto-generated method stub
-		return null;
+		List<DeclareAnnotation> decAs = new ArrayList<DeclareAnnotation>();
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (method.isAnnotationPresent(ajcDeclareAnnotation.class)) {
+				ajcDeclareAnnotation decAnn = method.getAnnotation(ajcDeclareAnnotation.class);
+				// the target annotation is on this method...
+				Annotation targetAnnotation = null;
+				Annotation[] anns = method.getAnnotations();
+				for (Annotation ann: anns) {
+					if (ann.annotationType() != ajcDeclareAnnotation.class) {
+						// this must be the one...
+						targetAnnotation = ann;
+						break;
+					}
+				}
+				DeclareAnnotationImpl da = new DeclareAnnotationImpl(
+						this,
+						decAnn.kind(),
+						decAnn.pattern(),
+						targetAnnotation,
+						decAnn.annotation()
+						);
+				decAs.add(da);
+			}
+		}
+		if (getSupertype().isAspect()) {
+			decAs.addAll(Arrays.asList(getSupertype().getDeclareAnnotations()));
+		}
+		DeclareAnnotation[] ret = new DeclareAnnotation[decAs.size()];
+		decAs.toArray(ret);
+		return ret;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclarePrecedence()
 	 */
 	public DeclarePrecedence[] getDeclarePrecedence() {
-		// TODO Auto-generated method stub
-		return null;
+		List<DeclarePrecedence> decps = new ArrayList<DeclarePrecedence>();
+		
+		// @AspectJ Style
+		if (clazz.isAnnotationPresent(org.aspectj.lang.annotation.DeclarePrecedence.class)) {
+			org.aspectj.lang.annotation.DeclarePrecedence ann = 
+				clazz.getAnnotation(org.aspectj.lang.annotation.DeclarePrecedence.class);
+			DeclarePrecedenceImpl decp = new DeclarePrecedenceImpl(
+					ann.value(),
+					this
+					);
+			decps.add(decp);
+		}
+		
+		// annotated code-style
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (method.isAnnotationPresent(ajcDeclarePrecedence.class)) {
+				ajcDeclarePrecedence decPAnn = method.getAnnotation(ajcDeclarePrecedence.class);
+				DeclarePrecedenceImpl decp = new DeclarePrecedenceImpl(
+						decPAnn.value(),
+						this
+						);
+				decps.add(decp);
+			}
+		}
+		if (getSupertype().isAspect()) {
+			decps.addAll(Arrays.asList(getSupertype().getDeclarePrecedence()));
+		}
+		DeclarePrecedence[] ret = new DeclarePrecedence[decps.size()];
+		decps.toArray(ret);
+		return ret;
 	}
 
 	/* (non-Javadoc)
@@ -819,5 +913,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 		}
 		return classes;
 	}
+	
+	public String toString() { return getName(); }
 
 }
