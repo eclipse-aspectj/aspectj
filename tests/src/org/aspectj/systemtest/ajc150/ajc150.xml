@@ -4900,7 +4900,14 @@
    </ajc-test>
    
    <ajc-test dir="bugs150" title="ITD varargs problem">
-     <compile files="pr110906.aj"/>
+     <compile files="pr110906.aj" options="-1.5"/>
+     <run class="pr110906">
+       <stdout>
+           <line text="a"/>
+           <line text="a"/>
+           <line text="a"/>
+       </stdout>
+     </run>
    </ajc-test>
    
    <ajc-test dir="bugs150" title="generic itds and abstract method error">

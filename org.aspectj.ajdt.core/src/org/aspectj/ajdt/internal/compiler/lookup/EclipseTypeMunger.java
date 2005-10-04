@@ -131,7 +131,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			binding.modifiers = (binding.modifiers & (IConstants.AccPublic | IConstants.AccProtected | IConstants.AccPrivate));
 			if (isAbstract) binding.modifiers |= IConstants.AccAbstract;
 		}
-		
+		if (munger.getSignature().isVarargsMethod()) binding.modifiers |= IConstants.AccVarargs;
 		findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
 		return true;
 	}

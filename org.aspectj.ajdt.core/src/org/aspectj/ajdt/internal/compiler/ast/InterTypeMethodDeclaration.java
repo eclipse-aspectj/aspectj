@@ -35,6 +35,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilationUnit;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
@@ -188,8 +189,9 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		// referred to in the parameters/returntype
 		ResolvedMember sig = world.makeResolvedMember(binding,onTypeBinding);
 		sig.resetName(new String(declaredSelector));
-		sig.resetModifiers(declaredModifiers); 
-		
+		int resetModifiers = declaredModifiers;
+		if (binding.isVarargs())  resetModifiers = resetModifiers | Constants.ACC_VARARGS;
+		sig.resetModifiers(resetModifiers); 
 		NewMethodTypeMunger myMunger = new NewMethodTypeMunger(sig, null);
 		setMunger(myMunger);
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);

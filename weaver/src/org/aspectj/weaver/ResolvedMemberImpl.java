@@ -321,10 +321,14 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     	return (modifiers & Constants.ACC_VARARGS)!=0;
     }
     
+    public void setVarargsMethod() {
+    	modifiers = modifiers | Constants.ACC_VARARGS;
+    }
+    
 	public boolean isSynthetic() {
 		return false;
 	}
-    
+
     public void write(DataOutputStream s) throws IOException {
     	getKind().write(s);
     	getDeclaringType().write(s);
@@ -335,6 +339,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 		s.writeInt(getStart());
 		s.writeInt(getEnd());
+		s.writeBoolean(isVarargsMethod());
 
 		// Write out any type variables...
 		if (typeVariables==null) {
@@ -356,15 +361,21 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
     
     public static ResolvedMemberImpl readResolvedMember(VersionedDataInputStream s, ISourceContext sourceContext) throws IOException {
-    	ResolvedMemberImpl m = new ResolvedMemberImpl(Kind.read(s), UnresolvedType.read(s), s.readInt(), s.readUTF(), s.readUTF());
+    	
+    	ResolvedMemberImpl m = new ResolvedMemberImpl(Kind.read(s), UnresolvedType.read(s), s.readInt(), 
+    			s.readUTF(), s.readUTF());
 		m.checkedExceptions = UnresolvedType.readArray(s);
 
 		m.start = s.readInt();
 		m.end = s.readInt();
 		m.sourceContext = sourceContext;
 		
-		// Read in the type variables...
+		
 		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			
+			boolean isvarargs = s.readBoolean();
+			if (isvarargs) m.setVarargsMethod();
+
 			int tvcount = s.readInt();
 			if (tvcount!=0) {
 				m.typeVariables = new UnresolvedType[tvcount];

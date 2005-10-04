@@ -53,6 +53,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}
   public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
   public void testBadDecp_pr110788_4() { runTest("bad generic decp - 4");}
+
+  public void testVarargsITD_pr110906() { runTest("ITD varargs problem");}
   
   public void testBadGenericSigAttribute_pr110927() { 
 	runTest("cant create signature attribute");

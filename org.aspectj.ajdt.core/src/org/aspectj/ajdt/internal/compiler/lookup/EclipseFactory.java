@@ -449,7 +449,7 @@ public class EclipseFactory {
 		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
 		ResolvedType realDeclaringType = world.resolve(fromBinding(declaringType));
 		if (realDeclaringType.isRawType()) realDeclaringType = realDeclaringType.getGenericType();
-		ResolvedMember ret =  new ResolvedMemberImpl(
+		ResolvedMemberImpl ret =  new ResolvedMemberImpl(
 			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
 			realDeclaringType,
 			binding.modifiers,
@@ -458,6 +458,9 @@ public class EclipseFactory {
 			fromBindings(binding.parameters),
 			fromBindings(binding.thrownExceptions)
 			);
+		if (binding.isVarargs()) {
+			ret.setVarargsMethod();
+		}
 		if (typeVariablesForThisMember.size()!=0) {
 			UnresolvedType[] tvars = new UnresolvedType[typeVariablesForThisMember.size()];
 			int i =0;
