@@ -153,7 +153,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 			// this searches each file for a class
 			for (Iterator it = packageNode.getChildren().iterator(); it.hasNext(); ) {
 				IProgramElement fileNode = (IProgramElement)it.next();
-				IProgramElement cNode = findClassInNodes(fileNode.getChildren(), typeName);
+				IProgramElement cNode = findClassInNodes(fileNode.getChildren(), typeName, typeName);
 				if (cNode != null) {
 					ret = cNode;
 					typeMap.put(key,ret);
@@ -163,7 +163,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 		return ret;
 	}
 	
-	private IProgramElement findClassInNodes(Collection nodes, String name) {
+	private IProgramElement findClassInNodes(Collection nodes, String name, String typeName) {
 		String baseName;
 		String innerName;
 		int dollar = name.indexOf('$');
@@ -179,9 +179,16 @@ public class AspectJElementHierarchy implements IHierarchy {
 			IProgramElement classNode = (IProgramElement)j.next();
 			if (baseName.equals(classNode.getName())) {
 				if (innerName == null) return classNode;
-				else return findClassInNodes(classNode.getChildren(), innerName);
+				else return findClassInNodes(classNode.getChildren(), innerName, typeName);
 			} else if (name.equals(classNode.getName())) {
 				return classNode;
+			} else if (typeName.equals(classNode.getBytecodeSignature())) { 
+				return classNode;
+			} else if (classNode.getChildren() != null && !classNode.getChildren().isEmpty()){
+				IProgramElement node = findClassInNodes(classNode.getChildren(),name, typeName);
+				if (node != null) {
+					return node;
+				}
 			}
 		}
 		return null;

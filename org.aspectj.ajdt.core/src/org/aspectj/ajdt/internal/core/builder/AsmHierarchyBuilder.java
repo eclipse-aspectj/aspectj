@@ -331,7 +331,21 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			new ArrayList());
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
 		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
-		
+		// if we're something like 'new Runnable(){..}' then set the 
+		// bytecodeSignature to be the typename so we can match it later 
+		// when creating the structure model
+		if (peNode.getBytecodeSignature() == null 
+				&& memberTypeDeclaration.binding != null
+				&& memberTypeDeclaration.binding.constantPoolName() != null) {
+			StringTokenizer st = new StringTokenizer(
+					new String(memberTypeDeclaration.binding.constantPoolName()),"/");
+			while(st.hasMoreTokens()) {
+				String s = st.nextToken();
+				if (!st.hasMoreTokens()) {
+					peNode.setBytecodeSignature(s);
+				}
+			}
+		}
 
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);

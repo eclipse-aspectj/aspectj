@@ -643,6 +643,24 @@
         </compile>
         <run class="pr100195"/>
     </ajc-test> 
+
+    <ajc-test dir="bugs150/pr77269" title="advice in structure model with anonymous inner class">
+        <compile files="pack/pr77269.aj" options="-emacssym">
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs150" title="advice in structure model with named inner class">
+        <compile files="pr77269b.aj" options="-emacssym">
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs150/pr77269" title="declare warning in structure model with anonymous inner class">
+        <compile files="pack/pr77269c.aj" options="-emacssym">
+        	<message kind="warning" line="8" text="blah blah blah"/>
+        </compile>
+    </ajc-test> 
+
+
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
@@ -4879,6 +4897,10 @@
    
    <ajc-test dir="bugs150" title="cunning declare parents">
      <compile files="pr92311.aj"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150" title="ITD varargs problem">
+     <compile files="pr110906.aj"/>
    </ajc-test>
    
    <ajc-test dir="bugs150" title="generic itds and abstract method error">
