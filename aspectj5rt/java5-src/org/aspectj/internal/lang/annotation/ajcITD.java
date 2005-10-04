@@ -9,28 +9,23 @@
  * Contributors: 
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
-package org.aspectj.lang.reflect;
+package org.aspectj.internal.lang.annotation;
 
-import java.lang.reflect.Type;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 
 /**
- * Represents an inter-type field declaration declared in an aspect.
+ * @author colyer
+ * Marker annotation for code style ITDs
+ * ajc prefix used to indicate that this annotation is *internal*
  */
-public interface InterTypeFieldDeclaration extends InterTypeDeclaration {
-	
-	/**
-	 * The field name
-	 */
-	String getName();
-	
-	/**
-	 * The field type
-	 */
-	AjType<?> getType();
-	
-	/**
-	 * The generic field type
-	 */
-	Type getGenericType();
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ajcITD {
+	int modifiers();
+	String targetType();
+	String name();
 }

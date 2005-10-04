@@ -67,6 +67,8 @@ public class AddAtAspectJAnnotationsVisitor extends ASTVisitor {
 			((PointcutDeclaration)methodDeclaration).addAtAspectJAnnotations();
 		} else if (methodDeclaration instanceof DeclareDeclaration) {
 			((DeclareDeclaration)methodDeclaration).addAtAspectJAnnotations();
+		} else if (methodDeclaration instanceof InterTypeDeclaration) {
+			((InterTypeDeclaration)methodDeclaration).addAtAspectJAnnotations();
 		}
 		return false;
 	}

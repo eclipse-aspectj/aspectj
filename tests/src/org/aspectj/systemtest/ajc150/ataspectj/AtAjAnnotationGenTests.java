@@ -150,5 +150,9 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 	public void testDecAnnotation() {
 		runTest("ann gen for dec annotation");
 	}
+	
+	public void testITDs() {
+		runTest("ann gen for itds");
+	}
 }
 

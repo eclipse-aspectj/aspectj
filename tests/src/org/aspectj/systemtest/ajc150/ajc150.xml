@@ -4586,7 +4586,7 @@
    <!-- ============================================================== -->
    
    <ajc-test dir="bugs150/pr98901" title="public method with declare @method">
-     <compile files="Case01.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case01.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B01">
          <stdout>
            <line text="@anInterface()"/>
@@ -4617,7 +4617,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public ITD method with declare @method">
-     <compile files="Case04.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case04.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B04">
          <stdout>
            <line text="@anInterface()"/>
@@ -4626,7 +4626,7 @@
    </ajc-test>
 
 <ajc-test dir="bugs150/pr98901" title="public annotated ITD method">
-     <compile files="Case05.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case05.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B05">
          <stdout>
            <line text="@anInterface()"/>
@@ -4635,7 +4635,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public ITD-on-itself method with declare @method">
-     <compile files="Case06.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case06.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B06">
          <stdout>
            <line text="@anInterface()"/>
@@ -4644,7 +4644,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public annotated ITD-on-itself method">
-     <compile files="Case07.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case07.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B07">
          <stdout>
            <line text="@anInterface()"/>
@@ -4653,7 +4653,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public method on an Interface with declare @method">
-     <compile files="Case08.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case08.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B08">
          <stdout>
            <line text="@anInterface()"/>
@@ -4662,7 +4662,7 @@
    </ajc-test>
 
 <ajc-test dir="bugs150/pr98901" title="public annotated method on an Interface">
-     <compile files="Case09.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case09.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B09">
          <stdout>
            <line text="@anInterface()"/>
@@ -4671,7 +4671,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public ITD method onto an Interface with declare @method">
-     <compile files="Case10.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case10.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B10">
          <stdout>
            <line text="@anInterface()"/>
@@ -4680,7 +4680,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public annotated ITD method onto an Interface">
-     <compile files="Case11.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case11.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B11">
          <stdout>
            <line text="@anInterface()"/>
@@ -4689,7 +4689,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public abstract method with declare @method">
-     <compile files="Case12.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case12.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B12">
          <stdout>
            <line text="@anInterface()"/>
@@ -4698,7 +4698,7 @@
    </ajc-test>
 
 <ajc-test dir="bugs150/pr98901" title="public abstract method on the aspect that declares @method on it">
-     <compile files="Case13.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case13.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B13">
          <stdout>
            <line text="@anInterface()"/>
@@ -4707,7 +4707,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public abstract annotated method">
-     <compile files="Case14.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case14.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B14">
          <stdout>
            <line text="@anInterface()"/>
@@ -4716,7 +4716,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public abstract ITD method with declare @method">
-     <compile files="Case15.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case15.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B15">
          <stdout>
            <line text="@anInterface()"/>
@@ -4725,7 +4725,7 @@
    </ajc-test>
 
 <ajc-test dir="bugs150/pr98901" title="public abstract annotated ITD method">
-     <compile files="Case16.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case16.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B16">
          <stdout>
            <line text="@anInterface()"/>
@@ -4734,7 +4734,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public abstract ITD-on-itself method with declare @method">
-     <compile files="Case17.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case17.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B17">
          <stdout>
            <line text="@anInterface()"/>
@@ -4743,7 +4743,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public abstract annotated ITD-on-itself method">
-     <compile files="Case18.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case18.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B18">
          <stdout>
            <line text="@anInterface()"/>
@@ -4752,7 +4752,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public abstract method on an Interface with declare @method">
-     <compile files="Case19.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case19.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B19">
          <stdout>
            <line text="@anInterface()"/>
@@ -4761,7 +4761,7 @@
    </ajc-test>
 
 <ajc-test dir="bugs150/pr98901" title="public abstract annotated method on an Interface">
-     <compile files="Case20.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case20.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B20">
          <stdout>
            <line text="@anInterface()"/>
@@ -4770,7 +4770,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public abstract ITD method onto an Interface with declare @method">
-     <compile files="Case21.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case21.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B21">
          <stdout>
            <line text="@anInterface()"/>
@@ -4779,7 +4779,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public abstract annotated ITD method onto an Interface">
-     <compile files="Case22.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case22.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B22">
          <stdout>
            <line text="@anInterface()"/>
@@ -4788,7 +4788,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public field with declare @field">
-     <compile files="Case23.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case23.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B23">
          <stdout>
            <line text="@anInterface()"/>
@@ -4798,7 +4798,7 @@
   
 
 <ajc-test dir="bugs150/pr98901" title="public field on the aspect that declares @field on it">
-     <compile files="Case24.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case24.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B24">
          <stdout>
            <line text="@anInterface()"/>
@@ -4807,7 +4807,7 @@
    </ajc-test>
    
 <ajc-test dir="bugs150/pr98901" title="public annotated field">
-     <compile files="Case25.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case25.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B25">
          <stdout>
            <line text="@anInterface()"/>
@@ -4816,7 +4816,7 @@
    </ajc-test>
    
     <ajc-test dir="bugs150/pr98901" title="public ITD field with declare @field">
-     <compile files="Case26.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case26.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B26">
          <stdout>
            <line text="@anInterface()"/>
@@ -4825,7 +4825,7 @@
    </ajc-test>
 
     <ajc-test dir="bugs150/pr98901" title="public annotated ITD field">
-     <compile files="Case27.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case27.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B27">
          <stdout>
            <line text="@anInterface()"/>
@@ -4834,7 +4834,7 @@
    </ajc-test>
    
     <ajc-test dir="bugs150/pr98901" title="public ITD-on-itself field with declare @field">
-     <compile files="Case28.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case28.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B28">
          <stdout>
            <line text="@anInterface()"/>
@@ -4843,7 +4843,7 @@
    </ajc-test>
    
     <ajc-test dir="bugs150/pr98901" title="public annotated ITD-on-itself field">
-     <compile files="Case29.aj" options="-1.5 -Xlint:error"/>
+     <compile files="Case29.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B29">
          <stdout>
            <line text="@anInterface()"/>

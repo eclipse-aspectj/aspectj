@@ -29,6 +29,7 @@ import org.aspectj.internal.lang.annotation.ajcDeclareEoW;
 import org.aspectj.internal.lang.annotation.ajcDeclareParents;
 import org.aspectj.internal.lang.annotation.ajcDeclarePrecedence;
 import org.aspectj.internal.lang.annotation.ajcDeclareSoft;
+import org.aspectj.internal.lang.annotation.ajcITD;
 import org.aspectj.internal.lang.annotation.ajcPrivileged;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -70,6 +71,12 @@ public class AjTypeImpl<T> implements AjType<T> {
 	private Pointcut[] pointcuts = null;
 	private Advice[] declaredAdvice = null;
 	private Advice[] advice = null;
+	private InterTypeMethodDeclaration[] declaredITDMethods = null;
+	private InterTypeMethodDeclaration[] itdMethods = null;
+	private InterTypeFieldDeclaration[] declaredITDFields = null;
+	private InterTypeFieldDeclaration[] itdFields = null;
+	private InterTypeConstructorDeclaration[] itdCons = null;
+	private InterTypeConstructorDeclaration[] declaredITDCons = null;
 	
 	public AjTypeImpl(Class<T> fromClass) {
 		this.clazz = fromClass;
@@ -547,101 +554,346 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDMethod(java.lang.String, java.lang.Class, java.lang.Class...)
 	 */
 	public InterTypeMethodDeclaration getDeclaredITDMethod(String name,
-			AjType<?> target, AjType<?>... parameterTypes) {
-		// TODO Auto-generated method stub
-		return null;
+			AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException {
+		InterTypeMethodDeclaration[] itdms = getDeclaredITDMethods();
+		outer: for (InterTypeMethodDeclaration itdm : itdms) {
+			try {
+				if (!itdm.getName().equals(name)) continue;
+				AjType<?> itdTarget = itdm.getTargetType();
+				if (itdTarget.equals(target)) {
+					AjType<?>[] ptypes = itdm.getParameterTypes();
+					if (ptypes.length == parameterTypes.length) {
+						for (int i = 0; i < ptypes.length; i++) {
+							if (!ptypes[i].equals(parameterTypes[i]))
+								continue outer;
+						}
+						return itdm;
+					}
+				}
+			} catch (ClassNotFoundException cnf) {
+				// just move on to the next one
+			}
+		}
+		throw new NoSuchMethodException(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDMethods()
 	 */
 	public InterTypeMethodDeclaration[] getDeclaredITDMethods() {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.declaredITDMethods == null) {
+			List<InterTypeMethodDeclaration> itdms = new ArrayList<InterTypeMethodDeclaration>();
+			Method[] baseMethods = clazz.getDeclaredMethods();
+			for (Method m : baseMethods) {
+				if (!m.getName().contains("ajc$interMethod$")) continue;
+				if (m.isAnnotationPresent(ajcITD.class)) {
+					ajcITD ann = m.getAnnotation(ajcITD.class);
+					InterTypeMethodDeclaration itdm = 
+						new InterTypeMethodDeclarationImpl(
+								this,ann.targetType(),ann.modifiers(),
+								ann.name(),m);
+					itdms.add(itdm);
+				}				
+			}
+			addAnnotationStyleITDMethods(itdms,false);
+			this.declaredITDMethods = new InterTypeMethodDeclaration[itdms.size()];
+			itdms.toArray(this.declaredITDMethods);
+		}
+		return this.declaredITDMethods;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDMethod(java.lang.String, java.lang.Class, java.lang.Class...)
 	 */
 	public InterTypeMethodDeclaration getITDMethod(String name, AjType<?> target,
-			AjType<?>... parameterTypes) {
-		// TODO Auto-generated method stub
-		return null;
+			AjType<?>... parameterTypes) 
+	throws NoSuchMethodException {
+		InterTypeMethodDeclaration[] itdms = getITDMethods();
+		outer: for (InterTypeMethodDeclaration itdm : itdms) {
+			try {
+				if (!itdm.getName().equals(name)) continue;
+				AjType<?> itdTarget = itdm.getTargetType();
+				if (itdTarget.equals(target)) {
+					AjType<?>[] ptypes = itdm.getParameterTypes();
+					if (ptypes.length == parameterTypes.length) {
+						for (int i = 0; i < ptypes.length; i++) {
+							if (!ptypes[i].equals(parameterTypes[i]))
+								continue outer;
+						}
+						return itdm;
+					}
+				}
+			} catch (ClassNotFoundException cnf) {
+				// just move on to the next one
+			}
+		}
+		throw new NoSuchMethodException(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDMethods()
 	 */
 	public InterTypeMethodDeclaration[] getITDMethods() {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.itdMethods == null) {
+			List<InterTypeMethodDeclaration> itdms = new ArrayList<InterTypeMethodDeclaration>();
+			Method[] baseMethods = clazz.getDeclaredMethods();
+			for (Method m : baseMethods) {
+				if (!m.getName().contains("ajc$interMethod$")) continue;
+				if (m.isAnnotationPresent(ajcITD.class)) {
+					ajcITD ann = m.getAnnotation(ajcITD.class);
+					if (!Modifier.isPublic(ann.modifiers())) continue;
+					InterTypeMethodDeclaration itdm = 
+						new InterTypeMethodDeclarationImpl(
+								this,ann.targetType(),ann.modifiers(),
+								ann.name(),m);
+					itdms.add(itdm);
+				}				
+			}
+			addAnnotationStyleITDMethods(itdms,true);
+			this.itdMethods = new InterTypeMethodDeclaration[itdms.size()];
+			itdms.toArray(this.itdMethods);
+		}
+		return this.itdMethods;
+	}
+	
+	private void addAnnotationStyleITDMethods(List<InterTypeMethodDeclaration> toList, boolean publicOnly) {
+		if (isAspect()) {
+			Class<?>[] classes = clazz.getDeclaredClasses();
+			for(Class<?> c : classes) {
+				if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+					if (c.getInterfaces().length == 0) continue;
+					AjType<?> targetType = AjTypeSystem.getAjType((Class<?>)c.getInterfaces()[0]);
+					Method[] meths = c.getDeclaredMethods();
+					for (Method m : meths) {
+						if (!Modifier.isPublic(m.getModifiers()) && publicOnly) continue;
+						InterTypeMethodDeclaration itdm = 
+							new InterTypeMethodDeclarationImpl(
+									this,targetType,m);
+						toList.add(itdm);
+					}
+				}
+			}
+		}
 	}
 
+	private void addAnnotationStyleITDFields(List<InterTypeFieldDeclaration> toList, boolean publicOnly) {
+		if (isAspect()) {
+			Class<?>[] classes = clazz.getDeclaredClasses();
+			for(Class<?> c : classes) {
+				if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+					if (c.getInterfaces().length == 0) continue;
+					AjType<?> targetType = AjTypeSystem.getAjType((Class<?>)c.getInterfaces()[0]);
+					Field[] fields = c.getDeclaredFields();
+					for (Field f : fields) {
+						if (!Modifier.isPublic(f.getModifiers()) && publicOnly) continue;
+						InterTypeFieldDeclaration itdf = 
+							new InterTypeFieldDeclarationImpl(
+									this,targetType,f);
+						toList.add(itdf);
+					}
+				}
+			}
+		}
+	}
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDConstructor(java.lang.Class, java.lang.Class...)
 	 */
 	public InterTypeConstructorDeclaration getDeclaredITDConstructor(
-			AjType<?> target, AjType<?>... parameterTypes) {
-		// TODO Auto-generated method stub
-		return null;
+			AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException {
+		InterTypeConstructorDeclaration[] itdcs = getDeclaredITDConstructors();
+		outer: for (InterTypeConstructorDeclaration itdc : itdcs) {
+			try {
+				AjType<?> itdTarget = itdc.getTargetType();
+				if (itdTarget.equals(target)) {
+					AjType<?>[] ptypes = itdc.getParameterTypes();
+					if (ptypes.length == parameterTypes.length) {
+						for (int i = 0; i < ptypes.length; i++) {
+							if (!ptypes[i].equals(parameterTypes[i]))
+								continue outer;
+						}
+						return itdc;
+					}
+				}
+			} catch (ClassNotFoundException cnf) {
+				// just move on to the next one
+			}
+		}
+		throw new NoSuchMethodException();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDConstructors()
 	 */
 	public InterTypeConstructorDeclaration[] getDeclaredITDConstructors() {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.declaredITDCons == null) {
+			List<InterTypeConstructorDeclaration> itdcs = new ArrayList<InterTypeConstructorDeclaration>();
+			Method[] baseMethods = clazz.getDeclaredMethods();
+			for (Method m : baseMethods) {
+				if (!m.getName().contains("ajc$postInterConstructor")) continue;
+				if (m.isAnnotationPresent(ajcITD.class)) {
+					ajcITD ann = m.getAnnotation(ajcITD.class);
+					InterTypeConstructorDeclaration itdc = 
+						new InterTypeConstructorDeclarationImpl(this,ann.targetType(),ann.modifiers(),m);
+					itdcs.add(itdc);
+				}				
+			}
+			this.declaredITDCons = new InterTypeConstructorDeclaration[itdcs.size()];
+			itdcs.toArray(this.declaredITDCons);
+		}
+		return this.declaredITDCons;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDConstructor(java.lang.Class, java.lang.Class...)
 	 */
 	public InterTypeConstructorDeclaration getITDConstructor(AjType<?> target,
-			AjType<?>... parameterTypes) {
-		// TODO Auto-generated method stub
-		return null;
+			AjType<?>... parameterTypes) throws NoSuchMethodException {
+		InterTypeConstructorDeclaration[] itdcs = getITDConstructors();
+		outer: for (InterTypeConstructorDeclaration itdc : itdcs) {
+			try {
+				AjType<?> itdTarget = itdc.getTargetType();
+				if (itdTarget.equals(target)) {
+					AjType<?>[] ptypes = itdc.getParameterTypes();
+					if (ptypes.length == parameterTypes.length) {
+						for (int i = 0; i < ptypes.length; i++) {
+							if (!ptypes[i].equals(parameterTypes[i]))
+								continue outer;
+						}
+						return itdc;
+					}
+				}
+			} catch (ClassNotFoundException cnf) {
+				// just move on to the next one
+			}
+		}
+		throw new NoSuchMethodException();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDConstructors()
 	 */
 	public InterTypeConstructorDeclaration[] getITDConstructors() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		if (this.itdCons == null) {
+			List<InterTypeConstructorDeclaration> itdcs = new ArrayList<InterTypeConstructorDeclaration>();
+			Method[] baseMethods = clazz.getMethods();
+			for (Method m : baseMethods) {
+				if (!m.getName().contains("ajc$postInterConstructor")) continue;
+				if (m.isAnnotationPresent(ajcITD.class)) {
+					ajcITD ann = m.getAnnotation(ajcITD.class);
+					if (!Modifier.isPublic(ann.modifiers())) continue;
+					InterTypeConstructorDeclaration itdc = 
+						new InterTypeConstructorDeclarationImpl(this,ann.targetType(),ann.modifiers(),m);
+					itdcs.add(itdc);
+				}				
+			}
+			this.itdCons = new InterTypeConstructorDeclaration[itdcs.size()];
+			itdcs.toArray(this.itdCons);
+		}
+		return this.itdCons;	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDField(java.lang.String, java.lang.Class)
 	 */
 	public InterTypeFieldDeclaration getDeclaredITDField(String name,
-			AjType<?> target) {
-		// TODO Auto-generated method stub
-		return null;
+			AjType<?> target) throws NoSuchFieldException {
+		InterTypeFieldDeclaration[] itdfs = getDeclaredITDFields();
+		for (InterTypeFieldDeclaration itdf : itdfs) {
+			if (itdf.getName().equals(name)) {
+				try {
+					AjType<?> itdTarget = itdf.getTargetType();
+					if (itdTarget.equals(target)) return itdf;
+				} catch (ClassNotFoundException cnfEx) { 
+					// move on to next field
+				}				
+			}
+		}
+		throw new NoSuchFieldException(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDFields()
 	 */
 	public InterTypeFieldDeclaration[] getDeclaredITDFields() {
-		// TODO Auto-generated method stub
-		return null;
+		List<InterTypeFieldDeclaration> itdfs = new ArrayList<InterTypeFieldDeclaration>();
+		if (this.declaredITDFields == null) {
+			Method[] baseMethods = clazz.getDeclaredMethods();
+			for(Method m : baseMethods) {
+				if (m.isAnnotationPresent(ajcITD.class)) {
+					if (!m.getName().contains("ajc$interFieldInit")) continue;
+					ajcITD ann = m.getAnnotation(ajcITD.class);
+					String interFieldInitMethodName = m.getName();
+					String interFieldGetDispatchMethodName = 
+						interFieldInitMethodName.replace("FieldInit","FieldGetDispatch");
+					try {
+						Method dispatch = clazz.getDeclaredMethod(interFieldGetDispatchMethodName, m.getParameterTypes());
+						InterTypeFieldDeclaration itdf = new InterTypeFieldDeclarationImpl(
+								this,ann.targetType(),ann.modifiers(),ann.name(),
+								AjTypeSystem.getAjType(dispatch.getReturnType()),
+								dispatch.getGenericReturnType());
+						itdfs.add(itdf);
+					} catch (NoSuchMethodException nsmEx) {
+						throw new IllegalStateException("Can't find field get dispatch method for " + m.getName());
+					}
+				}
+			}
+			addAnnotationStyleITDFields(itdfs, false);
+			this.declaredITDFields = new InterTypeFieldDeclaration[itdfs.size()];
+			itdfs.toArray(this.declaredITDFields);
+		}
+		return this.declaredITDFields;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDField(java.lang.String, java.lang.Class)
 	 */
-	public InterTypeFieldDeclaration getITDField(String name, AjType<?> target) {
-		// TODO Auto-generated method stub
-		return null;
+	public InterTypeFieldDeclaration getITDField(String name, AjType<?> target) 
+	throws NoSuchFieldException {
+		InterTypeFieldDeclaration[] itdfs = getITDFields();
+		for (InterTypeFieldDeclaration itdf : itdfs) {
+			if (itdf.getName().equals(name)) {
+				try {
+					AjType<?> itdTarget = itdf.getTargetType();
+					if (itdTarget.equals(target)) return itdf;
+				} catch (ClassNotFoundException cnfEx) { 
+					// move on to next field
+				}				
+			}
+		}
+		throw new NoSuchFieldException(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getITDFields()
 	 */
 	public InterTypeFieldDeclaration[] getITDFields() {
-		// TODO Auto-generated method stub
-		return null;
+		List<InterTypeFieldDeclaration> itdfs = new ArrayList<InterTypeFieldDeclaration>();
+		if (this.itdFields == null) {
+			Method[] baseMethods = clazz.getMethods();
+			for(Method m : baseMethods) {
+				if (m.isAnnotationPresent(ajcITD.class)) {
+					ajcITD ann = m.getAnnotation(ajcITD.class);
+					if (!m.getName().contains("ajc$interFieldInit")) continue;
+					if (!Modifier.isPublic(ann.modifiers())) continue;
+					String interFieldInitMethodName = m.getName();
+					String interFieldGetDispatchMethodName = 
+						interFieldInitMethodName.replace("FieldInit","FieldGetDispatch");
+					try {
+						Method dispatch = m.getDeclaringClass().getDeclaredMethod(interFieldGetDispatchMethodName, m.getParameterTypes());
+						InterTypeFieldDeclaration itdf = new InterTypeFieldDeclarationImpl(
+								this,ann.targetType(),ann.modifiers(),ann.name(),
+								AjTypeSystem.getAjType(dispatch.getReturnType()),
+								dispatch.getGenericReturnType());
+						itdfs.add(itdf);
+					} catch (NoSuchMethodException nsmEx) {
+						throw new IllegalStateException("Can't find field get dispatch method for " + m.getName());
+					}
+				}
+			}
+			addAnnotationStyleITDFields(itdfs, true);
+			this.itdFields = new InterTypeFieldDeclaration[itdfs.size()];
+			itdfs.toArray(this.itdFields);
+		}
+		return this.itdFields;
 	}
 
 	/* (non-Javadoc)
@@ -701,12 +953,31 @@ public class AjTypeImpl<T> implements AjType<T> {
 				decps.add(decp);
 			}
 		}
+		addAnnotationStyleDeclareParents(decps);
 		if (getSupertype().isAspect()) {
 			decps.addAll(Arrays.asList(getSupertype().getDeclareParents()));
 		}
 		DeclareParents[] ret = new DeclareParents[decps.size()];
 		decps.toArray(ret);
 		return ret;
+	}
+	
+	private void addAnnotationStyleDeclareParents(List<DeclareParents> toList) {
+		Class<?>[] classes = clazz.getDeclaredClasses();
+		for (Class<?> c : classes) {
+			if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+				org.aspectj.lang.annotation.DeclareParents ann = c.getAnnotation(org.aspectj.lang.annotation.DeclareParents.class);
+				if (c.getInterfaces().length == 0) continue;
+				String parentType = c.getInterfaces()[0].getName();
+				DeclareParentsImpl decp = new DeclareParentsImpl(
+						ann.value(),
+						parentType,
+						false,
+						this
+						);
+				toList.add(decp);
+			}
+		}
 	}
 
 	/* (non-Javadoc)

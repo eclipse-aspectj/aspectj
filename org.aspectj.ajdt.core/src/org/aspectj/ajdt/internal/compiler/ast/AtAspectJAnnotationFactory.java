@@ -13,6 +13,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
@@ -49,6 +50,7 @@ public class AtAspectJAnnotationFactory {
 	static final char[] declareSoft = "ajcDeclareSoft".toCharArray();
 	static final char[] declarePrecedence = "ajcDeclarePrecedence".toCharArray();
 	static final char[] declareAnnotation = "ajcDeclareAnnotation".toCharArray();
+	static final char[] itdAnnotation = "ajcITD".toCharArray();
 
 	/**
 	 * Create an @Aspect annotation for a code style aspect declaration starting at
@@ -208,6 +210,23 @@ public class AtAspectJAnnotationFactory {
 		mvps[2] = new MemberValuePair("kind".toCharArray(),pos,pos,kindExpr);
 		ann.memberValuePairs = mvps;
 		return ann;
+	}
+	
+	public static Annotation createITDAnnotation(char[] targetTypeName, int modifiers, char[] name, int pos) {
+		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,itdAnnotation};
+		long[] positions = new long[typeName.length];
+		for (int i = 0; i < positions.length; i++) positions[i] = pos;
+		TypeReference annType = new QualifiedTypeReference(typeName,positions);
+		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+		Expression targetExpr = new StringLiteral(targetTypeName,pos,pos);
+		Expression nameExpr = new StringLiteral(name,pos,pos);
+		Expression modsExpr = new IntLiteral(Integer.toString(modifiers).toCharArray(),pos,pos);
+		MemberValuePair[] mvps = new MemberValuePair[3];
+		mvps[0] = new MemberValuePair("targetType".toCharArray(),pos,pos,targetExpr);
+		mvps[1] = new MemberValuePair("name".toCharArray(),pos,pos,nameExpr);
+		mvps[2] = new MemberValuePair("modifiers".toCharArray(),pos,pos,modsExpr);
+		ann.memberValuePairs = mvps;
+		return ann;		
 	}
 	
 	public static Annotation createDeclarePrecedenceAnnotation(String pointcutExpression, int pos) {

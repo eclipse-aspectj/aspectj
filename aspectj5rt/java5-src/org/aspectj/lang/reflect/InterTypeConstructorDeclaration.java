@@ -11,10 +11,26 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
+import java.lang.reflect.Type;
+
 /**
- * @author colyer
- *
+ * Runtime representation of an inter-type constructor member declared within an
+ * aspect.
  */
 public interface InterTypeConstructorDeclaration extends InterTypeDeclaration {
 
+	/**
+	 * The constructor parameters
+	 */
+	AjType<?>[] getParameterTypes();
+	
+	/**
+	 * The generic constructor parameters
+	 */
+	Type[] getGenericParameterTypes();
+	
+	/**
+	 * The declared exceptions thrown by this constructor
+	 */
+	AjType<?>[] getExceptionTypes();
 }

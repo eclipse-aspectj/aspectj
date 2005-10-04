@@ -11,6 +11,23 @@
  * ******************************************************************/
 package org.aspectj.lang.reflect;
 
+/**
+ * Represents an inter-type method, field, or constructor declared in an aspect.
+ */
 public interface InterTypeDeclaration {
 
+	/**
+	 * The declaring aspect
+	 */
+	AjType<?> getDeclaringType();
+	
+	/**
+	 * The target type of this ITD
+	 */
+	AjType<?> getTargetType() throws ClassNotFoundException;
+	
+	/**
+	 * Member modifiers, can be interpreted using java.lang.reflect.Modifier
+	 */
+	int getModifiers();
 }

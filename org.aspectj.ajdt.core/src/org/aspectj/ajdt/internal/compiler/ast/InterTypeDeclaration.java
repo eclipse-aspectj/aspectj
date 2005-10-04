@@ -26,6 +26,7 @@ import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -93,6 +94,15 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	// return the selector prefix for this itd that is to be used before resolution replaces it with a "proper" name
 	protected abstract char[] getPrefix();
 	
+	
+	public void addAtAspectJAnnotations() {
+		if (munger == null) return;
+		Annotation ann = AtAspectJAnnotationFactory.createITDAnnotation(
+				munger.getSignature().getDeclaringType().getName().toCharArray(),
+				declaredModifiers,declaredSelector,declarationSourceStart);
+		AtAspectJAnnotationFactory.addAnnotation(this,ann,this.scope);
+	}
+
 	/**
 	 * Checks that the target for the ITD is not an annotation.  If it is, an error message
 	 * is signaled.  We return true if it is annotation so the caller knows to stop processing.

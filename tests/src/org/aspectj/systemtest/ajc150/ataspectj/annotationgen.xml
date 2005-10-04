@@ -177,5 +177,11 @@
         <compile files="DeclareAnnotationTest.aj" options="-1.5">
         </compile>
         <run class="DeclareAnnotationTest"/>
-    </ajc-test>  
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for itds">
+        <compile files="ITDTest.aj" options="-1.5">
+        </compile>
+        <run class="a.b.c.ITDTest"/>
+    </ajc-test>    
 </suite>

@@ -224,7 +224,7 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	/**
 	 * Return the inter-type method declared by this type matching the given specification
 	 */
-	public InterTypeMethodDeclaration getDeclaredITDMethod(String name, AjType<?> target, AjType<?>... parameterTypes);
+	public InterTypeMethodDeclaration getDeclaredITDMethod(String name, AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
 	 * Return all of the inter-type methods declared by this type
@@ -234,7 +234,7 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	/**
 	 * Return the public inter-type method of this type matching the given specification
 	 */
-	public InterTypeMethodDeclaration getITDMethod(String name, AjType<?> target, AjType<?>... parameterTypes);
+	public InterTypeMethodDeclaration getITDMethod(String name, AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
 	 * Return all of the public inter-type declared methods of this type
@@ -244,7 +244,7 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	/**
 	 * Return the inter-type constructor declared by this type matching the given specification
 	 */
-	public InterTypeConstructorDeclaration getDeclaredITDConstructor(AjType<?> target, AjType<?>... parameterTypes);
+	public InterTypeConstructorDeclaration getDeclaredITDConstructor(AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
 	 * Returns all of the inter-type constructors declared by this type
@@ -254,7 +254,7 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	/**
 	 * Return the public inter-type constructor matching the given specification
 	 */
-	public InterTypeConstructorDeclaration getITDConstructor(AjType<?> target, AjType<?>... parameterTypes);
+	public InterTypeConstructorDeclaration getITDConstructor(AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException;
 
 	/**
 	 * Return all of the public inter-type constructors of this type
@@ -264,7 +264,7 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	/**
 	 * Return the inter-type field declared in this type with the given specification
 	 */
-	public InterTypeFieldDeclaration getDeclaredITDField(String name, AjType<?> target);
+	public InterTypeFieldDeclaration getDeclaredITDField(String name, AjType<?> target) throws NoSuchFieldException;
 
 	/**
 	 * Return all of the inter-type fields declared in this type
@@ -274,7 +274,7 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	/**
 	 * Return the public inter-type field matching the given specification
 	 */
-	public InterTypeFieldDeclaration getITDField(String name, AjType<?> target);
+	public InterTypeFieldDeclaration getITDField(String name, AjType<?> target) throws NoSuchFieldException;
 
 	/**
 	 * Return all of the public inter-type fields for this type
