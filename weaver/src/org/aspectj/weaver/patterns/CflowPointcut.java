@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -105,6 +106,12 @@ public class CflowPointcut extends Pointcut {
 
 		CflowPointcut ret = new CflowPointcut(Pointcut.read(s, context), s.readBoolean(), FileUtil.readIntArray(s));
 		ret.readLocation(context, s);
+		return ret;
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		CflowPointcut ret = new CflowPointcut(entry.parameterizeWith(typeVariableMap),isBelow,freeVars);
+		ret.copyLocationFrom(this);
 		return ret;
 	}
 

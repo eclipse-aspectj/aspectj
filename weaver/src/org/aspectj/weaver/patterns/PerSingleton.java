@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
@@ -52,6 +53,10 @@ public class PerSingleton extends PerClause {
     	// this method intentionally left blank
     }
 
+    public Pointcut parameterizeWith(Map typeVariableMap) {
+    	return this;
+    }
+    
     public Test findResidueInternal(Shadow shadow, ExposedState state) {
         // TODO: the commented code is for slow Aspects.aspectOf() style - keep or remove
         //

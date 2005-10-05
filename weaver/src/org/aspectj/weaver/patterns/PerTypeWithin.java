@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -60,6 +61,12 @@ public class PerTypeWithin extends PerClause {
 	
 	public Set couldMatchKinds() {
 		return kindSet;
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		PerTypeWithin ret = new PerTypeWithin(typePattern.parameterizeWith(typeVariableMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	// -----

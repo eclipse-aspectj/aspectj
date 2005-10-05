@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
@@ -75,6 +76,12 @@ public class PerObject extends PerClause {
     public void resolveBindings(IScope scope, Bindings bindings) {
     	// assert bindings == null;
     	entry.resolve(scope);  
+    }
+    
+    public Pointcut parameterizeWith(Map typeVariableMap) {
+    	PerObject ret = new PerObject(entry.parameterizeWith(typeVariableMap),isThis);
+    	ret.copyLocationFrom(this);
+    	return ret;
     }
     
     private Var getVar(Shadow shadow) {

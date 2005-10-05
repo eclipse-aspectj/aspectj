@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
@@ -67,6 +68,12 @@ public class HandlerPointcut extends Pointcut {
 		return exceptionType.matches(
 				shadow.getSignature().getParameterTypes()[0].resolve(shadow.getIWorld()), 
 				TypePattern.STATIC);
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		HandlerPointcut ret = new HandlerPointcut(exceptionType.parameterizeWith(typeVariableMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public boolean equals(Object other) {

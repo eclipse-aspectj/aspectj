@@ -476,7 +476,9 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 	}
 
 	public TypePattern parameterizeWith(Map typeVariableMap) {
-		return this;
+		AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(this.annotationPattern.parameterizeWith(typeVariableMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public void write(DataOutputStream s) throws IOException {

@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
@@ -74,6 +75,10 @@ public class PerFromSuper extends PerClause {
             }
             return p.concretize(inAspect);
         }
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		return this;
 	}
 	
 	

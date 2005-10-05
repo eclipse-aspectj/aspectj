@@ -16,6 +16,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
@@ -54,6 +55,12 @@ public class WithincodePointcut extends Pointcut {
 
 	public Set couldMatchKinds() {
 		return matchedShadowKinds;
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		WithincodePointcut ret = new WithincodePointcut(signature.parameterizeWith(typeVariableMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {

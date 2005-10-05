@@ -379,9 +379,6 @@ public abstract class Pointcut extends PatternNode {
 		}
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		throw new UnsupportedOperationException("this method needs to be defined in all subtypes and then made abstract when the work is complete");
-	}
-
+	public abstract Pointcut parameterizeWith(Map typeVariableMap);
 
 }

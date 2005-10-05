@@ -17,6 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
@@ -74,6 +75,10 @@ public class ConcreteCflowPointcut extends Pointcut {
 
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
+		throw new RuntimeException("unimplemented");
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
 		throw new RuntimeException("unimplemented");
 	}
 	

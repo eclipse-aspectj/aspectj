@@ -115,8 +115,14 @@ public class DeclareAnnotation extends Declare {
 	}
 
 	public Declare parameterizeWith(Map typeVariableBindingMap) {
-		// TODO Auto-generated method stub
-		return this;
+		Declare ret;
+		if (this.kind == AT_TYPE) {
+			ret = new DeclareAnnotation(kind,this.typePattern.parameterizeWith(typeVariableBindingMap));
+		} else {
+			ret = new DeclareAnnotation(kind, this.sigPattern.parameterizeWith(typeVariableBindingMap));
+		}
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public boolean isAdviceLike() {

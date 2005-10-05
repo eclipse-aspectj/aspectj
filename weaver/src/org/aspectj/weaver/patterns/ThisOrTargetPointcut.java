@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -76,6 +77,12 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 
 	public boolean isThis() { return isThis; }
 
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis,type.parameterizeWith(typeVariableMap));
+		ret.copyLocationFrom(this);
+		return ret;
+	}
+	
 	public Set couldMatchKinds() {
 		return isThis ? thisKindSet : targetKindSet;
 	}

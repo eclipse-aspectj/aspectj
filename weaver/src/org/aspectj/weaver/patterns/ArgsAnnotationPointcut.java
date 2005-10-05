@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -56,6 +57,12 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;  // empty args() matches jps with no args
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		ArgsAnnotationPointcut ret = new ArgsAnnotationPointcut(arguments.parameterizeWith(typeVariableMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	/* (non-Javadoc)

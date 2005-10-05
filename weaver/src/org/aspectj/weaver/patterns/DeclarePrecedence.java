@@ -41,8 +41,9 @@ public class DeclarePrecedence extends Declare {
 	}
 	
 	public Declare parameterizeWith(Map typeVariableBindingMap) {
-		// TODO Auto-generated method stub
-		return this;
+		DeclarePrecedence ret = new DeclarePrecedence(this.patterns.parameterizeWith(typeVariableBindingMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public String toString() {

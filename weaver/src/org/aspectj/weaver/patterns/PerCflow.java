@@ -19,6 +19,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
@@ -68,6 +69,12 @@ public class PerCflow extends PerClause {
     public void resolveBindings(IScope scope, Bindings bindings) {
     	// assert bindings == null;
     	entry.resolve(scope);  
+    }
+    
+    public Pointcut parameterizeWith(Map typeVariableMap) {
+    	PerCflow ret = new PerCflow(entry.parameterizeWith(typeVariableMap),isBelow);
+    	ret.copyLocationFrom(this);
+    	return ret;
     }
     
     protected Test findResidueInternal(Shadow shadow, ExposedState state) {

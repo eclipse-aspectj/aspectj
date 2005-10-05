@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
@@ -71,6 +72,12 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	public Set couldMatchKinds() {
 		return matchedShadowKinds;
+	}
+	
+	public Pointcut parameterizeWith(Map typeVariableMap) {
+		WithinCodeAnnotationPointcut ret = new WithinCodeAnnotationPointcut((ExactAnnotationTypePattern)this.annotationTypePattern.parameterizeWith(typeVariableMap));
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 
 	/* (non-Javadoc)

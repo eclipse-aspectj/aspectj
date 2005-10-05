@@ -16,10 +16,9 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -59,6 +58,12 @@ public class ArgsPointcut extends NameBindingPointcut {
         return arguments;
     }
 
+    public Pointcut parameterizeWith(Map typeVariableMap) {
+    	ArgsPointcut ret = new ArgsPointcut(this.arguments.parameterizeWith(typeVariableMap));
+    	ret.copyLocationFrom(this);
+    	return ret;
+    }
+    
 	public Set couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS;  // empty args() matches jps with no args
 	}
@@ -107,36 +112,6 @@ public class ArgsPointcut extends NameBindingPointcut {
 		}
 		
 		return argumentsToMatchAgainst;
-	}
-	
-	/**
-	 * @param ret
-	 * @param pTypes
-	 * @return
-	 */
-	private FuzzyBoolean checkSignatureMatch(Class[] pTypes) {
-		Collection tps = arguments.getExactTypes();
-		int sigIndex = 0;
-		for (Iterator iter = tps.iterator(); iter.hasNext();) {
-			UnresolvedType tp = (UnresolvedType) iter.next();
-			Class lookForClass = getPossiblyBoxed(tp);
-			if (lookForClass != null) {
-				boolean foundMatchInSig = false;
-				while (sigIndex < pTypes.length && !foundMatchInSig) {
-					if (pTypes[sigIndex++] == lookForClass) foundMatchInSig = true;
-				}
-				if (!foundMatchInSig) {
-					return FuzzyBoolean.NO;
-				}
-			}
-		}
-		return FuzzyBoolean.YES;
-	}
-
-	private Class getPossiblyBoxed(UnresolvedType tp) {
-		Class ret = (Class) ExactTypePattern.primitiveTypesMap.get(tp.getName());
-		if (ret == null) ret = (Class) ExactTypePattern.boxedPrimitivesMap.get(tp.getName());
-		return ret;
 	}
 
 	/* (non-Javadoc)
@@ -232,6 +207,7 @@ public class ArgsPointcut extends NameBindingPointcut {
                   IMessage msg = new Message(
                     WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
                     "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
+                  shadow.getIWorld().getMessageHandler().handleMessage(msg);
                 }
 				if (type.matchesInstanceof(argRTX).alwaysTrue()) {
 					continue;

@@ -12,6 +12,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
@@ -55,6 +56,16 @@ public class AnnotationPatternList extends PatternNode {
 
 	protected AnnotationTypePattern[] getAnnotationPatterns() {
 		return typePatterns;
+	}
+	
+	public AnnotationPatternList parameterizeWith(Map typeVariableMap) {
+		AnnotationTypePattern[] parameterizedPatterns = new AnnotationTypePattern[this.typePatterns.length];
+		for (int i = 0; i < parameterizedPatterns.length; i++) {
+			parameterizedPatterns[i] = this.typePatterns[i].parameterizeWith(typeVariableMap);
+		}
+		AnnotationPatternList ret = new AnnotationPatternList(parameterizedPatterns);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 	
 	public void resolve(World inWorld) {
