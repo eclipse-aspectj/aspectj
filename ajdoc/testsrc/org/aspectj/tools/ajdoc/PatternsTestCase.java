@@ -28,7 +28,7 @@ public class PatternsTestCase extends TestCase {
 //		System.err.println(new File("testdata.figures-demo").exists());
 //		File file1 = new File("testdata/patterns/allPatterns.lst");
 		File outdir = new File("testdata/patterns/doc");
-		File srcdir = new File("../docs/sandbox/ubc-design-patterns/src");
+		File srcdir = new File("../../docs/sandbox/ubc-design-patterns/src");
 		
 		String[] args = { 
 //			"-XajdocDebug", 

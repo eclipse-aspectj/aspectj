@@ -22,7 +22,7 @@ public class SpacewarTestCase extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		new File("testdata/spacewar/docdir").delete();
+		new File("../ajdoc/testdata/spacewar/docdir").delete();
 	}
     
 	public void testSimpleExample() {
@@ -44,8 +44,8 @@ public class SpacewarTestCase extends TestCase {
 	}
 	
 	public void testPublicModeExample() {
-		File outdir = new File("testdata/spacewar/docdir");
-		File sourcepath = new File("testdata/spacewar");
+		File outdir = new File("../ajdoc/testdata/spacewar/docdir");
+		File sourcepath = new File("../ajdoc/testdata/spacewar");
 		
 		String[] args = { 
 		        "-public",

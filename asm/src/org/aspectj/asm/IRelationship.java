@@ -58,6 +58,14 @@ public interface IRelationship extends Serializable {
 			
 		private final String name;
 		
+		public boolean isDeclareKind() {
+			return this == DECLARE_WARNING
+				|| this == DECLARE_ERROR
+				|| this == DECLARE
+				|| this == DECLARE_INTER_TYPE
+				|| this == DECLARE_SOFT;
+		}
+		
 		private Kind(String name) {
 			this.name = name; 
 		}

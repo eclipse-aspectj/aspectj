@@ -131,7 +131,7 @@ class StubFileGenerator{
                 } 
 		    	
 		    	if (member.getKind().isDeclare()) {
-		    		System.err.println("> Skipping declare (ajdoc limitation): " + member.toLabelString());
+//		    		System.err.println("> Skipping declare (ajdoc limitation): " + member.toLabelString());
 		    	} else if (signature != null &&
 		    		signature != "" && 
 		    		!member.getKind().isInterTypeMember() &&

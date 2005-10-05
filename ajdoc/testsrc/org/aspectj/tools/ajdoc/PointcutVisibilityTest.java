@@ -12,8 +12,8 @@ import junit.framework.TestCase;
  */
 public class PointcutVisibilityTest extends TestCase {
 
-    protected File file1 = new File("testdata/bug82340/Pointcuts.java");
-    protected File outdir = new File("testdata/bug82340/doc");
+    protected File file1 = new File("../ajdoc/testdata/bug82340/Pointcuts.java");
+    protected File outdir = new File("../ajdoc/testdata/bug82340/doc");
     
     public void testCoveragePublicMode() {
         outdir.delete();

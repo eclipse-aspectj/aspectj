@@ -22,18 +22,18 @@ import junit.framework.TestCase;
  */
 public class CoverageTestCase extends TestCase {
 
-	protected File file0 = new File("testdata/coverage/InDefaultPackage.java");
-	protected File file1 = new File("testdata/coverage/foo/ClassA.java");
-	protected File aspect1 = new File("testdata/coverage/foo/UseThisAspectForLinkCheck.aj");
-	protected File file2 = new File("testdata/coverage/foo/InterfaceI.java");
-	protected File file3 = new File("testdata/coverage/foo/PlainJava.java");
-	protected File file4 = new File("testdata/coverage/foo/ModelCoverage.java");
-	protected File file5 = new File("testdata/coverage/fluffy/Fluffy.java");
-	protected File file6 = new File("testdata/coverage/fluffy/bunny/Bunny.java");
-	protected File file7 = new File("testdata/coverage/fluffy/bunny/rocks/Rocks.java");
-	protected File file8 = new File("testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
-	protected File file9 = new File("testdata/coverage/foo/PkgVisibleClass.java");
-	protected File file10 = new File("testdata/coverage/foo/NoMembers.java");
+	protected File file0 = new File("../ajdoc/testdata/coverage/InDefaultPackage.java");
+	protected File file1 = new File("../ajdoc/testdata/coverage/foo/ClassA.java");
+	protected File aspect1 = new File("../ajdoc/testdata/coverage/foo/UseThisAspectForLinkCheck.aj");
+	protected File file2 = new File("../ajdoc/testdata/coverage/foo/InterfaceI.java");
+	protected File file3 = new File("../ajdoc/testdata/coverage/foo/PlainJava.java");
+	protected File file4 = new File("../ajdoc/testdata/coverage/foo/ModelCoverage.java");
+	protected File file5 = new File("../ajdoc/testdata/coverage/fluffy/Fluffy.java");
+	protected File file6 = new File("../ajdoc/testdata/coverage/fluffy/bunny/Bunny.java");
+	protected File file7 = new File("../ajdoc/testdata/coverage/fluffy/bunny/rocks/Rocks.java");
+	protected File file8 = new File("../ajdoc/testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
+	protected File file9 = new File("../ajdoc/testdata/coverage/foo/PkgVisibleClass.java");
+	protected File file10 = new File("../ajdoc/testdata/coverage/foo/NoMembers.java");
     
 	protected File outdir = new File("testdata/coverage/doc");
 	

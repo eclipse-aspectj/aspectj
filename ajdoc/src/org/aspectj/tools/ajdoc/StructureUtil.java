@@ -30,11 +30,24 @@ public class StructureUtil {
 	 */
 	public static List/*IProgramElement*/ getTargets(IProgramElement node, IRelationship.Kind kind) {
 	    List relations = AsmManager.getDefault().getRelationshipMap().get(node);
-		List targets = null;
+		List targets = null; 
 	    if (relations == null) return null;
 		for (Iterator it = relations.iterator(); it.hasNext(); ) {
 	      	IRelationship rtn = (IRelationship)it.next();
 	      	if (rtn.getKind().equals(kind)) {
+	      		targets = rtn.getTargets();
+	      	}
+	     }
+		return targets;
+	}
+
+	public static List/*IProgramElement*/ getDeclareTargets(IProgramElement node) {
+	    List relations = AsmManager.getDefault().getRelationshipMap().get(node);
+		List targets = null; 
+	    if (relations == null) return null;
+		for (Iterator it = relations.iterator(); it.hasNext(); ) {
+	      	IRelationship rtn = (IRelationship)it.next();
+	      	if (rtn.getKind().isDeclareKind()) {
 	      		targets = rtn.getTargets();
 	      	}
 	     }

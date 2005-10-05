@@ -16,27 +16,31 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.aspectj.bridge.Version;
-
 /**
  * @author Mik Kersten
  */
-public class ExecutionTestCase extends TestCase {
+public class DeclareFormsTest extends TestCase {
+
+	protected File file0 = new File("../ajdoc/testdata/declareForms/DeclareCoverage.java");
+	protected File outdir = new File("../ajdoc/testdata/declareForms/doc");
 	
-	public void testVersionMatch() {
-		String ajdocVersion = Main.getVersion();
-		String compilerVersion = Version.text;
-		assertTrue("version check", ajdocVersion.endsWith(compilerVersion));
-	}
-	
-	public void testFailingBuild() {
-		File file1 = new File("../ajdoc/testdata/failing-build/Fail.java");
-		String[] args = { file1.getAbsolutePath() };
-		
+	public void testCoverage() {
+		assertTrue(file0.exists());
+		outdir.delete();
+		String[] args = { 
+//			"-XajdocDebug",
+			"-source", 
+			"1.4",
+			"-private",
+            "-classpath",
+            AjdocTests.ASPECTJRT_PATH.getPath(),
+			"-d", 
+			outdir.getAbsolutePath(),
+			file0.getAbsolutePath(), 
+		};
 		org.aspectj.tools.ajdoc.Main.main(args);
-		assertTrue(Main.hasAborted());
 	}
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
 	}

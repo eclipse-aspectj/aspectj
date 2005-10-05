@@ -14,8 +14,17 @@
 
 package org.aspectj.tools.ajdoc;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
@@ -26,7 +35,13 @@ import org.aspectj.asm.IRelationship;
  */
 class HtmlDecorator {
 
-    static List visibleFileList = new ArrayList();
+    private static final String POINTCUT_DETAIL = "Pointcut Detail";
+	private static final String ADVICE_DETAIL = "Advice Detail";
+	private static final String DECLARE_DETAIL = "Declare Detail";
+	private static final String ADVICE_SUMMARY = "Advice Summary";
+	private static final String POINTCUT_SUMMARY = "Pointcut Summary";
+	private static final String DECLARE_SUMMARY = "Declare Summary";
+	static List visibleFileList = new ArrayList();
     static Hashtable declIDTable = null;
     static SymbolManager symbolManager = null;
     static File rootDir = null;
@@ -193,8 +208,8 @@ class HtmlDecorator {
         // Change "Class" to "Aspect"
         // HACK: depends on matching presence of advice or pointcut summary
         int classStartIndex = fileContents.toString().indexOf("<BR>\nClass ");
-        int pointcutSummaryIndex = fileContents.toString().indexOf("Pointcut Summary");
-        int adviceSummaryIndex = fileContents.toString().indexOf("Advice Summary");
+        int pointcutSummaryIndex = fileContents.toString().indexOf(POINTCUT_SUMMARY);
+        int adviceSummaryIndex = fileContents.toString().indexOf(ADVICE_SUMMARY);
         if (classStartIndex != -1 &&
         	(adviceSummaryIndex != -1 || pointcutSummaryIndex != -1)) {
             int classEndIndex = fileContents.toString().indexOf("</H2>", classStartIndex);
@@ -214,21 +229,28 @@ class HtmlDecorator {
     static void addAspectDocumentation(IProgramElement node, StringBuffer fileBuffer, int index ) {
     	List pointcuts = new ArrayList();
     	List advice = new ArrayList();
+    	List declares = new ArrayList();
     	for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
     		IProgramElement member = (IProgramElement)it.next();
     		if (member.getKind().equals(IProgramElement.Kind.POINTCUT)) {
     			pointcuts.add(member);
     		} else if (member.getKind().equals(IProgramElement.Kind.ADVICE)) {
     			advice.add(member);
+    		} else if (member.getKind().isDeclare() || member.getKind().isInterTypeMember()) {
+    			declares.add(member);
     		}
     	}
+    	if (declares.size() > 0) {
+    		insertDeclarationsDetails(fileBuffer, declares, DECLARE_DETAIL, index);
+    		insertDeclarationsSummary(fileBuffer, declares, DECLARE_SUMMARY, index);
+    	}
     	if (pointcuts.size() > 0) {
-    		insertDeclarationsSummary(fileBuffer, pointcuts, "Pointcut Summary", index);
-    		insertDeclarationsDetails(fileBuffer, pointcuts, "Pointcut Detail", index);
+    		insertDeclarationsSummary(fileBuffer, pointcuts, POINTCUT_SUMMARY, index);
+    		insertDeclarationsDetails(fileBuffer, pointcuts, POINTCUT_DETAIL, index);
     	}
     	if (advice.size() > 0) {
-    		insertDeclarationsSummary(fileBuffer, advice, "Advice Summary", index);
-    		insertDeclarationsDetails(fileBuffer, advice, "Advice Detail", index);
+    		insertDeclarationsSummary(fileBuffer, advice, ADVICE_SUMMARY, index);
+    		insertDeclarationsDetails(fileBuffer, advice, ADVICE_DETAIL, index);
     	}
     }
     
@@ -272,7 +294,7 @@ class HtmlDecorator {
                 // insert the table row accordingly
                 String comment = generateSummaryComment(decl);
                 String entry = "";
-                if ( kind.equals( "Advice Summary" ) ) {
+                if ( kind.equals( ADVICE_SUMMARY ) ) {
                     entry +=
                             "<TR><TD>" +
                             "<A HREF=\"#" + generateHREFName(decl) + "\">" +
@@ -285,7 +307,7 @@ class HtmlDecorator {
                             generateAffects(decl, false) + "</TD>" +
                             "</TR><TD>\n";
                 }
-                else if ( kind.equals( "Pointcut Summary" ) ) {
+                else if ( kind.equals( POINTCUT_SUMMARY ) ) {
                     entry +=
                             "<TR><TD WIDTH=\"1%\">" +
                             "<FONT SIZE=-1><TT>" + genAccessibility(decl) + "</TT></FONT>" +
@@ -299,15 +321,15 @@ class HtmlDecorator {
                     entry +=
                             "</TR></TD>\n";
                 }
-                else if ( kind.equals( "Introduction Summary" ) ) {
+                else if ( kind.equals( DECLARE_SUMMARY ) ) {
                     entry +=
                             "<TR><TD WIDTH=\"1%\">" +
                             "<FONT SIZE=-1><TT>" + decl.getModifiers() + "</TT></FONT>" +
                             "</TD>" +
                             "<TD>" +
                             "<A HREF=\"#" + generateHREFName(decl) + "\">" +
-                            "<TT>introduction " + decl.toLabelString() + "</TT></A><P>" +
-                            generateIntroductionSignatures(decl, false) +
+                            "<TT>" + decl.toLabelString() + "</TT></A><P>" +
+                            generateIntroductionSignatures(decl, true) +
                             generateAffects(decl, true);
                 }
     
@@ -377,7 +399,7 @@ class HtmlDecorator {
     
                 // insert the table row accordingly
                 entry +=  "<A NAME=\"" + generateHREFName(decl) + "\"><!-- --></A>\n";
-                if ( kind.equals( "Advice Detail" ) ) {
+                if ( kind.equals( ADVICE_DETAIL ) ) {
                     entry += "<H3>" + decl.getName() + "</H3><P>";
                     entry +=
                             "<TT>" +
@@ -385,15 +407,15 @@ class HtmlDecorator {
                             generateDetailsComment(decl) + "<P>" +
                             generateAffects(decl, false);
                 }
-                else if (kind.equals("Pointcut Detail")) {
+                else if (kind.equals(POINTCUT_DETAIL)) {
                     entry +=
                             "<H3>" +
                             decl.toLabelString() +
                             "</H3><P>" +
                             generateDetailsComment(decl);
                 }
-                else if (kind.equals("Introduction Detail")) {
-                	entry += "<H3>introduction " + decl.toLabelString() + "</H3><P>";
+                else if (kind.equals(DECLARE_DETAIL)) {
+                	entry += "<H3>declare " + decl.toLabelString() + "</H3><P>";
                     entry +=
                             generateIntroductionSignatures(decl, true) +
                             generateAffects(decl, true) +
@@ -454,9 +476,7 @@ class HtmlDecorator {
                                              StringBuffer fileContentsBuffer,
                                               int index ) {
     	List targets = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
-        if (targets != null && !targets.isEmpty()) {
-            String prevName = "";
-            
+        if (targets != null && !targets.isEmpty()) {            
             String adviceDoc
             = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
               "<TD width=\"15%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advised&nbsp;by:</font></b></td><td>";
@@ -511,14 +531,20 @@ class HtmlDecorator {
      * TODO: probably want to make this the same for intros and advice.
      */
     static String generateAffects(IProgramElement decl, boolean isIntroduction) {
-
-      List targets = StructureUtil.getTargets(decl, IRelationship.Kind.ADVICE);
-      if (targets == null) return null;
-        List packageList = new ArrayList();
-        String entry
-        = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
-          "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advises:</b></font></td><td>";
-    
+    	List targets = null;
+    	if (isIntroduction) {
+    		targets = StructureUtil.getDeclareTargets(decl);
+    	} else {
+    		targets = StructureUtil.getTargets(decl, IRelationship.Kind.ADVICE);
+    	}
+    	if (targets == null) return "";
+        String entry = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>";
+        if (!isIntroduction) {
+        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advises:</b></font></td><td>";
+        } else {
+        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Affects:</b></font></td><td>";
+        }
+        	
 		String relativePackagePath =
 			getRelativePathFromHere(
 				decl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR);    
@@ -634,7 +660,7 @@ class HtmlDecorator {
     }
 
     static String generateHREFName(IProgramElement decl) {
-        String hrefLink = decl.toLabelString(); // !!!
+        String hrefLink = decl.toLabelString().replace("\"", "quot;"); // !!!
         return hrefLink;
     }
 

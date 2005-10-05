@@ -22,7 +22,9 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 public class AjdocTests extends TestCase {
-    public static File ASPECTJRT_PATH;
+    
+	public static File ASPECTJRT_PATH;
+    
     static {
         String[] paths = { "sp:aspectjrt.path", "sp:aspectjrt.jar",
                 "../lib/test/aspectjrt.jar", "../aj-build/jars/aspectj5rt-all.jar",
@@ -34,6 +36,7 @@ public class AjdocTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite(AjdocTests.class.getName());
         //$JUnit-BEGIN$
+        suite.addTestSuite(DeclareFormsTest.class);
         suite.addTestSuite(SpacewarTestCase.class);
         suite.addTestSuite(PatternsTestCase.class);
         suite.addTestSuite(CoverageTestCase.class); 
