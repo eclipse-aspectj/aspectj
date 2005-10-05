@@ -58,9 +58,7 @@ public class WeaveSpec extends CompileSpec {
 			setFiles(aspectsFiles);
 			String options = getOptions();
 			if (options == null) {
-				setOptions("-Xreweavable");
-			} else if (options.indexOf("-Xreweavable") == -1) {
-				setOptions(options + ",-Xreweavable");
+				setOptions(""); 
 			}
 			setClasspath("classes.jar");
 			args = buildArgs();

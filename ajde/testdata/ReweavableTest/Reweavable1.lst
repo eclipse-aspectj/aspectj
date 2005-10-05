@@ -1,5 +1,4 @@
 CalculatePI.java
 Logger.aj
--Xreweavable
 -verbose
 -noExit

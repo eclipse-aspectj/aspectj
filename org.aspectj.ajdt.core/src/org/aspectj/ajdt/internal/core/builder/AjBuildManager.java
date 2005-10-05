@@ -612,8 +612,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			}
 		}
 		
-		
-		bcelWeaver.setReweavableMode(buildConfig.isXreweavable(),buildConfig.getXreweavableCompressClasses());
+		bcelWeaver.setReweavableMode(buildConfig.isXNotReweavable());
 
 		//check for org.aspectj.runtime.JoinPoint
 		ResolvedType joinPoint = bcelWorld.resolve("org.aspectj.lang.JoinPoint");

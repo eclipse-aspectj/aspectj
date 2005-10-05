@@ -120,7 +120,6 @@ class BcelClassWeaver implements IClassWeaver {
 
 	// Static setting across BcelClassWeavers
 	private static boolean inReweavableMode = false;
-	private static boolean compressReweavableAttributes = false;
     
     
     private        List addedSuperInitializersAsList = null; // List<IfaceInitList>
@@ -425,17 +424,17 @@ class BcelClassWeaver implements IClassWeaver {
 
 		// finally, if we changed, we add in the introduced methods.
         if (isChanged) {
-        	clazz.getOrCreateWeaverStateInfo();
+        	clazz.getOrCreateWeaverStateInfo(inReweavableMode);
 			weaveInAddedMethods(); // FIXME asc are these potentially affected by declare annotation?
         }
         
-        if (inReweavableMode || clazz.getType().isAspect()) {
-        	WeaverStateInfo wsi = clazz.getOrCreateWeaverStateInfo();
+        if (inReweavableMode) {
+        	WeaverStateInfo wsi = clazz.getOrCreateWeaverStateInfo(true);
         	wsi.addAspectsAffectingType(aspectsAffectingType);
         	wsi.setUnwovenClassFileData(ty.getJavaClass().getBytes());
-        	wsi.setReweavable(true,compressReweavableAttributes);
+        	wsi.setReweavable(true);
         } else {
-        	clazz.getOrCreateWeaverStateInfo().setReweavable(false,false);
+        	clazz.getOrCreateWeaverStateInfo(false).setReweavable(false);
         }
         
         return isChanged;
@@ -926,7 +925,9 @@ class BcelClassWeaver implements IClassWeaver {
 				ShadowMunger aMunger = (ShadowMunger) iter2.next();
 				if (aMunger instanceof BcelAdvice) {
 					BcelAdvice bAdvice = (BcelAdvice)aMunger;
-					aspectsAffectingType.add(bAdvice.getConcreteAspect().getName());
+					if(bAdvice.getConcreteAspect() != null){
+						aspectsAffectingType.add(bAdvice.getConcreteAspect().getName());
+					}
 				} else {
 				// It is a 'Checker' - we don't need to remember aspects that only contributed Checkers...
 				}		
@@ -1769,7 +1770,8 @@ class BcelClassWeaver implements IClassWeaver {
             shadow.implement();
             CompilationAndWeavingContext.leavingPhase(tok);
         }
-        mg.matchedShadows = null;
+		int ii = mg.getMaxLocals();
+		mg.matchedShadows = null;
     }
     
     // ----
@@ -1787,9 +1789,12 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 	
 	// Called by the BcelWeaver to let us know all BcelClassWeavers need to collect reweavable info
-	public static void setReweavableMode(boolean mode,boolean compress) {
+	public static void setReweavableMode(boolean mode) {
 		inReweavableMode = mode;
-		compressReweavableAttributes = compress;
+	}
+	
+	public static boolean getReweavableMode() { 
+		return inReweavableMode;
 	}
 
 }

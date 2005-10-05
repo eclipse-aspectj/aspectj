@@ -600,6 +600,18 @@ public final class LazyClassGen {
         writeBack(world);
         return myGen.getJavaClass();
     }
+    
+    public byte [] getJavaClassBytesIncludingReweavable(BcelWorld world){
+        writeBack(world);
+        byte [] wovenClassFileData = myGen.getJavaClass().getBytes();
+        WeaverStateInfo wsi = myType.getWeaverState();//getOrCreateWeaverStateInfo();
+        if(wsi != null && wsi.isReweavable()){ // && !reweavableDataInserted
+            //reweavableDataInserted = true;
+            return wsi.replaceKeyWithDiff(wovenClassFileData);
+        } else{
+            return wovenClassFileData;
+        }
+    }
 
     public void addGeneratedInner(LazyClassGen newClass) {
         classGens.add(newClass);
@@ -749,7 +761,7 @@ public final class LazyClassGen {
 	}
 	
 	public boolean isReweavable() {
-		if (myType.getWeaverState()==null) return false;
+		if (myType.getWeaverState()==null) return true;
         return myType.getWeaverState().isReweavable();
 	}
 	
@@ -757,12 +769,11 @@ public final class LazyClassGen {
 		if (myType.getWeaverState()==null) return null;
 		return myType.getWeaverState().getAspectsAffectingType();
 	}
-	
-	public WeaverStateInfo getOrCreateWeaverStateInfo() {
+		
+	public WeaverStateInfo getOrCreateWeaverStateInfo(boolean inReweavableMode) {
 		WeaverStateInfo ret = myType.getWeaverState();
 		if (ret != null) return ret;
-		
-		ret = new WeaverStateInfo();
+		ret = new WeaverStateInfo(inReweavableMode);
 		myType.setWeaverState(ret);
 		return ret;
 	}

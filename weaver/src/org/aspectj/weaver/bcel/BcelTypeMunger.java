@@ -103,7 +103,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		if (changed && munger.changesPublicSignature()) {
 			WeaverStateInfo info = 
-				weaver.getLazyClassGen().getOrCreateWeaverStateInfo();
+				weaver.getLazyClassGen().getOrCreateWeaverStateInfo(weaver.getReweavableMode());
 			info.addConcreteMunger(this);
 		}
 		// Whilst type mungers aren't persisting their source locations, we add this relationship during

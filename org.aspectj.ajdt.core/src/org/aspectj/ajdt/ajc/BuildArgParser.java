@@ -525,10 +525,12 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-XlazyTjp")) {
 				buildConfig.setXlazyTjp(true);
             } else if (arg.startsWith("-Xreweavable")) {
-            	buildConfig.setXreweavable(true);
+            	showWarning("-Xreweavable is on by default");
             	if (arg.endsWith(":compress")) {
-            		buildConfig.setXreweavableCompressClasses(true);
+            		showWarning("-Xreweavable:compress is no longer available - reweavable is now default");
             	}
+			} else if (arg.startsWith("-XnotReweavable")) {
+            	buildConfig.setXnotReweavable(true);
 			} else if (arg.equals("-XnoInline")) {
 				buildConfig.setXnoInline(true);
             } else if (arg.equals("-XhasMember")) {

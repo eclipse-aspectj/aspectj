@@ -15,7 +15,7 @@
     <ajc-test dir="java5/ataspectj" title="AjcLTW PerClauseTest -Xreweavable">
         <compile
             files="ataspectj/PerClauseTest.java,ataspectj/PerClauseTestAspects.java,ataspectj/TestHelper.java"
-            options="-1.5 -Xreweavable"/>
+            options="-1.5"/>
         <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>
     </ajc-test>
 
@@ -45,7 +45,7 @@
     <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -Xreweavable">
         <compile
             files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java"
-            options="-1.5 -Xreweavable"/>
+            options="-1.5"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
@@ -55,17 +55,17 @@
             options="-1.5 -Xlint:ignore"/>
         <compile
             files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -Xreweavable"/>
+            options="-1.5"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -XnoInline -Xreweavable">
         <compile
             files="ataspectj/AroundInlineMungerTestAspects.java"
-            options="-1.5 -Xlint:ignore -XnoInline -Xreweavable"/>
+            options="-1.5 -Xlint:ignore -XnoInline"/>
         <compile
             files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -Xreweavable -XnoInline"/>
+            options="-1.5 -XnoInline"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
@@ -75,7 +75,7 @@
             options="-1.5 -Xlint:ignore"/>
         <compile
             files="ataspectj/AroundInlineMungerTest2.aj,ataspectj/TestHelper.java"
-            options="-1.5 -Xreweavable"/>
+            options="-1.5"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest2" verbose="true"/>
     </ajc-test>
 
@@ -89,7 +89,7 @@
     <ajc-test dir="java5/ataspectj" title="Ajc Aspect1 LTW Aspect2 -Xreweavable">
         <compile
             files="ataspectj/ltwreweavable/Main.java,ataspectj/ltwreweavable/Aspect1.java,ataspectj/ltwreweavable/Advisable.java"
-            options="-1.5 -Xreweavable"
+            options="-1.5"
             outjar="main1.jar"/>
         <ant file="ajc-ant.xml" target="ltw.Aspect2MainTest" verbose="true"/>
     </ajc-test>

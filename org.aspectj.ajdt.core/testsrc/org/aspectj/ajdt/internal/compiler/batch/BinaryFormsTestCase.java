@@ -39,6 +39,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args.add("-d");
 		args.add("out");
+		args.add("-XnotReweavable");
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/lib/ConcreteA.aj");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/lib/AbstractA.aj");
@@ -54,6 +55,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args.add("-d");
 		args.add("out");
+		args.add("-XnotReweavable");
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client.java");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
@@ -69,6 +71,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 
 		args.add("-classpath");
         args.add(AjcTests.aspectjrtClasspath());
+		args.add("-XnotReweavable");
 		
 		args.add("-d");
 		args.add("out");
@@ -89,6 +92,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args.add("-d");
 		args.add("out");
+		args.add("-XnotReweavable");
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/MyAspect1.aj");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
@@ -101,6 +105,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args.add("-d");
 		args.add("out");
+		args.add("-XnotReweavable");
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
 		

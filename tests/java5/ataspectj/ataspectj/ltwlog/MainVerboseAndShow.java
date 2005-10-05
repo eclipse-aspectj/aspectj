@@ -23,10 +23,13 @@ public class MainVerboseAndShow {
 
     public static void main(String args[]) throws Throwable {
         new MainVerboseAndShow().target();
+        
         if (!MessageHolder.startsAs(Arrays.asList(new String[]{
                 "info weaving 'ataspectj/ltwlog/MainVerboseAndShow'",
+                "info weaver operating in reweavable mode.  Need to verify any required types exist.",
                 "weaveinfo Join point 'method-execution(void ataspectj.ltwlog.MainVerboseAndShow.target())' in Type 'ataspectj.ltwlog.MainVerboseAndShow' (MainVerboseAndShow.java:22) advised by before advice from 'ataspectj.ltwlog.Aspect1' (Aspect1.java)",
-                "info weaving 'ataspectj/ltwlog/Aspect1'"}))) {
+                "info weaving 'ataspectj/ltwlog/Aspect1'",
+                "info weaver operating in reweavable mode.  Need to verify any required types exist."}))) {
             MessageHolder.dump();
             throw new RuntimeException("failed");
         }

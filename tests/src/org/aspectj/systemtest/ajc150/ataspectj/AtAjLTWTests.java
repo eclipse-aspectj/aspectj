@@ -50,7 +50,7 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
     }
 
     public void testAjcLTWAroundInlineMungerTest_Xreweavable() {
-        runTest("AjcLTW AroundInlineMungerTest -Xreweavable");
+        runTest("AjcLTW AroundInlineMungerTest");
     }
 
     public void testAjcLTWAroundInlineMungerTest() {

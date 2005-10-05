@@ -40,8 +40,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public static final String OPTION_XSerializableAspects    = "org.aspectj.ajdt.core.compiler.weaver.XSerializableAspects";
 	public static final String OPTION_XLazyThisJoinPoint      = "org.aspectj.ajdt.core.compiler.weaver.XLazyThisJoinPoint";
 	public static final String OPTION_XNoInline               = "org.aspectj.ajdt.core.compiler.weaver.XNoInline";
-	public static final String OPTION_XReweavable             = "org.aspectj.ajdt.core.compiler.weaver.XReweavable";
-	public static final String OPTION_XReweavableCompress     = "org.aspectj.ajdt.core.compiler.weaver.XReweavableCompress";
+	public static final String OPTION_XNotReweavable          = "org.aspectj.ajdt.core.compiler.weaver.XNotReweavable";
 	public static final String OPTION_XHasMember              = "org.aspectj.ajdt.core.compiler.weaver.XHasMember";
 	public static final String OPTION_XdevPinpoint            = "org.aspectj.ajdt.core.compiler.weaver.XdevPinpoint";
 	
@@ -66,8 +65,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean xSerializableAspects = false;
 	public boolean xLazyThisJoinPoint = false;
 	public boolean xNoInline = false;
-	public boolean xReweavable = false;
-	public boolean xReweavableCompress = false;
+	public boolean xNotReweavable = false;
 	public boolean xHasMember = false;
 	public boolean xdevPinpoint = false;
 	public boolean showWeavingInformation = false;
@@ -121,8 +119,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		map.put(OPTION_XSerializableAspects,this.xSerializableAspects ? ENABLED : DISABLED);
 		map.put(OPTION_XLazyThisJoinPoint,this.xLazyThisJoinPoint ? ENABLED : DISABLED);
 		map.put(OPTION_XNoInline,this.xNoInline ? ENABLED : DISABLED);
-		map.put(OPTION_XReweavable,this.xReweavable ? ENABLED : DISABLED);
-		map.put(OPTION_XReweavableCompress,this.xReweavableCompress ? ENABLED : DISABLED);
+		map.put(OPTION_XNotReweavable,this.xNotReweavable ? ENABLED : DISABLED);
 		map.put(OPTION_XHasMember, this.xHasMember ? ENABLED : DISABLED);
 		map.put(OPTION_XdevPinpoint, this.xdevPinpoint ? ENABLED : DISABLED);
 
@@ -178,13 +175,14 @@ public class AjCompilerOptions extends CompilerOptions {
 				this.xNoInline = false;
 			}
 		}
-		if ((optionValue = optionsMap.get(OPTION_XReweavable)) != null) {
+		if ((optionValue = optionsMap.get(OPTION_XNotReweavable)) != null) {
 			if (ENABLED.equals(optionValue)) {
-				this.xReweavable = true;
+				this.xNotReweavable = true;
 			} else if (DISABLED.equals(optionValue)) {
-				this.xReweavable = false;
+				this.xNotReweavable = false;
 			}
 		}
+		/*
 		if ((optionValue = optionsMap.get(OPTION_XReweavableCompress)) != null) {
 			if (ENABLED.equals(optionValue)) {
 				this.xReweavableCompress = true;
@@ -192,6 +190,10 @@ public class AjCompilerOptions extends CompilerOptions {
 				this.xReweavableCompress = false;
 			}
 		}
+*/
+		
+		
+		
 		if ((optionValue = optionsMap.get(OPTION_XHasMember)) != null) {
 			if (ENABLED.equals(optionValue)) {
 				this.xHasMember = true;
@@ -263,8 +265,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		buf.append("\n\t- no inline (X option): ").append(this.xNoInline ? ENABLED : DISABLED); //$NON-NLS-1$
 		buf.append("\n\t- generate serializable aspects (X option): ").append(this.xSerializableAspects ? ENABLED : DISABLED); //$NON-NLS-1$
 		buf.append("\n\t- lazy thisJoinPoint (X option): ").append(this.xLazyThisJoinPoint ? ENABLED : DISABLED); //$NON-NLS-1$
-		buf.append("\n\t- generate reweavable class files (X option): ").append(this.xReweavable ? ENABLED : DISABLED); //$NON-NLS-1$
-		buf.append("\n\t- compress reweavable class files (X option): ").append(this.xReweavableCompress ? ENABLED : DISABLED); //$NON-NLS-1$		
+		buf.append("\n\t- generate non-reweavable class files (X option): ").append(this.xNotReweavable ? ENABLED : DISABLED); //$NON-NLS-1$	
 		buf.append("\n\t- has member support (X option): ").append(this.xHasMember ? ENABLED : DISABLED); //$NON-NLS-1$
 
 		buf.append("\n\t- generate AJDE model: ").append(this.generateModel ? ENABLED : DISABLED); //$NON-NLS-1$		

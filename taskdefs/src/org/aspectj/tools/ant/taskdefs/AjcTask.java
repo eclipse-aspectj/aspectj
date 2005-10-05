@@ -256,7 +256,7 @@ public class AjcTask extends MatchingTask {
     static {
         String[] xs = new String[] 
             {   "serializableAspects", "incrementalFile", "lazyTjp",
-        		"reweavable", "reweavable:compress", "noInline"
+        		"reweavable", "reweavable:compress", "notReweavable", "noInline"
             	//, "targetNearSource", "OcodeSize",
                  };
         VALID_XOPTIONS = Collections.unmodifiableList(Arrays.asList(xs));
@@ -465,6 +465,10 @@ public class AjcTask extends MatchingTask {
 
     public void setXReweavable(boolean reweavable) {
     	cmd.addFlag("-Xreweavable",reweavable);
+    }
+    
+    public void setXNotReweavable(boolean notReweavable) {
+    	cmd.addFlag("-XnotReweavable",notReweavable);
     }
     
     public void setXNoInline(boolean noInline) {
@@ -1820,6 +1824,8 @@ public class AjcTask extends MatchingTask {
                 setXNoweave(true);
 			} else if ("-Xreweavable".equals(flag)) {
 				setXReweavable(true);
+            } else if ("-XnotReweavable".equals(flag)) {
+				setXNotReweavable(true);
             } else if (flag.startsWith("@")) {
                 File file = new File(flag.substring(1));
                 if (file.canRead()) {

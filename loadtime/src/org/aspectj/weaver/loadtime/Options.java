@@ -35,7 +35,7 @@ public class Options {
     private final static String OPTION_noWarnNone = "-warn:none";
     private final static String OPTION_proceedOnError = "-proceedOnError";
     private final static String OPTION_verbose = "-verbose";
-    private final static String OPTION_reweavable = "-Xreweavable";
+    private final static String OPTION_notReweavable = "-XNotReweavable";
     private final static String OPTION_noinline = "-Xnoinline";
     private final static String OPTION_hasMember = "-XhasMember";
     private final static String OPTION_pinpoint = "-Xdev:pinpoint";
@@ -91,8 +91,8 @@ public class Options {
                 weaverOption.noWarn = true;
             } else if (arg.equalsIgnoreCase(OPTION_proceedOnError)) {
                 weaverOption.proceedOnError = true;
-            } else if (arg.equalsIgnoreCase(OPTION_reweavable)) {
-                weaverOption.reWeavable = true;
+            } else if (arg.equalsIgnoreCase(OPTION_notReweavable)) {
+                weaverOption.notReWeavable = true;
             } else if (arg.equalsIgnoreCase(OPTION_showWeaveInfo)) {
                 weaverOption.showWeaveInfo = true;
             } else if (arg.equalsIgnoreCase(OPTION_hasMember)) {
@@ -144,7 +144,7 @@ public class Options {
         boolean noWarn;
         boolean proceedOnError;
         boolean verbose;
-        boolean reWeavable;
+        boolean notReWeavable;
         boolean noInline;
         boolean showWeaveInfo;
         boolean pinpoint;

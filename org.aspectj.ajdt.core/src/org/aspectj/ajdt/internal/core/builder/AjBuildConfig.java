@@ -366,11 +366,8 @@ public class AjBuildConfig {
         if (!isXlazyTjp() && global.isXlazyTjp()) {
         	setXlazyTjp(true);
         }
-        if (!isXreweavable() && global.isXreweavable()) {
-        	setXreweavable(true);
-        }
-        if (!getXreweavableCompressClasses() && global.getXreweavableCompressClasses()) {
-        	setXreweavableCompressClasses(true);
+        if (!isXNotReweavable() && global.isXNotReweavable()) {
+        	setXnotReweavable(true);
         }
     }
 
@@ -473,8 +470,8 @@ public class AjBuildConfig {
 		options.xLazyThisJoinPoint = b;
 	}
 
-	public void setXreweavable(boolean b) {
-		options.xReweavable = b;
+	public void setXnotReweavable(boolean b) {
+		options.xNotReweavable = b;
 	}
 	
 	public void setXHasMemberSupport(boolean enabled) {
@@ -492,17 +489,10 @@ public class AjBuildConfig {
 	public boolean isXdevPinpoint() {
 		return options.xdevPinpoint;
 	}
-	
-	public boolean isXreweavable() {
-		return options.xReweavable;
-	}
-	
-	public void setXreweavableCompressClasses(boolean b) {
-		options.xReweavableCompress = b;
-	}
-	
-	public boolean getXreweavableCompressClasses() {
-		return options.xReweavableCompress;
+		
+
+	public boolean isXNotReweavable() {
+		return options.xNotReweavable;
 	}
 
 	public boolean isGenerateJavadocsInModelMode() {

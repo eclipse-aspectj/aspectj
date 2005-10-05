@@ -3697,20 +3697,20 @@
    <!-- generics/itds and binary weaving -->
    
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - A">
-   	   <compile files="TestA_generictype.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
-       <compile files="TestA_aspect.aj,TestA_class.java" inpath="code.jar" options="-1.5,-Xreweavable"/>
+   	   <compile files="TestA_generictype.java" outjar="code.jar" options="-1.5"/>
+       <compile files="TestA_aspect.aj,TestA_class.java" inpath="code.jar" options="-1.5"/>
        <run class="TestA_class"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - B">
-   	   <compile files="TestB_generictype.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
-       <compile files="TestB_aspect1.aj,TestB_aspect2.aj,TestB_class.java" inpath="code.jar" options="-1.5,-Xreweavable"/>
+   	   <compile files="TestB_generictype.java" outjar="code.jar" options="-1.5"/>
+       <compile files="TestB_aspect1.aj,TestB_aspect2.aj,TestB_class.java" inpath="code.jar" options="-1.5"/>
        <run class="TestB_class"/>
    </ajc-test>
     
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 1">
-   	   <compile files="BaseClass.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
-       <compile files="A1.aj" inpath="code.jar" options="-1.5,-Xreweavable"/>
+   	   <compile files="BaseClass.java" outjar="code.jar" options="-1.5"/>
+       <compile files="A1.aj" inpath="code.jar" options="-1.5"/>
         <run class="BaseClass">
         <stderr>
             <line text="Advice count=1"/>
@@ -3719,11 +3719,11 @@
     </ajc-test>
    
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 2">
-   	   <compile files="BaseClass.java,A1.aj" outjar="code.jar" options="-1.5,-Xreweavable,-showWeaveInfo">
+   	   <compile files="BaseClass.java,A1.aj" outjar="code.jar" options="-1.5,-showWeaveInfo">
    	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List BaseClass.list1')"/>
    	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java:12) advised by after advice from 'A1' (A1.aj:7)"/>
    	   </compile>
-       <compile files="A2.aj" inpath="code.jar" options="-1.5,-Xreweavable,-showWeaveInfo">
+       <compile files="A2.aj" inpath="code.jar" options="-1.5,-showWeaveInfo">
          <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List BaseClass.list1')"/>
    	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java:12) advised by after advice from 'A1' (A1.aj:7)"/>
 	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A2' (A2.aj:'java.util.List BaseClass.list2')"/>
@@ -3737,8 +3737,8 @@
     </ajc-test>
 
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 3">
-   	   <compile files="BaseClass.java,A1.aj,A2.aj" outjar="code.jar" options="-1.5,-Xreweavable"/>
-       <compile files="A3.aj" inpath="code.jar" options="-1.5,-Xreweavable"/>
+   	   <compile files="BaseClass.java,A1.aj,A2.aj" outjar="code.jar" options="-1.5"/>
+       <compile files="A3.aj" inpath="code.jar" options="-1.5"/>
         <run class="BaseClass">
         <stderr>
              <line text="Advice count=3"/>
@@ -3755,8 +3755,8 @@
        <run class="X1"/>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -1binary">
-   	 <compile files="Sub1.java,Super1.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
-   	 <compile files="X1.aj,Util.java" inpath="code.jar" options ="-1.5,-Xreweavable"/>
+   	 <compile files="Sub1.java,Super1.java" outjar="code.jar" options="-1.5"/>
+   	 <compile files="X1.aj,Util.java" inpath="code.jar" options ="-1.5"/>
      <run class="X1"/>
    </ajc-test>
  
@@ -3765,8 +3765,8 @@
        <run class="X2"/>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -2binary">
-   	 <compile files="Sub2.java,Super2.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
-   	 <compile files="X2.aj,Util.java" inpath="code.jar" options ="-1.5,-Xreweavable"/>
+   	 <compile files="Sub2.java,Super2.java" outjar="code.jar" options="-1.5"/>
+   	 <compile files="X2.aj,Util.java" inpath="code.jar" options ="-1.5"/>
      <run class="X2"/>
    </ajc-test>
       
@@ -3775,8 +3775,8 @@
      <run class="X3"/>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods -3binary">
-   	 <compile files="Sub3.java,Super3.java" outjar="code.jar" options="-1.5,-Xreweavable"/>
-   	 <compile files="X3.aj,Util.java" inpath="code.jar" options ="-1.5,-Xreweavable"/>
+   	 <compile files="Sub3.java,Super3.java" outjar="code.jar" options="-1.5"/>
+   	 <compile files="X3.aj,Util.java" inpath="code.jar" options ="-1.5"/>
      <run class="X3"/>
    </ajc-test>
       

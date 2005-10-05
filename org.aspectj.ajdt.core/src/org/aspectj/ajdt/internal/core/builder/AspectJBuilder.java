@@ -162,7 +162,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		myBcelWorld.setPinpointMode(options.xdevPinpoint);
 		setLintProperties(myBcelWorld,options);
 		myWeaver = new BcelWeaver(myBcelWorld);
-		myWeaver.setReweavableMode(options.xReweavable,options.xReweavableCompress);
+		myWeaver.setReweavableMode(options.xNotReweavable);
 		// TODO deal with injars, inpath, and aspectpath here...
 	}
 	

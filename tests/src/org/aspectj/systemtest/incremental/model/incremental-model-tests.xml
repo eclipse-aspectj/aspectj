@@ -56,7 +56,7 @@
 	<ajc-test dir="incremental/model/weaving2" 
     	title="Testing incremental structure model: Weaving handlers" 
     	keywords="incremental-test,model-test" >
-        <compile staging="true" options="-incremental,-emacssym" sourceroots="src"/>
+        <compile staging="true" options="-incremental,-emacssym, -XnotReweavable" sourceroots="src"/>
         <inc-compile tag="20" checkModel="code=1,advice=1,RelationshipMapSize=2"/> <!-- BetaA has a new piece of handler advice added -->
         <inc-compile tag="30" checkModel="code=1,advice=2,RelationshipMapSize=3"/> <!-- secondary.GammaA added, also advises the same handler -->
         <inc-compile tag="40" checkModel="code=1,advice=1,RelationshipMapSize=2"/> <!-- primary.BetaA deleted -->
@@ -87,7 +87,7 @@
 	<ajc-test dir="incremental/model/sourcefiles_addremove" 
     	title="Testing incremental structure model: Adding and removing files" 
     	keywords="incremental-test,model-test" >
-        <compile staging="true" options="-incremental,-emacssym" sourceroots="src"/>
+        <compile staging="true" options="-incremental,-emacssym, -XnotReweavable" sourceroots="src"/>
         <!-- On first compile, two source files in model, 'root' and 'Alpha' -->
         <inc-compile tag="20" checkModel="java source file=3,FileMapSize=2"/> <!-- Adds primary.Beta class -->   
         <inc-compile tag="30" checkModel="java source file=4"/> <!-- Adds secondary.Gamma aspect -->

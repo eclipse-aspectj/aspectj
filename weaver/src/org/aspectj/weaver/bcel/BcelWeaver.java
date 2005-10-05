@@ -1179,7 +1179,10 @@ public class BcelWeaver implements IWeaver {
 					}		
 				}
 			}
-			classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData()));
+			// old:
+			//classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData()));
+			// new: reweavable default with clever diff
+			classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
 		} else {
 			classType.resetState();
 		}
@@ -1219,7 +1222,7 @@ public class BcelWeaver implements IWeaver {
     public UnwovenClassFile[] getClassFilesFor(LazyClassGen clazz) {
     	List childClasses = clazz.getChildClasses(world);
     	UnwovenClassFile[] ret = new UnwovenClassFile[1 + childClasses.size()];    	
-    	ret[0] = new UnwovenClassFile(clazz.getFileName(),clazz.getJavaClass(world).getBytes());
+    	ret[0] = new UnwovenClassFile(clazz.getFileName(),clazz.getJavaClassBytesIncludingReweavable(world));
     	int index = 1;
     	for (Iterator iter = childClasses.iterator(); iter.hasNext();) {
 			UnwovenClassFile.ChildClass element = (UnwovenClassFile.ChildClass) iter.next();
@@ -1552,10 +1555,10 @@ public class BcelWeaver implements IWeaver {
 		this.progressPerClassFile = progressPerClassFile;
 	}
 
-	public void setReweavableMode(boolean mode,boolean compress) {
-		inReweavableMode = mode;
-		WeaverStateInfo.setReweavableModeDefaults(mode,compress);
-		BcelClassWeaver.setReweavableMode(mode,compress);
+	public void setReweavableMode(boolean xNotReweavable) {
+		inReweavableMode = !xNotReweavable;
+		WeaverStateInfo.setReweavableModeDefaults(!xNotReweavable,false,true);
+		BcelClassWeaver.setReweavableMode(!xNotReweavable);
 	}
 
 	public boolean isReweavable() {

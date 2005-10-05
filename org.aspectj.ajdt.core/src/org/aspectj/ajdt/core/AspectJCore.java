@@ -34,8 +34,7 @@ public class AspectJCore extends JavaCore {
 	public static final String COMPILER_SERIALIZABLE_ASPECTS = AjCompilerOptions.OPTION_XSerializableAspects;
 	public static final String COMPILER_LAZY_TJP             = AjCompilerOptions.OPTION_XLazyThisJoinPoint;
 	public static final String COMPILER_NO_ADVICE_INLINE     = AjCompilerOptions.OPTION_XNoInline;
-	public static final String COMPILER_REWEAVABLE           = AjCompilerOptions.OPTION_XReweavable;
-	public static final String COMPILER_REWEAVABLE_COMPRESS  = AjCompilerOptions.OPTION_XReweavableCompress;
+	public static final String COMPILER_NOT_REWEAVABLE       = AjCompilerOptions.OPTION_XNotReweavable;
 	
 	public AspectJCore() {
 		super();

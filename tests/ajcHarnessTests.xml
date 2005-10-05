@@ -180,7 +180,6 @@
       keywords="purejava">
         <compile classpath="classesDir,jars/required.jar" 
                  files="Main.java"
-                 options="-Xreweavable"
                  outjar="main.zip"/>
         <compile classpath="classesDir,jars/required.jar"
                  aspectpath="jars/requiredAspects.jar,jars/AspectMain.jar"
@@ -639,7 +638,7 @@ Also forked/unforked throw different exceptions
       keywords="purejava">
         <compile classpath="classesDir,jars/required.jar" 
                  files="Main.java"
-                 options="-Xreweavable"
+                 options=""
                  outjar="main.zip"/>
         <run class="Main" fork="true" exception="NoClassDefFoundError"/>
         <run class="Main" fork="false" exception="java.lang.ClassNotFoundException"/>

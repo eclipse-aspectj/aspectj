@@ -163,7 +163,7 @@
         <compile 
         	files="pack/DefineInterface.java,
         		   pack/InterfaceDefinition.java,
-        		   pack/MyInterface.java"/>
+        		   pack/MyInterface.java" options="-XnotReweavable"/>
         <run class="pack.InterfaceDefinition"/>
         <compile 
         	includeClassesDir="true"
