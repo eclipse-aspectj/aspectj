@@ -80,6 +80,10 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	}
 	
 	public Pointcut parameterizeWith(Map typeVariableMap) {
+		ExactAnnotationTypePattern newPattern = (ExactAnnotationTypePattern) this.annotationTypePattern.parameterizeWith(typeVariableMap);
+		if (newPattern.getAnnotationType() instanceof ResolvedType) {
+			verifyRuntimeRetention((ResolvedType)newPattern.getResolvedAnnotationType());
+		}
 		ThisOrTargetAnnotationPointcut ret = new ThisOrTargetAnnotationPointcut(isThis,(ExactAnnotationTypePattern)annotationTypePattern.parameterizeWith(typeVariableMap));
 		ret.copyLocationFrom(this);
 		return ret;
@@ -122,13 +126,18 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 			return;
 		}
 		ResolvedType rAnnotationType = (ResolvedType) annotationTypePattern.annotationType;
+		if (rAnnotationType.isTypeVariableReference()) return;  // we'll deal with this next check when the type var is actually bound...
+		verifyRuntimeRetention(rAnnotationType);
+		
+	}
+
+	private void verifyRuntimeRetention(ResolvedType rAnnotationType) {
 		if (!(rAnnotationType.isAnnotationWithRuntimeRetention())) {
 		    IMessage m = MessageUtil.error(
 					WeaverMessages.format(WeaverMessages.BINDING_NON_RUNTIME_RETENTION_ANNOTATION,rAnnotationType.getName()),
 					getSourceLocation());
-			scope.getMessageHandler().handleMessage(m);
+			rAnnotationType.getWorld().getMessageHandler().handleMessage(m);
 		}
-		
 	}
 
 	/* (non-Javadoc)

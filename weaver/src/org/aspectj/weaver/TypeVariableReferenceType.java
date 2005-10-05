@@ -17,6 +17,7 @@ package org.aspectj.weaver;
 public class TypeVariableReferenceType extends BoundedReferenceType implements TypeVariableReference {
 
 	private TypeVariable typeVariable;
+	private boolean resolvedIfBounds = false;
 	
 	public TypeVariableReferenceType(
 			TypeVariable aTypeVariable,
@@ -37,15 +38,24 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 		return typeVariable.getLowerBound();
 	}
 	
-	public ReferenceType[] getAdditionalBounds() {
-		if (additionalInterfaceBounds ==null && typeVariable.getAdditionalInterfaceBounds()!=null) {
+	private void setAdditionalInterfaceBoundsFromTypeVar() {
+		if (typeVariable.getAdditionalInterfaceBounds() == null) {
+			return;
+		} else {
 			UnresolvedType [] ifBounds = typeVariable.getAdditionalInterfaceBounds();
 			additionalInterfaceBounds = new ReferenceType[ifBounds.length];
 			for (int i = 0; i < ifBounds.length; i++) {
-				additionalInterfaceBounds[i] = (ReferenceType) ifBounds[i]; 
+				additionalInterfaceBounds[i] = (ReferenceType) ifBounds[i].resolve(getWorld()); 
 			}
 		}
-		return additionalInterfaceBounds;
+	}
+	
+	public ReferenceType[] getAdditionalBounds() {
+		if (!resolvedIfBounds) {
+			setAdditionalInterfaceBoundsFromTypeVar();
+			resolvedIfBounds = true;
+		}
+		return super.getAdditionalBounds();
 	}
 	
 	public TypeVariable getTypeVariable() {
@@ -62,6 +72,18 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
     //public ResolvedType resolve(World world) {
 	//	return super.resolve(world);
 	//}
+	
+	public boolean isAnnotation() {
+		World world = ((ReferenceType)getUpperBound()).getWorld();
+		ResolvedType annotationType = ResolvedType.ANNOTATION.resolve(world);
+		if (getUpperBound() != null && ((ReferenceType)getUpperBound()).isAnnotation()) return true;
+		ReferenceType[] ifBounds = getAdditionalBounds();
+		for (int i = 0; i < ifBounds.length; i++) {
+			if (ifBounds[i].isAnnotation()) return true;
+			if (ifBounds[i] == annotationType) return true; // annotation itself does not have the annotation flag set in Java!
+		}
+		return false;
+	}
 	
 	/**
      * return the signature for a *REFERENCE* to a type variable, which is simply:

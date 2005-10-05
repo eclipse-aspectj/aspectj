@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
@@ -79,6 +80,10 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 			int newFormalIndex = bindings.get(formalIndex);
 			return new BindingTypePattern(type, newFormalIndex, isVarArgs);
 		}
+	}
+	
+	public TypePattern parameterizeWith(Map typeVariableMap) {
+		return this;
 	}
 
     public String toString() {

@@ -11,6 +11,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
@@ -18,6 +19,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -52,7 +54,12 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 			world.getMessageHandler().handleMessage(m);
 			resolved = false;
 		}
-        if (!resolvedAnnotationType.isAnnotationWithRuntimeRetention()) { // default is class visibility
+		if (annotationType.isTypeVariableReference()) return;  // we'll deal with this next check when the type var is actually bound...
+        verifyRuntimeRetention(world, resolvedAnnotationType);
+	}
+
+	private void verifyRuntimeRetention(World world, ResolvedType resolvedAnnotationType) {
+		if (!resolvedAnnotationType.isAnnotationWithRuntimeRetention()) { // default is class visibility
 		    // default is class visibility
 			IMessage m = MessageUtil.error(
 					WeaverMessages.format(WeaverMessages.BINDING_NON_RUNTIME_RETENTION_ANNOTATION,annotationType.getName()),
@@ -62,6 +69,25 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		}
 	}
 	
+	public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
+		UnresolvedType newAnnotationType = annotationType;
+		if (annotationType.isTypeVariableReference()) {
+			TypeVariableReference t = (TypeVariableReference) annotationType;
+			String key = t.getTypeVariable().getName();
+			if (typeVariableMap.containsKey(key)) {
+				newAnnotationType = (UnresolvedType) typeVariableMap.get(key);
+			}
+		} else if (annotationType.isParameterizedType()) {
+			newAnnotationType = annotationType.parameterize(typeVariableMap);
+		}
+		BindingAnnotationTypePattern ret = new BindingAnnotationTypePattern(newAnnotationType,this.formalIndex);
+		if (newAnnotationType instanceof ResolvedType) {
+			ResolvedType rat = (ResolvedType) newAnnotationType;
+			verifyRuntimeRetention(rat.getWorld(),rat);			
+		}
+		ret.copyLocationFrom(this);
+		return ret;
+	}
 	
 	public int getFormalIndex() {
 		return formalIndex;

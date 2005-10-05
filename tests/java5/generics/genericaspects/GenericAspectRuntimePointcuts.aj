@@ -17,7 +17,7 @@ abstract aspect GA<P,Q,A extends Annotation> {
 	    - parameter binding
 	 */
 	
-	before(P p, Q q) : cflow(execution(* P.*(..)) && this(p)) && set(Q q) {
+	before(P p, Q q) : cflow(execution(* P.*(..)) && this(p)) && set(Q *) && args(q) {
 		System.out.println("cflow-ok " + p + " " + q);
 	}
 	
