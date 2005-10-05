@@ -175,6 +175,25 @@ final class ShadowRange extends Range {
 //            System.err.println("JUST COPIED: " + oldIh.getInstruction().toString(freshMethod.getEnclosingClass().getConstantPoolGen().getConstantPool()) 
 //            	+ " INTO " + freshIh.getInstruction().toString(freshMethod.getEnclosingClass().getConstantPoolGen().getConstantPool()));
         }
+        
+        // now go through again and update variable slots that have been altered as a result
+        // of remapping...
+        for (InstructionHandle newIh = freshBody.getStart(); newIh != freshBody.getEnd(); newIh = newIh.getNext()) {
+            InstructionTargeter[] sources = newIh.getTargeters();
+            if (sources != null) {
+                for (int i = sources.length - 1; i >= 0; i--) {
+                    if (sources[i] instanceof LocalVariableTag) {
+                    	LocalVariableTag lvt = (LocalVariableTag) sources[i];
+                    	if (!lvt.isRemapped() && remap.hasKey(lvt.getSlot())) {
+                    		lvt.updateSlot(remap.get(lvt.getSlot()));                    		
+                    	}
+                    }
+                }
+            }
+        }
+       
+        
+        
 
 		// we've now copied out all the instructions.
         // now delete the instructions... we've already taken care of the damn

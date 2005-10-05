@@ -18,8 +18,9 @@ import org.aspectj.weaver.UnresolvedType;
 public final class LocalVariableTag extends Tag {
     private final UnresolvedType type;
     private final String name;
-    private final int slot;
+    private int slot;
     private final int startPos;
+    boolean remapped = false;
 
     // AMC - pr101047, two local vars with the same name can share the same slot, but must in that case
     // have different start positions.
@@ -39,6 +40,13 @@ public final class LocalVariableTag extends Tag {
     public UnresolvedType getType() {
         return type;
     }
+    
+    public void updateSlot(int newSlot) {
+    	this.slot = newSlot;
+    	this.remapped = true;
+    }
+    
+    public boolean isRemapped() { return this.remapped; }
     
     // ---- from Object
     

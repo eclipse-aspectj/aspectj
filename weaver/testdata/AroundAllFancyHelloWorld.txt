@@ -101,7 +101,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
                     ASTORE_3   (line 9)
     finally -> E1
     | catch java.lang.Exception -> E0
-    | |             ALOAD_3   (line 11)
+    | |             ALOAD_3     // java.io.PrintStream out   (line 11)
     | |             LDC "bye"
     | |             ASTORE 5
     | |             ASTORE 7
@@ -127,8 +127,8 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | |             GOTO L0
     | catch java.lang.Exception -> E0
     |           E0: ASTORE 11   (line 12)
-    |               ALOAD_3   (line 13)
-    |               ALOAD 11
+    |               ALOAD_3     // java.io.PrintStream out   (line 13)
+    |               ALOAD 11     // java.lang.Exception e
     |               ASTORE 13
     |               ASTORE 15
     | method-call(void java.io.PrintStream.println(java.lang.Object))
@@ -159,7 +159,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
                 L0: JSR L1
                     GOTO L2
                 L1: ASTORE 21
-                    ALOAD_3   (line 15)
+                    ALOAD_3     // java.io.PrintStream out   (line 15)
                     LDC "finally"
                     ASTORE 23
                     ASTORE 25
