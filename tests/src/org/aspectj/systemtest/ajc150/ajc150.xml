@@ -4914,4 +4914,14 @@
      <compile files="pr102357.aj"/>
      <run class="pr102357"/>
    </ajc-test>
+
+   <ajc-test dir="bugs150" title="ITD varargs in constructor">
+     <compile files="pr111481.aj" options="-1.5"/>
+	 <run class="pr111481">
+       <stdout>
+           <line text="a"/>
+           <line text="a"/>
+       </stdout>
+      </run>
+   </ajc-test>
 </suite>

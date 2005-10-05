@@ -232,7 +232,9 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		ResolvedMember signature = world.makeResolvedMember(binding,onTypeBinding);
 		signature.resetKind(Member.CONSTRUCTOR);
 		signature.resetName("<init>");
-		signature.resetModifiers(declaredModifiers);
+		int resetModifiers = declaredModifiers;
+		if (binding.isVarargs())  resetModifiers = resetModifiers | Constants.ACC_VARARGS;
+		signature.resetModifiers(resetModifiers);
 		
 		ResolvedMember syntheticInterMember =
 			AjcMemberMaker.interConstructor(declaringTypeX,  signature, aspectType);

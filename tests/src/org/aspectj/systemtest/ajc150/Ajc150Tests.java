@@ -596,6 +596,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	  assertNotNull("Couldn't find 'method-call(void pack.Test.someMethod())' element in the tree",pe);
   }
   
+  public void testVarArgsIITDInConstructor() {
+	  runTest("ITD varargs in constructor");
+  }
   
   // helper methods.....
   
