@@ -277,6 +277,15 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// - memory usage (freemem calls?)
 	// - relationship map
 
+	
+//	public void testPr85132() {
+//		super.VERBOSE=true;
+//		initialiseProject("PR85132");
+//		build("PR85132");
+//		alter("PR85132","inc1");
+//		build("PR85132");
+//	}
+	
 	// ---------------------------------------------------------------------------------------------------
 
 	/**
