@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.aspectj.bridge.MessageUtil;
-
 /**
  * Iterates over the signatures of a join point, calculating new signatures
  * lazily to minimize processing and to avoid unneccessary "can't find type"
