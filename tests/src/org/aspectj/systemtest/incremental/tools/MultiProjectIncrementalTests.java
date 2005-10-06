@@ -273,27 +273,25 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkWasntFullBuild();
 	}
 	
+	
+	public void testPr85132() {
+		initialiseProject("PR85132");
+		build("PR85132");
+		alter("PR85132","inc1");
+		build("PR85132");
+	}
+	
+	public void testPr92837() {
+		initialiseProject("PR92837");
+		build("PR92837");
+		alter("PR92837","inc1");
+		build("PR92837");
+	}
+	
 	// other possible tests:
 	// - memory usage (freemem calls?)
 	// - relationship map
 
-	
-//	public void testPr85132() {
-//		super.VERBOSE=true;
-//		initialiseProject("PR85132");
-//		build("PR85132");
-//		alter("PR85132","inc1");
-//		build("PR85132");
-//	}
-//	
-//	public void testPr92837() {
-//		super.VERBOSE=true;
-//		initialiseProject("PR92837");
-//		build("PR92837");
-//		alter("PR92837","inc1");
-//		build("PR92837");
-//	}
-	
 	// ---------------------------------------------------------------------------------------------------
 
 	/**

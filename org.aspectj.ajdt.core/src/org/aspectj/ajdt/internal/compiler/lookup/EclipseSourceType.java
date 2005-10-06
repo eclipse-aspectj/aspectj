@@ -497,4 +497,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		tv.setRank(aTypeParameter.binding.rank);
 		return tv;
 	}
+
+	public void ensureDelegateConsistent() {
+		// do nothing, currently these can't become inconsistent (phew)
+	}
 }

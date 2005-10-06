@@ -24,7 +24,10 @@ public interface ReferenceTypeDelegate {
 	
 	// TODO asc move to proxy
 	public void addAnnotation(AnnotationX annotationX);
+	public void ensureDelegateConsistent(); // Required evil because of mutator methods in delegates :(  (see pr85132)
 
+	
+	
 	public boolean isAspect();
     public boolean isAnnotationStyleAspect();
     public boolean isInterface();

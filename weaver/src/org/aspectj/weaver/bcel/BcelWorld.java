@@ -14,6 +14,7 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -499,4 +500,26 @@ public class BcelWorld extends World implements Repository {
 		throw new RuntimeException("Not implemented");
 	}
 
+    // @Override
+    /** 
+     * The aim of this method is to make sure a particular type is 'ok'.  Some
+     * operations on the delegate for a type modify it and this method is
+     * intended to undo that...  see pr85132
+     */
+	public void validateType(UnresolvedType type) {
+		ResolvedType result = typeMap.get(type.getSignature());
+		if (result==null) return; // We haven't heard of it yet
+		if (!result.isExposedToWeaver()) return; // cant need resetting
+		ReferenceType rt = (ReferenceType)result;
+		rt.getDelegate().ensureDelegateConsistent();
+		// If we want to rebuild it 'from scratch' then:
+//		ClassParser cp = new ClassParser(new ByteArrayInputStream(newbytes),new String(cs));
+//		try {
+//			rt.setDelegate(makeBcelObjectType(rt,cp.parse(),true));
+//		} catch (ClassFormatException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+	}
 }

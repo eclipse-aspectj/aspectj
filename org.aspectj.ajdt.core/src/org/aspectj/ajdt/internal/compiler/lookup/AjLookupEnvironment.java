@@ -55,8 +55,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ReferenceType;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -439,7 +439,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ResolvedType onType = factory.fromEclipse(sourceType);
 		// AMC we shouldn't need this when generic sigs are fixed??
 		if (onType.isRawType()) onType = onType.getGenericType();
-		
+
 		WeaverStateInfo info = onType.getWeaverState();
 		
 		// this test isnt quite right - there will be a case where we fail to flag a problem
@@ -453,7 +453,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			CompilationAndWeavingContext.leavingPhase(tok);
 			return;
 		}
-		
+
 		// Check if the type we are looking at is the topMostImplementor of a dangerous interface - 
 		// report a problem if it is.
 		for (Iterator i = dangerousInterfaces.entrySet().iterator(); i.hasNext();) {
@@ -587,9 +587,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				weaveInterTypeDeclarations((SourceTypeBinding) memberTypes[i], typeMungers, declareParents,declareAnnotationOnTypes, false);
 			}
 		}
-		CompilationAndWeavingContext.leavingPhase(tok);
-	}
-
+			CompilationAndWeavingContext.leavingPhase(tok);
+		}
+		
 	/**
 	 * Called when we discover we are weaving intertype declarations on some type that has
 	 * an existing 'WeaverStateInfo' object - this is typically some previously woven type
@@ -855,6 +855,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				packageBinding,
 				needFieldsAndMethods,
 				accessRestriction);
+			factory.getWorld().validateType(factory.fromBinding(ret));
+			// if you need the bytes to pass to validate, here they are:ClassFileReader)binaryType).getReferenceBytes()
 			weaveInterTypeDeclarations(ret);			
 			return ret;
 		} finally {

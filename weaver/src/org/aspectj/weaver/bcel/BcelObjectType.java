@@ -85,6 +85,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private boolean haveLookedForDeclaredSignature = false;
 	private String declaredSignature = null;
 	private boolean isGenericType = false;
+	
+	/**
+	 * A BcelObjectType is 'damaged' if it has been modified from what was original constructed from
+	 * the bytecode.  This currently happens if the parents are modified or an annotation is added -
+	 * ideally BcelObjectType should be immutable but that's a bigger piece of work!!!!!!!!!! XXX
+	 */
+	private boolean damaged = false;
 
 	public Collection getTypeMungers() {
 		return typeMungers;	
@@ -223,6 +230,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	//??? method only used for testing
 	public void addPointcutDefinition(ResolvedPointcutDefinition d) {
+		damaged = true;
 		int len = pointcuts.length;
 		ResolvedPointcutDefinition[] ret = new ResolvedPointcutDefinition[len+1];
 		System.arraycopy(pointcuts, 0, ret, 0, len);
@@ -303,6 +311,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     
     JavaClass getJavaClass() {
         return javaClass;
+    }
+    
+    public void ensureDelegateConsistent() {
+    	if (damaged) {resetState();damaged=false;}
     }
     
     public void resetState() {
@@ -387,7 +399,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public void addAnnotation(AnnotationX annotation) {
-		
+		damaged = true;
 		// Add it to the set of annotations
 		int len = annotations.length;
 		AnnotationX[] ret = new AnnotationX[len+1];
@@ -438,6 +450,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	public void addParent(ResolvedType newParent) {
+		damaged = true;
 		if (newParent.isClass()) {
 			superClass = newParent;
 		} else {

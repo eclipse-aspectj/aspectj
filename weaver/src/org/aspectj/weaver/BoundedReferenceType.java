@@ -245,5 +245,9 @@ public class BoundedReferenceType extends ReferenceType {
 			return resolvedTypeX.getTypeVariables();
 		}
 
+		public void ensureDelegateConsistent() {
+			resolvedTypeX.getDelegate().ensureDelegateConsistent();
+		}
+
 	}
 }

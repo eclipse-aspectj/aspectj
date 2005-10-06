@@ -807,4 +807,7 @@ public abstract class World implements Dump.INode {
 			}
 		}
 	}
+
+	public void validateType(UnresolvedType type) { }
+	
 }

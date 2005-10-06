@@ -310,4 +310,8 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		return null;
 	}
 
+	public void ensureDelegateConsistent() {
+		// Nothing to do - a reflection based delegate can't become inconsistent...
+	}
+
 }
