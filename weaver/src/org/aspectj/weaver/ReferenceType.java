@@ -430,10 +430,10 @@ public class ReferenceType extends ResolvedType {
 	protected Collection getDeclares() {
 		if (parameterizedDeclares != null) return parameterizedDeclares;
 		Collection declares = null;
-		if (isParameterizedType()) {
+		if (ajMembersNeedParameterization()) {
 			Collection genericDeclares = delegate.getDeclares();
 			parameterizedDeclares = new ArrayList();
-			Map parameterizationMap = getMemberParameterizationMap();
+			Map parameterizationMap = getAjMemberParameterizationMap();
 			for (Iterator iter = genericDeclares.iterator(); iter.hasNext();) {
 				Declare declareStatement = (Declare) iter.next();
 				parameterizedDeclares.add(declareStatement.parameterizeWith(parameterizationMap));
@@ -449,6 +449,21 @@ public class ReferenceType extends ResolvedType {
 		return declares;
 	}
 	
+	private boolean ajMembersNeedParameterization() {
+		if (isParameterizedType()) return true;
+		if (getSuperclass() != null) return ((ReferenceType)getSuperclass()).ajMembersNeedParameterization();
+		return false;
+	}
+	
+	private Map getAjMemberParameterizationMap() {
+		Map myMap = getMemberParameterizationMap();
+		if (myMap.size() == 0) {
+			// might extend a parameterized aspect that we also need to consider...
+			if (getSuperclass() != null) return ((ReferenceType)getSuperclass()).getAjMemberParameterizationMap();
+		}
+		return myMap;
+	}
+	
 	protected Collection getTypeMungers() { return delegate.getTypeMungers(); }
 	
 	protected Collection getPrivilegedAccesses() { return delegate.getPrivilegedAccesses(); }
@@ -459,7 +474,11 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	public ResolvedType getSuperclass() {
-		return delegate.getSuperclass();
+		ResolvedType ret = delegate.getSuperclass();
+		if (this.isParameterizedType() && ret.isParameterizedType()) {
+			ret = ret.parameterize(getMemberParameterizationMap()).resolve(getWorld());
+		}
+		return ret;
 	}
 
 

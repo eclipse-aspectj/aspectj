@@ -1658,11 +1658,19 @@ class BcelClassWeaver implements IClassWeaver {
 				} else {
 					ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm,memberHostType);
 					ResolvedMember resolvedDooberry = world.resolve(realthing);
+					// AMC temp guard for M4
+					if (resolvedDooberry == null) {
+						throw new UnsupportedOperationException("Known limitation in M4 - can't find ITD members when type variable is used as an argument and has upper bound specified");
+					}
 					annotations = resolvedDooberry.getAnnotationTypes();
 				}
 			} else if (rm.getKind()==Member.CONSTRUCTOR) {
 				ResolvedMember realThing = AjcMemberMaker.postIntroducedConstructor(memberHostType.resolve(world),rm.getDeclaringType(),rm.getParameterTypes());
 				ResolvedMember resolvedDooberry = world.resolve(realThing);
+				// AMC temp guard for M4
+				if (resolvedDooberry == null) {
+					throw new UnsupportedOperationException("Known limitation in M4 - can't find ITD members when type variable is used as an argument and has upper bound specified");
+				}
 				annotations = resolvedDooberry.getAnnotationTypes();
 			}
 			if (annotations == null) 
@@ -1670,7 +1678,10 @@ class BcelClassWeaver implements IClassWeaver {
 			mapToAnnotations.put(rm,annotations);
 		}
 		rm.setAnnotationTypes(annotations);
-		} catch (Throwable t) {
+		} 
+	  	catch (UnsupportedOperationException ex) {
+	  	  throw ex;	
+	  	} catch (Throwable t) {
 		  //FIXME asc remove this catch after more testing has confirmed the above stuff is OK
 		  throw new BCException("Unexpectedly went bang when searching for annotations on "+rm,t);
 		}

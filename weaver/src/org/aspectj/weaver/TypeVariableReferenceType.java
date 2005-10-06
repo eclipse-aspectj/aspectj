@@ -11,6 +11,9 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Represents a type variable in a type or generic method declaration
  */
@@ -69,7 +72,8 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	public boolean isGenericWildcard() {
 		return false;
 	}
-    //public ResolvedType resolve(World world) {
+	
+	//public ResolvedType resolve(World world) {
 	//	return super.resolve(world);
 	//}
 	
@@ -96,5 +100,21 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	  sb.append(typeVariable.getName());
 	  sb.append(";");
 	  return sb.toString();
+	}
+	
+	public void write(DataOutputStream s) throws IOException {
+		super.write(s);
+		TypeVariableDeclaringElement tvde = typeVariable.getDeclaringElement();
+		if (tvde == null) {
+			s.writeInt(TypeVariable.UNKNOWN);
+		} else {			
+			s.writeInt(typeVariable.getDeclaringElementKind());
+			if (typeVariable.getDeclaringElementKind() == TypeVariable.TYPE) {
+				((UnresolvedType)tvde).write(s);
+			} else if (typeVariable.getDeclaringElementKind() == TypeVariable.METHOD){
+				// it's a method
+				((ResolvedMember)tvde).write(s);
+			}
+		}
 	}
 }

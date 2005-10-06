@@ -39,6 +39,9 @@ public abstract class Advice extends ShadowMunger {
     
     protected TypePattern exceptionType; // just for Softener kind
     
+    // if we are parameterized, these type may be different to the advice signature types
+    protected UnresolvedType[] bindingParameterTypes;
+    
     protected List/*Lint.Kind*/ suppressedLintKinds = null; // based on annotations on this advice
 
     public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars, List innerCflowEntries, ResolvedType inAspect){
@@ -94,6 +97,11 @@ public abstract class Advice extends ShadowMunger {
 		this.attribute = attribute;
 		this.kind = attribute.getKind(); // alias
 		this.signature = signature;
+		if (signature != null) {
+			this.bindingParameterTypes = signature.getParameterTypes();
+		} else {
+			this.bindingParameterTypes = new UnresolvedType[0];
+		}
     }    
 
 	
@@ -202,6 +210,11 @@ public abstract class Advice extends ShadowMunger {
 		return signature;
 	}
 	
+	// only called as part of parameterization....
+	public void setSignature(Member signature) {
+		this.signature = signature;
+	}
+	
 	public boolean hasExtraParameter() {
 		return (getExtraParameterFlags() & ExtraArgument) != 0;
 	}
@@ -213,6 +226,10 @@ public abstract class Advice extends ShadowMunger {
 	protected int getExtraParameterCount() {
 		return countOnes(getExtraParameterFlags() & ParameterMask);
 	}
+	
+	public UnresolvedType[] getBindingParameterTypes() { return this.bindingParameterTypes; }
+	
+	public void setBindingParameterTypes(UnresolvedType[] types) { this.bindingParameterTypes = types; }
 	
 	public static int countOnes(int bits) {
 		int ret = 0;
@@ -283,6 +300,7 @@ public abstract class Advice extends ShadowMunger {
         
 		Advice munger = world.createAdviceMunger(attribute, p, signature);
 		munger.concreteAspect = fromType;
+		munger.bindingParameterTypes = this.bindingParameterTypes;
     	//System.err.println("concretizing here " + p + " with clause " + clause);
         return munger;
     }

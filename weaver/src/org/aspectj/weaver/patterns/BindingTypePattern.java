@@ -83,7 +83,10 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 	}
 	
 	public TypePattern parameterizeWith(Map typeVariableMap) {
-		return this;
+		ExactTypePattern superParameterized = (ExactTypePattern) super.parameterizeWith(typeVariableMap);
+		BindingTypePattern ret = new BindingTypePattern(superParameterized.getExactType(),this.formalIndex,this.isVarArgs);
+		ret.copyLocationFrom(this);
+		return ret;
 	}
 
     public String toString() {

@@ -299,6 +299,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return (ResolvedType[])annotationTypes.toArray(new ResolvedType[]{});
     }
     
+    public AnnotationX[] getAnnotations() {
+    	if (backingGenericMember != null) return backingGenericMember.getAnnotations();
+    	return super.getAnnotations();
+    }
+    
 	public void setAnnotationTypes(UnresolvedType[] annotationtypes) {
 		if (annotationTypes == null) annotationTypes = new HashSet();
 		for (int i = 0; i < annotationtypes.length; i++) {

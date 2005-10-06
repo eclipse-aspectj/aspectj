@@ -17,6 +17,7 @@ package org.aspectj.weaver.bcel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
@@ -82,6 +83,12 @@ public class BcelAdvice extends Advice {
 		suppressLintWarnings(world);
 		ShadowMunger ret = super.concretize(fromType, world, clause);
 		clearLintSuppressions(world);
+		return ret;
+	}
+	
+	public ShadowMunger parameterizeWith(Map typeVariableMap) {
+		Pointcut pc = getPointcut().parameterizeWith(typeVariableMap);
+		BcelAdvice ret = new BcelAdvice(this.attribute,pc,this.signature,this.concreteAspect);
 		return ret;
 	}
 	
@@ -441,7 +448,7 @@ public class BcelAdvice extends Advice {
 	                }
             	}
             } else {
-                UnresolvedType desiredTy = getSignature().getParameterTypes()[i];
+                UnresolvedType desiredTy = getBindingParameterTypes()[i];
                 v.appendLoadAndConvert(il, fact, desiredTy.resolve(world));
             }
         }

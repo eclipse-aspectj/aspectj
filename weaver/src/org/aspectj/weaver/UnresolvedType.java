@@ -778,7 +778,12 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 		if (sig.equals(MISSING_NAME)) {
 			return ResolvedType.MISSING;
 		} else {
-			return UnresolvedType.forSignature(sig);
+			UnresolvedType ret = UnresolvedType.forSignature(sig);
+			// ugh, this is horrid, we shouldn't know about this subclass.
+			if (ret instanceof UnresolvedTypeVariableReferenceType) {
+				UnresolvedTypeVariableReferenceType.readDeclaringElement(s, (UnresolvedTypeVariableReferenceType)ret);
+			}
+			return ret;
 		}
 	}
 	

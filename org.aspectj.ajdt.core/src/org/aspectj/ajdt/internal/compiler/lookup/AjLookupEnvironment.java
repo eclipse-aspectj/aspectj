@@ -47,6 +47,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
@@ -671,16 +672,22 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_ANNOTATIONS, sourceType.sourceName);
 	
 		// Get the annotation specified in the declare
-		TypeBinding tb = factory.makeTypeBinding(decA.getAspect());
+		UnresolvedType aspectType = decA.getAspect();
+		if (aspectType instanceof ReferenceType) {
+			ReferenceType rt = (ReferenceType) aspectType;
+			if (rt.isParameterizedType() || rt.isRawType()) {
+				aspectType = rt.getGenericType();
+			}
+		}
+		TypeBinding tb = factory.makeTypeBinding(aspectType);
 		
-		SourceTypeBinding stb = null;
 		// TODO asc determine if there really is a problem here (see comment below)
 		
 		// ClassCastException here means we probably have either a parameterized type or a raw type, we need the
 		// commented out code to get it to work ... currently uncommented because I've not seen a case where its
 		// required yet ...
-		stb = (SourceTypeBinding)tb;
-		MethodBinding[] mbs = stb.getMethods(decA.getAnnotationMethod().toCharArray());
+		SourceTypeBinding stb = (SourceTypeBinding)tb;
+		MethodBinding[]	mbs = stb.getMethods(decA.getAnnotationMethod().toCharArray());
 		long abits = mbs[0].getAnnotationTagBits(); // ensure resolved
 		TypeDeclaration typeDecl = ((SourceTypeBinding)mbs[0].declaringClass).scope.referenceContext;
 		AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);

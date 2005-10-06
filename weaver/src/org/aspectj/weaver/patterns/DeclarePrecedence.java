@@ -96,7 +96,7 @@ public class DeclarePrecedence extends Declare {
     		if (exactType == ResolvedType.MISSING) continue;
     		
     		// Cannot do a dec prec specifying a non-aspect types unless suffixed with a '+'
-    		if (!exactType.isAspect() && !pi.isIncludeSubtypes()) {
+    		if (!exactType.isAspect() && !pi.isIncludeSubtypes() && !exactType.isTypeVariableReference()) {
     			scope.getWorld().showMessage(IMessage.ERROR,
     					WeaverMessages.format(WeaverMessages.CLASSES_IN_PRECEDENCE,exactType.getName()),
 						pi.getSourceLocation(),null);

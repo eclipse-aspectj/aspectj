@@ -131,7 +131,7 @@ public class CrosscuttingMembers {
 		} else if (declare instanceof DeclareAnnotation) {
 		    // FIXME asc perf Possible Improvement. Investigate why this is called twice in a weave ?
 			DeclareAnnotation da = (DeclareAnnotation)declare;
-			da.setAspect(this.inAspect);
+			if (da.getAspect() == null) da.setAspect(this.inAspect);
 			if (da.isDeclareAtType()) {
 				declareAnnotationsOnType.add(da);	
 			} else if (da.isDeclareAtField()) {

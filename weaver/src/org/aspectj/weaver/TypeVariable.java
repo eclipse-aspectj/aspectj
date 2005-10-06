@@ -42,7 +42,8 @@ public class TypeVariable {
 	/**
 	 * What kind of element declared this type variable?
 	 */
-	private int declaringElementKind = TYPE;
+	private int declaringElementKind = UNKNOWN;
+	public static final int UNKNOWN = -1;
 	public static final int METHOD  = 1;
 	public static final int TYPE    = 2;
 	private TypeVariableDeclaringElement declaringElement;
@@ -109,6 +110,47 @@ public class TypeVariable {
 		if (beingResolved) { return; } // avoid spiral of death
 		beingResolved = true;
 		if (isResolved) return;
+
+		TypeVariable resolvedTVar = null;
+
+		if (declaringElement != null) {
+			// resolve by finding the real type var that we refer to...
+			if (declaringElementKind == TYPE) {
+				UnresolvedType declaring = (UnresolvedType) declaringElement;
+				ReferenceType rd = (ReferenceType) declaring.resolve(inSomeWorld);
+				TypeVariable[] tVars = rd.getTypeVariables();
+				for (int i = 0; i < tVars.length; i++) {
+					if (tVars[i].getName().equals(getName())) {
+						resolvedTVar = tVars[i];
+						break;
+					}
+				}
+			} else {
+				// look for type variable on method...
+				ResolvedMember declaring = (ResolvedMember) declaringElement;
+				UnresolvedType[] tvrts = declaring.getTypeVariables();
+				for (int i = 0; i < tvrts.length; i++) {
+					if (tvrts[i].isTypeVariableReference()) {
+						TypeVariableReferenceType tvrt = (TypeVariableReferenceType) tvrts[i].resolve(inSomeWorld);
+						TypeVariable tv = tvrt.getTypeVariable();
+						if (tv.getName().equals(getName())) resolvedTVar = tv;
+					}
+				}			
+			}
+			
+			if (resolvedTVar == null) {
+				// well, this is bad... we didn't find the type variable on the member
+				// could be a separate compilation issue...
+				// should issue message, this is a workaround to get us going...
+				resolvedTVar = this;				
+			}
+		} else {
+			resolvedTVar = this;
+		}
+				
+		upperBound = resolvedTVar.upperBound;
+		lowerBound = resolvedTVar.lowerBound;
+		additionalInterfaceBounds = resolvedTVar.additionalInterfaceBounds;
 		
 		upperBound = upperBound.resolve(inSomeWorld);
 		if (lowerBound != null) lowerBound = lowerBound.resolve(inSomeWorld);
@@ -258,6 +300,11 @@ public class TypeVariable {
 
 	public void setDeclaringElement(TypeVariableDeclaringElement element) {
 		this.declaringElement = element;
+		if (element instanceof UnresolvedType) {
+			this.declaringElementKind = TYPE;
+		} else {
+			this.declaringElementKind = METHOD;
+		}
 	}
 	
 	public TypeVariableDeclaringElement getDeclaringElement() {

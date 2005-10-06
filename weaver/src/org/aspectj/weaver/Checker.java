@@ -29,7 +29,11 @@ public class Checker extends ShadowMunger {
 		super(deow.getPointcut(), deow.getStart(), deow.getEnd(), deow.getSourceContext());
 		this.msg = deow.getMessage();
 		this.isError = deow.isError();
-	}		 
+	}		
+	
+	private Checker(Pointcut pc, int start, int end, ISourceContext context) {
+		super(pc,start,end,context);
+	}
 
     public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
         pointcut = pointcut.concretize(fromType, getDeclaringType(), 0, this);
@@ -42,6 +46,17 @@ public class Checker extends ShadowMunger {
 
 	public void implementOn(Shadow shadow) {
 		throw new RuntimeException("illegal state");
+	}
+	
+	public ShadowMunger parameterizeWith(Map typeVariableMap) {
+		Checker ret = new Checker(
+							getPointcut().parameterizeWith(typeVariableMap),
+							getStart(),
+							getEnd(),
+							this.sourceContext);
+		ret.msg = this.msg;
+		ret.isError = this.isError;
+		return ret;
 	}
 
 	public boolean match(Shadow shadow, World world) {

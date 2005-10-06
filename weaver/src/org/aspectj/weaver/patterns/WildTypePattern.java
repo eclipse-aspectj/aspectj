@@ -531,12 +531,16 @@ public class WildTypePattern extends TypePattern {
 				typeParameters.parameterizeWith(typeVariableMap)
 			);
 		ret.annotationPattern = this.annotationPattern.parameterizeWith(typeVariableMap);
-		ret.additionalInterfaceBounds = new TypePattern[additionalInterfaceBounds.length];
-		for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-			ret.additionalInterfaceBounds[i] = additionalInterfaceBounds[i].parameterizeWith(typeVariableMap);
+		if (additionalInterfaceBounds == null) {
+			ret.additionalInterfaceBounds = null;
+		} else {
+			ret.additionalInterfaceBounds = new TypePattern[additionalInterfaceBounds.length];
+			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				ret.additionalInterfaceBounds[i] = additionalInterfaceBounds[i].parameterizeWith(typeVariableMap);
+			}
 		}
-		ret.upperBound = upperBound.parameterizeWith(typeVariableMap);
-		ret.lowerBound = lowerBound.parameterizeWith(typeVariableMap);
+		ret.upperBound = upperBound != null ? upperBound.parameterizeWith(typeVariableMap) : null;
+		ret.lowerBound = lowerBound != null ? lowerBound.parameterizeWith(typeVariableMap) : null;
 		ret.isGeneric = isGeneric;
 		ret.knownMatches = knownMatches;
 		ret.importedPrefixes = importedPrefixes;

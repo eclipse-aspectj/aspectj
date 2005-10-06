@@ -196,7 +196,9 @@ public class EclipseFactory {
 		}
 		// first piece of generics support!
 		if (binding instanceof TypeVariableBinding) {
-			return fromTypeVariableBinding((TypeVariableBinding)binding);
+			TypeVariableBinding tb = (TypeVariableBinding) binding;
+			UnresolvedTypeVariableReferenceType utvrt = (UnresolvedTypeVariableReferenceType) fromTypeVariableBinding(tb);
+			return utvrt;
 		}
 		
 		// handle arrays since the component type may need special treatment too...

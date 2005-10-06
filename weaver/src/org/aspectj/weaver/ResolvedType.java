@@ -635,7 +635,27 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			ShadowMunger munger = methods[i].getAssociatedShadowMunger();
 			if (munger != null) {
 				if (this.isParameterizedType()) {
-					munger.setPointcut(munger.getPointcut().parameterizeWith(typeVariableMap));
+					//munger.setPointcut(munger.getPointcut().parameterizeWith(typeVariableMap));
+					munger = munger.parameterizeWith(typeVariableMap);
+					if (munger instanceof Advice) {
+						Advice advice = (Advice) munger;
+						// update to use the parameterized signature...
+						UnresolvedType[] ptypes = methods[i].getGenericParameterTypes()	;
+						UnresolvedType[] newPTypes = new UnresolvedType[ptypes.length];
+						for (int j = 0; j < ptypes.length; j++) {
+							if (ptypes[j] instanceof TypeVariableReferenceType) {
+								TypeVariableReferenceType tvrt = (TypeVariableReferenceType) ptypes[j];
+								if (typeVariableMap.containsKey(tvrt.getTypeVariable().getName())) {
+									newPTypes[j] = (UnresolvedType) typeVariableMap.get(tvrt.getTypeVariable().getName());
+								} else {
+									newPTypes[j] = ptypes[j];
+								}
+							} else {
+								newPTypes[j] = ptypes[j];
+							}
+						}
+						advice.setBindingParameterTypes(newPTypes);
+					}
 				}
 				munger.setDeclaringType(this);
 				l.add(munger);

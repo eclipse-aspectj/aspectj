@@ -14,6 +14,7 @@
 package org.aspectj.weaver;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.ISourceLocation;
@@ -62,6 +63,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     public boolean match(Shadow shadow, World world) {
     	return pointcut.match(shadow).maybeTrue();
     }
+    
+    public abstract ShadowMunger parameterizeWith(Map typeVariableMap); 
     
 	public int fallbackCompareTo(Object other) {
 		return toString().compareTo(toString());

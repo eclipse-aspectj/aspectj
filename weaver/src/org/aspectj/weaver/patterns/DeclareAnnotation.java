@@ -112,15 +112,20 @@ public class DeclareAnnotation extends Declare {
 		if (sigPattern != null) {
 			sigPattern = sigPattern.resolveBindings(scope,Bindings.NONE);
 		}
+		this.containingAspect = scope.getEnclosingType();
 	}
 
 	public Declare parameterizeWith(Map typeVariableBindingMap) {
-		Declare ret;
+		DeclareAnnotation ret;
 		if (this.kind == AT_TYPE) {
 			ret = new DeclareAnnotation(kind,this.typePattern.parameterizeWith(typeVariableBindingMap));
 		} else {
 			ret = new DeclareAnnotation(kind, this.sigPattern.parameterizeWith(typeVariableBindingMap));
 		}
+		ret.annotationMethod = this.annotationMethod;
+		ret.annotationString = this.annotationString;
+		ret.containingAspect = this.containingAspect;
+		ret.annotation = this.annotation;
 		ret.copyLocationFrom(this);
 		return ret;
 	}

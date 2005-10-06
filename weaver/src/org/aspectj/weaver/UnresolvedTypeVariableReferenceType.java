@@ -11,6 +11,10 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * @author colyer
  * Represents a type variable encountered in the Eclipse Source world,
@@ -32,7 +36,7 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 	
 	// only used when resolving circular refs...
 	public void setTypeVariable(TypeVariable aTypeVariable) {
-		this.signature = aTypeVariable.getUpperBound().getSignature();
+		this.signature = "T" + aTypeVariable.getName() + ";"; //aTypeVariable.getUpperBound().getSignature();
 		this.typeVariable = aTypeVariable;
 	}
 	
@@ -62,6 +66,35 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 			return "<type variable not set!>";
 		} else {
 			return "T" + typeVariable.getName() + ";";
+		}
+	}
+	
+	public void write(DataOutputStream s) throws IOException {
+		super.write(s);
+		TypeVariableDeclaringElement tvde = typeVariable.getDeclaringElement();
+		if (tvde == null) {
+			s.writeInt(TypeVariable.UNKNOWN);
+		} else {			
+			s.writeInt(typeVariable.getDeclaringElementKind());
+			if (typeVariable.getDeclaringElementKind() == TypeVariable.TYPE) {
+				((UnresolvedType)tvde).write(s);
+			} else if (typeVariable.getDeclaringElementKind() == TypeVariable.METHOD){
+				// it's a method
+				((ResolvedMember)tvde).write(s);
+			}
+		}
+	}
+	
+	public static void readDeclaringElement(DataInputStream s, UnresolvedTypeVariableReferenceType utv)
+	throws IOException {
+		int kind = s.readInt();
+		utv.typeVariable.setDeclaringElementKind(kind);
+		if (kind == TypeVariable.TYPE) {
+			utv.typeVariable.setDeclaringElement(UnresolvedType.read(s));
+		} else if (kind == TypeVariable.METHOD) {
+			// it's a method
+			ResolvedMember rm = ResolvedMemberImpl.readResolvedMember(new VersionedDataInputStream(s),null);
+			utv.typeVariable.setDeclaringElement(rm);
 		}
 	}
 
