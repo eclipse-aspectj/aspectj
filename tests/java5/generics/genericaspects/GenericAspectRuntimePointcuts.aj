@@ -18,48 +18,54 @@ abstract aspect GA<P,Q,A extends Annotation> {
 	 */
 	
 	before(P p, Q q) : cflow(execution(* P.*(..)) && this(p)) && set(Q *) && args(q) {
-		System.out.println("cflow-ok " + p + " " + q);
+		System.out.println("cflow-ok " + p + " " + q + " " + thisJoinPoint);
 	}
 	
-	before(A a) : execution(* *(..)) && @annotation(a) {
-		System.out.println("@annotation-ok " + a);
+	before(A a) : execution(* *(..)) && @annotation(a) && !execution(* toString()){
+		System.out.println("@annotation-ok " + a + " " + thisJoinPoint);
 	}
 	
-	before(A a) : @args(a) {
-		System.out.println("@args-ok " + a);
+	before(A a) : execution(* *(..)) && @args(a) && !execution(* toString()){
+		System.out.println("@args-ok " + a + " " + thisJoinPoint);
 	}
 	
-	before(P p) : args(..,p) {
-		System.out.println("args-ok " + p);
+	before(P p) : execution(* *(..)) && args(..,p) && !execution(* toString()){
+		System.out.println("args-ok " + p + " " + thisJoinPoint);
 	}
 	
-	before(Q q) : this(q) && execution(* *(..)) {
-		System.out.println("this-ok " + q);
+	before(Q q) : this(q) && execution(* *(..)) && !execution(* toString()){
+		System.out.println("this-ok " + q + " " + thisJoinPoint);
 	}
 	
-	before(P p) : target(p) && call(* *(..)) {
-		System.out.println("target-ok " + p);
+	before(P p) : target(p) && execution(* *(..)) && !execution(* toString()){
+		System.out.println("target-ok " + p + " " + thisJoinPoint);
 	}
 	
-	before(A a) : @this(a) && execution(* *(..)) {
-		System.out.println("@this-ok " + a);
+	before(A a) : @this(a) && execution(* *(..)) && !execution(* toString()){
+		System.out.println("@this-ok " + a + " " + thisJoinPoint);
 	}
 	
-	before(A a) : @target(a) && call(* *(..)) {
-		System.out.println("@target-ok " + a);
+	before(A a) : @target(a) && execution(* *(..)) && !execution(* toString()){
+		System.out.println("@target-ok " + a + " " + thisJoinPoint);
 	}
 	
-	before(A a) : @within(a) && execution(* *(..)) {
-		System.out.println("@within-ok " + a);
+	before(A a) : @within(a) && execution(* *(..)) && !execution(* toString()){
+		System.out.println("@within-ok " + a + " " + thisJoinPoint);
 	}
 	
 	before(A a) : @withincode(a) && get(* *) {
-		System.out.println("@withincode-ok " + a);
+		System.out.println("@withincode-ok " + a + " " + thisJoinPoint);
 	}
 }
 
-aspect GenericAspectRuntimePointcuts extends GA<X,Y,MyAnnotation> {
-	
+aspect Sub extends GA<X,Y,MyAnnotation> {
+
+	before(MyAnnotation a) : execution(* bar(..)) && @annotation(a) && !execution(* toString()){
+		System.out.println("@annotation-ok-sub " + a + " " + thisJoinPoint);
+	}
+}
+
+public class GenericAspectRuntimePointcuts {
 	public static void main(String[] s) {
 		X x = new X();
 		Y y = new Y();
@@ -86,6 +92,7 @@ class X {
 	@MyAnnotation("bar")
 	void bar() {}
 	
+	public String toString() { return "an X"; }
 }
 
 @MyAnnotation("on Y")
@@ -96,4 +103,6 @@ class Y {
 	
 	@MyAnnotation
 	X bar() { return this.x; }
+	
+	public String toString() { return "a Y"; }
 }

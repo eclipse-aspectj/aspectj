@@ -22,7 +22,7 @@ Pointcut types:
     - Or
     - Not
     
-  * test before advice with
+  * test before advice with                    DONE
     - CflowPointcut
     - annotation
     - args annotation
@@ -35,18 +35,18 @@ Pointcut types:
     - @withincode
     - parameter binding
     
-  * pointcut in abstract class
+  * pointcut in generic class                  DONE
     - ref with parameterized type
     - ref without parameterized type (error)
     
 Declares:
 
-  * declare warning / error (covered above)
-  * declare parents
-  * declare soft
-  * declare precedence
-  * declare @type
-  * declare @field / method / cons
+  * declare warning / error (covered above)  DONE
+  * declare parents                          DONE
+  * declare soft                             DONE
+  * declare precedence                       DONE
+  * declare @type	                         DONE
+  * declare @field / method / cons           DONE
   
 AnnotationPatternNodes:
 
@@ -65,9 +65,9 @@ Type pattern Nodes:
   * HasMember
   * Exact
   * Wild
-  * type variables as type parameters
+  * type variables as type parameters         DONE
 
-Multi-level hierarchy:
+Multi-level hierarchy:                        DONE
 
   * test 3-deep with partial parameterization in middle
   

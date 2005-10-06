@@ -2865,6 +2865,106 @@
      <compile files="PR94086.aj" options="-1.5"/>
    </ajc-test>
    
+   <!-- generic abstract aspects... -->
+   
+   <ajc-test dir="java5/generics/genericaspects" title="static pointcut parameterization suite">
+     <compile files="GenericAspectPointcuts.aj" options="-1.5">
+     	<message kind="warning" line="62" text="kinded-returning-ok"/>
+     	<message kind="warning" line="52" text="kinded-declaring-ok"/>
+     	<message kind="warning" line="67" text="kinded-declaring-ok"/>
+     	<message kind="warning" line="50" text="kinded-params-ok"/>
+     	<message kind="warning" line="56" text="kinded-throws-ok"/>
+     	<message kind="warning" line="64" text="and-ok"/>
+     	<message kind="warning" line="60" text="or-ok"/>
+     	<message kind="warning" line="64" text="or-ok"/>
+     	<message kind="warning" line="67" text="or-ok"/>
+     	<message kind="warning" line="1" text="not-ok"/>
+     	<message kind="warning" line="42" text="not-ok"/>
+     	<message kind="warning" line="72" text="not-ok"/>
+     	<message kind="warning" line="59" text="within-ok"/>
+     	<message kind="warning" line="64" text="withincode-ok"/>
+     	<message kind="warning" line="53" text="handler-ok"/>
+     </compile>
+   </ajc-test>
+ 
+    <ajc-test dir="java5/generics/genericaspects" title="dynamic pointcut parameterization suite">
+     <compile files="GenericAspectRuntimePointcuts.aj" options="-1.5">
+     </compile>
+     <run class="GenericAspectRuntimePointcuts">
+       <stdout>
+         <line text="target-ok an X execution(void X.foo())"/>
+         <line text="@this-ok @MyAnnotation(value=my-value) execution(void X.foo())"/>
+         <line text="@target-ok @MyAnnotation(value=my-value) execution(void X.foo())"/>
+         <line text="@within-ok @MyAnnotation(value=my-value) execution(void X.foo())"/>
+         <line text="cflow-ok an X a Y set(Y X.y)"/>
+         <line text="@annotation-ok-sub @MyAnnotation(value=bar) execution(void X.bar())"/>
+         <line text="@annotation-ok @MyAnnotation(value=bar) execution(void X.bar())"/>
+         <line text="target-ok an X execution(void X.bar())"/>
+         <line text="@this-ok @MyAnnotation(value=my-value) execution(void X.bar())"/>
+         <line text="@target-ok @MyAnnotation(value=my-value) execution(void X.bar())"/>
+         <line text="@within-ok @MyAnnotation(value=my-value) execution(void X.bar())"/>
+         <line text="@args-ok @MyAnnotation(value=my-value) execution(void Y.foo(X))"/>
+         <line text="args-ok an X execution(void Y.foo(X))"/>
+         <line text="this-ok a Y execution(void Y.foo(X))"/>
+         <line text="@this-ok @MyAnnotation(value=on Y) execution(void Y.foo(X))"/>
+         <line text="@target-ok @MyAnnotation(value=on Y) execution(void Y.foo(X))"/>
+         <line text="@within-ok @MyAnnotation(value=on Y) execution(void Y.foo(X))"/>
+         <line text="@annotation-ok-sub @MyAnnotation(value=my-value) execution(X Y.bar())"/>
+         <line text="@annotation-ok @MyAnnotation(value=my-value) execution(X Y.bar())"/>
+         <line text="this-ok a Y execution(X Y.bar())"/>
+         <line text="@this-ok @MyAnnotation(value=on Y) execution(X Y.bar())"/> 
+         <line text="@target-ok @MyAnnotation(value=on Y) execution(X Y.bar())"/>
+         <line text="@within-ok @MyAnnotation(value=on Y) execution(X Y.bar())"/>
+         <line text="@withincode-ok @MyAnnotation(value=my-value) get(X Y.x)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+    <ajc-test dir="java5/generics/genericaspects" title="reference to pointcut in generic class">
+     <compile files="PointcutsInGenericClasses.aj" options="-1.5">
+         <message kind="warning" line="16" text="a match"/>
+     </compile>
+     </ajc-test>
+
+    <ajc-test dir="java5/generics/genericaspects" title="reference to non-parameterized pointcut in generic class">
+     <compile files="PointcutsInGenericClasses2.aj" options="-1.5">
+         <message kind="error" line="10" text="cannot use a raw type reference to refer to a pointcut in a generic type (use a parameterized reference instead)"/>
+     </compile>
+     </ajc-test>
+
+    <ajc-test dir="java5/generics/genericaspects" title="declare parents parameterized">
+     <compile files="DecPGenericTest.aj" options="-1.5">
+         <message kind="warning" line="16" text="success"/>
+     </compile>
+     </ajc-test>     
+     
+    <ajc-test dir="java5/generics/genericaspects" title="declare precedence parameterized">
+     <compile files="DecPrecedenceGenericTest.aj" options="-1.5 -Xdev:Pinpoint">
+     </compile>
+     <run class="DecPrecedenceGenericTest">
+         <stdout>
+             <line text="A1"/>
+             <line text="A2"/>
+         </stdout>
+     </run>
+     </ajc-test>     
+
+    <ajc-test dir="java5/generics/genericaspects" title="declare annotation parameterized">
+     <compile files="DecAnnGenericTest.aj" options="-1.5">
+         <message kind="warning" line="18" text="@type ok"/>
+         <message kind="warning" line="20" text="@field ok"/>
+         <message kind="warning" line="22" text="@constructor ok"/>
+         <message kind="warning" line="24" text="@method ok"/>
+     </compile>
+     </ajc-test>  
+
+    <ajc-test dir="java5/generics/genericaspects" title="multi-level generic abstract aspects">
+     <compile files="MultiLevelGenericTest.aj" options="-1.5">
+         <message kind="warning" line="23" text="base match"/>
+         <message kind="warning" line="23" text="middle match"/>
+         <message kind="warning" line="23" text="top match"/>
+     </compile>
+     </ajc-test> 
    <!-- generic bugs -->
    
    <ajc-test dir="java5/generics/bugs" title="ITD method with generic arg">
