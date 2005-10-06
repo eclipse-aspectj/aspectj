@@ -99,6 +99,7 @@
             <fileset dir="${aspectj.modules.dir}/taskdefs/src" />
             <fileset dir="${aspectj.modules.dir}/util/src" />
             <fileset dir="${aspectj.modules.dir}/weaver/src" />
+            <fileset dir="${aspectj.modules.dir}/weaver5/java5-src" />
         </zip>
         <build-eclipse-plugin name="${name.source}" />
     </target>
