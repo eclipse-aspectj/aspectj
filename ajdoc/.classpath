@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/asm"/>
 	<classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
 	<classpathentry kind="src" path="/bridge"/>
@@ -9,5 +8,6 @@
 	<classpathentry kind="src" path="testsrc"/>
 	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
 	<classpathentry kind="var" path="JAVA_HOME/lib/tools.jar"/>
+	<classpathentry kind="var" path="JRE14_LIB"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
