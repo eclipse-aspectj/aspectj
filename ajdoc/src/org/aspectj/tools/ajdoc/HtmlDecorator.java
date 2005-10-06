@@ -660,8 +660,17 @@ class HtmlDecorator {
     }
 
     static String generateHREFName(IProgramElement decl) {
-        String hrefLink = decl.toLabelString().replace("\"", "quot;"); // !!!
-        return hrefLink;
+        //String hrefLink = decl.toLabelString().replace("\"", "quot;"); // !!!
+        StringBuffer hrefLinkBuffer = new StringBuffer();
+        char[] declChars =  decl.toLabelString().toCharArray();
+        for (int i = 0; i < declChars.length; i++) {
+        	if (declChars[i] == '"') {
+        		hrefLinkBuffer.append("quot;");
+        	} else {
+        		hrefLinkBuffer.append(declChars[i]);
+        	}
+		}
+        return hrefLinkBuffer.toString();
     }
 
 
