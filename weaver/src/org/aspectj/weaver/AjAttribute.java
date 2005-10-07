@@ -16,10 +16,12 @@ package org.aspectj.weaver;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.Version;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
@@ -206,11 +208,12 @@ public abstract class AjAttribute {
 		public static short WEAVER_VERSION_MINOR_AJ121 = 0;
 		
 		// These are the weaver major/minor numbers for AspectJ 1.5.0
+		public static short WEAVER_VERSION_MAJOR_AJ150M4 = 3; 
 		public static short WEAVER_VERSION_MAJOR_AJ150 = 2;
 		public static short WEAVER_VERSION_MINOR_AJ150 = 0;
 		
 		// These are the weaver major/minor versions for *this* weaver
-		private static short CURRENT_VERSION_MAJOR      = WEAVER_VERSION_MAJOR_AJ150;
+		private static short CURRENT_VERSION_MAJOR      = WEAVER_VERSION_MAJOR_AJ150M4;
 		private static short CURRENT_VERSION_MINOR      = WEAVER_VERSION_MINOR_AJ150;
 		
 		public static final WeaverVersionInfo UNKNOWN = 
@@ -219,6 +222,8 @@ public abstract class AjAttribute {
 		// These are the versions read in from a particular class file.
 		private short major_version; 
 		private short minor_version;
+		
+		private long buildstamp = Version.NOTIME;
 		
 		public String getNameString() {
 			return AttributeName;
@@ -238,13 +243,22 @@ public abstract class AjAttribute {
 		public void write(DataOutputStream s) throws IOException {
 			s.writeShort(CURRENT_VERSION_MAJOR);
 			s.writeShort(CURRENT_VERSION_MINOR);
+			s.writeLong(Version.time); // build used to construct the class...
 		}
 		
 		public static WeaverVersionInfo read(VersionedDataInputStream s) throws IOException {
 			short major = s.readShort();
 			short minor = s.readShort();
 			WeaverVersionInfo wvi = new WeaverVersionInfo(major,minor);
-//			s.setVersion(wvi);		
+			if (s.getMajorVersion()>=WEAVER_VERSION_MAJOR_AJ150M4) {
+				long stamp = 0;				
+				try {
+					stamp = s.readLong();
+					wvi.setBuildstamp(stamp);
+				} catch (EOFException eof) {
+					// didnt find that build stamp - its not the end of the world
+				}
+			}
 			return wvi;
 		}
 		
@@ -262,6 +276,15 @@ public abstract class AjAttribute {
 		
 		public static short getCurrentWeaverMinorVersion() {
 			return CURRENT_VERSION_MINOR;
+		}
+		
+
+		public void setBuildstamp(long stamp) {
+			this.buildstamp = stamp;
+		}
+		
+		public long getBuildstamp() {
+			return buildstamp;
 		}
 		
 		public String toString() {

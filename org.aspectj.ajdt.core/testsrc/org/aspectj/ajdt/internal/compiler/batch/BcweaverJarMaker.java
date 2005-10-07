@@ -217,6 +217,7 @@ public class BcweaverJarMaker {
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
+		args.add("-XnotReweavable");
 		args.add("-outjar");
 		args.add("../weaver/testdata/ltw-woven.jar");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/LTWHelloWorld.java");

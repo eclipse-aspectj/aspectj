@@ -378,8 +378,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		
 		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
 			
-			boolean isvarargs = s.readBoolean();
-			if (isvarargs) m.setVarargsMethod();
+			if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150M4) { 
+				boolean isvarargs = s.readBoolean();
+				if (isvarargs) m.setVarargsMethod();
+			}
 
 			int tvcount = s.readInt();
 			if (tvcount!=0) {

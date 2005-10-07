@@ -26,6 +26,7 @@ public class VersionedDataInputStream extends DataInputStream {
 	
 	public int getMajorVersion() { return version.getMajorVersion(); }
 	public int getMinorVersion() { return version.getMinorVersion(); }
+	public long getBuildstamp() { return version.getBuildstamp(); }
 	
 	public void setVersion(WeaverVersionInfo version) { this.version = version; }
 }
