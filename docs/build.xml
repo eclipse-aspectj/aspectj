@@ -241,6 +241,7 @@
             <fileset dir="${docs.dist.dir}/doc" includes="*api/*" />
         </delete>
         <aspectj-javadoc module="runtime" />
+        <aspectj-javadoc module="aspectj5rt"/>
         <aspectj-javadoc module="weaver" />
     </target>
 
