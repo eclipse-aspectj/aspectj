@@ -10,13 +10,12 @@
  * 
  *******************************************************************************/
 
-import org.aspectj.testing.util.TestUtil;
-import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.tools.PointcutExpressionTest;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.aspectj.testing.util.TestUtil;
+import org.aspectj.weaver.tools.PointcutExpressionTest;
 
 /**
  */
