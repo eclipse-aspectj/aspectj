@@ -17,6 +17,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Set;
 
+import org.aspectj.bridge.ISourceLocation;
+
 public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	public NewMethodTypeMunger(
 		ResolvedMember signature,
@@ -37,13 +39,15 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		kind.write(s);
 		signature.write(s);
 		writeSuperMethodsCalled(s);
-		if (ResolvedTypeMunger.persistSourceLocation) writeSourceLocation(s);
+		writeSourceLocation(s);
 	}
 	
 	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		ResolvedTypeMunger munger = new NewMethodTypeMunger(
-				ResolvedMemberImpl.readResolvedMember(s, context),readSuperMethodsCalled(s));
-		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
+		ResolvedMemberImpl rmi = ResolvedMemberImpl.readResolvedMember(s, context);
+		Set superMethodsCalled = readSuperMethodsCalled(s);
+		ISourceLocation sLoc = readSourceLocation(s);
+		ResolvedTypeMunger munger = new NewMethodTypeMunger(rmi,superMethodsCalled);
+		if (sLoc!=null) munger.setSourceLocation(sLoc);
 		return munger;
 	}
 	

@@ -33,13 +33,13 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		kind.write(s);
 		signature.write(s);
 		writeSuperMethodsCalled(s);
-		if (ResolvedTypeMunger.persistSourceLocation) writeSourceLocation(s);
+		writeSourceLocation(s);
 	}
 
 	public static ResolvedTypeMunger readField(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ResolvedTypeMunger munger = new NewFieldTypeMunger(
 			ResolvedMemberImpl.readResolvedMember(s, context),readSuperMethodsCalled(s));
-		if (ResolvedTypeMunger.persistSourceLocation) munger.setSourceLocation(readSourceLocation(s));
+		munger.setSourceLocation(readSourceLocation(s));
 		return munger;
 	}
 	
