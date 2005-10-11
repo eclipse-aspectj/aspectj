@@ -64,7 +64,7 @@
       &ajdoc;        
     </sect1>
     <sect1 id="aj-ref-top">
-        <title><literal>ajdoc</literal>, the AspectJ load-time weaving script</title>
+        <title><literal>aj</literal>, the AspectJ load-time weaving script</title>
         <para><literal>aj</literal> launches programs,
             configuring basic load-time weaving.</para>
       &aj;        
