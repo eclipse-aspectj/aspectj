@@ -35,7 +35,7 @@
         <refsect2>
             <title>Examples</title>
             
-            <example id="simpleexample">
+            <example id="simpleajexample">
                 <title>A simple example</title>
                 
                 <para>Use ajc to build a library, then weave at load time</para>
