@@ -52,7 +52,7 @@ public class Aj implements ClassPreProcessor {
      * @param className
      * @param bytes
      * @param loader
-     * @return
+     * @return weaved bytes
      */
     public byte[] preProcess(String className, byte[] bytes, ClassLoader loader) {
         //TODO AV needs to doc that
@@ -85,16 +85,54 @@ public class Aj implements ClassPreProcessor {
         private static Map weavingAdaptors = new WeakHashMap();
 
         static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
-            synchronized(loader) {//FIXME AV - temp fix for #99861
-                synchronized (weavingAdaptors) {
-                    WeavingAdaptor weavingAdaptor = (WeavingAdaptor) weavingAdaptors.get(loader);
-                    if (weavingAdaptor == null) {
-                        weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
-                        weavingAdaptors.put(loader, weavingAdaptor);
-                    }
-                    return weavingAdaptor;
+            ExplicitlyInitializedClassLaoderWeavingAdaptor adaptor = null;
+            synchronized(weavingAdaptors) {
+                adaptor = (ExplicitlyInitializedClassLaoderWeavingAdaptor) weavingAdaptors.get(loader);
+                if (adaptor == null) {
+                    // create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
+                    // within the synchronized block
+                    ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
+                    adaptor = new ExplicitlyInitializedClassLaoderWeavingAdaptor(weavingAdaptor);
+                    weavingAdaptors.put(loader, adaptor);
                 }
             }
+            // perform the initialization
+            return adaptor.getWeavingAdaptor(loader, weavingContext);
+
+
+            // old version
+//            synchronized(loader) {//FIXME AV - temp fix for #99861
+//                synchronized (weavingAdaptors) {
+//                    WeavingAdaptor weavingAdaptor = (WeavingAdaptor) weavingAdaptors.get(loader);
+//                    if (weavingAdaptor == null) {
+//                        weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
+//                        weavingAdaptors.put(loader, weavingAdaptor);
+//                    }
+//                    return weavingAdaptor;
+//                }
+//            }
+        }
+    }
+
+    static class ExplicitlyInitializedClassLaoderWeavingAdaptor {
+        private final ClassLoaderWeavingAdaptor weavingAdaptor;
+        private boolean isInitialized;
+
+        public ExplicitlyInitializedClassLaoderWeavingAdaptor(ClassLoaderWeavingAdaptor weavingAdaptor) {
+            this.weavingAdaptor = weavingAdaptor;
+            this.isInitialized = false;
+        }
+
+        private void initialize(ClassLoader loader, IWeavingContext weavingContext) {
+            if (!isInitialized) {
+                isInitialized = true;
+                weavingAdaptor.initialize(loader, weavingContext);
+            }
+        }
+
+        public ClassLoaderWeavingAdaptor getWeavingAdaptor(ClassLoader loader, IWeavingContext weavingContext) {
+            initialize(loader, weavingContext);
+            return weavingAdaptor;
         }
     }
 

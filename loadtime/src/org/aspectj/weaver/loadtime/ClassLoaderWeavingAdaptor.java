@@ -58,7 +58,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private IWeavingContext weavingContext;
 
     public ClassLoaderWeavingAdaptor(final ClassLoader loader, IWeavingContext wContext) {
-        super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
+        super(null);
+    }
+    
+    void initialize(final ClassLoader loader, IWeavingContext wContext) {
+        //super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
         this.generatedClassHandler = new GeneratedClassHandler() {
             /**
              * Callback when we need to define a Closure in the JVM
