@@ -289,12 +289,14 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 	
 /*	public void testPr111779() {
+		super.VERBOSE=true;
 		initialiseProject("PR111779");
 		build("PR111779");
 		alter("PR111779","inc1");
 		build("PR111779");
 	}
 */
+
 	
 	// other possible tests:
 	// - memory usage (freemem calls?)

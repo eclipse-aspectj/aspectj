@@ -5024,4 +5024,19 @@
        </stdout>
       </run>
    </ajc-test>
+   
+   <!-- generic ITDs -->
+   
+   <ajc-test dir="java5/generics/itds/design" title="generic itds - design A">
+     <compile files="DesignA.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/design" title="generic itds - design B">
+     <compile files="DesignB.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/design" title="generic itds - design C">
+     <compile files="DesignC.java" options="-1.5"/>
+   </ajc-test>
+   
 </suite>

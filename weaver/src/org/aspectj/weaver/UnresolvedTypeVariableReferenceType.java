@@ -11,7 +11,6 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -41,12 +40,55 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 	}
 	
 	public ResolvedType resolve(World world) {
-		if (typeVariable == null) {
-		    throw new BCException("Cannot resolve this type variable reference, the type variable has not been set!");
+		TypeVariableDeclaringElement typeVariableScope = world.getTypeVariableLookupScope();
+		TypeVariable resolvedTypeVariable = null;
+		TypeVariableReferenceType tvrt    = null;
+		if (typeVariableScope == null) {
+			// throw new BCException("There is no scope in which to lookup type variables!");
+			// SAUSAGES correct thing to do is go bang, but to limp along, lets cope with the scope missing
+			resolvedTypeVariable = typeVariable.resolve(world);
+			tvrt = new TypeVariableReferenceType(resolvedTypeVariable,world);
+		} else {
+		    boolean foundOK = false;
+			resolvedTypeVariable = typeVariableScope.getTypeVariableNamed(typeVariable.getName());
+			// SAUSAGES remove this when the shared type var stuff is sorted
+			if (resolvedTypeVariable == null) {
+				resolvedTypeVariable = typeVariable.resolve(world);
+			} else {
+			  foundOK = true;
+			}
+			tvrt = new TypeVariableReferenceType(resolvedTypeVariable,world);
+			tvrt.fixedUp = foundOK;
 		}
-		typeVariable.resolve(world);
-		return new TypeVariableReferenceType(typeVariable,world);
+		
+		return tvrt;
+//		// SAUSAGES should really be resolved in a scope, or you won't get the type variable you really want!
+//		//throw new BCException("NO - UnresolvedTypeVariableReferenceTypes must be resolved in a type variable scope");
+//		if (typeVariable == null) {
+//		    throw new BCException("Cannot resolve this type variable reference, the type variable has not been set!");
+//		}
+//		typeVariable.resolve(world);
+//		return new TypeVariableReferenceType(typeVariable,world);
 	}
+	
+//	public ResolvedType resolve(World world,TypeVariableDeclaringElement tvde) {
+//		if (typeVariable == null) {
+//			throw new BCException("Cannot resolve this type variable reference, the type variable has not been set!");
+//		}
+//		
+//		// SAUSAGES temporary whilst the ITD logic gets sorted out
+//		if (tvde == null) return new TypeVariableReferenceType(typeVariable.resolve(world),world);
+//		
+//		TypeVariable resolvedTypeVariable = tvde.getTypeVariableNamed(typeVariable.getName());
+//		if (resolvedTypeVariable == null) {
+//			resolvedTypeVariable = typeVariable.resolve(world);
+//			// SAUSAGES put this in once ITDs remember the complex shared type var stuff
+//			// throw new BCException("Could not locate type variable '"+typeVariable.getName()+"' during resolution, scope was: "+tvde);
+//		}
+//		TypeVariableReferenceType tvrt = new TypeVariableReferenceType(resolvedTypeVariable,world);
+//		tvrt.fixedUp = true;
+//		return tvrt;
+//	}
 	
 	public boolean isTypeVariableReference() {
 		return true;
@@ -71,20 +113,8 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 	
 	public void write(DataOutputStream s) throws IOException {
 		super.write(s);
-		TypeVariableDeclaringElement tvde = typeVariable.getDeclaringElement();
-		if (tvde == null) {
-			s.writeInt(TypeVariable.UNKNOWN);
-		} else {			
-			s.writeInt(typeVariable.getDeclaringElementKind());
-			if (typeVariable.getDeclaringElementKind() == TypeVariable.TYPE) {
-				((UnresolvedType)tvde).write(s);
-			} else if (typeVariable.getDeclaringElementKind() == TypeVariable.METHOD){
-				// it's a method
-				((ResolvedMember)tvde).write(s);
-			}
-		}
 	}
-	
+	/*
 	public static void readDeclaringElement(DataInputStream s, UnresolvedTypeVariableReferenceType utv)
 	throws IOException {
 		int kind = s.readInt();
@@ -97,5 +127,5 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 			utv.typeVariable.setDeclaringElement(rm);
 		}
 	}
-
+*/
 }

@@ -22,6 +22,12 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	private TypeVariable typeVariable;
 	private boolean resolvedIfBounds = false;
 	
+	// If 'fixedUp' then the type variable in here is a reference to the real one that may
+	// exist either on a member or a type.  Not fixedUp means that we unpacked a generic
+	// signature and weren't able to fix it up during resolution (didn't quite know enough
+	// at the right time).  Wonder if we can fix it up late?
+	boolean fixedUp = false;
+	
 	public TypeVariableReferenceType(
 			TypeVariable aTypeVariable,
 			World aWorld) {
@@ -62,6 +68,7 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	}
 	
 	public TypeVariable getTypeVariable() {
+		// if (!fixedUp) throw new BCException("ARGH"); // SAUSAGES - fix it up now?
 		return typeVariable;
 	}
 	
@@ -104,17 +111,17 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	
 	public void write(DataOutputStream s) throws IOException {
 		super.write(s);
-		TypeVariableDeclaringElement tvde = typeVariable.getDeclaringElement();
-		if (tvde == null) {
-			s.writeInt(TypeVariable.UNKNOWN);
-		} else {			
-			s.writeInt(typeVariable.getDeclaringElementKind());
-			if (typeVariable.getDeclaringElementKind() == TypeVariable.TYPE) {
-				((UnresolvedType)tvde).write(s);
-			} else if (typeVariable.getDeclaringElementKind() == TypeVariable.METHOD){
-				// it's a method
-				((ResolvedMember)tvde).write(s);
-			}
-		}
+//		TypeVariableDeclaringElement tvde = typeVariable.getDeclaringElement();
+//		if (tvde == null) {
+//			s.writeInt(TypeVariable.UNKNOWN);
+//		} else {			
+//			s.writeInt(typeVariable.getDeclaringElementKind());
+//			if (typeVariable.getDeclaringElementKind() == TypeVariable.TYPE) {
+//				((UnresolvedType)tvde).write(s);
+//			} else if (typeVariable.getDeclaringElementKind() == TypeVariable.METHOD){
+//				// it's a method
+//				((ResolvedMember)tvde).write(s);
+//			}
+//		}
 	}
 }

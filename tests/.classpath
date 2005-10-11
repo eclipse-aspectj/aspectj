@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="/lib/ant/lib/ant-launcher.jar"/>
 	<classpathentry kind="src" path="testsrc"/>
 	<classpathentry kind="var" path="JAVA_HOME/lib/tools.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

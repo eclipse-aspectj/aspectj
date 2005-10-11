@@ -47,7 +47,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
@@ -57,7 +56,6 @@ import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -543,6 +541,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 					needOldStyleWarning = false;
 				}
 				onType.addInterTypeMunger(munger);
+				 /*
 				//TODO: Andy Should be done at weave time.
 				// Unfortunately we can't do it at weave time unless the type mungers remember where
 				// they came from.  Thats why we do it here during complation because at this time
@@ -554,6 +553,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				// AsmRelationshipProvider (see BCELTypeMunger)
 				if (!ResolvedTypeMunger.persistSourceLocation) // Do it up front if we bloody have to
 				 AsmInterTypeRelationshipProvider.getDefault().addRelationship(onType, munger);
+				 */
 			}
 		}
 		
@@ -863,7 +863,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				needFieldsAndMethods,
 				accessRestriction);
 			factory.getWorld().validateType(factory.fromBinding(ret));
-			// if you need the bytes to pass to validate, here they are:ClassFileReader)binaryType).getReferenceBytes()
+			// if you need the bytes to pass to validate, here they are:((ClassFileReader)binaryType).getReferenceBytes()
 			weaveInterTypeDeclarations(ret);			
 			return ret;
 		} finally {

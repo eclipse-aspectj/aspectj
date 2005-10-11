@@ -106,15 +106,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				weaver.getLazyClassGen().getOrCreateWeaverStateInfo(weaver.getReweavableMode());
 			info.addConcreteMunger(this);
 		}
-		// Whilst type mungers aren't persisting their source locations, we add this relationship during
-		// compilation time (see other reference to ResolvedTypeMunger.persist)
-		if (ResolvedTypeMunger.persistSourceLocation) {
-			if (changed && worthReporting) {
-				if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
-			  	  AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());
-				} else {
-			  	  AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());	
-				}
+
+		if (changed && worthReporting) {
+			if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
+		  	  AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());
+			} else {
+		  	  AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());	
 			}
 		}
 		
@@ -894,7 +891,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					boolean matchOK = true;
 					for (int j = 0; j < memberParams.length && matchOK; j++){
 						UnresolvedType memberParam = memberParams[j];
-						UnresolvedType lookingForParam = lookingForParams[j].resolve(aspectType.getWorld());
+						UnresolvedType lookingForParam = lookingForParams[j].resolve(aspectType.getWorld()); 
 						if (lookingForParam.isTypeVariableReference()) lookingForParam = lookingForParam.getUpperBound();
 						if (!memberParam.equals(lookingForParam)){
 							matchOK=false;

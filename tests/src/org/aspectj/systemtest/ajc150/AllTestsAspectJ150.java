@@ -47,6 +47,7 @@ public class AllTestsAspectJ150 {
 		suite.addTest(SuppressedWarnings.suite());
 		suite.addTest(DeclareAnnotationTests.suite());
 		suite.addTest(GenericsTests.suite());
+		suite.addTest(GenericITDsDesign.suite());
 		suite.addTest(AtAjSyntaxTests.suite());
         suite.addTest(AtAjMisuseTests.suite());
         suite.addTest(AtAjLTWTests.suite());

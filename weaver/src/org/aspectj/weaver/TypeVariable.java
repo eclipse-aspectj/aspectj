@@ -11,6 +11,8 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -106,10 +108,10 @@ public class TypeVariable {
 	/**
 	 * resolve all the bounds of this type variable
 	 */
-	public void resolve(World inSomeWorld) {
-		if (beingResolved) { return; } // avoid spiral of death
+	public TypeVariable resolve(World inSomeWorld) {
+		if (beingResolved) { return this; } // avoid spiral of death
 		beingResolved = true;
-		if (isResolved) return;
+		if (isResolved) return this;
 
 		TypeVariable resolvedTVar = null;
 
@@ -128,13 +130,14 @@ public class TypeVariable {
 			} else {
 				// look for type variable on method...
 				ResolvedMember declaring = (ResolvedMember) declaringElement;
-				UnresolvedType[] tvrts = declaring.getTypeVariables();
+				TypeVariable[] tvrts = declaring.getTypeVariables();
 				for (int i = 0; i < tvrts.length; i++) {
-					if (tvrts[i].isTypeVariableReference()) {
-						TypeVariableReferenceType tvrt = (TypeVariableReferenceType) tvrts[i].resolve(inSomeWorld);
-						TypeVariable tv = tvrt.getTypeVariable();
-						if (tv.getName().equals(getName())) resolvedTVar = tv;
-					}
+					if (tvrts[i].getName().equals(getName())) resolvedTVar = tvrts[i];
+//					if (tvrts[i].isTypeVariableReference()) {
+//						TypeVariableReferenceType tvrt = (TypeVariableReferenceType) tvrts[i].resolve(inSomeWorld);
+//						TypeVariable tv = tvrt.getTypeVariable();
+//						if (tv.getName().equals(getName())) resolvedTVar = tv;
+//					}
 				}			
 			}
 			
@@ -155,12 +158,14 @@ public class TypeVariable {
 		upperBound = upperBound.resolve(inSomeWorld);
 		if (lowerBound != null) lowerBound = lowerBound.resolve(inSomeWorld);
 		
-		for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-			additionalInterfaceBounds[i] = additionalInterfaceBounds[i].resolve(inSomeWorld);
+		if (additionalInterfaceBounds!=null) {
+			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				additionalInterfaceBounds[i] = additionalInterfaceBounds[i].resolve(inSomeWorld);
+			}
 		}
-		
 		isResolved = true;
 		beingResolved = false;
+		return this;
 	}
 	
 	/**
@@ -320,4 +325,37 @@ public class TypeVariable {
 		return declaringElementKind;
 	}
 	
+	public void write(DataOutputStream s) throws IOException {
+	// name, upperbound, additionalInterfaceBounds, lowerbound
+		s.writeUTF(name);
+		upperBound.write(s);
+		if (additionalInterfaceBounds==null || additionalInterfaceBounds.length==0) {
+			s.writeInt(0);
+		} else {
+			s.writeInt(additionalInterfaceBounds.length);
+			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				UnresolvedType ibound = additionalInterfaceBounds[i];
+				ibound.write(s);
+			}
+		}
+	}
+	
+	public static TypeVariable read(VersionedDataInputStream s) throws IOException {
+    	
+		//if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			
+		String name = s.readUTF();
+		UnresolvedType ubound = UnresolvedType.read(s);
+		int iboundcount = s.readInt();
+		UnresolvedType[] ibounds = null;
+		if (iboundcount>0) {
+			ibounds = new UnresolvedType[iboundcount];
+			for (int i=0; i<iboundcount; i++) {
+				ibounds[i] = UnresolvedType.read(s);
+			}
+		}
+		
+		TypeVariable newVariable = new TypeVariable(name,ubound,ibounds);
+		return newVariable;		
+    }
 }

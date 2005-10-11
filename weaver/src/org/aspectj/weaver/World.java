@@ -45,6 +45,9 @@ public abstract class World implements Dump.INode {
 	/** handler for cross-reference information produced during the weaving process */
 	private ICrossReferenceHandler xrefHandler = null;
 
+	/** Currently 'active' scope in which to lookup (resolve) typevariable references */
+	private TypeVariableDeclaringElement typeVariableLookupScope;
+	
 	/** The heart of the world, a map from type signatures to resolved types */
     protected TypeMap typeMap = new TypeMap(); // Signature to ResolvedType
 
@@ -329,7 +332,7 @@ public abstract class World implements Dump.INode {
     	// is backed by a simple type rather than a generic type.  This occurs for
     	// inner types of generic types that inherit their enclosing types
     	// type variables.
-    	if (rawType.isSimpleType() && anUnresolvedType.typeParameters.length==0) {
+    	if (rawType.isSimpleType() && (anUnresolvedType.typeParameters==null || anUnresolvedType.typeParameters.length==0)) {
     		rawType.world = this;
     		return rawType; 
     	}
@@ -546,6 +549,15 @@ public abstract class World implements Dump.INode {
     public ICrossReferenceHandler getCrossReferenceHandler() {
     	return this.xrefHandler;
     }
+    
+    public void setTypeVariableLookupScope(TypeVariableDeclaringElement scope) {
+    	this.typeVariableLookupScope = scope;
+    }
+
+    public TypeVariableDeclaringElement getTypeVariableLookupScope() {
+    	return typeVariableLookupScope;
+    }
+
 
 	public List getDeclareParents() {
 		return crosscuttingMembersSet.getDeclareParents();

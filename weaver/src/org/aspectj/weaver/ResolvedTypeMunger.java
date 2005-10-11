@@ -47,8 +47,6 @@ public abstract class ResolvedTypeMunger {
 	// might need serializing the class file for binary weaving.
 	protected List /*String*/ typeVariableToGenericTypeVariableIndex;
 	
-	public static transient boolean persistSourceLocation = true;
-	
 	private Set /* resolvedMembers */ superMethodsCalled = Collections.EMPTY_SET;
 	
 	private ISourceLocation location; // Lost during serialize/deserialize !
@@ -138,6 +136,7 @@ public abstract class ResolvedTypeMunger {
 		
 		Set ret = new HashSet();
 		int n = s.readInt();
+		if (n<0) throw new BCException("Problem deserializing type munger");
 		for (int i=0; i < n; i++) {
 			ret.add(ResolvedMemberImpl.readResolvedMember(s, null));
 		}
@@ -146,7 +145,7 @@ public abstract class ResolvedTypeMunger {
 	
 	protected void writeSuperMethodsCalled(DataOutputStream s) throws IOException {
 		
-		if (superMethodsCalled == null) {
+		if (superMethodsCalled == null || superMethodsCalled.size()==0) {
 			s.writeInt(0);
 			return;
 		}
@@ -163,7 +162,6 @@ public abstract class ResolvedTypeMunger {
 	}
 
 	protected static ISourceLocation readSourceLocation(VersionedDataInputStream s) throws IOException {
-		if (!persistSourceLocation) return null;
 		// Location persistence for type mungers was added after 1.2.1 was shipped...
 		if (s.getMajorVersion()<AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) return null;
 		SourceLocation ret = null;
@@ -196,7 +194,6 @@ public abstract class ResolvedTypeMunger {
 	}
 	
 	protected void writeSourceLocation(DataOutputStream s) throws IOException {	
-		if (!persistSourceLocation) return;
 		ObjectOutputStream oos = new ObjectOutputStream(s);
 		// oos.writeObject(location);
 		oos.writeObject(new Boolean(location!=null));

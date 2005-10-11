@@ -17,7 +17,6 @@ import java.lang.reflect.Modifier;
 import junit.framework.TestCase;
 
 import org.aspectj.internal.lang.annotation.ajcDeclareEoW;
-import org.aspectj.internal.lang.annotation.ajcITD;
 import org.aspectj.internal.lang.annotation.ajcPrivileged;
 import org.aspectj.lang.annotation.AdviceName;
 import org.aspectj.lang.annotation.After;

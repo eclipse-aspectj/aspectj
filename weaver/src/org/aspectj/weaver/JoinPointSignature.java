@@ -202,12 +202,16 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized);
 	}
 
-	public void setTypeVariables(UnresolvedType[] types) {
+	public void setTypeVariables(TypeVariable[] types) {
 		realMember.setTypeVariables(types);
 	}
 
-	public UnresolvedType[] getTypeVariables() {
+	public TypeVariable[] getTypeVariables() {
 		return realMember.getTypeVariables();
+	}
+	
+	public TypeVariable getTypeVariableNamed(String name) {
+		return realMember.getTypeVariableNamed(name);
 	}
 
 	public ResolvedMember getErasure() {

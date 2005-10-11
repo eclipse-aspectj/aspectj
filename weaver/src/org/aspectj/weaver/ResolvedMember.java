@@ -113,9 +113,9 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized);
 
-	public void setTypeVariables(UnresolvedType[] types);
+	public void setTypeVariables(TypeVariable[] types);
 
-	public UnresolvedType[] getTypeVariables();
+	public TypeVariable[] getTypeVariables();
 
 	/**
 	 * If this member is defined by a parameterized super-type, return the erasure

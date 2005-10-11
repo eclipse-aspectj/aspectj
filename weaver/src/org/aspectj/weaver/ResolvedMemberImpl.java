@@ -50,7 +50,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	private boolean isAjSynthetic = true;
     
     // generic methods have type variables
-	private UnresolvedType[] typeVariables;
+	private TypeVariable[] typeVariables;
     
     // these three fields hold the source location of this member
 	protected int start, end;
@@ -385,9 +385,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 			int tvcount = s.readInt();
 			if (tvcount!=0) {
-				m.typeVariables = new UnresolvedType[tvcount];
+				m.typeVariables = new TypeVariable[tvcount];
 				for (int i=0;i<tvcount;i++) {
-					m.typeVariables[i]=UnresolvedType.read(s);
+					m.typeVariables[i]=TypeVariable.read(s);
+					m.typeVariables[i].setDeclaringElement(m);
 				}
 			}
 		}
@@ -407,30 +408,37 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
 	public ResolvedMember resolve(World world) {
         // make sure all the pieces of a resolvedmember really are resolved
-        if (annotationTypes!=null) {
-          Set r = new HashSet();
-          for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
-			UnresolvedType element = (UnresolvedType) iter.next();
-			r.add(world.resolve(element));
-		  }
-		  annotationTypes = r;
-	    }
-        declaringType = declaringType.resolve(world);
-        if (declaringType.isRawType()) declaringType = ((ReferenceType)declaringType).getGenericType();
-		if (typeVariables!=null && typeVariables.length>0) {
-			for (int i = 0; i < typeVariables.length; i++) {
-				UnresolvedType array_element = typeVariables[i];
-				typeVariables[i] = typeVariables[i].resolve(world);
-	}
-		}
-		if (parameterTypes!=null && parameterTypes.length>0) {
-			for (int i = 0; i < parameterTypes.length; i++) {
-				UnresolvedType array_element = parameterTypes[i];
-				parameterTypes[i] = parameterTypes[i].resolve(world);
+		try {
+			if (typeVariables!=null && typeVariables.length>0) {
+				for (int i = 0; i < typeVariables.length; i++) {
+					typeVariables[i] = typeVariables[i].resolve(world);
+				}
 			}
+			world.setTypeVariableLookupScope(this);
+	        if (annotationTypes!=null) {
+	          Set r = new HashSet();
+	          for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
+				UnresolvedType element = (UnresolvedType) iter.next();
+				r.add(world.resolve(element));
+			  }
+			  annotationTypes = r;
+		    }
+	        declaringType = declaringType.resolve(world);
+	        if (declaringType.isRawType()) declaringType = ((ReferenceType)declaringType).getGenericType();
+			
+			if (parameterTypes!=null && parameterTypes.length>0) {
+				for (int i = 0; i < parameterTypes.length; i++) {
+					UnresolvedType array_element = parameterTypes[i];
+					// parameterTypes[i] = parameterTypes[i].resolve(world);
+					parameterTypes[i] = parameterTypes[i].resolve(world);
+				}
+			}
+		
+			returnType = returnType.resolve(world);
+		} finally {
+			world.setTypeVariableLookupScope(null);
 		}
-	
-		returnType = returnType.resolve(world);return this;
+		return this;
 	}
 	
 	public ISourceContext getSourceContext(World world) {
@@ -567,11 +575,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 	
 	
-	public void setTypeVariables(UnresolvedType[] types) {
-		typeVariables = types;
+	public void setTypeVariables(TypeVariable[] tvars) {
+		typeVariables = tvars;
 	}
 	
-	public UnresolvedType[] getTypeVariables() {
+	public TypeVariable[] getTypeVariables() {
 		return typeVariables;
 	}
 	
@@ -758,5 +766,20 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     	}
     	return buf.toString();    	
     }
+
+
+    
+	public TypeVariable getTypeVariableNamed(String name) {
+		// Check locally...
+		if (typeVariables!=null) {
+			for (int i = 0; i < typeVariables.length; i++) {
+				if (typeVariables[i].getName().equals(name)) return typeVariables[i];
+			}
+		}
+		// Bugger, check the declaring type!
+		return declaringType.getTypeVariableNamed(name);
+
+		// Do generic aspects with ITDs that share type variables with the aspect and the target type and have their own tvars cause this to be messier?
+	}
 }
    

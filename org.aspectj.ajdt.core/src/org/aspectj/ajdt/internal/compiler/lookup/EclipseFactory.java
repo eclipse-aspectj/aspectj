@@ -464,10 +464,11 @@ public class EclipseFactory {
 			ret.setVarargsMethod();
 		}
 		if (typeVariablesForThisMember.size()!=0) {
-			UnresolvedType[] tvars = new UnresolvedType[typeVariablesForThisMember.size()];
+			// SAUSAGES this might be broken with the change for resolved members to own type variables
+			TypeVariable[] tvars = new TypeVariable[typeVariablesForThisMember.size()];
 			int i =0;
 			for (Iterator iter = typeVariablesForThisMember.values().iterator(); iter.hasNext();) {
-				tvars[i++] = (UnresolvedType)iter.next();
+				tvars[i++] = ((TypeVariableReference)((UnresolvedType)iter.next())).getTypeVariable();
 			}
 			ret.setTypeVariables(tvars);
 		}
@@ -621,7 +622,7 @@ public class EclipseFactory {
 			if (member.getTypeVariables().length==0) {
 				tvbs = MethodBinding.NoTypeVariables;
 			} else {
-				tvbs = makeTypeVariableBindings(member.getTypeVariables());
+				tvbs = makeTypeVariableBindingsFromAJTypeVariables(member.getTypeVariables());
 				// fixup the declaring element, we couldn't do it whilst processing the typevariables as we'll end up in recursion.
 				for (int i = 0; i < tvbs.length; i++) {
 					TypeVariableBinding binding = tvbs[i];
@@ -658,6 +659,15 @@ public class EclipseFactory {
 		TypeVariableBinding[] ret = new TypeVariableBinding[len];
 		for (int i = 0; i < len; i++) {
 			ret[i] = makeTypeVariableBinding((TypeVariableReference)typeVariables[i]);
+		}
+		return ret;
+	}
+	
+	private TypeVariableBinding[] makeTypeVariableBindingsFromAJTypeVariables(TypeVariable[] typeVariables) {
+		int len = typeVariables.length;
+		TypeVariableBinding[] ret = new TypeVariableBinding[len];
+		for (int i = 0; i < len; i++) {
+			ret[i] = makeTypeVariableBindingFromAJTypeVariable(typeVariables[i]);
 		}
 		return ret;
 	}
@@ -703,6 +713,38 @@ public class EclipseFactory {
 			tvBinding.superInterfaces=rbs;
 		  }
 		}
+		return tvBinding;
+	}
+	
+	private TypeVariableBinding makeTypeVariableBindingFromAJTypeVariable(TypeVariable tv) {
+		TypeVariableBinding tvBinding = (TypeVariableBinding)typeVariableToTypeBinding.get(tv.getName());
+		if (currentType!=null) {
+			TypeVariableBinding tvb = currentType.getTypeVariable(tv.getName().toCharArray());			
+			if (tvb!=null) return tvb;
+		}
+		if (tvBinding==null) {
+		  Binding declaringElement = null;
+		  // this will cause an infinite loop or NPE... not required yet luckily.
+//		  if (tVar.getDeclaringElement() instanceof Member) {
+//			declaringElement = makeMethodBinding((ResolvedMember)tVar.getDeclaringElement());
+//		  } else {
+//			declaringElement = makeTypeBinding((UnresolvedType)tVar.getDeclaringElement());
+//		  }
+		  tvBinding = new TypeVariableBinding(tv.getName().toCharArray(),declaringElement,tv.getRank());
+		  typeVariableToTypeBinding.put(tv.getName(),tvBinding);
+		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tv.getUpperBound());
+		  tvBinding.firstBound=tvBinding.superclass; // FIXME asc is this correct? possibly it could be first superinterface
+		  if (tv.getAdditionalInterfaceBounds()==null) {
+			tvBinding.superInterfaces=TypeVariableBinding.NoSuperInterfaces;
+		  } else {
+			TypeBinding tbs[] = makeTypeBindings(tv.getAdditionalInterfaceBounds());
+			ReferenceBinding[] rbs= new ReferenceBinding[tbs.length];
+			for (int i = 0; i < tbs.length; i++) {
+				rbs[i] = (ReferenceBinding)tbs[i];
+			}
+			tvBinding.superInterfaces=rbs;
+		  }
+		}	
 		return tvBinding;
 	}
 

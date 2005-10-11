@@ -779,10 +779,6 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 			return ResolvedType.MISSING;
 		} else {
 			UnresolvedType ret = UnresolvedType.forSignature(sig);
-			// ugh, this is horrid, we shouldn't know about this subclass.
-			if (ret instanceof UnresolvedTypeVariableReferenceType) {
-				UnresolvedTypeVariableReferenceType.readDeclaringElement(s, (UnresolvedTypeVariableReferenceType)ret);
-			}
 			return ret;
 		}
 	}
@@ -881,6 +877,15 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	 */
 	public boolean isParameterizedWithAMemberTypeVariable() {
 		throw new RuntimeException("I dont know - you should ask a resolved version of me: "+this);
+	}
+	
+	public TypeVariable getTypeVariableNamed(String name) {
+		if (typeVariables==null || typeVariables.length==0) return null;
+		for (int i = 0; i < typeVariables.length; i++) {
+			TypeVariable aVar = typeVariables[i];
+			if (aVar.getName().equals(name)) return aVar;
+		}
+		return null;
 	}
 	
 }

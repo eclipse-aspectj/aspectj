@@ -663,7 +663,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public String getSourceCompatibilityLevel() {
-			return null;
+			return "1.5";
 		}
 
 		public Set getWarnings() {
