@@ -1,0 +1,157 @@
+<chapter id="tools-intro" 
+    xreflabel="Introduction to the AspectJ tools">
+    <title>Introduction to the AspectJ tools</title>
+<sect1 
+	id="eclipse-aspectj"
+	xreflabel="The Eclipse AspectJ implementation">
+	<title>The Eclipse AspectJ implementation</title>
+    <para>The <ulink url="../progguide/index.html">AspectJ Programming Guide</ulink>
+        describes the AspectJ language.  This guide describes the AspectJ
+        tools produced by the AspectJ
+        team on 
+         <ulink url="http://eclipse.org/aspectj">http://eclipse.org/aspectj</ulink>.
+        The AspectJ tools include
+        - ajc, the compiler/weaver;
+        ajdoc, a documentation tool; ajbrowser, a crosscutting code viewer;
+        Ant support for ajc; and load-time weaving support.
+        These tools are delivered in the library folder of the AspectJ tools
+        installation, mainly in <literal>aspectjtools.jar</literal> (tools) and
+        <literal>aspectjrt.jar</literal> (runtime).
+        This guide does not describe the Eclipse AspectJ development tools
+        (AJDT).  That is produced by another team (sharing some members) on
+         <ulink url="http://eclipse.org/aspectj">http://eclipse.org/ajdt</ulink>.
+        AJDT is delivered as an Eclipse plugin, incorporating the classes in
+        the AspectJ tools libraries along with the Eclipse plugin interface
+        classes.
+       </para>
+    <para>
+        Since AspectJ 1.1, the tools have implemented the AspectJ language 
+        using bytecode weaving, which combines aspects and classes to produce
+        .class files that run in a Java VM.  There are other ways to implement the
+        language (e.g., compiler preprocessor, VM support); the AspectJ team
+        has always tried to distinguish the language and the implementation
+        so other groups could build alternative implementations of AspectJ.
+        To that end,
+         
+    <ulink url="../progguide/implementation.html">The AspectJ Programming Guide,
+    Implementation Notes</ulink> describes how the Java bytecode form affects
+        language semantics.  VM- or source-based implementations may be free
+        of these limits or impose limits of their own, but most should be
+        fairly close to what's possible in Java bytecode.
+    </para>
+    <para> 
+        Please be careful not to confuse any description of
+        weaving or of this implementation of the AspectJ language with
+        the AspectJ language semantics.
+        If you do, you might find yourself writing code that doesn't work as
+        expected when you compile or run it on other systems.  
+        More importantly, if you
+        think about aspects in terms of weaving or of inserting or merging
+        code, then you can lose many of the design benefits of thinking
+        about an aspect as a single crosscutting module. 
+        When the text below introduces an implementation detail, it will warn if
+        users make mistakes by applying it in lieu of the language semantics.
+    </para>
+</sect1>
+    <!-- graphic for bytecode weaving -->
+<sect1 
+	id="bytecode-concepts"
+	xreflabel="Bytecode weaving, incremental compilation, and memory usage">
+	<title>Bytecode weaving, incremental compilation, and memory usage</title>
+    <para>Bytecode weaving takes classes and aspects in .class form
+        and weaves them together to produce binary-compatible .class files that 
+        run in any Java VM and implement the AspectJ semantics.
+        This process supports not only the compiler but also IDE's.
+        The compiler, given an aspect in source form, produces a binary
+        aspect and runs the weaver.  IDE's can get information about
+        crosscutting in the program by subscribing to information 
+        produced by weaver as a side-effect of weaving.
+    </para>
+    <para>Incremental compilation involves recompiling only what is necessary
+        to bring the binary form of a program up-to-date with the source form
+        in the shortest time possible.
+        Incremental weaving supports this by weaving on a per-class basis.
+        (Some implementations of AOP (including AspectJ 1.0) make use
+        of whole-program analysis that can't be done in incremental mode.)
+        Weaving per-class means that if the source for a pure Java class 
+        is updated, only that class needs to be produced.  However, if
+        some crosscutting specification may have been updated, then all
+        code potentially affected by it may need to be woven.  The AspectJ
+        tools are getting better at minimizing this effect, but it is to
+        some degree unavoidable due to the crosscutting semantics.
+    </para>
+    <para>
+        Memory usage can seem higher with AspectJ tools.
+        Some aspects are written to potentially affect many classes, so each
+        class must be checked during the process of weaving.  Programmers can
+        minimize this by writing the crosscutting specifications as narrowly
+        as possible while maintaining correctness.
+        (While it may seem like more memory, the proper comparison
+        would with with a Java program that had the same crosscutting,
+        with changes made to each code segment.  That would likely require
+        more memory and more time to recompile than the corresponding 
+        AspectJ program.)
+    </para>
+<sect2 
+	id="classpathInpathAndAspectpath"
+	xreflabel="Classpath, inpath, and aspectpath">
+	<title>Classpath, inpath, and aspectpath</title>
+    <para>AspectJ introduces two new paths for the binary input to the
+        weaver which you'll find referenced in <xref linkend="ajc-ref"/>,
+        <xref linkend="ajbrowser"/>, 
+        <xref linkend="antTasks"/>,
+        and <xref linkend="ltw"/>.
+    </para>
+    <para>As in Java, the <literal>classpath</literal> is where the AspectJ
+        tools resolve types specified in the program. When running an AspectJ
+        program, the classpath should contain the classes and aspects along with
+        the AspectJ runtime library, <literal>aspectjrt.jar</literal>.
+        </para>
+    <para>
+        In AspectJ tools, the <literal>aspectpath</literal> is where to find binary
+        aspects.  Like the classpath, it can include archives (.jar and .zip files) 
+        and directories containing .class files in a package layout (since 
+        binary aspects are in .class files).  These aspects affect other
+        classes in exactly the same way as source-level aspects, but are themselves
+        not affected.  When deploying programs, the original aspects must be included 
+        on the runtime classpath.
+    </para>
+    <para>
+        In AspectJ tools, the <literal>inpath</literal> is where to find binary
+        input - aspects and classes that weave and may be woven.  
+        Like the classpath, it can include archives and class directories. 
+        Like the aspectpath, it can include aspects that affect other classes
+        and aspects.
+        However, unlike the aspectpath, an aspect on the inpath may itself be
+        affected by aspects, as if the source were all compiled together.
+        When deploying aspects that were put on the inpath, only the woven output 
+        should be on the runtime classpath.
+    </para>
+    <para>
+        Although types in the inpath and the aspectpath need to be resolved by
+        the AspectJ tools, you usually do not need to place them on the classpath
+        because this is done automatically by the compiler/weaver.  But when using 
+        the <literal>WeavingURLClassLoader</literal>, your code must explicitly add the aspects
+        to the classpath so they can be resolved (as you'll see in the sample
+        code and the <literal>aj.bat</literal> script).
+    </para>
+    <para>The most common mistake is failing to add
+        <literal>aspectjrt.jar</literal> to the classpath. Also, when
+        weaving with binary aspects, users forget to deploy the aspect itself
+        along with any classes it requires. A more subtle mistake is putting a
+        binary aspect (BA) on the inpath instead of the aspectpath.  In this case
+        the aspect BA might be affected by an aspect, even itself; this can 
+        cause the program to fail, e.g., when an aspect uses exclusion to 
+        avoid infinite recursion but fails to exclude advice in aspect BA.
+        </para>
+        <para>The latter is one of many ways that mistakes in the build process
+            can affect aspects that are written poorly.  Aspects should never
+            rely on the boundaries of the build specification to narrow the
+            scope of their crosscutting, since the build can be changed 
+            without notice to the aspect developer.  Careful users might even
+            avoid relying on the implementation scope, to ensure their
+            AspectJ code will run on other implementations.
+        </para>
+	</sect2>
+    </sect1>
+</chapter>

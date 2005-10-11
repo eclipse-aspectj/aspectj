@@ -3,15 +3,15 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1//EN"
                       "../../lib/docbook/docbook-dtd/docbookx.dtd"
 [
+<!ENTITY aj               SYSTEM "aj.xml">
 <!ENTITY ajc              SYSTEM "ajc.xml">
-<!ENTITY ajdb             SYSTEM "ajdb.xml">
 <!ENTITY ajdoc            SYSTEM "ajdoc.xml">
 <!ENTITY antsupport       SYSTEM "antsupport.xml">
 <!ENTITY ajbrowser        SYSTEM "ajbrowser.xml">
-<!ENTITY ajdejbuilder     SYSTEM "ajdejbuilder.xml">
-<!ENTITY ajdeforte        SYSTEM "ajdeforte.xml">
-<!ENTITY aspectj-mode     SYSTEM "aspectj-mode.xml">
-<!ENTITY ajdee            SYSTEM "ajdee.xml">
+<!ENTITY compatibility    SYSTEM "compatibility.xml">
+<!ENTITY ltw              SYSTEM "ltw.xml">
+<!ENTITY tools-intro      SYSTEM "tools-intro.xml">
+<!ENTITY weaving          SYSTEM "weaving.xml">
 ]>
 
 <book>
@@ -34,60 +34,47 @@
 
     <abstract>
       <para>
-        This guide describes the tools in the AspectJ 1.2 development
-        environment.  See also 
+        This guide describes how to build and deploy AspectJ programs
+          using the AspectJ tools and facilities.  See also 
               <ulink url="../progguide/index.html">The
         				AspectJ Programming Guide</ulink>,       				
               the documentation available with the AspectJ support available for
-		        various integrated development environments (e.g., Eclipse, Emacs,
-		        JBuilder, and NetBeans), 
+		        various integrated development environments (e.g., 
+              <ulink url="http://eclipse.org/AJDT">Eclipse AJDT</ulink>), 
               and the most-recent documentation available from 
               the AspectJ project page, at
               	<ulink url="http://eclipse.org/aspectj">
               				http://eclipse.org/aspectj</ulink>.
-        <!--
-        <itemizedlist>
-              <listitem><para><ulink url="../progguide/index.html">the
-        				AspectJ Programming Guide</ulink></para>
-              </listitem>
-              <listitem><para>the
-		        documentation available with the AspectJ support available for
-		        various integrated development environments (e.g., Eclipse, Emacs,
-		        JBuilder, and NetBeans)</para>
-              </listitem>
-              <listitem><para>the most-recent documentation available from 
-              the AspectJ project page, at
-              	<ulink url="http://eclipse.org/aspectj">
-              				http://eclipse.org/aspectj</ulink>.</para>
-              </listitem>
-        </itemizedlist>
-		-->
       </para>
     </abstract>
   </bookinfo>
+  &tools-intro;
 
-  <reference>
-	<referenceinfo>
-		<abstract>
-			<title>Summary of command-line tools</title><para/>
-		</abstract>
-	</referenceinfo>
-	<title>Command-line tools</title>	
-      &ajc;
-      &ajdoc;
-  </reference>
+<chapter id="command-line-tools" xreflabel="AspectJ command-line tools">
+    <title>AspectJ command-line tools</title>
+    
+    <sect1 id="ajc-ref-top">
+        <title><literal>ajc</literal>, the AspectJ compiler/weaver</title>
+      &ajc;        
+    </sect1>
+    <sect1 id="ajdoc-ref-top">
+        <title><literal>ajdoc</literal>, the AspectJ documentation tool</title>
+        <para><literal>ajdoc</literal> produces JavaDoc-style documentation
+        including crosscutting information.</para>
+      &ajdoc;        
+    </sect1>
+    <sect1 id="aj-ref-top">
+        <title><literal>ajdoc</literal>, the AspectJ load-time weaving script</title>
+        <para><literal>aj</literal> launches programs,
+            configuring basic load-time weaving.</para>
+      &aj;        
+    </sect1>
+</chapter>
   
   &ajbrowser;
   &antsupport;
+  &ltw;
+  &compatibility;
 
 </book>
 
-<!--
-Local Variables:
-compile-command:"ant -quiet dev-html"
-fill-column: 79
-sgml-indent-step: 3
-sgml-local-ecat-files:devguide.ced
-sgml-namecase-general: t
-End:
--->
