@@ -30,9 +30,9 @@ import java.awt.*;
  */
 public class BuildOptionsPanel extends OptionsPanel {
 
-	private static String INCREMENTAL_NOTE = "Please note that this release offers an early access integration of the incremental\n"
-		+ "AspectJ compiler.  The Document Outline View will fail to refresh correctly when\n"
-		+ "incremental mode is enabled.  Submit any other bugs at http://eclipse.org/aspectj";
+//	private static String INCREMENTAL_NOTE = "Please note that this release offers an early access integration of the incremental\n"
+//		+ "AspectJ compiler.  The Document Outline View will fail to refresh correctly when\n"
+//		+ "incremental mode is enabled.  Submit any other bugs at http://eclipse.org/aspectj";
 
 	protected static final BuildOptionsPanel INSTANCE = new BuildOptionsPanel();
 
@@ -70,12 +70,12 @@ public class BuildOptionsPanel extends OptionsPanel {
 	private BorderLayout borderLayout1 = new BorderLayout();
 	private BorderLayout borderLayout7 = new BorderLayout();
   Box options_box2 = Box.createVerticalBox();
-  JTextArea incrementalNote = new JTextArea();
+  //JTextArea incrementalNote = new JTextArea();
   JLabel spacer_label = new JLabel();
   JCheckBox assertions_checkBox = new JCheckBox();
   JCheckBox oneFive_checkBox = new JCheckBox();
   Box options_box = Box.createVerticalBox();
-  JCheckBox incremental_checkBox = new JCheckBox();
+  //JCheckBox incremental_checkBox = new JCheckBox();
   JCheckBox useJavac_checkBox = new JCheckBox();
   JCheckBox preprocess_checkBox = new JCheckBox();
   JLabel spacer_label1 = new JLabel();
@@ -115,9 +115,9 @@ public class BuildOptionsPanel extends OptionsPanel {
 		useJavac_checkBox.setSelected(
 			Ajde.getDefault().getBuildManager().getBuildOptions().getUseJavacMode()
 		);
-		incremental_checkBox.setSelected(
-			Ajde.getDefault().getBuildManager().getBuildOptions().getIncrementalMode()
-		);
+//		incremental_checkBox.setSelected(
+//			Ajde.getDefault().getBuildManager().getBuildOptions().getIncrementalMode()
+//		);
 
 		nonStandard_field.setText(
 			Ajde.getDefault().getBuildManager().getBuildOptions().getNonStandardOptions()
@@ -150,9 +150,9 @@ public class BuildOptionsPanel extends OptionsPanel {
 		AjdeUIManager.getDefault().getBuildOptions().setUseJavacMode(
 			useJavac_checkBox.isSelected()
 		);
-		AjdeUIManager.getDefault().getBuildOptions().setIncrementalMode(
-			incremental_checkBox.isSelected()
-		);
+//		AjdeUIManager.getDefault().getBuildOptions().setIncrementalMode(
+//			incremental_checkBox.isSelected()
+//		);
 
 		AjdeUIManager.getDefault().getBuildOptions().setNonStandardOptions(
 			nonStandard_field.getText()
@@ -234,18 +234,18 @@ public class BuildOptionsPanel extends OptionsPanel {
 		workingDir_label.setFont(new java.awt.Font("Dialog", 0, 11));
 		workingDir_label.setPreferredSize(new Dimension(80, 16));
 		workingDir_label.setText("Working directory: ");
-    incrementalNote.setBackground(AjdeWidgetStyles.DEFAULT_BACKGROUND_COLOR);
-    incrementalNote.setFont(new java.awt.Font("Dialog", 0, 11));
-    incrementalNote.setEditable(false);
-    incrementalNote.setText(INCREMENTAL_NOTE);
+//    incrementalNote.setBackground(AjdeWidgetStyles.DEFAULT_BACKGROUND_COLOR);
+//    incrementalNote.setFont(new java.awt.Font("Dialog", 0, 11));
+//    incrementalNote.setEditable(false);
+//    incrementalNote.setText(INCREMENTAL_NOTE);
     spacer_label.setText("   ");
     assertions_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
     assertions_checkBox.setText("Java 1.4 source compatibility mode");
     oneFive_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
     oneFive_checkBox.setText("Java 1.5 source compatibility mode");
-    incremental_checkBox.setText("Incremental compile");
-    incremental_checkBox.setToolTipText("Only recompile necessary sources.");
-    incremental_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+//    incremental_checkBox.setText("Incremental compile");
+//    incremental_checkBox.setToolTipText("Only recompile necessary sources.");
+//    incremental_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
     useJavac_checkBox.setText("Use javac to generate .class files");
     useJavac_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
     preprocess_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
@@ -256,14 +256,14 @@ public class BuildOptionsPanel extends OptionsPanel {
 		jPanel2.add(workingDir_label, BorderLayout.CENTER);
 		jPanel2.add(workingDir_field, BorderLayout.EAST);
     compileOptions_panel.add(options_box2, BorderLayout.CENTER);
-    options_box2.add(incrementalNote, null);
+    //options_box2.add(incrementalNote, null);
     options_box2.add(spacer_label1, null);
     compileOptions_panel.add(options_box, BorderLayout.NORTH);
     options_box.add(assertions_checkBox, null);
     options_box.add(oneFive_checkBox, null); 
     options_box.add(preprocess_checkBox, null);
     options_box.add(useJavac_checkBox, null);
-    options_box.add(incremental_checkBox, null);
+    //options_box.add(incremental_checkBox, null);
     options_box.add(spacer_label, null);
 		fields_box.add(jPanel1, null);
 		fields_box.add(jPanel2, null);
