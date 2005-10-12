@@ -4067,7 +4067,7 @@ aspect A {
            from sources.
           </para>
 			<para>AspectJ 1.1+ source code is available through CVS using the 
-				CVS Root <literal>dev.eclipse.org:/home/technology</literal>. 
+				CVS Root <literal>dev.eclipse.org:/cvsroot/technology</literal>. 
 				For more information on accessing the CVS tree at eclipse.org, 
 				see the documentation from <ulink 
 				url="http://eclipse.org">http://eclipse.org</ulink>. Find 
@@ -4081,7 +4081,7 @@ aspect A {
           <para>
           To check out the source code in Eclipse go to (<literal>File > new > Other > CVS > Checkout Projects from CVS</literal>). You'll need about 125 MB of space for the source and build.
           	Host: <literal>dev.eclipse.org</literal>,
-          	Repository Path: <literal>/home/technology</literal>,
+          	Repository Path: <literal>/cvsroot/technology</literal>,
           	user name: <literal>anonymous</literal>,
           	password: (your email address),
           	connection type: <literal>pserver</literal>,
