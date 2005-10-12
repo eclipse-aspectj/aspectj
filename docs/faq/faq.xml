@@ -22,7 +22,7 @@
        2003-2005 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated June 16, 2005
+  <para>Last updated October 6, 2005
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -1735,6 +1735,49 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             <ulink url="devguide/ajc-ref.html">
               Reference for ajc</ulink>.
           </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:generics"
+            xreflabel="Q:Does the ajc compiler support generics and the other new language features of Java 5?">
+          <para>Does the <literal>ajc</literal> compiler support 
+        generics and the other new language features of Java 5?
+          </para>
+        </question>
+        <answer>
+          <para>Yes. As with <literal>Javac</literal>,
+          use the <literal>-source 1.5</literal> option as described
+          in the
+            <ulink url="devguide/index.html">
+              Development Environment Guide</ulink>
+            <ulink url="devguide/ajc-ref.html">
+              Reference for ajc</ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:versionCompatibility"
+            xreflabel="Q:Will AspectJ aspects work with different versions of the compiler/weaver and runtime?">
+          <para>Will aspects work with different versions of the compiler/weaver and runtime?
+          </para>
+        </question>
+        <answer>
+          <para>Yes.  Both <literal>ajc</literal> and 
+			  <literal>aspectjrt.jar</literal> should work with versions
+			  of aspect code and libraries back to AspectJ 1.2.1. 
+			  Any aspects should be deployed
+			  with the same version of <literal>aspectjrt.jar</literal> 
+			  they were compiled with.  For more information, see the
+			 <ulink url="devguide/index.html">
+              Development Environment Guide</ulink>
+            <ulink url="devguide/ajc-ref.html">
+              Reference for ajc</ulink>
+			  and 
+            <ulink url="devguide/deployment.html">
+              Deployment notes</ulink> section on 
+            <ulink url="devguide/versionCompatibility.html">
+				Version compatibility</ulink>.
+			</para>
         </answer>
       </qandaentry>
       <qandaentry>
@@ -4327,6 +4370,12 @@ aspect A {
 			  functionality, and performance, but for now we prefer using something
 			  that we know works well.
           </para>
+          <para>
+			  In the AspectJ 5 release, the weaver has been restructured to
+			  use reflection where possible.  Otherwise, it
+			  continues to use BCEL, but does not hold BCEL structures in
+			  memory after our evaluation completes.
+          </para>
         </answer>
       </qandaentry>
 	</qandadiv>
@@ -4598,7 +4647,8 @@ aspect A {
         <answer>
           <para>
           Entries changed recently:
-            <itemizedlist> 
+            <itemizedlist>
+        <listitem><para><xref linkend="q:versionCompatibility"/></para></listitem>
         <listitem><para><xref linkend="q:bcel"/></para></listitem>
 		<listitem><para><xref linkend="q:reflectiveCalls"/></para></listitem>
         <listitem><para><xref linkend="q:java5"/></para></listitem>
