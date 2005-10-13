@@ -684,6 +684,11 @@ public abstract class World implements Dump.INode {
 					System.err.println("Not putting a bounded reference type into the typemap: key="+key+" type="+type);
 				return type;
 			}
+			if (type instanceof MissingResolvedTypeWithKnownSignature) {
+				if (debug) 
+					System.err.println("Not putting a missing type into the typemap: key="+key+" type="+type);
+				return type;
+			}
 						
 			if (isExpendable(type))  {
 				return (ResolvedType) expendableMap.put(key,type);

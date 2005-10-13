@@ -41,6 +41,7 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.Member;
@@ -273,8 +274,19 @@ public class BcelWorld extends World implements Repository {
 	public BcelObjectType addSourceObjectType(JavaClass jc) {
 		BcelObjectType ret = null;
 		String signature = UnresolvedType.forName(jc.getClassName()).getSignature();
-        ReferenceType nameTypeX = (ReferenceType)typeMap.get(signature);
-
+		
+		Object fromTheMap = typeMap.get(signature);
+		
+		if (fromTheMap!=null && !(fromTheMap instanceof ReferenceType)) {
+			// what on earth is it then? See pr 112243
+			StringBuffer exceptionText = new StringBuffer();
+			exceptionText.append("Found invalid (not a ReferenceType) entry in the type map. ");
+			exceptionText.append("Signature=["+signature+"] Found=["+fromTheMap+"] Class=["+fromTheMap.getClass()+"]");
+			throw new BCException(exceptionText.toString());
+		}
+		
+		ReferenceType nameTypeX = (ReferenceType)fromTheMap;
+        
         if (nameTypeX == null) {        	
 		    if (jc.isGeneric()) {
 		    	nameTypeX =  ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()),this);
