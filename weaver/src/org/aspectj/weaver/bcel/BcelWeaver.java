@@ -1016,7 +1016,7 @@ public class BcelWeaver implements IWeaver {
 			if (theType.isAspect()) {
 				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
 				if (classType==null) {
-					throw new BCException("Can't find bcel delegate for "+className);
+					throw new BCException("Can't find bcel delegate for "+className+" type="+theType.getClass());
 				}
 		        weaveAndNotify(classFile, classType,requestor);
 		        wovenClassNames.add(className);
@@ -1034,7 +1034,7 @@ public class BcelWeaver implements IWeaver {
 			if (!theType.isAspect()) {
 				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
 				if (classType==null) {
-					throw new BCException("Can't find bcel delegate for "+className);
+					throw new BCException("Can't find bcel delegate for "+className+" type="+theType.getClass());
 				}
 		        weaveAndNotify(classFile, classType, requestor);
 		        wovenClassNames.add(className);
