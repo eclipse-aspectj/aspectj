@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
@@ -308,9 +309,22 @@ public class EclipseFactory {
 		if (typeVariableBindingsInProgress.containsKey(aTypeVariableBinding)) {
 			return (UnresolvedType) typeVariableBindingsInProgress.get(aTypeVariableBinding);
 		}
+		
+		// Check if its a type variable binding that we need to recover to an alias...
+		if (typeVariablesForAliasRecovery!=null) {
+			String aliasname = (String)typeVariablesForAliasRecovery.get(aTypeVariableBinding);
+			if (aliasname!=null) {
+				UnresolvedTypeVariableReferenceType ret = new UnresolvedTypeVariableReferenceType();
+				ret.setTypeVariable(new TypeVariable(aliasname));
+				return ret;
+			}
+		}
+		
 		if (typeVariablesForThisMember.containsKey(new String(aTypeVariableBinding.sourceName))) {
 			return (UnresolvedType)typeVariablesForThisMember.get(new String(aTypeVariableBinding.sourceName));
 		}
+		
+		
 		// Create the UnresolvedTypeVariableReferenceType for the type variable
 		String name = CharOperation.charToString(aTypeVariableBinding.sourceName());
 		
@@ -430,8 +444,32 @@ public class EclipseFactory {
      * (params, return type) we store the type variables in this structure, then should any
      * component of the method binding refer to them, we grab them from the map.
      */
-	// FIXME asc convert to array, indexed by rank
 	private Map typeVariablesForThisMember = new HashMap(); 
+	
+	/**
+	 * This is a map from typevariablebindings (eclipsey things) to the names the user
+	 * originally specified in their ITD.  For example if the target is 'interface I<N extends Number> {}'
+	 * and the ITD was 'public void I<X>.m(List<X> lxs) {}' then this map would contain a pointer
+	 * from the eclipse type 'N extends Number' to the letter 'X'.
+	 */
+	private Map typeVariablesForAliasRecovery;
+	
+	/**
+	 * Construct a resolvedmember from a methodbinding.  The supplied map tells us about any
+	 * typevariablebindings that replaced typevariables whilst the compiler was resolving types - 
+	 * this only happens if it is a generic itd that shares type variables with its target type.
+	 */
+	public ResolvedMember makeResolvedMemberForITD(MethodBinding binding,TypeBinding declaringType,
+			Map /*TypeVariableBinding > original alias name*/ recoveryAliases) {
+		ResolvedMember result = null;
+		try {
+			typeVariablesForAliasRecovery = recoveryAliases;
+			result = makeResolvedMember(binding,declaringType);
+		} finally {
+			typeVariablesForAliasRecovery = null;			
+		}
+		return result;
+	}
 
 	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
 		//System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
@@ -463,14 +501,12 @@ public class EclipseFactory {
 		if (binding.isVarargs()) {
 			ret.setVarargsMethod();
 		}
-		if (typeVariablesForThisMember.size()!=0) {
-			// SAUSAGES this might be broken with the change for resolved members to own type variables
-			TypeVariable[] tvars = new TypeVariable[typeVariablesForThisMember.size()];
-			int i =0;
-			for (Iterator iter = typeVariablesForThisMember.values().iterator(); iter.hasNext();) {
-				tvars[i++] = ((TypeVariableReference)((UnresolvedType)iter.next())).getTypeVariable();
+		if (ajTypeRefs!=null) {
+			TypeVariable[] tVars = new TypeVariable[ajTypeRefs.length];
+			for (int i=0;i<ajTypeRefs.length;i++) {
+				tVars[i]=((TypeVariableReference)ajTypeRefs[i]).getTypeVariable();
 			}
-			ret.setTypeVariables(tvars);
+			ret.setTypeVariables(tVars);
 		}
 		typeVariablesForThisMember.clear();
 		ret.resolve(world);
@@ -545,7 +581,8 @@ public class EclipseFactory {
 				lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
 			return ptb;
 		} else if (typeX.isTypeVariableReference()) {
-			return makeTypeVariableBinding((TypeVariableReference)typeX);
+//			return makeTypeVariableBinding((TypeVariableReference)typeX);
+			return makeTypeVariableBindingFromAJTypeVariable(((TypeVariableReference)typeX).getTypeVariable());
 		} else if (typeX.isRawType()) {
 			ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
 			RawTypeBinding rtb = lookupEnvironment.createRawType(baseTypeBinding,baseTypeBinding.enclosingType());
@@ -614,26 +651,72 @@ public class EclipseFactory {
 
 	private ReferenceBinding currentType = null;
 
+	/**
+	 * Convert a resolvedmember into an eclipse method binding.
+	 */
+	public MethodBinding makeMethodBinding(ResolvedMember member,List aliases) {
+		return internalMakeMethodBinding(member,aliases);
+	}
+	
+	/**
+	 * Convert a resolvedmember into an eclipse method binding.
+	 */
 	public MethodBinding makeMethodBinding(ResolvedMember member) {
+		return internalMakeMethodBinding(member,null); // there are no aliases
+		
+//		typeVariableToTypeBinding.clear(); // will be filled in as we go along...
+//		TypeVariableBinding[] tvbs = null;
+//		
+//		if (member.getTypeVariables()!=null)  {
+//			if (member.getTypeVariables().length==0)	tvbs = MethodBinding.NoTypeVariables;
+//			else                                     	tvbs = makeTypeVariableBindingsFromAJTypeVariables(member.getTypeVariables());
+//			// QQQ do we need to bother fixing up the declaring element for each type variable?
+//		}		
+//		
+//		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
+//		currentType = declaringType;
+//		MethodBinding mb =  new MethodBinding(member.getModifiers(), 
+//				member.getName().toCharArray(),
+//				makeTypeBinding(member.getReturnType()),
+//				makeTypeBindings(member.getParameterTypes()),
+//				makeReferenceBindings(member.getExceptions()),
+//				declaringType);
+//
+//		if (tvbs!=null) mb.typeVariables = tvbs;
+//		typeVariableToTypeBinding.clear();
+//		currentType = null;
+//		return mb;
+	}
+	
+	/**
+	 * Convert a normal AJ member and convert it into an eclipse methodBinding.
+	 * Taking into account any aliases that it may include due to being a 
+	 * generic ITD.  Any aliases are put into the typeVariableToBinding
+	 * map so that they will be substituted as appropriate in the returned 
+	 * methodbinding
+	 */
+	public MethodBinding internalMakeMethodBinding(ResolvedMember member,List aliases) {
 		typeVariableToTypeBinding.clear();
 		TypeVariableBinding[] tvbs = null;
-		
+
 		if (member.getTypeVariables()!=null)  {
 			if (member.getTypeVariables().length==0) {
 				tvbs = MethodBinding.NoTypeVariables;
 			} else {
 				tvbs = makeTypeVariableBindingsFromAJTypeVariables(member.getTypeVariables());
-				// fixup the declaring element, we couldn't do it whilst processing the typevariables as we'll end up in recursion.
-				for (int i = 0; i < tvbs.length; i++) {
-					TypeVariableBinding binding = tvbs[i];
-//					if (binding.declaringElement==null && ((TypeVariableReference)member.getTypeVariables()[i]).getTypeVariable().getDeclaringElement() instanceof Member) {
-//						tvbs[i].declaringElement = mb;
-//					} else {
-//						tvbs[i].declaringElement = declaringType;
-//					}
-				}
+				// QQQ do we need to bother fixing up the declaring element here?
 			}
-		}		
+		}	
+		
+		// If there are aliases, place them in the map
+		if (aliases!=null && aliases.size()!=0) {
+			ReferenceBinding tType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
+			int i=0;
+			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
+				String element = (String) iter.next();
+				typeVariableToTypeBinding.put(element,tType.typeVariables()[i++]);
+			}
+		}
 		
 		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
 		currentType = declaringType;
@@ -654,14 +737,14 @@ public class EclipseFactory {
 	/**
 	 * Convert a bunch of type variables in one go, from AspectJ form to Eclipse form.
 	 */
-	private TypeVariableBinding[] makeTypeVariableBindings(UnresolvedType[] typeVariables) {
-		int len = typeVariables.length;
-		TypeVariableBinding[] ret = new TypeVariableBinding[len];
-		for (int i = 0; i < len; i++) {
-			ret[i] = makeTypeVariableBinding((TypeVariableReference)typeVariables[i]);
-		}
-		return ret;
-	}
+//	private TypeVariableBinding[] makeTypeVariableBindings(UnresolvedType[] typeVariables) {
+//		int len = typeVariables.length;
+//		TypeVariableBinding[] ret = new TypeVariableBinding[len];
+//		for (int i = 0; i < len; i++) {
+//			ret[i] = makeTypeVariableBinding((TypeVariableReference)typeVariables[i]);
+//		}
+//		return ret;
+//	}
 	
 	private TypeVariableBinding[] makeTypeVariableBindingsFromAJTypeVariables(TypeVariable[] typeVariables) {
 		int len = typeVariables.length;
@@ -684,10 +767,10 @@ public class EclipseFactory {
 	 * to the TypeVariableBinding.
 	 */
 	private TypeVariableBinding makeTypeVariableBinding(TypeVariableReference tvReference) {
-		TypeVariable tVar = tvReference.getTypeVariable();
-		TypeVariableBinding tvBinding = (TypeVariableBinding)typeVariableToTypeBinding.get(tVar.getName());
+		TypeVariable tv = tvReference.getTypeVariable();
+		TypeVariableBinding tvBinding = (TypeVariableBinding)typeVariableToTypeBinding.get(tv.getName());
 		if (currentType!=null) {
-			TypeVariableBinding tvb = currentType.getTypeVariable(tVar.getName().toCharArray());			
+			TypeVariableBinding tvb = currentType.getTypeVariable(tv.getName().toCharArray());			
 			if (tvb!=null) return tvb;
 		}
 		if (tvBinding==null) {
@@ -698,14 +781,14 @@ public class EclipseFactory {
 //		  } else {
 //			declaringElement = makeTypeBinding((UnresolvedType)tVar.getDeclaringElement());
 //		  }
-		  tvBinding = new TypeVariableBinding(tVar.getName().toCharArray(),declaringElement,tVar.getRank());
-		  typeVariableToTypeBinding.put(tVar.getName(),tvBinding);
-		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tVar.getUpperBound());
-		  tvBinding.firstBound=tvBinding.superclass; // FIXME asc is this correct? possibly it could be first superinterface
-		  if (tVar.getAdditionalInterfaceBounds()==null) {
+		  tvBinding = new TypeVariableBinding(tv.getName().toCharArray(),declaringElement,tv.getRank());
+		  typeVariableToTypeBinding.put(tv.getName(),tvBinding);
+		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tv.getUpperBound());
+		  tvBinding.firstBound=(ReferenceBinding)makeTypeBinding(tv.getFirstBound());
+		  if (tv.getAdditionalInterfaceBounds()==null) {
 			tvBinding.superInterfaces=TypeVariableBinding.NoSuperInterfaces;
 		  } else {
-			TypeBinding tbs[] = makeTypeBindings(tVar.getAdditionalInterfaceBounds());
+			TypeBinding tbs[] = makeTypeBindings(tv.getAdditionalInterfaceBounds());
 			ReferenceBinding[] rbs= new ReferenceBinding[tbs.length];
 			for (int i = 0; i < tbs.length; i++) {
 				rbs[i] = (ReferenceBinding)tbs[i];
@@ -733,7 +816,7 @@ public class EclipseFactory {
 		  tvBinding = new TypeVariableBinding(tv.getName().toCharArray(),declaringElement,tv.getRank());
 		  typeVariableToTypeBinding.put(tv.getName(),tvBinding);
 		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tv.getUpperBound());
-		  tvBinding.firstBound=tvBinding.superclass; // FIXME asc is this correct? possibly it could be first superinterface
+		  tvBinding.firstBound=(ReferenceBinding)makeTypeBinding(tv.getFirstBound());
 		  if (tv.getAdditionalInterfaceBounds()==null) {
 			tvBinding.superInterfaces=TypeVariableBinding.NoSuperInterfaces;
 		  } else {

@@ -220,7 +220,11 @@ public class BcelGenericSignatureToTypeXConverter {
 			}
 		}
 		if (typeVarBounds == null) {
-			throw new GenericSignatureFormatException("Undeclared type variable in signature: " + aTypeVarSig.typeVariableName);
+			// blowing up here breaks the situation with ITDs where the type variable is mentioned in the 
+			// declaring type and used somewhere in the signature.  Temporary change to allow it to return just a 
+			// 'dumb' typevariablereference.
+			return new TypeVariableReferenceType(new TypeVariable(aTypeVarSig.typeVariableName),world);
+			// throw new GenericSignatureFormatException("Undeclared type variable in signature: " + aTypeVarSig.typeVariableName);
 		}
 		if (inProgressTypeVariableResolutions.containsKey(typeVarBounds)) {
 			return (ResolvedType) inProgressTypeVariableResolutions.get(typeVarBounds);

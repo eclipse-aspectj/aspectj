@@ -355,7 +355,38 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				typeVariables[i].write(s);
 			}
 		}
+		String gsig = getGenericSignature();
+		if (getSignature().equals(gsig)) {
+			s.writeBoolean(false);
+		} else {
+			s.writeBoolean(true);
+			s.writeInt(parameterTypes.length);
+			for (int i = 0; i < parameterTypes.length; i++) {
+				UnresolvedType array_element = parameterTypes[i];
+				array_element.write(s);
+			}
+			returnType.write(s);
+		}
     }
+    
+    public String getGenericSignature() {
+        StringBuffer sb = new StringBuffer();
+        if (typeVariables!=null) {
+      	  sb.append("<");
+  			for (int i = 0; i < typeVariables.length; i++) {
+  				sb.append(typeVariables[i].getSignature());
+  			}
+  			sb.append(">");
+  	  }
+        sb.append("(");
+        for (int i = 0; i < parameterTypes.length; i++) {
+  		UnresolvedType array_element = parameterTypes[i];
+  		sb.append(array_element.getSignature());
+  	  }
+        sb.append(")");
+        sb.append(returnType.getSignature());
+        return sb.toString();
+      }
 
     public static void writeArray(ResolvedMember[] members, DataOutputStream s) throws IOException {
 		s.writeInt(members.length);
@@ -370,7 +401,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     	ResolvedMemberImpl m = new ResolvedMemberImpl(Kind.read(s), UnresolvedType.read(s), s.readInt(), 
     			s.readUTF(), s.readUTF());
 		m.checkedExceptions = UnresolvedType.readArray(s);
-
+		
 		m.start = s.readInt();
 		m.end = s.readInt();
 		m.sourceContext = sourceContext;
@@ -389,6 +420,20 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				for (int i=0;i<tvcount;i++) {
 					m.typeVariables[i]=TypeVariable.read(s);
 					m.typeVariables[i].setDeclaringElement(m);
+				}
+			}
+			if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150M4) { 
+				boolean hasAGenericSignature = s.readBoolean();
+				if (hasAGenericSignature) {
+					int ps = s.readInt();
+					UnresolvedType[] params = new UnresolvedType[ps];
+					for (int i = 0; i < params.length; i++) {
+						UnresolvedType type = params[i];
+						params[i]=TypeFactory.createTypeFromSignature(s.readUTF());
+					}
+					UnresolvedType rt =  TypeFactory.createTypeFromSignature(s.readUTF());
+					m.parameterTypes = params;
+					m.returnType     = rt;
 				}
 			}
 		}
@@ -447,6 +492,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 	public final String[] getParameterNames() {
 		return parameterNames;
+	}
+	public final void setParameterNames(String[] pnames) {
+		parameterNames = pnames;
 	}
 	public final String[] getParameterNames(World world) {
 		return getParameterNames();
@@ -537,23 +585,34 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return getParameterTypes();
 	}
 	
-	// return a resolved member in which all type variables in the signature of this
-	// member have been replaced with the given bindings.
-	// the isParameterized flag tells us whether we are creating a raw type version or not
-	// if isParameterized List<T> will turn into List<String> (for example), 
-	// but if !isParameterized List<T> will turn into List.
+	/**
+	 * Return a resolvedmember in which all the type variables in the signature
+	 * have been replaced with the given bindings.
+	 * The 'isParameterized' flag tells us whether we are creating a raw type
+	 * version or not.  if (isParameterized) then List<T> will turn into 
+	 * List<String> (for example) - if (!isParameterized) then List<T> will turn
+	 * into List.
+	 */
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters,ResolvedType newDeclaringType, boolean isParameterized) {
-		if (!this.getDeclaringType().isGenericType()) {
+		if (//isParameterized &&  <-- might need this bit...
+				!getDeclaringType().isGenericType()) {
 			throw new IllegalStateException("Can't ask to parameterize a member of a non-generic type");
 		}
 		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
-		if (typeVariables.length != typeParameters.length) {
+		if (isParameterized && (typeVariables.length != typeParameters.length)) {
 			throw new IllegalStateException("Wrong number of type parameters supplied");
 		}
 		Map typeMap = new HashMap();
-		for (int i = 0; i < typeVariables.length; i++) {
-			typeMap.put(typeVariables[i].getName(), typeParameters[i]);
+		if (typeVariables!=null) {
+			// If no 'replacements' were supplied in the typeParameters array then collapse
+			// type variables to their first bound.
+			boolean typeParametersSupplied = typeParameters!=null && typeParameters.length>0;
+			for (int i = 0; i < typeVariables.length; i++) {
+				UnresolvedType ut = (!typeParametersSupplied?typeVariables[i].getFirstBound():typeParameters[i]);
+				typeMap.put(typeVariables[i].getName(),ut);
+			}
 		}
+		
 		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(),typeMap,isParameterized);
 		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
@@ -571,10 +630,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 					this
 				);
 		ret.setSourceContext(getSourceContext());
+		ret.setPosition(getStart(),getEnd());
 		return ret;
 	}
-	
-	
+		
 	public void setTypeVariables(TypeVariable[] tvars) {
 		typeVariables = tvars;
 	}
@@ -744,6 +803,53 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			toBuffer.append(aType.getSignature());
 		}
 	}
+	
+   /**
+    * Useful for writing tests, returns *everything* we know about this member.
+    */
+   public String toDebugString() {
+	   StringBuffer r = new StringBuffer();
+	   
+	   // modifiers
+	   String mods = Modifier.toString(modifiers);
+	   if (mods.length()!=0) r.append(mods).append(" ");
+	   
+	   // type variables
+	   if (typeVariables!=null && typeVariables.length>0) {
+		  r.append("<");
+		  for (int i = 0; i < typeVariables.length; i++) {
+			if (i>0) r.append(",");
+			TypeVariable t = typeVariables[i];
+			r.append(t.toDebugString());
+		  }
+		  r.append("> ");
+	   }
+	   
+	   // 'declaring' type
+	   r.append(returnType.toDebugString());
+   	   r.append(' ');
+   	   
+   	   // name
+  	   r.append(declaringType.getName());
+       r.append('.');
+  	   r.append(name);
+  	   
+  	   // parameter signature if a method
+   	   if (kind != FIELD) {
+   		 r.append("(");
+   		 UnresolvedType[] params = parameterTypes;
+   		 boolean parameterNamesExist = parameterNames!=null && parameterNames.length==params.length;
+         if (params.length != 0) {
+       	   for (int i=0, len = params.length; i < len; i++) {
+             if (i>0) r.append(", ");
+       		 r.append(params[i].toDebugString());
+       		 if (parameterNamesExist) r.append(" ").append(parameterNames[i]);
+       	   }
+         }
+   		 r.append(")");
+   	   }
+	   return r.toString();
+   }
 	
    public String toGenericString() {
     	StringBuffer buf = new StringBuffer();

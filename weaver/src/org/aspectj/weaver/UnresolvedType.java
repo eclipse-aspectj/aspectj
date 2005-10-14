@@ -623,6 +623,10 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     public String toString() {
         return getName(); // + " - " + getKind();
     }
+    
+    public String toDebugString() {
+    	return getName();
+    }
 
     // ---- requires worlds
 

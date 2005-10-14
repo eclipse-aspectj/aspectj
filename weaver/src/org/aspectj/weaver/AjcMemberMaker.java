@@ -643,11 +643,13 @@ public class AjcMemberMaker {
 		int modifiers = makePublicNonFinal(meth.getModifiers());
 		if (onInterface) modifiers |= Modifier.ABSTRACT;
 		
-		return new ResolvedMemberImpl(Member.METHOD, meth.getDeclaringType(),
+		ResolvedMemberImpl rmi = new ResolvedMemberImpl(Member.METHOD, meth.getDeclaringType(),
 			modifiers,
 			meth.getReturnType(), 
 			NameMangler.interMethod(meth.getModifiers(), aspectType, meth.getDeclaringType(), meth.getName()),
-			meth.getParameterTypes(), meth.getExceptions());	
+			meth.getParameterTypes(), meth.getExceptions());
+		rmi.setTypeVariables(meth.getTypeVariables());
+		return rmi;
 	}
 
 	/**
@@ -661,10 +663,14 @@ public class AjcMemberMaker {
 			paramTypes = UnresolvedType.insert(meth.getDeclaringType(), paramTypes);
 		}
 		
-		return new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC,
+		ResolvedMemberImpl rmi = new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC,
 			meth.getReturnType(), 
 			NameMangler.interMethodDispatcher(aspectType, meth.getDeclaringType(), meth.getName()),
 			paramTypes, meth.getExceptions());
+		
+		rmi.setTypeVariables(meth.getTypeVariables());
+		
+		return rmi;
 	}
 
 	/**
@@ -684,10 +690,12 @@ public class AjcMemberMaker {
 		}
 		
 		
-		return new ResolvedMemberImpl(Member.METHOD, aspectType, modifiers,
+		ResolvedMemberImpl rmi =  new ResolvedMemberImpl(Member.METHOD, aspectType, modifiers,
 			meth.getReturnType(), 
 			NameMangler.interMethodBody(aspectType, meth.getDeclaringType(), meth.getName()),
 			paramTypes, meth.getExceptions());
+		rmi.setTypeVariables(meth.getTypeVariables());
+		return rmi;
 	}
 	
 	

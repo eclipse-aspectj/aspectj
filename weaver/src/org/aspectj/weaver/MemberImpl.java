@@ -116,10 +116,12 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         buf.append("(");
         for (int i = 0, len = paramTypes.length; i < len; i++) {
 			if (paramTypes[i].isParameterizedType() && useRawTypes) buf.append(paramTypes[i].getErasureSignature());
+			else if (paramTypes[i].isTypeVariableReference() && useRawTypes) buf.append(paramTypes[i].getErasureSignature());
 			else                                                buf.append(paramTypes[i].getSignature());
         }
         buf.append(")");
         if (returnType.isParameterizedType() && useRawTypes) buf.append(returnType.getErasureSignature());
+		else if (returnType.isTypeVariableReference() && useRawTypes) buf.append(returnType.getErasureSignature());
         else 											 buf.append(returnType.getSignature());
         return buf.toString();        
     }

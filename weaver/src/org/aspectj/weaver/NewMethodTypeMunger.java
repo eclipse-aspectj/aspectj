@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -22,8 +23,10 @@ import org.aspectj.bridge.ISourceLocation;
 public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	public NewMethodTypeMunger(
 		ResolvedMember signature,
-		Set superMethodsCalled) {
+		Set superMethodsCalled,
+		List typeVariableAliases) {
 		super(Method, signature);
+		this.typeVariableAliases = typeVariableAliases;
 		this.setSuperMethodsCalled(superMethodsCalled);
 	}
 	
@@ -40,14 +43,19 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		signature.write(s);
 		writeSuperMethodsCalled(s);
 		writeSourceLocation(s);
+		writeOutTypeAliases(s);
 	}
 	
 	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		ResolvedMemberImpl rmi = ResolvedMemberImpl.readResolvedMember(s, context);
+		
+		ISourceLocation sloc = null;		
+		ResolvedMemberImpl rmImpl = ResolvedMemberImpl.readResolvedMember(s, context);
 		Set superMethodsCalled = readSuperMethodsCalled(s);
-		ISourceLocation sLoc = readSourceLocation(s);
-		ResolvedTypeMunger munger = new NewMethodTypeMunger(rmi,superMethodsCalled);
-		if (sLoc!=null) munger.setSourceLocation(sLoc);
+		sloc = readSourceLocation(s);
+		List typeVarAliases = readInTypeAliases(s);
+		
+		ResolvedTypeMunger munger = new NewMethodTypeMunger(rmImpl,superMethodsCalled,typeVarAliases);
+		if (sloc!=null) munger.setSourceLocation(sloc);
 		return munger;
 	}
 	

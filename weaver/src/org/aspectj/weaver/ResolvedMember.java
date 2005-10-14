@@ -93,6 +93,8 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	
 	// like toString but include generic signature info
 	public String toGenericString();
+	
+	public String toDebugString();
 
 	/**
 	 * Get the UnresolvedType for the return type, taking generic signature into account

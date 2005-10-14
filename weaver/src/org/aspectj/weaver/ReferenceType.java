@@ -404,7 +404,7 @@ public class ReferenceType extends ResolvedType {
 			TypeVariable[] tvs = getGenericType().getTypeVariables();
 			parameters = new UnresolvedType[tvs.length];
 			for (int i = 0; i < tvs.length; i++) {
-				parameters[i] = tvs[i].getUpperBound();
+				parameters[i] = tvs[i].getFirstBound();
 			}
 		}
 		return parameters;

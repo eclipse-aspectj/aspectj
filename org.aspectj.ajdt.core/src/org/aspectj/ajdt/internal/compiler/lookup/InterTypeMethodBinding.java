@@ -13,10 +13,6 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.Member;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
@@ -25,6 +21,11 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.UnresolvedType;
 
 /**
  * A special method binding representing an ITD that pretends to be a 
@@ -46,11 +47,12 @@ public class InterTypeMethodBinding extends MethodBinding {
 	
 	public AbstractMethodDeclaration sourceMethod;
 	
-	public InterTypeMethodBinding(EclipseFactory world, ResolvedMember signature, UnresolvedType withinType,
+	public InterTypeMethodBinding(EclipseFactory world, ResolvedTypeMunger munger, UnresolvedType withinType,
 									AbstractMethodDeclaration sourceMethod)
 	{
 		super();
-		MethodBinding mb = world.makeMethodBinding(signature);
+		ResolvedMember signature = munger.getSignature();
+		MethodBinding mb = world.makeMethodBinding(signature,munger.getTypeVariableAliases());
 		this.modifiers        = mb.modifiers;
 		this.selector         = mb.selector;
 		this.returnType       = mb.returnType;

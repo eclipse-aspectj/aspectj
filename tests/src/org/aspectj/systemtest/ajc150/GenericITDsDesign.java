@@ -36,6 +36,13 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
 	}
 
+
+	private void verifyDebugString(ResolvedMember theMember, String string) {
+		assertTrue("Expected '"+string+"' but found "+theMember.toDebugString(),
+				theMember.toDebugString().equals(string));
+	}
+
+	
 	public static Signature getClassSignature(Ajc ajc,String classname) {
 		try {
 			ClassPath cp = 
@@ -142,26 +149,53 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 	}
 	
 	// Verify: bounds are preserved and accessible after serialization
-	public void xtestDesignB() {
+	public void testDesignB() {
 		runTest("generic itds - design B"); 
 		BcelTypeMunger theBcelMunger = getMungerFromLine("X",7);
+		ResolvedTypeMunger rtMunger = theBcelMunger.getMunger();
+		ResolvedMember theMember = rtMunger.getSignature();
+		verifyDebugString(theMember,"<T extends java.lang.Number> void C.m0(T)");
+		
+		theBcelMunger = getMungerFromLine("X",9);
+		rtMunger = theBcelMunger.getMunger();
+		theMember = rtMunger.getSignature();
+		verifyDebugString(theMember,"<Q extends I> void C.m1(Q)");
+		
+		theBcelMunger = getMungerFromLine("X",11);
+		rtMunger = theBcelMunger.getMunger();
+		theMember = rtMunger.getSignature();
+		verifyDebugString(theMember,"<R extends java.lang.Number,I> void C.m2(R)");
 	}
 	
 	// Verify: a) multiple type variables work. 
 	//         b) type variables below the 'top level' (e.g. List<A>) are preserved.
-	public void xtestDesignC() {
-		runTest("generic itds - design B"); 
-		BcelTypeMunger theBcelMunger = getMungerFromLine("X",7);		
+	public void testDesignC() {
+		runTest("generic itds - design C"); 
+		BcelTypeMunger theBcelMunger = getMungerFromLine("X",9);
+		//System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
+		verifyDebugString(theBcelMunger.getMunger().getSignature(),"<T extends java.lang.Number,Q extends I> void C.m0(T, Q)");
+		
+		theBcelMunger = getMungerFromLine("X",11);
+		System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
+		verifyDebugString(theBcelMunger.getMunger().getSignature(),"<A,B,C> java.util.List<A> C.m1(B, java.util.Collection<C>)");
 	}
 	
-	
-	/*
-	 * broken stuff:
-	 * 
-	 * When generic signatures are unpacked from members, the typevariables attached to the bcelmethod/field won't
-	 * be the same instances as those held in the TypeVariableReferenceTypes for anything that occurs in the
-	 * return type or parameterset - we should perhaps fix that up.
-	 */
+	// Verify: a) sharing type vars with some target type results in the correct variable names in the serialized form
+	public void testDesignD() {
+		runTest("generic itds - design D"); 
+		BcelTypeMunger theBcelMunger = getMungerFromLine("X",9);
+		// System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
+		verifyDebugString(theBcelMunger.getMunger().getSignature(),"void C.m0(R)");
 		
-
+		theBcelMunger = getMungerFromLine("X",11);
+		// System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
+		verifyDebugString(theBcelMunger.getMunger().getSignature(),"java.util.List<Q> C.m0(Q, int, java.util.List<java.util.List<Q>>)");
+	}
+	
+//	// Verify: a) sharing type vars with some target type results in the correct variable names in the serialized form
+//	public void testDesignE() {
+//		runTest("generic itds - design E");
+//		
+//	}
+		
 }

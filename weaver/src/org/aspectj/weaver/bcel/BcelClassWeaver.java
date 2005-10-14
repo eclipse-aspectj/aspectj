@@ -1656,7 +1656,7 @@ class BcelClassWeaver implements IClassWeaver {
 					ResolvedMember resolvedDooberry = world.resolve(declaredSig);
 					annotations = resolvedDooberry.getAnnotationTypes();
 				} else {
-					ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm,memberHostType);
+					ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm.resolve(world),memberHostType);
 					ResolvedMember resolvedDooberry = world.resolve(realthing);
 					// AMC temp guard for M4
 					if (resolvedDooberry == null) {

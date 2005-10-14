@@ -31,13 +31,18 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	public TypeVariableReferenceType(
 			TypeVariable aTypeVariable,
 			World aWorld) {
-		super(aTypeVariable.getUpperBound().getSignature(),aWorld);
+		super(aTypeVariable.getFirstBound().getSignature(),aWorld);
 		this.typeVariable = aTypeVariable;
 		this.isExtends    = false;
 		this.isSuper      = false;
-		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)aTypeVariable.getUpperBound()));
 	}
 	
+	public ReferenceTypeDelegate getDelegate() {
+		if (delegate==null) 
+		  setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)typeVariable.getFirstBound()));
+		return delegate;
+	}
+
 	public UnresolvedType getUpperBound() {
 		if (typeVariable==null) return super.getUpperBound();
 		return typeVariable.getUpperBound();
@@ -74,6 +79,10 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	
 	public boolean isTypeVariableReference() {
 		return true;
+	}
+	
+	public String toString() {
+		return typeVariable.getName();
 	}
 	
 	public boolean isGenericWildcard() {

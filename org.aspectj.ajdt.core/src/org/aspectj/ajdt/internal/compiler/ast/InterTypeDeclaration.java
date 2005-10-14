@@ -59,6 +59,8 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	 */
 	protected List typeVariableAliases; 
 	
+	protected InterTypeScope interTypeScope;
+	
 	/**
 	 * When set to true, the scope hierarchy for the field/method declaration has been correctly modified to
 	 * include an intertypescope which resolves things relative to the targetted type.
@@ -136,8 +138,8 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		if (ignoreFurtherInvestigation) return;
 		
 		if (!scopeSetup) {
-		  ClassScope newParent = new InterTypeScope(upperScope, onTypeBinding,typeVariableAliases);
-		  scope.parent = newParent;
+		  interTypeScope = new InterTypeScope(upperScope, onTypeBinding,typeVariableAliases);
+		  scope.parent = interTypeScope;
 		  this.scope.isStatic = Modifier.isStatic(declaredModifiers);
 		  scopeSetup = true;
 		}
@@ -354,7 +356,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		// if resolution failed, give up - someone else is going to report an error
 		if (rb instanceof ProblemReferenceBinding) return;
 		
-		ClassScope newParent = new InterTypeScope(scope.parent, rb, typeVariableAliases);
+		interTypeScope = new InterTypeScope(scope.parent, rb, typeVariableAliases);
 		// FIXME asc verify the choice of lines here...
 		// Two versions of this next line.  
 		// First one tricks the JDT variable processing code so that it won't complain if
@@ -364,7 +366,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		// this is the original version in case tricking the JDT causes grief (if you reinstate this variant, you
 		// will need to change the expected messages output for some of the generic ITD tests)
 		// scope.isStatic = Modifier.isStatic(declaredModifiers);
-		scope.parent = newParent;
+		scope.parent = interTypeScope;
 	    scopeSetup = true;
 	}
 }

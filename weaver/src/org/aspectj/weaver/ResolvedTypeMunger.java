@@ -45,7 +45,7 @@ public abstract class ResolvedTypeMunger {
 	// across the intertype declaration to the right type variables in the generic
 	// type upon which the itd is being made.
 	// might need serializing the class file for binary weaving.
-	protected List /*String*/ typeVariableToGenericTypeVariableIndex;
+	protected List /*String*/ typeVariableAliases;
 	
 	private Set /* resolvedMembers */ superMethodsCalled = Collections.EMPTY_SET;
 	
@@ -286,4 +286,36 @@ public abstract class ResolvedTypeMunger {
 		}
 	}
 	
+	protected static List readInTypeAliases(VersionedDataInputStream s) throws IOException {
+		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+			int count = s.readInt();
+			List aliases = new ArrayList();
+			for (int i=0;i<count;i++) {
+				aliases.add(s.readUTF());
+			}
+			return aliases;
+		}
+		return null;
+	}
+	
+	protected void writeOutTypeAliases(DataOutputStream s) throws IOException {
+		// Write any type variable aliases
+		if (typeVariableAliases==null || typeVariableAliases.size()==0) {
+			s.writeInt(0);
+		} else {
+			s.writeInt(typeVariableAliases.size());
+			for (Iterator iter = typeVariableAliases.iterator(); iter.hasNext();) {
+				String element = (String) iter.next();
+				s.writeUTF(element);
+			}
+		}
+	}
+	
+	public List getTypeVariableAliases() {
+		return typeVariableAliases;
+	}
+	
+	public boolean hasTypeVariableAliases() {
+		return (typeVariableAliases!=null && typeVariableAliases.size()>0);
+	}
 }

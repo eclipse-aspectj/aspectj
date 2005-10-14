@@ -106,7 +106,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 
 	private boolean mungeNewMethod(SourceTypeBinding sourceType, ResolvedType onType, NewMethodTypeMunger munger, boolean isExactTargetType) {
 		InterTypeMethodBinding binding =
-			new InterTypeMethodBinding(world, munger.getSignature(), aspectType, sourceMethod);
+			new InterTypeMethodBinding(world, munger, aspectType, sourceMethod);
 
 		if (!isExactTargetType) {
 			// we're munging an interface ITD onto a topmost implementor
@@ -144,7 +144,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			//classScope.referenceContext.binding.addMethod(binding);
 		} else {
 			InterTypeMethodBinding binding =
-				new InterTypeMethodBinding(world, munger.getSignature(), aspectType, sourceMethod);
+				new InterTypeMethodBinding(world, munger, aspectType, sourceMethod);
 			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
 		}
 

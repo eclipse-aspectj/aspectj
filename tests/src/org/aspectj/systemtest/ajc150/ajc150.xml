@@ -3229,7 +3229,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 10">
      <compile files="GenericMethodITD10.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Comparable&lt;? super R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Comparable&lt;? super R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
@@ -3240,7 +3240,7 @@
    
    <ajc-test dir="java5/generics/itds" title="generic method itd - 12">
      <compile files="GenericMethodITD12.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? extends R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Foo&lt;? extends R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
@@ -3251,7 +3251,7 @@
 
    <ajc-test dir="java5/generics/itds" title="generic method itd - 14">
      <compile files="GenericMethodITD14.aj" options="-1.5">
-       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Object &amp; Foo&lt;? super R&gt;&gt;"/>
+       <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Foo&lt;? super R&gt;&gt;"/>
      </compile>
    </ajc-test>
    
@@ -3820,13 +3820,13 @@
    
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 2">
    	   <compile files="BaseClass.java,A1.aj" outjar="code.jar" options="-1.5,-showWeaveInfo">
-   	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List BaseClass.list1')"/>
+   	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List&lt;java.lang.String&gt; BaseClass.list1')"/>
    	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java:12) advised by after advice from 'A1' (A1.aj:7)"/>
    	   </compile>
        <compile files="A2.aj" inpath="code.jar" options="-1.5,-showWeaveInfo">
-         <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List BaseClass.list1')"/>
+         <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List&lt;java.lang.String&gt; BaseClass.list1')"/>
    	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java:12) advised by after advice from 'A1' (A1.aj:7)"/>
-	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A2' (A2.aj:'java.util.List BaseClass.list2')"/>
+	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A2' (A2.aj:'java.util.List&lt;N&gt; BaseClass.list2')"/>
          <message kind="weave" text="Type 'BaseClass' (BaseClass.java:13) advised by after advice from 'A2' (A2.aj:8)"/>
        </compile>
         <run class="BaseClass">
@@ -5039,4 +5039,7 @@
      <compile files="DesignC.java" options="-1.5"/>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/itds/design" title="generic itds - design D">
+     <compile files="DesignD.java" options="-1.5,-XnoWeave"/>
+   </ajc-test>
 </suite>

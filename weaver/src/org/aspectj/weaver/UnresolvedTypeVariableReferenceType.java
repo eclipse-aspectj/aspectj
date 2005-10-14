@@ -29,7 +29,7 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 	}
 	
 	public UnresolvedTypeVariableReferenceType(TypeVariable aTypeVariable) {
-		super(aTypeVariable.getUpperBound().getSignature());
+		super(aTypeVariable.getFirstBound().getSignature());
 		this.typeVariable = aTypeVariable;
 	}
 	
@@ -111,21 +111,16 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 		}
 	}
 	
+	public String toDebugString() {
+		return typeVariable.getName();
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		super.write(s);
 	}
-	/*
-	public static void readDeclaringElement(DataInputStream s, UnresolvedTypeVariableReferenceType utv)
-	throws IOException {
-		int kind = s.readInt();
-		utv.typeVariable.setDeclaringElementKind(kind);
-		if (kind == TypeVariable.TYPE) {
-			utv.typeVariable.setDeclaringElement(UnresolvedType.read(s));
-		} else if (kind == TypeVariable.METHOD) {
-			// it's a method
-			ResolvedMember rm = ResolvedMemberImpl.readResolvedMember(new VersionedDataInputStream(s),null);
-			utv.typeVariable.setDeclaringElement(rm);
-		}
+
+	public String getErasureSignature() {
+		return typeVariable.getFirstBound().getSignature();
 	}
-*/
+	
 }

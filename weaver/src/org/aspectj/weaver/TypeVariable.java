@@ -89,6 +89,15 @@ public class TypeVariable {
 		this.lowerBound = aLowerBound;
 	}
 	
+	// First bound is the first 'real' bound, this can be an interface if 
+	// no class bound was specified (it will default to object)
+	public UnresolvedType getFirstBound() {
+		if (upperBound.equals(UnresolvedType.OBJECT) && additionalInterfaceBounds!=null && additionalInterfaceBounds.length!=0) {
+			return additionalInterfaceBounds[0];
+		}
+		return upperBound;
+	}
+	
 	public UnresolvedType getUpperBound() {
 		return upperBound;
 	}
@@ -253,16 +262,22 @@ public class TypeVariable {
 		this.additionalInterfaceBounds = someTypeXs;
 	}
 	
+	public String toDebugString() {
+		return getDisplayName();
+	}
+	
 	public String getDisplayName() {
 		StringBuffer ret = new StringBuffer();
 		ret.append(name);
-		if (!upperBound.getName().equals("java.lang.Object")) {
+		if (!getFirstBound().getName().equals("java.lang.Object")) {
 			ret.append(" extends ");
-			ret.append(upperBound.getName());
+			ret.append(getFirstBound().getName());
 			if (additionalInterfaceBounds != null) {
 				for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-					ret.append(" & ");
-					ret.append(additionalInterfaceBounds[i].getName());
+					if (!getFirstBound().equals(additionalInterfaceBounds[i])) {
+						ret.append(" & ");
+						ret.append(additionalInterfaceBounds[i].getName());
+					}
 				}
 			}
 		}
@@ -284,9 +299,10 @@ public class TypeVariable {
 	public String getSignature() {
 	  	StringBuffer sb = new StringBuffer();
 	  	sb.append(name);
-	  	sb.append(":");
-	  	sb.append(upperBound.getSignature());
-	  	if (additionalInterfaceBounds!=null) {
+		sb.append(":");
+  		sb.append(upperBound.getSignature());
+	  	if (additionalInterfaceBounds!=null && additionalInterfaceBounds.length!=0) {
+		  	sb.append(":");
 		  	for (int i = 0; i < additionalInterfaceBounds.length; i++) {
 				UnresolvedType iBound = additionalInterfaceBounds[i];
 				sb.append(iBound.getSignature());

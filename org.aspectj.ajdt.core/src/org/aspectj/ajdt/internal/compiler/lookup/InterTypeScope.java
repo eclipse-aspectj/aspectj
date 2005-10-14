@@ -13,7 +13,9 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -28,6 +30,7 @@ import org.aspectj.weaver.BCException;
 public class InterTypeScope extends ClassScope {
 	ReferenceBinding onType;
 	List aliases;
+	Map /* real type variable > alias letter */ usedAliases; // Used later when reconstructing the resolved member
 
 	public InterTypeScope(Scope parent, ReferenceBinding onType) {
 		super(parent, null);
@@ -39,6 +42,11 @@ public class InterTypeScope extends ClassScope {
 	public InterTypeScope(Scope parent, ReferenceBinding rb, List list) {
 		this(parent,rb);
 		this.aliases = list;
+	}
+	
+	public String getAnyAliasForTypeVariableBinding(TypeVariableBinding tvb) {
+		if (usedAliases==null) return null;
+		return (String)usedAliases.get(tvb);
 	}
 
 	// this method depends on the fact that BinaryTypeBinding extends SourceTypeBinding
@@ -65,17 +73,25 @@ public class InterTypeScope extends ClassScope {
 	
 
 	public TypeVariableBinding findTypeVariable(char[] name, SourceTypeBinding sourceType) {
-		int aliased = (aliases==null?-1:aliases.indexOf(new String(name)));
+		String variableName = new String(name);
+		int aliased = (aliases==null?-1:aliases.indexOf(variableName));
 		if (aliased!=-1) {
 			if (aliased>sourceType.typeVariables.length || sourceType.typeVariables.length==0) {
 				TypeVariableBinding tvb = new TypeVariableBinding("fake".toCharArray(),null,0);
 				return tvb;
 				// error is going to be reported by someone else!
 			}
-			return sourceType.typeVariables()[aliased];
+			TypeVariableBinding tvb = sourceType.typeVariables()[aliased];
+			if (usedAliases==null) usedAliases = new HashMap();
+			usedAliases.put(tvb,variableName);
+			return tvb;
 		} else {
 		    return sourceType.getTypeVariable(name);
 		}
+	}
+
+	public Map getRecoveryAliases() {
+		return usedAliases;
 	}
 	
 

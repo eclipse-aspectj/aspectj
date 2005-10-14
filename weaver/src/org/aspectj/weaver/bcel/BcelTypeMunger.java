@@ -54,9 +54,11 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -710,15 +712,18 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 	
 	private boolean mungeNewMethod(BcelClassWeaver weaver, NewMethodTypeMunger munger) {
-		ResolvedMember unMangledInterMethod = munger.getSignature();
+		World w = weaver.getWorld();
+		// Resolving it will sort out the tvars
+		ResolvedMember unMangledInterMethod = munger.getSignature().resolve(w);
 		// do matching on the unMangled one, but actually add them to the mangled method
 		ResolvedMember interMethodBody = munger.getInterMethodBody(aspectType);
 		ResolvedMember interMethodDispatcher = munger.getInterMethodDispatcher(aspectType);
+		ResolvedMember memberHoldingAnyAnnotations = interMethodDispatcher;
+		ResolvedType onType = weaver.getWorld().resolve(unMangledInterMethod.getDeclaringType(),munger.getSourceLocation());
 		
 		LazyClassGen gen = weaver.getLazyClassGen();
 		boolean mungingInterface = gen.isInterface();
 		
-		ResolvedType onType = weaver.getWorld().resolve(unMangledInterMethod.getDeclaringType(),munger.getSourceLocation());
 		if (onType.isRawType()) onType = onType.getGenericType();
 
 		boolean onInterface = onType.isInterface();
@@ -758,9 +763,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				AnnotationX annotationsOnRealMember[] = null;
 				ResolvedType toLookOn = aspectType;
 				if (aspectType.isRawType()) toLookOn = aspectType.getGenericType();
-				ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn,interMethodDispatcher);
+				ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn,memberHoldingAnyAnnotations,false);
 				if (realMember==null) throw new BCException("Couldn't find ITD holder member '"+
-						interMethodDispatcher+"' on aspect "+aspectType);
+						memberHoldingAnyAnnotations+"' on aspect "+aspectType);
 				annotationsOnRealMember = realMember.getAnnotations();
 				
 				if (annotationsOnRealMember!=null) {
@@ -878,7 +883,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 	}
 	
-	private ResolvedMember getRealMemberForITDFromAspect(ResolvedType aspectType,ResolvedMember lookingFor) {
+	private ResolvedMember getRealMemberForITDFromAspect(ResolvedType aspectType,ResolvedMember lookingFor,boolean isCtorRelated) {
+		World world = aspectType.getWorld();
+		boolean debug = false;
+		if (debug) {
+			System.err.println("Searching for a member on type: "+aspectType);
+			System.err.println("Member we are looking for: "+lookingFor);
+		}
 		ResolvedMember aspectMethods[] = aspectType.getDeclaredMethods();
 		UnresolvedType [] lookingForParams = lookingFor.getParameterTypes();
 		
@@ -886,21 +897,39 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		for (int i = 0; realMember==null && i < aspectMethods.length; i++) {
 			ResolvedMember member = aspectMethods[i];
 			if (member.getName().equals(lookingFor.getName())){
-				UnresolvedType [] memberParams = member.getParameterTypes();
+				UnresolvedType [] memberParams = member.getGenericParameterTypes();
 				if (memberParams.length == lookingForParams.length){
+					if (debug) System.err.println("Reviewing potential candidates: "+member);
 					boolean matchOK = true;
-					for (int j = 0; j < memberParams.length && matchOK; j++){
-						UnresolvedType memberParam = memberParams[j];
-						UnresolvedType lookingForParam = lookingForParams[j].resolve(aspectType.getWorld()); 
-						if (lookingForParam.isTypeVariableReference()) lookingForParam = lookingForParam.getUpperBound();
-						if (!memberParam.equals(lookingForParam)){
+					// If not related to a ctor ITD then the name is enough to confirm we have the
+					// right one.  If it is ctor related we need to check the params all match, although
+					// only the erasure.
+					if (isCtorRelated) {
+					  for (int j = 0; j < memberParams.length && matchOK; j++){
+						ResolvedType pMember = memberParams[j].resolve(world);
+						ResolvedType pLookingFor = lookingForParams[j].resolve(world); 
+						
+						if (pMember.isTypeVariableReference()) 
+							pMember = ((TypeVariableReference)pMember).getTypeVariable().getFirstBound().resolve(world);
+						if (pMember.isParameterizedType() || pMember.isGenericType()) 
+							pMember = pMember.getRawType().resolve(aspectType.getWorld());
+						
+						if (pLookingFor.isTypeVariableReference()) 
+							pLookingFor = ((TypeVariableReference)pLookingFor).getTypeVariable().getFirstBound().resolve(world);
+						if (pLookingFor.isParameterizedType() || pLookingFor.isGenericType()) 
+							pLookingFor = pLookingFor.getRawType().resolve(world);
+						
+						if (debug) System.err.println("Comparing parameter "+j+"   member="+pMember+"   lookingFor="+pLookingFor);
+						if (!pMember.equals(pLookingFor)){
 							matchOK=false;
 						}
+					  }
 					}
 					if (matchOK) realMember = member;
 				}
 			}
 		}
+		if (debug && realMember==null) System.err.println("Didn't find a match");
 		return realMember;
 	}
 
@@ -981,7 +1010,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			
 			ResolvedMember interMethodDispatcher =AjcMemberMaker.postIntroducedConstructor(aspectType,onType,newConstructorTypeMunger.getSignature().getParameterTypes());
 			AnnotationX annotationsOnRealMember[] = null;
-			ResolvedMember realMember = getRealMemberForITDFromAspect(aspectType,interMethodDispatcher);
+			ResolvedMember realMember = getRealMemberForITDFromAspect(aspectType,interMethodDispatcher,true);
 			if (realMember==null) throw new BCException("Couldn't find ITD holder member '"+
 					interMethodDispatcher+"' on aspect "+aspectType);
 			annotationsOnRealMember = realMember.getAnnotations();
@@ -1159,7 +1188,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				// the below line just gets the method with the same name in aspectType.getDeclaredMethods();
 				ResolvedType toLookOn = aspectType;
 				if (aspectType.isRawType()) toLookOn = aspectType.getGenericType();
-				ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn,interMethodBody);
+				ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn,interMethodBody,false);
 				if (realMember==null) throw new BCException("Couldn't find ITD init member '"+
 						interMethodBody+"' on aspect "+aspectType);
 				annotationsOnRealMember = realMember.getAnnotations();

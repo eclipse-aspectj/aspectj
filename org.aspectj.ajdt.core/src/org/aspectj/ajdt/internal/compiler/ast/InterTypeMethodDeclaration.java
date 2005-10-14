@@ -167,11 +167,11 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	
 
 	public EclipseTypeMunger build(ClassScope classScope) {
-		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
+		EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		
 		resolveOnType(classScope);
 		if (ignoreFurtherInvestigation) return null;
-		
+
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
 		if (binding == null) {
 			// if binding is null, we failed to find a type used in the method params, this error
@@ -183,23 +183,22 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		if (isTargetAnnotation(classScope,"method")) return null; // Error message output in isTargetAnnotation
 		if (isTargetEnum(classScope,"method")) return null; // Error message output in isTargetEnum
 		
-
 		// This signature represents what we want consumers of the targetted type to 'see'
 		// must use the factory method to build it since there may be typevariables from the binding
 		// referred to in the parameters/returntype
-		ResolvedMember sig = world.makeResolvedMember(binding,onTypeBinding);
+		ResolvedMember sig = factory.makeResolvedMemberForITD(binding,onTypeBinding,interTypeScope.getRecoveryAliases());
 		sig.resetName(new String(declaredSelector));
 		int resetModifiers = declaredModifiers;
 		if (binding.isVarargs())  resetModifiers = resetModifiers | Constants.ACC_VARARGS;
 		sig.resetModifiers(resetModifiers); 
-		NewMethodTypeMunger myMunger = new NewMethodTypeMunger(sig, null);
+		NewMethodTypeMunger myMunger = new NewMethodTypeMunger(sig, null, typeVariableAliases);
 		setMunger(myMunger);
-		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
+		ResolvedType aspectType = factory.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me =
 			myMunger.getInterMethodBody(aspectType);
 		this.selector = binding.selector = me.getName().toCharArray();
 		
-		return new EclipseTypeMunger(world, myMunger, aspectType, this);
+		return new EclipseTypeMunger(factory, myMunger, aspectType, this);
 	}
 	
 	
