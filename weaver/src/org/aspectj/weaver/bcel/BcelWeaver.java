@@ -60,6 +60,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.AsmRelationshipProvider;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
 import org.aspectj.weaver.IClassFileProvider;
@@ -1011,8 +1012,12 @@ public class BcelWeaver implements IWeaver {
 		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
 		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
 			String className = classFile.getClassName();
-		    BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
-		    if (classType.isAspect()) {
+			ResolvedType theType = world.resolve(className);
+			if (theType.isAspect()) {
+				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+				if (classType==null) {
+					throw new BCException("Can't find bcel delegate for "+className);
+				}
 		        weaveAndNotify(classFile, classType,requestor);
 		        wovenClassNames.add(className);
 		    }
@@ -1025,8 +1030,12 @@ public class BcelWeaver implements IWeaver {
 		for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
 		    UnwovenClassFile classFile = (UnwovenClassFile)i.next();
 			String className = classFile.getClassName();
-		    BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(className));
-		    if (! classType.isAspect()) {
+			ResolvedType theType = world.resolve(className);
+			if (!theType.isAspect()) {
+				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+				if (classType==null) {
+					throw new BCException("Can't find bcel delegate for "+className);
+				}
 		        weaveAndNotify(classFile, classType, requestor);
 		        wovenClassNames.add(className);
 		    }
