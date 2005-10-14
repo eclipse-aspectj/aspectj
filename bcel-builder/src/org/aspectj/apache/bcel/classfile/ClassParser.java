@@ -70,7 +70,7 @@ import  java.util.zip.*;
  * JVM specification 1.0</a>. See this paper for
  * further details about the structure of a bytecode file.
  *
- * @version $Id: ClassParser.java,v 1.3 2005/09/14 11:10:57 aclement Exp $
+ * @version $Id: ClassParser.java,v 1.4 2005/10/14 08:39:32 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public final class ClassParser {
@@ -252,7 +252,16 @@ public final class ClassParser {
    */
   private final void readConstantPool() throws IOException, ClassFormatException
   {
-    constant_pool = new ConstantPool(file);
+    try {
+		constant_pool = new ConstantPool(file);
+	} catch (ClassFormatException cfe) {
+		// add some context if we can
+		if (file_name!=null) {
+			String newmessage = "File: '"+file_name+"': "+cfe.getMessage();
+			throw new ClassFormatException(newmessage); // this loses the old stack trace but I dont think that matters!
+		}
+		throw cfe;
+	}
   }    
 
   /**
