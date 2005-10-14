@@ -355,6 +355,7 @@ public class GenericSignatureParser {
 				case '.' :
 					if (identifier.length() > 0) tokens.add(identifier.toString());
 					identifier = new StringBuffer();
+					couldSeePrimitive = false;
 					tokens.add(".");
 					break;
 				case '(' :
