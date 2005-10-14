@@ -15,9 +15,14 @@
 package org.aspectj.internal.build;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import junit.framework.TestCase;
 
@@ -97,6 +102,9 @@ public class BuildModuleTest extends TestCase {
     protected void tearDown() throws Exception {
 		super.tearDown();
         if (debugging() && !REMOVE_JARS_AFTER_DEBUGGING) {
+            if (0 < tempFiles.size()) {
+                System.err.println("debugging files left: " + tempFiles);
+            }
             return;
         }
         deleteTempFiles();
@@ -169,6 +177,14 @@ public class BuildModuleTest extends TestCase {
 //        System.out.println("results: " + Arrays.asList(results));
 //        deleteTempFiles();
 //    }
+    public void testNoDuplicates() {
+        File weaverAllJar = doTask("weaver",true, true, true);
+        String dupError = duplicateEntryError(weaverAllJar);
+        weaverAllJar.delete();
+        if (null != dupError) {
+            fail(dupError);
+        }
+    }
     public void testAjbrowser() {
         checkBuild("ajbrowser", 
             "org.aspectj.tools.ajbrowser.Main",
@@ -320,6 +336,36 @@ public class BuildModuleTest extends TestCase {
     private static boolean debugging() {
         return ((null != DEBUGS) && (0 < DEBUGS.length));
     }
+    private static String duplicateEntryError(File weaverAllJar) {
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(weaverAllJar);
+            Enumeration e = zipFile.entries();
+            ArrayList entryNames = new ArrayList();
+            while (e.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) e.nextElement();
+                String name = entry.getName();
+                if (entryNames.contains(name)) {
+                    return "duplicate entry: " + name;
+                }
+                entryNames.add(name);
+            }
+        } catch (ZipException e) {
+            return "ZipException " + e;
+        } catch (IOException e) {
+            return "IOException " + e;
+        } finally {
+            if (null != zipFile) {
+                try {
+                    zipFile.close();
+                } catch (IOException e) {
+                    return "IOException closing " + zipFile + ": " + e;
+                }
+            }
+        }
+        return null;
+    }
+    
     private static String name(String module, boolean trimTesting, boolean assemble) {
         return module + (trimTesting?"":"-test") + (assemble?"-all":"");
     }
