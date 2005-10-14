@@ -1,0 +1,6 @@
+<aspectj>
+    <aspect name="Aspect1"/>
+    <aspect name="Aspect2"/>
+    
+    <weaver options="-showWeaveInfo"/>
+</aspectj>

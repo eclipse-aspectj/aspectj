@@ -25,7 +25,7 @@ import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.WeavingURLClassLoader;
+import org.aspectj.weaver.loadtime.WeavingURLClassLoader;
 
 import java.io.*;
 import java.lang.reflect.*;

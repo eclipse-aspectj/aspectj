@@ -1,84 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="testsrc">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/lib/ant/ant-src.zip" kind="lib" path="/lib/ant/lib/ant.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/lib/jdiff/jdiff.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/lib/regexp/jakarta-regexp-1.2.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/bridge">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/util">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/testing-client">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/lib/ant/lib/xercesImpl.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/lib/ant/lib/xml-apis.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" sourcepath="/lib/commons/commons-src.zip" kind="lib" path="/lib/commons/commons.jar">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/testing-util">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/ajde">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/asm">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/taskdefs">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="newsrc">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="/org.aspectj.ajdt.core">
-		<attributes>
-		</attributes>
-	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/weaver">
-		<attributes>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="testsrc"/>
+	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
+	<classpathentry sourcepath="/lib/ant/ant-src.zip" kind="lib" path="/lib/ant/lib/ant.jar"/>
+	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry kind="lib" path="/lib/jdiff/jdiff.jar"/>
+	<classpathentry kind="lib" path="/lib/regexp/jakarta-regexp-1.2.jar"/>
+	<classpathentry kind="src" path="/bridge"/>
+	<classpathentry kind="src" path="/util"/>
+	<classpathentry kind="src" path="/testing-client"/>
+	<classpathentry kind="lib" path="/lib/ant/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/lib/ant/lib/xml-apis.jar"/>
+	<classpathentry exported="true" sourcepath="/lib/commons/commons-src.zip" kind="lib" path="/lib/commons/commons.jar"/>
+	<classpathentry kind="src" path="/testing-util"/>
+	<classpathentry kind="src" path="/ajde"/>
+	<classpathentry kind="src" path="/asm"/>
+	<classpathentry kind="src" path="/taskdefs"/>
+	<classpathentry kind="src" path="newsrc"/>
+	<classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/loadtime"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

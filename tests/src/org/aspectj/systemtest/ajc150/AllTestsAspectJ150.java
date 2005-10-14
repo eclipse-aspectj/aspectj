@@ -13,6 +13,7 @@ package org.aspectj.systemtest.ajc150;
 import org.aspectj.systemtest.ajc150.ataspectj.AtAjSyntaxTests;
 import org.aspectj.systemtest.ajc150.ataspectj.AtAjMisuseTests;
 import org.aspectj.systemtest.ajc150.ataspectj.AtAjLTWTests;
+import org.aspectj.systemtest.ajc150.ltw.LTWTests;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -52,7 +53,9 @@ public class AllTestsAspectJ150 {
         suite.addTest(AtAjMisuseTests.suite());
         suite.addTest(AtAjLTWTests.suite());
         suite.addTest(HasMember.suite());
-		//$JUnit-END$
+
+		suite.addTestSuite(LTWTests.class);
+        //$JUnit-END$
 		return suite;
 	}
 }

@@ -13,5 +13,6 @@
 	<classpathentry kind="src" path="/testing-util"/>
 	<classpathentry kind="src" path="/testing-client"/>
 	<classpathentry kind="src" path="/org.eclipse.jdt.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/loadtime"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

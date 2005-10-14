@@ -1,0 +1,33 @@
+<!-- Load-time weaving tests -->
+
+	<ajc-test dir="ltw"
+      title="Ensure 1st aspect is rewoven when weaving 2nd aspect"
+      keywords="reweavable">
+        <compile
+        	files="Main.java, Aspect1.aj"
+			outjar="main1.jar"
+            options="-showWeaveInfo"
+        >
+        	<message kind="weave" text="method-execution(void Main.test1())' in Type 'Main' (Main.java:15) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
+        </compile>	
+        <compile
+        	classpath="main1.jar"
+        	files="Aspect2.aj"
+        	outjar="aspect2.jar"
+            options="-showWeaveInfo"
+        >
+        </compile>	
+        <run class="Main" ltw="aop-ltwreweavable.xml">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+                <line text="Aspect1.before_test1"/>
+                <line text="Aspect2.before_test2"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+    

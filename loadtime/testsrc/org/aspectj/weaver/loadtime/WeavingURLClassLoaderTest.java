@@ -10,7 +10,7 @@
  *     Matthew Webster     initial implementation 
  * ******************************************************************/
 
-package org.aspectj.weaver;
+package org.aspectj.weaver.loadtime;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.testing.util.TestUtil.TestError;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**

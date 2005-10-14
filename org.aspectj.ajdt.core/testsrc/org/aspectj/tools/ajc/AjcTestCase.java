@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.util.TestUtil;
+import org.aspectj.weaver.loadtime.WeavingURLClassLoader;
 
 import junit.framework.TestCase;
 
@@ -518,7 +519,7 @@ public class AjcTestCase extends TestCase {
 		return lastRunResult;
 	}
     public void testNothingForAntJUnit() {}
-	
+    
 	/**
 	 * Run the given class (main method), and return the result in a RunResult. The program runs with
 	 * a classpath containing the sandbox directory, runtime, testing-client, bridge, and
@@ -527,6 +528,11 @@ public class AjcTestCase extends TestCase {
 	public RunResult run(String className){
 		return run(className,new String[0],null);
 	}
+
+	public RunResult run(String className, String[] args, String classpath)  {
+		return run(className,args,null,false);
+	}
+
 	
 	/**
 	 * Run the given class, and return the result in a RunResult. The program runs with
@@ -537,7 +543,7 @@ public class AjcTestCase extends TestCase {
 	 * bridge, and util projects will all be appended to the classpath, as will any jars in
 	 * the sandbox.
 	 */
-	public RunResult run(String className, String[] args, String classpath)  {
+	public RunResult run(String className, String[] args, String classpath, boolean useLTW)  {
 		lastRunResult = null;
 		StringBuffer cp = new StringBuffer();
 		if (classpath != null) {
@@ -569,8 +575,15 @@ public class AjcTestCase extends TestCase {
 		} catch (Exception malEx) {
 			fail("Bad classpath specification: " + classpath);
 		}
-		URLClassLoader cLoader = new URLClassLoader(urls,null);
-		//System.out.println(cLoader.getParent());
+		
+		URLClassLoader cLoader;
+		if (useLTW) {
+			cLoader = new WeavingURLClassLoader(urls,null);
+		}
+		else {
+			cLoader = new URLClassLoader(urls,null);
+		}
+
 		try {
 			try {
 				Class testerClass = cLoader.loadClass("org.aspectj.testing.Tester");

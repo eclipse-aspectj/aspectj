@@ -11,7 +11,7 @@
  *     Martin Lippert     initial implementation 
  * ******************************************************************/
 
-package org.aspectj.weaver;
+package org.aspectj.weaver.loadtime;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.aspectj.weaver.ExtensibleURLClassLoader;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 import org.aspectj.weaver.tools.WeavingClassLoader;
 
@@ -44,11 +45,22 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 //		System.err.println("? WeavingURLClassLoader.<init>(" + parent + ")");
 	}
 	
+	public WeavingURLClassLoader (URL[] urls, ClassLoader parent) {
+		super(urls,parent);
+//		System.out.println("WeavingURLClassLoader.WeavingURLClassLoader()");
+	}
+	
 	public WeavingURLClassLoader (URL[] classURLs, URL[] aspectURLs, ClassLoader parent) {
 		super(classURLs,parent);
-//		System.err.println("? WeavingURLClassLoader.<init>()");
+//		System.err.println("? WeavingURLClassLoader.<init>() classURLs=" + classURLs.length + ", aspectURLs=" + aspectURLs.length);
 		this.aspectURLs = aspectURLs;
-		adaptor = new WeavingAdaptor(this);
+		
+		/* If either we nor our parent is using an ASPECT_PATH use a new-style
+		 * adaptor
+		 */ 
+		if (this.aspectURLs.length > 0 || parent instanceof WeavingClassLoader) {
+			adaptor = new WeavingAdaptor(this);
+		}
 	}
 	
 	private static String getAspectPath () {
@@ -87,6 +99,14 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	 */
 	protected Class defineClass(String name, byte[] b, CodeSource cs) throws IOException {
 //		System.err.println("? WeavingURLClassLoader.defineClass(" + name + ", [" + b.length + "])");
+		
+		/* Need to defer creation because of possible recursion during constructor execution */
+		if (adaptor == null) {
+			ClassLoaderWeavingAdaptor clwAdaptor = new ClassLoaderWeavingAdaptor(this,null);
+			clwAdaptor.initialize(this,null);
+			adaptor = clwAdaptor;
+		}
+		
 		b = adaptor.weaveClass(name,b);
 		return super.defineClass(name, b, cs);
 	}
@@ -115,5 +135,29 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	public void acceptClass (String name, byte[] bytes) {
 		generatedClasses.put(name,bytes);
 	}
+	
+//	private interface ClassPreProcessorAdaptor extends ClassPreProcessor {
+//		public void addURL(URL url);
+//	}
+//	
+//	private class WeavingAdaptorPreProcessor implements ClassPreProcessorAdaptor {
+//		
+//		private WeavingAdaptor adaptor;
+//		
+//		public WeavingAdaptorPreProcessor (WeavingClassLoader wcl) {
+//			adaptor = new WeavingAdaptor(wcl);
+//		}
+//	    
+//		public void initialize() {
+//		}
+//
+//	    public byte[] preProcess(String className, byte[] bytes, ClassLoader classLoader) {
+//	    	return adaptor.weaveClass(className,bytes);
+//	    }
+//
+//		public void addURL(URL url) {
+//			
+//		}
+//	}
 
 }

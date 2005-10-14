@@ -12,11 +12,13 @@
 package org.aspectj.testing;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
+import org.aspectj.util.FileUtil;
 
 /**
  * @author colyer
@@ -34,6 +36,7 @@ public class RunSpec implements ITestStep {
 	private AjcTest myTest;
 	private OutputSpec stdErrSpec;
 	private OutputSpec stdOutSpec;
+	private String ltwFile;
 	
 	public RunSpec() {
 	}
@@ -46,7 +49,9 @@ public class RunSpec implements ITestStep {
 			System.err.println("Warning, message spec for run command is currently ignored (org.aspectj.testing.RunSpec)");
 		}
 		String[] args = buildArgs();
-		AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(),args,getClasspath());
+//		System.err.println("? execute() inTestCase='" + inTestCase + "', ltwFile=" + ltwFile);
+		boolean useLtw = copyLtwFile(inTestCase.getSandboxDirectory());
+		AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(),args,getClasspath(),useLtw);
 		if (stdErrSpec != null) {
 			stdErrSpec.matchAgainst(rr.getStdErr());
 		}
@@ -102,6 +107,14 @@ public class RunSpec implements ITestStep {
 	public void setClassToRun(String classToRun) {
 		this.classToRun = classToRun;
 	}
+
+	public String getLtwFile() {
+		return ltwFile;
+	}
+
+	public void setLtwFile(String ltwFile) {
+		this.ltwFile = ltwFile;
+	}
 	
 	private String[] buildArgs() {
 		if (options == null) return new String[0];
@@ -111,5 +124,24 @@ public class RunSpec implements ITestStep {
 			ret[i] = strTok.nextToken();
 		}
 		return ret;
+	}
+	
+	private boolean copyLtwFile (File sandboxDirectory) {
+		boolean useLtw = false;
+		
+		if (ltwFile != null) {
+			File from = new File(baseDir,ltwFile);
+			File to = new File(sandboxDirectory,"META-INF" + File.separator + "aop.xml");
+//			System.out.println("RunSpec.copyLtwFile() from=" + from.getAbsolutePath() + " to=" + to.getAbsolutePath());
+			try {
+				FileUtil.copyFile(from,to);
+				useLtw = true;
+			}
+			catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		return useLtw;
 	}
 }
