@@ -301,7 +301,7 @@ final class BcelMethod extends ResolvedMemberImpl {
 				} catch (GenericSignatureFormatException e) {
 //					 development bug, fail fast with good info
 					throw new IllegalStateException(
-							"While determing the generic parameter types of " + this.toString()
+							"While determining the generic parameter types of " + this.toString()
 							+ " with generic signature " + gSig + " the following error was detected: "
 							+ e.getMessage());
 				}
