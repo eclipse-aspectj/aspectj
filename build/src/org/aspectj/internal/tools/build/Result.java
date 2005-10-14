@@ -217,9 +217,10 @@ public class Result {
         return outOfDate;
     }
 
-    public List findKnownJarAntecedants() {
+    /** @return List (File) of jar's required */
+    public List findJarRequirements() {
         ArrayList result = new ArrayList();
-        Module.doFindKnownJarAntecedants(this, result);
+        Module.doFindJarRequirements(this, result);
         return result;
     }
 

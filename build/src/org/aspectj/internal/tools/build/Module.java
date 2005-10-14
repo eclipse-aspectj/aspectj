@@ -99,7 +99,7 @@ public class Module {
      * 
      * @see findKnownJarAntecedants()
      */
-     static void doFindKnownJarAntecedants(Result result, List known) {
+     static void doFindJarRequirements(Result result, List known) {
         Util.iaxIfNull(result, "result");
         Util.iaxIfNull(known, "known");
         addIfNew(result.getLibJars(), known);
@@ -110,7 +110,7 @@ public class Module {
             File requiredJar = requiredResult.getOutputFile();
             if (!known.contains(requiredJar)) {
                 known.add(requiredJar);
-                doFindKnownJarAntecedants(requiredResult, known);
+                doFindJarRequirements(requiredResult, known);
             }
         }
     }
