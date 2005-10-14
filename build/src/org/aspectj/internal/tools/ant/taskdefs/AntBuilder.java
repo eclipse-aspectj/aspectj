@@ -468,7 +468,7 @@ public class AntBuilder extends Builder {
         zip.setDestFile(result.getOutputFile());
         ZipFileSet zipfileset = null;
         final Module module = result.getModule();
-        List known = result.findKnownJarAntecedants();
+        List known = result.findJarRequirements();
         removeLibraryFilesToSkip(module, known);
         // -- merge any antecedents, less any manifest
         for (Iterator iter = known.iterator(); iter.hasNext();) {
@@ -477,20 +477,17 @@ public class AntBuilder extends Builder {
             zipfileset.setProject(project);
             zipfileset.setSrc(jarFile);
             zipfileset.setIncludes("**/*");
-            zipfileset.setExcludes("META-INF/MANIFEST.MF");  // XXXFileLiteral
-            zipfileset.setExcludes("META-INF/manifest.mf");
-            zipfileset.setExcludes("meta-inf/manifest.mf");
-            zipfileset.setExcludes("meta-inf/MANIFEST.MF");
+            String name = jarFile.getName();
+            name = name.substring(0, name.length()-4); // ".jar".length()
+            // required includes self - exclude manifest from others
+            if (!module.name.equals(name)) {
+                zipfileset.setExcludes("META-INF/MANIFEST.MF");  // XXXFileLiteral
+                zipfileset.setExcludes("META-INF/manifest.mf");
+                zipfileset.setExcludes("meta-inf/manifest.mf");
+                zipfileset.setExcludes("meta-inf/MANIFEST.MF");
+            }
             zip.addZipfileset(zipfileset);
         }
-        
-        // merge the module jar itself, including same manifest (?)
-        zipfileset = new ZipFileSet();
-        zipfileset.setProject(project);
-        Kind normal = Result.kind(result.getKind().isNormal(), !Result.ASSEMBLE);
-        File src = module.getResult(normal).getOutputFile();
-        zipfileset.setSrc(src);
-        zip.addZipfileset(zipfileset);
 
         try {
             handler.log("assembling all " + module
