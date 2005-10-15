@@ -217,7 +217,7 @@ public class ConfigParser {
     private File makeFile(File dir, String name) {
         name = name.replace('/', File.separatorChar);
         File ret = new File(name);
-        if (dir != null && !ret.isAbsolute()) { 
+        if (!ret.exists() && (dir != null) && !ret.isAbsolute()) { 
           ret = new File(dir, name);
         }
         try {
