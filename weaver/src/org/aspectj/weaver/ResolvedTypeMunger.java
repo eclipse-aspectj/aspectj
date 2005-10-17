@@ -321,4 +321,22 @@ public abstract class ResolvedTypeMunger {
 	public boolean hasTypeVariableAliases() {
 		return (typeVariableAliases!=null && typeVariableAliases.size()>0);
 	}
+	
+	/**
+	 * return true if type variables are specified with the target type for
+	 * this ITD.  e.g. this would return true: "int I<A,B>.m() { return 42; }"
+	 */
+	public boolean sharesTypeVariablesWithGenericType() {
+		return (typeVariableAliases!=null && typeVariableAliases.size()>0);
+	}
+	
+	/**
+     * Parameterizes a resolved type munger for a particular usage of
+     * its target type (this is used when the target type is generic
+     * and the ITD shares type variables with the target)
+     * see ConcreteTypeMunger.parameterizedFor
+     */
+	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
+		throw new BCException("Should *NOT* be called for this kind of munger: "+this);
+	}
 }

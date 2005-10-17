@@ -1376,5 +1376,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			return false;
 		}
 	}
+	
+	public ConcreteTypeMunger parameterizedFor(ResolvedType target) {
+		return new BcelTypeMunger(munger.parameterizedFor(target),aspectType);
+	}
 }
 		

@@ -81,5 +81,29 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 //		ConcreteTypeMunger o = (ConcreteTypeMunger) other;
 		return 0;
 	}
+	
+	/**
+	 * ITDs can be made on generic types and 'share' type variables with
+	 * the generic type.  In this case we may need to 'tailor' the munger
+	 * for addition to a particulra type.  For eaxmple:
+	 *   interface I<T> {}
+	 *   
+	 *   aspect X implements I<String> {
+	 *     List<T> I<T>.foo { return null; }
+	 *   }
+	 *   
+	 * In this case the munger matches X but it matches with the form
+	 *   List<String> foo() { return null; }
+	 */
+	public boolean isTargetTypeParameterized() {
+		if (munger==null) return false; 
+		return munger.sharesTypeVariablesWithGenericType();
+	}
 
+    /**
+     * For an ITD made on a generic type that shares type variables with
+     * that target type, this method will tailor the ITD for a particular usage
+     * of the generic type - either in its raw or parameterized form.
+     */
+	public abstract ConcreteTypeMunger parameterizedFor(ResolvedType targetType);
 }

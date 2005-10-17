@@ -64,4 +64,15 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		if (ResolvedType.matches(ret, member)) return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
+	
+	/**
+     * ResolvedTypeMunger.parameterizedFor(ResolvedType)
+     */
+	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
+		ResolvedType genericType = target;
+		if (target.isRawType() || target.isParameterizedType()) genericType = genericType.getGenericType();
+		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType());
+		return new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+	}
+
 }
