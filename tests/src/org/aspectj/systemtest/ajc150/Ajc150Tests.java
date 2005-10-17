@@ -485,9 +485,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testCantProvideDefaultImplViaITD_pr110307_1() {runTest("Cant provide default implementation via ITD - 1");}
 //  public void testCantProvideDefaultImplViaITD_pr110307_2() {runTest("Cant provide default implementation via ITD - 2");}
 //  public void testCantProvideDefaultImplViaITD_pr110307_3() {runTest("Cant provide default implementation via ITD - 3");}
-//  public void testCantProvideDefaultImplViaITD_pr110307_4() {runTest("Cant provide default implementation via ITD - 4");}
+  public void testCantProvideDefaultImplViaITD_pr110307_4() {runTest("Cant provide default implementation via ITD - 4");}
 //  public void testCantProvideDefaultImplViaITD_pr110307_5() {runTest("Cant provide default implementation via ITD - 5");}
- // public void testCantProvideDefaultImplViaITD_pr110307_6() {runTest("Cant provide default implementation via ITD - 6");}
+//  public void testCantProvideDefaultImplViaITD_pr110307_6() {runTest("Cant provide default implementation via ITD - 6");}
   
   public void testCallJoinPointsInAnonymousInnerClasses() {
 	  runTest("call join points in anonymous inner classes");

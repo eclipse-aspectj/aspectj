@@ -197,5 +197,9 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	public AbstractMethodDeclaration getSourceMethod() {
 		return sourceMethod;
 	}
+	
+	public ConcreteTypeMunger parameterizedFor(ResolvedType target) {
+		return new EclipseTypeMunger(world,munger.parameterizedFor(target),aspectType,sourceMethod);
+	}
 
 }
