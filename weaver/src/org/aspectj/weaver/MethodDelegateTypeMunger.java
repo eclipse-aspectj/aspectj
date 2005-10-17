@@ -13,13 +13,10 @@
 
 package org.aspectj.weaver;
 
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.patterns.TypePattern;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Set;
-import java.util.Iterator;
+
+import org.aspectj.weaver.patterns.TypePattern;
 
 /**
  * Type munger for @AspectJ ITD declare parents ie with an interface AND an implementation.
