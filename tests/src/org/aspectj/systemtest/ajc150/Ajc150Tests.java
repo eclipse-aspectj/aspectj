@@ -202,8 +202,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
   
-   // IfPointcut.findResidueInternal() was modified to make this test complete in a short amount
-   // of time - if you see it hanging, someone has messed with the optimization.
+  // IfPointcut.findResidueInternal() was modified to make this test complete in a short amount
+  // of time - if you see it hanging, someone has messed with the optimization.
   public void testIfEvaluationExplosion_pr94086() {
 	  runTest("Exploding compile time with if() statements in pointcut");
   }
@@ -481,6 +481,13 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testParameterizedGenericMethods() {
 	  runTest("parameterized generic methods");
   }
+  
+//  public void testCantProvideDefaultImplViaITD_pr110307_1() {runTest("Cant provide default implementation via ITD - 1");}
+//  public void testCantProvideDefaultImplViaITD_pr110307_2() {runTest("Cant provide default implementation via ITD - 2");}
+//  public void testCantProvideDefaultImplViaITD_pr110307_3() {runTest("Cant provide default implementation via ITD - 3");}
+//  public void testCantProvideDefaultImplViaITD_pr110307_4() {runTest("Cant provide default implementation via ITD - 4");}
+//  public void testCantProvideDefaultImplViaITD_pr110307_5() {runTest("Cant provide default implementation via ITD - 5");}
+ // public void testCantProvideDefaultImplViaITD_pr110307_6() {runTest("Cant provide default implementation via ITD - 6");}
   
   public void testCallJoinPointsInAnonymousInnerClasses() {
 	  runTest("call join points in anonymous inner classes");

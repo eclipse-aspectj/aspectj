@@ -2801,7 +2801,7 @@
         </stderr>
       </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/suppressedWarnings" title="SuppressAjWarnings raised during matching">
        <compile files="SuppressionDuringMatching.aj" options="-1.5">
        </compile>
@@ -4954,7 +4954,7 @@
    <ajc-test dir="bugs150" title="Unable to build shadows">
      <compile files="pr109728.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110788" title="bad generic decp - 1">
      <compile files="Case1.java" options="-1.5">
        <message kind="error" line="10" text="Cannot declare parent B&lt;java.lang.Number&gt; onto type C since it already has A&lt;java.lang.String&gt; in its hierarchy"/>
@@ -4977,8 +4977,8 @@
    
    <ajc-test dir="bugs150/pr110927" title="cant create signature attribute">
      <compile files="Case1.java" options="-1.5"/>
-   </ajc-test>
-   
+   </ajc-test>   
+
    <ajc-test dir="bugs150/pr72834" title="broken dispatch">
      <compile files="Trouble.java">
        <message kind="error" line="7" text="package visible abstract inter-type declarations are not allowed"/>
@@ -5025,6 +5025,45 @@
       </run>
    </ajc-test>
    
+   <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 1">
+     <compile files="Case1.java" options="-1.5">
+       <message kind="warning" line="27" text="no match for this type name: Branch [Xlint:invalidAbsoluteTypeName]"/>
+       <message kind="error" line="26" text="can't bind type name 'Branch'"/>
+       <message kind="error" line="27" text="can't bind type name 'Revision'"/>
+       <message kind="error" line="33" text="List cannot be resolved to a type"/>
+       <message kind="error" line="38" text="List cannot be resolved to a type"/>
+       <message kind="error" line="39" text="List cannot be resolved to a type"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 2">
+     <compile files="Case2.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 3">
+     <compile files="Case3.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 4">
+     <compile files="Case4.java" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 5">
+     <compile files="Case5.java" options="-1.5">
+       <!-- might possibly need more diagnostics in this case to explain what has happened -->
+       <message kind="error" line="10" text="can't override java.util.List&lt;java.lang.String&gt; I.foo() with java.util.List&lt;java.lang.Integer&gt; A.foo() return types don't match"/>
+       <message kind="error" line="15" text="can't override java.util.List&lt;java.lang.String&gt; I.foo() with java.util.List&lt;java.lang.Integer&gt; A.foo() return types don't match"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 6">
+     <compile files="Case6.java" options="-1.5">
+       <!--message kind="error" line="8" text="N cannot be resolved to a type"/-->
+       <!--message kind="error" line="7" text="T cannot be resolved to a type"/-->
+     </compile>
+   </ajc-test>
+
+  
    <!-- generic ITDs -->
    
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design A">
@@ -5042,4 +5081,5 @@
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design D">
      <compile files="DesignD.java" options="-1.5,-XnoWeave"/>
    </ajc-test>
+
 </suite>
