@@ -882,7 +882,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				if (typeVariables[i].getName().equals(name)) return typeVariables[i];
 			}
 		}
-		// Bugger, check the declaring type!
+		// check the declaring type!
 		return declaringType.getTypeVariableNamed(name);
 
 		// Do generic aspects with ITDs that share type variables with the aspect and the target type and have their own tvars cause this to be messier?
