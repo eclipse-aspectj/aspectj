@@ -48,6 +48,9 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
@@ -68,6 +71,8 @@ import org.aspectj.weaver.patterns.PerTypeWithin;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.ExactTypePattern;
 
 /**
  * Annotation defined aspect reader.
@@ -151,10 +156,12 @@ public class AtAjAttributes {
     private static class AjAttributeFieldStruct extends AjAttributeStruct {
 
         final Field field;
+        final BcelField bField;
 
-        public AjAttributeFieldStruct(Field field, ResolvedType type, ISourceContext sourceContext, IMessageHandler messageHandler) {
+        public AjAttributeFieldStruct(Field field, BcelField bField, ResolvedType type, ISourceContext sourceContext, IMessageHandler messageHandler) {
             super(type, sourceContext, messageHandler);
             this.field = field;
+            this.bField = bField;
         }
     }
 
@@ -162,7 +169,7 @@ public class AtAjAttributes {
      * Annotations are RuntimeVisible only. This allow us to not visit RuntimeInvisible ones.
      *
      * @param attribute
-     * @return
+     * @return true if runtime visible annotation
      */
     public static boolean acceptAttribute(Attribute attribute) {
         return (attribute instanceof RuntimeVisibleAnnotations);
@@ -178,7 +185,7 @@ public class AtAjAttributes {
      * @return list of AjAttributes
      */
     public static List readAj5ClassAttributes(JavaClass javaClass, ReferenceType type, ISourceContext context, IMessageHandler msgHandler, boolean isCodeStyleAspect) {
-        //FIXME AV - 1.5 M3 feature limitation, kick after M3 ships
+        //FIXME AV - 1.5 feature limitation, kick after implemented
         try {
             Constant[] cpool = javaClass.getConstantPool().getConstantPool();
             for (int i = 0; i < cpool.length; i++) {
@@ -282,19 +289,21 @@ public class AtAjAttributes {
         }
 
 
-        // code style declare error / warning are class attributes
+        // code style declare error / warning / implements / parents are field attributes
         for (int i = 0; i < javaClass.getFields().length; i++) {
             Field field = javaClass.getFields()[i];
             if (field.getName().startsWith(NameMangler.PREFIX)) continue;  // already dealt with by ajc...
             //FIXME alex optimize, this method struct will gets recreated for advice extraction
-            AjAttributeFieldStruct fstruct = new AjAttributeFieldStruct(field, type, context, msgHandler);
+            AjAttributeFieldStruct fstruct = new AjAttributeFieldStruct(field, null, type, context, msgHandler);
             Attribute[] fattributes = field.getAttributes();
 
             for (int j = 0; j < fattributes.length; j++) {
                 Attribute fattribute = fattributes[j];
                 if (acceptAttribute(fattribute)) {
                     RuntimeAnnotations frvs = (RuntimeAnnotations) fattribute;
-                    if (handleDeclareErrorOrWarningAnnotation(frvs, fstruct)) {
+                    if (handleDeclareErrorOrWarningAnnotation(frvs, fstruct)
+                            || handleDeclareImplementsAnnotation(frvs, fstruct)
+                            || handleDeclareParentsAnnotation(frvs, fstruct)) {
                         // semantic check - must be in an @Aspect [remove if previous block bypassed in advance]
                         if (!type.isAnnotationStyleAspect()) {
                             msgHandler.handleMessage(
@@ -344,42 +353,42 @@ public class AtAjAttributes {
         for (int i = 0; i < attributes.length; i++) {
             Attribute attribute = attributes[i];
             try {
-				if (acceptAttribute(attribute)) {
-				    RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-				    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleBeforeAnnotation(
-				            rvs, struct, preResolvedPointcut
-				    );
-				    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterAnnotation(
-				            rvs, struct, preResolvedPointcut
-				    );
-				    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterReturningAnnotation(
-				            rvs, struct, preResolvedPointcut, bMethod
-				    );
-				    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterThrowingAnnotation(
-				            rvs, struct, preResolvedPointcut, bMethod
-				    );
-				    hasAtAspectJAnnotation = hasAtAspectJAnnotation || handleAroundAnnotation(
-				            rvs, struct, preResolvedPointcut
-				    );
-				    // there can only be one RuntimeVisible bytecode attribute
-				    break;
-				}
-			} catch (ReturningFormalNotDeclaredInAdviceSignatureException e) {
-				msgHandler.handleMessage(
-					new Message(
-							WeaverMessages.format(WeaverMessages.RETURNING_FORMAL_NOT_DECLARED_IN_ADVICE,e.getFormalName()),
-							IMessage.ERROR,
-							null,
-							bMethod.getSourceLocation())
-				);
-			} catch (ThrownFormalNotDeclaredInAdviceSignatureException e) {
-				msgHandler.handleMessage(
-						new Message(
-								WeaverMessages.format(WeaverMessages.THROWN_FORMAL_NOT_DECLARED_IN_ADVICE,e.getFormalName()),
-								IMessage.ERROR,
-								null,
-								bMethod.getSourceLocation())
-					);			}
+                if (acceptAttribute(attribute)) {
+                    RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
+                    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleBeforeAnnotation(
+                            rvs, struct, preResolvedPointcut
+                    );
+                    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterAnnotation(
+                            rvs, struct, preResolvedPointcut
+                    );
+                    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterReturningAnnotation(
+                            rvs, struct, preResolvedPointcut, bMethod
+                    );
+                    hasAtAspectJAnnotationMustReturnVoid = hasAtAspectJAnnotationMustReturnVoid || handleAfterThrowingAnnotation(
+                            rvs, struct, preResolvedPointcut, bMethod
+                    );
+                    hasAtAspectJAnnotation = hasAtAspectJAnnotation || handleAroundAnnotation(
+                            rvs, struct, preResolvedPointcut
+                    );
+                    // there can only be one RuntimeVisible bytecode attribute
+                    break;
+                }
+            } catch (ReturningFormalNotDeclaredInAdviceSignatureException e) {
+                msgHandler.handleMessage(
+                    new Message(
+                            WeaverMessages.format(WeaverMessages.RETURNING_FORMAL_NOT_DECLARED_IN_ADVICE,e.getFormalName()),
+                            IMessage.ERROR,
+                            null,
+                            bMethod.getSourceLocation())
+                );
+            } catch (ThrownFormalNotDeclaredInAdviceSignatureException e) {
+                msgHandler.handleMessage(
+                        new Message(
+                                WeaverMessages.format(WeaverMessages.THROWN_FORMAL_NOT_DECLARED_IN_ADVICE,e.getFormalName()),
+                                IMessage.ERROR,
+                                null,
+                                bMethod.getSourceLocation())
+                    );			}
         }
         hasAtAspectJAnnotation = hasAtAspectJAnnotation || hasAtAspectJAnnotationMustReturnVoid;
 
@@ -421,7 +430,7 @@ public class AtAjAttributes {
             );
             ;// go ahead
         }
-        
+
         return struct.ajAttributes;
     }
 
@@ -434,8 +443,31 @@ public class AtAjAttributes {
      * @param msgHandler
      * @return list of AjAttributes, always empty for now
      */
-    public static List readAj5FieldAttributes(Field field, ResolvedType type, ISourceContext context, IMessageHandler msgHandler) {
-        return Collections.EMPTY_LIST;
+    public static List readAj5FieldAttributes(Field field, BcelField bField, ResolvedType type, ISourceContext context, IMessageHandler msgHandler) {
+        //TODO use ? if (field.getName().startsWith(NameMangler.PREFIX)) return Collections.EMPTY_LIST;  // already dealt with by ajc...
+//
+//        // bypass primitive type fields - useless for @DeclareParents/Implements (interface)
+//        if (bField.getType().isPrimitiveType()) return Collections.EMPTY_LIST;
+//
+//        AjAttributeFieldStruct struct = new AjAttributeFieldStruct(field, bField, type, context, msgHandler);
+//        Attribute[] attributes = field.getAttributes();
+//
+//        boolean hasAtAspectJAnnotation = false;
+//        for (int i = 0; i < attributes.length; i++) {
+//            Attribute attribute = attributes[i];
+//            try {
+//                if (acceptAttribute(attribute)) {
+//                    RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
+//                    hasAtAspectJAnnotation = hasAtAspectJAnnotation || handleDeclareImplementsAnnotation(
+//                            rvs, struct//, preResolvedPointcut//FIXME add in src layer
+//                    );
+//                }
+//            } catch (Exception e) {
+//
+//            }
+//        }
+//
+        return Collections.EMPTY_LIST;//struct.ajAttributes;
     }
 
     /**
@@ -486,10 +518,10 @@ public class AtAjAttributes {
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
                 final IScope binding;
                 binding = new BindingScope(
-                        	struct.enclosingType,
-                        	struct.context,
-                        	bindings
-                		);
+                            struct.enclosingType,
+                            struct.context,
+                            bindings
+                        );
                 perClause.resolve(binding);
                 return true;
             }
@@ -567,6 +599,106 @@ public class AtAjAttributes {
                 DeclarePrecedence ajPrecedence = parser.parseDominates();
                 struct.ajAttributes.add(new AjAttribute.DeclareAttribute(ajPrecedence));
                 return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Read @DeclareImplements
+     *
+     * @param runtimeAnnotations
+     * @param struct
+     * @return true if found
+     */
+    private static boolean handleDeclareImplementsAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct struct) {//, ResolvedPointcutDefinition preResolvedPointcut) {
+        Annotation deci = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREIMPLEMENTS_ANNOTATION);
+        if (deci != null) {
+            ElementNameValuePair deciPatternNVP = getAnnotationElement(deci, VALUE);
+            String deciPattern = deciPatternNVP.getValue().stringifyValue();
+            if (deciPattern != null) {
+                TypePattern typePattern = parseTypePattern(deciPattern, struct);
+                ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(struct.enclosingType.getWorld());
+                if (fieldType.isPrimitiveType()) {
+                    return false;
+                } else if (fieldType.isInterface()) {
+                    TypePattern parent = new ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()), false, false);
+                    parent.resolve(struct.enclosingType.getWorld());
+                    List parents = new ArrayList(1);
+                    parents.add(parent);
+                    //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
+                    struct.ajAttributes.add(
+                            new AjAttribute.DeclareAttribute(
+                                    new DeclareParents(
+                                        typePattern,
+                                        parents,
+                                        false
+                                    )
+                            )
+                    );
+                    return true;
+                } else {
+                    reportError("@DeclareImplements: can only be used on field whose type is an interface", struct);
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Read @DeclareParents
+     *
+     * @param runtimeAnnotations
+     * @param struct
+     * @return true if found
+     */
+    private static boolean handleDeclareParentsAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct struct) {//, ResolvedPointcutDefinition preResolvedPointcut) {
+        Annotation decp = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREPARENTS_ANNOTATION);
+        if (decp != null) {
+            ElementNameValuePair decpPatternNVP = getAnnotationElement(decp, VALUE);
+            String decpPattern = decpPatternNVP.getValue().stringifyValue();
+            if (decpPattern != null) {
+                TypePattern typePattern = parseTypePattern(decpPattern, struct);
+                ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(struct.enclosingType.getWorld());
+                if (fieldType.isPrimitiveType()) {
+                    return false;
+                } else if (fieldType.isInterface() && (struct.field.isPublic() && struct.field.isStatic())) {
+                    TypePattern parent = new ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()), false, false);
+                    parent.resolve(struct.enclosingType.getWorld());
+                    //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
+                    // first add the declare implements like
+                    List parents = new ArrayList(1); parents.add(parent);
+                    struct.ajAttributes.add(
+                            new AjAttribute.DeclareAttribute(
+                                    new DeclareParents(
+                                        typePattern,
+                                        parents,
+                                        false
+                                    )
+                            )
+                    );
+                    // then iterate on field interface hierarchy (not object)
+                    for (Iterator it = fieldType.getMethods(); it.hasNext();) {
+                        ResolvedMember method = (ResolvedMember)it.next();
+                        if (method.isAbstract()) {
+                            struct.ajAttributes.add(
+                                    new AjAttribute.TypeMunger(
+                                            new MethodDelegateTypeMunger(
+                                                method,
+                                                struct.enclosingType,
+                                                struct.field.getName(),
+                                                typePattern
+                                            )
+                                    )
+                            );
+                        }
+                    }
+                    return true;
+                } else {
+                    reportError("@DeclareParents: can only be used on a public static field whose type is an interface", struct);
+                    return false;
+                }
             }
         }
         return false;
@@ -691,10 +823,10 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handleAfterReturningAnnotation(
-    		RuntimeAnnotations runtimeAnnotations, 
-    		AjAttributeMethodStruct struct, 
-    		ResolvedPointcutDefinition preResolvedPointcut,
-    		BcelMethod owningMethod) 
+            RuntimeAnnotations runtimeAnnotations,
+            AjAttributeMethodStruct struct,
+            ResolvedPointcutDefinition preResolvedPointcut,
+            BcelMethod owningMethod)
     throws ReturningFormalNotDeclaredInAdviceSignatureException
     {
         Annotation after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTERRETURNING_ANNOTATION);
@@ -724,8 +856,8 @@ public class AtAjAttributes {
                 if (isNullOrEmpty(returned)) {
                     returned = null;
                 } else {
-                   	// check that thrownFormal exists as the last parameter in the advice
-                	String[] pNames = owningMethod.getParameterNames();
+                       // check that thrownFormal exists as the last parameter in the advice
+                    String[] pNames = owningMethod.getParameterNames();
                     if (pNames == null || pNames.length == 0 || !Arrays.asList(pNames).contains(returned)) {
                         throw new ReturningFormalNotDeclaredInAdviceSignatureException(returned);
                     }
@@ -788,10 +920,10 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handleAfterThrowingAnnotation(
-    		RuntimeAnnotations runtimeAnnotations, 
-    		AjAttributeMethodStruct struct, 
-    		ResolvedPointcutDefinition preResolvedPointcut, 
-    		BcelMethod owningMethod)
+            RuntimeAnnotations runtimeAnnotations,
+            AjAttributeMethodStruct struct,
+            ResolvedPointcutDefinition preResolvedPointcut,
+            BcelMethod owningMethod)
     throws ThrownFormalNotDeclaredInAdviceSignatureException
     {
         Annotation after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTERTHROWING_ANNOTATION);
@@ -821,11 +953,11 @@ public class AtAjAttributes {
                 if (isNullOrEmpty(thrownFormal)) {
                     thrownFormal = null;
                 } else {
-                	// check that thrownFormal exists as the last parameter in the advice
-                	String[] pNames = owningMethod.getParameterNames();
-                	if (pNames == null || pNames.length == 0 || !Arrays.asList(pNames).contains(thrownFormal)) {
-                		throw new ThrownFormalNotDeclaredInAdviceSignatureException(thrownFormal);
-                	}
+                    // check that thrownFormal exists as the last parameter in the advice
+                    String[] pNames = owningMethod.getParameterNames();
+                    if (pNames == null || pNames.length == 0 || !Arrays.asList(pNames).contains(thrownFormal)) {
+                        throw new ThrownFormalNotDeclaredInAdviceSignatureException(thrownFormal);
+                    }
                 }
             }
 
@@ -1066,7 +1198,7 @@ public class AtAjAttributes {
      * Method.toString() is not suitable.
      *
      * @param method
-     * @return
+     * @return a readable representation of a method
      */
     private static String methodToString(Method method) {
         StringBuffer sb = new StringBuffer();
@@ -1080,7 +1212,7 @@ public class AtAjAttributes {
      * Field.toString() is not suitable.
      *
      * @param field
-     * @return
+     * @return a readable representation of a field
      */
     private static String fieldToString(Field field) {
         StringBuffer sb = new StringBuffer();
@@ -1167,7 +1299,7 @@ public class AtAjAttributes {
      * Compute the flag for the xxxJoinPoint extra argument
      *
      * @param method
-     * @return
+     * @return extra arg flag
      */
     private static int extractExtraArgument(Method method) {
         Type[] methodArgs = method.getArgumentTypes();
@@ -1182,7 +1314,7 @@ public class AtAjAttributes {
      * Compute the flag for the xxxJoinPoint extra argument
      *
      * @param argumentSignatures
-     * @return
+     * @return  extra arg flag
      */
     public static int extractExtraArgument(String[] argumentSignatures) {
         int extraArgument = 0;
@@ -1205,7 +1337,7 @@ public class AtAjAttributes {
      *
      * @param rvs
      * @param annotationType
-     * @return
+     * @return annotation
      */
     private static Annotation getAnnotation(RuntimeAnnotations rvs, UnresolvedType annotationType) {
         final String annotationTypeName = annotationType.getName();
@@ -1224,7 +1356,7 @@ public class AtAjAttributes {
      *
      * @param annotation
      * @param elementName
-     * @return
+     * @return annotation NVP
      */
     private static ElementNameValuePair getAnnotationElement(Annotation annotation, String elementName) {
         for (Iterator iterator1 = annotation.getValues().iterator(); iterator1.hasNext();) {
@@ -1241,7 +1373,7 @@ public class AtAjAttributes {
      * returns an empty array upon inconsistency
      *
      * @param method
-     * @return
+     * @return method arg names as in source
      */
     private static String[] getMethodArgumentNamesAsInSource(Method method) {
         if (method.getArgumentTypes().length == 0) {
@@ -1363,7 +1495,7 @@ public class AtAjAttributes {
      * Helper to test empty strings
      *
      * @param s
-     * @return
+     * @return true if empty or null
      */
     private static boolean isNullOrEmpty(String s) {
         return (s == null || s.length() <= 0);
@@ -1437,7 +1569,7 @@ public class AtAjAttributes {
      * @param pointcutString
      * @param struct
      * @param allowIf
-     * @return
+     * @return pointcut, unresolved
      */
     private static Pointcut parsePointcut(String pointcutString, AjAttributeStruct struct, boolean allowIf) {
         try {
@@ -1465,7 +1597,7 @@ public class AtAjAttributes {
      *
      * @param patternString
      * @param location
-     * @return
+     * @return type pattern
      */
     private static TypePattern parseTypePattern(String patternString, AjAttributeStruct location) {
         try {
@@ -1509,26 +1641,26 @@ public class AtAjAttributes {
             return node;
         }
     }
-    
+
     static class ThrownFormalNotDeclaredInAdviceSignatureException extends Exception {
-    	
-    	private String formalName;
-    	
-    	public ThrownFormalNotDeclaredInAdviceSignatureException(String formalName) {
-    		this.formalName = formalName;
-    	}
-    	
-    	public String getFormalName() { return formalName; }
+
+        private String formalName;
+
+        public ThrownFormalNotDeclaredInAdviceSignatureException(String formalName) {
+            this.formalName = formalName;
+        }
+
+        public String getFormalName() { return formalName; }
     }
-    
+
     static class ReturningFormalNotDeclaredInAdviceSignatureException extends Exception {
-    	
-    	private String formalName;
-    	
-    	public ReturningFormalNotDeclaredInAdviceSignatureException(String formalName) {
-    		this.formalName = formalName;
-    	}
-    	
-    	public String getFormalName() { return formalName; }
+
+        private String formalName;
+
+        public ReturningFormalNotDeclaredInAdviceSignatureException(String formalName) {
+            this.formalName = formalName;
+        }
+
+        public String getFormalName() { return formalName; }
     }
 }

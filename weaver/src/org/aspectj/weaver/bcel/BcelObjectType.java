@@ -273,7 +273,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 
-	private void processAttributes(List attributeList, List pointcuts, boolean fromAnnotations) {
+    private void processAttributes(List attributeList, List pointcuts, boolean fromAnnotations) {
 		for (Iterator iter = attributeList.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);

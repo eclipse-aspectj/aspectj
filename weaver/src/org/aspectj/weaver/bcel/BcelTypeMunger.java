@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC     initial implementation
+ *     Alexandre Vasseur    @AspectJ ITDs
  * ******************************************************************/
 
 
@@ -58,6 +59,7 @@ import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -83,6 +85,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewField(weaver, (NewFieldTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Method) {
 			changed = mungeNewMethod(weaver, (NewMethodTypeMunger)munger);
+        } else if (munger.getKind() == ResolvedTypeMunger.MethodDelegate) {
+            changed = mungeMethodDelegate(weaver, (MethodDelegateTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.PerObjectInterface) {
 			changed = mungePerObjectInterface(weaver, (PerObjectInterfaceTypeMunger)munger);
 			worthReporting = false;
@@ -99,7 +103,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewParent(weaver, (NewParentTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.AnnotationOnType) {
 			changed = mungeNewAnnotationOnType(weaver,(AnnotationOnTypeMunger)munger);
-		} else {
+        } else {
 			throw new RuntimeException("unimplemented");
 		}
 		
@@ -231,16 +235,18 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                         boolean satisfiedByITD = false;
                         for (Iterator ii = newParentTarget.getType().getInterTypeMungersIncludingSupers().iterator(); ii.hasNext(); ) {
                             ConcreteTypeMunger m = (ConcreteTypeMunger)ii.next();
-                            if (m.getMunger() instanceof NewMethodTypeMunger) {
-                            ResolvedMember sig = m.getSignature();
-                            if (!Modifier.isAbstract(sig.getModifiers())) {
-                                if (ResolvedType
-                                    .matches(
-                                        AjcMemberMaker.interMethod(
-                                            sig,m.getAspectType(),sig.getDeclaringType().resolve(weaver.getWorld()).isInterface()),o)) {
-                                    satisfiedByITD = true;
+                            if (m.getMunger().getKind() == ResolvedTypeMunger.Method) {//FIXME AVITD was instanceof
+                                ResolvedMember sig = m.getSignature();
+                                if (!Modifier.isAbstract(sig.getModifiers())) {
+                                    if (ResolvedType
+                                        .matches(
+                                            AjcMemberMaker.interMethod(
+                                                sig,m.getAspectType(),sig.getDeclaringType().resolve(weaver.getWorld()).isInterface()),o)) {
+                                        satisfiedByITD = true;
+                                    }
                                 }
-                            }
+                            } else if (m.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate) {
+                                satisfiedByITD = true;//FIXME AVITD that should be enough, no need to check more
                             }
                         }
                         if (!satisfiedByITD) {
@@ -883,6 +889,151 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 	}
 	
+    private boolean mungeMethodDelegate(BcelClassWeaver weaver, MethodDelegateTypeMunger munger) {
+        ResolvedMember introduced = munger.getSignature();
+
+        LazyClassGen gen = weaver.getLazyClassGen();
+        boolean mungingInterface = gen.isInterface();
+
+        ResolvedType fromType = weaver.getWorld().resolve(introduced.getDeclaringType(),munger.getSourceLocation());
+        if (fromType.isRawType()) fromType = fromType.getGenericType();
+
+        if (gen.getType().isAnnotation() || gen.getType().isEnum()) {
+            // don't signal error as it could be a consequence of a wild type pattern
+            return false;
+        }
+
+        boolean shouldApply = munger.matches(weaver.getLazyClassGen().getType(), aspectType);
+        if (shouldApply) {
+            LazyMethodGen mg = new LazyMethodGen(
+                    introduced.getModifiers() - Modifier.ABSTRACT,
+                    BcelWorld.makeBcelType(introduced.getReturnType()),
+                    introduced.getName(),
+                    BcelWorld.makeBcelTypes(introduced.getParameterTypes()),
+                    BcelWorld.makeBcelTypesAsClassNames(introduced.getExceptions()),
+                    gen
+            );
+            //FIXME AVITD annotation copy from annotation on ITD interface
+            // but need the BcelObjectType for the ITD interface..
+            // how?
+            // For copying the annotations across, we have to discover the real type
+            // which is holding them.
+//            if (weaver.getWorld().isInJava5Mode()){
+//                AnnotationX annotationsOnRealMember[] = null;
+//                //ResolvedType toLookOn = fromType;
+//                //if (fromType.isRawType()) toLookOn = fromType.getGenericType();
+//                annotationsOnRealMember = introduced.getAnnotations();
+//
+//                if (annotationsOnRealMember!=null) {
+//                    for (int i = 0; i < annotationsOnRealMember.length; i++) {
+//                        AnnotationX annotationX = annotationsOnRealMember[i];
+//                        Annotation a = annotationX.getBcelAnnotation();
+//                        AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
+//                        mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+//                    }
+//                }
+////                // the below loop fixes the very special (and very stupid)
+////                // case where an aspect declares an annotation
+////                // on an ITD it declared on itself.
+////                List allDecams = weaver.getWorld().getDeclareAnnotationOnMethods();
+////                for (Iterator i = allDecams.iterator(); i.hasNext();){
+////                    DeclareAnnotation decaMC = (DeclareAnnotation) i.next();
+////                    if (decaMC.matches(unMangledInterMethod,weaver.getWorld())
+////                            && mg.getEnclosingClass().getType() == aspectType) {
+////                        mg.addAnnotation(decaMC.getAnnotationX());
+////                    }
+////                }
+//            }
+
+
+            InstructionList body = new InstructionList();
+            InstructionFactory fact = gen.getFactory();
+
+            // getstatic field from aspect
+            body.append(Utility.createGet(fact, munger.getDelegate()));
+
+            int pos = 0;
+            Type[] paramTypes = BcelWorld.makeBcelTypes(introduced.getParameterTypes());
+            for (int i = 0, len = paramTypes.length; i < len; i++) {
+                Type paramType = paramTypes[i];
+                body.append(InstructionFactory.createLoad(paramType, pos));
+                pos+=paramType.getSize();
+            }
+            body.append(Utility.createInvoke(fact, weaver.getWorld(), introduced));
+            body.append(
+                InstructionFactory.createReturn(
+                    BcelWorld.makeBcelType(introduced.getReturnType())
+                )
+            );
+
+            mg.getBody().append(body);
+            // XXX make sure to check that we set exceptions properly on this guy.
+            weaver.addLazyMethodGen(mg);
+            weaver.getLazyClassGen().warnOnAddedMethod(mg.getMethod(),getSignature().getSourceLocation());
+            return true;
+        }
+        return false;
+//        else if (onInterface && !Modifier.isAbstract(unMangledInterMethod.getModifiers())) {
+//
+//            // This means the 'gen' should be the top most implementor
+//            // - if it is *not* then something went wrong after we worked
+//            // out that it was the top most implementor (see pr49657)
+//            if (!gen.getType().isTopmostImplementor(onType)) {
+//                ResolvedType rtx = gen.getType().getTopmostImplementor(onType);
+//                if (!rtx.isExposedToWeaver()) {
+//                    ISourceLocation sLoc = munger.getSourceLocation();
+//                    weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
+//                            WeaverMessages.format(WeaverMessages.ITD_NON_EXPOSED_IMPLEMENTOR,rtx,getAspectType().getName()),
+//                            (sLoc==null?getAspectType().getSourceLocation():sLoc)));
+//                } else {
+//                    // XXX what does this state mean?
+//                    // We have incorrectly identified what is the top most implementor and its not because
+//                    // a type wasn't exposed to the weaver
+//                }
+//                return false;
+//            } else {
+//
+//              ResolvedMember mangledInterMethod =
+//                    AjcMemberMaker.interMethod(unMangledInterMethod, aspectType, false);
+//
+//              LazyMethodGen mg = makeMethodGen(gen, mangledInterMethod);
+//              if (mungingInterface) {
+//                // we want the modifiers of the ITD to be used for all *implementors* of the
+//                // interface, but the method itself we add to the interface must be public abstract
+//                mg.setAccessFlags(Modifier.PUBLIC | Modifier.ABSTRACT);
+//              }
+//
+//              Type[] paramTypes = BcelWorld.makeBcelTypes(mangledInterMethod.getParameterTypes());
+//              Type returnType = BcelWorld.makeBcelType(mangledInterMethod.getReturnType());
+//
+//              InstructionList body = mg.getBody();
+//              InstructionFactory fact = gen.getFactory();
+//              int pos = 0;
+//
+//              if (!mangledInterMethod.isStatic()) {
+//                body.append(InstructionFactory.createThis());
+//                pos++;
+//              }
+//              for (int i = 0, len = paramTypes.length; i < len; i++) {
+//                Type paramType = paramTypes[i];
+//                body.append(InstructionFactory.createLoad(paramType, pos));
+//                pos+=paramType.getSize();
+//              }
+//              body.append(Utility.createInvoke(fact, weaver.getWorld(), interMethodBody));
+//              body.append(InstructionFactory.createReturn(returnType));
+//              mg.definingType = onType;
+//
+//              weaver.addOrReplaceLazyMethodGen(mg);
+//
+//              addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
+//
+//              return true;
+//            }
+//        } else {
+//            return false;
+//        }
+    }
+
 	private ResolvedMember getRealMemberForITDFromAspect(ResolvedType aspectType,ResolvedMember lookingFor,boolean isCtorRelated) {
 		World world = aspectType.getWorld();
 		boolean debug = false;
@@ -890,6 +1041,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			System.err.println("Searching for a member on type: "+aspectType);
 			System.err.println("Member we are looking for: "+lookingFor);
 		}
+
 		ResolvedMember aspectMethods[] = aspectType.getDeclaredMethods();
 		UnresolvedType [] lookingForParams = lookingFor.getParameterTypes();
 		

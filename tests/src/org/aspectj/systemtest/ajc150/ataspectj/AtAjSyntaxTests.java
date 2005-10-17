@@ -120,4 +120,12 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
     public void testBug104212() {
         runTest("Bug104212");
     }
+
+    public void testDeclareParentsInterface() {
+        runTest("DeclareParentsInterface");
+    }
+
+    public void testDeclareParentsImplements() {
+        runTest("DeclareParentsImplements");
+    }
 }

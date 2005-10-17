@@ -149,5 +149,14 @@
         <run class="ataspectj.Bug104212"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="DeclareParentsInterface">
+        <compile files="ataspectj/DeclareParentsInterfaceTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+        <run class="ataspectj.DeclareParentsInterfaceTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="DeclareParentsImplements">
+        <compile files="ataspectj/DeclareParentsImplementsTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+        <run class="ataspectj.DeclareParentsImplementsTest"/>
+    </ajc-test>
 
 </suite>

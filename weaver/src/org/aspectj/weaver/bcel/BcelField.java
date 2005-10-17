@@ -64,7 +64,7 @@ final class BcelField extends ResolvedMemberImpl {
 	private void unpackAttributes(World world) {
 		Attribute[] attrs = field.getAttributes();
         List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),attrs, getSourceContext(world),world.getMessageHandler(),bcelObjectType.getWeaverVersionAttribute());
-        as.addAll(AtAjAttributes.readAj5FieldAttributes(field, world.resolve(getDeclaringType()), getSourceContext(world), world.getMessageHandler()));
+        as.addAll(AtAjAttributes.readAj5FieldAttributes(field, this, world.resolve(getDeclaringType()), getSourceContext(world), world.getMessageHandler()));
 
 		for (Iterator iter = as.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();

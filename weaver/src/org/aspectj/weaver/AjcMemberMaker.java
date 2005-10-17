@@ -751,6 +751,8 @@ public class AjcMemberMaker {
     public final static UnresolvedType DECLAREERROR_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareError");
     public final static UnresolvedType DECLAREWARNING_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareWarning");
     public final static UnresolvedType DECLAREPRECEDENCE_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclarePrecedence");
+    public final static UnresolvedType DECLAREIMPLEMENTS_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareImplements");
+    public final static UnresolvedType DECLAREPARENTS_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareParents");
 
     public final static UnresolvedType TYPEX_JOINPOINT = UnresolvedType.forName(JoinPoint.class.getName().replace('/','.'));
     public final static UnresolvedType TYPEX_PROCEEDINGJOINPOINT = UnresolvedType.forName(ProceedingJoinPoint.class.getName().replace('/','.'));

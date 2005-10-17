@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC     initial implementation
+ *     Alexandre Vasseur    @AspectJ ITDs
  * ******************************************************************/
 
 
@@ -246,7 +247,9 @@ public abstract class ResolvedTypeMunger {
 	
 	public static final Kind AnnotationOnType = new Kind("AnnotationOnType",8); // not serialized
 
-	public static final String SUPER_DISPATCH_NAME = "superDispatch";
+    public static final Kind MethodDelegate = new Kind("MethodDelegate", 9);// not serialized, @AJ ITDs
+
+    public static final String SUPER_DISPATCH_NAME = "superDispatch";
 
 
 	public void setSuperMethodsCalled(Set c) {

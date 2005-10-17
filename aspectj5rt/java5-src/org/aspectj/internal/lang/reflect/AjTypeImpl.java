@@ -658,42 +658,72 @@ public class AjTypeImpl<T> implements AjType<T> {
 	
 	private void addAnnotationStyleITDMethods(List<InterTypeMethodDeclaration> toList, boolean publicOnly) {
 		if (isAspect()) {
-			Class<?>[] classes = clazz.getDeclaredClasses();
-			for(Class<?> c : classes) {
-				if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
-					if (c.getInterfaces().length == 0) continue;
-					AjType<?> targetType = AjTypeSystem.getAjType((Class<?>)c.getInterfaces()[0]);
-					Method[] meths = c.getDeclaredMethods();
-					for (Method m : meths) {
-						if (!Modifier.isPublic(m.getModifiers()) && publicOnly) continue;
-						InterTypeMethodDeclaration itdm = 
-							new InterTypeMethodDeclarationImpl(
-									this,targetType,m);
-						toList.add(itdm);
-					}
-				}
-			}
+            for (Field f : clazz.getDeclaredFields()) {
+                if (!f.getType().isInterface()) continue;
+                if (!Modifier.isPublic(f.getModifiers()) || !Modifier.isStatic(f.getModifiers())) continue;
+                if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+                    for (Method itdM : f.getType().getDeclaredMethods()) {
+                        if (!Modifier.isPublic(itdM.getModifiers()) && publicOnly) continue;
+                        InterTypeMethodDeclaration itdm = new InterTypeMethodDeclarationImpl(
+                                    this, AjTypeSystem.getAjType(f.getType()), itdM
+                        );
+                        toList.add(itdm);
+                    }
+                }
+            }
+//            Class<?>[] classes = clazz.getDeclaredClasses();
+//			for(Class<?> c : classes) {
+//				if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+//					if (c.getInterfaces().length == 0) continue;
+//					AjType<?> targetType = AjTypeSystem.getAjType((Class<?>)c.getInterfaces()[0]);
+//					Method[] meths = c.getDeclaredMethods();
+//					for (Method m : meths) {
+//						if (!Modifier.isPublic(m.getModifiers()) && publicOnly) continue;
+//						InterTypeMethodDeclaration itdm =
+//							new InterTypeMethodDeclarationImpl(
+//									this,targetType,m);
+//						toList.add(itdm);
+//					}
+//				}
+//			}
 		}
 	}
 
 	private void addAnnotationStyleITDFields(List<InterTypeFieldDeclaration> toList, boolean publicOnly) {
-		if (isAspect()) {
-			Class<?>[] classes = clazz.getDeclaredClasses();
-			for(Class<?> c : classes) {
-				if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
-					if (c.getInterfaces().length == 0) continue;
-					AjType<?> targetType = AjTypeSystem.getAjType((Class<?>)c.getInterfaces()[0]);
-					Field[] fields = c.getDeclaredFields();
-					for (Field f : fields) {
-						if (!Modifier.isPublic(f.getModifiers()) && publicOnly) continue;
-						InterTypeFieldDeclaration itdf = 
-							new InterTypeFieldDeclarationImpl(
-									this,targetType,f);
-						toList.add(itdf);
-					}
-				}
-			}
-		}
+        return;
+        //AV: I think it is meaningless
+        //@AJ decp is interface driven ie no field
+//        if (isAspect()) {
+//			for (Field f : clazz.getDeclaredFields()) {
+//                if (!f.getType().isInterface()) continue;
+//                if (!Modifier.isPublic(f.getModifiers()) || !Modifier.isStatic(f.getModifiers())) continue;
+//                if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+//                    for (Field itdF : f.getType().getDeclaredFields()) {
+//                        if (!Modifier.isPublic(itdF.getModifiers()) && publicOnly) continue;
+//                        InterTypeFieldDeclaration itdf = new InterTypeFieldDeclarationImpl(
+//                                    this, AjTypeSystem.getAjType(f.getType()), itdF
+//                        );
+//                        toList.add(itdf);
+//                    }
+//                }
+//            }
+//---old impl.
+//            Class<?>[] classes = clazz.getDeclaredClasses();
+//			for(Class<?> c : classes) {
+//				if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+//					if (c.getInterfaces().length == 0) continue;
+//					AjType<?> targetType = AjTypeSystem.getAjType((Class<?>)c.getInterfaces()[0]);
+//					Field[] fields = c.getDeclaredFields();
+//					for (Field f : fields) {
+//						if (!Modifier.isPublic(f.getModifiers()) && publicOnly) continue;
+//						InterTypeFieldDeclaration itdf =
+//							new InterTypeFieldDeclarationImpl(
+//									this,targetType,f);
+//						toList.add(itdf);
+//					}
+//				}
+//			}
+//		}
 	}
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDConstructor(java.lang.Class, java.lang.Class...)
@@ -963,21 +993,50 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 	
 	private void addAnnotationStyleDeclareParents(List<DeclareParents> toList) {
-		Class<?>[] classes = clazz.getDeclaredClasses();
-		for (Class<?> c : classes) {
-			if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
-				org.aspectj.lang.annotation.DeclareParents ann = c.getAnnotation(org.aspectj.lang.annotation.DeclareParents.class);
-				if (c.getInterfaces().length == 0) continue;
-				String parentType = c.getInterfaces()[0].getName();
-				DeclareParentsImpl decp = new DeclareParentsImpl(
-						ann.value(),
-						parentType,
-						false,
-						this
-						);
-				toList.add(decp);
-			}
-		}
+        for (Field f : clazz.getDeclaredFields()) {
+            if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareImplements.class)) {
+                if (!f.getType().isInterface()) continue;
+                org.aspectj.lang.annotation.DeclareImplements ann = f.getAnnotation(org.aspectj.lang.annotation.DeclareImplements.class);
+                String parentType = f.getType().getName();
+                DeclareParentsImpl decp = new DeclareParentsImpl(
+                        ann.value(),
+                        parentType,
+                        false,
+                        this
+                );
+                toList.add(decp);
+            }
+            if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)
+                && Modifier.isStatic(f.getModifiers())
+                && Modifier.isPublic(f.getModifiers())) {
+                if (!f.getType().isInterface()) continue;
+                org.aspectj.lang.annotation.DeclareParents ann = f.getAnnotation(org.aspectj.lang.annotation.DeclareParents.class);
+                String parentType = f.getType().getName();
+                DeclareParentsImpl decp = new DeclareParentsImpl(
+                        ann.value(),
+                        parentType,
+                        false,
+                        this
+                );
+                toList.add(decp);
+            }
+        }
+//
+//        Class<?>[] classes = clazz.getDeclaredClasses();
+//		for (Class<?> c : classes) {
+//			if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+//				org.aspectj.lang.annotation.DeclareParents ann = c.getAnnotation(org.aspectj.lang.annotation.DeclareParents.class);
+//				if (c.getInterfaces().length == 0) continue;
+//				String parentType = c.getInterfaces()[0].getName();
+//				DeclareParentsImpl decp = new DeclareParentsImpl(
+//						ann.value(),
+//						parentType,
+//						false,
+//						this
+//						);
+//				toList.add(decp);
+//			}
+//		}
 	}
 
 	/* (non-Javadoc)

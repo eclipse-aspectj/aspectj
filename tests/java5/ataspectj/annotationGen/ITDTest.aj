@@ -145,9 +145,9 @@ public aspect ITDTest {
     	} catch (ClassNotFoundException cnf) {
     		throw new RuntimeException(cnf);
     	}
-    	assertEquals("1: ",1,x.getDeclaredITDFields().length);
-    	assertEquals("i: ","i",x.getDeclaredITDFields()[0].getName());
-    	assertEquals("1: ",1,x.getITDMethods().length);
+    	//assertEquals("ITD field 1: ",1,x.getDeclaredITDFields().length);
+    	//assertEquals("ITD filed name i: ","i",x.getDeclaredITDFields()[0].getName());
+    	assertEquals("ITD method 1: ",1,x.getITDMethods().length);
     	assertEquals("getNumber: ","getNumber",x.getITDMethods()[0].getName());
     }
     
@@ -163,6 +163,9 @@ class A {}
 class X {
 	
 	@org.aspectj.lang.annotation.DeclareParents("org.xyz..*")
+	public static I myMixin = new Mixin();
+
+
 	public static class Mixin implements I {
 		
 		private int i = 0;
