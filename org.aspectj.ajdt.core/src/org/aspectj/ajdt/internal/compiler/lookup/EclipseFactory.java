@@ -211,16 +211,22 @@ public class EclipseFactory {
 		
 		if (binding instanceof WildcardBinding) {
 			WildcardBinding eWB = (WildcardBinding) binding;
-			UnresolvedType ut =  TypeFactory.createTypeFromSignature(CharOperation.charToString(eWB.genericTypeSignature()));
-			// If the bound for the wildcard is a typevariable, e.g. '? extends E' then
+			UnresolvedType theType = TypeFactory.createTypeFromSignature(CharOperation.charToString(eWB.genericTypeSignature()));
+		    
+			
+			// Repair the bound
+			// e.g. If the bound for the wildcard is a typevariable, e.g. '? extends E' then
 			// the type variable in the unresolvedtype will be correct only in name.  In that
 			// case let's set it correctly based on the one in the eclipse WildcardBinding
+			UnresolvedType theBound = null;
 			if (eWB.bound instanceof TypeVariableBinding) {
-				UnresolvedType tVar = fromTypeVariableBinding((TypeVariableBinding)eWB.bound);
-				if (ut.isGenericWildcard() && ut.isSuper()) ut.setLowerBound(tVar);
-				if (ut.isGenericWildcard() && ut.isExtends()) ut.setUpperBound(tVar);
+				theBound = fromTypeVariableBinding((TypeVariableBinding)eWB.bound);
+			} else {
+				theBound = fromBinding(eWB.bound);
 			}
-			return ut;
+			if (theType.isGenericWildcard() && theType.isSuper()) theType.setLowerBound(theBound);
+			if (theType.isGenericWildcard() && theType.isExtends()) theType.setUpperBound(theBound);
+			return theType;
 		}
 		
 		if (binding instanceof ParameterizedTypeBinding) {

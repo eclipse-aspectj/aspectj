@@ -5025,6 +5025,10 @@
       </run>
    </ajc-test>
    
+   <ajc-test dir="bugs150/pr112602" title="ClassCastException with generic wildcard">
+     <compile files="GenericInterface.java,Implementation.java" options="-1.5,-emacssym"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 1">
      <compile files="Case1.java" options="-1.5">
        <message kind="warning" line="27" text="no match for this type name: Branch [Xlint:invalidAbsoluteTypeName]"/>
@@ -5064,6 +5068,7 @@
    </ajc-test>
 
   
+   
    <!-- generic ITDs -->
    
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design A">

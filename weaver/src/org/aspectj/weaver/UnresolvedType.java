@@ -884,9 +884,10 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	}
 	
 	public TypeVariable getTypeVariableNamed(String name) {
-		if (typeVariables==null || typeVariables.length==0) return null;
-		for (int i = 0; i < typeVariables.length; i++) {
-			TypeVariable aVar = typeVariables[i];
+		TypeVariable[] vars = getTypeVariables();
+		if (vars==null || vars.length==0) return null;
+		for (int i = 0; i < vars.length; i++) {
+			TypeVariable aVar = vars[i];
 			if (aVar.getName().equals(name)) return aVar;
 		}
 		return null;

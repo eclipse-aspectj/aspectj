@@ -505,6 +505,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("debug info in around advice inlining");
   }
   
+  public void testCCEWithGenericWildcard_pr112602() {
+	  runTest("ClassCastException with generic wildcard");
+  }
+  
   public void testAdviceInStructureModelWithAnonymousInnerClass_pr77269() {
 	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
 	  runTest("advice in structure model with anonymous inner class");  
