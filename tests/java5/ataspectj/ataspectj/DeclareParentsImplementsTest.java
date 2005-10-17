@@ -17,6 +17,11 @@ import org.aspectj.lang.annotation.DeclareParents;
 import org.aspectj.lang.annotation.Before;
 
 import java.util.Arrays;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -31,6 +36,7 @@ public class DeclareParentsImplementsTest extends TestCase {
 
     static interface Introduced {
         final static int field1 = 1;
+        @Some
         void intro();
     }
 
@@ -72,11 +78,20 @@ public class DeclareParentsImplementsTest extends TestCase {
         assertEquals("aop intro-1 ", s_log.toString());
     }
 
+    public void testAddedMethodKeepAnnotation() throws Throwable {
+        Method m = Target.class.getDeclaredMethod("intro");
+        assertTrue("annotation not retained", m.isAnnotationPresent(Some.class));
+    }
+
     public static void main(String[] args) {
         TestHelper.runAndThrowOnFailure(suite());
     }
 
     public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(DeclareParentsImplementsTest.class);
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    static @interface Some {
     }
 }

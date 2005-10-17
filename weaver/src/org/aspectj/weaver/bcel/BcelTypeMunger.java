@@ -61,6 +61,7 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -891,9 +892,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	
     private boolean mungeMethodDelegate(BcelClassWeaver weaver, MethodDelegateTypeMunger munger) {
         ResolvedMember introduced = munger.getSignature();
-
         LazyClassGen gen = weaver.getLazyClassGen();
-        boolean mungingInterface = gen.isInterface();
 
         ResolvedType fromType = weaver.getWorld().resolve(introduced.getDeclaringType(),munger.getSourceLocation());
         if (fromType.isRawType()) fromType = fromType.getGenericType();
@@ -913,38 +912,29 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                     BcelWorld.makeBcelTypesAsClassNames(introduced.getExceptions()),
                     gen
             );
-            //FIXME AVITD annotation copy from annotation on ITD interface
-            // but need the BcelObjectType for the ITD interface..
-            // how?
-            // For copying the annotations across, we have to discover the real type
-            // which is holding them.
-//            if (weaver.getWorld().isInJava5Mode()){
-//                AnnotationX annotationsOnRealMember[] = null;
-//                //ResolvedType toLookOn = fromType;
-//                //if (fromType.isRawType()) toLookOn = fromType.getGenericType();
-//                annotationsOnRealMember = introduced.getAnnotations();
-//
-//                if (annotationsOnRealMember!=null) {
-//                    for (int i = 0; i < annotationsOnRealMember.length; i++) {
-//                        AnnotationX annotationX = annotationsOnRealMember[i];
-//                        Annotation a = annotationX.getBcelAnnotation();
-//                        AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
-//                        mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
-//                    }
-//                }
-////                // the below loop fixes the very special (and very stupid)
-////                // case where an aspect declares an annotation
-////                // on an ITD it declared on itself.
-////                List allDecams = weaver.getWorld().getDeclareAnnotationOnMethods();
-////                for (Iterator i = allDecams.iterator(); i.hasNext();){
-////                    DeclareAnnotation decaMC = (DeclareAnnotation) i.next();
-////                    if (decaMC.matches(unMangledInterMethod,weaver.getWorld())
-////                            && mg.getEnclosingClass().getType() == aspectType) {
-////                        mg.addAnnotation(decaMC.getAnnotationX());
-////                    }
-////                }
-//            }
 
+            //annotation copy from annotation on ITD interface
+            if (weaver.getWorld().isInJava5Mode()){
+                AnnotationX annotationsOnRealMember[] = null;
+                ResolvedType toLookOn = weaver.getWorld().lookupOrCreateName(introduced.getDeclaringType());
+                if (fromType.isRawType()) toLookOn = fromType.getGenericType();
+                // lookup the method
+                ResolvedMember[] ms = toLookOn.getDeclaredJavaMethods();
+                for (int i = 0; i < ms.length; i++) {
+                    ResolvedMember m = ms[i];
+                    if (introduced.getName().equals(m.getName()) && introduced.getSignature().equals(m.getSignature())) {
+                        annotationsOnRealMember = m.getAnnotations();
+                    }
+                }
+                if (annotationsOnRealMember!=null) {
+                    for (int i = 0; i < annotationsOnRealMember.length; i++) {
+                        AnnotationX annotationX = annotationsOnRealMember[i];
+                        Annotation a = annotationX.getBcelAnnotation();
+                        AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
+                        mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+                    }
+                }
+            }
 
             InstructionList body = new InstructionList();
             InstructionFactory fact = gen.getFactory();
@@ -959,7 +949,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                 body.append(InstructionFactory.createLoad(paramType, pos));
                 pos+=paramType.getSize();
             }
-            body.append(Utility.createInvoke(fact, weaver.getWorld(), introduced));
+            body.append(Utility.createInvoke(fact, Constants.INVOKEINTERFACE, introduced));
             body.append(
                 InstructionFactory.createReturn(
                     BcelWorld.makeBcelType(introduced.getReturnType())
