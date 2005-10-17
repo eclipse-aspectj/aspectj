@@ -671,21 +671,6 @@ public class AjTypeImpl<T> implements AjType<T> {
                     }
                 }
             }
-//            Class<?>[] classes = clazz.getDeclaredClasses();
-//			for(Class<?> c : classes) {
-//				if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
-//					if (c.getInterfaces().length == 0) continue;
-//					AjType<?> targetType = AjTypeSystem.getAjType((Class<?>)c.getInterfaces()[0]);
-//					Method[] meths = c.getDeclaredMethods();
-//					for (Method m : meths) {
-//						if (!Modifier.isPublic(m.getModifiers()) && publicOnly) continue;
-//						InterTypeMethodDeclaration itdm =
-//							new InterTypeMethodDeclarationImpl(
-//									this,targetType,m);
-//						toList.add(itdm);
-//					}
-//				}
-//			}
 		}
 	}
 
@@ -693,38 +678,8 @@ public class AjTypeImpl<T> implements AjType<T> {
         return;
         //AV: I think it is meaningless
         //@AJ decp is interface driven ie no field
-//        if (isAspect()) {
-//			for (Field f : clazz.getDeclaredFields()) {
-//                if (!f.getType().isInterface()) continue;
-//                if (!Modifier.isPublic(f.getModifiers()) || !Modifier.isStatic(f.getModifiers())) continue;
-//                if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
-//                    for (Field itdF : f.getType().getDeclaredFields()) {
-//                        if (!Modifier.isPublic(itdF.getModifiers()) && publicOnly) continue;
-//                        InterTypeFieldDeclaration itdf = new InterTypeFieldDeclarationImpl(
-//                                    this, AjTypeSystem.getAjType(f.getType()), itdF
-//                        );
-//                        toList.add(itdf);
-//                    }
-//                }
-//            }
-//---old impl.
-//            Class<?>[] classes = clazz.getDeclaredClasses();
-//			for(Class<?> c : classes) {
-//				if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
-//					if (c.getInterfaces().length == 0) continue;
-//					AjType<?> targetType = AjTypeSystem.getAjType((Class<?>)c.getInterfaces()[0]);
-//					Field[] fields = c.getDeclaredFields();
-//					for (Field f : fields) {
-//						if (!Modifier.isPublic(f.getModifiers()) && publicOnly) continue;
-//						InterTypeFieldDeclaration itdf =
-//							new InterTypeFieldDeclarationImpl(
-//									this,targetType,f);
-//						toList.add(itdf);
-//					}
-//				}
-//			}
-//		}
 	}
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDConstructor(java.lang.Class, java.lang.Class...)
 	 */
@@ -1021,22 +976,6 @@ public class AjTypeImpl<T> implements AjType<T> {
                 toList.add(decp);
             }
         }
-//
-//        Class<?>[] classes = clazz.getDeclaredClasses();
-//		for (Class<?> c : classes) {
-//			if (c.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
-//				org.aspectj.lang.annotation.DeclareParents ann = c.getAnnotation(org.aspectj.lang.annotation.DeclareParents.class);
-//				if (c.getInterfaces().length == 0) continue;
-//				String parentType = c.getInterfaces()[0].getName();
-//				DeclareParentsImpl decp = new DeclareParentsImpl(
-//						ann.value(),
-//						parentType,
-//						false,
-//						this
-//						);
-//				toList.add(decp);
-//			}
-//		}
 	}
 
 	/* (non-Javadoc)

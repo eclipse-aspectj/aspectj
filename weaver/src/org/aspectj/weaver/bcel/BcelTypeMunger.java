@@ -235,7 +235,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                         boolean satisfiedByITD = false;
                         for (Iterator ii = newParentTarget.getType().getInterTypeMungersIncludingSupers().iterator(); ii.hasNext(); ) {
                             ConcreteTypeMunger m = (ConcreteTypeMunger)ii.next();
-                            if (m.getMunger().getKind() == ResolvedTypeMunger.Method) {//FIXME AVITD was instanceof
+                            if (m.getMunger().getKind() == ResolvedTypeMunger.Method) {
                                 ResolvedMember sig = m.getSignature();
                                 if (!Modifier.isAbstract(sig.getModifiers())) {
                                     if (ResolvedType
@@ -246,7 +246,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                                     }
                                 }
                             } else if (m.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate) {
-                                satisfiedByITD = true;//FIXME AVITD that should be enough, no need to check more
+                                satisfiedByITD = true;//AV - that should be enough, no need to check more
                             }
                         }
                         if (!satisfiedByITD) {
@@ -973,65 +973,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             return true;
         }
         return false;
-//        else if (onInterface && !Modifier.isAbstract(unMangledInterMethod.getModifiers())) {
-//
-//            // This means the 'gen' should be the top most implementor
-//            // - if it is *not* then something went wrong after we worked
-//            // out that it was the top most implementor (see pr49657)
-//            if (!gen.getType().isTopmostImplementor(onType)) {
-//                ResolvedType rtx = gen.getType().getTopmostImplementor(onType);
-//                if (!rtx.isExposedToWeaver()) {
-//                    ISourceLocation sLoc = munger.getSourceLocation();
-//                    weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
-//                            WeaverMessages.format(WeaverMessages.ITD_NON_EXPOSED_IMPLEMENTOR,rtx,getAspectType().getName()),
-//                            (sLoc==null?getAspectType().getSourceLocation():sLoc)));
-//                } else {
-//                    // XXX what does this state mean?
-//                    // We have incorrectly identified what is the top most implementor and its not because
-//                    // a type wasn't exposed to the weaver
-//                }
-//                return false;
-//            } else {
-//
-//              ResolvedMember mangledInterMethod =
-//                    AjcMemberMaker.interMethod(unMangledInterMethod, aspectType, false);
-//
-//              LazyMethodGen mg = makeMethodGen(gen, mangledInterMethod);
-//              if (mungingInterface) {
-//                // we want the modifiers of the ITD to be used for all *implementors* of the
-//                // interface, but the method itself we add to the interface must be public abstract
-//                mg.setAccessFlags(Modifier.PUBLIC | Modifier.ABSTRACT);
-//              }
-//
-//              Type[] paramTypes = BcelWorld.makeBcelTypes(mangledInterMethod.getParameterTypes());
-//              Type returnType = BcelWorld.makeBcelType(mangledInterMethod.getReturnType());
-//
-//              InstructionList body = mg.getBody();
-//              InstructionFactory fact = gen.getFactory();
-//              int pos = 0;
-//
-//              if (!mangledInterMethod.isStatic()) {
-//                body.append(InstructionFactory.createThis());
-//                pos++;
-//              }
-//              for (int i = 0, len = paramTypes.length; i < len; i++) {
-//                Type paramType = paramTypes[i];
-//                body.append(InstructionFactory.createLoad(paramType, pos));
-//                pos+=paramType.getSize();
-//              }
-//              body.append(Utility.createInvoke(fact, weaver.getWorld(), interMethodBody));
-//              body.append(InstructionFactory.createReturn(returnType));
-//              mg.definingType = onType;
-//
-//              weaver.addOrReplaceLazyMethodGen(mg);
-//
-//              addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
-//
-//              return true;
-//            }
-//        } else {
-//            return false;
-//        }
     }
 
 	private ResolvedMember getRealMemberForITDFromAspect(ResolvedType aspectType,ResolvedMember lookingFor,boolean isCtorRelated) {

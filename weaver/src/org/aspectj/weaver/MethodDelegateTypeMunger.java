@@ -21,12 +21,34 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.Iterator;
 
+/**
+ * Type munger for @AspectJ ITD declare parents ie with an interface AND an implementation.
+ * Given the aspect that has a field public static Interface fieldI = ... // impl.
+ * we will weave in the Interface' methods and delegate to the aspect public static field fieldI
+ *
+ * Note: this munger DOES NOT handles the interface addition to the target classes - a regular Parent kinded munger
+ * must be added in coordination.
+ */
 public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 
+    /**
+     * The field in the aspect that hosts the mixin instance
+     */
     private final ResolvedMember aspectFieldDelegate;
 
+    /**
+     * Type pattern this munger applies to
+     */
     private final TypePattern typePattern;
 
+    /**
+     * Construct a new type munger for @AspectJ ITD
+     *
+     * @param signature
+     * @param aspect
+     * @param fieldName
+     * @param typePattern
+     */
     public MethodDelegateTypeMunger(ResolvedMember signature, ResolvedType aspect, String fieldName, TypePattern typePattern) {
         super(MethodDelegate, signature);
         this.typePattern = typePattern;
@@ -50,14 +72,6 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
         return aspectFieldDelegate;
     }
 
-//    public ResolvedMember getInterMethodBody(UnresolvedType aspectType) {
-//        return AjcMemberMaker.interMethodBody(signature, aspectType);
-//    }
-//
-//    public ResolvedMember getInterMethodDispatcher(UnresolvedType aspectType) {
-//        return AjcMemberMaker.interMethodDispatcher(signature, aspectType);
-//    }
-
     public void write(DataOutputStream s) throws IOException {
         ;//FIXME AVITD needed as changes public signature throw new RuntimeException("unimplemented");
     }
@@ -70,13 +84,14 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 //        if (sLoc != null) munger.setSourceLocation(sLoc);
 //        return munger;
 //    }
-//
-//    public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
-//        ResolvedMember ret = AjcMemberMaker.interMethodDispatcher(getSignature(), aspectType);
-//        if (ResolvedType.matches(ret, member)) return getSignature();
-//        return super.getMatchingSyntheticMember(member, aspectType);
-//    }
 
+    /**
+     * Match based on given type pattern, only classes can be matched
+     *
+     * @param matchType
+     * @param aspectType
+     * @return true if match
+     */
     public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
         // match only on class
         if (matchType.isEnum() || matchType.isInterface() || matchType.isAnnotation()) {
@@ -86,6 +101,11 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
         return typePattern.matchesStatically(matchType);
     }
 
+    /**
+     * Needed for reweavable
+     *
+     * @return true
+     */
     public boolean changesPublicSignature() {
         return true;
     }

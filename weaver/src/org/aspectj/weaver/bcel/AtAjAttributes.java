@@ -444,30 +444,8 @@ public class AtAjAttributes {
      * @return list of AjAttributes, always empty for now
      */
     public static List readAj5FieldAttributes(Field field, BcelField bField, ResolvedType type, ISourceContext context, IMessageHandler msgHandler) {
-        //TODO use ? if (field.getName().startsWith(NameMangler.PREFIX)) return Collections.EMPTY_LIST;  // already dealt with by ajc...
-//
-//        // bypass primitive type fields - useless for @DeclareParents/Implements (interface)
-//        if (bField.getType().isPrimitiveType()) return Collections.EMPTY_LIST;
-//
-//        AjAttributeFieldStruct struct = new AjAttributeFieldStruct(field, bField, type, context, msgHandler);
-//        Attribute[] attributes = field.getAttributes();
-//
-//        boolean hasAtAspectJAnnotation = false;
-//        for (int i = 0; i < attributes.length; i++) {
-//            Attribute attribute = attributes[i];
-//            try {
-//                if (acceptAttribute(attribute)) {
-//                    RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-//                    hasAtAspectJAnnotation = hasAtAspectJAnnotation || handleDeclareImplementsAnnotation(
-//                            rvs, struct//, preResolvedPointcut//FIXME add in src layer
-//                    );
-//                }
-//            } catch (Exception e) {
-//
-//            }
-//        }
-//
-        return Collections.EMPTY_LIST;//struct.ajAttributes;
+        // Note: field annotation are for ITD and DEOW - processed at class level directly
+        return Collections.EMPTY_LIST;
     }
 
     /**
