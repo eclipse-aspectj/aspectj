@@ -44,6 +44,7 @@ import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -59,9 +60,7 @@ import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
-import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -239,6 +238,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                             if (m.getMunger().getKind() == ResolvedTypeMunger.Method) {
                                 ResolvedMember sig = m.getSignature();
                                 if (!Modifier.isAbstract(sig.getModifiers())) {
+                                	
+                                	// If the ITD shares a type variable with some target type, we need to tailor it for that
+                                	// type
+                                	if (m.isTargetTypeParameterized()) {
+                            	        ResolvedType genericOnType = getWorld().resolve(sig.getDeclaringType()).getGenericType();
+                                		m = m.parameterizedFor(newParent.discoverActualOccurrenceOfTypeInHierarchy(genericOnType));
+                                    	sig = m.getSignature(); // possible sig change when type parameters filled in
+                                	}
                                     if (ResolvedType
                                         .matches(
                                             AjcMemberMaker.interMethod(
@@ -892,6 +899,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	
     private boolean mungeMethodDelegate(BcelClassWeaver weaver, MethodDelegateTypeMunger munger) {
         ResolvedMember introduced = munger.getSignature();
+
         LazyClassGen gen = weaver.getLazyClassGen();
 
         ResolvedType fromType = weaver.getWorld().resolve(introduced.getDeclaringType(),munger.getSourceLocation());
