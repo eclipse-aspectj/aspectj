@@ -158,7 +158,6 @@
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj5.def=ataspectj/aop-decptest2.xml"/>
-                        <jvmarg line="${jdwp}"/>
         </java>
     </target>
 </project>
