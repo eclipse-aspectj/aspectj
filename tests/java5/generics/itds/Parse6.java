@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Base<N extends Number> {
+class Base<N> {
 
   public List<N> f1;
 
