@@ -49,6 +49,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCunningDeclareParents_pr92311() { runTest("cunning declare parents");}
   public void testGenericITDsAndAbstractMethodError_pr102357() { runTest("generic itds and abstract method error");}
   */
+  
   public void testBadDecp_pr110788_1() { runTest("bad generic decp - 1");}
   public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}
   public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
@@ -482,12 +483,17 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("parameterized generic methods");
   }
   
-//  public void testCantProvideDefaultImplViaITD_pr110307_1() {runTest("Cant provide default implementation via ITD - 1");}
-//  public void testCantProvideDefaultImplViaITD_pr110307_2() {runTest("Cant provide default implementation via ITD - 2");}
-//  public void testCantProvideDefaultImplViaITD_pr110307_3() {runTest("Cant provide default implementation via ITD - 3");}
+  public void testCantProvideDefaultImplViaITD_pr110307_1() {runTest("Cant provide default implementation via ITD - 1");}
+  public void testCantProvideDefaultImplViaITD_pr110307_2() {runTest("Cant provide default implementation via ITD - 2");}
+  public void testCantProvideDefaultImplViaITD_pr110307_3() {runTest("Cant provide default implementation via ITD - 3");}
   public void testCantProvideDefaultImplViaITD_pr110307_4() {runTest("Cant provide default implementation via ITD - 4");}
-//  public void testCantProvideDefaultImplViaITD_pr110307_5() {runTest("Cant provide default implementation via ITD - 5");}
-//  public void testCantProvideDefaultImplViaITD_pr110307_6() {runTest("Cant provide default implementation via ITD - 6");}
+  public void testCantProvideDefaultImplViaITD_pr110307_5() {runTest("Cant provide default implementation via ITD - 5");}
+  
+  // Needs a change in the compiler so that getType() can be overridden in the intertype scope - thats
+  // where we can police whether a type variable has been used without being specified appropriately.
+  //public void testCantProvideDefaultImplViaITD_pr110307_6() {runTest("Cant provide default implementation via ITD - 6");}
+
+  public void testCantProvideDefaultImplViaITD_pr110307_7() {runTest("Cant provide default implementation via ITD - 7");}
   
   public void testCallJoinPointsInAnonymousInnerClasses() {
 	  runTest("call join points in anonymous inner classes");

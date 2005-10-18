@@ -5062,12 +5062,21 @@
    
    <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 6">
      <compile files="Case6.java" options="-1.5">
-       <!--message kind="error" line="8" text="N cannot be resolved to a type"/-->
+       <message kind="error" line="8" text="N cannot be resolved to a type"/>
        <!--message kind="error" line="7" text="T cannot be resolved to a type"/-->
      </compile>
    </ajc-test>
 
-  
+   <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 7">
+     <compile files="Case7.java" options="-1.5"/>
+     <run class="Case7">
+       <stderr> 
+         <line text="in=hello out=hello"/>
+         <line text="in=35 out=35"/>
+         <line text="in=[] out=[]"/>
+       </stderr>
+     </run>
+   </ajc-test>  
    
    <!-- generic ITDs -->
    
