@@ -470,16 +470,16 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		    }
 	        declaringType = declaringType.resolve(world);
 	        if (declaringType.isRawType()) declaringType = ((ReferenceType)declaringType).getGenericType();
+
 			
 			if (parameterTypes!=null && parameterTypes.length>0) {
 				for (int i = 0; i < parameterTypes.length; i++) {
-					UnresolvedType array_element = parameterTypes[i];
-					// parameterTypes[i] = parameterTypes[i].resolve(world);
 					parameterTypes[i] = parameterTypes[i].resolve(world);
 				}
 			}
-		
+			
 			returnType = returnType.resolve(world);
+		
 		} finally {
 			world.setTypeVariableLookupScope(null);
 		}
@@ -585,6 +585,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return getParameterTypes();
 	}
 	
+	
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters,ResolvedType newDeclaringType, boolean isParameterized) {
+		return parameterizedWith(typeParameters,newDeclaringType,isParameterized,null);
+	}
+	
+	
 	/**
 	 * Return a resolvedmember in which all the type variables in the signature
 	 * have been replaced with the given bindings.
@@ -593,7 +599,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * List<String> (for example) - if (!isParameterized) then List<T> will turn
 	 * into List.
 	 */
-	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters,ResolvedType newDeclaringType, boolean isParameterized) {
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters,ResolvedType newDeclaringType, boolean isParameterized,List aliases) {
 		if (//isParameterized &&  <-- might need this bit...
 				!getDeclaringType().isGenericType()) {
 			throw new IllegalStateException("Can't ask to parameterize a member of a non-generic type");
@@ -603,13 +609,24 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			throw new IllegalStateException("Wrong number of type parameters supplied");
 		}
 		Map typeMap = new HashMap();
+		boolean typeParametersSupplied = typeParameters!=null && typeParameters.length>0;
 		if (typeVariables!=null) {
 			// If no 'replacements' were supplied in the typeParameters array then collapse
 			// type variables to their first bound.
-			boolean typeParametersSupplied = typeParameters!=null && typeParameters.length>0;
 			for (int i = 0; i < typeVariables.length; i++) {
 				UnresolvedType ut = (!typeParametersSupplied?typeVariables[i].getFirstBound():typeParameters[i]);
 				typeMap.put(typeVariables[i].getName(),ut);
+			}
+		}
+		// For ITDs on generic types that use type variables from the target type, the aliases
+		// record the alternative names used throughout the ITD expression that must map to
+		// the same value as the type variables real name.
+		if (aliases!=null) {
+			int posn = 0;
+			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
+				String typeVariableAlias = (String) iter.next();
+				typeMap.put(typeVariableAlias,(!typeParametersSupplied?typeVariables[posn].getFirstBound():typeParameters[posn]));
+				posn++;
 			}
 		}
 		

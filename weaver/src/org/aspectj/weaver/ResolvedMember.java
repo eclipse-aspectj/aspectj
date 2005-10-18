@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.aspectj.bridge.ISourceLocation;
 
@@ -114,6 +115,12 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public ResolvedMemberImpl parameterizedWith(
 			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized);
+
+    // this variant allows for aliases for type variables (i.e. allowing them to have another name)
+    // this is used for processing ITDs that share type variables with their target generic type
+	public ResolvedMemberImpl parameterizedWith(
+			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+			boolean isParameterized,List aliases);
 
 	public void setTypeVariables(TypeVariable[] types);
 

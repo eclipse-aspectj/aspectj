@@ -71,7 +71,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
 		ResolvedType genericType = target;
 		if (target.isRawType() || target.isParameterizedType()) genericType = genericType.getGenericType();
-		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType());
+		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
 		return new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
 	}
 
