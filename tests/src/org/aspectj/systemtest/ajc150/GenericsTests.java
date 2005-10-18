@@ -244,7 +244,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testParseItdCtor()            {runTest("Parsing generic ITDs - 3");}
 	public void testParseItdComplexMethod()   {runTest("Parsing generic ITDs - 4");}
 	public void testParseItdSharingVars1()    {runTest("Parsing generic ITDs - 5");}
-//	public void testParseItdSharingVars2()    {runTest("Parsing generic ITDs - 6");}
+	public void testParseItdSharingVars2()    {runTest("Parsing generic ITDs - 6");}
 	
 	
 	// non static
@@ -352,7 +352,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testSophisticatedAspectsD() {runTest("uberaspects - D");}
 	public void testSophisticatedAspectsE() {runTest("uberaspects - E");}
 //	public void testSophisticatedAspectsF() {runTest("uberaspects - F");} field ITD collapses to Number from tvar..
-//	public void testSophisticatedAspectsG() {runTest("uberaspects - G");}
+	public void testSophisticatedAspectsG() {runTest("uberaspects - G");}
 	public void testSophisticatedAspectsH() {runTest("uberaspects - H");}
 	public void testSophisticatedAspectsI() {runTest("uberaspects - I");}
 	public void testSophisticatedAspectsJ() {runTest("uberaspects - J");}
@@ -386,8 +386,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	// general tests ... usually just more complex scenarios
 	public void testReusingTypeVariableLetters()   {runTest("reusing type variable letters");}
     public void testMultipleGenericITDsInOneFile() {runTest("multiple generic itds in one file");}
-//	public void testItdNonStaticMember()           {runTest("itd of non static member");}
-//	public void testItdStaticMember()              {runTest("itd of static member");}
+	public void testItdNonStaticMember()           {runTest("itd of non static member");}
+	public void testItdStaticMember()              {runTest("itd of static member");}
 	public void testStaticGenericMethodITD()       {runTest("static generic method itd");}
 	
 	
