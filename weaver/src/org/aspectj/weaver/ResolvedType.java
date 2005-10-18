@@ -1273,7 +1273,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
      *
      * returns null if it can't be found.
      */
-    public ResolvedType discoverActualOccurenceOfTypeInHierarchy(ResolvedType lookingFor) {
+    public ResolvedType discoverActualOccurrenceOfTypeInHierarchy(ResolvedType lookingFor) {
             if (!lookingFor.isGenericType())
                     throw new BCException("assertion failed: method should only be called with generic type, but "+lookingFor+" is "+lookingFor.typeKind);
 
@@ -1288,10 +1288,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
             for (int i = 0; i < superIs.length; i++) {
                     ResolvedType superI = superIs[i];
                     if (superI.genericTypeEquals(lookingFor)) return superI;
-                    ResolvedType checkTheSuperI = discoverActualOccurenceOfTypeInHierarchy(lookingFor);
+                    ResolvedType checkTheSuperI = discoverActualOccurrenceOfTypeInHierarchy(lookingFor);
                     if (checkTheSuperI!=null) return checkTheSuperI;
             }
-            return discoverActualOccurenceOfTypeInHierarchy(superT);
+            return discoverActualOccurrenceOfTypeInHierarchy(superT);
     }
 
     /**
@@ -1315,17 +1315,17 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	        member.resolve(world); // Ensure all parts of the member are resolved
 	        if (debug) System.err.println("  Actual target ontype: "+onType+"  ("+onType.typeKind+")");
 	        // quickly find the targettype in the type hierarchy for this type (it will be either RAW or PARAMETERIZED)
-	        ResolvedType actualTarget = discoverActualOccurenceOfTypeInHierarchy(onType);
+	        ResolvedType actualTarget = discoverActualOccurrenceOfTypeInHierarchy(onType);
 	        if (actualTarget==null)
 	                throw new BCException("assertion failed: asked "+this+" for occurrence of "+onType+" in its hierarchy??");
 	
 	        // only bind the tvars if its a parameterized type or the raw type (in which case they collapse to bounds) - don't do it for generic types ;)
 	        if (!actualTarget.isGenericType()) {
-	            if (debug) System.err.println("Occurence in "+this+" is actually "+actualTarget+"  ("+actualTarget.typeKind+")");
+	            if (debug) System.err.println("Occurrence in "+this+" is actually "+actualTarget+"  ("+actualTarget.typeKind+")");
 	            // parameterize the signature
-	            ResolvedMember newOne = member.parameterizedWith(actualTarget.getTypeParameters(),onType,actualTarget.isParameterizedType());
+	            // ResolvedMember newOne = member.parameterizedWith(actualTarget.getTypeParameters(),onType,actualTarget.isParameterizedType());
 	            munger = munger.parameterizedFor(actualTarget);
-	            if (debug) System.err.println("New sig: "+newOne);
+	            if (debug) System.err.println("New sig: "+munger.getSignature());
 	            
 	        }
 	        if (debug) System.err.println("=====================================");
@@ -1927,7 +1927,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			
 			for (int i = 0; i < typeParameters.length; i++) {
 				UnresolvedType aType = (ResolvedType)typeParameters[i];
-				if (aType.isTypeVariableReference()  && ((TypeVariableReference)aType).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
+				if (aType.isTypeVariableReference()  && 
+				// assume the worst - if its definetly not a type declared one, it could be anything
+						((TypeVariableReference)aType).getTypeVariable().getDeclaringElementKind()!=TypeVariable.TYPE) {
 					parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
 					return true;
 				}

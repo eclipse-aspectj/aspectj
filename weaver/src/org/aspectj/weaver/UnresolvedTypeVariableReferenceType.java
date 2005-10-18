@@ -45,13 +45,13 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 		TypeVariableReferenceType tvrt    = null;
 		if (typeVariableScope == null) {
 			// throw new BCException("There is no scope in which to lookup type variables!");
-			// SAUSAGES correct thing to do is go bang, but to limp along, lets cope with the scope missing
+			// FIXME asc correct thing to do is go bang, but to limp along, lets cope with the scope missing
 			resolvedTypeVariable = typeVariable.resolve(world);
 			tvrt = new TypeVariableReferenceType(resolvedTypeVariable,world);
 		} else {
 		    boolean foundOK = false;
 			resolvedTypeVariable = typeVariableScope.getTypeVariableNamed(typeVariable.getName());
-			// SAUSAGES remove this when the shared type var stuff is sorted
+			// FIXME asc remove this when the shared type var stuff is sorted
 			if (resolvedTypeVariable == null) {
 				resolvedTypeVariable = typeVariable.resolve(world);
 			} else {
@@ -62,33 +62,8 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 		}
 		
 		return tvrt;
-//		// SAUSAGES should really be resolved in a scope, or you won't get the type variable you really want!
-//		//throw new BCException("NO - UnresolvedTypeVariableReferenceTypes must be resolved in a type variable scope");
-//		if (typeVariable == null) {
-//		    throw new BCException("Cannot resolve this type variable reference, the type variable has not been set!");
-//		}
-//		typeVariable.resolve(world);
-//		return new TypeVariableReferenceType(typeVariable,world);
 	}
 	
-//	public ResolvedType resolve(World world,TypeVariableDeclaringElement tvde) {
-//		if (typeVariable == null) {
-//			throw new BCException("Cannot resolve this type variable reference, the type variable has not been set!");
-//		}
-//		
-//		// SAUSAGES temporary whilst the ITD logic gets sorted out
-//		if (tvde == null) return new TypeVariableReferenceType(typeVariable.resolve(world),world);
-//		
-//		TypeVariable resolvedTypeVariable = tvde.getTypeVariableNamed(typeVariable.getName());
-//		if (resolvedTypeVariable == null) {
-//			resolvedTypeVariable = typeVariable.resolve(world);
-//			// SAUSAGES put this in once ITDs remember the complex shared type var stuff
-//			// throw new BCException("Could not locate type variable '"+typeVariable.getName()+"' during resolution, scope was: "+tvde);
-//		}
-//		TypeVariableReferenceType tvrt = new TypeVariableReferenceType(resolvedTypeVariable,world);
-//		tvrt.fixedUp = true;
-//		return tvrt;
-//	}
 	
 	public boolean isTypeVariableReference() {
 		return true;
