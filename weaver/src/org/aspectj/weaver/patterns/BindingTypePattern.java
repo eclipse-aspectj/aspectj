@@ -48,7 +48,7 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
     }
     public int hashCode() {
         int result = 17;
-        result = 37*result + type.hashCode();
+        result = 37*result + super.hashCode();
         result = 37*result + formalIndex;
         return result;
     }

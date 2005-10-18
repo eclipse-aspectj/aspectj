@@ -148,6 +148,7 @@ public class ExactTypePattern extends TypePattern {
 		
     public boolean equals(Object other) {
     	if (!(other instanceof ExactTypePattern)) return false;
+    	if (other instanceof BindingTypePattern) return false;
     	ExactTypePattern o = (ExactTypePattern)other;
     	if (includeSubtypes != o.includeSubtypes) return false;
     	if (isVarArgs != o.isVarArgs) return false;   	
@@ -158,6 +159,9 @@ public class ExactTypePattern extends TypePattern {
     public int hashCode() {
         int result = 17;
         result = 37*result + type.hashCode();
+        result = 37*result + new Boolean(includeSubtypes).hashCode();
+        result = 37*result + new Boolean(isVarArgs).hashCode();
+        result = 37*result + typeParameters.hashCode();
         result = 37*result + annotationPattern.hashCode();
         return result;
     }
