@@ -15,6 +15,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
@@ -200,6 +201,10 @@ public class JoinPointSignature implements ResolvedMember {
 
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType, boolean isParameterized) {
 		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized);
+	}
+	
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType, boolean isParameterized,List aliases) {
+		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized,aliases);
 	}
 
 	public void setTypeVariables(TypeVariable[] types) {
