@@ -65,22 +65,31 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
         }
     }
 
+    private MethodDelegateTypeMunger(ResolvedMember signature, ResolvedMember fieldDelegate, TypePattern typePattern) {
+        super(MethodDelegate, signature);
+        this.aspectFieldDelegate = fieldDelegate;
+        this.typePattern = typePattern;
+    }
+
     public ResolvedMember getDelegate() {
         return aspectFieldDelegate;
     }
 
     public void write(DataOutputStream s) throws IOException {
-        ;//FIXME AVITD needed as changes public signature throw new RuntimeException("unimplemented");
+        kind.write(s);
+        signature.write(s);
+        aspectFieldDelegate.write(s);
+        typePattern.write(s);
     }
 
-//    public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
-//        ResolvedMemberImpl rmi = ResolvedMemberImpl.readResolvedMember(s, context);
-//        Set superMethodsCalled = readSuperMethodsCalled(s);
-//        ISourceLocation sLoc = readSourceLocation(s);
-//        ResolvedTypeMunger munger = new MethodDelegateTypeMunger(rmi, superMethodsCalled);
-//        if (sLoc != null) munger.setSourceLocation(sLoc);
-//        return munger;
-//    }
+
+
+    public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
+        ResolvedMemberImpl signature = ResolvedMemberImpl.readResolvedMember(s, context);
+        ResolvedMemberImpl field = ResolvedMemberImpl.readResolvedMember(s, context);
+        TypePattern tp = TypePattern.read(s, context);
+        return new MethodDelegateTypeMunger(signature, field, tp);
+    }
 
     /**
      * Match based on given type pattern, only classes can be matched

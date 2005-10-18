@@ -122,4 +122,43 @@
             <jvmarg value="-Daj5.def=ataspectj/aop-unweavabletest.xml"/>
         </java>
     </target>
+
+    <target name="ltw.Decp">
+        <java fork="yes" classname="ataspectj.DeclareParentsInterfaceTest" failonerror="yes">
+            <classpath>
+                <path refid="aj.path"/>
+            </classpath>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop-decptest.xml"/>
+        </java>
+        <java fork="yes" classname="ataspectj.DeclareParentsImplementsTest" failonerror="yes">
+            <classpath>
+                <path refid="aj.path"/>
+            </classpath>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop-decptest.xml"/>
+        </java>
+    </target>
+
+    <target name="ltw.Decp2">
+        <!-- javac compile the 2nd aspect -->
+        <javac destdir="${aj.sandbox}"
+            srcdir="${basedir}"
+            includes="ataspectj/DeclareParentsImplementsReweavableTestAspect.java"
+            debug="true">
+            <classpath>
+                <path refid="aj.path"/>
+                <pathelement path="${aj.sandbox}"/>
+            </classpath>
+        </javac>
+
+        <java fork="yes" classname="ataspectj.DeclareParentsImplementsReweavableTest" failonerror="yes">
+            <classpath>
+                <path refid="aj.path"/>
+            </classpath>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop-decptest2.xml"/>
+                        <jvmarg line="${jdwp}"/>
+        </java>
+    </target>
 </project>

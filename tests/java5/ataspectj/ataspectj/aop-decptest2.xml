@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<aspectj>
+    <weaver options="-XmessageHandlerClass:ataspectj.TestHelper"/>
+    <aspects>
+        <aspect name="ataspectj.DeclareParentsImplementsReweavableTest.TestAspect"/>
+        <aspect name="ataspectj.DeclareParentsImplementsReweavableTestAspect"/>
+    </aspects>
+</aspectj>

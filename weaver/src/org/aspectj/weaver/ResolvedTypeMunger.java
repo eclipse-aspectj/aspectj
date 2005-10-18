@@ -123,10 +123,11 @@ public abstract class ResolvedTypeMunger {
 			return NewFieldTypeMunger.readField(s, context);
 		} else if (kind == Method) {
 			return NewMethodTypeMunger.readMethod(s, context);
-
 		} else if (kind == Constructor) {
 			return NewConstructorTypeMunger.readConstructor(s, context);
-		} else {
+        } else if (kind == MethodDelegate) {
+            return MethodDelegateTypeMunger.readMethod(s, context);
+        } else {
 			throw new RuntimeException("unimplemented");
 		}
 	}
@@ -227,7 +228,8 @@ public abstract class ResolvedTypeMunger {
 	            case 1: return Field;
 	            case 2: return Method;
 	            case 5: return Constructor;
-	        }
+                case 9: return MethodDelegate;
+            }
 	        throw new BCException("bad kind: " + key);
 	    }
 	}
@@ -247,7 +249,7 @@ public abstract class ResolvedTypeMunger {
 	
 	public static final Kind AnnotationOnType = new Kind("AnnotationOnType",8); // not serialized
 
-    public static final Kind MethodDelegate = new Kind("MethodDelegate", 9);// not serialized, @AJ ITDs
+    public static final Kind MethodDelegate = new Kind("MethodDelegate", 9);// serialized, @AJ ITDs
 
     public static final String SUPER_DISPATCH_NAME = "superDispatch";
 

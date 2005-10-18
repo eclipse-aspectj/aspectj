@@ -47,8 +47,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	}
 	
 	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		
-		ISourceLocation sloc = null;		
+		ISourceLocation sloc = null;
 		ResolvedMemberImpl rmImpl = ResolvedMemberImpl.readResolvedMember(s, context);
 		Set superMethodsCalled = readSuperMethodsCalled(s);
 		sloc = readSourceLocation(s);

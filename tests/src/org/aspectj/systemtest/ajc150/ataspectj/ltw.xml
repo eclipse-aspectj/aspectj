@@ -102,4 +102,22 @@
         <ant file="ajc-ant.xml" target="ltw.Unweavable" verbose="true"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="LTW Decp">
+        <!-- ajc compile them to test reweable as well -->
+        <compile
+            files="ataspectj/DeclareParentsInterfaceTest.java,ataspectj/DeclareParentsImplementsTest.java,ataspectj/TestHelper.java"
+            options="-1.5"
+            />
+        <ant file="ajc-ant.xml" target="ltw.Decp" verbose="true"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="LTW Decp2">
+        <!-- ajc compile them but with only one aspect -->
+        <compile
+            files="ataspectj/DeclareParentsImplementsReweavableTest.java,ataspectj/TestHelper.java"
+            options="-1.5"
+            />
+        <!-- compile the other aspect alone (won't be applied) -->
+        <ant file="ajc-ant.xml" target="ltw.Decp2" verbose="true"/>
+    </ajc-test>
 </suite>

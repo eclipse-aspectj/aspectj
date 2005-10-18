@@ -82,4 +82,11 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("LTW Unweavable");
     }
 
+    public void testLTWDecp() {
+        runTest("LTW Decp");
+    }
+
+    public void testLTWDecp2() {
+        runTest("LTW Decp2");
+    }
 }
