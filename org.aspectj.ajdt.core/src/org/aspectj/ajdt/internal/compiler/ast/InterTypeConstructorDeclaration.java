@@ -227,9 +227,9 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		
 		
-
+		
 		// This signature represents what we want consumers of the targetted type to 'see'
-		ResolvedMember signature = world.makeResolvedMember(binding,onTypeBinding);
+		ResolvedMember signature = world.makeResolvedMemberForITD(binding,onTypeBinding,interTypeScope.getRecoveryAliases());
 		signature.resetKind(Member.CONSTRUCTOR);
 		signature.resetName("<init>");
 		int resetModifiers = declaredModifiers;
@@ -240,7 +240,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			AjcMemberMaker.interConstructor(declaringTypeX,  signature, aspectType);
 		
 		NewConstructorTypeMunger myMunger = 
-			new NewConstructorTypeMunger(signature, syntheticInterMember, null, null);
+			new NewConstructorTypeMunger(signature, syntheticInterMember, null, null,typeVariableAliases);
 		setMunger(myMunger);
 		myMunger.check(world.getWorld());
 		

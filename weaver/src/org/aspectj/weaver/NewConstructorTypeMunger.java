@@ -15,9 +15,11 @@ package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 
 public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	private ResolvedMember syntheticConstructor;
@@ -28,10 +30,11 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		ResolvedMember signature,
 		ResolvedMember syntheticConstructor,
 		ResolvedMember explicitConstructor,
-		Set superMethodsCalled)
-	{
+		Set superMethodsCalled,
+		List typeVariableAliases) {
 		super(Constructor, signature);
 		this.syntheticConstructor = syntheticConstructor;
+		this.typeVariableAliases = typeVariableAliases;
 		this.explicitConstructor = explicitConstructor;
 		this.setSuperMethodsCalled(superMethodsCalled);
 
@@ -49,15 +52,19 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		explicitConstructor.write(s);
 		writeSuperMethodsCalled(s);
 		writeSourceLocation(s);
+		writeOutTypeAliases(s);
 	}
 	
 	public static ResolvedTypeMunger readConstructor(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		ResolvedTypeMunger munger = new NewConstructorTypeMunger(
-				ResolvedMemberImpl.readResolvedMember(s, context),
-				ResolvedMemberImpl.readResolvedMember(s, context),
-				ResolvedMemberImpl.readResolvedMember(s, context),
-				readSuperMethodsCalled(s));
-		munger.setSourceLocation(readSourceLocation(s));
+		ISourceLocation sloc = null;
+		ResolvedMember sig           = ResolvedMemberImpl.readResolvedMember(s, context);
+		ResolvedMember syntheticCtor = ResolvedMemberImpl.readResolvedMember(s, context);
+		ResolvedMember explicitCtor  = ResolvedMemberImpl.readResolvedMember(s, context);
+		Set superMethodsCalled       = readSuperMethodsCalled(s);
+		sloc                         = readSourceLocation(s);
+		List typeVarAliases          = readInTypeAliases(s);
+		ResolvedTypeMunger munger = new NewConstructorTypeMunger(sig,syntheticCtor,explicitCtor,superMethodsCalled,typeVarAliases);
+		if (sloc!=null) munger.setSourceLocation(sloc);
 		return munger;
 	}
 
