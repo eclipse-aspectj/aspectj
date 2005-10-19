@@ -5,9 +5,6 @@ public aspect X2 {
     Super2 s = new Sub2();
     Integer i = (Integer)s.m();
     
-    Util.checkMethods("Sub2",
-      new String[]{
-        "java.lang.Object Sub2.m() [BridgeMethod]",
-        "java.lang.Integer Sub2.m()"});
+    Util.dumpMethods("Sub2");
   }
 }

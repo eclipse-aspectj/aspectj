@@ -401,21 +401,21 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testAtOverride7()  {runTest("atOverride used with ITDs - 7");}
 	
 	
-		// bridge methods
-//	public void testITDBridgeMethodsCovariance1() {runTest("bridging with covariance 1 normal");}
-//	public void testITDBridgeMethodsCovariance2() {runTest("bridging with covariance 1 itd");}
-//	public void testITDBridgeMethodsCovariance3() {runTest("bridging with covariance 1 itd binary weaving");}
-//	public void testITDBridgeMethods1Normal() {runTest("basic bridging with type vars - 1 - normal");}
-//	public void testITDBridgeMethods1Itd()    {runTest("basic bridging with type vars - 1 - itd");}
-//	public void testITDBridgeMethods2() {runTest("basic bridging with type vars - 2");}
-//	public void testITDBridgeMethodsPr91381() {runTest("Abstract intertype method and covariant returns");}
+	// bridge methods
+	public void testITDBridgeMethodsCovariance1() {runTest("bridging with covariance 1 - normal");}
+	public void testITDBridgeMethodsCovariance2() {runTest("bridging with covariance 1 - itd");}
+	public void testITDBridgeMethods1Normal()     {runTest("basic bridging with type vars - 1 - normal");}
+	public void testITDBridgeMethods1Itd()        {runTest("basic bridging with type vars - 1 - itd");}
+	public void testITDBridgeMethods2Normal()     {runTest("basic bridging with type vars - 2 - normal");}
+	public void testITDBridgeMethods2Itd()        {runTest("basic bridging with type vars - 2 - itd");}
+	public void testITDBridgeMethodsPr91381() {runTest("Abstract intertype method and covariant returns");}
 	
-    public void testGenericITDsBridgeMethods1()        {runTest("bridge methods -1");}
-//	public void testGenericITDsBridgeMethods1binary()  {runTest("bridge methods -1binary");}
-	public void testGenericITDsBridgeMethods2()        {runTest("bridge methods -2");}
-//	public void testGenericITDsBridgeMethods2binary()  {runTest("bridge methods -2binary");}
-	public void testGenericITDsBridgeMethods3()        {runTest("bridge methods -3");}
-//	public void testGenericITDsBridgeMethods3binary()  {runTest("bridge methods -3binary");}
+    public void testGenericITDsBridgeMethods1()        {runTest("bridge methods - 1");}
+	public void testGenericITDsBridgeMethods1binary()  {runTest("bridge methods - 1 - binary");}
+	public void testGenericITDsBridgeMethods2()        {runTest("bridge methods - 2");}
+//	public void testGenericITDsBridgeMethods2binary()  {runTest("bridge methods - 2 - binary");} // pr108101
+	public void testGenericITDsBridgeMethods3()        {runTest("bridge methods - 3");}
+//	public void testGenericITDsBridgeMethods3binary()  {runTest("bridge methods - 3 - binary");} // pr108101
 	
 	public void testGenericITDsBridgeMethodsPR91381()  {runTest("abstract intertype methods and covariant returns");}
 	public void testGenericITDsBridgeMethodsPR91381_2()  {runTest("abstract intertype methods and covariant returns - error");}

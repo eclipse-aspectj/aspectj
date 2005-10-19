@@ -1,4 +1,6 @@
 // this bridge stuff is handled by the compiler
+// We should get two methods in D, one is next() with return type Object
+// and one is next() with return type String
 import java.lang.reflect.*;
 
 abstract class C<A> {

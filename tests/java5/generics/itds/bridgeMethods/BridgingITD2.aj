@@ -1,4 +1,6 @@
 // this bridge stuff is handled by the compiler
+// We should get two methods in D, one is next() with return type Object
+// and one is next() with return type String
 import java.lang.reflect.*;
 
 abstract class C<A> {
@@ -6,7 +8,7 @@ abstract class C<A> {
 }
 
 class D extends C<String> {
-	//String next() {return "";}
+	//public String next() {return "";}
 }
 
 public aspect BridgingITD2 {
@@ -15,7 +17,7 @@ public aspect BridgingITD2 {
 	
 	public static void main(String []argv) {
 		Util.dumpMethods("D");
- C c = new D();
- String s = c.next();
+                D d = new D();
+                String s = d.next();
 	}
 }

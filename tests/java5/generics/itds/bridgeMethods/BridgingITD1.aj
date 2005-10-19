@@ -1,4 +1,5 @@
-// Now the implementation is introduced via an ITD, we should still get the bridge method in the class D
+// Now the implementation is introduced via an ITD, we should
+// still get the bridge method in the class D
 import java.lang.reflect.*;
 
 class C {
@@ -10,8 +11,8 @@ class D extends C {
 }
 
 public aspect BridgingITD1 {
-	public D D.method1() { return null; }
-	public static void main(String []argv) {
-	    Util.dumpMethods("D",new String[]{"C D.method1() [BridgeMethod]","D D.method1()"});
-	}
+  public D D.method1() { return null; }
+  public static void main(String []argv) {
+    Util.dumpMethods("D");
+  }
 }

@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Util {
 	
-	public static void checkMethods(String clazzname,String[] expectedMethods) {
+	public static void dumpMethods(String clazzname) {//,String[] expectedMethods) {
 		List methodsFound = new ArrayList();
 		try {
 			java.lang.Class clz = Class.forName(clazzname);
@@ -20,19 +20,24 @@ public class Util {
 		} catch (Throwable e) {e.printStackTrace();}
 		
 		StringBuffer diagnosticInfo = new StringBuffer();
-		diagnosticInfo.append("\nExpected:\n").append(dumparray(expectedMethods));
-		diagnosticInfo.append("\nFound:\n").append(dumplist(methodsFound));
-		
-		for (int i = 0; i < expectedMethods.length; i++) {
-			String string = expectedMethods[i];
-			if (!methodsFound.contains(string)) {
-				throw new RuntimeException("Expecting method '"+string+"' but didnt find it\n"+diagnosticInfo.toString());
-			}
-			methodsFound.remove(string);
+		Collections.sort(methodsFound);
+		for (Iterator iter = methodsFound.iterator(); iter.hasNext();) {
+			String element = (String) iter.next();
+			System.err.println(element);
 		}
-		if (methodsFound.size()>0) {
-			throw new RuntimeException("Found more methods than expected: "+dumplist(methodsFound));
-		}
+//		diagnosticInfo.append("\nExpected:\n").append(dumparray(expectedMethods));
+//		diagnosticInfo.append("\nFound:\n").append(dumplist(methodsFound));
+//		
+//		for (int i = 0; i < expectedMethods.length; i++) {
+//			String string = expectedMethods[i];
+//			if (!methodsFound.contains(string)) {
+//				throw new RuntimeException("Expecting method '"+string+"' but didnt find it\n"+diagnosticInfo.toString());
+//			}
+//			methodsFound.remove(string);
+//		}
+//		if (methodsFound.size()>0) {
+//			throw new RuntimeException("Found more methods than expected: "+dumplist(methodsFound));
+//		}
 	}
 	
 	private static String dumparray(String[] arr) {
