@@ -1378,5 +1378,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	public ConcreteTypeMunger parameterizedFor(ResolvedType target) {
 		return new BcelTypeMunger(munger.parameterizedFor(target),aspectType);
 	}
+	
+	/**
+	 * Returns a list of type variable aliases used in this munger.  For example, if the
+	 * ITD is 'int I<A,B>.m(List<A> las,List<B> lbs) {}' then this returns a list containing
+	 * the strings "A" and "B".
+	 */
+	public List /*String*/ getTypeVariableAliases() {
+		return munger.getTypeVariableAliases();
+	}
 }
 		
