@@ -416,7 +416,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @return the bytecode representation of the aspect
      */
     private String readAspect(String name, ClassLoader loader){
-        if (true) return name+"@"+(loader==null?"0":loader.hashCode());
+        if (true) return name+"@"+(loader==null?"0":Integer.toString(loader.hashCode()));
         // FIXME AV - ?? can someone tell me why we read the whole bytecode
         // especially one byte by one byte
         // also it does some NPE sometime (see AtAjLTW "LTW Decp2")
