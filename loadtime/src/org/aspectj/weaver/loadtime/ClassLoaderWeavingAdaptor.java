@@ -416,9 +416,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @return the bytecode representation of the aspect
      */
     private String readAspect(String name, ClassLoader loader){
-    	try {
+        if (true) return name+"@"+(loader==null?"0":loader.hashCode());
+        // FIXME AV - ?? can someone tell me why we read the whole bytecode
+        // especially one byte by one byte
+        // also it does some NPE sometime (see AtAjLTW "LTW Decp2")
+        InputStream is = null;
+        try {
     		String result = "";
-        	InputStream is = loader.getResourceAsStream(name.replace('.','/')+".class");
+        	is = loader.getResourceAsStream(name.replace('.','/')+".class");
 			int b = is.read();
 			while(b!=-1){
 				result = result + b;
@@ -429,11 +434,13 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return "";
-		}catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			//probably tried to read in a "non aspect @missing@" aspect
 			System.err.println("ClassLoaderWeavingAdaptor.readAspect() name: "+name+"  Exception: "+e);
 			return "";
-		}
+		} finally {
+            try {is.close();} catch (Throwable t) {;}
+        }
     }
     
 }
