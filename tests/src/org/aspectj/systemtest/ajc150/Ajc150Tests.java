@@ -618,6 +618,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testVarArgsIITDInConstructor() {
 	  runTest("ITD varargs in constructor");
   }
+   
+  public void testWeaveInfoMessageForDeclareAtMethodOnITDdMethod() {
+	  runTest("weaveinfo message for declare at method on an ITDd method");
+  }
   
   // helper methods.....
   

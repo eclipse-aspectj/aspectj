@@ -660,6 +660,16 @@
         </compile>
     </ajc-test> 
 
+    <ajc-test dir="bugs150" title="weaveinfo message for declare at method on an ITDd method">
+        <compile files="pr113073.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Type 'C' (pr113073.java) has intertyped method from 'D' (pr113073.java:'void C.anotherMethod()')"/>
+			<message kind="weave" text="'public void C.anotherMethod()' (pr113073.java) is annotated with @Annotation method annotation from 'B' (pr113073.java:3)"/>
+			<message kind="weave" text="Type 'C' (pr113073.java) has intertyped method from 'D' (pr113073.java:'void C.anotherMethod(java.lang.String)')"/>
+			<message kind="weave" text="'public void C.anotherMethod(String)' (pr113073.java) is annotated with @Annotation method annotation from 'B' (pr113073.java:3)"/>
+			<message kind="weave" text="Type 'C' (pr113073.java) has intertyped constructor from 'D' (pr113073.java:'void C."/>
+			<message kind="weave" text="'public void C.new(String)' (pr113073.java) is annotated with @Annotation constructor annotation from 'B' (pr113073.java:4)"/>
+        </compile>
+    </ajc-test> 
 
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->

@@ -491,8 +491,7 @@ class BcelClassWeaver implements IClassWeaver {
             			members.set(memberCounter,new LazyMethodGen(newMethod,clazz));
             			
             			AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
-            			
-            			reportMethodCtorWeavingMessage(clazz, mg, decaM);
+            			reportMethodCtorWeavingMessage(clazz, mg.getMemberView(), decaM,mg.getDeclarationLineNumber());
             			isChanged = true;
             			modificationOccured = true;
             		} else {
@@ -525,26 +524,27 @@ class BcelClassWeaver implements IClassWeaver {
 		return isChanged;
     }
 
-	// TAG: WeavingMessage
-	private void reportMethodCtorWeavingMessage(LazyClassGen clazz, LazyMethodGen mg, DeclareAnnotation decaM) {
+	
+    // TAG: WeavingMessage
+	private void reportMethodCtorWeavingMessage(LazyClassGen clazz, ResolvedMember member, DeclareAnnotation decaM,int memberLineNumber) {
 		if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)){
 			StringBuffer parmString = new StringBuffer("(");
-			Type[] args = mg.getMethod().getArgumentTypes();
-			for (int i = 0; i < args.length; i++) {
-				Type type2 = args[i];
-				String s = org.aspectj.apache.bcel.classfile.Utility.signatureToString(type2.getSignature());
+			UnresolvedType[] paramTypes = member.getParameterTypes();
+			for (int i = 0; i < paramTypes.length; i++) {
+				UnresolvedType type = paramTypes[i];
+				String s = org.aspectj.apache.bcel.classfile.Utility.signatureToString(type.getSignature());
 				if (s.lastIndexOf(".")!=-1) s =s.substring(s.lastIndexOf(".")+1);
 				parmString.append(s);
-				if ((i+1)<args.length) parmString.append(",");
+				if ((i+1)<paramTypes.length) parmString.append(",");
 			}
 			parmString.append(")");
-			String methodName = mg.getMethod().getName();
+			String methodName = member.getName();
 			StringBuffer sig = new StringBuffer();
-			sig.append(org.aspectj.apache.bcel.classfile.Utility.accessToString(mg.getMethod().getAccessFlags()) );
+			sig.append(org.aspectj.apache.bcel.classfile.Utility.accessToString(member.getModifiers()));
 			sig.append(" ");
-			sig.append(mg.getMethod().getReturnType().toString());
+			sig.append(member.getReturnType().toString());
 			sig.append(" ");
-			sig.append(clazz.getName());
+			sig.append(member.getDeclaringType().toString());
 			sig.append(".");
 			sig.append(methodName.equals("<init>")?"new":methodName);
 			sig.append(parmString);
@@ -554,8 +554,8 @@ class BcelClassWeaver implements IClassWeaver {
 				loc.append("no debug info available");
 			} else {
 				loc.append(clazz.getFileName());
-				if (mg.getDeclarationLineNumber()!=-1) {
-					loc.append(":"+mg.getDeclarationLineNumber());
+				if (memberLineNumber!=-1) {
+					loc.append(":"+memberLineNumber);
 				}
 			}
 			getWorld().getMessageHandler().handleMessage(
@@ -715,6 +715,7 @@ class BcelClassWeaver implements IClassWeaver {
 					annotationHolder.addAnnotation(decaMC.getAnnotationX());
 					isChanged=true;
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),unMangledInterMethod.getSourceLocation());
+					reportMethodCtorWeavingMessage(clazz, unMangledInterMethod, decaMC,-1);
 					modificationOccured = true;					
 				} else {
 					if (!decaMC.isStarredAnnotationPattern()) 
