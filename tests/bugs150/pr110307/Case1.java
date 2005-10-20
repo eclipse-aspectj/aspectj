@@ -12,7 +12,7 @@ interface AssociationSource<T> {
 
 }
 aspect ExtendProduct {
-       Link<Q> AssociationSource<Q>._target = null;
+       Link<X> AssociationSource<X>._target = null;
 
        public Link<Q> AssociationSource<Q>.getTarget() {
            return _target;
