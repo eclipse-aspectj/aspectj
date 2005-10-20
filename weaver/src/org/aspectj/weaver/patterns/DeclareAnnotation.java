@@ -288,6 +288,10 @@ public class DeclareAnnotation extends Declare {
 		return typePattern;
 	}
 	
+	public SignaturePattern getSignaturePattern() {
+		return sigPattern;
+	}
+	
 	public boolean isStarredAnnotationPattern() {
 		if (typePattern!=null) return typePattern.isStarAnnotation();
 		if (sigPattern!=null)  return sigPattern.isStarAnnotation();
