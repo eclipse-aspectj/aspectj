@@ -286,7 +286,11 @@ public class ReferenceType extends ResolvedType {
 
        	if (other.isTypeVariableReference()) {
        		TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
-       		return this.isAssignableFrom(otherType.getUpperBound().resolve(world));
+       		if (this instanceof TypeVariableReference) {
+       			return ((TypeVariableReference)this).getTypeVariable()==otherType.getTypeVariable();
+       		} else {
+       			return this.isAssignableFrom(otherType.getTypeVariable().getFirstBound().resolve(world));
+       		}
        	}
        	
        	if (allowMissing && other.isMissing()) return false;

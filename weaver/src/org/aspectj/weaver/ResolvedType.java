@@ -1324,10 +1324,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	            if (debug) System.err.println("Occurrence in "+this+" is actually "+actualTarget+"  ("+actualTarget.typeKind+")");
 	            // parameterize the signature
 	            // ResolvedMember newOne = member.parameterizedWith(actualTarget.getTypeParameters(),onType,actualTarget.isParameterizedType());
-	            munger = munger.parameterizedFor(actualTarget);
-	            if (debug) System.err.println("New sig: "+munger.getSignature());
-	            
 	        }
+	       //if (!actualTarget.isRawType()) 
+	    	   munger = munger.parameterizedFor(actualTarget);
+	        if (debug) System.err.println("New sig: "+munger.getSignature());
+	            
+	        
 	        if (debug) System.err.println("=====================================");
 		}
 		return munger;
@@ -1498,6 +1500,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	      ResolvedType rtParentReturnType = parent.getGenericReturnType().resolve(world);
 		  ResolvedType rtChildReturnType  = child.getGenericReturnType().resolve(world);
 		  incompatibleReturnTypes = !rtParentReturnType.isAssignableFrom(rtChildReturnType);
+		  if (incompatibleReturnTypes) {
+			  incompatibleReturnTypes = !rtParentReturnType.isAssignableFrom(rtChildReturnType);
+		  }
 		} else {
 		  incompatibleReturnTypes =!parent.getReturnType().equals(child.getReturnType());
 		}

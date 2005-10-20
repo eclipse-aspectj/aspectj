@@ -40,6 +40,17 @@ public abstract class ResolvedTypeMunger {
 	protected Kind kind;
 	protected ResolvedMember signature;
 	
+	protected ResolvedMember originalSignature;
+	
+	public void setOriginalSignature(ResolvedMember rm) {
+		originalSignature = rm;
+	}
+	
+	public ResolvedMember getMostOriginalSignature() {
+		if (originalSignature==null) return signature;
+		return originalSignature;
+	}
+	
 	// This list records the occurences (in order) of any names specified in the <> 
 	// for a target type for the ITD.  So for example, for List<C,B,A> this list
 	// will be C,B,A - the list is used later to map other occurrences of C,B,A
@@ -339,6 +350,33 @@ public abstract class ResolvedTypeMunger {
      * see ConcreteTypeMunger.parameterizedFor
      */
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
-		throw new BCException("Should *NOT* be called for this kind of munger: "+this);
+		throw new BCException("Dont call parameterizedFor on a type munger of this kind: "+this.getClass());
 	}
+//		ResolvedType genericType = target;
+//		if (target.isRawType() || target.isParameterizedType()) genericType = genericType.getGenericType();
+//		ResolvedMember parameterizedSignature = null;
+//		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used 
+//		// in the original ITD declaration to the ones used in the actual target type declaration.
+//		if (target.isGenericType()) {
+//			TypeVariable vars[] = target.getTypeVariables();
+//			UnresolvedTypeVariableReferenceType[] varRefs = new UnresolvedTypeVariableReferenceType[vars.length];
+//			for (int i = 0; i < vars.length; i++) {
+//				varRefs[i] = new UnresolvedTypeVariableReferenceType(vars[i]);
+//			}
+//			parameterizedSignature = getSignature().parameterizedWith(varRefs,genericType,true,typeVariableAliases);
+//		} else {
+//		  // For raw and 'normal' parameterized targets  (e.g. Interface, Interface<String>)
+//		  parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
+//		}
+//		return new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+//	}
+//	/**
+//     * see ResolvedTypeMunger.parameterizedFor(ResolvedType)
+//     */
+//	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
+//		ResolvedType genericType = target;
+//		if (target.isRawType() || target.isParameterizedType()) genericType = genericType.getGenericType();
+//		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
+//		return new NewFieldTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+//	}
 }

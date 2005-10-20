@@ -94,4 +94,27 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		}
 	}
 
+	/**
+     * see ResolvedTypeMunger.parameterizedFor(ResolvedType)
+     */
+	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
+		ResolvedType genericType = target;
+		if (target.isRawType() || target.isParameterizedType()) genericType = genericType.getGenericType();
+		ResolvedMember parameterizedSignature = null;
+		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used 
+		// in the original ITD declaration to the ones used in the actual target type declaration.
+		if (target.isGenericType()) {
+			TypeVariable vars[] = target.getTypeVariables();
+			UnresolvedTypeVariableReferenceType[] varRefs = new UnresolvedTypeVariableReferenceType[vars.length];
+			for (int i = 0; i < vars.length; i++) {
+				varRefs[i] = new UnresolvedTypeVariableReferenceType(vars[i]);
+			}
+			parameterizedSignature = getSignature().parameterizedWith(varRefs,genericType,true,typeVariableAliases);
+		} else {
+		  // For raw and 'normal' parameterized targets  (e.g. Interface, Interface<String>)
+		  parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
+		}
+		return new NewConstructorTypeMunger(parameterizedSignature,syntheticConstructor,explicitConstructor,getSuperMethodsCalled(),typeVariableAliases);
+	}
+
 }

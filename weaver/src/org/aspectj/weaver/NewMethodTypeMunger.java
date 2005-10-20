@@ -63,15 +63,31 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		if (ResolvedType.matches(ret, member)) return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
-	
+
 	/**
-     * ResolvedTypeMunger.parameterizedFor(ResolvedType)
+     * see ResolvedTypeMunger.parameterizedFor(ResolvedType)
      */
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
 		ResolvedType genericType = target;
 		if (target.isRawType() || target.isParameterizedType()) genericType = genericType.getGenericType();
-		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
-		return new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+		ResolvedMember parameterizedSignature = null;
+		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used 
+		// in the original ITD declaration to the ones used in the actual target type declaration.
+		if (target.isGenericType()) {
+			TypeVariable vars[] = target.getTypeVariables();
+			UnresolvedTypeVariableReferenceType[] varRefs = new UnresolvedTypeVariableReferenceType[vars.length];
+			for (int i = 0; i < vars.length; i++) {
+				varRefs[i] = new UnresolvedTypeVariableReferenceType(vars[i]);
+			}
+			parameterizedSignature = getSignature().parameterizedWith(varRefs,genericType,true,typeVariableAliases);
+		} else {
+		  // For raw and 'normal' parameterized targets  (e.g. Interface, Interface<String>)
+		  parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
+		}
+		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+		nmtm.setOriginalSignature(getSignature());
+		return nmtm;
 	}
-
+	
+	
 }

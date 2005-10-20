@@ -14,7 +14,7 @@
 package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
@@ -31,22 +31,22 @@ public class InterTypeFieldBinding extends FieldBinding {
 	public SyntheticMethodBinding writer;
 	public AbstractMethodDeclaration sourceMethod;
 	
-	public InterTypeFieldBinding(EclipseFactory world, ResolvedMember signature, UnresolvedType withinType,
+	public InterTypeFieldBinding(EclipseFactory world, ResolvedTypeMunger munger, UnresolvedType withinType,
 									AbstractMethodDeclaration sourceMethod)
 	{
-		super(world.makeFieldBinding(signature), null);
+		super(world.makeFieldBinding(munger.getSignature(),munger.getTypeVariableAliases()), null);
 		this.sourceMethod = sourceMethod;
 		
-		targetType = (ReferenceBinding)world.makeTypeBinding(signature.getDeclaringType());
+		targetType = (ReferenceBinding)world.makeTypeBinding(munger.getSignature().getDeclaringType());
 		this.declaringClass = (ReferenceBinding)world.makeTypeBinding(withinType);
 	
 		reader = new SimpleSyntheticAccessMethodBinding(
 								world.makeMethodBinding(
-			AjcMemberMaker.interFieldGetDispatcher(signature, withinType)
+			AjcMemberMaker.interFieldGetDispatcher(munger.getSignature(), withinType)
 		));
 		
 		writer = new SimpleSyntheticAccessMethodBinding(world.makeMethodBinding(
-			AjcMemberMaker.interFieldSetDispatcher(signature, withinType)
+			AjcMemberMaker.interFieldSetDispatcher(munger.getSignature(), withinType)
 		));
 	}
 	

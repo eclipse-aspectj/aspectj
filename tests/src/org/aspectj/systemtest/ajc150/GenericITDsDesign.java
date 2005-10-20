@@ -1,12 +1,14 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.util.ClassPath;
@@ -23,6 +25,7 @@ import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.bcel.BcelWorld;
+
 
 public class GenericITDsDesign extends XMLBasedAjcTestCase {
 
@@ -42,24 +45,27 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 				theMember.toDebugString().equals(string));
 	}
 
-	
-	public static Signature getClassSignature(Ajc ajc,String classname) {
+	public static JavaClass getClassFromDisk(Ajc ajc,String classname) {
 		try {
-			ClassPath cp = 
-				new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
-		    SyntheticRepository sRepos =  SyntheticRepository.getInstance(cp);
-			JavaClass clazz = sRepos.loadClass(classname);
-			Signature sigAttr = null;
-			Attribute[] attrs = clazz.getAttributes();
-			for (int i = 0; i < attrs.length; i++) {
-				Attribute attribute = attrs[i];
-				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
-			}
-			return sigAttr;
+		ClassPath cp = 
+			new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
+	    SyntheticRepository sRepos =  SyntheticRepository.getInstance(cp);
+			return sRepos.loadClass(classname);
 		} catch (ClassNotFoundException e) {
 			fail("Couldn't find class "+classname+" in the sandbox directory.");
 		}
 		return null;
+	}
+	
+	public static Signature getClassSignature(Ajc ajc,String classname) {
+		JavaClass clazz = getClassFromDisk(ajc,classname);
+		Signature sigAttr = null;
+		Attribute[] attrs = clazz.getAttributes();
+		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];
+			if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
+		}
+		return sigAttr;
 	}
 	// Check the signature attribute on a class is correct
 	public static void verifyClassSignature(Ajc ajc,String classname,String sig) {
@@ -93,6 +99,18 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		fail("Couldn't find a type munger from line "+linenumber+" in class "+classname);
 		return null;
 	}
+
+	public Hashtable getMeTheFields(String classname) {
+		JavaClass theClass = getClassFromDisk(ajc,classname);
+		Hashtable retval = new Hashtable();
+		org.aspectj.apache.bcel.classfile.Field[] fs = theClass.getFields();
+		for (int i = 0; i < fs.length; i++) {
+			Field field = fs[i];
+			retval.put(field.getName(),field);
+		}
+		return retval;
+	}
+	
 	/* 
 		test plan:
 		  1. Serializing and recovering 'default bounds' type variable info:
@@ -191,6 +209,61 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		// System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
 		verifyDebugString(theBcelMunger.getMunger().getSignature(),"java.util.List<Q> C.m0(Q, int, java.util.List<java.util.List<Q>>)");
 	}
+	
+	// Verify: a) for fields, sharing type vars with some target type results in the correct entries in the class file
+	public void testDesignE() {
+		runTest("generic itds - design E"); 
+		BcelTypeMunger theBcelMunger = getMungerFromLine("X",9);
+		verifyDebugString(theBcelMunger.getMunger().getSignature(),"java.util.List<Z> C.ln");
+		assertTrue("Expected to find \"Z\": "+theBcelMunger.getTypeVariableAliases(),theBcelMunger.getTypeVariableAliases().contains("Z"));
+		
+		theBcelMunger = getMungerFromLine("X",11);
+		verifyDebugString(theBcelMunger.getMunger().getSignature(),"Q C.n");
+		assertTrue("Expected to find \"Q\": "+theBcelMunger.getTypeVariableAliases(),theBcelMunger.getTypeVariableAliases().contains("Q"));
+	}
+	
+	// Verifying what gets into a class targetted with a field ITD
+	public void testDesignF() {
+	  runTest("generic itds - design F");	
+	  Hashtable fields = getMeTheFields("C");
+      
+      // Declared in src as: List C.list1;         and       List<Z> C<Z>.list2;
+      Field list1 = (Field)fields.get("ajc$interField$$list1");
+      assertTrue("Field list1 should be of type 'Ljava/util/List;' but is "+list1.getSignature(),
+    		  list1.getSignature().equals("Ljava/util/List;"));
+      Field list2 = (Field)fields.get("ajc$interField$$list1");
+      assertTrue("Field list2 should be of type 'Ljava/util/List;' but is "+list2.getSignature(),
+    		  list2.getSignature().equals("Ljava/util/List;"));
+      
+      // Declared in src as: String C.field1;      and      Q C<Q>.field2;
+      // bound for second field collapses to Object
+      Field field1 = (Field)fields.get("ajc$interField$$field1");
+      assertTrue("Field list1 should be of type 'Ljava/lang/String;' but is "+field1.getSignature(),
+    		  field1.getSignature().equals("Ljava/lang/String;"));
+      Field field2 = (Field)fields.get("ajc$interField$$field2");
+      assertTrue("Field list2 should be of type 'Ljava/lang/Object;' but is "+field2.getSignature(),
+    		  field2.getSignature().equals("Ljava/lang/Object;"));
+	}
+	
+
+	// Verifying what gets into a class when an interface it implements was targetted with a field ITD
+	public void testDesignG() {
+      runTest("generic itds - design G");
+	  Hashtable fields = getMeTheFields("C");
+     
+      // The ITDs are targetting an interface.  That interface is generic and is parameterized with
+      // 'String' when implemented in the class C.  This means the fields that make it into C should
+      // be parameterized with String also.
+	  
+	  //   List<Z> I<Z>.ln;                 and					Q I<Q>.n;
+//      Field field1 = (Field)fields.get("ajc$interField$X$I$ln");
+//      assertTrue("Field list1 should be of type 'Ljava/util/List;' but is "+field1.getSignature(),
+//    		  field1.getSignature().equals("Ljava/util/List;"));
+//      Field field2 = (Field)fields.get("ajc$interField$X$I$n");
+//      assertTrue("Field list2 should be of type 'Ljava/lang/String;' but is "+field2.getSignature(),
+//    		  field2.getSignature().equals("Ljava/lang/String;"));
+	}
+
 	
 //	// Verify: a) sharing type vars with some target type results in the correct variable names in the serialized form
 //	public void testDesignE() {

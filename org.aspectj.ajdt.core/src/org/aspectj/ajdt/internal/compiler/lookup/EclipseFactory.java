@@ -55,6 +55,8 @@ import org.aspectj.weaver.BoundedReferenceType;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
@@ -642,21 +644,69 @@ public class EclipseFactory {
 		}
 		return ret;
 	}
-
 	
+	
+	// field related
+	
+	public FieldBinding makeFieldBinding(NewFieldTypeMunger nftm) {
+		return internalMakeFieldBinding(nftm.getSignature(),nftm.getTypeVariableAliases());
+	}
+
+	/**
+	 * Convert a resolvedmember into an eclipse field binding
+	 */
+	public FieldBinding makeFieldBinding(ResolvedMember member,List aliases) {
+		return internalMakeFieldBinding(member,aliases);
+	}
+
+	/**
+	 * Convert a resolvedmember into an eclipse field binding
+	 */
 	public FieldBinding makeFieldBinding(ResolvedMember member) {
-		currentType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
+		return internalMakeFieldBinding(member,null);
+	}
+	
+	/**
+	 * Take a normal AJ member and convert it into an eclipse fieldBinding.
+	 * Taking into account any aliases that it may include due to being
+	 * a generic itd.  Any aliases are put into the typeVariableToBinding
+	 * map so that they will be substituted as appropriate in the returned
+	 * fieldbinding.
+	 */
+	public FieldBinding internalMakeFieldBinding(ResolvedMember member,List aliases) {
+		typeVariableToTypeBinding.clear();
+		TypeVariableBinding[] tvbs = null;
+		
+		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
+		
+		// If there are aliases, place them in the map
+		if (aliases!=null && aliases.size()>0) {
+			int i =0;
+			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
+				String element = (String) iter.next();
+				typeVariableToTypeBinding.put(element,declaringType.typeVariables()[i++]);
+			}
+		}
+		
+		currentType = declaringType;
 		FieldBinding fb =  new FieldBinding(member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()),
 				member.getModifiers(),
 				currentType,
 				Constant.NotAConstant);
+		typeVariableToTypeBinding.clear();
 		currentType = null;
 		return fb;
 	}
 
 	private ReferenceBinding currentType = null;
 
+	// method binding related
+	
+	public MethodBinding makeMethodBinding(NewMethodTypeMunger nmtm) {
+		return internalMakeMethodBinding(nmtm.getSignature(),nmtm.getTypeVariableAliases());
+	}
+	
 	/**
 	 * Convert a resolvedmember into an eclipse method binding.
 	 */
@@ -669,33 +719,10 @@ public class EclipseFactory {
 	 */
 	public MethodBinding makeMethodBinding(ResolvedMember member) {
 		return internalMakeMethodBinding(member,null); // there are no aliases
-		
-//		typeVariableToTypeBinding.clear(); // will be filled in as we go along...
-//		TypeVariableBinding[] tvbs = null;
-//		
-//		if (member.getTypeVariables()!=null)  {
-//			if (member.getTypeVariables().length==0)	tvbs = MethodBinding.NoTypeVariables;
-//			else                                     	tvbs = makeTypeVariableBindingsFromAJTypeVariables(member.getTypeVariables());
-//			// QQQ do we need to bother fixing up the declaring element for each type variable?
-//		}		
-//		
-//		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
-//		currentType = declaringType;
-//		MethodBinding mb =  new MethodBinding(member.getModifiers(), 
-//				member.getName().toCharArray(),
-//				makeTypeBinding(member.getReturnType()),
-//				makeTypeBindings(member.getParameterTypes()),
-//				makeReferenceBindings(member.getExceptions()),
-//				declaringType);
-//
-//		if (tvbs!=null) mb.typeVariables = tvbs;
-//		typeVariableToTypeBinding.clear();
-//		currentType = null;
-//		return mb;
 	}
 	
 	/**
-	 * Convert a normal AJ member and convert it into an eclipse methodBinding.
+	 * Take a normal AJ member and convert it into an eclipse methodBinding.
 	 * Taking into account any aliases that it may include due to being a 
 	 * generic ITD.  Any aliases are put into the typeVariableToBinding
 	 * map so that they will be substituted as appropriate in the returned 
@@ -713,18 +740,18 @@ public class EclipseFactory {
 				// QQQ do we need to bother fixing up the declaring element here?
 			}
 		}	
+
+		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
 		
 		// If there are aliases, place them in the map
 		if (aliases!=null && aliases.size()!=0) {
-			ReferenceBinding tType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
 			int i=0;
 			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
 				String element = (String) iter.next();
-				typeVariableToTypeBinding.put(element,tType.typeVariables()[i++]);
+				typeVariableToTypeBinding.put(element,declaringType.typeVariables()[i++]);
 			}
 		}
 		
-		ReferenceBinding declaringType = (ReferenceBinding)makeTypeBinding(member.getDeclaringType());
 		currentType = declaringType;
 		MethodBinding mb =  new MethodBinding(member.getModifiers(), 
 				member.getName().toCharArray(),

@@ -200,12 +200,12 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		}
 		
 		// Build a half correct resolvedmember (makeResolvedMember understands tvars) then build a fully correct sig from it
-		ResolvedMember sigtemp = world.makeResolvedMember(binding,onTypeBinding);
+		ResolvedMember sigtemp = world.makeResolvedMemberForITD(binding,onTypeBinding,interTypeScope.getRecoveryAliases());
 		ResolvedMember sig = new ResolvedMemberImpl(Member.FIELD,declaringType,declaredModifiers,
 				                  sigtemp.getReturnType(),new String(declaredSelector),UnresolvedType.NONE);
 		sig.setTypeVariables(sigtemp.getTypeVariables());
 		
-		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null);
+		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null,typeVariableAliases);
 		setMunger(myMunger);
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me = 

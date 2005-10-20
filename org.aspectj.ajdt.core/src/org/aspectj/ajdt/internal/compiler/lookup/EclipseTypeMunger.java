@@ -20,7 +20,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclarati
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.NewConstructorTypeMunger;
@@ -154,12 +153,12 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 
 	private void mungeNewField(SourceTypeBinding sourceType, NewFieldTypeMunger munger) {		
 		if (shouldTreatAsPublic() && !targetTypeX.isInterface()) {
-			FieldBinding binding = world.makeFieldBinding(munger.getSignature());
+			FieldBinding binding = world.makeFieldBinding(munger);
 			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
 			//classScope.referenceContext.binding.addField(binding);
 		} else {
 			InterTypeFieldBinding binding =
-				new InterTypeFieldBinding(world, munger.getSignature(), aspectType, sourceMethod);
+				new InterTypeFieldBinding(world, munger, aspectType, sourceMethod);
 			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
 		}
 	}
