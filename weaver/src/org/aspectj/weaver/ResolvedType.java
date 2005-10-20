@@ -1288,10 +1288,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
             for (int i = 0; i < superIs.length; i++) {
                     ResolvedType superI = superIs[i];
                     if (superI.genericTypeEquals(lookingFor)) return superI;
-                    ResolvedType checkTheSuperI = discoverActualOccurrenceOfTypeInHierarchy(lookingFor);
+                    ResolvedType checkTheSuperI = superI.discoverActualOccurrenceOfTypeInHierarchy(lookingFor);
                     if (checkTheSuperI!=null) return checkTheSuperI;
             }
-            return discoverActualOccurrenceOfTypeInHierarchy(superT);
+            return superT.discoverActualOccurrenceOfTypeInHierarchy(lookingFor);
     }
 
     /**

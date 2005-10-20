@@ -170,10 +170,6 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * TODO exotic class/interface bounds ('? extends List<String>','? super anything')
 	 * TODO signature attributes for generic ITDs (public only?)
 	 * 
-	 * 
-	 * strangeness:
-	 * 
-	 *   adding declare precedence into the itds/binaryweaving A2.aj, A3.aj causes a bizarre classfile inconsistent message
 	 */
 	
 	public static Test suite() {
@@ -221,8 +217,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testPR96220_GenericAspects2() {runTest("generic aspects - 2");}
 	public void testPR96220_GenericAspects3() {runTest("generic aspects - 3");}
 	public void testGenericAspects4()         {runTest("generic aspects - 4");} 
-    // TODO FREAKYGENERICASPECTPROBLEM why does everything have to be in one source file?
-	// public void testGenericAspects5()         {runTest("generic aspects - 5 (ajdk)");} 
+	public void testGenericAspects5()         {runTest("generic aspects - 5 (ajdk)");}  // in separate files
+	public void testGenericAspects6()         {runTest("generic aspects - 6 (ajdk)");}  // all in one file
 	public void testTypeVariablesInDeclareWarning() { runTest("generic aspect with declare warning using type vars");}
 	public void testTypeVariablesInExecutionAdvice() { runTest("generic aspect with execution advice using type vars");}
 	public void testTypeVariablesInAnonymousPointcut() { runTest("generic aspect with anonymous pointcut");}

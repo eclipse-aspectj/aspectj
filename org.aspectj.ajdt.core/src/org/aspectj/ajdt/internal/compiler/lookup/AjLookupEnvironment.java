@@ -47,6 +47,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
@@ -251,8 +252,16 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// Look at the supertype first
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES, sourceType.sourceName);
 	    ReferenceBinding superType = sourceType.superclass();
-	    if (yetToProcess.contains(superType) && superType instanceof SourceTypeBinding) {
-	    	collectAllITDsAndDeclares((SourceTypeBinding)superType, yetToProcess);
+	    if (superType instanceof SourceTypeBinding) {
+		    if (yetToProcess.contains(superType)) {
+		    	collectAllITDsAndDeclares((SourceTypeBinding)superType, yetToProcess);
+		    }
+	    } else if (superType instanceof ParameterizedTypeBinding) {
+	        // If its a PTB we need to pull the SourceTypeBinding out of it.
+	    	ParameterizedTypeBinding ptb = (ParameterizedTypeBinding)superType;
+	    	if (ptb.type instanceof SourceTypeBinding && yetToProcess.contains(ptb.type)) {
+	    		collectAllITDsAndDeclares((SourceTypeBinding)ptb.type, yetToProcess);
+	    	}
 	    }
         buildInterTypeAndPerClause(sourceType.scope);
         addCrosscuttingStructures(sourceType.scope);

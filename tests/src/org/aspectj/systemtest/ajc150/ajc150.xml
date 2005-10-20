@@ -3081,6 +3081,12 @@
      <run class="BlobContainment"/>
    </ajc-test>
    
+   <!-- same as above but all types in one file -->
+   <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 6 (ajdk)">
+     <compile files="TheBigOne.java" options="-1.5"/>
+     <run class="TheBigOne"/>
+   </ajc-test>
+   
    <!-- end of generic aspects -->
    
    <!-- generic ITDs -->
