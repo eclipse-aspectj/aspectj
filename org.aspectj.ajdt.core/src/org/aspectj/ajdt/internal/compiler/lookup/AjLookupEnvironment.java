@@ -26,6 +26,7 @@ import java.util.Set;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
@@ -57,6 +58,7 @@ import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -213,6 +215,13 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 		}
 		
+		for (int i = lastCompletedUnitIndex +1; i<=lastUnitIndex; i++) {
+			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
+            for (int j = 0; j < b.length; j++) {
+            	verifyAnyTypeParametersMeetBounds(b[j]);
+            }
+		}
+		
         for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
             SourceTypeBinding[] b = units[i].scope.topLevelTypes;
             for (int j = 0; j < b.length; j++) {
@@ -242,6 +251,42 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 	
 	
+	/**
+	 * For any given sourcetypebinding, this method checks that if it is a parameterized aspect that
+	 * the type parameters specified for any supertypes meet the bounds for the generic type
+	 * variables.
+	 */
+	private void verifyAnyTypeParametersMeetBounds(SourceTypeBinding sourceType) {
+		ResolvedType onType = factory.fromEclipse(sourceType);
+		if (onType.isAspect()) {
+			ResolvedType superType = factory.fromEclipse(sourceType.superclass);
+			// Don't need to check if it was used in its RAW form or isnt generic
+			if (superType.isGenericType() || superType.isParameterizedType()) {
+				TypeVariable[] typeVariables         = superType.getTypeVariables();
+				UnresolvedType[] typeParams          = superType.getTypeParameters();
+				if (typeVariables!=null && typeParams!=null) {
+					for (int i = 0; i < typeVariables.length; i++) {
+						boolean ok = typeVariables[i].canBeBoundTo(typeParams[i].resolve(factory.getWorld()));
+						if (!ok) { // the supplied parameter violates the bounds
+							// Type {0} does not meet the specification for type parameter {1} ({2}) in generic type {3}
+							String msg = 
+								WeaverMessages.format(
+									WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS,
+									typeParams[i],
+									new Integer(i+1),
+									typeVariables[i].getDisplayName(),
+									superType.getGenericType().getName());
+							factory.getWorld().getMessageHandler().handleMessage(MessageUtil.error(msg,onType.getSourceLocation()));
+						}
+					}
+			}
+			}
+		}
+		
+		
+		
+	}
+
 	/**
 	 * Find all the ITDs and Declares, but it is important we do this from the supertypes
 	 * down to the subtypes.
@@ -443,8 +488,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			Collection declareParents, Collection declareAnnotationOnTypes, boolean skipInners) {
 
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS, sourceType.sourceName);
-		
+
+
 		ResolvedType onType = factory.fromEclipse(sourceType);
+		
+
+		
 		// AMC we shouldn't need this when generic sigs are fixed??
 		if (onType.isRawType()) onType = onType.getGenericType();
 
@@ -550,24 +599,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 					needOldStyleWarning = false;
 				}
 				onType.addInterTypeMunger(munger);
-				 /*
-				//TODO: Andy Should be done at weave time.
-				// Unfortunately we can't do it at weave time unless the type mungers remember where
-				// they came from.  Thats why we do it here during complation because at this time
-				// they do know their source location.  I've put a flag in ResolvedTypeMunger that
-				// records whether type mungers are currently set to remember their source location.
-				// The flag is currently set to false, it should be set to true when we do the
-				// work to version all AspectJ attributes.
-				// (When done at weave time, it is done by invoking addRelationship() on 
-				// AsmRelationshipProvider (see BCELTypeMunger)
-				if (!ResolvedTypeMunger.persistSourceLocation) // Do it up front if we bloody have to
-				 AsmInterTypeRelationshipProvider.getDefault().addRelationship(onType, munger);
-				 */
 			}
 		}
 		
 		
-        //???onType.checkInterTypeMungers();
+
         onType.checkInterTypeMungers();
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();

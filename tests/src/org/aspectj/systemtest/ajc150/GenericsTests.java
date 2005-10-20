@@ -347,14 +347,13 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testSophisticatedAspectsC() {runTest("uberaspects - C");}
 	public void testSophisticatedAspectsD() {runTest("uberaspects - D");}
 	public void testSophisticatedAspectsE() {runTest("uberaspects - E");}
-//	public void testSophisticatedAspectsF() {runTest("uberaspects - F");} field ITD collapses to Number from tvar..
+	public void testSophisticatedAspectsF() {runTest("uberaspects - F");}
 	public void testSophisticatedAspectsG() {runTest("uberaspects - G");}
 	public void testSophisticatedAspectsH() {runTest("uberaspects - H");}
 	public void testSophisticatedAspectsI() {runTest("uberaspects - I");}
 	public void testSophisticatedAspectsJ() {runTest("uberaspects - J");}
-	// next test commented out, error message is less than ideal - see 
-	// comment in test program as to what should be expected
-    //public void testSophisticatedAspectsK() {runTest("uberaspects - K");}
+    public void testSophisticatedAspectsK() {runTest("uberaspects - K");}
+    public void testSophisticatedAspectsK2(){runTest("uberaspects - K2");}
 	public void testSophisticatedAspectsL() {runTest("uberaspects - L");}
     public void testSophisticatedAspectsM() {runTest("uberaspects - M");}
 	public void testSophisticatedAspectsN() {runTest("uberaspects - N");}
