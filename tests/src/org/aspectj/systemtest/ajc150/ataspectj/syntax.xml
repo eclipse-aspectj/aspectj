@@ -150,12 +150,19 @@
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="DeclareParentsInterface">
-        <compile files="ataspectj/DeclareParentsInterfaceTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+        <compile files="ataspectj/DeclareParentsInterfaceTest.java,ataspectj/TestHelper.java" options="-showWeaveInfo -1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
+            <message kind="weave" text="Extending interface set for type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java) to include 'ataspectj.DeclareParentsInterfaceTest$Marker' (DeclareParentsInterfaceTest.java)"/>
+            <message kind="weave" text="Join point "/>
+        </compile>
         <run class="ataspectj.DeclareParentsInterfaceTest"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="DeclareParentsImplements">
-        <compile files="ataspectj/DeclareParentsImplementsTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+        <compile files="ataspectj/DeclareParentsImplementsTest.java,ataspectj/TestHelper.java" options="-showWeaveInfo -1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
+            <message kind="weave" text="Join point "/>
+            <message kind="weave" text="Extending interface set for type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) to include 'ataspectj.DeclareParentsImplementsTest$Introduced' (DeclareParentsImplementsTest.java)"/>
+            <message kind="weave" text="Type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) has intertyped method from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java:'void ataspectj.DeclareParentsImplementsTest$Introduced.intro()')"/>
+        </compile>
         <run class="ataspectj.DeclareParentsImplementsTest"/>
     </ajc-test>
 

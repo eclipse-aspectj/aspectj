@@ -58,7 +58,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
                 break;
             }
         }
-        if (field == null) {
+        if (field == null) {           
             throw new RuntimeException("Should not happen: aspect field not found for @DeclareParents delegate");
         } else {
             aspectFieldDelegate = field;

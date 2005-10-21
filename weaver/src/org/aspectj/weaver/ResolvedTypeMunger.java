@@ -243,7 +243,16 @@ public abstract class ResolvedTypeMunger {
             }
 	        throw new BCException("bad kind: " + key);
 	    }
-	}
+
+        public String toString() {
+            // we want MethodDelegate to appear as Method in WeaveInfo messages
+            if (MethodDelegate.getName().equals(getName())) {
+                return Method.toString();
+            } else {
+                return super.toString();
+            }
+        }
+    }
 	
 	// ---- fields
 	
