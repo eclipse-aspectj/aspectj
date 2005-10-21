@@ -938,8 +938,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                     for (int i = 0; i < annotationsOnRealMember.length; i++) {
                         AnnotationX annotationX = annotationsOnRealMember[i];
                         Annotation a = annotationX.getBcelAnnotation();
-                        AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
-                        mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+                        AnnotationGen ag = new AnnotationGen(a, weaver.getLazyClassGen().getConstantPoolGen(), true);
+                        mg.addAnnotation(new AnnotationX(ag.getAnnotation(), weaver.getWorld()));
                     }
                 }
             }

@@ -71,8 +71,9 @@ public class WeaverMessages {
 	public static final String MISSING_REWEAVABLE_TYPE = "missingReweavableType";
 	public static final String VERIFIED_REWEAVABLE_TYPE = "verifiedReweavableType";
 	public static final String ASPECT_NEEDED = "aspectNeeded";
-	
-	public static final String CANT_FIND_TYPE = "cantFindType";
+    public static final String REWEAVABLE_ASPECT_NOT_REGISTERED = "reweavableAspectNotRegistered";
+
+    public static final String CANT_FIND_TYPE = "cantFindType";
 	public static final String CANT_FIND_CORE_TYPE = "cantFindCoreType";
 	public static final String CANT_FIND_TYPE_WITHINPCD = "cantFindTypeWithinpcd";
     public static final String CANT_FIND_TYPE_DURING_AROUND_WEAVE = "cftDuringAroundWeave";

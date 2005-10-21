@@ -1179,11 +1179,25 @@ public class BcelWeaver implements IWeaver {
 									WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,requiredTypeName,className),
 								    classType.getSourceLocation(), null);
 						} else {
-							if (!world.getMessageHandler().isIgnoring(IMessage.INFO))
-							  world.showMessage(IMessage.INFO,
+                            // weaved in aspect that are not declared in aop.xml trigger an error for now
+                            // may cause headhache for LTW and packaged lib without aop.xml in
+                            // see #104218
+                            if(!xcutSet.containsAspect(rtx)){
+                                world.showMessage(
+                                        IMessage.ERROR,
+                                        WeaverMessages.format(
+                                                WeaverMessages.REWEAVABLE_ASPECT_NOT_REGISTERED,
+                                                requiredTypeName,
+                                                className
+                                        ),
+                                        null,
+                                        null
+                                );
+                            } else if (!world.getMessageHandler().isIgnoring(IMessage.INFO))
+							    world.showMessage(IMessage.INFO,
 							  		WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,requiredTypeName,rtx.getSourceLocation().getSourceFile()),
 									null,null);
-							alreadyConfirmedReweavableState.add(requiredTypeName);
+							    alreadyConfirmedReweavableState.add(requiredTypeName);
 						}
 					}		
 				}

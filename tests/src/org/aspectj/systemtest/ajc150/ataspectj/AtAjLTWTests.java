@@ -82,12 +82,16 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("LTW Unweavable");
     }
 
-    // FIXME asc need to comment this out for now - I need a build through...
-//    public void testLTWDecp() {
-//        runTest("LTW Decp");
-//    }
+    public void testLTWDecp() {
+        runTest("LTW Decp");
+    }
 
     public void testLTWDecp2() {
         runTest("LTW Decp2");
     }
+
+    public void testCompileTimeAspectsDeclaredToLTWWeaver() {
+        runTest("Compile time aspects declared to ltw weaver");
+    }
+
 }

@@ -1,0 +1,5 @@
+<aspectj>
+    <weaver options="-XmessageHandlerClass:ataspectj.ltwlog.MessageHolder"/>
+    <!--aspect is not declared here so as to produce an error -->
+    <aspects/>
+</aspectj>

@@ -148,7 +148,6 @@
             debug="true">
             <classpath>
                 <path refid="aj.path"/>
-                <pathelement path="${aj.sandbox}"/>
             </classpath>
         </javac>
 
@@ -160,4 +159,31 @@
             <jvmarg value="-Daj5.def=ataspectj/aop-decptest2.xml"/>
         </java>
     </target>
+
+    <target name="ltw.oldAspectsDeclared">
+        <!--Aspects woven at compile time must be declared in an aop.xml file.
+        If they are not declared, then they will be lost during reweaving-->
+
+        <!--First test that the error is produced if the declaration is not made-->
+        <java fork="yes" classname="ataspectj.ltwreweavable.MainReweavableLogging" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <classpath>
+                <pathelement path="${aj.sandbox}/main1.jar"/>
+            </classpath>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/ltwreweavable/aop-ltwreweavable-declared.xml"/>
+            <jvmarg value="-DaspectDeclared=true"/>
+        </java>
+        <!--Now ensure that the error is not produced when the declaration is made.-->
+        <java fork="yes" classname="ataspectj.ltwreweavable.MainReweavableLogging" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <classpath>
+                <pathelement path="${aj.sandbox}/main1.jar"/>
+            </classpath>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/ltwreweavable/aop-ltwreweavable-omitted.xml"/>
+            <jvmarg value="-DaspectDeclared=false"/>
+        </java>
+    </target>
+
 </project>
