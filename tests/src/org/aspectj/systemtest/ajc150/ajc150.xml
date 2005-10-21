@@ -6,7 +6,7 @@
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
         <compile files="StaticImport.aj" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="test illegal change to pointcut declaration">
         <compile files="pr111915.java" options="-1.5 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void SomeClass.doSomething())' in Type 'SomeClass' (pr111915.java:4) advised by around advice from 'DoesntCompile' (pr111915.java:15)"/>
@@ -3677,6 +3677,10 @@
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - U">
      <compile files="GenericAspectU.aj" options="-1.5"/>
      <run class="GenericAspectU"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - V">
+     <compile files="GenericAspectV.aj" options="-1.5"/>
+     <run class="GenericAspectV"/>
    </ajc-test>
       
    
