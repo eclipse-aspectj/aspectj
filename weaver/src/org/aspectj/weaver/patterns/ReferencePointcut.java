@@ -23,7 +23,6 @@ import java.util.Set;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
@@ -209,7 +208,7 @@ public class ReferencePointcut extends Pointcut {
 				!p.getExactType().equals(UnresolvedType.OBJECT))
 			{
 				scope.message(IMessage.ERROR, p, "incompatible type, expected " +
-						parameterTypes[i].getName() + " found " + p);
+						parameterTypes[i].getName() + " found " + p +".  Check the type specified in your pointcut");
 				return;
 			}
 		}
@@ -299,18 +298,14 @@ public class ReferencePointcut extends Pointcut {
 			for (int i=0,len=arguments.size(); i < len; i++) {
 				TypePattern p = arguments.get(i);
 				if (p == TypePattern.NO) continue;
-				//we are allowed to bind to pointcuts which use subtypes as this is type safe
-				if (!p.matchesSubtypes(parameterTypes[i])  && 
-					!p.getExactType().equals(UnresolvedType.OBJECT))
-				{
-					throw new BCException("illegal change to pointcut declaration: " + this);
-				}
-				
+				// we are allowed to bind to pointcuts which use subtypes as this is type safe
+				// this will be checked in ReferencePointcut.resolveBindings().  Can't check it here
+				// as we don't know about any new parents added via decp.
 			    if (p instanceof BindingTypePattern) {
 			    	newBindings.put(i, ((BindingTypePattern)p).getFormalIndex());
 			    }
 			}
-			
+
 			if (searchStart.isParameterizedType()) {
 				// build a type map mapping type variable names in the generic type to
 				// the type parameters presented

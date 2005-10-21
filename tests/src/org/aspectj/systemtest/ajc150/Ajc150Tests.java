@@ -485,6 +485,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("parameterized generic methods");
   }
   
+  public void testIllegalChangeToPointcutDeclaration_pr111915() {
+	runTest("test illegal change to pointcut declaration");
+  }
+  
   public void testCantProvideDefaultImplViaITD_pr110307_1() {runTest("Cant provide default implementation via ITD - 1");}
   public void testCantProvideDefaultImplViaITD_pr110307_2() {runTest("Cant provide default implementation via ITD - 2");}
   public void testCantProvideDefaultImplViaITD_pr110307_3() {runTest("Cant provide default implementation via ITD - 3");}

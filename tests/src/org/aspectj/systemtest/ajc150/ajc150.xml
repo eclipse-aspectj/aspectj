@@ -6,6 +6,13 @@
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
         <compile files="StaticImport.aj" options="-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" title="test illegal change to pointcut declaration">
+        <compile files="pr111915.java" options="-1.5 -showWeaveInfo">
+          <message kind="weave" text="Join point 'method-execution(void SomeClass.doSomething())' in Type 'SomeClass' (pr111915.java:4) advised by around advice from 'DoesntCompile' (pr111915.java:15)"/>
+          <message kind="weave" text="Extending interface set for type 'SomeClass' (pr111915.java) to include 'java.io.Serializable' (pr111915.java)"/>
+        </compile>
+    </ajc-test> 
 
     <ajc-test dir="java5/bridgeMethods" pr="72766" title="Ignore bridge methods">
         <compile files="AspectX.aj" inpath="testcode.jar" options="-showWeaveInfo">
