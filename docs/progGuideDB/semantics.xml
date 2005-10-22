@@ -2192,7 +2192,8 @@ ModifiersPattern =
       <title>Reflective access to the join point</title>
 
       <para>
-        Three special variables are visible within bodies of advice:
+        Three special variables are visible within bodies of advice
+          and within <literal>if()</literal> pointcut expressions: 
         <literal>thisJoinPoint</literal>,
         <literal>thisJoinPointStaticPart</literal>, and
         <literal>thisEnclosingJoinPointStaticPart</literal>. Each is bound to
