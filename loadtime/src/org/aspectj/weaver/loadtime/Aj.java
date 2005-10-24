@@ -85,14 +85,14 @@ public class Aj implements ClassPreProcessor {
         private static Map weavingAdaptors = new WeakHashMap();
 
         static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
-            ExplicitlyInitializedClassLaoderWeavingAdaptor adaptor = null;
+            ExplicitlyInitializedClassLoaderWeavingAdaptor adaptor = null;
             synchronized(weavingAdaptors) {
-                adaptor = (ExplicitlyInitializedClassLaoderWeavingAdaptor) weavingAdaptors.get(loader);
+                adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(loader);
                 if (adaptor == null) {
                     // create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
                     // within the synchronized block
                     ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
-                    adaptor = new ExplicitlyInitializedClassLaoderWeavingAdaptor(weavingAdaptor);
+                    adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
                     weavingAdaptors.put(loader, adaptor);
                 }
             }
@@ -114,11 +114,11 @@ public class Aj implements ClassPreProcessor {
         }
     }
 
-    static class ExplicitlyInitializedClassLaoderWeavingAdaptor {
+    static class ExplicitlyInitializedClassLoaderWeavingAdaptor {
         private final ClassLoaderWeavingAdaptor weavingAdaptor;
         private boolean isInitialized;
 
-        public ExplicitlyInitializedClassLaoderWeavingAdaptor(ClassLoaderWeavingAdaptor weavingAdaptor) {
+        public ExplicitlyInitializedClassLoaderWeavingAdaptor(ClassLoaderWeavingAdaptor weavingAdaptor) {
             this.weavingAdaptor = weavingAdaptor;
             this.isInitialized = false;
         }

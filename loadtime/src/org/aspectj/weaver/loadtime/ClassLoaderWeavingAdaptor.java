@@ -107,10 +107,13 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
         // register the definitions
         registerDefinitions(weaver, loader);
-        messageHandler = bcelWorld.getMessageHandler();
 
-        // after adding aspects
-        weaver.prepareForWeave();
+        // AV - see #113511 - not sure it is good to skip message handler
+        if (enabled) {
+            messageHandler = bcelWorld.getMessageHandler();
+            // after adding aspects
+            weaver.prepareForWeave();
+        }
     }
 
     /**
@@ -152,10 +155,16 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             // still go thru if definitions is empty since we will configure
             // the default message handler in there
             registerOptions(weaver, loader, definitions);
-            registerAspectExclude(weaver, loader, definitions);
-            registerAspects(weaver, loader, definitions);
-            registerIncludeExclude(weaver, loader, definitions);
-            registerDump(weaver, loader, definitions);
+
+            // AV - see #113511
+            if (!definitions.isEmpty()) {
+                registerAspectExclude(weaver, loader, definitions);
+                registerAspects(weaver, loader, definitions);
+                registerIncludeExclude(weaver, loader, definitions);
+                registerDump(weaver, loader, definitions);
+            } else {
+                enabled = false;// will allow very fast skip in shouldWeave()
+            }
         } catch (Exception e) {
             weaver.getWorld().getMessageHandler().handleMessage(
                     new Message("Register definition failed", IMessage.WARNING, e, null)
