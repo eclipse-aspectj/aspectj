@@ -6,7 +6,15 @@
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
         <compile files="StaticImport.aj" options="-1.5"/>
     </ajc-test>
-
+    
+    <ajc-test dir="bugs150" title="Problem with constructor ITDs">
+        <compile files="pr112783.aj" options="-1.5"/>
+    </ajc-test>
+ 
+    <ajc-test dir="bugs150" title="Generics ClassCastException">
+        <compile files="pr113445.aj" options="-1.5,-emacssym"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs150" title="test illegal change to pointcut declaration">
         <compile files="pr111915.java" options="-1.5 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void SomeClass.doSomething())' in Type 'SomeClass' (pr111915.java:4) advised by around advice from 'DoesntCompile' (pr111915.java:15)"/>
