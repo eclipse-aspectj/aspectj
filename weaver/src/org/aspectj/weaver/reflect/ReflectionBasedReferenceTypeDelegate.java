@@ -64,6 +64,10 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		return this.world;
 	}
 	
+	protected ReflectionWorld getReflectionWorld() {
+		return (ReflectionWorld) this.world;
+	}
+	
 	
 	public ReferenceType buildGenericType() {
 		throw new UnsupportedOperationException("Shouldn't be asking for generic type at 1.4 source level or lower");
@@ -193,7 +197,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 			Class[] reflectInterfaces = this.myClass.getInterfaces();
 			this.interfaces = new ResolvedType[reflectInterfaces.length];
 			for (int i = 0; i < reflectInterfaces.length; i++) {
-				this.interfaces[i] = world.resolve(reflectInterfaces[i].getName());
+				this.interfaces[i] = getReflectionWorld().resolve(reflectInterfaces[i]);
 			}
 		}
 		return interfaces;
@@ -278,7 +282,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	 */
 	public ResolvedType getSuperclass() {
 		if (this.myClass.getSuperclass() == null) return null;
-		return world.resolve(this.myClass.getSuperclass().getName());
+		return getReflectionWorld().resolve(this.myClass.getSuperclass());
 	}
 
 	/* (non-Javadoc)

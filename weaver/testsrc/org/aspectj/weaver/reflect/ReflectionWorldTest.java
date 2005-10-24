@@ -12,6 +12,7 @@
 package org.aspectj.weaver.reflect;
 
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 import junit.framework.TestCase;
@@ -23,6 +24,13 @@ public class ReflectionWorldTest extends TestCase {
 		ResolvedType rt = world.resolve("java.lang.Object");
 		assertNotNull(rt);
 		assertEquals("Ljava/lang/Object;",rt.getSignature());
+	}
+	
+	public void testArrayTypes() {
+		World world = new ReflectionWorld();
+		String[] strArray = new String[1];
+		ResolvedType rt = world.resolve(UnresolvedType.forSignature(strArray.getClass().getName()));
+		assertTrue(rt.isArray());
 	}
 	
 }

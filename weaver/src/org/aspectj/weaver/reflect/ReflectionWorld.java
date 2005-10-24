@@ -23,6 +23,7 @@ import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.AdviceAttribute;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -40,6 +41,16 @@ public class ReflectionWorld extends World {
 		super();
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+	}
+	
+	public ResolvedType resolve(Class aClass) {
+		// classes that represent arrays return a class name that is the signature of the array type, ho-hum...
+		String className = aClass.getName();
+		if (!className.startsWith("[")) {
+			return resolve(className);
+		} else {
+			return resolve(UnresolvedType.forSignature(className));
+		}
 	}
 	
 	/* (non-Javadoc)

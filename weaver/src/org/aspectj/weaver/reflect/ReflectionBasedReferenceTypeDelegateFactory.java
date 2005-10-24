@@ -148,7 +148,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	private static ResolvedType[] toResolvedTypeArray(Class[] classes, World inWorld) {
 		ResolvedType[] ret = new ResolvedType[classes.length];
 		for (int i = 0; i < ret.length; i++) {
-			ret[i] = inWorld.resolve(classes[i].getName());
+			ret[i] = ((ReflectionWorld)inWorld).resolve(classes[i]);
 		}
 		return ret;
 	}
