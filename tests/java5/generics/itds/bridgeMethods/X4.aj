@@ -1,9 +1,9 @@
-public aspect X3 {
+public aspect X4 {
 
-  public Object Super3.m() {return null;}
+  declare parents: Sub4 extends Super4;
 
   public static void main(String []argv) {
-    Super3 s = new Sub3();
+    Super4 s = new Sub4();
     Integer i = (Integer)s.m();
     if (i!=42) throw new RuntimeException("Should be 42 but is "+i);
   }

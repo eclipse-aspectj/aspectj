@@ -4,7 +4,5 @@ public aspect X2 {
   public static void main(String []argv) {
     Super2 s = new Sub2();
     Integer i = (Integer)s.m();
-    
-    Util.dumpMethods("Sub2");
   }
 }

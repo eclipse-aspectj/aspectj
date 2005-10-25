@@ -735,13 +735,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedMember memberHoldingAnyAnnotations = interMethodDispatcher;
 		ResolvedType onType = weaver.getWorld().resolve(unMangledInterMethod.getDeclaringType(),munger.getSourceLocation());
 		
-		LazyClassGen gen = weaver.getLazyClassGen();
-		boolean mungingInterface = gen.isInterface();
+		LazyClassGen             gen = weaver.getLazyClassGen();
+		boolean    mungingInterface = gen.isInterface();
 		
 		if (onType.isRawType()) onType = onType.getGenericType();
 
 		boolean onInterface = onType.isInterface();
+
 		
+		// Simple checks, can't ITD on annotations or enums
 		if (onType.isAnnotation()) {
 			signalError(WeaverMessages.ITDM_ON_ANNOTATION_NOT_ALLOWED,weaver,onType);
 			return false;		
@@ -752,22 +754,26 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			return false;
 		}
 		
+		
+		
 		if (onInterface && gen.getLazyMethodGen(unMangledInterMethod.getName(), unMangledInterMethod.getSignature(),true) != null) {
 				// this is ok, we could be providing the default implementation of a method
 				// that the target has already declared
 				return false;
 		}
 		
+		// If we are processing the intended ITD target type (might be an interface)
 		if (onType.equals(gen.getType())) {
+			
+			
 			ResolvedMember mangledInterMethod =
 					AjcMemberMaker.interMethod(unMangledInterMethod, aspectType, onInterface);
             
-			
-			LazyMethodGen mg = makeMethodGen(gen, mangledInterMethod);
+			LazyMethodGen newMethod = makeMethodGen(gen, mangledInterMethod);
 			if (mungingInterface) {
 				// we want the modifiers of the ITD to be used for all *implementors* of the
 				// interface, but the method itself we add to the interface must be public abstract
-				mg.setAccessFlags(Modifier.PUBLIC | Modifier.ABSTRACT);
+				newMethod.setAccessFlags(Modifier.PUBLIC | Modifier.ABSTRACT);
 			}
 			
 			// pr98901
@@ -787,7 +793,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						AnnotationX annotationX = annotationsOnRealMember[i];
 						Annotation a = annotationX.getBcelAnnotation();
 						AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
-						mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+						newMethod.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
 					}
 				}
 				// the below loop fixes the very special (and very stupid)
@@ -797,14 +803,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				for (Iterator i = allDecams.iterator(); i.hasNext();){
 					DeclareAnnotation decaMC = (DeclareAnnotation) i.next();	
 					if (decaMC.matches(unMangledInterMethod,weaver.getWorld())
-							&& mg.getEnclosingClass().getType() == aspectType) {
-						mg.addAnnotation(decaMC.getAnnotationX());
+							&& newMethod.getEnclosingClass().getType() == aspectType) {
+						newMethod.addAnnotation(decaMC.getAnnotationX());
 					}
 				}
 			}
 
+			// If it doesn't target an interface and there is a body (i.e. it isnt abstract)
 			if (!onInterface && !Modifier.isAbstract(mangledInterMethod.getModifiers())) {
-				InstructionList body = mg.getBody();
+				InstructionList body = newMethod.getBody();
 				InstructionFactory fact = gen.getFactory();
 				int pos = 0;
 	
@@ -822,6 +829,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				body.append(
 					InstructionFactory.createReturn(
 						BcelWorld.makeBcelType(mangledInterMethod.getReturnType())));
+				
+				if (weaver.getWorld().isInJava5Mode()) { // Don't need bridge methods if not in 1.5 mode.
+					createAnyBridgeMethodsForCovariance(weaver, munger, unMangledInterMethod, onType, gen, paramTypes);
+				}
+				
 			} else {
 				//??? this is okay
 				//if (!(mg.getBody() == null)) throw new RuntimeException("bas");
@@ -829,8 +841,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			
 
 			// XXX make sure to check that we set exceptions properly on this guy.
-			weaver.addLazyMethodGen(mg);
-			weaver.getLazyClassGen().warnOnAddedMethod(mg.getMethod(),getSignature().getSourceLocation());
+			weaver.addLazyMethodGen(newMethod);
+			weaver.getLazyClassGen().warnOnAddedMethod(newMethod.getMethod(),getSignature().getSourceLocation());
 			
 			addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
 			
@@ -895,6 +907,90 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Create any bridge method required because of covariant returns being used.  This method is used in the case
+	 * where an ITD is applied to some type and it may be in an override relationship with a method from the supertype - but
+	 * due to covariance there is a mismatch in return values.
+	 * Example of when required:
+		 Super defines:   Object m(String s)
+		   Sub defines:   String m(String s) 
+		   then we need a bridge method in Sub called 'Object m(String s)' that forwards to 'String m(String s)'
+	 */
+	private void createAnyBridgeMethodsForCovariance(BcelClassWeaver weaver, NewMethodTypeMunger munger, ResolvedMember unMangledInterMethod, ResolvedType onType, LazyClassGen gen, Type[] paramTypes) {
+		// PERFORMANCE BOTTLENECK? Might need investigating, method analysis between types in a hierarchy just seems expensive...
+		// COVARIANCE BRIDGING
+		// Algorithm:  Step1. Check in this type - has someone already created the bridge method?
+		//             Step2. Look above us - do we 'override' a method and yet differ in return type (i.e. covariance)
+		//             Step3. Create a forwarding bridge method
+		ResolvedType superclass = onType.getSuperclass();
+		boolean quitRightNow = false;
+		
+		String localMethodName    = unMangledInterMethod.getName();
+		String localParameterSig  = unMangledInterMethod.getParameterSignature();
+		String localReturnTypeESig = unMangledInterMethod.getReturnType().getErasureSignature(); 
+
+		// Step1
+		boolean alreadyDone = false; // Compiler might have done it
+		ResolvedMember[] localMethods = onType.getDeclaredMethods();
+		for (int i = 0; i < localMethods.length; i++) {
+			ResolvedMember member = localMethods[i];
+			if (member.getName().equals(localMethodName)) {
+				// Check the params
+				if (member.getParameterSignature().equals(localParameterSig)) alreadyDone = true;
+			}
+		}
+		
+		// Step2
+		if (!alreadyDone) {
+			// Use the iterator form of 'getMethods()' so we do as little work as necessary
+			for (Iterator iter = onType.getSuperclass().getMethods();iter.hasNext() && !quitRightNow;) {
+				ResolvedMember aMethod = (ResolvedMember) iter.next();
+				if (aMethod.getName().equals(localMethodName) && aMethod.getParameterSignature().equals(localParameterSig)) {
+					// check the return types, if they are different we need a bridging method.
+					if (!aMethod.getReturnType().getErasureSignature().equals(localReturnTypeESig)) {
+						// Step3
+						createBridgeMethod(weaver.getWorld(), munger, unMangledInterMethod, gen, paramTypes, aMethod);
+						quitRightNow = true;
+					}
+				}
+			}
+		}
+	}
+
+	private void createBridgeMethod(BcelWorld world, NewMethodTypeMunger munger, 
+			ResolvedMember unMangledInterMethod, LazyClassGen gen, Type[] paramTypes, ResolvedMember aMethod) {
+		InstructionList body;
+		InstructionFactory fact;
+		int pos = 0;
+		
+		LazyMethodGen bridgeMethod = makeMethodGen(gen,aMethod); // The bridge method in this type will have the same signature as the one in the supertype
+		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040 /*BRIDGE    = 0x00000040*/ );
+		UnresolvedType[] newParams = munger.getSignature().getParameterTypes();
+//      paramTypes = BcelWorld.makeBcelTypes(bridgingSetter.getParameterTypes());
+//     Type[] bridgingToParms = BcelWorld.makeBcelTypes(unMangledInterMethod.getParameterTypes());
+		Type returnType   = BcelWorld.makeBcelType(aMethod.getReturnType());
+		body = bridgeMethod.getBody();
+		fact = gen.getFactory();
+
+		if (!unMangledInterMethod.isStatic()) {
+		   body.append(InstructionFactory.createThis());
+		   pos++;
+		}
+		for (int i = 0, len = paramTypes.length; i < len; i++) {
+		  Type paramType = paramTypes[i];
+		  body.append(InstructionFactory.createLoad(paramType, pos));
+//                            if (!bridgingSetter.getParameterTypes()[i].getErasureSignature().equals(unMangledInterMethod.getParameterTypes()[i].getErasureSignature())) {
+//                              System.err.println("Putting in cast from "+paramType+" to "+bridgingToParms[i]);
+//                              body.append(fact.createCast(paramType,bridgingToParms[i]));
+//                            }
+		  pos+=paramType.getSize();
+		}
+
+		body.append(Utility.createInvoke(fact, world,unMangledInterMethod));
+		body.append(InstructionFactory.createReturn(returnType));
+		gen.addMethodGen(bridgeMethod);
 	}
 	
     private boolean mungeMethodDelegate(BcelClassWeaver weaver, MethodDelegateTypeMunger munger) {

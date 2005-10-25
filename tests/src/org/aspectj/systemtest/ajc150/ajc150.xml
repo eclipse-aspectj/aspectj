@@ -3892,72 +3892,45 @@
    <!-- generics/itds and bridge methods -->
    
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 1">
-   	   <compile files="Sub1.java,Super1.java,X1.aj,Util.java" options="-1.5"/>
-       <run class="X1">
-         <stderr>
-           <line text="Number of methods defined for Sub1 is 2"/>
-           <line text="java.lang.Integer Sub1.m()"/>
-           <line text="java.lang.Object Sub1.m() [BridgeMethod]"/>
-         </stderr>
-       </run>
+   	   <compile files="Sub1.java,Super1.java,X1.aj" options="-1.5"/>
+       <run class="X1"/>
    </ajc-test>
-   
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 1 - binary">
    	 <compile files="Sub1.java,Super1.java" outjar="code.jar" options="-1.5"/>
-   	 <compile files="X1.aj,Util.java" inpath="code.jar" options ="-1.5"/>
-     <run class="X1">
-         <stderr>
-           <line text="Number of methods defined for Sub1 is 2"/>
-           <line text="java.lang.Integer Sub1.m()"/>
-           <line text="java.lang.Object Sub1.m() [BridgeMethod]"/>
-         </stderr>
-     </run>
+   	 <compile files="X1.aj" inpath="code.jar" options ="-1.5"/>
+     <run class="X1"/>
    </ajc-test>
- 
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 2">
-   	   <compile files="Sub2.java,Super2.java,X2.aj,Util.java" options="-1.5"/>
-       <run class="X2">
-         <stderr>
-           <line text="Number of methods defined for Sub2 is 2"/>
-           <line text="java.lang.Integer Sub2.m()"/>
-           <line text="java.lang.Object Sub2.m() [BridgeMethod]"/>
-         </stderr>
-       </run>
+   	   <compile files="Sub2.java,Super2.java,X2.aj" options="-1.5"/>
+       <run class="X2"/>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 2 - binary">
    	 <compile files="Sub2.java,Super2.java" outjar="code.jar" options="-1.5"/>
    	 <compile files="X2.aj,Util.java" inpath="code.jar" options ="-1.5"/>
-     <run class="X2">
-         <stderr>
-           <line text="Number of methods defined for Sub2 is 2"/>
-           <line text="java.lang.Integer Sub2.m()"/>
-           <line text="java.lang.Object Sub2.m() [BridgeMethod]"/>
-         </stderr>
-     </run>
+     <run class="X2"/>
    </ajc-test>
       
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 3">
-   	 <compile files="Sub3.java,Super3.java,X3.aj,Util.java" options="-1.5"/>
-     <run class="X3">
-         <stderr>
-           <line text="Number of methods defined for Sub3 is 2"/>
-           <line text="java.lang.Integer Sub3.m()"/>
-           <line text="java.lang.Object Sub3.m() [BridgeMethod]"/>
-         </stderr>
-     </run>
+   	 <compile files="Sub3.java,Super3.java,X3.aj" options="-1.5"/>
+     <run class="X3"/>
    </ajc-test>
-   
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 3 - binary">
    	 <compile files="Sub3.java,Super3.java" outjar="code.jar" options="-1.5"/>
-   	 <compile files="X3.aj,Util.java" inpath="code.jar" options ="-1.5"/>
-     <run class="X3">
-         <stderr>
-           <line text="Number of methods defined for Sub3 is 2"/>
-           <line text="java.lang.Integer Sub3.m()"/>
-           <line text="java.lang.Object Sub3.m() [BridgeMethod]"/>
-         </stderr>
-     </run>
+   	 <compile files="X3.aj" inpath="code.jar" options ="-1.5"/>
+     <run class="X3"/>
    </ajc-test>
+   
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 4">
+   	 <compile files="Sub4.java,Super4.java,X4.aj" options="-1.5"/>
+     <run class="X4"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 4 - binary">
+   	 <compile files="Sub4.java,Super4.java" outjar="code.jar" options="-1.5"/>
+   	 <compile files="X4.aj" inpath="code.jar" options ="-1.5"/>
+     <run class="X4"/>
+   </ajc-test>
+   
+   
       
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="abstract intertype methods and covariant returns">
    	   <compile files="pr91381.aj" options="-1.5"/>

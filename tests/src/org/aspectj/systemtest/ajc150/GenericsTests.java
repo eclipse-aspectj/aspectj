@@ -1,6 +1,12 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import junit.framework.Test;
 
@@ -405,12 +411,66 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testITDBridgeMethods2Itd()        {runTest("basic bridging with type vars - 2 - itd");}
 	public void testITDBridgeMethodsPr91381() {runTest("Abstract intertype method and covariant returns");}
 	
-    public void testGenericITDsBridgeMethods1()        {runTest("bridge methods - 1");}
-	public void testGenericITDsBridgeMethods1binary()  {runTest("bridge methods - 1 - binary");}
-	public void testGenericITDsBridgeMethods2()        {runTest("bridge methods - 2");}
-//	public void testGenericITDsBridgeMethods2binary()  {runTest("bridge methods - 2 - binary");} // pr108101
-	public void testGenericITDsBridgeMethods3()        {runTest("bridge methods - 3");}
-//	public void testGenericITDsBridgeMethods3binary()  {runTest("bridge methods - 3 - binary");} // pr108101
+	
+	// Just normal source compile of two types with a method override between them
+    public void testGenericITDsBridgeMethods1() {
+    	runTest("bridge methods - 1");
+    	checkMethodsExist("Sub1",new String[]{
+    			"java.lang.Integer Sub1.m()",
+    			"java.lang.Object Sub1.m() [BridgeMethod]"});
+    }
+    // Now the same thing but the aspect (which doesn't do much!) is binary woven in.
+	public void testGenericITDsBridgeMethods1binary()  {
+		runTest("bridge methods - 1 - binary");
+		checkMethodsExist("Sub1",new String[]{ 
+				"java.lang.Integer Sub1.m()",
+				"java.lang.Object Sub1.m() [BridgeMethod]"});
+	}
+	// Now the method is put into the superclass via ITD - there should be a bridge method in the subclass
+	public void testGenericITDsBridgeMethods2()        {
+		runTest("bridge methods - 2");
+		checkMethodsExist("Sub2",new String[]{
+    			"java.lang.Integer Sub2.m()",
+    			"java.lang.Object Sub2.m() [BridgeMethod]"});
+	}
+	// Now the superclass ITD is done with binary weaving so the weaver (rather than compiler) has to create the bridge method
+	public void testGenericITDsBridgeMethods2binary()  {
+		runTest("bridge methods - 2 - binary");
+		checkMethodsExist("Sub2",new String[]{
+    			"java.lang.Integer Sub2.m()",
+    			"java.lang.Object Sub2.m() [BridgeMethod]"});
+	}
+	// Now the method is put into the subclass via ITD - there should be a bridge method alongside it in the subclass
+	public void testGenericITDsBridgeMethods3()        {
+		runTest("bridge methods - 3");
+		checkMethodsExist("Sub3",new String[]{
+    			"java.lang.Integer Sub3.m()",
+    			"java.lang.Object Sub3.m() [BridgeMethod]"});
+	}
+	// Now the subclass ITD is done with binary weaving - the weaver should create the necessary bridge method
+//	public void testGenericITDsBridgeMethods3binary()  {
+//		runTest("bridge methods - 3 - binary");
+//		checkMethodsExist("Sub3",new String[]{
+//    			"java.lang.Integer Sub3.m()",
+//    			"java.lang.Object Sub3.m() [BridgeMethod]"});
+//	}
+	// Now the two types are disconnected until the aspect supplies a declare parents relationship - 
+	// the bridge method should still be created in the subtype
+	public void testGenericITDSBridgeMethods4() {
+		runTest("bridge methods - 4");
+		checkMethodsExist("Sub4",new String[]{
+    			"java.lang.Integer Sub4.m()",
+				"java.lang.Object Sub4.m() [BridgeMethod]"});
+	}
+	// now the aspect doing the decp between the types is applied via binary weaving - weaver should create the bridge method
+//	public void testGenericITDSBridgeMethods4binary() {
+//		runTest("bridge methods - 4 - binary");
+//		checkMethodsExist("Sub4",new String[]{
+//    			"java.lang.Integer Sub4.m()",
+//				"java.lang.Object Sub4.m() [BridgeMethod]"});
+//	}
+	
+	// FIXME asc need a testcase for when a decp wires two classes together and causes the subtype to need bridge methods
 	
 	public void testGenericITDsBridgeMethodsPR91381()  {runTest("abstract intertype methods and covariant returns");}
 	public void testGenericITDsBridgeMethodsPR91381_2()  {runTest("abstract intertype methods and covariant returns - error");}
@@ -745,27 +805,77 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testMultiLevelGenericAspects() {
 		runTest("multi-level generic abstract aspects");
 	}
-	
 	// --- helpers
+	
+	/**
+	 * When a class has been written to the sandbox directory, you can ask this method to 
+	 * verify it contains a particular set of methods.  Typically this is used to verify that
+	 * bridge methods have been created.
+	 */
+	public void checkMethodsExist(String classname,String[] methods) {
+		Set methodsFound = new HashSet();
+		StringBuffer debugString = new StringBuffer();
+		try {
+			ClassLoader cl = new URLClassLoader(new URL[]{ajc.getSandboxDirectory().toURL()});
+			Class clz = Class.forName(classname,false,cl);
+			java.lang.reflect.Method[] ms = clz.getDeclaredMethods();
+			if (ms!=null) {
+				for (int i =0;i<ms.length;i++) {
+					String methodString = ms[i].getReturnType().getName()+" "+ms[i].getDeclaringClass().getName()+"."+
+							           ms[i].getName()+"("+stringify(ms[i].getParameterTypes())+")"+
+							           (ms[i].isBridge()?" [BridgeMethod]":"");
+					methodsFound.add(methodString);
+					debugString.append("[").append(methodString).append("]");
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
-	public static Signature getClassSignature(Ajc ajc,String classname) {
+		// check the methods specified do exist
+		for (int i = 0; i < methods.length; i++) {
+			String string = methods[i];
+			if (!methodsFound.remove(string)) {
+				fail("Couldn't find ["+string+"] in the set of methods in "+classname+" => "+debugString);
+			}
+		}
+		StringBuffer unexpectedMethods = new StringBuffer();
+		if (!methodsFound.isEmpty()) {
+			for (Iterator iter = methodsFound.iterator(); iter.hasNext();) {
+				String element = (String) iter.next();
+				unexpectedMethods.append("[").append(element).append("]");
+			}
+			fail("These methods weren't expected: "+unexpectedMethods);
+		}
+		
+	}
+	
+	public static JavaClass getClass(Ajc ajc, String classname) {
 		try {
 			ClassPath cp = 
 				new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
 		    SyntheticRepository sRepos =  SyntheticRepository.getInstance(cp);
 			JavaClass clazz = sRepos.loadClass(classname);
-			Signature sigAttr = null;
-			Attribute[] attrs = clazz.getAttributes();
-			for (int i = 0; i < attrs.length; i++) {
-				Attribute attribute = attrs[i];
-				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
-			}
-			return sigAttr;
+			return clazz;
 		} catch (ClassNotFoundException e) {
 			fail("Couldn't find class "+classname+" in the sandbox directory.");
 		}
 		return null;
 	}
+		
+	public static Signature getClassSignature(Ajc ajc,String classname) {
+	    JavaClass clazz = getClass(ajc,classname);
+		Signature sigAttr = null;
+		Attribute[] attrs = clazz.getAttributes();
+		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];
+			if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
+		}
+		return sigAttr;
+	}
+	
 	// Check the signature attribute on a class is correct
 	public static void verifyClassSignature(Ajc ajc,String classname,String sig) {
 		Signature sigAttr = getClassSignature(ajc,classname);
@@ -774,5 +884,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 				sigAttr.getSignature().equals(sig));		
 	}
 		
+	private static String stringify(Class[] clazzes) {
+		if (clazzes==null) return "";
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < clazzes.length; i++) {
+			Class class1 = clazzes[i];
+			if (i>0) sb.append(",");
+			sb.append(clazzes[i].getName());
+		}
+		return sb.toString();
+	}
 
 }
