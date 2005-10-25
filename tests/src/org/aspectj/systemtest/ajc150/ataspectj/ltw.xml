@@ -147,4 +147,10 @@
         <run class="ataspectj.ConcreteAspectTest" ltw="ataspectj/aop-concreteaspect.xml"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="AspectOfWhenAspectNotInInclude">
+        <compile
+            files="ataspectj/bugs/AspectOfWhenAspectNotInIncludeTest.java,ataspectj/TestHelper.java"
+            options="-1.5 -XnoWeave"/>
+        <run class="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest" ltw="ataspectj/bugs/aop-aspectofwhenaspectnotinincludetest.xml"/>
+    </ajc-test>
 </suite>

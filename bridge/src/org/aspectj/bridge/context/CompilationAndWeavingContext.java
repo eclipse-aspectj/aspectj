@@ -73,9 +73,10 @@ public class CompilationAndWeavingContext {
 	public static final int IMPLEMENTING_ON_SHADOW = 29;
 	public static final int MATCHING_POINTCUT = 30;
 	public static final int MUNGING_WITH = 31;
-	
-	
-	// phase names
+    public static final int PROCESSING_ATASPECTJTYPE_MUNGERS_ONLY = 32;
+
+
+    // phase names
 	public static final String[] PHASE_NAMES = new String[] {
 		"batch building",
 		"incrementally building",
@@ -111,8 +112,9 @@ public class CompilationAndWeavingContext {
 		"matching shadow",
 		"implementing on shadow",
 		"matching pointcut",
-		"type munging with"
-	};
+		"type munging with",
+        "type munging for @AspectJ aspectOf"
+    };
 	
 	// context stacks, one per thread
 	private static Map contextMap = new HashMap();

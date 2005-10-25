@@ -299,7 +299,7 @@ public class ConcreteAspectCodeGen {
                 ResolvedType.forName(m_concreteAspect.name).resolve(m_world),
                 m_perClause.getKind()
         );
-        perClauseMunger.forceMunge(cg);
+        perClauseMunger.forceMunge(cg, false);
 
         //TODO AV - unsafe cast
         // register the fresh new class into the world repository as it does not exist on the classpath anywhere

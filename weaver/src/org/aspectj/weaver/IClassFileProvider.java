@@ -33,4 +33,11 @@ public interface IClassFileProvider {
 	 * The client to which the woven results should be returned.
 	 */
 	IWeaveRequestor getRequestor();
+
+    /**
+     * @return true if weaver should only do some internal munging as the one needed
+     * for @AspectJ aspectOf methods creation
+     */
+    boolean isApplyAtAspectJMungersOnly();
+
 }

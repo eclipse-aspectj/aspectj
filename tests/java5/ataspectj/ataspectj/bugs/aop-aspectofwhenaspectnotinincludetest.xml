@@ -1,0 +1,9 @@
+<aspectj>
+    <weaver options="-1.5 -showWeaveInfo">
+        <include within="somethingelse..*"/>
+    </weaver>
+    <aspects>
+        <aspect name="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest.TestAspect"/>
+        <aspect name="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest.TestAspectForAspect"/>
+    </aspects>
+</aspectj>

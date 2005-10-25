@@ -173,14 +173,28 @@ public class WeavingAdaptor {
             //System.out.println("WeavingAdaptor.weaveClass " + name);
 			info("weaving '" + name + "'");
 			bytes = getWovenBytes(name, bytes);
-		}
-		return bytes;
+		} else if (shouldWeaveAtAspect(name)) {
+            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
+            info("weaving '" + name + "'");
+            bytes = getAtAspectJAspectBytes(name, bytes);
+        }
+
+        return bytes;
 	}
 
-	private boolean shouldWeave (String name) {
+    /**
+     * @param name
+     * @return true if should weave (but maybe we still need to munge it for @AspectJ aspectof support)
+     */
+    private boolean shouldWeave (String name) {
 		name = name.replace('/','.');
-		boolean b = (enabled && !generatedClasses.containsKey(name) && shouldWeaveName(name) && shouldWeaveAspect(name));
-		return b && accept(name);
+		boolean b = enabled && !generatedClasses.containsKey(name) && shouldWeaveName(name);
+        return b && accept(name);
+//        && shouldWeaveAtAspect(name);
+//        // we recall shouldWeaveAtAspect as we need to add aspectOf methods for @Aspect anyway
+//        //FIXME AV - this is half ok as the aspect will be weaved by others. In theory if the aspect
+//        // is excluded from include/exclude config we should only weave late type mungers for aspectof
+//        return b && (accept(name) || shouldWeaveAtAspect(name));
 	}
 
     //ATAJ
@@ -206,11 +220,11 @@ public class WeavingAdaptor {
      * (and not part of the source compilation)
      *
      * @param name
-     * @return
+     * @return true if @Aspect
      */
-	private boolean shouldWeaveAspect(String name) {
+	private boolean shouldWeaveAtAspect(String name) {
 		ResolvedType type = bcelWorld.resolve(UnresolvedType.forName(name), true);
-        return (type == null || !type.isAspect() || type.isAnnotationStyleAspect());
+        return (type == null || type.isAnnotationStyleAspect());
 	}
 
 	/**
@@ -224,18 +238,24 @@ public class WeavingAdaptor {
 		WeavingClassFileProvider wcp = new WeavingClassFileProvider(name,bytes);
 		weaver.weave(wcp);
 		return wcp.getBytes();		
-		
-//		UnwovenClassFile unwoven = new UnwovenClassFile(name,bytes);
-//		
-//		// weave
-//		BcelObjectType bcelType = bcelWorld.addSourceObjectType(unwoven.getJavaClass());
-//		LazyClassGen woven = weaver.weaveWithoutDump(unwoven,bcelType);
-//		
-//		byte[] wovenBytes = woven != null ? woven.getJavaClass(bcelWorld).getBytes() : bytes;
-//		return wovenBytes;
 	}
-	
-	private void registerAspectLibraries(List aspectPath) {
+
+    /**
+     * Weave a set of bytes defining a class for only what is needed to turn @AspectJ aspect
+     * in a usefull form ie with aspectOf method - see #113587
+     * @param name the name of the class being woven
+     * @param bytes the bytes that define the class
+     * @return byte[] the woven bytes for the class
+     * @throws IOException
+     */
+    private byte[] getAtAspectJAspectBytes(String name, byte[] bytes) throws IOException {
+        WeavingClassFileProvider wcp = new WeavingClassFileProvider(name,bytes);
+        wcp.setApplyAtAspectJMungersOnly();
+        weaver.weave(wcp);
+        return wcp.getBytes();
+    }
+
+    private void registerAspectLibraries(List aspectPath) {
 //		System.err.println("? WeavingAdaptor.registerAspectLibraries(" + aspectPath + ")");
 		for (Iterator i = aspectPath.iterator(); i.hasNext();) {
 			String libName = (String)i.next();
@@ -346,14 +366,23 @@ public class WeavingAdaptor {
 
 		private List unwovenClasses = new ArrayList(); /* List<UnovenClassFile> */
 		private UnwovenClassFile wovenClass;
+        private boolean isApplyAtAspectJMungersOnly = false;
 
-		public WeavingClassFileProvider (String name, byte[] bytes) {
+        public WeavingClassFileProvider (String name, byte[] bytes) {
 			UnwovenClassFile unwoven = new UnwovenClassFile(name,bytes);
 			unwovenClasses.add(unwoven);
 			bcelWorld.addSourceObjectType(unwoven.getJavaClass());
 		}
 
-		public byte[] getBytes () {
+        public void setApplyAtAspectJMungersOnly() {
+            isApplyAtAspectJMungersOnly = true;
+        }
+
+        public boolean isApplyAtAspectJMungersOnly() {
+            return isApplyAtAspectJMungersOnly;
+        }
+
+        public byte[] getBytes () {
 			return wovenClass.getBytes();
 		}
 

@@ -71,8 +71,12 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	public IWeaveRequestor getRequestor() {
 		return this;
 	}
-	
-	// Iteration
+
+    public boolean isApplyAtAspectJMungersOnly() {
+        return false;
+    }
+
+    // Iteration
 	// ================================================================
 	
 	/* (non-Javadoc)

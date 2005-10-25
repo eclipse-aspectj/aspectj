@@ -56,6 +56,22 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     public boolean munge(BcelClassWeaver weaver) {
         LazyClassGen gen = weaver.getLazyClassGen();
 
+        doAggressiveInner(gen);
+
+        // Only munge the aspect type
+         if (!gen.getType().equals(aspectType)) {
+             return false;
+         }
+
+        return doMunge(gen, true);
+    }
+
+    public boolean forceMunge(LazyClassGen gen, boolean checkAlreadyThere) {
+        doAggressiveInner(gen);
+        return doMunge(gen, checkAlreadyThere);
+    }
+
+    private void doAggressiveInner(LazyClassGen gen) {
         // agressively generate the inner interface if any
         // Note: we do so because of the bug #75442 that leads to have this interface implemented by all classes and not
         // only those matched by the per clause, which fails under LTW since the very first class
@@ -79,16 +95,13 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
             }
             hasGeneratedInner = true;
         }
-
-        // Only munge the aspect type
-         if (!gen.getType().equals(aspectType)) {
-             return false;
-         }
-
-        return forceMunge(gen);
     }
 
-    public boolean forceMunge(LazyClassGen gen) {
+    private boolean doMunge(LazyClassGen gen, boolean checkAlreadyThere) {
+        if (checkAlreadyThere && hasPerClauseMembersAlready(gen)) {
+            return false;
+        }
+
         generatePerClauseMembers(gen);
 
         if (kind == PerClause.SINGLETON) {
@@ -130,6 +143,23 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         //since we need to eagerly create the nested ajcMighHaveAspect interface on LTW
         return true;
         //return aspectType.equals(onType);
+    }
+
+    private boolean hasPerClauseMembersAlready(LazyClassGen classGen) {
+        ResolvedMember[] methods = classGen.getBcelObjectType().getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            ResolvedMember method = methods[i];
+            if ("aspectOf".equals(method.getName())) {
+                if ("()".equals(method.getParameterSignature()) && (kind == PerClause.SINGLETON || kind == PerClause.PERCFLOW)) {
+                    return true;
+                } else if ("(Ljava/lang/Object;)".equals(method.getParameterSignature()) && kind == PerClause.PEROBJECT) {
+                    return true;
+                } else if ("(Ljava/lang/Class;)".equals(method.getParameterSignature()) && kind == PerClause.PERTYPEWITHIN) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void generatePerClauseMembers(LazyClassGen classGen) {

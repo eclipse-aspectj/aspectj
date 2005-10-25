@@ -858,7 +858,11 @@ public class BcelWeaver implements IWeaver {
     	prepareForWeave();
     	Collection c = weave( new IClassFileProvider() {
 
-			public Iterator getClassFileIterator() {
+            public boolean isApplyAtAspectJMungersOnly() {
+                return false;
+            }
+
+            public Iterator getClassFileIterator() {
 				return addedClasses.iterator();
 			}
 
@@ -961,7 +965,37 @@ public class BcelWeaver implements IWeaver {
     	Collection wovenClassNames = new ArrayList();
     	IWeaveRequestor requestor = input.getRequestor();
 
-    	requestor.processingReweavableState();
+        // special case for AtAspectJMungerOnly - see #113587
+        if (input.isApplyAtAspectJMungersOnly()) {
+            ContextToken atAspectJMungersOnly = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_ATASPECTJTYPE_MUNGERS_ONLY, "");
+            requestor.weavingAspects();
+            ContextToken aspectToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_ASPECTS, "");
+            for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+                UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+                String className = classFile.getClassName();
+                ResolvedType theType = world.resolve(className);
+                if (theType.isAnnotationStyleAspect()) {
+                    BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+                    if (classType==null) {
+                        throw new BCException("Can't find bcel delegate for "+className+" type="+theType.getClass());
+                    }
+                    LazyClassGen clazz = classType.getLazyClassGen();
+                    BcelPerClauseAspectAdder selfMunger = new BcelPerClauseAspectAdder(theType, theType.getPerClause().getKind());
+                    selfMunger.forceMunge(clazz, true);
+                    classType.finishedWith();
+                    UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
+                    for (int news = 0; news < newClasses.length; news++) {
+                        requestor.acceptResult(newClasses[news]);
+                    }
+                    wovenClassNames.add(classFile.getClassName());
+                }
+            }
+            requestor.weaveCompleted();
+            CompilationAndWeavingContext.leavingPhase(atAspectJMungersOnly);
+            return wovenClassNames;
+        }
+
+        requestor.processingReweavableState();
     	ContextToken reweaveToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_REWEAVABLE_STATE,"");
 		prepareToProcessReweavableState();
 		// clear all state from files we'll be reweaving
