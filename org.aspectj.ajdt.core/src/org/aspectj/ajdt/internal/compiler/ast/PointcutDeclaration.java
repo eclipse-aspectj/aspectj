@@ -88,12 +88,17 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 				
 		if (Modifier.isAbstract(this.declaredModifiers)) {
 			if (!(typeDec instanceof AspectDeclaration)) {
-				typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd, 
-						"The abstract pointcut " + new String(declaredName) +
-						" can only be defined in an aspect");
-				ignoreFurtherInvestigation = true;
-				return;
-			} else if (!Modifier.isAbstract(typeDec.modifiers)) {
+                // check for @Aspect
+                if (isAtAspectJ(typeDec)) {
+                   ;//no need to check abstract class as JDT does that
+                } else {
+                    typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd,
+                            "The abstract pointcut " + new String(declaredName) +
+                            " can only be defined in an aspect");
+                    ignoreFurtherInvestigation = true;
+                    return;
+                }
+            } else if (!Modifier.isAbstract(typeDec.modifiers)) {
 				typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd, 
 						"The abstract pointcut " + new String(declaredName) +
 						" can only be defined in an abstract aspect");
@@ -107,9 +112,22 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 			pointcutDesignator.postParse(typeDec, this);
 		}
 	}
-    
-	
-	/**
+
+    private boolean isAtAspectJ(TypeDeclaration typeDec) {
+        if (typeDec.annotations == null)
+            return false;
+
+        for (int i = 0; i < typeDec.annotations.length; i++) {
+            Annotation annotation = typeDec.annotations[i];
+            if ("Lorg/aspectj/lang/annotation/Aspect;".equals(new String(annotation.resolvedType.signature()))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
 	 * Called from the AtAspectJVisitor to create the @Pointcut annotation
 	 * (and corresponding method) for this pointcut
 	 *

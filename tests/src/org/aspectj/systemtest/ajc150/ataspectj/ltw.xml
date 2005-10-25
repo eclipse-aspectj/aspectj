@@ -134,7 +134,7 @@
     <ajc-test dir="java5/ataspectj" title="Concrete@Aspect">
         <compile
             files="ataspectj/ConcreteAtAspectTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -Xdev:NoAtAspectJProcessing -XnoWeave"
+            options="-1.5 -XnoWeave"
             />
         <run class="ataspectj.ConcreteAtAspectTest" ltw="ataspectj/aop-concreteataspect.xml"/>
     </ajc-test>

@@ -152,7 +152,7 @@ public class ConcreteAspectCodeGen {
                 if ("()V".equals(method.getSignature())) {
                     elligibleAbstractions.add(method.getName());
                 } else {
-                    reportError("Abstract member '" + method.getName() + "' cannot be concretized as a pointcut (illegal signature): " + stringify());
+                    reportError("Abstract method '" + method.getName() + "' cannot be concretized as a pointcut (illegal signature, must have no arguments, must return void): " + stringify());
                     return false;
                 }
             }

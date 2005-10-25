@@ -40,7 +40,7 @@ public class ConcreteAtAspectTest extends TestCase {
         abstract void pc();
         // must be abstract
         // for concrete-aspect, must further be no-arg, void
-        // but can be more complex for non-xml inheritance
+        // !!! but can be more complex for non-xml inheritance !!! ie not error for AJDTcore
 
         @Before("pc()")
         public void before() {

@@ -490,8 +490,13 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		String pointcutExpression = getStringLiteralFor("value",ajAnnotations.pointcutAnnotation,pcLocation);
 		try {
 			ISourceContext context = new EclipseSourceContext(unit.compilationResult,pcLocation[0]);
-			Pointcut pc = new PatternParser(pointcutExpression,context).parsePointcut();
-			pcDecl.pointcutDesignator = new PointcutDesignator(pc);
+            Pointcut pc = null;//abstract
+            if (pointcutExpression == null  || pointcutExpression.length() == 0) {
+                ;//will have to ensure abstract ()V method
+            } else {
+                pc = new PatternParser(pointcutExpression,context).parsePointcut();
+            }
+            pcDecl.pointcutDesignator = (pc==null)?null:new PointcutDesignator(pc);
 			pcDecl.setGenerateSyntheticPointcutMethod();
 			TypeDeclaration onType = (TypeDeclaration) typeStack.peek();
 			pcDecl.postParse(onType);
@@ -506,11 +511,14 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 //	            bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
 //	        }
 			swap(onType,methodDeclaration,pcDecl);
-			pc.resolve(new EclipseScope(bindings,methodDeclaration.scope));
-			HasIfPCDVisitor ifFinder = new HasIfPCDVisitor();
-			pc.traverse(ifFinder, null);
-			containsIfPcd = ifFinder.containsIfPcd;
-		} catch(ParserException pEx) {
+			if (pc != null) {
+                // has an expression
+                pc.resolve(new EclipseScope(bindings,methodDeclaration.scope));
+                HasIfPCDVisitor ifFinder = new HasIfPCDVisitor();
+                pc.traverse(ifFinder, null);
+                containsIfPcd = ifFinder.containsIfPcd;
+            }
+        } catch(ParserException pEx) {
 			methodDeclaration.scope.problemReporter().parseError(
 					pcLocation[0] + pEx.getLocation().getStart(),
 					pcLocation[0] + pEx.getLocation().getEnd() ,
@@ -543,7 +551,25 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 					  methodDeclaration.returnType.sourceEnd, 
 					  "Pointcuts without an if() expression should have an empty method body");			
 		}
-	}
+
+        if (pcDecl.pointcutDesignator == null) {
+            if (Modifier.isAbstract(methodDeclaration.modifiers)
+                //those 2 checks makes sense for aop.xml concretization but NOT for regular abstraction of pointcut
+                //&& returnsVoid
+                //&& (methodDeclaration.arguments == null || methodDeclaration.arguments.length == 0)) {
+                ) {
+                ;//fine
+            } else {
+                methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
+                          methodDeclaration.returnType.sourceEnd,
+                          "Method annotated with @Pointcut() for abstract pointcut must be abstract");
+            }
+        } else if (Modifier.isAbstract(methodDeclaration.modifiers)) {
+            methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
+                      methodDeclaration.returnType.sourceEnd,
+                      "Method annotated with non abstract @Pointcut(\""+pointcutExpression+"\") is abstract");
+        }
+    }
 	
 	private void copyAllFields(MethodDeclaration from, MethodDeclaration to) {
 		to.annotations = from.annotations;

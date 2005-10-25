@@ -113,23 +113,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             messageHandler = bcelWorld.getMessageHandler();
             // after adding aspects
             weaver.prepareForWeave();
-//            // weave and flush what was registered so far
-//            for (Iterator iterator = m_codeGens.iterator(); iterator.hasNext();) {
-//                ConcreteAspectCodeGen concreteAspectCodeGen = (ConcreteAspectCodeGen) iterator.next();
-//                byte[] partiallyWoven = concreteAspectCodeGen.getBytes(this);
-//                this.generatedClassHandler.acceptClass(
-//                        concreteAspectCodeGen.m_concreteAspect.name,
-//                        partiallyWoven
-//                );
-//                ResolvedType aspect = weaver.addLibraryAspect(concreteAspectCodeGen.m_concreteAspect.name);
-//                //generate key for SC
-//                String aspectCode = readAspect(concreteAspectCodeGen.m_concreteAspect.name, loader);
-//                if(namespace==null){
-//                    namespace=new StringBuffer(aspectCode);
-//                }else{
-//                    namespace = namespace.append(";"+aspectCode);
-//                }
-//            }
         }
     }
 
@@ -160,7 +143,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     		while(st.hasMoreTokens()){
     			Enumeration xmls = weavingContext.getResources(st.nextToken());
 //    			System.out.println("? registerDefinitions: found-aop.xml=" + xmls.hasMoreElements() + ", loader=" + loader);
-
 
     			while (xmls.hasMoreElements()) {
     			    URL xml = (URL) xmls.nextElement();
