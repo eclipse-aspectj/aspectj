@@ -33,4 +33,10 @@ public class ReflectionWorldTest extends TestCase {
 		assertTrue(rt.isArray());
 	}
 	
+	public void testPrimitiveTypes() {
+		ReflectionWorld world = new ReflectionWorld();
+		assertEquals("int",ResolvedType.INT,world.resolve(int.class));
+		assertEquals("void",ResolvedType.VOID,world.resolve(void.class));
+	}
+	
 }

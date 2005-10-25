@@ -46,11 +46,12 @@ public class ReflectionWorld extends World {
 	public ResolvedType resolve(Class aClass) {
 		// classes that represent arrays return a class name that is the signature of the array type, ho-hum...
 		String className = aClass.getName();
-		if (!className.startsWith("[")) {
-			return resolve(className);
-		} else {
+		if (aClass.isArray()) {
 			return resolve(UnresolvedType.forSignature(className));
 		}
+		else{
+			return resolve(className);
+		} 
 	}
 	
 	/* (non-Javadoc)
