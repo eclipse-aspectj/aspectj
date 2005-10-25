@@ -487,6 +487,13 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		assertNotNull("output jar", buildConfig.getOutputJar());
         assertEquals( "out jar", outJar, buildConfig.getOutputJar().toString() );				
 	}
+	
+	public void testXHasMember() {
+		buildOptions.setNonStandardOptions("-XhasMember");
+		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
+		assertTrue( "XhasMember", buildConfig.isXHasMemberEnabled() );
+	}
 
 	protected void setUp() throws Exception {
 		preferencesAdapter = new UserPreferencesStore(false);

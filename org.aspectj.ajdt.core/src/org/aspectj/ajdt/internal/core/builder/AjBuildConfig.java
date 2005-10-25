@@ -366,6 +366,9 @@ public class AjBuildConfig {
         if (!isXlazyTjp() && global.isXlazyTjp()) {
         	setXlazyTjp(true);
         }
+        if (!isXHasMemberEnabled() && global.isXHasMemberEnabled()) {
+        	setXHasMemberSupport(true);
+        }
         if (!isXNotReweavable() && global.isXNotReweavable()) {
         	setXnotReweavable(true);
         }
