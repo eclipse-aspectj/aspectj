@@ -85,6 +85,10 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
              return false;
          }
 
+        return forceMunge(gen);
+    }
+
+    public boolean forceMunge(LazyClassGen gen) {
         generatePerClauseMembers(gen);
 
         if (kind == PerClause.SINGLETON) {

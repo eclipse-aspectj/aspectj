@@ -42,7 +42,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	 */
 	public WeavingURLClassLoader (ClassLoader parent) {
 		this(getURLs(getClassPath()),getURLs(getAspectPath()),parent);
-//		System.err.println("? WeavingURLClassLoader.<init>(" + parent + ")");
+//		System.err.println("? WeavingURLClassLoader.<init>(" + m_parent + ")");
 	}
 	
 	public WeavingURLClassLoader (URL[] urls, ClassLoader parent) {
@@ -55,7 +55,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 //		System.err.println("? WeavingURLClassLoader.<init>() classURLs=" + classURLs.length + ", aspectURLs=" + aspectURLs.length);
 		this.aspectURLs = aspectURLs;
 		
-		/* If either we nor our parent is using an ASPECT_PATH use a new-style
+		/* If either we nor our m_parent is using an ASPECT_PATH use a new-style
 		 * adaptor
 		 */ 
 		if (this.aspectURLs.length > 0 || parent instanceof WeavingClassLoader) {

@@ -71,7 +71,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
              * @param bytes
              */
             public void acceptClass(String name, byte[] bytes) {
-                //TODO av make dump configurable
                 try {
                     if (shouldDump(name.replace('/', '.'))) {
                         Aj.dump(name, bytes);
@@ -79,6 +78,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
+
                 Aj.defineClass(loader, name, bytes);// could be done lazily using the hook
             }
         };
@@ -113,6 +113,23 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             messageHandler = bcelWorld.getMessageHandler();
             // after adding aspects
             weaver.prepareForWeave();
+//            // weave and flush what was registered so far
+//            for (Iterator iterator = m_codeGens.iterator(); iterator.hasNext();) {
+//                ConcreteAspectCodeGen concreteAspectCodeGen = (ConcreteAspectCodeGen) iterator.next();
+//                byte[] partiallyWoven = concreteAspectCodeGen.getBytes(this);
+//                this.generatedClassHandler.acceptClass(
+//                        concreteAspectCodeGen.m_concreteAspect.name,
+//                        partiallyWoven
+//                );
+//                ResolvedType aspect = weaver.addLibraryAspect(concreteAspectCodeGen.m_concreteAspect.name);
+//                //generate key for SC
+//                String aspectCode = readAspect(concreteAspectCodeGen.m_concreteAspect.name, loader);
+//                if(namespace==null){
+//                    namespace=new StringBuffer(aspectCode);
+//                }else{
+//                    namespace = namespace.append(";"+aspectCode);
+//                }
+//            }
         }
     }
 
@@ -257,16 +274,21 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         //TODO: the exclude aspect allow to exclude aspect defined upper in the CL hierarchy - is it what we want ??
         // if not, review the getResource so that we track which resource is defined by which CL
 
-        //it aspectClassNames
+        //iterate aspectClassNames
         //exclude if in any of the exclude list
         for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
             Definition definition = (Definition) iterator.next();
             for (Iterator aspects = definition.getAspectClassNames().iterator(); aspects.hasNext();) {
                 String aspectClassName = (String) aspects.next();
                 if (acceptAspect(aspectClassName)) {
-                    weaver.addLibraryAspect(aspectClassName);
-                	
-                	//generate key for SC
+                    ResolvedType aspect = weaver.addLibraryAspect(aspectClassName);
+                    if (aspect.isAbstract()) {
+                        // this is a warning
+                        weaver.getWorld().getMessageHandler().handleMessage(
+                                new Message("Abstract aspect registered in aop.xml, use a <concrete-aspect> element instead", IMessage.WARNING, null, null)
+                        );
+                    }
+                    //generate key for SC
                 	String aspectCode = readAspect(aspectClassName, loader);
                     if(namespace==null){
                     	namespace=new StringBuffer(aspectCode);
@@ -277,9 +299,35 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             }
         }
 
-        //it concreteAspects
-        //exclude if in any of the exclude list
-        //TODO
+        //iterate concreteAspects
+        //exclude if in any of the exclude list - note that the user defined name matters for that to happen
+        for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
+            Definition definition = (Definition) iterator.next();
+            for (Iterator aspects = definition.getConcreteAspects().iterator(); aspects.hasNext();) {
+                Definition.ConcreteAspect concreteAspect = (Definition.ConcreteAspect) aspects.next();
+                if (acceptAspect(concreteAspect.name)) {
+                    ConcreteAspectCodeGen gen = new ConcreteAspectCodeGen(concreteAspect, weaver.getWorld());
+                    if (!gen.validate()) {
+                        weaver.getWorld().getMessageHandler().handleMessage(
+                                new Message("Concrete-aspect '"+concreteAspect.name+"' could not be registered", IMessage.ERROR, null, null)
+                        );
+                        break;
+                    }
+                    this.generatedClassHandler.acceptClass(
+                            concreteAspect.name,
+                            gen.getBytes()
+                    );
+                    ResolvedType aspect = weaver.addLibraryAspect(concreteAspect.name);
+                    //generate key for SC
+                	String aspectCode = readAspect(concreteAspect.name, loader);
+                    if(namespace==null){
+                    	namespace=new StringBuffer(aspectCode);
+                    }else{
+                    	namespace = namespace.append(";"+aspectCode);
+                    }
+                }
+            }
+        }
     }
 
     /**

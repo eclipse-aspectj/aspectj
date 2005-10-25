@@ -39,8 +39,8 @@
                 need to specify the <literal>-Xreweavable</literal> compiler option when building
                 them. This causes AspectJ to save additional state in the class files that is used
                 to support subsequent reweaving. </para>
-            <para><!-- FIXME AV -->As per AspectJ 1.5.0 M3 aspects (code style or annotation style) are
-            reweavable by default, and weaved classes may be as well in 1.5.0 final.</para>
+            <para>As per AspectJ 1.5.0 M3 aspects (code style or annotation style) are
+            reweavable by default, and weaved classes are reweavable by default as well as per AspectJ 1.5.0 M4.</para>
         </sect2>
     </sect1>
     
@@ -206,12 +206,7 @@
                 useful way of externalizing configuration for infrastructure and
                 auxiliary aspects where the pointcut definitions themselves can be
                 considered part of the configuration of the service.
-            </para>
-
-            <para>
-                <emphasis>
-                Note: concrete-aspect is not available in AspectJ 1.5 M3.
-                </emphasis>
+                Refer to the next section for more details.
             </para>
 
             <para>
@@ -270,6 +265,91 @@
                 using the <literal>-outjar</literal> option of the AspectJ compiler. 
                 It will simply contain a (possibly empty) set of aspect elements, one for
                 each concrete aspect included in the JAR. </para>
+        </sect2>
+
+        <sect2 id="concrete-aspect" xreflabel="concrete-aspect">
+            <title>Using Concrete Aspects</title>
+            <para>
+                It is possible to concretize an abstract aspect by the mean of the <literal>META-INF/aop.xml</literal>
+                file. This is usefull to define abstract pointcuts at deployment time.
+                Consider the following:
+            </para>
+            <programlisting><![CDATA[
+            package mypack;
+
+            @Aspect
+            public abstract class AbstractAspect {
+
+                // abstract pointcut: no expression is defined
+                @Pointcut
+                abstract void scope();
+
+                @Before("scope() && execution(* *..doSome(..))")
+                public void before(JoinPoint jp) {
+                   ....
+                }
+            }
+            ]]></programlisting>
+            <para>
+                This aspect is equivalent to the following in code style:
+            </para>
+            <programlisting><![CDATA[
+            package mypack;
+
+            public abstract aspect AbstractAspect {
+
+                // abstract pointcut: no expression is defined
+                abstract pointcut scope();
+
+                before() : scope() && execution(* *..doSome(..)) {
+                   ....
+                }
+            }
+            ]]></programlisting>
+            <para>
+                This aspect (in either of its style) is a good candidate for concretization through <literal>META-INF/aop.xml</literal>.
+                It defines the abstract pointcut <literal>within()</literal>. It is important to remember that
+                concretization in this case must obey to the following rules:
+                <itemizedlist>
+                    <listitem><para>The parent aspect must be abstract. It can be an @AspectJ or a
+                            regular code style aspect.</para></listitem>
+                    <listitem><para>Only simple abstract pointcut can be concretized ie pointcut that don't expose
+                            state (through <literal>args(), this(), target(), if()</literal>). In @AspectJ syntax
+                            as illustrated in this sample, this means the method that hosts the pointcut is abstract,
+                            has no arguments, and returns void.</para></listitem>
+                    <listitem><para>Concretization must defines all such abstract pointcuts ie it is not possible
+                            to have <literal>concrete-aspect</literal> inter dependancies.</para></listitem>
+                    <listitem><para>Concretization can only concretize pointcuts ie there cannot be abstract method
+                            left in the aspect.</para></listitem>
+                </itemizedlist>
+                If you have requirements for more complex aspect inheritance, you should consider regular aspect
+                inheritance instead of concretization through XML.
+                Given that the following XML is valid:
+            </para>
+            <programlisting><![CDATA[
+            <aspectj>
+                <conrete-aspect name="mypack.__My__AbstractAspect" extends="mypack.AbstractAspect">
+                    <pointcut name="scope" expression="within(yourpackage..*)"/>
+                </concrete-aspect>
+            </aspectj>
+            ]]></programlisting>
+            <para>
+                It is important to remember that the <literal>name</literal> attribute in the XML directive
+                <literal>concrete-aspect</literal> defines the fully qualified name that will be given to the
+                concrete aspect. It must then be a valid class name. This one will indeed be generated on the fly by the weaver internals. You must
+                then ensure that there won't be name collision. Also note that the concrete aspect will be
+                defined at the classloader level for which the aop.xml is visible. This implies that if you need
+                to use the <literal>aspectof</literal> methods to access the aspect instance(s) (depending on the perclause
+                of the aspect it extends) you have to use the helper API <literal>org.aspectj.lang.Aspects.aspectOf(..)</literal>
+                as in:
+            </para>
+            <programlisting><![CDATA[
+                // exception handling omitted
+                Class myConcreteAspectClass = Class.forName("mypack.__My__AbstractAspect");
+
+                // here we are using a singleton aspect
+                AbstractAspect concreteInstance = Aspects.aspectOf(myConcreteAspectClass);
+            ]]></programlisting>
         </sect2>
 
         <!-- TODO someone implement that -->

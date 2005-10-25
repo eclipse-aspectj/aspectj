@@ -74,20 +74,26 @@ public class Definition {
     }
 
     public static class ConcreteAspect {
-        String name;
-        String extend;
-        List pointcuts;
+        public final String name;
+        public final String extend;
+        public final String precedence;
+        public final List pointcuts;
 
         public ConcreteAspect(String name, String extend) {
+            this(name, extend,  null);
+        }
+
+        public ConcreteAspect(String name, String extend, String precedence) {
             this.name = name;
             this.extend = extend;
+            this.precedence = precedence;
             this.pointcuts = new ArrayList();
         }
     }
 
     public static class Pointcut {
-        String name;
-        String expression;
+        public final String name;
+        public final String expression;
         public Pointcut(String name, String expression) {
             this.name = name;
             this.expression = expression;

@@ -27,8 +27,9 @@ public @interface Pointcut {
 
     /**
      * The pointcut expression
+     * We allow "" as default for abstract pointcut
      */
-    String value();
+    String value() default "";
     
     /**
      * When compiling without debug info, or when interpreting pointcuts at runtime,

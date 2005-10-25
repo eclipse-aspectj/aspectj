@@ -131,4 +131,20 @@
         <ant file="ajc-ant.xml" target="ltw.oldAspectsDeclared" verbose="true"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="Concrete@Aspect">
+        <compile
+            files="ataspectj/ConcreteAtAspectTest.java,ataspectj/TestHelper.java"
+            options="-1.5 -Xdev:NoAtAspectJProcessing -XnoWeave"
+            />
+        <run class="ataspectj.ConcreteAtAspectTest" ltw="ataspectj/aop-concreteataspect.xml"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="ConcreteAspect">
+        <compile
+            files="ataspectj/ConcreteAspectTest.aj,ataspectj/TestHelper.java"
+            options="-1.5 -Xdev:NoAtAspectJProcessing -XnoWeave"
+            />
+        <run class="ataspectj.ConcreteAspectTest" ltw="ataspectj/aop-concreteaspect.xml"/>
+    </ajc-test>
+
 </suite>

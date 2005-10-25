@@ -56,6 +56,7 @@ public class DocumentParser extends DefaultHandler {
     private final static String CONCRETE_ASPECT_ELEMENT = "concrete-aspect";
     private final static String NAME_ATTRIBUTE = "name";
     private final static String EXTEND_ATTRIBUTE = "extends";
+    private final static String PRECEDENCE_ATTRIBUTE = "precedence";
     private final static String POINTCUT_ELEMENT = "pointcut";
     private final static String WITHIN_ATTRIBUTE = "within";
     private final static String EXPRESSION_ATTRIBUTE = "expression";
@@ -149,8 +150,13 @@ public class DocumentParser extends DefaultHandler {
         } else if (CONCRETE_ASPECT_ELEMENT.equals(qName)) {
             String name = attributes.getValue(NAME_ATTRIBUTE);
             String extend = attributes.getValue(EXTEND_ATTRIBUTE);
+            String precedence = attributes.getValue(PRECEDENCE_ATTRIBUTE);
             if (!isNull(name) && !isNull(extend)) {
-                m_lastConcreteAspect = new Definition.ConcreteAspect(name, extend);
+                if (isNull(precedence)) {
+                    m_lastConcreteAspect = new Definition.ConcreteAspect(name, extend);
+                } else {
+                    m_lastConcreteAspect = new Definition.ConcreteAspect(name, extend, precedence);
+                }
                 m_definition.getConcreteAspects().add(m_lastConcreteAspect);
             }
         } else if (POINTCUT_ELEMENT.equals(qName) && m_lastConcreteAspect != null) {

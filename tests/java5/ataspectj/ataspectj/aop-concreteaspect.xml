@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<aspectj>
+    <weaver options="-XmessageHandlerClass:ataspectj.TestHelper -1.5"/>
+    <aspects>
+        <concrete-aspect name="ataspectj.Foo" extends="ataspectj.ConcreteAspectTest.ConcreteAspect">
+            <pointcut name="pc" expression="execution(* ataspectj.ConcreteAspectTest.target())"/>
+        </concrete-aspect>
+    </aspects>
+</aspectj>

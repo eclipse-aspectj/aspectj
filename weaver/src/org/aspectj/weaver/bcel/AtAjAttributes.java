@@ -1051,57 +1051,73 @@ public class AtAjAttributes {
         Annotation pointcut = getAnnotation(runtimeAnnotations, AjcMemberMaker.POINTCUT_ANNOTATION);
         if (pointcut != null) {
             ElementNameValuePair pointcutExpr = getAnnotationElement(pointcut, VALUE);
-            if (pointcutExpr != null) {
 
-                // semantic check: the method must return void, or be "public static boolean" for if() support
-                if (!(Type.VOID.equals(struct.method.getReturnType())
-                      || (Type.BOOLEAN.equals(struct.method.getReturnType()) && struct.method.isStatic() && struct.method.isPublic()))) {
-                    reportWarning("Found @Pointcut on a method not returning 'void' or not 'public static boolean'", struct);
-                    ;//no need to stop
-                }
-                // semantic check: the method must not throw anything
-                if (struct.method.getExceptionTable() != null) {
-                    reportWarning("Found @Pointcut on a method throwing exception", struct);
-                    ;// no need to stop
-                }
+            // semantic check: the method must return void, or be "public static boolean" for if() support
+            if (!(Type.VOID.equals(struct.method.getReturnType())
+                  || (Type.BOOLEAN.equals(struct.method.getReturnType()) && struct.method.isStatic() && struct.method.isPublic()))) {
+                reportWarning("Found @Pointcut on a method not returning 'void' or not 'public static boolean'", struct);
+                ;//no need to stop
+            }
 
-                // this/target/args binding
-                final IScope binding;
-                try {
-                    binding = new BindingScope(
-                            struct.enclosingType,
-                            struct.context,
-                            extractBindings(struct)
-                    );
-                } catch (UnreadableDebugInfoException e) {
+            // semantic check: the method must not throw anything
+            if (struct.method.getExceptionTable() != null) {
+                reportWarning("Found @Pointcut on a method throwing exception", struct);
+                ;// no need to stop
+            }
+
+            // this/target/args binding
+            final IScope binding;
+            try {
+                binding = new BindingScope(
+                        struct.enclosingType,
+                        struct.context,
+                        extractBindings(struct)
+                );
+            } catch (UnreadableDebugInfoException e) {
+                return;
+            }
+
+            UnresolvedType[] argumentTypes = new UnresolvedType[struct.method.getArgumentTypes().length];
+            for (int i = 0; i < argumentTypes.length; i++) {
+                argumentTypes[i] = UnresolvedType.forSignature(struct.method.getArgumentTypes()[i].getSignature());
+            }
+
+            Pointcut pc = null;
+            if (struct.method.isAbstract()) {
+                if ((pointcutExpr != null && isNullOrEmpty(pointcutExpr.getValue().stringifyValue()))
+                    || pointcutExpr == null) {
+                    // abstract pointcut
+                    // leave pc = null
+                } else {
+                    reportError("Found defined @Pointcut on an abstract method", struct);
+                    return;//stop
+                }
+            } else {
+                if (pointcutExpr != null) {
+                    // use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
+                    // since for it to be resolved, we will need other pointcuts to be registered as well
+                    pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
+                    if (pc == null) return;//parse error
+                    pc.setLocation(struct.context, -1, -1);//FIXME AVASM !! bMethod is null here..
+                } else {
+                    reportError("Found undefined @Pointcut on a non-abstract method", struct);
                     return;
                 }
-
-                UnresolvedType[] argumentTypes = new UnresolvedType[struct.method.getArgumentTypes().length];
-                for (int i = 0; i < argumentTypes.length; i++) {
-                    argumentTypes[i] = UnresolvedType.forSignature(struct.method.getArgumentTypes()[i].getSignature());
-                }
-
-                // use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
-                // since for it to be resolved, we will need other pointcuts to be registered as well
-                Pointcut pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
-                if (pc == null) return;//parse error
-                // do not resolve binding now but lazily
-                pc.setLocation(struct.context, -1, -1);//FIXME AVASM !! bMethod is null here..
-                struct.ajAttributes.add(
-                        new AjAttribute.PointcutDeclarationAttribute(
-                                new LazyResolvedPointcutDefinition(
-                                        struct.enclosingType,
-                                        struct.method.getModifiers(),
-                                        struct.method.getName(),
-                                        argumentTypes,
-                                        UnresolvedType.forSignature(struct.method.getReturnType().getSignature()),
-                                        pc,
-                                        binding
-                                )
-                        )
-                );
             }
+            // do not resolve binding now but lazily
+            struct.ajAttributes.add(
+                    new AjAttribute.PointcutDeclarationAttribute(
+                            new LazyResolvedPointcutDefinition(
+                                    struct.enclosingType,
+                                    struct.method.getModifiers(),
+                                    struct.method.getName(),
+                                    argumentTypes,
+                                    UnresolvedType.forSignature(struct.method.getReturnType().getSignature()),
+                                    pc,//can be null for abstract pointcut
+                                    binding
+                            )
+                    )
+            );
         }
     }
 

@@ -1,4 +1,24 @@
 <chapter id="ltw" xreflabel="Load-Time Weaving">
+
+    <!--
+
+
+
+    DO NOT MODIFY THIS ONE
+    Wes is in the process of polishing docs
+    Do changes in the devGuideDB/ltw.xml instead
+
+
+
+
+
+
+
+
+
+    -->
+
+
     <title>Load-Time Weaving</title>
     
     <sect1 id="ltw-introduction">

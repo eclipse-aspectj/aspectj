@@ -130,6 +130,7 @@ concrete-aspect
 <!ATTLIST concrete-aspect
     name CDATA #REQUIRED
     extends CDATA #REQUIRED
+    precedence CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 pointcut

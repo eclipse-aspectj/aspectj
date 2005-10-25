@@ -94,4 +94,11 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("Compile time aspects declared to ltw weaver");
     }
 
+    public void testConcreteAtAspect() {
+        runTest("Concrete@Aspect");
+    }
+
+    public void testConcreteAspect() {
+        runTest("ConcreteAspect");
+    }
 }

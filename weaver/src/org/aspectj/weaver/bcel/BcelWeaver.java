@@ -141,8 +141,9 @@ public class BcelWeaver implements IWeaver {
      * The type is resolved to support DOT for static inner classes as well as DOLLAR
      *
      * @param aspectName
+     * @return aspect
      */
-    public void addLibraryAspect(String aspectName) {
+    public ResolvedType addLibraryAspect(String aspectName) {
         // 1 - resolve as is
         ResolvedType type = world.resolve(UnresolvedType.forName(aspectName), true);
         if (type.equals(ResolvedType.MISSING)) {
@@ -167,8 +168,9 @@ public class BcelWeaver implements IWeaver {
             //TODO AV - happens to reach that a lot of time: for each type flagged reweavable X for each aspect in the weaverstate
             //=> mainly for nothing for LTW - pbly for something in incremental build...
 			xcutSet.addOrReplaceAspect(type);
-		} else {
-            // FIXME : Alex: better warning upon no such aspect from aop.xml
+            return type;
+        } else {
+            // FIXME AV - better warning upon no such aspect from aop.xml
 			throw new RuntimeException("Cannot register non aspect: " + type.getName() + " , " + aspectName);
 		}
     }
