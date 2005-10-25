@@ -949,7 +949,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				ResolvedMember aMethod = (ResolvedMember) iter.next();
 				if (aMethod.getName().equals(localMethodName) && aMethod.getParameterSignature().equals(localParameterSig)) {
 					// check the return types, if they are different we need a bridging method.
-					if (!aMethod.getReturnType().getErasureSignature().equals(localReturnTypeESig)) {
+					if (!aMethod.getReturnType().getErasureSignature().equals(localReturnTypeESig) && !Modifier.isPrivate(aMethod.getModifiers())) {
 						// Step3
 						createBridgeMethod(weaver.getWorld(), munger, unMangledInterMethod, gen, paramTypes, aMethod);
 						quitRightNow = true;
