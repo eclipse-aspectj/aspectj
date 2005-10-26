@@ -545,24 +545,28 @@ public class AjcMemberMaker {
 	 * This static method goes on the aspect that declares the inter-type field
 	 */
 	public static ResolvedMember interFieldSetDispatcher(ResolvedMember field, UnresolvedType aspectType) {
-		return new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC,
+		ResolvedMember rm =  new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC,
 			ResolvedType.VOID,
 			NameMangler.interFieldSetDispatcher(aspectType, field.getDeclaringType(), field.getName()),
 			field.isStatic() ? new UnresolvedType[] {field.getReturnType()} 
 			                 : new UnresolvedType[] {field.getDeclaringType(), field.getReturnType()} 
 			);
+		rm.setTypeVariables(field.getTypeVariables());
+		return rm;
 	}
 	
 	/**
 	 * This static method goes on the aspect that declares the inter-type field
 	 */
 	public static ResolvedMember interFieldGetDispatcher(ResolvedMember field, UnresolvedType aspectType) {
-		return new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC,
+		ResolvedMember rm = new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC,
 			field.getReturnType(),
 			NameMangler.interFieldGetDispatcher(aspectType, field.getDeclaringType(), field.getName()),
 			field.isStatic() ? UnresolvedType.NONE : new UnresolvedType[] {field.getDeclaringType()},
 			UnresolvedType.NONE
 			);
+		rm.setTypeVariables(field.getTypeVariables());
+		return rm;
 	}
 	
 	
@@ -575,8 +579,7 @@ public class AjcMemberMaker {
 	
 	
 	/**
-	 * This field goes on the class the field
-	 * is declared onto
+	 * This field goes on the class the field is declared onto
 	 */
 	public static ResolvedMember interFieldClassField(ResolvedMember field, UnresolvedType aspectType) {
 		return new ResolvedMemberImpl(Member.FIELD, field.getDeclaringType(), 
@@ -607,11 +610,13 @@ public class AjcMemberMaker {
 	public static ResolvedMember interFieldInterfaceSetter(ResolvedMember field, ResolvedType onType, UnresolvedType aspectType) {
 		int modifiers = Modifier.PUBLIC;
 		if (onType.isInterface()) modifiers |= Modifier.ABSTRACT;
-		return new ResolvedMemberImpl(Member.METHOD, onType, modifiers,
+		ResolvedMember rm = new ResolvedMemberImpl(Member.METHOD, onType, modifiers,
 			ResolvedType.VOID,
 			NameMangler.interFieldInterfaceSetter(aspectType, field.getDeclaringType(), field.getName()),
 			new UnresolvedType[] {field.getReturnType()}, UnresolvedType.NONE
 			);
+		rm.setTypeVariables(field.getTypeVariables());
+		return rm;
 	}
 	
 	/**
@@ -621,11 +626,13 @@ public class AjcMemberMaker {
 	public static ResolvedMember interFieldInterfaceGetter(ResolvedMember field, ResolvedType onType, UnresolvedType aspectType) {
 		int modifiers = Modifier.PUBLIC;
 		if (onType.isInterface()) modifiers |= Modifier.ABSTRACT;
-		return new ResolvedMemberImpl(Member.METHOD, onType, modifiers,
+		ResolvedMember rm = new ResolvedMemberImpl(Member.METHOD, onType, modifiers,
 			field.getReturnType(), 
 			NameMangler.interFieldInterfaceGetter(aspectType, field.getDeclaringType(), field.getName()),
 			UnresolvedType.NONE, UnresolvedType.NONE
 			);
+		rm.setTypeVariables(field.getTypeVariables());
+		return rm;
 	}
 	
 	
@@ -644,6 +651,25 @@ public class AjcMemberMaker {
 		if (onInterface) modifiers |= Modifier.ABSTRACT;
 		
 		ResolvedMemberImpl rmi = new ResolvedMemberImpl(Member.METHOD, meth.getDeclaringType(),
+			modifiers,
+			meth.getReturnType(), 
+			NameMangler.interMethod(meth.getModifiers(), aspectType, meth.getDeclaringType(), meth.getName()),
+			meth.getParameterTypes(), meth.getExceptions());
+		rmi.setTypeVariables(meth.getTypeVariables());
+		return rmi;
+	}
+	
+	/**
+	 * Sometimes the intertyped method requires a bridge method alongside it.  For example if the method 'N SomeI<N>.m()'
+	 * is put onto an interface 'interface I<N extends Number>' and then a concrete implementation is 'class C implements I<Float>'
+	 * then the ITD on the interface will be 'Number m()', whereas the ITD on the 'topmostimplementor' will be
+	 * 'Float m()'.  A bridge method needs to be created in the topmostimplementor 'Number m()' that delegates to 'Float m()'
+	 */
+	public static ResolvedMember bridgerToInterMethod(ResolvedMember meth, UnresolvedType aspectType) {
+		
+		int modifiers = makePublicNonFinal(meth.getModifiers());
+		
+		ResolvedMemberImpl rmi = new ResolvedMemberImpl(Member.METHOD, aspectType,
 			modifiers,
 			meth.getReturnType(), 
 			NameMangler.interMethod(meth.getModifiers(), aspectType, meth.getDeclaringType(), meth.getName()),
