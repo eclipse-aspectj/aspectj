@@ -6,11 +6,11 @@
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
         <compile files="StaticImport.aj" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="Problem with constructor ITDs">
         <compile files="pr112783.aj" options="-1.5"/>
     </ajc-test>
-    
+ 
     <ajc-test dir="bugs150/pr113630" title="IncompatibleClassChangeError">
         <compile files="Bean.java,BeanSupportAspectj.aj,BeanTestCase.java,javaBean.java,propertyChanger.java,PropertySupportAspect5.aj" options="-1.5"/>
         <run class="com.blueprint.util.aspectj5.test.BeanTestCase"/>
@@ -3695,6 +3695,10 @@
      <compile files="GenericAspectV.aj" options="-1.5"/>
      <run class="GenericAspectV"/>
    </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - W">
+     <compile files="GenericAspectW.aj" options="-1.5"/>
+     <run class="GenericAspectW"/>
+   </ajc-test>
       
    
    
@@ -3934,9 +3938,9 @@
    	 <compile files="X4.aj" inpath="code.jar" options ="-1.5"/>
      <run class="X4"/>
    </ajc-test>
-   
-   
       
+
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="abstract intertype methods and covariant returns">
    	   <compile files="pr91381.aj" options="-1.5"/>
        <run class="pr91381"/>
