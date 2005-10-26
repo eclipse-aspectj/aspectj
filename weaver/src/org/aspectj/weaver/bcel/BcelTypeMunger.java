@@ -916,7 +916,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					if (!originalParams[ii].getErasureSignature().equals(newParams[ii].getErasureSignature())) needsbridging=true;
 				}
 				if (toBridgeTo!=null && needsbridging) {
-					ResolvedMember localMangledJobby = AjcMemberMaker.bridgerToInterMethod(unMangledInterMethod,gen.getType());
+					ResolvedMember bridgerMethod = AjcMemberMaker.bridgerToInterMethod(unMangledInterMethod,gen.getType());
 					ResolvedMember bridgingSetter = AjcMemberMaker.interMethod(toBridgeTo, aspectType, false);
 					
 					// FIXME asc ----------------8<---------------- extract method
@@ -942,7 +942,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					  pos+=paramType.getSize();
 				    }
 				 
-				    body.append(Utility.createInvoke(fact, weaver.getWorld(), localMangledJobby));
+				    body.append(Utility.createInvoke(fact, weaver.getWorld(), bridgerMethod));
 				    body.append(InstructionFactory.createReturn(returnType));
 				    gen.addMethodGen(bridgeMethod);
 //			        mg.definingType = onType;
