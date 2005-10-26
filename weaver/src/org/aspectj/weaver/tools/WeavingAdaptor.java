@@ -28,13 +28,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
-import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
