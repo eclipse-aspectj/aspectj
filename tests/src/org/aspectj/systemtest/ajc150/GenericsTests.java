@@ -17,6 +17,7 @@ import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.weaver.patterns.WildTypePattern;
 
 public class GenericsTests extends XMLBasedAjcTestCase {
 
@@ -170,6 +171,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * PASS parameterizing ITDs with type variables
      * PASS using type variables from the target type in your *STATIC* ITD (field/method/ctor) (error scenario)
      * PASS basic binary weaving of generic itds
+     * 
 	 * TODO generic aspect binary weaving (or at least multi source file weaving)
 	 * TODO binary weaving with changing types (moving between generic and simple)
 	 * TODO bridge method creation (also relates to covariance overrides..)
@@ -217,7 +219,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     public void testGenericsBang_pr95993() {
 	    runTest("NPE at ClassScope.java:660 when compiling generic class");
     }    
-    
+	
 //    public void testIncompatibleClassChangeError_pr113630() {
 //    	runTest("IncompatibleClassChangeError");
 //    }
@@ -316,6 +318,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testFieldITDsUsingTargetTypeVars14(){runTest("field itd using type variable from target type -14");}
 	public void testFieldITDsUsingTargetTypeVars15(){runTest("field itd using type variable from target type -15");}
 	public void testFieldITDsUsingTargetTypeVars16(){runTest("field itd using type variable from target type -16");}
+	public void testFieldITDsUsingTargetTypeVars17(){runTest("field itd using type variable from target type -17");}
 	
 
 	public void testMethodITDsUsingTargetTypeVarsA1() {runTest("method itd using type variable from target type - A1");}
@@ -374,6 +377,24 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testSophisticatedAspectsS() {runTest("uberaspects - S");}
 	public void testSophisticatedAspectsT() {runTest("uberaspects - T");}
 	public void testSophisticatedAspectsU() {runTest("uberaspects - U");} //  includes nasty casts
+	public void testSophisticatedAspectsV() {
+		try {
+		    // FIXME shocking shocking shocking hack , tut-tut-tut - see pr112105
+			WildTypePattern.boundscheckingoff=true;
+			runTest("uberaspects - V");
+		} finally {
+			WildTypePattern.boundscheckingoff=false;
+		}
+	}
+	public void testSophisticatedAspectsW() {
+		try {
+		    // FIXME shocking shocking shocking hack , tut-tut-tut - see pr112105
+			WildTypePattern.boundscheckingoff=true;
+			runTest("uberaspects - W");
+		} finally {
+			WildTypePattern.boundscheckingoff=false;
+		}
+	}
 	
 	// FIXME asc these two tests have peculiar error messages - generic aspect related
 //	public void testItdUsingTypeParameter() {runTest("itd using type parameter");}
@@ -809,9 +830,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testMultiLevelGenericAspects() {
 		runTest("multi-level generic abstract aspects");
 	}
-	// --- helpers
 	
-	/**
+	// --- helpers
+		
+		/**
 	 * When a class has been written to the sandbox directory, you can ask this method to 
 	 * verify it contains a particular set of methods.  Typically this is used to verify that
 	 * bridge methods have been created.
@@ -868,18 +890,25 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		}
 		return null;
 	}
-		
-	public static Signature getClassSignature(Ajc ajc,String classname) {
-	    JavaClass clazz = getClass(ajc,classname);
-		Signature sigAttr = null;
-		Attribute[] attrs = clazz.getAttributes();
-		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
-			if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
-		}
-		return sigAttr;
-	}
 	
+	public static Signature getClassSignature(Ajc ajc,String classname) {
+		try {
+			ClassPath cp = 
+				new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
+		    SyntheticRepository sRepos =  SyntheticRepository.getInstance(cp);
+			JavaClass clazz = sRepos.loadClass(classname);
+			Signature sigAttr = null;
+			Attribute[] attrs = clazz.getAttributes();
+			for (int i = 0; i < attrs.length; i++) {
+				Attribute attribute = attrs[i];
+				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
+			}
+			return sigAttr;
+		} catch (ClassNotFoundException e) {
+			fail("Couldn't find class "+classname+" in the sandbox directory.");
+		}
+		return null;
+	}
 	// Check the signature attribute on a class is correct
 	public static void verifyClassSignature(Ajc ajc,String classname,String sig) {
 		Signature sigAttr = getClassSignature(ajc,classname);

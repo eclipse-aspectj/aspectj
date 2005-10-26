@@ -2,57 +2,63 @@ import java.util.*;
 import java.lang.reflect.*;
 import org.aspectj.lang.annotation.*;
 
-
-// JUST DONT ASK HOW THIS WORKS
-
 abstract aspect ParentChildRelationship<Parent,Child> {
 
-  interface ParentHasChildren<C>{
+  interface ParentHasChildren<C extends ChildHasParent>{
     List<C> getChildren();
     void addChild(C child);
     void removeChild(C child);
   }
 
-  interface ChildHasParent<P>{
+  interface ChildHasParent<P extends ParentHasChildren>{
     P getParent();
     void setParent(P parent);
   }
 
-  declare parents: Parent implements ParentHasChildren<Child>;
-  declare parents: Child  implements ChildHasParent<Parent>;
 
-  public List<E> ParentHasChildren<E>.children = new ArrayList<E>();
-  public P ChildHasParent<P>.parent;
+  declare parents: Parent implements ParentHasChildren<Child>;
+  declare parents: Child  implements ChildHasParent<Parent>; 
+
+  public List<A> ParentHasChildren<A>.children = new ArrayList<A>();
+  public       B ChildHasParent<B>.parent;
+
+  public E ChildHasParent<E>.getParent() {
+    return parent;
+  }
 
   public List<D> ParentHasChildren<D>.getChildren() {
     return Collections.unmodifiableList(children);  
   }
 
-  public P ChildHasParent<P>.getParent() {
-    return parent;
+  public void ChildHasParent<F>.setParent(F parent) {
+    parent.addChild(this);
   }
 
-  public void ChildHasParent<R>.setParent(R parent) {
-    this.parent = parent;
-    ((ParentHasChildren)parent).addChild(this);
-  }
-
-  public void ParentHasChildren<X>.addChild(X child) {
-    if (((ChildHasParent)child).parent != null) {
-      ((ParentHasChildren)((ChildHasParent)child).parent).removeChild(child);
+  public void ParentHasChildren<G>.addChild(G child) {
+    if (child.getParent() != null) {
+      child.getParent().removeChild(child);
     }
     children.add(child);
+    child.parent = this;
   }
 
-  public void ParentHasChildren<Y>.removeChild(Y child) {
+  public void ParentHasChildren<H>.removeChild(H child) {
     if (children.remove(child)) {
-      ((ChildHasParent)child).parent = null;
+      child.parent = null;
     }
   }
+
+  @SuppressAjWarnings
+  public pointcut addingChild(Parent p, Child c) :
+      execution(* Parent.addChild(Child)) && this(p) && args(c);
+      
+  @SuppressAjWarnings
+  public pointcut removingChild(Parent p, Child c) :
+      execution(* Parent.removeChild(Child)) && this(p) && args(c);
 
 }
 
-aspect GenericAspectU extends ParentChildRelationship<Top,Bottom> { 
+aspect GenericAspectW extends ParentChildRelationship<Top,Bottom> { 
 
   public static void main(String []argv) {
 
@@ -144,16 +150,9 @@ class Bottom {}
    TestS promoted getParent() and setParent()
    TestT ... tests some stumbling blocks I encountered before U...
    TestU promoted addChild and removeChild
+   TestV removed the casts (wow!)
+   TestW promotes the pointcuts and few slight changes to the implementations
+     to bring it in line with whats in the AJDK
 
-public abstract aspect ParentChildRelationship<Parent,Child> {
-
-    @SuppressAjWarnings
-    public pointcut addingChild(Parent p, Child c) :
-      execution(* Parent.addChild(Child)) && this(p) && args(c);
-      
-    @SuppressAjWarnings
-    public pointcut removingChild(Parent p, Child c) :
-      execution(* Parent.removeChild(Child)) && this(p) && args(c);
-}
 */
 

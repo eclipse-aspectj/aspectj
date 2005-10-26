@@ -145,6 +145,7 @@ class Bottom {}
    TestS promoted getParent() and setParent()
    TestT ... tests some stumbling blocks I encountered before U...
    TestU promoted addChild and removeChild
+   TestV removed the casts (wow!)
 
 public abstract aspect ParentChildRelationship<Parent,Child> {
 
