@@ -1629,6 +1629,20 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 	
 	/**
+     * For some named resolved type, this method looks for a member with a particular name -
+     * it should only be used when you truly believe there is only one member with that 
+     * name in the type as it returns the first one it finds.
+     */
+	private ResolvedMember findResolvedMemberNamed(ResolvedType type,String methodName) {
+		ResolvedMember[] allMethods = type.getDeclaredMethods();
+		for (int i = 0; i < allMethods.length; i++) {
+			ResolvedMember member = allMethods[i];
+			if (member.getName().equals(methodName)) return member;
+		}
+		return null;
+	}
+	
+	/**
 	 * For a given resolvedmember, this will discover the real annotations for it.
 	 * <b>Should only be used when the resolvedmember is the contents of an effective signature
 	 * attribute, as thats the only time when the annotations aren't stored directly in the
@@ -1657,13 +1671,14 @@ class BcelClassWeaver implements IClassWeaver {
 					ResolvedMember resolvedDooberry = world.resolve(declaredSig);
 					annotations = resolvedDooberry.getAnnotationTypes();
 				} else {
-					ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm.resolve(world),memberHostType);
-					ResolvedMember resolvedDooberry = world.resolve(realthing);
+					ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm.resolve(world),memberHostType).resolve(world);
+					// ResolvedMember resolvedDooberry = world.resolve(realthing);
+					ResolvedMember theRealMember = findResolvedMemberNamed(memberHostType.resolve(world),realthing.getName());
 					// AMC temp guard for M4
-					if (resolvedDooberry == null) {
+					if (theRealMember == null) {
 						throw new UnsupportedOperationException("Known limitation in M4 - can't find ITD members when type variable is used as an argument and has upper bound specified");
 					}
-					annotations = resolvedDooberry.getAnnotationTypes();
+					annotations = theRealMember.getAnnotationTypes();
 				}
 			} else if (rm.getKind()==Member.CONSTRUCTOR) {
 				ResolvedMember realThing = AjcMemberMaker.postIntroducedConstructor(memberHostType.resolve(world),rm.getDeclaringType(),rm.getParameterTypes());
