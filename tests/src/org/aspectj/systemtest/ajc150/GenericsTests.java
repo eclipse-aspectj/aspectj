@@ -217,6 +217,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     public void testGenericsBang_pr95993() {
 	    runTest("NPE at ClassScope.java:660 when compiling generic class");
     }    
+    
+//    public void testIncompatibleClassChangeError_pr113630() {
+//    	runTest("IncompatibleClassChangeError");
+//    }
 	
 	// generic aspects
 	public void testPR96220_GenericAspects1() {runTest("generic aspects - 1");}

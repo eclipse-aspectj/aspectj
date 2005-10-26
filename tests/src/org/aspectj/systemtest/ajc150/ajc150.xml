@@ -10,6 +10,11 @@
     <ajc-test dir="bugs150" title="Problem with constructor ITDs">
         <compile files="pr112783.aj" options="-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150/pr113630" title="IncompatibleClassChangeError">
+        <compile files="Bean.java,BeanSupportAspectj.aj,BeanTestCase.java,javaBean.java,propertyChanger.java,PropertySupportAspect5.aj" options="-1.5"/>
+        <run class="com.blueprint.util.aspectj5.test.BeanTestCase"/>
+    </ajc-test>  
  
     <ajc-test dir="bugs150" title="Generics ClassCastException">
         <compile files="pr113445.aj" options="-1.5,-emacssym"/>
