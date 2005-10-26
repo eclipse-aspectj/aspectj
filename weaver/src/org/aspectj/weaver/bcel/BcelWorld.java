@@ -14,11 +14,9 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.DataInputStream;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
