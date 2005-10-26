@@ -3424,6 +3424,11 @@
      </compile>
    </ajc-test>
    
+   <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -17">
+     <compile files="FieldQ.aj" options="-1.5"/>
+     <run class="FieldQ"/>
+   </ajc-test>
+   
    <!-- Now intertype declared methods on generic types that use the target types type vars -->
    
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A1">
