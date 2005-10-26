@@ -715,10 +715,23 @@ public class EclipseFactory {
 	}
 	
 	/**
+     * Creates a method binding for a resolvedmember taking into account type variable aliases -
+     * this variant can take an aliasTargetType and should be used when the alias target type
+     * cannot be retrieved from the resolvedmember.
+     */
+	public MethodBinding makeMethodBinding(ResolvedMember member,List aliases,UnresolvedType aliasTargetType) {
+		return internalMakeMethodBinding(member,aliases,aliasTargetType);
+	}
+	
+	/**
 	 * Convert a resolvedmember into an eclipse method binding.
 	 */
 	public MethodBinding makeMethodBinding(ResolvedMember member) {
 		return internalMakeMethodBinding(member,null); // there are no aliases
+	}
+	
+	public MethodBinding internalMakeMethodBinding(ResolvedMember member,List aliases) {
+		return internalMakeMethodBinding(member,aliases,member.getDeclaringType());
 	}
 	
 	/**
@@ -728,7 +741,7 @@ public class EclipseFactory {
 	 * map so that they will be substituted as appropriate in the returned 
 	 * methodbinding
 	 */
-	public MethodBinding internalMakeMethodBinding(ResolvedMember member,List aliases) {
+	public MethodBinding internalMakeMethodBinding(ResolvedMember member,List aliases,UnresolvedType aliasTargetType) {
 		typeVariableToTypeBinding.clear();
 		TypeVariableBinding[] tvbs = null;
 
@@ -746,9 +759,10 @@ public class EclipseFactory {
 		// If there are aliases, place them in the map
 		if (aliases!=null && aliases.size()!=0) {
 			int i=0;
+			ReferenceBinding aliasTarget = (ReferenceBinding)makeTypeBinding(aliasTargetType);
 			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
 				String element = (String) iter.next();
-				typeVariableToTypeBinding.put(element,declaringType.typeVariables()[i++]);
+				typeVariableToTypeBinding.put(element,aliasTarget.typeVariables()[i++]);
 			}
 		}
 		
