@@ -16,6 +16,9 @@ package org.aspectj.weaver.bcel;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.DataInputStream;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +28,7 @@ import java.util.StringTokenizer;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
 import org.aspectj.apache.bcel.generic.GETSTATIC;
@@ -467,7 +471,7 @@ public class BcelWorld extends World implements Repository {
      *
      * @param aspect
      * @param kind
-     * @return
+     * @return munger
      */
     public ConcreteTypeMunger makePerClauseAspect(ResolvedType aspect, PerClause.Kind kind) {
         return new BcelPerClauseAspectAdder(aspect, kind);
@@ -541,4 +545,35 @@ public class BcelWorld extends World implements Repository {
 //			e.printStackTrace();
 //		}
 	}
+
+    /**
+     * Checks if given bytecode is an @AspectJ aspect
+     *
+     * @param name
+     * @param bytes
+     * @return true if so
+     */
+    public boolean isAnnotationStyleAspect(String name, byte[] bytes) {
+        try {
+            ClassParser cp = new ClassParser(new ByteArrayInputStream(bytes), null);
+            JavaClass jc = cp.parse();
+            if (!jc.isClass()) {
+                return false;
+            }
+            Annotation anns[] = jc.getAnnotations();
+            if (anns.length == 0) {
+                return false;
+            }
+            for (int i = 0; i < anns.length; i++) {
+                Annotation ann = anns[i];
+                if ("Lorg/aspectj/lang/annotation/Aspect;".equals(ann.getTypeSignature())) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (IOException e) {
+            // assume it is one as a best effort
+            return true;
+        }
+    }
 }

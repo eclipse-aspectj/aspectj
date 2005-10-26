@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.ProtectionDomain;
+import java.io.Serializable;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -76,6 +77,12 @@ public class UnweavableTest extends TestCase {
         assertEquals(1, TestAspect2.I);
     }
 
+    public void testJitNotMatched() {
+        // just load a jit to make sure the weaver does not complains for classes coming from nowhere
+        Serializable serial = getJitNoMatch();
+        assertEquals(0, serial.getClass().getDeclaredMethods().length);
+    }
+
     @Retention(RetentionPolicy.RUNTIME)
     static @interface ASome {}
 
@@ -102,6 +109,29 @@ public class UnweavableTest extends TestCase {
             def.setAccessible(true);
             Class gen = (Class) def.invoke(loader, "ataspectj.ISomeGen", cw.toByteArray(), 0, cw.toByteArray().length);
             return (ISome) gen.newInstance();
+        } catch (Throwable t) {
+            fail(t.toString());
+            return null;
+        }
+    }
+
+    Serializable getJitNoMatch() {
+        ClassWriter cw = new ClassWriter(true, true);
+        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, "ataspectj/unmatched/Gen", null, "java/lang/Object", new String[]{"java/io/Serializable"});
+
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, new String[0]);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(0, 0);
+        cw.visitEnd();
+
+        try {
+            ClassLoader loader = this.getClass().getClassLoader();
+            Method def = ClassLoader.class.getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class, int.class, int.class});
+            def.setAccessible(true);
+            Class gen = (Class) def.invoke(loader, "ataspectj.unmatched.Gen", cw.toByteArray(), 0, cw.toByteArray().length);
+            return (Serializable) gen.newInstance();
         } catch (Throwable t) {
             fail(t.toString());
             return null;

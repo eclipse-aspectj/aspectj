@@ -23,6 +23,8 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.Utility;
+import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.patterns.PatternParser;
@@ -52,8 +54,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private List m_dumpTypePattern = new ArrayList();
     private List m_includeTypePattern = new ArrayList();
     private List m_excludeTypePattern = new ArrayList();
+    private List m_includeStartsWith = new ArrayList();
+    private List m_excludeStartsWith = new ArrayList();
     private List m_aspectExcludeTypePattern = new ArrayList();
-    
+    private List m_aspectExcludeStartsWith = new ArrayList();
+
     private StringBuffer namespace;
     private IWeavingContext weavingContext;
 
@@ -235,12 +240,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     }
 
     private void registerAspectExclude(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+        String fastMatchInfo = null;
         for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
             Definition definition = (Definition) iterator.next();
             for (Iterator iterator1 = definition.getAspectExcludePatterns().iterator(); iterator1.hasNext();) {
                 String exclude = (String) iterator1.next();
                 TypePattern excludePattern = new PatternParser(exclude).parseTypePattern();
                 m_aspectExcludeTypePattern.add(excludePattern);
+                fastMatchInfo = looksLikeStartsWith(exclude);
+                if (fastMatchInfo != null) {
+                    m_aspectExcludeStartsWith.add(fastMatchInfo);
+                }
             }
         }
     }
@@ -314,25 +324,65 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
     /**
      * Register the include / exclude filters
+     * We duplicate simple patterns in startWith filters that will allow faster matching without ResolvedType
      *
      * @param weaver
      * @param loader
      * @param definitions
      */
     private void registerIncludeExclude(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+        String fastMatchInfo = null;
         for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
             Definition definition = (Definition) iterator.next();
             for (Iterator iterator1 = definition.getIncludePatterns().iterator(); iterator1.hasNext();) {
                 String include = (String) iterator1.next();
                 TypePattern includePattern = new PatternParser(include).parseTypePattern();
                 m_includeTypePattern.add(includePattern);
+                fastMatchInfo = looksLikeStartsWith(include);
+                if (fastMatchInfo != null) {
+                    m_includeStartsWith.add(fastMatchInfo);
+                }
             }
             for (Iterator iterator1 = definition.getExcludePatterns().iterator(); iterator1.hasNext();) {
                 String exclude = (String) iterator1.next();
                 TypePattern excludePattern = new PatternParser(exclude).parseTypePattern();
                 m_excludeTypePattern.add(excludePattern);
+                fastMatchInfo = looksLikeStartsWith(exclude);
+                if (fastMatchInfo != null) {
+                    m_excludeStartsWith.add(fastMatchInfo);
+                }
             }
         }
+    }
+
+    /**
+     * Checks if the type pattern can be handled as a startswith check
+     *
+     * TODO AV - enhance to support "char.sss" ie FQN direclty (match iff equals)
+     * we could also add support for "*..*charss" endsWith style?
+     *
+     * @param typePattern
+     * @return null if not possible, or the startWith sequence to test against
+     */
+    private String looksLikeStartsWith(String typePattern) {
+        if (typePattern.indexOf('@') >= 0
+            || typePattern.indexOf('+') >= 0
+            || typePattern.indexOf(' ') >= 0
+            || typePattern.charAt(typePattern.length()-1) != '*') {
+            return null;
+        }
+        // now must looks like with "charsss..*" or "cha.rss..*" etc
+        // note that "*" and "*..*" won't be fast matched
+        // and that "charsss.*" will not neither
+        int length = typePattern.length();
+        if (typePattern.endsWith("..*") && length > 3) {
+            if (typePattern.indexOf("..") == length-3 // no ".." before last sequence
+                && typePattern.indexOf('*') == length-1) { // no "*" before last sequence
+                return typePattern.substring(0, length-2).replace('$', '.');
+                // ie "charsss." or "char.rss." etc
+            }
+        }
+        return null;
     }
 
     /**
@@ -353,13 +403,41 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
     }
 
-    protected boolean accept(String className) {
+    protected boolean accept(String className, byte[] bytes) {
         // avoid ResolvedType if not needed
         if (m_excludeTypePattern.isEmpty() && m_includeTypePattern.isEmpty()) {
             return true;
         }
-        //TODO AV - optimize for className.startWith only
-        ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(className), true);
+
+        // still try to avoid ResolvedType if we have simple patterns
+        String fastClassName = className.replace('/', '.').replace('$', '.');
+        for (int i = 0; i < m_excludeStartsWith.size(); i++) {
+            if (fastClassName.startsWith((String)m_excludeStartsWith.get(i))) {
+                return false;
+            }
+        }
+        boolean fastAccept = false;//defaults to false if no fast include
+        for (int i = 0; i < m_includeStartsWith.size(); i++) {
+            fastAccept = fastClassName.startsWith((String)m_includeStartsWith.get(i));
+            if (fastAccept) {
+                break;
+            }
+        }
+        if (fastAccept) {
+            return true;
+        }
+
+        // needs further analysis
+        // TODO AV - needs refactoring
+        // during LTW this calling resolve at that stage is BAD as we do have the bytecode from the classloader hook
+        // but still go thru resolve that will do a getResourcesAsStream on disk
+        // this is also problematic for jit stub which are not on disk - as often underlying infra
+        // does returns null or some other info for getResourceAsStream (f.e. WLS 9 CR248491)
+        // Instead I parse the given bytecode. But this also means it will be parsed again in
+        // new WeavingClassFileProvider() from WeavingAdaptor.getWovenBytes()...
+        BcelObjectType bct = ((BcelWorld)weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(null, bytes));
+        ResolvedType classInfo = bct.getResolvedTypeX();//BAD: weaver.getWorld().resolve(UnresolvedType.forName(className), true);
+
         //exclude are "AND"ed
         for (Iterator iterator = m_excludeTypePattern.iterator(); iterator.hasNext();) {
             TypePattern typePattern = (TypePattern) iterator.next();
@@ -386,7 +464,16 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         if (m_aspectExcludeTypePattern.isEmpty()) {
             return true;
         }
-        //TODO AV - optimize for className.startWith only
+
+        // still try to avoid ResolvedType if we have simple patterns
+        String fastClassName = aspectClassName.replace('/', '.').replace('.', '$');
+        for (int i = 0; i < m_aspectExcludeStartsWith.size(); i++) {
+            if (fastClassName.startsWith((String)m_aspectExcludeStartsWith.get(i))) {
+                return false;
+            }
+        }
+
+        // needs further analysis
         ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(aspectClassName), true);
         //exclude are "AND"ed
         for (Iterator iterator = m_aspectExcludeTypePattern.iterator(); iterator.hasNext();) {

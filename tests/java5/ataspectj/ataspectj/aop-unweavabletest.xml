@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <aspectj>
-    <weaver options="-verbose -showWeaveInfo"/>
+    <weaver options="-verbose -showWeaveInfo">
+        <!-- the pattern below will be fastmatched and it will exclude a jit class -->
+        <!-- as a consequence we will ask if this class is an @Aspect for special case of aspectof munging -->
+        <!-- and there we will do a raw BCEL parse and @Aspect annotation lookup insteead of going thru type resolve -->
+        <exclude within="someataspectj.unmatched..*"/>
+    </weaver>
     <aspects>
         <aspect name="ataspectj.UnweavableTest.TestAspect"/>
         <aspect name="ataspectj.UnweavableTest.TestAspect2"/>

@@ -33,8 +33,8 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
-import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
@@ -169,11 +169,11 @@ public class WeavingAdaptor {
      * @exception IOException weave failed
 	 */
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
-		if (shouldWeave(name)) {
+		if (shouldWeave(name, bytes)) {
             //System.out.println("WeavingAdaptor.weaveClass " + name);
 			info("weaving '" + name + "'");
 			bytes = getWovenBytes(name, bytes);
-		} else if (shouldWeaveAtAspect(name)) {
+		} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
             // an @AspectJ aspect needs to be at least munged by the aspectOf munger
             info("weaving '" + name + "'");
             bytes = getAtAspectJAspectBytes(name, bytes);
@@ -186,19 +186,19 @@ public class WeavingAdaptor {
      * @param name
      * @return true if should weave (but maybe we still need to munge it for @AspectJ aspectof support)
      */
-    private boolean shouldWeave (String name) {
+    private boolean shouldWeave (String name, byte[] bytes) {
 		name = name.replace('/','.');
 		boolean b = enabled && !generatedClasses.containsKey(name) && shouldWeaveName(name);
-        return b && accept(name);
-//        && shouldWeaveAtAspect(name);
-//        // we recall shouldWeaveAtAspect as we need to add aspectOf methods for @Aspect anyway
+        return b && accept(name, bytes);
+//        && shouldWeaveAnnotationStyleAspect(name);
+//        // we recall shouldWeaveAnnotationStyleAspect as we need to add aspectOf methods for @Aspect anyway
 //        //FIXME AV - this is half ok as the aspect will be weaved by others. In theory if the aspect
 //        // is excluded from include/exclude config we should only weave late type mungers for aspectof
-//        return b && (accept(name) || shouldWeaveAtAspect(name));
+//        return b && (accept(name) || shouldWeaveAnnotationStyleAspect(name));
 	}
 
     //ATAJ
-    protected boolean accept(String name) {
+    protected boolean accept(String name, byte[] bytes) {
         return true;
     }
 
@@ -220,11 +220,13 @@ public class WeavingAdaptor {
      * (and not part of the source compilation)
      *
      * @param name
+     * @param bytes bytecode (from classloader), allow to NOT lookup stuff on disk again during resolve
      * @return true if @Aspect
      */
-	private boolean shouldWeaveAtAspect(String name) {
-		ResolvedType type = bcelWorld.resolve(UnresolvedType.forName(name), true);
-        return (type == null || type.isAnnotationStyleAspect());
+	private boolean shouldWeaveAnnotationStyleAspect(String name, byte[] bytes) {
+		// AV: instead of doing resolve that would lookup stuff on disk thru BCEL ClassLoaderRepository
+        // we reuse bytes[] here to do a fast lookup for @Aspect annotation
+        return bcelWorld.isAnnotationStyleAspect(name, bytes);
 	}
 
 	/**
