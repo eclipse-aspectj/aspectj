@@ -128,7 +128,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			};
 		} else if (!onTypeBinding.isInterface()) {
 			MethodBinding writeMethod = world.makeMethodBinding(
-					AjcMemberMaker.interFieldSetDispatcher(sig,aspectType));
+					AjcMemberMaker.interFieldSetDispatcher(sig,aspectType),munger.getTypeVariableAliases());
 			// For the body of an intertype field initalizer, generate a call to the inter field set dispatcher
 			// method as that casts the shadow of a field set join point.
 			if (Modifier.isStatic(declaredModifiers)) {
@@ -147,7 +147,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		} else {
 			//XXX something is broken about this logic.  Can we write to static interface fields?
 			MethodBinding writeMethod = world.makeMethodBinding(
-				AjcMemberMaker.interFieldInterfaceSetter(sig, sig.getDeclaringType().resolve(world.getWorld()), aspectType));
+				AjcMemberMaker.interFieldInterfaceSetter(sig, sig.getDeclaringType().resolve(world.getWorld()), aspectType),munger.getTypeVariableAliases());
 			if (Modifier.isStatic(declaredModifiers)) {
 				this.statements = new Statement[] {
 					new KnownMessageSend(writeMethod, 
@@ -250,9 +250,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	{
 		MethodBinding binding;
 		if (isGetter) {
-			binding = world.makeMethodBinding(AjcMemberMaker.interFieldGetDispatcher(sig, aspectType));
+			binding = world.makeMethodBinding(AjcMemberMaker.interFieldGetDispatcher(sig, aspectType),munger.getTypeVariableAliases(),munger.getSignature().getDeclaringType());
 		} else {
-			binding = world.makeMethodBinding(AjcMemberMaker.interFieldSetDispatcher(sig, aspectType));
+			binding = world.makeMethodBinding(AjcMemberMaker.interFieldSetDispatcher(sig, aspectType),munger.getTypeVariableAliases(),munger.getSignature().getDeclaringType());
 		}
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
@@ -264,7 +264,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		codeStream.reset(this, classFile);
 		
 		FieldBinding classField = world.makeFieldBinding(
-			AjcMemberMaker.interFieldClassField(sig, aspectType));
+			AjcMemberMaker.interFieldClassField(sig, aspectType),munger.getTypeVariableAliases());
 		
 		codeStream.initializeMaxLocals(binding);
 		if (isGetter) {
@@ -273,7 +273,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
                 ResolvedType declaringRTX = world.getWorld().resolve(declaringTX,munger.getSourceLocation());
 				MethodBinding readMethod = world.makeMethodBinding(
 					AjcMemberMaker.interFieldInterfaceGetter(
-						sig, declaringRTX, aspectType));
+						sig, declaringRTX, aspectType),munger.getTypeVariableAliases());
 				generateInterfaceReadBody(binding, readMethod, codeStream);
 			} else {
 				generateClassReadBody(binding, classField, codeStream);
@@ -282,7 +282,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			if (onTypeBinding.isInterface()) {
 				MethodBinding writeMethod = world.makeMethodBinding(
 					AjcMemberMaker.interFieldInterfaceSetter(
-						sig, world.getWorld().resolve(sig.getDeclaringType(),munger.getSourceLocation()), aspectType));
+						sig, world.getWorld().resolve(sig.getDeclaringType(),munger.getSourceLocation()), aspectType),munger.getTypeVariableAliases());
 				generateInterfaceWriteBody(binding, writeMethod, codeStream);
 			} else {
 				generateClassWriteBody(binding, classField, codeStream);

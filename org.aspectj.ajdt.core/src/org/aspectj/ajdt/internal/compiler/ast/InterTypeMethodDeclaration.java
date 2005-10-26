@@ -126,7 +126,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 				
 				// Work out the real method binding that we can use for comparison
 				EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
-				MethodBinding realthing = world.makeMethodBinding(munger.getSignature());
+				MethodBinding realthing = world.makeMethodBinding(munger.getSignature(),munger.getTypeVariableAliases());
 				
 				boolean reportError = true;				
 				// Go up the hierarchy, looking for something we override
@@ -197,7 +197,6 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		ResolvedMember me =
 			myMunger.getInterMethodBody(aspectType);
 		this.selector = binding.selector = me.getName().toCharArray();
-		
 		return new EclipseTypeMunger(factory, myMunger, aspectType, this);
 	}
 	
@@ -231,9 +230,9 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		
 		ResolvedMember dispatchMember = 
 			AjcMemberMaker.interMethodDispatcher(signature, aspectType);
-		MethodBinding dispatchBinding = world.makeMethodBinding(dispatchMember);
+		MethodBinding dispatchBinding = world.makeMethodBinding(dispatchMember,munger.getTypeVariableAliases(),munger.getSignature().getDeclaringType());
 		MethodBinding introducedMethod = 
-			world.makeMethodBinding(AjcMemberMaker.interMethod(signature, aspectType, onTypeBinding.isInterface()));
+			world.makeMethodBinding(AjcMemberMaker.interMethod(signature, aspectType, onTypeBinding.isInterface()),munger.getTypeVariableAliases());
 		
 		classFile.generateMethodInfoHeader(dispatchBinding);
 		int methodAttributeOffset = classFile.contentsOffset;
