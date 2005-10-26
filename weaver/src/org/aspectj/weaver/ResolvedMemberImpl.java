@@ -646,6 +646,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 					getExceptions(),
 					this
 				);
+		ret.setTypeVariables(getTypeVariables());
 		ret.setSourceContext(getSourceContext());
 		ret.setPosition(getStart(),getEnd());
 		return ret;
