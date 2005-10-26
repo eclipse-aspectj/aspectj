@@ -90,6 +90,9 @@ public class WildTypePattern extends TypePattern {
 	String[] knownMatches;
 	int dim;
 	
+	// SECRETAPI - just for testing, turns off boundschecking temporarily...
+	public static boolean boundscheckingoff = false;
+	
 	// these next three are set if the type pattern is constrained by extends or super clauses, in which case the
 	// namePatterns must have length 1
 	// TODO AMC: read/write/resolve of these fields
@@ -896,6 +899,15 @@ public class WildTypePattern extends TypePattern {
 		
 		// now check that each typeParameter pattern, if exact, matches the bounds
 		// of the type variable.
+		return checkBoundsOK(scope,genericType,requireExactType);
+		
+		// return true;
+	}
+	
+	public boolean checkBoundsOK(IScope scope,ResolvedType genericType,boolean requireExactType) {
+		if (boundscheckingoff) return true;
+		TypeVariable[] tvs = genericType.getTypeVariables();
+		TypePattern[] typeParamPatterns = typeParameters.getTypePatterns();
 		if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
 			for (int i = 0; i < tvs.length; i++) {
 				UnresolvedType ut = typeParamPatterns[i].getExactType();
