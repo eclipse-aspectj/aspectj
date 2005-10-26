@@ -40,16 +40,13 @@ public abstract class ResolvedTypeMunger {
 	protected Kind kind;
 	protected ResolvedMember signature;
 	
-	protected ResolvedMember originalSignature;
+	/**
+	 * The declared signature is filled in when a type munger is parameterized for application to
+	 * a particular type.  It represents the signature originally declared in the source file.
+	 */
+	protected ResolvedMember declaredSignature;
 	
-	public void setOriginalSignature(ResolvedMember rm) {
-		originalSignature = rm;
-	}
 	
-	public ResolvedMember getMostOriginalSignature() {
-		if (originalSignature==null) return signature;
-		return originalSignature;
-	}
 	
 	// This list records the occurences (in order) of any names specified in the <> 
 	// for a target type for the ITD.  So for example, for List<C,B,A> this list
@@ -250,7 +247,7 @@ public abstract class ResolvedTypeMunger {
                 return Method.toString();
             } else {
                 return super.toString();
-            }
+	}
         }
     }
 	
@@ -388,4 +385,12 @@ public abstract class ResolvedTypeMunger {
 //		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
 //		return new NewFieldTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
 //	}
+	
+	public void setDeclaredSignature(ResolvedMember rm) {
+		declaredSignature = rm;
+	}
+	
+	public ResolvedMember getDeclaredSignature() {
+		return declaredSignature;
+	}
 }

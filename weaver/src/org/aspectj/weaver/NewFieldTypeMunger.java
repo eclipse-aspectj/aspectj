@@ -89,7 +89,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		  parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
 		}
 		NewFieldTypeMunger nftm = new NewFieldTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
-	    nftm.setOriginalSignature(getSignature());
+	    nftm.setDeclaredSignature(getSignature());
 	    return nftm;
 	}
 

@@ -34,8 +34,29 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		return AjcMemberMaker.interMethodBody(signature, aspectType);
 	}
 	
+	/**
+	 * If the munger has a declared signature 
+	 */
+	public ResolvedMember getDeclaredInterMethodBody(UnresolvedType aspectType,World w) {
+		if (declaredSignature!=null) {
+			ResolvedMember rm = declaredSignature.parameterizedWith(null,signature.getDeclaringType().resolve(w),false,getTypeVariableAliases());
+			return AjcMemberMaker.interMethodBody(rm, aspectType);
+		} else {
+			return AjcMemberMaker.interMethodBody(signature,aspectType);
+		}
+	}
+	
 	public ResolvedMember getInterMethodDispatcher(UnresolvedType aspectType) {
 		return AjcMemberMaker.interMethodDispatcher(signature, aspectType);
+	}
+	
+	public ResolvedMember getDeclaredInterMethodDispatcher(UnresolvedType aspectType,World w) {
+		if (declaredSignature!=null) {
+			ResolvedMember rm = declaredSignature.parameterizedWith(null,signature.getDeclaringType().resolve(w),false,getTypeVariableAliases());
+			return AjcMemberMaker.interMethodDispatcher(rm, aspectType);
+		} else {
+			return AjcMemberMaker.interMethodDispatcher(signature,aspectType);
+		}
 	}
 
 	public void write(DataOutputStream s) throws IOException {
@@ -85,7 +106,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		  parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
 		}
 		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
-		nmtm.setOriginalSignature(getSignature());
+		nmtm.setDeclaredSignature(getSignature());
 		return nmtm;
 	}
 	
