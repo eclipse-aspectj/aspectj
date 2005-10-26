@@ -488,6 +488,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		crosscuttingMembers.addDeclares(collectDeclares(!this.doesNotExposeShadowMungers()));
 		crosscuttingMembers.addPrivilegedAccesses(getPrivilegedAccesses());
 		
+		
 		//System.err.println("collected cc members: " + this + ", " + collectDeclares());
 		return crosscuttingMembers;
 	}
@@ -1326,7 +1327,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	            // ResolvedMember newOne = member.parameterizedWith(actualTarget.getTypeParameters(),onType,actualTarget.isParameterizedType());
 	        }
 	       //if (!actualTarget.isRawType()) 
-	    	   munger = munger.parameterizedFor(actualTarget);
+	    	munger = munger.parameterizedFor(actualTarget);
 	        if (debug) System.err.println("New sig: "+munger.getSignature());
 	            
 	        
@@ -1401,10 +1402,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 		}
 		//System.err.println("adding: " + munger + " to " + this);
-		// we used the 'parameterized' ITD for all the comparisons but we say the original
-        // one passed in actually matched as it will be added to the intertype member finder
-		// for the target type.
-		interTypeMungers.add(originalMunger);
+		// we are adding the parameterized form of the ITD to the list of
+		// mungers.  Within it, the munger knows the original declared
+		// signature for the ITD so it can be retrieved.
+		interTypeMungers.add(munger);
 	}
 	
 	private boolean compareToExistingMembers(ConcreteTypeMunger munger, List existingMembersList) {
