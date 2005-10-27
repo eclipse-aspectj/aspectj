@@ -60,6 +60,8 @@ public interface Member {
 	public UnresolvedType getDeclaringType();
 
 	public UnresolvedType getReturnType();
+	
+	public UnresolvedType getGenericReturnType();
 
 	public UnresolvedType getType();
 

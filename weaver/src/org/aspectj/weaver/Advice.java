@@ -158,12 +158,16 @@ public abstract class Advice extends ShadowMunger {
     					}
     				} else if (getSignature().getReturnType().equals(UnresolvedType.OBJECT)) {
     					return true;
-    				} else if(!shadow.getReturnType().resolve(world).isAssignableFrom(getSignature().getReturnType().resolve(world))) {
-    					//System.err.println(this + ", " + sourceContext + ", " + start);
-						world.showMessage(IMessage.ERROR,
-								WeaverMessages.format(WeaverMessages.INCOMPATIBLE_RETURN_TYPE,shadow),
-								getSourceLocation(), shadow.getSourceLocation());
-	    				return false;
+    				} else {
+    					ResolvedType shadowReturnType = shadow.getReturnType().resolve(world);
+    					ResolvedType adviceReturnType = getSignature().getGenericReturnType().resolve(world);
+    					if(!shadowReturnType.isAssignableFrom(adviceReturnType)) {
+	    					//System.err.println(this + ", " + sourceContext + ", " + start);
+							world.showMessage(IMessage.ERROR,
+									WeaverMessages.format(WeaverMessages.INCOMPATIBLE_RETURN_TYPE,shadow),
+									getSourceLocation(), shadow.getSourceLocation());
+		    				return false;
+    					}
     				}
     			}
     		}
