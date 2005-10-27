@@ -1,4 +1,3 @@
-package com.blueprint.util.aspectj5.test;
 
 import java.lang.annotation.*;
 import java.lang.*;
