@@ -51,8 +51,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testITDCtor_pr112783()       { runTest("Problem with constructor ITDs");}
   */
   
-  public void testUnboundFormal_pr112027() { runTest("unexpected error unboundFormalInPC");}
-  public void testCCEGenerics_pr113445()       { runTest("Generics ClassCastException");}
+  public void testUnboundFormal_pr112027()    { runTest("unexpected error unboundFormalInPC");}
+  public void testCCEGenerics_pr113445()      { runTest("Generics ClassCastException");}
+  public void testMatthewsAspect_pr113947_1() { runTest("maws generic aspect - 1");}
+  public void testMatthewsAspect_pr113947_2() { runTest("maws generic aspect - 2");}
   
   public void testBadDecp_pr110788_1() { runTest("bad generic decp - 1");}
   public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}

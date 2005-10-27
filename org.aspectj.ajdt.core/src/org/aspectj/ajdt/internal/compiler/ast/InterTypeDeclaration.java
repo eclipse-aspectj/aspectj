@@ -35,6 +35,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
@@ -338,7 +339,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	 * they have to be resolved against the ontype, not the aspect containing the ITD.
 	 */
 	public void ensureScopeSetup() {
-		if (scopeSetup) return; // don't do it agai
+		if (scopeSetup) return; // don't do it again
 		MethodScope scope = this.scope;
 		
 		TypeReference ot = onType;
@@ -353,6 +354,15 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		// resolve it
 		ReferenceBinding rb = (ReferenceBinding)ot.getTypeBindingPublic(scope.parent);
 
+		if (rb instanceof TypeVariableBinding) {
+			scope.problemReporter().signalError(sourceStart,sourceEnd,
+					  "Cannot make inter-type declarations on type variables, use an interface and declare parents");
+			this.ignoreFurtherInvestigation=true;
+			rb = new ProblemReferenceBinding(rb.compoundName,((TypeVariableBinding)rb).firstBound.enclosingType(),0);
+			return;
+		}
+
+		
 		// if resolution failed, give up - someone else is going to report an error
 		if (rb instanceof ProblemReferenceBinding) return;
 		

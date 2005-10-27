@@ -11,7 +11,22 @@
         <compile files="pr112783.aj" options="-1.5"/>
     </ajc-test>
     
-    
+    <ajc-test dir="bugs150/pr113947/case1" title="maws generic aspect - 1">
+        <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5">
+          <!-- the 'static ref' messages are a bit poor and ought to be eliminated... -->
+          <message kind="error" line="6" text="Cannot make a static reference to the non-static type M"/>
+          <message kind="error" line="6" text="Cannot make inter-type declarations on type variables"/>
+          <message kind="error" line="8" text="Cannot make a static reference to the non-static type I"/>
+          <message kind="error" line="8" text="Cannot make inter-type declarations on type variables"/>
+          <message kind="error" line="12" text="Cannot make a static reference to the non-static type M"/>
+          <message kind="error" line="12" text="Cannot make inter-type declarations on type variables"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs150/pr113947/case2" title="maws generic aspect - 2">
+        <compile files="AbstractListSupport.java" options="-1.5"/><!--,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5"/-->
+    </ajc-test>
+ 
     <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 1">
         <compile files="pr99191_1.java" options="-1.5">
         	<message kind="error" line="4" text="The field 'int C.noSuchField' does not exist"/>
@@ -52,7 +67,7 @@
         	<message kind="warning" text="void C.&lt;init&gt;(int) - already has an annotation of type Annotation, cannot add a second instance [Xlint:elementAlreadyAnnotated]"/>
         </compile>
     </ajc-test>
- 
+
     <ajc-test dir="bugs150/pr113630/case1" title="IncompatibleClassChangeError - errorscenario">
         <compile files="Bean.java,BeanTestCase.java,javaBean.java,propertyChanger.java,PropertySupportAspect5.aj" options="-1.5">
           <message kind="warning" line="9" text="Failing match because annotation 'javaBean' on type 'Bean' has SOURCE retention.  Matching allowed when RetentionPolicy is CLASS or RUNTIME"/>

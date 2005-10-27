@@ -58,6 +58,9 @@ public class InterTypeScope extends ClassScope {
 			else throw new BCException("In parameterized type "+onType+", can't handle reference binding "+rb);
 		} else if (onType instanceof ProblemReferenceBinding) { 
 			return null;
+		} else if (onType instanceof TypeVariableBinding) {
+			// Problem will have already been reported, cant ITD on a type variable.
+			return null;
 		}
 		
 		throw new BCException("can't handle: " + onType);

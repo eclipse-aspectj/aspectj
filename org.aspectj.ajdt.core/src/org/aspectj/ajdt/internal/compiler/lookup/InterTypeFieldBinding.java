@@ -19,6 +19,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -57,8 +58,15 @@ public class InterTypeFieldBinding extends FieldBinding {
 	
 		SourceTypeBinding invocationType = scope.invocationType();
 		//System.out.println("receiver: " + receiverType + ", " + invocationType);
+		ReferenceBinding declaringType = declaringClass;
 		
-		if (invocationType == declaringClass) return true;
+		// FIXME asc what about parameterized types and private ITD generic fields on interfaces?
+		
+		// Don't work with a raw type, work with the generic type
+		if (declaringClass.isRawType()) 
+			 declaringType = ((RawTypeBinding)declaringClass).type;
+		
+		if (invocationType == declaringType) return true;
 	
 	
 	//	if (invocationType.isPrivileged) {
@@ -74,9 +82,9 @@ public class InterTypeFieldBinding extends FieldBinding {
 		if (isPrivate()) {
 			// answer true if the receiverType is the declaringClass
 			// AND the invocationType and the declaringClass have a common enclosingType
-			if (receiverType != declaringClass) return false;
+			if (receiverType != declaringType) return false;
 	
-			if (invocationType != declaringClass) {
+			if (invocationType != declaringType) {
 				ReferenceBinding outerInvocationType = invocationType;
 				ReferenceBinding temp = outerInvocationType.enclosingType();
 				while (temp != null) {
@@ -84,7 +92,7 @@ public class InterTypeFieldBinding extends FieldBinding {
 					temp = temp.enclosingType();
 				}
 	
-				ReferenceBinding outerDeclaringClass = declaringClass;
+				ReferenceBinding outerDeclaringClass = declaringType;
 				temp = outerDeclaringClass.enclosingType();
 				while (temp != null) {
 					outerDeclaringClass = temp;

@@ -180,8 +180,11 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			//return null;
 			throw new AbortCompilationUnit(compilationResult,null);
 		}
+
 		if (isTargetAnnotation(classScope,"method")) return null; // Error message output in isTargetAnnotation
 		if (isTargetEnum(classScope,"method")) return null; // Error message output in isTargetEnum
+		
+		if (interTypeScope==null) return null; // We encountered a problem building the scope, don't continue - error already reported
 		
 		// This signature represents what we want consumers of the targetted type to 'see'
 		// must use the factory method to build it since there may be typevariables from the binding

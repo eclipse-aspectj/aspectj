@@ -226,7 +226,8 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		ResolvedType declaringTypeX = world.fromEclipse(onTypeBinding);
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		
-		
+		if (interTypeScope==null) return null; // We encountered a problem building the scope, don't continue - error already reported
+
 		
 		// This signature represents what we want consumers of the targetted type to 'see'
 		ResolvedMember signature = world.makeResolvedMemberForITD(binding,onTypeBinding,interTypeScope.getRecoveryAliases());

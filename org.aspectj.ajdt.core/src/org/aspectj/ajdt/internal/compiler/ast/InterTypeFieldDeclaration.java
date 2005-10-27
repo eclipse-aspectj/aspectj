@@ -199,6 +199,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			declaringType = declaringType.getGenericType();
 		}
 		
+		if (interTypeScope==null) return null; // We encountered a problem building the scope, don't continue - error already reported
+
+		
 		// Build a half correct resolvedmember (makeResolvedMember understands tvars) then build a fully correct sig from it
 		ResolvedMember sigtemp = world.makeResolvedMemberForITD(binding,onTypeBinding,interTypeScope.getRecoveryAliases());
 		ResolvedMember sig = new ResolvedMemberImpl(Member.FIELD,declaringType,declaredModifiers,
