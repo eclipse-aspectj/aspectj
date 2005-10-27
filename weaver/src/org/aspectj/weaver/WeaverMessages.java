@@ -140,7 +140,7 @@ public class WeaverMessages {
 	public static final String BINDING_NON_RUNTIME_RETENTION_ANNOTATION = "bindingNonRuntimeRetentionAnnotation";
 	
 	public static final String INCORRECT_TARGET_FOR_DECLARE_ANNOTATION = "incorrectTargetForDeclareAnnotation";
-	
+	public static final String NO_MATCH_BECAUSE_SOURCE_RETENTION = "noMatchBecauseSourceRetention";
 	
 	// Generics
 	public static final String CANT_DECP_MULTIPLE_PARAMETERIZATIONS="cantDecpMultipleParameterizations";
