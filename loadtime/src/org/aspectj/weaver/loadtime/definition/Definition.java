@@ -85,7 +85,15 @@ public class Definition {
 
         public ConcreteAspect(String name, String extend, String precedence) {
             this.name = name;
-            this.extend = extend;
+            // make sure extend set to null if ""
+            if (extend == null || extend.length() == 0) {
+                this.extend = null;
+                if (precedence == null || precedence.length() == 0) {
+                    throw new RuntimeException("Not allowed");
+                }
+            } else {
+                this.extend = extend;
+            }
             this.precedence = precedence;
             this.pointcuts = new ArrayList();
         }

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<aspectj>
+    <weaver options="-XmessageHandlerClass:ataspectj.TestHelper -1.5"/>
+    <aspects>
+        <concrete-aspect
+                name="ataspectj.Foo"
+                precedence="*..*_2, *..*_3, *..*_1"/>
+        <aspect name="ataspectj.ConcretePrecedenceAspectTest.TestAspect_1"/>
+        <aspect name="ataspectj.ConcretePrecedenceAspectTest.TestAspect_2"/>
+        <aspect name="ataspectj.ConcretePrecedenceAspectTest.TestAspect_3"/>
+    </aspects>
+</aspectj>

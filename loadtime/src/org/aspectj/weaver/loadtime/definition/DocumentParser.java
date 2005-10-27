@@ -151,10 +151,11 @@ public class DocumentParser extends DefaultHandler {
             String name = attributes.getValue(NAME_ATTRIBUTE);
             String extend = attributes.getValue(EXTEND_ATTRIBUTE);
             String precedence = attributes.getValue(PRECEDENCE_ATTRIBUTE);
-            if (!isNull(name) && !isNull(extend)) {
-                if (isNull(precedence)) {
+            if (!isNull(name)) {
+                if (isNull(precedence) && !isNull(extend)) {//if no precedence, then extends must be there
                     m_lastConcreteAspect = new Definition.ConcreteAspect(name, extend);
-                } else {
+                } else if (!isNull(precedence)) {
+                    // wether a pure precedence def, or an extendsANDprecedence def.
                     m_lastConcreteAspect = new Definition.ConcreteAspect(name, extend, precedence);
                 }
                 m_definition.getConcreteAspects().add(m_lastConcreteAspect);

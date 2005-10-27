@@ -147,6 +147,14 @@
         <run class="ataspectj.ConcreteAspectTest" ltw="ataspectj/aop-concreteaspect.xml"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="ConcretePrecedenceAspect">
+        <compile
+            files="ataspectj/ConcretePrecedenceAspectTest.java,ataspectj/TestHelper.java"
+            options="-1.5 -Xdev:NoAtAspectJProcessing -XnoWeave"
+            />
+        <run class="ataspectj.ConcretePrecedenceAspectTest" ltw="ataspectj/aop-concreteprecedenceaspect.xml"/>
+    </ajc-test>
+
     <ajc-test dir="java5/ataspectj" title="AspectOfWhenAspectNotInInclude">
         <compile
             files="ataspectj/bugs/AspectOfWhenAspectNotInIncludeTest.java,ataspectj/TestHelper.java"

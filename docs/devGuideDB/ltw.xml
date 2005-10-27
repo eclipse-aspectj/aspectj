@@ -354,8 +354,37 @@
                 // here we are using a singleton aspect
                 AbstractAspect concreteInstance = Aspects.aspectOf(myConcreteAspectClass);
             ]]></programlisting>
-        </sect2>
+       </sect2>
 
+        <sect2 id="concrete-aspect-precedence" xreflabel="concrete-aspect-precedence">
+            <title>Using Concrete Aspects to define precedence</title>
+            <para>
+                As described in the previous section, the <literal>concrete-aspect</literal> element in
+                <literal>META-INF/aop.xml</literal> gives the option to declare the precedence, just as
+                <literal>@DeclarePrecedence</literal> or <literal>declare precedence</literal> do in
+                aspect source code.
+            </para>
+            <para>
+                Sometimes it is required to declare precedence without extending any abstract aspect
+                as well. For such a need, it is possible to use the <literal>concrete-aspect</literal>
+                element without the <literal>extends</literal> attribute and without any
+                <literal>pointcut</literal> nested element, but only with a <literal>precedence</literal>
+                attribute.
+                Consider the following:
+            </para>
+            <programlisting><![CDATA[
+                <aspectj>
+                    <concrete-aspect name="mypack.__MyDeclarePrecedence"
+                                     precedence="*..*Security*, Logging+, *"/>
+                </aspectj>
+            ]]></programlisting>
+            <para>
+                This deployment time declaration is only defining a precedence rule. You have to remember
+                that the <literal>name</literal> attribute must be a valid fully qualified class name
+                that will be then reserved for this concrete-aspect and must not conflict with other classes
+                you deploy.
+            </para>
+        </sect2>
         <!-- TODO someone implement that -->
         <!--
         <sect2 id="configuring-load-time-weaving-with-properties-files" xreflabel="configuring-load-time-weaving-with-properties-files">
@@ -524,4 +553,3 @@
         </sect2>
     </sect1>
 </chapter>
-

@@ -34,6 +34,7 @@ import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.bcel.LazyMethodGen;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerSingleton;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -102,6 +103,26 @@ public class ConcreteAspectCodeGen {
             return false;
         }
 
+        // name must be undefined so far
+        ResolvedType current = m_world.resolve(m_concreteAspect.name, true);
+        if (!current.isMissing()) {
+            reportError("Attempt to concretize but choosen aspect name already defined: " + stringify());
+            return false;
+        }
+
+        // it can happen that extends is null, for precedence only declaration
+        if (m_concreteAspect.extend == null && m_concreteAspect.precedence != null) {
+            if (m_concreteAspect.pointcuts.isEmpty()) {
+                m_isValid = true;
+                m_perClause = new PerSingleton();
+                m_parent = null;
+                return true;// no need to checks more in that special case
+            } else {
+                reportError("Attempt to use nested pointcuts without extends clause: "+stringify());
+                return false;
+            }
+        }
+
         m_parent = m_world.resolve(m_concreteAspect.extend, true);
         // handle inner classes
         if (m_parent.equals(ResolvedType.MISSING)) {
@@ -133,13 +154,6 @@ public class ConcreteAspectCodeGen {
         // m_parent must be aspect
         if (!m_parent.isAspect()) {
             reportError("Attempt to concretize a non aspect: " + stringify());
-            return false;
-        }
-
-        // must be undefined so far
-        ResolvedType current = m_world.resolve(m_concreteAspect.name, true);
-        if (!current.isMissing()) {
-            reportError("Attempt to concretize but choosen aspect name already defined:" + stringify());
             return false;
         }
 
@@ -202,15 +216,15 @@ public class ConcreteAspectCodeGen {
         //TODO AV - abstract away from BCEL...
         // @Aspect //inherit clause from m_parent
         // @DeclarePrecedence("....") // if any
-        // public class xxxName extends xxxExtends {
-        //    @Pointcut(xxxExpression-n)
-        //    private void xxxName-n() {}
+        // public class xxxName [extends xxxExtends] {
+        //    [@Pointcut(xxxExpression-n)
+        //    public void xxxName-n() {}]
         // }
 
         // @Aspect public class ...
         LazyClassGen cg = new LazyClassGen(
                 m_concreteAspect.name.replace('.', '/'),
-                m_parent.getName(),
+                (m_parent==null)?"java/lang/Object":m_parent.getName().replace('.', '/'),
                 null,//TODO AV - we could point to the aop.xml that defines it and use JSR-45
                 Modifier.PUBLIC + Constants.ACC_SUPER,
                 EMPTY_STRINGS,
@@ -252,7 +266,7 @@ public class ConcreteAspectCodeGen {
         InstructionList cbody = init.getBody();
         cbody.append(InstructionConstants.ALOAD_0);
         cbody.append(cg.getFactory().createInvoke(
-                m_parent.getName().replace('.', '/'),
+                (m_parent==null)?"java/lang/Object":m_parent.getName().replace('.', '/'),
                 "<init>",
                 Type.VOID,
                 EMPTY_TYPES,
@@ -265,7 +279,7 @@ public class ConcreteAspectCodeGen {
             Definition.Pointcut abstractPc = (Definition.Pointcut) it.next();
 
             LazyMethodGen mg = new LazyMethodGen(
-                    Modifier.PUBLIC,
+                    Modifier.PUBLIC,//TODO AV - respect visibility instead of opening up?
                     Type.VOID,
                     abstractPc.name,
                     EMPTY_TYPES,

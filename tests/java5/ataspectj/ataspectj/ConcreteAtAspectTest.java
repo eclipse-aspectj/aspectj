@@ -17,6 +17,7 @@ import junit.framework.TestSuite;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.Aspects;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -59,6 +60,15 @@ public class ConcreteAtAspectTest extends TestCase {
         I = 0;
         target();
         assertEquals(3, I);
+    }
+
+    public void tesCanLoad() {
+        try {
+            Class jitAspect = Class.forName("ataspectj.Foo");
+            Object aspect = Aspects.aspectOf(jitAspect);
+        } catch (Throwable t) {
+            fail(t.toString());
+        }
     }
 
     public static void main(String[] args) {
