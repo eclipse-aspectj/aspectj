@@ -161,7 +161,9 @@
               <aspect name="com.MyAspect.Inner"/>
 
               <!-- define a concrete aspect inline -->
-              <concrete-aspect name="com.xyz.tracing.MyTracing" extends="tracing.AbstractTracing">
+              <concrete-aspect name="com.xyz.tracing.MyTracing"
+                               extends="tracing.AbstractTracing"
+                               precedence="com.xyz.first, *">
                 <pointcut name="tracingScope" expression="within(org.maw.*)"/>
               </concrete-aspect>
 
@@ -271,7 +273,9 @@
             <title>Using Concrete Aspects</title>
             <para>
                 It is possible to concretize an abstract aspect by the mean of the <literal>META-INF/aop.xml</literal>
-                file. This is usefull to define abstract pointcuts at deployment time.
+                file. This is usefull to define abstract pointcuts at deployment time, and also gives control
+                over precedence through the <literal>precedence</literal> attribute of the
+                <literal>concrete-aspect</literal> XML element.
                 Consider the following:
             </para>
             <programlisting><![CDATA[
