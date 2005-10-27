@@ -632,6 +632,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("weaveinfo message for declare at method on an ITDd method");
   }
   
+  public void testNoVerifyErrorWithTwoThisPCDs_pr113447() {
+	  runTest("no verify error with two this pcds");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

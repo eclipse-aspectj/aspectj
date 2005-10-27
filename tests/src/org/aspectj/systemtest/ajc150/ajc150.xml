@@ -698,6 +698,12 @@
         </compile>
     </ajc-test> 
 
+    <ajc-test dir="bugs150" title="no verify error with two this pcds">
+        <compile files="PR113447.java">
+        </compile>
+        <run class="PR113447"/>
+    </ajc-test> 
+
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
