@@ -1,0 +1,5 @@
+
+@LinkedListItem
+public class AnotherItem {
+
+}
