@@ -147,6 +147,10 @@ public class ReferenceType extends ResolvedType {
     	return delegate.isAnnotation();
     }
     
+    public String getRetentionPolicy() {
+    	return delegate.getRetentionPolicy();
+    }
+    
     public boolean isAnnotationWithRuntimeRetention() {
         return delegate.isAnnotationWithRuntimeRetention();
     }

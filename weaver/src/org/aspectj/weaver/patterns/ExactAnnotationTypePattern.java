@@ -19,6 +19,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
@@ -79,6 +80,14 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		}
 		
 		if (annotated.hasAnnotation(annotationType)) {
+			if (annotationType instanceof ReferenceType) {
+				ReferenceType rt = (ReferenceType)annotationType;
+				if (rt.getRetentionPolicy()!=null && rt.getRetentionPolicy().equals("SOURCE")) {
+					rt.getWorld().getMessageHandler().handleMessage(
+					  MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,annotationType,annotated),getSourceLocation()));
+					return FuzzyBoolean.NO;
+				}
+			}
 			return FuzzyBoolean.YES;
 		} else if (checkSupers) {
 			ResolvedType toMatchAgainst = ((ResolvedType) annotated).getSuperclass();

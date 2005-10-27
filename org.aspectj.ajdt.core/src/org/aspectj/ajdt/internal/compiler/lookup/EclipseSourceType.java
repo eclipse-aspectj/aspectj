@@ -14,25 +14,45 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareAnnotationDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.bridge.IMessage;
-//import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.patterns.PerSingleton;
-import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
+import org.aspectj.weaver.AbstractReferenceTypeDelegate;
+import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeVariable;
+import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerFromSuper;
+import org.aspectj.weaver.patterns.PerSingleton;
 
 /**
  * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedType
@@ -299,6 +319,15 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	    } else {
 		   return (binding.getAnnotationTagBits() & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention;        
 	    }
+	}
+	
+	public String getRetentionPolicy() {
+		if (isAnnotation()) {
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention) return "RUNTIME";
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationSourceRetention) return "SOURCE";
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationClassRetention) return "CLASS";
+		}
+		return null;
 	}
 	
 	public boolean hasAnnotation(UnresolvedType ofType) {

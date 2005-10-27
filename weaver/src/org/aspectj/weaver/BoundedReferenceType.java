@@ -176,6 +176,10 @@ public class BoundedReferenceType extends ReferenceType {
 		public boolean isAnnotationWithRuntimeRetention() {
 			return resolvedTypeX.isAnnotationWithRuntimeRetention();
 		}
+		
+		public String getRetentionPolicy() {
+			return resolvedTypeX.getRetentionPolicy();
+		}
 
 		public boolean isGeneric() {
 			return resolvedTypeX.isGenericType();

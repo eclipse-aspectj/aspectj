@@ -33,6 +33,7 @@ public interface ReferenceTypeDelegate {
     public boolean isInterface();
     public boolean isEnum();
     public boolean isAnnotation();
+    public String getRetentionPolicy();
     public boolean isAnnotationWithRuntimeRetention();
 	public boolean isClass();
 	public boolean isGeneric();

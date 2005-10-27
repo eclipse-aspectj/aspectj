@@ -126,6 +126,11 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		// cant be an annotation in Java 1.4 or prior
 		return false;
 	}
+	
+	public String getRetentionPolicy() {
+		// cant be an annotation in Java 1.4 or prior
+		return null;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isClass()

@@ -219,10 +219,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     public void testGenericsBang_pr95993() {
 	    runTest("NPE at ClassScope.java:660 when compiling generic class");
     }    
-	
-//    public void testIncompatibleClassChangeError_pr113630() {
-//    	runTest("IncompatibleClassChangeError");
-//    }
+    
 	
 	// generic aspects
 	public void testPR96220_GenericAspects1() {runTest("generic aspects - 1");}
@@ -892,23 +889,16 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	}
 	
 	public static Signature getClassSignature(Ajc ajc,String classname) {
-		try {
-			ClassPath cp = 
-				new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
-		    SyntheticRepository sRepos =  SyntheticRepository.getInstance(cp);
-			JavaClass clazz = sRepos.loadClass(classname);
-			Signature sigAttr = null;
-			Attribute[] attrs = clazz.getAttributes();
-			for (int i = 0; i < attrs.length; i++) {
-				Attribute attribute = attrs[i];
-				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
-			}
-			return sigAttr;
-		} catch (ClassNotFoundException e) {
-			fail("Couldn't find class "+classname+" in the sandbox directory.");
+	    JavaClass clazz = getClass(ajc,classname);
+		Signature sigAttr = null;
+		Attribute[] attrs = clazz.getAttributes();
+		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];
+			if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
 		}
-		return null;
+		return sigAttr;
 	}
+	
 	// Check the signature attribute on a class is correct
 	public static void verifyClassSignature(Ajc ajc,String classname,String sig) {
 		Signature sigAttr = getClassSignature(ajc,classname);

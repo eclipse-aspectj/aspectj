@@ -86,6 +86,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private String declaredSignature = null;
 	private boolean isGenericType = false;
 	
+	private boolean discoveredRetentionPolicy = false;
+	private String retentionPolicy;
+	
+	
 	/**
 	 * A BcelObjectType is 'damaged' if it has been modified from what was original constructed from
 	 * the bytecode.  This currently happens if the parents are modified or an annotation is added -
@@ -416,9 +420,34 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public boolean isAnnotationWithRuntimeRetention() {
-	    if (!isAnnotation()) {
-	        return false;
-	    } else {
+		return getRetentionPolicy().equals("RUNTIME");
+//	    if (!isAnnotation()) {
+//	        return false;
+//	    } else {
+//	        Annotation[] annotationsOnThisType = javaClass.getAnnotations();
+//	        for (int i = 0; i < annotationsOnThisType.length; i++) {
+//	            Annotation a = annotationsOnThisType[i];
+//	            if (a.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
+//	                List values = a.getValues();
+//	                boolean isRuntime = false;
+//	                for (Iterator it = values.iterator(); it.hasNext();) {
+//                        ElementNameValuePair element = (ElementNameValuePair) it.next();
+//                        ElementValue v = element.getValue();
+//                        isRuntime = v.stringifyValue().equals("RUNTIME");
+//                    }
+//	                return isRuntime;
+//	            }
+//	        }
+//		}
+//	    return false;
+	}
+	
+	
+	public String getRetentionPolicy() {
+		if (discoveredRetentionPolicy) return retentionPolicy;
+		discoveredRetentionPolicy=true;
+        retentionPolicy=null; // null means we have no idea
+		if (isAnnotation()) {
 	        Annotation[] annotationsOnThisType = javaClass.getAnnotations();
 	        for (int i = 0; i < annotationsOnThisType.length; i++) {
 	            Annotation a = annotationsOnThisType[i];
@@ -428,13 +457,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	                for (Iterator it = values.iterator(); it.hasNext();) {
                         ElementNameValuePair element = (ElementNameValuePair) it.next();
                         ElementValue v = element.getValue();
-                        isRuntime = v.stringifyValue().equals("RUNTIME");
+                        retentionPolicy = v.stringifyValue();
+                        return retentionPolicy;
                     }
-	                return isRuntime;
 	            }
 	        }
 		}
-	    return false;
+	    return retentionPolicy;
 	}
 	
 	public boolean isSynthetic() {
