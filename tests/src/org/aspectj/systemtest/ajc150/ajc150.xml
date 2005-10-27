@@ -10,6 +10,48 @@
     <ajc-test dir="bugs150" title="Problem with constructor ITDs">
         <compile files="pr112783.aj" options="-1.5"/>
     </ajc-test>
+    
+    
+    <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 1">
+        <compile files="pr99191_1.java" options="-1.5">
+        	<message kind="error" line="4" text="The field 'int C.noSuchField' does not exist"/>
+			<message kind="error" line="5" text="The field 'int B.noSuchField' does not exist"/>
+        </compile>
+    </ajc-test> 
+
+    <!-- Currently a warning doesn't occur if the annotation is already on the field
+         (see bug 113029). If this is fixed, need to add check for this warning to this
+         test as in test "declare annotation on non existent type - 4" -->
+    <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 2">
+        <compile files="pr99191_2.java" options="-1.5">
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 3">
+        <compile files="pr99191_3.java" options="-1.5">
+        	<message kind="error" line="4" text="The method 'public * C.noSuchMethod(..)' does not exist"/>
+			<message kind="error" line="5" text="The method '* B.noSuchMethod(..)' does not exist"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 4">
+        <compile files="pr99191_4.java" options="-1.5">
+        	<message kind="warning" text="void C.amethod() - already has an annotation of type Annotation, cannot add a second instance [Xlint:elementAlreadyAnnotated]"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 5">
+        <compile files="pr99191_5.java" options="-1.5">
+        	<message kind="error" line="4" text="The method 'C.new(java.lang.String)' does not exist"/>
+			<message kind="error" line="5" text="The method 'B.new(int)' does not exist"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 6">
+        <compile files="pr99191_6.java" options="-1.5">
+        	<message kind="warning" text="void C.&lt;init&gt;(int) - already has an annotation of type Annotation, cannot add a second instance [Xlint:elementAlreadyAnnotated]"/>
+        </compile>
+    </ajc-test>
  
     <ajc-test dir="bugs150/pr113630/case1" title="IncompatibleClassChangeError - errorscenario">
         <compile files="Bean.java,BeanTestCase.java,javaBean.java,propertyChanger.java,PropertySupportAspect5.aj" options="-1.5">

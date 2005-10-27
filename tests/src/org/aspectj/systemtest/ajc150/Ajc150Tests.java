@@ -64,6 +64,13 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testIncompatibleClassChangeError_pr113630_1() {runTest("IncompatibleClassChangeError - errorscenario");}
   public void testIncompatibleClassChangeError_pr113630_2() {runTest("IncompatibleClassChangeError - workingscenario");}
   
+
+  public void testDeclareAnnotationOnNonExistentType_pr99191_1() { runTest("declare annotation on non existent type - 1");}
+  public void testDeclareAnnotationOnNonExistentType_pr99191_2() { runTest("declare annotation on non existent type - 2");}  
+  public void testDeclareAnnotationOnNonExistentType_pr99191_3() { runTest("declare annotation on non existent type - 3");}  
+  public void testDeclareAnnotationOnNonExistentType_pr99191_4() { runTest("declare annotation on non existent type - 4");}  
+  public void testDeclareAnnotationOnNonExistentType_pr99191_5() { runTest("declare annotation on non existent type - 5");}  
+  
   public void testBadGenericSigAttribute_pr110927() { 
 	runTest("cant create signature attribute");
 	Signature sig = GenericsTests.getClassSignature(ajc,"I");

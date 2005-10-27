@@ -56,6 +56,7 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
@@ -82,6 +83,7 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
+import org.aspectj.weaver.patterns.ExactTypePattern;
 
 class BcelClassWeaver implements IClassWeaver {
     
@@ -467,6 +469,8 @@ class BcelClassWeaver implements IClassWeaver {
 		List decaMs = getMatchingSubset(allDecams,clazz.getType());		
 		if (decaMs.isEmpty()) return false; // nothing to do
 		if (!members.isEmpty()) {
+		  Set unusedDecams = new HashSet();
+		  unusedDecams.addAll(decaMs);
           for (int memberCounter = 0;memberCounter<members.size();memberCounter++) {
             LazyMethodGen mg = (LazyMethodGen)members.get(memberCounter);
             if (!mg.getName().startsWith(NameMangler.PREFIX)) {
@@ -479,7 +483,12 @@ class BcelClassWeaver implements IClassWeaver {
             		DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
             		
             		if (decaM.matches(mg.getMemberView(),world)) {
-            			if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
+            			if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) {
+            				// remove the declare @method since don't want an error when 
+            				// the annotation is already there
+            				unusedDecams.remove(decaM);
+            				continue; // skip this one...
+            			}
             			
             			Annotation a = decaM.getAnnotationX().getBcelAnnotation();
             			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
@@ -494,6 +503,8 @@ class BcelClassWeaver implements IClassWeaver {
             			reportMethodCtorWeavingMessage(clazz, mg.getMemberView(), decaM,mg.getDeclarationLineNumber());
             			isChanged = true;
             			modificationOccured = true;
+						// remove the declare @method since have matched against it
+            			unusedDecams.remove(decaM);           			
             		} else {
             			if (!decaM.isStarredAnnotationPattern()) 
             				worthRetrying.add(decaM); // an annotation is specified that might be put on by a subsequent decaf
@@ -508,18 +519,26 @@ class BcelClassWeaver implements IClassWeaver {
             		for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
             			DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
             			if (decaM.matches(mg.getMemberView(),world)) {
-            				if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) continue; // skip this one...
+            				if (doesAlreadyHaveAnnotation(mg.getMemberView(),decaM,reportedProblems)) {
+            					// remove the declare @method since don't want an error when 
+                				// the annotation is already there
+                				unusedDecams.remove(decaM);
+            					continue; // skip this one...
+            				}
             				mg.addAnnotation(decaM.getAnnotationX());
             				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
             				isChanged = true;
             				modificationOccured = true;
             				forRemoval.add(decaM);
+    						// remove the declare @method since have matched against it
+            				unusedDecams.remove(decaM);
             			}
             		}
             		worthRetrying.removeAll(forRemoval);
             	}
             }
           }
+	  	  checkUnusedDeclareAtTypes(unusedDecams, false);
         }
 		return isChanged;
     }
@@ -791,7 +810,8 @@ class BcelClassWeaver implements IClassWeaver {
 		if (decaFs.isEmpty()) return false; // nothing more to do
 		Field[] fields = clazz.getFieldGens();
 		if (fields!=null) {
-		  
+		  Set unusedDecafs = new HashSet();
+		  unusedDecafs.addAll(decaFs);
           for (int fieldCounter = 0;fieldCounter<fields.length;fieldCounter++) {
             BcelField aBcelField = new BcelField(clazz.getBcelObjectType(),fields[fieldCounter]);
 			if (!aBcelField.getName().startsWith(NameMangler.PREFIX)) {				
@@ -808,6 +828,9 @@ class BcelClassWeaver implements IClassWeaver {
 					
 					if (!dontAddTwice(decaF,dontAddMeTwice)){
 						if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)){
+            				// remove the declare @field since don't want an error when 
+            				// the annotation is already there
+            				unusedDecafs.remove(decaF);
 							continue;
 						}
 						
@@ -833,6 +856,8 @@ class BcelClassWeaver implements IClassWeaver {
 					reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);		
 					isChanged = true;
 					modificationOccured = true;
+					// remove the declare @field since have matched against it
+        			unusedDecafs.remove(decaF); 
 				} else {
 					if (!decaF.isStarredAnnotationPattern()) 
 						worthRetrying.add(decaF); // an annotation is specified that might be put on by a subsequent decaf
@@ -848,22 +873,80 @@ class BcelClassWeaver implements IClassWeaver {
 				DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
 				if (decaF.matches(aBcelField,world)) {
 					// below code is for recursive things
-					if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)) continue; // skip this one...
+					if (doesAlreadyHaveAnnotation(aBcelField,decaF,reportedProblems)) {
+        				// remove the declare @field since don't want an error when 
+        				// the annotation is already there
+        				unusedDecafs.remove(decaF);
+						continue; // skip this one...
+					}
 					aBcelField.addAnnotation(decaF.getAnnotationX());
 					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
 					isChanged = true;
 					modificationOccured = true;
 					forRemoval.add(decaF);
+					// remove the declare @field since have matched against it
+        			unusedDecafs.remove(decaF); 
 				}
 			  }
 			  worthRetrying.removeAll(forRemoval);
             }
 			}
           }
+	  	  checkUnusedDeclareAtTypes(unusedDecafs,true);
         }
 		return isChanged;
 	}
 
+	// bug 99191 - put out an error message if the type doesn't exist
+	/**
+	 * Report an error if the reason a "declare @method/ctor/field" was not used was because the member
+	 * specified does not exist.  This method is passed some set of declare statements that didn't
+	 * match and a flag indicating whether the set contains declare @field or declare @method/ctor
+	 * entries.
+	 */
+	private void checkUnusedDeclareAtTypes(Set unusedDecaTs, boolean isDeclareAtField) {
+		for (Iterator iter = unusedDecaTs.iterator(); iter.hasNext();) {
+	  		DeclareAnnotation declA = (DeclareAnnotation) iter.next();
+	  		
+	  		// Error if an exact type pattern was specified 
+	  		if ((declA.isExactPattern() || 
+					(declA.getSignaturePattern().getDeclaringType() instanceof ExactTypePattern))
+					&& (!declA.getSignaturePattern().getName().isAny()
+							|| (declA.getKind() == DeclareAnnotation.AT_CONSTRUCTOR))) {
+	  			
+	  			// Quickly check if an ITD meets supplies the 'missing' member
+	  			boolean itdMatch = false;
+	  			List lst = clazz.getType().getInterTypeMungers();
+	  			for (Iterator iterator = lst.iterator(); iterator.hasNext() && !itdMatch;) {
+					BcelTypeMunger element = (BcelTypeMunger) iterator.next();
+					if (element.getMunger() instanceof NewFieldTypeMunger) { 
+						NewFieldTypeMunger nftm = (NewFieldTypeMunger)element.getMunger();
+						itdMatch = declA.getSignaturePattern().matches(nftm.getSignature(),world,false);
+	  				}else if (element.getMunger() instanceof NewMethodTypeMunger) {
+						NewMethodTypeMunger nmtm = (NewMethodTypeMunger)element.getMunger();
+						itdMatch = declA.getSignaturePattern().matches(nmtm.getSignature(),world,false);							
+					} else if (element.getMunger() instanceof NewConstructorTypeMunger) {
+						NewConstructorTypeMunger nctm = (NewConstructorTypeMunger)element.getMunger();
+						itdMatch = declA.getSignaturePattern().matches(nctm.getSignature(),world,false);							
+					}
+				}
+	  			if (!itdMatch) {
+	  				IMessage message = null;
+	  				if (isDeclareAtField) {
+	  					message = new Message(
+								"The field '"+ declA.getSignaturePattern().toString() + 
+								"' does not exist", declA.getSourceLocation() , true);
+					} else { 
+						message = new Message(
+								"The method '"+ declA.getSignaturePattern().toString() + 
+								"' does not exist", declA.getSourceLocation() , true);
+					}
+					world.getMessageHandler().handleMessage(message);					
+				}
+	  		}
+	  	}
+	}
+	
 	// TAG: WeavingMessage
 	private void reportFieldAnnotationWeavingMessage(LazyClassGen clazz, Field[] fields, int fieldCounter, DeclareAnnotation decaF) {
 		if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)){
