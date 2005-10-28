@@ -1,7 +1,7 @@
 
 public abstract aspect AbstractListSupport<I,M extends I> {
 
-  declare parents : @LinkedListItem * implements M;
+  //declare parents : @LinkedListItem * implements M;
 
 
   // Interface

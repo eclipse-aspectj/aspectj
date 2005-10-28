@@ -24,7 +24,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs150/pr113947/case2" title="maws generic aspect - 2">
-        <compile files="AbstractListSupport.java" options="-1.5"/><!--,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5"/-->
+        <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5"/>
     </ajc-test>
     
     <ajc-test dir="bugs150/pr113861" title="field-get problems with generic field">
