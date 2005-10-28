@@ -161,4 +161,12 @@
             options="-1.5 -XnoWeave"/>
         <run class="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest" ltw="ataspectj/bugs/aop-aspectofwhenaspectnotinincludetest.xml"/>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AppContainer">
+        <compile
+            files="ataspectj/hierarchy/AppContainerTest.java,ataspectj/hierarchy/app/SubApp.java,ataspectj/TestHelper.java"
+            options="-1.5 -XnoWeave"
+            />
+        <ant file="ajc-ant.xml" target="ltw.AppContainer" verbose="true"/>
+    </ajc-test>
 </suite>

@@ -110,4 +110,8 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("AspectOfWhenAspectNotInInclude");
     }
 
+    public void testAppContainer() {
+        runTest("AppContainer");
+    }
+
 }

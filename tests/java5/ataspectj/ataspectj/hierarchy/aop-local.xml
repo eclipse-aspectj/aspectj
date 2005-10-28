@@ -1,0 +1,6 @@
+<aspectj>
+    <weaver options="-1.5 -XmessageHandlerClass:ataspectj.TestHelper -Xlint:ignore"/>
+    <aspects>
+        <aspect name="ataspectj.hierarchy.app.SubApp.SubAspect"/>
+    </aspects>
+</aspectj>

@@ -186,4 +186,31 @@
         </java>
     </target>
 
+    <target name="ltw.AppContainer">
+        <!-- mkdir the 2 sub app root folder -->
+        <mkdir dir="${aj.sandbox}/META-INF"/>
+        <mkdir dir="${aj.sandbox}/app_1"/>
+        <mkdir dir="${aj.sandbox}/app_1/META-INF"/>
+        <!-- install sub app -->
+        <copy todir="${aj.sandbox}/app_1">
+            <fileset dir="${aj.sandbox}" includes="ataspectj/hierarchy/app/*"/>
+        </copy>
+        <copy todir="${aj.sandbox}/app_2">
+            <fileset dir="${aj.sandbox}" includes="ataspectj/hierarchy/app/*"/>
+        </copy>
+        <delete dir="${aj.sandbox}/ataspectj/hierarchy/app"/>
+        <!-- install the aop.xml DD -->
+        <copy file="${aj.root}/tests/java5/ataspectj/ataspectj/hierarchy/aop-global.xml"
+              tofile="${aj.sandbox}/META-INF/aop.xml"/>
+        <!-- only app1 gets local aspect -->
+        <copy file="${aj.root}/tests/java5/ataspectj/ataspectj/hierarchy/aop-local.xml"
+              tofile="${aj.sandbox}/app_1/META-INF/aop.xml"/>
+        <!-- run -->
+        <java fork="yes" classname="ataspectj.hierarchy.AppContainerTest" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj.weaving.verbose=true"/>
+        </java>
+    </target>
+
 </project>

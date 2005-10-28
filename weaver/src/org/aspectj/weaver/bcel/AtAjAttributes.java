@@ -243,7 +243,14 @@ public class AtAjAttributes {
             // bypass what we have read
             return EMPTY_LIST;
         }
-        //FIXME turn on when ajcMightHaveAspect
+
+        // the following block will not detect @Pointcut in non @Aspect types for optimization purpose
+        if (!hasAtAspectAnnotation) {
+            return EMPTY_LIST;
+        }
+
+
+        //FIXME AV - turn on when ajcMightHaveAspect
 //        if (hasAtAspectAnnotation && type.isInterface()) {
 //            msgHandler.handleMessage(
 //                    new Message(
@@ -257,10 +264,19 @@ public class AtAjAttributes {
 //            return EMPTY_LIST;
 //        }
 
-        // the following block will not detect @Pointcut in non @Aspect types for optimization purpose
-        if (!hasAtAspectAnnotation) {
-            return EMPTY_LIST;
-        }
+        // semantic check: @Aspect must be public
+        // FIXME AV - do we really want to enforce that?
+//        if (hasAtAspectAnnotation && !javaClass.isPublic()) {
+//            msgHandler.handleMessage(
+//                    new Message(
+//                            "Found @Aspect annotation on a non public class '" + javaClass.getClassName() + "'",
+//                            IMessage.ERROR,
+//                            null,
+//                            type.getSourceLocation()
+//                    )
+//            );
+//            return EMPTY_LIST;
+//        }
 
         // code style pointcuts are class attributes
         // we need to gather the @AJ pointcut right now and not at method level annotation extraction time

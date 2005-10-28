@@ -209,6 +209,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 	
 	/**
+     * aspect must be public
 	 * nested aspect must be static
 	 * cannot extend a concrete aspect
 	 * pointcut in perclause must be good.
@@ -228,8 +229,13 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 				typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart,typeDecl.sourceEnd,"only classes can have an @Aspect annotation");
 			}
 		}
-		
-		TypeReference parentRef = typeDecl.superclass;
+
+        //FIXME AV - do we really want that
+//        if (!Modifier.isPublic(typeDecl.modifiers)) {
+//            typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart,typeDecl.sourceEnd,"@Aspect class must be public");
+//        }
+
+        TypeReference parentRef = typeDecl.superclass;
 		if (parentRef != null) {
 			TypeBinding parentBinding = parentRef.resolvedType;
 			if (parentBinding instanceof SourceTypeBinding) {
