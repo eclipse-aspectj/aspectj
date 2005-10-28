@@ -80,9 +80,9 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	
 	public static ResolvedMember createResolvedMethod(Method aMethod, World inWorld) {
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.METHOD,
-				inWorld.resolve(aMethod.getDeclaringClass().getName()),
+				toResolvedType(aMethod.getDeclaringClass(),(ReflectionWorld)inWorld),
 				aMethod.getModifiers(),
-				inWorld.resolve(aMethod.getReturnType().getName()),
+				toResolvedType(aMethod.getReturnType(),(ReflectionWorld)inWorld),
 				aMethod.getName(),
 				toResolvedTypeArray(aMethod.getParameterTypes(),inWorld),
 				toResolvedTypeArray(aMethod.getExceptionTypes(),inWorld),
@@ -93,9 +93,9 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	
 	public static ResolvedMember createResolvedAdviceMember(Method aMethod, World inWorld) {
 		return new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.ADVICE,
-				inWorld.resolve(aMethod.getDeclaringClass().getName()),
+				toResolvedType(aMethod.getDeclaringClass(),(ReflectionWorld)inWorld),
 				aMethod.getModifiers(),
-				inWorld.resolve(aMethod.getReturnType().getName()),
+				toResolvedType(aMethod.getReturnType(),(ReflectionWorld)inWorld),
 				aMethod.getName(),
 				toResolvedTypeArray(aMethod.getParameterTypes(),inWorld),
 				toResolvedTypeArray(aMethod.getExceptionTypes(),inWorld),
@@ -105,7 +105,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	
 	public static ResolvedMember createStaticInitMember(Class forType, World inWorld) {
 		return new ResolvedMemberImpl(org.aspectj.weaver.Member.STATIC_INITIALIZATION,
-				inWorld.resolve(forType.getName()),
+				toResolvedType(forType,(ReflectionWorld)inWorld),
 				Modifier.STATIC,
 				ResolvedType.VOID,
 				"<clinit>",
@@ -116,9 +116,9 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 
 	public static ResolvedMember createResolvedConstructor(Constructor aConstructor, World inWorld) {
 		return new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.CONSTRUCTOR,
-				inWorld.resolve(aConstructor.getDeclaringClass().getName()),
+				toResolvedType(aConstructor.getDeclaringClass(),(ReflectionWorld)inWorld),
 				aConstructor.getModifiers(),
-				inWorld.resolve(aConstructor.getDeclaringClass().getName()),
+				toResolvedType(aConstructor.getDeclaringClass(),(ReflectionWorld)inWorld),
 				"init",
 				toResolvedTypeArray(aConstructor.getParameterTypes(),inWorld),
 				toResolvedTypeArray(aConstructor.getExceptionTypes(),inWorld),
@@ -128,9 +128,9 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 
 	public static ResolvedMember createResolvedField(Field aField, World inWorld) {
 		return new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.FIELD,
-				inWorld.resolve(aField.getDeclaringClass().getName()),
+				toResolvedType(aField.getDeclaringClass(),(ReflectionWorld)inWorld),
 				aField.getModifiers(),
-				inWorld.resolve(aField.getType().getName()),
+				toResolvedType(aField.getType(),(ReflectionWorld)inWorld),
 				aField.getName(),
 				new UnresolvedType[0],
 				aField);
@@ -139,10 +139,14 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	public static ResolvedMember createHandlerMember(Class exceptionType, Class inType,World inWorld) {
 		return new ResolvedMemberImpl(
 				org.aspectj.weaver.Member.HANDLER,
-				inWorld.resolve(inType.getName()),
+				toResolvedType(inType,(ReflectionWorld)inWorld),
 				Modifier.STATIC,
 				"<catch>",
 				"(" + inWorld.resolve(exceptionType.getName()).getSignature() + ")V");
+	}
+	
+	private static ResolvedType toResolvedType(Class aClass, ReflectionWorld aWorld) {
+		return aWorld.resolve(aClass);
 	}
 
 	private static ResolvedType[] toResolvedTypeArray(Class[] classes, World inWorld) {

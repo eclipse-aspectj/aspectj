@@ -27,9 +27,9 @@ public class ReflectionWorldTest extends TestCase {
 	}
 	
 	public void testArrayTypes() {
-		World world = new ReflectionWorld();
+		ReflectionWorld world = new ReflectionWorld();
 		String[] strArray = new String[1];
-		ResolvedType rt = world.resolve(UnresolvedType.forSignature(strArray.getClass().getName()));
+		ResolvedType rt = world.resolve(strArray.getClass());
 		assertTrue(rt.isArray());
 	}
 	
