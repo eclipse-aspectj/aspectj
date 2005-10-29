@@ -17,6 +17,7 @@ import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.patterns.WildTypePattern;
 
 public class GenericsTests extends XMLBasedAjcTestCase {
@@ -846,7 +847,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 				for (int i =0;i<ms.length;i++) {
 					String methodString = ms[i].getReturnType().getName()+" "+ms[i].getDeclaringClass().getName()+"."+
 							           ms[i].getName()+"("+stringify(ms[i].getParameterTypes())+")"+
-							           (ms[i].isBridge()?" [BridgeMethod]":"");
+							           (isBridge(ms[i])?" [BridgeMethod]":"");
 					methodsFound.add(methodString);
 					debugString.append("[").append(methodString).append("]");
 				}
@@ -874,7 +875,26 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		}
 		
 	}
-	
+    
+    /**
+     * Use 1.5 API isBridge if available.
+     * See JLS3 15.12.4.5 Create Frame, Synchronize, Transfer Control
+     */
+	public static boolean isBridge(java.lang.reflect.Method m) {
+        // why not importing java.lang.reflect.Method? No BCEL clash?
+        if (!LangUtil.is15VMOrGreater()) {
+            return false;
+        }
+        try {
+            final Class[] noparms = new Class[0];
+            java.lang.reflect.Method isBridge 
+                = java.lang.reflect.Method.class.getMethod("isBridge", noparms);
+            Boolean result = (Boolean) isBridge.invoke(m, new Object[0]);
+            return result.booleanValue();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
 	public static JavaClass getClass(Ajc ajc, String classname) {
 		try {
 			ClassPath cp = 
@@ -911,7 +931,6 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		if (clazzes==null) return "";
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < clazzes.length; i++) {
-			Class class1 = clazzes[i];
 			if (i>0) sb.append(",");
 			sb.append(clazzes[i].getName());
 		}
