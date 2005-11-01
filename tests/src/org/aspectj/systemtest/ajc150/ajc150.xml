@@ -499,9 +499,6 @@
         <compile files="pr95992.aj" options="-1.5"/>
     </ajc-test>
 
-    <ajc-test dir="bugs150" pr="105479" title="declare parents introducing override with covariance">
-        <compile files="pr105479.aj" options="-1.5"/>
-    </ajc-test>                   
 
     <ajc-test dir="bugs150" pr="104024" title="inner class passed as argument to varargs method">
         <compile files="pr104024.aj" options="-1.5"/>
@@ -550,6 +547,10 @@
         <compile files="pr108602.java" options="-1.5"/>
     </ajc-test>
 
+    <ajc-test dir="bugs150" pr="105479" title="declare parents introducing override with covariance">
+        <compile files="pr105479.aj" options="-1.5"/>
+    </ajc-test>                   
+    
     <ajc-test dir="bugs150" pr="105479" title="override and covariance with decp - runtime">
         <compile files="pr105479part2.aj" options="-1.5"/>
         <run class="pr105479part2">
@@ -562,7 +563,7 @@
         </run>
     </ajc-test>
 
-    <ajc-test dir="bugs150/pr105479" pr="105479" title="override and covariance with decp - runtime separate files">
+    <ajc-test dir="bugs150/pr105479/case1" pr="105479" title="override and covariance with decp - runtime separate files">
         <compile files="ReturnTypeTest.aj,ReturnTypeTester.java,Driver.java" options="-1.5"/>
         <run class="Driver">
             <stdout>
@@ -572,6 +573,13 @@
                 <line text="in Test.hashCode()"/>
             </stdout>
         </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150/pr105479/case2" pr="105479" title="override and covariance with decp - binary weaving">
+        <compile files="ReturnTypeTest.java" outjar="jar1.jar" options="-1.5 -Xlint:ignore"/>
+        <compile files="ReturnTypeTester.java" outjar="jar2.jar" options="-1.5"/>
+        <compile inpath="jar1.jar;jar2.jar" options="-1.5"/>
+        <run class="ReturnTypeTester"/>
     </ajc-test>
     
     <ajc-test dir="bugs150" pr="102212" title="abstract synchronized itdms not detected">
