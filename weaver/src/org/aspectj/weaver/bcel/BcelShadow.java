@@ -134,6 +134,9 @@ public class BcelShadow extends Shadow {
     private final LazyMethodGen enclosingMethod;
 	private boolean fallsThrough;  //XXX not used anymore
 	
+	// SECRETAPI - for testing, this will tell us if the optimization succeeded *on the last shadow processed*
+	public static boolean appliedLazyTjpOptimization;
+	
 	// Some instructions have a target type that will vary 
     // from the signature (pr109728) (1.4 declaring type issue)
 	private String actualInstructionTargetType; 
@@ -241,6 +244,14 @@ public class BcelShadow extends Shadow {
 		}
 	}
 	
+	// records advice that is stopping us doing the lazyTjp optimization
+	private List badAdvice = null;
+	
+	public void addAdvicePreventingLazyTjp(BcelAdvice advice) {
+		if (badAdvice == null) badAdvice = new ArrayList();
+		badAdvice.add(advice);
+	}
+	
  	protected void prepareForMungers() {
 		// if we're a constructor call, we need to remove the new:dup or the new:dup_x1:swap, 
 		// and store all our
@@ -289,15 +300,43 @@ public class BcelShadow extends Shadow {
 		}
 
 		// now we ask each munger to request our state
-		isThisJoinPointLazy = world.isXlazyTjp();
-		
+		isThisJoinPointLazy = true;//world.isXlazyTjp(); // lazy is default now
+
+		badAdvice = null;
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
 			ShadowMunger munger = (ShadowMunger) iter.next();
 			munger.specializeOn(this);
 		}
 		
+		
 		initializeThisJoinPoint();
 
+		if (thisJoinPointVar!=null && !isThisJoinPointLazy && badAdvice!=null &&  badAdvice.size()>1) {
+			// something stopped us making it a lazy tjp
+			// can't build tjp lazily, no suitable test...
+			int valid = 0;
+			for (Iterator iter = badAdvice.iterator(); iter.hasNext();) {
+				BcelAdvice element = (BcelAdvice) iter.next();
+				ISourceLocation sLoc = element.getSourceLocation();
+				if (sLoc!=null && sLoc.getLine()>0) valid++;
+			}
+			if (valid!=0) { 
+				ISourceLocation[] badLocs = new ISourceLocation[valid];
+				int i = 0;
+				for (Iterator iter = badAdvice.iterator(); iter.hasNext();) {
+					BcelAdvice element = (BcelAdvice) iter.next();
+					ISourceLocation sLoc = element.getSourceLocation();
+					if (sLoc!=null) badLocs[i++]=sLoc;
+				}
+				world.getLint().multipleAdviceStoppingLazyTjp.signal(
+					    new String[] {this.toString()},
+					    getSourceLocation(),badLocs
+					);
+			}
+		}
+		badAdvice=null;
+		
+		
 	    // If we are an expression kind, we require our target/arguments on the stack
 	    // before we do our actual thing.  However, they may have been removed
 	    // from the stack as the shadowMungers have requested state.  
@@ -972,13 +1011,20 @@ public class BcelShadow extends Shadow {
 	public final Var getThisEnclosingJoinPointStaticPartVar() {
 		return getThisEnclosingJoinPointStaticPartBcelVar();
 	}
-    
-    public void requireThisJoinPoint(boolean hasGuardTest) {
-    	if (!hasGuardTest) {
-    		isThisJoinPointLazy = false;
-    	} else {
-    		lazyTjpConsumers++;
-    	}
+	
+    public void requireThisJoinPoint(boolean hasGuardTest, boolean isAround) { 
+		if (!isAround){
+			if (!hasGuardTest) {
+				isThisJoinPointLazy = false;
+			} else {
+				lazyTjpConsumers++;
+			}
+		}
+//    	if (!hasGuardTest) {
+//    		isThisJoinPointLazy = false;
+//    	} else {
+//    		lazyTjpConsumers++;
+//    	}
     	if (thisJoinPointVar == null) {
 			thisJoinPointVar = genTempVar(UnresolvedType.forName("org.aspectj.lang.JoinPoint"));
     	}
@@ -986,7 +1032,7 @@ public class BcelShadow extends Shadow {
     
     
     public Var getThisJoinPointVar() {
-    	requireThisJoinPoint(false);
+    	requireThisJoinPoint(false,false);
     	return thisJoinPointVar;
     }
     
@@ -998,6 +1044,7 @@ public class BcelShadow extends Shadow {
     	}
     		
 		if (isThisJoinPointLazy) {
+			appliedLazyTjpOptimization = true;
 			createThisJoinPoint(); // make sure any state needed is initialized, but throw the instructions out
 			
 			if (lazyTjpConsumers == 1) return; // special case only one lazyTjpUser
@@ -1008,6 +1055,7 @@ public class BcelShadow extends Shadow {
 			il.append(thisJoinPointVar.createStore(fact));
 			range.insert(il, Range.OutsideBefore);
 		} else {
+			appliedLazyTjpOptimization = false;
 			InstructionFactory fact = getFactory();
 			InstructionList il = createThisJoinPoint();
 			il.append(thisJoinPointVar.createStore(fact));
@@ -1021,11 +1069,13 @@ public class BcelShadow extends Shadow {
 			ShadowMunger munger = (ShadowMunger) i.next();
 			if (munger instanceof Advice) {
 				if ( ((Advice)munger).getKind() == AdviceKind.Around) {
-					world.getLint().canNotImplementLazyTjp.signal(
-					    new String[] {toString()},
-					    getSourceLocation(),
-					    new ISourceLocation[] { munger.getSourceLocation() }
-					);
+					if (munger.getSourceLocation()!=null) { // do we know enough to bother reporting?
+						world.getLint().canNotImplementLazyTjp.signal(
+						    new String[] {toString()},
+						    getSourceLocation(),
+						    new ISourceLocation[] { munger.getSourceLocation() }
+						);
+					}
 					return false;
 				}
 			}
@@ -1039,8 +1089,10 @@ public class BcelShadow extends Shadow {
 		InstructionList il = new InstructionList();
 
     	if (isThisJoinPointLazy) {
+    		// If we're lazy, build the join point right here.
     		il.append(createThisJoinPoint());
     		
+    		// Does someone else need it? If so, store it for later retrieval
     		if (lazyTjpConsumers > 1) {
 				il.append(thisJoinPointVar.createStore(fact));
 				
@@ -1050,6 +1102,7 @@ public class BcelShadow extends Shadow {
 				il.insert(thisJoinPointVar.createLoad(fact));
     		}
     	} else {			
+    		// If not lazy, its already been built and stored, just retrieve it
 			thisJoinPointVar.appendLoad(il, fact);
     	}
     	

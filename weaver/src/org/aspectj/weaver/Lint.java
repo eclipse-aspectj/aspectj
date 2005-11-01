@@ -54,6 +54,9 @@ public class Lint {
 	public final Kind canNotImplementLazyTjp = 
 		new Kind("canNotImplementLazyTjp", "can not implement lazyTjp on this joinpoint {0} because around advice is used");
 
+	public final Kind multipleAdviceStoppingLazyTjp = 
+		new Kind("multipleAdviceStoppingLazyTjp", "can not implement lazyTjp at joinpoint {0} because of advice conflicts, see secondary locations to find conflicting advice");
+
 	public final Kind needsSerialVersionUIDField = 
 		new Kind("needsSerialVersionUIDField", "serialVersionUID of type {0} needs to be set because of {1}");
 
@@ -92,7 +95,10 @@ public class Lint {
 	
 	public final Kind uncheckedAdviceConversion =
 		new Kind("uncheckedAdviceConversion","unchecked conversion when advice applied at shadow {0}, expected {1} but advice uses {2}");
-	
+ 
+	public final Kind noGuardForLazyTjp =
+		new Kind("noGuardForLazyTjp","can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at {0}");
+
     public Lint(World world) {
 		this.world = world;
 	}

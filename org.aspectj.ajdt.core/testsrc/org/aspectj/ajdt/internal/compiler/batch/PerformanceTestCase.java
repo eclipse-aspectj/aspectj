@@ -40,7 +40,8 @@ public class PerformanceTestCase extends CommandTestCase {
 		//   joinpoint method-execution(int LazyTjp.doit3(int)) because around advice is used [Xlint:canNotImplementLazyTjp]'
 		// into an error so that we can use checkCompiles() ability to check errors occur.
 		// Pass -proceedOnError to ensure even though we get that message, we still get the class file on disk
-		checkCompile("src1/LazyTjp.aj", new String[] {"-XlazyTjp","-Xlint:error","-proceedOnError"}, new int[] {96});
+		checkCompile("src1/LazyTjp.aj", new String[] {"-Xlint:error","-proceedOnError"}, new int[] {96});
 		TestUtil.runMain("out", "LazyTjp");
 	}
+	
 }

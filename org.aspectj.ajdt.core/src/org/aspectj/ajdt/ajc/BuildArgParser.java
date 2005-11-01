@@ -383,6 +383,7 @@ public class BuildArgParser extends Main {
         public void parseOption(String arg, LinkedList args) { // XXX use ListIterator.remove()
 			int nextArgIndex = args.indexOf(arg)+1; // XXX assumes unique
             // trim arg?
+			buildConfig.setXlazyTjp(true); // now default - MINOR could be pushed down and made default at a lower level
             if (LangUtil.isEmpty(arg)) {
                 showWarning("empty arg found");
             } else if (arg.equals("-inpath")) {;
@@ -523,7 +524,8 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-XserializableAspects")) {
 				buildConfig.setXserializableAspects(true);
 			} else if (arg.equals("-XlazyTjp")) {
-				buildConfig.setXlazyTjp(true);
+				// do nothing as this is now on by default
+				showWarning("-XlazyTjp should no longer be used, build tjps lazily is now the default");
             } else if (arg.startsWith("-Xreweavable")) {
             	showWarning("-Xreweavable is on by default");
             	if (arg.endsWith(":compress")) {

@@ -1,4 +1,4 @@
-public class LazyTjpTest4 {
+public class LazyTjpTest5 {
 
   public void test1 () { }
   
@@ -6,15 +6,15 @@ public class LazyTjpTest4 {
 
     private static boolean enabled = true;
     
-    after () : if(enabled) && execution(public void LazyTjpTest4.test1()) {
+    after () : if(enabled) && execution(public void LazyTjpTest5.test1()) {
       System.out.println(thisJoinPoint);
     }
 
-    before() : execution(public void LazyTjpTest4.test1()) {
+    before() : execution(public void LazyTjpTest5.test1()) {
       System.out.println(thisJoinPoint);
     }
 
-    before() : execution(public void LazyTjpTest4.test1()) {
+    void around() : execution(public void LazyTjpTest5.test1()) {
       System.out.println(thisJoinPoint);
     }
   }

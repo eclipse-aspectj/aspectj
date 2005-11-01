@@ -19,11 +19,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
@@ -141,8 +142,22 @@ public class BcelAdvice extends Advice {
         }
 
         if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-			((BcelShadow)shadow).requireThisJoinPoint(pointcutTest != Literal.TRUE && getKind() != AdviceKind.Around);
+    		boolean hasGuardTest = pointcutTest != Literal.TRUE && getKind() != AdviceKind.Around;
+    		boolean isAround = getKind() == AdviceKind.Around;
+			((BcelShadow)shadow).requireThisJoinPoint(hasGuardTest,isAround);
 			((BcelShadow)shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow,getSourceLocation());
+			if (!hasGuardTest && world.getLint().multipleAdviceStoppingLazyTjp.isEnabled()) {
+				// collect up the problematic advice
+				((BcelShadow)shadow).addAdvicePreventingLazyTjp(this);
+			}
+			if (!isAround && !hasGuardTest && world.getLint().noGuardForLazyTjp.isEnabled()) {
+				// can't build tjp lazily, no suitable test...
+				world.getLint().noGuardForLazyTjp.signal(
+					    new String[] {shadow.toString()},
+					    getSourceLocation(),
+					    new ISourceLocation[] { ((BcelShadow)shadow).getSourceLocation() }
+					);				
+			}
         }
         
         if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {

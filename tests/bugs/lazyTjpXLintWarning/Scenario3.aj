@@ -7,7 +7,7 @@ public aspect Scenario3 {
     pointcut toBeTraced() : execution(* main(..));
 
     Object around() : toBeTraced() {
-	//	Object[] args = thisJoinPoint.getArgs();
+	//Object[] args = thisJoinPoint.getArgs();
         return proceed();
     }
 	
