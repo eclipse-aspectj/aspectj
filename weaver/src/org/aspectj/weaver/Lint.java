@@ -90,6 +90,9 @@ public class Lint {
 	public final Kind uncheckedArgument =
 		new Kind("uncheckedArgument","unchecked match of {0} with {1} when argument is an instance of {2} at join point {3}");
 	
+	public final Kind uncheckedAdviceConversion =
+		new Kind("uncheckedAdviceConversion","unchecked conversion when advice applied at shadow {0}, expected {1} but advice uses {2}");
+	
     public Lint(World world) {
 		this.world = world;
 	}

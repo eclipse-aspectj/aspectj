@@ -161,7 +161,18 @@ public abstract class Advice extends ShadowMunger {
     				} else {
     					ResolvedType shadowReturnType = shadow.getReturnType().resolve(world);
     					ResolvedType adviceReturnType = getSignature().getGenericReturnType().resolve(world);
-    					if(!shadowReturnType.isAssignableFrom(adviceReturnType)) {
+    					
+    					if (shadowReturnType.isParameterizedType() && adviceReturnType.isRawType()) { // Set<Integer> and Set
+    						ResolvedType shadowReturnGenericType = shadowReturnType.getGenericType(); // Set
+    						ResolvedType adviceReturnGenericType = adviceReturnType.getGenericType(); // Set
+    						if (shadowReturnGenericType.isAssignableFrom(adviceReturnGenericType) && 
+    								world.getLint().uncheckedAdviceConversion.isEnabled()) {
+    							world.getLint().uncheckedAdviceConversion.signal(
+    								new String[]{shadow.toString(),shadowReturnType.getName(),adviceReturnType.getName()},
+    								shadow.getSourceLocation(),
+    								new ISourceLocation[]{getSourceLocation()});
+    						}
+    					} else if(!shadowReturnType.isAssignableFrom(adviceReturnType)) {
 	    					//System.err.println(this + ", " + sourceContext + ", " + start);
 							world.showMessage(IMessage.ERROR,
 									WeaverMessages.format(WeaverMessages.INCOMPATIBLE_RETURN_TYPE,shadow),

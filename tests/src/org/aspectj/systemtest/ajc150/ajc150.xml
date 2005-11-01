@@ -16,6 +16,14 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr114343" title="field-get, generics and around advice">
+      <compile files="Test.java,Test1.java,Test2.java,TestAspect.aj" options="-1.5">
+          <message kind="warning" line="7" text="unchecked conversion when advice applied at shadow field-get(java.util.Set Test1.intsSet), expected java.util.Set&lt;java.lang.Integer&gt; but advice uses java.util.Set"/>
+          <message kind="warning" line="8" text="unchecked conversion when advice applied at shadow field-get(java.util.Set Test2.doubSet), expected java.util.Set&lt;java.lang.Double&gt; but advice uses java.util.Set"/>
+      </compile>
+      <run class="TestAspect"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr113947/case1" title="maws generic aspect - 1">
         <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5">
           <!-- the 'static ref' messages are a bit poor and ought to be eliminated... -->
