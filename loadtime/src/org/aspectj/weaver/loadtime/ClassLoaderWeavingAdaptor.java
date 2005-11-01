@@ -229,7 +229,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 try { resource.close(); } catch (Throwable t) {;}
             }
         }
-        if (weaverOption.lint != null) {
+        if (weaverOption.lint == null) {
+        	bcelWorld.getLint().loadDefaultProperties();
+        } else {
             if (weaverOption.lint.equals("default")) {//FIXME should be AjBuildConfig.AJLINT_DEFAULT but yetanother deps..
                 bcelWorld.getLint().loadDefaultProperties();
             } else {
