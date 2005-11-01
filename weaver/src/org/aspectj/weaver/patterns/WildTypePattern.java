@@ -911,7 +911,16 @@ public class WildTypePattern extends TypePattern {
 		if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
 			for (int i = 0; i < tvs.length; i++) {
 				UnresolvedType ut = typeParamPatterns[i].getExactType();
-				if (!tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
+				boolean continueCheck = true;
+				// FIXME asc dont like this but ok temporary measure.  If the type parameter 
+				// is itself a type variable (from the generic aspect) then assume it'll be
+				// ok... (see pr112105)  Want to break this? Run GenericAspectK test.
+				if (ut.isTypeVariableReference()) {
+					continueCheck = false;
+				}
+				
+				if (continueCheck &&	
+						!tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
 					// issue message that type parameter does not meet specification
 					String parameterName = ut.getName();
 					if (ut.isTypeVariableReference()) parameterName = ((TypeVariableReference)ut).getTypeVariable().getDisplayName();
