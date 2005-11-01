@@ -176,7 +176,7 @@
 
             </aspects>
 
-            <weaver options="-verbose -XlazyTjp">
+            <weaver options="-verbose">
               <!-- Weave types that are within the javax.* or org.aspectj.*
                    packages. Also weave all types in the foo package that do
                    not have the @NoWeave annotation. -->
@@ -399,7 +399,7 @@
           aspects.include=com..*
           aspects.exclude=@CoolAspect
 
-          weaver.options=-verbose -XlazyTjp
+          weaver.options=-verbose
           weaver.include=javax.* OR org.aspectj.*
 		  ]]></programlisting>
         </sect2>
@@ -434,13 +434,6 @@
                             </entry>
                             <entry>Run the weaver in 1.5 mode (supports autoboxing in
                             join point matching)</entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <literal>-XlazyTjp</literal>
-                            </entry>
-                            <entry>Performance optimization for aspects making use
-                            of thisJoinPoint (non-static parts)</entry>
                         </row>
                         <row>
                             <entry>
