@@ -10,7 +10,12 @@
     <ajc-test dir="bugs150" title="Problem with constructor ITDs">
         <compile files="pr112783.aj" options="-1.5"/>
     </ajc-test>
-
+    
+    <ajc-test dir="java5/generics/bugs" title="using same type variable in ITD">
+      <compile files="SameTypeVariable.aj" options="-1.5">
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr113947/case1" title="maws generic aspect - 1">
         <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5">
           <!-- the 'static ref' messages are a bit poor and ought to be eliminated... -->
@@ -26,7 +31,7 @@
     <ajc-test dir="bugs150/pr113947/case2" title="maws generic aspect - 2">
         <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5"/>
     </ajc-test>
-    
+ 
     <ajc-test dir="bugs150/pr113861" title="field-get problems with generic field">
         <compile files="Test.java,TestAspect.java" options="-1.5"/>
         <run class="com.Test"/>
@@ -73,7 +78,7 @@
         	<message kind="warning" text="void C.&lt;init&gt;(int) - already has an annotation of type Annotation, cannot add a second instance [Xlint:elementAlreadyAnnotated]"/>
         </compile>
     </ajc-test>
- 
+
     <ajc-test dir="bugs150/pr113630/case1" title="IncompatibleClassChangeError - errorscenario">
         <compile files="Bean.java,BeanTestCase.java,javaBean.java,propertyChanger.java,PropertySupportAspect5.aj" options="-1.5">
           <message kind="warning" line="9" text="Failing match because annotation 'javaBean' on type 'Bean' has SOURCE retention.  Matching allowed when RetentionPolicy is CLASS or RUNTIME"/>
