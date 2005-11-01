@@ -69,6 +69,7 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IClassWeaver;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MissingResolvedTypeWithKnownSignature;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -321,6 +322,63 @@ class BcelClassWeaver implements IClassWeaver {
 			mg.getSignature().equals(existing.getSignature());
 	}    	
     
+	
+	protected LazyMethodGen makeBridgeMethod(LazyClassGen gen, ResolvedMember member) {
+
+		// remove abstract modifier
+		int mods = member.getModifiers();
+		if (Modifier.isAbstract(mods)) mods = mods - Modifier.ABSTRACT;
+		
+		LazyMethodGen ret = new LazyMethodGen(
+			mods,
+			BcelWorld.makeBcelType(member.getReturnType()),
+			member.getName(),
+			BcelWorld.makeBcelTypes(member.getParameterTypes()),
+			UnresolvedType.getNames(member.getExceptions()),
+			gen);
+        
+        // 43972 : Static crosscutting makes interfaces unusable for javac
+        // ret.makeSynthetic();    
+		return ret;
+	}
+	
+	
+	// FIXME asc doesnt cope with parameter variations (see commented out code below)
+	/**
+	 * Create a single bridge method called 'theBridgeMethod' that bridges to 'whatToBridgeTo'
+	 */
+	private void createBridgeMethod(BcelWorld world, ResolvedMember whatToBridgeTo, LazyClassGen clazz,ResolvedMember theBridgeMethod) {
+		InstructionList body;
+		InstructionFactory fact;
+		int pos = 0;
+
+		LazyMethodGen bridgeMethod = makeBridgeMethod(clazz,theBridgeMethod); // The bridge method in this type will have the same signature as the one in the supertype
+		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040 /*BRIDGE    = 0x00000040*/ );
+		UnresolvedType[] newParams = whatToBridgeTo.getParameterTypes();
+		Type returnType   = BcelWorld.makeBcelType(theBridgeMethod.getReturnType());
+		Type[] paramTypes = BcelWorld.makeBcelTypes(theBridgeMethod.getParameterTypes());
+		body = bridgeMethod.getBody();
+		fact = clazz.getFactory();
+
+		if (!whatToBridgeTo.isStatic()) {
+		   body.append(InstructionFactory.createThis());
+		   pos++;
+		}
+		for (int i = 0, len = paramTypes.length; i < len; i++) {
+		  Type paramType = paramTypes[i];
+		  body.append(InstructionFactory.createLoad(paramType, pos));
+//          if (!bridgingSetter.getParameterTypes()[i].getErasureSignature().equals(unMangledInterMethod.getParameterTypes()[i].getErasureSignature())) {
+//            System.err.println("Putting in cast from "+paramType+" to "+bridgingToParms[i]);
+//            body.append(fact.createCast(paramType,bridgingToParms[i]));
+//          }
+		  pos+=paramType.getSize();
+		}
+
+		body.append(Utility.createInvoke(fact, world,whatToBridgeTo));
+		body.append(InstructionFactory.createReturn(returnType));
+		clazz.addMethodGen(bridgeMethod);
+	}
+	
     // ----
     
     public boolean weave() {
@@ -354,6 +412,10 @@ class BcelClassWeaver implements IClassWeaver {
         		if (inReweavableMode || clazz.getType().isAspect()) aspectsAffectingType.add(munger.getAspectType().getName());
         	}
         }
+
+        // Assumption: at this point we've done all necessary type munging
+        calculateAnyRequiredBridgeMethods();
+
 
         // Weave special half type/half shadow mungers... 
         isChanged = weaveDeclareAtMethodCtor(clazz) || isChanged;
@@ -398,7 +460,7 @@ class BcelClassWeaver implements IClassWeaver {
 			
         
         // if we matched any initialization shadows, we inline and weave
-		if (! initializationShadows.isEmpty()) {
+		if (!initializationShadows.isEmpty()) {
 			// Repeat next step until nothing left to inline...cant go on 
 			// infinetly as compiler will have detected and reported 
 			// "Recursive constructor invocation"
@@ -441,9 +503,139 @@ class BcelClassWeaver implements IClassWeaver {
         
         return isChanged;
     }
-
-
     
+    
+    // FIXME asc no doubt incomplete...
+    /**
+     * Looks at the visibility modifiers between two methods, and knows whether they are from classes in
+     * the same package, and decides whether one overrides the other.
+     * @return true if there is an overrides rather than a 'hides' relationship
+     */
+    boolean isVisibilityOverride(int methodMods, ResolvedMember inheritedMethod,boolean inSamePackage) {
+    	if (inheritedMethod.isStatic()) return false;
+    	if (methodMods == inheritedMethod.getModifiers()) return true;
+
+    	if (inheritedMethod.isPrivate()) return false;
+    	
+    	boolean isPackageVisible = !inheritedMethod.isPrivate() && !inheritedMethod.isProtected() 
+    	                         && !inheritedMethod.isPublic();
+    	if (isPackageVisible && !inSamePackage) return false;
+    	
+    	return true;
+    }
+    
+    /**
+     * This method recurses up a specified type looking for a method that overrides the one passed in.
+     * 
+     * @return the method being overridden or null if none is found
+     */
+    public ResolvedMember checkForOverride(ResolvedType type,String methodname,String methodparams,String methodreturntype,int methodmodifiers,String methodpackage) {
+    	// check this type, then check its supertypes
+    	if (type==null) return null;
+    	if (type instanceof MissingResolvedTypeWithKnownSignature) return null; // we just can't tell !
+
+    	String packageName = type.getPackageName();
+    	if (packageName==null) packageName="";
+    	boolean inSamePackage = packageName.equals(methodpackage); // used when looking at visibility rules
+    	
+		for (Iterator iter = type.getMethods();iter.hasNext();) { 
+			ResolvedMember aMethod = (ResolvedMember) iter.next();
+			if (aMethod.isStatic()) continue;
+			if (!aMethod.isPrivate() && aMethod.getName().equals(methodname) && aMethod.getParameterSignature().equals(methodparams)) {
+				// visibility checks
+				if (isVisibilityOverride(methodmodifiers,aMethod,inSamePackage)) {
+					// check the return types, if they are different we need a bridging method.
+					if (!aMethod.getReturnType().getErasureSignature().equals(methodreturntype) && !Modifier.isPrivate(aMethod.getModifiers())) {
+						return aMethod;
+					}
+				}
+			}
+		}
+		
+		if (type.equals(UnresolvedType.OBJECT)) return null; 
+		
+	    ResolvedType superclass = type.getSuperclass();
+		ResolvedMember overriddenMethod = checkForOverride(superclass,methodname,methodparams,methodreturntype,methodmodifiers,methodpackage);
+		if (overriddenMethod!=null) return overriddenMethod;
+	    
+		ResolvedType[] interfaces = type.getDeclaredInterfaces();
+		for (int i = 0; i < interfaces.length; i++) {
+			ResolvedType anInterface = interfaces[i];
+			overriddenMethod = checkForOverride(anInterface,methodname,methodparams,methodreturntype,methodmodifiers,methodpackage);
+			if (overriddenMethod!=null) return overriddenMethod;
+		}
+		return null;
+    }
+
+    /**
+     * We need to determine if any methods in this type require bridge methods.
+     * 
+     * (Important that this method is fast as possible since it can be looking at all methods in all types)
+     * currently 01-nov-05 it is *not* as fast as possible!!
+     *      
+     * Optimizations possible:
+     *    tag types touched with decp or itds then before doing any heavy work here scan up the types hierarchy to see if 
+     *      any of its supertypes are tagged.
+     *    check if 1.5 flag on (currently not doing this to get some testing of it through the basic test suite)
+     */
+	private void calculateAnyRequiredBridgeMethods() {
+		if (!world.isInJava5Mode()) return; // no need to...
+		boolean debug=false;
+		
+		List /*LazyMethodGen*/ localMethods = clazz.getMethodGens();
+
+		// Keep a set of all methods from this type - it'll help us to check if bridge methods 
+		// have already been created
+		Set localMethodsSet = new HashSet(); // All the methods from this type
+		for (int i = 0; i < localMethods.size(); i++) {
+			LazyMethodGen aMethod = (LazyMethodGen)localMethods.get(i);
+			localMethodsSet.add(aMethod.getName()+aMethod.getSignature());
+		}
+		
+		// Now go through all the methods in this type
+		for (int i = 0; i < localMethods.size(); i++) {
+			
+			// This is the local method that we *might* have to bridge to
+			LazyMethodGen localMethod  = (LazyMethodGen)localMethods.get(i);
+			String localMethodName     = localMethod.getName();
+			String localParameterSig   = localMethod.getParameterSignature();
+			String localReturnTypeSig  = localMethod.getReturnType().getSignature();
+			
+			if (localMethod.isStatic())            continue; // ignore static methods
+			if (localMethodName.endsWith("init>")) continue; // Skip constructors and static initializers
+
+			if (debug) System.err.println("Do we need to bridge to "+localMethodName+""+localMethod.getSignature());
+			if (debug) System.err.println("Checking supertype "+clazz.getSuperClassname());
+			
+			// Check superclass
+			ResolvedType theSuperclass= world.resolve(clazz.getSuperClassname());
+			ResolvedMember overriddenMethod = checkForOverride(theSuperclass,localMethodName,localParameterSig,localReturnTypeSig,localMethod.getAccessFlags(),clazz.getPackageName());
+			if (overriddenMethod!=null) { 
+				boolean alreadyHaveABridgeMethod = localMethodsSet.contains(overriddenMethod.getName()+overriddenMethod.getSignature());
+				if (!alreadyHaveABridgeMethod) {
+					createBridgeMethod(world, localMethod.getMemberView(), clazz, overriddenMethod);
+					if (debug) System.err.println("Bridging to "+overriddenMethod);
+					continue;
+				}
+			}
+
+			// Check superinterfaces
+			String[] interfaces = clazz.getInterfaceNames();
+			for (int j = 0; j < interfaces.length; j++) {
+				if (debug) System.err.println("Checking superinterface "+interfaces[j]);
+				ResolvedType interfaceType = world.resolve(interfaces[j]);
+				overriddenMethod = checkForOverride(interfaceType,localMethodName,localParameterSig,localReturnTypeSig,localMethod.getAccessFlags(),clazz.getPackageName());
+				if (overriddenMethod!=null) { 
+					boolean alreadyHaveABridgeMethod = localMethodsSet.contains(overriddenMethod.getName()+overriddenMethod.getSignature());
+					if (!alreadyHaveABridgeMethod) {
+						createBridgeMethod(world, localMethod.getMemberView(), clazz, overriddenMethod);
+						if (debug) System.err.println("Bridging to "+overriddenMethod);
+						continue;
+					}	
+				}
+			}
+		}
+	}
     
     /**
      * Weave any declare @method/@ctor statements into the members of the supplied class
