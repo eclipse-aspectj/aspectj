@@ -88,6 +88,7 @@ public final class LazyClassGen {
 	private ClassGen myGen;
 	private ConstantPoolGen constantPoolGen;
 	private World world;
+    private String packageName = null;
 
     private List /*LazyMethodGen*/ methodGens  = new ArrayList();
     private List /*LazyClassGen*/  classGens   = new ArrayList();
@@ -329,6 +330,14 @@ public final class LazyClassGen {
             return root;
         return new File(root, str.substring(0, index));
     }
+    
+    public String getPackageName() {
+    	if (packageName!=null) return packageName;
+    	String str = getInternalClassName();
+    	int index= str.lastIndexOf("/");
+    	if (index==-1) return str;
+    	return str.substring(0,index).replace('/','.');
+    }
 
     public String getClassId() {
         String str = getInternalClassName();
@@ -351,6 +360,7 @@ public final class LazyClassGen {
 			warnOnAddedMethod(gen.getMethod(),sourceLocation);
 		}
 	}
+	
 
 	public void errorOnAddedField (Field field, ISourceLocation sourceLocation) {
 		if (isSerializable && !hasSerialVersionUIDField) {
@@ -631,6 +641,10 @@ public final class LazyClassGen {
     
     public String getSuperClassname() {
         return myGen.getSuperclassName();   
+    }
+    
+    public String[] getInterfaceNames() {
+    	return myGen.getInterfaceNames();
     }
 
 
