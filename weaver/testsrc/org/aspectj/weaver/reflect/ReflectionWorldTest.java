@@ -11,11 +11,10 @@
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
-import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.World;
-
 import junit.framework.TestCase;
+
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.World;
 
 public class ReflectionWorldTest extends TestCase {
 
