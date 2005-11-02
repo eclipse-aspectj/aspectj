@@ -558,6 +558,11 @@ public class EclipseFactory {
 		return ret;
 	}
 	
+	// When converting a parameterized type from our world to the eclipse world, these get set so that
+	// resolution of the type parameters may known in what context it is occurring (pr114744)
+	private ReferenceBinding baseTypeForParameterizedType;
+	private int indexOfTypeParameterBeingConverted;
+	
 	private TypeBinding makeTypeBinding1(UnresolvedType typeX) {
 		if (typeX.isPrimitiveType()) { 
 			if (typeX == ResolvedType.BOOLEAN) return BaseTypes.BooleanBinding;
@@ -582,9 +587,13 @@ public class EclipseFactory {
 		    UnresolvedType[] typeParameters = typeX.getTypeParameters();
 			ReferenceBinding baseTypeBinding = lookupBinding(typeX.getBaseName());
 			TypeBinding[] argumentBindings = new TypeBinding[typeParameters.length];
+			baseTypeForParameterizedType = baseTypeBinding;
 			for (int i = 0; i < argumentBindings.length; i++) {
+				indexOfTypeParameterBeingConverted = i;
 				argumentBindings[i] = makeTypeBinding(typeParameters[i]);
 			}
+			indexOfTypeParameterBeingConverted = 0;
+			baseTypeForParameterizedType = null;
 			ParameterizedTypeBinding ptb = 
 				lookupEnvironment.createParameterizedType(baseTypeBinding,argumentBindings,baseTypeBinding.enclosingType());
 			return ptb;
@@ -610,8 +619,7 @@ public class EclipseFactory {
 			}
 			TypeBinding[] otherBounds = null;
 			if (brt.getAdditionalBounds()!=null && brt.getAdditionalBounds().length!=0) otherBounds = makeTypeBindings(brt.getAdditionalBounds());
-			// FIXME asc rank should not always be 0 ... 
-			WildcardBinding wb = lookupEnvironment.createWildcard(null,0,bound,otherBounds,boundkind);
+			WildcardBinding wb = lookupEnvironment.createWildcard(baseTypeForParameterizedType,indexOfTypeParameterBeingConverted,bound,otherBounds,boundkind);
 			return wb;
 		} else {
 			return lookupBinding(typeX.getName());

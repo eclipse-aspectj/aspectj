@@ -16,6 +16,11 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150" title="capturebinding wildcard problem">
+      <compile files="pr114744.aj" options="-1.5">
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr114343" title="field-get, generics and around advice">
       <compile files="Test.java,Test1.java,Test2.java,TestAspect.aj" options="-1.5">
           <message kind="warning" line="7" text="unchecked conversion when advice applied at shadow field-get(java.util.Set Test1.intsSet), expected java.util.Set&lt;java.lang.Integer&gt; but advice uses java.util.Set"/>
