@@ -283,11 +283,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                         );
                     }
                     //generate key for SC
-                	String aspectCode = readAspect(aspectClassName, loader);
                     if(namespace==null){
-                    	namespace=new StringBuffer(aspectCode);
+                    	namespace=new StringBuffer(aspectClassName);
                     }else{
-                    	namespace = namespace.append(";"+aspectCode);
+                    	namespace = namespace.append(";"+aspectClassName);
                     }
                 }
             }
@@ -312,12 +311,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                             gen.getBytes()
                     );
                     ResolvedType aspect = weaver.addLibraryAspect(concreteAspect.name);
+
                     //generate key for SC
-                	String aspectCode = readAspect(concreteAspect.name, loader);
                     if(namespace==null){
-                    	namespace=new StringBuffer(aspectCode);
+                    	namespace=new StringBuffer(concreteAspect.name);
                     }else{
-                    	namespace = namespace.append(";"+aspectCode);
+                    	namespace = namespace.append(";"+concreteAspect.name);
                     }
                 }
             }
@@ -535,40 +534,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      */
     public void flushGeneratedClasses(){
     	generatedClasses = new HashMap();
-    }
-    
-
-    /**
-     * Read in an aspect from the disk and return its bytecode as a String
-     * @param name	the name of the aspect to read in
-     * @return the bytecode representation of the aspect
-     */
-    private String readAspect(String name, ClassLoader loader){
-        if (true) return name+"@"+(loader==null?"0":Integer.toString(loader.hashCode()));
-        // FIXME AV - ?? can someone tell me why we read the whole bytecode
-        // especially one byte by one byte
-        // also it does some NPE sometime (see AtAjLTW "LTW Decp2")
-        InputStream is = null;
-        try {
-    		String result = "";
-        	is = loader.getResourceAsStream(name.replace('.','/')+".class");
-			int b = is.read();
-			while(b!=-1){
-				result = result + b;
-				b=is.read();
-			}
-			is.close();
-	    	return result;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "";
-		} catch (NullPointerException e) {
-			//probably tried to read in a "non aspect @missing@" aspect
-			System.err.println("ClassLoaderWeavingAdaptor.readAspect() name: "+name+"  Exception: "+e);
-			return "";
-		} finally {
-            try {is.close();} catch (Throwable t) {;}
-        }
     }
     
 }
