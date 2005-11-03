@@ -14,5 +14,5 @@ public class GenericCtorITD1 {
 
 
 aspect X {
-  <T> Base.new(List<T> elements) { }
+  <T> Base.new(List<T> elements) { this(); }
 }

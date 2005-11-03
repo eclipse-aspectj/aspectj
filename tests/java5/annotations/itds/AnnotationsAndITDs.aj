@@ -14,10 +14,10 @@ public aspect AnnotationsAndITDs {
 	// annotated ITD constructors
 	
 	@SomeAnnotation(s="hello",clazz=AnnotationsAndITDs.class)
-	public ITDMe.new(String s) {}
+	public ITDMe.new(String s) { this(); }
 	
 	@SomeAnnotation(s="goodbye",clazz=String.class)
-	private ITDMe.new(int x) {}
+	private ITDMe.new(int x) { this(); }
 
 	// annotated ITD methods
 	
@@ -42,8 +42,8 @@ public aspect AnnotationsAndITDs {
 	
 	declare @constructor : ITDMe2.new(..) : @SomeAnnotation(s="@cons",clazz=String.class);
 	
-	public ITDMe2.new(String s) {}	
-	private ITDMe2.new(int x) {}
+	public ITDMe2.new(String s) { this(); }	
+	private ITDMe2.new(int x) { this(); }
 
 	// annotated ITD methods
 	

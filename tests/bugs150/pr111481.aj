@@ -8,6 +8,7 @@ public class pr111481 {
 }
 aspect A {
     public pr111481.new(Object... names) {
+    	this();
     	System.out.println(names[0]);
     }
 

@@ -655,6 +655,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("no verify error with two this pcds");
   }
   
+  public void testITDCWithNoExplicitConsCall() {
+	  runTest("ITDC with no explicit cons call");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

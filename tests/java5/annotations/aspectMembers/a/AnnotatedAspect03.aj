@@ -9,7 +9,7 @@ public aspect AnnotatedAspect03 {
 	
 	@MethodAnnotation private int ITDMe.getGoo() { return goo; }
 	
-	@ConstructorAnnotation public ITDMe.new(int x) { goo = x; }
+	@ConstructorAnnotation public ITDMe.new(int x) { this(); goo = x; }
 	
 }
 

@@ -12,5 +12,5 @@ class Base<N extends Number> {
 }
 
 aspect X {
-  public Base<Z>.new(List<String> ls) {}; // ok - specified type variable but didnt use it (could put a lint warning on this case?)
+  public Base<Z>.new(List<String> ls) { this(); }; // ok - specified type variable but didnt use it (could put a lint warning on this case?)
 }

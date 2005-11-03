@@ -8,7 +8,7 @@
 //  initialization(HW.new(String)) will not match !
 
 aspect A {  
-	HW.new(String s) {}  
+	HW.new(String s) { this(); }  
 	declare warning : initialization(HW.new(String,A)) : "Funky ctor found!";
 }
 

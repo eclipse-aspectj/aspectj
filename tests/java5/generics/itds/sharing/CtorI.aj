@@ -10,5 +10,5 @@ public class CtorI {
 class Base<N extends Number> { }
 
 aspect X {
-  public Base<Z>.new(List<Z> lz) {}
+  public Base<Z>.new(List<Z> lz) {this();}
 }

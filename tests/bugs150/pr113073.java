@@ -9,6 +9,7 @@ class C {
 
 aspect D {
 	public C.new(String s) {
+		this();
 	}
 	public void C.anotherMethod(String s) {
 	}

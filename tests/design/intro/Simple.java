@@ -56,10 +56,10 @@ aspect A {
 	return new C(2).m();
     }
     
-    public C.new(String s) { }
+    public C.new(String s) { this(); }
 
     private C.new(int i) {
-        Tester.note("new A.C");
+        this(); Tester.note("new A.C");
     }
 }
 
@@ -75,6 +75,6 @@ aspect B {
     }
 
     private C.new(int i) {
-	Tester.note("new B.C");
+	this(); Tester.note("new B.C");
     }
 }    

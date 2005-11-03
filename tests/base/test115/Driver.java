@@ -19,7 +19,7 @@ class SubClass extends Class {}
 aspect Aspect {
   static int count = 0;
   //introduction subtypes(Class) {
-  Class.new(int i) {count++;}
+  Class.new(int i) {this(); count++;}
   SubClass.new(int i) {super(2); count++;}
       //}
 }

@@ -3,9 +3,9 @@ import java.util.*;
 public aspect CtorG {
 
   // visibility options...
-  public  Base<Z>.new(List<Z> lz,int i) {}
-  private Base<Z>.new(List<Z> lz,String s) {}
-          Base<Z>.new(List<Z> lz,boolean b) {}
+  public  Base<Z>.new(List<Z> lz,int i) { this();}
+  private Base<Z>.new(List<Z> lz,String s) { this();}
+          Base<Z>.new(List<Z> lz,boolean b) {this();}
 
     public static void main(String []argv) {
 	    List<Integer> intList = new ArrayList<Integer>();

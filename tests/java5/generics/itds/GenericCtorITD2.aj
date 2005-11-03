@@ -18,5 +18,5 @@ public class GenericCtorITD2 {
 
 aspect X {
   // wildcards, argh!
-  <T> Base.new(List<T> one,List<? extends T> two) { }
+  <T> Base.new(List<T> one,List<? extends T> two) { this(); }
 }

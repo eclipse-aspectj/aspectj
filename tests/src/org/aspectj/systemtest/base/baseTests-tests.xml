@@ -116,7 +116,10 @@
 
     <ajc-test dir="base/test118" title="DEPRECATED: Introduce of constructors"
       keywords="from-base">
-        <compile files="Driver.java"/>
+        <compile files="Driver.java">
+          <message kind="warning" line="54" text="[Xlint:noExplicitConstructorCall]"/>
+          <message kind="warning" line="57" text="[Xlint:noExplicitConstructorCall]"/>
+        </compile>
         <run class="Driver"/>
     </ajc-test>
 

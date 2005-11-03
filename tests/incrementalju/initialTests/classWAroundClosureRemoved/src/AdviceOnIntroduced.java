@@ -8,7 +8,7 @@ public aspect AdviceOnIntroduced {
     }
     
     int Foo.foo(int n) { return n; }
-    Foo.new(int w) {}
+    Foo.new(int w) {this();}
         
     int around(int n):
         within(AdviceOnIntroduced) &&

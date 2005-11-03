@@ -5,11 +5,11 @@ import java.lang.annotation.*;
 
 public aspect BindingWithAnnotatedItds3 {
 
-  @Fruit("pear") A.new(String s) { }
+  @Fruit("pear") A.new(String s) { this();  }
 
-  private @Fruit("orange") A.new(int i) { }
+  private @Fruit("orange") A.new(int i) {  this(); }
 
-  public @Fruit("tomato") A.new(boolean b) { }
+  public @Fruit("tomato") A.new(boolean b) {  this(); }
   
   public static void main(String[]argv) {
     A instance1 = new A("a");

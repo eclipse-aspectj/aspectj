@@ -8,10 +8,10 @@ public class CtorA {
 }
 
 class Base<N extends Number> { 
-  //public Base(List<N> sn) {}
+  public Base() {}
   <Y extends Number> Base(Set<N> sn, List<Y> ys) {}
 }
 
 aspect X {
-  public Base<Z>.new(List<Z> lz) {}; // OK, Z becomes N in parameter
+  public Base<Z>.new(List<Z> lz) { this(); } // OK, Z becomes N in parameter
 }

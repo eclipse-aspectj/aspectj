@@ -23,8 +23,8 @@ public aspect PackageITDs {
   <R extends Number> void Base.packageMethod2(List<R> lr1,List<R> lr2) {}
 
   // ctor
-  <P extends Number> Base.new(List<P> lr) {}
-  <P extends Number> Base.new(List<P> lr1,List<P> lr2) {}
-  <P,Q extends Number> Base.new(List<P> lp,Map<Q,P> m1) {}
+  <P extends Number> Base.new(List<P> lr) { this(); }
+  <P extends Number> Base.new(List<P> lr1,List<P> lr2) { this(); }
+  <P,Q extends Number> Base.new(List<P> lp,Map<Q,P> m1) { this(); }
 
 }

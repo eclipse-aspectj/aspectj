@@ -74,7 +74,7 @@ aspect A pertarget(target(Foo)){
         // System.out.println(thisJoinPoint.className +"."+ 
         // thisJoinPoint.methodName);
     }
-    Foo.new(int n) { ranIntroducedConstructor = true; }
+    Foo.new(int n) { this(); ranIntroducedConstructor = true; }
 
 	// make sure advice doesn't go on the toString() method
 	// this would result in an infinite recursion

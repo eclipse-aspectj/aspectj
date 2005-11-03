@@ -11,7 +11,7 @@ class Base<N> {
 aspect X {
 
   public Base<Z>.new(Z  aNumber) {
-	  ;
+	 this() ;
   }
 	
   public List<Z> Base<Z>.f2;

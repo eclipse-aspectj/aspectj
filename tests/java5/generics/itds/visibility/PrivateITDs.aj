@@ -23,8 +23,8 @@ public aspect PrivateITDs {
   private <R extends Number> void Base.privateMethod2(List<R> lr1,List<R> lr2) {}
 
   // ctor
-  private <P extends Number> Base.new(List<P> lr) {}
-  private <P extends Number> Base.new(List<P> lr1,List<P> lr2) {}
-  private <P,Q extends Number> Base.new(List<P> lp,Map<Q,P> m1) {}
+  private <P extends Number> Base.new(List<P> lr) { this(); }
+  private <P extends Number> Base.new(List<P> lr1,List<P> lr2) { this(); }
+  private <P,Q extends Number> Base.new(List<P> lp,Map<Q,P> m1) { this(); }
 
 }

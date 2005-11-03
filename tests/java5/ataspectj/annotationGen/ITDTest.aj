@@ -12,11 +12,11 @@ public aspect ITDTest {
 
     int A.c(String s) { return 1; }
 
-    public A.new(String s) {}
+    public A.new(String s) { this(); }
 
-    private A.new(String s,String s2) {}
+    private A.new(String s,String s2) { this(); }
 	
-    A.new(String s, Object o) {}
+    A.new(String s, Object o) { this(); }
 
     public int A.f ;
 

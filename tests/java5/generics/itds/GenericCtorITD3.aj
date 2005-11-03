@@ -38,6 +38,7 @@ public class GenericCtorITD3 {
 
 aspect X {
   <T> Sorter.new(List<T> elements,Comparator<? super T> comparator) { 
+	this();
 	Collections.sort(elements,comparator);
 	l = elements;
   }

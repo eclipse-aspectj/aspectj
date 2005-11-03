@@ -11,5 +11,5 @@ class Base<N extends Number> {
 }
 
 aspect X {
-  public Base<Z>.new(List<List<Z>> llz) {}; // ok - nested but OK
+  public Base<Z>.new(List<List<Z>> llz) { this(); }; // ok - nested but OK
 }

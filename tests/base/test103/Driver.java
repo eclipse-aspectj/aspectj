@@ -46,7 +46,8 @@ aspect Foo {
         return other;
     }
         
-    Pos.new(MagicKey key) {
+    Pos.new(MagicKey key) { 
+    		   this();
             other = id;
             id = getOther();
         }

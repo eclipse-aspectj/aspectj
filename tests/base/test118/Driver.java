@@ -53,11 +53,11 @@ aspect A1 {
 
   C1.new() {
           c1Count++;
-      }
-      C1.new(int x) {
-              c1IntCount++;
-          }
-      }
+  }
+  C1.new(int x) {
+          c1IntCount++;
+  }
+}
 
 aspect Verify {
 

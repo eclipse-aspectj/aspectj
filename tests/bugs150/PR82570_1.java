@@ -12,7 +12,7 @@ public class PR82570_1 {
 aspect X {
 	
 	
-	public PR82570_1.new(String p) {}
+	public PR82570_1.new(String p) { this(); }
 	
 	public int PR82570_1.itdField;
 	

@@ -7,5 +7,5 @@ aspect A {
 }
 
 aspect B {
-    A.new(int i) {}  // CE 10
+    A.new(int i) { this(); }  // CE 10
 }

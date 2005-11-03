@@ -15,5 +15,5 @@ public class CtorH {
 class Base<N> { }
 
 aspect X {
-  public Base<Z>.new(List<Z> lz) {} // OK, Z becomes N in first case, S in the second ;)
+  public Base<Z>.new(List<Z> lz) {this();} // OK, Z becomes N in first case, S in the second ;)
 }
