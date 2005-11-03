@@ -744,14 +744,17 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     // ---- types
     public static ResolvedType makeArray(ResolvedType type, int dim) {
     	if (dim == 0) return type;
-    	ResolvedType array = new Array("[" + type.getSignature(),type.getWorld(),type);
+    	ResolvedType array = new Array("[" + type.getSignature(),"["+type.getErasureSignature(),type.getWorld(),type);
     	return makeArray(array,dim-1);
     }
     
     static class Array extends ResolvedType {
         ResolvedType componentType;
-        Array(String s, World world, ResolvedType componentType) {
-            super(s, world);
+       
+        
+        // Sometimes the erasure is different, eg.  [TT;  and [Ljava/lang/Object; 
+        Array(String sig, String erasureSig,World world, ResolvedType componentType) {
+            super(sig,erasureSig, world);
             this.componentType = componentType;
         }
         public final ResolvedMember[] getDeclaredFields() {

@@ -288,6 +288,11 @@ public class ReferenceType extends ResolvedType {
        		}
        	}
 
+       	if (isTypeVariableReference() && !other.isTypeVariableReference()) { // eg. this=T  other=Ljava/lang/Object;
+       	    TypeVariable aVar = ((TypeVariableReference)this).getTypeVariable();
+       	    return aVar.getFirstBound().resolve(world).isAssignableFrom(other);
+       	} 
+       	
        	if (other.isTypeVariableReference()) {
        		TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
        		if (this instanceof TypeVariableReference) {

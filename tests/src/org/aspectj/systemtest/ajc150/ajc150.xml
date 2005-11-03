@@ -29,6 +29,21 @@
       <run class="TestAspect"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr114343/case2" title="field-get, generics and around advice - 2">
+      <compile files="Test.java,TTT.java,TestAspect.java" options="-1.5"/>
+      <run class="TestAspect">
+        <stderr>
+          <line text="TestAspect.main: Calling foo"/>
+          <line text="Creating Test&lt;Integer&gt; instance"/>
+          <line text="Calling toArray"/>
+          <line text="In around advice"/>
+          <line text="In toArray()"/>
+          <line text="done"/>
+          <line text="TestAspect.main: done"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr113947/case1" title="maws generic aspect - 1">
         <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5">
           <!-- the 'static ref' messages are a bit poor and ought to be eliminated... -->

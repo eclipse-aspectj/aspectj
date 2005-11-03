@@ -204,10 +204,11 @@ public abstract class World implements Dump.INode {
         
         // no existing resolved type, create one
         if (ty.isArray()) {
-            ret = new ResolvedType.Array(signature, 
+        	ResolvedType componentType = resolve(ty.getComponentType(),allowMissing);
+        	String brackets = signature.substring(0,signature.lastIndexOf("[")+1);
+            ret = new ResolvedType.Array(signature, brackets+componentType.getErasureSignature(),
             		                     this, 
-            		                     resolve(ty.getComponentType(), 
-            		                     allowMissing));
+            		                     componentType);
         } else {
             ret = resolveToReferenceType(ty);
             if (!allowMissing && ret == ResolvedType.MISSING) {
@@ -264,7 +265,8 @@ public abstract class World implements Dump.INode {
     	return resolve(UnresolvedType.forName(name),allowMissing);
     }
     
-	
+	private ResolvedType currentlyResolvingBaseType;
+
 	/**
 	 * Resolve to a ReferenceType - simple, raw, parameterized, or generic.
      * Raw, parameterized, and generic versions of a type share a delegate.
@@ -273,8 +275,10 @@ public abstract class World implements Dump.INode {
 		if (ty.isParameterizedType()) {
 			// ======= parameterized types ================
 			ReferenceType genericType = (ReferenceType)resolveGenericTypeFor(ty,false);
+			currentlyResolvingBaseType = genericType;
 			ReferenceType parameterizedType = 
 				TypeFactory.createParameterizedType(genericType, ty.typeParameters, this);
+			currentlyResolvingBaseType = null;
 			return parameterizedType;
 			
 		} else if (ty.isGenericType()) {

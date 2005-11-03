@@ -110,6 +110,12 @@ public class TypeFactory {
 				typeVariableName = typeVariableName.substring(0, typeVariableName.length() -1);
 			}
 			return new UnresolvedTypeVariableReferenceType(new TypeVariable(typeVariableName));
+		} else if (signature.startsWith("[")) {
+			int dims = 0;
+			while (signature.charAt(dims)=='[') dims++;
+			UnresolvedType componentType = createTypeFromSignature(signature.substring(dims));
+			return new UnresolvedType(signature,
+					signature.substring(0,dims)+componentType.getErasureSignature());
 		}
 		return new UnresolvedType(signature);
 	}
