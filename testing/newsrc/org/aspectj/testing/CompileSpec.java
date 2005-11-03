@@ -134,6 +134,7 @@ public class CompileSpec implements ITestStep {
 	 */
 	public void setInpath(String inpath) {
 		this.inpath = inpath.replace(',',File.pathSeparatorChar);
+		this.inpath = inpath.replace(';',File.pathSeparatorChar);
 	}
 	/**
 	 * @return Returns the options.

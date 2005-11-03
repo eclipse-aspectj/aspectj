@@ -627,6 +627,7 @@ public class AjcTestCase extends TestCase {
         int cpIndex = -1;
         boolean hasruntime = false;      
         for (int i = 0; i < args.length-1; i++) {
+        		args[i] = adaptToPlatform(args[i]);
             if ("-classpath".equals(args[i])) {
                 cpIndex = i;
                 String next = args[i+1];
@@ -652,6 +653,12 @@ public class AjcTestCase extends TestCase {
         }
         return args;
     }
+	
+	private String adaptToPlatform(String s) {
+		String ret = s.replace(';',File.pathSeparatorChar);
+		ret = ret.replace(':',File.pathSeparatorChar);
+		return ret;
+	}
     
 	private List copyAll(List in) {
 		if (in == Collections.EMPTY_LIST) return in;
