@@ -15,7 +15,10 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
 import org.aspectj.ajdt.internal.compiler.lookup.*;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
@@ -32,6 +35,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
  * @author Jim Hugunin
  */
 public class InterTypeConstructorDeclaration extends InterTypeDeclaration {	
+	private static final String SUPPRESSAJWARNINGS = "Lorg/aspectj/lang/annotation/SuppressAjWarnings;";
+	private static final String NOEXPLICITCONSTRUCTORCALL = "noExplicitConstructorCall";
 	private MethodDeclaration preMethod;
 	private ExplicitConstructorCall explicitConstructorCall = null;
 	
@@ -69,8 +74,53 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			this.arguments);
 			
 		super.resolve(upperScope);
+		
+		// after annotations have been resolved...
+		if (explicitConstructorCall == null) {
+			raiseNoFieldInitializersWarning();
+		}
 	}
 
+	/**
+	 * Warning added in response to PR 62606 - if an ITD constructor does not make an explicit constructor
+	 * call then field initializers in the target class will not be executed leading to unexpected behaviour.
+	 */
+	private void raiseNoFieldInitializersWarning() {
+		if (suppressingNoExplicitConstructorCall()) return;
+		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(scope);
+		ISourceLocation location =
+			new EclipseSourceLocation(scope.problemReporter().referenceContext.compilationResult(),
+									sourceStart(),sourceEnd());
+		world.getWorld().getLint().noExplicitConstructorCall.signal(null, location);
+	}
+	
+	/**
+	 * true iff constructor has @SuppressAjWarnings or @SuppressAjWarnings("xyz,noExplicitConstructorCall,def,...")
+	 * @return
+	 */
+	private boolean suppressingNoExplicitConstructorCall() {
+		if (this.annotations == null) return false;
+		for (int i = 0; i < this.annotations.length; i++) {
+			if (new String(this.annotations[i].resolvedType.signature()).equals(SUPPRESSAJWARNINGS)) {
+				if (this.annotations[i] instanceof MarkerAnnotation) {
+					return true;
+				} else if (this.annotations[i] instanceof SingleMemberAnnotation){
+					SingleMemberAnnotation sma = (SingleMemberAnnotation) this.annotations[i];
+					if (sma.memberValue instanceof ArrayInitializer) {
+						ArrayInitializer memberValue = (ArrayInitializer) sma.memberValue;
+						for (int j = 0; j < memberValue.expressions.length; j++) {
+							if (memberValue.expressions[j] instanceof StringLiteral) {
+								StringLiteral val = (StringLiteral) memberValue.expressions[j];
+								if (new String(val.source()).equals(NOEXPLICITCONSTRUCTORCALL)) return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
 	private MethodDeclaration makePreMethod(ClassScope scope, 
 											ExplicitConstructorCall explicitConstructorCall)
 	{
