@@ -57,6 +57,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testMatthewsAspect_pr113947_2() { runTest("maws generic aspect - 2");}
   public void testFieldGet_pr114343()         { runTest("field-get, generics and around advice");}
   public void testFieldGet_pr114343_2()       { runTest("field-get, generics and around advice - 2");}
+  public void testFieldGet_pr114343_3()       { runTest("field-get, generics and around advice - 3");}
   public void testCaptureBinding_pr114744()   { runTest("capturebinding wildcard problem");}
   
   public void testBadDecp_pr110788_1() { runTest("bad generic decp - 1");}
