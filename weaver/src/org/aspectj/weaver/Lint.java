@@ -98,7 +98,10 @@ public class Lint {
  
 	public final Kind noGuardForLazyTjp =
 		new Kind("noGuardForLazyTjp","can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at {0}");
-
+	
+	public final Kind noExplicitConstructorCall = 
+		new Kind("noExplicitConstructorCall","inter-type constructor does not contain explicit constructor call: field initializers in the target type will not be executed");
+	
     public Lint(World world) {
 		this.world = world;
 	}
