@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.UnresolvedType;
 
 public class Bindings {
 	public static final Bindings NONE = new Bindings(0);
@@ -92,6 +93,20 @@ public class Bindings {
 			}
 		}
 		int[] newRet = new int[index];
+		System.arraycopy(ret, 0, newRet, 0, index);
+		//System.out.println("ret: " + index);
+		return newRet;
+	}
+	
+	public UnresolvedType[] getUsedFormalTypes() {
+		UnresolvedType[] ret = new UnresolvedType[bindings.length];
+		int index = 0;
+		for (int i=0, len=bindings.length; i < len; i++) {
+			if (bindings[i] != null) {
+				ret[index++] = ((BindingTypePattern)bindings[i]).getExactType();
+			}
+		}
+		UnresolvedType[] newRet = new UnresolvedType[index];
 		System.arraycopy(ret, 0, newRet, 0, index);
 		//System.out.println("ret: " + index);
 		return newRet;
