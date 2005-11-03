@@ -21,6 +21,11 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr86903" title="bcelrenderer bad">
+      <compile files="GenericService.java,Service.java,Main.java,BadWormhole.java"/>
+      <run class="Main"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr114343" title="field-get, generics and around advice">
       <compile files="Test.java,Test1.java,Test2.java,TestAspect.aj" options="-1.5">
           <message kind="warning" line="7" text="unchecked conversion when advice applied at shadow field-get(java.util.Set Test1.intsSet), expected java.util.Set&lt;java.lang.Integer&gt; but advice uses java.util.Set"/>
@@ -29,7 +34,19 @@
       <run class="TestAspect"/>
     </ajc-test>
     
-    <ajc-test dir="bugs150/pr114343/case2" title="field-get, generics and around advice - 2">
+    <ajc-test dir="bugs150/pr113947/case1" title="maws generic aspect - 1">
+        <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5">
+          <!-- the 'static ref' messages are a bit poor and ought to be eliminated... -->
+          <message kind="error" line="6" text="Cannot make a static reference to the non-static type M"/>
+          <message kind="error" line="6" text="Cannot make inter-type declarations on type variables"/>
+          <message kind="error" line="8" text="Cannot make a static reference to the non-static type I"/>
+          <message kind="error" line="8" text="Cannot make inter-type declarations on type variables"/>
+          <message kind="error" line="12" text="Cannot make a static reference to the non-static type M"/>
+          <message kind="error" line="12" text="Cannot make inter-type declarations on type variables"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="bugs150/pr114343/case2" title="field-get, generics and around advice - 2">
       <compile files="Test.java,TTT.java,TestAspect.java" options="-1.5"/>
       <run class="TestAspect">
         <stderr>
@@ -62,18 +79,7 @@
         </stderr>
       </run>
     </ajc-test>
-    
-    <ajc-test dir="bugs150/pr113947/case1" title="maws generic aspect - 1">
-        <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5">
-          <!-- the 'static ref' messages are a bit poor and ought to be eliminated... -->
-          <message kind="error" line="6" text="Cannot make a static reference to the non-static type M"/>
-          <message kind="error" line="6" text="Cannot make inter-type declarations on type variables"/>
-          <message kind="error" line="8" text="Cannot make a static reference to the non-static type I"/>
-          <message kind="error" line="8" text="Cannot make inter-type declarations on type variables"/>
-          <message kind="error" line="12" text="Cannot make a static reference to the non-static type M"/>
-          <message kind="error" line="12" text="Cannot make inter-type declarations on type variables"/>
-        </compile>
-    </ajc-test>
+
 
     <ajc-test dir="bugs150/pr113947/case2" title="maws generic aspect - 2">
         <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5"/>
