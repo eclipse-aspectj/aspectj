@@ -263,7 +263,7 @@ public class IfPointcut extends Pointcut {
         final IfPointcut ret;
         if (extraParameterFlags < 0 && testMethod == null) {
             // @AJ style, we need to find the testMethod in the aspect defining the "if()" enclosing pointcut
-            ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();
+            ResolvedPointcutDefinition def = bindings.peekEnclosingDefinition();
             if (def != null) {
                 ResolvedType aspect = inAspect.getWorld().resolve(def.getDeclaringType());
                 for (Iterator memberIter = aspect.getMethods(); memberIter.hasNext();) {
@@ -327,7 +327,7 @@ public class IfPointcut extends Pointcut {
 			}
 			ret.residueSource = advice.getPointcut().concretize(inAspect, inAspect, ret.baseArgsCount, advice);
 		} else {
-			ResolvedPointcutDefinition def = bindings.peekEnclosingDefinitition();
+			ResolvedPointcutDefinition def = bindings.peekEnclosingDefinition();
 			if (def == CflowPointcut.CFLOW_MARKER) {
 				inAspect.getWorld().showMessage(IMessage.ERROR,
 						WeaverMessages.format(WeaverMessages.IF_LEXICALLY_IN_CFLOW),

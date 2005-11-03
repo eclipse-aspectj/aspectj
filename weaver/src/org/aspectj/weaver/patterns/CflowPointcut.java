@@ -243,8 +243,22 @@ public class CflowPointcut extends Pointcut {
 				if (!bindings.hasKey(freeVar)) continue; 
 				
 				int formalIndex = bindings.get(freeVar);
-				ResolvedType formalType =
-					bindings.getAdviceSignature().getParameterTypes()[formalIndex].resolve(world);
+				
+				// We need to look in the right place for the type of the formal.  Suppose the advice looks like this:
+				//  before(String s):  somePointcut(*,s) 
+				// where the first argument in somePointcut is of type Number
+				// for free variable 0 we want to ask the pointcut for the type of its first argument, if we only
+				// ask the advice for the type of its first argument then we'll get the wrong type (pr86903)
+				
+				ResolvedPointcutDefinition enclosingDef = bindings.peekEnclosingDefinition();
+				ResolvedType formalType = null;
+				
+				// Is there a useful enclosing pointcut?
+				if (enclosingDef!=null && enclosingDef.getParameterTypes().length>0) {
+					formalType = enclosingDef.getParameterTypes()[freeVar].resolve(world);
+				} else {
+					formalType = bindings.getAdviceSignature().getParameterTypes()[formalIndex].resolve(world);
+				}
 				
 				ConcreteCflowPointcut.Slot slot = 
 					new ConcreteCflowPointcut.Slot(formalIndex, formalType, i);

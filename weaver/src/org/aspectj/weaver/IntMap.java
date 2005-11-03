@@ -37,12 +37,9 @@ public class IntMap {
 	}
 	
 	
-	public ResolvedPointcutDefinition peekEnclosingDefinitition() {
-        try {
-		    return (ResolvedPointcutDefinition)enclosingDefinition.get(enclosingDefinition.size()-1);
-        } catch (IndexOutOfBoundsException e) {
-            return null;
-        }
+	public ResolvedPointcutDefinition peekEnclosingDefinition() {
+		if (enclosingDefinition.size()==0) return null;
+	    return (ResolvedPointcutDefinition)enclosingDefinition.get(enclosingDefinition.size()-1);
 	}
 	
 	
