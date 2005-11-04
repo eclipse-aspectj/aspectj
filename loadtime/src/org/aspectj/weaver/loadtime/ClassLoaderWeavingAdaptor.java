@@ -17,6 +17,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -202,7 +203,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         world.setPinpointMode(weaverOption.pinpoint);
         weaver.setReweavableMode(weaverOption.notReWeavable);
         world.setXnoInline(weaverOption.noInline);
-        world.setBehaveInJava5Way(weaverOption.java5);//TODO should be autodetected ?
+        //world.setBehaveInJava5Way(weaverOption.java5);//TODO should be autodetected ?
+        // AMC - autodetect as per line below, needed for AtAjLTWTests.testLTWUnweavable
+        world.setBehaveInJava5Way(LangUtil.is15VMOrGreater());
         //-Xlintfile: first so that lint wins
         if (weaverOption.lintFile != null) {
             InputStream resource = null;
