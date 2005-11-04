@@ -22,6 +22,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SuperReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
@@ -37,13 +38,13 @@ public class InterSuperFixerVisitor extends ASTVisitor {
 	InterTypeDeclaration dec;
 	ReferenceBinding onType;
 	TypeBinding superType;
+	private int depthCounter = 0; // Keeps track of whether we are inside any nested local type declarations
 
 	EclipseFactory world; 
 	public InterSuperFixerVisitor(InterTypeDeclaration dec, EclipseFactory world, Scope scope) {
 		this.dec = dec;
 		this.onType = dec.onTypeBinding;
 		this.world = world;
-		
 		// AMC with the java 5 compiler the superclass() of an interface is object,
 		// not a parent interface (if one exists)
 		if (onType.isInterface() && onType.superInterfaces().length == 1) {
@@ -65,8 +66,19 @@ public class InterSuperFixerVisitor extends ASTVisitor {
 	public void endVisit(MessageSend send, BlockScope scope) {
 		send.receiver = fixReceiver(send.receiver, scope);
 	}
+	
+	
+	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
+		depthCounter++;
+		return super.visit(localTypeDeclaration, scope);
+	}
+
+	public void endVisit(TypeDeclaration localTypeDeclaration,BlockScope scope) {
+		depthCounter--;
+	}	
 
 	private Expression fixReceiver(Expression expression, BlockScope scope) {
+		if (depthCounter!=0) return expression; // Don't mess with super calls down in nested local type declarations (pr90143)
 		if (expression instanceof SuperReference) {
 			SuperReference superRef = (SuperReference) expression;
 			if (superType == null) {

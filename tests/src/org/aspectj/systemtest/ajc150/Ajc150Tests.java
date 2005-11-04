@@ -42,10 +42,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
 
+  public void testCantCallSuperMethods_pr90143() { runTest("cant call super methods");}
   /*
   public void testBrokenDispatchByITD_pr72834() { runTest("broken dispatch");}
   public void testMissingAccessor_pr73856() { runTest("missing accessor");}
-  public void testCantCallSuperMethods_pr90143() { runTest("cant call super methods");}
   public void testCunningDeclareParents_pr92311() { runTest("cunning declare parents");}
   public void testGenericITDsAndAbstractMethodError_pr102357() { runTest("generic itds and abstract method error");}
   public void testITDCtor_pr112783()       { runTest("Problem with constructor ITDs");}
