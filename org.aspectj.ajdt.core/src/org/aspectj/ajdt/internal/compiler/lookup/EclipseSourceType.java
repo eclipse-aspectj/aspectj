@@ -28,6 +28,7 @@ import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.core.builder.EclipseSourceContext;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -100,6 +101,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	public boolean isAspect() {
 		final boolean isCodeStyle = declaration instanceof AspectDeclaration;
         return isCodeStyle?isCodeStyle:isAnnotationStyleAspect();
+	}
+	
+	public boolean isAnonymous() {
+		return ((declaration.modifiers & ASTNode.AnonymousAndLocalMask) != 0);
 	}
 
     public boolean isAnnotationStyleAspect() {
