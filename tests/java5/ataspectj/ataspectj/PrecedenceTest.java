@@ -17,6 +17,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 import java.lang.annotation.Annotation;
 
@@ -56,6 +57,7 @@ public class PrecedenceTest extends TestCase {
 
     @Aspect()
     public static class TestAspect_1 {
+    		@SuppressAjWarnings
         @Before("execution(* ataspectj.PrecedenceTest.hello())")
         public void before() {
             log("TestAspect_1");
@@ -65,6 +67,7 @@ public class PrecedenceTest extends TestCase {
     @Aspect()
     @DeclarePrecedence("ataspectj.PrecedenceTest.TestAspect_3, ataspectj.PrecedenceTest.TestAspect_1")
     public static class TestAspect_2 {
+		@SuppressAjWarnings
         @Before("execution(* ataspectj.PrecedenceTest.hello())")
         public void before() {
             log("TestAspect_2");
@@ -73,6 +76,7 @@ public class PrecedenceTest extends TestCase {
 
     @Aspect()
     public static class TestAspect_3 {
+		@SuppressAjWarnings
         @Before("execution(* ataspectj.PrecedenceTest.hello())")
         public void before() {
             log("TestAspect_3");

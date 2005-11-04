@@ -13,6 +13,7 @@ package ataspectj;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Aspects;
 import junit.framework.Assert;
@@ -29,6 +30,7 @@ public class PerClauseTestAspects {
             s_count++;
         }
 
+        @SuppressAjWarnings
         @Before("execution(* ataspectj.PerClauseTest.perSingleton()) && target(t)")
         public void before(JoinPoint jp, Object t) {
             PerClauseTest.log("AOP."+jp.getSignature().getName());
@@ -44,6 +46,7 @@ public class PerClauseTestAspects {
             s_count++;
         }
 
+        @SuppressAjWarnings
         @Before("execution(* ataspectj.PerClauseTest.perTarget()) && target(t)")
         public void before(JoinPoint jp, Object t) {
             PerClauseTest.log("AOP."+jp.getSignature().getName());
@@ -59,6 +62,7 @@ public class PerClauseTestAspects {
             s_count++;
         }
 
+        @SuppressAjWarnings
         @Before("execution(* ataspectj.PerClauseTest.perCflow())")
         public void before(JoinPoint jp) {
             PerClauseTest.log("AOP."+jp.getSignature().getName());
@@ -74,6 +78,7 @@ public class PerClauseTestAspects {
             s_count++;
         }
 
+        @SuppressAjWarnings
         @Before("execution(* ataspectj.PerClauseTest.PTW*.foo())")
         public void before(JoinPoint jp) {
             ;
@@ -89,6 +94,7 @@ public class PerClauseTestAspects {
             s_count++;
         }
 
+        @SuppressAjWarnings
         @Before("execution(* ataspectj.PerClauseTest.PerThis.foo())")
         public void before(JoinPoint jp) {
             a_count++;

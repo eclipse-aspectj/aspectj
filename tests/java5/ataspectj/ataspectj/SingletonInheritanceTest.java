@@ -14,6 +14,7 @@ package ataspectj;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import junit.framework.TestCase;
 
 /**
@@ -69,11 +70,13 @@ public class SingletonInheritanceTest extends TestCase {
 
     @Aspect
     static class ChildAspect extends ParentAspect {
+    	    @SuppressAjWarnings
         @Before("pc()")
         public void abefore() {
             log("aop");
         }
 
+    	    @SuppressAjWarnings
         @Before("ataspectj.SingletonInheritanceTest.AbstractAspect.pc2()")
         public void abefore2() {
             log("aop2");

@@ -21,6 +21,7 @@ import org.aspectj.lang.Aspects;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 import java.security.PrivilegedAction;
 
@@ -108,6 +109,7 @@ public class BindingTest extends TestCase {
         void pc(int arg2, int arg1) {}// see rather fancy ordering here..
 
         // see return int here.
+        @SuppressAjWarnings
         @Around("pc(argAdvice2, argAdvice1) && target(t)")//see here ordering remade consistent
         public int aaround(ProceedingJoinPoint jp, BindingTest t, int argAdvice1, int argAdvice2) throws Throwable {
             int res = ((Integer)jp.proceed()).intValue();
@@ -117,12 +119,14 @@ public class BindingTest extends TestCase {
         @Pointcut("call(int dup(int)) && within(ataspectj.BindingTest) && args(arg1)")
         void pc2(int arg1) {}
 
+        @SuppressAjWarnings
         @Around("pc2(argAdvice1)")
         public Object aaround2(int argAdvice1, ProceedingJoinPoint jp) throws Throwable {
             int res = ((Integer)jp.proceed(new Object[]{new Integer(argAdvice1-1)})).intValue();
             return new Integer(res/3*2);
         }
 
+        @SuppressAjWarnings
         @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testProceedInInner()) && args(i)")
         public int aaround3(int i, final ProceedingJoinPoint jp) throws Throwable {
             final StringBuffer sb = new StringBuffer();
@@ -143,12 +147,14 @@ public class BindingTest extends TestCase {
             return Integer.parseInt(sb.toString())*2;
         }
 
-        @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testNoProceed()) && args(i)")
+       @SuppressAjWarnings
+       @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testNoProceed()) && args(i)")
         public int aaround4(int i, final ProceedingJoinPoint jp) throws Throwable {
             // since no proceed() is call, this advice won't be inlined
             return 0;
         }
 
+        @SuppressAjWarnings
         @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testDoubleProceed()) && args(i)")
         public int aaround5(int i, final ProceedingJoinPoint jp) throws Throwable {
             int i1 = ((Integer)jp.proceed()).intValue();
@@ -156,7 +162,8 @@ public class BindingTest extends TestCase {
             return i1 + i2;
         }
 
-        @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testDoubleProceedOneInner()) && args(i)")
+       @SuppressAjWarnings
+       @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testDoubleProceedOneInner()) && args(i)")
         public int aaround6(int i, final ProceedingJoinPoint jp) throws Throwable {
             int i1 = ((Integer)jp.proceed()).intValue();
             Object io2 = new PrivilegedAction() {
@@ -179,13 +186,15 @@ public class BindingTest extends TestCase {
             }
         }
 
+        @SuppressAjWarnings
         @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testAccessAspectState()) && args(i)")
         public Object aaround7(int i, final ProceedingJoinPoint jp) throws Throwable {
             m_count++;// will be wrapped for inlining support
             return jp.proceed();
         }
 
-        @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testTryCatch()) && args(i)")
+       @SuppressAjWarnings
+       @Around("call(int echo(int)) && withincode(void ataspectj.BindingTest.testTryCatch()) && args(i)")
         public Object aaround8(int i, final ProceedingJoinPoint jp) throws Throwable {
             try {
                 return 2*((Integer)jp.proceed()).intValue();

@@ -14,6 +14,7 @@ package ataspectj;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import junit.framework.TestCase;
 
 /**
@@ -69,6 +70,7 @@ public class PerClauseInheritanceTest extends TestCase {
             COUNT++;
         }
 
+        @SuppressAjWarnings
         @Before("pc()")
         public void abefore() {
             log("aop");

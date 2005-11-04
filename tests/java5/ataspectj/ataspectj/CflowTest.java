@@ -14,6 +14,7 @@ package ataspectj;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.runtime.internal.CFlowCounter;
@@ -63,7 +64,7 @@ public class CflowTest extends TestCase {
 
         //LTW will add:
         //public static final CFlowCounter ajc$cflowCounter$0 = new CFlowCounter();
-
+    	    @SuppressAjWarnings
         @Before("execution(* ataspectj.CflowTest.hello(..)) && this(t) && cflow(execution(* ataspectj.CflowTest.startCflow(..)))")
         public void before(Object t, JoinPoint jp) {
             assertEquals(CflowTest.class.getName(), t.getClass().getName());

@@ -18,6 +18,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.runtime.internal.CFlowCounter;
 import junit.framework.TestCase;
@@ -75,6 +76,7 @@ public class PointcutReferenceTest extends TestCase {
         @Pointcut("pcRef()")
         void pcRef2() {}
 
+        @SuppressAjWarnings
         @Before("pcRef2()")
         public void before(JoinPoint jp) {
             log("before");
@@ -86,6 +88,7 @@ public class PointcutReferenceTest extends TestCase {
                 " && ataspectj.PointcutReferenceTest.RefAspect.pcRefObjectBinding(t)")
         void pcRefBinding(Object t) {}
 
+        @SuppressAjWarnings
         @Before("pcRefBinding(ttt)")
         public void before(Object ttt, JoinPoint jp) {
             log("beforeWithRef");

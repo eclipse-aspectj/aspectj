@@ -14,6 +14,7 @@ package ataspectj;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
@@ -36,6 +37,7 @@ public class AroundInlineMungerTestAspects2 {
         private int i;
         private static int I;
 
+        @SuppressAjWarnings
         Object around() : execution(* ataspectj.AroundInlineMungerTest2.target()) {
             aroundCount++;
             priv(1, 2L, 3);
@@ -45,6 +47,7 @@ public class AroundInlineMungerTestAspects2 {
         }
 
         // this advice to test around advice body call/get/set advising
+        @SuppressAjWarnings
         before() : (call(* ataspectj.AroundInlineMungerTestAspects2.Open.priv(..))
                   || get(int ataspectj.AroundInlineMungerTestAspects2.Open.i)
                   || set(int ataspectj.AroundInlineMungerTestAspects2.Open.i)
@@ -54,6 +57,7 @@ public class AroundInlineMungerTestAspects2 {
             beforeCount++;
         }
 
+        @SuppressAjWarnings
         Object around() : execution(* ataspectj.AroundInlineMungerTest2.target()) {
             aroundCount++;
             super.superMethod();
@@ -62,6 +66,7 @@ public class AroundInlineMungerTestAspects2 {
             return proceed();
         }
 
+        @SuppressAjWarnings
         Object around() : execution(* ataspectj.AroundInlineMungerTest2.target()) {
             aroundCount++;
             // all those field access will be wrapped

@@ -18,6 +18,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.JoinPoint;
 
@@ -56,18 +57,21 @@ public class XXJoinPointTest extends TestCase {
         @Pointcut("call(* ataspectj.XXJoinPointTest.hello()) && within(ataspectj.XXJoinPointTest)")
         void pc() {}
 
+        @SuppressAjWarnings
         @Before("pc()")
         public void before(JoinPoint jp) {
             assertEquals("hello", jp.getSignature().getName());
             log("jp");
         }
 
+        @SuppressAjWarnings
         @Before("pc()")
         public void before(JoinPoint.StaticPart sjp) {
             assertEquals("hello", sjp.getSignature().getName());
             log("sjp");
         }
 
+        @SuppressAjWarnings
         @Before("pc()")
         public void beforeEnclosing(JoinPoint.EnclosingStaticPart esjp) {
             assertEquals("testJoinPointsInAdviceSignature", esjp.getSignature().getName());
@@ -75,6 +79,7 @@ public class XXJoinPointTest extends TestCase {
         }
 
         //weird order
+        @SuppressAjWarnings
         @Before("pc()")
         public void beforeWEIRD1(JoinPoint jp, JoinPoint.StaticPart sjp) {
             assertEquals("hello", jp.getSignature().getName());
@@ -82,6 +87,7 @@ public class XXJoinPointTest extends TestCase {
             log("jp-sjp");
         }
 
+        @SuppressAjWarnings
         @Before("pc()")
         public void before(JoinPoint.StaticPart sjp, JoinPoint.EnclosingStaticPart esjp) {
             assertEquals("hello", sjp.getSignature().getName());
@@ -90,6 +96,7 @@ public class XXJoinPointTest extends TestCase {
         }
 
         // conventional order
+        @SuppressAjWarnings
         @Before("pc()")
         public void before(JoinPoint.StaticPart sjp, JoinPoint jp, JoinPoint.EnclosingStaticPart esjp) {
             assertEquals("hello", sjp.getSignature().getName());
@@ -99,6 +106,7 @@ public class XXJoinPointTest extends TestCase {
         }
 
         // weird order
+        @SuppressAjWarnings
         @Before("pc()")
         public void beforeWEIRD2(JoinPoint.EnclosingStaticPart esjp, JoinPoint jp, JoinPoint.StaticPart sjp) {
             assertEquals("testJoinPointsInAdviceSignature", esjp.getSignature().getName());
