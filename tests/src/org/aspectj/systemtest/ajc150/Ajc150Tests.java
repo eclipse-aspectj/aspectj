@@ -665,6 +665,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("java 5 pointcuts and declares at pre-java 5 compliance levels");
   }
   
+  public void testAnonymousTypes() {
+	  runTest("Anonymous types and nome matching");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

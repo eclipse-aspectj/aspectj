@@ -50,6 +50,15 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs150" title="Anonymous types and nome matching">
+      <compile files="Pr73050.aj" outjar="jar1.jar">
+        <message kind="warning" line="16" text="anonymous types should be matched by a * wild card"/>
+      </compile>
+      <compile inpath="jar1.jar">
+        <message kind="warning" line="0" text="anonymous types should be matched by a * wild card"/>     
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr86903" title="bcelrenderer bad">
       <compile files="GenericService.java,Service.java,Main.java,BadWormhole.java"/>
       <run class="Main"/>
