@@ -52,6 +52,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   */
   
   public void testUnboundFormal_pr112027()    { runTest("unexpected error unboundFormalInPC");}
+  public void testNPEScopeSetup_pr115038()    { runTest("NPE in ensureScopeSetup");}
   public void testCCEGenerics_pr113445()      { runTest("Generics ClassCastException");}
   public void testMatthewsAspect_pr113947_1() { runTest("maws generic aspect - 1");}
   public void testMatthewsAspect_pr113947_2() { runTest("maws generic aspect - 2");}

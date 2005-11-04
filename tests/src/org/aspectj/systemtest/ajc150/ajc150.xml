@@ -10,13 +10,22 @@
     <ajc-test dir="bugs150" title="Problem with constructor ITDs">
         <compile files="pr112783.aj" options="-1.5"/>
     </ajc-test>
-
-    <ajc-test dir="bugs150" title="ITDC with no explicit cons call">
+ 
+    <ajc-test dir="bugs150" title="NPE in ensureScopeSetup">
+        <compile files="pr115038.aj" options="-1.5">
+          <!-- fixme asc the 'static ref' messages are a bit poor and ought to be eliminated... -->
+          <message kind="error" line="2" text="Cannot make a static reference to the non-static type Observable"/>
+          <message kind="error" line="2" text="Cannot make a static reference to the non-static type Event"/>
+          <message kind="error" line="2" text="Cannot make inter-type declarations on type variables"/>
+        </compile>
+    </ajc-test>
+ 
+   <ajc-test dir="bugs150" title="ITDC with no explicit cons call">
       <compile files="Pr62606.aj" options="-1.5">
         <message kind="warning" line="6" text="[Xlint:noExplicitConstructorCall]"/>
       </compile>
     </ajc-test>
-    
+ 
     <ajc-test dir="java5/generics/bugs" title="using same type variable in ITD">
       <compile files="SameTypeVariable.aj" options="-1.5">
       </compile>
@@ -24,31 +33,6 @@
     
     <ajc-test dir="bugs150" title="capturebinding wildcard problem">
       <compile files="pr114744.aj" options="-1.5">
-      </compile>
-    </ajc-test>
-    
-    <ajc-test dir="java5/compliance" title="java 5 pointcuts and declares at pre-java 5 compliance levels">
-      <compile files="AJ5FeaturesAtJ14.aj" options="-1.4">
-        <message kind="error" line="3" text="the @annotation pointcut expression is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="11" text="the @within pointcut expression is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="13" text="the @withincode pointcut expression is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="5" text="the @this pointcut expression is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="7" text="the @target pointcut expression is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="9" text="the @args pointcut expression is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="15" text="declare @type is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="15" text="annotations are only available if source level is 5.0"/>
-        <message kind="error" line="15" text="cannot convert from Foo to Annotation"/>     
-        <message kind="error" line="17" text="declare @method is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="17" text="annotations are only available if source level is 5.0"/>
-        <message kind="error" line="17" text="cannot convert from Foo to Annotation"/>
-        <message kind="error" line="19" text="declare @field is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="19" text="annotations are only available if source level is 5.0"/>
-        <message kind="error" line="19" text="cannot convert from Foo to Annotation"/>
-        <message kind="error" line="21" text="declare @constructor is only supported at Java 5 compliance level or above"/>       
-        <message kind="error" line="21" text="annotations are only available if source level is 5.0"/>
-        <message kind="error" line="21" text="cannot convert from Foo to Annotation"/>
-        <message kind="error" line="25" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="27" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
       </compile>
     </ajc-test>
     
