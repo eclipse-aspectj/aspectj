@@ -51,6 +51,7 @@ public class AllTests {
 		suite.addTestSuite(UtilTests.class);
 		suite.addTestSuite(GenericSignatureParsingTest.class);
 		suite.addTestSuite(GenericsErasureTesting.class);
+		suite.addTestSuite(AnonymousClassTest.class);
 		//$JUnit-END$
 		return suite;
 	}

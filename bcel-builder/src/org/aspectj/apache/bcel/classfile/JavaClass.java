@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.7 2005/09/21 15:02:05 acolyer Exp $
+ * @version $Id: JavaClass.java,v 1.8 2005/11/04 13:06:27 acolyer Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -721,6 +721,24 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 
   public final boolean isClass() {
     return (access_flags & Constants.ACC_INTERFACE) == 0;
+  }
+  
+  public final boolean isAnonymous() {
+	  for (int i = 0; i < this.attributes.length; i++) {
+		if (this.attributes[i] instanceof InnerClasses) {
+			InnerClass[] innerClasses = ((InnerClasses) this.attributes[i]).getInnerClasses();
+			for (int j = 0; j < innerClasses.length; j++) {
+				if (innerClasses[j].getInnerNameIndex() == 0) {
+					// this is an anonymous class, but is it me, or a class contained in me??
+					String inner_class_name = constant_pool.getConstantString(innerClasses[j].getInnerClassIndex(),
+						       Constants.CONSTANT_Class);
+					inner_class_name = Utility.compactClassName(inner_class_name);
+					if (inner_class_name.equals(getClassName())) return true;
+				}
+			}
+		}
+	  }
+	  return false;
   }
   
   // J5SUPPORT:
