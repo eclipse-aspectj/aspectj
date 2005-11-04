@@ -306,5 +306,10 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		return ret;
 	}
 
+	@Override
+	public boolean isAnonymous() {		
+		return this.myClass.isAnonymousClass();
+	}
+
 }
 

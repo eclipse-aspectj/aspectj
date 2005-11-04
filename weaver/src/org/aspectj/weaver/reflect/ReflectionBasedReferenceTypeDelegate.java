@@ -36,7 +36,7 @@ import org.aspectj.weaver.patterns.PerClause;
  */
 public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelegate {
 
-	private Class myClass = null;
+	protected Class myClass = null;
 	private World world;
 	private ReferenceType resolvedType;
 	private ResolvedMember[] fields = null;
@@ -148,7 +148,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	}
 	
 	public boolean isAnonymous() {
-		return this.myClass.isAnonymousClass();
+		return false;
 	}
 
 	/* (non-Javadoc)
