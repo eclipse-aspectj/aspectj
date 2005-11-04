@@ -146,6 +146,10 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		// cant be generic in 1.4
 		return false;
 	}
+	
+	public boolean isAnonymous() {
+		return this.myClass.isAnonymousClass();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isExposedToWeaver()

@@ -37,6 +37,7 @@ public interface ReferenceTypeDelegate {
     public boolean isAnnotationWithRuntimeRetention();
 	public boolean isClass();
 	public boolean isGeneric();
+	public boolean isAnonymous();
 	public boolean isExposedToWeaver();
 	
 	public boolean hasAnnotation(UnresolvedType ofType);

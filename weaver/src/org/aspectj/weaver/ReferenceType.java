@@ -147,6 +147,10 @@ public class ReferenceType extends ResolvedType {
     	return delegate.isAnnotation();
     }
     
+    public boolean isAnonymous() {
+    		return delegate.isAnonymous();
+    }
+    
     public String getRetentionPolicy() {
     	return delegate.getRetentionPolicy();
     }

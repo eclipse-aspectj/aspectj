@@ -402,6 +402,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return javaClass.isAnnotation();
 	}
 	
+	public boolean isAnonymous() {
+		return javaClass.isAnonymous();
+	}
+	
 	public void addAnnotation(AnnotationX annotation) {
 		damaged = true;
 		// Add it to the set of annotations

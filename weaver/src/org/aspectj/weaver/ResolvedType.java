@@ -616,6 +616,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     	return false;
     }
     
+    public boolean isAnonymous() {
+    		return false;
+    }
+    
     /**
      * Note: Only overridden by Name subtype
      */

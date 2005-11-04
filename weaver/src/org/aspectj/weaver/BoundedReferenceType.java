@@ -177,6 +177,10 @@ public class BoundedReferenceType extends ReferenceType {
 			return resolvedTypeX.isAnnotationWithRuntimeRetention();
 		}
 		
+		public boolean isAnonymous() {
+			return resolvedTypeX.isAnonymous();
+		}
+		
 		public String getRetentionPolicy() {
 			return resolvedTypeX.getRetentionPolicy();
 		}

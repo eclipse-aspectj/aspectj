@@ -229,7 +229,7 @@ public class WildTypePattern extends TypePattern {
 		// Ensure the annotation pattern is resolved
 		annotationPattern.resolve(type.getWorld());
 		
-		return matchesExactlyByName(targetTypeName) &&
+		return matchesExactlyByName(targetTypeName,type.isAnonymous()) &&
 		        matchesParameters(type,STATIC) &&
 		        matchesBounds(type,STATIC) &&
 		       annotationPattern.matches(annotatedType).alwaysTrue();
@@ -287,7 +287,7 @@ public class WildTypePattern extends TypePattern {
 	 * @param targetTypeName
 	 * @return
 	 */
-	private boolean matchesExactlyByName(String targetTypeName) {
+	private boolean matchesExactlyByName(String targetTypeName, boolean isAnonymous) {
 		// we deal with parameter matching separately...
 		if (targetTypeName.indexOf('<') != -1) {
 			targetTypeName = targetTypeName.substring(0,targetTypeName.indexOf('<'));
@@ -298,7 +298,7 @@ public class WildTypePattern extends TypePattern {
 		}
 		//XXX hack
 		if (knownMatches == null && importedPrefixes == null) {
-			return innerMatchesExactly(targetTypeName);
+			return innerMatchesExactly(targetTypeName,isAnonymous);
 		}
 		
 		if (isNamePatternStar()) {
@@ -321,6 +321,10 @@ public class WildTypePattern extends TypePattern {
 		// if our pattern is length 1, then known matches are exact matches
 		// if it's longer than that, then known matches are prefixes of a sort
 		if (namePatterns.length == 1) {
+			if (isAnonymous) {
+				// we've already ruled out "*", and no other name pattern should match an anonymous type
+				return false;
+			}
 			for (int i=0, len=knownMatches.length; i < len; i++) {
 				if (knownMatches[i].equals(targetTypeName)) return true;
 			}
@@ -329,7 +333,7 @@ public class WildTypePattern extends TypePattern {
 				String knownPrefix = knownMatches[i] + "$";
 				if (targetTypeName.startsWith(knownPrefix)) {
 					int pos = lastIndexOfDotOrDollar(knownMatches[i]);
-					if (innerMatchesExactly(targetTypeName.substring(pos+1))) {
+					if (innerMatchesExactly(targetTypeName.substring(pos+1),isAnonymous)) {
 						return true;
 					}
 				}
@@ -344,13 +348,13 @@ public class WildTypePattern extends TypePattern {
 			//System.err.println("prefix match? " + prefix + " to " + targetTypeName);
 			if (targetTypeName.startsWith(prefix)) {
 				
-				if (innerMatchesExactly(targetTypeName.substring(prefix.length()))) {
+				if (innerMatchesExactly(targetTypeName.substring(prefix.length()),isAnonymous)) {
 					return true;
 				}
 			}
 		}
 		
-		return innerMatchesExactly(targetTypeName);
+		return innerMatchesExactly(targetTypeName,isAnonymous);
 	}
 
 	private int lastIndexOfDotOrDollar(String string) {
@@ -360,21 +364,23 @@ public class WildTypePattern extends TypePattern {
     }
 
 	
-	private boolean innerMatchesExactly(String targetTypeName) {
+	private boolean innerMatchesExactly(String targetTypeName, boolean isAnonymous) {
 		//??? doing this everytime is not very efficient
 		char[][] names = splitNames(targetTypeName);
 
-        return innerMatchesExactly(names);
+        return innerMatchesExactly(names, isAnonymous);
 	}
 
-    private boolean innerMatchesExactly(char[][] names) {
+    private boolean innerMatchesExactly(char[][] names, boolean isAnonymous) {
         		
         		int namesLength = names.length;
         		int patternsLength = namePatterns.length;
         		
         		int namesIndex = 0;
         		int patternsIndex = 0;
-        		
+ 
+       		if ((!namePatterns[patternsLength-1].isAny()) && isAnonymous) return false;
+       		 
         		if (ellipsisCount == 0) {
         			if (namesLength != patternsLength) return false;
         			while (patternsIndex < patternsLength) {
