@@ -652,8 +652,29 @@ commands to your environment as needed.
       <para>To access compiler messages programmatically, use the methods
          <literal>setHolder(IMessageHolder holder)</literal> and/or
          <literal>run(String[] args, IMessageHolder holder)</literal>.
+		  <literal>ajc</literal> reports each message to the holder
+		  using <literal>IMessageHolder.handleMessage(..)</literal>.
+		  If you just want to collect the messages, use
+		  <literal>MessageHandler</literal> as your		  
+		  <literal>IMessageHolder</literal>.
+		  For example, compile and run the following with 
+		  <literal>aspectjtools.jar</literal> on the classpath:
       </para>
+        <programlisting>
+import org.aspectj.bridge.*;
+import org.aspectj.tools.ajc.Main;
+import java.util.Arrays;
 
+public class WrapAjc {
+  public static void main(String[] args) {
+    Main compiler = new Main();
+    MessageHandler m = new MessageHandler();
+    compiler.run(args, m);
+    IMessage[] ms = m.getMessages(null, true);
+    System.out.println("messages: " + Arrays.asList(ms));
+  }
+}
+        </programlisting>
     </refsect2>
 
     <refsect2>
