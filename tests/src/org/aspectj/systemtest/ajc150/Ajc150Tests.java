@@ -659,6 +659,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("ITDC with no explicit cons call");
   }
   
+  public void testJava5SpecificFeaturesUsedAtJava14OrLower() {
+	  runTest("java 5 pointcuts and declares at pre-java 5 compliance levels");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
