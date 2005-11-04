@@ -656,7 +656,7 @@ public class AjcTestCase extends TestCase {
 	
 	private String adaptToPlatform(String s) {
 		String ret = s.replace(';',File.pathSeparatorChar);
-		ret = ret.replace(':',File.pathSeparatorChar);
+		//ret = ret.replace(':',File.pathSeparatorChar);
 		return ret;
 	}
     
