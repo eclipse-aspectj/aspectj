@@ -20,6 +20,7 @@ import java.util.Set;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -86,6 +87,11 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings)
 	 */
 	protected void resolveBindings(IScope scope, Bindings bindings) {
+		if (!scope.getWorld().isInJava5Mode()) {
+			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.ATARGS_ONLY_SUPPORTED_AT_JAVA5_LEVEL),
+					getSourceLocation()));
+			return;
+		}
 		arguments.resolveBindings(scope, bindings, true);
 		if (arguments.ellipsisCount > 1) {
 			scope.message(IMessage.ERROR, this,

@@ -118,6 +118,12 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings)
 	 */
 	protected void resolveBindings(IScope scope, Bindings bindings) {
+		if (!scope.getWorld().isInJava5Mode()) {
+			scope.message(MessageUtil.error(WeaverMessages.format(
+					isThis ? WeaverMessages.ATTHIS_ONLY_SUPPORTED_AT_JAVA5_LEVEL : WeaverMessages.ATTARGET_ONLY_SUPPORTED_AT_JAVA5_LEVEL),
+					getSourceLocation()));
+			return;
+		}
 		annotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern.resolveBindings(scope,bindings,true);
 		// must be either a Var, or an annotation type pattern
 		// if annotationType does not have runtime retention, this is an error

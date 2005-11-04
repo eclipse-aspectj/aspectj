@@ -142,6 +142,19 @@ public class WeaverMessages {
 	public static final String INCORRECT_TARGET_FOR_DECLARE_ANNOTATION = "incorrectTargetForDeclareAnnotation";
 	public static final String NO_MATCH_BECAUSE_SOURCE_RETENTION = "noMatchBecauseSourceRetention";
 	
+	// < Java5 messages
+	public static final String ATANNOTATION_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "atannotationNeedsJava5";
+	public static final String ATWITHIN_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "atwithinNeedsJava5";
+	public static final String ATWITHINCODE_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "atwithincodeNeedsJava5";
+	public static final String ATTHIS_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "atthisNeedsJava5";
+	public static final String ATTARGET_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "attargetNeedsJava5";
+	public static final String ATARGS_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "atargsNeedsJava5";
+	public static final String DECLARE_ATTYPE_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "declareAtTypeNeedsJava5";
+	public static final String DECLARE_ATMETHOD_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "declareAtMethodNeedsJava5";
+	public static final String DECLARE_ATFIELD_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "declareAtFieldNeedsJava5";
+	public static final String DECLARE_ATCONS_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "declareAtConsNeedsJava5";
+	public static final String ANNOTATIONS_NEED_JAVA5 = "annotationsRequireJava5";
+	
 	// Generics
 	public static final String CANT_DECP_MULTIPLE_PARAMETERIZATIONS="cantDecpMultipleParameterizations";
 	public static final String HANDLER_PCD_DOESNT_SUPPORT_PARAMETERS="noParameterizedTypePatternInHandler";

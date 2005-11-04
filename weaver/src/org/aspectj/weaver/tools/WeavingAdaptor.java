@@ -35,6 +35,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.bcel.BcelWeaver;
@@ -144,6 +145,9 @@ public class WeavingAdaptor {
 		bcelWorld = new BcelWorld(classPath,messageHandler,null);
 		bcelWorld.setXnoInline(false);
 		bcelWorld.getLint().loadDefaultProperties();
+		if (LangUtil.is15VMOrGreater()) {
+			bcelWorld.setBehaveInJava5Way(true);
+		}
 
 		weaver = new BcelWeaver(bcelWorld);
 		registerAspectLibraries(aspectPath);

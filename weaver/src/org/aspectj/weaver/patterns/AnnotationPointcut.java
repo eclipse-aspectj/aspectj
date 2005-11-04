@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotatedElement;
@@ -34,6 +35,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
@@ -161,6 +163,11 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings)
 	 */
 	protected void resolveBindings(IScope scope, Bindings bindings) {
+		if (!scope.getWorld().isInJava5Mode()) {
+			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.ATANNOTATION_ONLY_SUPPORTED_AT_JAVA5_LEVEL),
+					getSourceLocation()));
+			return;
+		}
 		annotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern.resolveBindings(scope,bindings,true);
 		// must be either a Var, or an annotation type pattern
 	}

@@ -65,6 +65,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	private ResolvedType loadType(String name) {
 		if (world == null) {
 		  world = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/testcode.jar");
+		  world.setBehaveInJava5Way(true);
 		}
 		return world.resolve(name);
 	}

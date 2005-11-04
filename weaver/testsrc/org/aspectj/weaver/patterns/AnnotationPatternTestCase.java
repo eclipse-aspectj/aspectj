@@ -324,6 +324,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	
 	public TestScope makeSimpleScope() {
 		BcelWorld bWorld = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/testcode.jar"); // testcode contains Foo/Boo/Goo/etc
+		bWorld.setBehaveInJava5Way(true);
 		return new TestScope(new String[] {"int", "java.lang.String","Foo","Boo","Goo"}, 
 				             new String[] {"a", "b","foo","boo","goo"}, 
 							 bWorld);

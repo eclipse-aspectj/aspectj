@@ -20,6 +20,7 @@ import java.util.Set;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
@@ -101,6 +102,11 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings)
 	 */
 	protected void resolveBindings(IScope scope, Bindings bindings) {
+		if (!scope.getWorld().isInJava5Mode()) {
+			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.ATWITHIN_ONLY_SUPPORTED_AT_JAVA5_LEVEL),
+					getSourceLocation()));
+			return;
+		}
 		annotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern.resolveBindings(scope,bindings,true);
 		// must be either a Var, or an annotation type pattern
 	}

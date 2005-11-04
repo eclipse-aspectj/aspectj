@@ -677,6 +677,7 @@ public class ParserTestCase extends TestCase {
 
 	
 	public TestScope makeSimpleScope() {
+		world.setBehaveInJava5Way(true);
 		TestScope s = new TestScope(new String[] {"int", "java.lang.String"}, new String[] {"a", "b"}, world);
 		s.setImportedPrefixes(new String[]{"p."});
 		return s;

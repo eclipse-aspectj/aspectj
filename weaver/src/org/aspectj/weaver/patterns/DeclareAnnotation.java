@@ -17,12 +17,14 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 
 public class DeclareAnnotation extends Declare {
@@ -106,6 +108,16 @@ public class DeclareAnnotation extends Declare {
 	}
 	
 	public void resolve(IScope scope) {
+		if (!scope.getWorld().isInJava5Mode()) {
+			String msg = null;
+			if (kind == AT_TYPE) { msg = WeaverMessages.DECLARE_ATTYPE_ONLY_SUPPORTED_AT_JAVA5_LEVEL; }
+			else if (kind == AT_METHOD) { msg = WeaverMessages.DECLARE_ATMETHOD_ONLY_SUPPORTED_AT_JAVA5_LEVEL;}
+			else if (kind == AT_FIELD) { msg = WeaverMessages.DECLARE_ATFIELD_ONLY_SUPPORTED_AT_JAVA5_LEVEL;}
+			else if (kind == AT_CONSTRUCTOR) { msg = WeaverMessages.DECLARE_ATCONS_ONLY_SUPPORTED_AT_JAVA5_LEVEL;}
+			scope.message(MessageUtil.error(WeaverMessages.format(msg),
+					getSourceLocation()));
+			return;
+		}
 		if (typePattern != null) {
 			typePattern = typePattern.resolveBindings(scope,Bindings.NONE,false,false);
 		}

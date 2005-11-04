@@ -80,7 +80,12 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
     public AnnotationTypePattern resolveBindings(IScope scope, Bindings bindings, 
     								             boolean allowBinding)
     { 
-		if (resolved) return this;
+	if (!scope.getWorld().isInJava5Mode()) {
+		scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.ANNOTATIONS_NEED_JAVA5),
+				getSourceLocation()));
+		return this;
+	}
+	if (resolved) return this;
     	this.typePattern = typePattern.resolveBindings(scope,bindings,false,false);
     	resolved = true;
     	if (typePattern instanceof ExactTypePattern) {
