@@ -424,7 +424,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                                 }
         					}
                      
-        					int idx = cpg.addMethodref(newParent.getClassName(), invokeSpecial.getMethodName(cpg), invokeSpecial.getSignature(cpg));
+        					int idx = cpg.addMethodref(newParent.getName(), invokeSpecial.getMethodName(cpg), invokeSpecial.getSignature(cpg));
         					invokeSpecial.setIndex(idx);
         				}
         			}

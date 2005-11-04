@@ -51,6 +51,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testITDCtor_pr112783()       { runTest("Problem with constructor ITDs");}
   */
   
+  public void testBrokenDecp_pr112476()       { runTest("binary weaving decp broken");}
   public void testUnboundFormal_pr112027()    { runTest("unexpected error unboundFormalInPC");}
   public void testNPEScopeSetup_pr115038()    { runTest("NPE in ensureScopeSetup");}
   public void testCCEGenerics_pr113445()      { runTest("Generics ClassCastException");}

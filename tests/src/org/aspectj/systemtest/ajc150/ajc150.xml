@@ -3,6 +3,20 @@
 <!-- AspectJ v1.5.0 Tests -->
 <suite>
 
+    <ajc-test dir="bugs150/pr112476/case1" title="binary weaving decp broken">
+        <compile files="lib/A.java,lib/B.java,lib/C.java" outjar="library.jar" options="-1.5"/>
+        <!-- library.jar on the aspectpath here just for resolution when compiling SuperC -->
+        <compile aspectpath="library.jar" files="weaved/SuperC.java" outjar="newsuper.jar" options="-1.5"/>
+        <compile inpath="library.jar;newsuper.jar" files="weaved/DeclareAspect.aj" options="-1.5 -showWeaveInfo">
+          <message kind="weave" text="Setting superclass of type 'lib.C' (C.java) to 'weaved.SuperC' (DeclareAspect.aj)"/>
+        </compile>
+        <run class="weaved.SuperC">
+          <stdout>
+             <line text="Is [class lib.C] subcass of [class weaved.SuperC]? true"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
         <compile files="StaticImport.aj" options="-1.5"/>
     </ajc-test>
@@ -10,7 +24,7 @@
     <ajc-test dir="bugs150" title="Problem with constructor ITDs">
         <compile files="pr112783.aj" options="-1.5"/>
     </ajc-test>
- 
+
     <ajc-test dir="bugs150" title="NPE in ensureScopeSetup">
         <compile files="pr115038.aj" options="-1.5">
           <!-- fixme asc the 'static ref' messages are a bit poor and ought to be eliminated... -->
@@ -20,12 +34,12 @@
         </compile>
     </ajc-test>
  
-   <ajc-test dir="bugs150" title="ITDC with no explicit cons call">
+    <ajc-test dir="bugs150" title="ITDC with no explicit cons call">
       <compile files="Pr62606.aj" options="-1.5">
         <message kind="warning" line="6" text="[Xlint:noExplicitConstructorCall]"/>
       </compile>
     </ajc-test>
- 
+    
     <ajc-test dir="java5/generics/bugs" title="using same type variable in ITD">
       <compile files="SameTypeVariable.aj" options="-1.5">
       </compile>
