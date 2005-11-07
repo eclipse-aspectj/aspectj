@@ -7,6 +7,7 @@
     </weaver>
     <aspects>
         <exclude within="@Baz"/>
+        <include within="@Whoo"/>
         <aspect name="test.Aspect"/>
     </aspects>
 </aspectj>

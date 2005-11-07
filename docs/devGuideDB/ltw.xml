@@ -167,11 +167,12 @@
                 <pointcut name="tracingScope" expression="within(org.maw.*)"/>
               </concrete-aspect>
 
-              <!-- Of the set of aspects known to the weaver, use aspects matching
-                   the type pattern "com..*" for weaving. -->
+              <!-- Of the set of aspects declared in this sole aop.xml,
+                   use aspects matching the type pattern "com..*" for weaving. -->
               <include within="com..*"/>
 
-              <!-- Do not use any aspects with the @CoolAspect annotation for weaving -->
+              <!-- Of the set of aspects declared in this sole aop.xml,
+                   do not use any aspects with the @CoolAspect annotation for weaving -->
               <exclude within="@CoolAspect *"/>
 
             </aspects>
@@ -212,13 +213,19 @@
             </para>
 
             <para>
-                The aspects element may optionally contain one or more include and
-                exclude elements (by default, all defined aspects are used for weaving).
+                The <literal>aspects</literal> element may optionally contain one or more <literal>include</literal> and
+                <literal>exclude</literal> elements (by default, all defined aspects are used for weaving).
                 Specifying include or exclude elements restricts the set of defined
                 aspects to be used for weaving to those that are matched by an include
-                pattern, but not by an exclude pattern. The 'within' attribute accepts
+                pattern, but not by an exclude pattern. The <literal>within</literal> attribute accepts
                 a type pattern of the same form as a within pcd, except that &amp;&amp;
                 and || are replaced by 'AND' and 'OR'.
+            </para>
+            <para>
+                Note that <literal>include</literal> and <literal>exclude</literal> affects the declared list of aspects (or concrete-aspect) defined in this
+                sole aop.xml and has no side effect on other aop.xml files.
+                Also note it is required to use <literal>aspect</literal> or <literal>concrete-aspect</literal> elements and that include does not
+                mean "pick any aspect you 'll find" - as the aspect list must be known by the weaver.
             </para>
             
             <para>
@@ -517,6 +524,11 @@
         <para>
             Note that dynamic proxy representations are exposed to the LTW infrastructure and are not considered
             a special case.
+        </para>
+
+        <para>
+            Some lint options behave differently when used under load-time weaving. The <literal>adviceDidNotMatch</literal>
+            won't be handled as a warn (as during compile time) but as an info message.
         </para>
     </sect1>
     

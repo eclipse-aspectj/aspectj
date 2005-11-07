@@ -37,7 +37,7 @@ public class ConcreteAtAspectTest extends TestCase {
     @Aspect
     abstract static class ConcreteAtAspect {
 
-        @Pointcut()
+        @Pointcut
         abstract void pc();
         // must be abstract
         // for concrete-aspect, must further be no-arg, void

@@ -193,6 +193,11 @@ public class DocumentParser extends DefaultHandler {
             if (!isNull(typePattern)) {
                 m_definition.getAspectExcludePatterns().add(typePattern);
             }
+        } else if (INCLUDE_ELEMENT.equals(qName) && m_inAspects) {
+            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            if (!isNull(typePattern)) {
+                m_definition.getAspectIncludePatterns().add(typePattern);
+            }
         } else {
             throw new SAXException("Unknown element while parsing <aspectj> element: " + qName);
         }

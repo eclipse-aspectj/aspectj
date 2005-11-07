@@ -59,6 +59,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private List m_excludeStartsWith = new ArrayList();
     private List m_aspectExcludeTypePattern = new ArrayList();
     private List m_aspectExcludeStartsWith = new ArrayList();
+    private List m_aspectIncludeTypePattern = new ArrayList();
+    private List m_aspectIncludeStartsWith = new ArrayList();
 
     private StringBuffer namespace;
     private IWeavingContext weavingContext;
@@ -66,7 +68,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     public ClassLoaderWeavingAdaptor(final ClassLoader loader, IWeavingContext wContext) {
         super(null);
     }
-    
+
     void initialize(final ClassLoader loader, IWeavingContext wContext) {
         //super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
         this.generatedClassHandler = new GeneratedClassHandler() {
@@ -88,7 +90,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 Aj.defineClass(loader, name, bytes);// could be done lazily using the hook
             }
         };
-        
+
         if(wContext==null){
         	weavingContext = new DefaultWeavingContext(loader);
         }else{
@@ -142,7 +144,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     definitions.add(DocumentParser.parse((new File(file)).toURL()));
                 }
             }
-            
+
             String resourcePath = System.getProperty("org.aspectj.weaver.loadtime.configuration",AOP_XML);
     		StringTokenizer st = new StringTokenizer(resourcePath,";");
 
@@ -164,6 +166,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             // AV - see #113511
             if (!definitions.isEmpty()) {
                 registerAspectExclude(weaver, loader, definitions);
+                registerAspectInclude(weaver, loader, definitions);
                 registerAspects(weaver, loader, definitions);
                 registerIncludeExclude(weaver, loader, definitions);
                 registerDump(weaver, loader, definitions);
@@ -203,7 +206,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         world.setPinpointMode(weaverOption.pinpoint);
         weaver.setReweavableMode(weaverOption.notReWeavable);
         world.setXnoInline(weaverOption.noInline);
-        //world.setBehaveInJava5Way(weaverOption.java5);//TODO should be autodetected ?
         // AMC - autodetect as per line below, needed for AtAjLTWTests.testLTWUnweavable
         world.setBehaveInJava5Way(LangUtil.is15VMOrGreater());
         //-Xlintfile: first so that lint wins
@@ -256,6 +258,22 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 fastMatchInfo = looksLikeStartsWith(exclude);
                 if (fastMatchInfo != null) {
                     m_aspectExcludeStartsWith.add(fastMatchInfo);
+                }
+            }
+        }
+    }
+
+    private void registerAspectInclude(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+        String fastMatchInfo = null;
+        for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
+            Definition definition = (Definition) iterator.next();
+            for (Iterator iterator1 = definition.getAspectIncludePatterns().iterator(); iterator1.hasNext();) {
+                String include = (String) iterator1.next();
+                TypePattern includePattern = new PatternParser(include).parseTypePattern();
+                m_aspectIncludeTypePattern.add(includePattern);
+                fastMatchInfo = looksLikeStartsWith(include);
+                if (fastMatchInfo != null) {
+                    m_aspectIncludeStartsWith.add(fastMatchInfo);
                 }
             }
         }
@@ -464,17 +482,26 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         return accept;
     }
 
+    //FIXME we don't use include/exclude of others aop.xml
+    //this can be nice but very dangerous as well to change that
     private boolean acceptAspect(String aspectClassName) {
         // avoid ResolvedType if not needed
-        if (m_aspectExcludeTypePattern.isEmpty()) {
+        if (m_aspectExcludeTypePattern.isEmpty() && m_aspectIncludeTypePattern.isEmpty()) {
             return true;
         }
 
         // still try to avoid ResolvedType if we have simple patterns
+        // EXCLUDE: if one match then reject
         String fastClassName = aspectClassName.replace('/', '.').replace('.', '$');
         for (int i = 0; i < m_aspectExcludeStartsWith.size(); i++) {
             if (fastClassName.startsWith((String)m_aspectExcludeStartsWith.get(i))) {
                 return false;
+            }
+        }
+        //INCLUDE: if one match then accept
+        for (int i = 0; i < m_aspectIncludeStartsWith.size(); i++) {
+            if (fastClassName.startsWith((String)m_aspectIncludeStartsWith.get(i))) {
+                return true;
             }
         }
 
@@ -488,7 +515,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 return false;
             }
         }
-        return true;
+        //include are "OR"ed
+        boolean accept = true;//defaults to true if no include
+        for (Iterator iterator = m_aspectIncludeTypePattern.iterator(); iterator.hasNext();) {
+            TypePattern typePattern = (TypePattern) iterator.next();
+            accept = typePattern.matchesStatically(classInfo);
+            if (accept) {
+                break;
+            }
+            // goes on if this include did not match ("OR"ed)
+        }
+        return accept;
     }
 
     public boolean shouldDump(String className) {
@@ -508,11 +545,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         return false;
     }
-    
+
     /*
      *  shared classes methods
      */
-    
+
     /**
 	 * @return Returns the key.
 	 */
@@ -532,7 +569,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     	}
     	return false;
     }
-    
+
     /**
      * Flush the generated classes cache
      */

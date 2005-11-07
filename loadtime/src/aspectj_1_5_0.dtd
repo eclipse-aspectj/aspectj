@@ -92,16 +92,13 @@ dump
 aspects
 *********************************************************************************************************************************
 [aspects] defines a set of aspects
-TODO we were about to use include but it is already used for weaver scope with "within" which is not relevant
-for aspects. I (AV) decided to use only aspect and provide include= thru name, and exclude= as exclude.
-see sample.
+Note: include only include among Union{aspect, concrete-aspect} WITHIN THIS SOLE aop.xml
 ******************************************************************************************************************************-->
 <!ELEMENT aspects (
-    (aspect | exclude | concrete-aspect)*
+    (aspect | exclude | include | concrete-aspect)*
 )>
 <!--*****************************************************************************************************************************
 aspect
-TODO: did not used include since already used in weaver/include@within and @within does not makes sense
 *********************************************************************************************************************************
 [aspect] defines an aspect to include
     @name   FQN of the aspect, nested class must use $

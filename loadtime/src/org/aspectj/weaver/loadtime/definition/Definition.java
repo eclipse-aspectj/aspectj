@@ -33,6 +33,8 @@ public class Definition {
 
     private List m_aspectExcludePatterns;
 
+    private List m_aspectIncludePatterns;
+
     private List m_concreteAspects;
 
     public Definition() {
@@ -42,6 +44,7 @@ public class Definition {
         m_excludePatterns = new ArrayList(0);
         m_aspectClassNames = new ArrayList();
         m_aspectExcludePatterns = new ArrayList(0);
+        m_aspectIncludePatterns = new ArrayList(0);
         m_concreteAspects = new ArrayList(0);
     }
 
@@ -67,6 +70,10 @@ public class Definition {
 
     public List getAspectExcludePatterns() {
         return m_aspectExcludePatterns;
+    }
+
+    public List getAspectIncludePatterns() {
+        return m_aspectIncludePatterns;
     }
 
     public List getConcreteAspects() {
