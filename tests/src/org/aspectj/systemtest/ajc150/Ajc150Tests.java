@@ -42,16 +42,18 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
 
-  public void testCantCallSuperMethods_pr90143() { runTest("cant call super methods");}
   /*
   public void testBrokenDispatchByITD_pr72834() { runTest("broken dispatch");}
   public void testMissingAccessor_pr73856() { runTest("missing accessor");}
   public void testCunningDeclareParents_pr92311() { runTest("cunning declare parents");}
   public void testGenericITDsAndAbstractMethodError_pr102357() { runTest("generic itds and abstract method error");}
-  public void testITDCtor_pr112783()       { runTest("Problem with constructor ITDs");}
   */
   
-  public void testPossibleStaticImports_pr113066() { runTest("possible static imports bug");}
+  public void testPossibleStaticImports_pr113066_1() { runTest("possible static imports bug - 1");}
+  public void testPossibleStaticImports_pr113066_2() { runTest("possible static imports bug - 2");}
+  public void testPossibleStaticImports_pr113066_3() { runTest("possible static imports bug - 3");}
+  public void testITDCtor_pr112783()          { runTest("Problem with constructor ITDs");}
+  public void testCantCallSuperMethods_pr90143() { runTest("cant call super methods");}
   public void testBrokenDecp_pr112476()       { runTest("binary weaving decp broken");}
   public void testUnboundFormal_pr112027()    { runTest("unexpected error unboundFormalInPC");}
   public void testNPEScopeSetup_pr115038()    { runTest("NPE in ensureScopeSetup");}

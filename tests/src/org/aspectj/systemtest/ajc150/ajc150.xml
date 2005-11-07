@@ -18,8 +18,18 @@
     </ajc-test>
     
     
-    <ajc-test dir="bugs150/pr113066" title="possible static imports bug">
+    <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 1">
         <compile files="Consts.java,TestNPE.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 2">
+        <compile files="Consts2.java,TestNPE2.java" options="-1.5">
+          <message kind="error" line="2" text="The import a.Consts2.A_CONST cannot be resolved"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 3">
+        <compile files="Consts3.java,TestNPE3.java" options="-1.5"/>
     </ajc-test>
     
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
