@@ -34,6 +34,15 @@ public class OutxmlTest extends AjdeTestCase {
 		FileUtil.deleteContents(openFile(BIN_DIR));
 	}
 
+	/*
+	 * Clean up afterwards
+	 */
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		FileUtil.deleteContents(openFile(BIN_DIR));
+		openFile(BIN_DIR).delete();
+	}
+
 
 	/**
 	 * Aim: Test "-outxml" option produces the correct xml file
