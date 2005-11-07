@@ -128,4 +128,9 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
     public void testDeclareParentsImplements() {
         runTest("DeclareParentsImplements");
     }
+
+    public void testAbstractAspectNPE() {
+        runTest("AbstractAspectNPE");
+    }
+
 }

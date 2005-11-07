@@ -166,4 +166,11 @@
         <run class="ataspectj.DeclareParentsImplementsTest"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="AbstractAspectNPE">
+        <compile files="ataspectj/bugs/AbstractAspectNPEParent.java,ataspectj/bugs/AbstractAspectNPEChild.java"
+            options="-1.5 -showWeaveInfo">
+            <message kind="weave" text="Join point 'method-execution(void ataspectj.bugs.AbstractAspectNPEParent.main"/>            
+        </compile>
+    </ajc-test>
+
 </suite>
