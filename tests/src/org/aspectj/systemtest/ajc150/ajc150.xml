@@ -17,6 +17,11 @@
         </run>
     </ajc-test>
     
+    
+    <ajc-test dir="bugs150/pr113066" title="possible static imports bug">
+        <compile files="Consts.java,TestNPE.java" options="-1.5"/>
+    </ajc-test>
+    
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
         <compile files="StaticImport.aj" options="-1.5"/>
     </ajc-test>
