@@ -294,7 +294,7 @@ public class ReferenceType extends ResolvedType {
 
        	if (isTypeVariableReference() && !other.isTypeVariableReference()) { // eg. this=T  other=Ljava/lang/Object;
        	    TypeVariable aVar = ((TypeVariableReference)this).getTypeVariable();
-       	    return aVar.getFirstBound().resolve(world).isAssignableFrom(other);
+       	    return aVar.resolve(world).canBeBoundTo(other);
        	} 
        	
        	if (other.isTypeVariableReference()) {
@@ -302,6 +302,7 @@ public class ReferenceType extends ResolvedType {
        		if (this instanceof TypeVariableReference) {
        			return ((TypeVariableReference)this).getTypeVariable()==otherType.getTypeVariable();
        		} else {
+       		    // FIXME asc should this say canBeBoundTo??
        			return this.isAssignableFrom(otherType.getTypeVariable().getFirstBound().resolve(world));
        		}
        	}
