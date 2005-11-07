@@ -11,17 +11,18 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.definition;
 
+import java.io.InputStream;
+import java.net.URL;
+
+import javax.xml.parsers.SAXParserFactory;
+
+import org.aspectj.util.LangUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
-import org.aspectj.util.LangUtil;
-
-import java.io.InputStream;
-import java.net.URL;
 
 /**
  * FIXME AV - doc, concrete aspect
@@ -78,7 +79,7 @@ public class DocumentParser extends DefaultHandler {
         try {
             DocumentParser parser = new DocumentParser();
 
-            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             xmlReader.setContentHandler(parser);
             xmlReader.setErrorHandler(parser);
 
