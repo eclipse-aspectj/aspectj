@@ -1122,7 +1122,7 @@
             // default implementations.
           
             /** list of children maintained by parent */
-            private List<C> ParentHasChildren<C>.children;
+            private List<C> ParentHasChildren<C>.children = new ArrayList<C>();
           
             /** reference to parent maintained by child */        
             private P ChildHasParent<P>.parent;
@@ -1177,7 +1177,7 @@
                 * Matches at a removeChild join point for the parent type P and child type C
                 */    
               public pointcut removingChild(Parent p, Child c) :
-                execution(* Parent.removeChild(C)) && this(p) && args(c);
+                execution(* Parent.removeChild(Child)) && this(p) && args(c);
 
           }
           

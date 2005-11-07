@@ -376,6 +376,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testSophisticatedAspectsU() {runTest("uberaspects - U");} // includes nasty casts
 	public void testSophisticatedAspectsV() {runTest("uberaspects - V");} // casts are gone
 	public void testSophisticatedAspectsW() {runTest("uberaspects - W");}
+	public void testSophisticatedAspectsX() {runTest("uberaspects - X");} // from the AJDK
 	
 	// FIXME asc these two tests have peculiar error messages - generic aspect related
 //	public void testItdUsingTypeParameter() {runTest("itd using type parameter");}
