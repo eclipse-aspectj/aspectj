@@ -1,0 +1,6 @@
+src/TestClass.java
+src/TestInterface.java
+src/TestAbstractAspect.aj
+src/TestConcreteAspect.aj
+-outxmlfile
+custom/aop.xml

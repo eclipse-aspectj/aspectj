@@ -1,0 +1,5 @@
+src/TestClass.java
+src/TestInterface.java
+src/TestAbstractAspect.aj
+src/TestConcreteAspect.aj
+-outxml
