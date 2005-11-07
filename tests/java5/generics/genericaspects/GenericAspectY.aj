@@ -2,13 +2,6 @@ import java.util.*;
 import java.lang.reflect.*;
 import org.aspectj.lang.annotation.*;
 
-// This one is 99% the same as the one in the AJDK - the only difference it visibility of some
-// components for testing.  Here the type is not public so it can be embedded in this file, and
-// the parent/child fields are not private so they can be easily manipulated.
-
-// The aim of the test is to verify the ITDs and the type structure of the programming produced
-// during compilation, I am not testing the pointcuts work...
-
           /** 
            * a generic aspect, we've used descriptive role names for the type variables
            * (Parent and Child) but you could use anything of course
@@ -94,11 +87,14 @@ import org.aspectj.lang.annotation.*;
                 */    
               public pointcut removingChild(Parent p, Child c) :
                 execution(* Parent.removeChild(Child)) && this(p) && args(c);
-              
 
           }
           
 aspect GenericAspectX extends ParentChildRelationship<Top,Bottom> { 
+
+    // Advice to trigger weave infos
+    before(Top p,Bottom c): ParentChildRelationship.addingChild(p,c) {}
+    before(Top p,Bottom c): ParentChildRelationship.removingChild(p,c) {}
 
   public static void main(String []argv) {
 

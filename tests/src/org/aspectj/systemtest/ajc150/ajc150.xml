@@ -3929,6 +3929,11 @@
      <compile files="GenericAspectX.aj" options="-1.5"/>
      <run class="GenericAspectX"/>
    </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - Y">
+     <compile files="GenericAspectY.aj" options="-1.5 -showWeaveInfo">
+     </compile>
+     <run class="GenericAspectY"/>
+   </ajc-test>
       
    
    
