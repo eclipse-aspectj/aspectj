@@ -267,6 +267,8 @@ public class AjdeInteractionTestbed extends TestCase {
 	
 	static class MyErrorHandler implements ErrorHandler {
 		static MyErrorHandler _instance = new MyErrorHandler();
+		private List errorMessages = new ArrayList();
+		
 		private MyErrorHandler() {}
 		
 		public static ErrorHandler getInstance() { 
@@ -279,12 +281,17 @@ public class AjdeInteractionTestbed extends TestCase {
 
 		public void handleError(String message) {
 			log("ErrorHandler.handleWarning("+message+")");
-			
+			errorMessages.add(message);
 		}
 
 		public void handleError(String message, Throwable t) {
 			log("ErrorHandler.handleError("+message+","+t+")");
 			if (VERBOSE) t.printStackTrace();
+			errorMessages.add(message+","+t+")");
+		}
+		
+		public static List/*String*/ getErrorMessages() {
+			return _instance.errorMessages;
 		}
 		
 	}
