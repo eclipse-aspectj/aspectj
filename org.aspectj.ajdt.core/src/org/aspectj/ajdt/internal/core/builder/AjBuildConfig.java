@@ -42,6 +42,7 @@ public class AjBuildConfig {
 	
 	private File outputDir;
 	private File outputJar;
+	private String outxmlName;
 	private List/*File*/ sourceRoots = new ArrayList();
 	private List/*File*/ files = new ArrayList();
 	private List /*File*/ binaryFiles = new ArrayList();  // .class files in indirs...
@@ -165,6 +166,10 @@ public class AjBuildConfig {
 	public File getOutputJar() {
 		return outputJar;
 	}
+
+	public String getOutxmlName() {
+		return outxmlName;
+	}
 	
 	public List/*File*/ getInpath() {
 		// Elements of the list are either archives (jars/zips) or directories
@@ -181,6 +186,10 @@ public class AjBuildConfig {
 
 	public void setOutputJar(File outputJar) {
 		this.outputJar = outputJar;
+	}
+
+	public void setOutxmlName(String name) {
+		this.outxmlName = name;
 	}
 
 	public void setInJars(List sourceJars) {

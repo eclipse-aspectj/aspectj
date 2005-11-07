@@ -14,15 +14,18 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -125,6 +128,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	// FIXME asc should this really be in here?
 	private IHierarchy structureModel;
 	public AjBuildConfig buildConfig;
+	private List aspectNames = new LinkedList();
 	
 	AjState state = new AjState(this);
     
@@ -281,6 +285,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             state.successfulCompile(buildConfig,batch);
 
             copyResourcesToDestination();
+            
+            if (buildConfig.getOutxmlName() != null) {
+            	writeOutxmlFile();
+            }
+            
             /*boolean weaved = *///weaveAndGenerateClassFiles();
             // if not weaved, then no-op build, no model changes
             // but always returns true
@@ -480,7 +489,38 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		}
 	}
 	
+	private void writeOutxmlFile () throws IOException {
+		String filename = buildConfig.getOutxmlName();
+//		System.err.println("? AjBuildManager.writeOutxmlFile() outxml=" + filename);
+//		System.err.println("? AjBuildManager.writeOutxmlFile() outputDir=" + buildConfig.getOutputDir());
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		ps.println("<aspectj>");
+		ps.println("<aspects>");
+		for (Iterator i = aspectNames.iterator(); i.hasNext();) {
+			String name = (String)i.next();
+			ps.println("<aspect name=\"" + name + "\"/>");
+		}
+		ps.println("</aspects>");
+		ps.println("</aspectj>");
+		ps.println();
+		ps.close();
 
+		if (zos != null) {
+			ZipEntry newEntry = new ZipEntry(filename);
+			
+			zos.putNextEntry(newEntry);
+			zos.write(baos.toByteArray());
+			zos.closeEntry();
+		} else {
+			OutputStream fos = 
+				FileUtil.makeOutputStream(new File(buildConfig.getOutputDir(),filename));
+			fos.write(baos.toByteArray());
+			fos.close();
+		}
+	}
+	
 //	public static void dumprels() {
 //		IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
 //		int ctr = 1;
@@ -792,11 +832,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			public void acceptResult(CompilationResult unitResult) {
 				// end of compile, must now write the results to the output destination
 				// this is either a jar file or a file in a directory
-				if (!(unitResult.hasErrors() && !proceedOnError())) {					
+				if (!(unitResult.hasErrors() && !proceedOnError())) {			
 					Collection classFiles = unitResult.compiledTypes.values();
+					boolean shouldAddAspectName = (buildConfig.getOutxmlName() != null);
 					for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
 						ClassFile classFile = (ClassFile) iter.next();					
 						String filename = new String(classFile.fileName());
+						String classname = filename.replace('/', '.');
 						filename = filename.replace('/', File.separatorChar) + ".class";
 						try {
 							if (buildConfig.getOutputJar() == null) {
@@ -804,6 +846,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 							} else {
 								writeZipEntry(classFile,filename);
 							}
+							if (shouldAddAspectName) addAspectName(classname);
 						} catch (IOException ex) {
 							IMessage message = EclipseAdapterUtils.makeErrorMessage(
 									new String(unitResult.fileName),
@@ -853,6 +896,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				zos.putNextEntry(newEntry);
 				zos.write(classFile.getBytes());
 				zos.closeEntry();
+			}
+			
+			private void addAspectName (String name) {
+				BcelWorld world = getBcelWorld();
+				ResolvedType type = world.resolve(name);
+//				System.err.println("? writeAspectName() type=" + type);
+				if (type.isAspect()) {
+					aspectNames.add(name);
+				}
 			}
 		};
 	}

@@ -30,4 +30,61 @@
         </run>
     </ajc-test>
 
+	<ajc-test dir="ltw"
+      title="Ensure valid aop.xml file is generated"
+      keywords="-outxml">
+        <compile
+        	files="Main.java"
+			outjar="main.jar"
+        >
+        </compile>	
+        <compile
+        	classpath="main.jar"
+        	files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
+        	outxmlfile="META-INF/aop.xml"
+        >
+        </compile>	
+        <run class="Main" ltw="">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+                <line text="Aspect1.before_test1"/>
+                <line text="Aspect2.before_test2"/>
+                <line text="pakkage.Aspect3.before_test2"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+	<ajc-test dir="ltw"
+      title="Ensure valid aop.xml is generated for -outjar"
+      keywords="-outxml">
+        <compile
+        	files="Main.java"
+			outjar="main.jar"
+        >
+        </compile>	
+        <compile
+        	classpath="main.jar"
+        	files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
+        	outjar="aspects.jar"
+        	options="-outxml"
+        >
+        </compile>	
+        <run class="Main" ltw="">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+                <line text="Aspect1.before_test1"/>
+                <line text="Aspect2.before_test2"/>
+                <line text="pakkage.Aspect3.before_test2"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
     

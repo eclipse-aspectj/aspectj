@@ -37,6 +37,7 @@ public class CompileSpec implements ITestStep {
 	private String inpath;
 	private String sourceroots;
 	private String outjar;
+	private String outxml;
 	private String xlintfile;
 	private String options;
 	private String baseDir;
@@ -166,6 +167,20 @@ public class CompileSpec implements ITestStep {
 	public void setOutjar(String outjar) {
 		this.outjar = outjar;
 	}
+
+	/**
+	 * @return Returns the outxml.
+	 */
+	public String getOutxmlfile() {
+		return outxml;
+	}
+
+	/**
+	 * @param outxml The the of the aop.xml file to generate
+	 */
+	public void setOutxmlfile(String outxml) {
+		this.outxml = outxml;
+	}
 	/**
 	 * @return Returns the sourceroots.
 	 */
@@ -210,6 +225,11 @@ public class CompileSpec implements ITestStep {
 		if (getOutjar() != null) {
 			args.append("-outjar ");
 			args.append(getOutjar());
+			args.append(" ");
+		}
+		if (getOutxmlfile() != null) {
+			args.append("-outxmlfile ");
+			args.append(getOutxmlfile());
 			args.append(" ");
 		}
 		if (getOptions() != null) {

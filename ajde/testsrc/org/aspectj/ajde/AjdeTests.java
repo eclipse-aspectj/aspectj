@@ -59,6 +59,7 @@ public class AjdeTests extends TestCase {
 		suite.addTestSuite(JarManifestTest.class);
 		suite.addTestSuite(ExtensionTests.class);
 		suite.addTestSuite(GenericsTest.class); 
+		suite.addTestSuite(OutxmlTest.class);
 		
         //$JUnit-END$
         return suite;

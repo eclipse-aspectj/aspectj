@@ -28,8 +28,15 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
 
-  public void test001(){
-    runTest("Ensure 1st aspect is rewoven when weaving 2nd aspect");
-  }
+  	public void test001(){
+  		runTest("Ensure 1st aspect is rewoven when weaving 2nd aspect");
+  	}
+
+	public void testOutxmlFile (){
+	    runTest("Ensure valid aop.xml file is generated");
+	}
+	public void testOutxmlJar (){
+	    runTest("Ensure valid aop.xml is generated for -outjar");
+	}
 }
 

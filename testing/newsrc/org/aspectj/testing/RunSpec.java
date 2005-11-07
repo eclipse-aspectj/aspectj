@@ -130,6 +130,9 @@ public class RunSpec implements ITestStep {
 		boolean useLtw = false;
 		
 		if (ltwFile != null) {
+            // TODO maw use flag rather than empty file name
+			if (ltwFile.trim().length() == 0) return true;
+			
 			File from = new File(baseDir,ltwFile);
 			File to = new File(sandboxDirectory,"META-INF" + File.separator + "aop.xml");
 //			System.out.println("RunSpec.copyLtwFile() from=" + from.getAbsolutePath() + " to=" + to.getAbsolutePath());

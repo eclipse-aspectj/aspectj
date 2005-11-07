@@ -108,6 +108,18 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-outxml</term>
+        <listitem><para>Generate aop.xml file for load-time weaving with default name.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-outxmlfile <replaceable>custom/aop.xml</replaceable></term>
+        <listitem><para>Generate aop.xml file for load-time weaving with custom name.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-incremental</term>
         <listitem><para>Run the compiler continuously.
         After the initial compilation, the compiler will

@@ -21,6 +21,8 @@ import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.CountingMessageHandler;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -488,6 +490,22 @@ public class BuildArgParserTestCase extends TestCase {
 	
 	public void testAjFileInclusion() throws InvalidInputException {
 		genBuildConfig(new String[] { TEST_DIR + "X.aj", TEST_DIR + "Y.aj"}, messageWriter);
+	}
+	
+	public void testOutxml () {
+		IMessageHolder messageHolder = new MessageHandler();
+		AjBuildConfig config = genBuildConfig(new String[] { "-outxml", "-showWeaveInfo" }, messageHolder);
+        assertTrue("Warnings: " + messageHolder,!messageHolder.hasAnyMessage(IMessage.WARNING, true));
+		assertEquals("Wrong outxml","META-INF/aop.xml",config.getOutxmlName());
+		assertTrue("Following option currupted",config.getShowWeavingInformation());
+	}
+	
+	public void testOutxmlfile () {
+		IMessageHolder messageHolder = new MessageHandler();
+		AjBuildConfig config = genBuildConfig(new String[] { "-outxmlfile", "custom/aop.xml", "-showWeaveInfo" }, messageHolder);
+        assertTrue("Warnings: " + messageHolder,!messageHolder.hasAnyMessage(IMessage.WARNING, true));
+		assertEquals("Wrong outxml","custom/aop.xml",config.getOutxmlName());
+		assertTrue("Following option currupted",config.getShowWeavingInformation());
 	}
 	
 	protected void setUp() throws Exception {
