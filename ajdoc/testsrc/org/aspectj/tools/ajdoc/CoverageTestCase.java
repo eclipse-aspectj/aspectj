@@ -15,6 +15,8 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
+import org.aspectj.util.FileUtil;
+
 /**
  * A long way to go until full coverage, but this is the place to add more.
  * 
@@ -34,8 +36,8 @@ public class CoverageTestCase extends TestCase {
 	protected File file8 = new File("../ajdoc/testdata/coverage/fluffy/bunny/rocks/UseThisAspectForLinkCheckToo.java");
 	protected File file9 = new File("../ajdoc/testdata/coverage/foo/PkgVisibleClass.java");
 	protected File file10 = new File("../ajdoc/testdata/coverage/foo/NoMembers.java");
-    
-	protected File outdir = new File("testdata/coverage/doc");
+
+	protected File outdir;
 	
 	public void testOptions() {
 		outdir.delete();
@@ -110,9 +112,17 @@ public class CoverageTestCase extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
+		outdir = new File("testdata/coverage/doc");
 	}
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		
+		FileUtil.deleteContents(new File("ajdocworkingdir"));
+		(new File("ajdocworkingdir")).delete();
+		
+		FileUtil.deleteContents(new File("testdata"));
+		(new File("testdata")).delete();
+
 	}
 }

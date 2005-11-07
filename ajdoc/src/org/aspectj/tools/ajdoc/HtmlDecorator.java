@@ -224,6 +224,9 @@ class HtmlDecorator {
         file.delete();
         FileOutputStream fos = new FileOutputStream( file );
         fos.write( fileContents.toString().getBytes() );
+        
+        reader.close();
+        fos.close();
     }
 
     static void addAspectDocumentation(IProgramElement node, StringBuffer fileBuffer, int index ) {

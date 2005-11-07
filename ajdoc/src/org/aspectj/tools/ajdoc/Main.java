@@ -275,6 +275,9 @@ public class Main implements Config {
             }
             FileOutputStream fos = new FileOutputStream( indexFile );
             fos.write( indexFileBuffer.getBytes() );
+            
+            indexFileReader.close();
+            fos.close();
         }
         }
         catch (IOException ioe) {
