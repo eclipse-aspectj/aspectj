@@ -505,6 +505,10 @@ public class AjcTask extends MatchingTask {
         cmd.addFlag("-emacssym", emacssym);
     }
 
+    public void setCrossrefs(boolean on) {
+        cmd.addFlag("-crossrefs", on);
+    }
+    
 	/** 
 	 * -Xlint - set default level of -Xlint messages to warning
 	 * (same as </code>-Xlint:warning</code>)
@@ -1744,6 +1748,8 @@ public class AjcTask extends MatchingTask {
                 setDeprecation(true);
             } else if ("-d".equals(flag)) {
                 setDestdir(new File(in.next()));
+            } else if ("-crossrefs".equals(flag)) {
+                setCrossrefs(true);
             } else if ("-emacssym".equals(flag)) {
                 setEmacssym(true);
             } else if ("-encoding".equals(flag)) {
