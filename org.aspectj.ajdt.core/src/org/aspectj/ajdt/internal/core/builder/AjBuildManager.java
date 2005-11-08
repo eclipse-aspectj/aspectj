@@ -992,16 +992,20 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		}
 		
 		if (buildConfig == null || buildConfig.getFullClasspath() == null) return "no classpath specified";
+		
+		String ret = null;
 		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext(); ) {
 			File p = new File( (String)it.next() );
-			if (p.isFile() && p.getName().equals("aspectjrt.jar")) {
+			// pr112830, allow variations on aspectjrt.jar of the form aspectjrtXXXXXX.jar
+			if (p.isFile() && p.getName().startsWith("aspectjrt") && p.getName().endsWith(".jar")) {
 
 				try {
                     String version = null;
                     Manifest manifest = new JarFile(p).getManifest();
                     if (manifest == null) {
-                    	return "no manifest found in " + p.getAbsolutePath() + 
+                    	ret = "no manifest found in " + p.getAbsolutePath() + 
 								", expected " + Version.text;
+                    	continue;
                     }
                     Attributes attr = manifest.getAttributes("org/aspectj/lang/");
                     if (null != attr) {
@@ -1017,17 +1021,20 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 //							p.getAbsolutePath());
                         return null;
 					} else if (!Version.text.equals(version)) {
-						return "bad version number found in " + p.getAbsolutePath() + 
+						ret =  "bad version number found in " + p.getAbsolutePath() + 
 								" expected " + Version.text + " found " + version;
+						continue;
 					}
 				} catch (IOException ioe) {
-					return "bad jar file found in " + p.getAbsolutePath() + " error: " + ioe;
+					ret = "bad jar file found in " + p.getAbsolutePath() + " error: " + ioe;
 				}
-				return null;
+				return null; // this is the "OK" return value!
 			} else {
 				// might want to catch other classpath errors
 			}
 		}
+		
+		if (ret != null) return ret; // last error found in potentially matching jars...
 		
 		return "couldn't find aspectjrt.jar on classpath, checked: " + makeClasspathString(buildConfig);
 	}
