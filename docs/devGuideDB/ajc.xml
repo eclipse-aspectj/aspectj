@@ -143,6 +143,16 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-crossrefs</term>
+        <listitem><para>
+          Generate a build .ajsym file into the output directory.  Used for
+          viewing crosscutting references by tools like the AspectJ
+          Browser.
+        </para></listitem>
+      </varlistentry>
+
+
+      <varlistentry>
         <term>-emacssym</term>
         <listitem><para>
           Generate .ajesym symbol files for emacs support

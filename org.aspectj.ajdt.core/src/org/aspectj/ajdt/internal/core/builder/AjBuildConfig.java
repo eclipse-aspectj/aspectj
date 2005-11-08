@@ -515,6 +515,14 @@ public class AjBuildConfig {
 			boolean generateJavadocsInModelMode) {
 		options.generateJavaDocsInModel = generateJavadocsInModelMode;
 	}
+
+	public boolean isGenerateCrossRefsMode() {
+		return options.generateCrossRefs;
+	}
+
+	public void setGenerateCrossRefsMode(boolean on) {
+		options.generateCrossRefs = on;
+	}
 	
 	public boolean isEmacsSymMode() {
 		return options.generateEmacsSymFiles;

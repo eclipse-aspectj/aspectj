@@ -117,7 +117,6 @@ public class BuildArgParser extends Main {
 			
 			AjcConfigParser parser = new AjcConfigParser(buildConfig, handler);
 			parser.parseCommandLine(args);
-			
 			boolean swi = buildConfig.getShowWeavingInformation();
 			// Now jump through firey hoops to turn them on/off
 			if (handler instanceof CountingMessageHandler) {
@@ -519,6 +518,9 @@ public class BuildArgParser extends Main {
                 } else {
                     showError("-XincrementalFile requires file argument");
                 }
+			} else if (arg.equals("-crossrefs")) {
+				buildConfig.setGenerateCrossRefsMode(true);
+				buildConfig.setGenerateModelMode(true);
 			} else if (arg.equals("-emacssym")) {
 				buildConfig.setEmacsSymMode(true);
 				buildConfig.setGenerateModelMode(true);

@@ -40,7 +40,8 @@ public class AjdeTests extends TestCase {
     public static Test suite() { 
         TestSuite suite = new TestSuite(AjdeTests.class.getName());
         //$JUnit-BEGIN$
-		suite.addTestSuite(ShowWeaveMessagesTestCase.class);
+        suite.addTestSuite(SymbolFileGenerationTest.class);
+        suite.addTestSuite(ShowWeaveMessagesTestCase.class);
 		suite.addTestSuite(DuplicateManifestTest.class);
 		suite.addTestSuite(BuildOptionsTest.class); 
         suite.addTestSuite(BuildConfigurationTests.class);

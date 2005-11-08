@@ -89,6 +89,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 //import org.aspectj.org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
 public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourceProvider,ICompilerAdapterFactory {
+	private static final String CROSSREFS_FILE_NAME = "build.lst";
 	private static final String CANT_WRITE_RESULT = "unable to write compilation result";
 	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 	static final boolean COPY_INPATH_DIR_RESOURCES = false;
@@ -281,6 +282,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             if (buildConfig.isEmacsSymMode()) {
                 new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel();
             }
+            
+            // for bug 113554: support ajsym file generation for command line builds
+            if (buildConfig.isGenerateCrossRefsMode()) {
+                String configFileProxy = buildConfig.getOutputDir().getAbsolutePath() 
+            		+ File.separator 
+            		+ CROSSREFS_FILE_NAME; 
+            	AsmManager.getDefault().writeStructureModel(configFileProxy);
+            }
+            
             // have to tell state we succeeded or next is not incremental
             state.successfulCompile(buildConfig,batch);
 

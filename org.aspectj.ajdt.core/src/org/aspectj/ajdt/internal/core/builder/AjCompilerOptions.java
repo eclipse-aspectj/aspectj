@@ -79,6 +79,12 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean generateEmacsSymFiles = false;
 	public boolean noAtAspectJProcessing = false;
 	
+	/**
+	 * Generates a map of cross references based on information
+	 * in the structure model.
+	 */
+	public boolean generateCrossRefs = false;
+	
 	public boolean proceedOnError = false;
 
 	
