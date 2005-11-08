@@ -14,8 +14,10 @@
 package org.aspectj.ajde;
 
 import java.io.File;
+import java.io.FileFilter;
 
 import org.aspectj.tools.ajc.AjcTestCase;
+import org.aspectj.util.FileUtil;
 
 /**
  * @author Mik Kersten
@@ -24,15 +26,35 @@ public class SymbolFileGenerationTest extends AjcTestCase {
 	private static final String DIR = "../ajde/testdata/examples/coverage";
 
 	protected File dir = new File(DIR);
-	protected File configFile = new File(DIR + "/coverage.lst");
-	protected File esymFile = new File(DIR + "/ModelCoverage.ajesym");
-	protected File outDir = new File(DIR + "/bin");	
-	protected File crossRefsFile = new File(outDir.getAbsolutePath() + "/build.ajsym");
+	protected File configFile = new File(DIR + "/coverage.lst");	
+	protected File esymFile, outDir, crossRefsFile;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
+		esymFile = new File(DIR + "/ModelCoverage.ajesym");
+		outDir = new File(DIR + "/bin");	
+		crossRefsFile = new File(outDir.getAbsolutePath() + "/build.ajsym");
 	}
 	
+	protected void tearDown() throws Exception {
+		super.tearDown();
+				
+		FileUtil.deleteContents(new File(DIR),ajesymResourceFileFilter);
+		FileUtil.deleteContents(new File(DIR + "/pkg"),ajesymResourceFileFilter);
+		
+		FileUtil.deleteContents(new File(DIR + "/bin"));
+		(new File(DIR + "/bin")).delete();
+
+	}
+	
+	public FileFilter ajesymResourceFileFilter =
+		new FileFilter() {
+		public boolean accept(File pathname) {
+			String name = pathname.getName().toLowerCase();
+			return name.endsWith(".ajesym");
+		}
+	};
+		
 	public void testCrossRefsFileGeneration() {
 		if (crossRefsFile.exists()) assertTrue(crossRefsFile.delete());
 		if (esymFile.exists()) assertTrue(esymFile.delete());

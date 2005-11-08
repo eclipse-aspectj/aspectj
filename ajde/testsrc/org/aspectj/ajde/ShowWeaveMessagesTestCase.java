@@ -93,6 +93,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		FileUtil.deleteContents(openFile(binDir));
+		openFile(binDir).delete();
 		File rogueSymFile = new File(currTestDataPath + File.separatorChar + "Empty.ajsym");
 		if (rogueSymFile.exists()) rogueSymFile.delete();
 	}
