@@ -54,6 +54,18 @@ import org.aspectj.weaver.patterns.DeclareSoft;
 
 public class ASTVisitorTest extends TestCase {
 	
+    // from bug 110465 - will currently break because of casts
+//	public void testAspectWithITD() {
+//		check("aspect A{ public void B.x(){} }",
+//			  "(compilationUnit(aspect(simpleName)(methodITD(primitiveType)(simpleName)(block))))");
+//	}
+//	
+//	public void testAspectWithCommentThenITD() {
+//		check("aspect A{ /** */ public void B.x(){} }","yyy");
+//	}
+	
+				
+	// original tests
 	public void testAnInterface() {
 		check("interface AnInterface{}","(compilationUnit(interface(simpleName)))");
 	}
@@ -364,6 +376,7 @@ class TestVisitor extends AjASTVisitor {
 	}
 		
 	public boolean visit(MethodDeclaration node) {
+		if (node instanceof InterTypeMethodDeclaration) return visit((InterTypeMethodDeclaration)node);
 		if (node.isConstructor()){
 			b.append("(constructor");
 		} else {
