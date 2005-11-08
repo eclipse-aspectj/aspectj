@@ -357,13 +357,16 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		if (rb instanceof TypeVariableBinding) {
 			scope.problemReporter().signalError(sourceStart,sourceEnd,
 					  "Cannot make inter-type declarations on type variables, use an interface and declare parents");
+			// to prevent disgusting cascading errors after this problem - lets null out what leads to them (pr105038)
+			this.arguments=null;
+			this.returnType=new SingleTypeReference(TypeReference.VOID,0L);
+			
 			this.ignoreFurtherInvestigation=true;
 			ReferenceBinding closestMatch = null;
 			if (((TypeVariableBinding)rb).firstBound!=null) {
 				closestMatch = ((TypeVariableBinding)rb).firstBound.enclosingType();
 			}
 			rb = new ProblemReferenceBinding(rb.compoundName,closestMatch,0);
-			return;
 		}
 
 		

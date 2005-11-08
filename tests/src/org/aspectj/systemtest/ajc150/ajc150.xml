@@ -42,9 +42,6 @@
 
     <ajc-test dir="bugs150" title="NPE in ensureScopeSetup">
         <compile files="pr115038.aj" options="-1.5">
-          <!-- fixme asc the 'static ref' messages are a bit poor and ought to be eliminated... -->
-          <message kind="error" line="2" text="Cannot make a static reference to the non-static type Observable"/>
-          <message kind="error" line="2" text="Cannot make a static reference to the non-static type Event"/>
           <message kind="error" line="2" text="Cannot make inter-type declarations on type variables"/>
         </compile>
     </ajc-test>
@@ -89,12 +86,8 @@
     
     <ajc-test dir="bugs150/pr113947/case1" title="maws generic aspect - 1">
         <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5">
-          <!-- the 'static ref' messages are a bit poor and ought to be eliminated... -->
-          <message kind="error" line="6" text="Cannot make a static reference to the non-static type M"/>
           <message kind="error" line="6" text="Cannot make inter-type declarations on type variables"/>
-          <message kind="error" line="8" text="Cannot make a static reference to the non-static type I"/>
           <message kind="error" line="8" text="Cannot make inter-type declarations on type variables"/>
-          <message kind="error" line="12" text="Cannot make a static reference to the non-static type M"/>
           <message kind="error" line="12" text="Cannot make inter-type declarations on type variables"/>
         </compile>
     </ajc-test>
