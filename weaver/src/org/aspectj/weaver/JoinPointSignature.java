@@ -396,4 +396,12 @@ public class JoinPointSignature implements ResolvedMember {
 	public int hashCode() {
 		return 17 + (37 * realMember.hashCode()) + (37 * substituteDeclaringType.hashCode());
 	}
+
+	public boolean hasBackingGenericMember() {
+		return realMember.hasBackingGenericMember();
+	}
+
+	public ResolvedMember getBackingGenericMember() {
+		return realMember.getBackingGenericMember();
+	}
 }

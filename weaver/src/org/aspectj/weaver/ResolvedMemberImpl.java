@@ -721,6 +721,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	private ResolvedMember myErasure = null;
 	private boolean calculatedMyErasure = false;
 	
+	public boolean hasBackingGenericMember() {
+		return backingGenericMember!=null;
+	}
+	
+	public ResolvedMember getBackingGenericMember() {
+		return backingGenericMember;
+	}
 	
 	/**
       * For ITDs, we use the default factory methods to build a resolved member, then alter a couple of characteristics
