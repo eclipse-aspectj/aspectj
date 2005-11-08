@@ -37,6 +37,18 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs150" pr="104220" title="adviceexecution join point toString forms">
+      <compile files="Pr104220.aj"/>
+      <run class="Pr104220">
+        <stdout>
+          <line text="adviceexecution"/>
+          <line text="adviceexecution(void SomeAspect.before())"/>
+          <line text="adviceexecution(SomeAspect.before())"/>
+          <line text="adviceexecution(void SomeAspect.before())"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 1">
         <compile files="Consts.java,TestNPE.java" options="-1.5"/>
     </ajc-test>

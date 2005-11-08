@@ -674,6 +674,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("Anonymous types and nome matching");
   }
   
+  public void testAdviceExecutionJPToStringForms() {
+	  runTest("adviceexecution join point toString forms");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
