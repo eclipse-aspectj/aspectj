@@ -71,6 +71,22 @@ public class OutxmlTest extends AjdeTestCase {
 	}
 
 	/**
+	 * Aim: Test "-outxml" option produces the correct 
+	 * xml entry in outjar file
+	 * 
+	 */
+	public void testOutxmlToOutjar () {
+		File outjar = openFile(OUTJAR_NAME);
+		ideManager.getProjectProperties().setOutJar(outjar.getAbsolutePath());
+		assertTrue("Build failed",doSynchronousBuild("outxml-to-outjar.lst"));
+		assertTrue("Build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
+		
+		File aopxml = openFile(BIN_DIR + "/" + DEFAULT_AOPXML_NAME);
+		assertFalse(DEFAULT_AOPXML_NAME + " should not exisit",aopxml.exists());
+		assertJarContainsEntry(outjar,DEFAULT_AOPXML_NAME);
+	}
+
+	/**
 	 * Aim: Test "-outxmlfile filename" option produces the correct 
 	 * xml entry in outjar file
 	 * 

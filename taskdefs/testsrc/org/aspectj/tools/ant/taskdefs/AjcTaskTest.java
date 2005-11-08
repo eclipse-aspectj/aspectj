@@ -710,6 +710,31 @@ public class AjcTaskTest extends TestCase {
 		
 	}
 	
+	public void testOutxml () {
+        File destDir = getTempDir();
+        assertTrue(
+            "unable to create " + destDir,
+            destDir.canRead() || destDir.mkdirs());
+		AjcTask task = getTask("showweaveinfo.lst",destDir);
+		task.setOutxml(true);
+		checkRun(task,null);
+		File outxmlFile = new File(destDir,"META-INF/aop.xml");
+		assertTrue("META-INF/aop.xml missing",outxmlFile.exists());
+	}
+	
+	public void testOutxmlFile () {
+		String customName = "custom/aop.xml"; 
+        File destDir = getTempDir();
+        assertTrue(
+            "unable to create " + destDir,
+            destDir.canRead() || destDir.mkdirs());
+		AjcTask task = getTask("showweaveinfo.lst",destDir);
+		task.setOutxmlfile(customName);
+		checkRun(task,null);
+		File outxmlFile = new File(destDir,customName);
+		assertTrue(customName + " missing",outxmlFile.exists());
+	}
+
 	protected void runTest(
 		AjcTask task,
 		Class exceptionType,

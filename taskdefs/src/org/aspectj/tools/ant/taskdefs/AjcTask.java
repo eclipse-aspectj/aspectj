@@ -618,6 +618,14 @@ public class AjcTask extends MatchingTask {
         tmpOutjar = null;
     }
 
+    public void setOutxml(boolean outxml) {
+    	cmd.addFlag("-outxml",outxml);
+    }
+
+    public void setOutxmlfile(String name) {
+        cmd.addFlagged("-outxmlfile", name);
+    }
+
     public void setDestdir(File dir) {
         if (null != outjar) {
             String e = "specifying both output jar ("
@@ -1788,6 +1796,10 @@ public class AjcTask extends MatchingTask {
                 setNoExit(true);
             } else if ("-outjar".equals(flag)) {
                 setOutjar(new File(in.next()));
+            } else if ("-outxml".equals(flag)) {
+                setOutxml(true);
+            } else if ("-outxmlfile".equals(flag)) {
+                setOutxmlfile(in.next());
             } else if ("-preserveAllLocals".equals(flag)) {
                 setPreserveAllLocals(true);
             } else if ("-proceedOnError".equals(flag)) {
