@@ -177,6 +177,6 @@ public interface JoinPoint {
     static String INITIALIZATION = "initialization";
     static String EXCEPTION_HANDLER = "exception-handler";
 
-    static String ADVICE_EXECUTION = "advice-execution"; //??? consider this vs. pcd
+    static String ADVICE_EXECUTION = "adviceexecution"; 
 
 }

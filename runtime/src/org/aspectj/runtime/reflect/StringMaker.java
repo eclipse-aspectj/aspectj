@@ -16,6 +16,8 @@ package org.aspectj.runtime.reflect;
 
 import java.lang.reflect.Modifier;
 
+import org.aspectj.lang.JoinPoint;
+
 class StringMaker {
     boolean shortTypeNames = true;
     boolean includeArgs = true;

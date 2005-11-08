@@ -15,6 +15,7 @@
 package org.aspectj.runtime.reflect;
 
 import java.lang.reflect.Method;
+import java.util.StringTokenizer;
 
 import org.aspectj.lang.reflect.AdviceSignature;
 
@@ -43,17 +44,28 @@ class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
     }
 
     protected String createToString(StringMaker sm) {
-        //XXX this signature needs a lot of work        
-        StringBuffer buf = new StringBuffer("ADVICE: ");
-        buf.append(sm.makeModifiersString(getModifiers()));
+        StringBuffer buf = new StringBuffer();
+//        buf.append(sm.makeModifiersString(getModifiers()));
         if (sm.includeArgs) buf.append(sm.makeTypeName(getReturnType()));
         if (sm.includeArgs) buf.append(" ");        
         buf.append(sm.makePrimaryTypeName(getDeclaringType(),getDeclaringTypeName()));
         buf.append(".");
-        buf.append(getName());        
+        buf.append(toAdviceName(getName()));        
         sm.addSignature(buf, getParameterTypes());
         sm.addThrows(buf, getExceptionTypes());
         return buf.toString();
+    }
+    
+    private String toAdviceName(String methodName) {
+    		if (methodName.indexOf('$') == -1) return methodName;
+    		StringTokenizer strTok = new StringTokenizer(methodName,"$");
+    		while (strTok.hasMoreTokens()) {
+    			String token = strTok.nextToken();
+    			if ( token.startsWith("before") ||
+    				 token.startsWith("after") ||
+    				 token.startsWith("around") ) return token;    			   
+    		}
+    		return methodName;
     }
     
     /* (non-Javadoc)
