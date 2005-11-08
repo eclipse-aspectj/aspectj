@@ -23,7 +23,6 @@ import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.bridge.IMessage;
 import org.aspectj.testing.util.FileUtil;
 
 /**
