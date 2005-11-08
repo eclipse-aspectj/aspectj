@@ -1473,12 +1473,22 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			Type fieldType = 	BcelWorld.makeBcelType(field.getType());
 
 			FieldGen fg = makeFieldGen(gen,AjcMemberMaker.interFieldInterfaceField(field, onType, aspectType));
-	    	gen.addField(fg.getField(),getSourceLocation());
 			
+	    	
+			if (annotationsOnRealMember!=null) {
+				for (int i = 0; i < annotationsOnRealMember.length; i++) {
+					AnnotationX annotationX = annotationsOnRealMember[i];
+					Annotation a = annotationX.getBcelAnnotation();
+					AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);	
+					fg.addAnnotation(ag);
+				}
+			}
+			
+	    	gen.addField(fg.getField(),getSourceLocation());
 	    	//this uses a shadow munger to add init method to constructors
 	    	//weaver.getShadowMungers().add(makeInitCallShadowMunger(initMethod));
-	    	
-	    	ResolvedMember itdfieldGetter = AjcMemberMaker.interFieldInterfaceGetter(field, gen.getType()/*onType*/, aspectType);
+
+			ResolvedMember itdfieldGetter = AjcMemberMaker.interFieldInterfaceGetter(field, gen.getType()/*onType*/, aspectType);
 			LazyMethodGen mg = makeMethodGen(gen, itdfieldGetter);
 			InstructionList il = new InstructionList();
 			InstructionFactory fact = gen.getFactory();

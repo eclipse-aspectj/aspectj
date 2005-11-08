@@ -52,7 +52,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testPossibleStaticImports_pr113066_1() { runTest("possible static imports bug - 1");}
   public void testPossibleStaticImports_pr113066_2() { runTest("possible static imports bug - 2");}
   public void testPossibleStaticImports_pr113066_3() { runTest("possible static imports bug - 3");}
-  public void testITDCtor_pr112783()          { runTest("Problem with constructor ITDs");}
+  public void testITDCtor_pr112783()                 { runTest("Problem with constructor ITDs");}
+  public void testAnnotatedITDFs_pr114005_1()        { runTest("Annotated ITDFs - 1");}
+  public void testAnnotatedITDFs_pr114005_2()        { runTest("Annotated ITDFs - 2");}
   public void testCantCallSuperMethods_pr90143() { runTest("cant call super methods");}
   public void testBrokenDecp_pr112476()       { runTest("binary weaving decp broken");}
   public void testUnboundFormal_pr112027()    { runTest("unexpected error unboundFormalInPC");}

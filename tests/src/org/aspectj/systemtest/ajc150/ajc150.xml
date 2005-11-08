@@ -17,6 +17,25 @@
         </run>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr114005" title="Annotated ITDFs - 1">
+      <compile files="Declaration1.java" options="-1.5"/>
+      <run class="Declaration1">
+        <stdout>
+          <line text="public java.lang.String Test.firstProperty has annotation:true"/>
+          <line text="public java.lang.String Test.ajc$interField$Declaration1$TestInterface$secondProperty has annotation:true"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150/pr114005" title="Annotated ITDFs - 2">
+      <compile files="Declaration2.java" options="-1.5"/>
+      <run class="Declaration2">
+        <stdout>
+          <line text="public java.lang.String Test.firstProperty has annotation:true"/>
+          <line text="public java.lang.String Test.ajc$interField$Declaration2$TestInterface$secondProperty has annotation:true"/>
+        </stdout>
+      </run>
+    </ajc-test>
     
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 1">
         <compile files="Consts.java,TestNPE.java" options="-1.5"/>
