@@ -678,6 +678,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("adviceexecution join point toString forms");
   }
   
+  public void testAssertWithinPointcutExpression() {
+	  runTest("pointcut expression containing 'assert'");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
