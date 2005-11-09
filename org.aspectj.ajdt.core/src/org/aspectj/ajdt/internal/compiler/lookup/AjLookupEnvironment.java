@@ -782,9 +782,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 		
 		// Build a new array of annotations
-		// FIXME asc Should be caching the old set of annotations in the type so the class file
-		// generated doesn't have the annotation, it will then be added again during
-		// binary weaving? (similar to declare parents handling...)
+		
+		// remember the current set (rememberAnnotations only does something the first time it is called for a type)
+		sourceType.scope.referenceContext.rememberAnnotations(); 
+		
 		AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decA.getSourceLocation(),rtx.getSourceLocation());
 		Annotation abefore[] = sourceType.scope.referenceContext.annotations;
 		Annotation[] newset = new Annotation[toAdd.length+(abefore==null?0:abefore.length)];
