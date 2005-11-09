@@ -103,6 +103,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewParent(weaver, (NewParentTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.AnnotationOnType) {
 			changed = mungeNewAnnotationOnType(weaver,(AnnotationOnTypeMunger)munger);
+			worthReporting=false;
         } else {
 			throw new RuntimeException("unimplemented");
 		}
