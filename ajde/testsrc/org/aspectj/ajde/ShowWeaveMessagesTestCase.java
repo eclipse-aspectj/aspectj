@@ -347,6 +347,8 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 			fr = new BufferedReader(new FileReader(f));
 			String line = null;
 			while ((line=fr.readLine())!=null) fileContents.add(line);
+			List originalFileContents = new ArrayList();
+			originalFileContents.addAll(fileContents);
 			
 			// See if the messages match
 			int msgCount = 0;
@@ -356,8 +358,8 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 				if (debugTests) System.out.println("Looking at ["+msg+"]");
 				if (msg.getKind().equals(IMessage.WEAVEINFO)) {
 					if (!fileContents.contains(msg.getMessage())) {
-						fail("Could not find message '"+msg.getMessage()+"' in the expected results\n"+
-						stringify(fileContents));
+						fail("Could not find message '"+msg.getMessage()+"' in the expected results.  Expected results are:\n"+
+						stringify(originalFileContents));
 					} else {
 						fileContents.remove(msg.getMessage());
 					}
