@@ -821,6 +821,9 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	
 	public String getPackageName() {
 		String name = getName();
+		if (name.indexOf("<")!=-1) {
+			name = name.substring(0,name.indexOf("<"));
+		}
 		int index = name.lastIndexOf('.');
 		if (index == -1) { 
 			return null; 
