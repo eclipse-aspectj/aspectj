@@ -384,6 +384,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
      */
 	public boolean attemptToModifySuperCalls(BcelClassWeaver weaver,LazyClassGen newParentTarget, ResolvedType newParent) {
         String currentParent = newParentTarget.getSuperClassname();
+        if (newParent.getGenericType()!=null) newParent = newParent.getGenericType(); // target new super calls at the generic type if its raw or parameterized
         List mgs = newParentTarget.getMethodGens();
         
         // Look for ctors to modify
@@ -1402,10 +1403,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	
 	private boolean mungeNewField(BcelClassWeaver weaver, NewFieldTypeMunger munger) {
 		/*ResolvedMember initMethod = */munger.getInitMethod(aspectType);
-		
 		LazyClassGen gen = weaver.getLazyClassGen();
 		ResolvedMember field = munger.getSignature();
-		
 		
 		ResolvedType onType = weaver.getWorld().resolve(field.getDeclaringType(),munger.getSourceLocation());
 		if (onType.isRawType()) onType = onType.getGenericType();
@@ -1421,7 +1420,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			signalError(WeaverMessages.ITDF_ON_ENUM_NOT_ALLOWED,weaver,onType);
 			return false;
 		}
-		
 		
 		ResolvedMember interMethodBody = munger.getInitMethod(aspectType);
 		
@@ -1471,25 +1469,26 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (field.isStatic()) throw new RuntimeException("unimplemented");
 			weaver.addInitializer(this);
 			//System.err.println("impl body on " + gen.getType() + " for " + munger);
+			
+			
 			Type fieldType = 	BcelWorld.makeBcelType(field.getType());
-
+				
 			FieldGen fg = makeFieldGen(gen,AjcMemberMaker.interFieldInterfaceField(field, onType, aspectType));
-			
-	    	
-			if (annotationsOnRealMember!=null) {
-				for (int i = 0; i < annotationsOnRealMember.length; i++) {
-					AnnotationX annotationX = annotationsOnRealMember[i];
-					Annotation a = annotationX.getBcelAnnotation();
-					AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);	
-					fg.addAnnotation(ag);
+		    	
+				if (annotationsOnRealMember!=null) {
+					for (int i = 0; i < annotationsOnRealMember.length; i++) {
+						AnnotationX annotationX = annotationsOnRealMember[i];
+						Annotation a = annotationX.getBcelAnnotation();
+						AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);	
+						fg.addAnnotation(ag);
+					}
 				}
-			}
-			
-	    	gen.addField(fg.getField(),getSourceLocation());
+				
+		    	gen.addField(fg.getField(),getSourceLocation());
 	    	//this uses a shadow munger to add init method to constructors
 	    	//weaver.getShadowMungers().add(makeInitCallShadowMunger(initMethod));
-
-			ResolvedMember itdfieldGetter = AjcMemberMaker.interFieldInterfaceGetter(field, gen.getType()/*onType*/, aspectType);
+	    	
+	    	ResolvedMember itdfieldGetter = AjcMemberMaker.interFieldInterfaceGetter(field, gen.getType()/*onType*/, aspectType);
 			LazyMethodGen mg = makeMethodGen(gen, itdfieldGetter);
 			InstructionList il = new InstructionList();
 			InstructionFactory fact = gen.getFactory();
