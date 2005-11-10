@@ -331,11 +331,15 @@ public final class LazyClassGen {
         return new File(root, str.substring(0, index));
     }
     
+    /** Returns the packagename - if its the default package we return an empty string
+     */
     public String getPackageName() {
     	if (packageName!=null) return packageName;
     	String str = getInternalClassName();
-    	int index= str.lastIndexOf("/");
-    	if (index==-1) return str;
+    	int index = str.indexOf("<");
+    	if (index!=-1) str = str.substring(0,index); // strip off the generics guff
+    	index= str.lastIndexOf("/");
+    	if (index==-1) return "";
     	return str.substring(0,index).replace('/','.');
     }
 
@@ -410,6 +414,16 @@ public final class LazyClassGen {
     // FIXME asc Should be collection returned here
     public Field[] getFieldGens() {
       return myGen.getFields();
+    }
+    
+    public Field getField(String name) {
+    	Field[] allFields = myGen.getFields();
+    	if (allFields==null) return null;
+    	for (int i = 0; i < allFields.length; i++) {
+			Field field = allFields[i];
+			if (field.getName().equals(name)) return field;
+		}
+    	return null;
     }
     
     // FIXME asc How do the ones on the underlying class surface if this just returns new ones added?
@@ -634,14 +648,21 @@ public final class LazyClassGen {
 		  warnOnAddedInterface(typeX.getName(),sourceLocation);
     }
     
-	public void setSuperClass(UnresolvedType typeX) {
+	public void setSuperClass(ResolvedType typeX) {
     	regenerateGenericSignatureAttribute = true;
-		myGen.setSuperclassName(typeX.getName());
+    	myType.addParent(typeX); // used for the attribute
+    	if (typeX.getGenericType()!=null) typeX = typeX.getGenericType();
+		myGen.setSuperclassName(typeX.getName()); // used in the real class data
 	 }
     
     public String getSuperClassname() {
         return myGen.getSuperclassName();   
     }
+
+    // FIXME asc not great that some of these ask the gen and some ask the type ! (see the related setters too)
+	public ResolvedType getSuperClass() {
+		return myType.getSuperclass();
+	} 
     
     public String[] getInterfaceNames() {
     	return myGen.getInterfaceNames();
@@ -1179,6 +1200,7 @@ public final class LazyClassGen {
 		return null;
 	}
 	
+	
 	public void forcePublic() {
 		myGen.setAccessFlags(Utility.makePublic(myGen.getAccessFlags()));
 	}
@@ -1229,5 +1251,6 @@ public final class LazyClassGen {
 		}
 		return false;
 	}
+
 
 }
