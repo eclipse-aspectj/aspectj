@@ -4208,7 +4208,11 @@
      <compile files="OneX.java" inpath="onea.jar;oneb.jar" options="-1.5"/>
    </ajc-test>
       
-
+   <ajc-test dir="java5/generics/binaryBridging" title="binary bridge methods - two">
+     <compile files="TwoA.java" outjar="twoa.jar" options="-1.5"/>
+     <compile files="TwoB.java" outjar="twob.jar" options="-1.5"/>
+     <compile files="TwoX.java" inpath="twoa.jar;twob.jar" options="-1.5"/>
+   </ajc-test>
 
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="abstract intertype methods and covariant returns">
    	   <compile files="pr91381.aj" options="-1.5"/>
