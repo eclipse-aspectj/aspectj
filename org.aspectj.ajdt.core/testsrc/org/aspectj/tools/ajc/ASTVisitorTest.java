@@ -25,6 +25,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.AroundAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.Assignment;
 import org.aspectj.org.eclipse.jdt.core.dom.BeforeAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.Block;
+import org.aspectj.org.eclipse.jdt.core.dom.BlockComment;
 import org.aspectj.org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareDeclaration;
@@ -55,15 +56,15 @@ import org.aspectj.weaver.patterns.DeclareSoft;
 public class ASTVisitorTest extends TestCase {
 	
     // from bug 110465 - will currently break because of casts
-//	public void testAspectWithITD() {
-//		check("aspect A{ public void B.x(){} }",
-//			  "(compilationUnit(aspect(simpleName)(methodITD(primitiveType)(simpleName)(block))))");
-//	}
-//	
-//	public void testAspectWithCommentThenITD() {
-//		check("aspect A{ /** */ public void B.x(){} }","yyy");
-//	}
+	public void testAspectWithITD() {
+		check("aspect A{ public void B.x(){} }",
+			  "(compilationUnit(aspect(simpleName)(methodITD(primitiveType)(simpleName)(block))))");
+	}
 	
+	public void testAspectWithCommentThenITD() {
+		check("aspect A{ /** */ public void B.x(){} }",
+			  "(compilationUnit(aspect(simpleName)(methodITD(primitiveType)(simpleName)(block))))");
+	}
 				
 	// original tests
 	public void testAnInterface() {
@@ -513,6 +514,13 @@ class TestVisitor extends AjASTVisitor {
 	public boolean visit(VariableDeclaration node) {
 		b.append("(variableDeclaration"); //$NON-NLS-1$
 		return isVisitingChildren();
+	}
+	public boolean visit(BlockComment bc) {
+		b.append("(blockcomment");
+		return isVisitingChildren();
+	}
+	public void endVisit(BlockComment bc) {
+		b.append(")");
 	}
 	public void endVisit(VariableDeclaration node) {
 		b.append(")"); //$NON-NLS-1$

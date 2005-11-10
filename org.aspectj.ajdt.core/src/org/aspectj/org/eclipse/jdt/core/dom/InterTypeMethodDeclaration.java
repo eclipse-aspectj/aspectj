@@ -64,11 +64,12 @@ public class InterTypeMethodDeclaration extends MethodDeclaration {
 		return result;
 	}
 	
+	
+	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	void accept0(ASTVisitor visitor) {
-		AjASTVisitor ajvis = (AjASTVisitor)visitor;
+	void accept0(ASTVisitor ajvis) { 
 		boolean visitChildren = ajvis.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
