@@ -69,24 +69,27 @@ public class InterTypeMethodDeclaration extends MethodDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	void accept0(ASTVisitor ajvis) { 
-		boolean visitChildren = ajvis.visit(this);
-		if (visitChildren) {
-			// visit children in normal left to right reading order
-			acceptChild(ajvis, getJavadoc());
-			if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-				acceptChild(ajvis, getReturnType());
-			} else {
-				acceptChildren(ajvis, this.modifiers);
-				acceptChildren(ajvis, (NodeList)this.typeParameters());
-				acceptChild(ajvis, getReturnType2());
+	void accept0(ASTVisitor visitor) { 
+		if (visitor instanceof AjASTVisitor) {
+			AjASTVisitor ajvis = (AjASTVisitor)visitor;
+			boolean visitChildren = ajvis.visit(this);
+			if (visitChildren) {
+				// visit children in normal left to right reading order
+				acceptChild(ajvis, getJavadoc());
+				if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
+					acceptChild(ajvis, getReturnType());
+				} else {
+					acceptChildren(ajvis, this.modifiers);
+					acceptChildren(ajvis, (NodeList)this.typeParameters());
+					acceptChild(ajvis, getReturnType2());
+				}
+				// n.b. visit return type even for constructors
+				acceptChild(ajvis, getName());
+				acceptChildren(ajvis, this.parameters);
+				acceptChildren(ajvis, (NodeList)this.thrownExceptions());
+				acceptChild(ajvis, getBody());
 			}
-			// n.b. visit return type even for constructors
-			acceptChild(ajvis, getName());
-			acceptChildren(ajvis, this.parameters);
-			acceptChildren(ajvis, (NodeList)this.thrownExceptions());
-			acceptChild(ajvis, getBody());
+			ajvis.endVisit(this);
 		}
-		ajvis.endVisit(this);
 	}
 }

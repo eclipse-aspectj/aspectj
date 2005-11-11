@@ -49,16 +49,18 @@ public class InterTypeFieldDeclaration extends FieldDeclaration {
 	}
 	
 	void accept0(ASTVisitor visitor) {
-		boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
-		if (visitChildren) {
-			// visit children in normal left to right reading order
-			acceptChild(visitor, getJavadoc());
-			if (this.ast.apiLevel >= AST.JLS3) {
-				acceptChildren(visitor, this.modifiers);
+		if (visitor instanceof AjASTVisitor) {
+			boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
+			if (visitChildren) {
+				// visit children in normal left to right reading order
+				acceptChild(visitor, getJavadoc());
+				if (this.ast.apiLevel >= AST.JLS3) {
+					acceptChildren(visitor, this.modifiers);
+				}
+				acceptChild(visitor, getType());
+				acceptChildren(visitor, this.variableDeclarationFragments);
 			}
-			acceptChild(visitor, getType());
-			acceptChildren(visitor, this.variableDeclarationFragments);
+			((AjASTVisitor)visitor).endVisit(this);
 		}
-		((AjASTVisitor)visitor).endVisit(this);
 	}
 }

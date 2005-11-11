@@ -132,16 +132,18 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 	}
 	
 	void accept0(ASTVisitor visitor) {
-		boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
-		if (visitChildren) {
-			// visit children in normal left to right reading order
-			acceptChild(visitor, getJavadoc());
-			acceptChildren(visitor, this.parameters);
-			acceptChild(visitor, getPointcut());
-			acceptChild(visitor, getThrowing());
-			acceptChildren(visitor, this.thrownExceptions);
-			acceptChild(visitor, getBody());
+		if (visitor instanceof AjASTVisitor) {
+			boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
+			if (visitChildren) {
+				// visit children in normal left to right reading order
+				acceptChild(visitor, getJavadoc());
+				acceptChildren(visitor, this.parameters);
+				acceptChild(visitor, getPointcut());
+				acceptChild(visitor, getThrowing());
+				acceptChildren(visitor, this.thrownExceptions);
+				acceptChild(visitor, getBody());
+			}
+			((AjASTVisitor)visitor).endVisit(this);
 		}
-		((AjASTVisitor)visitor).endVisit(this);
 	}
 }

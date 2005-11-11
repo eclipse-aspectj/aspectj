@@ -239,21 +239,23 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	void accept0(ASTVisitor visitor) {
-		boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
-		if (visitChildren) {
-			// visit children in normal left to right reading order
-			acceptChild(visitor, getJavadoc());
-			if (ast.apiLevel == AST.JLS2_INTERNAL) {
-				acceptChild(visitor, getReturnType());
-			} else {
-				acceptChild(visitor, getReturnType2());
+		if (visitor instanceof AjASTVisitor) {
+			boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
+			if (visitChildren) {
+				// visit children in normal left to right reading order
+				acceptChild(visitor, getJavadoc());
+				if (ast.apiLevel == AST.JLS2_INTERNAL) {
+					acceptChild(visitor, getReturnType());
+				} else {
+					acceptChild(visitor, getReturnType2());
+				}
+				
+				acceptChildren(visitor, this.parameters);
+				acceptChild(visitor, getPointcut());
+				acceptChildren(visitor, this.thrownExceptions);
+				acceptChild(visitor, getBody());
 			}
-			
-			acceptChildren(visitor, this.parameters);
-			acceptChild(visitor, getPointcut());
-			acceptChildren(visitor, this.thrownExceptions);
-			acceptChild(visitor, getBody());
+			((AjASTVisitor)visitor).endVisit(this);
 		}
-		((AjASTVisitor)visitor).endVisit(this);
 	}
 }

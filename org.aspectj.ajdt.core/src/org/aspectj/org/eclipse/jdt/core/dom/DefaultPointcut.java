@@ -55,8 +55,10 @@ public class DefaultPointcut extends PointcutDesignator {
 		return ((AjASTMatcher)matcher).match(this, other);
 	}
 	void accept0(ASTVisitor visitor) {
-		boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
-		((AjASTVisitor)visitor).endVisit(this);
+		if (visitor instanceof AjASTVisitor) {
+			boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
+			((AjASTVisitor)visitor).endVisit(this);
+		}
 	}
 	int treeSize() {
 		return memSize();

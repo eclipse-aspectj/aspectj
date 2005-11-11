@@ -107,12 +107,14 @@ public class DeclareDeclaration extends BodyDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	void accept0(ASTVisitor visitor) {
-		boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
-		if (visitChildren) {
-			// visit children in normal left to right reading order
-			acceptChild(visitor, getJavadoc());
+		if (visitor instanceof AjASTVisitor) {
+			boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
+			if (visitChildren) {
+				// visit children in normal left to right reading order
+				acceptChild(visitor, getJavadoc());
+			}
+			((AjASTVisitor)visitor).endVisit(this);
 		}
-		((AjASTVisitor)visitor).endVisit(this);
 	}
 
 	/**

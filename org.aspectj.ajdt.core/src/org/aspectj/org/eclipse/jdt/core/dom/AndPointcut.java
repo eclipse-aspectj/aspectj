@@ -105,14 +105,16 @@ public class AndPointcut extends PointcutDesignator {
 		return ((AjASTMatcher)matcher).match(this, other);
 	}
 	void accept0(ASTVisitor visitor) {
-		boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
-		if (visitChildren) {
-			// visit children in normal left to right reading order
-			acceptChild(visitor, getLeft());
-			acceptChild(visitor, getRight());
-			// todo: accept the parameters here
+		if (visitor instanceof AjASTVisitor) {
+			boolean visitChildren = ((AjASTVisitor)visitor).visit(this);
+			if (visitChildren) {
+				// visit children in normal left to right reading order
+				acceptChild(visitor, getLeft());
+				acceptChild(visitor, getRight());
+				// todo: accept the parameters here
+			}
+			((AjASTVisitor)visitor).endVisit(this);
 		}
-		((AjASTVisitor)visitor).endVisit(this);
 	}
 	int treeSize() {
 		return
