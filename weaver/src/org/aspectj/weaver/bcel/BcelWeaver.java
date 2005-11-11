@@ -67,6 +67,8 @@ import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.IWeaver;
 import org.aspectj.weaver.NewParentTypeMunger;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ShadowMunger;
@@ -980,7 +982,7 @@ public class BcelWeaver implements IWeaver {
                 if (theType.isAnnotationStyleAspect()) {
                     BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
                     if (classType==null) {
-                        throw new BCException("Can't find bcel delegate for "+className+" type="+theType.getClass());
+                       throw new BCException("Can't find bcel delegate for "+className+" type="+theType.getClass());
                     }
                     LazyClassGen clazz = classType.getLazyClassGen();
                     BcelPerClauseAspectAdder selfMunger = new BcelPerClauseAspectAdder(theType, theType.getPerClause().getKind());
@@ -1053,8 +1055,16 @@ public class BcelWeaver implements IWeaver {
 			String className = classFile.getClassName();
 			ResolvedType theType = world.resolve(className);
 			if (theType.isAspect()) {
-				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+			   BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
 				if (classType==null) {
+					
+					// Sometimes.. if the Bcel Delegate couldn't be found then a problem occurred at compile time - on
+					// a previous compiler run.  In this case I assert the delegate will still be an EclipseSourceType
+					// and we can ignore the problem here (the original compile error will be reported again from
+					// the eclipse source type) - pr113531
+					ReferenceTypeDelegate theDelegate = ((ReferenceType)theType).getDelegate();
+					if (theDelegate.getClass().getSimpleName().equals("EclipseSourceType")) continue;
+
 					throw new BCException("Can't find bcel delegate for "+className+" type="+theType.getClass());
 				}
 		        weaveAndNotify(classFile, classType,requestor);
