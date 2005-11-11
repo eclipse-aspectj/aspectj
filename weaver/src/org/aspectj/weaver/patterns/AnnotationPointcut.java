@@ -197,18 +197,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			if (var == null) throw new BCException("Impossible! annotation=["+annotationType+
 					                               "]  shadow=["+shadow+" at "+shadow.getSourceLocation()+
 												   "]    pointcut is at ["+getSourceLocation()+"]");//return Literal.FALSE;
-			// Check if we have already bound something to this formal
-			if ((state.get(btp.getFormalIndex())!=null) &&(lastMatchedShadowId == shadow.shadowId)) {
-//				ISourceLocation pcdSloc = getSourceLocation(); 
-//				ISourceLocation shadowSloc = shadow.getSourceLocation();
-//				Message errorMessage = new Message(
-//					"Cannot use @pointcut to match at this location and bind a formal to type '"+var.getType()+
-//					"' - the formal is already bound to type '"+state.get(btp.getFormalIndex()).getType()+"'"+
-//					".  The secondary source location points to the problematic binding.",
-//					shadowSloc,true,new ISourceLocation[]{pcdSloc}); 
-//				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
-				state.setErroneousVar(btp.getFormalIndex());
-			}
+
 			state.set(btp.getFormalIndex(),var);
 		}
 		if (matchInternal(shadow).alwaysTrue()) 

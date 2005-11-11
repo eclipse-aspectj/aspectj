@@ -437,6 +437,9 @@ public class BcelWeaver implements IWeaver {
 
 		shadowMungerList = xcutSet.getShadowMungers();
 		rewritePointcuts(shadowMungerList);
+		// Sometimes an error occurs during rewriting pointcuts (for example, if ambiguous bindings
+		// are detected) - we ought to fail the prepare when this happens because continuing with
+		// inconsistent pointcuts could lead to problems
 		typeMungerList = xcutSet.getTypeMungers();
         lateTypeMungerList = xcutSet.getLateTypeMungers();
 		declareParentsList = xcutSet.getDeclareParents();

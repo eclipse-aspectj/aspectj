@@ -169,31 +169,19 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return (isThis ? "this(" : "target(") + type + ")";
 	}
 
+	/** 
+	 * Residue is the remainder of the pointcut match that couldn't be
+	 * performed with the purely static information at compile time and
+	 * this method returns the residue of a pointcut at a particular shadow.
+	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (!couldMatch(shadow)) return Literal.FALSE;
 		
+		// if no preference is specified, just say TRUE which means no residue
 		if (type == TypePattern.ANY) return Literal.TRUE;
 		
 		Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();	
 
-		if (type instanceof BindingTypePattern) {
-		  BindingTypePattern btp = (BindingTypePattern)type;
-		  // Check if we have already bound something to this formal
-		  Var existingVarInThisSlot = state.get(btp.getFormalIndex());
-		  
-		  if (existingVarInThisSlot != null ) {
-			  
-			// Is it already bound to exactly the same thing?
-			if (existingVarInThisSlot.equals(var)) return Literal.TRUE;
-			
-			// If state.get() returned non-null then someone has already bound the variable in that slot at
-			// the shadow 'shadow.shadowId'.  If our 'lastMatchedShadowId' is not the same as 'shadow.shadowId'
-			// then this pointcut wasn't involved in matching and so shouldn't contribute to binding - so just
-			// return Literal.TRUE meaning 'no residue'
-		    if (lastMatchedShadowId != shadow.shadowId) return Literal.TRUE;
-			state.setErroneousVar(btp.getFormalIndex());
-		  }
-		}
 		return exposeStateForVar(var, type, state, shadow.getIWorld());
 	}
 

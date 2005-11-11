@@ -16,6 +16,8 @@ package org.aspectj.weaver.patterns;
 import java.util.Arrays;
 
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Var;
 
@@ -23,6 +25,7 @@ public class ExposedState {
 	public Var[] vars;
 	private boolean[] erroneousVars;
 	private Expr aspectInstance;
+	private UnresolvedType[] expectedVarTypes; // enables us to check that binding is occurring with the *right* types
 
 	public ExposedState(int size) {
 		super();
@@ -33,6 +36,13 @@ public class ExposedState {
 	public ExposedState(Member signature) {
 		// XXX there maybe something about target for non-static sigs
 		this(signature.getParameterTypes().length);
+		expectedVarTypes = new UnresolvedType[signature.getParameterTypes().length];
+		if (expectedVarTypes.length>0) {
+			for (int i = 0; i < signature.getParameterTypes().length; i++) {
+				expectedVarTypes[i] = signature.getParameterTypes()[i];
+			}
+		}
+		
 	}
 	
 	public boolean isFullySetUp() {
@@ -43,12 +53,18 @@ public class ExposedState {
 	}
 
 	public void set(int i, Var var) {
-		//XXX add sanity checks
-		// Some checks added in ArgsPointcut and ThisOrTargetPointcut
-//		if (vars[i]!=null) {
-//			if (!var.getType().equals(vars[i].getType()))
-//			  throw new RuntimeException("Shouldn't allow a slot to change type! Currently="+var.getType()+"   New="+vars[i].getType());
-//		}
+		// check the type is OK if we can... these are the same rules as in matchesInstanceOf() processing
+		if (expectedVarTypes!=null) {
+			ResolvedType expected = expectedVarTypes[i].resolve(var.getType().getWorld());
+			if (!expected.equals(ResolvedType.OBJECT)) {
+				if (!expected.isAssignableFrom(var.getType())) {
+					if (!var.getType().isCoerceableFrom(expected)) {
+//						throw new BCException("Expected type "+expectedVarTypes[i]+" in slot "+i+" but attempt to put "+var.getType()+" into it");
+						return;
+					}
+				}
+			}
+		}
 		vars[i] = var;
 	}
     public Var get(int i) {

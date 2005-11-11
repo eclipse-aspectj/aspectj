@@ -212,19 +212,6 @@ public class ArgsPointcut extends NameBindingPointcut {
 				if (type.matchesInstanceof(argRTX).alwaysTrue()) {
 					continue;
 				}
-			} else {
-			  BindingTypePattern btp = (BindingTypePattern)type;
-			  // Check if we have already bound something to this formal
-			  if ((state.get(btp.getFormalIndex())!=null) &&(lastMatchedShadowId != shadow.shadowId)) {
-//			  	ISourceLocation isl = getSourceLocation();
-//				Message errorMessage = new Message(
-//                    "Ambiguous binding of type "+type.getExactType().toString()+
-//                    " using args(..) at this line - formal is already bound"+
-//                    ".  See secondary source location for location of args(..)",
-//					shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
-//				shadow.getIWorld().getMessageHandler().handleMessage(errorMessage);
-				state.setErroneousVar(btp.getFormalIndex());
-			  }
 			}
 
 			World world = shadow.getIWorld();
