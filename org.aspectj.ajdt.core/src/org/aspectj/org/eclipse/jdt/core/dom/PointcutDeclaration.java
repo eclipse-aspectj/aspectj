@@ -288,18 +288,20 @@ public class PointcutDeclaration extends BodyDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	void accept0(ASTVisitor visitor) {
-		AjASTVisitor ajvis = ((AjASTVisitor)visitor);
-		boolean visitChildren = ajvis.visit(this);
-		if (visitChildren) {
-			// visit children in normal left to right reading order
-			acceptChild(ajvis, getJavadoc());
-			if (this.ast.apiLevel >= AST.JLS3) {
-				acceptChildren(ajvis, this.modifiers);
+		if (visitor instanceof AjASTVisitor) {
+			AjASTVisitor ajvis = ((AjASTVisitor)visitor);
+			boolean visitChildren = ajvis.visit(this);
+			if (visitChildren) {
+				// visit children in normal left to right reading order
+				acceptChild(ajvis, getJavadoc());
+				if (this.ast.apiLevel >= AST.JLS3) {
+					acceptChildren(ajvis, this.modifiers);
+				}
+				acceptChild(ajvis, getName());
+				acceptChild(ajvis, getDesignator());
 			}
-			acceptChild(ajvis, getName());
-			acceptChild(ajvis, getDesignator());
+			ajvis.endVisit(this);
 		}
-		ajvis.endVisit(this);
 	}
 		
 	/* (omit javadoc for this method)

@@ -65,6 +65,10 @@ public class ASTVisitorTest extends TestCase {
 		check("aspect A{ /** */ public void B.x(){} }",
 			  "(compilationUnit(aspect(simpleName)(methodITD(primitiveType)(simpleName)(block))))");
 	}
+	
+	public void testAspectWithCommentThenPointcut() {
+		check("aspect A{ /** */ pointcut x(); }","(compilationUnit(aspect(simpleName)(pointcut(simpleName))))");
+	}
 				
 	// original tests
 	public void testAnInterface() {
