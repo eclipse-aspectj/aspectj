@@ -565,7 +565,8 @@ public final class LazyClassGen {
 				signature.append(">");
 			}
 			// now the supertype
-			signature.append(myType.getSuperclass().getSignature());
+			String supersig = myType.getSuperclass().getSignatureForAttribute();
+			signature.append(supersig);
 			ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
 			for (int i = 0; i < interfaceRTXs.length; i++) {
 				String s = interfaceRTXs[i].getSignatureForAttribute();
