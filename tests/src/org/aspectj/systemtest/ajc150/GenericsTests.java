@@ -458,12 +458,12 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     			"java.lang.Object Sub3.m() [BridgeMethod]"});
 	}
 	// Now the subclass ITD is done with binary weaving - the weaver should create the necessary bridge method
-//	public void testGenericITDsBridgeMethods3binary()  {
-//		runTest("bridge methods - 3 - binary");
-//		checkMethodsExist("Sub3",new String[]{
-//    			"java.lang.Integer Sub3.m()",
-//    			"java.lang.Object Sub3.m() [BridgeMethod]"});
-//	}
+	public void testGenericITDsBridgeMethods3binary()  {
+		runTest("bridge methods - 3 - binary");
+		checkMethodsExist("Sub3",new String[]{
+    			"java.lang.Integer Sub3.m()",
+    			"java.lang.Object Sub3.m() [BridgeMethod]"});
+	}
 	// Now the two types are disconnected until the aspect supplies a declare parents relationship - 
 	// the bridge method should still be created in the subtype
 	public void testGenericITDSBridgeMethods4() {
@@ -473,14 +473,35 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 				"java.lang.Object Sub4.m() [BridgeMethod]"});
 	}
 	// now the aspect doing the decp between the types is applied via binary weaving - weaver should create the bridge method
-//	public void testGenericITDSBridgeMethods4binary() {
-//		runTest("bridge methods - 4 - binary");
-//		checkMethodsExist("Sub4",new String[]{
-//    			"java.lang.Integer Sub4.m()",
-//				"java.lang.Object Sub4.m() [BridgeMethod]"});
-//	}
+	public void testGenericITDSBridgeMethods4binary() {
+		runTest("bridge methods - 4 - binary");
+		checkMethodsExist("Sub4",new String[]{
+    			"java.lang.Integer Sub4.m()",
+				"java.lang.Object Sub4.m() [BridgeMethod]"});
+	}
 	
-	// FIXME asc need a testcase for when a decp wires two classes together and causes the subtype to need bridge methods
+	public void testBinaryBridgeMethodsOne() {
+		runTest("binary bridge methods - one");
+		checkMethodsExist("OneB",new String[]{
+				"java.lang.Number OneB.firstMethod() [BridgeMethod]",
+				"java.lang.Integer OneB.firstMethod()",
+				"void OneB.secondMethod(java.lang.Number) [BridgeMethod]",
+				"void OneB.secondMethod(java.lang.Integer)",
+				"void OneB.thirdMethod(java.lang.Number,java.lang.Number) [BridgeMethod]",
+				"void OneB.thirdMethod(java.lang.Integer,java.lang.Integer)",
+				"void OneB.fourthMethod(java.util.List)",
+				"java.lang.Number OneB.fifthMethod(java.lang.Number,java.util.List) [BridgeMethod]",
+				"java.lang.Integer OneB.fifthMethod(java.lang.Integer,java.util.List)"
+		});
+	}
+	public void testBinaryBridgeMethodsTwo() {
+		runTest("binary bridge methods - two");
+		checkMethodsExist("TwoB",new String[]{
+				"java.lang.Number TwoB.firstMethod(java.io.Serializable) [BridgeMethod]",
+				"java.lang.Integer TwoB.firstMethod(java.lang.String)"
+		});
+	}
+	
 	
 	public void testGenericITDsBridgeMethodsPR91381()  {runTest("abstract intertype methods and covariant returns");}
 	public void testGenericITDsBridgeMethodsPR91381_2()  {runTest("abstract intertype methods and covariant returns - error");}
@@ -836,7 +857,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 							           ms[i].getName()+"("+stringify(ms[i].getParameterTypes())+")"+
 							           (isBridge(ms[i])?" [BridgeMethod]":"");
 					methodsFound.add(methodString);
-					debugString.append("[").append(methodString).append("]");
+					debugString.append("\n[").append(methodString).append("]");
 				}
 			}
 		} catch (ClassNotFoundException e) {

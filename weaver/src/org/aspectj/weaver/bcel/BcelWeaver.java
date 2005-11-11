@@ -1379,7 +1379,7 @@ public class BcelWeaver implements IWeaver {
 			
 			// check the annotation is suitable for the target
 			boolean problemReported = verifyTargetIsOK(decA, onType, annoX,reportProblems);
-			
+
 			if (!problemReported) {
 				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decA.getSourceLocation(),onType.getSourceLocation());
 				// TAG: WeavingMessage 
@@ -1488,26 +1488,41 @@ public class BcelWeaver implements IWeaver {
 		return ret;
 	}
 
-	
 	private LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {		
-		if (classType.isSynthetic()) {
+		if (classType.isSynthetic()) { // Don't touch synthetic classes
 			if (dump) dumpUnchanged(classFile);
 			return null;
 		}
 		
-//		JavaClass javaClass = classType.getJavaClass();
 		List shadowMungers = fastMatch(shadowMungerList, classType.getResolvedTypeX());
-		List typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
+		List typeMungers   = classType.getResolvedTypeX().getInterTypeMungers();
         
         classType.getResolvedTypeX().checkInterTypeMungers();
 
+		// Decide if we need to do actual weaving for this class
+		boolean mightNeedToWeave =  
+			shadowMungers.size() > 0 || 
+		    typeMungers.size() > 0 || 
+		    classType.isAspect() || 
+		    world.getDeclareAnnotationOnMethods().size()>0 || 
+		    world.getDeclareAnnotationOnFields().size()>0;   
+
+		// May need bridge methods if on 1.5 and something in our hierarchy is affected by ITDs
+		boolean mightNeedBridgeMethods = world.isInJava5Mode() && classType.getResolvedTypeX().getInterTypeMungersIncludingSupers().size()>0;
+
 		LazyClassGen clazz = null;
-		if (shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect() || 
-			world.getDeclareAnnotationOnMethods().size()>0 || world.getDeclareAnnotationOnFields().size()>0 ) {
+		if (mightNeedToWeave || mightNeedBridgeMethods) {
 			clazz = classType.getLazyClassGen();
 			//System.err.println("got lazy gen: " + clazz + ", " + clazz.getWeaverState());
 			try {
-				boolean isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList);
+				boolean isChanged = false;
+				
+				if (mightNeedToWeave) 
+					isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList);
+
+				if (mightNeedBridgeMethods) 
+					isChanged = BcelClassWeaver.calculateAnyRequiredBridgeMethods(world,clazz) || isChanged;
+		        
 				if (isChanged) {
 					if (dump) dump(classFile, clazz);
 					return clazz;
