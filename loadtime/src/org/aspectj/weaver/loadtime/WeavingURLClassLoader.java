@@ -34,7 +34,8 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	public static final String WEAVING_ASPECT_PATH = "aj.aspect.path"; 
 	
 	private URL[] aspectURLs;
-	private WeavingAdaptor adaptor; 
+	private WeavingAdaptor adaptor;
+	private boolean initializingAdaptor;
 	private Map generatedClasses = new HashMap(); /* String -> byte[] */ 
 
 	/*
@@ -99,15 +100,30 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	 */
 	protected Class defineClass(String name, byte[] b, CodeSource cs) throws IOException {
 //		System.err.println("? WeavingURLClassLoader.defineClass(" + name + ", [" + b.length + "])");
-		
-		/* Need to defer creation because of possible recursion during constructor execution */
-		if (adaptor == null) {
-			ClassLoaderWeavingAdaptor clwAdaptor = new ClassLoaderWeavingAdaptor(this,null);
-			clwAdaptor.initialize(this,null);
-			adaptor = clwAdaptor;
+
+		/* Avoid recursion during adaptor initialization */
+		if (!initializingAdaptor) {
+			
+			/* Need to defer creation because of possible recursion during constructor execution */
+			if (adaptor == null && !initializingAdaptor) {
+				DefaultWeavingContext weavingContext = new DefaultWeavingContext (this) {
+
+					/* Ensures consistent LTW messages for testing */
+					public String getClassLoaderName() {
+						return loader.getClass().getName();
+					}
+					
+				};
+				
+				ClassLoaderWeavingAdaptor clwAdaptor = new ClassLoaderWeavingAdaptor(this,weavingContext);
+				initializingAdaptor = true;
+				clwAdaptor.initialize(this,weavingContext);
+				initializingAdaptor = false;
+				adaptor = clwAdaptor;
+			}
+			
+			b = adaptor.weaveClass(name,b);
 		}
-		
-		b = adaptor.weaveClass(name,b);
 		return super.defineClass(name, b, cs);
 	}
 

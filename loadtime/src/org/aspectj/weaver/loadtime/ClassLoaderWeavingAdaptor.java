@@ -66,7 +66,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private IWeavingContext weavingContext;
 
     public ClassLoaderWeavingAdaptor(final ClassLoader loader, IWeavingContext wContext) {
-        super(null);
+    	this.weavingContext = wContext;
     }
 
     void initialize(final ClassLoader loader, IWeavingContext wContext) {
@@ -132,7 +132,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      */
     private void registerDefinitions(final BcelWeaver weaver, final ClassLoader loader) {
         try {
-            MessageUtil.info(messageHandler, "register classloader " + ((loader!=null)?loader.getClass().getName()+"@"+loader.hashCode():"null"));
+            MessageUtil.info(messageHandler, "register classloader " + getClassLoaderName(loader));
             //TODO av underoptimized: we will parse each XML once per CL that see it
             List definitions = new ArrayList();
 
@@ -172,6 +172,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 registerDump(weaver, loader, definitions);
             } else {
                 enabled = false;// will allow very fast skip in shouldWeave()
+        		info("no configuration found. Disabling weaver for class loader " + getClassLoaderName(loader));
             }
         } catch (Exception e) {
             weaver.getWorld().getMessageHandler().handleMessage(
@@ -180,6 +181,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
     }
 
+    private String getClassLoaderName (ClassLoader loader) {
+    	return weavingContext.getClassLoaderName();
+   	}
+    
     /**
      * Configure the weaver according to the option directives
      * TODO av - don't know if it is that good to reuse, since we only allow a small subset of options in LTW
@@ -195,7 +200,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             allOptions.append(definition.getWeaverOptions()).append(' ');
         }
 
-        Options.WeaverOption weaverOption = Options.parse(allOptions.toString(), loader);
+        Options.WeaverOption weaverOption = Options.parse(allOptions.toString(), loader, messageHandler);
 
         // configure the weaver and world
         // AV - code duplicates AspectJBuilder.initWorldAndWeaver()
@@ -297,13 +302,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             for (Iterator aspects = definition.getAspectClassNames().iterator(); aspects.hasNext();) {
                 String aspectClassName = (String) aspects.next();
                 if (acceptAspect(aspectClassName)) {
+                	info("register aspect " + aspectClassName);
                     ResolvedType aspect = weaver.addLibraryAspect(aspectClassName);
-                    if (aspect.isAbstract()) {
-                        // this is a warning
-                        weaver.getWorld().getMessageHandler().handleMessage(
-                                new Message("Abstract aspect registered in aop.xml, use a <concrete-aspect> element instead", IMessage.WARNING, null, null)
-                        );
-                    }
+
                     //generate key for SC
                     if(namespace==null){
                     	namespace=new StringBuffer(aspectClassName);
@@ -323,9 +324,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 if (acceptAspect(concreteAspect.name)) {
                     ConcreteAspectCodeGen gen = new ConcreteAspectCodeGen(concreteAspect, weaver.getWorld());
                     if (!gen.validate()) {
-                        weaver.getWorld().getMessageHandler().handleMessage(
-                                new Message("Concrete-aspect '"+concreteAspect.name+"' could not be registered", IMessage.ERROR, null, null)
-                        );
+                        error("Concrete-aspect '"+concreteAspect.name+"' could not be registered");
                         break;
                     }
                     this.generatedClassHandler.acceptClass(

@@ -1,0 +1,8 @@
+<aspectj>
+	<aspects>
+		<concrete-aspect name="ConcreteAspect" extends="AbstractSuperAspect">
+			<pointcut name="scope" expression="within(Main)"/>
+        </concrete-aspect>
+	</aspects>
+</aspectj>
+	

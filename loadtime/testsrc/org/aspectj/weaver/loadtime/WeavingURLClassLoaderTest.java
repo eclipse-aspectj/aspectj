@@ -69,6 +69,11 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		}
 	}
 
+	/*
+	 * We won't get an exception because the aspect path is empty and there is 
+	 * no aop.xml file so the weaver will be disabled and no reweaving will 
+	 * take place 
+	 */
 	public void testLoadWovenClass () {
 		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,"");
 		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,WOVEN_JAR);
@@ -83,6 +88,9 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		}
 	}
 
+	/*
+	 * We get an exception because the class was not built reweavable
+	 */
 	public void testWeaveWovenClass () {
 		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH,ADVICE_ASPECTS);
 		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH,ADVICE_ASPECTS + File.pathSeparator + WOVEN_JAR);
@@ -345,6 +353,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			fail("Expecting java.lang.NoClassDefFoundError");
 		}
 		catch (Exception ex) {
+			assertTrue("Expecting java.lang.NoClassDefFoundError but caught " + ex,ex.getMessage().contains("java.lang.NoClassDefFoundError"));
 		}
 	}
 
@@ -463,7 +472,9 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			method.invoke(null,params);
 		}
 		catch (InvocationTargetException ex) {
-			throw new RuntimeException(ex.getTargetException().toString());
+			Throwable targetException = ex.getTargetException();
+			if (targetException instanceof RuntimeException) throw (RuntimeException)ex.getTargetException();
+			else throw new RuntimeException(ex.getTargetException().toString());
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex.toString());

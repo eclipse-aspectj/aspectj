@@ -22,7 +22,7 @@ import java.util.Enumeration;
  */
 public class DefaultWeavingContext implements IWeavingContext {
 	
-	private ClassLoader loader;
+	protected ClassLoader loader;
 	
 	public DefaultWeavingContext(){
 		loader = getClass().getClassLoader();
@@ -49,6 +49,13 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 */
 	public String getBundleIdFromURL(URL url) {
 		return null;
+	}
+
+	/**
+	 * @return classname@hashcode
+	 */
+	public String getClassLoaderName() {
+    	return ((loader!=null)?loader.getClass().getName()+"@"+loader.hashCode():"null");
 	}
 
 }

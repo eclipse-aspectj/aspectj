@@ -8,7 +8,7 @@
 			outjar="main1.jar"
             options="-showWeaveInfo"
         >
-        	<message kind="weave" text="method-execution(void Main.test1())' in Type 'Main' (Main.java:15) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
+        	<message kind="weave" text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
         </compile>	
         <compile
         	classpath="main1.jar"
@@ -24,6 +24,8 @@
                 <line text="Main.test2"/>
             </stdout>
         	<stderr>
+	  	    	<line text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
+				<line text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)"/>
                 <line text="Aspect1.before_test1"/>
                 <line text="Aspect2.before_test2"/>
             </stderr>
@@ -87,4 +89,73 @@
         </run>
     </ajc-test>
 
+	<ajc-test dir="ltw"
+      title="Ensure no weaving without visible aop.xml"
+      keywords="reweavable">
+        <compile
+        	files="TestMain.java, Main.java"
+        >
+        </compile>	
+        <run class="TestMain" ltw="">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+				<line text="info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+				<line text="info no configuration found. Disabling weaver for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+
+	<ajc-test dir="ltw"
+      title="Define concrete sub-aspect using aop.xml"
+      keywords="aop.xml">
+        <compile
+        	files="Main.java"
+			outjar="main.jar"
+        >
+        </compile>	
+        <compile
+        	classpath="main1.jar"
+        	files="AbstractSuperAspect.aj"
+        	outjar="aspect.jar"
+        >
+        </compile>	
+        <run class="Main" ltw="aop-defineaspect.xml">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+                <line text="AbstractSuperAspect.before_test1"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+	<ajc-test dir="ltw"
+      title="Use abstract aspect for ITD using aop.xml"
+      keywords="abstract aspect, ITD">
+        <compile
+        	files="TestITDMethod.java"
+        >
+        </compile>	
+        <compile
+        	files="AbstractAspect.aj"
+        >
+        	<message kind="warning" text="this affected type is not exposed to the weaver: TestITDMethod"/>
+        </compile>	
+        <run class="TestITDMethod" options="test" ltw="aop-abstractaspect.xml">
+        	<stdout>
+                <line text="TestITDMethod.main"/>
+            </stdout>
+        	<stderr>
+        		<line text="weaveinfo Type 'TestITDMethod' (TestITDMethod.java) has intertyped method from 'AbstractAspect' (AbstractAspect.aj:'void TestITDMethod.test()')"/>
+                <line text="AbstractAspect_TestITDMethod.test"/>
+            </stderr>
+        </run>
+    </ajc-test>
     

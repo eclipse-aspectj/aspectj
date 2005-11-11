@@ -578,7 +578,8 @@ public class AjcTestCase extends TestCase {
 		
 		URLClassLoader cLoader;
 		if (useLTW) {
-			cLoader = new WeavingURLClassLoader(urls,null);
+			ClassLoader parent = getClass().getClassLoader();
+			cLoader = new WeavingURLClassLoader(urls,parent);
 		}
 		else {
 			cLoader = new URLClassLoader(urls,null);
@@ -592,10 +593,10 @@ public class AjcTestCase extends TestCase {
 			} catch (Exception ex) {
 				fail ("Unable to prepare org.aspectj.testing.Tester for test run: " + ex);
 			}
-			Class toRun = cLoader.loadClass(className);
-			Method mainMethod = toRun.getMethod("main",new Class[] {String[].class});
 			System.setOut(new PrintStream(baosOut));
 			System.setErr(new PrintStream(baosErr));
+			Class toRun = cLoader.loadClass(className);
+			Method mainMethod = toRun.getMethod("main",new Class[] {String[].class});
 			mainMethod.invoke(null,new Object[] {args});
 			lastRunResult = new RunResult(command.toString(),new String(baosOut.toByteArray()),new String(baosErr.toByteArray()));
 		} catch(ClassNotFoundException cnf) {

@@ -12,10 +12,13 @@
 package org.aspectj.systemtest.ajc150.ltw;
 
 import java.io.File;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import junit.framework.Test;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.tools.WeavingAdaptor;
 
 public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -37,6 +40,58 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 	public void testOutxmlJar (){
 	    runTest("Ensure valid aop.xml is generated for -outjar");
+	}
+	
+  	public void testNoAopxml(){
+  		setSystemProperty(WeavingAdaptor.WEAVING_ADAPTOR_VERBOSE,"true");
+  		runTest("Ensure no weaving without visible aop.xml");
+  	}
+
+	public void testDefineConcreteAspect(){
+  		runTest("Define concrete sub-aspect using aop.xml");
+  	}
+
+  	public void testDeclareAbstractAspect(){
+//		setSystemProperty(WeavingAdaptor.WEAVING_ADAPTOR_VERBOSE,"true");
+//		setSystemProperty(WeavingAdaptor.SHOW_WEAVE_INFO_PROPERTY,"true");
+  		runTest("Use abstract aspect for ITD using aop.xml");
+  	}
+
+  	/*
+  	 * Allow system properties to be set and restored
+  	 * TODO maw move to XMLBasedAjcTestCase or RunSpec
+  	 */
+	private final static String NULL = "null";
+
+	private Properties savedProperties;
+  	
+	protected void setSystemProperty (String key, String value) {
+		Properties systemProperties = System.getProperties();
+		copyProperty(key,systemProperties,savedProperties);
+		systemProperties.setProperty(key,value);
+	}
+	
+	private static void copyProperty (String key, Properties from, Properties to) {
+		String value = from.getProperty(key,NULL);
+		to.setProperty(key,value);
+	}
+
+	protected void setUp() throws Exception {
+		super.setUp();
+		savedProperties = new Properties();
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		
+		/* Restore system properties */
+		Properties systemProperties = System.getProperties();
+		for (Enumeration enu = savedProperties.keys(); enu.hasMoreElements(); ) {
+			String key = (String)enu.nextElement();
+			String value = savedProperties.getProperty(key);
+			if (value == NULL) systemProperties.remove(key);
+			else systemProperties.setProperty(key,value);
+		}
 	}
 }
 

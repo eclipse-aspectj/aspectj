@@ -141,7 +141,7 @@ public class RunSpec implements ITestStep {
 				useLtw = true;
 			}
 			catch (IOException ex) {
-				ex.printStackTrace();
+				AjcTestCase.fail(ex.toString());
 			}
 		}
 		

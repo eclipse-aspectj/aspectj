@@ -12,30 +12,17 @@
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public class Main {
+public class TestITDMethod {
 
-	public void test1 () {
-		System.out.println("Main.test1");
-	}
-
-	public void test2 () {
-		System.out.println("Main.test2");
-	}
-
-	public void invokeDeclaredMethods () throws Exception {
-		Method[] methods = getClass().getDeclaredMethods();
-		for (int i = 0; i < methods.length; i++) {
-			Method method = methods[i];
-			int modifiers = method.getModifiers();
-			if (!Modifier.isStatic(modifiers) && !method.getName().equals("invokeDeclaredMethods")) {
-				method.invoke(this,new Object[] {});
-			}
+	public void invokeDeclaredMethods (String[] names) throws Exception {
+		for (int i = 0; i < names.length; i++) {
+			Method method = getClass().getDeclaredMethod(names[i],new Class[] {});
+			method.invoke(this,new Object[] {});
 		}
 	}
 	
 	public static void main (String[] args) throws Exception {
-		System.out.println("Main.main");
-		new Main().test1();
-		new Main().test2();
+		System.out.println("TestITDMethod.main");
+		new TestITDMethod().invokeDeclaredMethods(args);
 	}
 }

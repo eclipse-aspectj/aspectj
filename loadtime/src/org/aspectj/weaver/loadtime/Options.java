@@ -45,15 +45,15 @@ public class Options {
     private static final String OPTIONVALUED_Xlint = "-Xlint:";
 
 
-    public static WeaverOption parse(String options, ClassLoader laoder) {
+    public static WeaverOption parse(String options, ClassLoader laoder, IMessageHandler imh) {
+        WeaverOption weaverOption = new WeaverOption(imh);
+
         if (LangUtil.isEmpty(options)) {
-            return new WeaverOption();
+            return weaverOption;
         }
         // the first option wins
         List flags = LangUtil.anySplit(options, " ");
         Collections.reverse(flags);
-
-        WeaverOption weaverOption = new WeaverOption();
 
         // do a first round on the message handler since it will report the options themselves
         for (Iterator iterator = flags.iterator(); iterator.hasNext();) {
@@ -152,8 +152,9 @@ public class Options {
         String lint;
         String lintFile;
 
-        public WeaverOption() {
-            messageHandler = new DefaultMessageHandler();//default
+        public WeaverOption(IMessageHandler imh) {
+//            messageHandler = new DefaultMessageHandler();//default
+            this.messageHandler = imh;
         }
     }
 }

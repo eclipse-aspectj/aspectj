@@ -41,5 +41,12 @@ public interface IWeavingContext {
 	 * @return
 	 */
 	public String getBundleIdFromURL(URL url);
+	
+	/**
+	 * In an environment with multiple class loaders allows each to be
+	 * identified using something safer and than toString
+	 * @return name of the associated class loader
+	 */
+	public String getClassLoaderName ();
 
 }

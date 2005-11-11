@@ -72,6 +72,11 @@ public class WeavingAdaptor {
 	protected GeneratedClassHandler generatedClassHandler;
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 
+	protected WeavingAdaptor () {
+		createMessageHandler();
+	}
+	
+	
 	/**
 	 * Construct a WeavingAdaptor with a reference to a weaving class loader. The
 	 * adaptor will automatically search the class loader hierarchy to resolve
@@ -135,9 +140,7 @@ public class WeavingAdaptor {
 	}
 	
 	private void init(List classPath, List aspectPath) {
-		messageHandler = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
-		if (verbose) messageHandler.dontIgnore(IMessage.INFO);
-		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) messageHandler.dontIgnore(IMessage.WEAVEINFO);
+		createMessageHandler();
 		
 		info("using classpath: " + classPath); 
 		info("using aspectpath: " + aspectPath); 
@@ -151,6 +154,13 @@ public class WeavingAdaptor {
 
 		weaver = new BcelWeaver(bcelWorld);
 		registerAspectLibraries(aspectPath);
+	}
+
+
+	private void createMessageHandler() {
+		messageHandler = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
+		if (verbose) messageHandler.dontIgnore(IMessage.INFO);
+		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) messageHandler.dontIgnore(IMessage.WEAVEINFO);
 	}
 	
 	/**
@@ -309,15 +319,15 @@ public class WeavingAdaptor {
 		return ret;
 	}
 	
-	private boolean info (String message) {
+	protected boolean info (String message) {
 		return MessageUtil.info(messageHandler,message);
 	}
 	
-	private boolean warn (String message) {
+	protected boolean warn (String message) {
 		return MessageUtil.warn(messageHandler,message);
 	}
 	
-	private boolean error (String message) {
+	protected boolean error (String message) {
 		return MessageUtil.error(messageHandler,message);
 	}
 
