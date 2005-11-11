@@ -658,10 +658,6 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("weaveinfo message for declare at method on an ITDd method");
   }
   
-  public void testNoVerifyErrorWithTwoThisPCDs_pr113447() {
-	  runTest("no verify error with two this pcds");
-  }
-  
   public void testITDCWithNoExplicitConsCall() {
 	  runTest("ITDC with no explicit cons call");
   }
@@ -681,6 +677,31 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAssertWithinPointcutExpression() {
 	  runTest("pointcut expression containing 'assert'");
   }
+  
+  public void testNoVerifyErrorWithTwoThisPCDs_pr113447() {
+	  runTest("no verify error with two this pcds");
+  }
+
+  public void testNoVerifyErrorWithTwoAtThisPCDs_pr113447() {
+	  runTest("no verify error with two at this pcds");
+  }
+  
+  public void testNoVerifyErrorWithAtWithinPCDs_pr113447() {
+	  runTest("no verify error with at within pcds");
+  }
+  
+  public void testNoVerifyErrorWithAtWithincodePCDs_pr113447() {
+	  runTest("no verify error with at withincode pcds");
+  }
+  
+  public void testNoVerifyErrorWithAtAnnotationPCDs_pr113447() {
+	  runTest("no verify error with at annotation pcds");
+  }
+  
+  public void testNoVerifyErrorWithTwoArgsPCDs_pr113447() {
+	  runTest("no verify error with two args pcds");
+  }
+  
   
   // helper methods.....
   

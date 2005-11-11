@@ -934,11 +934,41 @@
         </compile>
     </ajc-test> 
 
-    <ajc-test dir="bugs150" title="no verify error with two this pcds">
+    <ajc-test dir="bugs150/pr113447" title="no verify error with two this pcds">
         <compile files="PR113447.java">
         </compile>
         <run class="PR113447"/>
     </ajc-test> 
+
+	<ajc-test dir="bugs150/pr113447" title="no verify error with two at this pcds">
+        <compile files="PR113447a.java" options="-1.5">
+        </compile>
+        <run class="PR113447a"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr113447" title="no verify error with at within pcds">
+        <compile files="PR113447b.java" options="-1.5">
+        </compile>
+        <run class="PR113447b"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr113447" title="no verify error with at withincode pcds">
+        <compile files="PR113447c.java" options="-1.5">
+        </compile>
+        <run class="PR113447c"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr113447" title="no verify error with at annotation pcds">
+        <compile files="PR113447d.java" options="-1.5">
+        </compile>
+        <run class="PR113447d"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr113447" title="no verify error with two args pcds">
+        <compile files="PR113447e.java" options="-1.5">
+        </compile>
+        <run class="PR113447e"/>
+    </ajc-test>
 
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
