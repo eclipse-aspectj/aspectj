@@ -703,6 +703,13 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("no verify error with two args pcds");
   }
   
+  public void testNoStackOverflowWithCircularPCDInGenericAspect() {
+	  runTest("no StackOverflowError with circular pcd in generic aspect");
+  }
+  
+  public void testNoStackOverflowWithCircularPCDInGenericAspect2() {
+	  runTest("no StackOverflowError with circular pcd in generic aspect - 2");
+  }
   
   // helper methods.....
   

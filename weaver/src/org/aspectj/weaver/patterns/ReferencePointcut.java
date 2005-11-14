@@ -322,7 +322,10 @@ public class ReferencePointcut extends Pointcut {
 			newBindings.pushEnclosingDefinition(pointcutDec);
 			try {
 				Pointcut ret = pointcutDec.getPointcut();
-				if (typeVariableMap != null) ret = ret.parameterizeWith(typeVariableMap);
+				if (typeVariableMap != null && !hasBeenParameterized) {					
+					ret = ret.parameterizeWith(typeVariableMap);
+					ret.hasBeenParameterized=true;
+				}
 				return ret.concretize(searchStart, declaringType, newBindings);
 			} finally {
 				newBindings.popEnclosingDefinitition();

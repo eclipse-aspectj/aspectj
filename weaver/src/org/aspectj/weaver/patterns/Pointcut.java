@@ -104,6 +104,8 @@ public abstract class Pointcut extends PatternNode {
 	private FuzzyBoolean lastMatchedShadowResult;
 	private String[] typeVariablesInScope = new String[0];
 	
+	protected boolean hasBeenParameterized = false;
+	
 	/**
 	 * Constructor for Pattern.
 	 */

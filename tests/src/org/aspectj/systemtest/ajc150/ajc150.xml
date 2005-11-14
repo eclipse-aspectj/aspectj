@@ -976,6 +976,19 @@
         <run class="PR113447e"/>
     </ajc-test>
 
+    <ajc-test dir="bugs150" title="no StackOverflowError with circular pcd in generic aspect">
+        <compile files="pr115235.aj" options="-1.5">
+        	<message kind="warning" line="3" text="advice defined in GenericAbstractAspect has not been applied [Xlint:adviceDidNotMatch]"/>
+        	<message kind="error" text="circular pointcut declaration involving: pc()"/>
+        	<message kind="error" line="20" text="circular pointcut declaration involving: pc2()"/>
+	    </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs150" title="no StackOverflowError with circular pcd in generic aspect - 2">
+        <compile files="pr115235b.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
