@@ -75,6 +75,7 @@ import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
@@ -347,21 +348,30 @@ class BcelClassWeaver implements IClassWeaver {
 	/**
 	 * Create a single bridge method called 'theBridgeMethod' that bridges to 'whatToBridgeTo'
 	 */
-	private static void createBridgeMethod(BcelWorld world, ResolvedMember whatToBridgeTo, LazyClassGen clazz,ResolvedMember theBridgeMethod) {
+	private static void createBridgeMethod(BcelWorld world, LazyMethodGen whatToBridgeToMethodGen, LazyClassGen clazz,ResolvedMember theBridgeMethod) {
 		InstructionList body;
 		InstructionFactory fact;
 		int pos = 0;
 
+		ResolvedMember whatToBridgeTo = whatToBridgeToMethodGen.getMemberView();
+		
+		if (whatToBridgeTo==null) {
+			whatToBridgeTo = 
+			  new ResolvedMemberImpl(Member.METHOD,
+				whatToBridgeToMethodGen.getEnclosingClass().getType(),
+				whatToBridgeToMethodGen.getAccessFlags(),
+				whatToBridgeToMethodGen.getName(),
+				whatToBridgeToMethodGen.getSignature());
+		}
 		LazyMethodGen bridgeMethod = makeBridgeMethod(clazz,theBridgeMethod); // The bridge method in this type will have the same signature as the one in the supertype
 		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040 /*BRIDGE    = 0x00000040*/ );
-		UnresolvedType[] newParams = whatToBridgeTo.getParameterTypes();
 		Type returnType   = BcelWorld.makeBcelType(theBridgeMethod.getReturnType());
 		Type[] paramTypes = BcelWorld.makeBcelTypes(theBridgeMethod.getParameterTypes());
-		Type[] newParamTypes=BcelWorld.makeBcelTypes(newParams);
+		Type[] newParamTypes=whatToBridgeToMethodGen.getArgumentTypes();
 		body = bridgeMethod.getBody();
 		fact = clazz.getFactory();
 
-		if (!whatToBridgeTo.isStatic()) {
+		if (!whatToBridgeToMethodGen.isStatic()) {
 		   body.append(InstructionFactory.createThis());
 		   pos++;
 		}
@@ -652,6 +662,7 @@ class BcelClassWeaver implements IClassWeaver {
 			String psig  = bridgeToCandidate.getParameterSignature();
 			String rsig  = bridgeToCandidate.getReturnType().getSignature();
 			
+			//if (bridgeToCandidate.isAbstract()) continue;
 			if (bridgeToCandidate.isStatic())      continue; // ignore static methods
 			if (name.endsWith("init>")) continue; // Skip constructors and static initializers
 
@@ -667,7 +678,7 @@ class BcelClassWeaver implements IClassWeaver {
 				boolean alreadyHaveABridgeMethod = methodsSet.contains(overriddenMethod.getName()+overriddenMethod.getSignature());
 				if (!alreadyHaveABridgeMethod) {
 					if (debug) System.err.println("Bridging to "+overriddenMethod);
-					createBridgeMethod(world, bridgeToCandidate.getMemberView(), clazz, overriddenMethod);
+					createBridgeMethod(world, bridgeToCandidate, clazz, overriddenMethod);
 					didSomething = true;
 					continue; // look at the next method
 				}
@@ -682,7 +693,7 @@ class BcelClassWeaver implements IClassWeaver {
 				if (overriddenMethod!=null) { 
 					boolean alreadyHaveABridgeMethod = methodsSet.contains(overriddenMethod.getName()+overriddenMethod.getSignature());
 					if (!alreadyHaveABridgeMethod) {
-						createBridgeMethod(world, bridgeToCandidate.getMemberView(), clazz, overriddenMethod);
+						createBridgeMethod(world, bridgeToCandidate, clazz, overriddenMethod);
 						didSomething=true;
 						if (debug) System.err.println("Bridging to "+overriddenMethod);
 						continue; // look at the next method
