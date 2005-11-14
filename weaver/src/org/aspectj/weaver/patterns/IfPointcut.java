@@ -124,6 +124,7 @@ public class IfPointcut extends Pointcut {
 	public boolean equals(Object other) {
 		if (!(other instanceof IfPointcut)) return false;
 		IfPointcut o = (IfPointcut)other;
+		if (o.testMethod==null) return (this.testMethod==null);
 		return o.testMethod.equals(this.testMethod);
 	}
 
