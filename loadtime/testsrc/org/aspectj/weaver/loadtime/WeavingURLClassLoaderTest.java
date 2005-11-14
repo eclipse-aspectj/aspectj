@@ -353,7 +353,10 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			fail("Expecting java.lang.NoClassDefFoundError");
 		}
 		catch (Exception ex) {
-			assertTrue("Expecting java.lang.NoClassDefFoundError but caught " + ex,ex.getMessage().contains("java.lang.NoClassDefFoundError"));
+            String m = ex.getMessage();
+            if (-1 == m.indexOf("java.lang.NoClassDefFoundError")) {
+                fail("Expecting java.lang.NoClassDefFoundError but caught " + ex);
+            }
 		}
 	}
 
