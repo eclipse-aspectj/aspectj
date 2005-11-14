@@ -134,10 +134,16 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
     public Object visit(ThisOrTargetPointcut node, Object data) {
         if ((m_isTarget && !node.isThis())
             || (!m_isTarget && node.isThis())) {
+        	String pointcutString = node.getType().toString();
+        	// see pr115788 "<nothing>" means there was a problem resolving types - that will be reported so dont blow up
+        	// the parser here..
+        	if (pointcutString.equals("<nothing>")) {
+        		return new NoTypePattern();
+        	}
             //pertarget(target(Foo)) => Foo+ for type pattern matching
             //perthis(this(Foo)) => Foo+ for type pattern matching
             // TODO AV - we do like a deep copy by parsing it again.. quite dirty, would need a clean deep copy
-            TypePattern copy = new PatternParser(node.getType().toString().replace('$', '.')).parseTypePattern();
+            TypePattern copy = new PatternParser(pointcutString.replace('$', '.')).parseTypePattern();
             // TODO AV - see dirty replace from $ to . here as inner classes are with $ instead (#108488)
             copy.includeSubtypes = true;
             return copy;

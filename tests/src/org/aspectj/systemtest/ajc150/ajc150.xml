@@ -57,6 +57,12 @@
         <compile files="Consts.java,TestNPE.java" options="-1.5"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr115788" title="parser exception">
+        <compile files="AAA.java">
+          <message kind="warning" line="3" text="no match for this type name: Screen"/>
+        </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 2">
         <compile files="Consts2.java,TestNPE2.java" options="-1.5">
           <message kind="error" line="2" text="The import a.Consts2.A_CONST cannot be resolved"/>
