@@ -116,6 +116,18 @@ public class TypeFactory {
 			UnresolvedType componentType = createTypeFromSignature(signature.substring(dims));
 			return new UnresolvedType(signature,
 					signature.substring(0,dims)+componentType.getErasureSignature());
+		} else if (signature.length()==1) { // could be a primitive
+		  switch (signature.charAt(0)) {
+		  	  case 'V': return ResolvedType.VOID;
+		  	  case 'Z': return ResolvedType.BOOLEAN;
+			  case 'B': return ResolvedType.BYTE;
+			  case 'C': return ResolvedType.CHAR;
+			  case 'D': return ResolvedType.DOUBLE;
+			  case 'F': return ResolvedType.FLOAT;
+			  case 'I': return ResolvedType.INT;
+			  case 'J': return ResolvedType.LONG;
+			  case 'S': return ResolvedType.SHORT;
+		  }
 		}
 		return new UnresolvedType(signature);
 	}

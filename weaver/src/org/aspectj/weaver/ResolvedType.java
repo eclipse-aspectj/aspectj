@@ -838,6 +838,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
             super(signature, null);
             this.size = size;
             this.index = index;
+            this.typeKind=TypeKind.PRIMITIVE;
         }
         public final int getSize() {
             return size;
