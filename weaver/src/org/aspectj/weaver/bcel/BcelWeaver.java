@@ -1518,7 +1518,10 @@ public class BcelWeaver implements IWeaver {
 		    world.getDeclareAnnotationOnFields().size()>0;   
 
 		// May need bridge methods if on 1.5 and something in our hierarchy is affected by ITDs
-		boolean mightNeedBridgeMethods = world.isInJava5Mode() && classType.getResolvedTypeX().getInterTypeMungersIncludingSupers().size()>0;
+		boolean mightNeedBridgeMethods = 
+		  world.isInJava5Mode() && 
+		  !classType.isInterface() &&
+		  classType.getResolvedTypeX().getInterTypeMungersIncludingSupers().size()>0;
 
 		LazyClassGen clazz = null;
 		if (mightNeedToWeave || mightNeedBridgeMethods) {
