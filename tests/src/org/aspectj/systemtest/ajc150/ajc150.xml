@@ -190,6 +190,12 @@
 			<message kind="error" line="5" text="The field 'int B.noSuchField' does not exist"/>
         </compile>
     </ajc-test> 
+    
+    <ajc-test dir="java5/generics/bugs/lists" title="generics and ITD overrides">
+        <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
+        </compile>
+        <run class="IdentifiableAspect"/>
+    </ajc-test> 
 
     <!-- Currently a warning doesn't occur if the annotation is already on the field
          (see bug 113029). If this is fixed, need to add check for this warning to this
@@ -4268,7 +4274,13 @@
      <compile files="TwoB.java" outjar="twob.jar" options="-1.5"/>
      <compile files="TwoX.java" inpath="twoa.jar;twob.jar" options="-1.5"/>
    </ajc-test>
-
+   
+   <ajc-test dir="java5/generics/binaryBridging" title="binary bridge methods - three">
+     <compile files="ThreeA.java" outjar="threea.jar" options="-1.5"/>
+     <compile files="ThreeB.java" outjar="threeb.jar" options="-1.5"/>
+     <compile files="ThreeX.java" inpath="threea.jar;threeb.jar" options="-1.5"/>
+   </ajc-test>
+   
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="abstract intertype methods and covariant returns">
    	   <compile files="pr91381.aj" options="-1.5"/>
        <run class="pr91381"/>

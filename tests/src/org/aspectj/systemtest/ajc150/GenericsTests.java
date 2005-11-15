@@ -208,6 +208,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("Compilation error on generic member introduction");
 	}
 	
+	public void testGenericsOverrides() { 
+		runTest("generics and ITD overrides");
+	}
+	
 	public void testPR88606() {
 		runTest("Parameterized types on introduced fields not correctly recognized");
 	}
@@ -499,6 +503,13 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		checkMethodsExist("TwoB",new String[]{
 				"java.lang.Number TwoB.firstMethod(java.io.Serializable) [BridgeMethod]",
 				"java.lang.Integer TwoB.firstMethod(java.lang.String)"
+		});
+	}
+	public void testBinaryBridgeMethodsThree() {
+		runTest("binary bridge methods - three");
+		checkMethodsExist("ThreeB",new String[]{
+				"java.lang.Number ThreeB.m() [BridgeMethod]",
+				"java.lang.Double ThreeB.m()"
 		});
 	}
 	
