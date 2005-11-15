@@ -404,6 +404,9 @@ public class EclipseFactory {
 		// make sure that type mungers are
 		Collection ret = new ArrayList();
 		Collection baseTypeMungers = getWorld().getCrosscuttingMembersSet().getTypeMungers();
+		
+		// XXX by Andy: why do we mix up the mungers here? it means later we know about two sets
+		// and the late ones are a subset of the complete set? (see pr114436)
         baseTypeMungers.addAll(getWorld().getCrosscuttingMembersSet().getLateTypeMungers());
 
 		for (Iterator i = baseTypeMungers.iterator(); i.hasNext(); ) {
