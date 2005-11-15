@@ -64,4 +64,8 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
         if (matchType.isInterface()) return false;
         return getTestTypePattern(aspectType).matchesStatically(matchType);
     }
+    
+    public boolean isLateMunger() {
+    	return true;
+    }
 }

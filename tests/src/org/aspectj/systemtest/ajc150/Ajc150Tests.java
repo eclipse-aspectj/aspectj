@@ -49,6 +49,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testGenericITDsAndAbstractMethodError_pr102357() { runTest("generic itds and abstract method error");}
   */
   
+  public void testClassFormatError_pr114436() { runTest("ClassFormatError binary weaving perthis");}
   public void testParserException_pr115788() { runTest("parser exception");}
   public void testPossibleStaticImports_pr113066_1() { runTest("possible static imports bug - 1");}
   public void testPossibleStaticImports_pr113066_2() { runTest("possible static imports bug - 2");}

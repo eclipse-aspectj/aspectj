@@ -53,6 +53,12 @@
      <compile files="Pr112756.aj" options="-warn:assertIdentifier -Xdev:Pinpoint"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr114436" title="ClassFormatError binary weaving perthis">
+     <compile files="SimpleTrace.aj,ConcreteSimpleTracing.aj" outjar="aspects.jar"/>
+     <compile files="TestClass.java" aspectpath="aspects.jar"/>
+     <run class="TestClass"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 1">
         <compile files="Consts.java,TestNPE.java" options="-1.5"/>
     </ajc-test>

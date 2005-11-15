@@ -393,4 +393,12 @@ public abstract class ResolvedTypeMunger {
 	public ResolvedMember getDeclaredSignature() {
 		return declaredSignature;
 	}
+	
+	/**
+	 * A late munger has to be done after shadow munging since which shadows are matched
+	 * can affect the operation of the late munger. e.g. perobjectinterfacemunger
+	 */
+	public boolean isLateMunger() {
+		return false;
+	}
 }

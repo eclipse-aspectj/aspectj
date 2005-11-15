@@ -1472,7 +1472,7 @@ public class BcelWeaver implements IWeaver {
     	if (onType.isRawType() || onType.isParameterizedType()) onType = onType.getGenericType();
 		for (Iterator i = typeMungerList.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
-			if (m.matches(onType)) {
+			if (!m.isLateMunger() && m.matches(onType)) {
 				onType.addInterTypeMunger(m);
 			}
 		}

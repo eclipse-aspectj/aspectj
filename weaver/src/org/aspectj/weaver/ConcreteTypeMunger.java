@@ -110,4 +110,9 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
      * of the generic type - either in its raw or parameterized form.
      */
 	public abstract ConcreteTypeMunger parameterizedFor(ResolvedType targetType);
+	
+	public boolean isLateMunger() {
+		if (munger==null) return false;
+		return munger.isLateMunger();
+	}
 }
