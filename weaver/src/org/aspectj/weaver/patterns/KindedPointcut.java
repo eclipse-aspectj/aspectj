@@ -144,7 +144,8 @@ public class KindedPointcut extends Pointcut {
 			shadow.getSignature().getDeclaringType().resolve(world);
         
 		if (signature.getDeclaringType().isStar()
-			|| exactDeclaringType== ResolvedType.MISSING)
+			|| exactDeclaringType == ResolvedType.MISSING
+			|| exactDeclaringType.resolve(world).isMissing())
 			return;
 
         // warning not needed if match type couldn't ever be the declaring type
