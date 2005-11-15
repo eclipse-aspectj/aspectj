@@ -638,7 +638,7 @@ class BcelClassWeaver implements IClassWeaver {
      */
 	public static boolean calculateAnyRequiredBridgeMethods(BcelWorld world,LazyClassGen clazz) {
 		if (!world.isInJava5Mode()) return false; // just double check... the caller should have already verified this
-		
+		if (clazz.isInterface()) return false; // dont bother if we're an interface
 		boolean didSomething=false; // set if we build any bridge methods
 		
 		// So what methods do we have right now in this class?
