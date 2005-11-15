@@ -57,6 +57,14 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   		runTest("Use abstract aspect for ITD using aop.xml");
   	}
 
+  	public void testAspectsInclude () {
+  		runTest("Ensure a subset of inherited aspects is used for weaving");
+  	}
+
+  	public void testAspectsIncludeWithLintWarning () {
+  		runTest("Ensure weaver lint warning issued when an aspect is not used for weaving");
+  	}
+
   	/*
   	 * Allow system properties to be set and restored
   	 * TODO maw move to XMLBasedAjcTestCase or RunSpec

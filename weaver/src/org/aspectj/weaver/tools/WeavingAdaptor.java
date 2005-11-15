@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.IMessage.Kind;
@@ -325,6 +326,10 @@ public class WeavingAdaptor {
 	
 	protected boolean warn (String message) {
 		return MessageUtil.warn(messageHandler,message);
+	}
+	
+	protected boolean warn (String message, Throwable th) {
+        return messageHandler.handleMessage(new Message("Register definition failed", IMessage.WARNING, th, null));
 	}
 	
 	protected boolean error (String message) {

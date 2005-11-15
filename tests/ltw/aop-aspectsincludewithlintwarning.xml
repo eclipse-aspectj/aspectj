@@ -1,0 +1,8 @@
+<aspectj>
+	<aspects>
+		<include within="pakkage.*"/>
+	</aspects>
+
+	<weaver options="-Xlint:warning">
+	</weaver>
+</aspectj>

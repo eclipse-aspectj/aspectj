@@ -102,6 +102,9 @@ public class Lint {
 	public final Kind noExplicitConstructorCall = 
 		new Kind("noExplicitConstructorCall","inter-type constructor does not contain explicit constructor call: field initializers in the target type will not be executed");
 	
+	public final Kind aspectExcludedByConfiguration = 
+		new Kind("aspectExcludedByConfiguration","aspect {0} exluded for class loader {1}");
+	
     public Lint(World world) {
 		this.world = world;
 	}

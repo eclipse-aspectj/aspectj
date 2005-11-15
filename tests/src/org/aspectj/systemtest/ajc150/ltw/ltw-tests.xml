@@ -158,4 +158,60 @@
             </stderr>
         </run>
     </ajc-test>
+
+	<ajc-test dir="ltw"
+      title="Ensure a subset of inherited aspects is used for weaving"
+      keywords="aspects, include">
+        <compile
+        	files="Main.java"
+			outjar="main.jar"
+        >
+        </compile>	
+        <compile
+        	classpath="main.jar"
+        	files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
+        	outjar="aspects.jar"
+        	options="-outxml"
+        >
+        </compile>	
+        <run class="Main" ltw="aop-aspectsinclude.xml">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+                <line text="pakkage.Aspect3.before_test2"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+	<ajc-test dir="ltw"
+      title="Ensure weaver lint warning issued when an aspect is not used for weaving"
+      keywords="aspects, include, lint">
+        <compile
+        	files="Main.java"
+			outjar="main.jar"
+        >
+        </compile>	
+        <compile
+        	classpath="main.jar"
+        	files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
+        	outjar="aspects.jar"
+        	options="-outxml"
+        >
+        </compile>	
+        <run class="Main" ltw="aop-aspectsincludewithlintwarning.xml">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+				<line text="warning aspect Aspect1 exluded for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader [Xlint:aspectExcludedByConfiguration]"/>
+				<line text="warning aspect Aspect2 exluded for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader [Xlint:aspectExcludedByConfiguration]"/>
+                <line text="pakkage.Aspect3.before_test2"/>
+            </stderr>
+        </run>
+    </ajc-test>
     

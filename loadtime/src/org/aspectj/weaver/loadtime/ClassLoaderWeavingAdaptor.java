@@ -19,9 +19,11 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.ICrossReferenceHandler;
+import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.Utility;
@@ -175,9 +177,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         		info("no configuration found. Disabling weaver for class loader " + getClassLoaderName(loader));
             }
         } catch (Exception e) {
-            weaver.getWorld().getMessageHandler().handleMessage(
-                    new Message("Register definition failed", IMessage.WARNING, e, null)
-            );
+            enabled = false;// will allow very fast skip in shouldWeave()
+            warn("register definition failed",e);
         }
     }
 
@@ -284,6 +285,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
     }
 
+    protected void lint (String name, String[] infos) {
+    	Lint lint = bcelWorld.getLint();
+    	Kind kind = lint.getLintKind(name);
+    	kind.signal(infos,null,null);
+    }
+    
     /**
      * Register the aspect, following include / exclude rules
      *
@@ -311,6 +318,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     }else{
                     	namespace = namespace.append(";"+aspectClassName);
                     }
+                }
+                else {
+//                	warn("aspect excluded: " + aspectClassName);
+                	lint("aspectExcludedByConfiguration", new String[] { aspectClassName, getClassLoaderName(loader) });
                 }
             }
         }
