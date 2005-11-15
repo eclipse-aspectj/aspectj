@@ -14,6 +14,7 @@ package org.aspectj.weaver.loadtime.definition;
 import java.io.InputStream;
 import java.net.URL;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.aspectj.util.LangUtil;
@@ -23,6 +24,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * FIXME AV - doc, concrete aspect
@@ -73,13 +75,13 @@ public class DocumentParser extends DefaultHandler {
     private DocumentParser() {
         m_definition = new Definition();
     }
-
+    
     public static Definition parse(final URL url) throws Exception {
         InputStream in = null;
         try {
             DocumentParser parser = new DocumentParser();
 
-            XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            XMLReader xmlReader = getXMLReader();
             xmlReader.setContentHandler(parser);
             xmlReader.setErrorHandler(parser);
 
@@ -112,6 +114,21 @@ public class DocumentParser extends DefaultHandler {
             }
         }
     }
+
+	private static XMLReader getXMLReader() throws SAXException, ParserConfigurationException {
+		XMLReader xmlReader = null;
+
+		/* Try this first for Java 5 */
+		try {
+			xmlReader = XMLReaderFactory.createXMLReader();
+		}
+		
+		/* .. and ignore "System property ... not set" and then try this instead */
+		catch (SAXException ex) {
+			xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+		}
+		return xmlReader;
+	}
 
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
         if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
