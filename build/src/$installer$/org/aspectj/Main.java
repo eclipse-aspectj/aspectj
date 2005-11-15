@@ -705,7 +705,7 @@ class InstallContext {
     }
 
     public boolean onUnix() {
-        return !onMacintosh() && !onWindows();
+        return !onWindows();
     }
 
     static final String[] TEXT_EXTENSIONS = {
@@ -1347,7 +1347,8 @@ class InstallPane extends WizardPane {
                     // Moved to the bin dir in 1.2.1
                     // we should now come back and make the generation of this
                     // script uniform with those above.
-                    lsm.writeAJLaunchScript();
+                    lsm.writeAJLaunchScript("aj",false);
+                    lsm.writeAJLaunchScript("aj5",true);
                 }
                 if (hasGui()) {
                   progressBar.setValue(100);
@@ -1517,8 +1518,7 @@ class LaunchScriptMaker {
     /**
 	 * 
 	 */
-	public void writeAJLaunchScript() throws IOException {
-		String name = "aj";
+	public void writeAJLaunchScript(String name, boolean isJava5) throws IOException {
 		if (!context.onUnix()) {
 			if (context.onOS2()) {
 				name += ".cmd";
@@ -1532,7 +1532,7 @@ class LaunchScriptMaker {
 		File file = new File(destDir, name);
 
 		PrintStream ps = getPrintStream(file);
-		writeAJLaunchScriptContent(ps);
+		writeAJLaunchScriptContent(ps,isJava5);
 		ps.close();
 
 		if (context.onUnix()) {
@@ -1543,14 +1543,16 @@ class LaunchScriptMaker {
 	/**
 	 * @param ps
 	 */
-	private void writeAJLaunchScriptContent(PrintStream ps) {
+	private void writeAJLaunchScriptContent(PrintStream ps, boolean isJava5) {
 		if (context.onUnix()) {
 			writeUnixHeader(ps);
-			writeAJUnixLaunchLine(ps);
+			if (isJava5) writeAJ5UnixLaunchLine(ps);
+			else writeAJUnixLaunchLine(ps);
 		}
 		else {
 			writeWindowsHeader(ps);
-			writeAJWindowsLaunchLine(ps);
+			if (isJava5) writeAJ5WindowsLaunchLine(ps);
+			else writeAJWindowsLaunchLine(ps);
 		}
 	}
 
@@ -1561,9 +1563,20 @@ class LaunchScriptMaker {
 		ps.println(
 			"\"%JAVA_HOME%\\bin\\java\" -classpath " +
 			"\"%ASPECTJ_HOME%\\lib\\aspectjweaver.jar\"" +
-			" \"-Djava.system.class.loader=org.aspectj.weaver.WeavingURLClassLoader\"" +
+			" \"-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader\"" +
 			" \"-Daj.class.path=%ASPECTPATH%;%CLASSPATH%\"" +
 			" \"-Daj.aspect.path=%ASPECTPATH%\"" +
+			" " + makeScriptArgs(false));
+	}
+
+	/**
+	 * @param ps
+	 */
+	private void writeAJ5WindowsLaunchLine(PrintStream ps) {
+		ps.println(
+			"\"%JAVA_HOME%\\bin\\java\" -classpath " +
+			"\"%ASPECTJ_HOME%\\lib\\aspectjweaver.jar;%CLASSPATH%\"" +
+			" \"-javaagent:%ASPECTJ_HOME%\\lib\\aspectjweaver.jar\"" +
 			" " + makeScriptArgs(false));
 	}
 
@@ -1574,9 +1587,21 @@ class LaunchScriptMaker {
 		ps.println(
 			"\"$JAVA_HOME/bin/java\" -classpath" +
 		    " \"$ASPECTJ_HOME/lib/aspectjweaver.jar\"" +
-		    " \"-Djava.system.class.loader=org.aspectj.weaver.WeavingURLClassLoader\"" +
+		    " \"-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader\"" +
 		    " \"-Daj.class.path=$ASPECTPATH:$CLASSPATH\"" +
 		    " \"-Daj.aspect.path=$ASPECTPATH\"" +
+		    " " +
+			makeScriptArgs(true));
+	}
+
+	/**
+	 * @param ps
+	 */
+	private void writeAJ5UnixLaunchLine(PrintStream ps) {
+		ps.println(
+			"\"$JAVA_HOME/bin/java\" -classpath" +
+		    " \"$ASPECTJ_HOME/lib/aspectjweaver.jar:$CLASSPATH\"" +
+		    " \"-javaagent:$ASPECTJ_HOME/lib/aspectjweaver.jar\"" +
 		    " " +
 			makeScriptArgs(true));
 	}
