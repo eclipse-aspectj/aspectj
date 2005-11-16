@@ -1424,7 +1424,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private boolean compareToExistingMembers(ConcreteTypeMunger munger, Iterator existingMembers) {
 		ResolvedMember sig = munger.getSignature();
 		while (existingMembers.hasNext()) {
+			
 			ResolvedMember existingMember = (ResolvedMember)existingMembers.next();
+			// don't worry about clashing with bridge methods
+			if (existingMember.isBridgeMethod()) continue;
 			//System.err.println("Comparing munger: "+sig+" with member "+existingMember);
 			if (conflictingSignature(existingMember, munger.getSignature())) {
 				//System.err.println("conflict: existingMember=" + existingMember + "   typeMunger=" + munger);
@@ -1501,7 +1504,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 		
 		boolean incompatibleReturnTypes = false;
-		
 		// In 1.5 mode, allow for covariance on return type
 		if (world.isInJava5Mode() && parent.getKind()==Member.METHOD) {
 			

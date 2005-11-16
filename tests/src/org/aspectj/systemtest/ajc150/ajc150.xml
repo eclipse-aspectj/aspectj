@@ -191,7 +191,13 @@
         </compile>
     </ajc-test> 
     
-    <ajc-test dir="java5/generics/bugs/lists" title="generics and ITD overrides">
+    <ajc-test dir="java5/generics/bugs/lists/case1" title="generics and ITD overrides - 1">
+        <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
+        </compile>
+        <run class="IdentifiableAspect"/>
+    </ajc-test> 
+
+    <ajc-test dir="java5/generics/bugs/lists/case2" title="generics and ITD overrides - 2">
         <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
         </compile>
         <run class="IdentifiableAspect"/>

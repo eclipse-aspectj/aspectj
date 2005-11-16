@@ -208,9 +208,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		runTest("Compilation error on generic member introduction");
 	}
 	
-	public void testGenericsOverrides() { 
-		runTest("generics and ITD overrides");
-	}
+	public void testGenericsOverrides_1() { runTest("generics and ITD overrides - 1"); }
+	public void testGenericsOverrides_2() { runTest("generics and ITD overrides - 2"); }
 	
 	public void testPR88606() {
 		runTest("Parameterized types on introduced fields not correctly recognized");
