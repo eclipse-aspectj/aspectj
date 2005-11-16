@@ -10,4 +10,8 @@ public aspect IdentifiableAspect {
     public void LongIdentifiable.setId(Long id) {
         m_id= id;
     }
+
+  public static void main(String []argv) { 
+    new Bean();
+  }
 }
