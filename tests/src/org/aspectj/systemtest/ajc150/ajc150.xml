@@ -213,6 +213,12 @@
         </compile>
         <run class="IdentifiableAspect"/>
     </ajc-test> 
+    
+    <ajc-test dir="java5/generics/bugs/lists/case4" title="generics and ITD overrides - 4">
+        <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
+        </compile>
+        <run class="IdentifiableAspect"/>
+    </ajc-test> 
 
     <!-- Currently a warning doesn't occur if the annotation is already on the field
          (see bug 113029). If this is fixed, need to add check for this warning to this
