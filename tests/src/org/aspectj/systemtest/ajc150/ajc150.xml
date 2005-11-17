@@ -138,6 +138,11 @@
           <message kind="error" line="12" text="Cannot make inter-type declarations on type variables"/>
         </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" title="aspectOf and generic aspects">
+        <compile files="pr115237.aj" options="-1.5"/>
+        <run class="pr115237"/>
+    </ajc-test>
 
    <ajc-test dir="bugs150/pr114343/case2" title="field-get, generics and around advice - 2">
       <compile files="Test.java,TTT.java,TestAspect.java" options="-1.5"/>
@@ -198,6 +203,12 @@
     </ajc-test> 
 
     <ajc-test dir="java5/generics/bugs/lists/case2" title="generics and ITD overrides - 2">
+        <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
+        </compile>
+        <run class="IdentifiableAspect"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/generics/bugs/lists/case3" title="generics and ITD overrides - 3">
         <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
         </compile>
         <run class="IdentifiableAspect"/>

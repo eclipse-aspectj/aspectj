@@ -11,7 +11,10 @@ public aspect IdentifiableAspect {
         m_id= id;
     }
 
-  public static void main(String []argv) { 
+  public static void main(String []argv) {
     Bean b = new Bean();
+    b.setId(37L);
+    long l = b.getId();
+    if (l!=37L) throw new RuntimeException("id should be 37");
   }
 }
