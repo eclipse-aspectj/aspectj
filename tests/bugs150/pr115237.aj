@@ -7,7 +7,8 @@ public class pr115237 {
 		// AA aa = AA.aspectOf(c);
 
 		// hmm - n/a for parameterized types?
-		BB capt  = BB.aspectOf(c); // unexpected compile error here
+		B b = B.aspectOf(c);
+		//BB capt  = BB.aspectOf(c); // unexpected compile error here
 		//System.out.println("A " + a + " capt " + capt);
 	}
 	static class C {

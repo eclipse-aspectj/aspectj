@@ -45,6 +45,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -974,6 +975,18 @@ public class AspectDeclaration extends TypeDeclaration {
 			} else {
 				return null;
 			}
+        } else if (binding instanceof ParameterizedTypeBinding) {
+        	ParameterizedTypeBinding pBinding = (ParameterizedTypeBinding)binding;
+        	if (pBinding.type instanceof SourceTypeBinding) {
+	        	SourceTypeBinding sourceSc = (SourceTypeBinding)pBinding.type;
+	        	if (sourceSc.scope.referenceContext instanceof AspectDeclaration) {
+					perClause = ((AspectDeclaration)sourceSc.scope.referenceContext).perClause;
+				} else {
+					return null;
+				}
+        	} else {
+        		perClause=null;
+        	}
 		} else {
 			//XXX need to handle this too
 			return null;

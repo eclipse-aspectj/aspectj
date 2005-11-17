@@ -32,6 +32,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
@@ -393,9 +394,16 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
             return new PerSingleton();
         } else {
             // for @Aspect, we do need the real kind though we don't need the real perClause
-            PerClause.Kind kind = getPerClauseForTypeDeclaration(declaration);
-            //returning a perFromSuper is enough to get the correct kind.. (that's really a hack - AV)
-            return new PerFromSuper(kind);
+            // at least try to get the right perclause
+        	PerClause pc = null;
+        	if (declaration instanceof AspectDeclaration) 
+    		   pc =  ((AspectDeclaration)declaration).perClause;
+    		if (pc==null) {
+              PerClause.Kind kind = getPerClauseForTypeDeclaration(declaration);
+              //returning a perFromSuper is enough to get the correct kind.. (that's really a hack - AV)
+              return new PerFromSuper(kind);
+    		}
+    		return pc;
         }
 	}
 
@@ -419,24 +427,13 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
                     // it is an @Aspect(...something...)
                     SingleMemberAnnotation theAnnotation = (SingleMemberAnnotation)annotation;
                     String clause = new String(((StringLiteral)theAnnotation.memberValue).source());//TODO cast safe ?
-                    if (clause.startsWith("perthis(")) {
-                        return PerClause.PEROBJECT;
-                    } else if (clause.startsWith("pertarget(")) {
-                        return PerClause.PEROBJECT;
-                    } else if (clause.startsWith("percflow(")) {
-                        return PerClause.PERCFLOW;
-                    } else if (clause.startsWith("percflowbelow(")) {
-                        return PerClause.PERCFLOW;
-                    } else if (clause.startsWith("pertypewithin(")) {
-                        return PerClause.PERTYPEWITHIN;
-                    } else if (clause.startsWith("issingleton(")) {
-                        return PerClause.SINGLETON;
-                    } else {
-                        eclipseWorld().showMessage(IMessage.ABORT,
-                            "cannot determine perClause '" + clause + "'",
-                            new EclipseSourceLocation(typeDeclaration.compilationResult, typeDeclaration.sourceStart, typeDeclaration.sourceEnd), null);
-                        return PerClause.SINGLETON;//fallback strategy just to avoid NPE
-                    }
+                    return determinePerClause(typeDeclaration, clause);
+                } else if (annotation instanceof NormalAnnotation) { // this kind if it was added by the visitor !
+                	 // it is an @Aspect(...something...)
+                    NormalAnnotation theAnnotation = (NormalAnnotation)annotation;
+                    if (theAnnotation.memberValuePairs==null || theAnnotation.memberValuePairs.length<1) return PerClause.SINGLETON;
+                    String clause = new String(((StringLiteral)theAnnotation.memberValuePairs[0].value).source());//TODO cast safe ?
+                    return determinePerClause(typeDeclaration, clause);
                 } else {
                     eclipseWorld().showMessage(IMessage.ABORT,
                         "@Aspect annotation is expected to be SingleMemberAnnotation with 'String value()' as unique element",
@@ -447,6 +444,27 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
         }
         return null;//no @Aspect annotation at all (not as aspect)
     }
+
+	private PerClause.Kind determinePerClause(TypeDeclaration typeDeclaration, String clause) {
+		if (clause.startsWith("perthis(")) {
+		    return PerClause.PEROBJECT;
+		} else if (clause.startsWith("pertarget(")) {
+		    return PerClause.PEROBJECT;
+		} else if (clause.startsWith("percflow(")) {
+		    return PerClause.PERCFLOW;
+		} else if (clause.startsWith("percflowbelow(")) {
+		    return PerClause.PERCFLOW;
+		} else if (clause.startsWith("pertypewithin(")) {
+		    return PerClause.PERTYPEWITHIN;
+		} else if (clause.startsWith("issingleton(")) {
+		    return PerClause.SINGLETON;
+		} else {
+		    eclipseWorld().showMessage(IMessage.ABORT,
+		        "cannot determine perClause '" + clause + "'",
+		        new EclipseSourceLocation(typeDeclaration.compilationResult, typeDeclaration.sourceStart, typeDeclaration.sourceEnd), null);
+		    return PerClause.SINGLETON;//fallback strategy just to avoid NPE
+		}
+	}
 
     // adapted from AspectDeclaration
     private PerClause.Kind lookupPerClauseKind(ReferenceBinding binding) {
