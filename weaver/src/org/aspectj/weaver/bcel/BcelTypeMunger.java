@@ -194,7 +194,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		  ResolvedMember    superMethod = (ResolvedMember) iter.next();
           if (!superMethod.getName().equals("<init>")) {
 		    LazyMethodGen   subMethod = findMatchingMethod(newParentTarget, superMethod);
-            if (subMethod!=null) {
+            if (subMethod!=null && !subMethod.isBridgeMethod()) { // FIXME asc is this safe for all bridge methods?
               cont = enforceDecpRule3_visibilityChanges(weaver, newParent, superMethod, subMethod) && cont;
               cont = enforceDecpRule4_compatibleReturnTypes(weaver, superMethod, subMethod)        && cont;
               cont = enforceDecpRule5_cantChangeFromStaticToNonstatic(weaver,munger.getSourceLocation(),superMethod,subMethod) && cont;
@@ -633,6 +633,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		BcelClassWeaver weaver,
 		PerObjectInterfaceTypeMunger munger)
 	{
+		//System.err.println("Munging perobject ["+munger+"] onto "+weaver.getLazyClassGen().getClassName());
 		LazyClassGen gen = weaver.getLazyClassGen();
 		
 		if (couldMatch(gen.getBcelObjectType(), munger.getTestPointcut())) {
