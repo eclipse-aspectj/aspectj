@@ -7,11 +7,11 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/bridge"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/bcel-builder"/>
 	<classpathentry kind="lib" path="/lib/ext/jrockit/managementapi-jrockit81.jar"/>
 	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
 	<classpathentry kind="lib" path="/lib/ant/lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="/lib/ant/lib/xercesImpl.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/testing-util"/>
+	<classpathentry sourcepath="/lib/bcel/bcel-src.zip" kind="lib" path="/lib/bcel/bcel.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
