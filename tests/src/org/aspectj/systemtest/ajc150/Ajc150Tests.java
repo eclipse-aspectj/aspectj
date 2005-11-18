@@ -718,6 +718,15 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
    */
   public void testNPEinWeavingAdaptor_pr116626() { runTest("NPE in WeavingAdaptor");}
   
+  public void testXlintMessageForImproperAnnotationType_pr115252_Exact() {runTest("xlint message for improper exact annotation type");}
+  public void testXlintMessageForImproperAnnotationType_pr115252_OR() {runTest("xlint message for improper annotation type inside OR");}
+  public void testXlintMessageForImproperAnnotationType_pr115252_AND() {runTest("xlint message for improper annotation type inside AND");}
+  public void testXlintMessageForImproperAnnotationType_pr115252_Return() {runTest("xlint message for improper annotated return type");}  
+  public void testXlintMessageForImproperAnnotationType_pr115252_Declaring() {runTest("xlint message for improper annotated declaring type");}  
+  public void testXlintMessageForImproperAnnotationType_pr115252_Parameter() {runTest("xlint message for improper annotated parameter type");}  
+  public void testXlintMessageForImproperAnnotationType_pr115252_Throws() {runTest("xlint message for improper annotated throws pattern");}  
+  public void testXlintMessageForImproperAnnotationType_pr115252_MoreThanOne() {runTest("xlint message for more than one improper annotated parameter type");}  
+    
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

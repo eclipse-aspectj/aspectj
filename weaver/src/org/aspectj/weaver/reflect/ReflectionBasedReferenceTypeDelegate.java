@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -132,6 +133,14 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		return null;
 	}
 
+	public boolean canAnnotationTargetType() {
+		return false;
+	}
+	
+	public AnnotationTargetKind[] getAnnotationTargetKinds() {
+		return null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isClass()
 	 */

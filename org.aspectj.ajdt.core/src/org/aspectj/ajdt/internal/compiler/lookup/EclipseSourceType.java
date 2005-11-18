@@ -44,6 +44,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
+import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -78,6 +79,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	private CompilationUnitDeclaration unit;
 	private boolean annotationsResolved = false;
 	private ResolvedType[] resolvedAnnotations = null;
+		
+	private boolean discoveredAnnotationTargetKinds = false;
+	private AnnotationTargetKind[] annotationTargetKinds;
 	
 	protected EclipseFactory eclipseWorld() {
 		return factory;
@@ -336,6 +340,58 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return null;
 	}
 	
+	public boolean canAnnotationTargetType() {
+		if (isAnnotation()) {
+			return ((binding.getAnnotationTagBits() & TagBits.AnnotationForType) != 0 );
+		}
+		return false;
+	}
+	
+	public AnnotationTargetKind[] getAnnotationTargetKinds() {
+		if (discoveredAnnotationTargetKinds) return annotationTargetKinds;
+		discoveredAnnotationTargetKinds = true;
+		annotationTargetKinds = null; // null means we have no idea or the @Target annotation hasn't been used
+//		if (isAnnotation()) {
+//	        Annotation[] annotationsOnThisType = declaration.annotations;
+//	        if (annotationsOnThisType != null) {
+//		        for (int i = 0; i < annotationsOnThisType.length; i++) {
+//		            Annotation a = annotationsOnThisType[i];
+//		            if (a.resolvedType != null) {
+//		            	String packageName = new String(a.resolvedType.qualifiedPackageName()).concat(".");
+//			            String sourceName = new String(a.resolvedType.qualifiedSourceName());
+//			            if ((packageName + sourceName).equals(UnresolvedType.AT_TARGET.getName())) {
+//			            	MemberValuePair[] pairs = a.memberValuePairs();
+//			            	for (int j = 0; j < pairs.length; j++) {
+//								MemberValuePair pair = pairs[j];
+//								targetKind = pair.value.toString();
+//								return targetKind;
+//							}
+//			            }
+//					}
+//				}
+//	        }
+//		}
+//	    return targetKind;
+		if (isAnnotation()) {
+			List targetKinds = new ArrayList();
+			
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForAnnotationType) != 0) targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForConstructor)    != 0) targetKinds.add(AnnotationTargetKind.CONSTRUCTOR);
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForField)          != 0) targetKinds.add(AnnotationTargetKind.FIELD);
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForLocalVariable)  != 0) targetKinds.add(AnnotationTargetKind.LOCAL_VARIABLE);
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForMethod)         != 0) targetKinds.add(AnnotationTargetKind.METHOD);
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForPackage)        != 0) targetKinds.add(AnnotationTargetKind.PACKAGE);
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForParameter)      != 0) targetKinds.add(AnnotationTargetKind.PARAMETER);
+			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForType)           != 0) targetKinds.add(AnnotationTargetKind.TYPE);
+			
+			if (!targetKinds.isEmpty()) {
+				annotationTargetKinds = new AnnotationTargetKind[targetKinds.size()];
+				return (AnnotationTargetKind[]) targetKinds.toArray(annotationTargetKinds);	
+			}
+		}
+		return annotationTargetKinds;
+	}
+	
 	public boolean hasAnnotation(UnresolvedType ofType) {
 
 		// Make sure they are resolved
@@ -553,4 +609,5 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	public void ensureDelegateConsistent() {
 		// do nothing, currently these can't become inconsistent (phew)
 	}
+	
 }

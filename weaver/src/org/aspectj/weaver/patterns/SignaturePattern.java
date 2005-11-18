@@ -18,16 +18,20 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.JoinPointSignature;
@@ -71,22 +75,174 @@ public class SignaturePattern extends PatternNode {
     public SignaturePattern resolveBindings(IScope scope, Bindings bindings) { 
 		if (returnType != null) {
 			returnType = returnType.resolveBindings(scope, bindings, false, false);
+			checkForIncorrectTargetKind(returnType,scope,false);
 		} 
 		if (declaringType != null) {
 			declaringType = declaringType.resolveBindings(scope, bindings, false, false);
+			checkForIncorrectTargetKind(declaringType,scope,false);
 		}
 		if (parameterTypes != null) {
 			parameterTypes = parameterTypes.resolveBindings(scope, bindings, false, false);
+			checkForIncorrectTargetKind(parameterTypes,scope,false);
 		}
 		if (throwsPattern != null) {
 			throwsPattern = throwsPattern.resolveBindings(scope, bindings);
+			if (throwsPattern.getForbidden().getTypePatterns().length > 0 
+					|| throwsPattern.getRequired().getTypePatterns().length > 0) {
+				checkForIncorrectTargetKind(throwsPattern,scope,false);				
+			}
 		}
 		if (annotationPattern != null) {
 			annotationPattern = annotationPattern.resolveBindings(scope,bindings,false);
+			checkForIncorrectTargetKind(annotationPattern,scope,true);
 		}
 		
     	return this;
     }
+    
+    // bug 115252 - adding an xlint warning if the annnotation target type is 
+    // wrong. This logic, or similar, may have to be applied elsewhere in the case
+    // of pointcuts which don't go through SignaturePattern.resolveBindings(..)
+    private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed) {
+    	// return if we're not in java5 mode, if the unmatchedTargetKind Xlint
+    	// warning has been turned off, or if the patternNode is *
+    	if (!scope.getWorld().isInJava5Mode()
+    			|| scope.getWorld().getLint().unmatchedTargetKind == null
+    			|| (patternNode instanceof AnyTypePattern)) {
+			return;
+		}
+		if (patternNode instanceof ExactAnnotationTypePattern) {
+			ResolvedType resolvedType = ((ExactAnnotationTypePattern)patternNode).getAnnotationType().resolve(scope.getWorld());
+			if (targetsOtherThanTypeAllowed) {
+				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
+				if (targetKinds == null) return;
+				reportUnmatchedTargetKindMessage(targetKinds,patternNode,scope,true);
+			} else if (!targetsOtherThanTypeAllowed && !resolvedType.canAnnotationTargetType()) {
+				// everything is incorrect since we've already checked whether we have the TYPE target annotation
+				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
+				if (targetKinds == null) return;
+				reportUnmatchedTargetKindMessage(targetKinds,patternNode,scope,false);
+			}
+		} else {
+			TypePatternVisitor visitor = new TypePatternVisitor(scope,targetsOtherThanTypeAllowed);
+			patternNode.traverse(visitor,null);
+			if (visitor.containedIncorrectTargetKind()) {
+				Set keys = visitor.getIncorrectTargetKinds().keySet();				
+				for (Iterator iter = keys.iterator(); iter.hasNext();) {
+					PatternNode node = (PatternNode)iter.next();
+					AnnotationTargetKind[] targetKinds =  (AnnotationTargetKind[]) visitor.getIncorrectTargetKinds().get(node);
+					reportUnmatchedTargetKindMessage(targetKinds,node,scope,false);
+				}
+			}
+		}
+    }
+    
+    private void reportUnmatchedTargetKindMessage(
+    		AnnotationTargetKind[] annotationTargetKinds,  
+    		PatternNode node,
+    		IScope scope,
+    		boolean checkMatchesMemberKindName) {
+    	StringBuffer targetNames = new StringBuffer("{");
+    	for (int i = 0; i < annotationTargetKinds.length; i++) {
+			AnnotationTargetKind targetKind = annotationTargetKinds[i];
+			if (checkMatchesMemberKindName && kind.getName().equals(targetKind.getName())) {
+				return;
+			}
+			if (i < (annotationTargetKinds.length - 1)) {
+				targetNames.append("ElementType." + targetKind.getName() + ",");
+			} else {
+				targetNames.append("ElementType." + targetKind.getName() + "}");
+			}
+		}
+		scope.getWorld().getLint().unmatchedTargetKind.signal(new String[] {node.toString(),targetNames.toString()}, getSourceLocation(), new ISourceLocation[0]);
+    }
+    
+    /**
+     * Class which visits the nodes in the TypePattern tree until an
+     * ExactTypePattern is found. Once this is found it creates a new
+     * ExactAnnotationTypePattern and checks whether the targetKind
+     * (created via the @Target annotation) matches ElementType.TYPE if
+     * this is the only target kind which is allowed, or matches the
+     * signature pattern kind if there is no restriction.
+     */
+    private class TypePatternVisitor extends AbstractPatternNodeVisitor {
+
+    	private IScope scope;
+    	private Map incorrectTargetKinds /* PatternNode -> AnnotationTargetKind[] */ = new HashMap();
+    	private boolean targetsOtherThanTypeAllowed;
+
+    	/**
+    	 * @param requiredTarget - the signature pattern Kind
+    	 * @param scope
+    	 */
+    	public TypePatternVisitor(IScope scope, boolean targetsOtherThanTypeAllowed) {
+    		this.scope = scope;
+    		this.targetsOtherThanTypeAllowed = targetsOtherThanTypeAllowed;
+    	}
+    	
+    	public Object visit(WildAnnotationTypePattern node, Object data) {
+    		node.getTypePattern().accept(this,data);
+    		return node;
+    	}
+    	
+    	/**
+    	 * Do the ExactAnnotationTypePatterns have the incorrect target?
+    	 */
+    	public Object visit(ExactAnnotationTypePattern node, Object data) {
+    		ResolvedType resolvedType = node.getAnnotationType().resolve(scope.getWorld());
+			if (targetsOtherThanTypeAllowed) {
+				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
+				if (targetKinds == null) return data;
+				List incorrectTargets = new ArrayList();
+				for (int i = 0; i < targetKinds.length; i++) {
+					if (targetKinds[i].getName().equals(kind.getName())) {
+						return data;
+					}
+					incorrectTargets.add(targetKinds[i]);
+				}
+				if (incorrectTargets.isEmpty()) return data;
+				AnnotationTargetKind[] kinds = new AnnotationTargetKind[incorrectTargets.size()];
+				incorrectTargetKinds.put(node,(AnnotationTargetKind[]) incorrectTargets.toArray(kinds));	
+			} else if (!targetsOtherThanTypeAllowed && !resolvedType.canAnnotationTargetType()) {
+				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
+				if (targetKinds == null) return data;
+				incorrectTargetKinds.put(node,targetKinds);
+			}
+    		return data;
+    	}
+    	
+    	public Object visit(ExactTypePattern node, Object data) {
+    		ExactAnnotationTypePattern eatp =  new ExactAnnotationTypePattern(node.getExactType().resolve(scope.getWorld()));
+    		eatp.accept(this,data);		
+    		return data;
+    	}
+    	
+    	public Object visit(AndTypePattern node, Object data) {
+    		node.getLeft().accept(this,data);
+    		node.getRight().accept(this,data);
+    		return node;
+    	}
+
+    	public Object visit(OrTypePattern node, Object data) {
+    		node.getLeft().accept(this,data);
+    		node.getRight().accept(this,data);
+    		return node;
+    	}
+
+    	public Object visit(AnyWithAnnotationTypePattern node, Object data) {
+    		node.getAnnotationPattern().accept(this,data);
+    		return node;
+    	}
+    	
+    	public boolean containedIncorrectTargetKind() {
+    		return (incorrectTargetKinds.size() != 0);
+    	}
+    	
+    	public Map getIncorrectTargetKinds() {
+    		return incorrectTargetKinds;
+    	}
+    }
+    
     
 	public void postRead(ResolvedType enclosingType) {
 		if (returnType != null) {

@@ -185,6 +185,14 @@ public class BoundedReferenceType extends ReferenceType {
 			return resolvedTypeX.getRetentionPolicy();
 		}
 
+		public boolean canAnnotationTargetType() {
+			return resolvedTypeX.canAnnotationTargetType();
+		}
+		
+		public AnnotationTargetKind[] getAnnotationTargetKinds() {
+			return resolvedTypeX.getAnnotationTargetKinds();
+		}
+		
 		public boolean isGeneric() {
 			return resolvedTypeX.isGenericType();
 		}

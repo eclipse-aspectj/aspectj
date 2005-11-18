@@ -33,6 +33,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ReferenceType;
@@ -88,6 +89,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	
 	private boolean discoveredRetentionPolicy = false;
 	private String retentionPolicy;
+	private boolean discoveredAnnotationTargetKinds = false;
+	private AnnotationTargetKind[] annotationTargetKinds;
 	
 	
 	/**
@@ -468,6 +471,60 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	        }
 		}
 	    return retentionPolicy;
+	}
+	
+	public boolean canAnnotationTargetType() {
+		AnnotationTargetKind[] targetKinds = getAnnotationTargetKinds();
+		if (targetKinds == null) return true;
+		for (int i = 0; i < targetKinds.length; i++) {
+			if (targetKinds[i].equals(AnnotationTargetKind.TYPE)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public AnnotationTargetKind[] getAnnotationTargetKinds() {
+		if (discoveredAnnotationTargetKinds) return annotationTargetKinds;
+		discoveredAnnotationTargetKinds = true;
+		annotationTargetKinds = null; // null means we have no idea or the @Target annotation hasn't been used
+		List targetKinds = new ArrayList();
+		if (isAnnotation()) {
+	        Annotation[] annotationsOnThisType = javaClass.getAnnotations();
+	        for (int i = 0; i < annotationsOnThisType.length; i++) {
+	            Annotation a = annotationsOnThisType[i];
+	            if (a.getTypeName().equals(UnresolvedType.AT_TARGET.getName())) {
+	                List values = a.getValues();
+	                for (Iterator it = values.iterator(); it.hasNext();) {
+                        ElementNameValuePair element = (ElementNameValuePair) it.next();
+                        ElementValue v = element.getValue();
+                        String targetKind = v.stringifyValue();
+                        if (targetKind.equals("ANNOTATION_TYPE")) {
+							targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
+                        } else if (targetKind.equals("CONSTRUCTOR")) {
+							targetKinds.add(AnnotationTargetKind.CONSTRUCTOR);
+						} else if (targetKind.equals("FIELD")) {
+							targetKinds.add(AnnotationTargetKind.FIELD);
+						} else if (targetKind.equals("LOCAL_VARIABLE")) {
+							targetKinds.add(AnnotationTargetKind.LOCAL_VARIABLE);
+						} else if (targetKind.equals("METHOD")) {
+							targetKinds.add(AnnotationTargetKind.METHOD);
+						} else if (targetKind.equals("PACKAGE")) {
+							targetKinds.add(AnnotationTargetKind.PACKAGE);
+						} else if (targetKind.equals("PARAMETER")) {
+							targetKinds.add(AnnotationTargetKind.PARAMETER);
+						} else if (targetKind.equals("TYPE")) {
+							targetKinds.add(AnnotationTargetKind.TYPE);
+						} 
+                    }
+	            }
+	        }
+			if (!targetKinds.isEmpty()) {
+				annotationTargetKinds = new AnnotationTargetKind[targetKinds.size()];
+				return (AnnotationTargetKind[]) targetKinds.toArray(annotationTargetKinds);	
+			}
+		}
+		return annotationTargetKinds;
 	}
 	
 	public boolean isSynthetic() {

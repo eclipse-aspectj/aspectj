@@ -25,8 +25,6 @@ public interface ReferenceTypeDelegate {
 	// TODO asc move to proxy
 	public void addAnnotation(AnnotationX annotationX);
 	public void ensureDelegateConsistent(); // Required evil because of mutator methods in delegates :(  (see pr85132)
-
-	
 	
 	public boolean isAspect();
     public boolean isAnnotationStyleAspect();
@@ -34,6 +32,8 @@ public interface ReferenceTypeDelegate {
     public boolean isEnum();
     public boolean isAnnotation();
     public String getRetentionPolicy();
+    public boolean canAnnotationTargetType();
+    public AnnotationTargetKind[] getAnnotationTargetKinds();
     public boolean isAnnotationWithRuntimeRetention();
 	public boolean isClass();
 	public boolean isGeneric();
@@ -61,4 +61,5 @@ public interface ReferenceTypeDelegate {
 	public boolean doesNotExposeShadowMungers();
 	
 	public String getDeclaredGenericSignature();
+	
 }

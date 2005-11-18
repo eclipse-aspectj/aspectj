@@ -62,7 +62,16 @@
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 1">
         <compile files="Consts.java,TestNPE.java" options="-1.5"/>
     </ajc-test>
-    
+  
+    <ajc-test dir="bugs150" title="parameterized type and around advice">
+        <compile files="pr115250.aj" options="-1.5 -Xlint:ignore"/>
+        <run class="pr115250"/>
+          <!--stderr>
+            <line text="Advice running"/>
+          </stderr>
+        </run-->
+    </ajc-test>
+      
     <ajc-test dir="bugs150/pr115788" title="parser exception">
         <compile files="AAA.java">
           <message kind="warning" line="3" text="no match for this type name: Screen"/>
@@ -1021,6 +1030,79 @@
 
     <ajc-test dir="bugs150" title="no StackOverflowError with circular pcd in generic aspect - 2">
         <compile files="pr115235b.aj" options="-1.5">
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr115252" title="xlint message for improper exact annotation type">
+        <compile files="ExactAnnotationTypePattern.java" options="-1.5">
+			<message kind="warning" line="20" text="field blah"/>
+        	<message kind="warning" line="28" text="does not match because annotation @TypeAnnotation has @Target{ElementType.TYPE} [Xlint:unmatchedTargetKind]"/>
+        	<message kind="warning" line="37" text="does not match because annotation @FieldAnnotation has @Target{ElementType.FIELD} [Xlint:unmatchedTargetKind]"/>
+            <message kind="warning" line="46" text="does not match because annotation @MethodAnnotation has @Target{ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr115252" title="xlint message for improper annotation type inside OR">
+        <compile files="OrTypePattern.java" options="-1.5">
+            <message kind="warning" line="26" text="does not match because annotation @FieldAnnotation has @Target{ElementType.FIELD} [Xlint:unmatchedTargetKind]"/>
+        	<message kind="warning" line="31" text="does not match because annotation @TypeAnnotation has @Target{ElementType.TYPE} [Xlint:unmatchedTargetKind]"/>
+        	<message kind="warning" line="31" text="does not match because annotation @FieldAnnotation has @Target{ElementType.FIELD} [Xlint:unmatchedTargetKind]"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr115252" title="xlint message for improper annotation type inside AND">
+        <compile files="AndTypePattern.java" options="-1.5">
+            <message kind="warning" line="23" text="does not match because annotation @FieldAnnotation has @Target{ElementType.FIELD} [Xlint:unmatchedTargetKind]"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr115252" title="xlint message for improper annotated return type">
+        <compile files="AnnotationReturnType.java" options="-1.5">
+            <!-- warnings coming from matching pointcuts and corresponding declare warnings -->
+			<message kind="warning" line="12" text="(@TypeAnnotation *) *(..)"/>
+			<message kind="warning" line="12" text="(@(TypeAnnotation || MethodAnnotation) *) *(..)"/>
+            <!-- xlint warnings that were put in as part of fix for pr115252 -->
+        	<message kind="warning" line="32" text="does not match because annotation @MethodAnnotation has @Target{ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+        	<message kind="warning" line="37" text="does not match because annotation @MethodAnnotation has @Target{ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr115252" title="xlint message for improper annotated declaring type">
+        <compile files="AnnotationDeclaringType.java" options="-1.5">
+            <!-- warning coming from matching pointcuts and corresponding declare warnings -->
+			<message kind="warning" line="13" text="* (@TypeAnnotation *).*(..)"/>
+            <!-- xlint warning that was put in as part of fix for pr115252 -->
+        	<message kind="warning" line="27" text="does not match because annotation @MethodAnnotation has @Target{ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr115252" title="xlint message for improper annotated parameter type">
+        <compile files="AnnotationParameterType.java" options="-1.5">
+            <!-- warning coming from matching pointcuts and corresponding declare warnings -->
+			<message kind="warning" line="12" text="* *(@TypeAnnotation *)"/>
+            <!-- xlint warning that was put in as part of fix for pr115252 -->
+        	<message kind="warning" line="31" text="does not match because annotation @MethodAnnotation has @Target{ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr115252" title="xlint message for improper annotated throws pattern">
+        <compile files="AnnotationThrowsPattern.java" options="-1.5">
+            <!-- warnings coming from matching pointcuts and corresponding declare warnings -->
+			<message kind="warning" line="12" text="(* *.*(..) throws (@TypeAnnotation *))"/>
+			<message kind="warning" line="12" text="* *.*(..) throws !(@MethodAnnotation *)"/>
+			<message kind="warning" line="14" text="(* *.*(..) throws !(@TypeAnnotation *))"/>
+			<message kind="warning" line="14" text="* *.*(..) throws !(@MethodAnnotation *)"/>
+            <!-- xlint warnings that were put in as part of fix for pr115252 -->
+        	<message kind="warning" line="40" text="does not match because annotation @MethodAnnotation has @Target{ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+        	<message kind="warning" line="46" text="does not match because annotation @MethodAnnotation has @Target{ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150/pr115252" title="xlint message for more than one improper annotated parameter type">
+        <compile files="MoreThanOneTargetAnnotation.java" options="-1.5">
+            <!-- xlint warning that was put in as part of fix for pr115252 -->
+        	<message kind="warning" line="28" text="does not match because annotation @MethodAndFieldAnnotation has @Target{ElementType.FIELD,ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+        	<message kind="warning" line="38" text="does not match because annotation @TypeAndMethodAnnotation has @Target{ElementType.METHOD,ElementType.TYPE} [Xlint:unmatchedTargetKind]"/>
         </compile>
     </ajc-test>
 
@@ -2870,7 +2952,10 @@
         <compile files="Base.java,Colored.java,WrongTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
            <message kind="error" line="8" text="The annotation @MethodColoring is disallowed for this location"/>
            <message kind="error" line="9" text="The annotation @TypeColoring is disallowed for this location"/>
-        </compile>
+           <!-- xlint warnings that were put in as part of fix for pr115252 -->
+           <message kind="warning" line="13" text="does not match because annotation @MethodColoring has @Target{ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
+           <message kind="warning" line="16" text="does not match because annotation @TypeColoring has @Target{ElementType.TYPE} [Xlint:unmatchedTargetKind]"/>
+  </compile>
    </ajc-test>
     
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - right target - source weaving">

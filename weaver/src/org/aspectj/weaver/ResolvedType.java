@@ -633,8 +633,21 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public AnnotationX[] getAnnotations() {
 		throw new RuntimeException("ResolvedType.getAnnotations() should never be called");
 	}
-
     
+	/**
+	 * Note: Only overridden by ReferenceType subtype
+	 */
+	public boolean canAnnotationTargetType() {
+		return false;
+	}
+	
+	/**
+	 * Note: Only overridden by ReferenceType subtype
+	 */	
+	public AnnotationTargetKind[] getAnnotationTargetKinds() {
+		return null;
+	}
+	
     /**
      * Note: Only overridden by Name subtype.
      */

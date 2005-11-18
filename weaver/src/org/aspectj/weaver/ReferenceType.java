@@ -158,6 +158,14 @@ public class ReferenceType extends ResolvedType {
     public boolean isAnnotationWithRuntimeRetention() {
         return delegate.isAnnotationWithRuntimeRetention();
     }
+    
+    public boolean canAnnotationTargetType() {
+    	return delegate.canAnnotationTargetType();
+    }
+    
+    public AnnotationTargetKind[] getAnnotationTargetKinds() {
+    	return delegate.getAnnotationTargetKinds();
+    }
       
     // true iff the statement "this = (ThisType) other" would compile
     public final boolean isCoerceableFrom(ResolvedType o) {
