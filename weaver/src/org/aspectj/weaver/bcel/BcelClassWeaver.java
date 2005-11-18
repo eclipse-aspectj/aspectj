@@ -604,12 +604,16 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 		List l = typeToCheck.getInterTypeMungers();
 		for (Iterator iterator = l.iterator(); iterator.hasNext();) {
-			BcelTypeMunger element = (BcelTypeMunger) iterator.next();
-			if (element.getMunger() instanceof NewMethodTypeMunger) {
-				if (debug) System.err.println("Possible ITD candidate "+element);
-				ResolvedMember aMethod = element.getSignature();
-				ResolvedMember isOverriding = isOverriding(typeToCheck,aMethod,mname,mrettype,mmods,inSamePackage,methodParamsArray);
-				if (isOverriding!=null) return isOverriding;
+			Object o = iterator.next();
+			// FIXME asc if its not a BcelTypeMunger then its an EclipseTypeMunger ... do I need to worry about that?
+			if (o instanceof BcelTypeMunger) {
+				BcelTypeMunger element = (BcelTypeMunger)o;
+				if (element.getMunger() instanceof NewMethodTypeMunger) {
+					if (debug) System.err.println("Possible ITD candidate "+element);
+					ResolvedMember aMethod = element.getSignature();
+					ResolvedMember isOverriding = isOverriding(typeToCheck,aMethod,mname,mrettype,mmods,inSamePackage,methodParamsArray);
+					if (isOverriding!=null) return isOverriding;
+				}
 			}
 		}
 		
