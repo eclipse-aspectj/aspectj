@@ -712,6 +712,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testNoStackOverflowWithCircularPCDInGenericAspect2() {
 	  runTest("no StackOverflowError with circular pcd in generic aspect - 2");
   }
+
+  /*
+   * Load-time weaving bugs
+   */
+  public void testNPEinWeavingAdaptor_pr116626() { runTest("NPE in WeavingAdaptor");}
   
   // helper methods.....
   

@@ -387,14 +387,15 @@ public class WeavingAdaptor {
 
 	private class WeavingClassFileProvider implements IClassFileProvider {
 
+		private UnwovenClassFile unwovenClass;
 		private List unwovenClasses = new ArrayList(); /* List<UnovenClassFile> */
 		private UnwovenClassFile wovenClass;
         private boolean isApplyAtAspectJMungersOnly = false;
 
         public WeavingClassFileProvider (String name, byte[] bytes) {
-			UnwovenClassFile unwoven = new UnwovenClassFile(name,bytes);
-			unwovenClasses.add(unwoven);
-			bcelWorld.addSourceObjectType(unwoven.getJavaClass());
+			this.unwovenClass = new UnwovenClassFile(name,bytes);
+			this.unwovenClasses.add(unwovenClass);
+			bcelWorld.addSourceObjectType(unwovenClass.getJavaClass());
 		}
 
         public void setApplyAtAspectJMungersOnly() {
@@ -406,7 +407,8 @@ public class WeavingAdaptor {
         }
 
         public byte[] getBytes () {
-			return wovenClass.getBytes();
+        	if (wovenClass != null) return wovenClass.getBytes();
+        	else return unwovenClass.getBytes();
 		}
 
 		public Iterator getClassFileIterator() {

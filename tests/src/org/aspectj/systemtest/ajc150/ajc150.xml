@@ -5559,5 +5559,12 @@
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design G">
      <compile files="DesignG.java" options="-1.5"/>
    </ajc-test>
+   
+   <ajc-test dir="bugs150/pr116626" title="NPE in WeavingAdaptor">
+     <compile files="com/foo/bar/Test.java, TestAspect.aj" options="-1.5"/>
+     <run class="com.foo.bar.Test" ltw="aop.xml"
+     >
+     </run>
+   </ajc-test>
 
 </suite>

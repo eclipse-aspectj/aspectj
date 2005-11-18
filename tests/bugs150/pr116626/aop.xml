@@ -1,0 +1,9 @@
+<aspectj>
+	<aspects>
+		<aspect name="com.foo.bar.TestAspect"/>
+	</aspects>
+
+	<weaver options="-verbose -XlazyTjp -showWeaveInfo">
+		<include within="com.foo.*"/>
+	</weaver>
+</aspectj>
