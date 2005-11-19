@@ -35,9 +35,15 @@ import org.aspectj.weaver.World;
 public class Java15AnnotationFinder implements AnnotationFinder {
 	
 	private Repository bcelRepository;
+	private ClassLoader classLoader;
 	
+	// must have no-arg constructor for reflective construction
 	public Java15AnnotationFinder() {
-		this.bcelRepository = new ClassLoaderRepository(getClass().getClassLoader());
+	}
+	
+	public void setClassLoader(ClassLoader aLoader) {
+		this.bcelRepository = new ClassLoaderRepository(aLoader);
+		this.classLoader = aLoader;		
 	}
 
 	/* (non-Javadoc)
@@ -45,7 +51,7 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 	 */
 	public Object getAnnotation(ResolvedType annotationType, Object onObject) {
 		try {
-			Class annotationClass = Class.forName(annotationType.getName());
+			Class annotationClass = Class.forName(annotationType.getName(),false,classLoader);
 			if (onObject.getClass().isAnnotationPresent(annotationClass)) {
 				return onObject.getClass().getAnnotation(annotationClass);
 			}
@@ -57,7 +63,7 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 
 	public Object getAnnotationFromClass(ResolvedType annotationType, Class aClass) {
 		try {
-			Class annotationClass = Class.forName(annotationType.getName());
+			Class annotationClass = Class.forName(annotationType.getName(),false,classLoader);
 			if (aClass.isAnnotationPresent(annotationClass)) {
 				return aClass.getAnnotation(annotationClass);
 			}
@@ -71,7 +77,7 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 		if (!(aMember instanceof AccessibleObject)) return null;
 		AccessibleObject ao = (AccessibleObject) aMember;
 		try {
-			Class annotationClass = Class.forName(annotationType.getName());
+			Class annotationClass = Class.forName(annotationType.getName(),false,classLoader);
 			if (ao.isAnnotationPresent(annotationClass)) {
 				return ao.getAnnotation(annotationClass);
 			}

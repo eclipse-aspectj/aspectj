@@ -9,18 +9,15 @@
  * ******************************************************************/
 package org.aspectj.weaver.tools;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+/**
+ * A compiled AspectJ type pattern that can be used to
+ * match against types at runtime.
+ */
+public interface TypePatternMatcher {
 
-public class ToolsTests {
-
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for org.aspectj.weaver.tools");
-		//$JUnit-BEGIN$
-		suite.addTestSuite(PointcutParserTest.class);
-		suite.addTestSuite(PointcutExpressionTest.class);
-		suite.addTestSuite(TypePatternMatcherTest.class);
-		//$JUnit-END$
-		return suite;
-	}
+	/**
+	 * Does this type pattern matcher match the
+	 * given type (Class).
+	 */
+	public boolean matches(Class aClass);
 }

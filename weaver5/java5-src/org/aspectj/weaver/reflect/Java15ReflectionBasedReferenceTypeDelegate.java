@@ -57,14 +57,17 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	private ResolvedType superclass;
 	private ResolvedType[] superInterfaces;
 	private String genericSignature = null;
-	private Java15AnnotationFinder annotationFinder = new Java15AnnotationFinder();
+	private Java15AnnotationFinder annotationFinder = null;
 	
 
 	public Java15ReflectionBasedReferenceTypeDelegate() {}
 	
-	public void initialize(ReferenceType aType, Class aClass, World aWorld) {
-		super.initialize(aType, aClass, aWorld);
+	@Override
+	public void initialize(ReferenceType aType, Class aClass, ClassLoader classLoader, World aWorld) {
+		super.initialize(aType, aClass, classLoader, aWorld);
 		myType = AjTypeSystem.getAjType(aClass);
+		annotationFinder = new Java15AnnotationFinder();
+		annotationFinder.setClassLoader(classLoader);
 	}
 	
 	
@@ -169,6 +172,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			fromTypes(forMethod.getGenericExceptionTypes()),
 			forMethod
 			);
+		ret.setAnnotationFinder(this.annotationFinder);
 		return ret;
 	}
 
@@ -183,11 +187,13 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			fromTypes(forConstructor.getGenericExceptionTypes()),
 			forConstructor
 			);
+		ret.setAnnotationFinder(this.annotationFinder);
 		return ret;
 	}
 	
 	private ResolvedMember createGenericFieldMember(Field forField) {
-		return new ReflectionBasedResolvedMemberImpl(
+		ReflectionBasedResolvedMemberImpl ret =
+			new ReflectionBasedResolvedMemberImpl(
 				org.aspectj.weaver.Member.FIELD,
 				getResolvedTypeX(),
 				forField.getModifiers(),
@@ -195,6 +201,8 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 				forField.getName(),
 				new UnresolvedType[0],
 				forField);
+		ret.setAnnotationFinder(this.annotationFinder);
+		return ret;
 	}
 
 	public ResolvedMember[] getDeclaredPointcuts() {

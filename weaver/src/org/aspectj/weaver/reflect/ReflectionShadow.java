@@ -44,6 +44,7 @@ public class ReflectionShadow extends Shadow {
 	private Map withinAnnotationVar = new HashMap();
 	private Map withinCodeAnnotationVar = new HashMap();
 	private Map annotationVar = new HashMap();
+	private AnnotationFinder annotationFinder;
 	
 	public static Shadow makeExecutionShadow(World inWorld, java.lang.reflect.Member forMethod) {
 		Kind kind = (forMethod instanceof Method) ? Shadow.MethodExecution : Shadow.ConstructorExecution;
@@ -157,6 +158,9 @@ public class ReflectionShadow extends Shadow {
 		this.world = world;
 		this.enclosingType = enclosingType;
 		this.enclosingMember = enclosingMember;
+		if (world instanceof ReflectionWorld) {
+			this.annotationFinder = ((ReflectionWorld)world).getAnnotationFinder();
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -171,7 +175,7 @@ public class ReflectionShadow extends Shadow {
 	 */
 	public Var getThisVar() {
 		if (thisVar == null && hasThis()) {
-			thisVar = ReflectionVar.createThisVar(getThisType().resolve(world));
+			thisVar = ReflectionVar.createThisVar(getThisType().resolve(world),this.annotationFinder);
 		}
 		return thisVar;
 	}
@@ -181,7 +185,7 @@ public class ReflectionShadow extends Shadow {
 	 */
 	public Var getTargetVar() {
 		if (targetVar == null && hasTarget()) {
-			targetVar = ReflectionVar.createTargetVar(getThisType().resolve(world));
+			targetVar = ReflectionVar.createTargetVar(getThisType().resolve(world),this.annotationFinder);
 		}
 		return targetVar;
 	}
@@ -200,7 +204,7 @@ public class ReflectionShadow extends Shadow {
 		if (argsVars == null) {
 			this.argsVars = new Var[this.getArgCount()];
 			for (int j = 0; j < this.argsVars.length; j++) {
-				this.argsVars[j] = ReflectionVar.createArgsVar(getArgType(j).resolve(world), j);
+				this.argsVars[j] = ReflectionVar.createArgsVar(getArgType(j).resolve(world), j,this.annotationFinder);
 			}
 		}
 		if (i < argsVars.length) {
@@ -240,7 +244,7 @@ public class ReflectionShadow extends Shadow {
 	public Var getKindedAnnotationVar(UnresolvedType forAnnotationType) {
 		ResolvedType annType = forAnnotationType.resolve(world);
 		if (annotationVar.get(annType) == null) {
-			Var v = ReflectionVar.createAtAnnotationVar(annType);
+			Var v = ReflectionVar.createAtAnnotationVar(annType,this.annotationFinder);
 			annotationVar.put(annType,v);
 		}
 		return (Var) annotationVar.get(annType);
@@ -252,7 +256,7 @@ public class ReflectionShadow extends Shadow {
 	public Var getWithinAnnotationVar(UnresolvedType forAnnotationType) {
 		ResolvedType annType = forAnnotationType.resolve(world);
 		if (withinAnnotationVar.get(annType) == null) {
-			Var v = ReflectionVar.createWithinAnnotationVar(annType);
+			Var v = ReflectionVar.createWithinAnnotationVar(annType,this.annotationFinder);
 			withinAnnotationVar.put(annType,v);
 		}
 		return (Var) withinAnnotationVar.get(annType);
@@ -264,7 +268,7 @@ public class ReflectionShadow extends Shadow {
 	public Var getWithinCodeAnnotationVar(UnresolvedType forAnnotationType) {
 		ResolvedType annType = forAnnotationType.resolve(world);
 		if (withinCodeAnnotationVar.get(annType) == null) {
-			Var v = ReflectionVar.createWithinCodeAnnotationVar(annType);
+			Var v = ReflectionVar.createWithinCodeAnnotationVar(annType,this.annotationFinder);
 			withinCodeAnnotationVar.put(annType,v);
 		}
 		return (Var) withinCodeAnnotationVar.get(annType);
@@ -275,7 +279,7 @@ public class ReflectionShadow extends Shadow {
 	 */
 	public Var getThisAnnotationVar(UnresolvedType forAnnotationType) {
 		if (atThisVar == null) {
-			atThisVar = ReflectionVar.createThisAnnotationVar(forAnnotationType.resolve(world));
+			atThisVar = ReflectionVar.createThisAnnotationVar(forAnnotationType.resolve(world),this.annotationFinder);
 		}
 		return atThisVar;
 	}
@@ -285,7 +289,7 @@ public class ReflectionShadow extends Shadow {
 	 */
 	public Var getTargetAnnotationVar(UnresolvedType forAnnotationType) {
 		if (atTargetVar == null) {
-			atTargetVar = ReflectionVar.createTargetAnnotationVar(forAnnotationType.resolve(world));
+			atTargetVar = ReflectionVar.createTargetAnnotationVar(forAnnotationType.resolve(world),this.annotationFinder);
 		}
 		return atTargetVar;
 	}
@@ -302,7 +306,7 @@ public class ReflectionShadow extends Shadow {
 		Var[] vars = (Var[]) atArgsVars.get(annType);
 		if (i > (vars.length - 1) ) return null;
 		if (vars[i] == null) {
-			vars[i] = ReflectionVar.createArgsAnnotationVar(annType, i);
+			vars[i] = ReflectionVar.createArgsAnnotationVar(annType, i,this.annotationFinder);
 		}
 		return vars[i];
 	}

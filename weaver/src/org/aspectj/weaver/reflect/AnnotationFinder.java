@@ -22,6 +22,8 @@ import org.aspectj.weaver.ResolvedType;
  */
 public interface AnnotationFinder {
 
+	void setClassLoader(ClassLoader annotationLoader);
+	
 	Object getAnnotation(ResolvedType annotationType, Object onObject);
 	
 	Object getAnnotationFromMember(ResolvedType annotationType, Member aMember);

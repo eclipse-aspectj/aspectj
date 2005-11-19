@@ -38,23 +38,25 @@ import org.aspectj.weaver.patterns.PerClause;
 public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelegate {
 
 	protected Class myClass = null;
+	protected ClassLoader classLoader = null;
 	private World world;
 	private ReferenceType resolvedType;
 	private ResolvedMember[] fields = null;
 	private ResolvedMember[] methods = null;
 	private ResolvedType[] interfaces = null;
 	
-	public ReflectionBasedReferenceTypeDelegate(Class forClass, World inWorld, ReferenceType resolvedType) {
-		initialize(resolvedType,forClass,inWorld);
+	public ReflectionBasedReferenceTypeDelegate(Class forClass, ClassLoader aClassLoader, World inWorld, ReferenceType resolvedType) {
+		initialize(resolvedType,forClass, aClassLoader, inWorld);
 	}
 	
 	/** for reflective construction only */
 	public ReflectionBasedReferenceTypeDelegate() {}
 	
-	public void initialize(ReferenceType aType, Class aClass, World aWorld) {
+	public void initialize(ReferenceType aType, Class aClass, ClassLoader aClassLoader, World aWorld) {
 		this.myClass = aClass;
 		this.resolvedType = aType;
 		this.world = aWorld;
+		this.classLoader = aClassLoader;
 	}
 	
 	protected Class getBaseClass() { 
@@ -64,12 +66,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	protected World getWorld() {
 		return this.world;
 	}
-	
-	protected ReflectionWorld getReflectionWorld() {
-		return (ReflectionWorld) this.world;
-	}
-	
-	
+		
 	public ReferenceType buildGenericType() {
 		throw new UnsupportedOperationException("Shouldn't be asking for generic type at 1.4 source level or lower");
 	}
@@ -215,7 +212,8 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 			Class[] reflectInterfaces = this.myClass.getInterfaces();
 			this.interfaces = new ResolvedType[reflectInterfaces.length];
 			for (int i = 0; i < reflectInterfaces.length; i++) {
-				this.interfaces[i] = getReflectionWorld().resolve(reflectInterfaces[i]);
+				this.interfaces[i] = ReflectionBasedReferenceTypeDelegateFactory
+					.resolveTypeInWorld(reflectInterfaces[i],world);
 			}
 		}
 		return interfaces;
@@ -300,7 +298,8 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	 */
 	public ResolvedType getSuperclass() {
 		if (this.myClass.getSuperclass() == null) return null;
-		return getReflectionWorld().resolve(this.myClass.getSuperclass());
+		return ReflectionBasedReferenceTypeDelegateFactory
+				.resolveTypeInWorld(this.myClass.getSuperclass(),world);
 	}
 
 	/* (non-Javadoc)

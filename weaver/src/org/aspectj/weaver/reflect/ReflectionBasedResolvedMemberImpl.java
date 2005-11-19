@@ -25,16 +25,7 @@ import org.aspectj.weaver.UnresolvedType;
  */
 public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 
-	private static AnnotationFinder annotationFinder = null;
-	
-	static {
-		try {
-			Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
-			annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
-		} catch(Exception ex) {
-			// must be on 1.4 or earlier
-		}
-	}
+	private AnnotationFinder annotationFinder = null;
 	
 	private Member reflectMember;
 	
@@ -110,6 +101,10 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 		this.reflectMember = reflectMember;
 	}
 
+	public void setAnnotationFinder(AnnotationFinder finder) {
+		this.annotationFinder = finder;
+	}
+	
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		unpackAnnotations();
 		return super.hasAnnotation(ofType);

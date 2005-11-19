@@ -11,8 +11,12 @@
 package org.aspectj.weaver.tools;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessageHandler;
@@ -27,6 +31,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.AtAjAttributes;
 import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
+import org.aspectj.weaver.internal.tools.TypePatternMatcherImpl;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.FormalBinding;
@@ -40,6 +45,7 @@ import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
+import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.reflect.PointcutParameterImpl;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 
@@ -49,7 +55,8 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
  */
 public class PointcutParser {
     
-	private static World world = new ReflectionWorld();
+	private World world;
+	private ClassLoader classLoader;
     private Set supportedPrimitives; 
     
     /**
@@ -96,6 +103,7 @@ public class PointcutParser {
      */
     public PointcutParser() {
         supportedPrimitives = getAllSupportedPointcutPrimitives();
+        setClassLoader(PointcutParser.class.getClassLoader());
     }
     
     /**
@@ -123,6 +131,61 @@ public class PointcutParser {
                 throw new UnsupportedOperationException("Cannot handle if, cflow, and cflowbelow primitives"); 
             }
         }
+        setClassLoader(PointcutParser.class.getClassLoader());
+    }
+    
+    /**
+     * Create a pointcut parser that can parse pointcut expressions built
+     * from a user-defined subset of AspectJ's supported pointcut primitives. 
+     * The following restrictions apply:
+     * <ul>
+     * <li>The <code>if, cflow, and cflowbelow</code> pointcut designators are not supported
+     * <li>Pointcut expressions must be self-contained :- they cannot contain references
+     * to other named pointcuts
+     * <li>The pointcut expression must be anonymous with no formals allowed.
+     * </ul>
+     * @param supportedPointcutKinds a set of PointcutPrimitives this parser
+     * should support
+     * @param classLoader the class loader to use for resolving types
+     * @throws UnsupportedOperationException if the set contains if, cflow, or
+     * cflow below
+     */
+    public PointcutParser(Set/*<PointcutPrimitives>*/ supportedPointcutKinds,ClassLoader cl) {
+    	this(supportedPointcutKinds);
+    	setClassLoader(cl);
+    }
+
+    /**
+     * Set the classloader that this parser should use for
+     * type resolution.
+     * @param aLoader
+     */
+    public void setClassLoader(ClassLoader aLoader) {
+    	this.classLoader = aLoader;
+    	world = new ReflectionWorld(this.classLoader);
+    }
+
+    /**
+     * Set the lint properties for this parser from the
+     * given resource on the classpath. 
+     * @param resourcePath path to a file containing aspectj
+     * lint properties
+     */
+    public void setLintProperties(String resourcePath)throws IOException {
+    	URL url = this.classLoader.getResource(resourcePath);
+    	InputStream is = url.openStream();
+    	Properties p = new Properties();
+		p.load(is);
+		setLintProperties(p);
+    }
+    
+    /**
+     * Set the lint properties for this parser from the 
+     * given properties set.
+     * @param properties
+     */
+    public void setLintProperties(Properties properties) {
+    	getWorld().getLint().setFromProperties(properties);
     }
     
     public PointcutParameter createPointcutParameter(String name, Class type) {
@@ -168,9 +231,9 @@ public class PointcutParser {
              pc = pc.resolve(resolutionScope);
              ResolvedType declaringTypeForResolution = null;
              if (inScope != null) {
-            	 declaringTypeForResolution = world.resolve(inScope.getName());
+            	 declaringTypeForResolution = getWorld().resolve(inScope.getName());
              } else {
-            	 declaringTypeForResolution = ResolvedType.OBJECT.resolve(world);
+            	 declaringTypeForResolution = ResolvedType.OBJECT.resolve(getWorld());
              }
              IntMap arity = new IntMap(formalParameters.length);
              for (int i = 0; i < formalParameters.length; i++) {
@@ -178,13 +241,39 @@ public class PointcutParser {
              }             
         	 pc = pc.concretize(declaringTypeForResolution, declaringTypeForResolution, arity);
              validateAgainstSupportedPrimitives(pc,expression); // again, because we have now followed any ref'd pcuts
-             pcExpr = new PointcutExpressionImpl(pc,expression,formalParameters,world);
+             pcExpr = new PointcutExpressionImpl(pc,expression,formalParameters,getWorld());
          } catch (ParserException pEx) {
              throw new IllegalArgumentException(buildUserMessageFromParserException(expression,pEx));
          } catch (ReflectionWorld.ReflectionWorldException rwEx) {
         	 throw new IllegalArgumentException(rwEx.getMessage());
          }
          return pcExpr;
+    }
+    
+    /**
+     * Parse the given aspectj type pattern, and return a 
+     * matcher that can be used to match types using it.
+     * @param typePattern an aspectj type pattern
+     * @return a type pattern matcher that matches using the given
+     * pattern 
+     * @throws IllegalArgumentException if the type pattern cannot
+     * be successfully parsed.
+     */
+    public TypePatternMatcher parseTypePattern(String typePattern) 
+    throws IllegalArgumentException {
+        try {
+        	TypePattern tp = new PatternParser(typePattern).parseTypePattern();
+        	tp.resolve(world);
+        	return new TypePatternMatcherImpl(tp,world);
+        } catch (ParserException pEx) {
+            throw new IllegalArgumentException(buildUserMessageFromParserException(typePattern,pEx));
+        } catch (ReflectionWorld.ReflectionWorldException rwEx) {
+       	 	throw new IllegalArgumentException(rwEx.getMessage());
+        }
+    }
+    
+    private World getWorld() {
+    	return world;
     }
     
     /* for testing */
@@ -194,8 +283,8 @@ public class PointcutParser {
     
     /* for testing */
     IMessageHandler setCustomMessageHandler(IMessageHandler aHandler) {
-    	IMessageHandler current = world.getMessageHandler();
-    	world.setMessageHandler(aHandler);
+    	IMessageHandler current = getWorld().getMessageHandler();
+    	getWorld().setMessageHandler(aHandler);
     	return current;
     }
     
@@ -206,9 +295,9 @@ public class PointcutParser {
 			formalBindings[i] = new FormalBinding(UnresolvedType.forName(formalParameters[i].getType().getName()),formalParameters[i].getName(),i);			
 		}
     	if (inScope == null) {
-    		return new SimpleScope(world,formalBindings);
+    		return new SimpleScope(getWorld(),formalBindings);
     	} else {
-    		ResolvedType inType = world.resolve(inScope.getName());
+    		ResolvedType inType = getWorld().resolve(inScope.getName());
     		ISourceContext sourceContext = new ISourceContext() {
     			public ISourceLocation makeSourceLocation(IHasPosition position) {
     				return new SourceLocation(new File(""),0);

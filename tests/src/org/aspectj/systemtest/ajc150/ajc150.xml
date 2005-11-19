@@ -52,7 +52,12 @@
     <ajc-test dir="bugs150" pr="112756" title="pointcut expression containing 'assert'">
      <compile files="Pr112756.aj" options="-warn:assertIdentifier -Xdev:Pinpoint"/>
     </ajc-test>
-    
+
+	<ajc-test dir="java5/reflection" title="pointcut parsing with ajc compiled pointcut references">
+		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java"></compile>
+		<run class="ReflectOnAjcCompiledPointcuts" classpath=".;../lib/aspectj/aspectjtools.jar"/>
+	</ajc-test>
+	    
     <ajc-test dir="bugs150/pr114436" title="ClassFormatError binary weaving perthis">
      <compile files="SimpleTrace.aj,ConcreteSimpleTracing.aj" outjar="aspects.jar"/>
      <compile files="TestClass.java" aspectpath="aspects.jar"/>

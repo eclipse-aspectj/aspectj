@@ -10,6 +10,7 @@
 package org.aspectj.weaver.tools;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.aspectj.bridge.AbortException;
@@ -240,6 +241,19 @@ public class PointcutParserTest extends TestCase {
 		} catch(IllegalArgumentException ex) {
 			assertTrue("no match for type name",ex.getMessage().indexOf("warning no match for this type name: y") != -1);
 		}
+	}
+	
+	public void testXLintConfiguration() {
+		PointcutParser p = new PointcutParser();
+		try {
+			p.parsePointcutExpression("this(FooBar)");
+		} catch(IllegalArgumentException ex) {
+			assertTrue("should have xlint:invalidAbsoluteTypeName",ex.getMessage().indexOf("Xlint:invalidAbsoluteTypeName") != -1);
+		}
+		Properties props = new Properties();
+		props.put("invalidAbsoluteTypeName","ignore");
+		p.setLintProperties(props);
+		p.parsePointcutExpression("this(FooBar)");
 	}
 	
 	private static class IgnoreWarningsMessageHandler implements IMessageHandler {

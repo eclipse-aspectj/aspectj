@@ -31,78 +31,84 @@ public class ReflectionVar extends Var {
 	static final int AT_WITHINCODE_VAR = 7;
 	static final int AT_ANNOTATION_VAR = 8;
 	
-	private static AnnotationFinder annotationFinder = null;
+	private AnnotationFinder annotationFinder = null;
 	
-	static {
-		try {
-			Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
-			annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
-		} catch(Exception ex) {
-			// must be on 1.4 or earlier
-		}
-	}
+//	static {
+//		try {
+//			Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
+//			annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
+//		} catch(ClassNotFoundException ex) {
+//			// must be on 1.4 or earlier
+//		} catch(IllegalAccessException ex) {
+//			// not so good
+//			throw new RuntimeException("AspectJ internal error",ex);
+//		} catch(InstantiationException ex) {
+//			throw new RuntimeException("AspectJ internal error",ex);
+//		}
+//	}
 	
 	private int argsIndex = 0;
 	private int varType;
 	
-	public static ReflectionVar createThisVar(ResolvedType type) {
-		ReflectionVar ret = new ReflectionVar(type);
+	public static ReflectionVar createThisVar(ResolvedType type,AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = THIS_VAR;
 		return ret;
 	}
 	
-	public static ReflectionVar createTargetVar(ResolvedType type) {
-		ReflectionVar ret = new ReflectionVar(type);
+	public static ReflectionVar createTargetVar(ResolvedType type, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = TARGET_VAR;
 		return ret;		
 	}
 	
-	public static ReflectionVar createArgsVar(ResolvedType type, int index) {
-		ReflectionVar ret = new ReflectionVar(type);
+	public static ReflectionVar createArgsVar(ResolvedType type, int index, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = ARGS_VAR;
 		ret.argsIndex = index;
 		return ret;		
 	}
 	
-	public static ReflectionVar createThisAnnotationVar(ResolvedType type) {
-		ReflectionVar ret = new ReflectionVar(type);
+	public static ReflectionVar createThisAnnotationVar(ResolvedType type, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = AT_THIS_VAR;
 		return ret;
 	}
 	
-	public static ReflectionVar createTargetAnnotationVar(ResolvedType type) {
-		ReflectionVar ret = new ReflectionVar(type);
+	public static ReflectionVar createTargetAnnotationVar(ResolvedType type, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = AT_TARGET_VAR;
 		return ret;		
 	}
 	
-	public static ReflectionVar createArgsAnnotationVar(ResolvedType type, int index) {
-		ReflectionVar ret = new ReflectionVar(type);
+	public static ReflectionVar createArgsAnnotationVar(ResolvedType type, int index, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = AT_ARGS_VAR;
 		ret.argsIndex = index;
 		return ret;		
 	}
 	
-	public static ReflectionVar createWithinAnnotationVar(ResolvedType annType) {
-		ReflectionVar ret = new ReflectionVar(annType);
+	public static ReflectionVar createWithinAnnotationVar(ResolvedType annType, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(annType,finder);
 		ret.varType = AT_WITHIN_VAR;
 		return ret;
 	}
 	
-	public static ReflectionVar createWithinCodeAnnotationVar(ResolvedType annType) {
-		ReflectionVar ret = new ReflectionVar(annType);
+	public static ReflectionVar createWithinCodeAnnotationVar(ResolvedType annType, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(annType,finder);
 		ret.varType = AT_WITHINCODE_VAR;
 		return ret;
 	}
 
-	public static ReflectionVar createAtAnnotationVar(ResolvedType annType) {
-		ReflectionVar ret = new ReflectionVar(annType);
+	public static ReflectionVar createAtAnnotationVar(ResolvedType annType, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(annType,finder);
 		ret.varType = AT_ANNOTATION_VAR;
 		return ret;
 	}
 
-	private ReflectionVar(ResolvedType type) {
+	private ReflectionVar(ResolvedType type,AnnotationFinder finder) {
 		super(type);
+		this.annotationFinder = finder;
 	}
 			
 	

@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
@@ -56,6 +57,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.AjAttribute.Aspect;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -562,13 +564,25 @@ public class BcelWorld extends World implements Repository {
             if (anns.length == 0) {
                 return false;
             }
+            boolean couldBeAtAspectJStyle = false;
             for (int i = 0; i < anns.length; i++) {
                 Annotation ann = anns[i];
                 if ("Lorg/aspectj/lang/annotation/Aspect;".equals(ann.getTypeSignature())) {
-                    return true;
+                    couldBeAtAspectJStyle = true;
                 }
             }
-            return false;
+            
+            if (!couldBeAtAspectJStyle) return false;
+            
+            // ok, so it has the annotation, but it could have been put
+            // on a code style aspect by the annotation visitor
+            Attribute[] attributes = jc.getAttributes();
+            for (int i = 0; i < attributes.length; i++) {
+            	if (attributes[i].getName().equals(Aspect.AttributeName)) {
+            		return false;
+            	}
+            }
+            return true;
         } catch (IOException e) {
             // assume it is one as a best effort
             return true;

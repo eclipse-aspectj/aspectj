@@ -37,10 +37,50 @@ import org.aspectj.weaver.patterns.PerClause.Kind;
  */
 public class ReflectionWorld extends World {
 
+	private ClassLoader classLoader;
+	private AnnotationFinder annotationFinder;
+	
 	public ReflectionWorld() {
 		super();
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+		this.classLoader = ReflectionWorld.class.getClassLoader();
+		if (LangUtil.is15VMOrGreater()) {
+			initializeAnnotationFinder(this.classLoader);
+		}
+	}
+	
+	public ReflectionWorld(ClassLoader aClassLoader) {
+		super();
+		this.setMessageHandler(new ExceptionBasedMessageHandler());
+		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+		this.classLoader = aClassLoader;
+		if (LangUtil.is15VMOrGreater()) {
+			initializeAnnotationFinder(this.classLoader);
+		}
+	}
+
+	private void initializeAnnotationFinder(ClassLoader loader) {
+		try {
+			Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
+			this.annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
+			this.annotationFinder.setClassLoader(loader);
+		} catch(ClassNotFoundException ex) {
+			// must be on 1.4 or earlier
+		} catch(IllegalAccessException ex) {
+			// not so good
+			throw new RuntimeException("AspectJ internal error",ex);
+		} catch(InstantiationException ex) {
+			throw new RuntimeException("AspectJ internal error",ex);
+		}
+	}
+	
+	public ClassLoader getClassLoader() {
+		return this.classLoader;
+	}
+	
+	public AnnotationFinder getAnnotationFinder() {
+		return this.annotationFinder;
 	}
 	
 	public ResolvedType resolve(Class aClass) {
@@ -58,7 +98,7 @@ public class ReflectionWorld extends World {
 	 * @see org.aspectj.weaver.World#resolveDelegate(org.aspectj.weaver.ReferenceType)
 	 */
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
-		return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this);
+		return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, this.classLoader);
 	}
 
 	/* (non-Javadoc)

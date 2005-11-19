@@ -713,6 +713,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("no StackOverflowError with circular pcd in generic aspect - 2");
   }
 
+
+//  public void testPointcutParsingOfCompiledPointcuts() {
+//	  runTest("pointcut parsing with ajc compiled pointcut references");
+//  }
+
   /*
    * Load-time weaving bugs
    */
