@@ -2012,6 +2012,11 @@ public class BcelShadow extends Shadow {
 		 
 		// !!! THIS BLOCK OF CODE SHOULD BE IN A METHOD CALLED weaveAround(...);
         Member mungerSig = munger.getSignature();
+        //Member originalSig = mungerSig; // If mungerSig is on a parameterized type, originalSig is the member on the generic type
+        if (mungerSig instanceof ResolvedMember) {
+        	ResolvedMember rm = (ResolvedMember)mungerSig;
+        	if (rm.hasBackingGenericMember()) mungerSig = rm.getBackingGenericMember();
+        }
         ResolvedType declaringType = world.resolve(mungerSig.getDeclaringType(),true);
         if (declaringType == ResolvedType.MISSING) {
           IMessage msg = new Message(
@@ -2021,7 +2026,7 @@ public class BcelShadow extends Shadow {
           world.getMessageHandler().handleMessage(msg);
         }
         //??? might want some checks here to give better errors
-        BcelObjectType ot = BcelWorld.getBcelObjectType(declaringType); 
+        BcelObjectType ot = BcelWorld.getBcelObjectType((declaringType.isParameterizedType()?declaringType.getGenericType():declaringType)); 
         
 		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
 		if (!adviceMethod.getCanInline()) {
@@ -2142,7 +2147,7 @@ public class BcelShadow extends Shadow {
         LazyMethodGen localAdviceMethod =
 					new LazyMethodGen(
 						Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, 
-						adviceMethod.getReturnType(), 
+						BcelWorld.makeBcelType(mungerSig.getReturnType()), 
 						adviceMethodName,
 						parameterTypes,
 						new String[0],
@@ -2208,7 +2213,7 @@ public class BcelShadow extends Shadow {
 			advice.append(
 		        Utility.createConversion(
 		            getFactory(), 
-		            BcelWorld.makeBcelType(munger.getSignature().getReturnType()), 
+		            BcelWorld.makeBcelType(mungerSig.getReturnType()), 
 		            extractedMethod.getReturnType()));
 		    if (! isFallsThrough()) {
 		        advice.append(InstructionFactory.createReturn(extractedMethod.getReturnType()));
