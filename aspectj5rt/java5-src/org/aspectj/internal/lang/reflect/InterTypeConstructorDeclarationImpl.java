@@ -77,5 +77,24 @@ public class InterTypeConstructorDeclarationImpl extends
 		}
 		return ret;
 	}
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(java.lang.reflect.Modifier.toString(getModifiers()));
+		sb.append(" ");
+		sb.append(this.targetTypeName);
+		sb.append(".new");
+		sb.append("(");
+		AjType<?>[] pTypes = getParameterTypes();
+		for(int i = 0; i < (pTypes.length - 1); i++) {
+			sb.append(pTypes[i].toString());
+			sb.append(", ");
+		}
+		if (pTypes.length > 0) {
+			sb.append(pTypes[pTypes.length -1].toString());
+		}
+		sb.append(")");
+		return sb.toString();
+	}
 
 }

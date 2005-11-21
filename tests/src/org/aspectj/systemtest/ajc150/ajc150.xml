@@ -66,6 +66,20 @@
 		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java" options="-1.5"></compile>
 		<run class="ReflectOnAjcCompiledPointcuts" classpath="../lib/bcel/bcel.jar"/>
 	</ajc-test>
+	
+	<ajc-test dir="java5/reflection" pr="114322" title="reflection on abstract ITDs (Billing example)">
+		<compile files="ReflectBilling.java,Billing.aj" options="-1.5"/>
+		<run class="ReflectBilling">
+			<stdout>
+				<line text="public abstract long Connection.callRate()"/>
+				<line text="public long LongDistance.callRate()"/>
+				<line text="public long Local.callRate()"/>
+				<line text="public void Customer.addCharge(long)"/>
+				<line text="public Customer Connection.payer"/>
+				<line text="public long Customer.totalCharge"/>
+			</stdout>
+		</run>
+	</ajc-test>
 	    
     <ajc-test dir="bugs150/pr114436" title="ClassFormatError binary weaving perthis">
      <compile files="SimpleTrace.aj,ConcreteSimpleTracing.aj" outjar="aspects.jar"/>

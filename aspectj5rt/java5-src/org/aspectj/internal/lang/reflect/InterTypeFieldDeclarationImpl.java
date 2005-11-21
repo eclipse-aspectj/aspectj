@@ -74,5 +74,17 @@ public class InterTypeFieldDeclarationImpl extends InterTypeDeclarationImpl
 	public Type getGenericType() {
 		return this.genericType;
 	}
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(java.lang.reflect.Modifier.toString(getModifiers()));
+		sb.append(" ");
+		sb.append(getType().toString());
+		sb.append(" ");
+		sb.append(this.targetTypeName);
+		sb.append(".");
+		sb.append(getName());
+		return sb.toString();
+	}
 
 }

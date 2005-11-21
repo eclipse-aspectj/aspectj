@@ -585,7 +585,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 			List<InterTypeMethodDeclaration> itdms = new ArrayList<InterTypeMethodDeclaration>();
 			Method[] baseMethods = clazz.getDeclaredMethods();
 			for (Method m : baseMethods) {
-				if (!m.getName().contains("ajc$interMethod$")) continue;
+				if (!m.getName().contains("ajc$interMethodDispatch1$")) continue;
 				if (m.isAnnotationPresent(ajcITD.class)) {
 					ajcITD ann = m.getAnnotation(ajcITD.class);
 					InterTypeMethodDeclaration itdm = 

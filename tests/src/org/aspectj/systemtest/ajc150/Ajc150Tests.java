@@ -721,6 +721,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testPointcutParsingOfCompiledPointcuts() {
 	  runTest("pointcut parsing with ajc compiled pointcut references");
   }
+  
+  public void testReflectionOfAbstractITDs() {
+	  runTest("reflection on abstract ITDs (Billing example)");
+  }
 
   /*
    * Load-time weaving bugs

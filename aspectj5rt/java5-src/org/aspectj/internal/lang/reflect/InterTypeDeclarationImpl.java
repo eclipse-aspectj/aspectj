@@ -21,7 +21,7 @@ import org.aspectj.lang.reflect.InterTypeDeclaration;
 public class InterTypeDeclarationImpl implements InterTypeDeclaration {
 
 	private AjType<?> declaringType;
-	private String targetTypeName;
+	protected String targetTypeName;
 	private AjType<?> targetType;
 	private int modifiers;
 	
