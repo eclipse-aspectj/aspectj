@@ -16,6 +16,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ReferenceType;
@@ -69,9 +70,9 @@ public class ReflectionWorld extends World {
 			// must be on 1.4 or earlier
 		} catch(IllegalAccessException ex) {
 			// not so good
-			throw new RuntimeException("AspectJ internal error",ex);
+			throw new BCException("AspectJ internal error",ex);
 		} catch(InstantiationException ex) {
-			throw new RuntimeException("AspectJ internal error",ex);
+			throw new BCException("AspectJ internal error",ex);
 		}
 	}
 	
