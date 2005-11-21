@@ -52,14 +52,19 @@
     <ajc-test dir="bugs150" pr="112756" title="pointcut expression containing 'assert'">
      <compile files="Pr112756.aj" options="-warn:assertIdentifier -Xdev:Pinpoint"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="117296" title="self bounding generic types">
      <compile files="PropertySupport.java" options="-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="113368" title="thisJoinPointStaticPart in if test">
+    		<compile files="Pr113368.aj"/>
+    		<run class="Pr113368"/>
+    </ajc-test>
 
 	<ajc-test dir="java5/reflection" title="pointcut parsing with ajc compiled pointcut references">
-		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java"></compile>
-		<run class="ReflectOnAjcCompiledPointcuts" classpath=".;../lib/aspectj/aspectjtools.jar"/>
+		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java" options="-1.5"></compile>
+		<run class="ReflectOnAjcCompiledPointcuts" classpath="../lib/bcel/bcel.jar"/>
 	</ajc-test>
 	    
     <ajc-test dir="bugs150/pr114436" title="ClassFormatError binary weaving perthis">
