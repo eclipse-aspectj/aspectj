@@ -77,6 +77,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void testVarargsITD_pr110906() { runTest("ITD varargs problem");}
   public void testBadRenderer_pr86903() { runTest("bcelrenderer bad");}
+ // public void testSelfBoundGenerics_pr117296() { runTest("self bounding generic types");}
   
   public void testIncompatibleClassChangeError_pr113630_1() {runTest("IncompatibleClassChangeError - errorscenario");}
   public void testIncompatibleClassChangeError_pr113630_2() {runTest("IncompatibleClassChangeError - workingscenario");}
@@ -731,7 +732,18 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testXlintMessageForImproperAnnotationType_pr115252_Parameter() {runTest("xlint message for improper annotated parameter type");}  
   public void testXlintMessageForImproperAnnotationType_pr115252_Throws() {runTest("xlint message for improper annotated throws pattern");}  
   public void testXlintMessageForImproperAnnotationType_pr115252_MoreThanOne() {runTest("xlint message for more than one improper annotated parameter type");}  
-    
+  
+  public void testDeclareAtTypeInStructureModel_pr115607() {
+      AsmManager.setReporting("c:/debug.txt",true,true,true,true);
+	  runTest("declare at type appears correctly in structure model");  
+  	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+  	  IProgramElement pe = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_TYPE,"declare @type: Simple : @I");  	 	 
+  	  assertNotNull("Couldn't find 'declare @type: Simple : @I' element in the tree",pe);
+  	  List l = AsmManager.getDefault().getRelationshipMap().get(pe);	
+	  assertNotNull("Should have some relationships but does not",l);
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

@@ -52,6 +52,10 @@
     <ajc-test dir="bugs150" pr="112756" title="pointcut expression containing 'assert'">
      <compile files="Pr112756.aj" options="-warn:assertIdentifier -Xdev:Pinpoint"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" pr="117296" title="self bounding generic types">
+     <compile files="PropertySupport.java" options="-1.5"/>
+    </ajc-test>
 
 	<ajc-test dir="java5/reflection" title="pointcut parsing with ajc compiled pointcut references">
 		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java"></compile>
@@ -1120,6 +1124,11 @@
             <!-- xlint warning that was put in as part of fix for pr115252 -->
         	<message kind="warning" line="28" text="does not match because annotation @MethodAndFieldAnnotation has @Target{ElementType.FIELD,ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
         	<message kind="warning" line="38" text="does not match because annotation @TypeAndMethodAnnotation has @Target{ElementType.METHOD,ElementType.TYPE} [Xlint:unmatchedTargetKind]"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs150" title="declare at type appears correctly in structure model">
+        <compile files="pr115607.java" options="-1.5,-emacssym">
         </compile>
     </ajc-test>
 

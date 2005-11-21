@@ -88,6 +88,8 @@ public class EclipseSourceLocation implements ISourceLocation {
                 } else {
                     column = 0;
                 }
+            } else if (0 < lineNumber && lineNumber == result.lineSeparatorPositions.length) {
+            	column = 0;
             }
         }
 		return column;
