@@ -240,10 +240,12 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			TypeBinding parentBinding = parentRef.resolvedType;
 			if (parentBinding instanceof SourceTypeBinding) {
 				SourceTypeBinding parentSTB = (SourceTypeBinding) parentBinding;
-				TypeDeclaration parentDecl = parentSTB.scope.referenceContext;
-				if (isAspect(parentDecl) && !Modifier.isAbstract(parentDecl.modifiers)) {
-					typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart,typeDecl.sourceEnd,"cannot extend a concrete aspect");
-				}			
+				if (parentSTB.scope!=null) { // scope is null if its a binarytypebinding (in AJ world, thats a subclass of SourceTypeBinding)
+					TypeDeclaration parentDecl = parentSTB.scope.referenceContext; 
+					if (isAspect(parentDecl) && !Modifier.isAbstract(parentDecl.modifiers)) {
+						typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart,typeDecl.sourceEnd,"cannot extend a concrete aspect");
+					}			
+				}
 			}
 		}
 

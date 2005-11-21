@@ -289,6 +289,17 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("PR92837");
 	}
 	
+	public void testPr114875() {
+		initialiseProject("pr114875");
+		build("pr114875");
+		alter("pr114875","inc1");
+		build("pr114875");
+		checkWasntFullBuild();
+		alter("pr114875","inc2");
+		build("pr114875");
+		checkWasntFullBuild();
+	}
+	
 /*	public void testPr111779() {
 		super.VERBOSE=true;
 		initialiseProject("PR111779");
