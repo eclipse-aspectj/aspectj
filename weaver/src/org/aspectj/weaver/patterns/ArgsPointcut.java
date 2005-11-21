@@ -48,10 +48,12 @@ public class ArgsPointcut extends NameBindingPointcut {
 	private static final String ASPECTJ_SYNTHETIC_SIGNATURE_PREFIX = "Lorg/aspectj/runtime/internal/";
 	
 	private TypePatternList arguments;
+	private String stringRepresentation;
 	
 	public ArgsPointcut(TypePatternList arguments) {
 		this.arguments = arguments;
 		this.pointcutKind = ARGS;
+		this.stringRepresentation = "args" + arguments.toString() + "";
 	}
 
     public TypePatternList getArguments() {
@@ -288,9 +290,9 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 	
 	public String toString() {
-		return "args" + arguments.toString() + "";
+		return this.stringRepresentation;
 	}
-
+	
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

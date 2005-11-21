@@ -54,6 +54,7 @@ import org.aspectj.weaver.ast.Var;
 public class ThisOrTargetPointcut extends NameBindingPointcut {
 	private boolean isThis;
 	private TypePattern type;
+	private String declarationText;
 
 	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
 	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
@@ -69,6 +70,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		this.isThis = isThis;
 		this.type = type;
 		this.pointcutKind = THIS_OR_TARGET;
+		this.declarationText = (isThis ? "this(" : "target(") + type + ")";
 	}
 
     public TypePattern getType() {
@@ -166,7 +168,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
         return result;
     }
 	public String toString() {
-		return (isThis ? "this(" : "target(") + type + ")";
+		return declarationText;
 	}
 
 	/** 

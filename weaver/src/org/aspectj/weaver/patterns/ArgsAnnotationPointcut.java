@@ -42,6 +42,7 @@ import org.aspectj.weaver.ast.Var;
 public class ArgsAnnotationPointcut extends NameBindingPointcut {
 
 	private AnnotationPatternList arguments;
+	private String declarationText;
 
 	/**
 	 * 
@@ -50,6 +51,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 		super();
 		this.arguments = arguments;
 		this.pointcutKind = ATARGS;
+		buildDeclarationText();
 	}
 
     public AnnotationPatternList getArguments() {
@@ -225,11 +227,13 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    public String toString() {
+    private void buildDeclarationText() {
         StringBuffer buf = new StringBuffer("@args");
         buf.append(arguments.toString());
-        return buf.toString();
+        this.declarationText = buf.toString();
     }
+    
+    public String toString() { return this.declarationText; }
 
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);

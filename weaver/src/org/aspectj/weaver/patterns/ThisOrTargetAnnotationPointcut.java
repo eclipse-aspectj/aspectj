@@ -46,6 +46,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	private boolean alreadyWarnedAboutDEoW = false;
 	private ExactAnnotationTypePattern annotationTypePattern;
 	private ShadowMunger munger;
+	private String declarationText;
 	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
 	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
 	static {
@@ -64,6 +65,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 		this.isThis = isThis;
 		this.annotationTypePattern = type;
 		this.pointcutKind = ATTHIS_OR_TARGET;
+		buildDeclarationText();
 	}
 
 	public ThisOrTargetAnnotationPointcut(boolean isThis, ExactAnnotationTypePattern type, ShadowMunger munger) {
@@ -266,14 +268,16 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    public String toString() {
+    private void buildDeclarationText() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(isThis ? "@this(" : "@target(");
 		String annPatt = annotationTypePattern.toString();
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);
 		buf.append(")");
-		return buf.toString();   
+		this.declarationText = buf.toString();   
 	}
+    
+    public String toString() { return this.declarationText; }
 
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);

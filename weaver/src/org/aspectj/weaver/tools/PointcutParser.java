@@ -239,13 +239,13 @@ public class PointcutParser {
              for (int i = 0; i < formalParameters.length; i++) {
             	 arity.put(i, i);
              }             
-        	 pc = pc.concretize(declaringTypeForResolution, declaringTypeForResolution, arity);
+             pc = pc.concretize(declaringTypeForResolution, declaringTypeForResolution, arity);
              validateAgainstSupportedPrimitives(pc,expression); // again, because we have now followed any ref'd pcuts
              pcExpr = new PointcutExpressionImpl(pc,expression,formalParameters,getWorld());
          } catch (ParserException pEx) {
              throw new IllegalArgumentException(buildUserMessageFromParserException(expression,pEx));
          } catch (ReflectionWorld.ReflectionWorldException rwEx) {
-        	 throw new IllegalArgumentException(rwEx.getMessage());
+        	 	throw new IllegalArgumentException(rwEx.getMessage());
          }
          return pcExpr;
     }

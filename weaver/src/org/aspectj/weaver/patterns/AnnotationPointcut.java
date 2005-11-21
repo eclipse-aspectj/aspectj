@@ -65,16 +65,19 @@ public class AnnotationPointcut extends NameBindingPointcut {
 
 	private ExactAnnotationTypePattern annotationTypePattern;
     private ShadowMunger munger = null; // only set after concretization
+    private String declarationText; 
 	
 	public AnnotationPointcut(ExactAnnotationTypePattern type) {
 		super();
 		this.annotationTypePattern =  type;
 		this.pointcutKind = Pointcut.ANNOTATION;
+		buildDeclarationText();
 	}
 
 	public AnnotationPointcut(ExactAnnotationTypePattern type, ShadowMunger munger) {
 		this(type);
 		this.munger = munger;
+		buildDeclarationText();
 	}
 
     public ExactAnnotationTypePattern getAnnotationTypePattern() {
@@ -252,13 +255,17 @@ public class AnnotationPointcut extends NameBindingPointcut {
         return result;
     }
 	
-	public String toString() {
+	public void buildDeclarationText() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("@annotation(");
 		String annPatt = annotationTypePattern.toString();
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);
 		buf.append(")");
-		return buf.toString();
+		this.declarationText = buf.toString();
+	}
+	
+	public String toString() {
+		return this.declarationText;
 	}
 
     public Object accept(PatternNodeVisitor visitor, Object data) {

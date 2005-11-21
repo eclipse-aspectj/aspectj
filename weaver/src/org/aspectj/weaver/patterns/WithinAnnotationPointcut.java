@@ -45,6 +45,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 
 	private AnnotationTypePattern annotationTypePattern;
 	private ShadowMunger munger;
+	private String declarationText;
 	
 	/**
 	 * 
@@ -53,6 +54,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 		super();
 		this.annotationTypePattern = type;
 		this.pointcutKind = ATWITHIN;
+		buildDeclarationText();
 	}
 	
 	public WithinAnnotationPointcut(AnnotationTypePattern type, ShadowMunger munger) {
@@ -195,13 +197,17 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    public String toString() {
+    private void buildDeclarationText() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("@within(");
 		String annPatt = annotationTypePattern.toString();
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);
 		buf.append(")");
-		return buf.toString();
+		this.declarationText = buf.toString();
+    }
+    
+    public String toString() {
+    		return this.declarationText;
     }
 
     public Object accept(PatternNodeVisitor visitor, Object data) {

@@ -47,6 +47,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	private ExactAnnotationTypePattern annotationTypePattern;
     private ShadowMunger munger = null; // only set after concretization
+    private String declarationText;
     private static final Set matchedShadowKinds = new HashSet();
     static {
     	matchedShadowKinds.addAll(Shadow.ALL_SHADOW_KINDS);
@@ -60,6 +61,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 		super();
 		this.annotationTypePattern =  type;
 		this.pointcutKind = Pointcut.ATWITHINCODE;
+		buildDeclarationText();
 	}
 
 	public WithinCodeAnnotationPointcut(ExactAnnotationTypePattern type, ShadowMunger munger) {
@@ -202,14 +204,16 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
         return result;
     }
 	
-	public String toString() {
+	private void buildDeclarationText() {
 	    StringBuffer buf = new StringBuffer();
 		buf.append("@withincode(");
 		String annPatt = annotationTypePattern.toString();
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);
 		buf.append(")");
-		return buf.toString();
+		this.declarationText = buf.toString();
 	}
+	
+	public String toString() { return this.declarationText; }
 
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
