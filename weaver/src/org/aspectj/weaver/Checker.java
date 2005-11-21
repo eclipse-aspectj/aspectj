@@ -48,7 +48,7 @@ public class Checker extends ShadowMunger {
 		throw new RuntimeException("illegal state");
 	}
 	
-	public ShadowMunger parameterizeWith(Map typeVariableMap) {
+	public ShadowMunger parameterizeWith(ResolvedType declaringType,Map typeVariableMap) {
 		Checker ret = new Checker(
 							getPointcut().parameterizeWith(typeVariableMap),
 							getStart(),

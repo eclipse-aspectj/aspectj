@@ -64,7 +64,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     	return pointcut.match(shadow).maybeTrue();
     }
     
-    public abstract ShadowMunger parameterizeWith(Map typeVariableMap); 
+    public abstract ShadowMunger parameterizeWith(ResolvedType declaringType,Map typeVariableMap); 
     
 	public int fallbackCompareTo(Object other) {
 		return toString().compareTo(toString());

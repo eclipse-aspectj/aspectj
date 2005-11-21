@@ -684,7 +684,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			if (munger != null) {
 				if (this.isParameterizedType()) {
 					//munger.setPointcut(munger.getPointcut().parameterizeWith(typeVariableMap));
-					munger = munger.parameterizeWith(typeVariableMap);
+					munger = munger.parameterizeWith(this,typeVariableMap);
 					if (munger instanceof Advice) {
 						Advice advice = (Advice) munger;
 						// update to use the parameterized signature...

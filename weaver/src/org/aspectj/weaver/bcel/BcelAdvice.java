@@ -87,9 +87,16 @@ public class BcelAdvice extends Advice {
 		return ret;
 	}
 	
-	public ShadowMunger parameterizeWith(Map typeVariableMap) {
+	public ShadowMunger parameterizeWith(ResolvedType declaringType,Map typeVariableMap) {
 		Pointcut pc = getPointcut().parameterizeWith(typeVariableMap);
-		BcelAdvice ret = new BcelAdvice(this.attribute,pc,this.signature,this.concreteAspect);
+		
+		BcelAdvice ret = null;
+		Member adviceSignature = signature;		
+		// allows for around advice where the return value is a type variable (see pr115250)
+		if (signature instanceof ResolvedMember) {
+			adviceSignature = ((ResolvedMember)signature).parameterizedWith(declaringType.getTypeParameters(),declaringType,declaringType.isParameterizedType());
+		}
+		ret = new BcelAdvice(this.attribute,pc,adviceSignature,this.concreteAspect);
 		return ret;
 	}
 	
@@ -503,7 +510,16 @@ public class BcelAdvice extends Advice {
     
     public InstructionList getNonTestAdviceInstructions(BcelShadow shadow) {
         return new InstructionList(
-            Utility.createInvoke(shadow.getFactory(), shadow.getWorld(), getSignature()));
+            Utility.createInvoke(shadow.getFactory(), shadow.getWorld(), getOriginalSignature()));
+    }
+    
+    public Member getOriginalSignature() {
+    	Member sig = getSignature();
+    	if (sig instanceof ResolvedMember) {
+    		ResolvedMember rsig = (ResolvedMember)sig;
+    		if (rsig.hasBackingGenericMember()) return rsig.getBackingGenericMember();
+    	}
+    	return sig;
     }
 
     public InstructionList getTestInstructions(
