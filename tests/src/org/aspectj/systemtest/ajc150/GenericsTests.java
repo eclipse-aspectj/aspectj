@@ -195,7 +195,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testPR91267_1() {
 		runTest("NPE using generic methods in aspects 1");
 	}
+	
+	public void testParameterizedTypeAndAroundAdvice_PR115250() {
+		runTest("parameterized type and around advice");
+	}
 
+	public void testParameterizedTypeAndAroundAdvice_PR115250_2() {
+		runTest("parameterized type and around advice - 2");
+	}
+	
 	public void testPR91267_2() {
 		runTest("NPE using generic methods in aspects 2");
 	}
