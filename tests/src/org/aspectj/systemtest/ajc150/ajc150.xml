@@ -69,12 +69,24 @@
     </ajc-test>
   
     <ajc-test dir="bugs150" title="parameterized type and around advice">
-        <compile files="pr115250.aj" options="-1.5 -Xlint:ignore"/>
-        <run class="pr115250"/>
-          <!--stderr>
-            <line text="Advice running"/>
+        <compile files="pr115250.aj" options="-1.5 -Xlint:ignore">
+          <!-- this first error happens twice, once for each piece of around advice -->
+          <message kind="error" line="10" text="incompatible return type applying to constructor-execution(void pr115250$C.&lt;init&gt;())"/>
+          <message kind="error" line="17" text="incompatible return type applying to constructor-execution(void pr115250$C.&lt;init&gt;())"/>
+          <message kind="error" line="27" text="incompatible return type applying to constructor-execution(void pr115250$C.&lt;init&gt;())"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150" title="parameterized type and around advice - 2">
+        <compile files="pr115250_2.aj" options="-1.5 -Xlint:ignore -showWeaveInfo">
+          	<message kind="weave" text="Join point 'method-execution(pr115250_2$C pr115250_2$C.foo())' in Type 'pr115250_2$C' (pr115250_2.aj:7) advised by around advice from 'pr115250_2$A' (pr115250_2.aj:22)"/>
+			<message kind="weave" text="Join point 'method-execution(pr115250_2$C pr115250_2$C.foo())' in Type 'pr115250_2$C' (pr115250_2.aj:7) advised by around advice from 'pr115250_2$Normal' (pr115250_2.aj:12)"/>
+		</compile>
+        <run class="pr115250_2">
+          <stderr>
+            <line text="funky advice running"/>
           </stderr>
-        </run-->
+        </run>
     </ajc-test>
       
     <ajc-test dir="bugs150/pr115788" title="parser exception">
