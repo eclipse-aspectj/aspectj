@@ -280,9 +280,13 @@ public abstract class Advice extends ShadowMunger {
 	}
 	
 	public UnresolvedType getDeclaringAspect() {
-		return signature.getDeclaringType();
+		return getOriginalSignature().getDeclaringType();
 	}
 
+	protected Member getOriginalSignature() { 
+		return signature;
+	}
+	
 	protected String extraParametersToString() {
 		if (getExtraParameterFlags() == 0) {
 			return "";
