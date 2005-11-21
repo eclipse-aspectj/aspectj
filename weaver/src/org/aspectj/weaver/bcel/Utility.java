@@ -125,8 +125,12 @@ public class Utility {
             kind = Constants.INVOKEVIRTUAL;
         }
 
+        UnresolvedType targetType = signature.getDeclaringType();
+        if (targetType.isParameterizedType()) {
+        	targetType = targetType.resolve(world).getGenericType();
+        }
         return fact.createInvoke(
-            signature.getDeclaringType().getName(),
+            targetType.getName(),
             signature.getName(),
             BcelWorld.makeBcelType(signature.getReturnType()),
             BcelWorld.makeBcelTypes(signature.getParameterTypes()),
