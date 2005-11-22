@@ -52,9 +52,10 @@
     <ajc-test dir="bugs150" pr="112756" title="pointcut expression containing 'assert'">
      <compile files="Pr112756.aj" options="-warn:assertIdentifier -Xdev:Pinpoint"/>
     </ajc-test>
-
-    <ajc-test dir="bugs150" pr="117296" title="self bounding generic types">
+    
+    <ajc-test dir="bugs150/pr117296" pr="117296" title="self bounding generic types">
      <compile files="PropertySupport.java" options="-1.5"/>
+     <run class="PropertySupport"/>
     </ajc-test>
     
     <ajc-test dir="bugs150" pr="113368" title="thisJoinPointStaticPart in if test">

@@ -277,8 +277,7 @@ public class EclipseFactory {
 			TypeVariable[] tVars = new TypeVariable[tvbs.length];
 			for (int i = 0; i < tvbs.length; i++) {
 				TypeVariableBinding eclipseV = tvbs[i];
-				String name = CharOperation.charToString(eclipseV.sourceName); 
-				tVars[i] = new TypeVariable(name,fromBinding(eclipseV.superclass()),fromBindings(eclipseV.superInterfaces()));
+				tVars[i] = ((TypeVariableReference)fromTypeVariableBinding(eclipseV)).getTypeVariable();				
 			}
 			//TODO asc generics - temporary guard....
 			if (!(binding instanceof SourceTypeBinding))
@@ -339,6 +338,8 @@ public class EclipseFactory {
 		UnresolvedTypeVariableReferenceType ret = new UnresolvedTypeVariableReferenceType();
 		typeVariableBindingsInProgress.put(aTypeVariableBinding,ret);
 		
+		TypeVariable tv = new TypeVariable(name);
+		ret.setTypeVariable(tv);
 		// Dont set any bounds here, you'll get in a recursive mess
 		// TODO -- what about lower bounds??
 		UnresolvedType superclassType    = fromBinding(aTypeVariableBinding.superclass());
@@ -346,7 +347,6 @@ public class EclipseFactory {
 		for (int i = 0; i < superinterfaces.length; i++) {
 			superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
 		}
-		TypeVariable tv = new TypeVariable(name,superclassType,superinterfaces);
 		tv.setUpperBound(superclassType);
 		tv.setAdditionalInterfaceBounds(superinterfaces);
 		tv.setRank(aTypeVariableBinding.rank);
@@ -357,7 +357,6 @@ public class EclipseFactory {
 			tv.setDeclaringElementKind(TypeVariable.TYPE);
 //		    //	tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
 		}
-		ret.setTypeVariable(tv);
 		if (aTypeVariableBinding.declaringElement instanceof MethodBinding) 
 			typeVariablesForThisMember.put(new String(aTypeVariableBinding.sourceName),ret);
 		typeVariableBindingsInProgress.remove(aTypeVariableBinding);

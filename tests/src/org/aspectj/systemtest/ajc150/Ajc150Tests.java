@@ -77,7 +77,6 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void testVarargsITD_pr110906() { runTest("ITD varargs problem");}
   public void testBadRenderer_pr86903() { runTest("bcelrenderer bad");}
- // public void testSelfBoundGenerics_pr117296() { runTest("self bounding generic types");}
   
   public void testIncompatibleClassChangeError_pr113630_1() {runTest("IncompatibleClassChangeError - errorscenario");}
   public void testIncompatibleClassChangeError_pr113630_2() {runTest("IncompatibleClassChangeError - workingscenario");}

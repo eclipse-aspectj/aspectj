@@ -221,6 +221,11 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericsOverrides_3() { runTest("generics and ITD overrides - 3"); }
 	public void testGenericsOverrides_4() { runTest("generics and ITD overrides - 4"); }
 	
+
+    public void testSelfBoundGenerics_pr117296() { 
+	    runTest("self bounding generic types");
+    }
+	
 	public void testPR88606() {
 		runTest("Parameterized types on introduced fields not correctly recognized");
 	}
