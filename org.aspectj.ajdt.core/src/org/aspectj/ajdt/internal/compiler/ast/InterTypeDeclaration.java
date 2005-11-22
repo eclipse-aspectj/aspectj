@@ -50,7 +50,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	protected TypeReference onType;
 	protected ReferenceBinding onTypeBinding;
 	protected ResolvedTypeMunger munger;
-	protected int declaredModifiers;
+	public int declaredModifiers; // so others can see (these differ from the modifiers in the superclass)
 	protected char[] declaredSelector;
 	
 	/** 
