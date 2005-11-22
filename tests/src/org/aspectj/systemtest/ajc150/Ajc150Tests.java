@@ -725,6 +725,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testReflectionOfAbstractITDs() {
 	  runTest("reflection on abstract ITDs (Billing example)");
   }
+  
+  public void testDeclareSoftWithAdviceExecution() {
+	  runTest("declare soft and adviceexecution");
+  }
 
   /*
    * Load-time weaving bugs

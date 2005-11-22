@@ -166,8 +166,9 @@ public class EclipseShadow extends Shadow {
 				return null;
 				//throw new RuntimeException("unimplemented: " + e);
 			}
-			return new EclipseShadow(world, kind,
-					world.makeResolvedMember(e.binding), astNode, context);
+			return
+				new EclipseShadow(world, kind,
+					world.makeResolvedMember(e.binding,kind), astNode, context);
 		} else if (astNode instanceof TypeDeclaration) {
 			return new EclipseShadow(world, Shadow.StaticInitialization,
 							new MemberImpl(Member.STATIC_INITIALIZATION, 

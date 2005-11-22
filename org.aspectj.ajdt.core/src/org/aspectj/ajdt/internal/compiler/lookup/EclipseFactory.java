@@ -448,6 +448,12 @@ public class EclipseFactory {
 	public ResolvedMember makeResolvedMember(MethodBinding binding) {
 		return makeResolvedMember(binding, binding.declaringClass);
 	}
+	
+	public ResolvedMember makeResolvedMember(MethodBinding binding, Shadow.Kind shadowKind) {
+		Member.Kind memberKind = binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD;
+		if (shadowKind == Shadow.AdviceExecution) memberKind = Member.ADVICE;
+		return makeResolvedMember(binding,binding.declaringClass,memberKind);
+	}
 
     /** 
      * Conversion from a methodbinding (eclipse) to a resolvedmember (aspectj) is now done
@@ -481,8 +487,13 @@ public class EclipseFactory {
 		}
 		return result;
 	}
-
+	
 	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
+		return makeResolvedMember(binding,declaringType,
+				binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD);
+	}
+
+	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType, Member.Kind memberKind) {
 		//System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
 
         // Convert the type variables and store them
@@ -501,7 +512,7 @@ public class EclipseFactory {
 		ResolvedType realDeclaringType = world.resolve(fromBinding(declaringType));
 		if (realDeclaringType.isRawType()) realDeclaringType = realDeclaringType.getGenericType();
 		ResolvedMemberImpl ret =  new ResolvedMemberImpl(
-			binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD,
+			memberKind,
 			realDeclaringType,
 			binding.modifiers,
 			fromBinding(binding.returnType),
