@@ -730,6 +730,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("declare soft and adviceexecution");
   }
 
+  public void testDeclareSoftWithExclusions() {
+	  runTest("declare soft and exclusions");
+  }
+  
   /*
    * Load-time weaving bugs
    */

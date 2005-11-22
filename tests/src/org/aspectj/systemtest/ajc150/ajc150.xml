@@ -84,7 +84,12 @@
 	<ajc-test dir="bugs150" title="declare soft and adviceexecution" pr="103051">
 		<compile files="Pr103051.aj" options="-Xdev:Pinpoint"/>
 	</ajc-test>
-	    
+
+	<ajc-test dir="bugs150" title="declare soft and exclusions" pr="103097">
+		<compile files="Pr103097.aj"/>
+		<run class="Pr103097"/>
+	</ajc-test>
+		    
     <ajc-test dir="bugs150/pr114436" title="ClassFormatError binary weaving perthis">
      <compile files="SimpleTrace.aj,ConcreteSimpleTracing.aj" outjar="aspects.jar"/>
      <compile files="TestClass.java" aspectpath="aspects.jar"/>
