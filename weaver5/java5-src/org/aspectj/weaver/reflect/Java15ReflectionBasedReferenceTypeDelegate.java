@@ -79,8 +79,9 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	
 	public AnnotationX[] getAnnotations() {
 		// AMC - we seem not to need to implement this method...
-		throw new UnsupportedOperationException("getAnnotations on Java15ReflectionBasedReferenceTypeDelegate is not implemented yet");
-		//return super.getAnnotations();
+	 	//throw new UnsupportedOperationException("getAnnotations on Java15ReflectionBasedReferenceTypeDelegate is not implemented yet");
+	    // FIXME is this the right implementation in the reflective case?
+		return super.getAnnotations();
 	}
 	
 	public ResolvedType[] getAnnotationTypes() {
@@ -127,7 +128,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	}
 	
 	public ResolvedType getSuperclass() {
-		if (superclass == null)
+		if (superclass == null && getBaseClass()!=Object.class) // superclass of Object is null
 		  superclass = fromType(this.getBaseClass().getGenericSuperclass());
 		 return superclass;
 	}
@@ -267,7 +268,24 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	
 	private ResolvedType fromType(Type aType) {
 		if (aType instanceof Class) {
-			return getWorld().resolve(((Class)aType).getName());
+			Class clazz = (Class)aType;
+			String name = clazz.getName();
+			/**
+			 * getName() can return:
+			 * 
+			 * 1. If this class object represents a reference type that is not an array type 
+			 *    then the binary name of the class is returned
+			 * 2. If this class object represents a primitive type or void, then the 
+			 *    name returned is a String equal to the Java language keyword corresponding to the primitive type or void.
+			 * 3. If this class object represents a class of arrays, then the internal form 
+			 *    of the name consists of the name of the element type preceded by one or more '[' characters representing the depth of the array nesting.
+			 */
+			if (clazz.isArray()) {
+				UnresolvedType ut = UnresolvedType.forSignature(name);
+				return getWorld().resolve(ut);
+			} else {
+				return getWorld().resolve(name);
+			}
 		} else if (aType instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) aType;
 			ResolvedType baseType = fromType(pt.getRawType());

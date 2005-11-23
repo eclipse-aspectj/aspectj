@@ -11,17 +11,20 @@
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.World;
 
 import junit.framework.TestCase;
 
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
+
 public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 
-	private World world;
+	protected ReflectionWorld world;
 	private ResolvedType objectType;
+	private ResolvedType classType;
+	private ResolvedType enumType;
+
 	
 	public void testIsAspect() {
 		assertFalse(objectType.isAspect());
@@ -86,31 +89,50 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 	}
 	
 	public void testGetSuperclass() {
-		assertNull(objectType.getSuperclass());
+		assertTrue("Superclass of object should be null, but it is: "+objectType.getSuperclass(),objectType.getSuperclass()==null);
 		assertEquals(objectType,world.resolve("java.lang.Class").getSuperclass());
 		ResolvedType d = world.resolve("reflect.tests.D");
 		assertEquals(world.resolve("reflect.tests.C"),d.getSuperclass());
 	}
 	
+
+	protected int findMethod(String name, ResolvedMember[] methods) {
+		for (int i=0; i<methods.length; i++) {
+			if (name.equals(methods[i].getName())) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public void testGetDeclaredMethods() {
 		ResolvedMember[] methods = objectType.getDeclaredMethods();
-		assertEquals(13,methods.length);
+		assertEquals(Object.class.getDeclaredMethods().length + Object.class.getDeclaredConstructors().length, methods.length);
 		
 		ResolvedType c = world.resolve("reflect.tests.C");
 		methods = c.getDeclaredMethods();
 		assertEquals(3,methods.length);
-		assertEquals("foo",methods[0].getName());
-		assertEquals(world.resolve("java.lang.String"),methods[0].getReturnType());
-		assertEquals(1, methods[0].getParameterTypes().length);
-		assertEquals(objectType,methods[0].getParameterTypes()[0]);
-		assertEquals(1,methods[0].getExceptions().length);
-		assertEquals(world.resolve("java.lang.Exception"),methods[0].getExceptions()[0]);
-		assertEquals("bar",methods[1].getName());
-		assertEquals("init",methods[2].getName());
+		int idx = findMethod("foo", methods);
+		assertTrue(idx > -1);
+		
+		assertEquals(world.resolve("java.lang.String"),methods[idx].getReturnType());
+		assertEquals(1, methods[idx].getParameterTypes().length);
+		assertEquals(objectType,methods[idx].getParameterTypes()[0]);
+		assertEquals(1,methods[idx].getExceptions().length);
+		assertEquals(world.resolve("java.lang.Exception"),methods[idx].getExceptions()[0]);
+		int baridx = findMethod("bar", methods);
+		int initidx = findMethod("init", methods);
+		assertTrue(baridx > -1);
+		assertTrue(initidx > -1);
+		assertTrue(baridx != initidx && baridx != idx && idx <= 2 && initidx <= 2 && baridx <= 2);
 		
 		ResolvedType d = world.resolve("reflect.tests.D");
 		methods = d.getDeclaredMethods();
 		assertEquals(2,methods.length);
+
+		classType = world.resolve("java.lang.Class");
+		methods = classType.getDeclaredMethods();
+		assertEquals(Class.class.getDeclaredMethods().length + Class.class.getDeclaredConstructors().length, methods.length); 
 	}
 	
 	public void testGetDeclaredFields() {
@@ -135,7 +157,7 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 		interfaces = d.getDeclaredInterfaces();
 		assertEquals(1,interfaces.length);
 		assertEquals(world.resolve("java.io.Serializable"),interfaces[0]);
-}
+    }
 	
 	public void testGetDeclaredPointcuts() {
 		ResolvedMember[] pointcuts = objectType.getDeclaredPointcuts();
