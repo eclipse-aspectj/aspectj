@@ -82,6 +82,9 @@ import org.aspectj.lang.annotation.*;
               public pointcut addingChild(Parent p, Child c) :
                 execution(* Parent.addChild(Child)) && this(p) && args(c);
                 
+              // Something a little more simple...
+              public pointcut addingChild2(Parent p): execution(* Parent.addChild(Child)) && this(p);
+              
               /**
                 * Matches at a removeChild join point for the parent type P and child type C
                 */    
@@ -93,8 +96,10 @@ import org.aspectj.lang.annotation.*;
 aspect GenericAspectX extends ParentChildRelationship<Top,Bottom> { 
 
     // Advice to trigger weave infos
-    before(Top p,Bottom c): ParentChildRelationship.addingChild(p,c) {}
-    before(Top p,Bottom c): ParentChildRelationship.removingChild(p,c) {}
+	before(Top p): ParentChildRelationship.addingChild2(p) {}
+	
+//    before(Top p,Bottom c): ParentChildRelationship.addingChild(p,c) {}
+//    before(Top p,Bottom c): ParentChildRelationship.removingChild(p,c) {}
 
   public static void main(String []argv) {
 
