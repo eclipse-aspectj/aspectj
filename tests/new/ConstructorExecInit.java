@@ -20,7 +20,7 @@ aspect A {
     after (Object target) : execution(*.new(..)) && target(target) && !within(A) { 
         Tester.event("execution");
     }
-    after () returning (Object target) : initialization(new(..)) && !this(A) { 
+    after () returning : initialization(new(..)) && !this(A) { 
         Tester.event("initialization");
     }
 }

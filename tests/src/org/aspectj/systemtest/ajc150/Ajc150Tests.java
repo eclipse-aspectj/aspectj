@@ -734,6 +734,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("declare soft and exclusions");
   }
   
+  public void testReturningObjectBinding() {
+	  runTest("returning(Object) binding");
+  }
+  
   /*
    * Load-time weaving bugs
    */

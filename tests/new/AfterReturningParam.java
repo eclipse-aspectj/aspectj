@@ -4,7 +4,8 @@ public class AfterReturningParam {
     public static void main(String[] args) {
         
         AfterReturningParam p = new AfterReturningParam();
-        Tester.checkAndClearEvents(new String[] { "constr exec as Object null" });
+ //       Tester.checkAndClearEvents(new String[] { "constr exec as Object null" });
+ //        see pr 103157 for reason why this no longer matches
 
         p.mInt();
         Tester.checkAndClearEvents(new String[] { "int as Object 2" });
@@ -36,6 +37,7 @@ aspect A {
         callEvent("constr exec as constd object", o); 
     }
     after() returning (Object o) : execution(AfterReturningParam.new()) {  // CW 38 in 1.0.4, does match
+    	                                                                       // in 1.5 does not match - no return value for this jp
         callEvent("constr exec as Object", o);
     }
     after() returning (String o) : execution(AfterReturningParam.new()) {  // CW 41 in 1.0.4, no match

@@ -35,7 +35,7 @@ abstract aspect A {
 	 //&& initialization(new(..)) ;
          && initialization(I.new(..)) ;
 
-     after() returning(Object o): j() {
+     after() returning: j() {
 	 Tester.note("advised default constructor");
 	 count++;
      }

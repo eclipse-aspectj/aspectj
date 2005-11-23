@@ -60,7 +60,8 @@
     
     <ajc-test dir="bugs150" pr="113368" title="thisJoinPointStaticPart in if test">
     		<compile files="Pr113368.aj"/>
-    		<run class="Pr113368"/>
+    		<run class="Pr113368">
+    		</run>
     </ajc-test>
     
     <ajc-test dir="bugs150/pr87525" pr="87525" title="privilege problem with switch">
@@ -84,6 +85,19 @@
 				<line text="public void Customer.addCharge(long)"/>
 				<line text="public Customer Connection.payer"/>
 				<line text="public long Customer.totalCharge"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs150" pr="103157" title="returning(Object) binding">
+		<compile files="Pr103157.aj"/>
+		<run class="Pr103157">
+			<stdout>
+				<line text="returning from staticinit"/>
+				<line text="returning from preinit"/>
+				<line text="returning from set"/>
+				<line text="returning from cons exe"/>
+				<line text="returning from init"/>
 			</stdout>
 		</run>
 	</ajc-test>

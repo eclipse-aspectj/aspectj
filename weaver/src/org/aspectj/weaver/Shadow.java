@@ -280,6 +280,20 @@ public abstract class Shadow {
 			return !isTargetSameAsThis();
 		}
 		
+		/**
+		 * These shadow kinds have return values that can be bound in
+		 * after returning(Dooberry doo) advice.
+		 * @return
+		 */
+		public boolean hasReturnValue() {
+			return 
+				this == MethodCall ||
+				this == ConstructorCall ||
+				this == MethodExecution ||
+				this == FieldGet ||
+				this == AdviceExecution;
+		}
+		
 		
 		/**
 		 * These are all the shadows that contains other shadows within them and

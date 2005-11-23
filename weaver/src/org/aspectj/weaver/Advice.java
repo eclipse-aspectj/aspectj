@@ -120,7 +120,9 @@ public abstract class Advice extends ShadowMunger {
     		if (hasExtraParameter() && kind == AdviceKind.AfterReturning) {
     			ResolvedType resolvedExtraParameterType = getExtraParameterType().resolve(world);
     			ResolvedType shadowReturnType = shadow.getReturnType().resolve(world);
-    			boolean matches = resolvedExtraParameterType.isConvertableFrom(shadowReturnType);
+    			boolean matches = 
+    				(resolvedExtraParameterType.isConvertableFrom(shadowReturnType) &&
+    				 shadow.getKind().hasReturnValue());
     			if (matches && resolvedExtraParameterType.isParameterizedType()) {
     				maybeIssueUncheckedMatchWarning(resolvedExtraParameterType,shadowReturnType,shadow,world);
     			}
