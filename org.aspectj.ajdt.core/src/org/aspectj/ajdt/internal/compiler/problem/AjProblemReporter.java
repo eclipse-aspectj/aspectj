@@ -435,6 +435,19 @@ public class AjProblemReporter extends ProblemReporter {
     }
     
     /**
+     * The method verifier is a bit 'keen' and doesn't cope well with ITDMs which are
+     * of course to be considered a 'default' implementation if the target type doesn't
+     * supply one.  This test may not be complete - it is possible that it should read if
+     * *either* is an ITD...but I dont have a testcase that shows that is required. yet.
+     * (pr115788)
+     */
+    public void duplicateInheritedMethods(SourceTypeBinding type, MethodBinding inheritedMethod1, MethodBinding inheritedMethod2) {
+    	if (!(inheritedMethod1 instanceof InterTypeMethodBinding && 
+    	      inheritedMethod2 instanceof InterTypeMethodBinding)) 
+    		super.duplicateInheritedMethods(type,inheritedMethod1,inheritedMethod2);
+    }
+    
+    /**
      * All problems end up routed through here at some point...
      */
     public IProblem createProblem(char[] fileName, int problemId, String[] problemArguments, String[] messageArguments, int severity, int problemStartPosition, int problemEndPosition, int lineNumber) {

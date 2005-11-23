@@ -81,7 +81,10 @@ public class EclipseFactory {
 	private boolean xSerializableAspects;
 	private World world;
 	
+	// We can get clashes if we don't treat raw types differently - we end up looking
+	// up a raw and getting the generic type (pr115788)
 	private Map/*UnresolvedType, TypeBinding*/ typexToBinding = new HashMap();
+	private Map/*UnresolvedType, TypeBinding*/ rawTypeXToBinding = new HashMap();
 	//XXX currently unused
 //	private Map/*TypeBinding, ResolvedType*/ bindingToResolvedTypeX = new HashMap();
 	
@@ -447,7 +450,7 @@ public class EclipseFactory {
 	public ResolvedMember makeResolvedMember(MethodBinding binding) {
 		return makeResolvedMember(binding, binding.declaringClass);
 	}
-	
+
 	public ResolvedMember makeResolvedMember(MethodBinding binding, Shadow.Kind shadowKind) {
 		Member.Kind memberKind = binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD;
 		if (shadowKind == Shadow.AdviceExecution) memberKind = Member.ADVICE;
@@ -486,7 +489,7 @@ public class EclipseFactory {
 		}
 		return result;
 	}
-	
+
 	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
 		return makeResolvedMember(binding,declaringType,
 				binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD);
@@ -556,21 +559,31 @@ public class EclipseFactory {
 		TypeBinding ret = null;
 		
 		// looking up type variables can get us into trouble
-		if (!typeX.isTypeVariableReference())
-			ret = (TypeBinding)typexToBinding.get(typeX);
-			
+		if (!typeX.isTypeVariableReference()) {
+			if (typeX.isRawType()) {
+				ret = (TypeBinding)rawTypeXToBinding.get(typeX);
+			} else {
+				ret = (TypeBinding)typexToBinding.get(typeX);
+			}
+		}
+
 		if (ret == null) {
 			ret = makeTypeBinding1(typeX);
-			// FIXME asc keep type variables *out* of the map for now, they go in typeVariableToTypeBinding
-			if (!(typeX instanceof BoundedReferenceType) && !(typeX instanceof UnresolvedTypeVariableReferenceType)) 
-			  typexToBinding.put(typeX, ret);
+			if (!(typeX instanceof BoundedReferenceType) && 
+				!(typeX instanceof UnresolvedTypeVariableReferenceType)
+				) {
+			  if (typeX.isRawType()) {
+				  rawTypeXToBinding.put(typeX,ret);
+			  } else {
+				  typexToBinding.put(typeX, ret);
+			  }
+			}
 		}
 		if (ret == null) {
 			System.out.println("can't find: " + typeX);
 		}
 		return ret;
 	}
-	
 	// When converting a parameterized type from our world to the eclipse world, these get set so that
 	// resolution of the type parameters may known in what context it is occurring (pr114744)
 	private ReferenceBinding baseTypeForParameterizedType;
