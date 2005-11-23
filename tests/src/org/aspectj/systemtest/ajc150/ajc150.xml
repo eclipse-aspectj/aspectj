@@ -37,6 +37,11 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs150" pr="114054" title="pertarget and negated pointcut">
+     <compile files="Pr114054.aj" options=""/>
+     <run class="Pr114054"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs150" pr="104220" title="adviceexecution join point toString forms">
       <compile files="Pr104220.aj"/>
       <run class="Pr104220">

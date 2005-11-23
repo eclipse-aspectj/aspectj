@@ -739,6 +739,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("returning(Object) binding");
   }
   
+  public void testPerTargetAndNegation() {
+	  runTest("pertarget and negated pointcut");
+  }
+  
   /*
    * Load-time weaving bugs
    */

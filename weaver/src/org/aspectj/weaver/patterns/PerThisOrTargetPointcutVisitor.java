@@ -113,11 +113,14 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
     }
 
     public Object visit(NotPointcut node, Object data) {
-        TypePattern negated = getPerTypePointcut(node.getNegatedPointcut());
-        if (MAYBE.equals(negated)) {
-            return MAYBE;
-        }
-        return new NotTypePattern(negated);
+//        TypePattern negated = getPerTypePointcut(node.getNegatedPointcut());
+//        if (MAYBE.equals(negated)) {
+//            return MAYBE;
+//        }
+//        return new NotTypePattern(negated);
+    	    // AMC - the only safe thing to return here is maybe...
+    		// see for example pr114054
+    	return MAYBE;
     }
 
     public Object visit(ThisOrTargetAnnotationPointcut node, Object data) {
