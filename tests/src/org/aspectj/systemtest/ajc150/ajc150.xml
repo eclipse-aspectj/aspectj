@@ -53,6 +53,11 @@
      <compile files="Pr112756.aj" options="-warn:assertIdentifier -Xdev:Pinpoint"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr117681" pr="117681" title="at declare parents">
+     <compile files="Test.java,TestAspect.java,Audit.java,AuditImpl.java" options="-1.5"/>
+     <run class="Test"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs150/pr117296" pr="117296" title="self bounding generic types">
      <compile files="PropertySupport.java" options="-1.5"/>
      <run class="PropertySupport"/>

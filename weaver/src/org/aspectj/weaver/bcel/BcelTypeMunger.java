@@ -1107,6 +1107,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             body.append(Utility.createGet(fact, munger.getDelegate()));
 
             int pos = 0;
+    		if (!introduced.isStatic()) { // skip 'this'
+    		  //body.append(InstructionFactory.createThis());
+    		  pos++;
+    		}
             Type[] paramTypes = BcelWorld.makeBcelTypes(introduced.getParameterTypes());
             for (int i = 0, len = paramTypes.length; i < len; i++) {
                 Type paramType = paramTypes[i];
