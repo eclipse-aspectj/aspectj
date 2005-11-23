@@ -27,6 +27,19 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs150" pr="114495" title="parameterized pointcut and advice">
+    		<compile files="Pr114495.aj" options="-1.5">
+    			<message kind="warning" line="3" text="going()"/>
+    		</compile>
+    		<run class="Pr114495">
+    			<stdout>
+    				<line text="A.going()"/>
+    				<line text="AA.going()"/>
+    			</stdout>
+    		</run>
+    </ajc-test>acj
+    
+    
     <ajc-test dir="bugs150/pr114005" title="Annotated ITDFs - 2">
       <compile files="Declaration2.java" options="-1.5"/>
       <run class="Declaration2">

@@ -743,6 +743,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("pertarget and negated pointcut");
   }
   
+  public void testParameterizedPointcutAndAdvice() {
+	  runTest("parameterized pointcut and advice");
+  }
+  
   /*
    * Load-time weaving bugs
    */

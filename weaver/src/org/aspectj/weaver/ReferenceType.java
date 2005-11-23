@@ -475,21 +475,6 @@ public class ReferenceType extends ResolvedType {
 		return declares;
 	}
 	
-	private boolean ajMembersNeedParameterization() {
-		if (isParameterizedType()) return true;
-		if (getSuperclass() != null) return ((ReferenceType)getSuperclass()).ajMembersNeedParameterization();
-		return false;
-	}
-	
-	private Map getAjMemberParameterizationMap() {
-		Map myMap = getMemberParameterizationMap();
-		if (myMap.size() == 0) {
-			// might extend a parameterized aspect that we also need to consider...
-			if (getSuperclass() != null) return ((ReferenceType)getSuperclass()).getAjMemberParameterizationMap();
-		}
-		return myMap;
-	}
-	
 	protected Collection getTypeMungers() { return delegate.getTypeMungers(); }
 	
 	protected Collection getPrivilegedAccesses() { return delegate.getPrivilegedAccesses(); }

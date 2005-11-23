@@ -93,7 +93,7 @@ public class BcelAdvice extends Advice {
 		BcelAdvice ret = null;
 		Member adviceSignature = signature;		
 		// allows for around advice where the return value is a type variable (see pr115250)
-		if (signature instanceof ResolvedMember) {
+		if (signature instanceof ResolvedMember && signature.getDeclaringType().isGenericType()) {
 			adviceSignature = ((ResolvedMember)signature).parameterizedWith(declaringType.getTypeParameters(),declaringType,declaringType.isParameterizedType());
 		}
 		ret = new BcelAdvice(this.attribute,pc,adviceSignature,this.concreteAspect);

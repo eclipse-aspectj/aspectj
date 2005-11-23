@@ -678,11 +678,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		List l = new ArrayList();
 		ResolvedMember[] methods = getDeclaredMethods();
 		if (isParameterizedType()) methods = getGenericType().getDeclaredMethods();
-		Map typeVariableMap = getMemberParameterizationMap();
+		Map typeVariableMap = getAjMemberParameterizationMap();
 		for (int i=0, len = methods.length; i < len; i++) {
 			ShadowMunger munger = methods[i].getAssociatedShadowMunger();
 			if (munger != null) {
-				if (this.isParameterizedType()) {
+				if (ajMembersNeedParameterization()) {
 					//munger.setPointcut(munger.getPointcut().parameterizeWith(typeVariableMap));
 					munger = munger.parameterizeWith(this,typeVariableMap);
 					if (munger instanceof Advice) {
@@ -2002,6 +2002,21 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			parameterizedWithAMemberTypeVariable=FuzzyBoolean.NO;
 		}
 		return parameterizedWithAMemberTypeVariable.alwaysTrue();
+	}
+
+	protected boolean ajMembersNeedParameterization() {
+		if (isParameterizedType()) return true;
+		if (getSuperclass() != null) return ((ReferenceType)getSuperclass()).ajMembersNeedParameterization();
+		return false;
+	}
+
+	protected Map getAjMemberParameterizationMap() {
+		Map myMap = getMemberParameterizationMap();
+		if (myMap.size() == 0) {
+			// might extend a parameterized aspect that we also need to consider...
+			if (getSuperclass() != null) return ((ReferenceType)getSuperclass()).getAjMemberParameterizationMap();
+		}
+		return myMap;
 	}
 	    
 }
