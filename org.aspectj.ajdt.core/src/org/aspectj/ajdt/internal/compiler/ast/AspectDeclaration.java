@@ -979,7 +979,7 @@ public class AspectDeclaration extends TypeDeclaration {
         	ParameterizedTypeBinding pBinding = (ParameterizedTypeBinding)binding;
         	if (pBinding.type instanceof SourceTypeBinding) {
 	        	SourceTypeBinding sourceSc = (SourceTypeBinding)pBinding.type;
-	        	if (sourceSc.scope.referenceContext instanceof AspectDeclaration) {
+	        	if (sourceSc.scope != null && sourceSc.scope.referenceContext instanceof AspectDeclaration) {
 					perClause = ((AspectDeclaration)sourceSc.scope.referenceContext).perClause;
 				} else {
 					return null;
