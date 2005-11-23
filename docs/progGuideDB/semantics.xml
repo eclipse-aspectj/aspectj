@@ -1249,8 +1249,8 @@ aspect A {
 </programlisting>
 
       <para>
-        Formal parameter lists can use the wildcard <literal>..</literal> to
-        indicate zero or more arguments, so
+        The wildcard <literal>..</literal> indicates zero or more 
+        parameters, so
       </para>
 
 <programlisting>
@@ -1782,6 +1782,16 @@ ModifiersPattern =
         around( <replaceable>Formals</replaceable> )</literal>
       </listitem>
     </itemizedlist>
+    <para>
+      and where <replaceable>Formal</replaceable> refers to a
+        variable binding like those used for method parameters,
+        of the form 
+        <literal><replaceable>Type</replaceable></literal>
+        <literal><replaceable>Variable-Name</replaceable></literal>,
+        and <replaceable>Formals</replaceable> refers to a comma-delimited
+        list of <replaceable>Formal</replaceable>.
+    </para>
+
 
     <para>
       Advice defines crosscutting behavior.  It is defined in terms of
@@ -2952,7 +2962,9 @@ ModifiersPattern =
       <para>
         Unlike class expressions, aspects are not instantiated with
         <literal>new</literal> expressions.  Rather, aspect instances are
-        automatically created to cut across programs.
+        automatically created to cut across programs.  A program
+          can get a reference to an aspect instance using the static
+          method <literal>aspectOf(..)</literal>.
       </para>
 
       <para>
@@ -2964,6 +2976,9 @@ ModifiersPattern =
         The criteria used to determine how an aspect is instantiated
         is inherited from its parent aspect.  If the aspect has no parent
         aspect, then by default the aspect is a singleton aspect.
+        How an aspect is instantiated controls the form of the 
+        <literal>aspectOf(..)</literal> method defined on the
+        concrete aspect class.
       </para>
 
       <sect3>
@@ -2978,8 +2993,8 @@ ModifiersPattern =
           By default (or by using the modifier <literal>issingleton()</literal>)
           an aspect has exactly one instance that cuts across the entire
           program.  That instance is available at any time during program
-          execution with the static method <literal>aspectOf()</literal>
-          defined on the aspect
+          execution from the static method <literal>aspectOf()</literal>
+          automatically defined on all concrete aspects
           -- so, in the above examples, <literal>A.aspectOf()</literal> will
           return A's instance.  This aspect instance is created as the aspect's
           classfile is loaded.
