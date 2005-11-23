@@ -24,6 +24,7 @@ import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedFieldBinding;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
@@ -34,7 +35,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
@@ -415,6 +418,18 @@ public class AjProblemReporter extends ProblemReporter {
     	// don't output unused warnings for pointcuts...
     	if (!(methodDecl instanceof PointcutDeclaration))
     			super.unusedPrivateMethod(methodDecl);
+    }
+    
+    public void caseExpressionMustBeConstant(Expression expression) {
+    	if (expression instanceof QualifiedNameReference) {
+    		QualifiedNameReference qnr = (QualifiedNameReference)expression;
+    		if (qnr.otherBindings!=null && qnr.otherBindings.length>0 && qnr.otherBindings[0] instanceof PrivilegedFieldBinding) {
+    			super.signalError(expression.sourceStart,expression.sourceEnd,"Fields accessible due to an aspect being privileged can not be used in switch statements");
+    			referenceContext.tagAsHavingErrors();
+    			return;
+    		}
+    	}
+    	super.caseExpressionMustBeConstant(expression);
     }
     
     public void unusedArgument(LocalDeclaration localDecl) {

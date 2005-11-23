@@ -62,6 +62,12 @@
     		<compile files="Pr113368.aj"/>
     		<run class="Pr113368"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150/pr87525" pr="87525" title="privilege problem with switch">
+   		<compile files="A.java,B.java">
+   		  <message kind="error" line="5" text="Fields accessible due to an aspect being privileged can not be used in switch statements"/>
+   		</compile>
+    </ajc-test>
 
 	<ajc-test dir="java5/reflection" title="pointcut parsing with ajc compiled pointcut references">
 		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java" options="-1.5"></compile>
