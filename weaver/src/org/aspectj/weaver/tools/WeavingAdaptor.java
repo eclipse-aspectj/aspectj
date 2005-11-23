@@ -186,15 +186,16 @@ public class WeavingAdaptor {
      * @exception IOException weave failed
 	 */
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
-		if (shouldWeave(name, bytes)) {
-            //System.out.println("WeavingAdaptor.weaveClass " + name);
-			info("weaving '" + name + "'");
-			bytes = getWovenBytes(name, bytes);
-		} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
-            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
-            info("weaving '" + name + "'");
-            bytes = getAtAspectJAspectBytes(name, bytes);
-        }
+		if (enabled) {
+			if (shouldWeave(name, bytes)) {
+				info("weaving '" + name + "'");
+				bytes = getWovenBytes(name, bytes);
+			} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
+	            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
+	            info("weaving '" + name + "'");
+	            bytes = getAtAspectJAspectBytes(name, bytes);
+	        }
+		}
 
         return bytes;
 	}
@@ -205,7 +206,7 @@ public class WeavingAdaptor {
      */
     private boolean shouldWeave (String name, byte[] bytes) {
 		name = name.replace('/','.');
-		boolean b = enabled && !generatedClasses.containsKey(name) && shouldWeaveName(name);
+		boolean b = !generatedClasses.containsKey(name) && shouldWeaveName(name);
         return b && accept(name, bytes);
 //        && shouldWeaveAnnotationStyleAspect(name);
 //        // we recall shouldWeaveAnnotationStyleAspect as we need to add aspectOf methods for @Aspect anyway

@@ -12,32 +12,9 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import org.aspectj.asm.IRelationship;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.ICrossReferenceHandler;
-import org.aspectj.weaver.Lint;
-import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.Lint.Kind;
-import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.Utility;
-import org.aspectj.weaver.bcel.BcelObjectType;
-import org.aspectj.weaver.loadtime.definition.Definition;
-import org.aspectj.weaver.loadtime.definition.DocumentParser;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.tools.GeneratedClassHandler;
-import org.aspectj.weaver.tools.WeavingAdaptor;
-
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -46,6 +23,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import org.aspectj.asm.IRelationship;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.ICrossReferenceHandler;
+import org.aspectj.weaver.Lint;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.Lint.Kind;
+import org.aspectj.weaver.bcel.BcelObjectType;
+import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.Utility;
+import org.aspectj.weaver.loadtime.definition.Definition;
+import org.aspectj.weaver.loadtime.definition.DocumentParser;
+import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.weaver.tools.GeneratedClassHandler;
+import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -99,6 +98,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         	weavingContext = wContext ;
         }
 
+        List definitions = parseDefinitions(loader);
+        if (!enabled) {
+        	return;
+        }
+        
         bcelWorld = new BcelWorld(
                 loader, messageHandler, new ICrossReferenceHandler() {
                     public void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind, boolean runtimeTest) {
@@ -106,7 +110,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     }
                 }
         );
-
 //            //TODO this AJ code will call
 //            //org.aspectj.apache.bcel.Repository.setRepository(this);
 //            //ie set some static things
@@ -116,14 +119,13 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         weaver = new BcelWeaver(bcelWorld);
 
         // register the definitions
-        registerDefinitions(weaver, loader);
+        registerDefinitions(weaver, loader, definitions);
+        messageHandler = bcelWorld.getMessageHandler();
 
-        // AV - see #113511 - not sure it is good to skip message handler
-        if (enabled) {
-            messageHandler = bcelWorld.getMessageHandler();
-            // after adding aspects
-            weaver.prepareForWeave();
-        }
+        //bcelWorld.setResolutionLoader(loader.getParent());//(ClassLoader)null);//
+        
+        // after adding aspects
+        weaver.prepareForWeave();
     }
 
     /**
@@ -132,17 +134,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @param weaver
      * @param loader
      */
-    private void registerDefinitions(final BcelWeaver weaver, final ClassLoader loader) {
-        try {
-            MessageUtil.info(messageHandler, "register classloader " + getClassLoaderName(loader));
+    private List parseDefinitions(final ClassLoader loader) {
+        List definitions = new ArrayList();
+    	try {
+            info("register classloader " + getClassLoaderName(loader));
             //TODO av underoptimized: we will parse each XML once per CL that see it
-            List definitions = new ArrayList();
 
             //TODO av dev mode needed ? TBD -Daj5.def=...
             if (ClassLoader.getSystemClassLoader().equals(loader)) {
                 String file = System.getProperty("aj5.def", null);
                 if (file != null) {
-                    MessageUtil.info(messageHandler, "using (-Daj5.def) " + file);
+                    info("using (-Daj5.def) " + file);
                     definitions.add(DocumentParser.parse((new File(file)).toURL()));
                 }
             }
@@ -156,26 +158,29 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
     			while (xmls.hasMoreElements()) {
     			    URL xml = (URL) xmls.nextElement();
-    			    MessageUtil.info(messageHandler, "using " + xml.getFile());
+    			    info("using " + xml.getFile());
     			    definitions.add(DocumentParser.parse(xml));
     			}
     		}
-
-            // still go thru if definitions is empty since we will configure
-            // the default message handler in there
-            registerOptions(weaver, loader, definitions);
-
-            // AV - see #113511
-            if (!definitions.isEmpty()) {
-                registerAspectExclude(weaver, loader, definitions);
-                registerAspectInclude(weaver, loader, definitions);
-                registerAspects(weaver, loader, definitions);
-                registerIncludeExclude(weaver, loader, definitions);
-                registerDump(weaver, loader, definitions);
-            } else {
+    		if (definitions.isEmpty()) {
                 enabled = false;// will allow very fast skip in shouldWeave()
         		info("no configuration found. Disabling weaver for class loader " + getClassLoaderName(loader));
-            }
+    		}
+        } catch (Exception e) {
+            enabled = false;// will allow very fast skip in shouldWeave()
+            warn("parse definitions failed",e);
+        }
+		return definitions;
+    }
+        
+    private void registerDefinitions(final BcelWeaver weaver, final ClassLoader loader, List definitions) {
+    	try {
+            registerOptions(weaver, loader, definitions);
+            registerAspectExclude(weaver, loader, definitions);
+            registerAspectInclude(weaver, loader, definitions);
+            registerAspects(weaver, loader, definitions);
+            registerIncludeExclude(weaver, loader, definitions);
+            registerDump(weaver, loader, definitions);
         } catch (Exception e) {
             enabled = false;// will allow very fast skip in shouldWeave()
             warn("register definition failed",e);
@@ -586,5 +591,4 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     public void flushGeneratedClasses(){
     	generatedClasses = new HashMap();
     }
-    
 }
