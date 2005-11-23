@@ -40,7 +40,7 @@ public class StringToType {
 	throws ClassNotFoundException {
 		try {
 			if (typeName.indexOf("<") == -1) {
-				return AjTypeSystem.getAjType(Class.forName(typeName));
+				return AjTypeSystem.getAjType(Class.forName(typeName,false,classScope.getClassLoader()));
 			} else {
 				return makeParameterizedType(typeName,classScope);
 			}
@@ -60,7 +60,7 @@ public class StringToType {
 	throws ClassNotFoundException {
 		int paramStart = typeName.indexOf('<');
 		String baseName = typeName.substring(0, paramStart);
-		final Class baseClass = Class.forName(baseName);
+		final Class baseClass = Class.forName(baseName,false,classScope.getClassLoader());
 		int paramEnd = typeName.lastIndexOf('>');
 		String params = typeName.substring(paramStart+1,paramEnd);
 		final Type[] typeParams = commaSeparatedListToTypeArray(params,classScope);

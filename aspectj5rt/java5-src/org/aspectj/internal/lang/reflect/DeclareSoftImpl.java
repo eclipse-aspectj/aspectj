@@ -28,11 +28,12 @@ public class DeclareSoftImpl implements DeclareSoft {
 	private String missingTypeName;
 	
 	
-	public DeclareSoftImpl(AjType declaringType, String pcut, String exceptionTypeName) {
+	public DeclareSoftImpl(AjType<?> declaringType, String pcut, String exceptionTypeName) {
 		this.declaringType = declaringType;
 		this.pointcut = new PointcutExpressionImpl(pcut);
 		try {
-			this.exceptionType = AjTypeSystem.getAjType(Class.forName(exceptionTypeName));
+			ClassLoader cl = declaringType.getJavaClass().getClassLoader();
+			this.exceptionType = AjTypeSystem.getAjType(Class.forName(exceptionTypeName,false,cl));
 		} catch (ClassNotFoundException ex) {
 			this.missingTypeName = exceptionTypeName;
 		}

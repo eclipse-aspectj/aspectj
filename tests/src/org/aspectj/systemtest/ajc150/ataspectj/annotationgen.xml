@@ -150,15 +150,15 @@
     </ajc-test>          
 
    <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decp">
-        <compile files="DeclareParentsTest.aj" options="-1.5">
+        <compile files="DeclareParentsTest.aj" options="-1.5, -outxml">
         </compile>
-        <run class="DeclareParentsTest"/>
+        <run class="DeclareParentsTest" ltw=""/>
     </ajc-test>          
     
       <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decp 2">
-        <compile files="DeclareParentsTestAdvanced.aj" options="-1.5">
+        <compile files="DeclareParentsTestAdvanced.aj" options="-1.5, -outxml">
         </compile>
-        <run class="a.b.c.DeclareParentsTestAdvanced"/>
+        <run class="a.b.c.DeclareParentsTestAdvanced" ltw=""/>
     </ajc-test>
     
     <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decs">
@@ -180,8 +180,8 @@
     </ajc-test>
     
     <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for itds">
-        <compile files="ITDTest.aj" options="-1.5">
+        <compile files="ITDTest.aj" options="-1.5, -outxml">
         </compile>
-        <run class="a.b.c.ITDTest"/>
+        <run class="a.b.c.ITDTest" ltw=""/>
     </ajc-test>    
 </suite>
