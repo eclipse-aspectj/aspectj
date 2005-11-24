@@ -265,7 +265,11 @@ public class AjState {
 	private boolean changed(List oldPath, List newPath, boolean checkClassFiles, File oldOutputLocation) {
 		if (oldPath == null) oldPath = new ArrayList();
 		if (newPath == null) newPath = new ArrayList();
-		try {oldOutputLocation = oldOutputLocation.getCanonicalFile();} catch(IOException ex) { /* we did our best...*/ }
+		try {
+			if (oldOutputLocation != null) {
+				oldOutputLocation = oldOutputLocation.getCanonicalFile();
+			}
+		} catch(IOException ex) { /* we did our best...*/ }
 		if (oldPath.size() != newPath.size()) {
 			return true;
 		}
