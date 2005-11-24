@@ -128,7 +128,7 @@ public class Options {
             weaverOption.messageHandler.dontIgnore(IMessage.WARNING);
         }
         if (weaverOption.verbose) {
-            weaverOption.messageHandler.dontIgnore(IMessage.DEBUG);
+            weaverOption.messageHandler.dontIgnore(IMessage.INFO);
         }
         if (weaverOption.showWeaveInfo) {
             weaverOption.messageHandler.dontIgnore(IMessage.WEAVEINFO);

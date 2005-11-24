@@ -3,6 +3,6 @@
 	    <aspect name="AbstractAspect"/>
 	</aspects>
     
-    <weaver options="-showWeaveInfo -verbose"/>
+    <weaver options="-showWeaveInfo"/>
 </aspectj>
 	

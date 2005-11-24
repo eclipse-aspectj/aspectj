@@ -73,8 +73,20 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("Ajc Aspect1 LTW Aspect2 -Xreweavable");
     }
 
-    public void testLTWLog() {
-        runTest("LTW Log");
+    public void testLTWLogSilent() {
+        runTest("LTW Log silent");
+    }
+
+    public void testLTWLogVerbose() {
+        runTest("LTW Log verbose");
+    }
+
+    public void testLTWLogVerboseAndShow() {
+        runTest("LTW Log verbose and showWeaveInfo");
+    }
+
+    public void testLTWLogMessageHandlerClass() {
+        runTest("LTW Log messageHandlerClass");
     }
 
     public void testLTWUnweavable() {

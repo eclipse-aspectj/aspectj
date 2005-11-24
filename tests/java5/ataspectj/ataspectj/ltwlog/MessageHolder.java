@@ -28,6 +28,7 @@ public class MessageHolder extends DefaultMessageHandler {
     static List s_messages = new ArrayList();
 
     public MessageHolder() {
+    	System.out.println("MessageHolder.MessageHolder()");
     }
 
     public boolean handleMessage(IMessage message) throws AbortException {

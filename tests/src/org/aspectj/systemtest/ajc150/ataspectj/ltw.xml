@@ -94,8 +94,88 @@
         <ant file="ajc-ant.xml" target="ltw.Aspect2MainTest" verbose="true"/>
     </ajc-test>
 
-    <ajc-test dir="java5/ataspectj" title="LTW Log">
-        <ant file="ajc-ant.xml" target="ltwlog.LTWLog" verbose="true"/>
+    <ajc-test dir="java5/ataspectj" title="LTW Log silent">
+    	<compile
+    		files="ataspectj/ltwlog/Main.java"
+    		options="-1.5"
+    	/>
+    	<compile
+    		files="ataspectj/ltwlog/Aspect1.java"
+    		options="-1.5 -XnoWeave"
+    	>
+        </compile>	
+        <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-silent.xml">
+        	<stdout>
+ 				<line text="execution(Main.target())"/>
+            </stdout>
+        	<stderr>
+            </stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="LTW Log verbose">
+    	<compile
+    		files="ataspectj/ltwlog/Main.java"
+    		options="-1.5"
+    	/>
+    	<compile
+    		files="ataspectj/ltwlog/Aspect1.java"
+    		options="-1.5 -XnoWeave"
+    	>
+        </compile>	
+        <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verbose.xml">
+        	<stdout>
+ 				<line text="execution(Main.target())"/>
+            </stdout>
+        	<stderr>
+				<line text="info register aspect ataspectj.ltwlog.Aspect1"/>
+				<line text="info weaving 'ataspectj.ltwlog.Main'"/>
+				<line text="info weaving 'ataspectj.ltwlog.Aspect1'"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="LTW Log verbose and showWeaveInfo">
+    	<compile
+    		files="ataspectj/ltwlog/Main.java"
+    		options="-1.5"
+    	/>
+    	<compile
+    		files="ataspectj/ltwlog/Aspect1.java"
+    		options="-1.5 -XnoWeave"
+    	>
+        </compile>	
+        <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verboseandshow.xml">
+        	<stdout>
+ 				<line text="execution(Main.target())"/>
+            </stdout>
+        	<stderr>
+				<line text="info register aspect ataspectj.ltwlog.Aspect1"/>
+				<line text="info weaving 'ataspectj.ltwlog.Main'"/>
+				<line text="weaveinfo Join point 'method-execution(void ataspectj.ltwlog.Main.target())' in Type 'ataspectj.ltwlog.Main' (Main.java:22) advised by before advice from 'ataspectj.ltwlog.Aspect1' (Aspect1.java)"/>
+				<line text="info weaving 'ataspectj.ltwlog.Aspect1'"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="LTW Log messageHandlerClass">
+    	<compile
+    		files="ataspectj/ltwlog/Main.java, ataspectj/ltwlog/MessageHolder.java"
+    		options="-1.5"
+    	/>
+    	<compile
+    		files="ataspectj/ltwlog/Aspect1.java"
+    		options="-1.5 -XnoWeave"
+    	>
+        </compile>	
+        <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-messagehandler.xml">
+        	<stdout>
+				<line text="MessageHolder.MessageHolder()"/>
+ 				<line text="execution(Main.target())"/>
+            </stdout>
+        	<stderr>
+            </stderr>
+        </run>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW Unweavable">

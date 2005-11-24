@@ -1,5 +1,4 @@
 <aspectj>
-    <weaver options="-XmessageHandlerClass:ataspectj.ltwlog.MessageHolder"/>
     <aspects>
         <aspect name="ataspectj.ltwlog.Aspect1"/>
     </aspects>
