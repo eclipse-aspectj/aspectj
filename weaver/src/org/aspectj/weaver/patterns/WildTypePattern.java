@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
@@ -532,8 +533,24 @@ public class WildTypePattern extends TypePattern {
 	}		
 
 	public TypePattern parameterizeWith(Map typeVariableMap) {
+		NamePattern[] newNamePatterns = new NamePattern[namePatterns.length];
+		for(int i=0; i<namePatterns.length;i++) { newNamePatterns[i] = namePatterns[i]; }
+		if (newNamePatterns.length == 1) {
+			String simpleName = newNamePatterns[0].maybeGetSimpleName();
+			if (simpleName != null) {
+				if (typeVariableMap.containsKey(simpleName)) {
+					String newName = ((ReferenceType)typeVariableMap.get(simpleName)).getName().replace('$','.');
+					StringTokenizer strTok = new StringTokenizer(newName,".");
+					newNamePatterns = new NamePattern[strTok.countTokens()];
+					int index = 0;
+					while(strTok.hasMoreTokens()) {
+						newNamePatterns[index++] = new NamePattern(strTok.nextToken());
+ 					}
+				}
+			}
+		}
 		WildTypePattern ret = new WildTypePattern(
-				namePatterns,
+				newNamePatterns,
 				includeSubtypes,
 				dim,
 				isVarArgs,

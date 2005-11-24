@@ -147,8 +147,8 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 		ret.setSourceContext(getSourceContext());
 		ret.setPosition(getStart(),getEnd());
 		ret.setParameterNames(getParameterNames());
-		//return ret;
-		return this;
+		return ret;
+		//return this;
 	}
 	
 	// for testing

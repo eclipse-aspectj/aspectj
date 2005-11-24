@@ -194,6 +194,7 @@ public class ReferencePointcut extends Pointcut {
 			return;
 		}
 				
+		//if (onType == null) onType = pointcutDef.getDeclaringType();
 		if (onType != null) {
 			if (onType.isParameterizedType()) {
 				// build a type map mapping type variable names in the generic type to
