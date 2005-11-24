@@ -15,6 +15,8 @@ package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -113,6 +115,39 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 	 * Called when asking a parameterized super-aspect for its pointcuts.
 	 */
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType, boolean isParameterized) {
+		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
+		if (isParameterized && (typeVariables.length != typeParameters.length)) {
+			throw new IllegalStateException("Wrong number of type parameters supplied");
+		}
+		Map typeMap = new HashMap();
+		boolean typeParametersSupplied = typeParameters!=null && typeParameters.length>0;
+		if (typeVariables!=null) {
+			// If no 'replacements' were supplied in the typeParameters array then collapse
+			// type variables to their first bound.
+			for (int i = 0; i < typeVariables.length; i++) {
+				UnresolvedType ut = (!typeParametersSupplied?typeVariables[i].getFirstBound():typeParameters[i]);
+				typeMap.put(typeVariables[i].getName(),ut);
+			}
+		}
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(),typeMap,isParameterized);
+		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
+		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
+			parameterizedParameterTypes[i] = 
+				parameterize(getGenericParameterTypes()[i], typeMap,isParameterized);
+		}
+		ResolvedPointcutDefinition ret = new ResolvedPointcutDefinition(
+					newDeclaringType,
+					getModifiers(),
+					getName(),
+					parameterizedParameterTypes,
+					parameterizedReturnType,
+					pointcut.parameterizeWith(typeMap)
+				);
+		ret.setTypeVariables(getTypeVariables());
+		ret.setSourceContext(getSourceContext());
+		ret.setPosition(getStart(),getEnd());
+		ret.setParameterNames(getParameterNames());
+		//return ret;
 		return this;
 	}
 	

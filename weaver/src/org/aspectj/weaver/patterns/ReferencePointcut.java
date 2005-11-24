@@ -164,7 +164,7 @@ public class ReferencePointcut extends Pointcut {
 		if (pointcutDef == null) {
 			scope.message(IMessage.ERROR, this, "can't find referenced pointcut " + name);
 			return;
-		}
+		} 
 		
 		// check visibility
 		if (!pointcutDef.isVisible(scope.getEnclosingType())) {
@@ -193,26 +193,7 @@ public class ReferencePointcut extends Pointcut {
 						parameterTypes.length + " found " + arguments.size());
 			return;
 		}
-		
-		
-		
-		for (int i=0,len=arguments.size(); i < len; i++) {
-			TypePattern p = arguments.get(i);
-			//we are allowed to bind to pointcuts which use subtypes as this is type safe
-			if (p == TypePattern.NO) {
-				scope.message(IMessage.ERROR, this,
-								"bad parameter to pointcut reference");
-				return;
-			}
-			if (!p.matchesSubtypes(parameterTypes[i]) && 
-				!p.getExactType().equals(UnresolvedType.OBJECT))
-			{
-				scope.message(IMessage.ERROR, p, "incompatible type, expected " +
-						parameterTypes[i].getName() + " found " + p +".  Check the type specified in your pointcut");
-				return;
-			}
-		}
-		
+				
 		if (onType != null) {
 			if (onType.isParameterizedType()) {
 				// build a type map mapping type variable names in the generic type to
@@ -229,6 +210,27 @@ public class ReferencePointcut extends Pointcut {
 						getSourceLocation()));
 			}
 		}
+		
+		for (int i=0,len=arguments.size(); i < len; i++) {
+			TypePattern p = arguments.get(i);
+			//we are allowed to bind to pointcuts which use subtypes as this is type safe
+			if (typeVariableMap != null) {
+				p = p.parameterizeWith(typeVariableMap);
+			}
+			if (p == TypePattern.NO) {
+				scope.message(IMessage.ERROR, this,
+								"bad parameter to pointcut reference");
+				return;
+			}
+			if (!p.matchesSubtypes(parameterTypes[i]) && 
+				!p.getExactType().equals(UnresolvedType.OBJECT))
+			{
+				scope.message(IMessage.ERROR, p, "incompatible type, expected " +
+						parameterTypes[i].getName() + " found " + p +".  Check the type specified in your pointcut");
+				return;
+			}
+		}
+
 	}
 	
 	public void postRead(ResolvedType enclosingType) {

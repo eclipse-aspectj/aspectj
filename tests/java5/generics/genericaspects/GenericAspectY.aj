@@ -98,7 +98,7 @@ import org.aspectj.lang.annotation.*;
 aspect GenericAspectX extends ParentChildRelationship<Top,Bottom> { 
 
     // Advice to trigger weave infos
-	before(Top p): ParentChildRelationship.addingChildSimple(p) {}
+	before(Top p): /*ParentChildRelationship.*/addingChildSimple(p) {}
 	
 //    before(Top p,Bottom c): ParentChildRelationship.addingChild(p,c) {}
 //    before(Top p,Bottom c): ParentChildRelationship.removingChild(p,c) {}

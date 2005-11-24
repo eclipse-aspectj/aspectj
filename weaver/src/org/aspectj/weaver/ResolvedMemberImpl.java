@@ -661,9 +661,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return typeVariables;
 	}
 	
-	private UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType) {
-		if (aType instanceof TypeVariableReferenceType) {
-			String variableName = ((TypeVariableReferenceType)aType).getTypeVariable().getName();
+	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType) {
+		if (aType instanceof TypeVariableReference) {
+			String variableName = ((TypeVariableReference)aType).getTypeVariable().getName();
 			if (!typeVariableMap.containsKey(variableName)) {
 				return aType; // if the type variable comes from the method (and not the type) thats OK
 			}
