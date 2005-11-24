@@ -146,9 +146,14 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 				UnresolvedType argType = shadow.getArgType(argsIndex);
 				ResolvedType rArgType = argType.resolve(shadow.getIWorld());
 				if (rArgType == ResolvedType.MISSING) {
-	                  IMessage msg = new Message(
-	                    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
-	                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
+					shadow.getIWorld().getLint().cantFindType.signal(
+							new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName())},
+							shadow.getSourceLocation(),
+							new ISourceLocation[]{getSourceLocation()}
+							);
+//	                  IMessage msg = new Message(
+//	                    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
+//	                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
 	            }
 
 				ResolvedType rAnnType = ap.getAnnotationType().resolve(shadow.getIWorld());

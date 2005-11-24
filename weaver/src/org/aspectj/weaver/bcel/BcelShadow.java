@@ -2019,11 +2019,16 @@ public class BcelShadow extends Shadow {
         }
         ResolvedType declaringType = world.resolve(mungerSig.getDeclaringType(),true);
         if (declaringType == ResolvedType.MISSING) {
-          IMessage msg = new Message(
-                WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,declaringType.getClassName()),
-                "",IMessage.ERROR,getSourceLocation(),null,
-                new ISourceLocation[]{ munger.getSourceLocation()});
-          world.getMessageHandler().handleMessage(msg);
+        	world.getLint().cantFindType.signal(
+        			new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,declaringType.getClassName())},
+        			getSourceLocation(),
+        			new ISourceLocation[]{ munger.getSourceLocation()}
+        			);
+//          IMessage msg = new Message(
+//                WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,declaringType.getClassName()),
+//                "",IMessage.ERROR,getSourceLocation(),null,
+//                new ISourceLocation[]{ munger.getSourceLocation()});
+//          world.getMessageHandler().handleMessage(msg);
         }
         //??? might want some checks here to give better errors
         BcelObjectType ot = BcelWorld.getBcelObjectType((declaringType.isParameterizedType()?declaringType.getGenericType():declaringType)); 
@@ -2619,11 +2624,16 @@ public class BcelShadow extends Shadow {
                 UnresolvedType bcelTX = BcelWorld.fromBcel(stateTypes[i]);
                 ResolvedType stateRTX = world.resolve(bcelTX,true);
                 if (stateRTX == ResolvedType.MISSING) {
-                    IMessage msg = new Message(
-                             WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT,bcelTX.getClassName()),
-                              "",IMessage.ERROR,getSourceLocation(),null,
-                              new ISourceLocation[]{ munger.getSourceLocation()});
-                    world.getMessageHandler().handleMessage(msg);
+                		world.getLint().cantFindType.signal(
+                				new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT,bcelTX.getClassName())},
+                				getSourceLocation(),
+                				new ISourceLocation[]{ munger.getSourceLocation()}
+                				);
+//                    IMessage msg = new Message(
+//                             WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT,bcelTX.getClassName()),
+//                              "",IMessage.ERROR,getSourceLocation(),null,
+//                              new ISourceLocation[]{ munger.getSourceLocation()});
+//                    world.getMessageHandler().handleMessage(msg);
                 }
 				stateTempVar.appendConvertableArrayLoad(
 					returnConversionCode, 

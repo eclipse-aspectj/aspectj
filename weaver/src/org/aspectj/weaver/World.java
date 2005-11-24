@@ -142,13 +142,14 @@ public abstract class World implements Dump.INode {
     public ResolvedType resolve(UnresolvedType ty,ISourceLocation isl) {
         ResolvedType ret = resolve(ty,true);
         if (ty == ResolvedType.MISSING) {
-            IMessage msg = null;
-            if (isl!=null) {
-              msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()),isl);
-            } else {
-              msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName())); 
-            }
-            messageHandler.handleMessage(msg);
+            //IMessage msg = null;
+            getLint().cantFindType.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()),isl);
+            //if (isl!=null) {
+              //msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()),isl);
+            //} else {
+              //msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName())); 
+            //}
+            //messageHandler.handleMessage(msg);
         }
         return ret;
     }

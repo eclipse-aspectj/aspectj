@@ -206,10 +206,15 @@ public class ArgsPointcut extends NameBindingPointcut {
             ResolvedType argRTX = shadow.getIWorld().resolve(argType,true);
 			if (!(type instanceof BindingTypePattern)) {
                 if (argRTX == ResolvedType.MISSING) {
-                  IMessage msg = new Message(
-                    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
-                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
-                  shadow.getIWorld().getMessageHandler().handleMessage(msg);
+					shadow.getIWorld().getLint().cantFindType.signal(
+							new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName())},
+							shadow.getSourceLocation(),
+							new ISourceLocation[]{getSourceLocation()}
+							);
+//                  IMessage msg = new Message(
+//                    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName()),
+//                    "",IMessage.ERROR,shadow.getSourceLocation(),null,new ISourceLocation[]{getSourceLocation()});
+//                  shadow.getIWorld().getMessageHandler().handleMessage(msg);
                 }
 				if (type.matchesInstanceof(argRTX).alwaysTrue()) {
 					continue;

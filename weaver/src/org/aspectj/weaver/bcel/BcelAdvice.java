@@ -263,10 +263,14 @@ public class BcelAdvice extends Advice {
 		for (int i=0, len=excs.length; i < len; i++) {
 			ResolvedType t = world.resolve(excs[i],true);
             if (t == ResolvedType.MISSING) {
-                IMessage msg = new Message(
-                  WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
-                  "",IMessage.ERROR,getSourceLocation(),null,null);
-                world.getMessageHandler().handleMessage(msg);
+            		world.getLint().cantFindType.signal(
+            				WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
+            				getSourceLocation()
+            				);
+//                IMessage msg = new Message(
+//                  WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
+//                  "",IMessage.ERROR,getSourceLocation(),null,null);
+//                world.getMessageHandler().handleMessage(msg);
             }
 			if (!(runtimeException.isAssignableFrom(t) || error.isAssignableFrom(t))) {
 				ret.add(t);

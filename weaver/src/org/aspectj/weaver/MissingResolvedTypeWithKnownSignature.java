@@ -176,7 +176,8 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 		if (issuedJoinPointWarning) return;
 		String message = WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_JOINPOINT,getName(),signature);
 		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
-		MessageUtil.warn(world.getMessageHandler(),message); 
+		world.getLint().cantFindTypeAffectingJoinPointMatch.signal(message,null);
+//		MessageUtil.warn(world.getMessageHandler(),message); 
 		issuedJoinPointWarning = true;		
 	}
 	
@@ -184,7 +185,8 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 		if (issuedMissingInterfaceWarning) return;
 		String message = WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_INTERFACE_METHODS,getName(),signature);
 		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
-		MessageUtil.warn(world.getMessageHandler(),message); 
+		world.getLint().cantFindTypeAffectingJoinPointMatch.signal(message,null);
+		//MessageUtil.warn(world.getMessageHandler(),message); 
 		issuedMissingInterfaceWarning = true;				
 	}
 	
@@ -192,7 +194,8 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 		if (issuedCantFindTypeError) return;
 		String message = WeaverMessages.format(key,getName());
 		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
-		MessageUtil.error(world.getMessageHandler(),message);
+		world.getLint().cantFindType.signal(message,null);
+//		MessageUtil.error(world.getMessageHandler(),message);
 		issuedCantFindTypeError = true;
 	}
 
@@ -200,7 +203,8 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 		if (issuedCantFindTypeError) return;
 		String message = WeaverMessages.format(key,getName(),insert);
 		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
-		MessageUtil.error(world.getMessageHandler(),message);
+		world.getLint().cantFindType.signal(message,null);
+//		MessageUtil.error(world.getMessageHandler(),message);
 		issuedCantFindTypeError = true;
 	}
 

@@ -108,6 +108,13 @@ public class Lint {
 	public final Kind aspectExcludedByConfiguration = 
 		new Kind("aspectExcludedByConfiguration","aspect {0} exluded for class loader {1}");
 	
+	// there are a lot of messages in the cant find type family - I'm defining an umbrella lint warning that
+	// allows a user to control their severity (for e.g. ltw or binary weaving)
+	public final Kind cantFindType =
+		new Kind("cantFindType","{0}");
+	
+	public final Kind cantFindTypeAffectingJoinPointMatch = new Kind("cantFindTypeAffectingJPMatch","{0}");
+	
     public Lint(World world) {
 		this.world = world;
 	}

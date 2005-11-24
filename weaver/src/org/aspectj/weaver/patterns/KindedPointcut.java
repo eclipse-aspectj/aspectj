@@ -26,6 +26,7 @@ import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -155,7 +156,13 @@ public class KindedPointcut extends Pointcut {
 
 		// if the method in the declaring type is *not* visible to the
 		// exact declaring type then warning not needed.
-		int shadowModifiers = shadow.getSignature().resolve(world).getModifiers();
+		ResolvedMember rm = shadow.getSignature().resolve(world);
+		// rm can be null in the case where we are binary weaving, and looking at a class with a call to a method in another class,
+		// but because of class incompatibilities, the method does not exist on the target class anymore.
+		// this will be reported elsewhere.
+		if (rm == null) return; 
+		
+		int shadowModifiers = rm.getModifiers();
 		if (!ResolvedType
 			.isVisible(
 				shadowModifiers,
