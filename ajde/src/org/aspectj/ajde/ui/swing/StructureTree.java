@@ -25,7 +25,9 @@ import org.aspectj.ajde.Ajde;
  */
 class StructureTree extends JTree {
 
-    public static final Font DEFAULT_FONT = new java.awt.Font("Dialog", 0, 11);
+	private static final long serialVersionUID = -5599178058976534562L;
+
+	public static final Font DEFAULT_FONT = new java.awt.Font("Dialog", 0, 11);
 
     private String rootFilePath = null;
 

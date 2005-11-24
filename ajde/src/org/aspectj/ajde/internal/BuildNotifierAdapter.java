@@ -21,14 +21,14 @@ import org.aspectj.bridge.IProgressListener;
 public class BuildNotifierAdapter implements IProgressListener {
 
     private BuildProgressMonitor progressMonitor;
-    private AjBuildManager buildManager;
+//    private AjBuildManager buildManager;
 //    private int numCompilationUnitPasses = 1;
 //    private int completedPasses = 0;
 	private boolean cancelRequested = false;
 
 	public BuildNotifierAdapter(BuildProgressMonitor progressMonitor, AjBuildManager buildManager) {
 		this.progressMonitor = progressMonitor;
-		this.buildManager = buildManager;
+//		this.buildManager = buildManager;
 	}
   
 	public void begin() {

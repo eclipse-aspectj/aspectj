@@ -32,9 +32,10 @@ import org.aspectj.asm.IProgramElement;
  */
 public class StructureViewPanel extends JPanel implements StructureViewRenderer {
 
-    protected StructureTreeManager treeManager = new StructureTreeManager();
+	private static final long serialVersionUID = 7549744200612883786L;
+	protected StructureTreeManager treeManager = new StructureTreeManager();
     protected StructureView currentView = null;
-	private java.util.List structureViews = null;
+//	private java.util.List structureViews = null;
 
     protected Border border1;
     protected Border border2;
@@ -50,7 +51,7 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 	}
 
 	public StructureViewPanel(java.util.List structureViews) {
-		this.structureViews = structureViews;
+//		this.structureViews = structureViews;
 
 		for (Iterator it = structureViews.iterator(); it.hasNext(); ) {
 			initView((StructureView)it.next());

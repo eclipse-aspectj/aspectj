@@ -201,7 +201,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		aspectpath.add(openFile("AspectAdvice.jar"));
 		ideManager.getProjectProperties().setAspectPath(aspectpath);
 		assertTrue("Build failed", doSynchronousBuild("Empty.lst"));
-        List l = ideManager.getCompilationSourceLineTasks();
+        /*List l = */ideManager.getCompilationSourceLineTasks();
         verifyWeavingMessages("advice.binary",true);
 	}
 	
@@ -214,7 +214,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		aspectpath.add(openFile("AspectITD.jar"));
 		ideManager.getProjectProperties().setAspectPath(aspectpath);
 		assertTrue("Build failed", doSynchronousBuild("Empty.lst"));
-		List l = ideManager.getCompilationSourceLineTasks();
+		/*List l = */ideManager.getCompilationSourceLineTasks();
 		verifyWeavingMessages("itd",false);
 	}
 
@@ -260,7 +260,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		aspectpath.add(openFile("AspectAdvice_nodebug.jar"));
 		ideManager.getProjectProperties().setAspectPath(aspectpath);
 		assertTrue("Build failed", doSynchronousBuild("Empty.lst"));
-		List l = ideManager.getCompilationSourceLineTasks();
+		/*List l = */ideManager.getCompilationSourceLineTasks();
 		verifyWeavingMessages("advice.binary.nodebug",true);
 	}
 	
@@ -273,7 +273,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		aspectpath.add(openFile("AspectITD_nodebug.jar"));
 		ideManager.getProjectProperties().setAspectPath(aspectpath);
 		assertTrue("Build failed", doSynchronousBuild("Empty.lst"));
-		List l = ideManager.getCompilationSourceLineTasks();
+		/*List l = */ideManager.getCompilationSourceLineTasks();
 		verifyWeavingMessages("itd.nodebug",true);
 	}
 	

@@ -62,7 +62,7 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 				"declare parents: implements Serializable"/*Point"*/);
 		
 		assertNotNull(dp);
-		List relations = manager.getRelationshipMap().get(dp);
+		/*List relations = */manager.getRelationshipMap().get(dp);
 				
 		List rels = AsmManager.getDefault().getRelationshipMap().get(dp);
 		assertTrue(rels.size()>0);

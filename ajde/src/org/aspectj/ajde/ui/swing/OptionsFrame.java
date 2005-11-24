@@ -46,7 +46,9 @@ import org.aspectj.bridge.Version;
  */
 public class OptionsFrame extends JFrame {
 
-    // XXX using \n b/c JTextArea.setLineWrap(true) lineates inside words.
+	private static final long serialVersionUID = -859222442871124487L;
+
+	// XXX using \n b/c JTextArea.setLineWrap(true) lineates inside words.
     private static final String ABOUT_TEXT =
         "\nThe AspectJ compiler and core tools are produced by the\n" +
         "AspectJ project.\n\n" +
@@ -70,19 +72,19 @@ public class OptionsFrame extends JFrame {
     private TitledBorder titledBorder1;
     private TitledBorder titledBorder2;
     private TitledBorder titledBorder3;
-    private Border border1;
+//    private Border border1;
     private TitledBorder titledBorder4;
     private TitledBorder titledBorder5;
-    private Border border2;
+//    private Border border2;
     private TitledBorder titledBorder6;
 //    private Box temp_box = Box.createVerticalBox();
-    private Border border3;
+//    private Border border3;
     private TitledBorder titledBorder7;
     private Border border4;
     private TitledBorder titledBorder8;
     private Border border5;
     private TitledBorder titledBorder9;
-    private Border border6;
+//    private Border border6;
     private TitledBorder titledBorder10;
 //    private ButtonGroup views_buttonGroup = new ButtonGroup();
     private Border border7;
@@ -184,18 +186,18 @@ public class OptionsFrame extends JFrame {
         titledBorder1 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158)),"Sorting");
         titledBorder2 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Associations (navigeable relations between sturcture nodes)");
         titledBorder3 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158)),"Member Filtering (nodes to exclude from view)");
-        border1 = BorderFactory.createLineBorder(Color.black,2);
+        BorderFactory.createLineBorder(Color.black,2);
         titledBorder4 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Compile Options");
         titledBorder5 = new TitledBorder("");
-        border2 = BorderFactory.createLineBorder(Color.black,2);
+        BorderFactory.createLineBorder(Color.black,2);
         titledBorder6 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Run Options");
-        border3 = BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158));
+        BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158));
         titledBorder7 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158)),"Granularity (all nodes below selected level will be hidden)");
         border4 = BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158));
         titledBorder8 = new TitledBorder(border4,"Member Visibility");
         border5 = BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158));
         titledBorder9 = new TitledBorder(border5,"Member Modifiers");
-        border6 = BorderFactory.createEmptyBorder();
+        BorderFactory.createEmptyBorder();
         titledBorder10 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Structure View Properties");
         border7 = BorderFactory.createEtchedBorder(Color.white,new Color(156, 156, 158));
         titledBorder11 = new TitledBorder(border7,"Member Kinds");

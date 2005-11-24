@@ -34,12 +34,14 @@ public class BuildOptionsPanel extends OptionsPanel {
 //		+ "AspectJ compiler.  The Document Outline View will fail to refresh correctly when\n"
 //		+ "incremental mode is enabled.  Submit any other bugs at http://eclipse.org/aspectj";
 
+	private static final long serialVersionUID = 5891996016897166802L;
+
 	protected static final BuildOptionsPanel INSTANCE = new BuildOptionsPanel();
 
 //	private ButtonGroup compilerMode_buttonGroup = new ButtonGroup();
 	private TitledBorder titledBorder1;
-	private Border border3;
-	private Border border4;
+//	private Border border3;
+//	private Border border4;
 //	private TitledBorder titledBorder2;
 //	private Border border5;
 	private Border border1;
@@ -55,7 +57,7 @@ public class BuildOptionsPanel extends OptionsPanel {
 	private BorderLayout borderLayout8 = new BorderLayout();
 	private Box options_box1 = Box.createVerticalBox();
 	private BorderLayout borderLayout5 = new BorderLayout();
-	private JTextField workingDir_field = new JTextField();
+//	private JTextField workingDir_field = new JTextField();
 	private JPanel jPanel2 = new JPanel();
 	private JPanel jPanel1 = new JPanel();
 	private JPanel build_panel = new JPanel();
@@ -76,8 +78,8 @@ public class BuildOptionsPanel extends OptionsPanel {
   JCheckBox oneFive_checkBox = new JCheckBox();
   Box options_box = Box.createVerticalBox();
   //JCheckBox incremental_checkBox = new JCheckBox();
-  JCheckBox useJavac_checkBox = new JCheckBox();
-  JCheckBox preprocess_checkBox = new JCheckBox();
+//  JCheckBox useJavac_checkBox = new JCheckBox();
+//  JCheckBox preprocess_checkBox = new JCheckBox();
   JLabel spacer_label1 = new JLabel();
 
 	public BuildOptionsPanel() {
@@ -89,10 +91,10 @@ public class BuildOptionsPanel extends OptionsPanel {
 //			compilerMode_buttonGroup.add(strict_radioButton);
 //			compilerMode_buttonGroup.add(lenient_radioButton);
 
-			preprocess_checkBox.setEnabled(false);
-			useJavac_checkBox.setEnabled(false);
-			workingDir_field.setEnabled(false);
-			workingDir_label.setEnabled(false);
+//			preprocess_checkBox.setEnabled(false);
+//			useJavac_checkBox.setEnabled(false);
+//			workingDir_field.setEnabled(false);
+//			workingDir_label.setEnabled(false);
 		} catch (Exception e) {
 			Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
 		}
@@ -109,12 +111,12 @@ public class BuildOptionsPanel extends OptionsPanel {
 			        Ajde.getDefault().getBuildManager().getBuildOptions().getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_4)
 				);
 		}
-		preprocess_checkBox.setSelected(
-			Ajde.getDefault().getBuildManager().getBuildOptions().getPreprocessMode()
-		);
-		useJavac_checkBox.setSelected(
-			Ajde.getDefault().getBuildManager().getBuildOptions().getUseJavacMode()
-		);
+//		preprocess_checkBox.setSelected(
+//			Ajde.getDefault().getBuildManager().getBuildOptions().getPreprocessMode()
+//		);
+//		useJavac_checkBox.setSelected(
+//			Ajde.getDefault().getBuildManager().getBuildOptions().getUseJavacMode()
+//		);
 //		incremental_checkBox.setSelected(
 //			Ajde.getDefault().getBuildManager().getBuildOptions().getIncrementalMode()
 //		);
@@ -122,9 +124,9 @@ public class BuildOptionsPanel extends OptionsPanel {
 		nonStandard_field.setText(
 			Ajde.getDefault().getBuildManager().getBuildOptions().getNonStandardOptions()
 		);
-		workingDir_field.setText(
-			Ajde.getDefault().getBuildManager().getBuildOptions().getWorkingOutputPath()
-		);
+//		workingDir_field.setText(
+//			Ajde.getDefault().getBuildManager().getBuildOptions().getWorkingOutputPath()
+//		);
 
 //		if (Ajde.getDefault().getBuildManager().getBuildOptions().getStrictSpecMode()) {
 //			strict_radioButton.setSelected(true);
@@ -139,17 +141,17 @@ public class BuildOptionsPanel extends OptionsPanel {
 	    if (oneFive_checkBox.isSelected()) {
 	        AjdeUIManager.getDefault().getBuildOptions().setSourceCompatibilityLevel(CompilerOptions.VERSION_1_5); 
 	    } else if (assertions_checkBox.isSelected()) {
-	        AjdeUIManager.getDefault().getBuildOptions().setSourceOnePointFourMode(true);
+//	        AjdeUIManager.getDefault().getBuildOptions().setSourceOnePointFourMode(true);
 	        AjdeUIManager.getDefault().getBuildOptions().setSourceCompatibilityLevel(CompilerOptions.VERSION_1_4); 
 	    } else { 
 	        AjdeUIManager.getDefault().getBuildOptions().setSourceCompatibilityLevel(CompilerOptions.VERSION_1_3); 
 	    }
-		AjdeUIManager.getDefault().getBuildOptions().setPreprocessMode(
-			preprocess_checkBox.isSelected()
-		);
-		AjdeUIManager.getDefault().getBuildOptions().setUseJavacMode(
-			useJavac_checkBox.isSelected()
-		);
+//		AjdeUIManager.getDefault().getBuildOptions().setPreprocessMode(
+//			preprocess_checkBox.isSelected()
+//		);
+//		AjdeUIManager.getDefault().getBuildOptions().setUseJavacMode(
+//			useJavac_checkBox.isSelected()
+//		);
 //		AjdeUIManager.getDefault().getBuildOptions().setIncrementalMode(
 //			incremental_checkBox.isSelected()
 //		);
@@ -157,9 +159,9 @@ public class BuildOptionsPanel extends OptionsPanel {
 		AjdeUIManager.getDefault().getBuildOptions().setNonStandardOptions(
 			nonStandard_field.getText()
 		);
-		AjdeUIManager.getDefault().getBuildOptions().setWorkingDir(
-			workingDir_field.getText()
-		);
+//		AjdeUIManager.getDefault().getBuildOptions().setWorkingDir(
+//			workingDir_field.getText()
+//		);
 
 //		AjdeUIManager.getDefault().getBuildOptions().setStrictSpecMode(strict_radioButton.isSelected());
 //		AjdeUIManager.getDefault().getBuildOptions().setLenientSpecMode(lenient_radioButton.isSelected());
@@ -174,14 +176,12 @@ public class BuildOptionsPanel extends OptionsPanel {
 			new TitledBorder(
 				BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158)),
 				"ajc Options");
-		border3 =
-			BorderFactory.createCompoundBorder(
+		BorderFactory.createCompoundBorder(
 				new TitledBorder(
 					BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158)),
 					"ajc Options"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		border4 =
-			BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158));
+		BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158));
 //		titledBorder2 =
 //			new TitledBorder(
 //				BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158)),
@@ -215,9 +215,9 @@ public class BuildOptionsPanel extends OptionsPanel {
 //		lenient_radioButton.setText(
 //			"Be lenient in interpreting the Java specification");
 //		lenient_radioButton.setFont(new java.awt.Font("Dialog", 0, 11));
-		workingDir_field.setFont(new java.awt.Font("SansSerif", 0, 11));
-		workingDir_field.setMinimumSize(new Dimension(200, 21));
-		workingDir_field.setPreferredSize(new Dimension(350, 21));
+//		workingDir_field.setFont(new java.awt.Font("SansSerif", 0, 11));
+//		workingDir_field.setMinimumSize(new Dimension(200, 21));
+//		workingDir_field.setPreferredSize(new Dimension(350, 21));
 		jPanel2.setLayout(borderLayout3);
 		jPanel1.setLayout(borderLayout2);
 		build_panel.setLayout(borderLayout4);
@@ -246,23 +246,23 @@ public class BuildOptionsPanel extends OptionsPanel {
 //    incremental_checkBox.setText("Incremental compile");
 //    incremental_checkBox.setToolTipText("Only recompile necessary sources.");
 //    incremental_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
-    useJavac_checkBox.setText("Use javac to generate .class files");
-    useJavac_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
-    preprocess_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
-    preprocess_checkBox.setToolTipText("");
-    preprocess_checkBox.setText("Only preprocess and generate .java source files");
+//    useJavac_checkBox.setText("Use javac to generate .class files");
+//    useJavac_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+//    preprocess_checkBox.setFont(new java.awt.Font("Dialog", 0, 11));
+//    preprocess_checkBox.setToolTipText("");
+//    preprocess_checkBox.setText("Only preprocess and generate .java source files");
     spacer_label1.setText("   ");
-    this.add(jPanel3, BorderLayout.NORTH);
-		jPanel2.add(workingDir_label, BorderLayout.CENTER);
-		jPanel2.add(workingDir_field, BorderLayout.EAST);
+//    this.add(jPanel3, BorderLayout.NORTH);
+//		jPanel2.add(workingDir_label, BorderLayout.CENTER);
+//		jPanel2.add(workingDir_field, BorderLayout.EAST);
     compileOptions_panel.add(options_box2, BorderLayout.CENTER);
     //options_box2.add(incrementalNote, null);
     options_box2.add(spacer_label1, null);
     compileOptions_panel.add(options_box, BorderLayout.NORTH);
     options_box.add(assertions_checkBox, null);
     options_box.add(oneFive_checkBox, null); 
-    options_box.add(preprocess_checkBox, null);
-    options_box.add(useJavac_checkBox, null);
+//    options_box.add(preprocess_checkBox, null);
+//    options_box.add(useJavac_checkBox, null);
     //options_box.add(incremental_checkBox, null);
     options_box.add(spacer_label, null);
 		fields_box.add(jPanel1, null);

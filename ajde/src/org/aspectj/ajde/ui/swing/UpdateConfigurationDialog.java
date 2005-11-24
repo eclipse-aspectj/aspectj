@@ -49,9 +49,10 @@ import org.aspectj.ajde.Ajde;
  * @author Mik Kersten
  */
 public class UpdateConfigurationDialog extends JFrame {
-    private Vector buildConfigFiles;
-    private Vector filesToUpdate;
-    private boolean addToConfiguration;
+	private static final long serialVersionUID = 5885112642841314728L;
+//	private Vector buildConfigFiles;
+//    private Vector filesToUpdate;
+//    private boolean addToConfiguration;
 
     private String message1 = " Project has been updated.";
     private String message2 = " File list below.";
@@ -79,9 +80,9 @@ public class UpdateConfigurationDialog extends JFrame {
 
     public UpdateConfigurationDialog(Vector filesToUpdate, Vector buildConfigFiles, boolean addToConfiguration, Component parentComponent) {
         try {
-            this.buildConfigFiles = buildConfigFiles;
-            this.filesToUpdate = filesToUpdate;
-            this.addToConfiguration = addToConfiguration;
+//            this.buildConfigFiles = buildConfigFiles;
+//            this.filesToUpdate = filesToUpdate;
+//            this.addToConfiguration = addToConfiguration;
 
             updatedFilesList.setListData(filesToUpdate);
             String action = "removed from";
@@ -174,7 +175,9 @@ public class UpdateConfigurationDialog extends JFrame {
 }
 
 class CheckListCellRenderer extends JCheckBox implements ListCellRenderer {
-    public CheckListCellRenderer() {
+	private static final long serialVersionUID = -9183012434083509581L;
+
+	public CheckListCellRenderer() {
         super();
         setOpaque(true);
     }

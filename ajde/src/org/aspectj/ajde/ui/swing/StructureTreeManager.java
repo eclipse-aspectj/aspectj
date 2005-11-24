@@ -165,7 +165,10 @@ class StructureTreeManager {
     }
 
     private class StructureTreeModel extends DefaultTreeModel implements TreeModel {
-        public StructureTreeModel(TreeNode newRoot) {
+        
+		private static final long serialVersionUID = 1L;
+
+		public StructureTreeModel(TreeNode newRoot) {
             super(newRoot);
         }
 

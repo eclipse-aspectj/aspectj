@@ -22,6 +22,8 @@ package org.aspectj.ajde.ui;
  */
 public class InvalidResourceException extends Exception {
 
+	private static final long serialVersionUID = -5290919159396792978L;
+
 	/**
 	 * Constructor for InvalidResourceException.
 	 */

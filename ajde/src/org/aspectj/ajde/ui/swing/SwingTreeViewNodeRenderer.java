@@ -28,7 +28,9 @@ import org.aspectj.bridge.*;
  */
 class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
 
-    public Component getTreeCellRendererComponent(JTree tree,
+	private static final long serialVersionUID = -4561164526650924465L;
+
+	public Component getTreeCellRendererComponent(JTree tree,
                                                     Object treeNode,
                                                     boolean sel,
                                                     boolean expanded,

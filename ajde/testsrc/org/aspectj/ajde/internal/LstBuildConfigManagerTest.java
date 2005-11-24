@@ -118,51 +118,51 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 //	private static final String BAD_PATHS_FILE = "C:/Dev/aspectj/tests/ajde/examples/figures-coverage/test-error.lst";
 //	private static final String INCLUDES_FILE = "C:/Dev/aspectj/tests/ajde/examples/spacewar/spacewar/demo.lst";
 
-	private static final String WILDCARDS_FILE_CONTENTS;
-	private static final String BAD_PATHS_FILE_CONTENTS;
-	private static final String INCLUDES_FILE_CONTENTS;
+//	private static final String WILDCARDS_FILE_CONTENTS;
+//	private static final String BAD_PATHS_FILE_CONTENTS;
+//	private static final String INCLUDES_FILE_CONTENTS;
 	
 	static {
-		WILDCARDS_FILE_CONTENTS = 
-			"figures/Debug.java;" +
-			"figures/Figure.java;" +
-			"figures/FigureElement.java;" +
-			"figures/Main.java;" +
-			"figures/composites/Line.java;" +
-			"figures/composites/Square.java;" +
-			"figures/primitives/planar/Point.java;" +
-			"figures/primitives/solid/SolidPoint.java;";
+//		WILDCARDS_FILE_CONTENTS = 
+//			"figures/Debug.java;" +
+//			"figures/Figure.java;" +
+//			"figures/FigureElement.java;" +
+//			"figures/Main.java;" +
+//			"figures/composites/Line.java;" +
+//			"figures/composites/Square.java;" +
+//			"figures/primitives/planar/Point.java;" +
+//			"figures/primitives/solid/SolidPoint.java;";
 
-		BAD_PATHS_FILE_CONTENTS = WILDCARDS_FILE_CONTENTS;
-
-        // TODO-path
-		INCLUDES_FILE_CONTENTS =
-			"../coordination/Condition.java;" +
-			"../coordination/CoordinationAction.java;" +
-			"../coordination/Coordinator.java;" +
-			"../coordination/Exclusion.java;" +
-			"../coordination/MethodState.java;" +
-			"../coordination/Mutex.java;" +
-			"../coordination/Selfex.java;" +
-			"../coordination/TimeoutException.java;" +
-			"Bullet.java;" +
-			"Display.java;" +
-			"Display1.java;" +
-			"Display2.java;" +
-			"EnergyPacket.java;" +
-			"EnergyPacketProducer.java;" +
-			"EnsureShipIsAlive.java;" +
-			"Game.java;" +
-			"GameSynchronization.java;" +
-			"Pilot.java;" +
-			"Player.java;" +
-			"Registry.java;" +
-			"RegistrySynchronization.java;" +
-			"Robot.java;" +
-			"SWFrame.java;" +
-			"Ship.java;" +
-			"SpaceObject.java;" +
-			"Timer.java;";
+//		BAD_PATHS_FILE_CONTENTS = WILDCARDS_FILE_CONTENTS;
+//
+//        // TODO-path
+//		INCLUDES_FILE_CONTENTS =
+//			"../coordination/Condition.java;" +
+//			"../coordination/CoordinationAction.java;" +
+//			"../coordination/Coordinator.java;" +
+//			"../coordination/Exclusion.java;" +
+//			"../coordination/MethodState.java;" +
+//			"../coordination/Mutex.java;" +
+//			"../coordination/Selfex.java;" +
+//			"../coordination/TimeoutException.java;" +
+//			"Bullet.java;" +
+//			"Display.java;" +
+//			"Display1.java;" +
+//			"Display2.java;" +
+//			"EnergyPacket.java;" +
+//			"EnergyPacketProducer.java;" +
+//			"EnsureShipIsAlive.java;" +
+//			"Game.java;" +
+//			"GameSynchronization.java;" +
+//			"Pilot.java;" +
+//			"Player.java;" +
+//			"Registry.java;" +
+//			"RegistrySynchronization.java;" +
+//			"Robot.java;" +
+//			"SWFrame.java;" +
+//			"Ship.java;" +
+//			"SpaceObject.java;" +
+//			"Timer.java;";
 	}
 }
 

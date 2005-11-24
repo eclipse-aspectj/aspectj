@@ -29,10 +29,12 @@ import javax.swing.JPopupMenu;
 
 public class AJButtonMenuCombo extends JPanel {
 	
-    private JButton mainButton;
+	private static final long serialVersionUID = -4866207530403336160L;
+
+	private JButton mainButton;
     private JButton popupButton;
     private JPopupMenu menu;
-    private boolean depressable = false;
+//    private boolean depressable = false;
     private boolean isPressed = false;
     
 	public AJButtonMenuCombo(String name, 
@@ -42,7 +44,7 @@ public class AJButtonMenuCombo extends JPanel {
 		boolean depressable) {
 			
 		this.menu = menu;
-		this.depressable = depressable;
+//		this.depressable = depressable;
 		mainButton = new JButton();
 		mainButton.setIcon(icon);
         mainButton.setBorder(AjdeWidgetStyles.DEFAULT_BORDER);

@@ -28,6 +28,8 @@ import org.aspectj.util.LangUtil;
  */
 public class CompilerMessagesCellRenderer extends JLabel implements ListCellRenderer {
 
+	private static final long serialVersionUID = -4406791252357837712L;
+
 	public Component getListCellRendererComponent(
 		JList list,
 		Object value,

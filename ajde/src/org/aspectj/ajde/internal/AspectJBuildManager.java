@@ -224,14 +224,14 @@ public class AspectJBuildManager implements BuildManager {
 				+ "\n-> -warn:" + formatSet(buildOptions.getWarnings())
 				+ "\n-> noImportError: " + buildOptions.getNoImportError()
 				+ "\n-> preserveAllLocals:" + buildOptions.getPreserveAllLocals()
-				+ "\n-> non-standard options: " + buildOptions.getNonStandardOptions()
-				+ "\n-> [ignored-deprecated in AspectJ1.1] porting mode: " + buildOptions.getPortingMode()
-				+ "\n-> [ignored-deprecated in AspectJ1.1] source 1.4 mode: " + buildOptions.getSourceOnePointFourMode()
-				+ "\n-> [ignored-deprecated in AspectJ1.1] strict spec mode: " + buildOptions.getStrictSpecMode()
-				+ "\n-> [ignored-deprecated in AspectJ1.1] lenient spec mode: " + buildOptions.getLenientSpecMode()
-				+ "\n-> [ignored-deprecated in AspectJ1.1] use javac mode: " + buildOptions.getUseJavacMode()
-				+ "\n-> [ignored-deprecated in AspectJ1.1] preprocess mode: " + buildOptions.getPreprocessMode()
-				+ "\n-> [ignored-deprecated in AspectJ1.1] working dir: " + buildOptions.getWorkingOutputPath();
+				+ "\n-> non-standard options: " + buildOptions.getNonStandardOptions();
+//				+ "\n-> [ignored-deprecated in AspectJ1.1] porting mode: " + buildOptions.getPortingMode()
+//				+ "\n-> [ignored-deprecated in AspectJ1.1] source 1.4 mode: " + buildOptions.getSourceOnePointFourMode()
+//				+ "\n-> [ignored-deprecated in AspectJ1.1] strict spec mode: " + buildOptions.getStrictSpecMode()
+//				+ "\n-> [ignored-deprecated in AspectJ1.1] lenient spec mode: " + buildOptions.getLenientSpecMode()
+//				+ "\n-> [ignored-deprecated in AspectJ1.1] use javac mode: " + buildOptions.getUseJavacMode()
+//				+ "\n-> [ignored-deprecated in AspectJ1.1] preprocess mode: " + buildOptions.getPreprocessMode()
+//				+ "\n-> [ignored-deprecated in AspectJ1.1] working dir: " + buildOptions.getWorkingOutputPath();
 		}
 		
 		private String formatSet( Set options ) {

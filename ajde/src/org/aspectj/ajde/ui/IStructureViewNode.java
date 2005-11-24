@@ -57,6 +57,8 @@ public interface IStructureViewNode {
 	 */
 	public static class Kind implements Serializable {
 		
+		private static final long serialVersionUID = 6730849292562214877L;
+		
 		public static final Kind DECLARATION = new Kind("declaration");
 		public static final Kind RELATIONSHIP = new Kind("relationship");
 		public static final Kind LINK = new Kind("link");

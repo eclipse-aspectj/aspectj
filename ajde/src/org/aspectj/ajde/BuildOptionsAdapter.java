@@ -55,29 +55,29 @@ public interface BuildOptionsAdapter {
 	 */
 	public Map getJavaOptionsMap();  
 	
-	/**
-	 * Use javac to generate .class files.  The default is "false".
-	 * From -usejavac
-	 * @deprecated Not supported from AspectJ 1.1 onwards
-	 */
-	public boolean getUseJavacMode();
+//	/**
+//	 * Use javac to generate .class files.  The default is "false".
+//	 * From -usejavac
+//	 * @deprecated Not supported from AspectJ 1.1 onwards
+//	 */
+//	public boolean getUseJavacMode();
+//	
+//	/**
+//	 * Only relevant with Use Javac or Preprocess modes.  Specify where to place
+//	 * intermediate .java files.  The default is "workingdir".
+//	 * From -workingdir
+//	 * @deprecated Not supported from AspectJ 1.1 onwards
+//	 */
+//	public String getWorkingOutputPath();
 	
-	/**
-	 * Only relevant with Use Javac or Preprocess modes.  Specify where to place
-	 * intermediate .java files.  The default is "workingdir".
-	 * From -workingdir
-	 * @deprecated Not supported from AspectJ 1.1 onwards
-	 */
-	public String getWorkingOutputPath();
-	
-	/**
-	 * Generate regular Java code into the Working OutputPath.  Don't try to generate
-	 * any .class files.  The default is "false".
-	 * From -source
-	 * @deprecated Not supported from AspectJ 1.1 onwards
-	 */
-	public boolean getPreprocessMode();
-	
+//	/**
+//	 * Generate regular Java code into the Working OutputPath.  Don't try to generate
+//	 * any .class files.  The default is "false".
+//	 * From -source
+//	 * @deprecated Not supported from AspectJ 1.1 onwards
+//	 */
+//	public boolean getPreprocessMode();
+//	
 	/**
 	 * Specify character encoding used by source files.  The default is the current
 	 * JVM's default.
@@ -85,12 +85,12 @@ public interface BuildOptionsAdapter {
 	 */
 	public String getCharacterEncoding();
 	
-	/**
-	 * Support assertions as defined in JLS-1.4.  The default is "false".
-	 * @deprecated Use getComplianceLevel instead
-	 */
-	public boolean getSourceOnePointFourMode();
-	
+//	/**
+//	 * Support assertions as defined in JLS-1.4.  The default is "false".
+//	 * @deprecated Use getComplianceLevel instead
+//	 */
+//	public boolean getSourceOnePointFourMode();
+//	
 
     /**
      * Run compiles incrementally.
@@ -98,29 +98,29 @@ public interface BuildOptionsAdapter {
      */
     public boolean getIncrementalMode();
 
-	/**
-	 * Be extra-lenient in interpreting the Java specification.  The default is "false", 
-	 * i.e. "regular" mode.
-	 * From -lenient
-	 * @deprecated Not supported from AspectJ 1.1 onwards
-	 */
-	public boolean getLenientSpecMode();
+//	/**
+//	 * Be extra-lenient in interpreting the Java specification.  The default is "false", 
+//	 * i.e. "regular" mode.
+//	 * From -lenient
+//	 * @deprecated Not supported from AspectJ 1.1 onwards
+//	 */
+//	public boolean getLenientSpecMode();
 	
-	/**
-	 * Be extra-strict in interpreting the Java specification.  The default is "false", 
-	 * i.e. "regular" mode.
-	 * From -strict
-	 * @deprecated Not supported from AspectJ 1.1 onwards
-	 */
-	public boolean getStrictSpecMode();
-	
-	/**
-	 * Make the use of some features from pre-1.0 versions of AspectJ be warnings to ease
-	 * porting of old code.  The default is "false".
-	 * From -porting
-	 * @deprecated Not supported from AspectJ 1.1 onwards
-	 */
-	public boolean getPortingMode();
+//	/**
+//	 * Be extra-strict in interpreting the Java specification.  The default is "false", 
+//	 * i.e. "regular" mode.
+//	 * From -strict
+//	 * @deprecated Not supported from AspectJ 1.1 onwards
+//	 */
+//	public boolean getStrictSpecMode();
+//	
+//	/**
+//	 * Make the use of some features from pre-1.0 versions of AspectJ be warnings to ease
+//	 * porting of old code.  The default is "false".
+//	 * From -porting
+//	 * @deprecated Not supported from AspectJ 1.1 onwards
+//	 */
+//	public boolean getPortingMode();
 	
 	/**
 	 * The non-standard, typically prefaced with -X when used with a command line compiler.

@@ -10,16 +10,16 @@
  *******************************************************************************/
 package org.aspectj.ajde;
 
-import org.aspectj.asm.AsmManager;
+//import org.aspectj.asm.AsmManager;
 
 /**
  * @author Mik Kersten
  */
 public class GenericsTest extends AjdeTestCase {
     
-    private AsmManager manager = null;
+    //private AsmManager manager = null;
     // TODO-path
-	private static final String CONFIG_FILE_PATH = "../bug-83565/build.lst";
+	//private static final String CONFIG_FILE_PATH = "../bug-83565/build.lst";
  
 	public void testBuild() {	
 //	    assertTrue("build success", doSynchronousBuild(CONFIG_FILE_PATH));	
@@ -27,7 +27,7 @@ public class GenericsTest extends AjdeTestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp("examples");
-		manager = AsmManager.getDefault();
+		//manager = AsmManager.getDefault();
 	}
     
 }

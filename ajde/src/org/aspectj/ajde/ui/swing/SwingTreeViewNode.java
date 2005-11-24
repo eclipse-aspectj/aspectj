@@ -27,6 +27,7 @@ import org.aspectj.asm.*;
  */
 public class SwingTreeViewNode extends DefaultMutableTreeNode implements IStructureViewNode {
 
+	private static final long serialVersionUID = 4957761341510335532L;
 	private String relationshipName;
 	private IProgramElement programElement;
 	private AbstractIcon icon;

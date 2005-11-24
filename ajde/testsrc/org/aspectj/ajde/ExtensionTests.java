@@ -12,7 +12,7 @@ package org.aspectj.ajde;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
+//import java.util.Properties;
 import java.io.File;
 
 import org.aspectj.asm.AsmManager;
@@ -58,8 +58,8 @@ public class ExtensionTests extends AjcTestCase {
 	public void testInnerClassesInASM() {
 		String[] args = new String[] {"InnerClasses.java","-emacssym"};
 		CompilationResult result = ajc(baseDir,args);
-		List l = result.getWarningMessages();
-		Properties p = AsmManager.ModelInfo.summarizeModel().getProperties();
+		/*List l = */result.getWarningMessages();
+		/*Properties p = */AsmManager.ModelInfo.summarizeModel().getProperties();
 		if (debugTests) System.out.println("Structure Model for InnerClasses.java:");
 		walkit(AsmManager.getDefault().getHierarchy().getRoot(),0);
 		foundNode = null;

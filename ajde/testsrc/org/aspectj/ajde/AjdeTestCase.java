@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 
 public class AjdeTestCase extends TestCase {
 
-	private static final String TEST_DATA_PATH = AjdeTests.testDataPath(null);
+//	private static final String TEST_DATA_PATH = AjdeTests.testDataPath(null);
 
 	protected NullIdeManager ideManager = NullIdeManager.getIdeManager();
 	protected TestBuildListener testerBuildListener = new TestBuildListener();

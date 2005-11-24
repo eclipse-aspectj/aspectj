@@ -24,8 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.GlobalStructureView;
@@ -42,9 +40,11 @@ import org.aspectj.ajde.ui.StructureViewRenderer;
  */
 public class BrowserViewPanel extends JPanel implements StructureViewRenderer {
 
-    private StructureTreeManager treeManager;
+	private static final long serialVersionUID = 2201330630036486567L;
+
+	private StructureTreeManager treeManager;
     //private StructureView structureView = null;
-    private int depthSliderVal = 0;
+    //private int depthSliderVal = 0;
     private JComboBox view_comboBox = null;
 
     private BorderLayout borderLayout1 = new BorderLayout();
@@ -118,14 +118,14 @@ public class BrowserViewPanel extends JPanel implements StructureViewRenderer {
         depth_slider.setSnapToTicks(true);
         depth_slider.setPaintTrack(true);
         depth_slider.setPaintTicks(true);
-        this.depth_slider.addChangeListener(
-            new ChangeListener() {
-                public void stateChanged(ChangeEvent e) {
-                    depthSliderVal = depth_slider.getValue();
-                    //AjdeUIManager.getDefault().getViewManager().updateView();
-                }
-            });
-        depthSliderVal = depth_slider.getValue();
+//        this.depth_slider.addChangeListener(
+//            new ChangeListener() {
+//                public void stateChanged(ChangeEvent e) {
+//                    depthSliderVal = depth_slider.getValue();
+//                    //AjdeUIManager.getDefault().getViewManager().updateView();
+//                }
+//            });
+//        depthSliderVal = depth_slider.getValue();
     }
 
     private void view_comboBox_actionPerformed(ActionEvent e) {

@@ -27,6 +27,8 @@ import org.aspectj.asm.*;
 
 public class BrowserStructureViewToolPanel extends JPanel {
 
+	private static final long serialVersionUID = 7960528108612681776L;
+
 	private StructureView currentView;
 	private StructureViewPanel viewPanel;
     protected BorderLayout borderLayout1 = new BorderLayout();
@@ -155,6 +157,9 @@ public class BrowserStructureViewToolPanel extends JPanel {
 	}
 
 	private class RadioSelectionMenuButton extends JRadioButtonMenuItem {
+
+		private static final long serialVersionUID = -879644981405801807L;
+
 		public RadioSelectionMenuButton(StructureViewProperties.Granularity granularity, ButtonGroup group) {
 			super(granularity.toString());
 			super.setFont(AjdeWidgetStyles.DEFAULT_LABEL_FONT);
@@ -177,6 +182,8 @@ public class BrowserStructureViewToolPanel extends JPanel {
 	}
 
 	private class CheckBoxSelectionMenuButton extends JCheckBoxMenuItem {
+
+		private static final long serialVersionUID = -4555502313984854787L;
 
 		public CheckBoxSelectionMenuButton(String name) {
 			super(name);

@@ -28,6 +28,8 @@ import org.aspectj.asm.IProgramElement;
 
 public class BuildConfigPopupMenu extends JPopupMenu {
 
+	private static final long serialVersionUID = -6730132748667530482L;
+
 	public BuildConfigPopupMenu(final AbstractAction action) {
 		java.util.List configFiles = Ajde.getDefault().getProjectProperties().getBuildConfigFiles();
 		for (Iterator it = configFiles.iterator(); it.hasNext(); ) {

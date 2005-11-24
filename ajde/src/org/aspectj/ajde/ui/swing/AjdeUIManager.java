@@ -37,7 +37,7 @@ public class AjdeUIManager {
 	private BrowserViewManager viewManager = null;
 //	private BuildProgressMonitor buildProgressMonitor = null;
 //	private ErrorHandler errorHandler = null;
-	private UserPreferencesAdapter userPreferencesAdapter = null;
+//	private UserPreferencesAdapter userPreferencesAdapter = null;
 	private AjcBuildOptions buildOptionsAdapter = null;
 	private IdeUIAdapter ideUIAdapter = null;
 	private TreeViewBuildConfigEditor buildConfigEditor = null;
@@ -88,7 +88,7 @@ public class AjdeUIManager {
 			this.iconRegistry = iconRegistry;
 			//ConfigurationManager configManager = new LstConfigurationManager();
 			this.ideUIAdapter = ideUIAdapter;
-			this.userPreferencesAdapter = userPreferencesAdapter;
+//			this.userPreferencesAdapter = userPreferencesAdapter;
 			this.buildOptionsAdapter = new AjcBuildOptions(userPreferencesAdapter);
 			this.buildConfigEditor = new TreeViewBuildConfigEditor();
 			this.rootFrame = rootFrame;
@@ -149,7 +149,7 @@ public class AjdeUIManager {
 		int x = (rootFrame.getWidth()/2) + rootFrame.getX() - optionsFrame.getWidth()/2;
 		int y = (rootFrame.getHeight()/2) + rootFrame.getY() - optionsFrame.getHeight()/2;
 		optionsFrame.setLocation(x, y);
-		optionsFrame.show();
+		optionsFrame.setVisible(true);
 	}
 	
 	public AjcBuildOptions getBuildOptions() {

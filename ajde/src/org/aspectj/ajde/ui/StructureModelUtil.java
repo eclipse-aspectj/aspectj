@@ -37,6 +37,9 @@ import org.aspectj.asm.IProgramElement;
 public class StructureModelUtil {
 	
 	public static class ModelIncorrectException extends Exception {
+
+		private static final long serialVersionUID = 8920868549577870993L;
+
 		public ModelIncorrectException(String s) {
 			super(s);
 		}

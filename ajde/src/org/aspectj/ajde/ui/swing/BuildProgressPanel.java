@@ -30,6 +30,7 @@ import org.aspectj.ajde.Ajde;
  */
 class BuildProgressPanel extends JPanel {
 
+	private static final long serialVersionUID = -8045879840621749183L;
 	private static final int MAX_VAL = 100;
 	//private JDialog dialog = null;
 

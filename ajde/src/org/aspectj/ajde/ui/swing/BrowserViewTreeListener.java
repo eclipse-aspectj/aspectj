@@ -110,7 +110,10 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             JMenuItem showSourcesItem = new JMenuItem("Display sources", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.CODE));
             showSourcesItem.setFont(new java.awt.Font("Dialog", 0, 11));
             showSourcesItem.addActionListener(new AbstractAction() {
-                public void actionPerformed(ActionEvent e) {
+                
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                     //AjdeUIManager.getDefault().getViewManager().showSourcesNodes(signatures);
                     // USED THE FOLLOWING FROM: BrowserViewManager:
 //					public void showSourcesNodes(java.util.List nodes) {
@@ -139,7 +142,10 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             JMenuItem generatePCD = new JMenuItem("Pointcut Wizard (alpha)...", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.POINTCUT));
             generatePCD.setFont(new java.awt.Font("Dialog", 0, 11));
             generatePCD.addActionListener(new AbstractAction() {
-                public void actionPerformed(ActionEvent e) {
+                
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                     AjdeUIManager.getDefault().getViewManager().extractAndInsertSignatures(signatures, true);
                 }
             });

@@ -255,7 +255,7 @@ public class Ajde {
         final StringBuffer command = new StringBuffer();
         LangUtil.ProcessController controller
             = new LangUtil.ProcessController() {
-                protected void doCompleting(Throwable thrown, int result) {
+                public void doCompleting(Throwable thrown, int result) {
                     LangUtil.ProcessController.Thrown any = getThrown(); 
                     if (!any.thrown && (null == thrown) && (0 == result)) {
                         return; // no errors

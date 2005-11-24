@@ -28,10 +28,10 @@ public class LstBuildConfigFileParser extends ConfigParser {
 	private List importedFiles = new ArrayList();
 	private List problemEntries = new ArrayList();
 
-	private String currFilePath;
+//	private String currFilePath;
 
 	public LstBuildConfigFileParser(String currFilePath) {
-		this.currFilePath = currFilePath;		
+//		this.currFilePath = currFilePath;		
 	}  
 
     protected void showWarning(String message) {

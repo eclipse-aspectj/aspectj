@@ -23,7 +23,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,13 +54,14 @@ import org.aspectj.asm.IProgramElement;
  */
 public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEditor {
 
+	private static final long serialVersionUID = 8071799814661969685L;
 	private ConfigTreeNode root;
 //	private ConfigTreeNode currNode;
 	private BuildConfigModel model = null;
 	
     private static java.util.List selectedEntries = new ArrayList();
-    private String configFile = null;
-    private File sourcePath = null;
+//    private String configFile = null;
+//    private File sourcePath = null;
     //private BuildConfigModelBuilder configTreeBuilder = new BuildConfigModelBuilder();
     
     BorderLayout borderLayout1 = new BorderLayout();
@@ -80,8 +80,8 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
                 Ajde.getDefault().getErrorHandler().handleError("No structure is selected for editing.");
                 return;
             }
-            this.configFile = configFile;
-            sourcePath = new File(new File(configFile).getParent());
+ //           this.configFile = configFile;
+ //           sourcePath = new File(new File(configFile).getParent());
             jbInit();
             jLabel1.setText(" Build configuration: " + configFile);
 
@@ -151,7 +151,9 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
     }
 
     private class ConfigTreeNode extends DefaultMutableTreeNode {
-        public JCheckBox checkBox = null;
+       
+		private static final long serialVersionUID = 1L;
+		public JCheckBox checkBox = null;
         public BuildConfigNode modelNode;
 
         public ConfigTreeNode(BuildConfigNode modelNode) {
@@ -213,7 +215,9 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
     }
 
     static class ConfigTreeCellRenderer extends DefaultTreeCellRenderer {
-        public Component getTreeCellRendererComponent(JTree tree,
+ 		private static final long serialVersionUID = -3120665318910899066L;
+
+		public Component getTreeCellRendererComponent(JTree tree,
                                                       Object value,
                                                       boolean sel,
                                                       boolean expanded,

@@ -36,10 +36,10 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public static final String outjarName = "/bin/output.jar";
 
 
-	private static int nonreweavesize_CalculatePI;
-	private static int nonreweavesize_Logger;
-	private static int reweavablesize_CalculatePI;
-	private static int reweavablesize_Logger;
+//	private static int nonreweavesize_CalculatePI;
+//	private static int nonreweavesize_Logger;
+//	private static int reweavablesize_CalculatePI;
+//	private static int reweavablesize_Logger;
 			
 	/**
 	 * Constructor for JarResourceCopyTestCase.
@@ -90,8 +90,8 @@ public class ReweavableTestCase extends AjdeTestCase {
 		if (debugTests) System.out.println("CalculatePI.class is of size: "+fCalc.length());
 		if (debugTests) System.out.println("Logger.class is of size: "+fLog.length());
 		if (debugTests) System.out.println("\n\n\n");
-		nonreweavesize_CalculatePI = (int)fCalc.length();
-		nonreweavesize_Logger = (int)fLog.length();
+		/*nonreweavesize_CalculatePI = (int)*/fCalc.length();
+		/*nonreweavesize_Logger = (int)*/fLog.length();
 	}
 
 
@@ -134,8 +134,8 @@ public class ReweavableTestCase extends AjdeTestCase {
 //		assertTrue("Reweavable version should be larger than non-reweavable version of Logger",
 //		  fLog.length()>nonreweavesize_Logger);
 
-		reweavablesize_CalculatePI = (int)fCalc.length();
-		reweavablesize_Logger = (int)fLog.length();
+		/*reweavablesize_CalculatePI = (int)*/fCalc.length();
+		/*reweavablesize_Logger = (int)*/fLog.length();
 		
 		if (debugTests) System.out.println("\n\n\n");
 	}

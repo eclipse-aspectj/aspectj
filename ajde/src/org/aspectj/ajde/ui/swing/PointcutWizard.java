@@ -27,8 +27,9 @@ import org.aspectj.ajde.ui.*;
  * @author Mik Kersten
  */
 class PointcutWizard extends JFrame {
-    private BrowserViewPanel typeTreeView = null;
-    private java.util.List signatures = null;
+ 	private static final long serialVersionUID = -9058319919402871975L;
+//	private BrowserViewPanel typeTreeView = null;
+//    private java.util.List signatures = null;
 
     JPanel jPanel1 = new JPanel();
     JPanel jPanel2 = new JPanel();
@@ -49,10 +50,10 @@ class PointcutWizard extends JFrame {
     JPanel jPanel5 = new JPanel();
 
     public PointcutWizard(java.util.List signatures) {
-        this.signatures = signatures;
+ //       this.signatures = signatures;
         ArrayList views = new ArrayList();
         views.add(StructureViewProperties.Hierarchy.INHERITANCE);
-        typeTreeView = new BrowserViewPanel(AjdeUIManager.getDefault().getIconRegistry(), views, StructureViewProperties.Hierarchy.INHERITANCE);
+//        typeTreeView = new BrowserViewPanel(AjdeUIManager.getDefault().getIconRegistry(), views, StructureViewProperties.Hierarchy.INHERITANCE);
         
         throw new RuntimeException("unimplemented, can't get the current file");
         //typeTreeView.updateTree(Ajde.getDefault().getEditorManager().getCurrFile());

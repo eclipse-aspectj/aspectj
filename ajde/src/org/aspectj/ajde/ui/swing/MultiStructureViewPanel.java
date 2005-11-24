@@ -25,7 +25,9 @@ import org.aspectj.ajde.Ajde;
  * @author  Mik Kersten
  */
 public class MultiStructureViewPanel extends JPanel {
-    JSplitPane views_splitPane;
+ 
+	private static final long serialVersionUID = -4409192026967597082L;
+	JSplitPane views_splitPane;
     BorderLayout borderLayout1 = new BorderLayout();
 
 	public MultiStructureViewPanel(StructureViewPanel topPanel, StructureViewPanel bottomPanel) {

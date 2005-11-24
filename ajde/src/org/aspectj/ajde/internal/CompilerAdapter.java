@@ -259,8 +259,7 @@ public class CompilerAdapter {
         if (options.getSourceCompatibilityLevel() != null && options.getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_5)) {
 		    optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_5);
 		    optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5); 
-		} else if (options.getSourceOnePointFourMode() 
-		        || options.getSourceCompatibilityLevel() != null && options.getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_4)) {
+		} else if (options.getSourceCompatibilityLevel() != null && options.getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_4)) {
 		    optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
 			optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_4);
 		} 

@@ -43,7 +43,8 @@ import org.aspectj.asm.IProgramElement;
  * @author Mik Kersten
  */
 class BrowserView extends JPanel {
-    private BrowserViewPanel masterView;
+	private static final long serialVersionUID = 1L;
+//	private BrowserViewPanel masterView;
     private BrowserViewPanel slaveView;
     private boolean slaveViewVisible = false;
     private String lastSelectedConfig = "";
@@ -69,7 +70,7 @@ class BrowserView extends JPanel {
 
     public BrowserView(BrowserViewPanel masterView, BrowserViewPanel slaveView, IconRegistry icons) {
         try {
-            this.masterView = masterView;
+ //           this.masterView = masterView;
             this.slaveView = slaveView;
             this.icons = icons;
             configs_comboBox = new JComboBox(Ajde.getDefault().getProjectProperties().getBuildConfigFiles().toArray());
@@ -248,7 +249,10 @@ class BrowserView extends JPanel {
 //    }
 
     static class ConfigsCellRenderer extends JLabel implements ListCellRenderer {
-        public ConfigsCellRenderer() {
+
+    		private static final long serialVersionUID = 8795959045339903340L;
+
+		public ConfigsCellRenderer() {
             setOpaque(true);
         }
 

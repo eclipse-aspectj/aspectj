@@ -30,7 +30,8 @@ import javax.swing.JTextArea;
 import javax.swing.border.Border;
 
 public class ErrorDialog extends JDialog {
-    JPanel top_panel = new JPanel();
+	private static final long serialVersionUID = 5646564514289861666L;
+	JPanel top_panel = new JPanel();
     BorderLayout borderLayout2 = new BorderLayout();
     JPanel button_panel = new JPanel();
     JButton close_button = new JButton();

@@ -48,10 +48,10 @@ public class BuildOptionsTest extends AjdeTestCase {
 		assertTrue("character encoding", buildOptions.getCharacterEncoding().equals("mumble"));
 	}
 	
-	public void testPortingMode() {
-		buildOptions.setPortingMode(true);
-		assertTrue("porting mode", buildOptions.getPortingMode());
-	}
+//	public void testPortingMode() {
+//		buildOptions.setPortingMode(true);
+//		assertTrue("porting mode", buildOptions.getPortingMode());
+//	}
 
 	public void testVerboseMode() {
 		buildOptions.setVerboseMode(true);
@@ -153,7 +153,7 @@ public class BuildOptionsTest extends AjdeTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		buildOptions.setCharacterEncoding("");
-		buildOptions.setPortingMode(true);
+//		buildOptions.setPortingMode(true);
 	}
 }
 

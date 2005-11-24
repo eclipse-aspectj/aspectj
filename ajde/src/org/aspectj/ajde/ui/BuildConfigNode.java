@@ -176,6 +176,8 @@ public class BuildConfigNode {
 	 */
 	public static class Kind implements Serializable {
 		
+		private static final long serialVersionUID = 3924996793884978885L;
+		
 		public static final Kind FILE_JAVA = new Kind("Java source file");
 		public static final Kind FILE_ASPECTJ = new Kind("AspectJ source file");
 		public static final Kind FILE_LST = new Kind("build configuration file");

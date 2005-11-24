@@ -28,6 +28,7 @@ import org.aspectj.asm.*;
 
 public class SimpleStructureViewToolPanel extends JPanel {
 
+	private static final long serialVersionUID = -7573973278642540506L;
 	private StructureView currentView;
 	private JButton separator_button = new JButton();
 	private boolean hideNonAJEnabled = false;
