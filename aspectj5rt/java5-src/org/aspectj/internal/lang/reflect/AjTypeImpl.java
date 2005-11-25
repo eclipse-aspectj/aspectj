@@ -118,8 +118,9 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getSupertype()
 	 */
-	public AjType<?> getSupertype() {
-		return new AjTypeImpl(clazz.getSuperclass());
+	public AjType<? super T> getSupertype() {
+		Class<? super T> superclass = clazz.getSuperclass();
+		return (AjType<? super T>) new AjTypeImpl(superclass);
 	}
 
 	/* (non-Javadoc)

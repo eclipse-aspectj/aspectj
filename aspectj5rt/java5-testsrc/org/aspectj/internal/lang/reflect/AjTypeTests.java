@@ -60,7 +60,7 @@ public class AjTypeTests extends TestCase {
 	}
 	
 	public void testGetSupertype() {
-		Class stringSuper = String.class.getSuperclass();
+		Class<?> stringSuper = String.class.getSuperclass();
 		AjType ajSuper = stringType.getSupertype();
 		assertEquals(AjTypeSystem.getAjType(stringSuper),ajSuper);
 	}

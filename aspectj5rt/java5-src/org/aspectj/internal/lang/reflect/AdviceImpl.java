@@ -64,7 +64,7 @@ public class AdviceImpl implements Advice {
 			this.genericParameterTypes = new Type[genTypes.length - syntheticCount];
 			for (int i = 0; i < genericParameterTypes.length; i++) {
 				if (genTypes[i] instanceof Class) {
-					this.genericParameterTypes[i] = AjTypeSystem.getAjType((Class)genTypes[i]);
+					this.genericParameterTypes[i] = AjTypeSystem.getAjType((Class<?>)genTypes[i]);
 				} else {
 					this.genericParameterTypes[i] = genTypes[i];
 				}

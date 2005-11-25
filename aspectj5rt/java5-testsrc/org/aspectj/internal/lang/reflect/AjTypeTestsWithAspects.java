@@ -42,7 +42,7 @@ import org.aspectj.lang.reflect.TypePatternBasedPerClause;
 
 public class AjTypeTestsWithAspects extends TestCase {
 
-	private AjType sa;
+	private AjType<SimpleAspect> sa;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -50,11 +50,11 @@ public class AjTypeTestsWithAspects extends TestCase {
 	}
 
 	public void testGetPerClause() {
-		AjType perThisA = AjTypeSystem.getAjType(PerThisAspect.class);
-		AjType perTargetA = AjTypeSystem.getAjType(PerTargetAspect.class);
-		AjType perCflowA = AjTypeSystem.getAjType(PerCflowAspect.class);
-		AjType perCflowbelowA = AjTypeSystem.getAjType(PerCflowbelowAspect.class);
-		AjType perTypeWithinA = AjTypeSystem.getAjType(PerTypeWithin.class);
+		AjType<PerThisAspect> perThisA = AjTypeSystem.getAjType(PerThisAspect.class);
+		AjType<PerTargetAspect> perTargetA = AjTypeSystem.getAjType(PerTargetAspect.class);
+		AjType<PerCflowAspect> perCflowA = AjTypeSystem.getAjType(PerCflowAspect.class);
+		AjType<PerCflowbelowAspect> perCflowbelowA = AjTypeSystem.getAjType(PerCflowbelowAspect.class);
+		AjType<PerTypeWithin> perTypeWithinA = AjTypeSystem.getAjType(PerTypeWithin.class);
 		
 		PerClause pc = perThisA.getPerClause();
 		assertEquals(PerClauseKind.PERTHIS,pc.getKind());
