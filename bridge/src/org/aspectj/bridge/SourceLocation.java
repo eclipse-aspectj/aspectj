@@ -29,7 +29,9 @@ import org.aspectj.util.LangUtil;
  */
 public class SourceLocation implements ISourceLocation, java.io.Serializable {
     
-    /** used when SourceLocation is not available */
+	private static final long serialVersionUID = -5434765814401009794L;
+
+	/** used when SourceLocation is not available */
     public static final ISourceLocation UNKNOWN 
         = new SourceLocation(ISourceLocation.NO_FILE, 0, 0, 0);
     

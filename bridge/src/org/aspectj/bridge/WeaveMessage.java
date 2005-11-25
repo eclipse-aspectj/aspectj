@@ -102,11 +102,11 @@ public class WeaveMessage extends Message {
 	
 	public static class WeaveMessageKind {
     	
-		private int id;
+		//private int id;
 		private String message;
     	
 		public WeaveMessageKind(int id,String message) {
-			this.id = id;
+			//this.id = id;
 			this.message = message;
 		}
     	

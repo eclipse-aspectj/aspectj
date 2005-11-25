@@ -38,6 +38,8 @@ import java.util.ArrayList;
  */
 public class AbortException extends RuntimeException { // XXX move porters out, handle proxy better
 
+	private static final long serialVersionUID = -7211791639898586417L;
+
 	private boolean isSilent = false;
 
     /** used when message text is null */

@@ -98,7 +98,9 @@ public class PinpointingMessageHandler implements IMessageHandler {
 	}
 	
    private static class MessageIssued extends RuntimeException {
-    	public String getMessage() {
+ 	private static final long serialVersionUID = 1L;
+
+		public String getMessage() {
     		return "message issued...";
     	}
     }
