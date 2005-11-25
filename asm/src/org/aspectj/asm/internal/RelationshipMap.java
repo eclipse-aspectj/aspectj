@@ -25,18 +25,21 @@ import org.aspectj.asm.IRelationship.Kind;
  */
 public class RelationshipMap extends HashMap implements IRelationshipMap {
 	
-	// As this gets serialized, make the hierarchy transient and
-	// settable
-	private transient IHierarchy hierarchy;
+	private static final long serialVersionUID = 496638323566589643L;
+
+//	// As this gets serialized, make the hierarchy transient and
+//	// settable
+//	private transient IHierarchy hierarchy;
 	
 	public RelationshipMap() { }
 	
 	public RelationshipMap(IHierarchy hierarchy) {
-		this.hierarchy = hierarchy;
+//		this.hierarchy = hierarchy;
 	}
 
 	public void setHierarchy(IHierarchy hierarchy) {
-		this.hierarchy = hierarchy;
+		// commented out as field never read !
+//		this.hierarchy = hierarchy;
 	}
 	
 	public List get(String handle) {

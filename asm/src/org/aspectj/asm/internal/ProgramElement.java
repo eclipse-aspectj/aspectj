@@ -29,6 +29,8 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class ProgramElement implements IProgramElement {
 		
+	private static final long serialVersionUID = 171673495267384449L;
+	
 	protected IProgramElement parent = null;
 	protected String name = "";
 	// children.listIterator() should support remove() operation
@@ -43,7 +45,7 @@ public class ProgramElement implements IProgramElement {
 	private Accessibility accessibility;
 	private String declaringType = "";
 	private String formalComment = "";
-	private String packageName = null;
+	//private String packageName = null;
 	private boolean runnable = false;
 	private boolean implementor = false; 
 	private boolean overrider = false;
@@ -116,7 +118,7 @@ public class ProgramElement implements IProgramElement {
 		this.modifiers = genModifiers(modifiers);
 		this.accessibility = accessibility;
 		this.declaringType = declaringType;
-		this.packageName = packageName;
+		//this.packageName = packageName;
 		this.formalComment = formalComment;
 		this.relations = relations;
 		cacheByHandle();

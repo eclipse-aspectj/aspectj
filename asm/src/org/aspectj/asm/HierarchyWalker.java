@@ -21,14 +21,14 @@ package org.aspectj.asm;
  */
 public abstract class HierarchyWalker {
 
-	private IHierarchy hierarchy;
+//	private IHierarchy hierarchy;
 
 	public HierarchyWalker() {
 		super();
 	}
 	
 	public HierarchyWalker(IHierarchy hierarchy) {
-		this.hierarchy = hierarchy;
+//		this.hierarchy = hierarchy;
     }
 
     protected void preProcess(IProgramElement node) { }

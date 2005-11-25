@@ -25,7 +25,9 @@ import org.aspectj.bridge.*;
  */
 public class AspectJElementHierarchy implements IHierarchy {
 	
-    protected  IProgramElement root = null;
+	private static final long serialVersionUID = 6462734311117048620L;
+	
+	protected  IProgramElement root = null;
     protected String configFile = null;
 
     private Map fileMap = null;

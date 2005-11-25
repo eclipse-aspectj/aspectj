@@ -25,6 +25,8 @@ import org.aspectj.asm.IRelationship;
  */
 public class Relationship implements IRelationship {
 	
+	private static final long serialVersionUID = 3855166397957609120L;
+
 	private String name;
 	private Kind kind;
 	private String sourceHandle;

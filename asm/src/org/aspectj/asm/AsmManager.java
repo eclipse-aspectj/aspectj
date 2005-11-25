@@ -38,7 +38,7 @@ public class AsmManager {
 
     private IElementHandleProvider handleProvider;
     private List structureListeners = new ArrayList();
-	private boolean shouldSaveModel = true;
+//	private boolean shouldSaveModel = true;
 
 	
 	public void setRelationshipMap(IRelationshipMap irm) { mapper = irm;}
@@ -245,9 +245,9 @@ public class AsmManager {
         return configFilePath.substring(0, configFilePath.lastIndexOf(".lst")) + ".ajsym";
     }
     
-	public void setShouldSaveModel(boolean shouldSaveModel) {
-		this.shouldSaveModel = shouldSaveModel;
-	}
+//	public void setShouldSaveModel(boolean shouldSaveModel) {
+//		this.shouldSaveModel = shouldSaveModel;
+//	}
 	
 	// ==== implementation of canonical file path map and accessors ==============
 
@@ -700,7 +700,7 @@ public class AsmManager {
 //			flightrecorder.append("In removeNode, about to chuck away: "+progElem+"\n");
 		
 			verifyAssumption(progElem!=null);
-			boolean deleteOK = false;
+//			boolean deleteOK = false;
 			IProgramElement parent = progElem.getParent();
 //			flightrecorder.append("Parent of it is "+parent+"\n");
 			List kids = parent.getChildren();
@@ -710,7 +710,7 @@ public class AsmManager {
 		  		if (kids.get(i).equals(progElem)) {
 			 		kids.remove(i); 
 //			  		flightrecorder.append("Removing it\n");
-			  		deleteOK=true;
+//			  		deleteOK=true;
 			  		break;
 		  		}
 			}

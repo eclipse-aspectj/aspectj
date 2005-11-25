@@ -38,7 +38,9 @@ public interface IRelationship extends Serializable {
 	 */
 	public static class Kind implements Serializable {
 		
-        public static final Kind DECLARE_WARNING       = new Kind("declare warning");
+		private static final long serialVersionUID = -2691351740214705220L;
+		
+		public static final Kind DECLARE_WARNING       = new Kind("declare warning");
         public static final Kind DECLARE_ERROR         = new Kind("declare error");
 		public static final Kind ADVICE_AROUND         = new Kind("around advice");
 		public static final Kind ADVICE_AFTERRETURNING = new Kind("after returning advice");

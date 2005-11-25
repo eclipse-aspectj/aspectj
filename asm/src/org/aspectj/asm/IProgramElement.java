@@ -32,6 +32,7 @@ public interface IProgramElement extends Serializable {
 	// Extra stuff
 	// Could be just a string but may prove more useful as an object in the long run ...
 	public static class ExtraInformation implements Serializable {
+		private static final long serialVersionUID = -3880735494840820638L;
 		private String extraInfo;
 		public ExtraInformation() { extraInfo = "";}
 	
@@ -148,6 +149,8 @@ public interface IProgramElement extends Serializable {
 	 */
 	public static class Modifiers implements Serializable {
 		
+		private static final long serialVersionUID = -8279300899976607927L;
+		
 		public static final Modifiers STATIC = new Modifiers("static");
 		public static final Modifiers FINAL = new Modifiers("final");
 		public static final Modifiers ABSTRACT = new Modifiers("abstract");
@@ -180,6 +183,8 @@ public interface IProgramElement extends Serializable {
 	 */
 	public static class Accessibility implements Serializable {
 		
+		private static final long serialVersionUID = 5371838588180918519L;
+		
 		public static final Accessibility PUBLIC = new Accessibility("public");
 		public static final Accessibility PACKAGE = new Accessibility("package");
 		public static final Accessibility PROTECTED = new Accessibility("protected");
@@ -209,6 +214,8 @@ public interface IProgramElement extends Serializable {
 	 */
 	public static class Kind implements Serializable {
 		
+		private static final long serialVersionUID = -1963553877479266124L;
+
 		public static final Kind PROJECT = new Kind("project");
 		public static final Kind PACKAGE = new Kind("package");
 		public static final Kind FILE = new Kind("file");
