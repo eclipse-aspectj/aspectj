@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 
 /**
