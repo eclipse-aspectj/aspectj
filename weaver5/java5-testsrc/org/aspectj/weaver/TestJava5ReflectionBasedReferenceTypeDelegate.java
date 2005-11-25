@@ -1,17 +1,27 @@
 package org.aspectj.weaver;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegateTest;
 
 public class TestJava5ReflectionBasedReferenceTypeDelegate extends ReflectionBasedReferenceTypeDelegateTest {
+	
+	public static Test suite() {
+		TestSuite suite = new TestSuite("TestJava5ReflectionBasedReferenceTypeDelegate");
+		suite.addTestSuite(TestJava5ReflectionBasedReferenceTypeDelegate.class);
+		return suite;
+	}
+	
 	
 	/**
 	 * Let's play about with a generic type and ensure we can work with it in a reflective world.
 	 */
 	public void testResolveGeneric() {
 		UnresolvedType collectionType = UnresolvedType.forName("java.util.Collection");
-		ResolvedType rt= world.resolve(collectionType).getRawType().resolve(world);
+		world.resolve(collectionType).getRawType().resolve(world);
 		ResolvedMember[] methods = world.resolve(collectionType).getDeclaredMethods();
-		int i = findMethod("toArray", methods);
+		int i = findMethod("toArray", 1, methods);
 		assertTrue("Couldn't find 'toArray' in the set of methods? "+methods,i != -1);
 		String expectedSignature = "T[] java.util.Collection.toArray(T[])";
 		assertTrue("Expected signature of '"+expectedSignature+"' but it was '"+methods[i],methods[i].toString().equals(expectedSignature));

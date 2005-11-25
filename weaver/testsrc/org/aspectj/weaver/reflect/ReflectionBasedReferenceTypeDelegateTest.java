@@ -105,6 +105,15 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 		return -1;
 	}
 	
+	protected int findMethod(String name, int numArgs, ResolvedMember[] methods) {
+		for (int i=0; i<methods.length; i++) {
+			if (name.equals(methods[i].getName()) && (methods[i].getParameterTypes().length == numArgs)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public void testGetDeclaredMethods() {
 		ResolvedMember[] methods = objectType.getDeclaredMethods();
 		assertEquals(Object.class.getDeclaredMethods().length + Object.class.getDeclaredConstructors().length, methods.length);
