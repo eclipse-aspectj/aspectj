@@ -79,19 +79,19 @@ import org.aspectj.lang.annotation.*;
               
               // Try something simple ... when this works then look at uncommenting the two below and the two related advice
               // in the sub aspect
-              public pointcut addingChildSimple(Parent p): execution(* Parent.addChild(Child)) && this(p);
+              public pointcut addingChildSimple(Parent p): execution(* ParentHasChildren.addChild(ChildHasParent)) && this(p);
               
               /**
                * Matches at an addChild join point for the parent type P and child type C
                */    
 //             public pointcut addingChild(Parent p, Child c) :
-//               execution(* Parent.addChild(Child)) && this(p) && args(c);
+//               execution(* ParentHasChildren.addChild(ChildHasParent)) && this(p) && args(c);
                
               /**
                 * Matches at a removeChild join point for the parent type P and child type C
                 */    
 //              public pointcut removingChild(Parent p, Child c) :
-//                execution(* Parent.removeChild(Child)) && this(p) && args(c);
+//                execution(* ParentHasChildren.removeChild(ChildHasParent)) && this(p) && args(c);
 
           }
           
