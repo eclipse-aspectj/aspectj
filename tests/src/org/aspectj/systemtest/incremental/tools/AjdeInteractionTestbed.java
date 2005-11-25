@@ -72,6 +72,10 @@ public class AjdeInteractionTestbed extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
+		MyStateListener.reset();
+		MyBuildProgressMonitor.reset();
+		MyTaskListManager.reset();
+		
 		// Create a sandbox in which to work
 		createEmptySandbox();
 	}

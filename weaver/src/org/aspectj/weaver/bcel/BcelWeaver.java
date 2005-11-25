@@ -1071,6 +1071,7 @@ public class BcelWeaver implements IWeaver {
 		        wovenClassNames.add(className);
 		    }
 		}
+		
 		CompilationAndWeavingContext.leavingPhase(aspectToken);
 
 		requestor.weavingClasses();

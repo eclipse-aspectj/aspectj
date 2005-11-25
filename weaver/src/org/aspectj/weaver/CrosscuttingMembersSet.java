@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.weaver.patterns.DeclareParents;
 
 /**
@@ -48,26 +49,51 @@ public class CrosscuttingMembersSet {
 		this.world = world;
 	}
 
+
 	/**
 	 * @return whether or not that was a change to the global signature
 	 * 			XXX for efficiency we will need a richer representation than this
 	 */
 	public boolean addOrReplaceAspect(ResolvedType aspectType) {
+		boolean change = false;
 		CrosscuttingMembers xcut = (CrosscuttingMembers)members.get(aspectType);
 		if (xcut == null) {
 			members.put(aspectType, aspectType.collectCrosscuttingMembers());
 			clearCaches();
-			return true;
+			change = true;
 		} else {
 			if (xcut.replaceWith(aspectType.collectCrosscuttingMembers())) {
 				clearCaches();
-				return true;
+				change = true;
 			} else {
-				return false;
+				change = false;
 			}
 		}
+//		if (aspectType.isAbstract()) {
+//			// we might have sub-aspects that need to re-collect their crosscutting members from us
+//			boolean ancestorChange = addOrReplaceDescendantsOf(aspectType); 
+//			change = change || ancestorChange;
+//		}
+		return change;
 	}
     
+	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType) {
+		Set knownAspects = members.keySet();
+		Set toBeReplaced = new HashSet();
+		for(Iterator it = knownAspects.iterator(); it.hasNext(); ) {
+			ResolvedType candidateAncestor = (ResolvedType)it.next();
+			if ((candidateAncestor != aspectType) && (aspectType.isAssignableFrom(candidateAncestor))) {
+				toBeReplaced.add(candidateAncestor);
+			}
+		}
+		boolean change = false;
+		for (Iterator it = toBeReplaced.iterator(); it.hasNext(); ) {
+			boolean thisChange = addOrReplaceAspect((ResolvedType)it.next());
+			change = change || thisChange;
+		}
+		return change;
+	}
+	
     public void addAdviceLikeDeclares(ResolvedType aspectType) {
         CrosscuttingMembers xcut = (CrosscuttingMembers)members.get(aspectType);
         xcut.addDeclares(aspectType.collectDeclares(true));

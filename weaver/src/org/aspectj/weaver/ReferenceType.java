@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -31,6 +32,14 @@ import org.aspectj.weaver.patterns.PerClause;
  * is also set to point to the generic form.
  */
 public class ReferenceType extends ResolvedType {
+	
+	/**
+	 * For generic types, this list holds references to all the derived raw
+	 * and parameterized versions. We need this so that if the generic delegate
+	 * is swapped during incremental compilation, the delegate of the derivatives
+	 * is swapped also.
+	 */
+	private List/*ReferenceType*/ derivativeTypes = new ArrayList();
 	
 	/**
 	 * For parameterized types (or the raw type) - this field points to the actual
@@ -77,6 +86,7 @@ public class ReferenceType extends ResolvedType {
     	this.genericType = genericReferenceType;
     	this.typeKind = TypeKind.PARAMETERIZED;
     	this.delegate = genericReferenceType.getDelegate();
+    	genericReferenceType.addDependentType(this);
     }
     
     /**
@@ -93,6 +103,11 @@ public class ReferenceType extends ResolvedType {
     	this.genericType = genericReferenceType;
     	this.typeKind = TypeKind.RAW;
     	this.delegate = genericReferenceType.getDelegate();    	
+    	genericReferenceType.addDependentType(this);
+    }
+    
+    private void addDependentType(ReferenceType dependent) {
+    		this.derivativeTypes.add(dependent);
     }
     
     public String getSignatureForAttribute() {
@@ -500,10 +515,18 @@ public class ReferenceType extends ResolvedType {
 	public void setDelegate(ReferenceTypeDelegate delegate) {
 		this.delegate = delegate;
 		
+		for(Iterator it = this.derivativeTypes.iterator(); it.hasNext(); ) {
+			ReferenceType dependent = (ReferenceType) it.next();
+			dependent.setDelegate(delegate);
+		}
+		
 		// If we are raw, we have a generic type - we should ensure it uses the
 		// same delegate
-		if (isRawType() && getGenericType()!=null) {
-			((ReferenceType)getGenericType()).setDelegate(delegate);
+		if (isRawType() && getGenericType()!=null ) {
+			ReferenceType genType = (ReferenceType) getGenericType();
+			if (genType.getDelegate() != delegate) { // avoids circular updates
+				genType.setDelegate(delegate);
+			}
 		}
 		clearParameterizationCaches();
 	}

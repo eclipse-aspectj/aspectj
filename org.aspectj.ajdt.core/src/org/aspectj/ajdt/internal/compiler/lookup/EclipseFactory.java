@@ -964,7 +964,15 @@ public class EclipseFactory {
 		// give it the same delegate and link it to the raw type
 		if (binding.isGenericType()) {
 			UnresolvedType complexTx = fromBinding(binding); // fully aware of any generics info
-			ReferenceType complexName = new ReferenceType(complexTx,world);//getWorld().lookupOrCreateName(complexTx);
+			ResolvedType cName = world.resolve(complexTx,true);
+			ReferenceType complexName = null;
+			if (cName != ResolvedType.MISSING) {
+				complexName = (ReferenceType) cName;
+				complexName = (ReferenceType) complexName.getGenericType();
+				if (complexName == null) complexName = new ReferenceType(complexTx,world);
+			} else {
+				complexName = new ReferenceType(complexTx,world);
+			}
 			name.setGenericType(complexName);
 			complexName.setDelegate(t);
 			complexName.setSourceContext(t.getResolvedTypeX().getSourceContext());

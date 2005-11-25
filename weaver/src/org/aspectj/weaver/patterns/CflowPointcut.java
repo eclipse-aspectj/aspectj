@@ -153,6 +153,11 @@ public class CflowPointcut extends Pointcut {
 	}
 	
 	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
+		
+//		if (this.entry.state == Pointcut.SYMBOLIC) {
+//			// too early to concretize, return unchanged
+//			return this;
+//		}
 
 		// Enforce rule about which designators are supported in declare
 		if (isDeclare(bindings.getEnclosingAdvice())) {
@@ -218,16 +223,17 @@ public class CflowPointcut extends Pointcut {
 		  	// Create a counter field in the aspect
 		  	localCflowField = new ResolvedMemberImpl(Member.FIELD,concreteAspect,Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
 		  		NameMangler.cflowCounter(xcut),UnresolvedType.forName(NameMangler.CFLOW_COUNTER_TYPE).getSignature());
+		   
+		  	// Create type munger to add field to the aspect
+		  	concreteAspect.crosscuttingMembers.addTypeMunger(world.makeCflowCounterFieldAdder(localCflowField));
 		  
-		    // Create type munger to add field to the aspect
-		    concreteAspect.crosscuttingMembers.addTypeMunger(world.makeCflowCounterFieldAdder(localCflowField));
-		  
-		    // Create shadow munger to push stuff onto the stack
-		    concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
-		  		Advice.makeCflowEntry(world,concreteEntry,isBelow,localCflowField,freeVars.length,innerCflowEntries,inAspect));
-		    
-		    putCflowfield(concreteEntry,localCflowField); // Remember it
+		  	// Create shadow munger to push stuff onto the stack
+		  	concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
+		    Advice.makeCflowEntry(world,concreteEntry,isBelow,localCflowField,freeVars.length,innerCflowEntries,inAspect));
+	    
+			putCflowfield(concreteEntry,localCflowField); // Remember it
 	      }
+		    
 		  Pointcut ret = new ConcreteCflowPointcut(localCflowField, null,true);
 		  ret.copyLocationFrom(this);
 		  return ret;

@@ -115,7 +115,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 	 * Called when asking a parameterized super-aspect for its pointcuts.
 	 */
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType, boolean isParameterized) {
-		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
+		TypeVariable[] typeVariables = getDeclaringType().resolve(newDeclaringType.getWorld()).getTypeVariables();
 		if (isParameterized && (typeVariables.length != typeParameters.length)) {
 			throw new IllegalStateException("Wrong number of type parameters supplied");
 		}

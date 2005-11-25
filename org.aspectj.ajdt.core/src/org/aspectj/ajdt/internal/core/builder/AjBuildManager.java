@@ -264,10 +264,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                     // dealt with on the first call to processDelta - we are going through this loop
                     // again because in compiling something we found something else we needed to
                     // rebuild.  But what case causes this?
-                    if (hereWeGoAgain) 
+                    if (hereWeGoAgain) {
 					  if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
 					    if (AsmManager.attemptIncrementalModelRepairs)
 						  AsmManager.getDefault().processDelta(files,state.addedFiles,state.deletedFiles);
+                    }
                 }
                 if (!files.isEmpty()) {
                    	CompilationAndWeavingContext.leavingPhase(ct);

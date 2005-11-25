@@ -23,6 +23,7 @@ import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.testing.util.FileUtil;
 
 /**
@@ -48,6 +49,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
+		AjdeInteractionTestbed.VERBOSE = VERBOSE;
 	}
 	
 	
@@ -299,28 +301,26 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkWasntFullBuild();
 	}
 	
-	
-	
-//	public void testPr115251() {
-//		AjdeInteractionTestbed.VERBOSE=true;
-//		initialiseProject("PR115251");
-//		build("PR115251");
-//		checkWasFullBuild();
-//		alter("PR115251","inc1");
-//		build("PR115251");
-//		checkWasntFullBuild();
-//	}
+	public void testPr115251() {
+		//AjdeInteractionTestbed.VERBOSE=true;
+		initialiseProject("PR115251");
+		build("PR115251");
+		checkWasFullBuild();
+		alter("PR115251","inc1");
+		build("PR115251");
+		checkWasntFullBuild();
+	}
 
 	
-//	public void testPr111779() {
-//		super.VERBOSE=true;
-//		initialiseProject("PR111779");
-//		build("PR111779");
-//		alter("PR111779","inc1");
-//		build("PR111779");
-//	}
+/*	public void testPr111779() {
+		super.VERBOSE=true;
+		initialiseProject("PR111779");
+		build("PR111779");
+		alter("PR111779","inc1");
+		build("PR111779");
+	}
+*/
 
-	
 //	public void testPr93310_1() {
 //		AjdeInteractionTestbed.VERBOSE = true;
 //		initialiseProject("PR93310_1");
@@ -344,30 +344,29 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 //		build("PR93310_2");
 //		checkWasntFullBuild();
 //	}
-	
 	// Stage1: Compile two files, pack.A and pack.A1 - A1 sets a protected field in A. 
 	// Stage2: make the field private in class A > gives compile error
 	// Stage3: Add a new aspect whilst there is a compile error !
-//	public void testPr113531() {
-//		initialiseProject("PR113531");
-//		build("PR113531");
-//		assertFalse("build should have compiled ok",
-//				MyTaskListManager.hasErrorMessages());
-//		alter("PR113531","inc1");
-//		build("PR113531");
-//		assertEquals("error message should be 'foo cannot be resolved' ",
-//				"foo cannot be resolved",
-//				((IMessage)MyTaskListManager.getErrorMessages().get(0))
-//					.getMessage());
-//		alter("PR113531","inc2");
-//		build("PR113531");
-//		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
-//				MyErrorHandler.getErrorMessages().isEmpty());		
-//		assertEquals("error message should be 'foo cannot be resolved' ",
-//				"foo cannot be resolved",
-//				((IMessage)MyTaskListManager.getErrorMessages().get(0))
-//					.getMessage());
-//	}
+	public void testPr113531() {
+		initialiseProject("PR113531");
+		build("PR113531");
+		assertFalse("build should have compiled ok",
+				MyTaskListManager.hasErrorMessages());
+		alter("PR113531","inc1");
+		build("PR113531");
+		assertEquals("error message should be 'foo cannot be resolved' ",
+				"foo cannot be resolved",
+				((IMessage)MyTaskListManager.getErrorMessages().get(0))
+					.getMessage());
+		alter("PR113531","inc2");
+		build("PR113531");
+		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
+				MyErrorHandler.getErrorMessages().isEmpty());		
+		assertEquals("error message should be 'foo cannot be resolved' ",
+				"foo cannot be resolved",
+				((IMessage)MyTaskListManager.getErrorMessages().get(0))
+					.getMessage());
+	}
 
 //	public void testPr112736() {
 //		AjdeInteractionTestbed.VERBOSE = true;
@@ -380,6 +379,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 //		build("PR112736");
 //		checkWasntFullBuild();
 //	}
+	
 	
 	// other possible tests:
 	// - memory usage (freemem calls?)
