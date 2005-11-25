@@ -54,7 +54,7 @@ public class JRockitAgent implements com.bea.jvm.ClassPreProcessor {
     public JRockitAgent() {
         if (START_RMP_SERVER) {
             // the management server will be spawned in a new thread
-            RmpSocketListener management = new RmpSocketListener();
+            /*RmpSocketListener management = */new RmpSocketListener();
         }
         JVMFactory.getJVM().getClassLibrary().setClassPreProcessor(this);
     }

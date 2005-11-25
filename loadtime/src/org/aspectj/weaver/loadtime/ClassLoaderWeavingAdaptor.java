@@ -315,7 +315,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 String aspectClassName = (String) aspects.next();
                 if (acceptAspect(aspectClassName)) {
                 	info("register aspect " + aspectClassName);
-                    ResolvedType aspect = weaver.addLibraryAspect(aspectClassName);
+                    /*ResolvedType aspect = */weaver.addLibraryAspect(aspectClassName);
 
                     //generate key for SC
                     if(namespace==null){
@@ -347,7 +347,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                             concreteAspect.name,
                             gen.getBytes()
                     );
-                    ResolvedType aspect = weaver.addLibraryAspect(concreteAspect.name);
+                    /*ResolvedType aspect = */weaver.addLibraryAspect(concreteAspect.name);
 
                     //generate key for SC
                     if(namespace==null){
