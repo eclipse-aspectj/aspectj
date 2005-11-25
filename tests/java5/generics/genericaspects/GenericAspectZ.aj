@@ -75,33 +75,25 @@ import org.aspectj.lang.annotation.*;
               public void ChildHasParent<P>.setParent(P parent) {
                  parent.addChild(this);
               }
-          
-              
-              // Try something simple ... when this works then look at uncommenting the two below and the two related advice
-              // in the sub aspect
-              public pointcut addingChildSimple(Parent p): execution(* ParentHasChildren.addChild(ChildHasParent)) && this(p);
-              
+                        
               /**
                * Matches at an addChild join point for the parent type P and child type C
                */    
-//             public pointcut addingChild(Parent p, Child c) :
-//               execution(* ParentHasChildren.addChild(ChildHasParent)) && this(p) && args(c);
+             public pointcut addingChild(Parent p, Child c) :
+               execution(* ParentHasChildren.addChild(ChildHasParent)) && this(p) && args(c);
                
               /**
                 * Matches at a removeChild join point for the parent type P and child type C
                 */    
-//              public pointcut removingChild(Parent p, Child c) :
-//                execution(* ParentHasChildren.removeChild(ChildHasParent)) && this(p) && args(c);
+              public pointcut removingChild(Parent p, Child c) :
+                execution(* ParentHasChildren.removeChild(ChildHasParent)) && this(p) && args(c);
 
           }
           
-aspect GenericAspectY extends ParentChildRelationship<Top,Bottom> { 
-
-    // Advice to trigger weave infos
-	before(Top p): /*ParentChildRelationship.*/addingChildSimple(p) {}
+aspect GenericAspectZ extends ParentChildRelationship<Top,Bottom> { 
 	
-//    before(Top p,Bottom c): ParentChildRelationship.addingChild(p,c) {}
-//    before(Top p,Bottom c): ParentChildRelationship.removingChild(p,c) {}
+    before(Top p,Bottom c): addingChild(p,c) {}
+    before(Top p,Bottom c): removingChild(p,c) {}
 
   public static void main(String []argv) {
 

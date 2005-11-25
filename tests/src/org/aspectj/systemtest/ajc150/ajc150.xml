@@ -4226,8 +4226,48 @@
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - Y">
      <compile files="GenericAspectY.aj" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-execution(void ParentChildRelationship$ParentHasChildren.addChild(C))' in Type 'ParentChildRelationship' (GenericAspectY.aj:53) advised by before advice from 'GenericAspectY' (GenericAspectY.aj:101) [with runtime test]"/>
+		<message kind="weave" text="Extending interface set for type 'Top' (GenericAspectY.aj) to include 'ParentChildRelationship$ParentHasChildren&lt;Bottom&gt;' (GenericAspectY.aj)"/>
+		<message kind="weave" text="Type 'Top' (GenericAspectY.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectY.aj:'java.util.List&lt;C&gt; ParentChildRelationship$ParentHasChildren.children')"/>
+		<message kind="weave" text="Type 'Top' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'java.util.List&lt;C&gt; ParentChildRelationship$ParentHasChildren.getChildren()')"/>
+		<message kind="weave" text="Type 'Top' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'void ParentChildRelationship$ParentHasChildren.addChild(C)')"/>
+		<message kind="weave" text="Type 'Top' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'void ParentChildRelationship$ParentHasChildren.removeChild(C)')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ParentHasChildren' (GenericAspectY.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectY.aj:'java.util.List&lt;C&gt; ParentChildRelationship$ParentHasChildren.children')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ParentHasChildren' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'java.util.List&lt;C&gt; ParentChildRelationship$ParentHasChildren.getChildren()')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ParentHasChildren' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'void ParentChildRelationship$ParentHasChildren.addChild(C)')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ParentHasChildren' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'void ParentChildRelationship$ParentHasChildren.removeChild(C)')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ChildHasParent' (GenericAspectY.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectY.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.parent')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ChildHasParent' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.getParent()')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ChildHasParent' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'void ParentChildRelationship$ChildHasParent.setParent(P)')"/>
+		<message kind="weave" text="Extending interface set for type 'Bottom' (GenericAspectY.aj) to include 'ParentChildRelationship$ChildHasParent&lt;Top&gt;' (GenericAspectY.aj)"/>
+		<message kind="weave" text="Type 'Bottom' (GenericAspectY.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectY.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.parent')"/>
+		<message kind="weave" text="Type 'Bottom' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.getParent()')"/>
+		<message kind="weave" text="Type 'Bottom' (GenericAspectY.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectY.aj:'void ParentChildRelationship$ChildHasParent.setParent(P)')"/>       
      </compile>
      <run class="GenericAspectY"/>
+   </ajc-test>
+   <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - Z">
+     <compile files="GenericAspectZ.aj" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-execution(void ParentChildRelationship$ParentHasChildren.addChild(C))' in Type 'ParentChildRelationship' (GenericAspectZ.aj:53) advised by before advice from 'GenericAspectZ' (GenericAspectZ.aj:95) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'method-execution(void ParentChildRelationship$ParentHasChildren.removeChild(C))' in Type 'ParentChildRelationship' (GenericAspectZ.aj:65) advised by before advice from 'GenericAspectZ' (GenericAspectZ.aj:96) [with runtime test]"/>
+		<message kind="weave" text="Extending interface set for type 'Top' (GenericAspectZ.aj) to include 'ParentChildRelationship$ParentHasChildren&lt;Bottom&gt;' (GenericAspectZ.aj)"/>
+		<message kind="weave" text="Type 'Top' (GenericAspectZ.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectZ.aj:'java.util.List&lt;C&gt; ParentChildRelationship$ParentHasChildren.children')"/>
+		<message kind="weave" text="Type 'Top' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'java.util.List&lt;C&gt; ParentChildRelationship$ParentHasChildren.getChildren()')"/>
+		<message kind="weave" text="Type 'Top' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'void ParentChildRelationship$ParentHasChildren.addChild(C)')"/>
+		<message kind="weave" text="Type 'Top' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'void ParentChildRelationship$ParentHasChildren.removeChild(C)')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ParentHasChildren' (GenericAspectZ.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectZ.aj:'java.util.List&lt;C&gt; ParentChildRelationship$ParentHasChildren.children')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ParentHasChildren' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'java.util.List&lt;C&gt; ParentChildRelationship$ParentHasChildren.getChildren()')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ParentHasChildren' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'void ParentChildRelationship$ParentHasChildren.addChild(C)')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ParentHasChildren' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'void ParentChildRelationship$ParentHasChildren.removeChild(C)')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ChildHasParent' (GenericAspectZ.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectZ.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.parent')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ChildHasParent' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.getParent()')"/>
+		<message kind="weave" text="Type 'ParentChildRelationship$ChildHasParent' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'void ParentChildRelationship$ChildHasParent.setParent(P)')"/>
+		<message kind="weave" text="Extending interface set for type 'Bottom' (GenericAspectZ.aj) to include 'ParentChildRelationship$ChildHasParent&lt;Top&gt;' (GenericAspectZ.aj)"/>
+		<message kind="weave" text="Type 'Bottom' (GenericAspectZ.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectZ.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.parent')"/>
+		<message kind="weave" text="Type 'Bottom' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.getParent()')"/>
+		<message kind="weave" text="Type 'Bottom' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'void ParentChildRelationship$ChildHasParent.setParent(P)')"/>       
+     </compile>
+     <run class="GenericAspectZ"/>
    </ajc-test>
       
    
