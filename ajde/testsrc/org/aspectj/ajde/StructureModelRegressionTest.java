@@ -103,7 +103,7 @@ public class StructureModelRegressionTest extends AjdeTestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp("StructureModelRegressionTest");
-		Ajde.getDefault().getStructureModelManager().setShouldSaveModel(false);
+//		Ajde.getDefault().getStructureModelManager().setShouldSaveModel(false);
 	}
 	
 	public void testModelExists() {
