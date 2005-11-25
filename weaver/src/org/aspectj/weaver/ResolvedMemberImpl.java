@@ -602,7 +602,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters,ResolvedType newDeclaringType, boolean isParameterized,List aliases) {
 		if (//isParameterized &&  <-- might need this bit...
 				!getDeclaringType().isGenericType()) {
-			throw new IllegalStateException("Can't ask to parameterize a member of a non-generic type");
+			throw new IllegalStateException("Can't ask to parameterize a member of non-generic type: "+getDeclaringType()+"  kind("+getDeclaringType().typeKind+")");
 		}
 		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
 		if (isParameterized && (typeVariables.length != typeParameters.length)) {

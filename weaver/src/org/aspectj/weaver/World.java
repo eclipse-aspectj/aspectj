@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.aspectj.asm.IHierarchy;
-import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -50,6 +49,7 @@ public abstract class World implements Dump.INode {
 	
 	/** The heart of the world, a map from type signatures to resolved types */
     protected TypeMap typeMap = new TypeMap(); // Signature to ResolvedType
+    
 
     /** Calculator for working out aspect precedence */
     private AspectPrecedenceCalculator precedenceCalculator;
@@ -831,5 +831,23 @@ public abstract class World implements Dump.INode {
 	}
 
 	public void validateType(UnresolvedType type) { }
+
+    // --- with java5 we can get into a recursive mess if we aren't careful when resolving types (*cough* java.lang.Enum) ---
+	
+    // --- this first map is for java15 delegates which may try and recursively access the same type variables.
+	// --- I would rather stash this against a reference type - but we don't guarantee referencetypes are unique for
+	//     so we can't :(
+	private Map workInProgress1 = new HashMap();
+	public TypeVariable[] getTypeVariablesCurrentlyBeingProcessed(Class baseClass) {
+		return (TypeVariable[])workInProgress1.get(baseClass);
+	}
+	public void recordTypeVariablesCurrentlyBeingProcessed(Class baseClass, TypeVariable[] typeVariables) {
+		workInProgress1.put(baseClass,typeVariables);
+	}
+	public void forgetTypeVariablesCurrentlyBeingProcessed(Class baseClass) {
+		workInProgress1.remove(baseClass);
+	}
+
+    // ---
 	
 }

@@ -35,6 +35,7 @@ public class BcweaverModuleTests15 extends TestCase {
 	        suite.addTestSuite(WildTypePatternResolutionTestCase.class);
 	        if (LangUtil.is15VMOrGreater()) {
 	            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.tools.Java15PointcutExpressionTest", false);
+	            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.TestJava5ReflectionBasedReferenceTypeDelegate", false);
 	        }
 	        return suite;
 	    }

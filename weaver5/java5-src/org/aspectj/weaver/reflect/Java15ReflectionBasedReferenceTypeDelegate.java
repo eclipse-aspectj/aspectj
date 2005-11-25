@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.AjType;
@@ -133,13 +135,33 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		 return superclass;
 	}
 	
+	
 	public TypeVariable[] getTypeVariables() {
+		TypeVariable[] workInProgressSetOfVariables = (TypeVariable[])getResolvedTypeX().getWorld().getTypeVariablesCurrentlyBeingProcessed(getBaseClass());
+		if (workInProgressSetOfVariables!=null) {
+			return workInProgressSetOfVariables;
+		}
 		if (this.typeVariables == null) {
 			java.lang.reflect.TypeVariable[] tVars = this.getBaseClass().getTypeParameters();
 			this.typeVariables = new TypeVariable[tVars.length];
+			// basic initialization
 			for (int i = 0; i < tVars.length; i++) {
-				this.typeVariables[i] = ((TypeVariableReferenceType) fromType(tVars[i])).getTypeVariable();
+				typeVariables[i] = new TypeVariable(tVars[i].getName());
 			}
+			// stash it
+			this.getResolvedTypeX().getWorld().recordTypeVariablesCurrentlyBeingProcessed(getBaseClass(),typeVariables);
+			// now fill in the details...
+			for (int i = 0; i < tVars.length; i++) {
+				TypeVariableReferenceType tvrt = ((TypeVariableReferenceType) fromType(tVars[i]));
+				TypeVariable tv = tvrt.getTypeVariable();
+				typeVariables[i].setUpperBound(tv.getUpperBound());
+				typeVariables[i].setAdditionalInterfaceBounds(tv.getAdditionalInterfaceBounds());
+				typeVariables[i].setDeclaringElement(tv.getDeclaringElement());
+				typeVariables[i].setDeclaringElementKind(tv.getDeclaringElementKind());
+				typeVariables[i].setRank(tv.getRank());
+				typeVariables[i].setLowerBound(tv.getLowerBound());
+			}
+			this.getResolvedTypeX().getWorld().forgetTypeVariablesCurrentlyBeingProcessed(getBaseClass());
 		}		
 		return this.typeVariables;
 	}
@@ -162,10 +184,19 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		return methods;
 	}
 	
+	/**
+	 * Returns the generic type, regardless of the resolvedType we 'know about'
+	 */
+	public ResolvedType getGenericResolvedType() {
+		ResolvedType rt = getResolvedTypeX();
+		if (rt.isParameterizedType() || rt.isRawType()) return rt.getGenericType();
+		return rt;
+	}
+	
 	private ResolvedMember createGenericMethodMember(Method forMethod) {
 		ReflectionBasedResolvedMemberImpl ret = 
 		new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.METHOD,
-			getResolvedTypeX(),
+			getGenericResolvedType(),
 			forMethod.getModifiers(),
 			fromType(forMethod.getGenericReturnType()),
 			forMethod.getName(),
@@ -180,9 +211,9 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	private ResolvedMember createGenericConstructorMember(Constructor forConstructor) {
 		ReflectionBasedResolvedMemberImpl ret = 
 		new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.METHOD,
-			getResolvedTypeX(),
+			getGenericResolvedType(),
 			forConstructor.getModifiers(),
-			getResolvedTypeX(),
+			getGenericResolvedType(),
 			"init",
 			fromTypes(forConstructor.getGenericParameterTypes()),
 			fromTypes(forConstructor.getGenericExceptionTypes()),
@@ -196,7 +227,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		ReflectionBasedResolvedMemberImpl ret =
 			new ReflectionBasedResolvedMemberImpl(
 				org.aspectj.weaver.Member.FIELD,
-				getResolvedTypeX(),
+				getGenericResolvedType(),
 				forField.getModifiers(),
 				fromType(forField.getGenericType()),
 				forField.getName(),
@@ -266,6 +297,9 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		return getBaseClass().getTypeParameters().length > 0;
 	}
 	
+	// Used to prevent recursion - we record what we are working on and return it if asked again *whilst* working on it
+	private Map /*java.lang.reflect.TypeVariable > TypeVariableReferenceType */typeVariablesInProgress = new HashMap();
+	
 	private ResolvedType fromType(Type aType) {
 		if (aType instanceof Class) {
 			Class clazz = (Class)aType;
@@ -293,7 +327,15 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			ResolvedType[] resolvedArgs = fromTypes(args);
 			return TypeFactory.createParameterizedType(baseType, resolvedArgs, getWorld());
 		} else if (aType instanceof java.lang.reflect.TypeVariable) {
+			if (typeVariablesInProgress.get(aType)!=null) // check if we are already working on this type
+				return (TypeVariableReferenceType)typeVariablesInProgress.get(aType);
+
 			java.lang.reflect.TypeVariable tv = (java.lang.reflect.TypeVariable) aType;
+			TypeVariable rt_tv = new TypeVariable(tv.getName());
+			TypeVariableReferenceType tvrt = new TypeVariableReferenceType(rt_tv,getWorld());
+			
+			typeVariablesInProgress.put(aType,tvrt); // record what we are working on, for recursion case
+			
 			Type[] bounds = tv.getBounds();
 			ResolvedType[] resBounds = fromTypes(bounds);
 			ResolvedType upperBound = resBounds[0];
@@ -302,8 +344,12 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 				additionalBounds = new ResolvedType[resBounds.length - 1];
 				System.arraycopy(resBounds,1,additionalBounds,0,additionalBounds.length);
 			}
-			TypeVariable rt_tv = new TypeVariable(tv.getName(),upperBound,additionalBounds);
-			return new TypeVariableReferenceType(rt_tv,getWorld());
+			rt_tv.setUpperBound(upperBound);
+			rt_tv.setAdditionalInterfaceBounds(additionalBounds);
+			
+			typeVariablesInProgress.remove(aType); // we have finished working on it
+			
+			return tvrt;
 		} else if (aType instanceof WildcardType) {
 			WildcardType wildType = (WildcardType) aType;
 			Type[] lowerBounds = wildType.getLowerBounds();
@@ -319,7 +365,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		} else if (aType instanceof GenericArrayType) {
 			GenericArrayType gt = (GenericArrayType) aType;
 			Type componentType = gt.getGenericComponentType();
-			UnresolvedType.makeArray(fromType(componentType),1);
+			return UnresolvedType.makeArray(fromType(componentType),1).resolve(getWorld());
 		}
 		return ResolvedType.MISSING;
 	}
