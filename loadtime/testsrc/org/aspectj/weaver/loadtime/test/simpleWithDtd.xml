@@ -3,7 +3,7 @@
 <aspectj>
     <weaver options="-showWeaveInfo">
         <include within="foo..bar.Goo+"/>
-        <dump within="foo..*"/>
+        <dump within="foo..*" beforeandafter="true"/>
     </weaver>
     <aspects>
         <exclude within="@Baz"/>

@@ -11,8 +11,6 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -63,11 +61,7 @@ public class Aj implements ClassPreProcessor {
 
         try {
             WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
-            byte[] weaved = weavingAdaptor.weaveClass(className, bytes);
-            if (weavingAdaptor.shouldDump(className.replace('/', '.'))) {
-                dump(className, weaved);
-            }
-            return weaved;
+            return weavingAdaptor.weaveClass(className, bytes);
         } catch (Throwable t) {
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
             // would make sense at least in test f.e. see TestHelper.handleMessage()
@@ -163,32 +157,6 @@ public class Aj implements ClassPreProcessor {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Dump the given bytcode in _dump/... (dev mode)
-     *
-     * @param name
-     * @param b
-     * @throws Throwable
-     */
-    static void dump(String name, byte[] b) throws Throwable {
-        String className = name.replace('.', '/');
-        final File dir;
-        if (className.indexOf('/') > 0) {
-            dir = new File("_ajdump" + File.separator + className.substring(0, className.lastIndexOf('/')));
-        } else {
-            dir = new File("_ajdump");
-        }
-        dir.mkdirs();
-        String fileName = "_ajdump" + File.separator + className + ".class";
-        FileOutputStream os = new FileOutputStream(fileName);
-        os.write(b);
-        os.close();
-    }
-    
-    /*
-     * Shared classes methods
-     */
 
     /**
      * Returns a namespace based on the contest of the aspects available

@@ -12,6 +12,8 @@
 package org.aspectj.systemtest.ajc150.ataspectj;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.util.FileUtil;
+
 import junit.framework.Test;
 
 import java.io.File;
@@ -65,9 +67,66 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("AjcLTW AroundInlineMungerTest2");
     }
 
+    public void testLTWDumpNone() {
+        runTest("LTW DumpTest none");
+
+        File f = new File("_ajdump/ataspectj/DumpTest.class");
+        assertFalse(f.exists());
+        f = new File("_ajdump/_before/ataspectj/DumpTestTheDump.class");
+        assertFalse(f.exists());
+        f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
+        assertFalse(f.exists());
+    }
+
     public void testLTWDump() {
         runTest("LTW DumpTest");
+        
+        File f = new File("_ajdump/ataspectj/DumpTest.class");
+        assertFalse(f.exists());
+        f = new File("_ajdump/_before/ataspectj/DumpTestTheDump.class");
+        assertFalse(f.exists());
+        f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
+        assertTrue(f.exists());
+        
+        // tidy up...
+        f = new File("_ajdump");
+        FileUtil.deleteContents(f);
+        f.delete();
     }
+
+    public void testLTWDumpBeforeAndAfter() {
+        runTest("LTW DumpTest before and after");
+
+        File f = new File("_ajdump/ataspectj/DumpTest.class");
+        assertFalse(f.exists());
+        f = new File("_ajdump/_before/ataspectj/DumpTestTheDump.class");
+        assertTrue(f.exists());
+        f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
+        assertTrue(f.exists());
+        
+        // tidy up...
+        f = new File("_ajdump");
+        FileUtil.deleteContents(f);
+        f.delete();
+    }
+
+      /* FIXME maw currently can't dump closures because the logic in 
+       * ClassLoaderWeavingAdaptor.shouldDump() relies on the World being
+       * able to resolve the name which it can't for closures.
+       */   
+//    public void testLTWDumpClosure() {
+//        runTest("LTW DumpTest closure");
+//
+//        File f = new File("_ajdump/_before/ataspectj/DumpTestTheDump$AjcClosure1.class");
+//        assertTrue(f.exists());
+//        f = new File("_ajdump/ataspectj/DumpTestTheDump$AjcClosure1.class");
+//        assertTrue(f.exists());
+//        
+//        // tidy up...
+//        f = new File("_ajdump");
+//        FileUtil.deleteContents(f);
+//        f.delete();
+//    }
 
     public void testAjcAspect1LTWAspect2_Xreweavable() {
         runTest("Ajc Aspect1 LTW Aspect2 -Xreweavable");

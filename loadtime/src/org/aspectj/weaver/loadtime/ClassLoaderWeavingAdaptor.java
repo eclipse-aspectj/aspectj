@@ -54,6 +54,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private final static String AOP_XML = "META-INF/aop.xml";
 
     private List m_dumpTypePattern = new ArrayList();
+    private boolean m_dumpBefore = false;
     private List m_includeTypePattern = new ArrayList();
     private List m_excludeTypePattern = new ArrayList();
     private List m_includeStartsWith = new ArrayList();
@@ -81,8 +82,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
              */
             public void acceptClass(String name, byte[] bytes) {
                 try {
-                    if (shouldDump(name.replace('/', '.'))) {
-                        Aj.dump(name, bytes);
+                    if (shouldDump(name.replace('/', '.'), false)) {
+                        dump(name, bytes, false);
                     }
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
@@ -438,6 +439,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 TypePattern pattern = new PatternParser(dump).parseTypePattern();
                 m_dumpTypePattern.add(pattern);
             }
+            if (definition.shouldDumpBefore()) {
+            	m_dumpBefore = true;
+            }
         }
     }
 
@@ -543,11 +547,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         return accept;
     }
 
-    public boolean shouldDump(String className) {
+    protected boolean shouldDump(String className, boolean before) {
+    	// Don't dump before weaving unless asked to
+    	if (before && !m_dumpBefore) {
+            return false;
+    	}
+    	
         // avoid ResolvedType if not needed
         if (m_dumpTypePattern.isEmpty()) {
             return false;
         }
+
         //TODO AV - optimize for className.startWith only
         ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(className), true);
         //dump

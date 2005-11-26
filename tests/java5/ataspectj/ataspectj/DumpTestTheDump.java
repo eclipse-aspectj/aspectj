@@ -15,4 +15,7 @@ package ataspectj;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class DumpTestTheDump {
+	public void aroundMethod (String s) {
+		
+	}
 }

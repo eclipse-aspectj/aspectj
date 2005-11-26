@@ -51,6 +51,7 @@ public class DocumentParser extends DefaultHandler {
     private final static String ASPECTJ_ELEMENT = "aspectj";
     private final static String WEAVER_ELEMENT = "weaver";
     private final static String DUMP_ELEMENT = "dump";
+    private final static String DUMP_BEFOREANDAFTER_ATTRIBUTE = "beforeandafter";
     private final static String INCLUDE_ELEMENT = "include";
     private final static String EXCLUDE_ELEMENT = "exclude";
     private final static String OPTIONS_ATTRIBUTE = "options";
@@ -206,6 +207,10 @@ public class DocumentParser extends DefaultHandler {
             if (!isNull(typePattern)) {
                 m_definition.getDumpPatterns().add(typePattern);
             }
+            String beforeAndAfter = attributes.getValue(DUMP_BEFOREANDAFTER_ATTRIBUTE);
+            if (isTrue(beforeAndAfter)) {
+            	m_definition.setDumpBefore(true);
+            }
         } else if (EXCLUDE_ELEMENT.equals(qName) && m_inAspects) {
             String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
             if (!isNull(typePattern)) {
@@ -256,6 +261,10 @@ public class DocumentParser extends DefaultHandler {
 
     private boolean isNull(String s) {
         return (s == null || s.length() <= 0);
+    }
+
+    private boolean isTrue(String s) {
+        return (s != null && s.equals("true"));
     }
 
 

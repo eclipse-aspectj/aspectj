@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<aspectj>
+	<aspects>
+		<aspect name="ataspectj.TestAroundAspect"/>
+	</aspects>
+    <weaver options="-Xnoinline">
+        <dump within="ataspectj.DumpTestThe*" beforeandafter="true"/> 
+    </weaver>
+</aspectj>

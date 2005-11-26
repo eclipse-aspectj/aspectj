@@ -24,6 +24,7 @@ public class Definition {
     private StringBuffer m_weaverOptions;
 
     private List m_dumpPatterns;
+    private boolean m_dumpBefore;
 
     private List m_includePatterns;
 
@@ -39,6 +40,7 @@ public class Definition {
 
     public Definition() {
         m_weaverOptions = new StringBuffer();
+        m_dumpBefore = false;
         m_dumpPatterns = new ArrayList(0);
         m_includePatterns = new ArrayList(0);
         m_excludePatterns = new ArrayList(0);
@@ -55,6 +57,14 @@ public class Definition {
     public List getDumpPatterns() {
         return m_dumpPatterns;
     }
+
+	public void setDumpBefore(boolean b) {
+		m_dumpBefore = b;
+	}
+
+	public boolean shouldDumpBefore() {
+		return m_dumpBefore;
+	}
 
     public List getIncludePatterns() {
         return m_includePatterns;

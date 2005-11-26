@@ -7,21 +7,12 @@
  * http://eclipse.org/legal/epl-v10.html 
  * 
  * Contributors:
- *   Alexandre Vasseur         initial implementation
+ *   Matthew Webster         initial implementation
  *******************************************************************************/
 package ataspectj;
 
-import junit.framework.TestCase;
-
-import java.io.File;
-
-/**
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
- */
-public class DumpTest extends TestCase {
-
-    public static void main(String[] args) {
-    	new DumpTestTheDump().aroundMethod("DumpTest");
-    }
-
+public aspect TestAroundAspect {
+	Object around () : execution(public void aroundMethod(..)) {
+		return proceed();
+	}
 }
