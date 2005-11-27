@@ -523,7 +523,7 @@ public class PointcutExpressionTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		p = new PointcutParser();
+		p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		asCons = A.class.getConstructor(new Class[]{String.class});
 		bsCons = B.class.getConstructor(new Class[0]);
 		bsStringCons = B.class.getConstructor(new Class[]{String.class});

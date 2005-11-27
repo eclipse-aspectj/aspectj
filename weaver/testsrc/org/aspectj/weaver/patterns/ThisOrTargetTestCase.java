@@ -56,7 +56,7 @@ public class ThisOrTargetTestCase extends TestCase {
 	}
 	
 	public void testMatchJP() throws Exception {
-		PointcutParser parser = new PointcutParser();
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		PointcutExpression thisEx = parser.parsePointcutExpression("this(Exception)");
 		PointcutExpression thisIOEx = parser.parsePointcutExpression("this(java.io.IOException)");
 
@@ -82,7 +82,7 @@ public class ThisOrTargetTestCase extends TestCase {
 	}
 	
 	public void testBinding() throws Exception {
-		PointcutParser parser = new PointcutParser();
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		PointcutParameter ex = parser.createPointcutParameter("ex", Exception.class);
 		PointcutParameter ioEx = parser.createPointcutParameter("ioEx", IOException.class);
 

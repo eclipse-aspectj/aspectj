@@ -27,7 +27,7 @@ public class TypePatternMatcherTest extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		PointcutParser pp = new PointcutParser();
+		PointcutParser pp = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		tpm = pp.parseTypePattern("java.util.Map+");
 	}
 	

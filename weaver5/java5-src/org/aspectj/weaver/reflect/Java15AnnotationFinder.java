@@ -51,7 +51,7 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 	 */
 	public Object getAnnotation(ResolvedType annotationType, Object onObject) {
 		try {
-			Class annotationClass = Class.forName(annotationType.getName(),false,classLoader);
+			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationType.getName(),false,classLoader);
 			if (onObject.getClass().isAnnotationPresent(annotationClass)) {
 				return onObject.getClass().getAnnotation(annotationClass);
 			}
@@ -63,7 +63,7 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 
 	public Object getAnnotationFromClass(ResolvedType annotationType, Class aClass) {
 		try {
-			Class annotationClass = Class.forName(annotationType.getName(),false,classLoader);
+			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationType.getName(),false,classLoader);
 			if (aClass.isAnnotationPresent(annotationClass)) {
 				return aClass.getAnnotation(annotationClass);
 			}

@@ -5,8 +5,8 @@ public class RuntimePointcuts {
 	
 	
 	public static void main(String[] args) throws Exception {
-		PointcutParser parser = new PointcutParser();
-		parser.setClassLoader(RuntimePointcuts.class.getClassLoader());
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(RuntimePointcuts.class.getClassLoader());
+//		parser.setClassLoader(RuntimePointcuts.class.getClassLoader());
 		PointcutExpression pc1 = parser.parsePointcutExpression("PCLib.anyMethodExecution()");
 		PointcutParameter param = parser.createPointcutParameter("s",String.class);
 		PointcutExpression pc2 = parser.parsePointcutExpression("PCLib.joinPointWithStringArg(s)",RuntimePointcuts.class,new PointcutParameter[] {param});

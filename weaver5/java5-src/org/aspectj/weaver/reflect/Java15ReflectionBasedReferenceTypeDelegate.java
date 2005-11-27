@@ -50,7 +50,7 @@ import org.aspectj.weaver.tools.PointcutParser;
 public class Java15ReflectionBasedReferenceTypeDelegate extends
 		ReflectionBasedReferenceTypeDelegate {
 	
-	private AjType myType;
+	private AjType<?> myType;
 	private ResolvedType[] annotations;
 	private ResolvedMember[] pointcuts;
 	private ResolvedMember[] methods;
@@ -241,7 +241,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		if (pointcuts == null) {
 			Pointcut[] pcs = this.myType.getDeclaredPointcuts();
 			pointcuts = new ResolvedMember[pcs.length];
-			PointcutParser parser = new PointcutParser();
+			PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(classLoader);
 			for (int i = 0; i < pcs.length; i++) {
 				AjType<?>[] ptypes = pcs[i].getParameterTypes();
 				String[] pnames = pcs[i].getParameterNames();

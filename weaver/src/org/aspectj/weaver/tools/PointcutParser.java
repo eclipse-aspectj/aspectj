@@ -92,6 +92,85 @@ public class PointcutParser {
     }
     
     /**
+     * Returns a pointcut parser that can parse the full AspectJ pointcut
+     * language with the following exceptions:
+     * <ul>
+     * <li>The <code>if, cflow, and cflowbelow</code> pointcut designators are not supported
+     * <li>Pointcut expressions must be self-contained :- they cannot contain references
+     * to other named pointcuts
+     * <li>The pointcut expression must be anonymous with no formals allowed.
+     * </ul>
+     * <p>When resolving types in pointcut expressions, the context classloader is used to find types.</p>
+     */
+    public static PointcutParser getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution() {
+    		PointcutParser p =  new PointcutParser();
+    		p.setClassLoader(Thread.currentThread().getContextClassLoader());
+    		return p;
+    }
+    
+    /**
+     * Returns a pointcut parser that can parse pointcut expressions built
+     * from a user-defined subset of AspectJ's supported pointcut primitives. 
+     * The following restrictions apply:
+     * <ul>
+     * <li>The <code>if, cflow, and cflowbelow</code> pointcut designators are not supported
+     * <li>Pointcut expressions must be self-contained :- they cannot contain references
+     * to other named pointcuts
+     * <li>The pointcut expression must be anonymous with no formals allowed.
+     * </ul>
+     * <p>When resolving types in pointcut expressions, the context classloader is used to find types.</p>
+     * @param supportedPointcutKinds a set of PointcutPrimitives this parser
+     * should support
+     * @throws UnsupportedOperationException if the set contains if, cflow, or
+     * cflow below
+     */
+    public static PointcutParser getPointcutParserSupportingSpecifiedPrimitivesAndUsingContextClassloaderForResolution(Set supportedPointcutKinds) {
+    		PointcutParser p = new PointcutParser(supportedPointcutKinds);
+    		p.setClassLoader(Thread.currentThread().getContextClassLoader());
+    		return p;
+    }
+    
+    /**
+     * Returns a pointcut parser that can parse the full AspectJ pointcut
+     * language with the following exceptions:
+     * <ul>
+     * <li>The <code>if, cflow, and cflowbelow</code> pointcut designators are not supported
+     * <li>Pointcut expressions must be self-contained :- they cannot contain references
+     * to other named pointcuts
+     * <li>The pointcut expression must be anonymous with no formals allowed.
+     * </ul>
+     * <p>When resolving types in pointcut expressions, the given classloader is used to find types.</p>
+     */
+    public static PointcutParser getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(ClassLoader classLoader) {
+   		PointcutParser p =  new PointcutParser();
+		p.setClassLoader(classLoader);
+		return p;
+    }
+    
+ 
+    /**
+     * Returns a pointcut parser that can parse pointcut expressions built
+     * from a user-defined subset of AspectJ's supported pointcut primitives. 
+     * The following restrictions apply:
+     * <ul>
+     * <li>The <code>if, cflow, and cflowbelow</code> pointcut designators are not supported
+     * <li>Pointcut expressions must be self-contained :- they cannot contain references
+     * to other named pointcuts
+     * <li>The pointcut expression must be anonymous with no formals allowed.
+     * </ul>
+     * <p>When resolving types in pointcut expressions, the given classloader is used to find types.</p>
+     * @param supportedPointcutKinds a set of PointcutPrimitives this parser
+     * should support
+     * @throws UnsupportedOperationException if the set contains if, cflow, or
+     * cflow below
+     */
+    public static PointcutParser getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(Set supportedPointcutKinds, ClassLoader classLoader) {
+   		PointcutParser p = new PointcutParser(supportedPointcutKinds);
+		p.setClassLoader(classLoader);
+		return p;   	
+    }
+    
+    /**
      * Create a pointcut parser that can parse the full AspectJ pointcut
      * language with the following exceptions:
      * <ul>
@@ -101,7 +180,7 @@ public class PointcutParser {
      * <li>The pointcut expression must be anonymous with no formals allowed.
      * </ul>
      */
-    public PointcutParser() {
+    private PointcutParser() {
         supportedPrimitives = getAllSupportedPointcutPrimitives();
         setClassLoader(PointcutParser.class.getClassLoader());
     }
@@ -121,7 +200,7 @@ public class PointcutParser {
      * @throws UnsupportedOperationException if the set contains if, cflow, or
      * cflow below
      */
-    public PointcutParser(Set/*<PointcutPrimitives>*/ supportedPointcutKinds) {
+    private PointcutParser(Set/*<PointcutPrimitives>*/ supportedPointcutKinds) {
         supportedPrimitives = supportedPointcutKinds;
         for (Iterator iter = supportedPointcutKinds.iterator(); iter.hasNext();) {
             PointcutPrimitive element = (PointcutPrimitive) iter.next();
@@ -135,32 +214,11 @@ public class PointcutParser {
     }
     
     /**
-     * Create a pointcut parser that can parse pointcut expressions built
-     * from a user-defined subset of AspectJ's supported pointcut primitives. 
-     * The following restrictions apply:
-     * <ul>
-     * <li>The <code>if, cflow, and cflowbelow</code> pointcut designators are not supported
-     * <li>Pointcut expressions must be self-contained :- they cannot contain references
-     * to other named pointcuts
-     * <li>The pointcut expression must be anonymous with no formals allowed.
-     * </ul>
-     * @param supportedPointcutKinds a set of PointcutPrimitives this parser
-     * should support
-     * @param classLoader the class loader to use for resolving types
-     * @throws UnsupportedOperationException if the set contains if, cflow, or
-     * cflow below
-     */
-    public PointcutParser(Set/*<PointcutPrimitives>*/ supportedPointcutKinds,ClassLoader cl) {
-    	this(supportedPointcutKinds);
-    	setClassLoader(cl);
-    }
-
-    /**
      * Set the classloader that this parser should use for
      * type resolution.
      * @param aLoader
      */
-    public void setClassLoader(ClassLoader aLoader) {
+    private void setClassLoader(ClassLoader aLoader) {
     	this.classLoader = aLoader;
     	world = new ReflectionWorld(this.classLoader);
     }

@@ -3,7 +3,8 @@ import org.aspectj.weaver.tools.*;
 public class ReflectOnAjcCompiledPointcuts {
 	
 	public static void main(String[] args) {
-		PointcutParser p = new PointcutParser();
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(ReflectOnAjcCompiledPointcuts.class.getClassLoader());
+//		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
 		PointcutExpression pe = null;
 //		pe = p.parsePointcutExpression("PointcutLibrary.propertyAccess()");
 //		pe = p.parsePointcutExpression("PointcutLibrary.propertyUpdate()");

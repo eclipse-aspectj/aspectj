@@ -243,7 +243,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		parser = new PointcutParser();
+		parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		a = A.class.getMethod("a");
 		b = B.class.getMethod("b");
 		c = B.class.getMethod("c",new Class[] {A.class,B.class});

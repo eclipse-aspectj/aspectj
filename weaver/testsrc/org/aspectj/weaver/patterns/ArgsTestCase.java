@@ -69,7 +69,7 @@ public class ArgsTestCase extends TestCase {
 	
 	public void testBinding() throws Exception {
 		
-		PointcutParser parser = new PointcutParser();
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(A.class.getClassLoader());
 		PointcutParameter a = parser.createPointcutParameter("a",A.class);
 		A theParameter = new A();
 		PointcutExpression bindA = parser.parsePointcutExpression("args(a,*)",A.class,new PointcutParameter[] {a});
@@ -99,7 +99,7 @@ public class ArgsTestCase extends TestCase {
 	public void testMatchJPWithPrimitiveTypes() throws Exception {
 		try {
 
-			PointcutParser parser = new PointcutParser();
+			PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(A.class.getClassLoader());
 			PointcutExpression oneInt = parser.parsePointcutExpression("args(int)");
 			PointcutExpression oneInteger = parser.parsePointcutExpression("args(Integer)");
 
@@ -151,7 +151,7 @@ public class ArgsTestCase extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		PointcutParser parser = new PointcutParser();
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(A.class.getClassLoader());
 		wildcardArgs = parser.parsePointcutExpression("args(..)");
 		oneA = parser.parsePointcutExpression("args(org.aspectj.weaver.patterns.ArgsTestCase.A)");
 		oneAandaC = parser.parsePointcutExpression("args(org.aspectj.weaver.patterns.ArgsTestCase.A,org.aspectj.weaver.patterns.ArgsTestCase.C)");

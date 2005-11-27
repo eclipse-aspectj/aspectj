@@ -34,7 +34,7 @@ public class PointcutParserTest extends TestCase {
 	}
 	
 	public void testEmptyConstructor() {
-		PointcutParser parser = new PointcutParser();
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		Set s = parser.getSupportedPrimitives();
 		assertEquals("Should be 21 elements in the set",21,s.size());
 		assertFalse("Should not contain if pcd",s.contains(PointcutPrimitive.IF));
@@ -44,18 +44,18 @@ public class PointcutParserTest extends TestCase {
 	
 	public void testSetConstructor() {
 		Set p = PointcutParser.getAllSupportedPointcutPrimitives();
-		PointcutParser parser = new PointcutParser(p);
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(p,this.getClass().getClassLoader());
 		assertEquals("Should use the set we pass in",p,parser.getSupportedPrimitives());
 		Set q = new HashSet();
 		q.add(PointcutPrimitive.ARGS);
-		parser = new PointcutParser(q);
+		parser = PointcutParser.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(q,this.getClass().getClassLoader());
 		assertEquals("Should have only one element in set",1,parser.getSupportedPrimitives().size());
 		assertEquals("Should only have ARGS pcd",PointcutPrimitive.ARGS,
 				parser.getSupportedPrimitives().iterator().next());
 	}
 	
 	public void testParsePointcutExpression() {
-		PointcutParser p = new PointcutParser();
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		IMessageHandler current = p.setCustomMessageHandler(new IgnoreWarningsMessageHandler());
 		try {			
 			p.parsePointcutExpression(
@@ -74,7 +74,7 @@ public class PointcutParserTest extends TestCase {
 	}
 	
 	public void testParseExceptionErrorMessages() {
-		PointcutParser p = new PointcutParser();
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		try {
 			p.parsePointcutExpression("execution(int Foo.*(..) && args(Double)");
 			fail("Expected IllegalArgumentException");
@@ -84,7 +84,7 @@ public class PointcutParserTest extends TestCase {
 	}
 	
 	public void testParseIfPCD() {
-		PointcutParser p = new PointcutParser();
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		try {
 			p.parsePointcutExpression("if(true)");
 			fail("Expected UnsupportedPointcutPrimitiveException");
@@ -94,7 +94,7 @@ public class PointcutParserTest extends TestCase {
 	}
 	
 	public void testParseCflowPCDs() {
-		PointcutParser p = new PointcutParser();
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		try {
 			p.parsePointcutExpression("cflow(this(t))");
 			fail("Expected UnsupportedPointcutPrimitiveException");
@@ -112,7 +112,7 @@ public class PointcutParserTest extends TestCase {
 	public void testParseReferencePCDs() {
 		Set pcKinds = PointcutParser.getAllSupportedPointcutPrimitives();
 		pcKinds.remove(PointcutPrimitive.REFERENCE);
-		PointcutParser p = new PointcutParser(pcKinds);
+		PointcutParser p = PointcutParser.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(pcKinds,this.getClass().getClassLoader());
 		try {
 			p.parsePointcutExpression("bananas(String)");
 			fail("Expected UnsupportedPointcutPrimitiveException");
@@ -123,7 +123,7 @@ public class PointcutParserTest extends TestCase {
 
 	public void testParseUnsupportedPCDs() {
 		Set s = new HashSet();
-		PointcutParser p = new PointcutParser(s);
+		PointcutParser p = PointcutParser.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(s,this.getClass().getClassLoader());
 		try {
 			p.parsePointcutExpression("args(x)");
 			fail("Expected UnsupportedPointcutPrimitiveException");
@@ -223,7 +223,7 @@ public class PointcutParserTest extends TestCase {
 	}	
 	
 	public void testFormals() {
-		PointcutParser parser = new PointcutParser();
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		PointcutParameter param = parser.createPointcutParameter("x",String.class);
 		PointcutExpression pc = parser.parsePointcutExpression("args(x)", null, new PointcutParameter[] {param} );
 		assertEquals("args(x)",pc.getPointcutExpression());
@@ -244,7 +244,7 @@ public class PointcutParserTest extends TestCase {
 	}
 	
 	public void testXLintConfiguration() {
-		PointcutParser p = new PointcutParser();
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		try {
 			p.parsePointcutExpression("this(FooBar)");
 		} catch(IllegalArgumentException ex) {
