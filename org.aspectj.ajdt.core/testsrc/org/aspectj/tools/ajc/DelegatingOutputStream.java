@@ -1,0 +1,91 @@
+/*******************************************************************************
+ * Copyright (c) 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Webster - initial implementation
+ *******************************************************************************/
+package org.aspectj.tools.ajc;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+public class DelegatingOutputStream extends OutputStream {
+
+	private boolean verbose = true;
+	private OutputStream target;
+	private List delegates;
+	
+	public DelegatingOutputStream (OutputStream os) {
+		this.target = os;
+		this.delegates = new LinkedList();
+	}
+	
+	public void close() throws IOException {
+		target.close();
+		
+		for (Iterator i = delegates.iterator(); i.hasNext();) {
+			OutputStream delegate = (OutputStream)i.next();
+			delegate.close();
+		}
+	}
+
+	public void flush() throws IOException {
+		target.flush();
+		
+		for (Iterator i = delegates.iterator(); i.hasNext();) {
+			OutputStream delegate = (OutputStream)i.next();
+			delegate.flush();
+		}
+	}
+
+	public void write(byte[] b, int off, int len) throws IOException {
+		if (verbose) target.write(b, off, len);
+		
+		for (Iterator i = delegates.iterator(); i.hasNext();) {
+			OutputStream delegate = (OutputStream)i.next();
+			delegate.write(b,off,len);
+		}
+	}
+
+	public void write(byte[] b) throws IOException {
+		if (verbose) target.write(b);
+		
+		for (Iterator i = delegates.iterator(); i.hasNext();) {
+			OutputStream delegate = (OutputStream)i.next();
+			delegate.write(b);
+		}
+	}
+
+	public void write(int b) throws IOException {
+		if (verbose) target.write(b);
+		
+		for (Iterator i = delegates.iterator(); i.hasNext();) {
+			OutputStream delegate = (OutputStream)i.next();
+			delegate.write(b);
+		}
+	}
+	
+	public boolean add (OutputStream delegate) {
+		return delegates.add(delegate);
+	}
+	
+	public boolean remove (OutputStream delegate) {
+		return delegates.remove(delegate);
+	}
+
+	public boolean isVerbose() {
+		return verbose;
+	}
+
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
+	
+}

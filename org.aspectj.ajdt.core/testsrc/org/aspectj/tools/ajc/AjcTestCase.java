@@ -14,6 +14,7 @@ package org.aspectj.tools.ajc;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,12 +26,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import junit.framework.TestCase;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.weaver.loadtime.WeavingURLClassLoader;
-
-import junit.framework.TestCase;
 
 /**
  * A TestCase class that acts as the superclass for all test cases wishing
@@ -51,9 +52,8 @@ import junit.framework.TestCase;
  * @see org.aspectj.testing.XMLBasedAjcTestCase
  */
 public class AjcTestCase extends TestCase {
-
-	private RunResult lastRunResult;
 	
+	private RunResult lastRunResult;
 	
 	/**
 	 * The Ajc (compiler) instance used for thet test. Created afresh
@@ -84,6 +84,17 @@ public class AjcTestCase extends TestCase {
 		// hmmm, this next one should perhaps point to an aj-build jar...
 		+ File.pathSeparator+".."+File.separator+"lib"     +File.separator+"test"+File.separator+"aspectjrt.jar"
         ;
+
+	/*
+	 * Save reference to real stderr and stdout before starting redirection
+	 */
+	public final static PrintStream err = System.err;
+	public final static PrintStream out = System.out;
+	private final static DelegatingOutputStream delegatingErr;
+	private final static DelegatingOutputStream delegatingOut;
+	public final static boolean DEFAULT_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose",false); 
+	public final static boolean DEFAULT_ERR_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose.err",DEFAULT_VERBOSE); 
+	public final static boolean DEFAULT_OUT_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose.out",DEFAULT_VERBOSE); 
 
 	/**
 	 * Helper class that represents the specification of an individual
@@ -562,8 +573,6 @@ public class AjcTestCase extends TestCase {
 			command.append(" ");
 			command.append(args[i]);
 		}
-		PrintStream systemOut = System.out;
-		PrintStream systemErr = System.err;
 		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
 		StringTokenizer strTok = new StringTokenizer(classpath,File.pathSeparator);
@@ -593,8 +602,8 @@ public class AjcTestCase extends TestCase {
 			} catch (Exception ex) {
 				fail ("Unable to prepare org.aspectj.testing.Tester for test run: " + ex);
 			}
-			System.setOut(new PrintStream(baosOut));
-			System.setErr(new PrintStream(baosErr));
+			startCapture(baosErr,baosOut);
+			
 			Class toRun = cLoader.loadClass(className);
 			Method mainMethod = toRun.getMethod("main",new Class[] {String[].class});
 			mainMethod.invoke(null,new Object[] {args});
@@ -609,8 +618,7 @@ public class AjcTestCase extends TestCase {
 			// the main method threw an exception...
             fail("Exception thrown by " + className + ".main(String[]) :" + invTgt.getTargetException());
 		} finally {
-			System.setOut(systemOut);
-			System.setErr(systemErr);
+			stopCapture(baosErr,baosOut);
 		}
 		return lastRunResult;
 	}
@@ -733,6 +741,28 @@ public class AjcTestCase extends TestCase {
 		}
 	}
 	
+	private static void startCapture (OutputStream errOS, OutputStream outOS) {
+		delegatingErr.add(errOS);
+		delegatingOut.add(outOS);
+
+		delegatingErr.setVerbose(DEFAULT_ERR_VERBOSE);
+		delegatingOut.setVerbose(DEFAULT_OUT_VERBOSE);
+	}
+	
+	private static void stopCapture (OutputStream errOS, OutputStream outOS) {
+		delegatingErr.setVerbose(true);
+		delegatingOut.setVerbose(true);
+
+		delegatingErr.remove(errOS);
+		delegatingOut.remove(outOS);
+	}
+	
+	private static boolean getBoolean (String name, boolean def) {
+		String defaultValue = String.valueOf(def);
+		String value = System.getProperty(name,defaultValue);
+		return Boolean.valueOf(value).booleanValue();
+	}
+	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -746,5 +776,13 @@ public class AjcTestCase extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
         //ajc = null;
+	}
+	
+	static {
+//		new RuntimeException("*** AjcTestCase.<clinit>()").printStackTrace();
+		delegatingErr = new DelegatingOutputStream(err);
+		System.setErr(new PrintStream(delegatingErr));
+		delegatingOut = new DelegatingOutputStream(out);
+		System.setOut(new PrintStream(delegatingOut));
 	}
 }
