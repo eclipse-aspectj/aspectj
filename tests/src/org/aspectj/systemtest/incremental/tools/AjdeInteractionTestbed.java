@@ -703,17 +703,24 @@ public class AjdeInteractionTestbed extends TestCase {
 		
 		public static boolean informedAboutKindOfBuild;
 		public static boolean fullBuildOccurred;
+		public static List detectedDeletions = new ArrayList();
 		
 		
 		public static void reset() {
 			informedAboutKindOfBuild=false;
 			fullBuildOccurred=false;
+			if (detectedDeletions!=null) detectedDeletions.clear();
 		}
 		
   	    public boolean pathChange = false;
 		public void pathChangeDetected() {pathChange = true;}
 		public void aboutToCompareClasspaths(List oldClasspath, List newClasspath) {}
 		public void detectedClassChangeInThisDir(File f) {}
+		
+		public void detectedAspectDeleted(File f) {
+			detectedDeletions.add(f.toString());
+		}
+
 		public void buildSuccessful(boolean wasFullBuild) {
 			informedAboutKindOfBuild= true;
 			fullBuildOccurred=wasFullBuild;

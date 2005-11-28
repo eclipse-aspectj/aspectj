@@ -321,29 +321,36 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 */
 
-//	public void testPr93310_1() {
-//		AjdeInteractionTestbed.VERBOSE = true;
-//		initialiseProject("PR93310_1");
-//		build("PR93310_1");
-//		checkWasFullBuild();
-//		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR93310_1" + File.separatorChar + "src" + File.separatorChar + "pack" + File.separatorChar + "C2.java";
-//		(new File(fileC2)).delete();
-//		alter("PR93310_1","inc1");
-//		build("PR93310_1");
-//		checkWasntFullBuild();
-//	}
+	public void testPr93310_1() {
+		initialiseProject("PR93310_1");
+		build("PR93310_1");
+		checkWasFullBuild();
+		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR93310_1" + File.separatorChar + "src" + File.separatorChar + "pack" + File.separatorChar + "C2.java";
+		(new File(fileC2)).delete();
+		alter("PR93310_1","inc1");
+		build("PR93310_1");
+		checkWasFullBuild();
+		int l =  AjdeInteractionTestbed.MyStateListener.detectedDeletions.size();
+		assertTrue("Expected one deleted file to be noticed, but detected: "+l,l==1);
+		String name = (String)AjdeInteractionTestbed.MyStateListener.detectedDeletions.get(0);
+		assertTrue("Should end with C2.java but is "+name,name.endsWith("C2.java"));
+	}
 	
-//	public void testPr93310_2() {
-//		AjdeInteractionTestbed.VERBOSE = true;
-//		initialiseProject("PR93310_2");
-//		build("PR93310_2");
-//		checkWasFullBuild();
-//		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR93310_2" + File.separatorChar + "src" + File.separatorChar + "pack" + File.separatorChar + "C2.java";
-//		(new File(fileC2)).delete();
-//		alter("PR93310_2","inc1");
-//		build("PR93310_2");
-//		checkWasntFullBuild();
-//	}
+	public void testPr93310_2() {
+		initialiseProject("PR93310_2");
+		build("PR93310_2");
+		checkWasFullBuild();
+		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR93310_2" + File.separatorChar + "src" + File.separatorChar + "pack" + File.separatorChar + "C2.java";
+		(new File(fileC2)).delete();
+		alter("PR93310_2","inc1");
+		build("PR93310_2");
+		checkWasFullBuild();
+		int l =  AjdeInteractionTestbed.MyStateListener.detectedDeletions.size();
+		assertTrue("Expected one deleted file to be noticed, but detected: "+l,l==1);
+		String name = (String)AjdeInteractionTestbed.MyStateListener.detectedDeletions.get(0);
+		assertTrue("Should end with C2.java but is "+name,name.endsWith("C2.java"));
+	}
+	
 	// Stage1: Compile two files, pack.A and pack.A1 - A1 sets a protected field in A. 
 	// Stage2: make the field private in class A > gives compile error
 	// Stage3: Add a new aspect whilst there is a compile error !
