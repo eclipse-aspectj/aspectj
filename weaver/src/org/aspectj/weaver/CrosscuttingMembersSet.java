@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.weaver.patterns.DeclareParents;
 
 /**
