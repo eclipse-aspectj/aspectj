@@ -238,23 +238,6 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
         assertTrue("Superclass for Map generic type should be Object but was "+rt2,rt2.equals(UnresolvedType.OBJECT));         
     }
     
-    public void testGenericInterfaceSuperclass_ReflectionWorldResolution() {
-        
-        UnresolvedType javaUtilMap = UnresolvedType.forName("java.util.Map");
-        
-        ReferenceType rawType = (ReferenceType) world.resolve(javaUtilMap);
-        assertTrue("Should be the raw type ?!? "+rawType.getTypekind(),rawType.isRawType());
-        
-        ReferenceType genericType = (ReferenceType)rawType.getGenericType();
-        assertTrue("Should be the generic type ?!? "+genericType.getTypekind(),genericType.isGenericType());
-        
-        ResolvedType rt = rawType.getSuperclass();
-        assertTrue("Superclass for Map raw type should be Object but was "+rt,rt.equals(UnresolvedType.OBJECT));     
-        
-        ResolvedType rt2 = genericType.getSuperclass();
-        assertTrue("Superclass for Map generic type should be Object but was "+rt2,rt2.equals(UnresolvedType.OBJECT));       
-    }
-
 	// todo: array of int	
 
 	protected void setUp() throws Exception {

@@ -297,7 +297,12 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getSuperclass()
 	 */
 	public ResolvedType getSuperclass() {
-		if (this.myClass.getSuperclass() == null) return null;
+		if (this.myClass.getSuperclass() == null) {
+			if (myClass==Object.class) {
+				return null;
+			}
+			return world.resolve(UnresolvedType.OBJECT);
+		}
 		return ReflectionBasedReferenceTypeDelegateFactory
 				.resolveTypeInWorld(this.myClass.getSuperclass(),world);
 	}
