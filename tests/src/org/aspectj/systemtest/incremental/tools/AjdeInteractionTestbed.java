@@ -29,8 +29,8 @@ import org.aspectj.ajde.BuildProgressMonitor;
 import org.aspectj.ajde.ErrorHandler;
 import org.aspectj.ajde.ProjectPropertiesAdapter;
 import org.aspectj.ajde.TaskListManager;
+import org.aspectj.ajdt.internal.core.builder.AbstractStateListener;
 import org.aspectj.ajdt.internal.core.builder.AjState;
-import org.aspectj.ajdt.internal.core.builder.IStateListener;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
@@ -694,7 +694,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 	}
 	
-	static class MyStateListener implements IStateListener {
+	static class MyStateListener extends AbstractStateListener {
 		
 		private static MyStateListener _instance = new MyStateListener();
 		private MyStateListener() {reset();}

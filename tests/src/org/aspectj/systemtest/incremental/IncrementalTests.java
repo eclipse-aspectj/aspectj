@@ -14,8 +14,8 @@ import java.util.List;
 
 import junit.framework.Test;
 
+import org.aspectj.ajdt.internal.core.builder.AbstractStateListener;
 import org.aspectj.ajdt.internal.core.builder.AjState;
-import org.aspectj.ajdt.internal.core.builder.IStateListener;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -112,7 +112,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
    * being on the classpath.  This test verifies the fix is OK
    */
   public void testIncrementalOKWithOutputPathOnClasspath() throws Exception {
-	  class MyStateListener implements IStateListener {
+	  class MyStateListener extends AbstractStateListener {
   	    public boolean pathChange = false;
 		public void pathChangeDetected() {pathChange = true;}
 		public void aboutToCompareClasspaths(List oldClasspath, List newClasspath) {}

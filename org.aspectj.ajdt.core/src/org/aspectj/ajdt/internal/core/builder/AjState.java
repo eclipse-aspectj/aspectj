@@ -38,6 +38,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatExcepti
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
@@ -147,11 +148,44 @@ public class AjState {
 		addedBinaryFiles.removeAll(oldBinaryFiles);
 		deletedBinaryFiles = new HashSet(oldBinaryFiles);
 		deletedBinaryFiles.removeAll(newBinaryFiles);
+			
+		boolean couldStillBeIncremental = processDeletedFiles(deletedFiles);
+		
+		if (!couldStillBeIncremental) return false;
 		
 		this.newBuildConfig = newBuildConfig;
 		
 		return true;
 	}
+		
+	/**
+	 * Checks if any of the files in the set passed in contains an aspect declaration.  If one is found
+	 * then we start the process of batch building, i.e. we remove all the results of the last build,
+	 * call any registered listener to tell them whats happened and return false.
+	 * 
+	 * @return false if we discovered an aspect declaration
+	 */
+    private boolean processDeletedFiles(Set deletedFiles) {
+		for (Iterator iter = deletedFiles.iterator(); iter.hasNext();) {
+			File  aDeletedFile = (File ) iter.next();
+			InterimCompilationResult cr = (InterimCompilationResult)resultsFromFile.get(aDeletedFile);
+			if (cr!=null) {
+				Map compiledTypes = cr.result().compiledTypes;
+				if (compiledTypes!=null) {
+					for (Iterator iterator = compiledTypes.keySet().iterator(); iterator.hasNext();) {
+						char[] className = (char[])iterator.next();
+						ResolvedType rt = world.resolve(new String(className).replace('/','.'));
+						if (rt.isAspect()) { 
+							removeAllResultsOfLastBuild();
+							if (stateListener!=null) stateListener.detectedAspectDeleted(aDeletedFile);
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+    }
 	
 	private Collection getModifiedFiles() {		
 		return getModifiedFiles(lastSuccessfulBuildTime);

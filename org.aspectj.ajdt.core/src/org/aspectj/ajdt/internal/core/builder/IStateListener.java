@@ -32,6 +32,12 @@ public interface IStateListener {
 	public void aboutToCompareClasspaths(List oldClasspath, List newClasspath);
 
 	public void pathChangeDetected();
+	
+	/**
+	 * Called if state processing detects a file was deleted that contained an aspect declaration.
+	 * Incremental compilation will not be attempted if this occurs.
+	 */
+	public void detectedAspectDeleted(File f);
 
 	public void buildSuccessful(boolean wasFullBuild);
 

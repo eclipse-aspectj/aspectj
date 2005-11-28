@@ -368,17 +368,17 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 					.getMessage());
 	}
 
-//	public void testPr112736() {
-//		AjdeInteractionTestbed.VERBOSE = true;
-//		initialiseProject("PR112736");
-//		build("PR112736");
-//		checkWasFullBuild();
-//		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR112736" + File.separatorChar + "src" + File.separatorChar + "pack" + File.separatorChar + "A.java";
-//		(new File(fileC2)).delete();
-//		alter("PR112736","inc1");
-//		build("PR112736");
-//		checkWasntFullBuild();
-//	}
+	public void testPr112736() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		initialiseProject("PR112736");
+		build("PR112736");
+		checkWasFullBuild();
+		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR112736" + File.separatorChar + "src" + File.separatorChar + "pack" + File.separatorChar + "A.java";
+		(new File(fileC2)).delete();
+		alter("PR112736","inc1");
+		build("PR112736");
+		checkWasFullBuild();
+	}
 	
 	
 	// other possible tests:
