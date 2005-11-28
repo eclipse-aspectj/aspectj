@@ -187,6 +187,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     public boolean isGenericWildcard()        { return typeKind == TypeKind.WILDCARD; }
     public boolean isExtends() { return isExtends;}
     public boolean isSuper()   { return isSuper;  }
+    public TypeKind getTypekind() { return typeKind;}
     
     // for any reference type, we can get some extra information...
     public final boolean isArray() {  return signature.startsWith("["); } 

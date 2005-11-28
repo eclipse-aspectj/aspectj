@@ -14,17 +14,17 @@ package org.aspectj.weaver.reflect;
 
 import junit.framework.TestCase;
 
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 
 	protected ReflectionWorld world;
 	private ResolvedType objectType;
 	private ResolvedType classType;
-	private ResolvedType enumType;
-
 	
 	public void testIsAspect() {
 		assertFalse(objectType.isAspect());
@@ -173,6 +173,90 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 		assertEquals(0,pointcuts.length);
 	}
 	
+	
+	
+	public void testSerializableSuperclass() {
+		ResolvedType serializableType = world.resolve("java.io.Serializable");
+		ResolvedType superType = serializableType.getSuperclass();
+        assertTrue("Superclass of serializable should be Object but was "+superType,superType.equals(UnresolvedType.OBJECT));    
+
+        BcelWorld bcelworld = new BcelWorld();
+        bcelworld.setBehaveInJava5Way(true);
+        ResolvedType bcelSupertype = bcelworld.resolve(UnresolvedType.SERIALIZABLE).getSuperclass();
+        assertTrue("Should be null but is "+bcelSupertype,bcelSupertype.equals(UnresolvedType.OBJECT));
+	}
+	
+	public void testSubinterfaceSuperclass() {		
+		ResolvedType ifaceType = world.resolve("java.security.Key");
+		ResolvedType superType = ifaceType.getSuperclass();
+		assertTrue("Superclass should be Object but was "+superType,superType.equals(UnresolvedType.OBJECT));  
+
+        BcelWorld bcelworld = new BcelWorld();
+        bcelworld.setBehaveInJava5Way(true);
+        ResolvedType bcelSupertype = bcelworld.resolve("java.security.Key").getSuperclass();
+        assertTrue("Should be null but is "+bcelSupertype,bcelSupertype.equals(UnresolvedType.OBJECT));
+	}
+	
+	public void testVoidSuperclass() {
+		ResolvedType voidType = world.resolve(Void.TYPE);
+		ResolvedType superType = voidType.getSuperclass();
+		assertNull(superType);
+		   
+        BcelWorld bcelworld = new BcelWorld();
+        bcelworld.setBehaveInJava5Way(true);
+        ResolvedType bcelSupertype = bcelworld.resolve("void").getSuperclass();
+        assertTrue("Should be null but is "+bcelSupertype,bcelSupertype==null);
+	}
+
+	public void testIntSuperclass() {
+		ResolvedType voidType = world.resolve(Integer.TYPE);
+		ResolvedType superType = voidType.getSuperclass();
+		assertNull(superType);
+
+        BcelWorld bcelworld = new BcelWorld();
+        bcelworld.setBehaveInJava5Way(true);
+        ResolvedType bcelSupertype = bcelworld.resolve("int").getSuperclass();
+        assertTrue("Should be null but is "+bcelSupertype,bcelSupertype==null);
+	}
+	
+    public void testGenericInterfaceSuperclass_BcelWorldResolution() {
+        BcelWorld bcelworld = new BcelWorld();
+        bcelworld.setBehaveInJava5Way(true);
+        
+        UnresolvedType javaUtilMap = UnresolvedType.forName("java.util.Map");
+        
+        ReferenceType rawType = (ReferenceType) bcelworld.resolve(javaUtilMap);
+        assertTrue("Should be the raw type ?!? "+rawType.getTypekind(),rawType.isRawType());
+        
+        ReferenceType genericType = (ReferenceType)rawType.getGenericType();
+        assertTrue("Should be the generic type ?!? "+genericType.getTypekind(),genericType.isGenericType());
+        
+        ResolvedType rt = rawType.getSuperclass();
+        assertTrue("Superclass for Map raw type should be Object but was "+rt,rt.equals(UnresolvedType.OBJECT));         
+        
+        ResolvedType rt2 = genericType.getSuperclass();
+        assertTrue("Superclass for Map generic type should be Object but was "+rt2,rt2.equals(UnresolvedType.OBJECT));         
+    }
+    
+    public void testGenericInterfaceSuperclass_ReflectionWorldResolution() {
+        
+        UnresolvedType javaUtilMap = UnresolvedType.forName("java.util.Map");
+        
+        ReferenceType rawType = (ReferenceType) world.resolve(javaUtilMap);
+        assertTrue("Should be the raw type ?!? "+rawType.getTypekind(),rawType.isRawType());
+        
+        ReferenceType genericType = (ReferenceType)rawType.getGenericType();
+        assertTrue("Should be the generic type ?!? "+genericType.getTypekind(),genericType.isGenericType());
+        
+        ResolvedType rt = rawType.getSuperclass();
+        assertTrue("Superclass for Map raw type should be Object but was "+rt,rt.equals(UnresolvedType.OBJECT));     
+        
+        ResolvedType rt2 = genericType.getSuperclass();
+        assertTrue("Superclass for Map generic type should be Object but was "+rt2,rt2.equals(UnresolvedType.OBJECT));       
+    }
+
+	// todo: array of int	
+
 	protected void setUp() throws Exception {
 		world = new ReflectionWorld();
 		objectType = world.resolve("java.lang.Object");

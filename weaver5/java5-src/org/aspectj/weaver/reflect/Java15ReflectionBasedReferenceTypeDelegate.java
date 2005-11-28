@@ -129,9 +129,13 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		return superInterfaces;
 	}
 	
+	// If the superclass is null, return Object - same as bcel does
 	public ResolvedType getSuperclass() {
-		if (superclass == null && getBaseClass()!=Object.class) // superclass of Object is null
-		  superclass = fromType(this.getBaseClass().getGenericSuperclass());
+		if (superclass == null && getBaseClass()!=Object.class) {// superclass of Object is null
+		  Type t = this.getBaseClass().getGenericSuperclass();
+		  if (t!=null) superclass = fromType(t);
+		  if (t==null) superclass = getWorld().resolve(UnresolvedType.OBJECT);
+		}
 		 return superclass;
 	}
 	
