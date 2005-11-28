@@ -37,8 +37,18 @@
     				<line text="AA.going()"/>
     			</stdout>
     		</run>
-    </ajc-test>acj
+    </ajc-test>
     
+    <ajc-test dir="bugs150" pr="112880" title="double parameter generic abstract type">
+    	  <compile files="Pr112880.aj" options="-1.5">
+    	  </compile>
+    	  <run class="Pr112880">
+    	  	<stdout>
+    	  		<line text="method returning C1 or C2"/>
+    	  		<line text="method returning C1 or C2"/>
+    	  	</stdout>
+    	  </run>
+    </ajc-test>
     
     <ajc-test dir="bugs150/pr114005" title="Annotated ITDFs - 2">
       <compile files="Declaration2.java" options="-1.5"/>

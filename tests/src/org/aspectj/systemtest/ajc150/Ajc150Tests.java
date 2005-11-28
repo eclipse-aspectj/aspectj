@@ -747,6 +747,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("parameterized pointcut and advice");
   }
   
+  public void testDoublyParameterizedAbstractType() {
+	  runTest("double parameter generic abstract type");
+  }
+  
   /*
    * Load-time weaving bugs
    */
