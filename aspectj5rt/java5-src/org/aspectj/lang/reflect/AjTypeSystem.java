@@ -35,7 +35,7 @@ public class AjTypeSystem {
 		 */
 		public static <T> AjType<T> getAjType(Class<T> fromClass) {
 			if (ajTypes.containsKey(fromClass)) {
-				WeakReference<AjType<T>> weakRefToAjType = (WeakReference<AjType<T>>) ajTypes.get(fromClass);
+				WeakReference<AjType> weakRefToAjType =  ajTypes.get(fromClass);
 				AjType<T> theAjType = weakRefToAjType.get();
 				if (theAjType != null) {
 					return theAjType;
