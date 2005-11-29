@@ -285,19 +285,36 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		if (extraArgument != null) {
 			extraArgumentName = new String(extraArgument.name);
 		}
+		String argNames = buildArgNameRepresentation();
 		
 		if (kind == AdviceKind.Before) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createBeforeAnnotation(pointcutExpression,declarationSourceStart);
+			adviceAnnotation = AtAspectJAnnotationFactory.createBeforeAnnotation(pointcutExpression,argNames,declarationSourceStart);
 		} else if (kind == AdviceKind.After) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createAfterAnnotation(pointcutExpression,declarationSourceStart);			
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterAnnotation(pointcutExpression,argNames,declarationSourceStart);			
 		} else if (kind == AdviceKind.AfterReturning) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createAfterReturningAnnotation(pointcutExpression,extraArgumentName,declarationSourceStart);
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterReturningAnnotation(pointcutExpression,argNames,extraArgumentName,declarationSourceStart);
 		} else if (kind == AdviceKind.AfterThrowing) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createAfterThrowingAnnotation(pointcutExpression,extraArgumentName,declarationSourceStart);
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterThrowingAnnotation(pointcutExpression,argNames,extraArgumentName,declarationSourceStart);
 		} else if (kind == AdviceKind.Around) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createAroundAnnotation(pointcutExpression,declarationSourceStart);
+			adviceAnnotation = AtAspectJAnnotationFactory.createAroundAnnotation(pointcutExpression,argNames,declarationSourceStart);
 		}
 		AtAspectJAnnotationFactory.addAnnotation(this, adviceAnnotation,this.scope);
+	}
+	
+	private String buildArgNameRepresentation() {
+		StringBuffer args = new StringBuffer();
+		int numArgsWeCareAbout = getDeclaredParameterCount();
+		if (this.arguments != null) {
+			for (int i = 0; i < numArgsWeCareAbout; i++) {
+				if (i != 0) args.append(",");
+				args.append(new String(this.arguments[i].name));
+			}
+		}
+		if (extraArgument != null) {
+			if (numArgsWeCareAbout > 0) { args.append(","); }
+			args.append(new String(extraArgument.name));
+		}
+		return args.toString();
 	}
 	
 	// override, Called by ClassScope.postParse
