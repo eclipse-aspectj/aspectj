@@ -118,6 +118,12 @@
 		<run class="Simple" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
 	</ajc-test>
 	
+	<ajc-test dir="java5/reflection" title="arg names in advice annotations">
+		<compile files="AdviceWithArgs.aj" options="-1.5"></compile>
+		<run class="AdviceWithArgs"/>
+	</ajc-test>
+	
+	
 	<ajc-test dir="java5/reflection" pr="114322" title="reflection on abstract ITDs (Billing example)">
 		<compile files="ReflectBilling.java,Billing.aj" options="-1.5"/>
 		<run class="ReflectBilling">

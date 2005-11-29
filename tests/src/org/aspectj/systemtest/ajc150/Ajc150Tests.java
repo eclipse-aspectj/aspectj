@@ -753,6 +753,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("double parameter generic abstract type");
   }
   
+
+  public void testArgNamesInAdviceAnnotations() {
+	  runTest("arg names in advice annotations");
+  }
+  
   /*
    * Load-time weaving bugs
    */
@@ -777,6 +782,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	  List l = AsmManager.getDefault().getRelationshipMap().get(pe);	
 	  assertNotNull("Should have some relationships but does not",l);
   }
+  
   
   // helper methods.....
   
