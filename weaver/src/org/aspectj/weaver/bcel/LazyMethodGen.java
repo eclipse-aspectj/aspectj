@@ -105,7 +105,7 @@ public final class LazyMethodGen {
     private int             maxLocals; 
     
     private boolean canInline = true;
-    private boolean hasExceptionHandlers;
+//    private boolean hasExceptionHandlers;
     
     private boolean isSynthetic = false;
     
@@ -294,7 +294,7 @@ public final class LazyMethodGen {
         CodeExceptionGen[] exns = gen.getExceptionHandlers();
         if (exns != null) {
             int len = exns.length;
-            if (len > 0) hasExceptionHandlers = true;
+ //           if (len > 0) hasExceptionHandlers = true;
             int priority = len - 1;
             for (int i = 0; i < len; i++, priority--) {
                 CodeExceptionGen exn = exns[i];
@@ -1152,8 +1152,8 @@ public final class LazyMethodGen {
     	// Old implementation, simply:   l.add(0,fresh);
     	for (ListIterator iter = l.listIterator(); iter.hasNext();) {
             ExceptionRange r = (ExceptionRange) iter.next();
-            int freal = fresh.getRealStart().getPosition();
-            int rreal = r.getRealStart().getPosition();
+//            int freal = fresh.getRealStart().getPosition();
+//            int rreal = r.getRealStart().getPosition();
             if (fresh.getPriority() >= r.getPriority()) {
                 iter.previous();
                 iter.add(fresh);

@@ -255,11 +255,11 @@ public abstract class Shadow {
     /** A type-safe enum representing the kind of shadows
      */
 	public static final class Kind extends TypeSafeEnum {
-		private boolean argsOnStack;  //XXX unused
+//		private boolean argsOnStack;  //XXX unused
 
 		public Kind(String name, int key, boolean argsOnStack) {
 			super(name, key);
-			this.argsOnStack = argsOnStack;
+//			this.argsOnStack = argsOnStack;
 		}
 
 		public String toLegalJavaIdentifier() {
