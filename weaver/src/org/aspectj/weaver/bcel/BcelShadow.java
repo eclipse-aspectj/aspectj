@@ -130,7 +130,7 @@ public class BcelShadow extends Shadow {
     private ShadowRange range;    
     private final BcelWorld world;  
     private final LazyMethodGen enclosingMethod;
-	private boolean fallsThrough;  //XXX not used anymore
+//	private boolean fallsThrough;  //XXX not used anymore
 	
 	// SECRETAPI - for testing, this will tell us if the optimization succeeded *on the last shadow processed*
 	public static boolean appliedLazyTjpOptimization;
@@ -156,7 +156,7 @@ public class BcelShadow extends Shadow {
 		super(kind, signature, enclosingShadow);
 		this.world = world;
 		this.enclosingMethod = enclosingMethod;
-		fallsThrough = kind.argsOnStack();
+//		fallsThrough = kind.argsOnStack();
 	}
 
 	// ---- copies all state, including Shadow's mungers...
@@ -278,7 +278,7 @@ public class BcelShadow extends Shadow {
 			// what is in initializeArgVars() (since there is only one argument
 			// at a handler jp and only before advice is supported) (pr46298)
 	        argVars = new BcelVar[1];
-			int positionOffset = (hasTarget() ? 1 : 0) + ((hasThis() && !getKind().isTargetSameAsThis()) ? 1 : 0);
+			//int positionOffset = (hasTarget() ? 1 : 0) + ((hasThis() && !getKind().isTargetSameAsThis()) ? 1 : 0);
 			UnresolvedType tx = getArgType(0);
             argVars[0] = genTempVar(tx, "ajc$arg0");
             InstructionHandle insertedInstruction = 
@@ -563,7 +563,8 @@ public class BcelShadow extends Shadow {
 		LazyMethodGen constructor,
 		Member interfaceConstructorSignature) 
 	{
-		InstructionList body = constructor.getBody();
+		// this call marks the instruction list as changed
+		constructor.getBody();
 		// UnresolvedType inType = constructor.getEnclosingClass().getType();
         BcelShadow s =
             new BcelShadow(
@@ -572,7 +573,7 @@ public class BcelShadow extends Shadow {
                 interfaceConstructorSignature,
                 constructor,
                 null);
-        s.fallsThrough = true;
+//        s.fallsThrough = true;
 //        ShadowRange r = new ShadowRange(body);
 //        r.associateWithShadow(s);
 //        InstructionHandle start = Range.genStart(body, handle);
@@ -655,7 +656,7 @@ public class BcelShadow extends Shadow {
 			world.makeJoinPointSignature(constructor),
 			constructor,
 			null);
-		ret.fallsThrough = true;
+//		ret.fallsThrough = true;
 		if (constructor.getEffectiveSignature() != null) {
 			ret.setMatchingSignature(constructor.getEffectiveSignature().getEffectiveSignature());
 		}
@@ -1518,7 +1519,7 @@ public class BcelShadow extends Shadow {
     		
     	} else if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution || 
     		        getKind() == Shadow.AdviceExecution) {
-    		ResolvedMember rm[] = relevantType.getDeclaredMethods();
+    		//ResolvedMember rm[] = relevantType.getDeclaredMethods();
     		Member foundMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		
     		annotations = getAnnotations(foundMember, relevantMember,relevantType);
@@ -1834,7 +1835,7 @@ public class BcelShadow extends Shadow {
 		InstructionList entryInstructions = new InstructionList();
 		InstructionList entrySuccessInstructions = new InstructionList();
 		
-		BcelObjectType aspectType = BcelWorld.getBcelObjectType(munger.getConcreteAspect());
+		BcelWorld.getBcelObjectType(munger.getConcreteAspect());
 		String aspectname = munger.getConcreteAspect().getName();
 		
 		String ptwField = NameMangler.perTypeWithinFieldForTarget(munger.getConcreteAspect());
@@ -2431,7 +2432,7 @@ public class BcelShadow extends Shadow {
             }
             for (int i = startIndex, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
                 Type stateType = callbackMethod.getArgumentTypes()[i];
-                ResolvedType stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+                BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
                     ret.append(new ALOAD(localJp));// from localAdvice signature
                 } else {
@@ -2452,7 +2453,8 @@ public class BcelShadow extends Shadow {
 
             for (int i = 0, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
                 Type stateType = callbackMethod.getArgumentTypes()[i];
-                ResolvedType stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+                /*ResolvedType stateTypeX =*/ 
+                BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
                     ret.append(new ALOAD(localJp));// from localAdvice signature
 //                } else if ("Lorg/aspectj/lang/ProceedingJoinPoint;".equals(stateType.getSignature())) {
