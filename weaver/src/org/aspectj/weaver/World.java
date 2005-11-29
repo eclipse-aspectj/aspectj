@@ -79,6 +79,9 @@ public abstract class World implements Dump.INode {
     /** When behaving in a Java 5 way autoboxing is considered */
     private boolean behaveInJava5Way = false;
     
+    /** The level of the aspectjrt.jar the code we generate needs to run on */
+    private String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
+    
     /** 
      * A list of RuntimeExceptions containing full stack information for every
      * type we couldn't find.
@@ -642,6 +645,14 @@ public abstract class World implements Dump.INode {
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
+	}
+	
+	public void setTargetAspectjRuntimeLevel(String s) {
+		targetAspectjRuntimeLevel = s;
+	}
+	
+	public String getTargetAspectjRuntimeLevel() {
+		return targetAspectjRuntimeLevel;
 	}
 	
 	/*

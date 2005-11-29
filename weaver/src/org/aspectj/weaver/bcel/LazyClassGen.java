@@ -999,7 +999,14 @@ public final class LazyClassGen {
     	// create the signature
     	list.append(InstructionFactory.createLoad(factoryType, 0));
     	
-    	if (sig.getKind().equals(Member.METHOD)) {
+    	if (world.getTargetAspectjRuntimeLevel().equals(org.aspectj.weaver.Constants.RUNTIME_LEVEL_12)) {
+        	list.append(new PUSH(getConstantPoolGen(), sig.getSignatureString(shadow.getWorld())));
+    		list.append(fact.createInvoke(factoryType.getClassName(), 
+    					sig.getSignatureMakerName(),
+    					new ObjectType(sig.getSignatureType()),
+    					new Type[] { Type.STRING },
+    					Constants.INVOKEVIRTUAL));
+    	} else 	if (sig.getKind().equals(Member.METHOD)) {
     		BcelWorld w = shadow.getWorld();
     		// For methods, push the parts of the signature on.
     		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
@@ -1079,6 +1086,7 @@ public final class LazyClassGen {
 			  	   new Type[] { Type.STRING },
 			  	   Constants.INVOKEVIRTUAL));
     	}   	
+    	
     	//XXX should load source location from shadow
     	list.append(Utility.createConstant(fact, shadow.getSourceLine()));
 

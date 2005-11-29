@@ -86,6 +86,11 @@
      <run class="Test"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr111667" pr="111667" title="lint for advice sorting">
+     <compile files="A.java,X.java,Y.java" options="-1.5">
+     </compile>
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr117296" pr="117296" title="self bounding generic types">
      <compile files="PropertySupport.java" options="-1.5"/>
      <run class="PropertySupport"/>
@@ -106,6 +111,11 @@
 	<ajc-test dir="java5/reflection" title="pointcut parsing with ajc compiled pointcut references">
 		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java" options="-1.5"></compile>
 		<run class="ReflectOnAjcCompiledPointcuts" classpath="../lib/bcel/bcel.jar"/>
+	</ajc-test>
+	
+	<ajc-test dir="compatibility" title="generating code for a 1.2.1 runtime">
+		<compile files="Simple.java" options="-Xajruntimetarget:1.2"></compile>
+		<run class="Simple" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
 	</ajc-test>
 	
 	<ajc-test dir="java5/reflection" pr="114322" title="reflection on abstract ITDs (Billing example)">

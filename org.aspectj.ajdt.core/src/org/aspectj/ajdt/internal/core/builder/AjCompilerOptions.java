@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.weaver.Constants;
 
 
 /**
@@ -72,6 +73,9 @@ public class AjCompilerOptions extends CompilerOptions {
 	
 	// If true - autoboxing behaves differently ...
 	public boolean behaveInJava5Way = false;
+	
+	// Specifies the level of the aspectjrt.jar we are targetting
+	public String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
 	
 	// these next four not exposed by IDEs
 	public boolean generateModel = false;

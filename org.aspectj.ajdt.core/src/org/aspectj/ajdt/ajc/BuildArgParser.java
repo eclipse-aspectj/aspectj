@@ -20,6 +20,7 @@ import java.util.*;
 import org.aspectj.ajdt.internal.core.builder.*;
 import org.aspectj.bridge.*;
 import org.aspectj.util.*;
+import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -637,6 +638,14 @@ public class BuildArgParser extends Main {
             	buildConfig.setProceedOnError(true);
             } else if (new File(arg).isDirectory()) {
                 showError("dir arg not permitted: " + arg);
+            } else if (arg.startsWith("-Xajruntimetarget")) {
+        		if (arg.endsWith(":1.2")) {
+            		buildConfig.setTargetAspectjRuntimeLevel(Constants.RUNTIME_LEVEL_12);
+        		} else if (arg.endsWith(":1.5")) {
+            		buildConfig.setTargetAspectjRuntimeLevel(Constants.RUNTIME_LEVEL_15);
+        		} else {
+        			showError("-Xajruntimetarget:<level> only supports a target level of 1.2 or 1.5");
+        		}
             } else if (arg.equals("-1.5")) {
             	buildConfig.setBehaveInJava5Way(true);
             	unparsedArgs.add("-1.5");

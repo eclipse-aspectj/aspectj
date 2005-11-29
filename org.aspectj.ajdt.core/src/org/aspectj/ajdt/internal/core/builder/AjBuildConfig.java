@@ -571,4 +571,12 @@ public class AjBuildConfig {
 	public boolean getBehaveInJava5Way() {
 		return options.behaveInJava5Way;
 	}
+	
+	public void setTargetAspectjRuntimeLevel(String level) {
+		options.targetAspectjRuntimeLevel = level;
+	}
+
+	public String getTargetAspectjRuntimeLevel() {
+		return options.targetAspectjRuntimeLevel;
+	}
 }

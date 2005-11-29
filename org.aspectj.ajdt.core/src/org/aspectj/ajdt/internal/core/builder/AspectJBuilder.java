@@ -156,6 +156,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		cpManager = new EclipseClassPathManager(nameEnvironment);
 		myBcelWorld = new BcelWorld(cpManager,new UnhandledMessageHandler(getProject()),null /*(xrefHandler)*/);
 		myBcelWorld.setBehaveInJava5Way(options.behaveInJava5Way);
+		myBcelWorld.setTargetAspectjRuntimeLevel(options.targetAspectjRuntimeLevel);
 		myBcelWorld.setXnoInline(options.xNoInline);
 		myBcelWorld.setXlazyTjp(options.xLazyThisJoinPoint);
 		myBcelWorld.setXHasMemberSupportEnabled(options.xHasMember);

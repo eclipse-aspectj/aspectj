@@ -48,6 +48,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCunningDeclareParents_pr92311() { runTest("cunning declare parents");}
   public void testGenericITDsAndAbstractMethodError_pr102357() { runTest("generic itds and abstract method error");}
   */
+  public void testGeneratingCodeForAnOldRuntime_pr116679() { runTest("generating code for a 1.2.1 runtime");}
   
   public void testAtDeclareParents_pr117681() { runTest("at declare parents");}
   public void testPrivilegeProblem_pr87525() { runTest("privilege problem with switch");}
@@ -79,6 +80,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void testVarargsITD_pr110906() { runTest("ITD varargs problem");}
   public void testBadRenderer_pr86903() { runTest("bcelrenderer bad");}
+  //public void testLintForAdviceSorting_pr111667() { runTest("lint for advice sorting");}
   
   public void testIncompatibleClassChangeError_pr113630_1() {runTest("IncompatibleClassChangeError - errorscenario");}
   public void testIncompatibleClassChangeError_pr113630_2() {runTest("IncompatibleClassChangeError - workingscenario");}
