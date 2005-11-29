@@ -39,4 +39,14 @@ public @interface AfterThrowing {
      * The name of the argument in the advice signature to bind the thrown exception to
      */
     String throwing() default "";
+    
+    /**
+     * When compiling without debug info, or when interpreting pointcuts at runtime,
+     * the names of any arguments used in the advice declaration are not available.
+     * Under these circumstances only, it is necessary to provide the arg names in 
+     * the annotation - these MUST duplicate the names used in the annotated method.
+     * Format is a simple comma-separated list.
+     */
+    String argNames() default "";
+
 }
