@@ -901,10 +901,13 @@ public final class LazyClassGen {
 		else {
 			modifiers |= Modifier.PRIVATE;
 		}
-		ret = new FieldGen(modifiers,
-    		isEnclosingJp?enclosingStaticTjpType:staticTjpType,
-    		"ajc$tjp_" + tjpFields.size(),
-    		getConstantPoolGen()).getField();
+		ObjectType jpType = null;
+		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have different staticjp types in 1.2
+			jpType = staticTjpType;
+		} else {
+			jpType = isEnclosingJp?enclosingStaticTjpType:staticTjpType;
+		}
+		ret = new FieldGen(modifiers,jpType,"ajc$tjp_" + tjpFields.size(),getConstantPoolGen()).getField();
     	addField(ret);
     	tjpFields.put(shadow, ret);
     	return ret;
@@ -999,7 +1002,7 @@ public final class LazyClassGen {
     	// create the signature
     	list.append(InstructionFactory.createLoad(factoryType, 0));
     	
-    	if (world.getTargetAspectjRuntimeLevel().equals(org.aspectj.weaver.Constants.RUNTIME_LEVEL_12)) {
+    	if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have optimized factory methods in 1.2
         	list.append(new PUSH(getConstantPoolGen(), sig.getSignatureString(shadow.getWorld())));
     		list.append(fact.createInvoke(factoryType.getClassName(), 
     					sig.getSignatureMakerName(),
@@ -1091,21 +1094,31 @@ public final class LazyClassGen {
     	list.append(Utility.createConstant(fact, shadow.getSourceLine()));
 
         final String factoryMethod;
-        if (staticTjpType.equals(field.getType())) {
-            factoryMethod = "makeSJP";
-        } else if (enclosingStaticTjpType.equals(field.getType())) {
-            factoryMethod = "makeESJP";
+        
+       	if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have makeESJP() in 1.2    	
+        	list.append(fact.createInvoke(factoryType.getClassName(),
+        			"makeSJP", staticTjpType, 
+        			new Type[] { Type.STRING, sigType, Type.INT},
+        			Constants.INVOKEVIRTUAL));
+        	
+        	// put it in the field	
+        	list.append(fact.createFieldAccess(getClassName(), field.getName(),staticTjpType, Constants.PUTSTATIC));
+        
         } else {
-            throw new Error("should not happen");
-        }
-    	list.append(fact.createInvoke(factoryType.getClassName(),
-    			factoryMethod, field.getType(),
-    			new Type[] { Type.STRING, sigType, Type.INT},
-    			Constants.INVOKEVIRTUAL));
-    	
-    	// put it in the field	
-    	list.append(fact.createFieldAccess(getClassName(), field.getName(),
-    		field.getType(), Constants.PUTSTATIC));
+	        if (staticTjpType.equals(field.getType())) {
+	            factoryMethod = "makeSJP";
+	        } else if (enclosingStaticTjpType.equals(field.getType())) {
+	            factoryMethod = "makeESJP";
+	        } else {
+	            throw new Error("should not happen");
+	        }
+	    	list.append(fact.createInvoke(factoryType.getClassName(),
+	    			factoryMethod, field.getType(),
+	    			new Type[] { Type.STRING, sigType, Type.INT},
+	    			Constants.INVOKEVIRTUAL));
+	    	// put it in the field	
+	    	list.append(fact.createFieldAccess(getClassName(), field.getName(), field.getType(), Constants.PUTSTATIC));
+    	}
     }
     
     

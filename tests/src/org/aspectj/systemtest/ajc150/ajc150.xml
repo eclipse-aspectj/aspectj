@@ -113,17 +113,21 @@
 		<run class="ReflectOnAjcCompiledPointcuts" classpath="../lib/bcel/bcel.jar"/>
 	</ajc-test>
 	
-	<ajc-test dir="compatibility" title="generating code for a 1.2.1 runtime">
-		<compile files="Simple.java" options="-Xajruntimetarget:1.2"></compile>
+	<ajc-test dir="compatibility/case1" title="generating code for a 1.2.1 runtime - 1">
+		<compile files="Simple.java" options="-Xajruntimetarget:1.2"/>
 		<run class="Simple" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
 	</ajc-test>
-	
+
+	<ajc-test dir="compatibility/case2" title="generating code for a 1.2.1 runtime - 2">
+		<compile files="TrackingErrors.aj,A.java" options="-Xajruntimetarget:1.2"/>
+		<run class="A" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
+	</ajc-test>
+		
 	<ajc-test dir="java5/reflection" title="arg names in advice annotations">
 		<compile files="AdviceWithArgs.aj" options="-1.5"></compile>
 		<run class="AdviceWithArgs"/>
 	</ajc-test>
-	
-	
+
 	<ajc-test dir="java5/reflection" pr="114322" title="reflection on abstract ITDs (Billing example)">
 		<compile files="ReflectBilling.java,Billing.aj" options="-1.5"/>
 		<run class="ReflectBilling">

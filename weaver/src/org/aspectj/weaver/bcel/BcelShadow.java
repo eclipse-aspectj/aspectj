@@ -1179,11 +1179,17 @@ public class BcelShadow extends Shadow {
     public BcelVar getThisJoinPointStaticPartBcelVar(final boolean isEnclosingJp) {
     	if (thisJoinPointStaticPartVar == null) {
     		Field field = getEnclosingClass().getTjpField(this, isEnclosingJp);
-    		thisJoinPointStaticPartVar =
-    			new BcelFieldRef(
-    				isEnclosingJp?
-                        world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$EnclosingStaticPart")):
-                        world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$StaticPart")),
+    		
+    			ResolvedType sjpType = null;
+    	       	if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have different jpsp types in 1.2	
+    		    	sjpType = world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$StaticPart"));
+    		    } else {
+    		    	sjpType = isEnclosingJp?
+                              world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$EnclosingStaticPart")):
+                              world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$StaticPart"));
+    		    }
+    		    thisJoinPointStaticPartVar = new BcelFieldRef(
+    				sjpType,
     				getEnclosingClass().getClassName(),
     				field.getName());
 //    		getEnclosingClass().warnOnAddedStaticInitializer(this,munger.getSourceLocation());
