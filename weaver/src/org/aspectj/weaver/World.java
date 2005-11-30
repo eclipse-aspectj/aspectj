@@ -655,6 +655,10 @@ public abstract class World implements Dump.INode {
 		return targetAspectjRuntimeLevel;
 	}
 	
+	public boolean isTargettingAspectJRuntime12() {
+		return getTargetAspectjRuntimeLevel().equals(org.aspectj.weaver.Constants.RUNTIME_LEVEL_12);
+	}
+	
 	/*
 	 *  Map of types in the world, with soft links to expendable ones.
 	 *  An expendable type is a reference type that is not exposed to the weaver (ie
