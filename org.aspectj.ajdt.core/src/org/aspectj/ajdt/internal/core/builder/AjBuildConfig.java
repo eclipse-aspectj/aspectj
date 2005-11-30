@@ -375,6 +375,10 @@ public class AjBuildConfig {
         if (!isXlazyTjp() && global.isXlazyTjp()) {
         	setXlazyTjp(true);
         }
+        if (!getProceedOnError() && global.getProceedOnError()) {
+        	setProceedOnError(true);
+        }
+       	setTargetAspectjRuntimeLevel(global.getTargetAspectjRuntimeLevel());
         if (!isXHasMemberEnabled() && global.isXHasMemberEnabled()) {
         	setXHasMemberSupport(true);
         }

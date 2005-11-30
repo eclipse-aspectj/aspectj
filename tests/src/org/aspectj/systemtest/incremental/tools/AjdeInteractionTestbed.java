@@ -65,6 +65,10 @@ public class AjdeInteractionTestbed extends TestCase {
 	public static void configureNewProjectDependency(String fromProject, String projectItDependsOn) {
 		MyProjectPropertiesAdapter.addDependancy(fromProject,projectItDependsOn);
 	}
+	
+	public static void configureNonStandardCompileOptions(String options) {
+		MyBuildOptionsAdapter.setNonStandardOptions(options);
+	}
 	// End of methods for configuring the build
 	
 	
@@ -117,6 +121,7 @@ public class AjdeInteractionTestbed extends TestCase {
 			MyBuildProgressMonitor.reset();
 			MyTaskListManager.reset();
 			MyStateListener.reset();
+			// MyBuildOptionsAdapter.reset(); needs manually resetting in a test
 			
 			MyProjectPropertiesAdapter.setActiveProject(projectName);
 			AsmManager.attemptIncrementalModelRepairs=true;
@@ -620,6 +625,16 @@ public class AjdeInteractionTestbed extends TestCase {
 		static MyBuildOptionsAdapter _instance = new MyBuildOptionsAdapter();
 		private MyBuildOptionsAdapter() {}
 		
+		public static void setNonStandardOptions(String options) {
+			_instance.nonstandardoptions = options;
+		}
+
+		private String nonstandardoptions=null;
+		
+		public static void reset() {
+			_instance.nonstandardoptions=null;
+		}
+		
 		public static BuildOptionsAdapter getInstance() { 
 			return _instance;
 		}
@@ -666,7 +681,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public String getNonStandardOptions() {
-			return null;
+			return nonstandardoptions;
 		}
 
 		public String getComplianceLevel() {
