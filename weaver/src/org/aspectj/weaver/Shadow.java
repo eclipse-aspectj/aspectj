@@ -406,7 +406,12 @@ public abstract class Shadow {
     } 
     
 	private void sortMungers() {
+		
 		List sorted = PartialOrder.sort(mungers);
+		
+		// Bunch of code to work out whether to report xlints for advice that isn't ordered at this Joinpoint
+		possiblyReportUnorderedAdvice(sorted);
+		
 		if (sorted == null) {
 			// this means that we have circular dependencies
 			for (Iterator i = mungers.iterator(); i.hasNext(); ) {
@@ -417,6 +422,61 @@ public abstract class Shadow {
 			}
 		}
 		mungers = sorted;
+	}
+
+    // not quite optimal... but the xlint is ignore by default
+	private void possiblyReportUnorderedAdvice(List sorted) {
+		if (sorted!=null && getIWorld().getLint().unorderedAdviceAtShadow.isEnabled() && mungers.size()>1) {
+			
+			// Stores a set of strings of the form 'aspect1:aspect2' which indicates there is no
+			// precedence specified between the two aspects at this shadow.
+			Set clashingAspects = new HashSet();
+			int max = mungers.size();
+			
+			// Compare every pair of advice mungers
+			for (int i = max-1; i >=0; i--) {
+				for (int j=0; j<i; j++) {
+				  Object a = mungers.get(i);
+				  Object b = mungers.get(j);
+				  
+				  // Make sure they are the right type
+				  if (a instanceof BcelAdvice && b instanceof BcelAdvice) {
+					  BcelAdvice adviceA = (BcelAdvice)a;
+					  BcelAdvice adviceB = (BcelAdvice)b;
+					  if (!adviceA.concreteAspect.equals(adviceB.concreteAspect)) {
+						  AdviceKind adviceKindA = adviceA.getKind();
+						  AdviceKind adviceKindB = adviceB.getKind();
+						  
+						  // make sure they are the nice ones (<6) and not any synthetic advice ones we
+						  // create to support other features of the language.
+						  if (adviceKindA.getKey()<(byte)6 && adviceKindB.getKey()<(byte)6 && 
+						      adviceKindA.getPrecedence() == adviceKindB.getPrecedence()) {
+							  
+							  // Ask the world if it knows about precedence between these
+							  Integer order = getIWorld().getPrecedenceIfAny(
+									  adviceA.concreteAspect,
+									  adviceB.concreteAspect);
+							  
+							  if (order!=null && 
+							      order.equals(new Integer(0))) {
+								  String key = adviceA.getDeclaringAspect()+":"+adviceB.getDeclaringAspect();
+								  String possibleExistingKey = adviceB.getDeclaringAspect()+":"+adviceA.getDeclaringAspect();
+								  if (!clashingAspects.contains(possibleExistingKey)) clashingAspects.add(key);
+							  }
+						  }
+					  }
+				  }
+				}				
+		    }
+			for (Iterator iter = clashingAspects.iterator(); iter.hasNext();) {
+				String element = (String) iter.next();
+				String aspect1 = element.substring(0,element.indexOf(":"));
+				String aspect2 = element.substring(element.indexOf(":")+1);
+				getIWorld().getLint().unorderedAdviceAtShadow.signal(
+						  new String[]{this.toString(),aspect1,aspect2},
+						  this.getSourceLocation(),null);
+			}		  
+		}
 	}
 	
 	/** Prepare the shadow for implementation.  After this is done, the shadow

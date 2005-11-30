@@ -87,7 +87,8 @@
     </ajc-test>
     
     <ajc-test dir="bugs150/pr111667" pr="111667" title="lint for advice sorting">
-     <compile files="A.java,X.java,Y.java" options="-1.5">
+     <compile files="A.java,X.java,Y.java" options="-1.5 -Xlint:warning">
+       <message kind="warning" line="9" text="at this shadow method-execution(void A.m1()) no precedence is specified between advice applying from aspect X and aspect Y [Xlint:unorderedAdviceAtShadow]"/>
      </compile>
     </ajc-test>
 

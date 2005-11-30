@@ -498,6 +498,9 @@ public abstract class World implements Dump.INode {
 	public int compareByPrecedence(ResolvedType aspect1, ResolvedType aspect2) {
 		return precedenceCalculator.compareByPrecedence(aspect1, aspect2);
 	}
+	public Integer getPrecedenceIfAny(ResolvedType aspect1, ResolvedType aspect2) {
+		return precedenceCalculator.getPrecedenceIfAny(aspect1, aspect2);
+	}
 		
 	/**
 	 * compares by precedence with the additional rule that a super-aspect is 
@@ -809,6 +812,10 @@ public abstract class World implements Dump.INode {
 				cachedResults.put(key, new Integer(order));
 				return order;
 			}
+		}
+		
+		public Integer getPrecedenceIfAny(ResolvedType aspect1,ResolvedType aspect2) {
+			return (Integer)cachedResults.get(new PrecedenceCacheKey(aspect1,aspect2));
 		}
 		
 		public int compareByPrecedenceAndHierarchy(ResolvedType firstAspect, ResolvedType secondAspect) {
