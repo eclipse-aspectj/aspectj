@@ -50,9 +50,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   */
   public void testGeneratingCodeForAnOldRuntime_pr116679_1() { runTest("generating code for a 1.2.1 runtime - 1");}
   public void testGeneratingCodeForAnOldRuntime_pr116679_2() { runTest("generating code for a 1.2.1 runtime - 2");}
-  
   public void testAmbiguousMethod_pr118599_1() { runTest("ambiguous method when binary weaving - 1");}
   public void testAmbiguousMethod_pr118599_2() { runTest("ambiguous method when binary weaving - 2");}
+  public void testAroundAdviceArrayAdviceSigs_pr118781()     { runTest("verify error with around advice array sigs");}
   public void testAtDeclareParents_pr117681() { runTest("at declare parents");}
   public void testPrivilegeProblem_pr87525() { runTest("privilege problem with switch");}
   public void testGenericAspects_pr115237() { runTest("aspectOf and generic aspects");}

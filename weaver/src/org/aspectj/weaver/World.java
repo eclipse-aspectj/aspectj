@@ -209,8 +209,8 @@ public abstract class World implements Dump.INode {
         // no existing resolved type, create one
         if (ty.isArray()) {
         	ResolvedType componentType = resolve(ty.getComponentType(),allowMissing);
-        	String brackets = signature.substring(0,signature.lastIndexOf("[")+1);
-            ret = new ResolvedType.Array(signature, brackets+componentType.getErasureSignature(),
+        	//String brackets = signature.substring(0,signature.lastIndexOf("[")+1);
+            ret = new ResolvedType.Array(signature, "["+componentType.getErasureSignature(),
             		                     this, 
             		                     componentType);
         } else {
@@ -690,6 +690,9 @@ public abstract class World implements Dump.INode {
 		 * method/ctor as opposed to those you see declared on a generic type.
 		 */
 		public ResolvedType put(String key, ResolvedType type) { 
+			if (key.indexOf("String")!=-1) {
+				int stop=1;
+			}
 			if (type.isParameterizedType() && type.isParameterizedWithAMemberTypeVariable()) {
 				if (debug) 
 					System.err.println("Not putting a parameterized type that utilises member declared type variables into the typemap: key="+key+" type="+type);
