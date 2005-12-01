@@ -63,8 +63,19 @@
     <ajc-test dir="bugs150" pr="114054" title="pertarget and negated pointcut">
      <compile files="Pr114054.aj" options=""/>
      <run class="Pr114054"/>
+    </ajc-test>  
+    
+    <ajc-test dir="bugs150/pr118599" pr="118599" title="ambiguous method when binary weaving - 1">
+     <!-- separate compilation was failing  -->
+     <compile files="Attributable.java" outjar="foo.jar" options="-1.5"/>
+     <compile files="AnAttributedClass.java" aspectpath="foo.jar" options="-1.5"/>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr118599" pr="118599" title="ambiguous method when binary weaving - 2">
+     <!-- complete compilation works -->
+     <compile files="Attributable.java,AnAttributedClass.java" options="-1.5"/>
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="104220" title="adviceexecution join point toString forms">
       <compile files="Pr104220.aj"/>
       <run class="Pr104220">
@@ -85,13 +96,28 @@
      <compile files="Test.java,TestAspect.java,Audit.java,AuditImpl.java" options="-1.5"/>
      <run class="Test"/>
     </ajc-test>
-    
+        
     <ajc-test dir="bugs150/pr111667" pr="111667" title="lint for advice sorting">
      <compile files="A.java,X.java,Y.java" options="-1.5 -Xlint:warning">
        <message kind="warning" line="9" text="at this shadow method-execution(void A.m1()) no precedence is specified between advice applying from aspect X and aspect Y [Xlint:unorderedAdviceAtShadow]"/>
      </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs150/pr118326" pr="118326" title="illegal initialization - 1">
+     <compile files="Foo.java,Bar.java">
+       <message kind="error" line="2" text="Type mismatch: cannot convert from null to int"/>
+       <message kind="error" line="6" text="Type mismatch: cannot convert from Integer to int"/>
+       <message kind="error" line="8" text="Type mismatch: cannot convert from String to int"/>
+     </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150/pr118326" pr="118326" title="illegal initialization - 2">
+     <compile files="Foo.java,Bar.java" options="-1.5">
+       <message kind="error" line="2" text="Type mismatch: cannot convert from null to int"/>
+       <message kind="error" line="8" text="Type mismatch: cannot convert from String to int"/>
+     </compile>
+    </ajc-test>
+        
     <ajc-test dir="bugs150/pr117296" pr="117296" title="self bounding generic types">
      <compile files="PropertySupport.java" options="-1.5"/>
      <run class="PropertySupport"/>
@@ -118,7 +144,7 @@
 		<compile files="Simple.java" options="-Xajruntimetarget:1.2"/>
 		<run class="Simple" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
 	</ajc-test>
-
+	
 	<ajc-test dir="compatibility/case2" title="generating code for a 1.2.1 runtime - 2">
 		<compile files="TrackingErrors.aj,A.java" options="-Xajruntimetarget:1.2"/>
 		<run class="A" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
@@ -128,7 +154,8 @@
 		<compile files="AdviceWithArgs.aj" options="-1.5"></compile>
 		<run class="AdviceWithArgs"/>
 	</ajc-test>
-
+	
+	
 	<ajc-test dir="java5/reflection" pr="114322" title="reflection on abstract ITDs (Billing example)">
 		<compile files="ReflectBilling.java,Billing.aj" options="-1.5"/>
 		<run class="ReflectBilling">
