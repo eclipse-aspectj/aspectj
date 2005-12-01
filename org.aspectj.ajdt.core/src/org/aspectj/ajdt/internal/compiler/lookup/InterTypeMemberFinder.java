@@ -42,7 +42,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	private List interTypeMethods = new ArrayList();
 	
 	public SourceTypeBinding sourceTypeBinding;
-
+	
 	public FieldBinding getField(SourceTypeBinding sourceTypeBinding,char[] fieldName,InvocationSite site,Scope scope) {
 		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName, true);  // XXX may need to get the correct value for second parameter in the future (see #55341)
 		if (interTypeFields.isEmpty()) return retField;
@@ -435,6 +435,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			MethodBinding[] baseMethods = sourceTypeBinding.methods;
 			for (int i=0, len=baseMethods.length; i < len; i++) {
 				MethodBinding b = baseMethods[i];
+				sourceTypeBinding.resolveTypesFor(b); // this will return fast if its already been done.
 				if (matches(binding, b)) {
 					// this always means we should remove the existing method
 					if (b.sourceMethod() != null) {
