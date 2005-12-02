@@ -54,7 +54,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     }
 
     // ---- things that don't require a world
-
+    
     /**
      * Returns an iterator through ResolvedType objects representing all the direct
      * supertypes of this type.  That is, through the superclass, if any, and
@@ -617,6 +617,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     }
     
     public boolean isAnonymous() {
+    		return false;
+    }
+    
+    public boolean isNested() {
     		return false;
     }
     

@@ -181,6 +181,10 @@ public class BoundedReferenceType extends ReferenceType {
 			return resolvedTypeX.isAnonymous();
 		}
 		
+		public boolean isNested() {
+			return resolvedTypeX.isNested();
+		}
+		
 		public String getRetentionPolicy() {
 			return resolvedTypeX.getRetentionPolicy();
 		}

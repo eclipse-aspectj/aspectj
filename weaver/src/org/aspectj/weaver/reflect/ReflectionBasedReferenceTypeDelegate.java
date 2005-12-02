@@ -156,6 +156,11 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public boolean isAnonymous() {
 		return false;
 	}
+	
+	public boolean isNested() {
+		boolean member = this.myClass.isMemberClass();
+		return member;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isExposedToWeaver()

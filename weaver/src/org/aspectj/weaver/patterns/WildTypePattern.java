@@ -200,12 +200,15 @@ public class WildTypePattern extends TypePattern {
 	}
 	
 	//XXX inefficient implementation
-	public static char[][] splitNames(String s) {
+	// we don't know whether $ characters are from nested types, or were
+	// part of the declared type name (generated code often uses $s in type
+	// names). More work required on our part to get this right...
+	public static char[][] splitNames(String s, boolean convertDollar) {
 		List ret = new ArrayList();
 		int startIndex = 0;
 		while (true) {
 		    int breakIndex = s.indexOf('.', startIndex);  // what about /
-		    if (breakIndex == -1) breakIndex = s.indexOf('$', startIndex);  // we treat $ like . here
+		    if (convertDollar && (breakIndex == -1)) breakIndex = s.indexOf('$', startIndex);  // we treat $ like . here
 		    if (breakIndex == -1) break;
 		    char[] name = s.substring(startIndex, breakIndex).toCharArray();
 		    ret.add(name);
@@ -230,7 +233,7 @@ public class WildTypePattern extends TypePattern {
 		// Ensure the annotation pattern is resolved
 		annotationPattern.resolve(type.getWorld());
 		
-		return matchesExactlyByName(targetTypeName,type.isAnonymous()) &&
+		return matchesExactlyByName(targetTypeName,type.isAnonymous(),type.isNested()) &&
 		        matchesParameters(type,STATIC) &&
 		        matchesBounds(type,STATIC) &&
 		       annotationPattern.matches(annotatedType).alwaysTrue();
@@ -288,7 +291,7 @@ public class WildTypePattern extends TypePattern {
 	 * @param targetTypeName
 	 * @return
 	 */
-	private boolean matchesExactlyByName(String targetTypeName, boolean isAnonymous) {
+	private boolean matchesExactlyByName(String targetTypeName, boolean isAnonymous, boolean isNested) {
 		// we deal with parameter matching separately...
 		if (targetTypeName.indexOf('<') != -1) {
 			targetTypeName = targetTypeName.substring(0,targetTypeName.indexOf('<'));
@@ -299,7 +302,7 @@ public class WildTypePattern extends TypePattern {
 		}
 		//XXX hack
 		if (knownMatches == null && importedPrefixes == null) {
-			return innerMatchesExactly(targetTypeName,isAnonymous);
+			return innerMatchesExactly(targetTypeName,isAnonymous, isNested);
 		}
 		
 		if (isNamePatternStar()) {
@@ -334,7 +337,7 @@ public class WildTypePattern extends TypePattern {
 				String knownPrefix = knownMatches[i] + "$";
 				if (targetTypeName.startsWith(knownPrefix)) {
 					int pos = lastIndexOfDotOrDollar(knownMatches[i]);
-					if (innerMatchesExactly(targetTypeName.substring(pos+1),isAnonymous)) {
+					if (innerMatchesExactly(targetTypeName.substring(pos+1),isAnonymous,isNested)) {
 						return true;
 					}
 				}
@@ -349,13 +352,13 @@ public class WildTypePattern extends TypePattern {
 			//System.err.println("prefix match? " + prefix + " to " + targetTypeName);
 			if (targetTypeName.startsWith(prefix)) {
 				
-				if (innerMatchesExactly(targetTypeName.substring(prefix.length()),isAnonymous)) {
+				if (innerMatchesExactly(targetTypeName.substring(prefix.length()),isAnonymous,isNested)) {
 					return true;
 				}
 			}
 		}
 		
-		return innerMatchesExactly(targetTypeName,isAnonymous);
+		return innerMatchesExactly(targetTypeName,isAnonymous,isNested);
 	}
 
 	private int lastIndexOfDotOrDollar(String string) {
@@ -365,9 +368,9 @@ public class WildTypePattern extends TypePattern {
     }
 
 	
-	private boolean innerMatchesExactly(String targetTypeName, boolean isAnonymous) {
+	private boolean innerMatchesExactly(String targetTypeName, boolean isAnonymous, boolean isNested) {
 		//??? doing this everytime is not very efficient
-		char[][] names = splitNames(targetTypeName);
+		char[][] names = splitNames(targetTypeName,isNested);
 
         return innerMatchesExactly(names, isAnonymous);
 	}
@@ -980,9 +983,16 @@ public class WildTypePattern extends TypePattern {
 		
 		List ret = new ArrayList();
 		for (int i=0, len=possibleMatches.length; i < len; i++) {
-			char[][] names = splitNames(possibleMatches[i]); //??? not most efficient
+			char[][] names = splitNames(possibleMatches[i],true); //??? not most efficient
 			if (namePatterns[0].matches(names[names.length-1])) {
 				ret.add(possibleMatches[i]);
+				continue;
+			}
+			if (possibleMatches[i].indexOf("$") != -1) {
+				names = splitNames(possibleMatches[i],false); //??? not most efficient
+				if (namePatterns[0].matches(names[names.length-1])) {
+					ret.add(possibleMatches[i]);
+				}
 			}
 		}
 		return (String[])ret.toArray(new String[ret.size()]);
