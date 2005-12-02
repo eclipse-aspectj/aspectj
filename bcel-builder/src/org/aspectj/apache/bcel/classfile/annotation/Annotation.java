@@ -88,12 +88,12 @@ public class Annotation {
 		return typeIndex;
 	}
 	
-	public final String getTypeSignature() {
+	public String getTypeSignature() {
 	  ConstantUtf8 c = (ConstantUtf8)cpool.getConstant(typeIndex,Constants.CONSTANT_Utf8);
 	  return c.getBytes();
 	}
 	
-	public final String getTypeName() {
+	public String getTypeName() {
 		ConstantUtf8 c = (ConstantUtf8)cpool.getConstant(typeIndex,Constants.CONSTANT_Utf8);
 		return Utility.signatureToString(c.getBytes());
 	}
