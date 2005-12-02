@@ -61,7 +61,7 @@ public class EclipseScope implements IScope {
 	
 	
 	public UnresolvedType lookupType(String name, IHasPosition location) {
-		char[][] splitName = WildTypePattern.splitNames(name);
+		char[][] splitName = WildTypePattern.splitNames(name,true);
 		TypeBinding b = scope.getType(splitName,splitName.length);
 		//FIXME ??? need reasonable error handling...
 		if (!b.isValidBinding()) {

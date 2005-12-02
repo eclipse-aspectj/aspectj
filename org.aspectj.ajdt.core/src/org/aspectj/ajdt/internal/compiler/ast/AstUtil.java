@@ -240,7 +240,7 @@ public class AstUtil {
 		return (long)end | ((long)start << 32);
 	}
 	public static char[][] getCompoundName(String string) {
-		return WildTypePattern.splitNames(string);
+		return WildTypePattern.splitNames(string,true);
 	}
 
 	public static TypeBinding[] insert(
