@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.8 2005/11/04 13:06:27 acolyer Exp $
+ * @version $Id: JavaClass.java,v 1.9 2005/12/02 06:56:14 acolyer Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -99,6 +99,9 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   private Annotation[] annotations;   // annotations defined on the class
   private byte         source = HEAP; // Generated in memory
   private boolean     isGeneric = false;
+  private boolean 		isAnonymous = false;
+  private boolean 		isNested = false;
+  private boolean 		computedNestedTypeStatus = false;
 
   public static final byte HEAP = 1;
   public static final byte FILE = 2;
@@ -724,21 +727,38 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   }
   
   public final boolean isAnonymous() {
+	  computeNestedTypeStatus();
+	  return this.isAnonymous;
+  }
+  
+  public final boolean isNested() {
+	  computeNestedTypeStatus();
+	  return this.isNested;
+  }
+  
+  private final void computeNestedTypeStatus() {
+	  if (computedNestedTypeStatus) return;
 	  for (int i = 0; i < this.attributes.length; i++) {
-		if (this.attributes[i] instanceof InnerClasses) {
-			InnerClass[] innerClasses = ((InnerClasses) this.attributes[i]).getInnerClasses();
-			for (int j = 0; j < innerClasses.length; j++) {
-				if (innerClasses[j].getInnerNameIndex() == 0) {
-					// this is an anonymous class, but is it me, or a class contained in me??
+			if (this.attributes[i] instanceof InnerClasses) {
+				InnerClass[] innerClasses = ((InnerClasses) this.attributes[i]).getInnerClasses();
+				for (int j = 0; j < innerClasses.length; j++) {
+					boolean innerClassAttributeRefersToMe = false;
 					String inner_class_name = constant_pool.getConstantString(innerClasses[j].getInnerClassIndex(),
 						       Constants.CONSTANT_Class);
 					inner_class_name = Utility.compactClassName(inner_class_name);
-					if (inner_class_name.equals(getClassName())) return true;
+					if (inner_class_name.equals(getClassName())) {
+						innerClassAttributeRefersToMe = true;
+					}
+					if (innerClassAttributeRefersToMe) {
+						this.isNested = true;
+						if (innerClasses[j].getInnerNameIndex() == 0) {
+							this.isAnonymous = true;
+						}
+					}
 				}
 			}
-		}
 	  }
-	  return false;
+	  this.computedNestedTypeStatus = true;
   }
   
   // J5SUPPORT:
