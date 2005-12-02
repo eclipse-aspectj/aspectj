@@ -158,8 +158,10 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	}
 	
 	public boolean isNested() {
-		boolean member = this.myClass.isMemberClass();
-		return member;
+		// FIXME this is *wrong* but isMemberClass() doesnt exist in pre-1.5... (same deal as isAnonymous above...)
+		return true;
+//		boolean member = this.myClass.isMemberClass();
+//		return member;
 	}
 
 	/* (non-Javadoc)
