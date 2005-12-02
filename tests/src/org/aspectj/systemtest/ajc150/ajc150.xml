@@ -2,6 +2,10 @@
 
 <!-- AspectJ v1.5.0 Tests -->
 <suite>
+    <ajc-test dir="bugs150" title="access to private ITD from nested type">
+        <compile files="pr118698.aj"/>
+        <run class="pr118698"/>
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr112476/case1" title="binary weaving decp broken">
         <compile files="lib/A.java,lib/B.java,lib/C.java" outjar="library.jar" options="-1.5"/>

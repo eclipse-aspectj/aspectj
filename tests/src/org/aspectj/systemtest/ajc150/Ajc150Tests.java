@@ -83,14 +83,15 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void testVarargsITD_pr110906() { runTest("ITD varargs problem");}
   public void testBadRenderer_pr86903() { runTest("bcelrenderer bad");}
-//  public void testIllegalInitialization_pr118326_1() { runTest("illegal initialization - 1");}
-//  public void testIllegalInitialization_pr118326_2() { runTest("illegal initialization - 2");}
+  //public void testIllegalInitialization_pr118326_1() { runTest("illegal initialization - 1");}
+  //public void testIllegalInitialization_pr118326_2() { runTest("illegal initialization - 2");}
   public void testLintForAdviceSorting_pr111667() { runTest("lint for advice sorting");}
   
   public void testIncompatibleClassChangeError_pr113630_1() {runTest("IncompatibleClassChangeError - errorscenario");}
   public void testIncompatibleClassChangeError_pr113630_2() {runTest("IncompatibleClassChangeError - workingscenario");}
   
   public void testFieldGetProblemWithGenericField_pr113861() {runTest("field-get problems with generic field");}
+  public void testAccesstoPrivateITDInNested_pr118698() { runTest("access to private ITD from nested type");}
 
   public void testDeclareAnnotationOnNonExistentType_pr99191_1() { runTest("declare annotation on non existent type - 1");}
   public void testDeclareAnnotationOnNonExistentType_pr99191_2() { runTest("declare annotation on non existent type - 2");}  

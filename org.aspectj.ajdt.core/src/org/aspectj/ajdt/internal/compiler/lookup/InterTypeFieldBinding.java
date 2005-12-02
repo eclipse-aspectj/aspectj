@@ -82,7 +82,16 @@ public class InterTypeFieldBinding extends FieldBinding {
 		if (isPrivate()) {
 			// answer true if the receiverType is the declaringClass
 			// AND the invocationType and the declaringClass have a common enclosingType
-			if (receiverType != declaringType) return false;
+			
+			// Is the receiverType an innertype of the declaring type?
+			boolean receiverTypeIsSameOrInsideDeclaringType = receiverType == declaringType;
+			ReferenceBinding typeToCheckNext = receiverType.enclosingType();
+			while (!receiverTypeIsSameOrInsideDeclaringType && typeToCheckNext!=null) {
+				if (typeToCheckNext==declaringType) receiverTypeIsSameOrInsideDeclaringType=true;
+			}
+			if (!receiverTypeIsSameOrInsideDeclaringType) return false;
+			// the code above replaces this line: (pr118698)
+//			if (receiverType != declaringType) return false;
 	
 			if (invocationType != declaringType) {
 				ReferenceBinding outerInvocationType = invocationType;
