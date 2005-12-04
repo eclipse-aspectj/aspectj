@@ -789,6 +789,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  assertNotNull("Should have some relationships but does not",l);
   }
   
+  public void testNoNPEWhenInaccessibleMethodIsCalledWithinITD_pr119019() {
+	  runTest("no NPE when inaccessible method is called within itd");
+  }
+  
   
   // helper methods.....
   

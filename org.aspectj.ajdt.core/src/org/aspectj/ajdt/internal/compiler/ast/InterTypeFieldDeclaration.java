@@ -29,9 +29,11 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.AjAttribute;
@@ -57,6 +59,7 @@ import org.aspectj.weaver.UnresolvedType;
  */
 public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	public Expression initialization;
+	private TypeBinding realFieldType;
 	//public InterTypeFieldBinding interBinding;
 	
 	public InterTypeFieldDeclaration(CompilationResult result, TypeReference onType) {
@@ -80,7 +83,6 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 				"static inter-type field on interface not supported");
 			ignoreFurtherInvestigation = true;
 		}
-		
 		if (Modifier.isStatic(declaredModifiers) && typeVariableAliases!=null && typeVariableAliases.size()>0 && onTypeBinding.isGenericType()) {
 			scope.problemReporter().signalError(sourceStart,sourceEnd,
 					"static intertype field declarations cannot refer to type variables from the target generic type");
@@ -119,7 +121,58 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			aae.sourceEnd = initialization.sourceEnd;
 			aae.dimensions = new Expression[arrayType.dimensions];
 			initialization = aae;
+		} /*else if (initialization!=null) {
+			MethodScope initializationScope = this.scope;
+			TypeBinding fieldType = realFieldType;
+			TypeBinding initializationType;
+			this.initialization.setExpectedType(fieldType); // needed in case of generic method invocation
+			if (this.initialization instanceof ArrayInitializer) {
+		
+				if ((initializationType = this.initialization.resolveTypeExpecting(initializationScope, fieldType)) != null) {
+					((ArrayInitializer) this.initialization).binding = (ArrayBinding) initializationType;
+					this.initialization.computeConversion(initializationScope, fieldType, initializationType);
+				}
+			}
+//			System.err.println("i=>"+initialization);
+//			System.err.println("sasuages=>"+initialization.resolvedType);
+//			//initializationType = initialization.resolveType(initializationScope);
+//			System.err.println("scope=>"+initializationScope);
+
+			else if ((initializationType = this.initialization.resolveType(initializationScope)) != null) {
+		
+				if (fieldType != initializationType) // must call before computeConversion() and typeMismatchError()
+					initializationScope.compilationUnitScope().recordTypeConversion(fieldType, initializationType);
+				if (this.initialization.isConstantValueOfTypeAssignableToType(initializationType, fieldType)
+						|| (fieldType.isBaseType() && BaseTypeBinding.isWidening(fieldType.id, initializationType.id))
+						|| initializationType.isCompatibleWith(fieldType)) {
+					initialization.computeConversion(initializationScope, fieldType, initializationType);
+					if (initializationType.needsUncheckedConversion(fieldType)) {
+						    initializationScope.problemReporter().unsafeTypeConversion(this.initialization, initializationType, fieldType);
+					}									
+				} else if (initializationScope.isBoxingCompatibleWith(initializationType, fieldType) 
+									|| (initializationType.isBaseType()  // narrowing then boxing ?
+											&& initializationScope.compilerOptions().sourceLevel >= JDK1_5 // autoboxing
+											&& !fieldType.isBaseType()
+											&& initialization.isConstantValueOfTypeAssignableToType(initializationType, initializationScope.environment().computeBoxingType(fieldType)))) {
+					this.initialization.computeConversion(initializationScope, fieldType, initializationType);
+				} else {
+					initializationScope.problemReporter().typeMismatchError(initializationType, fieldType, this);
+				}
+		//			if (this.binding.isFinal()){ // cast from constant actual type to variable type
+		//				this.binding.setConstant(this.initialization.constant.castTo((this.binding.returnType.id << 4) + this.initialization.constant.typeID()));
+		//			}
+		//		} else {
+		//			this.binding.setConstant(NotAConstant);
+			}
+		//		
 		}
+		
+		*/
+		
+		
+		
+		
+		//////////////////////
 
 		
 		if (initialization == null) {
@@ -172,6 +225,55 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 
 	}
 
+	/*
+	public void resolveStatements() {
+		super.resolveStatements();
+	
+//	if (initialization!=null) {
+//		MethodScope initializationScope = this.scope;
+//		TypeBinding fieldType = realFieldType;
+//		TypeBinding initializationType;
+//		this.initialization.setExpectedType(fieldType); // needed in case of generic method invocation
+//		if (this.initialization instanceof ArrayInitializer) {
+//	
+//			if ((initializationType = this.initialization.resolveTypeExpecting(initializationScope, fieldType)) != null) {
+//				((ArrayInitializer) this.initialization).binding = (ArrayBinding) initializationType;
+//				this.initialization.computeConversion(initializationScope, fieldType, initializationType);
+//			}
+//		}
+////		System.err.println("i=>"+initialization);
+////		System.err.println("sasuages=>"+initialization.resolvedType);
+////		//initializationType = initialization.resolveType(initializationScope);
+////		System.err.println("scope=>"+initializationScope);
+//
+//		else if ((initializationType = this.initialization.resolveType(initializationScope)) != null) {
+//	
+//			if (fieldType != initializationType) // must call before computeConversion() and typeMismatchError()
+//				initializationScope.compilationUnitScope().recordTypeConversion(fieldType, initializationType);
+//			if (this.initialization.isConstantValueOfTypeAssignableToType(initializationType, fieldType)
+//					|| (fieldType.isBaseType() && BaseTypeBinding.isWidening(fieldType.id, initializationType.id))
+//					|| initializationType.isCompatibleWith(fieldType)) {
+//				initialization.computeConversion(initializationScope, fieldType, initializationType);
+//				if (initializationType.needsUncheckedConversion(fieldType)) {
+//					    initializationScope.problemReporter().unsafeTypeConversion(this.initialization, initializationType, fieldType);
+//				}									
+//			} else if (initializationScope.isBoxingCompatibleWith(initializationType, fieldType) 
+//								|| (initializationType.isBaseType()  // narrowing then boxing ?
+//										&& initializationScope.compilerOptions().sourceLevel >= JDK1_5 // autoboxing
+//										&& !fieldType.isBaseType()
+//										&& initialization.isConstantValueOfTypeAssignableToType(initializationType, initializationScope.environment().computeBoxingType(fieldType)))) {
+//				this.initialization.computeConversion(initializationScope, fieldType, initializationType);
+//			} else {
+//				initializationScope.problemReporter().typeMismatchError(initializationType, fieldType, this);
+//			}
+//	//			if (this.binding.isFinal()){ // cast from constant actual type to variable type
+//	//				this.binding.setConstant(this.initialization.constant.castTo((this.binding.returnType.id << 4) + this.initialization.constant.typeID()));
+//	//			}
+//	//		} else {
+//	//			this.binding.setConstant(NotAConstant);
+//		}}
+		
+	}*/
 	public EclipseTypeMunger build(ClassScope classScope) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		resolveOnType(classScope);
@@ -214,6 +316,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		ResolvedMember me = 
 			myMunger.getInitMethod(aspectType);
 		this.selector = binding.selector = me.getName().toCharArray();
+		this.realFieldType = this.binding.returnType;
 		this.binding.returnType = TypeBinding.VoidBinding;
 		//??? all other pieces should already match
 		

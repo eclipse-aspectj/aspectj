@@ -1271,6 +1271,11 @@
         </compile>
     </ajc-test>
 
+	<ajc-test dir="bugs150/pr119019" title="no NPE when inaccessible method is called within itd">
+        <compile files="bar/TargetITDClass.java,foo/ITDWithACall.aj"/>
+        <run class="foo.ITDWithACall"/>
+    </ajc-test>
+
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
