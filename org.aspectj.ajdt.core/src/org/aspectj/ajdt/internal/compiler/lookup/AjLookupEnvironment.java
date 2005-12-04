@@ -54,8 +54,10 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.FakeAnnotation;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
@@ -726,6 +728,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 		TypeBinding tb = factory.makeTypeBinding(aspectType);
 		
+		
+		
+		
 		// TODO asc determine if there really is a problem here (see comment below)
 		
 		// ClassCastException here means we probably have either a parameterized type or a raw type, we need the
@@ -738,6 +743,54 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
 		Annotation[] toAdd = methodDecl.annotations; // this is what to add
 		abits = toAdd[0].resolvedType.getAnnotationTagBits();
+		
+		if (sourceType instanceof BinaryTypeBinding) {
+			// In this case we can't access the source type binding to add a new annotation, so let's put something
+			// on the weaver type temporarily
+			ResolvedType theTargetType = factory.fromEclipse(sourceType);
+			TypeBinding theAnnotationType = toAdd[0].resolvedType;
+			String name = new String(theAnnotationType.qualifiedPackageName())+"."+new String(theAnnotationType.sourceName());
+			String sig = new String(theAnnotationType.signature());
+			if (theTargetType.hasAnnotation(UnresolvedType.forSignature(sig))) {
+				CompilationAndWeavingContext.leavingPhase(tok);
+				return false;
+			}
+			
+			// FIXME asc tidy up this code that duplicates whats below!
+			// Simple checks on the bits
+			boolean giveupnow = false;
+			if (((abits & TagBits.AnnotationTargetMASK)!=0)) {
+				if ( isAnnotationTargettingSomethingOtherThanAnnotationOrNormal(abits)) {
+					// error will have been already reported
+					giveupnow = true;
+				} else if (  (sourceType.isAnnotationType() && (abits & TagBits.AnnotationForAnnotationType)==0) ||
+				      (!sourceType.isAnnotationType() && (abits & TagBits.AnnotationForType)==0) ) {
+				
+				  if (reportProblems) {
+				    if (decA.isExactPattern()) {
+				      factory.showMessage(IMessage.ERROR,
+						WeaverMessages.format(WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION,rtx.getName(),toAdd[0].type,stringifyTargets(abits)),
+						decA.getSourceLocation(), null);
+				    } 
+				    // dont put out the lint - the weaving process will do that
+//				    else {
+//					  if (factory.getWorld().getLint().invalidTargetForAnnotation.isEnabled()) {
+//						  factory.getWorld().getLint().invalidTargetForAnnotation.signal(new String[]{rtx.getName(),toAdd[0].type.toString(),stringifyTargets(abits)},decA.getSourceLocation(),null);
+//					  }
+//				    }
+				  }
+				  giveupnow=true;
+			    }
+			}
+			if (giveupnow) { 
+				CompilationAndWeavingContext.leavingPhase(tok);
+				return false;
+			}
+			
+			theTargetType.addAnnotation(new AnnotationX(new FakeAnnotation(name,sig,(abits & TagBits.AnnotationRuntimeRetention)!=0),factory.getWorld()));
+			CompilationAndWeavingContext.leavingPhase(tok);
+			return true;
+		}
 		
 		Annotation currentAnnotations[] = sourceType.scope.referenceContext.annotations;
 		if (currentAnnotations!=null) 
@@ -796,6 +849,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		sourceType.scope.referenceContext.annotations = newset;
 		CompilationAndWeavingContext.leavingPhase(tok);
 		return true;
+	}
+
+	private boolean isAnnotationTargettingSomethingOtherThanAnnotationOrNormal(long abits) {
+		return (abits & (TagBits.AnnotationForAnnotationType | TagBits.AnnotationForType))==0;
 	}
 	
 
