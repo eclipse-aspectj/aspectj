@@ -313,6 +313,35 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkWasntFullBuild();
 	}
 	
+	public void testPr117882() {
+//		AjdeInteractionTestbed.VERBOSE=true;
+//		AjdeInteractionTestbed.configureBuildStructureModel(true);
+		initialiseProject("PR117882");
+		build("PR117882");
+		checkWasFullBuild();
+		alter("PR117882","inc1");
+		build("PR117882");
+		checkWasntFullBuild();
+//		AjdeInteractionTestbed.VERBOSE=false;
+//		AjdeInteractionTestbed.configureBuildStructureModel(false);
+	}
+	
+	public void testPr117882_2() {
+//		AjdeInteractionTestbed.VERBOSE=true;
+//		AjdeInteractionTestbed.configureBuildStructureModel(true);
+		initialiseProject("PR117882_2");
+		build("PR117882_2");
+		checkWasFullBuild();
+		alter("PR117882_2","inc1");
+		build("PR117882_2");
+		checkWasntFullBuild();
+		checkCompileWeaveCount(1,4);
+		//fullBuild("PR117882_2");
+		//checkWasFullBuild();
+//		AjdeInteractionTestbed.VERBOSE=false;
+//		AjdeInteractionTestbed.configureBuildStructureModel(false);
+	}
+	
 	public void testPr115251() {
 		//AjdeInteractionTestbed.VERBOSE=true;
 		initialiseProject("PR115251");
@@ -454,7 +483,11 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		if (AjdeInteractionTestbed.VERBOSE) printBuildReport();
 	}
 	
-	
+	public void fullBuild(String projectName) {
+		constructUpToDateLstFile(projectName,"build.lst");
+		fullBuild(projectName,"build.lst");
+		if (AjdeInteractionTestbed.VERBOSE) printBuildReport();
+	}
 
 	private void constructUpToDateLstFile(String pname,String configname) {
 		File projectBase = new File(sandboxDir,pname);

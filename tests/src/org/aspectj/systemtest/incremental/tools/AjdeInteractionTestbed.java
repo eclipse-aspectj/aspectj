@@ -89,6 +89,10 @@ public class AjdeInteractionTestbed extends TestCase {
 		return AjdeManager.build(projectName,configFile);
 	}
 
+	public boolean fullBuild(String projectName,String configFile) {
+		return AjdeManager.fullBuild(projectName,configFile);
+	}
+	
 	/** Looks after communicating with the singleton Ajde instance */
 	public static class AjdeManager {
 		
@@ -131,6 +135,48 @@ public class AjdeInteractionTestbed extends TestCase {
 			
 			// Do the compile
 			Ajde.getDefault().getBuildManager().build(getFile(projectName,configFile));
+			
+			// Wait for it to complete
+			while (!MyBuildProgressMonitor.hasFinished()) {
+				lognoln(".");
+				pause(100);
+			} 
+			log("");
+		    
+			// What happened?
+			if (MyTaskListManager.hasErrorMessages()) {
+				System.err.println("Build errors:");
+				for (Iterator iter = MyTaskListManager.getErrorMessages().iterator(); iter.hasNext();) {
+					IMessage element = (IMessage) iter.next();
+					System.err.println(element);
+				}
+				System.err.println("---------");
+			}
+			log("Build finished, time taken = "+MyBuildProgressMonitor.getTimeTaken()+"ms");
+			return true;
+		}
+		
+		private static boolean fullBuild(String projectName,String configFile) {
+			pause(1000); // delay to allow previous runs build stamps to be OK
+			lognoln("Building project '"+projectName+"'");
+			
+			// Ajde.getDefault().enableLogging(System.out);
+			
+			//Ajde.getDefault().getBuildManager().setReportInfoMessages(true); 
+			
+			// Configure the necessary providers and listeners for this compile
+			MyBuildProgressMonitor.reset();
+			MyTaskListManager.reset();
+			MyStateListener.reset();
+			
+			MyProjectPropertiesAdapter.setActiveProject(projectName);
+			//AsmManager.attemptIncrementalModelRepairs=true;
+			//IncrementalStateManager.recordIncrementalStates=true;
+			
+			Ajde.getDefault().getBuildManager().setBuildModelMode(buildModel);
+			
+			// Do the compile
+			Ajde.getDefault().getBuildManager().buildFresh(getFile(projectName,configFile));
 			
 			// Wait for it to complete
 			while (!MyBuildProgressMonitor.hasFinished()) {
@@ -640,7 +686,10 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public Map getJavaOptionsMap() {
-			return null;
+			Hashtable ht = new Hashtable();
+			ht.put("org.eclipse.jdt.core.compiler.compliance","1.5");
+			ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.5");
+			return ht;
 		}
 
 		public boolean getUseJavacMode() {
