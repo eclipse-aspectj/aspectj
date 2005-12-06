@@ -25,9 +25,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.aspectj.asm.IRelationship;
-import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.Lint;
@@ -220,7 +218,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         world.setXnoInline(weaverOption.noInline);
         // AMC - autodetect as per line below, needed for AtAjLTWTests.testLTWUnweavable
         world.setBehaveInJava5Way(LangUtil.is15VMOrGreater());
-        //-Xlintfile: first so that lint wins
+
+        /* First load defaults */
+		bcelWorld.getLint().loadDefaultProperties();
+		
+		/* Second overlay LTW defaults */
+		bcelWorld.getLint().adviceDidNotMatch.setKind(null);
+        
+        /* Third load user file using -Xlintfile so that -Xlint wins */
         if (weaverOption.lintFile != null) {
             InputStream resource = null;
             try {
@@ -236,20 +241,20 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     }
                 }
                 if (failure != null || resource == null) {
-                    world.getMessageHandler().handleMessage(new Message(
-                            "Cannot access resource for -Xlintfile:"+weaverOption.lintFile,
-                            IMessage.WARNING,
-                            failure,
-                            null));
+                	warn("Cannot access resource for -Xlintfile:"+weaverOption.lintFile,failure);
+//                    world.getMessageHandler().handleMessage(new Message(
+//                            "Cannot access resource for -Xlintfile:"+weaverOption.lintFile,
+//                            IMessage.WARNING,
+//                            failure,
+//                            null));
                 }
             } finally {
                 try { resource.close(); } catch (Throwable t) {;}
             }
-        }
-        if (weaverOption.lint == null) {
-        		bcelWorld.getLint().loadDefaultProperties();
-        		bcelWorld.getLint().adviceDidNotMatch.setKind(IMessage.INFO);
-        } else {
+       } 
+        
+       /* Fourth override with -Xlint */
+       if (weaverOption.lint != null) {
             if (weaverOption.lint.equals("default")) {//FIXME should be AjBuildConfig.AJLINT_DEFAULT but yetanother deps..
                 bcelWorld.getLint().loadDefaultProperties();
             } else {

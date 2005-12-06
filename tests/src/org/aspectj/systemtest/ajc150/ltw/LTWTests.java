@@ -65,6 +65,30 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   		runTest("Ensure weaver lint warning issued when an aspect is not used for weaving");
   	}
 
+  	public void testXlintfileEmpty () {
+  		runTest("Empty Xlint.properties file");
+  	}
+
+  	public void testXlintfileMissing () {
+  		runTest("Warning with missing Xlint.properties file");
+  	}
+
+  	public void testXlintWarningAdviceDidNotMatchSuppressed () {
+  		runTest("Warning when advice doesn't match suppressed for LTW");
+  	}
+
+  	public void testXlintfile () {
+  		runTest("Override suppressing of warning when advice doesn't match using -Xlintfile");
+  	}
+
+  	public void testXlintDefault () {
+  		runTest("Warning when advice doesn't match using -Xlint:default");
+  	}
+
+  	public void testXlintWarning () {
+  		runTest("Override suppressing of warning when advice doesn't match using -Xlint:warning");
+  	}
+  	
   	/*
   	 * Allow system properties to be set and restored
   	 * TODO maw move to XMLBasedAjcTestCase or RunSpec

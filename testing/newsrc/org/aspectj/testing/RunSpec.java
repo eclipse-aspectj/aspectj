@@ -37,6 +37,7 @@ public class RunSpec implements ITestStep {
 	private OutputSpec stdErrSpec;
 	private OutputSpec stdOutSpec;
 	private String ltwFile;
+	private String xlintFile;
 	
 	public RunSpec() {
 	}
@@ -51,6 +52,7 @@ public class RunSpec implements ITestStep {
 		String[] args = buildArgs();
 //		System.err.println("? execute() inTestCase='" + inTestCase + "', ltwFile=" + ltwFile);
 		boolean useLtw = copyLtwFile(inTestCase.getSandboxDirectory());
+		copyXlintFile(inTestCase.getSandboxDirectory());
 		AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(),args,getClasspath(),useLtw);
 		if (stdErrSpec != null) {
 			stdErrSpec.matchAgainst(rr.getStdErr());
@@ -146,5 +148,26 @@ public class RunSpec implements ITestStep {
 		}
 		
 		return useLtw;
+	}
+
+	public String getXlintFile() {
+		return xlintFile;
+	}
+
+	public void setXlintFile(String xlintFile) {
+		this.xlintFile = xlintFile;
+	}
+
+	private void copyXlintFile (File sandboxDirectory) {
+		if (xlintFile != null) {
+			File from = new File(baseDir,xlintFile);
+			File to = new File(sandboxDirectory, File.separator + xlintFile);
+			try {
+				FileUtil.copyFile(from,to);
+			}
+			catch (IOException ex) {
+				AjcTestCase.fail(ex.toString());
+			}
+		}
 	}
 }

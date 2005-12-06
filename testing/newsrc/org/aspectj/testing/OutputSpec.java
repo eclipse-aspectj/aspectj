@@ -35,7 +35,8 @@ public class OutputSpec {
 				String line = (String) iter.next();
 				lineNo++;
 				String outputLine = strTok.nextToken().trim();
-				if (!line.equals(outputLine)) {
+				/* Avoid trying to match on ajSandbox source names that appear in messages */
+				if (outputLine.indexOf(line) == -1) {
 					matches = false;
 					break;
 				}

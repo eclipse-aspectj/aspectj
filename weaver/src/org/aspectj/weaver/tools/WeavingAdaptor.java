@@ -332,7 +332,7 @@ public class WeavingAdaptor {
 	}
 	
 	protected boolean warn (String message, Throwable th) {
-        return messageHandler.handleMessage(new Message("Register definition failed", IMessage.WARNING, th, null));
+        return messageHandler.handleMessage(new Message(message, IMessage.WARNING, th, null));
 	}
 	
 	protected boolean error (String message) {

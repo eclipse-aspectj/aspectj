@@ -1,0 +1,3 @@
+<aspectj>
+	<weaver options="-Xlintfile:Xlint-empty.properties"/>
+</aspectj>

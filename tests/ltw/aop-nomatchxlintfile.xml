@@ -1,0 +1,7 @@
+<aspectj>
+	<aspects>
+	    <aspect name="Aspect3"/>
+	</aspects>
+    
+    <weaver options="-verbose -showWeaveInfo -Xlintfile:Xlint-nomatch.properties"/>
+</aspectj>
