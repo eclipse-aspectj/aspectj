@@ -62,9 +62,19 @@ public class AjTypeTests extends TestCase {
 	public void testGetSupertype() {
 		Class<?> stringSuper = String.class.getSuperclass();
 		AjType ajSuper = stringType.getSupertype();
-		assertEquals(AjTypeSystem.getAjType(stringSuper),ajSuper);
+		assertEquals(AjTypeSystem.getAjType(stringSuper),ajSuper);		
 	}
 
+	public void testObjectSupertype() {
+		AjType<?> objectSuper = AjTypeSystem.getAjType(Object.class).getSupertype();
+		assertNull(objectSuper);		
+	}
+
+	public void testInterfaceSupertype() {
+		AjType<?> serializableSuper = AjTypeSystem.getAjType(Serializable.class).getSupertype();
+		assertNull(serializableSuper);		
+	}
+	
 	public void testGetGenericSupertype() {
 		Type t  = AjTypeSystem.getAjType(Goo.class).getGenericSupertype();
 		assertEquals(Foo.class,t);
