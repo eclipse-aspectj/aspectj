@@ -13,6 +13,7 @@ package org.aspectj.weaver.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -62,6 +63,29 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		}
 	}
 	
+	private static GenericSignatureInformationProvider createGenericSignatureProvider(World inWorld) {
+		if (LangUtil.is15VMOrGreater()) {
+			try {
+				Class providerClass = Class.forName("org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider");
+				Constructor cons = providerClass.getConstructor(new Class[] {World.class});
+				GenericSignatureInformationProvider ret = (GenericSignatureInformationProvider) cons.newInstance(new Object[] {inWorld});
+				return ret;				
+			} catch (ClassNotFoundException cnfEx) {
+				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider was not found on classpath");
+			} catch (NoSuchMethodException nsmEx) {
+				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + nsmEx + " occured");
+			} catch (InstantiationException insEx) {
+				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + insEx + " occured");
+			} catch (InvocationTargetException invEx) {
+				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + invEx + " occured");				
+			} catch (IllegalAccessException illAcc) {
+				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + illAcc + " occured");								
+			}
+		} else {
+			return new Java14GenericSignatureInformationProvider();
+		}
+	}
+	
 	/**
 	 * convert a java.lang.reflect.Member into a resolved member in the world
 	 * @param reflectMember
@@ -91,6 +115,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		if (inWorld instanceof ReflectionWorld) {
 			ret.setAnnotationFinder(((ReflectionWorld)inWorld).getAnnotationFinder());
 		}
+		ret.setGenericSignatureInformationProvider(createGenericSignatureProvider(inWorld));
 		return ret;
 	}
 	
@@ -108,6 +133,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		if (inWorld instanceof ReflectionWorld) {
 			ret.setAnnotationFinder(((ReflectionWorld)inWorld).getAnnotationFinder());
 		}
+		ret.setGenericSignatureInformationProvider(createGenericSignatureProvider(inWorld));
 		return ret;
 	}
 	
@@ -136,6 +162,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		if (inWorld instanceof ReflectionWorld) {
 			ret.setAnnotationFinder(((ReflectionWorld)inWorld).getAnnotationFinder());
 		}
+		ret.setGenericSignatureInformationProvider(createGenericSignatureProvider(inWorld));
 		return ret;
 	}
 
@@ -151,6 +178,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		if (inWorld instanceof ReflectionWorld) {
 			ret.setAnnotationFinder(((ReflectionWorld)inWorld).getAnnotationFinder());
 		}
+		ret.setGenericSignatureInformationProvider(createGenericSignatureProvider(inWorld));
 		return ret;
 	}
 	
@@ -167,7 +195,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 //		 classes that represent arrays return a class name that is the signature of the array type, ho-hum...
 		String className = aClass.getName();
 		if (aClass.isArray()) {
-			return aWorld.resolve(UnresolvedType.forSignature(className));
+			return aWorld.resolve(UnresolvedType.forSignature(className.replace('.','/')));
 		}
 		else{
 			return aWorld.resolve(className);

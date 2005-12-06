@@ -36,6 +36,7 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 	
 	private Repository bcelRepository;
 	private ClassLoader classLoader;
+	private World world;
 	
 	// must have no-arg constructor for reflective construction
 	public Java15AnnotationFinder() {
@@ -46,6 +47,10 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 		this.classLoader = aLoader;		
 	}
 
+	public void setWorld(World aWorld) {
+		this.world = aWorld;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.reflect.AnnotationFinder#getAnnotation(org.aspectj.weaver.ResolvedType, java.lang.Object)
 	 */
@@ -109,9 +114,9 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 			bcelRepository.clear();
 			if (anns == null) anns = new org.aspectj.apache.bcel.classfile.annotation.Annotation[0];
 			// convert to our Annotation type
-			Set<UnresolvedType> annSet = new HashSet<UnresolvedType>();
+			Set<ResolvedType> annSet = new HashSet<ResolvedType>();
 			for (int i = 0; i < anns.length; i++) {
-				annSet.add(UnresolvedType.forName(anns[i].getTypeName()));
+				annSet.add(UnresolvedType.forName(anns[i].getTypeName()).resolve(world));
 			}
 			return annSet;
 		} catch (ClassNotFoundException cnfEx) {
@@ -123,7 +128,7 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 		Annotation[] anns = ao.getDeclaredAnnotations();
 		Set<UnresolvedType> annSet = new HashSet<UnresolvedType>();
 		for (int i = 0; i < anns.length; i++) {
-			annSet.add(UnresolvedType.forName(anns[i].annotationType().getName()));
+			annSet.add(UnresolvedType.forName(anns[i].annotationType().getName()).resolve(world));
 		}
 		return annSet;
 	}

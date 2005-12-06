@@ -14,6 +14,7 @@ package org.aspectj.weaver.tools;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.aspectj.lang.annotation.Pointcut;
 
@@ -37,6 +38,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 	private Method a;
 	private Method b;
 	private Method c;
+	private Method d;
 	
 	public void testAtThis() {
 		PointcutExpression atThis = parser.parsePointcutExpression("@this(org.aspectj.weaver.tools.Java15PointcutExpressionTest.MyAnnotation)");
@@ -114,6 +116,18 @@ public class Java15PointcutExpressionTest extends TestCase {
 		assertFalse("does not match",jp1.matches());
 		jp2 = sMatch2.matchesJoinPoint(new B(), new B(), new Object[] {new B(),new B()});
 		assertTrue("matches",jp2.matches());					
+	}
+	
+	public void testAtArgs2() {
+		PointcutExpression atArgs = parser.parsePointcutExpression("@args(*, org.aspectj.weaver.tools.Java15PointcutExpressionTest.MyAnnotation)");
+		ShadowMatch sMatch1 = atArgs.matchesMethodExecution(c);
+		ShadowMatch sMatch2 = atArgs.matchesMethodExecution(d);
+		assertTrue("maybe matches c",sMatch1.maybeMatches());
+		assertTrue("maybe matches d",sMatch2.maybeMatches());
+		JoinPointMatch jp1 = sMatch1.matchesJoinPoint(new B(), new B(), new Object[] {new A(), new B()});
+		assertTrue("matches",jp1.matches());
+		JoinPointMatch jp2 = sMatch2.matchesJoinPoint(new B(), new B(), new Object[] {new A(),new A()});
+		assertFalse("does not match",jp2.matches());									
 	}
 	
 	public void testAtArgsWithBinding() {
@@ -241,12 +255,34 @@ public class Java15PointcutExpressionTest extends TestCase {
 		assertTrue("matches",sMatch.alwaysMatches());
 	}
 	
+	public void testGenericMethodSignatures() throws Exception{
+		PointcutExpression ex = parser.parsePointcutExpression("execution(* set*(java.util.List<org.aspectj.weaver.tools.Java15PointcutExpressionTest.C>))");
+		Method m = TestBean.class.getMethod("setFriends",List.class);
+		ShadowMatch sm = ex.matchesMethodExecution(m);
+		assertTrue("should match",sm.alwaysMatches());		
+	}
+	
+	public void testAnnotationInExecution() throws Exception {
+		PointcutExpression ex = parser.parsePointcutExpression("execution(@(org.springframework..*) * *(..))");		
+	}
+	
+	public void testVarArgsMatching() throws Exception {
+		PointcutExpression ex = parser.parsePointcutExpression("execution(* *(String...))");
+		Method usesVarArgs = D.class.getMethod("varArgs",String[].class);
+		Method noVarArgs = D.class.getMethod("nonVarArgs", String[].class);
+		ShadowMatch sm1 = ex.matchesMethodExecution(usesVarArgs);
+		assertTrue("should match",sm1.alwaysMatches());				
+		ShadowMatch sm2 = ex.matchesMethodExecution(noVarArgs);
+		assertFalse("should not match",sm2.alwaysMatches());				
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		a = A.class.getMethod("a");
 		b = B.class.getMethod("b");
 		c = B.class.getMethod("c",new Class[] {A.class,B.class});
+		d = B.class.getMethod("d",new Class[] {A.class,A.class});
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -262,6 +298,8 @@ public class Java15PointcutExpressionTest extends TestCase {
 	private static class B {
 		@MyClassFileRetentionAnnotation public void b() {}
 		public void c(A anA, B aB) {}
+		
+		public void d(A anA, A anotherA) {}
 	}
 	
 	private static class C {
@@ -271,6 +309,18 @@ public class Java15PointcutExpressionTest extends TestCase {
 		
 		@Pointcut(value="execution(* *(..)) && this(x)", argNames="x")
 		public void goo(A x) {}
+	}
+	
+	private static class D {
+		
+		public void nonVarArgs(String[] strings) {};
+		
+		public void varArgs(String... strings) {};
+		
+	}
+	
+	static class TestBean {
+		public void setFriends(List<C> friends) {}
 	}
 
 }

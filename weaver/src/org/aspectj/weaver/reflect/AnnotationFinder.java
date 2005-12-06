@@ -15,6 +15,7 @@ import java.lang.reflect.Member;
 import java.util.Set;
 
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.World;
 
 /**
  * @author colyer
@@ -24,11 +25,13 @@ public interface AnnotationFinder {
 
 	void setClassLoader(ClassLoader annotationLoader);
 	
+	void setWorld(World aWorld);
+	
 	Object getAnnotation(ResolvedType annotationType, Object onObject);
 	
 	Object getAnnotationFromMember(ResolvedType annotationType, Member aMember);
 	
 	Object getAnnotationFromClass(ResolvedType annotationType, Class aClass);
 	
-	Set/*UnresolvedType*/ getAnnotations(Member onMember);
+	Set/*ResolvedType*/ getAnnotations(Member onMember);
 }

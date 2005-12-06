@@ -26,6 +26,8 @@ import org.aspectj.weaver.UnresolvedType;
 public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 
 	private AnnotationFinder annotationFinder = null;
+	private GenericSignatureInformationProvider gsigInfoProvider = 
+		new Java14GenericSignatureInformationProvider();
 	
 	private Member reflectMember;
 	
@@ -101,6 +103,53 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 		this.reflectMember = reflectMember;
 	}
 
+	public Member getMember() {
+		return this.reflectMember;
+	}
+	
+	// generic signature support
+	
+	public void setGenericSignatureInformationProvider(GenericSignatureInformationProvider gsigProvider) {
+		this.gsigInfoProvider = gsigProvider;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.ResolvedMemberImpl#getGenericParameterTypes()
+	 */
+	public UnresolvedType[] getGenericParameterTypes() {
+		return this.gsigInfoProvider.getGenericParameterTypes(this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.ResolvedMemberImpl#getGenericReturnType()
+	 */
+	public UnresolvedType getGenericReturnType() {
+		return this.gsigInfoProvider.getGenericReturnType(this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.ResolvedMemberImpl#isSynthetic()
+	 */
+	public boolean isSynthetic() {
+		return this.gsigInfoProvider.isSynthetic(this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.ResolvedMemberImpl#isVarargsMethod()
+	 */
+	public boolean isVarargsMethod() {
+		return this.gsigInfoProvider.isVarArgs(this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.ResolvedMemberImpl#isBridgeMethod()
+	 */
+	public boolean isBridgeMethod() {
+		return this.gsigInfoProvider.isBridge(this);
+	}
+	
+	// annotation support
+	
 	public void setAnnotationFinder(AnnotationFinder finder) {
 		this.annotationFinder = finder;
 	}

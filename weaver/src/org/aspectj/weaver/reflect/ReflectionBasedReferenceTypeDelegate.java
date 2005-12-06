@@ -13,6 +13,7 @@ package org.aspectj.weaver.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -345,6 +346,10 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 
 	public void ensureDelegateConsistent() {
 		// Nothing to do - a reflection based delegate can't become inconsistent...
+	}
+	
+	public ReflectionBasedResolvedMemberImpl createResolvedMemberFor(Member aMember) {
+		return null;
 	}
 
 }

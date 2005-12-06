@@ -555,4 +555,5 @@ public class PointcutExpressionTest extends TestCase {
 	}
 	
 	static class X {}
+	
 }

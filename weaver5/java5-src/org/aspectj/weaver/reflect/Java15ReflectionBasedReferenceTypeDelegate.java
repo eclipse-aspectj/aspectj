@@ -59,6 +59,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	private ResolvedType superclass;
 	private ResolvedType[] superInterfaces;
 	private String genericSignature = null;
+	private JavaLangTypeToResolvedTypeConverter typeConverter;
 	private Java15AnnotationFinder annotationFinder = null;
 	
 
@@ -70,6 +71,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		myType = AjTypeSystem.getAjType(aClass);
 		annotationFinder = new Java15AnnotationFinder();
 		annotationFinder.setClassLoader(classLoader);
+		this.typeConverter = new JavaLangTypeToResolvedTypeConverter(aWorld);
 	}
 	
 	
@@ -124,7 +126,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (superInterfaces == null) {
 			Type[] genericInterfaces = getBaseClass().getGenericInterfaces();
-			this.superInterfaces = fromTypes(genericInterfaces);
+			this.superInterfaces = typeConverter.fromTypes(genericInterfaces);
 		}
 		return superInterfaces;
 	}
@@ -133,7 +135,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	public ResolvedType getSuperclass() {
 		if (superclass == null && getBaseClass()!=Object.class) {// superclass of Object is null
 		  Type t = this.getBaseClass().getGenericSuperclass();
-		  if (t!=null) superclass = fromType(t);
+		  if (t!=null) superclass = typeConverter.fromType(t);
 		  if (t==null) superclass = getWorld().resolve(UnresolvedType.OBJECT);
 		}
 		 return superclass;
@@ -156,7 +158,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			this.getResolvedTypeX().getWorld().recordTypeVariablesCurrentlyBeingProcessed(getBaseClass(),typeVariables);
 			// now fill in the details...
 			for (int i = 0; i < tVars.length; i++) {
-				TypeVariableReferenceType tvrt = ((TypeVariableReferenceType) fromType(tVars[i]));
+				TypeVariableReferenceType tvrt = ((TypeVariableReferenceType) typeConverter.fromType(tVars[i]));
 				TypeVariable tv = tvrt.getTypeVariable();
 				typeVariables[i].setUpperBound(tv.getUpperBound());
 				typeVariables[i].setAdditionalInterfaceBounds(tv.getAdditionalInterfaceBounds());
@@ -202,13 +204,14 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.METHOD,
 			getGenericResolvedType(),
 			forMethod.getModifiers(),
-			fromType(forMethod.getGenericReturnType()),
+			typeConverter.fromType(forMethod.getReturnType()),
 			forMethod.getName(),
-			fromTypes(forMethod.getGenericParameterTypes()),
-			fromTypes(forMethod.getGenericExceptionTypes()),
+			typeConverter.fromTypes(forMethod.getParameterTypes()),
+			typeConverter.fromTypes(forMethod.getExceptionTypes()),
 			forMethod
 			);
 		ret.setAnnotationFinder(this.annotationFinder);
+		ret.setGenericSignatureInformationProvider(new Java15GenericSignatureInformationProvider(this.getWorld()));
 		return ret;
 	}
 
@@ -219,11 +222,12 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			forConstructor.getModifiers(),
 			getGenericResolvedType(),
 			"init",
-			fromTypes(forConstructor.getGenericParameterTypes()),
-			fromTypes(forConstructor.getGenericExceptionTypes()),
+			typeConverter.fromTypes(forConstructor.getParameterTypes()),
+			typeConverter.fromTypes(forConstructor.getExceptionTypes()),
 			forConstructor
 			);
 		ret.setAnnotationFinder(this.annotationFinder);
+		ret.setGenericSignatureInformationProvider(new Java15GenericSignatureInformationProvider(this.getWorld()));
 		return ret;
 	}
 	
@@ -233,11 +237,12 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 				org.aspectj.weaver.Member.FIELD,
 				getGenericResolvedType(),
 				forField.getModifiers(),
-				fromType(forField.getGenericType()),
+				typeConverter.fromType(forField.getType()),
 				forField.getName(),
 				new UnresolvedType[0],
 				forField);
 		ret.setAnnotationFinder(this.annotationFinder);
+		ret.setGenericSignatureInformationProvider(new Java15GenericSignatureInformationProvider(this.getWorld()));
 		return ret;
 	}
 
@@ -299,87 +304,6 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	public boolean isGeneric() {
 		//return false; // for now
 		return getBaseClass().getTypeParameters().length > 0;
-	}
-	
-	// Used to prevent recursion - we record what we are working on and return it if asked again *whilst* working on it
-	private Map /*java.lang.reflect.TypeVariable > TypeVariableReferenceType */typeVariablesInProgress = new HashMap();
-	
-	private ResolvedType fromType(Type aType) {
-		if (aType instanceof Class) {
-			Class clazz = (Class)aType;
-			String name = clazz.getName();
-			/**
-			 * getName() can return:
-			 * 
-			 * 1. If this class object represents a reference type that is not an array type 
-			 *    then the binary name of the class is returned
-			 * 2. If this class object represents a primitive type or void, then the 
-			 *    name returned is a String equal to the Java language keyword corresponding to the primitive type or void.
-			 * 3. If this class object represents a class of arrays, then the internal form 
-			 *    of the name consists of the name of the element type preceded by one or more '[' characters representing the depth of the array nesting.
-			 */
-			if (clazz.isArray()) {
-				UnresolvedType ut = UnresolvedType.forSignature(name);
-				return getWorld().resolve(ut);
-			} else {
-				return getWorld().resolve(name);
-			}
-		} else if (aType instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) aType;
-			ResolvedType baseType = fromType(pt.getRawType());
-			Type[] args = pt.getActualTypeArguments();
-			ResolvedType[] resolvedArgs = fromTypes(args);
-			return TypeFactory.createParameterizedType(baseType, resolvedArgs, getWorld());
-		} else if (aType instanceof java.lang.reflect.TypeVariable) {
-			if (typeVariablesInProgress.get(aType)!=null) // check if we are already working on this type
-				return (TypeVariableReferenceType)typeVariablesInProgress.get(aType);
-
-			java.lang.reflect.TypeVariable tv = (java.lang.reflect.TypeVariable) aType;
-			TypeVariable rt_tv = new TypeVariable(tv.getName());
-			TypeVariableReferenceType tvrt = new TypeVariableReferenceType(rt_tv,getWorld());
-			
-			typeVariablesInProgress.put(aType,tvrt); // record what we are working on, for recursion case
-			
-			Type[] bounds = tv.getBounds();
-			ResolvedType[] resBounds = fromTypes(bounds);
-			ResolvedType upperBound = resBounds[0];
-			ResolvedType[] additionalBounds = new ResolvedType[0];
-			if (resBounds.length > 1) {
-				additionalBounds = new ResolvedType[resBounds.length - 1];
-				System.arraycopy(resBounds,1,additionalBounds,0,additionalBounds.length);
-			}
-			rt_tv.setUpperBound(upperBound);
-			rt_tv.setAdditionalInterfaceBounds(additionalBounds);
-			
-			typeVariablesInProgress.remove(aType); // we have finished working on it
-			
-			return tvrt;
-		} else if (aType instanceof WildcardType) {
-			WildcardType wildType = (WildcardType) aType;
-			Type[] lowerBounds = wildType.getLowerBounds();
-			Type[] upperBounds = wildType.getUpperBounds();
-			ResolvedType bound = null;
-			boolean isExtends = lowerBounds.length == 0;
-			if (isExtends) {
-				bound = fromType(upperBounds[0]);
-			} else {
-				bound = fromType(lowerBounds[0]);
-			}
-			return new BoundedReferenceType((ReferenceType)bound,isExtends,getWorld());
-		} else if (aType instanceof GenericArrayType) {
-			GenericArrayType gt = (GenericArrayType) aType;
-			Type componentType = gt.getGenericComponentType();
-			return UnresolvedType.makeArray(fromType(componentType),1).resolve(getWorld());
-		}
-		return ResolvedType.MISSING;
-	}
-	
-	private ResolvedType[] fromTypes(Type[] types) {
-		ResolvedType[] ret = new ResolvedType[types.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = fromType(types[i]);
-		}
-		return ret;
 	}
 
 	@Override

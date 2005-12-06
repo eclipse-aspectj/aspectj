@@ -66,6 +66,7 @@ public class ReflectionWorld extends World {
 			Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
 			this.annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
 			this.annotationFinder.setClassLoader(loader);
+			this.annotationFinder.setWorld(this);
 		} catch(ClassNotFoundException ex) {
 			// must be on 1.4 or earlier
 		} catch(IllegalAccessException ex) {
