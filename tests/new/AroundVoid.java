@@ -52,6 +52,7 @@ class C {
         while (true) {
             int x = 0;
             int y = 2/x;
+            throw new ArithmeticException();
         }
     }
 
