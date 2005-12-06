@@ -69,6 +69,11 @@
      <run class="Pr114054"/>
     </ajc-test>  
     
+    <ajc-test dir="bugs150/pr117854" pr="117854" title="broken switch transform">
+     <compile files="BrokenSwitch.java" options=""/>
+     <run class="BrokenSwitch"/>
+    </ajc-test>  
+    
     <ajc-test dir="bugs150/pr118599" pr="118599" title="ambiguous method when binary weaving - 1">
      <!-- separate compilation was failing  -->
      <compile files="Attributable.java" outjar="foo.jar" options="-1.5"/>

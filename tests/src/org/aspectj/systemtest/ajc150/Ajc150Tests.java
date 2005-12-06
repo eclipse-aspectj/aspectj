@@ -81,6 +81,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
   public void testBadDecp_pr110788_4() { runTest("bad generic decp - 4");}
 
+  public void testBrokenSwitch_pr117854() { runTest("broken switch transform");}
   public void testVarargsITD_pr110906() { runTest("ITD varargs problem");}
   public void testBadRenderer_pr86903() { runTest("bcelrenderer bad");}
   //public void testIllegalInitialization_pr118326_1() { runTest("illegal initialization - 1");}
