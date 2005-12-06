@@ -793,6 +793,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("no NPE when inaccessible method is called within itd");
   }
   
+  public void testNoNPEWithOrPointcutAndMoreThanOneArgs_pr118149() {
+	  runTest("no NPE with or pointcut and more than one args");
+  }
   
   // helper methods.....
   

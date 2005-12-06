@@ -175,8 +175,15 @@ public class IfPointcut extends Pointcut {
                     residueSource.findResidue(shadow, myState);
 
 
+                    // pr118149
+                    // It is possible for vars in myState (which would normally be set
+                    // in the call to residueSource.findResidue) to not be set (be null)
+                    // in an Or pointcut with if expressions in both branches, and where
+                    // one branch is known statically to not match. In this situation we
+                    // simply return Test.
                     for (int i=0; i < baseArgsCount; i++) {
                         Var v = myState.get(i);
+                        if (v == null) continue;  // pr118149
                         args.add(v);
                         ret = Test.makeAnd(ret,
                             Test.makeInstanceof(v,

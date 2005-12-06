@@ -1276,6 +1276,10 @@
         <run class="foo.ITDWithACall"/>
     </ajc-test>
 
+	<ajc-test dir="bugs150" title="no NPE with or pointcut and more than one args">
+        <compile files="PR118149.aj"/>
+    </ajc-test>
+
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
     
