@@ -59,7 +59,7 @@ package org.aspectj.apache.bcel.generic;
  * TABLESWITCH instruction, depending on whether the match values (int[]) can be
  * sorted with no gaps between the numbers.
  *
- * @version $Id: SWITCH.java,v 1.3 2005/08/25 11:35:49 aclement Exp $
+ * @version $Id: SWITCH.java,v 1.4 2005/12/06 11:28:24 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class SWITCH implements CompoundInstruction {
@@ -170,10 +170,10 @@ public final class SWITCH implements CompoundInstruction {
    * @return match is sorted in ascending order with no gap bigger than max_gap?
    */
   private final boolean matchIsOrdered(int max_gap) {
-    for(int i=1; i < match_length; i++)
-      if(match[i] - match[i-1] > max_gap)
-	return false;
-
+    for(int i=1; i < match_length; i++) {
+      int diff = (match[i]-match[i-1]);
+      if(diff > max_gap || diff<0) return false;
+    }
     return true;
   }
 
