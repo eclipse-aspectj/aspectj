@@ -541,12 +541,16 @@ public aspect ComparablePoint {
         </para>
 
         <para>
-          The method <literal>Object.hashCode</literal> returns an unique
-          integer, suitable for use as a hash table key. Different
-          implementations are allowed return different integers, but must
-          return distinct integers for distinct objects, and the same integer
-          for objects that test equal. But since the default implementation
-          of <literal>Object.equal</literal> returns <literal>true</literal>
+          The method <literal>Object.hashCode</literal> returns an 
+          integer, suitable for use as a hash table key.  It is not required
+          that two objects which are not equal (according to the 
+          <literal>equals</literal> method) return different integer
+          results from <literal>hashCode</literal> but it can
+          improve performance when the integer is used as a key into a 
+          data structure.  However, any two objects which are equal 
+          must return the same integer value from a call to 
+          <literal>hashCode</literal>.  Since the default implementation
+          of <literal>Object.equals</literal> returns <literal>true</literal>
           only when two objects are identical, we need to redefine both
           <function>equals</function> and <function>hashCode</function> to work
           correctly with objects of type <classname>Point</classname>. For
