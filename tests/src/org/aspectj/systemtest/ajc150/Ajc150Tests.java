@@ -42,6 +42,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
 
+ // public void testGenericPTW_pr119539_1() { runTest("generic pertypewithin aspect - 1");}
+  //public void testGenericPTW_pr119539_2() { runTest("generic pertypewithin aspect - 2");}
+  //public void testGenericPTW_pr119539_3() { runTest("generic pertypewithin aspect - 3");}
   /*
   public void testBrokenDispatchByITD_pr72834() { runTest("broken dispatch");}
   public void testMissingAccessor_pr73856() { runTest("missing accessor");}
@@ -796,6 +799,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void testNoNPEWithOrPointcutAndMoreThanOneArgs_pr118149() {
 	  runTest("no NPE with or pointcut and more than one args");
+  }
+  
+  public void testNoSOBWithGenericInnerAspects_pr119543() {
+	  runTest("no StringOutOfBoundsException with generic inner aspects");
   }
   
   // helper methods.....
