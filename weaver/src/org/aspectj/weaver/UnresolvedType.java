@@ -595,7 +595,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
      */
     public UnresolvedType getOutermostType() {
     	if (isArray() || isPrimitiveType()) return this;
-		String sig = getSignature();
+		String sig = getErasureSignature();
 		int dollar = sig.indexOf('$');
 		if (dollar != -1) {
 			return UnresolvedType.forSignature(sig.substring(0, dollar) + ';');
