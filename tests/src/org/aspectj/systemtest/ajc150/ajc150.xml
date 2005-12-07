@@ -69,6 +69,28 @@
      <run class="Pr114054"/>
     </ajc-test>  
     
+    <ajc-test dir="bugs150/pr119539" pr="119539" title="generic pertypewithin aspect - 1">
+     <compile files="GenericPerTypeWithin.java" options="-1.5 -showWeaveInfo">
+     	<message kind="weave" text="Join point 'constructor-execution(void bugs.C.&lt;init&gt;())' in Type 'bugs.C' (GenericPerTypeWithin.java:10) advised by before advice from 'bugs.A' (GenericPerTypeWithin.java:21)"/>
+	    <message kind="weave" text="Join point 'constructor-execution(void bugs.C.&lt;init&gt;())' in Type 'bugs.C' (GenericPerTypeWithin.java:10) advised by before advice from 'bugs.A' (GenericPerTypeWithin.java:20)"/>
+	 </compile>
+     <run class="bugs.GenericPerTypeWithin"/>
+    </ajc-test>  
+    
+    <ajc-test dir="bugs150/pr119539" pr="119539" title="generic pertypewithin aspect - 2">
+     <compile files="GenericPerTypeWithin2.java" options="-1.5 -showWeaveInfo">
+       <message kind="error" line="24" text="a generic super-aspect must be fully parameterized in an extends clause"/>
+	 </compile>
+    </ajc-test>  
+    
+    <ajc-test dir="bugs150/pr119539" pr="119539" title="generic pertypewithin aspect - 3">
+     <compile files="GenericPerTypeWithin3.java" options="-1.5 -showWeaveInfo">
+     	<message kind="weave" text="Join point 'constructor-execution(void bugs.GenericPerTypeWithin3$C.&lt;init&gt;())' in Type 'bugs.GenericPerTypeWithin3$C' (GenericPerTypeWithin3.java:15) advised by before advice from 'bugs.GenericPerTypeWithin3$A' (GenericPerTypeWithin3.java:10)"/>
+		<message kind="warning" line="15" text="Singleton.creation()"/>
+	 </compile>
+     <run class="bugs.GenericPerTypeWithin3"/>
+    </ajc-test>  
+    
     <ajc-test dir="bugs150/pr117854" pr="117854" title="broken switch transform">
      <compile files="BrokenSwitch.java" options=""/>
      <run class="BrokenSwitch"/>
@@ -1283,6 +1305,12 @@
 
 	<ajc-test dir="bugs150" title="no NPE with or pointcut and more than one args">
         <compile files="PR118149.aj"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs150" title="no StringOutOfBoundsException with generic inner aspects">
+        <compile files="PR119543.java" options="-1.5">
+		   	<message kind="warning" line="8" text="advice defined in PR119543$A has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
     </ajc-test>
 
     <!-- ============================================================================ -->
