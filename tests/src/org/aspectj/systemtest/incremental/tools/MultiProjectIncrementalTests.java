@@ -335,7 +335,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		alter("PR117882_2","inc1");
 		build("PR117882_2");
 		checkWasntFullBuild();
-		checkCompileWeaveCount(1,4);
+//		checkCompileWeaveCount(1,4);
 		//fullBuild("PR117882_2");
 		//checkWasFullBuild();
 //		AjdeInteractionTestbed.VERBOSE=false;
