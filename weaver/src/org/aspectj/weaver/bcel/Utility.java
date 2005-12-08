@@ -394,11 +394,15 @@ public class Utility {
         }
     }
 
+    public static InstructionList createConversion(InstructionFactory factory,Type fromType,Type toType) {
+    	return createConversion(factory,fromType,toType,false);
+    }
     
     public static InstructionList createConversion(
             InstructionFactory fact,
             Type fromType,
-            Type toType) {
+            Type toType,
+            boolean allowAutoboxing) {
         //System.out.println("cast to: " + toType);
 
         InstructionList il = new InstructionList();
@@ -458,6 +462,35 @@ public class Utility {
         if (fromType instanceof ReferenceType 
                 && ((ReferenceType)fromType).isAssignmentCompatibleWith(toType)) {
             return il;
+        }
+        
+        if (allowAutoboxing) {
+	        if (toType instanceof BasicType && fromType instanceof ReferenceType) {
+	        	// unboxing
+	        	String name = toType.toString() + "Value";
+	            il.append(
+	                fact.createInvoke(
+	                    "org.aspectj.runtime.internal.Conversions",
+	                    name,
+	                    toType,
+	                    new Type[] { Type.OBJECT },
+	                    Constants.INVOKESTATIC));
+	            return il;
+	        }
+	        
+	        if (fromType instanceof BasicType && toType instanceof ReferenceType) {
+	        	// boxing
+	        	String name = fromType.toString() + "Object";
+	            il.append(
+	                fact.createInvoke(
+	                    "org.aspectj.runtime.internal.Conversions",
+	                    name,
+	                    Type.OBJECT,
+	                    new Type[] { fromType },
+	                    Constants.INVOKESTATIC));
+	            il.append(fact.createCast(Type.OBJECT, toType));
+	            return il;
+	        }
         }
 
         il.append(fact.createCast(fromType, toType));

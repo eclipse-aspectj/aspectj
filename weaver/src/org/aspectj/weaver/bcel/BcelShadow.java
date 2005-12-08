@@ -2231,7 +2231,7 @@ public class BcelShadow extends Shadow {
 		        Utility.createConversion(
 		            getFactory(), 
 		            BcelWorld.makeBcelType(mungerSig.getReturnType()), 
-		            extractedMethod.getReturnType()));
+		            extractedMethod.getReturnType(),world.isInJava5Mode()));
 		    if (! isFallsThrough()) {
 		        advice.append(InstructionFactory.createReturn(extractedMethod.getReturnType()));
 		    }
@@ -2659,7 +2659,7 @@ public class BcelShadow extends Shadow {
 	            Utility.createConversion(
 	                getFactory(), 
 	                BcelWorld.makeBcelType(munger.getSignature().getReturnType()), 
-	                callbackMethod.getReturnType());
+	                callbackMethod.getReturnType(),world.isInJava5Mode());
 			if (!isFallsThrough()) {
 				returnConversionCode.append(
 					InstructionFactory.createReturn(callbackMethod.getReturnType()));
