@@ -68,6 +68,31 @@
      <compile files="Pr114054.aj" options=""/>
      <run class="Pr114054"/>
     </ajc-test>  
+
+    <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 1">
+     <compile files="TestLib.java,ThreadAspectLib.java" options="-1.5"/>
+     <run class="TestLib">
+       <stderr>
+          <line text="obtaining five, got 3"/>
+       </stderr>
+     </run>
+    </ajc-test> 
+ 
+    <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 2">
+     <compile files="TestLib2.java,ThreadAspectLib2.java" options="-1.5"/>
+     <run class="TestLib2">
+       <stderr>
+          <line text="obtaining five, got 3"/>
+       </stderr>
+     </run>
+    </ajc-test> 
+   
+    <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 3">
+     <compile files="TestLib2.java,ThreadAspectLib2.java">
+       <message kind="error" line="16" text="incompatible return type applying to method-call(java.lang.Integer TestLib2.getFive())"/>
+       <message kind="error" line="4" text="incompatible return type applying to method-call(java.lang.Integer TestLib2.getFive())"/>
+     </compile>
+    </ajc-test> 
     
     <ajc-test dir="bugs150/pr119539" pr="119539" title="generic pertypewithin aspect - 1">
      <compile files="GenericPerTypeWithin.java" options="-1.5 -showWeaveInfo">

@@ -42,7 +42,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
 
- // public void testGenericPTW_pr119539_1() { runTest("generic pertypewithin aspect - 1");}
+  //public void testGenericPTW_pr119539_1() { runTest("generic pertypewithin aspect - 1");}
   //public void testGenericPTW_pr119539_2() { runTest("generic pertypewithin aspect - 2");}
   //public void testGenericPTW_pr119539_3() { runTest("generic pertypewithin aspect - 3");}
   /*
@@ -79,7 +79,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testFieldGet_pr114343_2()       { runTest("field-get, generics and around advice - 2");}
   public void testFieldGet_pr114343_3()       { runTest("field-get, generics and around advice - 3");}
   public void testCaptureBinding_pr114744()   { runTest("capturebinding wildcard problem");}
-  
+  public void testAutoboxingAroundAdvice_pr119210_1()   { runTest("autoboxing around advice - 1");}
+  public void testAutoboxingAroundAdvice_pr119210_2()   { runTest("autoboxing around advice - 2");}
+  public void testAutoboxingAroundAdvice_pr119210_3()   { runTest("autoboxing around advice - 3");}
   public void testBadDecp_pr110788_1() { runTest("bad generic decp - 1");}
   public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}
   public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
