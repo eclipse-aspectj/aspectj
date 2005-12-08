@@ -197,7 +197,7 @@ public class BcelShadow extends Shadow {
 			ih = ih.getPrev();
 		}
 		// now IH points to the NEW.  We're followed by the DUP, and that is followed
-		// by the actual instruciton we care about.  
+		// by the actual instruction we care about.  
 		InstructionHandle newHandle = ih;
 		InstructionHandle endHandle = newHandle.getNext();
 		InstructionHandle nextHandle;
@@ -214,6 +214,7 @@ public class BcelShadow extends Shadow {
 				// XXX see next XXX comment
 				throw new RuntimeException("Unhandled kind of new " + endHandle);
 			}
+			// Now make any jumps to the 'new', the 'dup' or the 'end' now target the nextHandle
 			retargetFrom(newHandle, nextHandle);
 			retargetFrom(dupHandle, nextHandle);
 			retargetFrom(endHandle, nextHandle);
@@ -237,7 +238,13 @@ public class BcelShadow extends Shadow {
 		InstructionTargeter[] sources = old.getTargeters();
 		if (sources != null) {
 			for (int i = sources.length - 1; i >= 0; i--) {
-				sources[i].updateTarget(old, fresh);
+				if (sources[i] instanceof ExceptionRange) {
+					ExceptionRange it = (ExceptionRange)sources[i];
+					System.err.println("...");
+					it.updateTarget(old,fresh,it.getBody());
+				} else {
+				  sources[i].updateTarget(old, fresh);
+				}
 			}
 		}
 	}

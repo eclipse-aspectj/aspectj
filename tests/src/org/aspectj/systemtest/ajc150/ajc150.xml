@@ -175,6 +175,7 @@
 		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java" options="-1.5"></compile>
 		<run class="ReflectOnAjcCompiledPointcuts" classpath="../lib/bcel/bcel.jar"/>
 	</ajc-test>
+
 	
 	<ajc-test dir="compatibility/case1" title="generating code for a 1.2.1 runtime - 1">
 		<compile files="Simple.java" options="-Xajruntimetarget:1.2"/>
@@ -228,6 +229,12 @@
 		<run class="Pr103097"/>
 	</ajc-test>
 		    
+
+	<ajc-test dir="bugs150" title="Range problem">
+		<compile files="pr109614.java"/>
+		<run class="pr109614"/>
+	</ajc-test>
+	    
     <ajc-test dir="bugs150/pr114436" title="ClassFormatError binary weaving perthis">
      <compile files="SimpleTrace.aj,ConcreteSimpleTracing.aj" outjar="aspects.jar"/>
      <compile files="TestClass.java" aspectpath="aspects.jar"/>

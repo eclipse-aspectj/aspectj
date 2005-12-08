@@ -58,6 +58,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAroundAdviceArrayAdviceSigs_pr118781()     { runTest("verify error with around advice array sigs");}
   public void testAtDeclareParents_pr117681() { runTest("at declare parents");}
   public void testPrivilegeProblem_pr87525() { runTest("privilege problem with switch");}
+  public void testRangeProblem_pr109614() { runTest("Range problem");}
   public void testGenericAspects_pr115237() { runTest("aspectOf and generic aspects");}
   public void testClassFormatError_pr114436() { runTest("ClassFormatError binary weaving perthis");}
   public void testParserException_pr115788() { runTest("parser exception");}
