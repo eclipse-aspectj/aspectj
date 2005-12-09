@@ -1113,7 +1113,9 @@ public class AspectDeclaration extends TypeDeclaration {
 //	}
 
 	public StringBuffer printHeader(int indent, StringBuffer output) {
-		printModifiers(this.modifiers, output);
+		// since all aspects are made public we want to print the
+		// modifiers that were supplied in the original source code
+		printModifiers(this.declaredModifiers,output);
 		output.append("aspect " ); 
 		output.append(name);
 		if (superclass != null) {

@@ -165,7 +165,7 @@ class StubFileGenerator{
     	String signature = classNode.getSourceSignature();
 		if (signature != null){
 			int index = signature.indexOf("aspect");
-			if (index != -1 && signature.charAt(index-1) != '.') {
+			if (index == 0 || (index != -1 && signature.charAt(index-1) != '.') ) {
 				signature = signature.substring(0, index) +
 				"class " +
 				signature.substring(index + 6, signature.length());

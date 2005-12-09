@@ -35,6 +35,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		IProgramElement packageAspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AdviceNamingCoverage");
 		assertNotNull(packageAspect);
 		assertEquals(IProgramElement.Accessibility.PACKAGE, packageAspect.getAccessibility());
+		assertEquals("aspect should not have public in it's signature","aspect AdviceNamingCoverage",packageAspect.getSourceSignature());
 	}
 	
 	public void testStaticModifiers() {
