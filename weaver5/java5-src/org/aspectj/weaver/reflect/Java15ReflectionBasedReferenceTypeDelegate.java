@@ -213,8 +213,9 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.METHOD,
 			getGenericResolvedType(),
 			forConstructor.getModifiers(),
-			getGenericResolvedType(),
-			"init",
+			// to return what BCEL returns the return type is void
+			ResolvedType.VOID,//getGenericResolvedType(),
+			"<init>",
 			typeConverter.fromTypes(forConstructor.getParameterTypes()),
 			typeConverter.fromTypes(forConstructor.getExceptionTypes()),
 			forConstructor

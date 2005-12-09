@@ -12,6 +12,9 @@
 package org.aspectj.weaver.reflect;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.ReferenceType;
@@ -130,7 +133,7 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 		assertEquals(1,methods[idx].getExceptions().length);
 		assertEquals(world.resolve("java.lang.Exception"),methods[idx].getExceptions()[0]);
 		int baridx = findMethod("bar", methods);
-		int initidx = findMethod("init", methods);
+		int initidx = findMethod("<init>", methods);
 		assertTrue(baridx > -1);
 		assertTrue(initidx > -1);
 		assertTrue(baridx != initidx && baridx != idx && idx <= 2 && initidx <= 2 && baridx <= 2);
@@ -238,6 +241,51 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
         assertTrue("Superclass for Map generic type should be Object but was "+rt2,rt2.equals(UnresolvedType.OBJECT));         
     }
     
+    // FIXME asc maybe.  The reflection list of methods returned doesn't include <clinit> (the static initializer) ... is that really a problem.
+    public void testCompareSubclassDelegates() {
+    	
+    	boolean barfIfClinitMissing = false;
+        world.setBehaveInJava5Way(true);
+        
+        BcelWorld bcelWorld = new BcelWorld();
+        bcelWorld.setBehaveInJava5Way(true);
+        UnresolvedType javaUtilHashMap = UnresolvedType.forName("java.util.HashMap");
+        ReferenceType rawType =(ReferenceType)bcelWorld.resolve(javaUtilHashMap );
+        
+        ReferenceType rawReflectType =(ReferenceType)world.resolve(javaUtilHashMap );
+        ResolvedMember[] rms1 = rawType.getDelegate().getDeclaredMethods();
+        ResolvedMember[] rms2 = rawReflectType.getDelegate().getDeclaredMethods();
+        StringBuffer errors = new StringBuffer();
+        Set one = new HashSet();
+        for (int i = 0; i < rms1.length; i++) {
+			one.add(rms1[i].toString());
+		}
+        Set two = new HashSet();
+        for (int i = 0; i < rms2.length; i++) {
+			two.add(rms2[i].toString());
+		}
+        for (int i = 0;i<rms2.length;i++) {
+        	if (!one.contains(rms2[i].toString())) {
+        		errors.append("Couldn't find "+rms2[i].toString()+" in the bcel set\n");
+        	}
+        }
+        for (int i = 0;i<rms1.length;i++) {
+        	if (!two.contains(rms1[i].toString())) {
+        		if (!barfIfClinitMissing && rms1[i].getName().equals("<clinit>")) continue;
+        		errors.append("Couldn't find "+rms1[i].toString()+" in the reflection set\n");
+        	}
+        }
+        assertTrue("Errors:"+errors.toString(),errors.length()==0);
+        
+        if (barfIfClinitMissing) {
+        	// the numbers must be exact
+            assertEquals(rms1.length,rms2.length);        	
+        } else {
+        	// the numbers can be out by one in favour of bcel
+        	assertTrue("Should be one extra (clinit) in BCEL case, but bcel="+rms1.length+" reflect="+rms2.length,rms1.length==rms2.length+1);
+        }
+    }
+    	    
 	// todo: array of int	
 
 	protected void setUp() throws Exception {
