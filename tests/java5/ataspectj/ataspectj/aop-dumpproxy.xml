@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<aspectj>
+    <weaver>
+<!--    
+        <dump within="*..*Proxy*" beforeandafter="true"/> 
+-->        
+        <dump within="*Proxy*" beforeandafter="true"/> 
+    </weaver>
+</aspectj>

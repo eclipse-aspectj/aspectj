@@ -314,7 +314,7 @@ public class AsmElementFormatter {
 		String label;
 		UnresolvedType typeX = tp.getExactType();
 		
-		if (typeX != ResolvedType.MISSING) {
+		if (!ResolvedType.isMissing(typeX)) {
 			label = typeX.getName();
 			if (tp.isIncludeSubtypes()) label += "+";
 		} else {

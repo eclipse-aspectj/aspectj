@@ -361,6 +361,7 @@ public class WeavingAdaptor {
 	    dir.mkdirs();
 	    String fileName = dirName + File.separator + className + ".class";
 	    try {
+//	    	System.out.println("WeavingAdaptor.dump() fileName=" + new File(fileName).getAbsolutePath());
 		    FileOutputStream os = new FileOutputStream(fileName);
 		    os.write(b);
 		    os.close();

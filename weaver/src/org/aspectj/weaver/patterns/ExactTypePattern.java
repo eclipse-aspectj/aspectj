@@ -83,7 +83,7 @@ public class ExactTypePattern extends TypePattern {
 		if (super.couldEverMatchSameTypesAs(other)) return true;
 		// false is necessary but not sufficient
 		UnresolvedType otherType = other.getExactType();
-		if (otherType != ResolvedType.MISSING) {
+		if (!ResolvedType.isMissing(otherType)) {
 			return type.equals(otherType);
 		} 
 		if (other instanceof WildTypePattern) {

@@ -148,7 +148,7 @@ public class BcelWeaver implements IWeaver {
     public ResolvedType addLibraryAspect(String aspectName) {
         // 1 - resolve as is
         ResolvedType type = world.resolve(UnresolvedType.forName(aspectName), true);
-        if (type.equals(ResolvedType.MISSING)) {
+        if (type.isMissing()) {
             // fallback on inner class lookup mechanism
             String fixedName = aspectName;
             int hasDot = fixedName.lastIndexOf('.');
@@ -159,7 +159,7 @@ public class BcelWeaver implements IWeaver {
                 fixedName = new String(fixedNameChars);
                 hasDot = fixedName.lastIndexOf('.');
                 type = world.resolve(UnresolvedType.forName(fixedName), true);
-                if (!type.equals(ResolvedType.MISSING)) {
+                if (!type.isMissing()) {
                     break;
                 }
             }
@@ -1223,7 +1223,7 @@ public class BcelWeaver implements IWeaver {
 					String requiredTypeName = (String) iter.next();
 					if (!alreadyConfirmedReweavableState.contains(requiredTypeName)) {
 						ResolvedType rtx = world.resolve(UnresolvedType.forName(requiredTypeName),true);
-						boolean exists = rtx!=ResolvedType.MISSING;
+						boolean exists = !rtx.isMissing();
 						if (!exists) {
 							world.showMessage(IMessage.ERROR, 
 									WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,requiredTypeName,className),

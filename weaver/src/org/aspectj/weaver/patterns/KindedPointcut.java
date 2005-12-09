@@ -145,7 +145,7 @@ public class KindedPointcut extends Pointcut {
 			shadow.getSignature().getDeclaringType().resolve(world);
         
 		if (signature.getDeclaringType().isStar()
-			|| exactDeclaringType == ResolvedType.MISSING
+			|| ResolvedType.isMissing(exactDeclaringType)
 			|| exactDeclaringType.resolve(world).isMissing())
 			return;
 
@@ -267,7 +267,7 @@ public class KindedPointcut extends Pointcut {
 			World world = scope.getWorld();
 			UnresolvedType exactType = signature.getDeclaringType().getExactType();
 			if (signature.getKind() == Member.CONSTRUCTOR &&
-				!exactType.equals(ResolvedType.MISSING) &&
+				!ResolvedType.isMissing(exactType) &&
 				exactType.resolve(world).isInterface() &&
 				!signature.getDeclaringType().isIncludeSubtypes()) {
 					world.getLint().noInterfaceCtorJoinpoint.signal(exactType.toString(), getSourceLocation());

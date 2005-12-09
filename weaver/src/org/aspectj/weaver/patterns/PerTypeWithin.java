@@ -79,7 +79,7 @@ public class PerTypeWithin extends PerClause {
 		
     protected FuzzyBoolean matchInternal(Shadow shadow) {
     	ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
-    	if (enclosingType == ResolvedType.MISSING) {
+    	if (enclosingType.isMissing()) {
     		//PTWIMPL ?? Add a proper message
     		IMessage msg = new Message(
     				"Cant find type pertypewithin matching...",

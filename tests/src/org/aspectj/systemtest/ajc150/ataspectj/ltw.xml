@@ -95,9 +95,9 @@
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest before and after">
         <compile
-                files="ataspectj/DumpTest.java,ataspectj/DumpTestTheDump.java,ataspectj/TestHelper.java"
+                files="ataspectj/Test$$EnhancerByCGLIB$$12345.java"
                 options="-1.5"/>
-        <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dumpbeforeandafter.xml"/>
+        <run class="ataspectj.Test$$EnhancerByCGLIB$$12345" ltw="ataspectj/aop-dumpbeforeandafter.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest closure">
@@ -105,6 +105,13 @@
                 files="ataspectj/DumpTest.java,ataspectj/DumpTestTheDump.java,ataspectj/TestAroundAspect.aj"
                 options="-1.5"/>
         <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dumpclosure.xml"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="LTW DumpTest proxy">
+        <compile
+                files="ataspectj/TestProxyGenerator.java,ataspectj/TestInterface.java"
+                options="-1.5"/>
+        <ant file="ajc-ant.xml" target="ltw.DumpProxyTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="Ajc Aspect1 LTW Aspect2 -Xreweavable">

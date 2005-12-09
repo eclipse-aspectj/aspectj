@@ -122,11 +122,11 @@ import org.aspectj.weaver.bcel.BcelWorld;
 		 
 		 assertTrue("resolves to WildTypePattern",rtp instanceof WildTypePattern);
 		 assertTrue("one type parameter", rtp.typeParameters.size() == 1);
-		 assertEquals("missing",ResolvedType.MISSING,rtp.getExactType());
+		 assertTrue("missing",ResolvedType.isMissing(rtp.getExactType()));
 		 
 		 WildTypePattern wtp = (WildTypePattern) writeAndRead(rtp);
 		 assertTrue("one type parameter", wtp.typeParameters.size() == 1);
-		 assertEquals("missing",ResolvedType.MISSING,wtp.getExactType());
+		 assertTrue("missing",ResolvedType.isMissing(wtp.getExactType()));
 		 assertEquals("Str*",wtp.getTypeParameters().getTypePatterns()[0].toString());
 		 
 		 assertFalse("does not match List",wtp.matches(javaUtilList, TypePattern.STATIC).alwaysTrue());

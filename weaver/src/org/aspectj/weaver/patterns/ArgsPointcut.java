@@ -204,7 +204,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 			TypePattern type = patterns[i];
             ResolvedType argRTX = shadow.getIWorld().resolve(argType,true);
 			if (!(type instanceof BindingTypePattern)) {
-                if (argRTX == ResolvedType.MISSING) {
+                if (argRTX.isMissing()) {
 					shadow.getIWorld().getLint().cantFindType.signal(
 							new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_ARG_TYPE,argType.getName())},
 							shadow.getSourceLocation(),

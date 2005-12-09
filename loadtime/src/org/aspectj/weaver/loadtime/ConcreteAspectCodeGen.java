@@ -125,7 +125,7 @@ public class ConcreteAspectCodeGen {
 
         m_parent = m_world.resolve(m_concreteAspect.extend, true);
         // handle inner classes
-        if (m_parent.equals(ResolvedType.MISSING)) {
+        if (m_parent.isMissing()) {
             // fallback on inner class lookup mechanism
             String fixedName = m_concreteAspect.extend;
             int hasDot = fixedName.lastIndexOf('.');
@@ -135,7 +135,7 @@ public class ConcreteAspectCodeGen {
                 fixedName = new String(fixedNameChars);
                 hasDot = fixedName.lastIndexOf('.');
                 m_parent = m_world.resolve(UnresolvedType.forName(fixedName), true);
-                if (!m_parent.equals(ResolvedType.MISSING)) {
+                if (!m_parent.isMissing()) {
                     break;
                 }
             }

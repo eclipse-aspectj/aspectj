@@ -151,7 +151,7 @@ public class CrosscuttingMembers {
 	}
 	
 	public void exposeType(UnresolvedType typeToExpose) {
-		if (typeToExpose == ResolvedType.MISSING) return;
+		if (ResolvedType.isMissing(typeToExpose)) return;
 		if (typeToExpose.isParameterizedType() || typeToExpose.isRawType()) {
 			if (typeToExpose instanceof ResolvedType) {
 				typeToExpose = ((ResolvedType)typeToExpose).getGenericType();

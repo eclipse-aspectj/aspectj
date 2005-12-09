@@ -93,7 +93,7 @@ public class DeclarePrecedence extends Declare {
     			continue;
     		}
     		ResolvedType exactType = pi.getExactType().resolve(scope.getWorld());
-    		if (exactType == ResolvedType.MISSING) continue;
+    		if (exactType.isMissing()) continue;
     		
     		// Cannot do a dec prec specifying a non-aspect types unless suffixed with a '+'
     		if (!exactType.isAspect() && !pi.isIncludeSubtypes() && !exactType.isTypeVariableReference()) {

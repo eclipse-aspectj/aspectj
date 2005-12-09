@@ -253,7 +253,7 @@ public class EclipseFactory {
 			String baseTypeSignature = null;
 			
 			ResolvedType baseType = getWorld().resolve(UnresolvedType.forName(getName(binding)),true);
-			if (baseType != ResolvedType.MISSING) {
+			if (!baseType.isMissing()) {
 				// can legitimately be missing if a bound refers to a type we haven't added to the world yet...
 				if (!baseType.isGenericType() && arguments!=null) baseType = baseType.getGenericType();
 				baseTypeSignature = baseType.getErasureSignature();
@@ -966,7 +966,7 @@ public class EclipseFactory {
 			UnresolvedType complexTx = fromBinding(binding); // fully aware of any generics info
 			ResolvedType cName = world.resolve(complexTx,true);
 			ReferenceType complexName = null;
-			if (cName != ResolvedType.MISSING) {
+			if (!cName.isMissing()) {
 				complexName = (ReferenceType) cName;
 				complexName = (ReferenceType) complexName.getGenericType();
 				if (complexName == null) complexName = new ReferenceType(complexTx,world);

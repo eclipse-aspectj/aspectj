@@ -2030,7 +2030,7 @@ public class BcelShadow extends Shadow {
         	if (rm.hasBackingGenericMember()) mungerSig = rm.getBackingGenericMember();
         }
         ResolvedType declaringType = world.resolve(mungerSig.getDeclaringType(),true);
-        if (declaringType == ResolvedType.MISSING) {
+        if (declaringType.isMissing()) {
         	world.getLint().cantFindType.signal(
         			new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,declaringType.getClassName())},
         			getSourceLocation(),
@@ -2636,7 +2636,7 @@ public class BcelShadow extends Shadow {
 			for (int i = 0, len = stateTypes.length; i < len; i++) {
                 UnresolvedType bcelTX = BcelWorld.fromBcel(stateTypes[i]);
                 ResolvedType stateRTX = world.resolve(bcelTX,true);
-                if (stateRTX == ResolvedType.MISSING) {
+                if (stateRTX.isMissing()) {
                 		world.getLint().cantFindType.signal(
                 				new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT,bcelTX.getClassName())},
                 				getSourceLocation(),

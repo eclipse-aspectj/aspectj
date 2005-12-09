@@ -78,7 +78,7 @@ public abstract class AbstractWorldTestCase extends TestCase {
     	ResolvedType[] primitives = getWorld().resolve(primitiveTypeXs);
     	UnresolvedType tx = UnresolvedType.forSignature(sig);
         ResolvedType ty = getWorld().resolve(tx,true);
-        assertTrue("Couldnt find type "+tx,ty!=ResolvedType.MISSING);
+        assertTrue("Couldnt find type "+tx,!ty.isMissing());
         ResolvedType[] lowerTyArray = 
             getWorld().resolve(UnresolvedType.forSignatures(lowers));
         List lowerTys = new ArrayList(Arrays.asList(lowerTyArray));
@@ -103,7 +103,7 @@ public abstract class AbstractWorldTestCase extends TestCase {
             ResolvedType ty = primitives[i];
             UnresolvedType tx = UnresolvedType.forSignature("["+ty.getSignature());
             ResolvedType aty = getWorld().resolve(tx,true);
-            assertTrue("Couldnt find type "+tx,aty!=ResolvedType.MISSING);
+            assertTrue("Couldnt find type "+tx,!aty.isMissing());
             modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
             fieldsTest(aty, ResolvedMember.NONE);
             methodsTest(aty, ResolvedMember.NONE);
@@ -121,7 +121,7 @@ public abstract class AbstractWorldTestCase extends TestCase {
                 isCoerceableFromTest(aty, ty1, false);
                 tx = UnresolvedType.forSignature("[" + ty1.getSignature());
                 ResolvedType aty1 = getWorld().resolve(tx,true);
-                assertTrue("Couldnt find type "+tx,aty1!=ResolvedType.MISSING);
+                assertTrue("Couldnt find type "+tx,!aty1.isMissing());
                 if (ty.equals(ty1)) {
                     isCoerceableFromTest(aty, aty1, true);
                     isAssignableFromTest(aty, aty1, true);

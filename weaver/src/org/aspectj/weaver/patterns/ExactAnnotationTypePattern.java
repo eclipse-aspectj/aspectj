@@ -154,9 +154,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		annotationType = scope.getWorld().resolve(annotationType,true);
 		
 		// We may not have found it if it is in a package, lets look it up...
-		if (annotationType == ResolvedType.MISSING) {
+		if (ResolvedType.isMissing(annotationType)) {
 			UnresolvedType type = null;
-			while ((type = scope.lookupType(cleanname,this)) == ResolvedType.MISSING) {
+			while (ResolvedType.isMissing(type = scope.lookupType(cleanname,this))) {
 				int lastDot = cleanname.lastIndexOf('.');
 				if (lastDot == -1) break;
 				cleanname = cleanname.substring(0,lastDot)+"$"+cleanname.substring(lastDot+1);

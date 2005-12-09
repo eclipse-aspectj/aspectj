@@ -76,7 +76,7 @@ public class TjpWeaveTestCase extends WeaveTestCase {
 
     public void testAround2Tjp() throws IOException {
     	ResolvedType rtx = world.resolve(UnresolvedType.forName("Aspect"),true);
-    	assertTrue("Couldnt find type Aspect",rtx!=ResolvedType.MISSING);
+    	assertTrue("Couldnt find type Aspect",!rtx.isMissing());
     	BcelAdvice munger1 = new BcelAdvice(
     		AdviceKind.stringToKind("around"),
     		makePointcutAll(), 

@@ -129,7 +129,7 @@ public class ReferencePointcut extends Pointcut {
 		if (onTypeSymbolic != null) {
 			onType = onTypeSymbolic.resolveExactType(scope, bindings);
 			// in this case we've already signalled an error
-			if (onType == ResolvedType.MISSING) return;		
+			if (ResolvedType.isMissing(onType)) return;		
 		}
 		
 		ResolvedType searchType;
@@ -263,7 +263,7 @@ public class ReferencePointcut extends Pointcut {
 			ResolvedPointcutDefinition pointcutDec;
 			if (onType != null) {
 				searchStart = onType.resolve(searchStart.getWorld());
-				if (searchStart == ResolvedType.MISSING) {
+				if (searchStart.isMissing()) {
 					return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 				}
 			}

@@ -60,6 +60,14 @@
         </java>
     </target>
 
+    <target name="ltw.DumpProxyTest">
+        <java fork="yes" classname="ataspectj.TestProxyGenerator" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj5.def=ataspectj/aop-dumpproxy.xml"/>
+        </java>
+    </target>
+
     <target name="javac.ltw" depends="compile:javac, ltw"/>
 
     <target name="ltw.Aspect2MainTest">

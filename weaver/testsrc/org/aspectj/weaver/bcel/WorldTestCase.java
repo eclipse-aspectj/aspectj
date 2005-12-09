@@ -36,7 +36,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
 	// XXX fix the various XXXs before expecting this test to work
     public void xtestTraceJar() {
         ResolvedType trace = world.resolve(UnresolvedType.forName("Trace"),true);
-        assertTrue("Couldnt find type Trace",trace!=ResolvedType.MISSING);
+        assertTrue("Couldnt find type Trace",!trace.isMissing());
         fieldsTest(trace, Member.NONE);
         /*Member constr = */MemberImpl.methodFromString("void Trace.<init>()"); 
         //XXX need attribute fix - 
@@ -69,7 +69,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
             });
         
         ResolvedType myTrace = world.resolve(UnresolvedType.forName("MyTrace"),true);
-        assertTrue("Couldnt find type MyTrace",myTrace!=ResolvedType.MISSING);
+        assertTrue("Couldnt find type MyTrace",!myTrace.isMissing());
 
         interfacesTest(myTrace, ResolvedType.NONE);
         superclassTest(myTrace, trace);

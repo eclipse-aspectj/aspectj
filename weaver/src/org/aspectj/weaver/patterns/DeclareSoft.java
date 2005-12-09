@@ -99,7 +99,7 @@ public class DeclareSoft extends Declare {
     public void resolve(IScope scope) {
     	exception = exception.resolveBindings(scope, null, false, true);
     	ResolvedType excType = exception.getExactType().resolve(scope.getWorld());
-    	if (excType != ResolvedType.MISSING) {
+    	if (!excType.isMissing()) {
     		if (excType.isTypeVariableReference()) {
     			// a declare soft in a generic abstract aspect, we need to check the upper bound
     			excType = excType.getUpperBound().resolve(scope.getWorld());

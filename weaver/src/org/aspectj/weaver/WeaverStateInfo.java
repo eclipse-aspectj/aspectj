@@ -204,7 +204,7 @@ public class WeaverStateInfo {
 		for (Iterator i = typeMungers.iterator(); i.hasNext();) {
 			Entry entry = (Entry) i.next();
 			ResolvedType aspectType = world.resolve(entry.aspectType, true);
-			if (aspectType == ResolvedType.MISSING) {
+			if (aspectType.isMissing()) {
 				world.showMessage(IMessage.ERROR,
 					WeaverMessages.format(WeaverMessages.ASPECT_NEEDED,entry.aspectType,onType),
 					onType.getSourceLocation(), null);

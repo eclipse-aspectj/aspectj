@@ -182,7 +182,7 @@ public class WildTypePattern extends TypePattern {
 		if (super.couldEverMatchSameTypesAs(other)) return true;
 		// false is necessary but not sufficient
 		UnresolvedType otherType = other.getExactType();
-		if (otherType != ResolvedType.MISSING) {
+		if (!ResolvedType.isMissing(otherType)) {
 			if (namePatterns.length > 0) {
 				if (!namePatterns[0].matches(otherType.getName())) return false;
 			}
@@ -703,7 +703,7 @@ public class WildTypePattern extends TypePattern {
 	
 	private UnresolvedType lookupTypeInScope(IScope scope, String typeName, IHasPosition location) {
 		UnresolvedType type = null;
-		while ((type = scope.lookupType(typeName, location)) == ResolvedType.MISSING) {
+		while (ResolvedType.isMissing(type = scope.lookupType(typeName, location))) {
 			int lastDot = typeName.lastIndexOf('.');
 			if (lastDot == -1) break;
 			typeName = typeName.substring(0, lastDot) + '$' + typeName.substring(lastDot+1);
@@ -713,7 +713,7 @@ public class WildTypePattern extends TypePattern {
 	
 	private ResolvedType lookupTypeInWorld(World world, String typeName) {
 		ResolvedType ret = world.resolve(UnresolvedType.forName(typeName),true);
-		while (ret == ResolvedType.MISSING) {
+		while (ret.isMissing()) {
 			int lastDot = typeName.lastIndexOf('.');
 			if (lastDot == -1) break;
 			typeName = typeName.substring(0, lastDot) + '$' + typeName.substring(lastDot+1);
@@ -744,8 +744,8 @@ public class WildTypePattern extends TypePattern {
 	private TypePattern resolveGenericWildcard(IScope scope, UnresolvedType aType) {
 		if (!aType.getSignature().equals(GENERIC_WILDCARD_CHARACTER)) throw new IllegalStateException("Can only have bounds for a generic wildcard");
 		boolean canBeExact = true;
-		if ((upperBound != null) && (upperBound.getExactType() == ResolvedType.MISSING)) canBeExact = false;
-		if ((lowerBound != null) && (lowerBound.getExactType() == ResolvedType.MISSING)) canBeExact = false;
+		if ((upperBound != null) && ResolvedType.isMissing(upperBound.getExactType())) canBeExact = false;
+		if ((lowerBound != null) && ResolvedType.isMissing(lowerBound.getExactType())) canBeExact = false;
 		if (canBeExact) {
 			ResolvedType type = null;
 			if (upperBound != null) {
@@ -813,7 +813,7 @@ public class WildTypePattern extends TypePattern {
 			return NO;
 		} else if (scope.getWorld().getLint().invalidAbsoluteTypeName.isEnabled()) {
 			// Only put the lint warning out if we can't find it in the world
-			if (typeFoundInWholeWorldSearch == ResolvedType.MISSING) {
+			if (typeFoundInWholeWorldSearch.isMissing()) {
 			  scope.getWorld().getLint().invalidAbsoluteTypeName.signal(nameWeLookedFor, getSourceLocation());
 			}
 		}
@@ -854,11 +854,11 @@ public class WildTypePattern extends TypePattern {
 		} else {
 			// we have to set bounds on the TypeVariable held by tvrType before resolving it
 			boolean canCreateExactTypePattern = true;
-			if (upperBound != null && upperBound.getExactType() == ResolvedType.MISSING) canCreateExactTypePattern = false;
-			if (lowerBound != null && lowerBound.getExactType() == ResolvedType.MISSING) canCreateExactTypePattern = false;
+			if (upperBound != null && ResolvedType.isMissing(upperBound.getExactType())) canCreateExactTypePattern = false;
+			if (lowerBound != null && ResolvedType.isMissing(lowerBound.getExactType())) canCreateExactTypePattern = false;
 			if (additionalInterfaceBounds != null) {
 				for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-					if (additionalInterfaceBounds[i].getExactType() == ResolvedType.MISSING) canCreateExactTypePattern = false;
+					if (ResolvedType.isMissing(additionalInterfaceBounds[i].getExactType())) canCreateExactTypePattern = false;
 				}
 			}
 			if (canCreateExactTypePattern) {

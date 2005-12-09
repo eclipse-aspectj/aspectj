@@ -51,8 +51,8 @@ public class SimpleScope implements IScope {
 		
 		for (int i=0; i<importedPrefixes.length; i++) {
 			String importedPrefix = importedPrefixes[i];
-			UnresolvedType tryType = world.resolve(UnresolvedType.forName(importedPrefix + name), true);
-			if (tryType != ResolvedType.MISSING) {
+			ResolvedType tryType = world.resolve(UnresolvedType.forName(importedPrefix + name), true);
+			if (!tryType.isMissing()) {
 				return tryType;
 			}
 		}

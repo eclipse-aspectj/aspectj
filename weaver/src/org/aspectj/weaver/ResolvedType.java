@@ -98,6 +98,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
         return false;
     }
     
+    // FIXME asc I wonder if in some circumstances MissingWithKnownSignature should not be considered 
+    // 'really' missing as some code can continue based solely on the signature
+    public static boolean isMissing (UnresolvedType unresolved) {
+    	if (unresolved instanceof ResolvedType) {
+    		ResolvedType resolved = (ResolvedType)unresolved;
+    		return resolved.isMissing();
+    	}
+    	else return (unresolved == MISSING);
+    }
+    
     public ResolvedType[] getAnnotationTypes() {
     	return EMPTY_RESOLVED_TYPE_ARRAY;
     }
@@ -1243,7 +1253,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		int lastDollar = name.lastIndexOf('$');
 		while (lastDollar != -1) {
 			ResolvedType ret = world.resolve(UnresolvedType.forName(name.substring(0, lastDollar)), true);
-			if (ret != ResolvedType.MISSING) return ret;
+			if (!ResolvedType.isMissing(ret)) return ret;
 			lastDollar = name.lastIndexOf('$', lastDollar-1);
 		}
 		return null;

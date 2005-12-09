@@ -165,7 +165,7 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
         ResolvedType searchStart = m_fromAspectType;
         if (node.onType != null) {
             searchStart = node.onType.resolve(m_fromAspectType.getWorld());
-            if (searchStart == ResolvedType.MISSING) {
+            if (searchStart.isMissing()) {
                 return MAYBE;// this should not happen since concretize will fails but just in case..
             }
         }

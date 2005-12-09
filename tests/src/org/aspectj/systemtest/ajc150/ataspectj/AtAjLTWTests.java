@@ -11,12 +11,13 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150.ataspectj;
 
-import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.util.FileUtil;
+import java.io.File;
+import java.io.FilenameFilter;
 
 import junit.framework.Test;
 
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.util.FileUtil;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -97,11 +98,9 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
     public void testLTWDumpBeforeAndAfter() {
         runTest("LTW DumpTest before and after");
 
-        File f = new File("_ajdump/ataspectj/DumpTest.class");
-        assertFalse(f.exists());
-        f = new File("_ajdump/_before/ataspectj/DumpTestTheDump.class");
+        File f = new File("_ajdump/_before/ataspectj/Test$$EnhancerByCGLIB$$12345.class");
         assertTrue(f.exists());
-        f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
+        f = new File("_ajdump/ataspectj/Test$$EnhancerByCGLIB$$12345.class");
         assertTrue(f.exists());
         
         // tidy up...
@@ -110,23 +109,39 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         f.delete();
     }
 
-      /* FIXME maw currently can't dump closures because the logic in 
-       * ClassLoaderWeavingAdaptor.shouldDump() relies on the World being
-       * able to resolve the name which it can't for closures.
-       */   
-//    public void testLTWDumpClosure() {
-//        runTest("LTW DumpTest closure");
-//
-//        File f = new File("_ajdump/_before/ataspectj/DumpTestTheDump$AjcClosure1.class");
-//        assertTrue(f.exists());
-//        f = new File("_ajdump/ataspectj/DumpTestTheDump$AjcClosure1.class");
-//        assertTrue(f.exists());
-//        
-//        // tidy up...
-//        f = new File("_ajdump");
-//        FileUtil.deleteContents(f);
-//        f.delete();
-//    }
+    public void testLTWDumpClosure() {
+        runTest("LTW DumpTest closure");
+
+        File f = new File("_ajdump/ataspectj/DumpTestTheDump$AjcClosure1.class");
+        assertTrue("Missing dump file " + f.getAbsolutePath(),f.exists());
+        
+        // tidy up...
+        f = new File("_ajdump");
+        FileUtil.deleteContents(f);
+        f.delete();
+    }
+
+    public void testLTWDumpProxy() {
+        runTest("LTW DumpTest proxy");
+
+        // The working directory is different because this test must be forked
+        File dir = new File("../tests/java5/ataspectj");
+        File f = new File(dir,"_ajdump/_before");
+        System.out.println("AtAjLTWTests.testLTWDumpProxy() f=" + f.getAbsolutePath());
+        CountingFilenameFilter cff = new CountingFilenameFilter();
+        f.listFiles(cff);
+        assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
+        f = new File(dir,"_ajdump");
+        System.out.println("AtAjLTWTests.testLTWDumpProxy() f=" + f.getAbsolutePath());
+        cff = new CountingFilenameFilter();
+        f.listFiles(cff);
+        assertEquals(1,cff.getCount());
+        
+        // tidy up...
+        f = new File(dir,"_ajdump");
+        FileUtil.deleteContents(f);
+        f.delete();
+    }
 
     public void testAjcAspect1LTWAspect2_Xreweavable() {
         runTest("Ajc Aspect1 LTW Aspect2 -Xreweavable");
@@ -185,4 +200,17 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("AppContainer");
     }
 
+    private static class CountingFilenameFilter implements FilenameFilter {
+    	
+    	private int count;
+    	
+    	public boolean accept(File dir, String name) {
+    		if (name.endsWith(".class")) count++;
+    		return false;
+    	}
+
+		public int getCount() {
+			return count;
+		}
+    }
 }

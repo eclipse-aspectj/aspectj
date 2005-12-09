@@ -144,7 +144,7 @@ public abstract class World implements Dump.INode {
      */
     public ResolvedType resolve(UnresolvedType ty,ISourceLocation isl) {
         ResolvedType ret = resolve(ty,true);
-        if (ty == ResolvedType.MISSING) {
+        if (ResolvedType.isMissing(ty)) {
             //IMessage msg = null;
             getLint().cantFindType.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()),isl);
             //if (isl!=null) {
@@ -215,13 +215,13 @@ public abstract class World implements Dump.INode {
             		                     componentType);
         } else {
             ret = resolveToReferenceType(ty);
-            if (!allowMissing && ret == ResolvedType.MISSING) {
+            if (!allowMissing && ret.isMissing()) {
                 ret = handleRequiredMissingTypeDuringResolution(ty);
             }
         }        
   
 		// Pulling in the type may have already put the right entry in the map
-		if (typeMap.get(signature)==null && ret != ResolvedType.MISSING) {
+		if (typeMap.get(signature)==null && !ret.isMissing()) {
 	        typeMap.put(signature, ret);
 		}
         return ret;
@@ -298,7 +298,9 @@ public abstract class World implements Dump.INode {
 			String erasedSignature = ty.getErasureSignature();
     		ReferenceType simpleOrRawType = new ReferenceType(erasedSignature, this);
 	    	ReferenceTypeDelegate delegate = resolveDelegate(simpleOrRawType);
-	    	if (delegate == null) return ResolvedType.MISSING;
+	    	// 117854
+//	    	if (delegate == null) return ResolvedType.MISSING;
+	    	if (delegate == null) return new MissingResolvedTypeWithKnownSignature(ty.getSignature(),erasedSignature,this);//ResolvedType.MISSING;
 	    	
 	    	if (delegate.isGeneric() && behaveInJava5Way) {
 	    		// ======== raw type ===========
@@ -401,7 +403,7 @@ public abstract class World implements Dump.INode {
      */
     public ResolvedType getCoreType(UnresolvedType tx) {
     	ResolvedType coreTy = resolve(tx,true);
-    	if (coreTy == ResolvedType.MISSING) {
+    	if (coreTy.isMissing()) {
     		 MessageUtil.error(messageHandler, 
             	WeaverMessages.format(WeaverMessages.CANT_FIND_CORE_TYPE,tx.getName()));
     	}

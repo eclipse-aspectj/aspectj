@@ -175,7 +175,7 @@ public class BcelAdvice extends Advice {
     private boolean canInline(Shadow s) {
     	if (attribute.isProceedInInners()) return false;
     	//XXX this guard seems to only be needed for bad test cases
-    	if (concreteAspect == null || concreteAspect == ResolvedType.MISSING) return false;
+    	if (concreteAspect == null || concreteAspect.isMissing()) return false;
 
 		if (concreteAspect.getWorld().isXnoInline()) return false;
     	//System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
@@ -261,7 +261,7 @@ public class BcelAdvice extends Advice {
 		
 		for (int i=0, len=excs.length; i < len; i++) {
 			ResolvedType t = world.resolve(excs[i],true);
-            if (t == ResolvedType.MISSING) {
+            if (t.isMissing()) {
             		world.getLint().cantFindType.signal(
             				WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
             				getSourceLocation()

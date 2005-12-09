@@ -270,7 +270,7 @@ public class TypePatternList extends PatternNode {
 		ArrayList ret = new ArrayList();
 		for (int i=0; i<typePatterns.length; i++) {
 			UnresolvedType t = typePatterns[i].getExactType();
-			if (t != ResolvedType.MISSING) ret.add(t);
+			if (!ResolvedType.isMissing(t)) ret.add(t);
 		}
 		return ret;
 	}

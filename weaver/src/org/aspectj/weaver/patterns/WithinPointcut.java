@@ -71,7 +71,7 @@ public class WithinPointcut extends Pointcut {
 	   
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
-		if (enclosingType == ResolvedType.MISSING) {
+		if (enclosingType.isMissing()) {
 			shadow.getIWorld().getLint().cantFindType.signal(
 					new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_WITHINPCD,
 											shadow.getEnclosingType().getName())},
