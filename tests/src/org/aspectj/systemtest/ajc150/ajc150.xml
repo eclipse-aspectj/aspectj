@@ -69,6 +69,11 @@
      <run class="Pr114054"/>
     </ajc-test>  
 
+    <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning">
+     <compile files="NodeImpl.java,INode.java,ParameterizedDP.java" options="-1.5"/>
+     <run class="bugs.ParameterizedDP"/>
+    </ajc-test>  
+
     <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 1">
      <compile files="TestLib.java,ThreadAspectLib.java" options="-1.5"/>
      <run class="TestLib">
