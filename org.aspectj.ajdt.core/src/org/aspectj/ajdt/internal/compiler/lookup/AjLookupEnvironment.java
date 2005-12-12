@@ -289,6 +289,19 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		
 	}
 
+	public void doSupertypesFirst(ReferenceBinding rb,Collection yetToProcess) {
+	    if (rb instanceof SourceTypeBinding) {
+		    if (yetToProcess.contains(rb)) {
+		    	collectAllITDsAndDeclares((SourceTypeBinding)rb, yetToProcess);
+		    }
+	    } else if (rb instanceof ParameterizedTypeBinding) {
+	        // If its a PTB we need to pull the SourceTypeBinding out of it.
+	    	ParameterizedTypeBinding ptb = (ParameterizedTypeBinding)rb;
+	    	if (ptb.type instanceof SourceTypeBinding && yetToProcess.contains(ptb.type)) {
+	    		collectAllITDsAndDeclares((SourceTypeBinding)ptb.type, yetToProcess);
+	    	}
+	    }
+	}
 	/**
 	 * Find all the ITDs and Declares, but it is important we do this from the supertypes
 	 * down to the subtypes.
@@ -298,18 +311,18 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	private void collectAllITDsAndDeclares(SourceTypeBinding sourceType, Collection yetToProcess) {
 		// Look at the supertype first
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES, sourceType.sourceName);
-	    ReferenceBinding superType = sourceType.superclass();
-	    if (superType instanceof SourceTypeBinding) {
-		    if (yetToProcess.contains(superType)) {
-		    	collectAllITDsAndDeclares((SourceTypeBinding)superType, yetToProcess);
-		    }
-	    } else if (superType instanceof ParameterizedTypeBinding) {
-	        // If its a PTB we need to pull the SourceTypeBinding out of it.
-	    	ParameterizedTypeBinding ptb = (ParameterizedTypeBinding)superType;
-	    	if (ptb.type instanceof SourceTypeBinding && yetToProcess.contains(ptb.type)) {
-	    		collectAllITDsAndDeclares((SourceTypeBinding)ptb.type, yetToProcess);
-	    	}
-	    }
+		
+		// look out our direct supertype
+		doSupertypesFirst(sourceType.superclass(),yetToProcess);
+	    
+	    // now check our membertypes (pr119570)
+		ReferenceBinding[] memberTypes = sourceType.memberTypes;
+		for (int i = 0, length = memberTypes.length; i < length; i++) {
+			SourceTypeBinding rb = (SourceTypeBinding)memberTypes[i];
+			if (!rb.superclass().equals(sourceType))
+			  doSupertypesFirst(rb.superclass(),yetToProcess);
+		}
+		
         buildInterTypeAndPerClause(sourceType.scope);
         addCrosscuttingStructures(sourceType.scope);
         yetToProcess.remove(sourceType);

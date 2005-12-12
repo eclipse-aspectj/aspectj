@@ -51,6 +51,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCunningDeclareParents_pr92311() { runTest("cunning declare parents");}
   public void testGenericITDsAndAbstractMethodError_pr102357() { runTest("generic itds and abstract method error");}
   */
+  //public void testIncorrectSignatureMatchingWithExceptions_pr119749() { runTest("incorrect exception signature matching");}
   public void testGeneratingCodeForAnOldRuntime_pr116679_1() { runTest("generating code for a 1.2.1 runtime - 1");}
   public void testGeneratingCodeForAnOldRuntime_pr116679_2() { runTest("generating code for a 1.2.1 runtime - 2");}
   public void testAmbiguousMethod_pr118599_1() { runTest("ambiguous method when binary weaving - 1");}
@@ -86,7 +87,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}
   public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
   public void testBadDecp_pr110788_4() { runTest("bad generic decp - 4");}
-  public void testSpuriousOverrideMethodWarning_pr119570() { runTest("spurious override method warning");}
+  public void testSpuriousOverrideMethodWarning_pr119570_1() { runTest("spurious override method warning");}
+  public void testSpuriousOverrideMethodWarning_pr119570_2() { runTest("spurious override method warning - 2");}
   public void testBrokenSwitch_pr117854() { runTest("broken switch transform");}
   public void testVarargsITD_pr110906() { runTest("ITD varargs problem");}
   public void testBadRenderer_pr86903() { runTest("bcelrenderer bad");}

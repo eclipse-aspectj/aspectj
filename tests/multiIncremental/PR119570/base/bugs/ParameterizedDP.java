@@ -22,6 +22,6 @@ class TaggedTexts {
         // unneeded declare-parents duplicates one in NodeImpl
         // when here, get spurious error message
         // when commented out, d-p fails and get compiler error at 1) above
-        declare parents : Tag implements INode<Tag,Tag>;
+//        declare parents : Tag implements INode<Tag,Tag>;
     }
 }

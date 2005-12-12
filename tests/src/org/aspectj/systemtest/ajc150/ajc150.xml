@@ -72,6 +72,11 @@
     <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning">
      <compile files="NodeImpl.java,INode.java,ParameterizedDP.java" options="-1.5"/>
      <run class="bugs.ParameterizedDP"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning - 2">
+     <compile files="ParameterizedDP.java,NodeImpl.java,INode.java" options="-1.5"/>
+     <run class="bugs.ParameterizedDP"/>
     </ajc-test>  
 
     <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 1">
@@ -124,6 +129,13 @@
     <ajc-test dir="bugs150/pr117854" pr="117854" title="broken switch transform">
      <compile files="BrokenSwitch.java" options=""/>
      <run class="BrokenSwitch"/>
+    </ajc-test>  
+    
+    <ajc-test dir="bugs150/pr119749" pr="119749" title="incorrect exception signature matching">
+     <compile files="InheritedThrows.java" options="">  
+     	<message kind="warning" line="19" text="one"/>
+     	<message kind="warning" line="27" text="one"/>
+     </compile>
     </ajc-test>  
     
     <ajc-test dir="bugs150/pr118599" pr="118599" title="ambiguous method when binary weaving - 1">
