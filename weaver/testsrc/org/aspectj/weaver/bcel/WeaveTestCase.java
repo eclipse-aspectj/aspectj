@@ -28,6 +28,7 @@ public abstract class WeaveTestCase extends TestCase {
 
 	public boolean regenerate = false;
 	public boolean runTests = true;
+	public boolean behave15 = false;
 
     File outDir;
     String outDirPath;
@@ -75,12 +76,17 @@ public abstract class WeaveTestCase extends TestCase {
     
 	public void weaveTest(String name, String outName, List planners) throws IOException {
         BcelWeaver weaver = new BcelWeaver(world);
+        try {
+          if (behave15) world.setBehaveInJava5Way(true);
         
-        UnwovenClassFile classFile = makeUnwovenClassFile(classDir, name, outDirPath); 
+          UnwovenClassFile classFile = makeUnwovenClassFile(classDir, name, outDirPath); 
         
-        weaver.addClassFile(classFile);
-        weaver.setShadowMungers(planners);
-        weaveTestInner(weaver, classFile, name, outName);
+          weaver.addClassFile(classFile);
+          weaver.setShadowMungers(planners);
+          weaveTestInner(weaver, classFile, name, outName);
+        } finally {
+         if (behave15)  world.setBehaveInJava5Way(false);
+        }
 	}
         
         

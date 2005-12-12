@@ -30,6 +30,16 @@ public class TjpWeaveTestCase extends WeaveTestCase {
 	public TjpWeaveTestCase(String name) {
 		super(name);
 	}
+	
+	public void setUp() {
+		super.setUp();
+		behave15=true;
+	}
+
+	public void tearDown() throws Exception {
+		super.tearDown();
+		behave15=false;
+	}
     
 
     public void testStaticTjp() throws IOException {

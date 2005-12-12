@@ -661,7 +661,11 @@ public abstract class World implements Dump.INode {
 	}
 	
 	public boolean isTargettingAspectJRuntime12() {
-		return getTargetAspectjRuntimeLevel().equals(org.aspectj.weaver.Constants.RUNTIME_LEVEL_12);
+		boolean b = false; // pr116679
+		if (!isInJava5Mode()) b=true;
+		else b = getTargetAspectjRuntimeLevel().equals(org.aspectj.weaver.Constants.RUNTIME_LEVEL_12);
+		//System.err.println("Asked if targetting runtime 1.2 , returning: "+b);
+		return b;
 	}
 	
 	/*
