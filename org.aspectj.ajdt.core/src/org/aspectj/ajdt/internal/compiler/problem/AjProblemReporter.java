@@ -273,6 +273,11 @@ public class AjProblemReporter extends ProblemReporter {
 		super.disallowedTargetForAnnotation(annotation);
 	}
 	
+	public void overridesPackageDefaultMethod(MethodBinding localMethod, MethodBinding inheritedMethod) {
+	  if (new String(localMethod.selector).startsWith("ajc$")) return;
+	  super.overridesPackageDefaultMethod(localMethod,inheritedMethod);
+	}
+	
 	public void handle(
 		int problemId,
 		String[] problemArguments,

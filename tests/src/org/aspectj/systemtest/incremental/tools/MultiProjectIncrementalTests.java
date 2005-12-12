@@ -290,6 +290,20 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("PR92837");
 	}
 	
+	public void testPr119570() {
+		initialiseProject("PR119570");
+		build("PR119570");
+		List l = MyTaskListManager.getWarningMessages();
+		assertTrue("Should be no warnings, but got "+l,l.size()==0);
+	}
+	
+	public void testPr119570_2() {
+		initialiseProject("PR119570_2");
+		build("PR119570_2");
+		List l = MyTaskListManager.getWarningMessages();
+		assertTrue("Should be no warnings, but got "+l,l.size()==0);
+	}
+	
 	// If you fiddle with the compiler options - you must manually reset the options at the end of the test
 	public void testPr117209() {
 		try {

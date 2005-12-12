@@ -604,11 +604,13 @@ public class AjdeInteractionTestbed extends TestCase {
 		private boolean receivedNonIncrementalBuildMessage = false;
 		private boolean receivedBatchBuildMessage = false;
 		private List errorMessages = new ArrayList();
+		private List warningMessages = new ArrayList();
 		
 		public static void reset() {
 			_instance.receivedNonIncrementalBuildMessage=false;
 			_instance.receivedBatchBuildMessage=false;
 			_instance.errorMessages.clear();
+			_instance.warningMessages.clear();
 		}
 		
 //		public static boolean defaultedToBatch() {
@@ -625,6 +627,10 @@ public class AjdeInteractionTestbed extends TestCase {
 		
 		public static List/*IMessage*/ getErrorMessages() {
 			return _instance.errorMessages;
+		}
+		
+		public static List/*IMessage*/ getWarningMessages() {
+			return _instance.warningMessages;
 		}
 		
 		public static TaskListManager getInstance() { 
@@ -644,12 +650,15 @@ public class AjdeInteractionTestbed extends TestCase {
 			if (message.getKind()==IMessage.ERROR) {
 				errorMessages.add(message);
 			}
+			if (message.getKind()==IMessage.WARNING) {
+				warningMessages.add(message);
+			}
 			log("TaskListManager.addSourcelineTask("+message+")");
 		}
 
 		public boolean hasWarning() {
-			log("TaskListManager.hasWarning() [returning false]");
-			return false;
+			log("TaskListManager.hasWarning() [returning "+(warningMessages.size()==0)+"]");
+			return warningMessages.size()==0;
 		}
 
 		public void addProjectTask(String message, Kind kind) {
