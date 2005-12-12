@@ -595,14 +595,16 @@ public class BcelAdvice extends Advice {
 		}
 	}
 
-	public BcelVar[] getExposedStateAsBcelVars() {
+	public BcelVar[] getExposedStateAsBcelVars(boolean isAround) {
         // ATAJ aspect
-        // the closure instantiation has the same mapping as the extracted method from wich it is called
-        if (getConcreteAspect()!= null && getConcreteAspect().isAnnotationStyleAspect()) {
-            return BcelVar.NONE;
+        if (isAround) {
+            // the closure instantiation has the same mapping as the extracted method from wich it is called
+            if (getConcreteAspect()!= null && getConcreteAspect().isAnnotationStyleAspect()) {
+                return BcelVar.NONE;
+            }
         }
 
-		//System.out.println("vars: " + Arrays.asList(exposedState.vars));
+        //System.out.println("vars: " + Arrays.asList(exposedState.vars));
 		if (exposedState == null) return BcelVar.NONE;
 		int len = exposedState.vars.length;
 		BcelVar[] ret = new BcelVar[len];

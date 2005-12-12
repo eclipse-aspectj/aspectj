@@ -1,0 +1,7 @@
+<aspectj>
+    <weaver options="-1.5 -showWeaveInfo">
+    </weaver>
+    <aspects>
+        <aspect name="ataspectj.bugs.CflowBelowStackTest.TestAspect"/>
+    </aspects>
+</aspectj>

@@ -1894,7 +1894,7 @@ public class BcelShadow extends Shadow {
 	      						new Type[] { }, 
 	      						Constants.INVOKESTATIC));
 			} else {
-				BcelVar[] cflowStateVars = munger.getExposedStateAsBcelVars();
+				BcelVar[] cflowStateVars = munger.getExposedStateAsBcelVars(false);
 	
 				if (cflowStateVars.length == 0) {
 					// This should be getting managed by a counter - lets make sure.
@@ -1958,7 +1958,7 @@ public class BcelShadow extends Shadow {
 				exitInstructions.append(Utility.createGet(fact, cflowField));
 				if (munger.getKind() != AdviceKind.PerCflowEntry &&
 					munger.getKind() != AdviceKind.PerCflowBelowEntry &&
-					munger.getExposedStateAsBcelVars().length==0) {
+					munger.getExposedStateAsBcelVars(false).length==0) {
 					exitInstructions
 					.append(
 						fact
@@ -2342,7 +2342,7 @@ public class BcelShadow extends Shadow {
 		// we have on stack all the arguments for the ADVICE call.
 		// we have in frame somewhere all the arguments for the non-advice call.
 		
-		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();		
+		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 		IntMap proceedMap =  makeProceedArgumentMap(adviceVars);
 
 //		System.out.println(proceedMap + " for " + this);
@@ -2587,7 +2587,7 @@ public class BcelShadow extends Shadow {
         		    0,
         		    munger);
         			    
-    	BcelVar[] adviceVars = munger.getExposedStateAsBcelVars();
+    	BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
     	
     	String closureClassName = 
     		NameMangler.makeClosureClassName(

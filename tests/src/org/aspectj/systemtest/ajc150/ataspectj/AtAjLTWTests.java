@@ -200,6 +200,10 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("AppContainer");
     }
 
+    public void testCflowBelowStack() {
+        runTest("CflowBelowStack");
+    }
+
     private static class CountingFilenameFilter implements FilenameFilter {
     	
     	private int count;

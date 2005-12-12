@@ -277,4 +277,13 @@
             />
         <ant file="ajc-ant.xml" target="ltw.AppContainer" verbose="true"/>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="CflowBelowStack">
+        <compile
+            files="ataspectj/bugs/CflowBelowStackTest.java,ataspectj/TestHelper.java"
+            options="-1.5 -verbose "/>
+        <run class="ataspectj.bugs.CflowBelowStackTest" ltw="ataspectj/bugs/aop-cflowbelowstacktest.xml"/>
+    </ajc-test>
+
+
 </suite>
