@@ -215,7 +215,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
      * binding.
      */
     public UnresolvedType parameterize(Map typeBindings) {
-    	throw new UnsupportedOperationException("resolve this type first");
+    	throw new UnsupportedOperationException("unable to parameterize unresolved type: " + signature);
     }
     
     /**
