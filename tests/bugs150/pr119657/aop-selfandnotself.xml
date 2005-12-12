@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<aspectj>
+    <aspects>
+        <aspect name="accounts.recovery.Recovery"/>
+        <aspect name="accounts.recovery.RecoveryNotSelf"/>
+    </aspects>
+	<weaver options="-verbose -showWeaveInfo"/>
+</aspectj>
+        
