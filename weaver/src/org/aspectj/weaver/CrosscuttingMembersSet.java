@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.DeclareParents;
 
 /**
@@ -32,17 +33,17 @@ import org.aspectj.weaver.patterns.DeclareParents;
 public class CrosscuttingMembersSet {
 	private World world;
 	//FIXME AV - ? we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
-    private Map members = new HashMap();
+    private Map /* ResolvedType (the aspect) > CrosscuttingMembers */members = new HashMap();
 	
-	private List shadowMungers = null;
-	private List typeMungers = null;
-    private List lateTypeMungers = null;
-	private List declareSofts = null;
-	private List declareParents = null;
-	private List declareAnnotationOnTypes   = null;
+	private List shadowMungers             = null;
+	private List typeMungers               = null;
+    private List lateTypeMungers           = null;
+	private List declareSofts              = null;
+	private List declareParents            = null;
+	private List declareAnnotationOnTypes  = null;
 	private List declareAnnotationOnFields = null; 
 	private List declareAnnotationOnMethods= null; // includes ctors
-	private List declareDominates = null;
+	private List declareDominates          = null;
 	
 	public CrosscuttingMembersSet(World world) {
 		this.world = world;
@@ -59,35 +60,40 @@ public class CrosscuttingMembersSet {
 		if (xcut == null) {
 			members.put(aspectType, aspectType.collectCrosscuttingMembers());
 			clearCaches();
+			CflowPointcut.clearCaches(aspectType);
 			change = true;
 		} else {
 			if (xcut.replaceWith(aspectType.collectCrosscuttingMembers())) {
 				clearCaches();
+
+				CflowPointcut.clearCaches(aspectType);
 				change = true;
 			} else {
 				change = false;
 			}
 		}
-//		if (aspectType.isAbstract()) {
-//			// we might have sub-aspects that need to re-collect their crosscutting members from us
-//			boolean ancestorChange = addOrReplaceDescendantsOf(aspectType); 
-//			change = change || ancestorChange;
-//		}
+		if (aspectType.isAbstract()) {
+			// we might have sub-aspects that need to re-collect their crosscutting members from us
+			boolean ancestorChange = addOrReplaceDescendantsOf(aspectType); 
+			change = change || ancestorChange;
+		}
 		return change;
 	}
     
 	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType) {
+		//System.err.println("Looking at descendants of "+aspectType.getName());
 		Set knownAspects = members.keySet();
 		Set toBeReplaced = new HashSet();
 		for(Iterator it = knownAspects.iterator(); it.hasNext(); ) {
-			ResolvedType candidateAncestor = (ResolvedType)it.next();
-			if ((candidateAncestor != aspectType) && (aspectType.isAssignableFrom(candidateAncestor))) {
-				toBeReplaced.add(candidateAncestor);
+			ResolvedType candidateDescendant = (ResolvedType)it.next();
+			if ((candidateDescendant != aspectType) && (aspectType.isAssignableFrom(candidateDescendant))) {
+				toBeReplaced.add(candidateDescendant);
 			}
 		}
 		boolean change = false;
 		for (Iterator it = toBeReplaced.iterator(); it.hasNext(); ) {
-			boolean thisChange = addOrReplaceAspect((ResolvedType)it.next());
+			ResolvedType next = (ResolvedType)it.next();
+			boolean thisChange = addOrReplaceAspect(next);
 			change = change || thisChange;
 		}
 		return change;

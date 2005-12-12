@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,11 +151,13 @@ public class CflowPointcut extends Pointcut {
 	}
 
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-		throw new RuntimeException("unimplemented");
+		throw new RuntimeException("unimplemented - did concretization fail?");
 	}
 	
 	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		
+		// the pointcut is marked as CONCRETE after returning from this 
+		// call - so we can't skip concretization
 //		if (this.entry.state == Pointcut.SYMBOLIC) {
 //			// too early to concretize, return unchanged
 //			return this;
@@ -169,10 +173,12 @@ public class CflowPointcut extends Pointcut {
 		
 		//make this remap from formal positions to arrayIndices
 		IntMap entryBindings = new IntMap();
-		for (int i=0, len=freeVars.length; i < len; i++) {
+		if (freeVars!=null) {
+		  for (int i=0, len=freeVars.length; i < len; i++) {
 			int freeVar = freeVars[i];
 			//int formalIndex = bindings.get(freeVar);
 			entryBindings.put(freeVar, i);
+		  }
 		}
 		entryBindings.copyContext(bindings);
 		//System.out.println(this + " bindings: " + entryBindings);
@@ -198,8 +204,7 @@ public class CflowPointcut extends Pointcut {
 		List innerCflowEntries = new ArrayList(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 
-		  
-		Object field = getCflowfield(concreteEntry);
+		Object field = getCflowfield(concreteEntry,concreteAspect);
 		
 		// Four routes of interest through this code (did I hear someone say refactor??)
 		// 1) no state in the cflow - we can use a counter *and* we have seen this pointcut
@@ -211,7 +216,7 @@ public class CflowPointcut extends Pointcut {
 		// 4) state in the cflow - we need to use a stack, but this is the first time 
 		//    we have seen this pointcut, so build the infrastructure.
 		
-		if (freeVars.length == 0) { // No state, so don't use a stack, use a counter.
+		if (freeVars==null || freeVars.length == 0) { // No state, so don't use a stack, use a counter.
 		  ResolvedMember localCflowField = null;
 
 		  // Check if we have already got a counter for this cflow pointcut
@@ -229,9 +234,9 @@ public class CflowPointcut extends Pointcut {
 		  
 		  	// Create shadow munger to push stuff onto the stack
 		  	concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
-		    Advice.makeCflowEntry(world,concreteEntry,isBelow,localCflowField,freeVars.length,innerCflowEntries,inAspect));
+		    Advice.makeCflowEntry(world,concreteEntry,isBelow,localCflowField,freeVars==null?0:freeVars.length,innerCflowEntries,inAspect));
 	    
-			putCflowfield(concreteEntry,localCflowField); // Remember it
+			putCflowfield(concreteEntry,concreteAspect,localCflowField); // Remember it
 	      }
 		    
 		  Pointcut ret = new ConcreteCflowPointcut(localCflowField, null,true);
@@ -289,7 +294,7 @@ public class CflowPointcut extends Pointcut {
 			
 			  concreteAspect.crosscuttingMembers.addTypeMunger(
 				world.makeCflowStackFieldAdder(localCflowField));
-			  putCflowfield(concreteEntry,localCflowField);
+			  putCflowfield(concreteEntry,concreteAspect,localCflowField);
 		    }
 			Pointcut ret = new ConcreteCflowPointcut(localCflowField, slots,false);
 			ret.copyLocationFrom(this);
@@ -303,23 +308,57 @@ public class CflowPointcut extends Pointcut {
 		cflowBelowFields.clear();
 	}
 	
-	private Object getCflowfield(Pointcut pcutkey) {
-		if (isBelow) {
-			return cflowBelowFields.get(pcutkey);
-		} else {
-			return cflowFields.get(pcutkey);
-		}
+	private String getKey(Pointcut p,ResolvedType a) {
+	  StringBuffer sb = new StringBuffer();
+	  sb.append(a.getName());
+	  sb.append("::");
+	  sb.append(p.toString());
+	  return sb.toString();
 	}
 	
-	private void putCflowfield(Pointcut pcutkey,Object o) {
+	private Object getCflowfield(Pointcut pcutkey, ResolvedType concreteAspect) {
+		String key = getKey(pcutkey,concreteAspect);
+		Object o =null;
 		if (isBelow) {
-			cflowBelowFields.put(pcutkey,o);
+			o = cflowBelowFields.get(key);
 		} else {
-			cflowFields.put(pcutkey,o);
+			o = cflowFields.get(key);
+		}
+		//System.err.println("Retrieving for key "+key+" returning "+o);
+		return o;
+	}
+	
+	private void putCflowfield(Pointcut pcutkey,ResolvedType concreteAspect,Object o) {
+		String key = getKey(pcutkey,concreteAspect);
+		//System.err.println("Storing cflow field for key"+key);
+		if (isBelow) {
+			cflowBelowFields.put(key,o);
+		} else {
+			cflowFields.put(key,o);
 		}
 	}
 
     public Object accept(PatternNodeVisitor visitor, Object data) {
         return visitor.visit(this, data);
+	}
+
+	public static void clearCaches(ResolvedType aspectType) {
+		//System.err.println("Wiping entries starting "+aspectType.getName());
+		String key = aspectType.getName()+"::";
+		wipeKeys(key,cflowFields);
+		wipeKeys(key,cflowBelowFields);
+	}
+	
+	private static void wipeKeys(String keyPrefix,Hashtable ht) {
+		Enumeration keys = ht.keys();
+		List forRemoval = new ArrayList();
+		while (keys.hasMoreElements()) {
+			String s = (String)keys.nextElement();
+			if (s.startsWith(keyPrefix)) forRemoval.add(s);
+		}
+		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
+			String element = (String) iter.next();
+			ht.remove(element);
+		}
 	}
 }

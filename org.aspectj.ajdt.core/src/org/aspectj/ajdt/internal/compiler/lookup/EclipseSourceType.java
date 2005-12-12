@@ -451,10 +451,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		// but we don't need this level of detail, and working with real per clauses
 		// at this stage of compilation is not worth the trouble
         if (!isAnnotationStyleAspect()) {
-//        	   if(declaration instanceof AspectDeclaration) {
-//        		   PerClause pc = ((AspectDeclaration)declaration).perClause;
-//        		   if (pc != null) return pc;
-//        	   }
+        	   if(declaration instanceof AspectDeclaration) {
+        		   PerClause pc = ((AspectDeclaration)declaration).perClause;
+        		   if (pc != null) return pc;
+        	   }
             return new PerSingleton();
         } else {
             // for @Aspect, we do need the real kind though we don't need the real perClause

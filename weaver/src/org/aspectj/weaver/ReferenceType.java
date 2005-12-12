@@ -469,7 +469,14 @@ public class ReferenceType extends ResolvedType {
 		return this.typeVariables;
 	}
 	
-	public PerClause getPerClause() { return delegate.getPerClause(); }
+	public PerClause getPerClause() { 
+		PerClause pclause = delegate.getPerClause();
+		if (isParameterizedType()) { // could cache the result here...
+			Map parameterizationMap = getAjMemberParameterizationMap();
+			pclause = (PerClause)pclause.parameterizeWith(parameterizationMap);
+		}
+		return pclause;
+	}
 	
 	
 	protected Collection getDeclares() {
