@@ -465,15 +465,20 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 return false;
             }
         }
-        boolean fastAccept = false;//defaults to false if no fast include
-        for (int i = 0; i < m_includeStartsWith.size(); i++) {
-            fastAccept = fastClassName.startsWith((String)m_includeStartsWith.get(i));
-            if (fastAccept) {
-                break;
+        
+        /* 
+         * Bug 120363
+         * If we have an exclude pattern that cannot be matched using "starts with"
+         * then we cannot fast accept
+         */ 
+        if (m_excludeTypePattern.isEmpty()) {
+            boolean fastAccept = false;//defaults to false if no fast include
+            for (int i = 0; i < m_includeStartsWith.size(); i++) {
+                fastAccept = fastClassName.startsWith((String)m_includeStartsWith.get(i));
+                if (fastAccept) {
+                    break;
+                }
             }
-        }
-        if (fastAccept) {
-            return true;
         }
 
         // needs further analysis

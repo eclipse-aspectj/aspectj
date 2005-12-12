@@ -97,11 +97,18 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 
     public void testLTWDumpBeforeAndAfter() {
         runTest("LTW DumpTest before and after");
+        
+        // before
+        File f = new File("_ajdump/_before/com/foo/bar");
+        CountingFilenameFilter cff = new CountingFilenameFilter();
+        f.listFiles(cff);
+        assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
 
-        File f = new File("_ajdump/_before/ataspectj/Test$$EnhancerByCGLIB$$12345.class");
-        assertTrue(f.exists());
-        f = new File("_ajdump/ataspectj/Test$$EnhancerByCGLIB$$12345.class");
-        assertTrue(f.exists());
+        // after
+        f = new File("_ajdump/com/foo/bar");
+        cff = new CountingFilenameFilter();
+        f.listFiles(cff);
+        assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
         
         // tidy up...
         f = new File("_ajdump");
@@ -127,12 +134,10 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         // The working directory is different because this test must be forked
         File dir = new File("../tests/java5/ataspectj");
         File f = new File(dir,"_ajdump/_before");
-        System.out.println("AtAjLTWTests.testLTWDumpProxy() f=" + f.getAbsolutePath());
         CountingFilenameFilter cff = new CountingFilenameFilter();
         f.listFiles(cff);
         assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
         f = new File(dir,"_ajdump");
-        System.out.println("AtAjLTWTests.testLTWDumpProxy() f=" + f.getAbsolutePath());
         cff = new CountingFilenameFilter();
         f.listFiles(cff);
         assertEquals(1,cff.getCount());

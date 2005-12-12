@@ -92,12 +92,20 @@
                 options="-1.5"/>
         <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dump.xml"/>
     </ajc-test>
-
+    
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest before and after">
         <compile
-                files="ataspectj/Test$$EnhancerByCGLIB$$12345.java"
+                files="com/foo/bar/Test.java, com/foo/bar/Test$$EnhancerByCGLIB$$12345.java"
                 options="-1.5"/>
-        <run class="ataspectj.Test$$EnhancerByCGLIB$$12345" ltw="ataspectj/aop-dumpbeforeandafter.xml"/>
+        <run class="com.foo.bar.Test$$EnhancerByCGLIB$$12345" ltw="ataspectj/aop-dumpbeforeandafter.xml">
+        	<stdout>
+        		<line text="Test$$EnhancerByCGLIB$$12345.main()"/>
+        		<line text="Test.main()"/>
+            </stdout>
+        	<stderr>
+        		<line text="info weaving 'com.foo.bar.Test'"/>
+            </stderr>
+        </run>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest closure">

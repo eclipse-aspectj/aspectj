@@ -8,12 +8,13 @@
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
-package ataspectj;
+package com.foo.bar;
 
 public class Test$$EnhancerByCGLIB$$12345 {
 
 	public static void main(String[] args) {
 		System.out.println("Test$$EnhancerByCGLIB$$12345.main()");
+		Test.main(args);
 	}
 
 }

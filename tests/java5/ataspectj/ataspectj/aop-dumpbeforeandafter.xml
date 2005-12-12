@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <aspectj>
-    <weaver options="-verbose">
-        <dump within="ataspectj..*" beforeandafter="true"/> 
-    </weaver>
+    <weaver options="-XlazyTjp -verbose">
+        <dump within="com.foo.bar..*" beforeandafter="true"/> 
+        <include within="com.foo..*"/>
+        <exclude within="com.foo.bar..*CGLIB*"/>
+	</weaver>
 </aspectj>
