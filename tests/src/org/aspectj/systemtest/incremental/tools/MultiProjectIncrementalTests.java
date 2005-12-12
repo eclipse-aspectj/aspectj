@@ -307,9 +307,9 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// If you fiddle with the compiler options - you must manually reset the options at the end of the test
 	public void testPr117209() {
 		try {
-			initialiseProject("PR117209");
+			initialiseProject("pr117209");
 			configureNonStandardCompileOptions("-proceedOnError");
-			build("PR117209");
+			build("pr117209");
 			checkCompileWeaveCount(6,6);
 		} finally {
 			MyBuildOptionsAdapter.reset();
