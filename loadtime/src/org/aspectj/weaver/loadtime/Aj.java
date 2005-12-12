@@ -11,8 +11,6 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -127,34 +125,6 @@ public class Aj implements ClassPreProcessor {
         public ClassLoaderWeavingAdaptor getWeavingAdaptor(ClassLoader loader, IWeavingContext weavingContext) {
             initialize(loader, weavingContext);
             return weavingAdaptor;
-        }
-    }
-
-    static void defineClass(ClassLoader loader, String name, byte[] bytes) {
-        try {
-            //TODO av protection domain, and optimize
-            Method defineClass = ClassLoader.class.getDeclaredMethod(
-                    "defineClass", new Class[]{
-                        String.class, bytes.getClass(), int.class, int.class
-                    }
-            );
-            defineClass.setAccessible(true);
-            defineClass.invoke(
-                    loader, new Object[]{
-                        name,
-                        bytes,
-                        new Integer(0),
-                        new Integer(bytes.length)
-                    }
-            );
-        } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof LinkageError) {
-                ;//is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-            } else {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

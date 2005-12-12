@@ -167,6 +167,14 @@ public class BcelWeaver implements IWeaver {
 
     	//System.out.println("type: " + type + " for " + aspectName);
 		if (type.isAspect()) {
+			
+			// Bug 119657 ensure we use the unwoven aspect
+			WeaverStateInfo wsi = type.getWeaverState();		
+			if (wsi != null && wsi.isReweavable()) {
+			    BcelObjectType classType = getClassType(type.getName());
+				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
+			}
+			
             //TODO AV - happens to reach that a lot of time: for each type flagged reweavable X for each aspect in the weaverstate
             //=> mainly for nothing for LTW - pbly for something in incremental build...
 			xcutSet.addOrReplaceAspect(type);

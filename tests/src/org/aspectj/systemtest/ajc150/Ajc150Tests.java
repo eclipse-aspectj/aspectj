@@ -808,6 +808,34 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("no StringOutOfBoundsException with generic inner aspects");
   }
   
+  public void testIllegalAccessErrorWithAroundAdvice_pr119657() {
+	  runTest("IllegalAccessError with around advice on interface method call");
+  }
+  
+  public void testIllegalAccessErrorWithAroundAdviceNotSelf_pr119657() {
+	  runTest("IllegalAccessError with around advice on interface method call not self");
+  }
+  
+  public void testIllegalAccessErrorWithAroundAdviceNoWeaveLTW_pr119657() {
+	  runTest("IllegalAccessError with around advice on interface method call using -XnoWeave and LTW");
+  }
+  
+  public void testIllegalAccessErrorWithAroundAdviceLTW_pr119657() {
+	  runTest("IllegalAccessError with around advice on interface method call using LTW");
+  }
+  
+  public void testIllegalAccessErrorWithAroundAdviceNotSelfLTW_pr119657() {
+	  runTest("IllegalAccessError with around advice on interface method call not self using LTW");
+  }
+  
+  public void testIllegalAccessErrorWithAroundAdviceSelfAndNotSelfLTW_pr119657() {
+	  runTest("IllegalAccessError with around advice on interface method call self and not self using LTW");
+  }
+  
+  public void testIllegalAccessErrorWithAroundAdviceLTWNoInline_pr119657() {
+	  runTest("IllegalAccessError with around advice on interface method call using LTW and -XnoInline");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

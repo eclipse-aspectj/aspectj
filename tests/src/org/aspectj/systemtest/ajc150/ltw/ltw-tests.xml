@@ -132,6 +132,8 @@
                 <line text="Main.test2"/>
             </stdout>
         	<stderr>
+                <line text="info generating class 'ConcreteAspect'"/>
+                <line text="info weaving 'Main'"/>
                 <line text="AbstractSuperAspect.before_test1"/>
             </stderr>
         </run>

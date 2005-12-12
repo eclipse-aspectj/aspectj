@@ -15,6 +15,8 @@ package org.aspectj.weaver.loadtime;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -87,7 +89,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     throwable.printStackTrace();
                 }
 
-                Aj.defineClass(loader, name, bytes);// could be done lazily using the hook
+                defineClass(loader, name, bytes);// could be done lazily using the hook
             }
         };
 
@@ -606,4 +608,28 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     public void flushGeneratedClasses(){
     	generatedClasses = new HashMap();
     }
+
+	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
+		info("generating class '" + name + "'");
+		
+		try {
+			//TODO av protection domain, and optimize
+			Method defineClass = ClassLoader.class.getDeclaredMethod(
+					"defineClass", new Class[] { String.class,
+							bytes.getClass(), int.class, int.class });
+			defineClass.setAccessible(true);
+			defineClass.invoke(loader, new Object[] { name, bytes,
+					new Integer(0), new Integer(bytes.length) });
+		} catch (InvocationTargetException e) {
+			if (e.getTargetException() instanceof LinkageError) {
+				warn("define generated class failed",e.getTargetException());
+				//is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+				// TODO maw I don't think this is OK and
+			} else {
+				warn("define generated class failed",e.getTargetException());
+			}
+		} catch (Exception e) {
+			warn("define generated class failed",e);
+		}
+	}
 }

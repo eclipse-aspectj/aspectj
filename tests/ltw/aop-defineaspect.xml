@@ -4,5 +4,6 @@
 			<pointcut name="scope" expression="within(Main)"/>
         </concrete-aspect>
 	</aspects>
+	<weaver options="-verbose"/>
 </aspectj>
 	
