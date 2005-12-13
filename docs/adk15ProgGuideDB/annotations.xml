@@ -1180,12 +1180,11 @@
   	</para>
   	
   	<para>
-  	    The pointcut <literal>c1MethodCall</literal> matches both 
-  	    <literal>c1.aMethod()</literal> and <literal>c2.aMethod()</literal>. The call
-  	    to <literal>c2.aMethod</literal> is matched because the call join point has
-  	    multiple signatures (<literal>@SomeAnnotation C1.aMethod()</literal> and
-  	    <literal>C2.aMethod()</literal>), and the former of those signatures is
-  	    exactly matched by the pattern.
+  	    The pointcut <literal>annotatedMethodCall</literal> matches  
+  	    <literal>c1.aMethod()</literal> but not <literal>c2.aMethod()</literal>. The call
+  	    to <literal>c2.aMethod</literal> is not matched because join point matching for
+  	    modifiers (the visibility modifiers, annotations, and throws clause) is based on
+  	    the subject of the join point (the method actually being called).
   	</para>
   	
   </sect2>
