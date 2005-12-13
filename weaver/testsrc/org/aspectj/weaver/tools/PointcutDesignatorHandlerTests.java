@@ -26,7 +26,7 @@ public class PointcutDesignatorHandlerTests extends TestCase {
 			  .parsePointcutExpression("bean(service.*");
 			fail("should not be able to parse bean(service.*)");
 		} catch(IllegalArgumentException ex) {
-			assertTrue("contains bean",ex.getMessage().contains("bean"));
+			assertTrue("contains bean",ex.getMessage().indexOf("bean") != -1);
 		}
 	}
 	
