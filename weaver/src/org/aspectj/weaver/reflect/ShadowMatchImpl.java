@@ -27,8 +27,11 @@ import org.aspectj.weaver.ast.Not;
 import org.aspectj.weaver.ast.Or;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.internal.tools.MatchingContextBasedTest;
 import org.aspectj.weaver.patterns.ExposedState;
+import org.aspectj.weaver.tools.DefaultMatchingContext;
 import org.aspectj.weaver.tools.JoinPointMatch;
+import org.aspectj.weaver.tools.MatchingContext;
 import org.aspectj.weaver.tools.PointcutParameter;
 import org.aspectj.weaver.tools.ShadowMatch;
 
@@ -45,6 +48,7 @@ public class ShadowMatchImpl implements ShadowMatch {
 	private Member withinCode;
 	private Member subject;
 	private Class withinType;
+	private MatchingContext matchContext = new DefaultMatchingContext();
 	
 	public ShadowMatchImpl(FuzzyBoolean match, Test test, ExposedState state, PointcutParameter[] params) {
 		this.match = match;
@@ -71,11 +75,18 @@ public class ShadowMatchImpl implements ShadowMatch {
 
 	public JoinPointMatch matchesJoinPoint(Object thisObject, Object targetObject, Object[] args) {
 		if (neverMatches()) return JoinPointMatchImpl.NO_MATCH;
-		if (new RuntimeTestEvaluator(residualTest,thisObject,targetObject,args).matches()) {
+		if (new RuntimeTestEvaluator(residualTest,thisObject,targetObject,args,this.matchContext).matches()) {
 			return new JoinPointMatchImpl(getPointcutParameters(thisObject,targetObject,args));
 		} else {
 			return JoinPointMatchImpl.NO_MATCH;
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.tools.ShadowMatch#setMatchingContext(org.aspectj.weaver.tools.MatchingContext)
+	 */
+	public void setMatchingContext(MatchingContext aMatchContext) {
+		this.matchContext = aMatchContext;
 	}
 
 	private PointcutParameter[] getPointcutParameters(Object thisObject, Object targetObject, Object[] args) {
@@ -91,16 +102,19 @@ public class ShadowMatchImpl implements ShadowMatch {
 	private static class RuntimeTestEvaluator implements ITestVisitor {
 
 		private boolean matches = true;
-		private Test test;
-		private Object thisObject;
-		private Object targetObject;
-		private Object[] args;
+		private final Test test;
+		private final Object thisObject;
+		private final Object targetObject;
+		private final Object[] args;
+		private final MatchingContext matchContext;
 		
-		public RuntimeTestEvaluator(Test aTest,Object thisObject, Object targetObject, Object[] args) {
+		
+		public RuntimeTestEvaluator(Test aTest,Object thisObject, Object targetObject, Object[] args, MatchingContext context) {
 			this.test = aTest;
 			this.thisObject = thisObject;
 			this.targetObject = targetObject;
 			this.args = args;
+			this.matchContext = context;
 		}
 		
 		public boolean matches() {
@@ -110,11 +124,11 @@ public class ShadowMatchImpl implements ShadowMatch {
 		
 		public void visit(And e) {
 			boolean leftMatches = 
-				new RuntimeTestEvaluator(e.getLeft(),thisObject,targetObject,args).matches();
+				new RuntimeTestEvaluator(e.getLeft(),thisObject,targetObject,args,matchContext).matches();
 			if (!leftMatches) {
 				matches = false;
 			} else {
-				matches = new RuntimeTestEvaluator(e.getRight(),thisObject,targetObject,args).matches();
+				matches = new RuntimeTestEvaluator(e.getRight(),thisObject,targetObject,args,matchContext).matches();
 			}			
 		}
 
@@ -126,18 +140,22 @@ public class ShadowMatchImpl implements ShadowMatch {
 			ResolvedType actualType = world.resolve(value.getClass().getName());
 			matches = desiredType.isAssignableFrom(actualType);
 		}
+		
+		public void visit(MatchingContextBasedTest matchingContextTest) {
+			matches = matchingContextTest.matches(this.matchContext);
+		}
 
 		public void visit(Not not) {
-			matches = ! new RuntimeTestEvaluator(not.getBody(),thisObject,targetObject,args).matches();
+			matches = ! new RuntimeTestEvaluator(not.getBody(),thisObject,targetObject,args,matchContext).matches();
 		}
 
 		public void visit(Or or) {
 			boolean leftMatches = 
-				new RuntimeTestEvaluator(or.getLeft(),thisObject,targetObject,args).matches();
+				new RuntimeTestEvaluator(or.getLeft(),thisObject,targetObject,args,matchContext).matches();
 			if (leftMatches) {
 				matches = true;
 			} else {
-				matches = new RuntimeTestEvaluator(or.getRight(),thisObject,targetObject,args).matches();
+				matches = new RuntimeTestEvaluator(or.getRight(),thisObject,targetObject,args,matchContext).matches();
 			}
 		}
 

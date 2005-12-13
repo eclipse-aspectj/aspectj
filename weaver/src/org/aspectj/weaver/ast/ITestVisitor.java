@@ -13,6 +13,8 @@
 
 package org.aspectj.weaver.ast;
 
+import org.aspectj.weaver.internal.tools.MatchingContextBasedTest;
+
 
 public interface ITestVisitor {
 
@@ -24,5 +26,6 @@ public interface ITestVisitor {
 	void visit(Call call);
 	void visit(FieldGetCall fieldGetCall);
 	void visit(HasAnnotation hasAnnotation);
+	void visit(MatchingContextBasedTest matchingContextTest);
 
 }

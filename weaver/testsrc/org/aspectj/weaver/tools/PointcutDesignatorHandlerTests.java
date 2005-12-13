@@ -1,0 +1,142 @@
+/* *******************************************************************
+ * Copyright (c) 2005 Contributors.
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Eclipse Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://eclipse.org/legal/epl-v10.html 
+ *  
+ * Contributors: 
+ *   Adrian Colyer			Initial implementation
+ * ******************************************************************/
+package org.aspectj.weaver.tools;
+
+import junit.framework.TestCase;
+
+/**
+ * @author Adrian
+ *
+ */
+public class PointcutDesignatorHandlerTests extends TestCase {
+
+	public void testParseWithoutHandler() {
+		try {
+			PointcutParser
+			  .getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution()
+			  .parsePointcutExpression("bean(service.*");
+			fail("should not be able to parse bean(service.*)");
+		} catch(IllegalArgumentException ex) {
+			assertTrue("contains bean",ex.getMessage().contains("bean"));
+		}
+	}
+	
+	public void testParseWithHandler() {
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+		BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+		parser.registerPointcutDesignatorHandler(beanHandler);
+		parser.parsePointcutExpression("bean(service.*)");
+		assertEquals("service.*",beanHandler.getExpressionLastAskedToParse());
+	}
+	
+	public void testStaticMatch() throws Exception {
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+		BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+		parser.registerPointcutDesignatorHandler(beanHandler);
+		PointcutExpression pc = parser.parsePointcutExpression("bean(myBean)");
+		DefaultMatchingContext context = new DefaultMatchingContext();
+		context.addContextBinding("beanName","myBean");
+		pc.setMatchingContext(context);
+		ShadowMatch sm = pc.matchesMethodExecution(Object.class.getMethod("toString",new Class[0]));
+		assertTrue(sm.alwaysMatches());
+		context.addContextBinding("beanName", "notMyBean");
+		sm = pc.matchesMethodExecution(Object.class.getMethod("toString",new Class[0]));
+		assertTrue(sm.neverMatches());
+	}
+	
+	public void testDynamicMatch() throws Exception {
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+		BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+		beanHandler.simulateDynamicTest = true;
+		parser.registerPointcutDesignatorHandler(beanHandler);
+		PointcutExpression pc = parser.parsePointcutExpression("bean(myBean)");
+		ShadowMatch sm = pc.matchesMethodExecution(Object.class.getMethod("toString",new Class[0]));
+		DefaultMatchingContext context = new DefaultMatchingContext();
+		assertTrue(sm.maybeMatches());
+		assertFalse(sm.alwaysMatches());
+		assertFalse(sm.neverMatches());
+		context.addContextBinding("beanName","myBean");
+		sm.setMatchingContext(context);
+		assertTrue(sm.matchesJoinPoint(null, null, null).matches());
+		context.addContextBinding("beanName", "notMyBean");
+		assertFalse(sm.matchesJoinPoint(null, null, null).matches());
+	}
+	
+
+
+	private class BeanDesignatorHandler implements PointcutDesignatorHandler {
+
+		private String askedToParse;
+		public boolean simulateDynamicTest = false;
+		
+		public String getDesignatorName() {
+			return "bean";
+		}
+	
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.PointcutDesignatorHandler#parse(java.lang.String)
+		 */
+		public ContextBasedMatcher parse(String expression) {
+			this.askedToParse = expression;
+			return new BeanPointcutExpression(expression,this.simulateDynamicTest);
+		}
+		
+		public String getExpressionLastAskedToParse() {
+			return this.askedToParse;
+		}
+	}
+	
+	private class BeanPointcutExpression implements ContextBasedMatcher {
+
+		private final String beanNamePattern;
+		private final boolean simulateDynamicTest;
+
+		public BeanPointcutExpression(String beanNamePattern, boolean simulateDynamicTest) {
+			this.beanNamePattern = beanNamePattern;
+			this.simulateDynamicTest = simulateDynamicTest;			
+		}
+
+
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#couldMatchJoinPointsInType(java.lang.Class)
+		 */
+		public boolean couldMatchJoinPointsInType(Class aClass) {
+			return true;
+		}
+
+
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#mayNeedDynamicTest()
+		 */
+		public boolean mayNeedDynamicTest() {
+			return this.simulateDynamicTest;
+		}
+
+
+		public FuzzyBoolean matchesStatically(MatchingContext matchContext) {
+			if (this.simulateDynamicTest) return FuzzyBoolean.MAYBE;
+			if (this.beanNamePattern.equals(matchContext.getBinding("beanName"))) {
+				return FuzzyBoolean.YES;
+			} else {
+				return FuzzyBoolean.NO;
+			}
+		}
+
+
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#matchesDynamically(org.aspectj.weaver.tools.MatchingContext)
+		 */
+		public boolean matchesDynamically(MatchingContext matchContext) {
+			return this.beanNamePattern.equals(matchContext.getBinding("beanName"));
+		}
+	}		
+}

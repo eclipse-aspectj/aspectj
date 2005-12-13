@@ -25,6 +25,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.tools.MatchingContext;
 
 /**
  * @author colyer
@@ -32,9 +33,10 @@ import org.aspectj.weaver.ast.Var;
  */
 public class ReflectionShadow extends Shadow {
 
-	private World world;
-	private ResolvedType enclosingType;
-	private ResolvedMember enclosingMember;
+	private final World world;
+	private final ResolvedType enclosingType;
+	private final ResolvedMember enclosingMember;
+	private final MatchingContext matchContext;
 	private Var thisVar = null;
 	private Var targetVar = null;
 	private Var[] argsVars = null;
@@ -46,118 +48,119 @@ public class ReflectionShadow extends Shadow {
 	private Map annotationVar = new HashMap();
 	private AnnotationFinder annotationFinder;
 	
-	public static Shadow makeExecutionShadow(World inWorld, java.lang.reflect.Member forMethod) {
+	public static Shadow makeExecutionShadow(World inWorld, java.lang.reflect.Member forMethod, MatchingContext withContext) {
 		Kind kind = (forMethod instanceof Method) ? Shadow.MethodExecution : Shadow.ConstructorExecution;
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(forMethod, inWorld);
 		ResolvedType enclosingType = signature.getDeclaringType().resolve(inWorld);
-		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null);
+		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null,withContext);
 	}
 	
-	public static Shadow makeAdviceExecutionShadow(World inWorld, java.lang.reflect.Method forMethod) {
+	public static Shadow makeAdviceExecutionShadow(World inWorld, java.lang.reflect.Method forMethod, MatchingContext withContext) {
 		Kind kind = Shadow.AdviceExecution;
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedAdviceMember(forMethod, inWorld);
 		ResolvedType enclosingType = signature.getDeclaringType().resolve(inWorld);
-		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null);
+		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null,withContext);
 	}
 	
-	public static Shadow makeCallShadow(World inWorld, java.lang.reflect.Member aMember, java.lang.reflect.Member withinCode) {
-		Shadow enclosingShadow = makeExecutionShadow(inWorld,withinCode);
+	public static Shadow makeCallShadow(World inWorld, java.lang.reflect.Member aMember, java.lang.reflect.Member withinCode, MatchingContext withContext) {
+		Shadow enclosingShadow = makeExecutionShadow(inWorld,withinCode,withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(aMember, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(withinCode, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
 		Kind kind = aMember instanceof Method ? Shadow.MethodCall : Shadow.ConstructorCall;
-		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember);
+		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember,withContext);
 	}
 
-	public static Shadow makeCallShadow(World inWorld, java.lang.reflect.Member aMember, Class thisClass) {
-		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, thisClass);
+	public static Shadow makeCallShadow(World inWorld, java.lang.reflect.Member aMember, Class thisClass, MatchingContext withContext) {
+		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, thisClass,withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(aMember, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createStaticInitMember(thisClass, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
 		Kind kind = aMember instanceof Method ? Shadow.MethodCall : Shadow.ConstructorCall;
-		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember);
+		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember,withContext);
 	}
 
-	public static Shadow makeStaticInitializationShadow(World inWorld, Class forType) {
+	public static Shadow makeStaticInitializationShadow(World inWorld, Class forType, MatchingContext withContext) {
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createStaticInitMember(forType, inWorld);
 		ResolvedType enclosingType = signature.getDeclaringType().resolve(inWorld);
 		Kind kind = Shadow.StaticInitialization;
-		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null);
+		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null,withContext);
 	}
 	
-	public static Shadow makePreInitializationShadow(World inWorld, Constructor forConstructor) {
+	public static Shadow makePreInitializationShadow(World inWorld, Constructor forConstructor, MatchingContext withContext) {
 		Kind kind =  Shadow.PreInitialization;
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(forConstructor, inWorld);
 		ResolvedType enclosingType = signature.getDeclaringType().resolve(inWorld);
-		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null);
+		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null,withContext);
 	}
 	
-	public static Shadow makeInitializationShadow(World inWorld, Constructor forConstructor) {
+	public static Shadow makeInitializationShadow(World inWorld, Constructor forConstructor, MatchingContext withContext) {
 		Kind kind =  Shadow.Initialization;
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(forConstructor, inWorld);
 		ResolvedType enclosingType = signature.getDeclaringType().resolve(inWorld);
-		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null);
+		return new ReflectionShadow(inWorld,kind,signature,null,enclosingType,null,withContext);
 	}
 	
-	public static Shadow makeHandlerShadow(World inWorld, Class exceptionType, Class withinType) {
+	public static Shadow makeHandlerShadow(World inWorld, Class exceptionType, Class withinType, MatchingContext withContext) {
 		Kind kind = Shadow.ExceptionHandler;
-		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, withinType);
+		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, withinType,withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createHandlerMember(exceptionType, withinType, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createStaticInitMember(withinType, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
-		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember);	
+		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember,withContext);	
 	}
 	
-	public static Shadow makeHandlerShadow(World inWorld, Class exceptionType, java.lang.reflect.Member withinCode) {
+	public static Shadow makeHandlerShadow(World inWorld, Class exceptionType, java.lang.reflect.Member withinCode, MatchingContext withContext) {
 		Kind kind = Shadow.ExceptionHandler;
-		Shadow enclosingShadow = makeExecutionShadow(inWorld, withinCode);
+		Shadow enclosingShadow = makeExecutionShadow(inWorld, withinCode,withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createHandlerMember(exceptionType, withinCode.getDeclaringClass(), inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(withinCode, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
-		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember);	
+		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember,withContext);	
 	}
 	
-	public static Shadow makeFieldGetShadow(World inWorld, Field forField, Class callerType) {
-		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, callerType);
+	public static Shadow makeFieldGetShadow(World inWorld, Field forField, Class callerType, MatchingContext withContext) {
+		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, callerType,withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedField(forField, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createStaticInitMember(callerType, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
 		Kind kind = Shadow.FieldGet;
-		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember);
+		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember,withContext);
 	}
 	
-	public static Shadow makeFieldGetShadow(World inWorld, Field forField, java.lang.reflect.Member inMember) {
-		Shadow enclosingShadow = makeExecutionShadow(inWorld,inMember);
+	public static Shadow makeFieldGetShadow(World inWorld, Field forField, java.lang.reflect.Member inMember, MatchingContext withContext) {
+		Shadow enclosingShadow = makeExecutionShadow(inWorld,inMember,withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedField(forField, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(inMember, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
 		Kind kind = Shadow.FieldGet;
-		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember);
+		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember,withContext);
 	}
 
-	public static Shadow makeFieldSetShadow(World inWorld, Field forField, Class callerType) {
-		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, callerType);
+	public static Shadow makeFieldSetShadow(World inWorld, Field forField, Class callerType, MatchingContext withContext) {
+		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, callerType, withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedField(forField, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createStaticInitMember(callerType, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
 		Kind kind = Shadow.FieldSet;
-		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember);
+		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember,withContext);
 	}
 
-	public static Shadow makeFieldSetShadow(World inWorld, Field forField, java.lang.reflect.Member inMember) {
-		Shadow enclosingShadow = makeExecutionShadow(inWorld,inMember);
+	public static Shadow makeFieldSetShadow(World inWorld, Field forField, java.lang.reflect.Member inMember, MatchingContext withContext) {
+		Shadow enclosingShadow = makeExecutionShadow(inWorld,inMember,withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedField(forField, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(inMember, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
 		Kind kind = Shadow.FieldSet;
-		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember);
+		return new ReflectionShadow(inWorld,kind,signature,enclosingShadow,enclosingType,enclosingMember,withContext);
 	}
 
-	public ReflectionShadow(World world, Kind kind, Member signature, Shadow enclosingShadow, ResolvedType enclosingType, ResolvedMember enclosingMember) {
+	public ReflectionShadow(World world, Kind kind, Member signature, Shadow enclosingShadow, ResolvedType enclosingType, ResolvedMember enclosingMember, MatchingContext withContext) {
 		super(kind,signature,enclosingShadow);
 		this.world = world;
 		this.enclosingType = enclosingType;
 		this.enclosingMember = enclosingMember;
+		this.matchContext = withContext;
 		if (world instanceof ReflectionWorld) {
 			this.annotationFinder = ((ReflectionWorld)world).getAnnotationFinder();
 		}
@@ -336,4 +339,7 @@ public class ReflectionShadow extends Shadow {
 		return null;
 	}
 
+	public MatchingContext getMatchingContext() {
+		return this.matchContext;
+	}
 }

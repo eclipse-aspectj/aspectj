@@ -175,6 +175,7 @@ public abstract class Pointcut extends PatternNode {
 	public static final byte NONE = 20; // DO NOT CHANGE OR REORDER THIS SEQUENCE, THIS VALUE CAN BE PUT OUT BY ASPECTJ1.2.1
 
 	public static final byte ATARGS = 21;
+	public static final byte USER_EXTENSION = 22;
 
 	public byte getPointcutKind() { return pointcutKind; }
 

@@ -55,9 +55,10 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
  */
 public class PointcutParser {
     
-	private World world;
+	private ReflectionWorld world;
 	private ClassLoader classLoader;
     private Set supportedPrimitives; 
+    private Set pointcutDesignators = new HashSet();
     
     /**
      * @return a Set containing every PointcutPrimitive except
@@ -246,6 +247,23 @@ public class PointcutParser {
     	getWorld().getLint().setFromProperties(properties);
     }
     
+    /**
+     * Register a new pointcut designator handler with this parser.
+     * This provides an extension mechansim for the integration of
+     * domain-specific pointcut designators with the AspectJ
+     * pointcut language.
+     * @param designatorHandler
+     */
+    public void registerPointcutDesignatorHandler(PointcutDesignatorHandler designatorHandler) {
+    	this.pointcutDesignators.add(designatorHandler);
+    }
+    
+    /**
+     * Create a pointcut parameter of the given name and type.
+     * @param name
+     * @param type
+     * @return
+     */
     public PointcutParameter createPointcutParameter(String name, Class type) {
     	return new PointcutParameterImpl(name,type);
     }
@@ -283,7 +301,9 @@ public class PointcutParser {
     throws UnsupportedPointcutPrimitiveException, IllegalArgumentException {
     	 PointcutExpressionImpl pcExpr = null;
          try {
-             Pointcut pc = new PatternParser(expression).parsePointcut();
+        	 PatternParser parser = new PatternParser(expression);
+        	 parser.setPointcutDesignatorHandlers(pointcutDesignators, world);
+             Pointcut pc = parser.parsePointcut();
              validateAgainstSupportedPrimitives(pc,expression);
              IScope resolutionScope = buildResolutionScope((inScope == null ? Object.class : inScope),formalParameters);
              pc = pc.resolve(resolutionScope);
@@ -450,6 +470,9 @@ public class PointcutParser {
         	    if (!supportedPrimitives.contains(PointcutPrimitive.REFERENCE))
         	        throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.REFERENCE);
         	    break;        		
+        	case Pointcut.USER_EXTENSION:
+        		// always ok...
+        		break;
         	case Pointcut.NONE:  // deliberate fall-through
         	default:
         	    throw new IllegalArgumentException("Unknown pointcut kind: " + pc.getPointcutKind());

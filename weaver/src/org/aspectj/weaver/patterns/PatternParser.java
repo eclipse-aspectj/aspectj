@@ -16,12 +16,20 @@
 package org.aspectj.weaver.patterns;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.internal.tools.PointcutDesignatorHandlerBasedPointcut;
+import org.aspectj.weaver.reflect.ReflectionWorld;
+import org.aspectj.weaver.tools.ContextBasedMatcher;
+import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 
 //XXX doesn't handle errors for extra tokens very well (sometimes ignores)
 public class PatternParser {
@@ -31,6 +39,10 @@ public class PatternParser {
 	
 	/** not thread-safe, but this class is not intended to be... */
 	private boolean allowHasTypePatterns = false;
+	
+	/** extension handlers used in weaver tools API only */
+	private Set pointcutDesignatorHandlers = Collections.EMPTY_SET;
+	private ReflectionWorld world;
 
 	/**
 	 * Constructor for PatternParser.
@@ -39,6 +51,12 @@ public class PatternParser {
 		super();
 		this.tokenSource = tokenSource;
 		this.sourceContext = tokenSource.getSourceContext();
+	}
+	
+	/** only used by weaver tools API */
+	public void setPointcutDesignatorHandlers(Set handlers, ReflectionWorld world) {
+		this.pointcutDesignatorHandlers = handlers;
+		this.world = world;
 	}
 
 	public PerClause maybeParsePerClause() {
@@ -354,10 +372,23 @@ public class PatternParser {
 				// TODO - Alex has some token stuff going on here to get a readable name in place of ""...
 				p = new IfPointcut("");
 			}
-		}
+		} 
 		else {
-			tokenSource.setIndex(start);
-			p = parseReferencePointcut();
+			boolean matchedByExtensionDesignator = false;
+			// see if a registered handler wants to parse it, otherwise
+			// treat as a reference pointcut
+			for (Iterator iter = this.pointcutDesignatorHandlers.iterator(); iter.hasNext();) {
+				PointcutDesignatorHandler pcd = (PointcutDesignatorHandler) iter.next();
+				if (pcd.getDesignatorName().equals(kind)) {
+					p = parseDesignatorPointcut(pcd);
+					matchedByExtensionDesignator = true;
+				}
+				
+			}
+			if (!matchedByExtensionDesignator) {
+				tokenSource.setIndex(start);
+				p = parseReferencePointcut();
+			}
 		}
 		return p;
 	}
@@ -518,6 +549,27 @@ public class PatternParser {
 		
 		TypePatternList arguments = parseArgumentsPattern();
 		return new ReferencePointcut(onType, name.maybeGetSimpleName(), arguments);
+	}
+	
+	private Pointcut parseDesignatorPointcut(PointcutDesignatorHandler pcdHandler) {
+		eat("(");
+		int parenCount = 1;
+		StringBuffer pointcutBody = new StringBuffer();
+		while (parenCount > 0) {
+			if (maybeEat("(")) {
+				parenCount++;
+				pointcutBody.append("(");
+			} else if (maybeEat(")")) {
+				parenCount--;
+				if (parenCount > 0) {
+					pointcutBody.append(")");
+				}
+			} else {
+				pointcutBody.append(nextToken().getString());
+			}
+		}
+		ContextBasedMatcher pcExpr = pcdHandler.parse(pointcutBody.toString());
+		return new PointcutDesignatorHandlerBasedPointcut(pcExpr,world);
 	}
 
 

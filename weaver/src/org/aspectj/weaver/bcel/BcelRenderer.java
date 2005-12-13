@@ -42,6 +42,7 @@ import org.aspectj.weaver.ast.Or;
 import org.aspectj.weaver.ast.StringConstExpr;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.internal.tools.MatchingContextBasedTest;
 
 // we generate right to left, btw.
 public class BcelRenderer implements ITestVisitor, IExprVisitor {
@@ -200,6 +201,13 @@ public class BcelRenderer implements ITestVisitor, IExprVisitor {
         il.append(createJumpBasedOnBooleanOnStack());
         instructions.insert(il);
         hasAnnotation.getVar().accept(this);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.aspectj.weaver.ast.ITestVisitor#visit(org.aspectj.weaver.internal.tools.MatchingContextBasedTest)
+     */
+    public void visit(MatchingContextBasedTest matchingContextTest) {
+    	throw new UnsupportedOperationException("matching context extension not supported in bytecode weaving");
     }
     
 	private InstructionList createJumpBasedOnBooleanOnStack() {

@@ -23,6 +23,13 @@ import java.lang.reflect.Method;
 public interface PointcutExpression {
 
 	/**
+	 * Set the matching context to be used for
+	 * subsequent calls to match.
+	 * @see MatchingContext
+	 */
+	void setMatchingContext(MatchingContext aMatchContext);
+	
+	/**
 	 * Determine whether or not this pointcut could ever match a join point in the given class.
 	 * @param aClass  the candidate class
 	 * @return true iff this pointcut <i>may</i> match a join point within(aClass), and false otherwise 

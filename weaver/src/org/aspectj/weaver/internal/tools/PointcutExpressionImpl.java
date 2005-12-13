@@ -32,6 +32,8 @@ import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
 import org.aspectj.weaver.reflect.ReflectionShadow;
 import org.aspectj.weaver.reflect.ShadowMatchImpl;
+import org.aspectj.weaver.tools.DefaultMatchingContext;
+import org.aspectj.weaver.tools.MatchingContext;
 import org.aspectj.weaver.tools.PointcutExpression;
 import org.aspectj.weaver.tools.PointcutParameter;
 import org.aspectj.weaver.tools.ShadowMatch;
@@ -45,6 +47,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	private Pointcut pointcut;
 	private String expression;
 	private PointcutParameter[] parameters;
+	private MatchingContext matchContext = new DefaultMatchingContext();
 	
 	public PointcutExpressionImpl(Pointcut pointcut, String expression, PointcutParameter[] params, World inWorld) {
 		this.pointcut = pointcut;
@@ -56,6 +59,13 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	
 	public Pointcut getUnderlyingPointcut() {
 		return this.pointcut;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.tools.PointcutExpression#setMatchingContext(org.aspectj.weaver.tools.MatchingContext)
+	 */
+	public void setMatchingContext(MatchingContext aMatchContext) {
+		this.matchContext = aMatchContext;
 	}
 	
 	public boolean couldMatchJoinPointsInType(Class aClass) {
@@ -81,7 +91,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	private ShadowMatch matchesExecution(Member aMember) {
-		Shadow s = ReflectionShadow.makeExecutionShadow(world, aMember);
+		Shadow s = ReflectionShadow.makeExecutionShadow(world, aMember,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aMember);
 		sm.setWithinCode(null);
@@ -90,7 +100,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesStaticInitialization(Class aClass) {
-		Shadow s = ReflectionShadow.makeStaticInitializationShadow(world, aClass);
+		Shadow s = ReflectionShadow.makeStaticInitializationShadow(world, aClass,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(null);
 		sm.setWithinCode(null);
@@ -99,7 +109,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}	
 	
 	public ShadowMatch matchesAdviceExecution(Method aMethod) {
-		Shadow s = ReflectionShadow.makeAdviceExecutionShadow(world, aMethod);
+		Shadow s = ReflectionShadow.makeAdviceExecutionShadow(world, aMethod,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aMethod);
 		sm.setWithinCode(null);
@@ -108,7 +118,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesInitialization(Constructor aConstructor) {
-		Shadow s = ReflectionShadow.makeInitializationShadow(world, aConstructor);
+		Shadow s = ReflectionShadow.makeInitializationShadow(world, aConstructor,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aConstructor);
 		sm.setWithinCode(null);
@@ -117,7 +127,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesPreInitialization(Constructor aConstructor) {
-		Shadow s = ReflectionShadow.makePreInitializationShadow(world, aConstructor);
+		Shadow s = ReflectionShadow.makePreInitializationShadow(world, aConstructor,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aConstructor);
 		sm.setWithinCode(null);
@@ -126,7 +136,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesMethodCall(Method aMethod, Member withinCode) {
-		Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, withinCode);
+		Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, withinCode,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aMethod);
 		sm.setWithinCode(withinCode);
@@ -135,7 +145,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesMethodCall(Method aMethod, Class callerType) {
-		Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, callerType);
+		Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, callerType,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aMethod);
 		sm.setWithinCode(null);
@@ -144,7 +154,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesConstructorCall(Constructor aConstructor, Class callerType) {
-		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, callerType);
+		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, callerType,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aConstructor);
 		sm.setWithinCode(null);
@@ -153,7 +163,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesConstructorCall(Constructor aConstructor, Member withinCode) {
-		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor,withinCode);
+		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor,withinCode,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aConstructor);
 		sm.setWithinCode(withinCode);
@@ -162,7 +172,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 
 	public ShadowMatch matchesHandler(Class exceptionType, Class handlingType) {
-		Shadow s = ReflectionShadow.makeHandlerShadow(world,exceptionType,handlingType);
+		Shadow s = ReflectionShadow.makeHandlerShadow(world,exceptionType,handlingType,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(null);
 		sm.setWithinCode(null);
@@ -171,7 +181,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesHandler(Class exceptionType, Member withinCode) {
-		Shadow s = ReflectionShadow.makeHandlerShadow(world,exceptionType,withinCode);
+		Shadow s = ReflectionShadow.makeHandlerShadow(world,exceptionType,withinCode,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(null);
 		sm.setWithinCode(withinCode);
@@ -180,7 +190,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesFieldGet(Field aField, Class withinType) {
-		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinType);
+		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinType,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aField);
 		sm.setWithinCode(null);
@@ -189,7 +199,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesFieldGet(Field aField, Member withinCode) {
-		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinCode);
+		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinCode,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aField);
 		sm.setWithinCode(withinCode);
@@ -198,7 +208,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesFieldSet(Field aField, Class withinType) {
-		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinType);
+		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinType,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aField);
 		sm.setWithinCode(null);
@@ -207,7 +217,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public ShadowMatch matchesFieldSet(Field aField, Member withinCode) {
-		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinCode);
+		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinCode,this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aField);
 		sm.setWithinCode(withinCode);
@@ -222,7 +232,9 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		if (match.maybeTrue()) {
 			residueTest = pointcut.findResidue(forShadow, state);
 		}
-		return new ShadowMatchImpl(match,residueTest,state,parameters);				
+		ShadowMatchImpl sm = new ShadowMatchImpl(match,residueTest,state,parameters);
+		sm.setMatchingContext(this.matchContext);
+		return sm;
 	}
 
 	/* (non-Javadoc)

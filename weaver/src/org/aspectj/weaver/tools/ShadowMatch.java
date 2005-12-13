@@ -48,4 +48,11 @@ public interface ShadowMatch {
 	 * @return
 	 */
 	JoinPointMatch matchesJoinPoint(Object thisObject, Object targetObject, Object[] args);
+	
+	/**
+	 * Set a matching context to be used when matching
+	 * join points.
+	 * @see MatchingContext
+	 */
+	void setMatchingContext(MatchingContext aMatchContext);
 }

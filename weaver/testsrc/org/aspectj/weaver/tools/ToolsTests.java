@@ -20,6 +20,7 @@ public class ToolsTests {
 		suite.addTestSuite(PointcutParserTest.class);
 		suite.addTestSuite(PointcutExpressionTest.class);
 		suite.addTestSuite(TypePatternMatcherTest.class);
+		suite.addTestSuite(PointcutDesignatorHandlerTests.class);
 		//$JUnit-END$
 		return suite;
 	}
