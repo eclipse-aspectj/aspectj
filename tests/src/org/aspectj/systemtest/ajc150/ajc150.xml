@@ -78,6 +78,10 @@
      <compile files="ParameterizedDP.java,NodeImpl.java,INode.java" options="-1.5"/>
      <run class="bugs.ParameterizedDP"/>
     </ajc-test>  
+    
+    <ajc-test dir="bugs150/pr120521" pr="120521" title="named pointcut not resolved in pertarget pointcut">
+     <compile files="PerTargetSubaspectError.java"/>
+    </ajc-test>  
 
     <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 1">
      <compile files="TestLib.java,ThreadAspectLib.java" options="-1.5"/>
