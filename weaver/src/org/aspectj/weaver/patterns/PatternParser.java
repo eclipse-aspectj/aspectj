@@ -25,7 +25,6 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.World;
 import org.aspectj.weaver.internal.tools.PointcutDesignatorHandlerBasedPointcut;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 import org.aspectj.weaver.tools.ContextBasedMatcher;
