@@ -305,24 +305,30 @@ public class SignaturePattern extends PatternNode {
 			return FuzzyBoolean.MAYBE;
 		}
 			
+		// modifiers match on the *subject*
 		if (!modifiers.matches(aMember.getModifiers())) {
-			if (aMember.isPrivate()) return FuzzyBoolean.NO;
-			else return FuzzyBoolean.MAYBE;
+			return FuzzyBoolean.NO;
+//			if (aMember.isPrivate()) return FuzzyBoolean.NO;
+//			else return FuzzyBoolean.MAYBE;
 		}
 		
-		FuzzyBoolean matchesIgnoringAnnotations = FuzzyBoolean.YES;
+		// annotations match on the *subject* 
+		if (!matchesAnnotations(aMember,inAWorld).alwaysTrue()) {
+			return FuzzyBoolean.NO;
+		}
+		
 		if (kind == Member.STATIC_INITIALIZATION) {
-			matchesIgnoringAnnotations = matchesExactlyStaticInitialization(aMember, inAWorld);
+			return matchesExactlyStaticInitialization(aMember, inAWorld);
 		} else if (kind == Member.FIELD) {
-			matchesIgnoringAnnotations = matchesExactlyField(aMember,inAWorld);
+			return matchesExactlyField(aMember,inAWorld);
 		} else if (kind == Member.METHOD) {
-			matchesIgnoringAnnotations = matchesExactlyMethod(aMember,inAWorld);
+			return matchesExactlyMethod(aMember,inAWorld);
 		} else if (kind == Member.CONSTRUCTOR) {
-			matchesIgnoringAnnotations = matchesExactlyConstructor(aMember, inAWorld);
+			return matchesExactlyConstructor(aMember, inAWorld);
+		} else {
+			return FuzzyBoolean.YES;
 		}
-		if (!matchesIgnoringAnnotations.alwaysTrue()) return matchesIgnoringAnnotations;
 		
-		return matchesAnnotations(aMember, inAWorld);
 	}
 	
 	/**
@@ -357,6 +363,9 @@ public class SignaturePattern extends PatternNode {
 	 */
 	private FuzzyBoolean matchesExactlyMethod(JoinPointSignature aMethod, World world) {
 		if (!name.matches(aMethod.getName())) return FuzzyBoolean.NO;
+		// Check the throws pattern
+		if (!throwsPattern.matches(aMethod.getExceptions(), world)) return FuzzyBoolean.NO;
+		
 		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) return FuzzyBoolean.MAYBE;
 		if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
 			// looking bad, but there might be parameterization to consider...
@@ -378,9 +387,6 @@ public class SignaturePattern extends PatternNode {
 		
 		// check that varargs specifications match
 		if (!matchesVarArgs(aMethod,world)) return FuzzyBoolean.MAYBE;
-		
-		// Check the throws pattern
-		if (!throwsPattern.matches(aMethod.getExceptions(), world)) return FuzzyBoolean.MAYBE;
 		
 		// passed all the guards..
 		return FuzzyBoolean.YES;
@@ -477,7 +483,7 @@ public class SignaturePattern extends PatternNode {
 	  if (annotationPattern.matches(member).alwaysTrue()) {
 		  return FuzzyBoolean.YES;
 	  } else {
-		  return FuzzyBoolean.MAYBE;  // need to look at ancestor members too...
+		  return FuzzyBoolean.NO;  // do NOT look at ancestor members...
 	  }
 	}
 	

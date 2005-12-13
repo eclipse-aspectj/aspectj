@@ -23,7 +23,7 @@
 	  pointcut annotatedC2MethodCall() : 
 	    call(@SomeAnnotation * C2.aMethod());  // matches nothing
 	
-	  pointcut annotatedMethodCall() :   // CW L16, L17
+	  pointcut annotatedMethodCall() :   // CW L16
 	    call(@SomeAnnotation * aMethod());
 	  
 	  declare warning : annotatedC2MethodCall() : "annotatedC2MethodCall()";

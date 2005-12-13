@@ -847,6 +847,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("reflection on @DeclareParents");
   }
   
+  public void testModifierOverrides() {
+	  runTest("modifier overrides");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {

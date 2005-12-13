@@ -38,8 +38,8 @@ public class SignaturePatternTestCase extends TestCase {
 		Member mOnDerived = MemberImpl.methodFromString("void fluffy.Derived.m()");
 		
 		checkMatch(makeMethodPat("* fluffy.Base.*(..) throws java.lang.CloneNotSupportedException"),
-					new Member[] { mOnBase, mOnDerived },
-					new Member[] { });
+					new Member[] { mOnBase },
+					new Member[] { mOnDerived });
 					
 		checkMatch(makeMethodPat("* fluffy.Derived.*(..) throws java.lang.CloneNotSupportedException"),
 					new Member[] { },
@@ -53,7 +53,7 @@ public class SignaturePatternTestCase extends TestCase {
 		
 		checkMatch(makeMethodPat("* *(..)"), M, NONE);
 		checkMatch(makeMethodPat("* *(..) throws !*"), NO_EXCEPTIONS, M);
-		checkMatch(makeMethodPat("* *(..) throws *"), BOTH, NONE);
+		checkMatch(makeMethodPat("* *(..) throws *"), M, NO_EXCEPTIONS);
 		checkMatch(makeMethodPat("* *(..) throws *, !*"), NONE, BOTH);
 		
 		checkMatch(makeMethodPat("* *(..) throws (!*)"), NONE, BOTH);		

@@ -6,6 +6,25 @@
         <compile files="pr118698.aj"/>
         <run class="pr118698"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" title="modifier overrides">
+       <compile files="pr119749.aj" options="-1.5">
+        	<message kind="warning" line="26" text="C E.*()"/>
+        	<message kind="warning" line="25" text="D E.*()"/>
+        	<message kind="warning" line="17" text="aa @Me void m()"/>
+        	<message kind="warning" line="17" text="aa void m() throws Exception"/>
+        	<message kind="warning" line="17" text="aa * *(..) throws Exception"/>
+        	<message kind="warning" line="37" text="aa call void m() throws Exception"/>
+        	<message kind="warning" line="38" text="aa call void m() throws Exception"/>
+        </compile>
+        <run class="pr119749">
+            <stdout>
+             <line text="execution(void pr119749.C.m()): execMe[@pr119749$Me()]"/>
+             <line text="execution(void pr119749.C.m()): execEx"/>
+            </stdout>
+        </run>
+    </ajc-test>
+    
 
     <ajc-test dir="bugs150/pr112476/case1" title="binary weaving decp broken">
         <compile files="lib/A.java,lib/B.java,lib/C.java" outjar="library.jar" options="-1.5"/>
@@ -2683,7 +2702,7 @@
      <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: @inherited">
         <compile files="AnnotationInheritance.aj" options="-1.5">
             <message kind="warning" line="16" text="annotatedMethodCall()"/>
-            <message kind="warning" line="17" text="annotatedMethodCall()"/>
+            <!-- <message kind="warning" line="17" text="annotatedMethodCall()"/> -->
         </compile>
     </ajc-test>
     
