@@ -1251,7 +1251,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     	if (isArray()) return null;
 		String name = getName();
 		int lastDollar = name.lastIndexOf('$');
-		while (lastDollar != -1) {
+		while (lastDollar >0) { // allow for classes starting '$' (pr120474)
 			ResolvedType ret = world.resolve(UnresolvedType.forName(name.substring(0, lastDollar)), true);
 			if (!ResolvedType.isMissing(ret)) return ret;
 			lastDollar = name.lastIndexOf('$', lastDollar-1);

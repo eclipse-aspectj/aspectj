@@ -41,7 +41,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
-
+  public void testDollarClasses_pr120474() { runTest("Dollar classes");}
   public void testGenericPTW_pr119539_1() { runTest("generic pertypewithin aspect - 1");}
   public void testGenericPTW_pr119539_2() { runTest("generic pertypewithin aspect - 2");}
   public void testGenericPTW_pr119539_3() { runTest("generic pertypewithin aspect - 3");}
