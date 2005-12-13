@@ -104,6 +104,7 @@
                 <line text="Main.test2"/>
             </stdout>
         	<stderr>
+				<line text="info AspectJ Weaver Version"/>
 				<line text="info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
 				<line text="info no configuration found. Disabling weaver for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
             </stderr>

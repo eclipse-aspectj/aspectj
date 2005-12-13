@@ -35,6 +35,7 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.MessageWriter;
+import org.aspectj.bridge.Version;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
@@ -163,6 +164,7 @@ public class WeavingAdaptor {
 		messageHandler = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
 		if (verbose) messageHandler.dontIgnore(IMessage.INFO);
 		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) messageHandler.dontIgnore(IMessage.WEAVEINFO);
+		info("AspectJ Weaver Version " + Version.text + " built on " + Version.time_text);  //$NON-NLS-1$
 	}
 	
 	/**
