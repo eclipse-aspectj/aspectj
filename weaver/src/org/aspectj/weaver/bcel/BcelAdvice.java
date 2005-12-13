@@ -82,7 +82,7 @@ public class BcelAdvice extends Advice {
 	public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
 		suppressLintWarnings(world);
 		ShadowMunger ret = super.concretize(fromType, world, clause);
-		clearLintSuppressions(world);
+		clearLintSuppressions(world,this.suppressedLintKinds);
 		return ret;
 	}
 	
@@ -102,7 +102,7 @@ public class BcelAdvice extends Advice {
 	public boolean match(Shadow shadow, World world) {
 		suppressLintWarnings(world);
 		boolean ret = super.match(shadow, world);
-		clearLintSuppressions(world);
+		clearLintSuppressions(world,this.suppressedLintKinds);
 		return ret;
 	}
 	
@@ -130,7 +130,7 @@ public class BcelAdvice extends Advice {
     	World world = shadow.getIWorld();
     	suppressLintWarnings(world);
 		pointcutTest = getPointcut().findResidue(shadow, exposedState);
-		clearLintSuppressions(world);
+		clearLintSuppressions(world,this.suppressedLintKinds);
 		
 		// these initializations won't be performed by findResidue, but need to be
 		// so that the joinpoint is primed for weaving
@@ -629,7 +629,7 @@ public class BcelAdvice extends Advice {
     	inWorld.getLint().suppressKinds(suppressedLintKinds);
 	}
 	
-	protected void clearLintSuppressions(World inWorld) {
-		inWorld.getLint().clearSuppressions();
+	protected void clearLintSuppressions(World inWorld,Collection toClear) {
+		inWorld.getLint().clearSuppressions(toClear);
 	}
 }

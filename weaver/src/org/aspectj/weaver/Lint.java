@@ -198,11 +198,18 @@ public class Lint {
 	}
 	
 	// remove any suppression of lint warnings in place
-	public void clearSuppressions() {
+	public void clearAllSuppressions() {
 		for (Iterator iter = kinds.values().iterator(); iter.hasNext();) {
 			Kind k = (Kind) iter.next();
 			k.setSuppressed(false);
 		}		
+	}
+	
+	public void clearSuppressions(Collection lintKind) {
+		for (Iterator iter = lintKind.iterator(); iter.hasNext();) {
+			Kind k = (Kind) iter.next();
+			k.setSuppressed(false);
+		}
 	}
 
 	private IMessage.Kind getMessageKind(String v) {
