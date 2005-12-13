@@ -52,7 +52,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCunningDeclareParents_pr92311() { runTest("cunning declare parents");}
   public void testGenericITDsAndAbstractMethodError_pr102357() { runTest("generic itds and abstract method error");}
   */
-  //public void testIncorrectSignatureMatchingWithExceptions_pr119749() { runTest("incorrect exception signature matching");}
+  public void testIncorrectSignatureMatchingWithExceptions_pr119749() { runTest("incorrect exception signature matching");}
   public void testGeneratingCodeForAnOldRuntime_pr116679_1() { runTest("generating code for a 1.2.1 runtime - 1");}
   public void testGeneratingCodeForAnOldRuntime_pr116679_2() { runTest("generating code for a 1.2.1 runtime - 2");}
   public void testAmbiguousMethod_pr118599_1() { runTest("ambiguous method when binary weaving - 1");}

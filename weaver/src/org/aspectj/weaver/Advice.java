@@ -116,8 +116,8 @@ public abstract class Advice extends ShadowMunger {
 				}
 			}
 			
-			
-    		if (hasExtraParameter() && kind == AdviceKind.AfterReturning) {
+
+			if (hasExtraParameter() && kind == AdviceKind.AfterReturning) {
     			ResolvedType resolvedExtraParameterType = getExtraParameterType().resolve(world);
     			ResolvedType shadowReturnType = shadow.getReturnType().resolve(world);
     			boolean matches = 
@@ -127,6 +127,16 @@ public abstract class Advice extends ShadowMunger {
     				maybeIssueUncheckedMatchWarning(resolvedExtraParameterType,shadowReturnType,shadow,world);
     			}
     			return matches;
+			} else if (hasExtraParameter() && kind==AdviceKind.AfterThrowing) { // pr119749
+	    			ResolvedType exceptionType = getExtraParameterType().resolve(world);
+	    			if (!exceptionType.isCheckedException()) return true;
+	    			UnresolvedType[] shadowThrows = shadow.getSignature().getExceptions(world);
+	    			boolean matches = false;
+	    			for (int i = 0; i < shadowThrows.length && !matches; i++) {
+						ResolvedType type = shadowThrows[i].resolve(world);
+						if (exceptionType.isAssignableFrom(type)) matches=true;
+					}
+	    			return matches;
     		} else if (kind == AdviceKind.PerTargetEntry) {
     			return shadow.hasTarget();
     		} else if (kind == AdviceKind.PerThisEntry) {

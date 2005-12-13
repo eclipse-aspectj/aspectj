@@ -1883,6 +1883,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public ResolvedPointcutDefinition findPointcut(String name, World world) {
 	    throw new UnsupportedOperationException("Not yet implemenented");
 	}
+	
+	/**
+	 * @return true if assignable to java.lang.Exception
+	 */
+	public boolean isException() {
+		return (world.getCoreType(UnresolvedType.JAVA_LANG_EXCEPTION).isAssignableFrom(this));
+	}
+	
+	/**
+	 * @return true if it is an exception and it is a checked one, false otherwise.
+	 */
+	public boolean isCheckedException() {
+		if (!isException()) return false;
+		if (world.getCoreType(UnresolvedType.RUNTIME_EXCEPTION).isAssignableFrom(this)) return false;
+		return true;
+	}
 
 	/**
 	 * Determines if variables of this type could be assigned values of another

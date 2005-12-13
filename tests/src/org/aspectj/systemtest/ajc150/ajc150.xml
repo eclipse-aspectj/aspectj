@@ -136,9 +136,9 @@
     </ajc-test>  
     
     <ajc-test dir="bugs150/pr119749" pr="119749" title="incorrect exception signature matching">
-     <compile files="InheritedThrows.java" options="">  
-     	<message kind="warning" line="19" text="one"/>
-     	<message kind="warning" line="27" text="one"/>
+     <compile files="InheritedThrows.java" options="-showWeaveInfo">  
+     	<message kind="weave" text="Join point 'method-execution(void InheritedThrows$NestedClassBoth.m())' in Type 'InheritedThrows$NestedClassBoth' (InheritedThrows.java:24) advised by afterThrowing advice from 'InheritedThrows$A' (InheritedThrows.java:4)"/>
+     	<message kind="weave" text="Join point 'method-execution(void InheritedThrows$NestedClass1.m())' in Type 'InheritedThrows$NestedClass1' (InheritedThrows.java:16) advised by afterThrowing advice from 'InheritedThrows$A' (InheritedThrows.java:4)"/>
      </compile>
     </ajc-test>  
     

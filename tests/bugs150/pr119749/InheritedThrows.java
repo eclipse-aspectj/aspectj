@@ -1,10 +1,7 @@
 public class InheritedThrows {
 
     static aspect A {
-        declare warning : execution (* *.*(..) throws Ex1) : "one";
-//        declare warning : execution (* *.*(..) throws Ex2) : "two";
-//        declare warning : execution (* *.*(..) throws !(Ex1||Ex2)) : "neither";
-//        declare warning : execution (* *.*(..) throws Ex1, Ex2) : "both";
+        after() throwing(Ex1 a): execution(* *.*(..) throws Ex1) {}
     }
 
     public static class Ex1 extends Exception {}
@@ -16,7 +13,7 @@ public class InheritedThrows {
     }
 
     private static class NestedClass1 implements MyInterface {
-        public void m() throws Ex1 {}
+        public void m() throws Ex1 {} // MATCHES HERE
     }
 
     private static class NestedClass2 implements MyInterface {
@@ -24,7 +21,7 @@ public class InheritedThrows {
     }
 
     private static class NestedClassBoth implements MyInterface {
-        public void m() throws Ex1, Ex2 {}
+        public void m() throws Ex1, Ex2 {}  // MATCHES HERE
     }
 
     private static class NestedClassNeither implements MyInterface {
