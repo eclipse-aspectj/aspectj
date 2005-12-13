@@ -59,6 +59,9 @@ public class Aj implements ClassPreProcessor {
 
         try {
             WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
+            if (weavingAdaptor == null) {
+            	return bytes;
+            }
             return weavingAdaptor.weaveClass(className, bytes);
         } catch (Throwable t) {
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
@@ -81,11 +84,17 @@ public class Aj implements ClassPreProcessor {
             synchronized(weavingAdaptors) {
                 adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(loader);
                 if (adaptor == null) {
-                    // create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
-                    // within the synchronized block
-                    ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
-                    adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
-                    weavingAdaptors.put(loader, adaptor);
+                	String loaderClassName = loader.getClass().getName(); 
+                	if (loaderClassName.equals("sun.reflect.DelegatingClassLoader")) {
+                		// we don't weave reflection generated types at all! 
+                		return null;
+                	} else {
+	                    // create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
+	                    // within the synchronized block
+	                    ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
+	                    adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
+	                    weavingAdaptors.put(loader, adaptor);
+                	}
                 }
             }
             // perform the initialization
