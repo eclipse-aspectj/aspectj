@@ -663,7 +663,13 @@ public class AjTypeImpl<T> implements AjType<T> {
                 if (!f.getType().isInterface()) continue;
                 if (!Modifier.isPublic(f.getModifiers()) || !Modifier.isStatic(f.getModifiers())) continue;
                 if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
-                    for (Method itdM : f.getType().getDeclaredMethods()) {
+                	 Class itdSource = f.getType();
+                	 try {
+                	 	itdSource = f.get(null).getClass();
+                	 } catch (IllegalAccessException ex) {
+                		//
+                	 }
+                    for (Method itdM : itdSource.getDeclaredMethods()) {
                         if (!Modifier.isPublic(itdM.getModifiers()) && publicOnly) continue;
                         InterTypeMethodDeclaration itdm = new InterTypeMethodDeclarationImpl(
                                     this, AjTypeSystem.getAjType(f.getType()), itdM
@@ -676,9 +682,30 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	private void addAnnotationStyleITDFields(List<InterTypeFieldDeclaration> toList, boolean publicOnly) {
-        return;
         //AV: I think it is meaningless
         //@AJ decp is interface driven ie no field
+        // AMC: private fields in the mixin type should show as ITDs private to the aspect...
+        if (isAspect()) {
+            for (Field f : clazz.getDeclaredFields()) {
+                if (!f.getType().isInterface()) continue;
+                if (!Modifier.isPublic(f.getModifiers()) || !Modifier.isStatic(f.getModifiers())) continue;
+                if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+                	 Class itdSource = f.getType();
+                	 try {
+                	 	itdSource = f.get(null).getClass();
+                	 } catch (IllegalAccessException ex) {
+                		//
+                	 }
+                    for (Field itdF : itdSource.getDeclaredFields()) {
+                        if (!Modifier.isPublic(itdF.getModifiers()) && publicOnly) continue;
+                        InterTypeFieldDeclaration itdf = new InterTypeFieldDeclarationImpl(
+                                    this, AjTypeSystem.getAjType(f.getType()), itdF
+                        );
+                        toList.add(itdf);
+                    }
+                }
+            }
+		}
 	}
 
 	/* (non-Javadoc)

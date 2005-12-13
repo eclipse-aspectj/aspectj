@@ -225,7 +225,57 @@
 		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java" options="-1.5"></compile>
 		<run class="ReflectOnAjcCompiledPointcuts" classpath="../lib/bcel/bcel.jar"/>
 	</ajc-test>
+	
+	<ajc-test dir="java5/reflection" title="reflection on itds">
+		<compile files="InterTypeDeclarations.aj,ReflectOnCodeStyleITDs.java" options="-1.5"></compile>
+		<run class="ReflectOnCodeStyleITDs" classpath="../lib/bcel/bcel.jar">
+		  <stdout>
+		  	<line text="public C.new(int, int, int)"/>
+		  	<line text="C.new(int, int)"/>
+		  	<line text="private C.new(int)"/>
+		  	<line text="private C.new(int)"/>	
+		  	<line text="public C.new(int, int, int)"/>
+		  	<line text="public C.new(int, int, int)"/>
+		  	<line text="int C.getY()"/>
+		  	<line text="int I.getY()"/>
+		  	<line text="public int C.getZ()"/>
+		  	<line text="public int I.getZ()"/>
+		  	<line text="private int C.getX()"/>
+		  	<line text="private int I.getX()"/>
+		  	<line text="private int C.getX()"/>
+		  	<line text="public int C.getZ()"/>
+		  	<line text="public int I.getZ()"/>
+		  	<line text="public int C.getZ()"/>
+		  	<line text="int C.y"/>
+		  	<line text="int I.y"/>
+		  	<line text="public int C.z"/>
+		  	<line text="public int I.z"/>
+		  	<line text="private int C.x"/>
+		  	<line text="private int I.x"/>
+		  	<line text="private int C.x"/>
+		  	<line text="public int C.z"/>
+		  	<line text="public int I.z"/>
+		  	<line text="public int C.z"/>
+		  </stdout>
+		</run>
+	</ajc-test>
 
+	<ajc-test dir="java5/reflection" title="reflection on @DeclareParents">
+		<compile files="AtAspectJDeclareParents.aj,ReflectOnAtAspectJDeclareParents.java" options="-1.5"></compile>
+		<run class="ReflectOnAtAspectJDeclareParents" classpath="../lib/bcel/bcel.jar">
+		  <stdout>
+		    <line text="declare parents : C implements I"/>
+		  	<line text="public int I.getX()"/>
+		  	<line text="public void I.setX(int)"/>
+		  	<line text="public int I.getX()"/>
+			<line text="public int I.getX()"/>
+		  	<line text="public void I.setX(int)"/>
+		  	<line text="public int I.getX()"/>
+		  	<line text="private int I.x"/>
+		  	<line text="private int I.x"/>
+		  </stdout>
+		</run>
+	</ajc-test>
 	
 	<ajc-test dir="compatibility/case1" title="generating code for a 1.2.1 runtime - 1">
 		<compile files="Simple.java" options="-Xajruntimetarget:1.2"/>

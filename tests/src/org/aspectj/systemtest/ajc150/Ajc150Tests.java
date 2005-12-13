@@ -839,6 +839,14 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("IllegalAccessError with around advice on interface method call using LTW and -XnoInline");
   }
   
+  public void testReflectOnCodeStyleITDs() {
+	  runTest("reflection on itds");
+  }
+  
+  public void testReflectOnAtAspectJDecP() {
+	  runTest("reflection on @DeclareParents");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
