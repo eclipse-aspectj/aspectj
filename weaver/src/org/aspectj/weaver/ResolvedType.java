@@ -480,6 +480,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
                 return f;
             }
         }
+        // pr120521
+        if (!getOutermostType().equals(this)) {
+        	ResolvedType outerType = getOutermostType().resolve(world);
+        	ResolvedPointcutDefinition rpd = outerType.findPointcut(name);
+        	return rpd;
+        }
         return null; // should we throw an exception here?
     }
     
