@@ -15,6 +15,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.patterns.Pointcut.MatchesNothingPointcut;
 
 /**
  * @author colyer
@@ -26,17 +27,75 @@ public class PointcutRewriter {
 
 	private static final boolean WATCH_PROGRESS = false;
 	
-	public Pointcut rewrite(Pointcut pc) {
-		if (WATCH_PROGRESS) System.out.println("Initial pointcut is        ==> " + pc);
-		Pointcut result = distributeNot(pc);
-		if (WATCH_PROGRESS) System.out.println("Distributing NOT gives     ==> " + result);
-		result = pullUpDisjunctions(result);
-		if (WATCH_PROGRESS) System.out.println("Pull up disjunctions gives ==> " + result);
+	/**
+	 * Set forcerewrite if you want to override the checking for something already in DNF (useful for
+	 * some testing)
+	 * Repeated processing of something already in DNF is expensive (it ends up being done for
+	 * every pointcut on every incremental compile) - so let's not do it if we don't have to.
+	 * See pr113257
+	 */
+	public Pointcut rewrite(Pointcut pc,boolean forceRewrite) {
+		Pointcut result = pc;
+		if (forceRewrite || !isDNF(pc)) {
+			if (WATCH_PROGRESS) System.out.println("Initial pointcut is        ==> " + format(pc));
+			result = distributeNot(result);
+			if (WATCH_PROGRESS) System.out.println("Distributing NOT gives     ==> " + format(result));
+			result = pullUpDisjunctions(result);
+			if (WATCH_PROGRESS) System.out.println("Pull up disjunctions gives ==> " + format(result));		
+	    } else {
+			if (WATCH_PROGRESS) System.out.println("Not distributing NOTs or pulling up disjunctions, already DNF ==> "+format(pc));
+	    }
 		result = simplifyAnds(result);
-		if (WATCH_PROGRESS) System.out.println("Simplifying ANDs gives     ==> " + result);
+		if (WATCH_PROGRESS) System.out.println("Simplifying ANDs gives     ==> " + format(result));
 		result = sortOrs(result);
-		if (WATCH_PROGRESS) System.out.println("Sorting ORs gives          ==> " + result);
+		if (WATCH_PROGRESS) System.out.println("Sorting ORs gives          ==> " + format(result));
+		//result = removeNothings(result);
+	    //if (WATCH_PROGRESS) System.out.println("Removing nothings gives    ==> " + format(result));
 		return result;
+	}
+	
+	public Pointcut rewrite(Pointcut pc) {
+		return rewrite(pc,false);
+	}
+	
+	/**
+	 * Check if a pointcut is in DNF - if it is then it should be lots of 'ORs' up the 
+	 * top with 'ANDs' beneath them.
+	 */
+	private boolean isDNF(Pointcut pc) {
+		return isDNFHelper(pc,true);
+	}
+	
+	/**
+	 * Helper function for determining DNFness.  Records when we have crossed the point of allowing ORs.
+	 */
+	private boolean isDNFHelper(Pointcut pc,boolean canStillHaveOrs) {
+		if (isAnd(pc)) {
+			AndPointcut ap = (AndPointcut)pc;
+			return isDNFHelper(ap.getLeft(),false) && isDNFHelper(ap.getRight(),false);
+		} else if (isOr(pc)) {
+			if (!canStillHaveOrs) return false;
+			OrPointcut op = (OrPointcut)pc;
+			return isDNFHelper(op.getLeft(),true) && isDNFHelper(op.getRight(),true);
+		} else if (isNot(pc)) {
+			return isDNFHelper(((NotPointcut)pc).getNegatedPointcut(),canStillHaveOrs);
+		} else {
+			return true;
+		}
+	}
+	
+	/** 
+	 * Allows formatting of the output pointcut for debugging...
+	 */
+	public static String format(Pointcut p) {
+		String s = p.toString();
+		// Regex param needs '(' and '*' changing to '.'
+//		s = s.replaceAll("persingleton.pkg1.monitoring.ErrorMonitoring.","M");
+//		s = s.replaceAll("args.BindingTypePattern.java.lang.Throwable, 0.","Z");
+//		s = s.replaceAll("within.pkg1.monitoring.DoMonitorErrors+.","X");
+//		s=s.replaceAll("within.pkg1.monitoring....","Y");
+//		s=s.replaceAll("if.true.","N");
+		return s;
 	}
 	
 	
@@ -83,6 +142,8 @@ public class PointcutRewriter {
 	
 	// A && (B || C) => (A && B) || (A && C)
 	// (A || B) && C => (A && C) || (B && C)
+	// is this next one optimal??
+	// (A || B) && (C || D) =>  (¬A && B && ¬C && D) || (B && C) || (A && ¬C && D) || (A && ¬B && C)
 	private Pointcut pullUpDisjunctions(Pointcut pc) {
 		if (isNot(pc)) {
 			NotPointcut npc = (NotPointcut)pc;
@@ -110,8 +171,18 @@ public class PointcutRewriter {
 									new AndPointcut(left,rightLeft),
 									new AndPointcut(left,rightRight))
 							);
-				
-			} else {
+			}  else if (isOr(right) && isOr(left)) {
+				// (A || B) && (C || D) =>  (¬A && B && ¬C && D) || (B && C) || (A && ¬C && D) || (A && ¬B && C)
+				Pointcut A = pullUpDisjunctions(((OrPointcut)left).getLeft());
+				Pointcut B = pullUpDisjunctions(((OrPointcut)left).getRight());
+				Pointcut C = pullUpDisjunctions(((OrPointcut)right).getLeft());
+				Pointcut D = pullUpDisjunctions(((OrPointcut)right).getRight());
+				Pointcut newLeft = new OrPointcut(createAndsFor(new Pointcut[]{not(A),B,not(C),D}),
+						                          createAndsFor(new Pointcut[]{B,C}));
+				Pointcut newRight = new OrPointcut(createAndsFor(new Pointcut[]{A,not(C),not(D)}),
+						                           createAndsFor(new Pointcut[]{A,not(B),C}));
+				return pullUpDisjunctions(new OrPointcut(newLeft,newRight));
+			}	else {
 				return new AndPointcut(left,right);
 			}
 		} else if (isOr(pc)){
@@ -122,7 +193,34 @@ public class PointcutRewriter {
 			return pc;
 		}
 	}
-		
+	
+	/**
+	 * Returns a NOTted form of the pointcut p - we cope with already NOTted pointcuts.
+	 */
+	public Pointcut not(Pointcut p) {
+		if (isNot(p)) {
+			return ((NotPointcut)p).getNegatedPointcut();
+		}
+		return new NotPointcut(p);
+	}
+	
+	/**
+	 * Passed an array of pointcuts, returns an AND tree with them in.
+	 */
+	public Pointcut createAndsFor(Pointcut[] ps) {
+		if (ps.length==1) return ps[0]; // dumb case
+		if (ps.length==2) { // recursion exit case
+			return new AndPointcut(ps[0],ps[1]);
+		}
+		// otherwise ...
+		Pointcut[] subset = new Pointcut[ps.length-1];
+		for (int i = 1; i < ps.length; i++) {
+			subset[i-1]=ps[i];
+		}
+		return new AndPointcut(ps[0],createAndsFor(subset));
+	}
+
+	
 	// NOT: execution(* TP.*(..)) => within(TP) && execution(* *(..))
 	//      since this breaks when the pattern matches an interface
 	// NOT: withincode(* TP.*(..)) => within(TP) && withincode(* *(..))
@@ -174,7 +272,13 @@ public class PointcutRewriter {
 	private Pointcut simplifyAnds(Pointcut pc) {
 		if (isNot(pc)) {
 			NotPointcut npc = (NotPointcut) pc;
-			return new NotPointcut(simplifyAnds(npc.getNegatedPointcut()));
+			Pointcut notBody = npc.getNegatedPointcut();
+			if (isNot(notBody)) {
+				// !!X => X
+				return simplifyAnds(((NotPointcut)notBody).getNegatedPointcut());
+			} else {
+				return new NotPointcut(simplifyAnds(npc.getNegatedPointcut()));
+			}
 		} else if (isOr(pc)) {
 			OrPointcut opc = (OrPointcut) pc;
 			return new OrPointcut(simplifyAnds(opc.getLeft()),simplifyAnds(opc.getRight()));
@@ -223,6 +327,37 @@ public class PointcutRewriter {
 			result = new OrPointcut(result,right);
 		}
 		return result;
+	}
+	
+	/**
+	 * Removes MATCHES_NOTHING pointcuts
+	 */
+	private Pointcut removeNothings(Pointcut pc) {
+		if (isAnd(pc)) {
+			AndPointcut apc = (AndPointcut)pc;
+			Pointcut right = removeNothings(apc.getRight());
+			Pointcut left  = removeNothings(apc.getLeft());
+			if (left instanceof MatchesNothingPointcut || right instanceof MatchesNothingPointcut) return new MatchesNothingPointcut();
+			return new AndPointcut(left,right);
+		} else if (isOr(pc)) {
+			OrPointcut opc = (OrPointcut)pc;
+			Pointcut right = removeNothings(opc.getRight());
+			Pointcut left  = removeNothings(opc.getLeft());
+			if (left instanceof MatchesNothingPointcut 
+					&& !(right instanceof MatchesNothingPointcut)) {
+				return right;
+			} else if (right instanceof MatchesNothingPointcut 
+					&& !(left instanceof MatchesNothingPointcut)) {
+				return left;
+			} else if (!(left instanceof MatchesNothingPointcut)
+					&& !(right instanceof MatchesNothingPointcut)) {
+				return new OrPointcut(left,right);
+			} else if (left instanceof MatchesNothingPointcut
+					&& right instanceof MatchesNothingPointcut) {
+				return new MatchesNothingPointcut();	
+			}			
+		}
+		return pc;
 	}
 	
 	private void collectAndNodes(AndPointcut apc,Set nodesSoFar) {

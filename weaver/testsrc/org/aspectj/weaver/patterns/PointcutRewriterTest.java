@@ -37,11 +37,11 @@ public class PointcutRewriterTest extends TestCase {
 		Pointcut notNotNOT = getPointcut("!!!this(Foo)");
 		assertEquals("!this(Foo)",prw.rewrite(notNotNOT).toString());
 		Pointcut and = getPointcut("!(this(Foo) && this(Goo))");
-		assertEquals("(!this(Foo) || !this(Goo))",prw.rewrite(and).toString());
+		assertEquals("(!this(Foo) || !this(Goo))",prw.rewrite(and,true).toString());
 		Pointcut or = getPointcut("!(this(Foo) || this(Goo))");
-		assertEquals("(!this(Foo) && !this(Goo))",prw.rewrite(or).toString());
+		assertEquals("(!this(Foo) && !this(Goo))",prw.rewrite(or,true).toString());
 		Pointcut nestedNot = getPointcut("!(this(Foo) && !this(Goo))");
-		assertEquals("(!this(Foo) || this(Goo))",prw.rewrite(nestedNot).toString());
+		assertEquals("(!this(Foo) || this(Goo))",prw.rewrite(nestedNot,true).toString());
 	}
 	
 	public void testPullUpDisjunctions() {

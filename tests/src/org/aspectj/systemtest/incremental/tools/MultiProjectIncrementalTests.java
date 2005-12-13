@@ -441,6 +441,19 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkWasFullBuild();
 	}
 	
+	/**
+	 * We have problems with multiple rewrites of a pointcut across incremental builds.
+	 */
+	public void testPr113257() {
+		initialiseProject("PR113257");
+		build("PR113257");
+		alter("PR113257","inc1");
+		build("PR113257");
+		checkWasntFullBuild();
+		alter("PR113257","inc1");
+		build("PR113257");
+	}
+	
 	
 	// other possible tests:
 	// - memory usage (freemem calls?)
