@@ -72,12 +72,16 @@ public class AjASTConverter extends ASTConverter {
 			adviceDecl = new org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration(this.ast);
 		} else if (adviceDeclaration.kind.equals(AdviceKind.AfterThrowing)){
 			adviceDecl = new AfterThrowingAdviceDeclaration(this.ast);
+			if (adviceDeclaration.extraArgument != null) {
 			SingleVariableDeclaration throwing = convert(adviceDeclaration.extraArgument);
 			((AfterThrowingAdviceDeclaration)adviceDecl).setThrowing(throwing);
+			}
 		} else if (adviceDeclaration.kind.equals(AdviceKind.AfterReturning)){
 			adviceDecl = new AfterReturningAdviceDeclaration(this.ast);
+			if (adviceDeclaration.extraArgument != null) {
 			SingleVariableDeclaration returning = convert(adviceDeclaration.extraArgument);
 			((AfterReturningAdviceDeclaration)adviceDecl).setReturning(returning);
+			} 
 		} else if (adviceDeclaration.kind.equals(AdviceKind.Around)){
 			adviceDecl = new AroundAdviceDeclaration(this.ast);
 			// set the returnType

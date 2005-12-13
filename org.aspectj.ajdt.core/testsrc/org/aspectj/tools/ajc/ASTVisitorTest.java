@@ -102,9 +102,17 @@ public class ASTVisitorTest extends TestCase {
 		check("aspect A {pointcut a();after():a(){}}",
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterAdvice(simpleName)(block))))");
 	}
+	public void testAfterThrowingAdviceWithNoArgument() {
+		check("aspect A {pointcut a();after()throwing:a(){} }",
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterThrowingAdvice(simpleName)(block))))");
+	}
 	public void testAfterThrowingAdvice() {
 		check("aspect A {pointcut a();after()throwing(Exception e):a(){} }",
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterThrowingAdvice(simpleName)(simpleName)(simpleName)(block))))");
+	}
+	public void testAfterReturningAdviceWithNoArgument() {
+		check("aspect A {pointcut a();after()returning:a(){}}",
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterReturningAdvice(simpleName)(block))))");
 	}
 	public void testAfterReturningAdvice() {
 		check("aspect A {pointcut a();after()returning(Object o):a(){}}",
