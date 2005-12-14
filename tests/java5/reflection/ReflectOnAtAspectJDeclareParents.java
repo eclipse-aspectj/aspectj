@@ -101,21 +101,7 @@ public class ReflectOnAtAspectJDeclareParents {
 	
 	private void testDeclaredInterTypeFields(AjType<AtAspectJDeclareParents> ajType) {
 		InterTypeFieldDeclaration[] itdfs = ajType.getDeclaredITDFields();
-		assertEquals(1,itdfs.length,"number of declared ITD fields");
-		System.out.println(itdfs[0]);
-		try {
-			InterTypeFieldDeclaration shouldFind = ajType.getDeclaredITDField("x",AjTypeSystem.getAjType(I.class));
-			System.out.println(shouldFind);
-		} catch (NoSuchFieldException ex) {
-			throw new RuntimeException("getITDField failed");
-		}
-		try {
-			ajType.getDeclaredITDField("p",AjTypeSystem.getAjType(C.class));
-			throw new RuntimeException("failed to fail in getting ITDField");
-		} catch (NoSuchFieldException ex) {
-			// good!
-		}
-		
+		assertEquals(0,itdfs.length,"number of declared ITD fields");
 	}
 	
 	private void testInterTypeFields(AjType<AtAspectJDeclareParents> ajType) {

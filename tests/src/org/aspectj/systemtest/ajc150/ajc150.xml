@@ -290,8 +290,6 @@
 			<line text="public int I.getX()"/>
 		  	<line text="public void I.setX(int)"/>
 		  	<line text="public int I.getX()"/>
-		  	<line text="private int I.x"/>
-		  	<line text="private int I.x"/>
 		  </stdout>
 		</run>
 	</ajc-test>

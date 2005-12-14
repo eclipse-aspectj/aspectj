@@ -312,21 +312,24 @@ public class SignaturePattern extends PatternNode {
 //			else return FuzzyBoolean.MAYBE;
 		}
 		
+		
+		FuzzyBoolean matchesIgnoringAnnotations = FuzzyBoolean.YES;
+		if (kind == Member.STATIC_INITIALIZATION) {
+			matchesIgnoringAnnotations = matchesExactlyStaticInitialization(aMember, inAWorld);
+		} else if (kind == Member.FIELD) {
+			matchesIgnoringAnnotations = matchesExactlyField(aMember,inAWorld);
+		} else if (kind == Member.METHOD) {
+			matchesIgnoringAnnotations = matchesExactlyMethod(aMember,inAWorld);
+		} else if (kind == Member.CONSTRUCTOR) {
+			matchesIgnoringAnnotations = matchesExactlyConstructor(aMember, inAWorld);
+		}
+		if (matchesIgnoringAnnotations.alwaysFalse()) return FuzzyBoolean.NO;
+		
 		// annotations match on the *subject* 
 		if (!matchesAnnotations(aMember,inAWorld).alwaysTrue()) {
 			return FuzzyBoolean.NO;
-		}
-		
-		if (kind == Member.STATIC_INITIALIZATION) {
-			return matchesExactlyStaticInitialization(aMember, inAWorld);
-		} else if (kind == Member.FIELD) {
-			return matchesExactlyField(aMember,inAWorld);
-		} else if (kind == Member.METHOD) {
-			return matchesExactlyMethod(aMember,inAWorld);
-		} else if (kind == Member.CONSTRUCTOR) {
-			return matchesExactlyConstructor(aMember, inAWorld);
 		} else {
-			return FuzzyBoolean.YES;
+			return matchesIgnoringAnnotations;
 		}
 		
 	}

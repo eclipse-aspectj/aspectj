@@ -9,7 +9,13 @@ public aspect AtAspectJDeclareParents {
 
 class C {}
 
-interface I{}
+interface I{
+	
+	int getX();
+	
+	void setX(int x);
+	
+}
 
 class Impl implements I {
 	

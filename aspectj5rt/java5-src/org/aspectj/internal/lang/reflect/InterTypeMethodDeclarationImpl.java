@@ -47,8 +47,8 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 		this.baseMethod = itdInterMethod;
 	}
 
-	public InterTypeMethodDeclarationImpl(AjType<?> decType, AjType<?> targetType, Method base) {
-		super(decType,targetType,base.getModifiers());
+	public InterTypeMethodDeclarationImpl(AjType<?> decType, AjType<?> targetType, Method base, int modifiers) {
+		super(decType,targetType,modifiers);
 		this.parameterAdjustmentFactor = 0;
 		this.name = base.getName();
 		this.baseMethod = base;
