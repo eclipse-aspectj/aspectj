@@ -25,6 +25,10 @@
         </run>
     </ajc-test>
     
+    <ajc-test dir="bugs150/pr120826" pr="120826" title="varargs NPE">
+     <compile files="TestVarargs.java" options="-1.5"/>
+    </ajc-test> 
+    
 
     <ajc-test dir="bugs150/pr112476/case1" title="binary weaving decp broken">
         <compile files="lib/A.java,lib/B.java,lib/C.java" outjar="library.jar" options="-1.5"/>
