@@ -220,7 +220,7 @@ public class AtAjAttributes {
             if (acceptAttribute(attribute)) {
                 RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
                 // we don't need to look for several attribute occurence since it cannot happen as per JSR175
-                if (!isCodeStyleAspect) {
+                if (!isCodeStyleAspect && !javaClass.isInterface()) {
                     hasAtAspectAnnotation = handleAspectAnnotation(rvs, struct);
                     //TODO AV - if put outside the if isCodeStyleAspect then we would enable mix style
                     hasAtPrecedenceAnnotation = handlePrecedenceAnnotation(rvs, struct);

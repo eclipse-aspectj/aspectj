@@ -172,15 +172,19 @@ public class PointcutRewriter {
 									new AndPointcut(left,rightRight))
 							);
 			}  else if (isOr(right) && isOr(left)) {
-				// (A || B) && (C || D) =>  (¬A && B && ¬C && D) || (B && C) || (A && ¬C && D) || (A && ¬B && C)
+				// (A || B) && (C || D) => (A && C) || (A && D) || (B && C) || (B && D)
 				Pointcut A = pullUpDisjunctions(((OrPointcut)left).getLeft());
 				Pointcut B = pullUpDisjunctions(((OrPointcut)left).getRight());
 				Pointcut C = pullUpDisjunctions(((OrPointcut)right).getLeft());
 				Pointcut D = pullUpDisjunctions(((OrPointcut)right).getRight());
-				Pointcut newLeft = new OrPointcut(createAndsFor(new Pointcut[]{not(A),B,not(C),D}),
-						                          createAndsFor(new Pointcut[]{B,C}));
-				Pointcut newRight = new OrPointcut(createAndsFor(new Pointcut[]{A,not(C),not(D)}),
-						                           createAndsFor(new Pointcut[]{A,not(B),C}));
+				Pointcut newLeft = new OrPointcut(
+						 				new AndPointcut(A,C),
+						 				new AndPointcut(A,D)
+									);
+				Pointcut newRight = new OrPointcut(
+						               new AndPointcut(B,C),
+						               new AndPointcut(B,D)
+						           );				
 				return pullUpDisjunctions(new OrPointcut(newLeft,newRight));
 			}	else {
 				return new AndPointcut(left,right);
