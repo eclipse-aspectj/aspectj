@@ -41,7 +41,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
- // public void testVarargsNPE_pr120826() { runTest("varargs NPE");}
+  public void testVarargsNPE_pr120826() { runTest("varargs NPE");}
   public void testNamedPointcutPertarget_pr120521() { runTest("named pointcut not resolved in pertarget pointcut");}
   public void testDollarClasses_pr120474() { runTest("Dollar classes");}
   public void testGenericPTW_pr119539_1() { runTest("generic pertypewithin aspect - 1");}
