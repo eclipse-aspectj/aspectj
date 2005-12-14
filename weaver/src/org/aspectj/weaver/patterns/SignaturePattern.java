@@ -281,16 +281,18 @@ public class SignaturePattern extends PatternNode {
 		if (kind == Member.ADVICE) return true;
 		
 		// do the hard work then...
+		boolean subjectMatch = true;
 		Iterator candidateMatches = joinPointSignature.getJoinPointSignatures(world);
 		while(candidateMatches.hasNext()) {
 			JoinPointSignature aSig = (JoinPointSignature) candidateMatches.next();
-			FuzzyBoolean matchResult = matchesExactly(aSig,world,allowBridgeMethods); 
+			FuzzyBoolean matchResult = matchesExactly(aSig,world,allowBridgeMethods,subjectMatch); 
 			if (matchResult.alwaysTrue()) {
 				return true;
 			} else if (matchResult.alwaysFalse()) {
 				return false;
 			}
 			// if we got a "MAYBE" it's worth looking at the other signatures
+			subjectMatch = false;
 		}
 		return false;
 	}
@@ -299,14 +301,14 @@ public class SignaturePattern extends PatternNode {
 	// or chasing up the hierarchy)
 	// return YES if it does, NO if it doesn't and no ancester member could match either,
 	// and MAYBE if it doesn't but an ancester member could.
-	private FuzzyBoolean matchesExactly(JoinPointSignature aMember, World inAWorld, boolean allowBridgeMethods) {
+	private FuzzyBoolean matchesExactly(JoinPointSignature aMember, World inAWorld, boolean allowBridgeMethods,boolean subjectMatch) {
 		// Java5 introduces bridge methods, we match a call to them but nothing else...
 		if (aMember.isBridgeMethod() && !allowBridgeMethods) {
 			return FuzzyBoolean.MAYBE;
 		}
 			
 		// modifiers match on the *subject*
-		if (!modifiers.matches(aMember.getModifiers())) {
+		if (subjectMatch && !modifiers.matches(aMember.getModifiers())) {
 			return FuzzyBoolean.NO;
 //			if (aMember.isPrivate()) return FuzzyBoolean.NO;
 //			else return FuzzyBoolean.MAYBE;
@@ -319,14 +321,14 @@ public class SignaturePattern extends PatternNode {
 		} else if (kind == Member.FIELD) {
 			matchesIgnoringAnnotations = matchesExactlyField(aMember,inAWorld);
 		} else if (kind == Member.METHOD) {
-			matchesIgnoringAnnotations = matchesExactlyMethod(aMember,inAWorld);
+			matchesIgnoringAnnotations = matchesExactlyMethod(aMember,inAWorld, subjectMatch);
 		} else if (kind == Member.CONSTRUCTOR) {
 			matchesIgnoringAnnotations = matchesExactlyConstructor(aMember, inAWorld);
 		}
 		if (matchesIgnoringAnnotations.alwaysFalse()) return FuzzyBoolean.NO;
 		
 		// annotations match on the *subject* 
-		if (!matchesAnnotations(aMember,inAWorld).alwaysTrue()) {
+		if (subjectMatch && !matchesAnnotations(aMember,inAWorld).alwaysTrue()) {
 			return FuzzyBoolean.NO;
 		} else {
 			return matchesIgnoringAnnotations;
@@ -364,10 +366,10 @@ public class SignaturePattern extends PatternNode {
 	/**
 	 * Matches on name, declaring type, return type, parameter types, throws types
 	 */
-	private FuzzyBoolean matchesExactlyMethod(JoinPointSignature aMethod, World world) {
+	private FuzzyBoolean matchesExactlyMethod(JoinPointSignature aMethod, World world, boolean subjectMatch) {
 		if (!name.matches(aMethod.getName())) return FuzzyBoolean.NO;
 		// Check the throws pattern
-		if (!throwsPattern.matches(aMethod.getExceptions(), world)) return FuzzyBoolean.NO;
+		if (subjectMatch && !throwsPattern.matches(aMethod.getExceptions(), world)) return FuzzyBoolean.NO;
 		
 		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) return FuzzyBoolean.MAYBE;
 		if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
