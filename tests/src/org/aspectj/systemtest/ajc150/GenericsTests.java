@@ -538,6 +538,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	public void testPR96220_GenericDecp() {
 		runTest("generic decp - simple");
+		checkOneSignatureAttribute(ajc,"Basic");
 		verifyClassSignature(ajc,"Basic","Ljava/lang/Object;LJ<Ljava/lang/Double;>;LI<Ljava/lang/Double;>;");
 	}
 	
@@ -582,6 +583,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 
 	public void testGenericDecpParameterized() {
 		runTest("generic decp - with parameterized on the target");
+		checkOneSignatureAttribute(ajc,"Basic6");
 		verifyClassSignature(ajc,"Basic6","<J:Ljava/lang/Object;>Ljava/lang/Object;LI<TJ;>;LK<Ljava/lang/Integer;>;");
 	}
 	
@@ -951,6 +953,22 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 			if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
 		}
 		return sigAttr;
+	}
+	
+	public static void checkOneSignatureAttribute(Ajc ajc,String classname) {
+		JavaClass clazz = getClass(ajc,classname);
+		Signature sigAttr = null;
+		Attribute[] attrs = clazz.getAttributes();
+		int signatureCount = 0;
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];
+			if (attribute.getName().equals("Signature")) {
+				signatureCount++;
+				sb.append("\n"+((Signature)attribute).getSignature());
+			}
+		}
+		if (signatureCount>1) fail("Should be only one signature attribute but found "+signatureCount+sb.toString());
 	}
 	
 	// Check the signature attribute on a class is correct

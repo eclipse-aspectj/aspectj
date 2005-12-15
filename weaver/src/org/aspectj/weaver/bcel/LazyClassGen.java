@@ -572,11 +572,9 @@ public final class LazyClassGen {
 				String s = interfaceRTXs[i].getSignatureForAttribute();
 				signature.append(s);
 			}
+			if (sigAttr!=null) myGen.removeAttribute(sigAttr);
 			myGen.addAttribute(createSignatureAttribute(signature.toString()));
 		}
-		
-		// TODO asc generics The 'old' signature is left in the constant pool - I wonder how safe it would be to 
-		// remove it since we don't know what else (if anything) is referring to it
 	}
 	
 	/** 
