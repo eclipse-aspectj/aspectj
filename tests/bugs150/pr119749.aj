@@ -10,7 +10,7 @@ public aspect pr119749 {
         // not inherited
         @Retention(RetentionPolicy.RUNTIME)
         @Target(ElementType.METHOD)     
-        @interface Me{}
+        @interface Me { String value() default "Me"; }
 
         static class C {
                 @Me()
@@ -53,7 +53,7 @@ public aspect pr119749 {
                 declare warning : execAnyEx() : "aa * *(..) throws Exception";
                 declare warning : callEx() : "aa call void m() throws Exception";
                 before(Me me) : @annotation(me) && execMe() {
-                        log(thisJoinPoint, "execMe[" + me + "]");
+                    log(thisJoinPoint, "execMe[" + me.value() + "]");
                 }
                 before() : execEx() {
                         log(thisJoinPoint, "execEx");

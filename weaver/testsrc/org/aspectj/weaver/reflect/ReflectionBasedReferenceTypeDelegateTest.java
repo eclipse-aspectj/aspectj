@@ -17,6 +17,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -247,7 +248,7 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
     	boolean barfIfClinitMissing = false;
         world.setBehaveInJava5Way(true);
         
-        BcelWorld bcelWorld = new BcelWorld();
+        BcelWorld bcelWorld = new BcelWorld(getClass().getClassLoader(),IMessageHandler.THROW,null);
         bcelWorld.setBehaveInJava5Way(true);
         UnresolvedType javaUtilHashMap = UnresolvedType.forName("java.util.HashMap");
         ReferenceType rawType =(ReferenceType)bcelWorld.resolve(javaUtilHashMap );
@@ -289,7 +290,7 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 	// todo: array of int	
 
 	protected void setUp() throws Exception {
-		world = new ReflectionWorld();
+		world = new ReflectionWorld(getClass().getClassLoader());
 		objectType = world.resolve("java.lang.Object");
 	}
 }

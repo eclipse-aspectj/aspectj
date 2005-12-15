@@ -19,7 +19,7 @@
         </compile>
         <run class="pr119749">
             <stdout>
-             <line text="execution(void pr119749.C.m()): execMe[@pr119749$Me()]"/>
+             <line text="execution(void pr119749.C.m()): execMe[Me]"/>
              <line text="execution(void pr119749.C.m()): execEx"/>
             </stdout>
         </run>

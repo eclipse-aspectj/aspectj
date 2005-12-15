@@ -19,21 +19,21 @@ import org.aspectj.weaver.World;
 public class ReflectionWorldTest extends TestCase {
 
 	public void testDelegateCreation() {
-		World world = new ReflectionWorld();
+		World world = new ReflectionWorld(getClass().getClassLoader());
 		ResolvedType rt = world.resolve("java.lang.Object");
 		assertNotNull(rt);
 		assertEquals("Ljava/lang/Object;",rt.getSignature());
 	}
 	
 	public void testArrayTypes() {
-		ReflectionWorld world = new ReflectionWorld();
+		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 		String[] strArray = new String[1];
 		ResolvedType rt = world.resolve(strArray.getClass());
 		assertTrue(rt.isArray());
 	}
 	
 	public void testPrimitiveTypes() {
-		ReflectionWorld world = new ReflectionWorld();
+		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 		assertEquals("int",ResolvedType.INT,world.resolve(int.class));
 		assertEquals("void",ResolvedType.VOID,world.resolve(void.class));
 	}

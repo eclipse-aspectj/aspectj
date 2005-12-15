@@ -23,10 +23,6 @@ import java.util.Enumeration;
 public class DefaultWeavingContext implements IWeavingContext {
 	
 	protected ClassLoader loader;
-	
-	public DefaultWeavingContext(){
-		loader = getClass().getClassLoader();
-	}
 
 	/**
 	 * Construct a new WeavingContext to use the specifed ClassLoader

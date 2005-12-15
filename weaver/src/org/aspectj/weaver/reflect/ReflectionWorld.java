@@ -41,7 +41,7 @@ public class ReflectionWorld extends World {
 	private ClassLoader classLoader;
 	private AnnotationFinder annotationFinder;
 	
-	public ReflectionWorld() {
+	private ReflectionWorld() {
 		super();
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
