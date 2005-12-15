@@ -35,17 +35,27 @@ public aspect ITDTest {
     private static void checkITDMs(AjType<?> itdTest) throws ClassNotFoundException {
     	InterTypeMethodDeclaration[] itdms = itdTest.getDeclaredITDMethods();
     	assertEquals("expecting 3 declared methods, got: ",3,itdms.length);
-    	assertEquals("expecting method name a, got: ","a",itdms[0].getName());
-    	assertEquals("expecting method name b, got: ","b",itdms[1].getName());
-    	assertEquals("expecting method name c, got: ","c",itdms[2].getName());
-    	assertEquals("expecting AjType<a.b.c.A>",AjTypeSystem.getAjType(A.class),itdms[0].getTargetType());
-    	assertEquals("expecting public method, got:",true,Modifier.isPublic(itdms[0].getModifiers()));
-    	assertEquals("expecting private method, got:",true,Modifier.isPrivate(itdms[1].getModifiers()));
-    	assertEquals("expecting non-public method, got:",false,Modifier.isPublic(itdms[2].getModifiers()));
-    	assertEquals("one param, got: ",1,itdms[0].getParameterTypes().length);
-    	assertEquals("expecting String, got: ",String.class,itdms[0].getParameterTypes()[0].getJavaClass());
-    	assertEquals("nothing thrown, but: ",0,itdms[1].getExceptionTypes().length);
-    	assertEquals("expecting int, got: ",int.class,itdms[2].getReturnType().getJavaClass());
+    	InterTypeMethodDeclaration a = null,b = null,c = null;
+    	for (int i = 0; i < itdms.length; i++) {
+	    	if (itdms[i].getName().equals("a")) {
+	    		a = itdms[i];
+	    	} else if (itdms[i].getName().equals("b")) {
+	    		b = itdms[i];
+	    	} else if (itdms[i].getName().equals("c")) {
+	    		c = itdms[i];
+	    	}
+    	}
+    	assertNotNull("expecting method name a",a);
+    	assertNotNull("expecting method name b",b);
+    	assertNotNull("expecting method name c",c);
+    	assertEquals("expecting AjType<a.b.c.A>",AjTypeSystem.getAjType(A.class),a.getTargetType());
+    	assertEquals("expecting public method, got:",true,Modifier.isPublic(a.getModifiers()));
+    	assertEquals("expecting private method, got:",true,Modifier.isPrivate(b.getModifiers()));
+    	assertEquals("expecting non-public method, got:",false,Modifier.isPublic(c.getModifiers()));
+    	assertEquals("one param, got: ",1,a.getParameterTypes().length);
+    	assertEquals("expecting String, got: ",String.class,a.getParameterTypes()[0].getJavaClass());
+    	assertEquals("nothing thrown, but: ",0,b.getExceptionTypes().length);
+    	assertEquals("expecting int, got: ",int.class,c.getReturnType().getJavaClass());
     	itdms = itdTest.getITDMethods();
     	assertEquals("expecting 1 method, got: ",1,itdms.length);
        	assertEquals("expecting method name a, got: ","a",itdms[0].getName());
@@ -62,23 +72,33 @@ public aspect ITDTest {
     private static void checkITDFs(AjType<?> itdTest) throws ClassNotFoundException {
     	InterTypeFieldDeclaration[] itdfs = itdTest.getDeclaredITDFields();
     	assertEquals("expecting 3 declared fields, got: ",3, itdfs.length);
-    	assertEquals("expecting field name f, got: ","f",itdfs[0].getName());
-    	assertEquals("expecting field name g, got: ","g",itdfs[1].getName());
-    	assertEquals("expecting field name h, got: ","h",itdfs[2].getName());
-    	assertEquals("expecting AjType<a.b.c.A>",AjTypeSystem.getAjType(A.class),itdfs[0].getTargetType());
-       	assertEquals("expecting public field, got:",true,Modifier.isPublic(itdfs[0].getModifiers()));
-    	assertEquals("expecting private field, got:",true,Modifier.isPrivate(itdfs[1].getModifiers()));
-    	assertEquals("expecting non-public field, got:",false,Modifier.isPublic(itdfs[2].getModifiers()));
-       	assertEquals("expecting int, got: ",int.class,itdfs[2].getType().getJavaClass());
+    	InterTypeFieldDeclaration f = null,g = null,h = null;
+    	for (int i = 0; i < itdfs.length; i++) {
+	    	if (itdfs[i].getName().equals("f")) {
+	    		f = itdfs[i];
+	    	} else if (itdfs[i].getName().equals("g")) {
+	    		g = itdfs[i];
+	    	} else if (itdfs[i].getName().equals("h")) {
+	    		h = itdfs[i];
+	    	}
+    	}
+    	assertNotNull("expecting field name f",f);
+    	assertNotNull("expecting field name g",g);
+    	assertNotNull("expecting field name h",h);
+    	assertEquals("expecting AjType<a.b.c.A>",AjTypeSystem.getAjType(A.class),f.getTargetType());
+       	assertEquals("expecting public field, got:",true,Modifier.isPublic(f.getModifiers()));
+    	assertEquals("expecting private field, got:",true,Modifier.isPrivate(g.getModifiers()));
+    	assertEquals("expecting non-public field, got:",false,Modifier.isPublic(h.getModifiers()));
+       	assertEquals("expecting int, got: ",int.class,h.getType().getJavaClass());
         itdfs = itdTest.getITDFields();
     	assertEquals("expecting 1 field, got: ",1, itdfs.length);
     	assertEquals("expecting field name f, got: ","f",itdfs[0].getName());   
     	try {
-    		InterTypeFieldDeclaration f = itdTest.getDeclaredITDField("f",AjTypeSystem.getAjType(A.class));
+    		f = itdTest.getDeclaredITDField("f",AjTypeSystem.getAjType(A.class));
        		assertEquals("expecting f, got: ","f",f.getName());
     	} catch(NoSuchFieldException ex) { throw new RuntimeException("didn't find expected itdf"); }
        	try {
-       		InterTypeFieldDeclaration g = itdTest.getITDField("g",AjTypeSystem.getAjType(A.class));
+       		g = itdTest.getITDField("g",AjTypeSystem.getAjType(A.class));
        		throw new RuntimeException("Expected NoSuchFieldException not thrown");
        	} catch (NoSuchFieldException ex) { }
     }
@@ -153,6 +173,10 @@ public aspect ITDTest {
     
     private static void assertEquals(String msg, Object expected, Object actual) {
     	if (!expected.equals(actual)) throw new RuntimeException(msg + " " + actual.toString());
+    }
+    
+    private static void assertNotNull(String msg, Object obj) {
+    	if (obj == null) throw new RuntimeException(msg);
     }
 }
 

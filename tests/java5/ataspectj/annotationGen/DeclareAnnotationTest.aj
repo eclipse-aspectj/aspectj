@@ -16,11 +16,37 @@ public aspect DeclareAnnotationTest {
 		AjType<DeclareAnnotationTest> myType = AjTypeSystem.getAjType(DeclareAnnotationTest.class);
 		DeclareAnnotation[] decAs = myType.getDeclareAnnotations();
 		if (decAs.length != 4) throw new RuntimeException("Expecting 4 members, got " + decAs.length);
-		// should be in declaration order...
-		checkAtType(decAs[0]);
-		checkAtMethod(decAs[1]);
-		checkAtField(decAs[2]);
-		checkAtConstructor(decAs[3]);
+		
+		int atTypeIndex = -1;
+		int atMethodIndex = -1;
+		int atFieldIndex = -1;
+		int atConstructorIndex = -1;
+		
+		int index = 0;
+		for (DeclareAnnotation da : decAs) {
+			
+			switch (da.getKind()) {
+				case Field:
+					atFieldIndex = index++;
+					break;
+				case Method:
+					atMethodIndex = index++;
+					break;
+				case Constructor:
+					atConstructorIndex = index++;
+					break;
+				case Type:
+					atTypeIndex = index++;
+					break;
+				default: throw new RuntimeException ("unknown type");
+			}
+		}
+		
+		
+		checkAtType(decAs[atTypeIndex]);
+		checkAtMethod(decAs[atMethodIndex]);
+		checkAtField(decAs[atFieldIndex]);
+		checkAtConstructor(decAs[atConstructorIndex]);
 	}
 		
 	

@@ -318,10 +318,10 @@
 		<compile files="ReflectBilling.java,Billing.aj" options="-1.5"/>
 		<run class="ReflectBilling">
 			<stdout>
-				<line text="public abstract long Connection.callRate()"/>
-				<line text="public long LongDistance.callRate()"/>
-				<line text="public long Local.callRate()"/>
 				<line text="public void Customer.addCharge(long)"/>
+				<line text="public long Local.callRate()"/>
+				<line text="public long LongDistance.callRate()"/>
+				<line text="public abstract long Connection.callRate()"/>
 				<line text="public Customer Connection.payer"/>
 				<line text="public long Customer.totalCharge"/>
 			</stdout>
