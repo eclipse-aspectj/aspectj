@@ -1620,8 +1620,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// not marked abstract.  The code below this next line seems to make assumptions
 		// about what will have gotten through the compiler based on the normal
 		// java rules.  clone goes against these...
-		if (m2.isProtected() && m2.isNative() && m2.getName().equals("clone")) return +1;
-		
+		if (m2.isProtected() && m2.getName().charAt(0)=='c') {
+			UnresolvedType declaring = m2.getDeclaringType();
+			if (declaring!=null) {
+				if (declaring.getName().equals("java.lang.Object") && m2.getName().equals("clone")) return +1;
+			}
+		}
+
 		if (Modifier.isAbstract(m1.getModifiers())) return -1;
 		if (Modifier.isAbstract(m2.getModifiers())) return +1;
 	
