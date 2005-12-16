@@ -24,6 +24,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.IScope;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -559,6 +560,7 @@ public abstract class AjAttribute {
 			return AttributeName;
 		}		
 		private PerClause perClause;
+		private IScope resolutionScope;
 
 		public Aspect(PerClause perClause) {
 			this.perClause = perClause;
@@ -568,9 +570,18 @@ public abstract class AjAttribute {
 	    	//XXXperClause.concretize(inAspect);
 	        return perClause;
 	    }
+	    
+	    public PerClause reifyFromAtAspectJ(ResolvedType inAspect) {
+	      perClause.resolve(resolutionScope);
+	      return perClause;
+	    }
 		
 		public void write(DataOutputStream s) throws IOException {
 			perClause.write(s);
+		}
+
+		public void setResolutionScope(IScope binding) {
+			this.resolutionScope = binding;
 		}
 	}
 	

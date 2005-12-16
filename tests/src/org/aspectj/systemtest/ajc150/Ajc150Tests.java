@@ -852,6 +852,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("modifier overrides");
   }
   
+  public void testAbstractPerThisInAtAspectJ() {
+	  runTest("abstract perthis in @AspectJ");
+  }
+  
   // helper methods.....
   
   public SyntheticRepository createRepos(File cpentry) {
