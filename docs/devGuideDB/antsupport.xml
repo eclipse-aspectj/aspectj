@@ -425,10 +425,17 @@
 			<row>
 				<entry><para>X
 				</para></entry>
-				<entry><para>						
-				Set experimental option(s), using comma-separated list of accepted options 
-				(unlisted here). Options should not contain the leading X. 
-				XLint options should be specified using the xlint... entries.
+				<entry><para>
+					Set experimental option(s), using comma-separated list of accepted options 
+				    Options should not contain the leading X.
+                    Some commonly-used experimental options have their
+                    own entries.  The other permitted ones (currently) are
+                    serializableAspects, incrementalFile, lazyTjp,
+        		reweavable, notReweavable, noInline,
+            	noWeave,hasMember,
+                ajruntimelevel:1.2, and ajruntimelevel:1.5.
+                Of these, some were deprecated in AspectJ 5
+                    (reweavable, noWeave, etc.).
 				</para></entry>
 			</row>
 			<row>
@@ -464,6 +471,13 @@
 				</para></entry>
 				<entry><para>
 				If true, emit <literal>.ajesym</literal> symbol files for Emacs support.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>crossref
+				</para></entry>
+				<entry><para>
+				If true, emit <literal>.ajsym</literal> file into the output directory.
 				</para></entry>
 			</row>
 			<row>
@@ -680,10 +694,11 @@
 				</para></entry>
 				<entry><para>		
 				 	Set source compliance level to one of
-				 	[<literal>1.3 1.4</literal>]
-				 	(e.g., in 1.4 no assert identifiers
-				 	and no import from default package).
-				 	Defaults to 1.3 compliance level. 				
+				 	[<literal>1.3 1.4 1.5</literal>]
+                    (default is 1.4).
+                    1.3 implies -source 1.3 and -target 1.1.
+                    1.4 implies -source 1.4 and -target 1.2.
+                    1.5 implies -source 1.5 and -target 1.5.
 				</para></entry>
 			</row>
 			<row>
@@ -1372,9 +1387,9 @@
 				<entry><para>X
 				</para></entry>
 				<entry><para>
-				 	comma-delimited list of extended (-X...) options, 
-				 	entered without -X (e.g., 
-				 	<literal>X="lint"</literal> for -Xlint).
+				 	deprecated X options include
+					reweavable (on by default)
+					reweavable:compress (compressed by default)
 				</para></entry>
 			</row>
 			<row>
