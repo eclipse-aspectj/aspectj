@@ -254,10 +254,14 @@ public class AjcTask extends MatchingTask {
     private static final ICommandEditor COMMAND_EDITOR;
             
     static {
+        // many now deprecated: reweavable*, noWeave, ...
         String[] xs = new String[] 
             {   "serializableAspects", "incrementalFile", "lazyTjp",
-        		"reweavable", "reweavable:compress", "notReweavable", "noInline"
-            	//, "targetNearSource", "OcodeSize",
+        		"reweavable", "reweavable:compress", "notReweavable", "noInline",
+            	"noWeave","hasMember",
+                "ajruntimelevel:1.2", "ajruntimelevel:1.5", 
+                
+                //, "targetNearSource", "OcodeSize",
                  };
         VALID_XOPTIONS = Collections.unmodifiableList(Arrays.asList(xs));
 
