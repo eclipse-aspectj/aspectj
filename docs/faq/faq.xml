@@ -4106,14 +4106,21 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
         </question>
         <answer>
           <para>
-          AspectJ 1.1 can weave binary aspects
+          Since the 1.1 release, AspectJ can weave binary aspects
           into classes in bytecode form.  Hooked up to a class loader,
           this can weave class bytecodes after they are read in,
           before the
-          class is defined by the VM.  In the 1.1 release (or soon
-          thereafter) we will provide a proof-of-concept class loader,
-          but we expect most people will already have a custom 
-          class loader which they will adapt to invoke our weaver.
+          class is defined by the VM.  (This means load-time weaving
+          only works were aspects are not required to compile the pure-java
+          classes.  If the aspects are required, then the Java classes
+          have to be compiled with the aspects using the AspectJ compiler.)
+              The AspectJ 1.2 release had the
+              WeavingURLClassLoader, and the 1.2.1 release introduced
+              the aj.bat script for Java 1.4.
+              The AspectJ 5 release introduces much better support for
+              load-time weaving, including declaring concrete aspects
+              in XML files and integrating with Java 5 and BEA JRocket
+              JVM's.  See <xref linkend="aspectj5ltw"/>.
           </para> 
           <para>Some have asked about only weaving particular classes 
           specified at run-time.
