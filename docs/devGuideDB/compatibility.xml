@@ -2,7 +2,7 @@
 
   <title>AspectJ version compatibility</title>
 
-<sect1 id="versionCompatibility" xreflabel="Version Compatibility">
+<sect1 id="versionCompatibility" xreflabel="AspectJ Version Compatibility">
     <title>Version Compatibility</title>
     
     <para>Systems, code, and build tools change over time, often not in step.
