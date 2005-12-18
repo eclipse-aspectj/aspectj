@@ -22,7 +22,7 @@
        2003-2005 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated October 6, 2005
+  <para>Last updated December 18, 2005
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -1552,6 +1552,28 @@ aspect PublicErrorLogging {
     <qandadiv id="compiler" xreflabel="Using the AspectJ compiler">
       <title>Using the AspectJ compiler</title>
       <qandaentry>
+        <question id="q:compilerRequired"
+            xreflabel="Q:Do I have to use the AspectJ compiler?">
+          <para>
+            Do I have to use the AspectJ compiler?
+          </para>
+        </question>
+        <answer>
+            <para> The AspectJ compiler or weaver is required at some point, but
+                many people can use AspectJ without changing their build or
+                deployment process significantly. For aspects that are not
+                required to compile, you can use the AspectJ binary weaver, run
+                at build-time or class-load-time. You can write aspects using
+                the original code style (which must be compiled with the AspectJ
+                compiler) or using the annotation style new in AspectJ 5 (which
+                may be compiled with Javac or the AspectJ compiler). </para>
+          <para>
+              For more information, see
+              <xref linkend="q:codeversusannotationstyles"/>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
         <question id="q:requiredsources"
             xreflabel="Q:What files do I need to include when compiling AspectJ programs?">
           <para>
@@ -1746,7 +1768,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         </question>
         <answer>
           <para>Yes. As with <literal>Javac</literal>,
-          use the <literal>-source 1.5</literal> option as described
+          use the <literal>-1.5</literal> option as described
           in the
             <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
@@ -3776,6 +3798,169 @@ aspect A {
         </answer>
       </qandaentry>
     </qandadiv>
+    <qandadiv id="AspectJ5" xreflabel="AspectJ 5 and Java 5">
+      <qandaentry>
+        <question id="q:aspectj5features"
+            xreflabel="Q:What are the new features of AspectJ 5?">
+          <para>
+            What are the new features of AspectJ 5?
+          </para>
+        </question>
+        <answer>
+            <para>
+                All the new features are documented in the 
+                <ulink url="adk15notebook/index.html">
+              AspectJ 5 Developer's Notebook</ulink>
+                and the 
+                <ulink url="devguide/index.html">
+              AspectJ Development Environment Guide</ulink>.
+                To summarize:
+            </para>
+			<itemizedlist>
+				<listitem><para>
+                    Java 5 support: as an extension to Java, AspectJ supports
+                    all the new language features of Java 5, including generics
+                    (parameterized types), autoboxing, covariant return types,
+                    enhanced for-loops, enums, varargs, and of course 
+                    annotations.
+				</para></listitem>
+				<listitem><para>
+                    Java 5 extensions: the AspectJ language has been extended
+                    to make use of Java 5 language features.
+                    <itemizedlist>
+                        <listitem><para>
+                            Generic aspects: an abstract aspect can be declared
+                            with a generic type parameter which can be used 
+                            in pointcuts and when declaring members on the aspect
+                            (but not when declaring members on other types).
+        				</para></listitem>
+                        <listitem><para>
+                            Annotations: pointcuts can now pick out join points
+                            based on the associated annotations, annotation
+                            values can be bound in the same way that other
+                            context variables are bound at the join point,
+                            and annotations may be declared on other types in
+                            an aspect.
+        				</para></listitem>
+                    </itemizedlist>                    
+				</para></listitem>
+				<listitem><para>
+                    Annotation-style aspects: AspectJ 5 integrates AspectWerkz-style
+                    aspects declared in annotations.  This permits aspects to 
+                    be written and compiled in pure-java code and woven using
+                    build-time or load-time weaving with the AspectJ weaver.
+                    (The original AspectJ language aspects are distinguished
+                    as "code-style" aspects.)
+				</para></listitem>
+				<listitem><para>
+                    AspectWerkz load-time weaving: Load-time weaving is
+                    greatly improved for all versions of Java, and now supports
+                    an XML configuration file which can declare concrete aspects.
+                    This means developers can deploy binary abstract aspects
+                    that deployers configure using only XML.
+				</para></listitem>
+				<listitem><para>
+                    pertypewithin instantiation model: aspects may now be instantiated
+                    on a per-class basis.
+				</para></listitem>
+				<listitem><para>
+                    Reflection and runtime support: AspectJ 5 supports reflection
+                    on aspects using the Aspect class, and also support runtime
+                    evaluation of pointcuts using a pointcut parser.
+				</para></listitem>
+			</itemizedlist>
+          <para>
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:codeversusannotationstyles"
+            xreflabel="Q:Should I use code- or annotation-style aspects?">
+          <para>
+            Should I use code- or annotation-style aspects?
+          </para>
+        </question>
+        <answer>
+          <para>
+            To use AspectJ, you can use the original code-style aspects
+            or the annotation-style aspects new in AspectJ 5.  
+          </para>
+          <para>
+            The original code-style is a small extension of the Java language
+            designed to express crosscutting as clearly as possible
+            in ways familiar to most Java programmers.
+            To use the original code-style aspects,
+            compile them with the AspectJ compiler or weave
+            pre-compiled binary aspects using the AspectJ binary (.class)
+            weaver, either at build-time or at class-load-time.
+            Code-style aspects have excellent IDE support, allowing
+            you to navigate to and from affected source code.
+          </para>
+          <para>
+            Annotation-style
+            aspects are written (not surprisingly) using annotations.
+            They use the subset of the AspectJ language that works
+            when aspects are woven after the code is compiled.
+            The source files are compiled with Javac, which simply saves the 
+            annotations in the .class files.  The resulting .class files
+              must be woven using
+            the AspectJ weaver, which reads the annotations from the
+            .class file and uses them to define aspects.
+            Annotation-style aspects have the benefit of being compilable
+              by Javac, but you can't use the full AspectJ language,
+              and you don't enjoy the same level of IDE support
+              for viewing crosscutting structure.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question id="q:aspectj5ltw"
+            xreflabel="Q:What's new about the load-time weaving support in AspectJ 5?">
+          <para>
+            What's new about the load-time weaving support in AspectJ 5?
+          </para>
+        </question>
+        <answer>
+          <para>
+              While the AspectJ weaver could be used at load-time in previous
+              releases, the AspectJ 5 release supports much better integration
+              with the Java 5 VM and the BEA JRocket JVM.  It also supports
+              an XML file for configuration that allows deployers to declare
+              concrete aspects using only XML.  This means aspect developers
+              can write abstract aspects, and deployers need only configure
+              <literal>aop.xml</literal> and run using the AspectJ weaver in Java 5.  
+              For example, to run Java 5 VM with load-time weaving,
+          </para>
+<programlisting>
+            <![CDATA[
+java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
+]]>
+          </programlisting>        
+          <para>
+              To declare a concrete aspect, add a a 
+              concrete-aspect XML entity to <literal>META-INF/aop.xml</literal>.
+              This example extends a tracing aspect to apply to 
+              every type in the application:
+          </para>
+<programlisting>
+            <![CDATA[
+<concrete-aspect 
+    name="com.company.tracing.ConcreteTracing"
+    extends="tracing.AbstractTracing">
+    <pointcut 
+        name="tracingScope" 
+        expression="within(com.company.app..*)"/>
+</concrete-aspect>                
+]]>
+          </programlisting>  
+            <para>
+                For more information, see the
+                <ulink url="devguide/index.html">
+              AspectJ Development Environment Guide</ulink>.
+            </para>      
+        </answer>
+      </qandaentry>
+    </qandadiv>
     <qandadiv id="Technology" xreflabel="Understanding AspectJ Technology">
       <title>Understanding AspectJ Technology</title>
       <qandaentry>
@@ -4648,6 +4833,10 @@ aspect A {
           <para>
           Entries changed recently:
             <itemizedlist>
+        <listitem><para><xref linkend="q:compilerRequired"/></para></listitem>
+        <listitem><para><xref linkend="q:aspectj5features"/></para></listitem>
+        <listitem><para><xref linkend="q:codeversusannotationstyles"/></para></listitem>
+        <listitem><para><xref linkend="q:aspectj5ltw"/></para></listitem>
         <listitem><para><xref linkend="q:versionCompatibility"/></para></listitem>
         <listitem><para><xref linkend="q:bcel"/></para></listitem>
 		<listitem><para><xref linkend="q:reflectiveCalls"/></para></listitem>
@@ -4918,8 +5107,10 @@ aspect A {
                   </entry>
                 </row>
                 <row>
-                  <entry valign="top" align="center">1.3 (AspectJ 5)</entry>
-                  <entry>Support for Java 1.5
+                  <entry valign="top" align="center">1.5 (AspectJ 5)</entry>
+                  <entry>Support for Java 1.5, generic aspects,
+                      annotations, etc.  Integrates AspectWerkz-style
+                      load-time weaving.
                   </entry>
                 </row>
               </tbody>
@@ -4936,9 +5127,7 @@ aspect A {
         </question>
         <answer>
           <para>
-          Yes. We will support weaving Java 5 classes and upgrade the language
-		  to use annotations and generics.  For more information, see the
-		  documentation for the AspectJ 5 release.
+          Yes.  Java 5 is supported in AspectJ 5.
           </para>
         </answer>
       </qandaentry>
