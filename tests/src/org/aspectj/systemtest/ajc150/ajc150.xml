@@ -122,11 +122,9 @@
 
     <ajc-test dir="java5/decps" title="decps - 2b">
      <compile files="Basic2b.java" options="-1.5 -showWeaveInfo">
-       <message kind="weave" text="Join point 'method-execution(void X$I.m2())' in Type 'X' (Basic2.java:15) advised by before advice from 'X' (Basic2b.java:23)"/>
-       <message kind="weave" text="Type 'X$I' (Basic2b.java) has intertyped method from 'X' (Basic2.java:'void X$I.m2()')"/>
+       <message kind="weave" text="Join point 'method-execution(void X$IImpl.m2())' in Type 'X$IImpl' (Basic2b.java:18) advised by before advice from 'X' (Basic2b.java:27)"/>
        <message kind="weave" text="Extending interface set for type 'Basic2b' (Basic2b.java) to include 'X$I' (Basic2b.java)"/>
-       <message kind="weave" text="Type 'Basic2b' (Basic2b.java) has intertyped method from 'X' (Basic2b.java:'void X$I.m2()')"/>
-       <message kind="weave" text="Join point 'method-execution(void Basic2.main(java.lang.String[]))' in Type 'Basic2b' (Basic2b.java:2) advised by before advice from 'X' (Basic2b.java:23)"/>
+       <message kind="weave" text="Join point 'method-execution(void Basic2b.main(java.lang.String[]))' in Type 'Basic2b' (Basic2b.java:4) advised by before advice from 'X' (Basic2b.java:27)"/>
      </compile>
      <run class="Basic2b"/>
     </ajc-test>  
@@ -154,13 +152,10 @@
        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m2()')"/>
        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m3()')"/>
 	   <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m4()')"/>
-	   <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:7) advised by before advice from 'X' (Basic3b.java:29)"/>
-	   <message kind="weave" text="Join point 'method-call(void X$I.m3())' in Type 'Basic3b' (Basic3b.java:8) advised by before advice from 'X' (Basic3b.java:29)"/>
-	   <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:9) advised by before advice from 'X' (Basic3b.java:29)"/>
-	   <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'X' (Basic3b.java:29)"/>
-	   <message kind="weave" text="Type 'X$I' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m2()')"/>
-	   <message kind="weave" text="Type 'X$I' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m3()')"/>
-	   <message kind="weave" text="Type 'X$I' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m4()')"/>
+	   <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:7) advised by before advice from 'X' (Basic3b.java:36)"/>
+	   <message kind="weave" text="Join point 'method-call(void X$I.m3())' in Type 'Basic3b' (Basic3b.java:8) advised by before advice from 'X' (Basic3b.java:36)"/>
+	   <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:9) advised by before advice from 'X' (Basic3b.java:36)"/>
+	   <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'X' (Basic3b.java:36)"/>
 	 </compile>
      <run class="Basic3b"/>
     </ajc-test>   

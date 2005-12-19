@@ -16,17 +16,20 @@ public class Basic3b {
 @Aspect class X {
 
   interface I { 
+	  public void m2();
+	  public void m3();
+	  public void m4();
   }
 
-  class IIimpl implements I {
+  class IImpl implements I {
     public void m2() { }
     public void m3() { }
     public void m4() { }
   }
 
 
-  @DeclareParents("Basic3b",defaultimpl="IImpl")
-  private I simplefield;;
+  @DeclareParents(value="Basic3b",defaultImpl=IImpl.class)
+  private I simplefield;
 
 
   @Before("call(* *(..))")

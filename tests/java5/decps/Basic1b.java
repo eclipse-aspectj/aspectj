@@ -15,7 +15,7 @@ class X {
   interface I { 
   }
  
-  @DeclareParents("Basic1bb")
+  @DeclareParents("Basic1b")
   private I someField;
 
 }

@@ -14,12 +14,12 @@ public class Basic2b {
   interface I { 
   }
 
-  class IIimpl implements I {
+  class IImpl implements I {
     public void m2() { }
   }
 
 
-  @DeclareParents("Basic2b",defaultimpl="IImpl")
+  @DeclareParents(value="Basic2b",defaultImpl=X.IImpl.class)
   private I simplefield;;
 
 
