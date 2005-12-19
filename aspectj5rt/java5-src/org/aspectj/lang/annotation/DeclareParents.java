@@ -28,4 +28,14 @@ public @interface DeclareParents {
      */
     String value();
     
+    /**
+     * Optional class defining default implementation
+     * of interface members (equivalent to defining
+     * a set of interface member ITDs for the
+     * public methods of the interface).
+     */
+    Class defaultImpl() default DeclareParents.class;
+    
+    // note - a default of "null" is not allowed,
+    // hence the strange default given above.
 }

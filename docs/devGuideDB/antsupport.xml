@@ -432,7 +432,7 @@
                     own entries.  The other permitted ones (currently) are
                     serializableAspects, incrementalFile, lazyTjp,
         		reweavable, notReweavable, noInline,
-            	noWeave,hasMember,
+            	noWeave,
                 ajruntimelevel:1.2, and ajruntimelevel:1.5.
                 Of these, some were deprecated in AspectJ 5
                     (reweavable, noWeave, etc.).

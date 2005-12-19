@@ -456,12 +456,15 @@
     (Experimental) Create class files that can't be subsequently rewoven by AspectJ.
         </para></listitem>
       </varlistentry>
+      <!-- not documenting this feature yet -->
+      <!--
       <varlistentry>
         <term>-XhasMember</term>
         <listitem><para>
             (Experimental) Allow hasmethod() and hasfield type patterns in declare parents and declare @type.
         </para></listitem>
       </varlistentry>
+      -->
       <varlistentry>
         <term>-Xajruntimelevel:1.2, ajruntimelevel:1.5</term>
         <listitem><para>

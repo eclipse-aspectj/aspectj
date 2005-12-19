@@ -273,20 +273,31 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
         List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler(),AjAttribute.WeaverVersionInfo.UNKNOWN);
 		processAttributes(l,pointcuts,false);
 		l = AtAjAttributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler(),isCodeStyleAspect);
-		processAttributes(l,pointcuts,true);
+		AjAttribute.Aspect deferredAspectAttribute = processAttributes(l,pointcuts,true);
 		
 		this.pointcuts = (ResolvedPointcutDefinition[]) 
 			pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+
+		if (deferredAspectAttribute != null) {
+			// we can finally process the aspect and its associated perclause...
+			perClause = deferredAspectAttribute.reifyFromAtAspectJ(this.getResolvedTypeX());
+		}
+
 	}
 
 
-    private void processAttributes(List attributeList, List pointcuts, boolean fromAnnotations) {
+    private AjAttribute.Aspect processAttributes(List attributeList, List pointcuts, boolean fromAnnotations) {
+    	AjAttribute.Aspect deferredAspectAttribute = null;
 		for (Iterator iter = attributeList.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			//System.err.println("unpacking: " + this + " and " + a);
 			if (a instanceof AjAttribute.Aspect) {
-				perClause = ((AjAttribute.Aspect)a).reify(this.getResolvedTypeX());
-				if (!fromAnnotations) isCodeStyleAspect = true;
+				if (fromAnnotations) {
+					deferredAspectAttribute = (AjAttribute.Aspect) a;
+				} else {
+					perClause = ((AjAttribute.Aspect)a).reify(this.getResolvedTypeX());
+					isCodeStyleAspect = true;
+				}
 			} else if (a instanceof AjAttribute.PointcutDeclarationAttribute) {
 				pointcuts.add(((AjAttribute.PointcutDeclarationAttribute)a).reify());
 			} else if (a instanceof AjAttribute.WeaverState) {
@@ -307,6 +318,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				throw new BCException("bad attribute " + a);
 			}
 		}
+		return deferredAspectAttribute;
 	}
 
 	public PerClause getPerClause() {

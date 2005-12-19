@@ -338,6 +338,7 @@ public class AtAjAttributes {
             }
             struct.ajAttributes.addAll(fstruct.ajAttributes);
         }
+        
         return struct.ajAttributes;
     }
 
@@ -462,7 +463,8 @@ public class AtAjAttributes {
         // Note: field annotation are for ITD and DEOW - processed at class level directly
         return Collections.EMPTY_LIST;
     }
-
+    
+    
     /**
      * Read @Aspect
      *
@@ -507,7 +509,8 @@ public class AtAjAttributes {
                 perClause.setLocation(struct.context, struct.context.getOffset(), struct.context.getOffset()+1);//FIXME AVASM
                 // FIXME asc see related comment way about about the version...
                 struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
-                struct.ajAttributes.add(new AjAttribute.Aspect(perClause));
+                AjAttribute.Aspect aspectAttribute = new AjAttribute.Aspect(perClause);
+                struct.ajAttributes.add(aspectAttribute);
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
                 final IScope binding;
                 binding = new BindingScope(
@@ -515,7 +518,14 @@ public class AtAjAttributes {
                             struct.context,
                             bindings
                         );
-                perClause.resolve(binding);
+                
+//                // we can't resolve here since the perclause typically refers to pointcuts
+//                // defined in the aspect that we haven't told the BcelObjectType about yet.
+//                
+//                perClause.resolve(binding);
+                
+                // so we prepare to do it later...
+                aspectAttribute.setResolutionScope(binding);
                 return true;
             }
         }
@@ -531,25 +541,25 @@ public class AtAjAttributes {
      */
     private static PerClause parsePerClausePointcut(String perClauseString, AjAttributeStruct struct) {
         final String pointcutString;
-        Pointcut poincut = null;
+        Pointcut pointcut = null;
         TypePattern typePattern = null;
         final PerClause perClause;
         if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERCFLOW.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERCFLOW.extractPointcut(perClauseString);
-            poincut = parsePointcut(pointcutString, struct, false);
-            perClause = new PerCflow(poincut, false);
+            pointcut = parsePointcut(pointcutString, struct, false);
+            perClause = new PerCflow(pointcut, false);
         } else if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERCFLOWBELOW.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERCFLOWBELOW.extractPointcut(perClauseString);
-            poincut = parsePointcut(pointcutString, struct, false);
-            perClause = new PerCflow(poincut, true);
+            pointcut = parsePointcut(pointcutString, struct, false);
+            perClause = new PerCflow(pointcut, true);
         } else if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERTARGET.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERTARGET.extractPointcut(perClauseString);
-            poincut = parsePointcut(pointcutString, struct, false);
-            perClause = new PerObject(poincut, false);
+            pointcut = parsePointcut(pointcutString, struct, false);
+            perClause = new PerObject(pointcut, false);
         } else if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERTHIS.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERTHIS.extractPointcut(perClauseString);
-            poincut = parsePointcut(pointcutString, struct, false);
-            perClause = new PerObject(poincut, true);
+            pointcut = parsePointcut(pointcutString, struct, false);
+            perClause = new PerObject(pointcut, true);
         } else if (perClauseString.startsWith(PerClause.KindAnnotationPrefix.PERTYPEWITHIN.getName())) {
             pointcutString = PerClause.KindAnnotationPrefix.PERTYPEWITHIN.extractPointcut(perClauseString);
             typePattern = parseTypePattern(pointcutString, struct);
@@ -564,7 +574,7 @@ public class AtAjAttributes {
 
         if (!PerClause.SINGLETON.equals(perClause.getKind())
                 && !PerClause.PERTYPEWITHIN.equals(perClause.getKind())
-                && poincut == null) {
+                && pointcut == null) {
             // we could not parse the pointcut
             return null;
         }
