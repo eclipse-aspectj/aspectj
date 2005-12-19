@@ -2,8 +2,8 @@ import org.aspectj.lang.annotation.*;
 
 public aspect AtAspectJDeclareParents {
 	
-	@DeclareParents("C")
-	public static I mixin = new Impl();
+	@DeclareParents(value="C",defaultImpl=Impl.class)
+	private I implementedInterface;
 	
 }
 

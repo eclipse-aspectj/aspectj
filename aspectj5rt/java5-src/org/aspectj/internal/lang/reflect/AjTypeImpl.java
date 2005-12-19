@@ -661,8 +661,10 @@ public class AjTypeImpl<T> implements AjType<T> {
 		if (isAspect()) {
             for (Field f : clazz.getDeclaredFields()) {
                 if (!f.getType().isInterface()) continue;
-                if (!Modifier.isPublic(f.getModifiers()) || !Modifier.isStatic(f.getModifiers())) continue;
-                if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {                	 
+                if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
+                	Class<org.aspectj.lang.annotation.DeclareParents> decPAnnClass = org.aspectj.lang.annotation.DeclareParents.class;
+                	org.aspectj.lang.annotation.DeclareParents decPAnn = f.getAnnotation(decPAnnClass);
+               	    if (decPAnn.defaultImpl() == decPAnnClass) continue; // doesn't contribute members...
                     for (Method itdM : f.getType().getDeclaredMethods()) {
                         if (!Modifier.isPublic(itdM.getModifiers()) && publicOnly) continue;
                         InterTypeMethodDeclaration itdm = new InterTypeMethodDeclarationImpl(
@@ -951,21 +953,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	
 	private void addAnnotationStyleDeclareParents(List<DeclareParents> toList) {
         for (Field f : clazz.getDeclaredFields()) {
-            if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareImplements.class)) {
-                if (!f.getType().isInterface()) continue;
-                org.aspectj.lang.annotation.DeclareImplements ann = f.getAnnotation(org.aspectj.lang.annotation.DeclareImplements.class);
-                String parentType = f.getType().getName();
-                DeclareParentsImpl decp = new DeclareParentsImpl(
-                        ann.value(),
-                        parentType,
-                        false,
-                        this
-                );
-                toList.add(decp);
-            }
-            if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)
-                && Modifier.isStatic(f.getModifiers())
-                && Modifier.isPublic(f.getModifiers())) {
+            if (f.isAnnotationPresent(org.aspectj.lang.annotation.DeclareParents.class)) {
                 if (!f.getType().isInterface()) continue;
                 org.aspectj.lang.annotation.DeclareParents ann = f.getAnnotation(org.aspectj.lang.annotation.DeclareParents.class);
                 String parentType = f.getType().getName();

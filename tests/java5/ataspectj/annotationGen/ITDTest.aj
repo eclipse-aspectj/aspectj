@@ -186,7 +186,7 @@ class A {}
 @Aspect
 class X {
 	
-	@org.aspectj.lang.annotation.DeclareParents("org.xyz..*")
+	@org.aspectj.lang.annotation.DeclareParents(value="org.xyz..*",defaultImpl=Mixin.class)
 	public static I myMixin = new Mixin();
 
 
