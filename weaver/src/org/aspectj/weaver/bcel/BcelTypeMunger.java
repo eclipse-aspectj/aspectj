@@ -29,6 +29,7 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.BranchInstruction;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -63,7 +64,7 @@ import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
-
+import org.aspectj.lang.Signature;
 
 //XXX addLazyMethodGen is probably bad everywhere
 public class BcelTypeMunger extends ConcreteTypeMunger {
@@ -87,6 +88,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewMethod(weaver, (NewMethodTypeMunger)munger);
         } else if (munger.getKind() == ResolvedTypeMunger.MethodDelegate) {
             changed = mungeMethodDelegate(weaver, (MethodDelegateTypeMunger)munger);
+        } else if (munger.getKind() == ResolvedTypeMunger.FieldHost) {
+            changed = mungeFieldHost(weaver, (MethodDelegateTypeMunger.FieldHostTypeMunger)munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.PerObjectInterface) {
 			changed = mungePerObjectInterface(weaver, (PerObjectInterfaceTypeMunger)munger);
 			worthReporting = false;
@@ -147,7 +150,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 //                  reportDeclareParentsMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSEXTENDS,sourceType,parent);
                     
         		}
-        	} else {
+            } else if (munger.getKind().equals(ResolvedTypeMunger.FieldHost)) {
+                ;//hidden
+            } else {
         		ResolvedMember declaredSig = munger.getDeclaredSignature();
         		if (declaredSig==null) declaredSig= munger.getSignature();
         		weaver.getWorld().getMessageHandler().handleMessage(WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ITD,
@@ -1103,11 +1108,23 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             InstructionList body = new InstructionList();
             InstructionFactory fact = gen.getFactory();
 
-            // getstatic field from aspect
-            body.append(Utility.createGet(fact, munger.getDelegate()));
+            // getfield
+            body.append(InstructionConstants.ALOAD_0);
+            body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+            BranchInstruction ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
+            body.append(ifNonNull);
+            InstructionHandle ifNonNullElse = body.append(InstructionConstants.ALOAD_0);
+            body.append(fact.createNew(munger.getImplClassName()));
+            body.append(InstructionConstants.DUP);
+            body.append(fact.createInvoke(munger.getImplClassName(), "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
+            body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+            ifNonNull.setTarget(ifNonNullElse);
+            body.append(InstructionConstants.ALOAD_0);
+            body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 
+            //args
             int pos = 0;
-    		if (!introduced.isStatic()) { // skip 'this'
+    		if (!introduced.isStatic()) { // skip 'this' (?? can this really happen)
     		  //body.append(InstructionFactory.createThis());
     		  pos++;
     		}
@@ -1133,7 +1150,25 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         return false;
     }
 
-	private ResolvedMember getRealMemberForITDFromAspect(ResolvedType aspectType,ResolvedMember lookingFor,boolean isCtorRelated) {
+    private boolean mungeFieldHost(BcelClassWeaver weaver, MethodDelegateTypeMunger.FieldHostTypeMunger munger) {
+        LazyClassGen gen = weaver.getLazyClassGen();
+        if (gen.getType().isAnnotation() || gen.getType().isEnum()) {
+            // don't signal error as it could be a consequence of a wild type pattern
+            return false;
+        }
+        boolean shouldApply = munger.matches(weaver.getLazyClassGen().getType(), aspectType);
+        ResolvedMember host = AjcMemberMaker.itdAtDeclareParentsField(
+                weaver.getLazyClassGen().getType(),
+                munger.getSignature().getType(),
+                aspectType);
+        weaver.getLazyClassGen().addField(makeFieldGen(
+                weaver.getLazyClassGen(),
+                host).getField(), null);
+        return true;
+    }
+
+
+    private ResolvedMember getRealMemberForITDFromAspect(ResolvedType aspectType,ResolvedMember lookingFor,boolean isCtorRelated) {
 		World world = aspectType.getWorld();
 		boolean debug = false;
 		if (debug) {

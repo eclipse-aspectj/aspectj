@@ -50,10 +50,11 @@ public class DeclareParentsImplementsTest extends TestCase {
     @Aspect
     static class TestAspect {
 
-        @DeclareParents("ataspectj.DeclareParentsImplementsTest.Target")
-        public static Introduced i = new Implementation();//see here control of instantiation
+        @DeclareParents(value="ataspectj.DeclareParentsImplementsTest.Target",
+                        defaultImpl=Implementation.class)
+        public static Introduced i;
         // will lead to: class Target implements Introduced {
-        //    void intro(args) { TestAspect.i.intro(args); }
+        //    void intro(args) { delegate to some hidden field, lazy initialized here for now }
         // }
 
         @Before("execution(* ataspectj.DeclareParentsImplementsTest.Introduced.intro())")

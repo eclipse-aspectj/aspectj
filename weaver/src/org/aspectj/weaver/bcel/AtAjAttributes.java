@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.lang.reflect.Modifier;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -31,6 +32,7 @@ import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -50,6 +52,9 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.ResolvedMemberImpl;
+import org.aspectj.weaver.Member;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
@@ -317,7 +322,6 @@ public class AtAjAttributes {
                 if (acceptAttribute(fattribute)) {
                     RuntimeAnnotations frvs = (RuntimeAnnotations) fattribute;
                     if (handleDeclareErrorOrWarningAnnotation(frvs, fstruct)
-                            || handleDeclareImplementsAnnotation(frvs, fstruct)
                             || handleDeclareParentsAnnotation(frvs, fstruct)) {
                         // semantic check - must be in an @Aspect [remove if previous block bypassed in advance]
                         if (!type.isAnnotationStyleAspect()) {
@@ -338,7 +342,7 @@ public class AtAjAttributes {
             }
             struct.ajAttributes.addAll(fstruct.ajAttributes);
         }
-        
+
         return struct.ajAttributes;
     }
 
@@ -463,8 +467,8 @@ public class AtAjAttributes {
         // Note: field annotation are for ITD and DEOW - processed at class level directly
         return Collections.EMPTY_LIST;
     }
-    
-    
+
+
     /**
      * Read @Aspect
      *
@@ -518,12 +522,12 @@ public class AtAjAttributes {
                             struct.context,
                             bindings
                         );
-                
+
 //                // we can't resolve here since the perclause typically refers to pointcuts
 //                // defined in the aspect that we haven't told the BcelObjectType about yet.
-//                
+//
 //                perClause.resolve(binding);
-                
+
                 // so we prepare to do it later...
                 aspectAttribute.setResolutionScope(binding);
                 return true;
@@ -607,47 +611,47 @@ public class AtAjAttributes {
         return false;
     }
 
-    /**
-     * Read @DeclareImplements
-     *
-     * @param runtimeAnnotations
-     * @param struct
-     * @return true if found
-     */
-    private static boolean handleDeclareImplementsAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct struct) {//, ResolvedPointcutDefinition preResolvedPointcut) {
-        Annotation deci = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREIMPLEMENTS_ANNOTATION);
-        if (deci != null) {
-            ElementNameValuePair deciPatternNVP = getAnnotationElement(deci, VALUE);
-            String deciPattern = deciPatternNVP.getValue().stringifyValue();
-            if (deciPattern != null) {
-                TypePattern typePattern = parseTypePattern(deciPattern, struct);
-                ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(struct.enclosingType.getWorld());
-                if (fieldType.isPrimitiveType()) {
-                    return false;
-                } else if (fieldType.isInterface()) {
-                    TypePattern parent = new ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()), false, false);
-                    parent.resolve(struct.enclosingType.getWorld());
-                    List parents = new ArrayList(1);
-                    parents.add(parent);
-                    //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
-                    struct.ajAttributes.add(
-                            new AjAttribute.DeclareAttribute(
-                                    new DeclareParents(
-                                        typePattern,
-                                        parents,
-                                        false
-                                    )
-                            )
-                    );
-                    return true;
-                } else {
-                    reportError("@DeclareImplements: can only be used on field whose type is an interface", struct);
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
+//    /**
+//     * Read @DeclareImplements
+//     *
+//     * @param runtimeAnnotations
+//     * @param struct
+//     * @return true if found
+//     */
+//    private static boolean handleDeclareImplementsAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct struct) {//, ResolvedPointcutDefinition preResolvedPointcut) {
+//        Annotation deci = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREIMPLEMENTS_ANNOTATION);
+//        if (deci != null) {
+//            ElementNameValuePair deciPatternNVP = getAnnotationElement(deci, VALUE);
+//            String deciPattern = deciPatternNVP.getValue().stringifyValue();
+//            if (deciPattern != null) {
+//                TypePattern typePattern = parseTypePattern(deciPattern, struct);
+//                ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(struct.enclosingType.getWorld());
+//                if (fieldType.isPrimitiveType()) {
+//                    return false;
+//                } else if (fieldType.isInterface()) {
+//                    TypePattern parent = new ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()), false, false);
+//                    parent.resolve(struct.enclosingType.getWorld());
+//                    List parents = new ArrayList(1);
+//                    parents.add(parent);
+//                    //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
+//                    struct.ajAttributes.add(
+//                            new AjAttribute.DeclareAttribute(
+//                                    new DeclareParents(
+//                                        typePattern,
+//                                        parents,
+//                                        false
+//                                    )
+//                            )
+//                    );
+//                    return true;
+//                } else {
+//                    reportError("@DeclareImplements: can only be used on field whose type is an interface", struct);
+//                    return false;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * Read @DeclareParents
@@ -664,9 +668,7 @@ public class AtAjAttributes {
             if (decpPattern != null) {
                 TypePattern typePattern = parseTypePattern(decpPattern, struct);
                 ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(struct.enclosingType.getWorld());
-                if (fieldType.isPrimitiveType()) {
-                    return false;
-                } else if (fieldType.isInterface() && (struct.field.isPublic() && struct.field.isStatic())) {
+                if (fieldType.isInterface()) {
                     TypePattern parent = new ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()), false, false);
                     parent.resolve(struct.enclosingType.getWorld());
                     //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
@@ -681,25 +683,66 @@ public class AtAjAttributes {
                                     )
                             )
                     );
+
+
+                    // do we have a defaultImpl=xxx.class (ie implementation)
+                    String defaultImplClassName = null;
+                    ElementNameValuePair defaultImplNVP = getAnnotationElement(decp, "defaultImpl");
+                    if (defaultImplNVP != null) {
+                        ClassElementValue defaultImpl = (ClassElementValue) defaultImplNVP.getValue();
+                        defaultImplClassName = UnresolvedType.forSignature(defaultImpl.getClassString()).getName();
+                        if (defaultImplClassName.equals("org.aspectj.lang.annotation.DeclareParents")) {
+                            defaultImplClassName = null;
+                        }
+                        //TODO check public no arg ctor
+                    }
+
                     // then iterate on field interface hierarchy (not object)
-                    for (Iterator it = fieldType.getMethods(); it.hasNext();) {
-                        ResolvedMember method = (ResolvedMember)it.next();
+                    boolean hasAtLeastOneMethod = false;
+                    ResolvedMember[] methods = (ResolvedMember[])fieldType.getMethodsWithoutIterator(true, false).toArray(new ResolvedMember[0]);
+                    for (int i = 0; i < methods.length; i++) {
+                        ResolvedMember method = (ResolvedMember)methods[i];
                         if (method.isAbstract()) {
+                            if (defaultImplClassName == null) {
+                                // non marker interface with no default impl provided
+                                reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided", struct);
+                                return false;
+                            }
+                            hasAtLeastOneMethod = true;
+                            
                             struct.ajAttributes.add(
                                     new AjAttribute.TypeMunger(
                                             new MethodDelegateTypeMunger(
                                                 method,
                                                 struct.enclosingType,
-                                                struct.field.getName(),
+                                                defaultImplClassName,
                                                 typePattern
                                             )
                                     )
                             );
                         }
                     }
+                    // successfull so far, we thus need a bcel type munger to have
+                    // a field hosting the mixin in the target type
+                    if (hasAtLeastOneMethod) {
+                        struct.ajAttributes.add(
+                                new AjAttribute.TypeMunger(
+                                        new MethodDelegateTypeMunger.FieldHostTypeMunger(
+                                                AjcMemberMaker.itdAtDeclareParentsField(
+                                                        null,//prototyped
+                                                        fieldType,
+                                                        struct.enclosingType
+                                                ),
+                                                struct.enclosingType,
+                                                typePattern
+                                        )
+                                )
+                        );
+                    }
+
                     return true;
                 } else {
-                    reportError("@DeclareParents: can only be used on a public static field whose type is an interface", struct);
+                    reportError("@DeclareParents: can only be used on a field whose type is an interface", struct);
                     return false;
                 }
             }

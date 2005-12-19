@@ -28,10 +28,12 @@ import org.aspectj.weaver.patterns.TypePattern;
  */
 public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 
+    private final UnresolvedType aspect;
+
     /**
-     * The field in the aspect that hosts the mixin instance
+     * The mixin impl (no arg ctor)
      */
-    private final ResolvedMember aspectFieldDelegate;
+    private final String implClassName;
 
     /**
      * Type pattern this munger applies to
@@ -43,52 +45,42 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
      *
      * @param signature
      * @param aspect
-     * @param fieldName
+     * @param implClassName
      * @param typePattern
      */
-    public MethodDelegateTypeMunger(ResolvedMember signature, ResolvedType aspect, String fieldName, TypePattern typePattern) {
+    public MethodDelegateTypeMunger(ResolvedMember signature, UnresolvedType aspect, String implClassName, TypePattern typePattern) {
         super(MethodDelegate, signature);
+        this.aspect = aspect;
         this.typePattern = typePattern;
-
-        ResolvedMember[] fields = aspect.getDeclaredFields();//note: will unpack attributes
-        ResolvedMember field = null;
-        for (int i = 0; i < fields.length; i++) {
-            if (fieldName.equals(fields[i].getName())) {
-                field = fields[i];
-                break;
-            }
-        }
-        if (field == null) {           
-            throw new RuntimeException("Should not happen: aspect field not found for @DeclareParents delegate");
-        } else {
-            aspectFieldDelegate = field;
-        }
+        this.implClassName = implClassName;
     }
 
-    private MethodDelegateTypeMunger(ResolvedMember signature, ResolvedMember fieldDelegate, TypePattern typePattern) {
-        super(MethodDelegate, signature);
-        this.aspectFieldDelegate = fieldDelegate;
-        this.typePattern = typePattern;
+    public ResolvedMember getDelegate(ResolvedType targetType) {
+        return AjcMemberMaker.itdAtDeclareParentsField(
+                targetType,
+                signature.getDeclaringType(),
+                aspect
+        );
     }
 
-    public ResolvedMember getDelegate() {
-        return aspectFieldDelegate;
+    public String getImplClassName() {
+        return implClassName;
     }
 
     public void write(DataOutputStream s) throws IOException {
         kind.write(s);
         signature.write(s);
-        aspectFieldDelegate.write(s);
+        aspect.write(s);
+        s.writeUTF(implClassName);
         typePattern.write(s);
     }
 
-
-
     public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
         ResolvedMemberImpl signature = ResolvedMemberImpl.readResolvedMember(s, context);
-        ResolvedMemberImpl field = ResolvedMemberImpl.readResolvedMember(s, context);
+        UnresolvedType aspect = UnresolvedType.read(s);
+        String implClassName = s.readUTF();
         TypePattern tp = TypePattern.read(s, context);
-        return new MethodDelegateTypeMunger(signature, field, tp);
+        return new MethodDelegateTypeMunger(signature, aspect, implClassName, tp);
     }
 
     /**
@@ -114,5 +106,63 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
      */
     public boolean changesPublicSignature() {
         return true;
+    }
+
+    public static class FieldHostTypeMunger extends ResolvedTypeMunger {
+
+        private UnresolvedType aspect;
+
+        /**
+         * Type pattern this munger applies to
+         */
+        private final TypePattern typePattern;
+
+        /**
+         * Construct a new type munger for @AspectJ ITD
+         *
+         * @param field
+         * @param aspect
+         * @param typePattern
+         */
+        public FieldHostTypeMunger(ResolvedMember field, UnresolvedType aspect, TypePattern typePattern) {
+            super(FieldHost, field);
+            this.aspect = aspect;
+            this.typePattern = typePattern;
+        }
+
+        public void write(DataOutputStream s) throws IOException {
+            kind.write(s);
+            signature.write(s);
+            aspect.write(s);
+            typePattern.write(s);
+        }
+
+        public static ResolvedTypeMunger readFieldHost(VersionedDataInputStream s, ISourceContext context) throws IOException {
+            ResolvedMemberImpl signature = ResolvedMemberImpl.readResolvedMember(s, context);
+            UnresolvedType aspect = UnresolvedType.read(s);
+            TypePattern tp = TypePattern.read(s, context);
+            return new FieldHostTypeMunger(signature, aspect, tp);
+        }
+
+        /**
+         * Match based on given type pattern, only classes can be matched
+         *
+         * @param matchType
+         * @param aspectType
+         * @return true if match
+         */
+        public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
+            // match only on class
+            if (matchType.isEnum() || matchType.isInterface() || matchType.isAnnotation()) {
+                return false;
+            }
+
+            return typePattern.matchesStatically(matchType);
+        }
+
+        public boolean changesPublicSignature() {
+            return false;
+        }
+
     }
 }

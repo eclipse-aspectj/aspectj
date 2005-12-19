@@ -64,16 +64,17 @@ public class NameMangler {
 	
 	// PTWIMPL method names that must include aspect type
 	public static String perTypeWithinFieldForTarget(UnresolvedType aspectType) {
-		String s = makeName(aspectType.getNameAsIdentifier(), "ptwAspectInstance");
-		return s;
+		return makeName(aspectType.getNameAsIdentifier(), "ptwAspectInstance");
 	}
-	
-	public static String perTypeWithinLocalAspectOf(UnresolvedType aspectType) {
+
+    public static String perTypeWithinLocalAspectOf(UnresolvedType aspectType) {
 		return makeName(aspectType.getNameAsIdentifier(), "localAspectOf");
 	}
 	
-	
-	
+    public static String itdAtDeclareParentsField(UnresolvedType aspectType, UnresolvedType itdType) {
+        return makeName(aspectType.getNameAsIdentifier(), itdType.getNameAsIdentifier());
+    }
+
 	public static String privilegedAccessMethodForMethod(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("privMethod", aspectType.getNameAsIdentifier(),
 					objectType.getNameAsIdentifier(), name);
