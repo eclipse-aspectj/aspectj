@@ -454,11 +454,14 @@ public class BcelAdvice extends Advice {
 	                    }
 	                } else if (hasExtraParameter()) {
                         previousIsClosure = false;
-	                    extraVar.appendLoadAndConvert(
-	                        il,
-	                        fact,
-	                        getExtraParameterType().resolve(world));
-	                } else {
+                        //extra var can be null here (@Aj aspect extends abstract code style, advice in code style)
+                        if (extraVar != null) {
+                            extraVar.appendLoadAndConvert(
+                                il,
+                                fact,
+                                getExtraParameterType().resolve(world));
+                        }
+                    } else {
                         previousIsClosure = false;
                         getConcreteAspect().getWorld().getMessageHandler().handleMessage(
                                 new Message(

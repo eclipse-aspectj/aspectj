@@ -41,6 +41,9 @@ public class DeclareParentsImplementsTest extends TestCase {
     }
 
     static class Implementation implements Introduced {
+        public Implementation(int i) {}
+        public Implementation() {}
+
         public void intro() {
             log("intro-"+field1);
             // we cannot copy the raw bytecode as there might be super.* calls, and other OO stuff
