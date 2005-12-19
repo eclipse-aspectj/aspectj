@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.lang.reflect.Modifier;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -29,10 +28,10 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -52,9 +51,6 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.NewFieldTypeMunger;
-import org.aspectj.weaver.ResolvedMemberImpl;
-import org.aspectj.weaver.Member;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
@@ -671,16 +667,18 @@ public class AtAjAttributes {
                 if (fieldType.isInterface()) {
                     TypePattern parent = new ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()), false, false);
                     parent.resolve(struct.enclosingType.getWorld());
-                    //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
                     // first add the declare implements like
                     List parents = new ArrayList(1); parents.add(parent);
+                    DeclareParents dp = new DeclareParents(
+                            typePattern,
+                            parents,
+                            false
+                        );
+                    //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
+                    dp.setLocation(struct.context,0,0); // not ideal...
                     struct.ajAttributes.add(
                             new AjAttribute.DeclareAttribute(
-                                    new DeclareParents(
-                                        typePattern,
-                                        parents,
-                                        false
-                                    )
+                                    dp
                             )
                     );
 
