@@ -499,8 +499,18 @@ public class AjcMemberMaker {
 			NameMangler.postIntroducedConstructor(aspectType, targetType),
 			UnresolvedType.insert(targetType, paramTypes));
 	}
-	
-	public static ResolvedMember interConstructor(ResolvedType targetType, ResolvedMember constructor, UnresolvedType aspectType) {
+
+    public static ResolvedMember itdAtDeclareParentsField(ResolvedType targetType, UnresolvedType itdType, UnresolvedType aspectType) {
+        return new ResolvedMemberImpl(
+                Member.FIELD,
+                targetType,
+                Modifier.PRIVATE,
+                itdType,
+                NameMangler.itdAtDeclareParentsField(aspectType, itdType),
+                null);
+    }
+
+    public static ResolvedMember interConstructor(ResolvedType targetType, ResolvedMember constructor, UnresolvedType aspectType) {
 //		
 //		ResolvedType targetType,
 //		UnresolvedType[] argTypes,

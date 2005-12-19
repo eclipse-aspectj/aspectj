@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.DeclareImplements;
+import org.aspectj.lang.annotation.DeclareParents;
 
 import java.util.Arrays;
 
@@ -34,7 +35,7 @@ public class DeclareParentsInterfaceTest extends TestCase {
     @Aspect
     static class TestAspect {
 
-        @DeclareImplements("ataspectj.DeclareParentsInterfaceTest.Target")
+        @DeclareParents("ataspectj.DeclareParentsInterfaceTest.Target")
         Marker introduce;
 
         @Before("execution(* ataspectj.DeclareParentsInterfaceTest.Marker+.target())")

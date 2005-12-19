@@ -135,6 +135,8 @@ public abstract class ResolvedTypeMunger {
 			return NewConstructorTypeMunger.readConstructor(s, context);
         } else if (kind == MethodDelegate) {
             return MethodDelegateTypeMunger.readMethod(s, context);
+        } else if (kind == FieldHost) {
+            return MethodDelegateTypeMunger.FieldHostTypeMunger.readFieldHost(s, context);
         } else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -237,12 +239,14 @@ public abstract class ResolvedTypeMunger {
 	            case 2: return Method;
 	            case 5: return Constructor;
                 case 9: return MethodDelegate;
+                case 10: return FieldHost;
             }
 	        throw new BCException("bad kind: " + key);
 	    }
 
         public String toString() {
             // we want MethodDelegate to appear as Method in WeaveInfo messages
+            //TODO we may want something for fieldhost ?
             if (MethodDelegate.getName().equals(getName())) {
                 return Method.toString();
             } else {
@@ -267,6 +271,7 @@ public abstract class ResolvedTypeMunger {
 	public static final Kind AnnotationOnType = new Kind("AnnotationOnType",8); // not serialized
 
     public static final Kind MethodDelegate = new Kind("MethodDelegate", 9);// serialized, @AJ ITDs
+    public static final Kind FieldHost = new Kind("FieldHost", 10);// serialized, @AJ ITDs
 
     public static final String SUPER_DISPATCH_NAME = "superDispatch";
 

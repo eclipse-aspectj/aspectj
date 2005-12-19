@@ -39,8 +39,9 @@ public class DeclareParentsImplementsReweavableTest extends TestCase {
     @Aspect
     static class TestAspect {
 
-        @DeclareParents("ataspectj.DeclareParentsImplementsReweavableTest.Target")
-        public static I1 i1 = new Imp1();
+        @DeclareParents(value="ataspectj.DeclareParentsImplementsReweavableTest.Target",
+                        defaultImpl = Imp1.class)
+        public static I1 i1;
     }
 
     public void testDecPInt() {
