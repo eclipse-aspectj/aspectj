@@ -80,14 +80,14 @@
       </varlistentry>
 
       <varlistentry>
-        <term>-aspectpath <replaceable>JarList</replaceable></term>
+        <term>-aspectpath <replaceable>Path</replaceable></term>
         <listitem><para>
-        Weave binary aspects from JarList zip files into all sources.
+        Weave binary aspects from Jars and directories on path into all sources.
         The aspects should have been output by the same version
         of the compiler.
         To run the output classes requires putting all the 
         aspectpath entries on the run classpath.
-        JarList, like classpath, is a single argument containing
+        Path, like classpath, is a single argument containing
         a list of paths to jar files, delimited by the platform-
         specific classpath delimiter.
         </para></listitem>

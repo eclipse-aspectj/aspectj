@@ -850,8 +850,6 @@
         <sect3>
             <title>Declaring pointcuts inside generic types</title>
             
-            <para><emphasis>This language feature will not be supported until AspectJ 5 M4.</emphasis></para>
-            
             <para>Pointcuts can be declared in both classes and aspects. A pointcut declared in a generic
             type may use the type variables of the type in which it is declared. All references to
             a pointcut declared in a generic type from outside of that type must be via a parameterized type reference, 
@@ -1028,8 +1026,6 @@
 
       <sect2 id="generic-aspects" xreflabel="generic-aspects">
           <title>Generic Aspects</title>
-          
-          <para><emphasis>This feature will not be fully implemented until AspectJ5 M4.</emphasis></para>
           
           <para>
             AspectJ 5 allows an <emphasis>abstract</emphasis> aspect to be declared as a generic type. Any concrete
