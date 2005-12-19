@@ -9,7 +9,8 @@
     
     <sect1 id="ltw-introduction">
         <title>Introduction</title>        
-        <para>See Developer's Guide.</para>            
+        <para>See Developer's Guide for information on 
+        load-time weaving support in AspectJ 5.</para>            
     </sect1>
 </chapter>
 

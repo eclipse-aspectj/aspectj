@@ -5,8 +5,6 @@
   <sect1>
       <title>Pointcuts</title>
       
-      <sect2 id="binding-of-formals" xreflabel="binding-of-formals">
-          <title>Binding of formals</title>
           <para>
            AspectJ 5 is more liberal than AspectJ 1.2.1 in accepting pointcut expressions
            that bind context variables in more than one location. For example, AspectJ
@@ -26,16 +24,6 @@
 		     are mutually exclusive.
 		  </para>
            
-      </sect2>
-      
-      <sect2 id="additional-lint-warnings" xreflabel="additional-lint-warnings">
-          <title>Additional lint warnings</title>
-          <para>
-            Discuss detection of common errors -> warning/error, eg. conjunction of more than one
-            kind of join point. Differing numbers of args in method signature / args / @args /
-            @parameters.
-          </para>
-      </sect2>
   </sect1>
   
   <sect1 id="declare-soft">
@@ -92,17 +80,7 @@
       
   </sect1>
   
-   <sect1>
-      <title>Tools</title>
-      
-      <sect2 id="aspectpath" xreflabel="aspectpath">
-          <title>Aspectpath</title>
-          
-          <para>AspectJ 5 allows the specification of directories (containing .class files) on the aspectpath in
-              addition to jar/zip files.</para>
-      </sect2>
-      
-    </sect1>
+
 </chapter>
 
 

@@ -52,13 +52,6 @@
      public aspect Foo {}
          ]]></programlisting>
 
-        <para>And since issingleton() is the default aspect instantiation model it is equivalent to:</para>
-
-        <programlisting><![CDATA[
-      @Aspect("issingleton()")
-      public class Foo {}
-         ]]></programlisting>
-
         <para>To specify an aspect an aspect instantiation model (the default is
             singleton), provide the perclause as the
             <literal>@Aspect</literal>
@@ -167,8 +160,9 @@
      pointcut anyCall(int i, Foo callee) : call(* *.*(int)) && args(i) && target(callee);
              ]]></programlisting>
 
-            <para>An example with modifiers (it is also good to remember that Java 5 annotations are not
-                inherited):</para>
+            <para>An example with modifiers (Remember that Java 5 annotations are not
+                inherited, so the <literal>@Pointcut</literal> annotation must be
+                present on the extending aspect's pointcut declaration too):</para>
 
             <programlisting><![CDATA[
      @Pointcut("")
@@ -254,15 +248,16 @@
                 </para>
 
                 <para>
-                    When using the annotation style, it would be really a pain to write a valid Java expression within
-                    the annotation value so the syntax differs sligthly, whilst providing the very same
+                    When using the annotation style, it is not possible to write a full Java expression
+                    within
+                    the annotation value so the syntax differs slightly, whilst providing the very same
                     semantics and runtime behaviour. An
                     <literal>if()</literal>
                     pointcut expression can be
                     declared in an
                     <literal>@Pointcut</literal>
-                    , but must either an empty body, or be one
-                    of the expression
+                    , but must have either an empty body (<literal>if()</literal>, or be one
+                    of the expression forms
                     <literal>if(true)</literal>
                     or
                     <literal>if(false)</literal>
@@ -634,13 +629,14 @@
 
         <para>
             Inter-type declarations are challenging to support using an annotation style.
-            It's very important to preserve the exact same semantics between the code style
+            It's very important to preserve the same semantics between the code style
             and the annotation style. We also want to support compilation of a large set
-            of AspectJ applications using a standard Java 5 compiler. For these reasons, in
-            the initial release of AspectJ 5 we will only support inter-type declarations
-            backed by interfaces when using the annotation style - which means it is not possible to
-            introduce constructors or fields, as it would not be not possible to call those unless already
-            weaved and available on a binary form.
+            of @AspectJ applications using a standard Java 5 compiler. For these reasons,
+            the 1.5.0 release of AspectJ 5 only supports inter-type declarations
+            backed by interfaces when using the annotation style - 
+            which means it is not possible to
+            introduce constructors or fields, as it would not be not possible to call 
+            those unless already woven and available on a binary form.
         </para>
 
         <para>
@@ -702,11 +698,9 @@
            }
         }
 
-        // here is the actual ITD syntax when using @AspectJ
-        // public static is mandatory
         // the field type must be the introduced interface. It can't be a class.
-        @DeclareParents("org.xzy..*")
-        public static Moody introduced = new MoodyImpl();
+        @DeclareParents(value="org.xzy..*",defaultImpl="MoodyImpl")
+        private Moody implementedInterface;
 
         @Before("execution(* *.*(..)) && this(m)")
         void feelingMoody(Moody m) {
@@ -721,50 +715,39 @@
             <literal>@DeclareParents</literal>
             annotation is equivalent to
             a declare parents statement that all types matching the type pattern implement
-            the interface whose @DeclareParents annotated aspect' field is type of (in this case Moody).
-            Each method declaration of this interface are treated as inter-type declarations.
+            the given interface (in this case Moody).
+            Each method declared in the interface is treated as an inter-type declaration.
             Note how this scheme operates within the constraints
             of Java type checking and ensures that
             <literal>this</literal>
             has access
             to the exact same set of members as in the code style example.
         </para>
-
+        
         <para>
-            Note that it is illegal to use the @DeclareParents annotation on an aspect' field whose type
-            is not an interface. Indeed, the interface is the inter-type declaration contract that dictates
-            which methods are introduced.
-        </para>
-
-        <para>
-            It is important to remember that the @DeclareParents annotated aspect' field that serves as a host
-            for the inter-type declaration must be <literal>public static</literal> and <literal>initialized by some means</literal>.
-            The weaved code will indeed delegate calls to this field when f.e. invoking:
+            Note that it is illegal to use the @DeclareParents annotation on an aspect' field of a non-interface type.
+            The interface type is the inter-type declaration contract that dictates
+            which methods are declared on the target type.
         </para>
 
         <programlisting><![CDATA[
-     // this type will be affected by the inter-type declaration as the type pattern match
+     // this type will be affected by the inter-type declaration as the type pattern matches
      package org.xyz;
      public class MoodTest {
 
         public void test() {
-            // see here the cast to the introduced interface
+            // see here the cast to the introduced interface (required)
             Mood mood = ((Moody)this).getMood();
-            // will delegate to the aspect field "introduced" that host this inter-type declaration
             ...
         }
     }
          ]]></programlisting>
 
-        <para>
-            It is perfectly possible to use an IoC framework to initialize the @DeclaredParents aspect' field. You must
-            ensure though that the aspect field will be initialed prior the first inter-type declaration invocation it hosts.
-        </para>
-
-
-        <para>
-            If you need to only introduce a marker interface which defines no method - such as <literal>java.io.Serializable</literal>
-            it is possible to use the following syntax.
+        <para>The <literal>@DeclareParents</literal> annotation can also be used without specifying
+        a <literal>defaultImpl</literal> value (for example, 
+        <literal>@DeclareParents("org.xyz..*")</literal>). This is equivalent to a 
+        <literal>declare parents ... implements</literal> clause, and does <emphasis>not</emphasis>
+        make any inter-type declarations for default implementation of the interface methods.
         </para>
 
         <para>
@@ -785,19 +768,15 @@
      @Aspect
      public class SerializableMarker {
 
-        @DeclareImplements("org.xyz..*")
-        Serializable introducedNoMethods;
+        @DeclareParents("org.xyz..*")
+        Serializable implementedInterface;
      }
          ]]></programlisting>
 
-        <para>
-            The <literal>@DeclareImplements</literal> annotation on the aspect' field dictates the type pattern
-            on which to introduce the marker interface.
-        </para>
 
         <para>
-            In that case, as there is no method introduced, it is perfectly possible to have the aspect' field
-            private, or not initialized. Remember that the field' type must be the introduced interface and cannot be class.
+        	If the interface defines one or more operations, and these are not implemented by
+        	the target type, an error will be issued during weaving.
         </para>
 
     </sect1>
@@ -806,17 +785,14 @@
         <title>Declare statements</title>
 
         <para>The previous section on inter-type declarations covered the case
-            of declare parents ... implements. The 1.5.0 release of AspectJ 5 will
+            of declare parents ... implements. The 1.5.0 release of AspectJ 5 does
             not support annotation style declarations for declare parents ... extends
             and declare soft (programs with these declarations would not in general
             be compilable by a regular Java 5 compiler, reducing the priority of
             their implementation). These may be supported in a future release.</para>
 
         <para>
-            Declare annotation is not supported neither in the 1.5.0 release of AspectJ 5. Given that Java 5
-            compilers enforce the annotation target (@java.lang.annotation.Target) to be respected, this would cause
-            adding a lot of dummy members in the aspect (such as dummy constructors, methods etc), which would break the
-            object oriented design of the @AspectJ aspect itself.
+            Declare annotation is also not supported in the 1.5.0 release of AspectJ 5.
         </para>
 
         <para>Declare precedence <emphasis>is</emphasis>
@@ -894,7 +870,7 @@
             code style). Declare warning and error declarations are made by annotating
             a string constant whose value is the message to be issued.</para>
 
-        <para>Note that the String must be a constant and not the result of the invocation
+        <para>Note that the String must be a literal and not the result of the invocation
             of a static method for example.</para>
 
         <programlisting><![CDATA[
@@ -912,7 +888,7 @@
        @DeclareError("execution(* IFoo+.*(..)) && !within(org.foo..*)")
        static final String badIFooImplementors = "Only foo types can implement IFoo";
 
-       // the following is not valid since the message is not a String constant
+       // the following is not valid since the message is not a String literal
        @DeclareError("execution(* IFoo+.*(..)) && !within(org.foo..*)")
        static final String badIFooImplementorsCorrupted = getMessage();
        static String getMessage() {

@@ -311,21 +311,9 @@
       <para>
           For any kind of annotated element (type, method, constructor, package, etc.), 
           an annotation pattern can be used to match against the set of annotations
-          on the annotated element. Annotation patterns are defined by the following
-          grammar.
-      </para>
-      
-      <programlisting><![CDATA[
-		AnnotationPattern := '!'? '@' AnnotationTypePattern AnnotationPattern* 
-        
-		AnnotationTypePattern := FullyQualifiedName |
-		                         '(' TypePattern ')'
-  		                     
-  		FullyQualifiedName := JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*  		
-      ]]></programlisting>
-        
-      <para>In simple terms, an annotation pattern element has one of two basic
-      forms:</para>  
+          on the annotated element.An annotation pattern element has one of two basic
+          forms:
+      </para>  
     
       <itemizedlist>
           <listitem>@&lt;qualified-name&gt;, for example, @Foo, or 
@@ -406,7 +394,7 @@
   	<title>Type Patterns</title>
   	
 	<para>AspectJ 1.5 extends type patterns to allow an optional <literal>AnnotationPattern</literal>
-	prefix. (Extensions to this definition for generics are shown in the next chapter).</para>
+	prefix.</para>
 
   	<programlisting><![CDATA[
   	  	TypePattern := SimpleTypePattern |
@@ -431,8 +419,9 @@
 
     <para>Note that in most cases when annotations are used as part of a type pattern,
         the parenthesis are required (as in <literal>(@Foo Hello+)</literal>). In
-        some cases (such as a type pattern used within a <literal>this</literal>
-        pointcut expression, the parenthesis are optional:</para>
+        some cases (such as a type pattern used within a <literal>within</literal> or
+        <literal>handler</literal>
+        pointcut expression), the parenthesis are optional:</para>
 
       <programlisting><![CDATA[
         OptionalParensTypePattern := AnnotationPattern? TypePattern
@@ -525,9 +514,12 @@
   <sect2 id="signaturePatterns" xreflabel="Signature Patterns">
   	<title>Signature Patterns</title>
   	
-  	<para>A <literal>FieldPattern</literal> is described by the following
-  	grammar:</para>
+  	<sect3 id="fieldPatterns" xreflabel="Field Patterns">
+  	  <title>Field Patterns</title>
   	
+  	<para>A <literal>FieldPattern</literal> can optionally specify an annotation-matching
+  	pattern as the first element:</para>
+  	  	
   	<programlisting><![CDATA[  	
   		FieldPattern := 
   		    AnnotationPattern? FieldModifiersPattern? 
@@ -544,7 +536,7 @@
 	]]></programlisting>
   	
   	<para>
-  	    The optional <literal>AnnotationPattern</literal> restricts matches to fields with
+  	    If present, the <literal>AnnotationPattern</literal> restricts matches to fields with
   	    annotations that match the pattern. For example:
   	</para>
 
@@ -604,7 +596,13 @@
 
     </variablelist>
   	
-  	<para>A <literal>MethodPattern</literal> is of the form</para>
+  	</sect3>
+
+  	<sect3 id="methodPatterns" xreflabel="Method Patterns">
+  	  <title>Method and Constructor Patterns</title>
+  	
+  	<para>A <literal>MethodPattern</literal> can optionally specify an annotation-matching
+  	pattern as the first element.</para>
 
   	<programlisting><![CDATA[  	
   		MethodPattern := 
@@ -631,8 +629,6 @@
 		            					            
 	]]></programlisting>
   	
-  	<para><emphasis>Note: compared to the previous version, this definition of MethodPattern does
-  	not allow parameter annotation matching (only matching on annotations of parameter types).</emphasis></para>
   	
   	<para>A <literal>ConstructorPattern</literal> has the form</para>
 
@@ -687,6 +683,8 @@
           </listitem>
         </varlistentry>
     </variablelist>
+	
+	</sect3>
 
   </sect2>
   
@@ -886,14 +884,8 @@
   	    @args(*,*,untrustedDataSource);
 	]]></programlisting>
 
-    <para>
-        <emphasis>Note: an alternative design would be to allow both annotation
-        patterns and type patterns to be specified in the existing args pcd.
-        This works well for matching, but is more awkward when it comes to
-        exposing context.</emphasis>
-    </para>
-
-    <para>Access to <literal>AnnotatedElement</literal> information is available
+    <para>In addition to accessing annotation information at runtime through context binding,
+    access to <literal>AnnotatedElement</literal> information is also available
     reflectively with the body of advice through the <literal>thisJoinPoint</literal>,
     <literal>thisJoinPointStaticPart</literal>, and 
     <literal>thisEnclosingJoinPointStaticPart</literal> variables. To access 
@@ -905,16 +897,6 @@
   	Annotation[] targetAnnotations = thisJoinPoint.getTarget().getClass().getAnnotations();
   	Annotation[] firstParamAnnotations = thisJoinPoint.getArgs()[0].getClass().getAnnotations();
 	]]></programlisting>
-
-    <para>
-        <emphasis>Note: it would be nicer to provide direct helper methods in
-        the JoinPoint interface or a sub-interface that provide the annotations
-        directly, something like "AnnotatedElement getThisAnnotationInfo()".
-        The problem here is that the "AnnotatedElement" type is only in the
-        Java 5 runtime libraries, and we don't want to tie the AspectJ runtime
-        library to Java 5. A sub-interface and downcast solution could be used
-        if these helpers were felt to be sufficiently important.</emphasis>
-    </para>
 
     <para>
     The <literal>@within</literal> and <literal>@withincode</literal> pointcut designators
@@ -1009,15 +991,9 @@
       <title>Package and Parameter Annotations</title>
 
       <para>
-          <emphasis>Note: A previous design allowed package annotation patterns to be specified
-          directly in type patterns, and parameter annotation patterns to be
-          specified directly in method and constructor signature patterns. Because
-          this made some pointcut expressions hard to read and understand, we moved
-          in favour of the design presented below, which also has its drawbacks. 
-          Matching on package and parameter annotations will be
-          deferred until after the 1.5.0 release so that we can gain more understanding
-          of the kinds of uses AspectJ users are making of annotations in pointcut
-          expressions before commiting to any one approach.</emphasis>
+          <emphasis>Matching on package and parameter annotations is not supported
+          in AspectJ 1.5.0. Support for this capability may be considered in a future
+          release.</emphasis>
       </para>
 
 <!-- @withinpackage ??? -->
@@ -1189,17 +1165,19 @@
   	
   </sect2>
   
-  <sect2 id="limitations" xreflabel="limitations">
-    <title>Limitations</title>
+  <sect2 id="matchingOnAnnotationValues" xreflabel="matchingOnAnnotationValues">
+    <title>Matching based on annotation values</title>
     <para>
-        It would be useful to be able to match join points based on  
-        annotation values, rather than merely the presence of a
-        class-file retention annotation of a given type. This facility may be supported in a future version of AspectJ, by expanding the
-        definition of <literal>AnnotationPattern</literal>. Matching annotation values for
-        annotations with runtime retention can be done by exposing the annotation value
-        as a pointcut parameter and then using an <literal>if</literal> pointcut expression
-        to test the value. 
+    	The <literal>if</literal> pointcut designator can be used to write pointcuts
+    	that match based on the values annotation members. For example:    	
     </para>
+
+  	<programlisting><![CDATA[
+  	pointcut txRequiredMethod(Tx transactionAnnotation) :
+  	    execution(* *(..)) && @this(transactionAnnotation) 
+  	    && if(transactionAnnotation.policy() == TxPolicy.REQUIRED);
+	]]></programlisting>
+
   </sect2>
   
   </sect1>

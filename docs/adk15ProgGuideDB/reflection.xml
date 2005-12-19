@@ -3,14 +3,25 @@
   <title>New Reflection Interfaces</title>
   
   <para>
-      AspectJ 5 provides support for runtime reflection of aspect types. The class <literal>Aspect</literal> is
-      analogous to the Java class <literal>Class</literal> and provides access to the members of an aspect. 
+    AspectJ 5 provides a full set of reflection APIs analogous to the 
+    <literal>java.lang.reflect</literal> package, but fully aware of the
+    AspectJ type system. See the javadoc for the runtime and tools APIs
+    for the full details. The reflection APIs are only supported when
+    running under Java 5 and for code compiled by the AspectJ 5 compiler
+    at target level 1.5.
   </para>
   
    <sect1 id="reflection_api">
-    <title>The Aspect Class</title>
+    <title>Using AjTypeSystem</title>
 	<para>
-	    
+	    The starting point for using the reflection apis is
+	    <literal>org.aspectj.lang.reflect.AjTypeSystem</literal> which
+	    provides the method <literal>getAjType(Class)</literal> which will
+	    return the <literal>AjType</literal> corresponding to a given
+	    Java class. The <literal>AjType</literal> interface corresponds to
+	    <literal>java.lang.Class</literal> and gives you access to all of the
+	    method, field, constructor, and also pointcut, advice, declare
+	    statement and inter-type declaration members in the type.
 	</para>
 	
   </sect1>
