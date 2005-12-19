@@ -46,7 +46,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testDecps2()  { runTest("decps - 2");}
   public void testDecps2b() { runTest("decps - 2b");}
   public void testDecps3()  { runTest("decps - 3");}
- // public void testDecps3b() { runTest("decps - 3b");}
+  public void testDecps3b() { runTest("decps - 3b");}
+  public void testDecps3c() { runTest("decps - 3c");}
 
   public void testVarargsNPE_pr120826() { runTest("varargs NPE");}
   public void testNamedPointcutPertarget_pr120521() { runTest("named pointcut not resolved in pertarget pointcut");}

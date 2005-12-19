@@ -160,6 +160,12 @@
      <run class="Basic3b"/>
     </ajc-test>   
     
+    <ajc-test dir="java5/decps" title="decps - 3c">
+     <compile files="Basic3c.java" options="-1.5">
+	 </compile>
+     <run class="Basic3c"/>
+    </ajc-test>  
+    
     
 
     <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning">

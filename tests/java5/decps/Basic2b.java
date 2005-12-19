@@ -14,7 +14,7 @@ public class Basic2b {
   interface I { 
   }
 
-  class IImpl implements I {
+  static class IImpl implements I {
     public void m2() { }
   }
 
