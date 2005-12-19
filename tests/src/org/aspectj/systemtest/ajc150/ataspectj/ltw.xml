@@ -103,6 +103,9 @@
         		<line text="Test.main()"/>
             </stdout>
         	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
         		<line text="info weaving 'com.foo.bar.Test'"/>
             </stderr>
         </run>
@@ -164,6 +167,9 @@
  				<line text="execution(Main.target())"/>
             </stdout>
         	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
 				<line text="info register aspect ataspectj.ltwlog.Aspect1"/>
 				<line text="info weaving 'ataspectj.ltwlog.Main'"/>
 				<line text="info weaving 'ataspectj.ltwlog.Aspect1'"/>
@@ -186,6 +192,9 @@
  				<line text="execution(Main.target())"/>
             </stdout>
         	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
 				<line text="info register aspect ataspectj.ltwlog.Aspect1"/>
 				<line text="info weaving 'ataspectj.ltwlog.Main'"/>
 				<line text="weaveinfo Join point 'method-execution(void ataspectj.ltwlog.Main.target())' in Type 'ataspectj.ltwlog.Main' (Main.java:22) advised by before advice from 'ataspectj.ltwlog.Aspect1' (Aspect1.java)"/>

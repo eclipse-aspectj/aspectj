@@ -69,9 +69,10 @@ public class WeavingAdaptor {
 
 	protected boolean enabled = true;
 	protected boolean verbose = getVerbose();
-	protected BcelWorld bcelWorld = null;
-	protected BcelWeaver weaver = null;
-	protected IMessageHandler/*WeavingAdaptorMessageHandler*/ messageHandler = null;
+	protected BcelWorld bcelWorld;
+	protected BcelWeaver weaver;
+	private IMessageHandler messageHandler;
+	private WeavingAdaptorMessageHandler messageHolder;
 	protected GeneratedClassHandler generatedClassHandler;
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 
@@ -159,12 +160,25 @@ public class WeavingAdaptor {
 		registerAspectLibraries(aspectPath);
 	}
 
-
 	private void createMessageHandler() {
-		messageHandler = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
+		messageHolder = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
+		messageHandler = messageHolder;
 		if (verbose) messageHandler.dontIgnore(IMessage.INFO);
 		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) messageHandler.dontIgnore(IMessage.WEAVEINFO);
 		info("AspectJ Weaver Version " + Version.text + " built on " + Version.time_text);  //$NON-NLS-1$
+	}
+	
+	protected IMessageHandler getMessageHandler () {
+		return messageHandler;
+	}
+	
+	protected void setMessageHandler (IMessageHandler mh) {
+		if (messageHolder != null) {
+			messageHolder.flushMessages();
+			messageHolder = null;
+		}
+		messageHandler = mh;
+		bcelWorld.setMessageHandler(mh);
 	}
 	
 	/**
@@ -381,6 +395,8 @@ public class WeavingAdaptor {
 
 		private Set ignoring = new HashSet();
 		private IMessage.Kind failKind;
+		private boolean accumulating = true;
+	    private List messages = new ArrayList();
 
 		public WeavingAdaptorMessageHandler (PrintWriter writer) {
 			super(writer,true);
@@ -388,10 +404,10 @@ public class WeavingAdaptor {
 			ignore(IMessage.WEAVEINFO);
             ignore(IMessage.INFO);
 			this.failKind = IMessage.ERROR;
-
 		}
 
 		public boolean handleMessage(IMessage message) throws AbortException {
+			addMessage(message);
 			boolean result = super.handleMessage(message);
 			if (0 <= message.getKind().compareTo(failKind)) {
 				throw new AbortException(message);
@@ -418,7 +434,23 @@ public class WeavingAdaptor {
 		public void dontIgnore (IMessage.Kind kind) {
 			if (null != kind) {
 				ignoring.remove(kind);
+				if (kind.equals(IMessage.INFO)) accumulating = false;
 			}
+		}
+		
+		private void addMessage (IMessage message) {
+			if (accumulating && isIgnoring(message.getKind())) {
+				messages.add(message);
+			}
+		}
+		
+		public void flushMessages () {
+            for (Iterator iter = messages.iterator(); iter.hasNext();) {
+                IMessage message = (IMessage)iter.next();
+                super.handleMessage(message);
+            }
+			accumulating = false;
+			messages.clear();
 		}
 	}
 
