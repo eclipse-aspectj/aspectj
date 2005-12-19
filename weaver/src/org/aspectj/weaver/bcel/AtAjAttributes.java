@@ -693,8 +693,34 @@ public class AtAjAttributes {
                         defaultImplClassName = UnresolvedType.forSignature(defaultImpl.getClassString()).getName();
                         if (defaultImplClassName.equals("org.aspectj.lang.annotation.DeclareParents")) {
                             defaultImplClassName = null;
+                        } else {
+                            // check public no arg ctor
+                            ResolvedType impl = struct.enclosingType.getWorld().resolve(
+                                    defaultImplClassName,
+                                    false
+                            );
+                            ResolvedMember[] mm  = impl.getDeclaredMethods();
+                            boolean hasNoCtorOrANoArgOne = true;
+                            for (int i = 0; i < mm.length; i++) {
+                                ResolvedMember resolvedMember = mm[i];
+                                if (resolvedMember.getName().equals("<init>")) {
+                                    hasNoCtorOrANoArgOne = false;
+                                    if (resolvedMember.getParameterTypes().length == 0
+                                        && resolvedMember.isPublic()) {
+                                        hasNoCtorOrANoArgOne = true;
+                                    }
+                                }
+                                if (hasNoCtorOrANoArgOne) {
+                                    break;
+                                }
+                            }
+                            if (!hasNoCtorOrANoArgOne) {
+                                reportError("@DeclareParents: defaultImpl=\""
+                                            + defaultImplClassName
+                                            + "\" has no public no-arg constructor", struct);
+                            }
                         }
-                        //TODO check public no arg ctor
+
                     }
 
                     // then iterate on field interface hierarchy (not object)
@@ -709,7 +735,7 @@ public class AtAjAttributes {
                                 return false;
                             }
                             hasAtLeastOneMethod = true;
-                            
+
                             struct.ajAttributes.add(
                                     new AjAttribute.TypeMunger(
                                             new MethodDelegateTypeMunger(
