@@ -23,8 +23,8 @@ public class MoodIndicator {
    // here is the actual ITD syntax when using @AspectJ
    // public static is mandatory
    // the field type must be the introduced interface. It can't be a class.
-   @DeclareParents("C")
-   public static Moody introduced = new MoodyImpl();
+   @DeclareParents(value="C", defaultImpl=MoodyImpl.class)
+   Moody introduced;
 
 //   @Before("execution(* *.*(..)) && this(m)")
 //   public void feelingMoody(Moody m) {
