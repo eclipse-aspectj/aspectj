@@ -26,7 +26,7 @@ public class DeclareParentsImplementsReweavableTest extends TestCase {
 
     static interface I1 { int do1(); }
 
-    static class Imp1 implements I1 {
+    public static class Imp1 implements I1 {
         public int do1() {return 1;}
     }
 

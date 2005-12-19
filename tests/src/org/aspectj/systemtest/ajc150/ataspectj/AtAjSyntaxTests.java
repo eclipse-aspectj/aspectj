@@ -133,4 +133,8 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
         runTest("AbstractAspectNPE");
     }
 
+    public void testAbstractInherited() {
+        runTest("AbstractInherited");
+    }
+
 }

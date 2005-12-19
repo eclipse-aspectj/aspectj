@@ -364,6 +364,19 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("PR115251");
 		checkWasntFullBuild();
 	}
+	
+	public void testPr121384() {
+//		AjdeInteractionTestbed.VERBOSE=true;
+//		AsmManager.setReporting("c:/foo.txt",true,true,true,false);
+		MyBuildOptionsAdapter.setNonStandardOptions("-showWeaveInfo");
+		configureBuildStructureModel(true);
+		initialiseProject("pr121384");
+		build("pr121384"); 
+		checkWasFullBuild();
+		alter("pr121384","inc1");
+		build("pr121384");
+		checkWasntFullBuild();
+	}
 
 	
 /*	public void testPr111779() {

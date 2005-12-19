@@ -173,4 +173,12 @@
         </compile>
     </ajc-test>
 
+
+    <ajc-test dir="java5/ataspectj" title="AbstractInherited">
+        <compile files="ataspectj/bugs/AbstractInherited.java"
+            options="-1.5 -showWeaveInfo">
+            <message kind="weave" text="Join point "/>
+        </compile>
+    </ajc-test>
+
 </suite>

@@ -14,7 +14,6 @@ package ataspectj;
 import junit.framework.TestCase;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.DeclareImplements;
 import org.aspectj.lang.annotation.DeclareParents;
 
 import java.util.Arrays;
