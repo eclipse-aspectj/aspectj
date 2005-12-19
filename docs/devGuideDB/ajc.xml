@@ -252,23 +252,34 @@
       <varlistentry>
         <term>-1.3</term>
         <listitem><para>Set compliance level to 1.3 
+            This implies -source 1.3 and -target 1.1.
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term>-1.4</term>
         <listitem><para>Set compliance level to 1.4 (default)
+            This implies -source 1.4 and -target 1.2.
         </para></listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>-source <replaceable>[1.3|1.4]</replaceable></term>
-        <listitem><para>Toggle assertions (1.3 or 1.4, default is 1.3).
+        <term>-1.5</term>
+        <listitem><para>Set compliance level to 1.5.
+            This implies -source 1.5 and -target 1.5.
+        </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-source <replaceable>[1.3|1.4|1.5]</replaceable></term>
+        <listitem><para>Toggle assertions (1.3, 1.4, or 1.5 - default is 1.4).
             When using -source 1.3, an assert() statement valid under
             Java 1.4 will result in a compiler error.
           When using -source 1.4, 
           treat <literal>assert</literal> as a keyword and 
           implement assertions according to the 1.4 language spec.
+          When using -source 1.5,
+            Java 5 language features are permitted. 
         </para></listitem>
       </varlistentry>
 
@@ -410,7 +421,8 @@
       
       <varlistentry>
         <term>-Xreweavable[:compress]</term>
-        <listitem><para>(Experimental) runs weaver in reweavable mode which causes
+        <listitem><para>(Experimental - deprecated as now default) 
+            Runs weaver in reweavable mode which causes
         it to create woven classes that can be rewoven, subject to the restriction that
         on attempting a reweave all the types that advised the woven type must be accessible.
         </para></listitem>
@@ -433,11 +445,33 @@
 
       <varlistentry>
         <term>-XserializableAspects</term>
-        <listitem><para>(Experimental) Normally it is an error to declare
+        <listitem><para>
+        (Experimental) Normally it is an error to declare
         aspects Serializable.  This option removes that restriction.
         </para></listitem>
       </varlistentry>
-     </variablelist>
+      <varlistentry>
+        <term>-XnotReweavable</term>
+        <listitem><para>
+    (Experimental) Create class files that can't be subsequently rewoven by AspectJ.
+        </para></listitem>
+      </varlistentry>
+      <!-- not documenting this feature yet -->
+      <!--
+      <varlistentry>
+        <term>-XhasMember</term>
+        <listitem><para>
+            (Experimental) Allow hasmethod() and hasfield type patterns in declare parents and declare @type.
+        </para></listitem>
+      </varlistentry>
+      -->
+      <varlistentry>
+        <term>-Xajruntimelevel:1.2, ajruntimelevel:1.5</term>
+        <listitem><para>
+        (Experimental) Allows code to be generated that targets a 1.2 or a 1.5 level AspectJ runtime (default 1.5)
+         </para></listitem>
+      </varlistentry>
+    </variablelist>
 
     </refsect2>
 
@@ -486,7 +520,12 @@
         pubwork="book">The Java Virtual Machine Specification, Second
         Edition</citetitle></ulink> and runs on any Java 2 compatible
         platform. The code it generates runs on any Java 1.1 or later
-        compatible platform.</para>
+        compatible platform.
+        For more information on compatibility with
+          Java and with previous releases of AspectJ,
+          see
+          <xref linkend="versionCompatibility"/>.
+      </para>
 
     </refsect2>
 
