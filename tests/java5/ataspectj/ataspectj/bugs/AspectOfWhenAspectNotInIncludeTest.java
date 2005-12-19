@@ -15,9 +15,9 @@ import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import ataspectj.TestHelper;
+import org.aspectj.lang.annotation.DeclareParents;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.DeclareImplements;
 import org.aspectj.lang.Aspects;
 
 import java.io.Serializable;
@@ -36,7 +36,7 @@ public class AspectOfWhenAspectNotInIncludeTest extends TestCase {
 
     @Aspect
     static class TestAspectForAspect {
-        @DeclareImplements("ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest.TestAspect")
+        @DeclareParents("ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest.TestAspect")
         Serializable shouldNotHappenDueToInclude;
     }
 
