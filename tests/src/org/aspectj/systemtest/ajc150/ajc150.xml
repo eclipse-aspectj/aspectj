@@ -98,7 +98,10 @@
      <run class="Pr114054"/>
     </ajc-test>  
     
-       
+    <ajc-test dir="bugs150" pr="121385" title="mixing styles">
+     <compile files="pr121385.aj" options="-1.5"/>
+    </ajc-test> 
+        
     <ajc-test dir="java5/decps" title="decps - 1">
      <compile files="Basic1.java" options="-1.5"/>
      <run class="Basic1"/>
@@ -122,7 +125,7 @@
 
     <ajc-test dir="java5/decps" title="decps - 2b">
      <compile files="Basic2b.java" options="-1.5 -showWeaveInfo">
-       <message kind="weave" text="Join point 'method-execution(void X$IImpl.m2())' in Type 'X$IImpl' (Basic2b.java:18) advised by before advice from 'X' (Basic2b.java:27)"/>
+       <message kind="weave" text="Join point 'method-execution(void X$IIimpl.m2())' in Type 'X$IIimpl' (Basic2b.java:18) advised by before advice from 'X' (Basic2b.java:27)"/>
        <message kind="weave" text="Extending interface set for type 'Basic2b' (Basic2b.java) to include 'X$I' (Basic2b.java)"/>
        <message kind="weave" text="Join point 'method-execution(void Basic2b.main(java.lang.String[]))' in Type 'Basic2b' (Basic2b.java:4) advised by before advice from 'X' (Basic2b.java:27)"/>
      </compile>
@@ -152,18 +155,18 @@
        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m2()')"/>
        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m3()')"/>
 	   <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m4()')"/>
-	   <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:7) advised by before advice from 'X' (Basic3b.java:36)"/>
-	   <message kind="weave" text="Join point 'method-call(void X$I.m3())' in Type 'Basic3b' (Basic3b.java:8) advised by before advice from 'X' (Basic3b.java:36)"/>
-	   <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:9) advised by before advice from 'X' (Basic3b.java:36)"/>
-	   <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'X' (Basic3b.java:36)"/>
+	   <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:7) advised by before advice from 'X' (Basic3b.java:35)"/>
+	   <message kind="weave" text="Join point 'method-call(void X$I.m3())' in Type 'Basic3b' (Basic3b.java:8) advised by before advice from 'X' (Basic3b.java:35)"/>
+	   <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:9) advised by before advice from 'X' (Basic3b.java:35)"/>
+	   <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'X' (Basic3b.java:35)"/>
 	 </compile>
      <run class="Basic3b"/>
     </ajc-test>   
     
     <ajc-test dir="java5/decps" title="decps - 3c">
      <compile files="Basic3c.java" options="-1.5">
+       <message kind="error" text="@DeclareParents: defaultImpl=&quot;X$IImpl&quot; has no public no-arg constructor"/>
 	 </compile>
-     <run class="Basic3c"/>
     </ajc-test>  
     
     
