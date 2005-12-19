@@ -21,14 +21,14 @@ public class Basic3c {
 	  public void m4();
   }
 
-  public static class IImpl implements I {
+  class IImpl implements I {
     public void m2() { }
     public void m3() { }
     public void m4() { }
   }
 
 
-  @DeclareParents(value="Basic3c",defaultImpl=X.IImpl.class)
+  @DeclareParents(value="Basic3c",defaultImpl=IImpl.class)
   private I simplefield;
 
 
