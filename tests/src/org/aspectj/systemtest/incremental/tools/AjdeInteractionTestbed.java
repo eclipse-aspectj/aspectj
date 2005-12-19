@@ -431,6 +431,7 @@ public class AjdeInteractionTestbed extends TestCase {
     		  System.getProperty("sun.boot.class.path") + 
     		  File.pathSeparator + "../runtime/bin" + 
     		  File.pathSeparator +  System.getProperty("aspectjrt.path") +
+    		  File.pathSeparator +  "../lib/junit/junit.jar" +
     		  File.pathSeparator+".."+File.separator+"lib" + File.separator+"test"+File.separator+"aspectjrt.jar";
 			
 			// look at dependant projects
