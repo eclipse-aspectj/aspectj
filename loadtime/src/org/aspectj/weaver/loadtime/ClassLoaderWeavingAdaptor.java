@@ -105,7 +105,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         
         bcelWorld = new BcelWorld(
-                loader, messageHandler, new ICrossReferenceHandler() {
+                loader, getMessageHandler(), new ICrossReferenceHandler() {
                     public void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind, boolean runtimeTest) {
                         ;// for tools only
                     }
@@ -121,7 +121,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
         // register the definitions
         registerDefinitions(weaver, loader, definitions);
-        messageHandler = bcelWorld.getMessageHandler();
 
         //bcelWorld.setResolutionLoader(loader.getParent());//(ClassLoader)null);//
         
@@ -207,12 +206,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             allOptions.append(definition.getWeaverOptions()).append(' ');
         }
 
-        Options.WeaverOption weaverOption = Options.parse(allOptions.toString(), loader, messageHandler);
+        Options.WeaverOption weaverOption = Options.parse(allOptions.toString(), loader, getMessageHandler());
 
         // configure the weaver and world
         // AV - code duplicates AspectJBuilder.initWorldAndWeaver()
         World world = weaver.getWorld();
-        world.setMessageHandler(weaverOption.messageHandler);
+        setMessageHandler(weaverOption.messageHandler);
         world.setXlazyTjp(weaverOption.lazyTjp);
         world.setXHasMemberSupportEnabled(weaverOption.hasMember);
         world.setPinpointMode(weaverOption.pinpoint);

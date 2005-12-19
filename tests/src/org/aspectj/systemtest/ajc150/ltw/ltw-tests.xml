@@ -133,6 +133,9 @@
                 <line text="Main.test2"/>
             </stdout>
         	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
                 <line text="info generating class 'ConcreteAspect'"/>
                 <line text="info weaving 'Main'"/>
                 <line text="AbstractSuperAspect.before_test1"/>
@@ -259,6 +262,9 @@
         </compile>	
         <run class="Main" ltw="aop-nomatch.xml">
         	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
 	        	<line text="info weaving 'Main'"/>
         	</stderr>
@@ -278,6 +284,9 @@
         </compile>	
         <run class="Main" ltw="aop-nomatchxlintfile.xml" xlintfile="Xlint-nomatch.properties">
         	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
 	        	<line text="info weaving 'Main'"/>
         		<line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/>
@@ -298,6 +307,9 @@
         </compile>	
         <run class="Main" ltw="aop-nomatchxlint.xml">
         	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
 	        	<line text="info weaving 'Main'"/>
         		<line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/>
@@ -318,6 +330,9 @@
         </compile>	
         <run class="Main" ltw="aop-nomatchxlint.xml">
         	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
 	        	<line text="info weaving 'Main'"/>
         		<line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/>
