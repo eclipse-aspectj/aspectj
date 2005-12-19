@@ -20,7 +20,10 @@ import org.aspectj.lang.annotation.DeclareParents;
 @Aspect
 public class DeclareParentsImplementsReweavableTestAspect {
 
-    @DeclareParents("ataspectj.DeclareParentsImplementsReweavableTest.Target")
-    public static DeclareParentsImplementsReweavableTest.I2 i2 = new DeclareParentsImplementsReweavableTest.Imp2();
+    @DeclareParents(
+            value="ataspectj.DeclareParentsImplementsReweavableTest.Target",
+            defaultImpl = DeclareParentsImplementsReweavableTest.Imp2.class
+    )
+    public static DeclareParentsImplementsReweavableTest.I2 i2;
 
 }
