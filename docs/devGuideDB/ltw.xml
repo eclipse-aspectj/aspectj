@@ -33,14 +33,12 @@
         <sect2 id="weaving-class-files-more-than-once" xreflabel="weaving-class-files-more-than-once">
             <title>Weaving class files more than once</title>
         
-            <para> By default a class file that has been woven by the AspectJ compiler cannot
-                subsequently be rewoven (passed as input to the weaver). If you are developing
-                AspectJ applications that are to be used in a load-time weaving environment, you
+            <para> As of AspectJ 5 aspects (code style or annotation style) and woven classes are
+            	reweavable by default. If you are developing AspectJ applications that are to be used 
+            	in a load-time weaving environment with an older version of the compiler you
                 need to specify the <literal>-Xreweavable</literal> compiler option when building
                 them. This causes AspectJ to save additional state in the class files that is used
                 to support subsequent reweaving. </para>
-            <para>As per AspectJ 1.5.0 M3 aspects (code style or annotation style) are
-            reweavable by default, and weaved classes are reweavable by default as well as per AspectJ 1.5.0 M4.</para>
         </sect2>
     </sect1>
     
@@ -98,31 +96,20 @@
                     </listitem>
                 </varlistentry>
                 <varlistentry>
-                    <term>Command-line wrapper script <literal>aj</literal></term>
+                    <term>Command-line wrapper scripts <literal>aj</literal></term>
                     <listitem>
                         <para>The <command>aj</command> command runs Java programs in Java 1.4 or
                         later by setting up <literal>WeavingURLClassLoader</literal> as the 
                             system class loader.  
                             For more information, see <xref linkend="aj"/>.
                         </para>
+                        <para>The <command>aj5</command> command runs Java programs in Java 5
+                        by using the <literal>-javaagent:pathto/aspectjweaver.jar</literal> option 
+                            described above.
+                            For more information, see <xref linkend="aj"/>.
+                        </para>
                     </listitem>
                 </varlistentry>
-                <!-- FIXME: must be made consistent (aop.xml , CL hierarchy etc) -->
-<!--                <varlistentry>-->
-<!--                    <term>Command line</term>-->
-<!--                    <listitem>-->
-<!--                        <para> AspectJ includes a script "aj" that allows programs executed at-->
-<!--                            the command line to take advantage of load-time weaving. -->
-<!--                            The script is customized when AspectJ is installed depending on the chosen -->
-<!--                            JDK. For example, for JDK 1.4 the script uses the-->
-<!--                            <literal>-Djava.system.class.loader</literal> system property to replace-->
-<!--                            the system class loader with a weaving class loader allowing classes -->
-<!--                            loaded from the CLASSPATH to be woven. -->
-<!--                            For JDK 1.5 the JVMTI weaving agent is used allowing classes loaded by all-->
-<!--                            class loaders to be woven. Versions of the JDK prior to 1.3 are not-->
-<!--                            supported by the "aj" mechanism. </para>-->
-<!--                    </listitem>-->
-<!--                </varlistentry>-->
                 <varlistentry>
                     <term>Custom class loader</term>
                     <listitem>
@@ -146,7 +133,7 @@
             
             <para>The weaver is configured using one or more <literal>META-INF/aop.xml</literal>
                 files located on the class loader search path. Each file may define a list of
-                concrete aspects to be used for weaving, type patterns describing which types
+                aspects to be used for weaving, type patterns describing which types
                 should woven, and a set of options to be passed to the weaver. In addition AspectJ 5
                 supports the definition of concrete aspects in XML. Aspects defined in this way
                 must extend an abstract aspect visible to the weaver. The abstract aspect
@@ -167,11 +154,11 @@
                 <pointcut name="tracingScope" expression="within(org.maw.*)"/>
               </concrete-aspect>
 
-              <!-- Of the set of aspects declared in this sole aop.xml,
+              <!-- Of the set of aspects declared to the weaver
                    use aspects matching the type pattern "com..*" for weaving. -->
               <include within="com..*"/>
 
-              <!-- Of the set of aspects declared in this sole aop.xml,
+              <!-- Of the set of aspects declared to the weaver
                    do not use any aspects with the @CoolAspect annotation for weaving -->
               <exclude within="@CoolAspect *"/>
 
@@ -184,7 +171,14 @@
               <include within="javax.*"/>
               <include within="org.aspectj.*"/>
               <include within="(!@NoWeave foo.*) AND foo.*"/>
-              <dump within="somepack.*"/><!-- will dump weaved classes to the "./_ajdump" folder on disk (for diagnostic purpose) -->
+
+              <!-- Do not weave types within the "bar" pakage -->
+              <exclude within="bar.*"/>
+
+              <!-- Dump all types within the "somepack" package,
+                   both before are after they are woven,
+                   to the "./_ajdump" folder on disk (for diagnostic purposes) -->
+              <dump within="somepack.*" />
             </weaver>
 
           </aspectj>
@@ -222,22 +216,24 @@
                 and || are replaced by 'AND' and 'OR'.
             </para>
             <para>
-                Note that <literal>include</literal> and <literal>exclude</literal> affects the declared list of aspects (or concrete-aspect) defined in this
-                sole aop.xml and has no side effect on other aop.xml files.
-                Also note it is required to use <literal>aspect</literal> or <literal>concrete-aspect</literal> elements and that include does not
-                mean "pick any aspect you 'll find" - as the aspect list must be known by the weaver.
+                Note that <literal>include</literal> and <literal>exclude</literal> elements affect all aspects 
+                declared to the weaver including those in other aop.xml files. To help avoid unexpected 
+                behaviour a lint warning is issued
+                if an aspect is not declared as a result of of applying these filters.
+                Also note <literal>aspect</literal> and <literal>concrete-aspect</literal> elements
+                must be used to delare aspects to the weaver i.e. <literal>include</literal> and <literal>exclude</literal>
+                elements cannot be used find aspects on the class loader search path.
             </para>
             
             <para>
                 The weaver element is used to pass options to the weaver and to specify
                 the set of types that should be woven. If no include elements are specified
-                then all types seen by the weaver will be woven.
+                then all types visible to the weaver will be woven.
             </para>
           
           
             <para> When several configuration files are visible from a given weaving class loader
-                their contents are conceptually merged (this applies to both aop.xml files
-                and to aop.properties files as described in the next section). 
+                their contents are conceptually merged. 
                 The files are merged in the order they are
                 found on the search path (regular <literal>getResourceAsStream</literal> lookup)
                 according to the following rules: </para>
@@ -263,24 +259,27 @@
 
             <para>It is not an error for the same aspect to be defined to the weaver in 
                 more than one visible <literal>META-INF/aop.xml</literal> file. 
-                However, if a declarative concrete aspect
-                is declared in more than aop.xml file then an error will be issued.
-                 A concrete aspect 
+                However, if a concrete aspect
+                is defined in more than aop.xml file then an error will be issued.
+                A concrete aspect 
                 defined in this way will be used to weave types loaded by the
                 class loader that loaded the aop.xml file in which it was defined. 
                 </para>
             
-            <para> A <literal>META-INF/aop.xml</literal> file will automatically be generated when
-                using the <literal>-outjar</literal> option of the AspectJ compiler. 
-                It will simply contain a (possibly empty) set of aspect elements, one for
-                each concrete aspect included in the JAR. </para>
+            <para> A <literal>META-INF/aop.xml</literal> can be generated by
+                using either the <literal>-outxml</literal> or <literal>-outxmlfile</literal> options of the AspectJ compiler. 
+                It will simply contain a (possibly empty) set of aspect elements; one for
+                each abstract or concrete aspect defined. 
+                When used in conjuction with the <literal>-outjar</literal> option
+                a JAR is produced that can be used
+                with the <command>aj5</command> command or a load-time weaving environment.</para>
         </sect2>
 
         <sect2 id="concrete-aspect" xreflabel="concrete-aspect">
             <title>Using Concrete Aspects</title>
             <para>
-                It is possible to concretize an abstract aspect by the mean of the <literal>META-INF/aop.xml</literal>
-                file. This is usefull to define abstract pointcuts at deployment time, and also gives control
+                It is possible to make an abstract aspect concrete by means of the <literal>META-INF/aop.xml</literal>
+                file. This is useful way to implement abstract pointcuts at deployment time, and also gives control
                 over precedence through the <literal>precedence</literal> attribute of the
                 <literal>concrete-aspect</literal> XML element.
                 Consider the following:
@@ -318,24 +317,23 @@
             }
             ]]></programlisting>
             <para>
-                This aspect (in either of its style) is a good candidate for concretization through <literal>META-INF/aop.xml</literal>.
-                It defines the abstract pointcut <literal>within()</literal>. It is important to remember that
-                concretization in this case must obey to the following rules:
+                This aspect (in either style) can be made concrete using <literal>META-INF/aop.xml</literal>.
+                It defines the abstract pointcut <literal>within()</literal>. When using this mechanism the 
+                following rules apply:
                 <itemizedlist>
                     <listitem><para>The parent aspect must be abstract. It can be an @AspectJ or a
                             regular code style aspect.</para></listitem>
-                    <listitem><para>Only simple abstract pointcut can be concretized ie pointcut that don't expose
+                    <listitem><para>Only a simple abstract pointcut can be implemented i.e. a pointcut that doesn't expose
                             state (through <literal>args(), this(), target(), if()</literal>). In @AspectJ syntax
-                            as illustrated in this sample, this means the method that hosts the pointcut is abstract,
-                            has no arguments, and returns void.</para></listitem>
-                    <listitem><para>Concretization must defines all such abstract pointcuts ie it is not possible
-                            to have <literal>concrete-aspect</literal> inter dependancies.</para></listitem>
-                    <listitem><para>Concretization can only concretize pointcuts ie there cannot be abstract method
-                            left in the aspect.</para></listitem>
+                            as illustrated in this sample, this means the method that hosts the pointcut must be abstract,
+                            have no arguments, and return void.</para></listitem>
+                    <listitem><para>The concrete aspect must implement all inherited abstract pointcuts.</para></listitem>
+                    <listitem><para>The concrete aspect may not implement methods so the abstract aspect it 
+                            extends may not contain any abstract methods.</para></listitem>
                 </itemizedlist>
-                If you have requirements for more complex aspect inheritance, you should consider regular aspect
-                inheritance instead of concretization through XML.
-                Given that the following XML is valid:
+                If more complex aspect inheritance is required use regular aspect
+                inheritance instead of XML.
+                The following XML definition shows a valid concrete sub-aspect for the abstract aspects above:
             </para>
             <programlisting><![CDATA[
             <aspectj>
@@ -345,10 +343,11 @@
             </aspectj>
             ]]></programlisting>
             <para>
-                It is important to remember that the <literal>name</literal> attribute in the XML directive
-                <literal>concrete-aspect</literal> defines the fully qualified name that will be given to the
-                concrete aspect. It must then be a valid class name. This one will indeed be generated on the fly by the weaver internals. You must
-                then ensure that there won't be name collision. Also note that the concrete aspect will be
+                It is important to remember that the <literal>name</literal> attribute in the
+                <literal>concrete-aspect</literal> directive defines the fully qualified name that will be given to the
+                concrete aspect. It must a valid class name because the aspect will be generated on the fly by the weaver.
+                You must
+                also ensure that there are no name collisions. Note that the concrete aspect will be
                 defined at the classloader level for which the aop.xml is visible. This implies that if you need
                 to use the <literal>aspectof</literal> methods to access the aspect instance(s) (depending on the perclause
                 of the aspect it extends) you have to use the helper API <literal>org.aspectj.lang.Aspects.aspectOf(..)</literal>
@@ -372,10 +371,10 @@
                 aspect source code.
             </para>
             <para>
-                Sometimes it is required to declare precedence without extending any abstract aspect
-                as well. For such a need, it is possible to use the <literal>concrete-aspect</literal>
+                Sometimes it is necessary to declare precedence without extending any abstract aspect.
+                It is therefore possible to use the <literal>concrete-aspect</literal>
                 element without the <literal>extends</literal> attribute and without any
-                <literal>pointcut</literal> nested element, but only with a <literal>precedence</literal>
+                <literal>pointcut</literal> nested elements, just a <literal>precedence</literal>
                 attribute.
                 Consider the following:
             </para>
@@ -386,7 +385,7 @@
                 </aspectj>
             ]]></programlisting>
             <para>
-                This deployment time declaration is only defining a precedence rule. You have to remember
+                This deployment time definitions is only declaring a precedence rule. You have to remember
                 that the <literal>name</literal> attribute must be a valid fully qualified class name
                 that will be then reserved for this concrete-aspect and must not conflict with other classes
                 you deploy.
@@ -429,12 +428,13 @@
                             <entry>
                                 <literal>-verbose</literal>
                             </entry>
-                            <entry>Issue informational messages about the weaving process. If ever you need to have information
-                                   when the load time weaving engine is bootstrapped (hence its logger as per <literal>-XmessageHandlerClass:...</literal> not ready yet),
-                                   you can use the option <literal>-Daj.weaving.verbose=true</literal> on the JVM startup command line. Messages will then be printed
-                                   on stderr as long as the message handler class is not ready.
+                            <entry>Issue informational messages about the weaving process. Messages issued while the weaver is being 
+                                   bootstrapped are accumulated until all options are parsed. If the messages are required to be output
+                                   immediately you can use the option <literal>-Daj.weaving.verbose=true</literal> on the JVM startup command line.
                             </entry>
                         </row>
+        				<!-- TODO option parsed but not used -->
+        				<!--
                         <row>
                             <entry>
                                 <literal>-1.5</literal>
@@ -442,6 +442,7 @@
                             <entry>Run the weaver in 1.5 mode (supports autoboxing in
                             join point matching)</entry>
                         </row>
+                        -->
                         <row>
                             <entry>
                                 <literal>-Xlintfile:pathToAResource</literal>
@@ -460,6 +461,8 @@
                             </entry>
                             <entry>Suppress warning messages</entry>
                         </row>
+        				<!-- TODO option parsed but not used -->
+        				<!--
                         <row>
                             <entry>
                                 <literal>-proceedOnError</literal>
@@ -467,6 +470,7 @@
                             <entry>Continue weaving even if errors occur (for example,
                              "... already woven" errors)</entry>
                         </row>
+                        -->
                         <row>
                             <entry>
                                 <literal>-Xreweavable</literal>
@@ -490,14 +494,12 @@
                                 <literal>-XmessageHandlerClass:...</literal>
                             </entry>
                             <entry>Provide alternative output destination to stdout/stderr for all weaver messages.
-                            The given value must be the full qualified class name of a class that implements
-                            <literal>org.aspectj.bridge.IMessageHandler</literal>
-                            and that is visible from where the <literal>aop.xml</literal> is packed.
-                            If more than one such options are used,
-                            the first occurence only is taken into account.
-                            You must also be very cautious about using a custom handler since it is likely that it will be invoked
-                            (as well as all its third parties) while the weaving is done, which means that f.e. it cannot be weaved
-                            by the aspects that are configured within the same deployment unit.
+                            The given value must be the full qualified class name of a class that implements the
+                            <literal>org.aspectj.bridge.IMessageHandler</literal> interface
+                            and is visible to the classloader with which the weaver being configured is associated.
+                            Exercise caution when packaging a custom message handler with an application that is to 
+                            be woven. The handler (as well as classes on which it depends) cannot itself be woven
+                            by the aspects that are declared to the same weaver.
                             </entry>
                         </row>
                     </tbody>
@@ -509,8 +511,8 @@
     <sect1 id="ltw-specialcases">
         <title>Special cases</title>
         <para>
-            Those classes are not exposed to the LTW infrastructure, no matter
-            the configuration of the <literal>aop.xml</literal> file(s):
+            The following classes are not exposed to the LTW infrastructure regardless of 
+            the <literal>aop.xml</literal> file(s) used:
             <itemizedlist>
                 <listitem> <para>All <literal>org.aspectj.*</literal> classes (and subpackages) - as those are needed by the infrastructure itself</para></listitem>
                 <listitem> <para>All <literal>java.*</literal> and <literal>javax.*</literal> classes (and subpackages)</para></listitem>
