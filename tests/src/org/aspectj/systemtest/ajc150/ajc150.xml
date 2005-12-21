@@ -6,6 +6,29 @@
     <ajc-test dir="bugs150" title="abstract perthis in @AspectJ">
         <compile files="pr121197.aj" options="-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs150" title="different numbers of type vars">
+        <compile files="pr121575.aj" options="-1.5"/>
+        <run class="pr121575"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/generics/tvars" title="different numbers of type vars - 2">
+        <compile files="Case1.aj" options="-1.5 -showWeaveInfo">
+          <message kind="weave" text="Join point 'method-execution(void MyClass.read(java.lang.String))' in Type 'MyClass' (Case1.aj:13) advised by before advice from 'MyAspect' (Case1.aj:5)"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/generics/tvars" title="different numbers of type vars - 3">
+        <compile files="Case2.aj" options="-1.5 -showWeaveInfo">
+          <message kind="weave" text="Join point 'method-execution(void MyClass.read(java.lang.Number))' in Type 'MyClass' (Case2.aj:13) advised by before advice from 'MyAspect' (Case2.aj:5)"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/generics/tvars" title="different numbers of type vars - 4">
+        <compile files="Case3.aj" options="-1.5 -showWeaveInfo">
+          <message kind="error" line="9" text="The type MyClass&lt;T,E&gt; must implement the inherited abstract method MyInterface&lt;T&gt;.read(T)"/>
+        </compile>
+    </ajc-test>
 
 
     <ajc-test dir="bugs150" title="access to private ITD from nested type">

@@ -42,6 +42,10 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
 
+  public void testTypeVars_pr121575()  { runTest("different numbers of type vars");}
+  public void testTypeVars_pr121575_2()  { runTest("different numbers of type vars - 2");}
+  public void testTypeVars_pr121575_3()  { runTest("different numbers of type vars - 3");}
+  public void testTypeVars_pr121575_4()  { runTest("different numbers of type vars - 4");}
   public void testDecps1()  { runTest("decps - 1");  }
   public void testDecps1b() { runTest("decps - 1b"); }
   public void testDecps2()  { runTest("decps - 2");  }

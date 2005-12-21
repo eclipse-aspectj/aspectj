@@ -400,15 +400,66 @@ public class ReferenceType extends ResolvedType {
 					parameterizedInterfaces[i] = 
 						parameterizedInterfaces[i].getRawType().resolve(getWorld());
 				} else if (parameterizedInterfaces[i].isParameterizedType()) {
-					// a parameterized supertype collapses any type vars to their upper
-					// bounds
-					parameterizedInterfaces[i] = 
-						parameterizedInterfaces[i].parameterizedWith(paramTypes);
+					// a parameterized supertype collapses any type vars to their upper bounds
+					UnresolvedType[] toUseForParameterization = determineThoseTypesToUse(parameterizedInterfaces[i],paramTypes);
+					parameterizedInterfaces[i] = parameterizedInterfaces[i].parameterizedWith(toUseForParameterization);
 				}
 			}
 			return parameterizedInterfaces;
 		} 
 		return delegate.getDeclaredInterfaces();
+	}
+	
+	/**
+	 * It is possible this type has multiple type variables but the interface we are about to parameterize
+	 * only uses a subset - this method determines the subset to use by looking at the type variable names
+	 * used.  For example:
+	 * <code>
+	 * class Foo<T extends String,E extends Number> implements SuperInterface<T> {}
+	 * </code>
+	 * where
+	 * <code>
+	 * interface SuperInterface<Z> {}
+	 * </code>
+     * In that example, a use of the 'Foo' raw type should know that it implements
+     * the SuperInterface<String>.
+	 */
+	private UnresolvedType[] determineThoseTypesToUse(ResolvedType parameterizedInterface,UnresolvedType[] paramTypes) {
+	    // What are the type parameters for the supertype?
+		UnresolvedType[] tParms = parameterizedInterface.getTypeParameters();
+		UnresolvedType[] retVal = new UnresolvedType[tParms.length];
+		
+		// Go through the supertypes type parameters, if any of them is a type variable, use the
+		// real type variable on the declaring type.
+		
+		// it is possibly overkill to look up the type variable - ideally the entry in the type parameter list for the
+		// interface should be the a ref to the type variable in the current type ... but I'm not 100% confident right now.
+		for (int i = 0; i < tParms.length; i++) {
+			UnresolvedType tParm = tParms[i];
+			if (tParm.isTypeVariableReference()) {
+				TypeVariableReference tvrt = (TypeVariableReference)tParm;
+				TypeVariable tv = tvrt.getTypeVariable();
+				int rank = getRank(tv.getName());
+				retVal[i]= paramTypes[rank];
+			} else {
+				retVal[i] = tParms[i];
+			}
+			
+		}
+		return retVal;
+	}
+	
+	/**
+	 * Returns the position within the set of type variables for this type for the specified type variable name.
+	 * Returns -1 if there is no type variable with the specified name.
+	 */
+	private int getRank(String tvname) {
+		TypeVariable[] thisTypesTVars = getGenericType().getTypeVariables();
+		for (int i = 0; i < thisTypesTVars.length; i++) {
+			TypeVariable tv = thisTypesTVars[i];
+			if (tv.getName().equals(tvname)) return i;
+		}
+		return -1;
 	}
 
 	public ResolvedMember[] getDeclaredMethods() {
