@@ -41,7 +41,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
   }
-
+  public void testMixingCodeStyles_pr121385()  { runTest("mixing aspect styles");}
   public void testTypeVars_pr121575()  { runTest("different numbers of type vars");}
   public void testTypeVars_pr121575_2()  { runTest("different numbers of type vars - 2");}
   public void testTypeVars_pr121575_3()  { runTest("different numbers of type vars - 3");}
@@ -868,6 +868,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAbstractPerThisInAtAspectJ() {
 	  runTest("abstract perthis in @AspectJ");
   }
+  
+  public void testNPEInBcelAdviceWithConcreteAspect_pr121385() {
+	  runTest("override protected pointcut in aop.xml concrete aspect");
+  }
+  
   
   // helper methods.....
   

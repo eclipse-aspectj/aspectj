@@ -2221,7 +2221,7 @@ public class BcelShadow extends Shadow {
 				munger.getAdviceArgSetup(
 					this,
 					null,
-                    (munger.getConcreteAspect().isAnnotationStyleAspect())?
+                    (munger.getConcreteAspect().isAnnotationStyleAspect() && munger.getDeclaringAspect()!=null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect())?
                         this.loadThisJoinPoint():
 					    new InstructionList(InstructionConstants.ACONST_NULL)));
 		    // adviceMethodInvocation =
@@ -2667,7 +2667,8 @@ public class BcelShadow extends Shadow {
 		}
 
         // ATAJ for @AJ aspect we need to link the closure with the joinpoint instance
-        if (munger.getConcreteAspect()!=null && munger.getConcreteAspect().isAnnotationStyleAspect()) {
+        if (munger.getConcreteAspect()!=null && munger.getConcreteAspect().isAnnotationStyleAspect() 
+           && munger.getDeclaringAspect()!=null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
             closureInstantiation.append(Utility.createInvoke(
                     getFactory(),
                     getWorld(),

@@ -11,6 +11,12 @@
         <compile files="pr121575.aj" options="-1.5"/>
         <run class="pr121575"/>
     </ajc-test>
+
+    
+    <ajc-test dir="bugs150/pr121385" title="mixing aspect styles">
+        <compile files="A.java" options="-1.5"/>
+        <run class="A"/>
+    </ajc-test>
     
     <ajc-test dir="java5/generics/tvars" title="different numbers of type vars - 2">
         <compile files="Case1.aj" options="-1.5 -showWeaveInfo">
@@ -6206,6 +6212,24 @@
            <line text="Recovery.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
        </stdout>
      </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs150/pr121385" title="override protected pointcut in aop.xml concrete aspect">
+     <compile files="Hello.java"/>
+     <compile files="World.aj, ConcreteWorld.aj"/>
+     <run class="Hello" ltw="aop.xml">
+       <stdout>
+           <line text="around start!"/>
+           <line text="Hello"/>
+           <line text="around start!"/>
+           <line text="World"/>
+           <line text="around end!"/>
+           <line text="around end!"/>
+       </stdout>
+     </run>
+<!--     
+     <ant file="ant.xml" target="ConcreteAsepectTest" verbose="true"/>
+-->
    </ajc-test>
 
 </suite>

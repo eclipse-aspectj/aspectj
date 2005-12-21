@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aspectj>
+	<aspects>
+        <concrete-aspect name="World1" extends="World">
+        	<pointcut name="greeting" expression="execution(* Hello.sayWorld(..)) || execution(* Hello.sayHello(..))"/>
+        </concrete-aspect>
+	</aspects>
+<!--
+	<aspects>
+    	<aspect name="World"/>
+    	<aspect name="ConcreteWorld"/>
+	</aspects>
+-->
+
+	<weaver options="-Xreweavable -verbose -XlazyTjp -showWeaveInfo">
+    	<include within="Hello"/>
+	</weaver>
+</aspectj>
+

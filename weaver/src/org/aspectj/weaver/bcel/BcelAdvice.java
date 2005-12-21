@@ -400,7 +400,9 @@ public class BcelAdvice extends Advice {
 		if (exposedState.getAspectInstance() != null) {
 			il.append(BcelRenderer.renderExpr(fact, world, exposedState.getAspectInstance()));
 		}
-        final boolean isAnnotationStyleAspect = getConcreteAspect()!=null && getConcreteAspect().isAnnotationStyleAspect();
+		// pr121385
+		boolean x = this.getDeclaringAspect().resolve(world).isAnnotationStyleAspect();
+        final boolean isAnnotationStyleAspect = getConcreteAspect()!=null && getConcreteAspect().isAnnotationStyleAspect() && x;
         boolean previousIsClosure = false;
         for (int i = 0, len = exposedState.size(); i < len; i++) {
         	if (exposedState.isErroneousVar(i)) continue; // Erroneous vars have already had error msgs reported!
@@ -454,13 +456,10 @@ public class BcelAdvice extends Advice {
 	                    }
 	                } else if (hasExtraParameter()) {
                         previousIsClosure = false;
-                        //extra var can be null here (@Aj aspect extends abstract code style, advice in code style)
-                        if (extraVar != null) {
                             extraVar.appendLoadAndConvert(
                                 il,
                                 fact,
                                 getExtraParameterType().resolve(world));
-                        }
                     } else {
                         previousIsClosure = false;
                         getConcreteAspect().getWorld().getMessageHandler().handleMessage(
