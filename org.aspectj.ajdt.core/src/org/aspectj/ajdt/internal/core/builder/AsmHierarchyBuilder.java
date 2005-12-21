@@ -402,7 +402,14 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
 		
 		if (methodDeclaration.returnType!=null) {
-		  peNode.setCorrespondingType(methodDeclaration.returnType.toString());
+			// if we don't make the distinction between ITD fields and other
+			// methods, then we loose the type, for example int, for the field
+			// and instead get "void".
+			if (peNode.getKind().equals(IProgramElement.Kind.INTER_TYPE_FIELD)) {
+				peNode.setCorrespondingType(methodDeclaration.returnType.toString());
+			} else {
+				peNode.setCorrespondingType(methodDeclaration.returnType.resolvedType.debugName());				
+			}
 		} else {
 		  peNode.setCorrespondingType(null);	
 		}

@@ -41,6 +41,10 @@ class HtmlDecorator {
 	private static final String ADVICE_SUMMARY = "Advice Summary";
 	private static final String POINTCUT_SUMMARY = "Pointcut Summary";
 	private static final String DECLARE_SUMMARY = "Declare Summary";
+	private static final String ITD_METHOD_SUMMARY = "Inter-Type Method Summary";
+	private static final String ITD_FIELD_SUMMARY = "Inter-Type Field Summary";
+	private static final String ITD_CONSTRUCTOR_SUMMARY = "Inter-Type Constructor Summary";
+	
 	static List visibleFileList = new ArrayList();
     static Hashtable declIDTable = null;
     static SymbolManager symbolManager = null;
@@ -233,6 +237,18 @@ class HtmlDecorator {
     	List pointcuts = new ArrayList();
     	List advice = new ArrayList();
     	List declares = new ArrayList();
+    	List methodsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_METHOD);
+    	if (methodsDeclaredOn != null && !methodsDeclaredOn.isEmpty()) {
+ 			insertDeclarationsSummary(fileBuffer,methodsDeclaredOn,ITD_METHOD_SUMMARY,index);
+		}
+    	List fieldsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_FIELD);
+    	if (fieldsDeclaredOn != null && !fieldsDeclaredOn.isEmpty()) {
+ 			insertDeclarationsSummary(fileBuffer,fieldsDeclaredOn,ITD_FIELD_SUMMARY,index);
+		}
+    	List constDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
+    	if (fieldsDeclaredOn != null && !constDeclaredOn.isEmpty()) {
+ 			insertDeclarationsSummary(fileBuffer,constDeclaredOn,ITD_CONSTRUCTOR_SUMMARY,index);
+		}
     	for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
     		IProgramElement member = (IProgramElement)it.next();
     		if (member.getKind().equals(IProgramElement.Kind.POINTCUT)) {
@@ -301,7 +317,7 @@ class HtmlDecorator {
                     entry +=
                             "<TR><TD>" +
                             "<A HREF=\"#" + generateHREFName(decl) + "\">" +
-                            "<TT>" + generateAdviceSignatures(decl) +
+                            "<TT>" + generateSignatures(decl) +
     						"</TT></A><BR>&nbsp;";
                     if (!comment.equals("")) {
                         entry += comment + "<P>";
@@ -327,15 +343,35 @@ class HtmlDecorator {
                 else if ( kind.equals( DECLARE_SUMMARY ) ) {
                     entry +=
                             "<TR><TD WIDTH=\"1%\">" +
-                            "<FONT SIZE=-1><TT>" + decl.getModifiers() + "</TT></FONT>" +
+                            "<FONT SIZE=-1><TT>" + 
+                            generateModifierInformation(decl,false) 
+                            + "</TT></FONT>" +
                             "</TD>" +
                             "<TD>" +
                             "<A HREF=\"#" + generateHREFName(decl) + "\">" +
                             "<TT>" + decl.toLabelString() + "</TT></A><P>" +
-                            generateIntroductionSignatures(decl, true) +
                             generateAffects(decl, true);
                 }
-    
+                else if ( kind.equals( ITD_FIELD_SUMMARY ) 
+                			|| kind.equals( ITD_METHOD_SUMMARY)) {
+                	entry +=
+                            "<TR><TD WIDTH=\"1%\">" +
+                            "<FONT SIZE=-1><TT>" + 
+                            generateModifierInformation(decl,false) + 
+                            "</TT></FONT>" +
+                            "</TD>" +
+                            "<TD>" +
+                            "<A HREF=\"#" + generateHREFName(decl) + "\">" +
+                            "<TT>" + decl.toLabelString() + "</TT></A><P>"+
+                            generateDeclaredBy(decl);
+                }
+                else if ( kind.equals( ITD_CONSTRUCTOR_SUMMARY ) ) {
+                	entry +="<TD>" +
+                            "<A HREF=\"#" + generateHREFName(decl) + "\">" +
+                            "<TT>" + decl.toLabelString() + "</TT></A><P>"+
+                            generateDeclaredBy(decl);
+                }
+                
                 // insert the entry
                 fileBuffer.insert(insertIndex, entry);
                 insertIndex += entry.length();
@@ -406,7 +442,7 @@ class HtmlDecorator {
                     entry += "<H3>" + decl.getName() + "</H3><P>";
                     entry +=
                             "<TT>" +
-                            generateAdviceSignatures(decl) + "</TT>\n" + "<P>" +
+                            generateSignatures(decl) + "</TT>\n" + "<P>" +
                             generateDetailsComment(decl) + "<P>" +
                             generateAffects(decl, false);
                 }
@@ -418,9 +454,14 @@ class HtmlDecorator {
                             generateDetailsComment(decl);
                 }
                 else if (kind.equals(DECLARE_DETAIL)) {
-                	entry += "<H3>declare " + decl.toLabelString() + "</H3><P>";
-                    entry +=
-                            generateIntroductionSignatures(decl, true) +
+                	entry += "<H3>" + decl.toLabelString() + 
+                			 "</H3><P>" +
+                			 generateModifierInformation(decl,true);
+                	if (!decl.getKind().equals(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR)) {
+						entry += "&nbsp;&nbsp;";
+					}
+                    entry += generateSignatures(decl) + 
+                            "<P>" +
                             generateAffects(decl, true) +
                             generateDetailsComment(decl);
                 }
@@ -531,6 +572,43 @@ class HtmlDecorator {
     }
 
     /**
+     * pr119453 - adding "declared by" relationship
+     */
+    static String generateDeclaredBy(IProgramElement decl) {
+        String entry = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
+        		"<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" +
+        		"&nbsp;Declared&nbsp;by:</b></font></td><td>";
+        	
+		String relativePackagePath =
+			getRelativePathFromHere(
+				decl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR);    
+    
+       	if (decl != null && !StructureUtil.isAnonymous(decl.getParent())) {
+       		String packagePath = "";
+       		if (decl.getPackageName() != null && !decl.getPackageName().equals("")) {
+       			packagePath = decl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR;
+       		}
+       		
+			String typeSignature = constructNestedTypeName(decl);
+       		
+       		String hrefName = packagePath + typeSignature;       		
+        		
+       		// The hrefLink needs to just be the corresponding aspect 
+       		String hrefLink = 
+				relativePackagePath
+				+ packagePath 
+				+ typeSignature
+       			+ ".html";
+        		
+            entry += "<A HREF=\"" + hrefLink +
+                    "\"><tt>" + hrefName.replace('/', '.') + "</tt></A>";  // !!! don't replace
+       	}
+        entry += "</B></FONT></TD></TR></TABLE>\n</TR></TD>\n";
+        return entry;
+    }
+   
+    
+    /**
      * TODO: probably want to make this the same for intros and advice.
      */
     static String generateAffects(IProgramElement decl, boolean isIntroduction) {
@@ -545,7 +623,7 @@ class HtmlDecorator {
         if (!isIntroduction) {
         	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advises:</b></font></td><td>";
         } else {
-        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Affects:</b></font></td><td>";
+        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Declared&nbsp;on:</b></font></td><td>";
         }
         	
 		String relativePackagePath =
@@ -617,6 +695,29 @@ class HtmlDecorator {
 		return result.toString();
 	}
 
+	/** 
+	 * Generate the "public int"-type information about the given IProgramElement.
+	 * Used when dealing with ITDs. To mirror the behaviour of methods and fields
+	 * in classes, if we're generating the summary information we don't want to 
+	 * include "public" if the accessibility of the IProgramElement is public. 
+	 * 
+	 */
+	private static String generateModifierInformation(IProgramElement decl, boolean isDetails) {
+		String intro = "";
+		if (isDetails || 
+				!decl.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC)) {
+			intro += "<TT>" + decl.getAccessibility().toString() + "&nbsp;" ;
+		} 
+		if (decl.getKind().equals(IProgramElement.Kind.INTER_TYPE_FIELD)) {
+			return intro  + decl.getCorrespondingType() + "</TT>";
+		} else if (decl.getKind().equals(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR)
+				&& isDetails) {
+			return intro + "</TT>";
+		} else {
+			return intro + decl.getCorrespondingType(true) + "</TT>";
+		}
+	}
+	
 	static String generateIntroductionSignatures(IProgramElement decl, boolean isDetails) {
     	return "<not implemented>";
     	//        Declaration[] decls = decl.getDeclarations();
@@ -639,7 +740,7 @@ class HtmlDecorator {
 //        return entry;
     }
 
-    static String generateAdviceSignatures(IProgramElement decl ) {
+    static String generateSignatures(IProgramElement decl ) {
         return "<B>" + decl.toLabelString() + "</B>";
     }
 

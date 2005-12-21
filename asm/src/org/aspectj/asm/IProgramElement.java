@@ -75,7 +75,8 @@ public interface IProgramElement extends Serializable {
 	/** 
 	 * This correponds to both method return types and field types.
 	 */
-	public String getCorrespondingType();
+	public String getCorrespondingType();	
+	public String getCorrespondingType(boolean getFullyQualifiedType);
 	
 	public String toSignatureString();
 	

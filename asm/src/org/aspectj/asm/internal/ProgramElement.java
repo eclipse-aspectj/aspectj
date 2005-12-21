@@ -297,6 +297,17 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public String getCorrespondingType() {
+		return getCorrespondingType(false);
+	}
+	
+	public String getCorrespondingType(boolean getFullyQualifiedType) {
+		if (getFullyQualifiedType) {
+			return returnType;
+		}
+		int index = returnType.lastIndexOf(".");
+		if (index != -1) {
+			return returnType.substring(index);
+		}
 		return returnType;
 	}
 
@@ -493,6 +504,5 @@ public class ProgramElement implements IProgramElement {
 	public ExtraInformation getExtraInfo() {
 		return info;
 	}
-
 }
 

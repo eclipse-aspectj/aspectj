@@ -40,6 +40,7 @@ public class AjdocTests extends TestCase {
         suite.addTestSuite(SpacewarTestCase.class);
         suite.addTestSuite(PatternsTestCase.class);
         suite.addTestSuite(CoverageTestCase.class); 
+        suite.addTestSuite(ITDTest.class);
         suite.addTestSuite(ExecutionTestCase.class);// !!! must be last because it exists
         //$JUnit-END$
         return suite;
