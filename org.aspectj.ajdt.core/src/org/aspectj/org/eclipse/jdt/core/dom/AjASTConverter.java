@@ -20,6 +20,7 @@ import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeConstructorDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
@@ -204,7 +205,6 @@ public class AjASTConverter extends ASTConverter {
 			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) methodDeclaration);
 		}
 		MethodDeclaration methodDecl = new MethodDeclaration(this.ast);
-		setModifiers(methodDecl, methodDeclaration);
 		boolean isConstructor = methodDeclaration.isConstructor();
 		methodDecl.setConstructor(isConstructor);
 		
@@ -225,12 +225,23 @@ public class AjASTConverter extends ASTConverter {
 		}
 		/////////////////////////
 		
+		// set modifiers after checking whether we're an itd, otherwise
+		// the modifiers are not set on the correct object.
+		setModifiers(methodDecl, methodDeclaration);
+
+		// for ITD's use the declaredSelector
 		final SimpleName methodName = new SimpleName(this.ast);
-		methodName.internalSetIdentifier(new String(methodDeclaration.selector));
+		if (methodDeclaration instanceof InterTypeDeclaration) {
+			InterTypeDeclaration itd = (InterTypeDeclaration) methodDeclaration;
+			methodName.internalSetIdentifier(new String(itd.getDeclaredSelector()));
+		} else {
+			methodName.internalSetIdentifier(new String(methodDeclaration.selector));
+		}
 		int start = methodDeclaration.sourceStart;
 		int end = retrieveIdentifierEndPosition(start, methodDeclaration.sourceEnd);
 		methodName.setSourceRange(start, end - start + 1);
 		methodDecl.setName(methodName);
+		
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference[] thrownExceptions = methodDeclaration.thrownExceptions;
 		if (thrownExceptions != null) {
 			int thrownExceptionsLength = thrownExceptions.length;
@@ -3580,7 +3591,7 @@ public class AjASTConverter extends ASTConverter {
 		// ajh02: method added
 		switch(this.ast.apiLevel) {
 			case AST.JLS2_INTERNAL :
-				fieldDeclaration.internalSetModifiers(fieldDecl.modifiers & CompilerModifiers.AccJustFlag);
+				fieldDeclaration.internalSetModifiers(fieldDecl.declaredModifiers & CompilerModifiers.AccJustFlag);
 				if (fieldDecl.annotations != null) {
 					fieldDeclaration.setFlags(fieldDeclaration.getFlags() | ASTNode.MALFORMED);
 				}
@@ -3615,7 +3626,11 @@ public class AjASTConverter extends ASTConverter {
 	protected void setModifiers(MethodDeclaration methodDecl, AbstractMethodDeclaration methodDeclaration) {
 		switch(this.ast.apiLevel) {
 			case AST.JLS2_INTERNAL :
-				methodDecl.internalSetModifiers(methodDeclaration.modifiers & CompilerModifiers.AccJustFlag);
+				if (methodDeclaration instanceof InterTypeDeclaration) {
+					methodDecl.internalSetModifiers(((InterTypeDeclaration)methodDeclaration).declaredModifiers & CompilerModifiers.AccJustFlag);
+				} else {
+					methodDecl.internalSetModifiers(methodDeclaration.modifiers & CompilerModifiers.AccJustFlag);
+				}
 				if (methodDeclaration.annotations != null) {
 					methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
 				}
