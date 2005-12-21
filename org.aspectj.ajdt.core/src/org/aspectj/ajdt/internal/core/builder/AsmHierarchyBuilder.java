@@ -418,7 +418,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		
 		// TODO: add return type test
 		if (peNode.getKind().equals(IProgramElement.Kind.METHOD)) {
-			if (peNode.toLabelString().equals("main(String[])")
+			if ((peNode.toLabelString().equals("main(String[])")
+					|| peNode.toLabelString().equals("main(java.lang.String[])"))
 				&& peNode.getModifiers().contains(IProgramElement.Modifiers.STATIC)
 				&& peNode.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC)) {
 				((IProgramElement)stack.peek()).setRunnable(true);

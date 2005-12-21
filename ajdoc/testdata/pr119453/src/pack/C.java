@@ -15,4 +15,7 @@ public class C {
 		return "";
 	}
 	
+	public void method3(String s) { 
+	}
+	
 }
