@@ -690,7 +690,7 @@
         };
 
         // this implementation can be outside of the aspect
-        public class MoodyImpl implements Moody {
+        public static class MoodyImpl implements Moody {
            private Mood mood = Mood.HAPPY;
 
            public Mood getMood() {
@@ -699,7 +699,7 @@
         }
 
         // the field type must be the introduced interface. It can't be a class.
-        @DeclareParents(value="org.xzy..*",defaultImpl="MoodyImpl")
+        @DeclareParents(value="org.xzy..*",defaultImpl=MoodyImpl.class)
         private Moody implementedInterface;
 
         @Before("execution(* *.*(..)) && this(m)")
