@@ -121,7 +121,9 @@ class StubFileGenerator{
 		    	    && !member.getKind().equals(IProgramElement.Kind.ADVICE)) {
 					signature = member.getSourceSignature();//StructureUtil.genSignature(member);
 					if (member.getKind().equals(IProgramElement.Kind.ENUM_VALUE)){
-						if (((IProgramElement)members.get(members.indexOf(member)+1)).getKind().equals(IProgramElement.Kind.ENUM_VALUE)){
+						int index = members.indexOf(member);
+						if ((index + 1 < members.size()) &&
+								((IProgramElement)members.get(index+1)).getKind().equals(IProgramElement.Kind.ENUM_VALUE)){
 							// if the next member is also an ENUM_VALUE:
 							signature = signature + ",";
 						} else {
