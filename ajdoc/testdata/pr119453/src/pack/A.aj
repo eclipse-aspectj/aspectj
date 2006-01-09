@@ -4,6 +4,8 @@ public aspect A {
 
 	private int C.y = 3;
 
+	declare warning : execution(* C.method()) : "warning..";
+	
 	/**
 	 * blah
 	 */

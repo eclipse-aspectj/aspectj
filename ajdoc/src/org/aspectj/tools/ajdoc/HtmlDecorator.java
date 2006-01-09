@@ -704,6 +704,9 @@ class HtmlDecorator {
 	 */
 	private static String generateModifierInformation(IProgramElement decl, boolean isDetails) {
 		String intro = "";
+		if (decl.getKind().isDeclare()) {
+			return intro + "</TT>";
+		}
 		if (isDetails || 
 				!decl.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC)) {
 			intro += "<TT>" + decl.getAccessibility().toString() + "&nbsp;" ;

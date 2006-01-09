@@ -158,6 +158,7 @@ public class ITDTest extends TestCase {
 				boolean containsPublicString = false;
 				boolean containsITDFAsHeader = false;
 				boolean containsCorrectConstInfo = false;
+				boolean containsPackageVoid = false;
 				// walk through the information in this section
 				String nextLine = readerA.readLine();
 				while(nextLine != null 
@@ -176,6 +177,9 @@ public class ITDTest extends TestCase {
 					if (nextLine.indexOf("public&nbsp;</TT><B>C.C") != -1 ) {
 						containsCorrectConstInfo = true;
 					}
+					if (nextLine.indexOf("package&nbsp;void") != -1 ) {
+						containsPackageVoid = true;
+					}
 					nextLine = readerA.readLine();
 				}
 				assertTrue("Declare detail summary should contain the 'private int' " +
@@ -186,6 +190,8 @@ public class ITDTest extends TestCase {
 						containsITDFAsHeader);
 				assertTrue("Declare detail summary should have 'public C.C' for the " +
 						"ITD constructor", containsCorrectConstInfo);
+				assertFalse("Declare detail summary should not have 'package void' in it",
+						containsPackageVoid);
 				
 				// we may have hit the "inter-type field summary" so set this to 
 				// be the next line we look at.
@@ -196,6 +202,7 @@ public class ITDTest extends TestCase {
 				boolean containsInt = false;
 				boolean containsString = false;
 				boolean containsPublic = false;
+				boolean containsPackageVoid = false;
 				// walk through the information in this section
 				String nextLine = readerA.readLine();
 				while(nextLine != null && (nextLine.indexOf("========") == -1)) {
@@ -211,12 +218,17 @@ public class ITDTest extends TestCase {
 					if (nextLine.indexOf("String") != -1) {
 						containsString = true;
 					}
+					if (nextLine.indexOf("package&nbsp;void") != -1) {
+						containsPackageVoid = true;
+					}
 					nextLine = readerA.readLine();
 				}
 				assertTrue("Declare summary should contain the 'private' modifier",containsPrivate);
 				assertTrue("Declare summary should contain the 'int' return type",containsInt);
 				assertFalse("Declare summary should not contain the 'public' modifier",containsPublic);
 				assertTrue("Declare summary should contain the 'String' return type",containsString);
+				assertFalse("Declare summary should not have 'package void' in it",
+						containsPackageVoid);
 				
 				// we may have hit the "Declare Details" so set this to 
 				// be the next line we look at.
