@@ -81,11 +81,23 @@ public class TypeFactory {
 		
 		if (signature.startsWith(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER)) {
 			// parameterized type, calculate signature erasure and type parameters
+			
+			// (see pr112458) It is possible for a parameterized type to have *no* type parameters visible in its signature.
+			// This happens for an inner type of a parameterized type which simply inherits the type parameters
+			// of its parent.  In this case it is parameterized but theres no < in the signature.
+			
 			int startOfParams = signature.indexOf('<');
 			int endOfParams = signature.lastIndexOf('>');
-			String signatureErasure = "L" + signature.substring(1,startOfParams) + ";";
-			UnresolvedType[] typeParams = createTypeParams(signature.substring(startOfParams +1, endOfParams));
-			return new UnresolvedType(signature,signatureErasure,typeParams);
+			if (startOfParams==-1) {
+				// Should be an inner type of a parameterized type - could assert there is a '$' in the signature....
+				String signatureErasure = "L" + signature.substring(1);
+				UnresolvedType[] typeParams = new UnresolvedType[0];
+				return new UnresolvedType(signature,signatureErasure,typeParams);
+			} else {
+				String signatureErasure = "L" + signature.substring(1,startOfParams) + ";";
+				UnresolvedType[] typeParams = createTypeParams(signature.substring(startOfParams +1, endOfParams));
+				return new UnresolvedType(signature,signatureErasure,typeParams);
+			}
 		} else if (signature.equals("?")){
 			UnresolvedType ret = UnresolvedType.SOMETHING;
 			ret.typeKind = TypeKind.WILDCARD;

@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.1 Tests -->
+<suite>
+    
+    <ajc-test dir="bugs151" title="member types in generic types">
+        <compile files="pr112458.aj" options="-1.5 -emacssym"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151" title="member types in generic types - 2">
+        <compile files="pr112458_2.aj" options="-1.5 -emacssym"/>
+        <run class="pr112458_2"/>
+    </ajc-test>
+
+</suite>

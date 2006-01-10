@@ -24,7 +24,7 @@ import junit.framework.TestSuite;
 public class AllTestsAspectJ150 {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Java5/AspectJ5 tests");
+		TestSuite suite = new TestSuite("AspectJ1.5.0 tests");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(MigrationTests.class);
 		suite.addTest(Ajc150Tests.suite());
