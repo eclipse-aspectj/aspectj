@@ -82,7 +82,7 @@ public class TypeFactory {
 		if (signature.startsWith(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER)) {
 			// parameterized type, calculate signature erasure and type parameters
 			
-			// (see pr112458) It is possible for a parameterized type to have *no* type parameters visible in its signature.
+			// (see pr122458) It is possible for a parameterized type to have *no* type parameters visible in its signature.
 			// This happens for an inner type of a parameterized type which simply inherits the type parameters
 			// of its parent.  In this case it is parameterized but theres no < in the signature.
 			
