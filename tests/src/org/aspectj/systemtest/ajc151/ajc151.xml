@@ -4,12 +4,12 @@
 <suite>
     
     <ajc-test dir="bugs151" title="member types in generic types">
-        <compile files="pr112458.aj" options="-1.5 -emacssym"/>
+        <compile files="pr122458.aj" options="-1.5 -emacssym"/>
     </ajc-test>
     
     <ajc-test dir="bugs151" title="member types in generic types - 2">
-        <compile files="pr112458_2.aj" options="-1.5 -emacssym"/>
-        <run class="pr112458_2"/>
+        <compile files="pr122458_2.aj" options="-1.5 -emacssym"/>
+        <run class="pr122458_2"/>
     </ajc-test>
 
 </suite>
