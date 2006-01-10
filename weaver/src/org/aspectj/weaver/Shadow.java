@@ -231,7 +231,7 @@ public abstract class Shadow {
     public static final Kind FieldGet             = new Kind(JoinPoint.FIELD_GET, 5,  true);
     public static final Kind FieldSet             = new Kind(JoinPoint.FIELD_SET, 6,  true);
     public static final Kind StaticInitialization = new Kind(JoinPoint.STATICINITIALIZATION, 7,  false);
-    public static final Kind PreInitialization    = new Kind(JoinPoint.PREINTIALIZATION, 8,  false);
+    public static final Kind PreInitialization    = new Kind(JoinPoint.PREINITIALIZATION, 8,  false);
     public static final Kind AdviceExecution      = new Kind(JoinPoint.ADVICE_EXECUTION, 9,  false);
     public static final Kind Initialization       = new Kind(JoinPoint.INITIALIZATION, 10,  false);
     public static final Kind ExceptionHandler     = new Kind(JoinPoint.EXCEPTION_HANDLER, 11,  true);

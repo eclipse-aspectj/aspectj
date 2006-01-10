@@ -173,7 +173,7 @@ public interface JoinPoint {
     static String FIELD_GET = "field-get";
     static String FIELD_SET = "field-set";
     static String STATICINITIALIZATION = "staticinitialization";
-    static String PREINTIALIZATION = "preinitialization";
+    static String PREINITIALIZATION = "preinitialization";
     static String INITIALIZATION = "initialization";
     static String EXCEPTION_HANDLER = "exception-handler";
 
