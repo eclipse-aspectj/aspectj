@@ -43,6 +43,7 @@ public class AjdocTests extends TestCase {
         suite.addTestSuite(ITDTest.class);
         suite.addTestSuite(FullyQualifiedArgumentTest.class);
         suite.addTestSuite(EnumTest.class);
+        suite.addTestSuite(PointcutVisibilityTest.class);
         suite.addTestSuite(ExecutionTestCase.class);// !!! must be last because it exists
         //$JUnit-END$
         return suite;

@@ -11,58 +11,25 @@
  * ******************************************************************/
  package org.aspectj.tools.ajdoc;
 
-import java.io.File;
-
-import junit.framework.TestCase;
 
 /**
  * @author Mik Kersten
  */
-public class SpacewarTestCase extends TestCase {
+public class SpacewarTestCase extends AjdocTestCase {
+	
+	private String[] dirs = {"spacewar","coordination"};
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		new File("../ajdoc/testdata/spacewar/docdir").delete();
+		initialiseProject("spacewar");
 	}
     
 	public void testSimpleExample() {
-		File outdir = new File("testdata/spacewar/docdir");
-		File sourcepath = new File("testdata/spacewar");
-		
-		String[] args = { 
-                "-classpath",
-                AjdocTests.ASPECTJRT_PATH.getPath(),
-                "-d", 
-				outdir.getAbsolutePath(),
-				"-sourcepath",
-				sourcepath.getAbsolutePath(),
-				"spacewar",
-				"coordination" };
-		
-		org.aspectj.tools.ajdoc.Main.main(args);
-		assertTrue(true);
+		runAjdoc(dirs);
 	}
 	
 	public void testPublicModeExample() {
-		File outdir = new File("../ajdoc/testdata/spacewar/docdir");
-		File sourcepath = new File("../ajdoc/testdata/spacewar");
-		
-		String[] args = { 
-		        "-public",
-                "-classpath",
-                AjdocTests.ASPECTJRT_PATH.getPath(),
-		        "-d", 
-				outdir.getAbsolutePath(),
-				"-sourcepath",
-				sourcepath.getAbsolutePath(),
-				"spacewar",
-				"coordination" };
-		
-		org.aspectj.tools.ajdoc.Main.main(args);
-		assertTrue(true);
+		runAjdoc("public",dirs);
 	}
-	
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
+
 }

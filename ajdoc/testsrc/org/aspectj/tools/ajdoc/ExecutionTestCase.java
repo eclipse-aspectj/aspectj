@@ -14,14 +14,12 @@ package org.aspectj.tools.ajdoc;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
 import org.aspectj.bridge.Version;
 
 /**
  * @author Mik Kersten
  */
-public class ExecutionTestCase extends TestCase {
+public class ExecutionTestCase extends AjdocTestCase {
 	
 	public void testVersionMatch() {
 		String ajdocVersion = Main.getVersion();
@@ -30,18 +28,10 @@ public class ExecutionTestCase extends TestCase {
 	}
 	
 	public void testFailingBuild() {
-		File file1 = new File("../ajdoc/testdata/failing-build/Fail.java");
-		String[] args = { file1.getAbsolutePath() };
-		
+		initialiseProject("failing-build");
+		File file1 = new File(getAbsoluteProjectDir() + File.separatorChar + "Fail.java");
+		String[] args = { file1.getAbsolutePath() };	
 		org.aspectj.tools.ajdoc.Main.main(args);
 		assertTrue(Main.hasAborted());
-	}
-	
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-	
-	protected void tearDown() throws Exception {
-		super.tearDown();
 	}
 }

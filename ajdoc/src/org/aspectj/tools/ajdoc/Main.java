@@ -66,6 +66,10 @@ public class Main implements Config {
     private static boolean deleteTempFilesOnExit = true;
     
 	private static boolean aborted = false;
+	
+	// creating a local variable to enable us to create the ajdocworkingdir
+	// in a local sandbox during testing
+	private static String outputWorkingDir = Config.WORKING_DIR;
 
     public static void clearState() {
         symbolManager = null;
@@ -102,8 +106,8 @@ public class Main implements Config {
         File[] signatureFiles  = new File[filenames.size()];
         try {
             // create the workingdir if it doesn't exist
-            if ( !(new File( Config.WORKING_DIR ).isDirectory()) ) {
-                File dir = new File( Config.WORKING_DIR );
+            if ( !(new File( outputWorkingDir ).isDirectory()) ) {
+                File dir = new File( outputWorkingDir );
                 dir.mkdir();
                 if (deleteTempFilesOnExit) dir.deleteOnExit();
             }
@@ -171,7 +175,7 @@ public class Main implements Config {
                 javadocargs = new String[numExtraArgs + options.size() + packageList.size() +
                                          fileList.size() ];
                 javadocargs[0] = "-sourcepath";
-                javadocargs[1] = Config.WORKING_DIR;
+                javadocargs[1] = outputWorkingDir;
                 int argIndex = 2;
                 if (authorStandardDocletSwitch) {
                     javadocargs[argIndex] = "-author";
@@ -321,7 +325,7 @@ public class Main implements Config {
     	
         String filename    = "";
         if ( packageName != null ) {
-            String pathName =  Config.WORKING_DIR + '/' + packageName.replace('.', '/');
+            String pathName =  outputWorkingDir + '/' + packageName.replace('.', '/');
             File packageDir = new File(pathName);
             if ( !packageDir.exists() ) {
                 packageDir.mkdirs();
@@ -329,11 +333,11 @@ public class Main implements Config {
             }
             //verifyPackageDirExists(packageName, null);
             packageName = packageName.replace( '.','/' ); // !!!
-            filename = Config.WORKING_DIR + Config.DIR_SEP_CHAR + packageName +
+            filename = outputWorkingDir + Config.DIR_SEP_CHAR + packageName +
                        Config.DIR_SEP_CHAR + inputFile.getName();
         }
         else {
-            filename = Config.WORKING_DIR + Config.DIR_SEP_CHAR + inputFile.getName();
+            filename = outputWorkingDir + Config.DIR_SEP_CHAR + inputFile.getName();
         }
         File signatureFile = new File( filename );
         if (deleteTempFilesOnExit) signatureFile.deleteOnExit();
@@ -436,7 +440,7 @@ public class Main implements Config {
     static String getSourcepathAsString() {
        String cPath = "";
        for (int i = 0; i < sourcepath.size(); i++) {
-           cPath += (String)sourcepath.elementAt(i) + Config.DIR_SEP_CHAR + Config.WORKING_DIR;
+           cPath += (String)sourcepath.elementAt(i) + Config.DIR_SEP_CHAR + outputWorkingDir;
            if (i != sourcepath.size()-1) {
               cPath += File.pathSeparator;
            }
@@ -730,6 +734,27 @@ public class Main implements Config {
     
 	public static boolean hasAborted() {
 		return aborted;
+	}
+	
+	/**
+	 * Sets the output working dir to be <fullyQualifiedOutputDir>\ajdocworkingdir
+	 * Useful in testing to redirect the ajdocworkingdir to the sandbox
+	 */
+	public static void setOutputWorkingDir(String fullyQulifiedOutputDir) {
+		if (fullyQulifiedOutputDir == null) {
+			resetOutputWorkingDir();
+		} else {
+			outputWorkingDir = fullyQulifiedOutputDir + File.separatorChar + 
+									Config.WORKING_DIR;			
+		}
+	}
+	
+	/**
+	 * Resets the output working dir to be the default which is
+	 * <the current directory>\ajdocworkingdir
+	 */
+	public static void resetOutputWorkingDir() {
+		outputWorkingDir = Config.WORKING_DIR;
 	}
 }
 

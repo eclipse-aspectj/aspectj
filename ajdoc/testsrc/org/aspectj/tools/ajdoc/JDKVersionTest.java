@@ -3,12 +3,11 @@
   */
 package org.aspectj.tools.ajdoc;
 
-import junit.framework.TestCase;
 
 /**
  * @author Mik Kersten
  */
-public class JDKVersionTest extends TestCase {
+public class JDKVersionTest extends AjdocTestCase {
 
 //    public void testIsUsing1point4() {
 //        String v = System.getProperty("java.class.version","44.0");

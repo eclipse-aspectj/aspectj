@@ -14,14 +14,12 @@ package org.aspectj.tools.ajdoc;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
 /**
  * A long way to go until full coverage, but this is the place to add more.
  * 
  * @author Mik Kersten
  */
-public class PatternsTestCase extends TestCase {
+public class PatternsTestCase extends AjdocTestCase {
 	
 	public void testSimpleExample() {
 		  
@@ -90,11 +88,4 @@ public class PatternsTestCase extends TestCase {
 		org.aspectj.tools.ajdoc.Main.main(args);
 	}
 	
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-	
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
 }

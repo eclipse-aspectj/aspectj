@@ -207,24 +207,36 @@ class HtmlDecorator {
             else {
                 decorateMemberDocumentation(decl, fileContents, index);
             } 
-        } 
-        
-        // Change "Class" to "Aspect"
-        // HACK: depends on matching presence of advice or pointcut summary
-        int classStartIndex = fileContents.toString().indexOf("<BR>\nClass ");
-        int pointcutSummaryIndex = fileContents.toString().indexOf(POINTCUT_SUMMARY);
-        int adviceSummaryIndex = fileContents.toString().indexOf(ADVICE_SUMMARY);
-        if (classStartIndex != -1 &&
-        	(adviceSummaryIndex != -1 || pointcutSummaryIndex != -1)) {
-            int classEndIndex = fileContents.toString().indexOf("</H2>", classStartIndex);
-            if (classStartIndex != -1 && classEndIndex != -1) { 
-                String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
-                String aspectLine = "<BR>\n" + "Aspect " + classLine.substring(11, classLine.length());
-                fileContents.delete(classStartIndex, classEndIndex);
-                fileContents.insert(classStartIndex, aspectLine);
+            // Change "Class" to "Aspect"
+            // moved this here because then can use the IProgramElement.Kind
+            // rather than checking to see if there's advice - this fixes
+            // the case with an inner aspect not having the title "Aspect"
+            if(decl.getKind().equals(IProgramElement.Kind.ASPECT) 
+            		&& file.getName().indexOf(decl.toSignatureString()) != -1) {
+            	int classStartIndex = fileContents.toString().indexOf("<BR>\nClass ");
+                if (classStartIndex != -1) {
+                    int classEndIndex = fileContents.toString().indexOf("</H2>", classStartIndex);
+                    if (classStartIndex != -1 && classEndIndex != -1) { 
+                        String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
+                        String aspectLine = "<BR>\n" + "Aspect " + classLine.substring(11, classLine.length());
+                        fileContents.delete(classStartIndex, classEndIndex);
+                        fileContents.insert(classStartIndex, aspectLine);
+                    }
+                }
+                int secondClassStartIndex = fileContents.toString().indexOf("class <B>");
+                if (secondClassStartIndex != -1) {
+                	String name = decl.toSignatureString();
+					int classEndIndex = fileContents.indexOf(name + "</B><DT>");
+					if (secondClassStartIndex != -1 && classEndIndex != -1) {
+						StringBuffer sb = new StringBuffer(fileContents.toString().
+								substring(secondClassStartIndex,classEndIndex));
+						sb.replace(0,5,"aspect");
+						fileContents.delete(secondClassStartIndex, classEndIndex);
+                        fileContents.insert(secondClassStartIndex, sb.toString());
+					}
+				}
             }
-        }
-
+        } 
         file.delete();
         FileOutputStream fos = new FileOutputStream( file );
         fos.write( fileContents.toString().getBytes() );
@@ -460,9 +472,12 @@ class HtmlDecorator {
                 	if (!decl.getKind().equals(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR)) {
 						entry += "&nbsp;&nbsp;";
 					}
-                    entry += generateSignatures(decl) + 
-                            "<P>" +
-                            generateAffects(decl, true) +
+                	// if we're not a declare statement then we need to generate the signature.
+                	// If we did this for declare statements we get two repeated lines
+                	if (!decl.getKind().isDeclare()) {
+						entry += generateSignatures(decl) + "<P>";
+					}
+                    entry += generateAffects(decl, true) +
                             generateDetailsComment(decl);
                 }
     

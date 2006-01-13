@@ -23,7 +23,7 @@ public class PlainJava {
 		return i; 
 	}
 	
-	static private class Bar {
+	static private class ClassBar {
 		
 		static private class Baz { 
 
