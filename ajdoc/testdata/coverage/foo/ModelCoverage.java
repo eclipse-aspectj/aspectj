@@ -6,6 +6,10 @@ import java.util.List;
  
 interface I { } 
 
+/**
+ * doc about the Point class........
+ *
+ */
 class Point { 
 	int x;
 	static int sx;
@@ -28,7 +32,8 @@ class Point {
 	}
 	 
 	public int changeX(int x) { 
-		this.x = x;
+		//this.x = x;
+		setX(x);
 		return x;
 	}
 	

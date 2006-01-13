@@ -25,21 +25,58 @@ import org.aspectj.asm.IRelationship;
  */
 public class StructureUtil {
 
-	
 	/**
+	 * Calculate the targets for a given IProgramElement (and it's 
+	 * immediate children if its not a type or if the child is
+	 * CODE) and relationship kind
+	 * 
 	 * @return	null if a relationship of that kind is not found
 	 */
 	public static List /*String*/ getTargets(IProgramElement node, IRelationship.Kind kind) {
-	    List relations = AsmManager.getDefault().getRelationshipMap().get(node);
+		return getTargets(node,kind,null);
+	}
+	
+	/**
+	 * Calculate the targets for a given IProgramElement (and it's immediate
+	 * children if its not a type or if the child is CODE) and relationship 
+	 * kind with the specified relationship name.
+	 * 
+	 * @return null if a relationship of that kind is not found
+	 */
+	public static List /*String*/ getTargets(IProgramElement node, IRelationship.Kind kind, String relName) {
+		List relations = AsmManager.getDefault().getRelationshipMap().get(node);
+	    for (Iterator iter = node.getChildren().iterator(); iter.hasNext();) {
+			IProgramElement child = (IProgramElement) iter.next();
+			// if we're not a type, or if we are and the child is code, then
+			// we want to get the relationships for this child - this means that the
+			// correct relationships appear against the type in the ajdoc
+			if (!node.getKind().isType() 
+					|| child.getKind().equals(IProgramElement.Kind.CODE) ) {
+				List childRelations = AsmManager.getDefault().getRelationshipMap().get(child);
+				if (childRelations != null) {
+					if (relations == null) {
+						relations = childRelations;
+					} else {
+						relations.addAll(childRelations);
+					}
+				}					
+			}
+		}			
 		List targets = null; 
-	    if (relations == null) return null;
+	    if (relations == null || relations.isEmpty()) return null;
 		for (Iterator it = relations.iterator(); it.hasNext(); ) {
 	      	IRelationship rtn = (IRelationship)it.next();
-	      	if (rtn.getKind().equals(kind)) {
-	      		targets = rtn.getTargets();
+	      	if (rtn.getKind().equals(kind)
+	      			&& ((relName != null  && relName.equals(rtn.getName()))
+	      					|| relName == null)){
+	      		if (targets == null) {
+	      			targets = rtn.getTargets();
+				} else {
+					targets.addAll(rtn.getTargets());
+				}
 	      	}
 	     }
-		return targets;
+		return targets;		
 	}
 	
 	static List /*IProgramElement */ getDeclareInterTypeTargets(IProgramElement node, IProgramElement.Kind kind) {

@@ -130,31 +130,44 @@ public class AjdocOutputChecker {
 		}
 		return missingStrings;
 	}
-	
+
 	/**
-	 * Checks whether the given strings appear one after the other in the
-	 * ajdoc html file
+	 * Returns whether the class data section has the expected 
+	 * relationship and target i.e. have the relationships been 
+	 * applied to the type.
 	 * 
-	 * @param htmlFile
-	 * @param firstString
-	 * @param secondString expected to follow the firstString
-	 * @return true if secondString appears after firstString, false otherwise
-	 * @throws Exception
+	 * @param the ajdoc html file
+	 * @param the detail sectionHeader, for example "DECLARE DETAIL SUMMARY"
+	 * @param the source of the relationship, for example "Point()"
+	 * @param the relationship, for example HtmlDecorator.HtmlRelationshipKind.MATCHED_BY
+	 * @param the expected target, for example "HREF=\"../foo/Main.html#doIt()\""
+	 * @return true if the section contains the expected source/relationship/target,
+	 * false otherwise
 	 */
-	public static boolean fileContainsConsecutiveStrings(File htmlFile, 
-			String firstString, String secondString ) throws Exception {
-		if ((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html")) {
+	public static boolean classDataSectionContainsRel(File htmlFile,
+			HtmlDecorator.HtmlRelationshipKind relationship, 
+			String target) throws Exception {
+		if (((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html"))) {
 			return false;
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(htmlFile));
 		String line = reader.readLine();
 		while (line != null) {
-			if (line.indexOf(firstString) != -1) {
-				if ( (line.indexOf(secondString) != -1 
-						&& line.indexOf(secondString) > line.indexOf(firstString)) 
-						|| reader.readLine().indexOf(secondString) != -1) {
-					reader.close();
-					return true;
+			if (line.indexOf("START OF CLASS DATA") != -1) {
+				// found the required class data section
+				String subLine = reader.readLine();
+				while(subLine != null 
+						&& (subLine.indexOf("========") == -1)){
+					int relIndex = subLine.indexOf(relationship.toString());
+					int targetIndex = subLine.indexOf(target);
+					if ((relIndex != -1) && (targetIndex != -1)) {
+						reader.close();
+						if (relIndex < targetIndex) {
+							return true;
+						}
+						return false;
+					}
+					subLine = reader.readLine();
 				}
 				reader.close();
 				return false;
@@ -164,36 +177,55 @@ public class AjdocOutputChecker {
 		reader.close();
 		return false;
 	}
-
+	
 	/**
-	 * Checks whether the given strings appear one after the other in the
-	 * given section of the ajdoc html file
+	 * Returns whether the supplied source has the expected 
+	 * relationship and target within the given detail section
 	 * 
-	 * @param htmlFile
-	 * @param firstString
-	 * @param secondString expected to follow the firstString
-	 * @param sectionHeader
-	 * @return true if secondString appears after firstString, false otherwise
-	 * @throws Exception
+	 * @param the ajdoc html file
+	 * @param the detail sectionHeader, for example "DECLARE DETAIL SUMMARY"
+	 * @param the source of the relationship, for example "Point()"
+	 * @param the relationship, for example HtmlDecorator.HtmlRelationshipKind.MATCHED_BY
+	 * @param the expected target, for example "HREF=\"../foo/Main.html#doIt()\""
+	 * @return true if the section contains the expected source/relationship/target,
+	 * false otherwise
 	 */
-	public static boolean sectionContainsConsecutiveStrings(File htmlFile, 
-			String firstString, String secondString, String sectionHeader) throws Exception  {
+	public static boolean detailSectionContainsRel(File htmlFile, 
+			String sectionHeader, String source, 
+			HtmlDecorator.HtmlRelationshipKind relationship, 
+			String target) throws Exception {
 		if (((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html"))) {
+			return false;
+		}
+		if (sectionHeader.indexOf("DETAIL") == -1) {
 			return false;
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(htmlFile));
 		String line = reader.readLine();
 		while (line != null) {
 			if (line.indexOf(sectionHeader) != -1) {
+				// found the required main section
 				String nextLine = reader.readLine();
 				while (nextLine != null && (nextLine.indexOf("========") == -1)) {
-					if (nextLine.indexOf(firstString) != -1) {
-						if ( (nextLine.indexOf(secondString) != -1 
-								&& nextLine.indexOf(secondString) > nextLine.indexOf(firstString)) 
-								|| reader.readLine().indexOf(secondString) != -1) {
-							reader.close();
-							return true;
+					if (nextLine.indexOf("NAME=\""+source+"\"") != -1) {
+						// found the required subsection
+						String subLine = reader.readLine();
+						while(subLine != null 
+								&& (subLine.indexOf("========") == -1)
+								&& (subLine.indexOf("NAME") == -1)) {
+							int relIndex = subLine.indexOf(relationship.toString());
+							int targetIndex = subLine.indexOf(target);
+							if ((relIndex != -1) && (targetIndex != -1)) {
+								reader.close();
+								if (relIndex < targetIndex) {
+									return true;
+								}
+								return false;
+							}
+							subLine = reader.readLine();
 						}
+						reader.close();
+						return false;
 					}
 					nextLine = reader.readLine();
 				}
@@ -205,4 +237,67 @@ public class AjdocOutputChecker {
 		reader.close();
 		return false;
 	}
+	
+	/**
+	 * Returns whether the supplied source has the expected 
+	 * relationship and target within the given summary section
+	 * 
+	 * @param the ajdoc html file
+	 * @param the detail sectionHeader, for example "DECLARE SUMMARY"
+	 * @param the source of the relationship, for example "Point()"
+	 * @param the relationship, for example HtmlDecorator.HtmlRelationshipKind.MATCHED_BY
+	 * @param the expected target, for example "HREF=\"../foo/Main.html#doIt()\""
+	 * @return true if the section contains the expected source/relationship/target,
+	 * false otherwise
+	 */
+	public static boolean summarySectionContainsRel(
+			File htmlFile, 
+			String sectionHeader, 
+			String source, 
+			HtmlDecorator.HtmlRelationshipKind relationship, 
+			String target) throws Exception {
+		if (((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html"))) {
+			return false;
+		}
+		if (sectionHeader.indexOf("SUMMARY") == -1) {
+			return false;
+		}
+		BufferedReader reader = new BufferedReader(new FileReader(htmlFile));
+		String line = reader.readLine();
+		while (line != null) {
+			if (line.indexOf(sectionHeader) != -1) {
+				// found the required main section
+				String nextLine = reader.readLine();
+				while (nextLine != null && (nextLine.indexOf("========") == -1)) {
+					if (nextLine.indexOf(source) != -1) {
+						// found the required subsection
+						String subLine = nextLine;
+						while(subLine != null 
+								&& (subLine.indexOf("========") == -1)
+								&& (subLine.indexOf("<TR BGCOLOR=\"white\" CLASS=\"TableRowColor\">") == -1)) {
+							int relIndex = subLine.indexOf(relationship.toString());
+							int targetIndex = subLine.indexOf(target);
+							if ((relIndex != -1) && (targetIndex != -1)) {
+								reader.close();
+								if (relIndex < targetIndex) {
+									return true;
+								}
+								return false;
+							}
+							subLine = reader.readLine();
+						}
+						reader.close();
+						return false;
+					}
+					nextLine = reader.readLine();
+				}
+				reader.close();
+				return false;
+			}
+			line = reader.readLine();
+		}
+		reader.close();
+		return false;
+	}
+	
 }

@@ -82,6 +82,35 @@ public class CoverageTestCase extends AjdocTestCase {
     }
     
     /**
+     * Test that the ajdoc for an aspect has the title "Aspect"
+     */
+	public void testAJdocHasAspectTitle() throws Exception {
+		File[] files = {new File(getAbsoluteProjectDir() + "/pkg/A.aj")};
+		runAjdoc("private","1.4",files);
+        File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/A.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath()+ " - were there compilation errors?");
+		}	
+		assertTrue(htmlFile.getAbsolutePath() + " should have Aspect A as it's title",
+				AjdocOutputChecker.containsString(htmlFile,"Aspect A"));
+	}
+	
+	/**
+	 * Test that the ajdoc for a class has the title "Class" 
+	 */
+	public void testAJdocHasClassTitle() throws Exception {
+		File[] files = {new File(getAbsoluteProjectDir() + "/pkg/C.java")};
+		runAjdoc("private","1.4",files);
+        File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/C.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath()+ " - were there compilation errors?");
+		}	
+		assertTrue(htmlFile.getAbsolutePath() + " should have Class C as it's title",
+				AjdocOutputChecker.containsString(htmlFile,"Class C"));
+		
+	}
+    
+    /**
      * Test that the ajdoc for an inner aspect is entitled "Aspect" rather
      * than "Class", but that the enclosing class is still "Class" 
      */
@@ -171,44 +200,50 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"<B>before(): methodExecutionP..</B>",
-				"Advises:</b></font></td><td><A HREF=\"../foo/Point.html#setX(int)\"",
-				"<B>before(): constructorExecutionP..</B>",
-				"Advises:</b></font></td><td><A HREF=\"../foo/Point.html#Point()\"",
-				"<B>before(): callConstructorP..</B>",
-				"Advises:</b></font></td><td><A HREF=\"../foo/Point.html#doIt()\"",
-				"<B>before(): getP..</B>",
-				"Advises:</b></font></td><td><A HREF=\"../foo/Point.html#getX()\"",
-				"<B>before(): setP..</B>",
-				"Advises:</b></font></td><td><A HREF=\"../foo/Point.html\"><tt>foo.Point</tt></A>, <A HREF=\"../foo/Point.html#Point()\"><tt>foo.Point.Point()</tt></A>, <A HREF=\"../foo/Point.html#setX(int)\"><tt>foo.Point.setX</tt></A>, <A HREF=\"../foo/Point.html#changeX(int)\"",
-				"<B>before(): initializationP..</B>",
-				"Advises:</b></font></td><td><A HREF=\"../foo/Point.html#Point()\"",
-				"<B>before(): staticinitializationP..</B>",
-				"Advises:</b></font></td><td><A HREF=\"../foo/Point.html\"",
-				"<B>before(): handlerP..</B>",
-				"Advises:</b></font></td><td><A HREF=\"../foo/Point.html#doIt()\""};
+				"before(): methodExecutionP..",
+				"HREF=\"../foo/Point.html#setX(int)\"",
+				"before(): constructorExecutionP..",
+				"HREF=\"../foo/Point.html#Point()\"",
+				"before(): callMethodP..",
+				"HREF=\"../foo/Point.html#changeX(int)\"",
+				"before(): callConstructorP..",
+				"HREF=\"../foo/Point.html#doIt()\"",
+				"before(): getP..",
+				"HREF=\"../foo/Point.html#getX()\"",
+				"before(): setP..",
+				"HREF=\"../foo/Point.html\"><tt>foo.Point</tt></A>, <A HREF=\"../foo/Point.html#Point()\"><tt>foo.Point.Point()</tt></A>, <A HREF=\"../foo/Point.html#setX(int)\"",
+				"before(): initializationP..",
+				"HREF=\"../foo/Point.html#Point()\"",
+				"before(): staticinitializationP..",
+				"HREF=\"../foo/Point.html\"",
+				"before(): handlerP..",
+				"HREF=\"../foo/Point.html#doIt()\""
+		};
 		
 		for (int i = 0; i < strings.length - 1; i = i+2) {
-			boolean b = AjdocOutputChecker.sectionContainsConsecutiveStrings(htmlFile,strings[i],
-					strings[i+1],"ADVICE DETAIL SUMMARY");
-			assertTrue(strings[i] + " should have relationship " + strings[i+1] + 
+			boolean b = AjdocOutputChecker.detailSectionContainsRel(
+					htmlFile,"ADVICE DETAIL SUMMARY",strings[i],
+					HtmlDecorator.HtmlRelationshipKind.ADVISES,
+					strings[i+1]);
+			assertTrue(strings[i] + " should advise " + strings[i+1] + 
 					" in the Advice Detail section", b);
 		}
 		
 		for (int i = 0; i < strings.length - 1; i = i+2) {
-			boolean b = AjdocOutputChecker.sectionContainsConsecutiveStrings(htmlFile,strings[i],
-					strings[i+1],"ADVICE SUMMARY");
-			assertTrue(strings[i] + " should have relationship " + strings[i+1] + 
+			boolean b = AjdocOutputChecker.summarySectionContainsRel(
+					htmlFile,"ADVICE SUMMARY",strings[i],
+					HtmlDecorator.HtmlRelationshipKind.ADVISES,
+					strings[i+1]);
+			assertTrue(strings[i] + " should advise " + strings[i+1] + 
 					" in the Advice Summary section", b);
 		}
     }
 
     /**
-     * Test that all the advised by relationships appear in the 
-     * various detail and summary sections in the ajdoc for the
-     * affected class and that the links are correct 
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with a method execution pointcut 
      */
-    public void testAdvisedByRelationshipCoverage() throws Exception {
+    public void testAdvisedByMethodExecution() throws Exception {
     	File[] files = {file4};
     	runAjdoc("private","1.4",files);
     	
@@ -217,33 +252,344 @@ public class CoverageTestCase extends AjdocTestCase {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
-		String[] constructorStrings = {
-				"Advised&nbsp;by:",
-				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): constructorExecutionP..\""};
-		String[] methodStrings = {
-				"Advised&nbsp;by:",
+		String[] strings = {
+				"setX(int)",
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): methodExecutionP..\""};
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Detail should have " + strings[0]+" advised by " + strings[1],b);
 		
-		boolean b = AjdocOutputChecker.sectionContainsConsecutiveStrings(
-				htmlFile,constructorStrings[0],
-				constructorStrings[1],"CONSTRUCTOR SUMMARY");
-		assertTrue("the Constructor Summary should have the advised by relationship",b);
-		b = AjdocOutputChecker.sectionContainsConsecutiveStrings(
-				htmlFile,constructorStrings[0],
-				constructorStrings[1],"CONSTRUCTOR DETAIL");
-		assertTrue("the Constructor Detail should have the advised by relationship",b);		
-
-		b = AjdocOutputChecker.sectionContainsConsecutiveStrings(
-				htmlFile,methodStrings[0],
-				methodStrings[1],"=== METHOD SUMMARY");
-		assertTrue("the Method Summary should have the advised by relationship",b);
-
-		b = AjdocOutputChecker.sectionContainsConsecutiveStrings(
-				htmlFile,methodStrings[0],
-				methodStrings[1],"=== METHOD DETAIL");
-		assertTrue("the Method Detail should have the advised by relationship",b);
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Summary should have " + strings[0]+" advised by " + strings[1],b);
     }
     
+    /**
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with a constructor execution pointcut 
+     */
+    public void testAdvisedByConstructorExecution() throws Exception {
+    	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String[] strings = {
+				"Point()",
+				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): constructorExecutionP..\""};
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== CONSTRUCTOR DETAIL",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Constructor Detail should have " + strings[0]+" advised by " + strings[1],b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== CONSTRUCTOR SUMMARY",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Constructor Summary should have " + strings[0]+" advised by " + strings[1],b);
+    }
+    
+    /**
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with a method call pointcut 
+     */
+    public void testAdvisedByMethodCall() throws Exception {
+    	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String[] strings = {
+				"changeX(int)",
+				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): callMethodP..\""};
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Detail should have " + strings[0]+" advised by " + strings[1],b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Summary should have " + strings[0]+" advised by " + strings[1],b);
+   }
+
+    /**
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with a constructor call pointcut 
+     */
+    public void testAdvisedByConstructorCall() throws Exception {
+    	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String[] strings = {
+				"doIt()",
+				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): callConstructorP..\""};
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Detail should have " + strings[0]+" advised by " + strings[1],b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Summary should have " + strings[0]+" advised by " + strings[1],b);
+    }
+
+    /**
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with a get pointcut 
+     */
+    public void testAdvisedByGet() throws Exception {
+    	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String[] strings = {
+				"getX()",
+				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): getP..\""};
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Detail should have " + strings[0]+" advised by " + strings[1],b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Summary should have " + strings[0]+" advised by " + strings[1],b);
+   }
+
+    /**
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with a set pointcut 
+     */
+    public void testAdvisedBySet() throws Exception {
+    	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String href = "HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): setP..\"";
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				"setX(int)",
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				href);
+		assertTrue("the Method Detail should have setX(int) advised by " + href,b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				"setX(int)",
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				href);
+		assertTrue("the Method Summary should have setX(int) advised by " + href,b);
+
+		b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== CONSTRUCTOR DETAIL",
+				"Point()",
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				href);
+		assertTrue("the Constructor Detail should have advised by " + href,b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== CONSTRUCTOR SUMMARY",
+				"Point()",
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				href);
+		assertTrue("the Constructor Summary should have advised by " + href,b);
+
+		b = AjdocOutputChecker.classDataSectionContainsRel(
+				htmlFile,
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				href);
+		assertTrue("The class data section should have 'advised by " + href + "'",b);
+    }
+
+    /**
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with an initialization pointcut 
+     */
+    public void testAdvisedByInitialization() throws Exception {
+    	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String[] strings = {
+				"Point()",
+				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): initializationP..\""};
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== CONSTRUCTOR DETAIL",strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Detail should have 'setX(int) advised by ... before()'",b);
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== CONSTRUCTOR SUMMARY",strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Summary should have 'setX(int) advised by ... before()'",b);
+   }
+
+    /**
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with a staticinitialization pointcut 
+     */
+    public void testAdvisedByStaticInitialization() throws Exception {
+    	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String href = "HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): staticinitializationP..\"";
+		boolean b = AjdocOutputChecker.classDataSectionContainsRel(
+				htmlFile,
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				href);
+		assertTrue("The class data section should have 'advised by " + href + "'",b);
+    }
+
+    /**
+     * Test that the advised by relationship appears in the ajdoc when the 
+     * advice is associated with a handler pointcut 
+     */
+    public void testAdvisedByHandler() throws Exception {
+    	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String[] strings = {
+				"doIt()",
+				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): handlerP..\""};
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Detail should have " + strings[0]+" advised by " + strings[1],b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Summary should have " + strings[0]+" advised by " + strings[1],b);
+    }
+
+    /**
+     * Test that if have two before advice blocks from the same
+     * aspect affect the same method, then both appear in the ajdoc 
+     */
+    public void testTwoBeforeAdvice() throws Exception {
+    	File[] files = {new File(getAbsoluteProjectDir() + "/pkg/A2.aj")};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/C2.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+        
+		String[] strings = {
+				"amethod()",
+				"HREF=\"../pkg/A2.html#before(): p..\"",
+				"HREF=\"../pkg/A2.html#before(): p2..\""};
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Detail should have " + strings[0]+" advised by " + strings[1],b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[1]);
+		assertTrue("the Method Summary should have " + strings[0]+" advised by " + strings[1],b);
+		
+		b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[2]);
+		assertTrue("the Method Detail should have " + strings[0]+" advised by " + strings[2],b);
+		
+		b = AjdocOutputChecker.summarySectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				strings[0],
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				strings[2]);
+		assertTrue("the Method Summary should have " + strings[0]+" advised by " + strings[2],b);
+    }
+    
+    /**
+     * Test that there are no spurious "advised by" entries
+     * against the aspect in the ajdoc
+     */
+    public void testNoSpuriousAdvisedByRels() throws Exception {
+       	File[] files = {file4};
+    	runAjdoc("private","1.4",files);
+    	
+        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/AdvisesRelationshipCoverage.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+		}
+		
+		String href = "foo.Point.setX(int)";
+		boolean b = AjdocOutputChecker.classDataSectionContainsRel(
+				htmlFile,
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				href);
+		assertFalse("The class data section should not have 'advised by " + href + "'",b);
+
+    }
     
 	public void testCoverage() {
 		File[] files = {aspect1,file0,file1,file2,file3,file4,file5,file6,

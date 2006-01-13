@@ -15,6 +15,7 @@
 package org.aspectj.tools.ajdoc;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -29,6 +30,7 @@ import java.util.StringTokenizer;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
+import org.aspectj.util.TypeSafeEnum;
 
 /**
  * @author Mik Kersten
@@ -226,7 +228,7 @@ class HtmlDecorator {
                 int secondClassStartIndex = fileContents.toString().indexOf("class <B>");
                 if (secondClassStartIndex != -1) {
                 	String name = decl.toSignatureString();
-					int classEndIndex = fileContents.indexOf(name + "</B><DT>");
+ 					int classEndIndex = fileContents.indexOf(name + "</B><DT>");
 					if (secondClassStartIndex != -1 && classEndIndex != -1) {
 						StringBuffer sb = new StringBuffer(fileContents.toString().
 								substring(secondClassStartIndex,classEndIndex));
@@ -283,6 +285,21 @@ class HtmlDecorator {
     		insertDeclarationsSummary(fileBuffer, advice, ADVICE_SUMMARY, index);
     		insertDeclarationsDetails(fileBuffer, advice, ADVICE_DETAIL, index);
     	}
+    	// add the 'aspect declarations' information against the type
+    	List parentsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.DECLARE_PARENTS);
+    	if (parentsDeclaredOn != null && parentsDeclaredOn.size() > 0) {
+			decorateDocWithRel(node,fileBuffer,index,parentsDeclaredOn,HtmlRelationshipKind.ASPECT_DECLARATIONS);
+		}
+    	// add the 'annotated by' information against the type
+    	List annotatedBy = StructureUtil.getTargets(node,IRelationship.Kind.DECLARE_INTER_TYPE,"annotated by");
+    	if (annotatedBy != null && annotatedBy.size() > 0) {
+			decorateDocWithRel(node,fileBuffer,index,annotatedBy,HtmlRelationshipKind.ANNOTATED_BY);
+		}
+    	// add the 'advised by' information against the type
+    	List advisedBy = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
+    	if (advisedBy != null && advisedBy.size() > 0) {
+			decorateDocWithRel(node,fileBuffer,index,advisedBy,HtmlRelationshipKind.ADVISED_BY);
+		} 	
     }
     
 //    static void addIntroductionDocumentation(IProgramElement decl,
@@ -335,7 +352,7 @@ class HtmlDecorator {
                         entry += comment + "<P>";
                     }
                     entry +=
-                            generateAffects(decl, false) + "</TD>" +
+                            generateAffects(decl) + "</TD>" +
                             "</TR><TD>\n";
                 }
                 else if ( kind.equals( POINTCUT_SUMMARY ) ) {
@@ -362,7 +379,7 @@ class HtmlDecorator {
                             "<TD>" +
                             "<A HREF=\"#" + generateHREFName(decl) + "\">" +
                             "<TT>" + decl.toLabelString() + "</TT></A><P>" +
-                            generateAffects(decl, true);
+                            generateAffects(decl);
                 }
                 else if ( kind.equals( ITD_FIELD_SUMMARY ) 
                 			|| kind.equals( ITD_METHOD_SUMMARY)) {
@@ -456,7 +473,7 @@ class HtmlDecorator {
                             "<TT>" +
                             generateSignatures(decl) + "</TT>\n" + "<P>" +
                             generateDetailsComment(decl) + "<P>" +
-                            generateAffects(decl, false);
+                            generateAffects(decl);
                 }
                 else if (kind.equals(POINTCUT_DETAIL)) {
                     entry +=
@@ -477,7 +494,7 @@ class HtmlDecorator {
                 	if (!decl.getKind().isDeclare()) {
 						entry += generateSignatures(decl) + "<P>";
 					}
-                    entry += generateAffects(decl, true) +
+                    entry += generateAffects(decl) +
                             generateDetailsComment(decl);
                 }
     
@@ -530,15 +547,18 @@ class HtmlDecorator {
             return index;
         }
     }
-
-    static void decorateMemberDocumentation(IProgramElement node,
-                                             StringBuffer fileContentsBuffer,
-                                              int index ) {
-    	List targets = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
+    
+    static void decorateDocWithRel(
+    		IProgramElement node,
+    		StringBuffer fileContentsBuffer,
+    		int index,
+    		List targets,
+    		HtmlRelationshipKind relKind) {
         if (targets != null && !targets.isEmpty()) {            
-            String adviceDoc
-            = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
-              "<TD width=\"15%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advised&nbsp;by:</font></b></td><td>";
+            String adviceDoc = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>" +
+              "<TD width=\"15%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" +
+              relKind.toString() +
+              "</font></b></td><td>";
 
 			String relativePackagePath =
 				getRelativePathFromHere(
@@ -546,8 +566,16 @@ class HtmlDecorator {
 
             List addedNames = new ArrayList();
             for (Iterator it = targets.iterator(); it.hasNext(); ) {
-            	String currHandle = (String)it.next();
-            	IProgramElement currDecl = AsmManager.getDefault().getHierarchy().findElementForHandle(currHandle);
+            	Object o = it.next();
+            	IProgramElement currDecl = null;
+            	if (o instanceof String) {
+                	String currHandle = (String)o;
+                	currDecl = AsmManager.getDefault().getHierarchy().findElementForHandle(currHandle);					
+				} else if (o instanceof IProgramElement){
+					currDecl = (IProgramElement)o;
+				} else {
+					return;
+				}
             	
         		String packagePath = "";
         		if (currDecl.getPackageName() != null && !currDecl.getPackageName().equals("")) {
@@ -565,12 +593,16 @@ class HtmlDecorator {
                    hrefName = currDecl.getPackageName().replace('.', '/');
 //                   hrefLink = "";//+ currDecl.getPackageName() + Config.DIR_SEP_CHAR;
                 } 
+                // use the currDecl.toLabelString rather than currDecl.getName()
+                // because two distinct advice blocks can have the same 
+                // currDecl.getName() and wouldn't both appear in the ajdoc
                 hrefName += Config.DIR_SEP_CHAR +
-                              currDecl.getParent().toLinkLabelString()
-							  + "." + currDecl.getName();
+                				currDecl.getParent().toLinkLabelString()
+                				+ "." + currDecl.toLabelString();                
                   
+                // need to replace " with quot; otherwise the links wont work
                 hrefLink += currDecl.getParent().toLinkLabelString() + ".html"
-					  + "#" + currDecl.toLabelString(); 
+				  + "#" + currDecl.toLabelString().replaceAll("\"","quot;"); 
 
                 if (!addedNames.contains(hrefName)) {
 	                adviceDoc = adviceDoc +
@@ -584,6 +616,22 @@ class HtmlDecorator {
             adviceDoc += "</TR></TD></TABLE>\n";
             fileContentsBuffer.insert( index, adviceDoc );
         }
+    }
+    
+    static void decorateMemberDocumentation(IProgramElement node,
+                                             StringBuffer fileContentsBuffer,
+                                              int index ) {
+       	List targets = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
+       	decorateDocWithRel(node,fileContentsBuffer,index,targets,HtmlRelationshipKind.ADVISED_BY);
+
+       	List warnings = StructureUtil.getTargets(node,IRelationship.Kind.DECLARE,"matches declare");
+       	decorateDocWithRel(node,fileContentsBuffer,index,warnings,HtmlRelationshipKind.MATCHES_DECLARE);
+
+       	List softenedBy = StructureUtil.getTargets(node,IRelationship.Kind.DECLARE,"softened by");
+       	decorateDocWithRel(node,fileContentsBuffer,index,softenedBy,HtmlRelationshipKind.SOFTENED_BY);
+
+       	List annotatedBy = StructureUtil.getTargets(node,IRelationship.Kind.DECLARE_INTER_TYPE,"annotated by");
+       	decorateDocWithRel(node,fileContentsBuffer,index,annotatedBy,HtmlRelationshipKind.ANNOTATED_BY);
     }
 
     /**
@@ -626,20 +674,39 @@ class HtmlDecorator {
     /**
      * TODO: probably want to make this the same for intros and advice.
      */
-    static String generateAffects(IProgramElement decl, boolean isIntroduction) {
+    static String generateAffects(IProgramElement decl) {
     	List targets = null;
-    	if (isIntroduction) {
-    		targets = StructureUtil.getDeclareTargets(decl);
-    	} else {
-    		targets = StructureUtil.getTargets(decl, IRelationship.Kind.ADVICE);
-    	}
+    	if (decl.getKind().isDeclare() || decl.getKind().isInterTypeMember()) {
+			targets = StructureUtil.getDeclareTargets(decl);
+		} else {
+			targets = StructureUtil.getTargets(decl, IRelationship.Kind.ADVICE);
+		}
     	if (targets == null) return "";
         String entry = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>";
-        if (!isIntroduction) {
-        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Advises:</b></font></td><td>";
-        } else {
-        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>&nbsp;Declared&nbsp;on:</b></font></td><td>";
-        }
+        
+        IProgramElement.Kind kind = decl.getKind();
+        if (kind.equals(IProgramElement.Kind.ADVICE)) {
+        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" +
+					HtmlRelationshipKind.ADVISES.toString() +
+					"</b></font></td><td>";
+		} else if (kind.equals(IProgramElement.Kind.DECLARE_WARNING) 
+				|| kind.equals(IProgramElement.Kind.DECLARE_ERROR)) {
+        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" +
+					HtmlRelationshipKind.MATCHED_BY.toString() +
+					"</b></font></td><td>";			
+		} else if (kind.isDeclareAnnotation()) {
+        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" +
+					HtmlRelationshipKind.ANNOTATES.toString() +
+					"</b></font></td><td>";			
+		} else if (kind.equals(IProgramElement.Kind.DECLARE_SOFT)) {
+        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" +
+					HtmlRelationshipKind.SOFTENS.toString() +
+					"</b></font></td><td>";			
+		} else {
+        	entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" +
+					HtmlRelationshipKind.DECLARED_ON.toString() +
+					"</b></font></td><td>";			
+		}
         	
 		String relativePackagePath =
 			getRelativePathFromHere(
@@ -866,5 +933,49 @@ class HtmlDecorator {
                 decl.getName() );
         }
         return formattedComment;
+    }
+    
+    /**
+     * TypeSafeEnum for the entries which need to be put in the html doc 
+     */
+    public static class HtmlRelationshipKind extends TypeSafeEnum {
+
+		public HtmlRelationshipKind(String name, int key) {
+			super(name, key);
+			
+		}
+		
+		public static HtmlRelationshipKind read(DataInputStream s) throws IOException {
+			int key = s.readByte();
+			switch(key) {
+				case 1: return ADVISES;
+		        case 2: return ADVISED_BY;
+		        case 3: return MATCHED_BY;
+		        case 4: return MATCHES_DECLARE;
+		        case 5: return DECLARED_ON;
+		        case 6: return ASPECT_DECLARATIONS;
+		        case 7: return SOFTENS;
+		        case 8: return SOFTENED_BY;
+		        case 9: return ANNOTATES;
+		        case 10: return ANNOTATED_BY;
+		        case 11: return USES_POINTCUT;
+		        case 12: return POINTCUT_USED_BY;
+			}
+			throw new Error("weird relationship kind " + key);
+		}
+
+		public static final HtmlRelationshipKind ADVISES = new HtmlRelationshipKind("&nbsp;Advises:", 1);
+		public static final HtmlRelationshipKind ADVISED_BY = new HtmlRelationshipKind("&nbsp;Advised&nbsp;by:", 2);
+		public static final HtmlRelationshipKind MATCHED_BY = new HtmlRelationshipKind("&nbsp;Matched&nbsp;by:", 3);
+		public static final HtmlRelationshipKind MATCHES_DECLARE = new HtmlRelationshipKind("&nbsp;Matches&nbsp;declare:", 4);
+		public static final HtmlRelationshipKind DECLARED_ON = new HtmlRelationshipKind("&nbsp;Declared&nbsp;on:", 5);
+		public static final HtmlRelationshipKind ASPECT_DECLARATIONS = new HtmlRelationshipKind("&nbsp;Aspect&nbsp;declarations:", 6);
+		public static final HtmlRelationshipKind SOFTENS = new HtmlRelationshipKind("&nbsp;Softens:", 7);
+		public static final HtmlRelationshipKind SOFTENED_BY = new HtmlRelationshipKind("&nbsp;Softened&nbsp;by:", 8);
+		public static final HtmlRelationshipKind ANNOTATES = new HtmlRelationshipKind("&nbsp;Annotates:", 9);
+		public static final HtmlRelationshipKind ANNOTATED_BY = new HtmlRelationshipKind("&nbsp;Annotated&nbsp;by:", 10);
+		public static final HtmlRelationshipKind USES_POINTCUT = new HtmlRelationshipKind("&nbsp;Uses&nbsp;pointcut:", 11);
+		public static final HtmlRelationshipKind POINTCUT_USED_BY = new HtmlRelationshipKind("&nbsp;Pointcut&nbsp;used&nbsp;by:", 12);
+		
     }
 }

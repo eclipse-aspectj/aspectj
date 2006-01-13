@@ -18,4 +18,7 @@ public aspect A {
 	before() : p() {
 	}
 	
+	pointcut p1() : execution(public String C.method1(..));
+	after() returning : p1() {
+	}
 }

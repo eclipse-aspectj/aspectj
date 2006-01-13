@@ -351,6 +351,10 @@ public interface IProgramElement extends Serializable {
 			return name.startsWith("declare");	
 		} 
 
+		public boolean isDeclareAnnotation() {
+			return name.startsWith("declare @");	
+		}
+		
 		// The 4 declarations below are necessary for serialization
 		private static int nextOrdinal = 0;
 		private final int ordinal = nextOrdinal++;

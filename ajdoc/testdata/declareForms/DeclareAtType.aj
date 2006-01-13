@@ -3,7 +3,7 @@ package foo;
 @interface MyAnnotation {	
 }
 
-public aspect AnnotationTest {
+public aspect DeclareAtType {
 
 	declare @type : C : @MyAnnotation;
 	

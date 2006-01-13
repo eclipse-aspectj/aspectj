@@ -2,20 +2,23 @@ package foo;
 
 public aspect DeclareCoverage2 {
 
-    pointcut illegalNewFigElt(): call(Point.new(..)) && !withincode(* *.doIt(..));
+    pointcut illegalNewFigElt(): call(Point2.new(..)) && !withincode(* *.doIt(..));
     
     declare error: illegalNewFigElt(): "Illegal constructor call.";
-    declare warning: call(* Point.setX(..)): "Illegal call.";
+    declare warning: call(* Point2.setX(..)): "Illegal call.";
+    declare warning : execution(* Point2.setX(..)) : "blah";
 
-    declare parents: Point extends java.io.Serializable;
-	declare parents: Line implements java.util.Observable;
-    declare soft: SizeException : call(* Point.getX());
-	declare precedence: DeclareCoverage2, InterTypeDecCoverage, *;
+    declare parents: Point2 implements java.io.Serializable;
+    declare soft: SizeException2 : call(* Point2.getX());
+	declare precedence: DeclareCoverage2, InterTypeDecCoverage2, *;
 }
 
-aspect InterTypeDecCoverage {}
+aspect InterTypeDecCoverage2 {}
 
-class Point { 
+/**
+ * comment about class Point2
+ */
+class Point2 { 
 	
 	int x = 2;
 	public void setX(int x) {
@@ -27,18 +30,18 @@ class Point {
 	}
 }
 
-class Line {
+class Line2 {
 }
 
-class SizeException extends Throwable { }
+class SizeException2 extends Throwable { }
 
-class Main {
+class Main2 {
 	
 	public static void main(String[] args) {
 	}
 	
 	public void doIt() {
-		Point p = new Point();
+		Point2 p = new Point2();
 		p.setX(3);
 		p.getX();
 	}

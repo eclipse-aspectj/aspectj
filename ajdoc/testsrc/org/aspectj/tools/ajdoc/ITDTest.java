@@ -14,11 +14,62 @@ import java.io.File;
 import java.util.List;
 
 public class ITDTest extends AjdocTestCase {
+	
+	/**
+	 * Test for pr119453
+	 */
+	public void testITDDeclaredOn() throws Exception {
+		initialiseProject("pr119453");
+		File[] files = {
+				new File(getAbsoluteProjectDir() + "/src/pack/C.java"),
+				new File(getAbsoluteProjectDir() + "/src/pack/A.aj")
+		};
+		runAjdoc("private",files);
+		File htmlA = new File(getAbsolutePathOutdir() + "/pack/A.html");
+		if (htmlA == null || !htmlA.exists()) {
+			fail("couldn't find " + getAbsolutePathOutdir() + "/pack/A.html - were there compilation errors?");
+		}
+
+		// check field itd appears
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlA,"DECLARE DETAIL SUMMARY",
+				"C.y",
+				HtmlDecorator.HtmlRelationshipKind.DECLARED_ON,
+				"HREF=\"../pack/C.html\"");
+		assertTrue("Should have 'C.y declared on HREF=\"../pack/C.html\"" + 
+				"' in the Declare Detail section", b);
+        b = AjdocOutputChecker.summarySectionContainsRel(
+					htmlA,"DECLARE SUMMARY",
+					"C.y",
+					HtmlDecorator.HtmlRelationshipKind.DECLARED_ON,
+					"HREF=\"../pack/C.html\"");
+		assertTrue("Should have 'C.y declared on HREF=\"../pack/C.html\"" + 
+				"' in the Declare Summary section", b);
+		
+		// check the modifiers are correct in the declare detail summary
+		String[] stringsA = { "private&nbsp;int",
+				"public&nbsp;java.lang.String", 
+				"<H3>C.y</H3>",
+				"public&nbsp;</TT><B>C.C",
+				"package&nbsp;void"};
+		List missing = AjdocOutputChecker.getMissingStringsInSection(htmlA,stringsA,"DECLARE DETAIL SUMMARY");
+		assertEquals("There should be one missing string ",1,missing.size());
+		assertEquals("the 'package' and 'void' modifiers shouldn't appear in the 'Declare Detail' section of the ajdoc",
+				"package&nbsp;void", missing.get(0));
+		
+		// check the modifiers are correct in the declare summary
+		String[] stringsA2 = {"private", "int", "public", "String", "package&nbsp;void"};
+		missing = AjdocOutputChecker.getMissingStringsInSection(htmlA,stringsA2,"DECLARE SUMMARY");
+		assertEquals("There should be two missing strings ",2,missing.size());
+		assertTrue("the public modifier shouldn't appear in the 'Declare Summary' section of the ajdoc", missing.contains("public"));
+		assertTrue("the 'package' and 'void' modifiers shouldn't appear in the 'Declare Summary' section of the ajdoc", missing.contains("package&nbsp;void"));
+		
+	}
 
 	/**
 	 * Test for pr119453
 	 */
-	public void testITDShownInDoc() throws Exception {
+	public void testITDMatchesDeclare() throws Exception {
 		initialiseProject("pr119453");
 		File[] files = {
 				new File(getAbsoluteProjectDir() + "/src/pack/C.java"),
@@ -32,9 +83,7 @@ public class ITDTest extends AjdocTestCase {
 			fail("couldn't find " + getAbsolutePathOutdir()
 					+ "/pack/C.html - were there compilation errors?");
 		}
-		// check that C is a class
-		assertTrue(htmlC.getAbsolutePath() + " should have Class C as it's title",
-				AjdocOutputChecker.containsString(htmlC,"Class C"));
+
 		// check that the required sections exist
 		assertTrue(htmlC.getAbsolutePath() + " should contain an "
 				+ "'INTER-TYPE METHOD SUMMARY' section", 
@@ -46,7 +95,7 @@ public class ITDTest extends AjdocTestCase {
 				+ "'INTER-TYPE CONSTRUCTOR SUMMARY' section",
 				AjdocOutputChecker.containsString(htmlC,"INTER-TYPE CONSTRUCTOR SUMMARY"));
 
-		// check the contents of the sections is correct
+		// check the modifier information in the sections is correct
 		String[] stringsC = { "public", "String", "pack.A" };
 		List missing = AjdocOutputChecker.getMissingStringsInSection(htmlC,stringsC,"INTER-TYPE METHOD SUMMARY");
 		assertEquals("There should be one missing string",1,missing.size());
@@ -56,33 +105,33 @@ public class ITDTest extends AjdocTestCase {
 		String[] stringsC2 = { "private" };
 		missing = AjdocOutputChecker.getMissingStringsInSection(htmlC,stringsC2,"INTER-TYPE FIELD SUMMARY");
 		assertTrue("the private modifier for itd methods should appear in the ajdoc ",missing.size() == 0);
-		
-		// check the contents of A.html
-		File htmlA = new File(getAbsolutePathOutdir() + "/pack/A.html");
-		if (htmlA == null || !htmlA.exists()) {
-			fail("couldn't find " + getAbsolutePathOutdir() + "/pack/A.html - were there compilation errors?");
-		}
-		// check that A is an Aspect
-		assertTrue(htmlA.getAbsolutePath() + " should have Aspect A as it's title",
-				AjdocOutputChecker.containsString(htmlA,"Aspect A"));
+	
+	}
+	
+	/**
+	 * Test that the ITD's do not appear in as 'aspect declarations' in the
+	 * class data information. 
+	 */
+	public void testNoAspectDeclarations() throws Exception {
+		initialiseProject("pr119453");
+		File[] files = {
+				new File(getAbsoluteProjectDir() + "/src/pack/C.java"),
+				new File(getAbsoluteProjectDir() + "/src/pack/A.aj")
+		};
+		runAjdoc("private",files);
 
-		// check the contents of the declare detail summary
-		String[] stringsA = { "private&nbsp;int",
-				"public&nbsp;java.lang.String", 
-				"<H3>C.y</H3>",
-				"public&nbsp;</TT><B>C.C",
-				"package&nbsp;void"};
-		missing = AjdocOutputChecker.getMissingStringsInSection(htmlA,stringsA,"DECLARE DETAIL SUMMARY");
-		assertEquals("There should be one missing string ",1,missing.size());
-		assertEquals("the 'package' and 'void' modifiers shouldn't appear in the 'Declare Detail' section of the ajdoc",
-				"package&nbsp;void", missing.get(0));
-		
-		// check the contents of the declare summary
-		String[] stringsA2 = {"private", "int", "public", "String", "package&nbsp;void"};
-		missing = AjdocOutputChecker.getMissingStringsInSection(htmlA,stringsA2,"DECLARE SUMMARY");
-		assertEquals("There should be two missing strings ",2,missing.size());
-		assertTrue("the public modifier shouldn't appear in the 'Declare Summary' section of the ajdoc", missing.contains("public"));
-		assertTrue("the 'package' and 'void' modifiers shouldn't appear in the 'Declare Summary' section of the ajdoc", missing.contains("package&nbsp;void"));
+		File htmlC = new File(getAbsolutePathOutdir() + "/pack/C.html");
+		if (htmlC == null || !htmlC.exists()) {
+			fail("couldn't find " + getAbsolutePathOutdir()
+					+ "/pack/C.html - were there compilation errors?");
+		}
+
+		boolean b = AjdocOutputChecker.classDataSectionContainsRel(
+				htmlC,
+				HtmlDecorator.HtmlRelationshipKind.ASPECT_DECLARATIONS,
+				"pack.A.C.y");
+		assertFalse("The class data section should not have 'aspect declarations" +
+				" pack.A.C.y' since this is an ITD",b);
 	}
 
 }
