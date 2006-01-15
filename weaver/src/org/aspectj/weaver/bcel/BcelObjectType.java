@@ -633,6 +633,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		
 	private void unpackGenericSignature() {
 		if (genericSignatureUnpacked) return;
+		if (!getResolvedTypeX().getWorld().isInJava5Mode()) {
+			return;
+		}
 		genericSignatureUnpacked = true;
 		Signature.ClassSignature cSig = getGenericClassTypeSignature();
 		if (cSig != null) {

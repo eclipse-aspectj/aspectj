@@ -40,6 +40,7 @@ public class MemberTestCase15 extends TestCase {
 	    
 	    public void testCanBeParameterizedGenericMethod() {
 	    	BcelWorld world = new BcelWorld();
+	    	world.setBehaveInJava5Way(true);
 	    	ResolvedType javaLangClass = world.resolve(UnresolvedType.forName("java.lang.Class"));
 	    	javaLangClass = javaLangClass.getGenericType();
 	    	if (javaLangClass == null) return;  // for < 1.5
@@ -59,6 +60,7 @@ public class MemberTestCase15 extends TestCase {
 	    
 	    public void testCanBeParameterizedMethodInGenericType() {
 	       	BcelWorld world = new BcelWorld();
+	       	world.setBehaveInJava5Way(true);
 	    	ResolvedType javaUtilList = world.resolve(UnresolvedType.forName("java.util.List"));
 	    	javaUtilList = javaUtilList.getGenericType();
 	    	if (javaUtilList == null) return;  // for < 1.5

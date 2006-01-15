@@ -156,8 +156,11 @@ final class BcelField extends ResolvedMemberImpl {
 	}
 	
 	private void unpackGenericSignature() {
-		if (unpackedGenericSignature)
-			return;
+		if (unpackedGenericSignature) { return; }
+		if (!world.isInJava5Mode()) {
+			this.genericFieldType = getReturnType();
+			return; 
+		}
 		unpackedGenericSignature = true;
 		String gSig = field.getGenericSignature();
 		if (gSig != null) {

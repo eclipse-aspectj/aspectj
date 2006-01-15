@@ -265,6 +265,12 @@ final class BcelMethod extends ResolvedMemberImpl {
 	 
 	 private void unpackGenericSignature() {
 		 if (unpackedGenericSignature) return;
+ 		 if (!world.isInJava5Mode()) { 
+ 			 this.genericReturnType = getReturnType();
+ 			 this.genericParameterTypes = getParameterTypes();
+ 			 return;
+ 		 }
+ 		 // ok, we have work to do...
 		 unpackedGenericSignature = true;
 		 String gSig = method.getGenericSignature();
 		 if (gSig != null) {
