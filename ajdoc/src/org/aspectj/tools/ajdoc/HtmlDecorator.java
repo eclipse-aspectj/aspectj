@@ -204,7 +204,18 @@ class HtmlDecorator {
 //                addIntroductionDocumentation(decl, fileContents, index);
 //                addAdviceDocumentation(decl, fileContents, index);
 //                addPointcutDocumentation(decl, fileContents, index);
-                addAspectDocumentation(decl, fileContents, index);
+                String fullname = "";
+                if (decl.getParent().getKind().equals(IProgramElement.Kind.ASPECT) 
+            			|| decl.getParent().getKind().equals(IProgramElement.Kind.CLASS)) {
+            		fullname += decl.getParent().toSignatureString().concat(".").concat(decl.toSignatureString());
+				} else {
+					fullname += decl.toSignatureString();
+				}
+                // only add aspect documentation if we're in the correct
+                // file for the given IProgramElement
+            	if (file.getName().indexOf(fullname + ".html") != -1) {
+                    addAspectDocumentation(decl, fileContents, index);
+            	}
             }
             else {
                 decorateMemberDocumentation(decl, fileContents, index);
@@ -215,12 +226,36 @@ class HtmlDecorator {
             // the case with an inner aspect not having the title "Aspect"
             if(decl.getKind().equals(IProgramElement.Kind.ASPECT) 
             		&& file.getName().indexOf(decl.toSignatureString()) != -1) {
+            	// only want to change "Class" to "Aspect" if we're in the
+            	// file corresponding to the IProgramElement
+            	String fullname = "";
+            	if (decl.getParent().getKind().equals(IProgramElement.Kind.ASPECT) 
+            			|| decl.getParent().getKind().equals(IProgramElement.Kind.CLASS)) {
+            		fullname += decl.getParent().toSignatureString().concat(".").concat(decl.toSignatureString());
+				} else {
+					fullname += decl.toSignatureString();
+				}
+            	if (file.getName().indexOf(fullname + ".html") == -1) {
+            		// we're still in the file for a parent IPE
+            		continue;
+            	}
+         
+            	boolean br = true;
             	int classStartIndex = fileContents.toString().indexOf("<BR>\nClass ");
+            	if (classStartIndex == -1) {
+					classStartIndex = fileContents.toString().indexOf("<H2>\nClass ");
+					br = false;
+				}
                 if (classStartIndex != -1) {
                     int classEndIndex = fileContents.toString().indexOf("</H2>", classStartIndex);
                     if (classStartIndex != -1 && classEndIndex != -1) { 
                         String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
-                        String aspectLine = "<BR>\n" + "Aspect " + classLine.substring(11, classLine.length());
+                        String aspectLine = "";
+                        if (br) {
+                            aspectLine += "<BR>\n" + "Aspect " + classLine.substring(11, classLine.length());	
+						} else {
+	                        aspectLine += "<H2>\n" + "Aspect " + classLine.substring(11, classLine.length());
+						}
                         fileContents.delete(classStartIndex, classEndIndex);
                         fileContents.insert(classStartIndex, aspectLine);
                     }
@@ -593,11 +628,33 @@ class HtmlDecorator {
                    hrefName = currDecl.getPackageName().replace('.', '/');
 //                   hrefLink = "";//+ currDecl.getPackageName() + Config.DIR_SEP_CHAR;
                 } 
+                
+                // in the case of nested classes, in order for the links to work,
+                // need to have the correct file name which is something of the 
+                // form parentClass.nestedAspect.html
+                List names = new ArrayList();
+                IProgramElement parent = currDecl;
+                while (parent != null
+                		&& parent.getParent() != null
+                		&& (!parent.getParent().getKind().equals(IProgramElement.Kind.FILE_JAVA) 
+                				&& !parent.getParent().getKind().equals(IProgramElement.Kind.FILE_ASPECTJ))) {
+					parent = parent.getParent();
+					names.add(parent.toLinkLabelString());
+				}
+                StringBuffer sbuff = new StringBuffer();
+                for (int i = names.size() - 1; i >= 0; i--) {
+					String element = (String)names.get(i);
+					if (i == 0) {
+						sbuff.append(element);
+					} else {
+						sbuff.append(element + ".");
+					}
+				}
                 // use the currDecl.toLabelString rather than currDecl.getName()
                 // because two distinct advice blocks can have the same 
                 // currDecl.getName() and wouldn't both appear in the ajdoc
                 hrefName += Config.DIR_SEP_CHAR +
-                				currDecl.getParent().toLinkLabelString()
+                				sbuff.toString()
                 				+ "." + currDecl.toLabelString();                
                   
                 // need to replace " with quot; otherwise the links wont work
@@ -609,8 +666,7 @@ class HtmlDecorator {
 					sb.insert(nextQuote,"quot;");
 					nextQuote = sb.toString().indexOf("\"");
 				}
-                hrefLink += currDecl.getParent().toLinkLabelString() + ".html"
-				  	+ "#" + sb.toString(); 
+                hrefLink += sbuff.toString() + ".html" + "#" + sb.toString(); 
 
                 if (!addedNames.contains(hrefName)) {
 	                adviceDoc = adviceDoc +

@@ -597,6 +597,191 @@ public class CoverageTestCase extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 	}
 	
+	/**
+	 * Test that nested aspects appear with "aspect" in their title
+	 * when the ajdoc file is written slightly differently (when it's 
+	 * written for this apsect, it's different than for testInnerAspect()) 
+	 */
+	public void testNestedAspect() throws Exception {
+		File[] files = {file9};
+		runAjdoc("private","1.4",files);	
+		
+	       File htmlFile = new File(getAbsolutePathOutdir() + "/PkgVisibleClass.NestedAspect.html");
+			if (htmlFile == null || !htmlFile.exists()) {
+				fail("couldn't find " + htmlFile.getAbsolutePath()
+						+ " - were there compilation errors?");
+			}
+		
+		// ensure that the file is entitled "Aspect PkgVisibleClass.NestedAspect" rather
+		// than "Class PkgVisibleClass.NestedAspect"
+		String[] strings = { "Aspect PkgVisibleClass.NestedAspect",
+				"<PRE>static aspect <B>PkgVisibleClass.NestedAspect</B><DT>extends java.lang.Object</DL>",
+				"Class PkgVisibleClass.NestedAspect",
+				"<PRE>static class <B>PkgVisibleClass.NestedAspect</B><DT>extends java.lang.Object</DL>"};
+		List missing = AjdocOutputChecker.getMissingStringsInFile(htmlFile,strings);
+		assertEquals("There should be 2 missing strings",2,missing.size());
+		assertTrue(htmlFile.getName() + " should not have Class as it's title",missing.contains("Class PkgVisibleClass.NestedAspect"));
+		assertTrue(htmlFile.getName() + " should not have class in its subtitle",missing.contains("<PRE>static class <B>PkgVisibleClass.NestedAspect</B><DT>extends java.lang.Object</DL>"));
+		
+		// get the html file for the enclosing class
+        File htmlFileClass = new File(getAbsolutePathOutdir() + "/PkgVisibleClass.html");
+		if (htmlFileClass == null || !htmlFileClass.exists()) {
+			fail("couldn't find " + htmlFileClass.getAbsolutePath()
+					+ " - were there compilation errors?");
+		}
+        
+		// ensure that the file is entitled "Class PkgVisibleClass" and
+		// has not been changed to "Aspect PkgVisibleClass"
+		String[] classStrings = { "Class PkgVisibleClass</H2>",
+				"class <B>PkgVisibleClass</B><DT>extends java.lang.Object</DL>",
+				"Aspect PkgVisibleClass</H2>",
+				"aspect <B>PkgVisibleClass</B><DT>extends java.lang.Object<DT>"};
+		List classMissing = AjdocOutputChecker.getMissingStringsInFile(htmlFileClass,classStrings);
+		assertEquals("There should be 2 missing strings",2,classMissing.size());
+		assertTrue(htmlFileClass.getName() + " should not have Aspect as it's title",classMissing.contains("Aspect PkgVisibleClass</H2>"));
+		assertTrue(htmlFileClass.getName() + " should not have aspect in its subtitle",classMissing.contains("aspect <B>PkgVisibleClass</B><DT>extends java.lang.Object<DT>"));
+	}
+
+	/**
+	 * Test that in the case when you have a nested aspect whose
+	 * name is part of the enclosing class, for example a class called 
+	 * ClassWithNestedAspect has nested aspect called NestedAspect,
+	 * that the titles for the ajdoc are correct.
+	 */
+	public void testNestedAspectWithSimilarName() throws Exception {
+    	File[] files = {new File(getAbsoluteProjectDir() + "/pkg/ClassWithNestedAspect.java")};
+        runAjdoc("private","1.4",files);
+            
+        File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.NestedAspect.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath()
+					+ " - were there compilation errors?");
+		}
+		// ensure that the file is entitled "Aspect ClassWithNestedAspect.NestedAspect" 
+		// rather than "Class ClassWithNestedAspect.NestedAspect"
+		String[] strings = { "Aspect ClassWithNestedAspect.NestedAspect",
+				"<PRE>static aspect <B>ClassWithNestedAspect.NestedAspect</B><DT>extends java.lang.Object</DL>",
+				"Class ClassWithNestedAspect.NestedAspect",
+				"<PRE>static class <B>ClassWithNestedAspect.NestedAspect</B><DT>extends java.lang.Object</DL>"};
+		List missing = AjdocOutputChecker.getMissingStringsInFile(htmlFile,strings);
+		assertEquals("There should be 2 missing strings",2,missing.size());
+		assertTrue(htmlFile.getName() + " should not have Class as it's title",missing.contains("Class ClassWithNestedAspect.NestedAspect"));
+		assertTrue(htmlFile.getName() + " should not have class in its subtitle",missing.contains("<PRE>static class <B>ClassWithNestedAspect.NestedAspect</B><DT>extends java.lang.Object</DL>"));
+		
+		// get the html file for the enclosing class
+        File htmlFileClass = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.html");
+		if (htmlFileClass == null || !htmlFileClass.exists()) {
+			fail("couldn't find " + htmlFileClass.getAbsolutePath()
+					+ " - were there compilation errors?");
+		}
+        
+		// ensure that the file is entitled "Class ClassWithNestedAspect" and
+		// has not been changed to "Aspect ClassWithNestedAspect"
+		String[] classStrings = { "Class ClassWithNestedAspect</H2>",
+				"public class <B>ClassWithNestedAspect</B><DT>extends java.lang.Object</DL>",
+				"Aspect ClassWithNestedAspect</H2>",
+				"public aspect <B>ClassWithNestedAspect</B><DT>extends java.lang.Object</DL>"};
+		List classMissing = AjdocOutputChecker.getMissingStringsInFile(htmlFileClass,classStrings);
+		assertEquals("There should be 2 missing strings",2,classMissing.size());
+		assertTrue(htmlFileClass.getName() + " should not have Aspect as it's title",
+				classMissing.contains("Aspect ClassWithNestedAspect</H2>"));
+		assertTrue(htmlFileClass.getName() + " should not have aspect in its subtitle",
+				classMissing.contains("public aspect <B>ClassWithNestedAspect</B><DT>extends java.lang.Object</DL>"));
+
+	}
+	
+	/**
+	 * Test that everythings being decorated correctly within the ajdoc
+	 * for the aspect when the aspect is a nested aspect
+	 */
+	public void testAdviceInNestedAspect() throws Exception {
+    	File[] files = {new File(getAbsoluteProjectDir() + "/pkg/ClassWithNestedAspect.java")};
+        runAjdoc("private","1.4",files);
+            
+        File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.NestedAspect.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath()
+					+ " - were there compilation errors?");
+		}
+		
+		boolean b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"ADVICE DETAIL SUMMARY",
+				"before(): p..",
+				HtmlDecorator.HtmlRelationshipKind.ADVISES,
+				"HREF=\"../pkg/ClassWithNestedAspect.html#amethod()\"");
+		assertTrue("Should have 'before(): p.. advises HREF=\"../pkg/ClassWithNestedAspect.html#amethod()\"" +
+				"' in the Advice Detail section", b);
+        b = AjdocOutputChecker.summarySectionContainsRel(
+					htmlFile,"ADVICE SUMMARY",
+					"before(): p..",
+					HtmlDecorator.HtmlRelationshipKind.ADVISES,
+					"HREF=\"../pkg/ClassWithNestedAspect.html#amethod()\"");
+		assertTrue("Should have 'before(): p.. advises HREF=\"../pkg/ClassWithNestedAspect.html#amethod()\"" +
+				"' in the Advice Summary section", b);
+
+	}
+	
+	/**
+	 * Test that everythings being decorated correctly within the ajdoc
+	 * for the advised class when the aspect is a nested aspect
+	 */
+	public void testAdvisedByInNestedAspect() throws Exception {
+    	File[] files = {new File(getAbsoluteProjectDir() + "/pkg/ClassWithNestedAspect.java")};
+        runAjdoc("private","1.4",files);
+            
+        File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath()
+					+ " - were there compilation errors?");
+		}
+		
+		boolean b = AjdocOutputChecker.containsString(htmlFile,"POINTCUT SUMMARY ");
+		assertFalse(htmlFile.getName() + " should not contain a pointcut summary section",b);
+		b = AjdocOutputChecker.containsString(htmlFile,"ADVICE SUMMARY ");
+		assertFalse(htmlFile.getName() + " should not contain an adivce summary section",b);
+		b = AjdocOutputChecker.containsString(htmlFile,"POINTCUT DETAIL ");
+		assertFalse(htmlFile.getName() + " should not contain a pointcut detail section",b);
+		b = AjdocOutputChecker.containsString(htmlFile,"ADVICE DETAIL ");
+		assertFalse(htmlFile.getName() + " should not contain an advice detail section",b);
+		
+		b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				"amethod()",
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				"HREF=\"../pkg/ClassWithNestedAspect.NestedAspect.html#before(): p..\"");
+		assertTrue("Should have 'amethod() advised by " +
+				"HREF=\"../pkg/ClassWithNestedAspect.NestedAspect.html#before(): p..\"" +
+				"' in the Method Detail section", b);
+
+		b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD DETAIL",
+				"amethod()",
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+				"pkg.ClassWithNestedAspect.NestedAspect.NestedAspect.before(): p..");
+		assertFalse("Should not have the label " +
+				"pkg.ClassWithNestedAspect.NestedAspect.NestedAspect.before(): p.." +
+				" in the Method Detail section", b);
+
+		b = AjdocOutputChecker.summarySectionContainsRel(
+					htmlFile,"=== METHOD SUMMARY",
+					"amethod()",
+					HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+					"HREF=\"../pkg/ClassWithNestedAspect.NestedAspect.html#before(): p..\"");
+		assertTrue("Should have 'amethod() advised by " +
+				"HREF=\"../pkg/ClassWithNestedAspect.NestedAspect.html#before(): p..\"" +
+				"' in the Method Summary section", b);
+
+		b = AjdocOutputChecker.detailSectionContainsRel(
+				htmlFile,"=== METHOD SUMMARY",
+				"amethod()",
+				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
+		"pkg.ClassWithNestedAspect.NestedAspect.NestedAspect.before(): p..");
+		assertFalse("Should not have the label " +
+				"pkg.ClassWithNestedAspect.NestedAspect.NestedAspect.before(): p.." +
+				" in the Method Summary section", b);
+
+	}
+	
 	private void createFiles() {
 		file0 = new File(getAbsoluteProjectDir() + "/InDefaultPackage.java");
 		file1 = new File(getAbsoluteProjectDir() + "/foo/ClassA.java");
