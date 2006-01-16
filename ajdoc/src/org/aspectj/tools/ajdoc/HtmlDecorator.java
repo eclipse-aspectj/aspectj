@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.util.TypeSafeEnum;
@@ -49,32 +50,29 @@ class HtmlDecorator {
 	
 	static List visibleFileList = new ArrayList();
     static Hashtable declIDTable = null;
-    static SymbolManager symbolManager = null;
     static File rootDir = null;
     static String docVisibilityModifier;
 
     static void decorateHTMLFromInputFiles(Hashtable table,
                                            File newRootDir,
-                                           SymbolManager sm,
                                            File[] inputFiles,
                                            String docModifier ) throws IOException {
         rootDir = newRootDir;
         declIDTable = table;
-        symbolManager = sm;
         docVisibilityModifier = docModifier;
         for (int i = 0; i < inputFiles.length; i++) {
-            decorateHTMLFromDecls(symbolManager.getDeclarations(inputFiles[i].getCanonicalPath()),
-                                  rootDir.getCanonicalPath() + Config.DIR_SEP_CHAR,
-                                  docModifier,
-                                  false);
+        	decorateHTMLFromIPEs(getProgramElements(inputFiles[i].getCanonicalPath()),
+                  rootDir.getCanonicalPath() + Config.DIR_SEP_CHAR,
+                  docModifier,
+                  false);
         }
     }
 
-    static void decorateHTMLFromDecls(Declaration[] decls, String base, String docModifier, boolean exceededNestingLevel) throws IOException {
+    static void decorateHTMLFromIPEs(IProgramElement[] decls, String base, String docModifier, boolean exceededNestingLevel) throws IOException {
     	if ( decls != null ) {
             for (int i = 0; i < decls.length; i++) {
-                Declaration decl = decls[i];
-                decorateHTMLFromDecl(decl, base, docModifier, exceededNestingLevel);
+            	IProgramElement decl = decls[i];
+                decorateHTMLFromIPE(decl, base, docModifier, exceededNestingLevel);
             }
         }
     }
@@ -89,63 +87,57 @@ class HtmlDecorator {
      *   - package: package protected and public
      *   - private: everything
      */
-    static void decorateHTMLFromDecl(Declaration decl,
-                                     String base,
-                                     String docModifier,
-                                     boolean exceededNestingLevel ) throws IOException {
-        boolean nestedClass = false;
-        if ( decl.isType() ) {
-            boolean decorateFile = true;
-            if (isAboveVisibility(decl.getNode())) {
-                visibleFileList.add(decl.getSignature());
-                String packageName = decl.getPackageName();
-                String filename    = "";
-                if ( packageName != null ) {
-                   
-                   int index1 = base.lastIndexOf(Config.DIR_SEP_CHAR);
-                   int index2 = base.lastIndexOf(".");
-                   String currFileClass = "";
-                   if (index1 > -1 && index2 > 0 && index1 < index2) {
-                      currFileClass = base.substring(index1+1, index2);
-                   }
-                   
-                   // XXX only one level of nexting
-                   if (currFileClass.equals(decl.getDeclaringType())) {
-                   	  nestedClass = true;
-                      packageName = packageName.replace( '.','/' );
-                      String newBase = "";
-                      if ( base.lastIndexOf(Config.DIR_SEP_CHAR) > 0 ) {
-                         newBase = base.substring(0, base.lastIndexOf(Config.DIR_SEP_CHAR));
-                      }
-                      String signature = constructNestedTypeName(decl.getNode());
-                     
-                      filename = newBase + Config.DIR_SEP_CHAR + packageName +
-                                 Config.DIR_SEP_CHAR + currFileClass + //"." +
-                                 signature + ".html"; 
-                   } else {
-                       packageName = packageName.replace( '.','/' ); 
-                       filename = base + packageName + Config.DIR_SEP_CHAR + decl.getSignature() + ".html";
-                   }
-                }
-                else {
-                    filename = base + decl.getSignature() + ".html";
-                }
-                if (!exceededNestingLevel) {
-                    
-                   decorateHTMLFile(new File(filename));
-                   
-                   decorateHTMLFromDecls(decl.getDeclarations(),
-                                         base + decl.getSignature() + ".",
-                                         docModifier,
-                                         nestedClass);
-                }
-                else {
-                   System.out.println("Warning: can not generate documentation for nested " +
-                                      "inner class: " + decl.getSignature() );
-                }
-            }
-        }
-    }
+    static void decorateHTMLFromIPE(IProgramElement decl,
+            String base,
+            String docModifier,
+            boolean exceededNestingLevel ) throws IOException {
+		boolean nestedClass = false;
+		if ( decl.getKind().isType() ) {
+			boolean decorateFile = true;
+			if (isAboveVisibility(decl)) {
+				visibleFileList.add(decl.toSignatureString());
+				String packageName = decl.getPackageName();
+				String filename    = "";
+				if ( packageName != null ) {
+		
+					int index1 = base.lastIndexOf(Config.DIR_SEP_CHAR);
+					int index2 = base.lastIndexOf(".");
+					String currFileClass = "";
+					if (index1 > -1 && index2 > 0 && index1 < index2) {
+						currFileClass = base.substring(index1+1, index2);
+					}
+		
+					// XXX only one level of nexting
+					if (currFileClass.equals(decl.getDeclaringType())) {
+						nestedClass = true;
+						packageName = packageName.replace( '.','/' );
+						String newBase = "";
+						if ( base.lastIndexOf(Config.DIR_SEP_CHAR) > 0 ) {
+							newBase = base.substring(0, base.lastIndexOf(Config.DIR_SEP_CHAR));
+						}
+						String signature = constructNestedTypeName(decl);
+		
+						filename = newBase + Config.DIR_SEP_CHAR + packageName +
+						Config.DIR_SEP_CHAR + currFileClass + //"." +
+						signature + ".html"; 
+					} else {
+						packageName = packageName.replace( '.','/' ); 
+						filename = base + packageName + Config.DIR_SEP_CHAR + decl.toSignatureString() + ".html";
+					}
+				}
+				else {
+					filename = base + decl.toSignatureString() + ".html";
+				}
+				if (!exceededNestingLevel) {		
+					decorateHTMLFile(new File(filename));
+				}
+				else {
+					System.out.println("Warning: can not generate documentation for nested " +
+		             "inner class: " + decl.toSignatureString() );
+				}
+			}
+		}
+	}
 
     private static String constructNestedTypeName(IProgramElement node) {
     	if (node.getParent().getKind().isSourceFile()) {
@@ -201,9 +193,6 @@ class HtmlDecorator {
             fileContents.delete(start, end + Config.DECL_ID_TERMINATOR.length());
             if ( decl.getKind().isType() ) {
                 isSecond = true;
-//                addIntroductionDocumentation(decl, fileContents, index);
-//                addAdviceDocumentation(decl, fileContents, index);
-//                addPointcutDocumentation(decl, fileContents, index);
                 String fullname = "";
                 if (decl.getParent().getKind().equals(IProgramElement.Kind.ASPECT) 
             			|| decl.getParent().getKind().equals(IProgramElement.Kind.CLASS)) {
@@ -336,22 +325,6 @@ class HtmlDecorator {
 			decorateDocWithRel(node,fileBuffer,index,advisedBy,HtmlRelationshipKind.ADVISED_BY);
 		} 	
     }
-    
-//    static void addIntroductionDocumentation(IProgramElement decl,
-//                                   StringBuffer fileBuffer,
-//                                   int index ) {
-//        Declaration[] introductions = decl.getIntroductionDeclarations();
-//        if ( introductions.length > 0 ) {
-//            insertDeclarationsSummary(fileBuffer,
-//                                      introductions,
-//                                      "Introduction Summary",
-//                                      index);
-//            insertDeclarationsDetails(fileBuffer,
-//                                      introductions,
-//                                      "Introduction Detail",
-//                                      index);
-//        }
-//    }
 
     static void insertDeclarationsSummary(StringBuffer  fileBuffer,
                                           List decls,
@@ -626,7 +599,6 @@ class HtmlDecorator {
 
                 if (currDecl.getPackageName() != null ) {
                    hrefName = currDecl.getPackageName().replace('.', '/');
-//                   hrefLink = "";//+ currDecl.getPackageName() + Config.DIR_SEP_CHAR;
                 } 
                 
                 // in the case of nested classes, in order for the links to work,
@@ -869,24 +841,6 @@ class HtmlDecorator {
 	
 	static String generateIntroductionSignatures(IProgramElement decl, boolean isDetails) {
     	return "<not implemented>";
-    	//        Declaration[] decls = decl.getDeclarations();
-//        String entry = "";
-//        for ( int j = 0; j < decls.length; j++ ) {
-//            Declaration currDecl = decls[j];
-//            if ( currDecl != null ) {
-//                entry +=
-//                        "<TT><B>" +
-//                        currDecl.getSignature() +
-//                        "</B></TT><BR>";
-//            }
-//            if (isDetails) {
-//                entry += generateDetailsComment(currDecl) + "<P>";
-//            }
-//            else {
-//                entry += generateSummaryComment(currDecl) + "<P>";
-//            }
-//        }
-//        return entry;
     }
 
     static String generateSignatures(IProgramElement decl ) {
@@ -913,7 +867,6 @@ class HtmlDecorator {
     }
 
     static String generateHREFName(IProgramElement decl) {
-        //String hrefLink = decl.toLabelString().replace("\"", "quot;"); // !!!
         StringBuffer hrefLinkBuffer = new StringBuffer();
         char[] declChars =  decl.toLabelString().toCharArray();
         for (int i = 0; i < declChars.length; i++) {
@@ -998,6 +951,34 @@ class HtmlDecorator {
         }
         return formattedComment;
     }
+    
+    static public IProgramElement[] getProgramElements(String filename) {
+    	
+    	IProgramElement file = (IProgramElement)AsmManager.getDefault().getHierarchy().findElementForSourceFile(filename);
+		final List nodes = new ArrayList();
+		HierarchyWalker walker = new HierarchyWalker() {
+			public void preProcess(IProgramElement node) {
+				IProgramElement p = (IProgramElement)node;
+				if (accept(node)) nodes.add(p);
+			}
+		};
+
+		file.walk(walker);
+		return (IProgramElement[])nodes.toArray(new IProgramElement[nodes.size()]);
+    }
+    
+    /**
+     * Rejects anonymous kinds by checking if their name is an integer
+     */
+	static private boolean accept(IProgramElement node) {
+		if (node.getKind().isType()) {
+			boolean isAnonymous = StructureUtil.isAnonymous(node);
+			return !node.getParent().getKind().equals(IProgramElement.Kind.METHOD)
+				&& !isAnonymous;
+		} else {
+			return !node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE);
+		}
+	}
     
     /**
      * TypeSafeEnum for the entries which need to be put in the html doc 

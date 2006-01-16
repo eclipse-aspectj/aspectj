@@ -30,17 +30,16 @@ class StubFileGenerator{
     static Hashtable declIDTable = null;
 
     static void doFiles (Hashtable table,
-                        SymbolManager symbolManager,
                         File[] inputFiles,
                         File[] signatureFiles) throws DocException {
         declIDTable = table;
         for (int i = 0; i < inputFiles.length; i++) {
-            processFile(symbolManager, inputFiles[i], signatureFiles[i]);
+            processFile(inputFiles[i], signatureFiles[i]);
         }
     }
     
 
-    static void processFile(SymbolManager symbolManager, File inputFile, File signatureFile) throws DocException {
+    static void processFile(File inputFile, File signatureFile) throws DocException {
         try {
         	String path = StructureUtil.translateAjPathName(signatureFile.getCanonicalPath());
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path)));
@@ -193,11 +192,11 @@ class StubFileGenerator{
      * replaced.
      */
     static String addToFormal(String formalComment, String string) {
-        boolean appendPeriod = true;
+        //boolean appendPeriod = true;
         if ( (formalComment == null) || formalComment.equals("")) {
             //formalComment = "/**\n * . \n */\n";
             formalComment = "/**\n * \n */\n";
-            appendPeriod = false;
+            //appendPeriod = false;
         }
         formalComment = formalComment.trim();
 

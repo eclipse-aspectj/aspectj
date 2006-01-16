@@ -32,8 +32,6 @@ import org.aspectj.util.FileUtil;
 public class Main implements Config {
 
 	private static final String FAIL_MESSAGE =  "> compile failed, exiting ajdoc";
-	
-    static SymbolManager symbolManager = null;
 
     /** Command line options. */
     static Vector options;
@@ -72,7 +70,6 @@ public class Main implements Config {
 	private static String outputWorkingDir = Config.WORKING_DIR;
 
     public static void clearState() {
-        symbolManager = null;
         options = new Vector();
         ajcOptions = new Vector();
         filenames = new Vector();
@@ -101,7 +98,6 @@ public class Main implements Config {
         sourcepath.addElement("."); // add the current directory to the classapth
         parseCommandLine(args);  
         rootDir = getRootDir();
-        symbolManager = SymbolManager.getDefault();
         File[] inputFiles      = new File[filenames.size()];
         File[] signatureFiles  = new File[filenames.size()];
         try {
@@ -158,7 +154,7 @@ public class Main implements Config {
             // PHASE 1: generate Signature files (Java with DeclIDs and no bodies).
             System.out.println( "> Building signature files..." );
 			try{
-            StubFileGenerator.doFiles(declIDTable, symbolManager, inputFiles, signatureFiles);
+            StubFileGenerator.doFiles(declIDTable, inputFiles, signatureFiles);
 			} catch (DocException d){
 				System.err.println(d.getMessage());
 	           // d.printStackTrace();
@@ -219,7 +215,6 @@ public class Main implements Config {
             System.out.println( "> Decorating html files..." );
             HtmlDecorator.decorateHTMLFromInputFiles(declIDTable,
                                               rootDir,
-                                              symbolManager,
                                               inputFiles,
                                               docModifier); 
             
@@ -586,7 +581,7 @@ public class Main implements Config {
             else { 
                 // check if this is a file or a package
 //            	System.err.println(">>>>>>>> " + );
-            	String entryName = arg.substring(arg.lastIndexOf(File.separator)+1);
+//            	String entryName = arg.substring(arg.lastIndexOf(File.separator)+1);
                 if (FileUtil.hasSourceSuffix(arg)
                 	|| arg.endsWith(".lst") 
 					&& arg != null ) {
