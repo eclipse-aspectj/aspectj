@@ -99,10 +99,10 @@ public class DeclareFormsTest extends AjdocTestCase {
 				"' in the Declare Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"DECLARE SUMMARY",
-					declareWarning,
+					declareWarningQuotes,
 					HtmlDecorator.HtmlRelationshipKind.MATCHED_BY,
 					doItHref);
-		assertTrue("Should have '" + declareWarning + " matched by " + doItHref + 
+		assertTrue("Should have '" + declareWarningQuotes + " matched by " + doItHref + 
 				"' in the Declare Summary section", b);
 	}
 	

@@ -228,7 +228,7 @@ class HtmlDecorator {
                 int secondClassStartIndex = fileContents.toString().indexOf("class <B>");
                 if (secondClassStartIndex != -1) {
                 	String name = decl.toSignatureString();
- 					int classEndIndex = fileContents.indexOf(name + "</B><DT>");
+					int classEndIndex = fileContents.toString().indexOf(name + "</B><DT>");
 					if (secondClassStartIndex != -1 && classEndIndex != -1) {
 						StringBuffer sb = new StringBuffer(fileContents.toString().
 								substring(secondClassStartIndex,classEndIndex));
@@ -601,8 +601,16 @@ class HtmlDecorator {
                 				+ "." + currDecl.toLabelString();                
                   
                 // need to replace " with quot; otherwise the links wont work
+                // for 'matches declare' relationship
+                StringBuffer sb = new StringBuffer(currDecl.toLabelString());
+                int nextQuote = sb.toString().indexOf("\"");
+                while (nextQuote != -1) {
+					sb.deleteCharAt(nextQuote);
+					sb.insert(nextQuote,"quot;");
+					nextQuote = sb.toString().indexOf("\"");
+				}
                 hrefLink += currDecl.getParent().toLinkLabelString() + ".html"
-				  + "#" + currDecl.toLabelString().replaceAll("\"","quot;"); 
+				  	+ "#" + sb.toString(); 
 
                 if (!addedNames.contains(hrefName)) {
 	                adviceDoc = adviceDoc +
