@@ -58,7 +58,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		// matches if the type of any of the annotations on the AnnotatedElement is
 		// matched by the typePattern.
 		ResolvedType[] annTypes = annotated.getAnnotationTypes();
-		if (annTypes.length!=0) {
+
+		if (annTypes!=null && annTypes.length!=0) {
 			for (int i = 0; i < annTypes.length; i++) {
 				if (typePattern.matches(annTypes[i],TypePattern.STATIC).alwaysTrue()) {
 					return FuzzyBoolean.YES;
