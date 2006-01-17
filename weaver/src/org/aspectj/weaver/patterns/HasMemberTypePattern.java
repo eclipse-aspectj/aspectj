@@ -110,6 +110,7 @@ public class HasMemberTypePattern extends TypePattern {
 			String msg = WeaverMessages.format(WeaverMessages.HAS_MEMBER_NOT_ENABLED,this.toString());
 			scope.message(IMessage.ERROR, this, msg);
 		}
+		signaturePattern.resolveBindings(scope,bindings);
 		return this;
 	}
 
