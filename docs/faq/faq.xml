@@ -22,7 +22,7 @@
        2003-2005 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated December 18, 2005
+  <para>Last updated January 17, 2006
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -4294,6 +4294,11 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
 			</listitem>
 			<listitem>
 			<para>
+			Name: <literal>JRE14_LIB</literal>, Value: (wherever your Java 4 Runtime is installed)<literal>\jre\lib\rt.jar</literal>
+			</para>
+			</listitem>
+			<listitem>
+			<para>
 			Name: <literal>JRE15_LIB</literal>, Value: (wherever your Java 5 Runtime is installed)<literal>\jre\lib\rt.jar</literal>
 			</para>
 			</listitem>
@@ -4303,6 +4308,12 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
 			</para>
 			</listitem>
 		  </itemizedlist>
+		  </para>
+		  <para>
+		  The <literal>org.aspectj.lib</literal> project is an AspectJ project so 
+          you also have to have AJDT installed. For the latest AJDT release and
+          download instructions visit the
+		  <ulink url="http://www.eclipse.org/ajdt/downloads/">AJDT Downloads</ulink> page.
 		  </para>
 			<para>
 			When you've added the variables click OK to do a full rebuild, then run the tests by going in the Package Explorer to:
@@ -4358,6 +4369,117 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
            files and may
           change, so the list above may not be correct when you read it.
           </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+
+        <question id="q:buildingAspectJAndAJDT"
+            xreflabel="Q:How do I build AspectJ and integrate it into AJDT?">
+          <para>How do I build AspectJ and integrate it into AJDT?
+          </para>
+        </question>
+        <answer>
+          <para>To build AspectJ, first get the source tree as
+          described in <xref linkend="q:buildingsource"/>. Once you have
+          a development environment set up, copy the 
+          <literal>build/sample-local.properties</literal> file
+          to <literal>build/local.properties</literal> and within this file point the 
+          <literal>java14.home</literal> and <literal>java15.home</literal>
+          to the corresponding places on your machine.
+          </para>
+			<para>
+             To build AspectJ on the command line:
+          </para>
+		  <para>
+		  <itemizedlist>
+		  	<listitem>
+		  	<para>
+			Open a command prompt
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+			Navigate to the <literal>build</literal> directory within your AspectJ workspace 
+			(to find out where your workspace is go to <literal>File > 
+			Switch Workspace</literal> within Eclipse).
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+			Run <literal>ant clean</literal> to remove the files from 
+			previously built AspectJ versions. 
+			</para>
+			</listitem>
+		  	<listitem>
+		  	<para>
+			Run <literal>ant</literal> to build AspectJ. The built files are created in 
+			<literal>your_eclipse_installation_directory/aspectj_development_workspace/aj-build</literal>.
+			</para>
+			</listitem>
+		  </itemizedlist>
+		  </para>
+			<para>
+			To import a locally built AspectJ into AJDT first follow the
+			instructions on <ulink url="http://www.eclipse.org/ajdt/faq.php#q:develop">
+			How do I setup an AJDT development environment in Eclipse?</ulink>
+			for setting up an AJDT development environment and running the 
+			correctness tests. Then:
+			</para>
+		  <para>
+		  <itemizedlist>
+		  	<listitem>
+		  	<para>
+			Create a file <literal>aspectjlib.properties</literal> within 
+			the <literal>org.aspectj.ajde</literal> project and add the following two lines
+			<programlisting>
+aspectj.lib.dir=C:/eclipse/aspectj-workspace/aj-build/dist/tools/lib
+aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspectj.ajde.doc/doc
+			</programlisting>
+  			making sure to change the path to correspond to your set up.
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+			Run the <literal>build.xml</literal> file in <literal>org.aspectj.ajde</literal> 
+			with the <literal>plugin jars</literal> target:
+			<itemizedlist>
+		  	   	<listitem>
+		  		<para>
+	 			Right click on the <literal>build.xml</literal> file in the 
+	 			<literal>org.aspectj.ajde</literal> plugin
+	 			</para>
+	 			</listitem>
+				<listitem>
+	 			<para>
+				Select <literal>Run As > Ant build...</literal>
+				</para>
+				</listitem>
+				<listitem>
+				<para>
+				In the resultant dialog navigate to the <literal>Targets</literal> tab
+				</para>
+				</listitem>
+				<listitem>
+				<para>
+				Ensure <literal>plugin jars</literal> is the only selected target
+				</para>
+				</listitem>
+				<listitem>
+				<para>
+				Click <literal>Run</literal>
+				</para>
+				</listitem>
+			</itemizedlist>	
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+			Refresh the <literal>org.aspectj.ajde, org.aspectj.runtime</literal> 
+			and <literal>org.aspectj.weaver</literal> plugins.
+			</para>
+			</listitem>
+		  </itemizedlist>
+		  </para>					
         </answer>
       </qandaentry>
       <qandaentry>
@@ -4850,6 +4972,7 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
         <listitem><para><xref linkend="q:java5"/></para></listitem>
 	    <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
         <listitem><para><xref linkend="q:buildingsource"/></para></listitem>
+        <listitem><para><xref linkend="q:buildingAspectJAndAJDT"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
