@@ -11,5 +11,16 @@
         <compile files="pr122458_2.aj" options="-1.5 -emacssym"/>
         <run class="pr122458_2"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs151/pr123695" title="Internal nullptr exception with complex declare annotation">
+        <compile files="InjectName.java,Main.java,MarkMyMethods.java,MarkMyMethodsAspect.java,NameAspect.java,Named.java,Read.java,Write.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr124105" title="hasMember problems with packages">
+        <compile files="com/test/IOption.java,com/test/IXOption.java,com/test/IYOption.java,com/test/IZOption.java,com/test/MyBrokenXOption.java,com/test/MyXOption.java,com/test/OptionAspect.aj,com/test/OptionType.java" options="-1.5 -XhasMember">
+          <message kind="error" line="4" text="IOption implementations must provide a constructor which accepts an OptionType"/>
+        </compile>
+    </ajc-test>
+    
 
 </suite>
