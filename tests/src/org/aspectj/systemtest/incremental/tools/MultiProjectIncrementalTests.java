@@ -466,7 +466,14 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		alter("PR113257","inc1");
 		build("PR113257");
 	}
-	
+
+	public void testPr123612() {
+		initialiseProject("PR123612");
+		build("PR123612");
+		alter("PR123612","inc1");
+		build("PR123612");
+		checkWasntFullBuild();
+	}
 	
 	// other possible tests:
 	// - memory usage (freemem calls?)

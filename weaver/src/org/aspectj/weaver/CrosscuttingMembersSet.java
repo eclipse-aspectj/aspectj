@@ -127,6 +127,9 @@ public class CrosscuttingMembersSet {
         lateTypeMungers = null;
 		declareSofts = null;
 		declareParents = null;
+		declareAnnotationOnFields=null;
+		declareAnnotationOnMethods=null;
+		declareAnnotationOnTypes=null;
 		declareDominates = null;
 	}
 	
