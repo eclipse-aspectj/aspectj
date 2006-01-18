@@ -22,7 +22,9 @@ import java.util.*;
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.taskdefs.*;
 import org.apache.tools.ant.types.*;
+import org.apache.tools.ant.util.TaskLogger;
 import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.tools.ajc.Main.MessagePrinter;
 import org.aspectj.util.*;
@@ -298,6 +300,7 @@ public class AjcTask extends MatchingTask {
     private boolean failonerror;
     private boolean fork;
     private String maxMem;
+    private TaskLogger logger;
 	
 	// ------- single entries dumped into cmd
     protected GuardedCommand cmd;
@@ -989,6 +992,7 @@ public class AjcTask extends MatchingTask {
      *             or if there were compiler errors and failonerror is true.
      */
     public void execute() throws BuildException {
+    	this.logger = new TaskLogger(this);
         if (executing) {
             throw new IllegalStateException("already executing");
         } else {
@@ -998,9 +1002,7 @@ public class AjcTask extends MatchingTask {
         verifyOptions();
         try {
             String[] args = makeCommand();
-            if (verbose || listFileArgs) { // XXX if listFileArgs, only do that
-                log("ajc " + Arrays.asList(args), Project.MSG_VERBOSE);
-            }
+            logVerbose("ajc " + Arrays.asList(args));
             if (!fork) {
                 executeInSameVM(args);
             } else { // when forking, Adapter handles failonerror
@@ -1009,10 +1011,10 @@ public class AjcTask extends MatchingTask {
         } catch (BuildException e) {
             throw e;
         } catch (Throwable x) {
-        	System.err.println(Main.renderExceptionForUser(x));        	
+        	this.logger.error(Main.renderExceptionForUser(x));
             throw new BuildException("IGNORE -- See " 
             	+ LangUtil.unqualifiedClassName(x) 
-            	+ " rendered to System.err");
+            	+ " rendered to ant logger");
         } finally {
             executing = false;
             if (null != tmpOutjar) {
@@ -1044,7 +1046,7 @@ public class AjcTask extends MatchingTask {
         ArrayList result = new ArrayList();
         if (0 < ignored.size()) {
             for (Iterator iter = ignored.iterator(); iter.hasNext();) {
-                log("ignored: " + iter.next(), Project.MSG_INFO);                   
+            	logVerbose("ignored: " + iter.next());
             }
         }
         // when copying resources, use temp jar for class output
@@ -1055,7 +1057,7 @@ public class AjcTask extends MatchingTask {
                 String path = outjar.getAbsolutePath();
                 int len = FileUtil.zipSuffixLength(path);
                 if (len < 1) {
-                    log("not copying resources - weird outjar: " + path);
+                    this.logger.info("not copying resources - weird outjar: " + path);
                 } else {
                     path = path.substring(0, path.length()-len) + ".tmp.jar";
                     tmpOutjar = new File(path);
@@ -1187,11 +1189,8 @@ public class AjcTask extends MatchingTask {
         if (null == holder) {
             MessageHandler mhandler = new MessageHandler(true);
 			final IMessageHandler delegate;
-              delegate  = verbose ? MessagePrinter.VERBOSE: MessagePrinter.TERSE;
+              delegate  = new AntMessageHandler(this.logger,this.verbose);
             mhandler.setInterceptor(delegate);
-            if (!verbose) {
-                mhandler.ignore(IMessage.INFO);
-            }
             holder = mhandler;
             numPreviousErrors = 0;
         } else {
@@ -1281,8 +1280,8 @@ public class AjcTask extends MatchingTask {
      */
     protected void executeInOtherVM(String[] args) {
         if (null != messageHolder) {
-            log("message holder ignored when forking: "
-                + messageHolder.getClass().getName(), Project.MSG_WARN);
+            this.logger.warning("message holder ignored when forking: "
+                + messageHolder.getClass().getName());
         }
         CommandlineJava javaCmd = new CommandlineJava();
         javaCmd.setClassname(org.aspectj.tools.ajc.Main.class.getName());
@@ -1337,9 +1336,7 @@ public class AjcTask extends MatchingTask {
                     both[0] = path;
                 }
             }
-            if (verbose) { // XXX also when ant is verbose...
-                log("forking " + Arrays.asList(both));
-            }
+            logVerbose("forking " + Arrays.asList(both));
             int result = execInOtherVM(both);
             if (0 > result) {
                 throw new BuildException("failure[" + result + "] running ajc");
@@ -1366,7 +1363,8 @@ public class AjcTask extends MatchingTask {
 			
             Project project = getProject();
 			PumpStreamHandler handler = new LogStreamHandler(this,
-					  Project.MSG_INFO, Project.MSG_WARN);
+					  verbose ? Project.MSG_VERBOSE : Project.MSG_INFO, 
+					  Project.MSG_WARN);
 		  
 // replace above two lines with what follows as an aid to debugging when running the unit tests....
 //            LogStreamHandler handler = new LogStreamHandler(this,
@@ -1466,7 +1464,7 @@ public class AjcTask extends MatchingTask {
                 if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
                     list.add(file.getAbsolutePath());
                 } else {
-                    log("skipping file: " + file, Project.MSG_WARN);
+                    this.logger.warning("skipping file: " + file);
                 }
             }
         }
@@ -1866,8 +1864,16 @@ public class AjcTask extends MatchingTask {
                 }
             }
         }
+        
     }
 
+    protected void logVerbose(String text) {
+    	if (this.verbose) {
+    		this.logger.info(text);
+    	} else {
+    		this.logger.verbose(text);
+    	}
+    }
 /**
  * Commandline wrapper that 
  * only permits addition of non-empty values
@@ -1977,6 +1983,64 @@ public static class GuardedCommand {
             }
         }
     }     
+}
+
+private static class AntMessageHandler implements IMessageHandler {
+
+	private TaskLogger logger;
+	private boolean taskLevelVerbose;
+	
+	public AntMessageHandler(TaskLogger logger, boolean taskVerbose) {
+		this.logger = logger;
+		this.taskLevelVerbose = taskVerbose;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.aspectj.bridge.IMessageHandler#handleMessage(org.aspectj.bridge.IMessage)
+	 */
+	public boolean handleMessage(IMessage message) throws AbortException {
+		Kind messageKind = message.getKind();
+		String messageText = message.toString();
+		if (messageKind == IMessage.ABORT) {
+			this.logger.error(messageText);
+		} else if (messageKind == IMessage.DEBUG) {
+			this.logger.debug(messageText);
+		} else if (messageKind == IMessage.ERROR) {
+			this.logger.error(messageText);
+		} else if (messageKind == IMessage.FAIL){
+			this.logger.error(messageText);
+		} else if (messageKind == IMessage.INFO) {
+			if (this.taskLevelVerbose) {
+				this.logger.info(messageText);
+			}
+			else {
+				this.logger.verbose(messageText);				
+			}
+		} else if (messageKind == IMessage.WARNING) {
+			this.logger.warning(messageText);
+		} else if (messageKind == IMessage.WEAVEINFO) {
+			this.logger.info(messageText);
+		} else if (messageKind == IMessage.TASKTAG) {
+			// ignore
+		} else {
+			throw new BuildException("Unknown message kind from AspectJ compiler: " + messageKind.toString());
+		}
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
+	 */
+	public boolean isIgnoring(Kind kind) {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.bridge.IMessageHandler#dontIgnore(org.aspectj.bridge.IMessage.Kind)
+	 */
+	public void dontIgnore(Kind kind) {
+	}
+	
 }
 }
 
