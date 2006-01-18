@@ -52,6 +52,7 @@ import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.CountingMessageHandler;
+import org.aspectj.bridge.ILifecycleAware;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
@@ -172,6 +173,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         boolean ret = true;
     	batchCompile = batch;
     	
+    	if (baseHandler instanceof ILifecycleAware) {
+    		((ILifecycleAware)baseHandler).buildStarting(!batch);
+    	}
     	int phase = batch ? CompilationAndWeavingContext.BATCH_BUILD : CompilationAndWeavingContext.INCREMENTAL_BUILD;
     	ContextToken ct = CompilationAndWeavingContext.enteringPhase(phase ,buildConfig);
         try {
@@ -311,6 +315,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
            	CompilationAndWeavingContext.leavingPhase(ct);
             
         } finally {
+        	if (baseHandler instanceof ILifecycleAware) {
+        		((ILifecycleAware)baseHandler).buildFinished(!batch);
+        	}
         	if (zos != null) {
         		closeOutputStream(buildConfig.getOutputJar());
         	}
