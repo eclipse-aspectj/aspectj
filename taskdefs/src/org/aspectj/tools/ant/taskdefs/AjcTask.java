@@ -16,18 +16,50 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import org.apache.tools.ant.*;
-import org.apache.tools.ant.taskdefs.*;
-import org.apache.tools.ant.types.*;
+import org.apache.tools.ant.AntClassLoader;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Location;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Execute;
+import org.apache.tools.ant.taskdefs.Expand;
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.taskdefs.LogStreamHandler;
+import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.taskdefs.Mkdir;
+import org.apache.tools.ant.taskdefs.PumpStreamHandler;
+import org.apache.tools.ant.taskdefs.Zip;
+import org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter;
+import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.types.CommandlineJava;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.PatternSet;
+import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.ZipFileSet;
 import org.apache.tools.ant.util.TaskLogger;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.tools.ajc.Main;
-import org.aspectj.tools.ajc.Main.MessagePrinter;
-import org.aspectj.util.*;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 
 /**
