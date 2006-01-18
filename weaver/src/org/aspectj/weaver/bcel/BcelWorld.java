@@ -494,6 +494,7 @@ public class BcelWorld extends World implements Repository {
 	public void tidyUp() {
 	    // At end of compile, close any open files so deletion of those archives is possible
 		classPath.closeArchives();
+		typeMap.report();
 	}
 
 	

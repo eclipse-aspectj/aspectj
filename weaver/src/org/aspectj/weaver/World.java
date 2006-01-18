@@ -14,12 +14,14 @@
 
 package org.aspectj.weaver;
 
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.aspectj.asm.IHierarchy;
@@ -30,9 +32,11 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
+import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegate;
 
 /**
  * A World is a collection of known types and crosscutting members.
@@ -48,7 +52,7 @@ public abstract class World implements Dump.INode {
 	private TypeVariableDeclaringElement typeVariableLookupScope;
 	
 	/** The heart of the world, a map from type signatures to resolved types */
-    protected TypeMap typeMap = new TypeMap(); // Signature to ResolvedType
+    protected TypeMap typeMap = new TypeMap(this); // Signature to ResolvedType
     
 
     /** Calculator for working out aspect precedence */
@@ -669,17 +673,42 @@ public abstract class World implements Dump.INode {
 	}
 	
 	/*
-	 *  Map of types in the world, with soft links to expendable ones.
+	 *  Map of types in the world, can have 'references' to expendable ones which 
+	 *  can be garbage collected to recover memory.
 	 *  An expendable type is a reference type that is not exposed to the weaver (ie
 	 *  just pulled in for type resolution purposes).
 	 */
 	protected static class TypeMap {
-		/** Map of types that never get thrown away */
+		
+		private static boolean debug = false;
+
+		// Strategy for entries in the expendable map
+		public static int DONT_USE_REFS = 0; // Hang around forever
+		public static int USE_WEAK_REFS = 1; // Collected asap
+		public static int USE_SOFT_REFS = 2; // Collected when short on memory
+		
+		// SECRETAPI - Can switch to a policy of choice ;)
+		public static int policy  = USE_SOFT_REFS; 
+
+		// Map of types that never get thrown away
 		private Map tMap = new HashMap();
-		/** Map of types that may be ejected from the cache if we need space */
+		
+		// Map of types that may be ejected from the cache if we need space
 		private Map expendableMap = new WeakHashMap();
 		
-		private static final boolean debug = false;
+		private World w;
+
+		// profiling tools...
+		private boolean memoryProfiling = false;
+		private int maxExpendableMapSize = -1;
+		private int collectedTypes = 0;
+		private ReferenceQueue rq = new ReferenceQueue();
+		
+		TypeMap(World w) {
+			this.w = w;
+			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.INFO);
+		}
+		
 		/** 
 		 * Add a new type into the map, the key is the type signature.
 		 * Some types do *not* go in the map, these are ones involving
@@ -718,37 +747,85 @@ public abstract class World implements Dump.INode {
 					System.err.println("Not putting a missing type into the typemap: key="+key+" type="+type);
 				return type;
 			}
+			
+			if ((type instanceof ReferenceType) && (((ReferenceType)type).getDelegate()==null) && w.isExpendable(type)) {
+				if (debug) 
+				    System.err.println("Not putting expendable ref type with null delegate into typemap: key="+key+" type="+type);
+				return type;
+			}
 						
-			if (isExpendable(type))  {
-				return (ResolvedType) expendableMap.put(key,type);
+			if (w.isExpendable(type))  {
+				// Dont use reference queue for tracking if not profiling...
+				if (policy==USE_WEAK_REFS) {
+				    if (memoryProfiling) expendableMap.put(key,new WeakReference(type,rq));
+				    else                 expendableMap.put(key,new WeakReference(type));
+				} else if (policy==USE_SOFT_REFS) {
+					if (memoryProfiling) expendableMap.put(key,new SoftReference(type,rq));
+					else                 expendableMap.put(key,new SoftReference(type));
+				} else {
+				  expendableMap.put(key,type);
+				}
+				if (memoryProfiling && expendableMap.size()>maxExpendableMapSize) {
+					maxExpendableMapSize = expendableMap.size();
+				}
+			    return type;
 			} else {
 				return (ResolvedType) tMap.put(key,type);
 			}
 		}
 		
+		public void report() {
+			if (!memoryProfiling) return;
+			checkq();
+			w.getMessageHandler().handleMessage(MessageUtil.info("MEMORY: world expendable type map reached maximum size of #"+maxExpendableMapSize+" entries"));
+			w.getMessageHandler().handleMessage(MessageUtil.info("MEMORY: types collected through garbage collection #"+collectedTypes+" entries"));
+		}
+		
+		public void checkq() {
+			if (!memoryProfiling) return;
+			while (rq.poll()!=null) collectedTypes++;
+		}
+		
 		/** Lookup a type by its signature */
 		public ResolvedType get(String key) {
+			checkq();
 			ResolvedType ret = (ResolvedType) tMap.get(key);
-			if (ret == null) ret = (ResolvedType) expendableMap.get(key);
+			if (ret == null) {
+				if (policy==USE_WEAK_REFS) {
+					WeakReference ref = (WeakReference)expendableMap.get(key);
+					if (ref != null) {
+						ret = (ResolvedType) ref.get();
+					}
+				} else if (policy==USE_SOFT_REFS) {
+					SoftReference ref = (SoftReference)expendableMap.get(key);
+					if (ref != null) {
+						ret = (ResolvedType) ref.get();
+					}
+				} else {
+				    return (ResolvedType)expendableMap.get(key);
+				}
+			}
 			return ret;
 		}
 		
 		/** Remove a type from the map */
 		public ResolvedType remove(String key) {
 			ResolvedType ret = (ResolvedType) tMap.remove(key);
-			if (ret == null) ret = (ResolvedType) expendableMap.remove(key);
+			if (ret == null) {
+				if (policy==USE_WEAK_REFS) { 
+					WeakReference wref = (WeakReference)expendableMap.remove(key);
+					if (wref!=null) ret = (ResolvedType)wref.get();
+					return ret;
+				} else if (policy==USE_SOFT_REFS) {
+					SoftReference wref = (SoftReference)expendableMap.remove(key);
+					if (wref!=null) ret = (ResolvedType)wref.get();
+					return ret;
+				} else {
+					ret = (ResolvedType)expendableMap.remove(key);
+					return ret;
+				}
+			}
 			return ret;
-		}
-		
-		/** Reference types we don't intend to weave may be ejected from
-		 * the cache if we need the space.
-		 */
-		private boolean isExpendable(ResolvedType type) {
-			return (
-					  (type != null) &&
-					  (!type.isExposedToWeaver()) &&
-					  (!type.isPrimitiveType())
-					);
 		}
 		
 	    public String toString() {
@@ -762,14 +839,58 @@ public abstract class World implements Dump.INode {
 	    
 	    private String dumpthem(Map m) {
 	    	StringBuffer sb = new StringBuffer();
-	    	Set keys = m.keySet();
-	    	for (Iterator iter = keys.iterator(); iter.hasNext();) {
-				String k = (String) iter.next();
-				sb.append(k+"="+m.get(k)).append("\n");
+	    	
+	    	int otherTypes = 0;
+	    	int bcelDel = 0;
+	    	int refDel = 0;
+	    	
+	    	for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry entry = (Map.Entry) iter.next();
+				Object val = entry.getValue();
+				if (val instanceof WeakReference) {
+					val = ((WeakReference)val).get();
+				} else 
+				if (val instanceof SoftReference) {
+					val = ((SoftReference)val).get();
+				} 
+				sb.append(entry.getKey()+"="+val).append("\n");
+				if (val instanceof ReferenceType) {
+					ReferenceType refType = (ReferenceType)val;
+					if (refType.getDelegate() instanceof BcelObjectType) {
+						bcelDel++;
+					} else if (refType.getDelegate() instanceof ReflectionBasedReferenceTypeDelegate) {
+						refDel++;
+					} else {
+						otherTypes++;
+					}
+				} else {
+					otherTypes++;
+				}
 			}
+	    	sb.append("# BCEL = "+bcelDel+", # REF = "+refDel+", # Other = "+otherTypes);
+	    	
 	    	return sb.toString();
 	    }
+	    
+	    public int totalSize() {
+	    	return tMap.size()+expendableMap.size();
+	    }
+	    public int hardSize() {
+	    	return tMap.size();
+	    }
 	}	
+	
+	/** Reference types we don't intend to weave may be ejected from
+	 * the cache if we need the space.
+	 */
+	protected boolean isExpendable(ResolvedType type) {
+		return (
+				!type.equals(UnresolvedType.OBJECT) && 
+				  (type != null) &&
+				  (!type.isExposedToWeaver()) &&
+				  (!type.isPrimitiveType())
+				);
+	}
 
 	/**
 	 * This class is used to compute and store precedence relationships between
