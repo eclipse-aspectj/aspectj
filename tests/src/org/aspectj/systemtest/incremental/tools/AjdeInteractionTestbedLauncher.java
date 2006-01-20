@@ -40,6 +40,7 @@ public class AjdeInteractionTestbedLauncher extends
 	}
 	
 	private void buildProject(String projectName) {
+		configureBuildStructureModel(true);
 		initialiseProject(projectName);
 		build(projectName);
 	}
