@@ -322,7 +322,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         		closeOutputStream(buildConfig.getOutputJar());
         	}
             ret = !handler.hasErrors();
-            getBcelWorld().tidyUp();
+            if (getBcelWorld()!=null) getBcelWorld().tidyUp();
             // bug 59895, don't release reference to handler as may be needed by a nested call
             //handler = null;
         }
