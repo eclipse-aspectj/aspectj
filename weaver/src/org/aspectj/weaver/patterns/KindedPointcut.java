@@ -358,7 +358,12 @@ public class KindedPointcut extends Pointcut {
 			if (visitor.wellHasItThen/*?*/()) {
 				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.NO_GENERIC_THROWABLES),
 						getSourceLocation()));
-			}									
+			}							
+			if (!scope.getWorld().isJoinpointArrayConstructionEnabled() && 
+				kind==Shadow.ConstructorCall &&
+				signature.getDeclaringType().isArray()) {
+				scope.message(MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_NEWARRAY_JOINPOINTS_BY_DEFAULT),getSourceLocation()));
+			}
 		}
 	}
 	

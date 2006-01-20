@@ -157,6 +157,7 @@
      <ajc-test dir="features151/newarrayjoinpoint" title="option deactivated - no match expected">
         <compile files="One.java" options="-1.5 -showWeaveInfo">
            <message kind="warning" line="9" text="advice defined in X has not been applied [Xlint:adviceDidNotMatch]"/>
+           <message kind="warning" line="9" text="There are no join points for array construction unless -Xjoinpoints:arrayconstruction is specified"/>
         </compile>
     </ajc-test>
     
