@@ -1,0 +1,418 @@
+<?xml version="1.0"?>
+
+<!--
+    Copyright 2006 contributors.
+  
+    All rights reserved. 
+    This program and the accompanying materials are made available 
+    under the terms of the Eclipse Public License v1.0 
+    which accompanies this distribution and is available at 
+    http://eclipse.org/legal/epl-v10.html 
+
+    Contributors: Adrian Colyer
+-->
+
+<project name="aspectj-profiling" default="usage">
+
+	<!-- project.properties contains your local settings, not checked into CVS -->
+	<property file="project.properties"/>
+	
+	<!-- default property settings, version controlled -->
+	<property file="build.properties"/>
+
+	<!-- pull in the ant file defining the paths etc. for the target application -->
+	<import file="${target.application.definitions.file}"/>
+
+	<!-- list of useful targets... -->		
+	<target name="usage">
+		<echo message="ant build script for profiling AspectJ compiler"/>
+		<echo message="useful targets are:"/>
+		<echo message="   gc.suite           : runs basic timing and gc for source, binary, ltw, and ajdt compiles"/>
+		<echo message="   full.profile.suite : runs full profiling for source, binary, ltw, and ajdt compiles"/>
+		<echo message="   source.compile     : compiles from source (and weaves) with full profiling"/>
+		<echo message="   source.compile.gc  : compiles from source (and weaves) with basic timing and gc"/>
+		<echo message="   binary.weave       : binary weaving from injars and aspectpath with full profiling"/>
+		<echo message="   binary.weave.gc    : binary weaving from injars and aspectpath with basic timing and gc"/>
+		<echo message="   loadtime.weave     : load-time weaving with full profiling"/>
+		<echo message="   loadtime.weave.gc  : load-time weaving with basic timing and gc"/>
+		<echo message="   ajdt.compile       : source compile simulating ajdt usage of compiler with full profiling"/>
+		<echo message="   ajdt.compile.gc    : source compile simulating ajdt usage of compiler with basic timing and gc"/>
+		<echo message="   clean              : remove all output etc. and prepare for fresh run"/>
+		<echo message="results are placed in ${results.dir} for analysis with HAT, PerfAnal etc."/>
+		<echo message="customise behaviour using local project.properties (see build.properties"/>
+		<echo message="for available customisations)"/>
+	</target>
+
+	<!-- handy suites -->	
+	<target name="gc.suite" depends="source.compile.gc,binary.weave.gc,loadtime.weave.gc,ajdt.compile.gc"/>
+	<target name="full.profile.suite" depends="source.compile,binary.weave,loadtime.weave,ajdt.compile"/>
+	
+	<!-- 
+		how to obtain the aspectj compiler - if the use.aspectjtools.jar property
+		is set to true, will use the version of aspectjtools.jar in 
+		aspectj.lib.dir.  If use.aspectjtools.jar property is false, will use
+		the bin directories from the projects in your aspectj.workspace.root.
+	-->
+
+	<condition property="ajtools.jar">
+		<istrue value="${use.aspectjtools.jar}"/>
+	</condition>
+			
+	<condition property="iajc.local">
+		<istrue value="${use.local.iajc.task.class}"/>
+	</condition>
+		
+	<path id="aspectj.compiler.path">
+		<dirset dir=".">
+			<include name="classes" if="iajc.local"/>			
+		</dirset>
+		<fileset dir="${aspectj.lib.dir}">
+			<include name="aspectjtools.jar" if="ajtools.jar"/>
+		</fileset>
+		<dirset dir="${aspectj.workspace.root}">
+			<include name="*/bin" unless="ajtools.jar"/>
+		</dirset>
+		<fileset dir="${aspectj.workspace.root}">
+			<include name="org.eclipse.jdt.core/jdtcore-for-aspectj.jar" unless="ajtools.jar"/>
+			<include name="lib/bcel/bcel.jar" unless="ajtools.jar"/>
+		</fileset>
+	</path>
+
+	<path id="ajde.launch.path">
+		<dirset dir="${aspectj.workspace.root}">
+			<include name="test*/bin"/>
+		</dirset>
+	</path>
+		
+	<!-- define the iajc task -->
+	<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+		<classpath>
+			<path refid="aspectj.compiler.path"/>
+		</classpath>
+	</taskdef>
+
+	<!-- some simple checking to give status messages about the config we will run with -->
+	<target name="config-check" depends="check.ajtools.jar,check.workspace,check.iajc.local,check.iajc.ajtools"/>
+	<target name="check.ajtools.jar" if="ajtools.jar">
+		<echo message="using aspectjtools.jar from ${aspectj.lib.dir}"/>
+	</target>
+	<target name="check.workspace" unless="ajtools.jar">
+		<echo message="using AspectJ from workspace at ${aspectj.workspace.root}"/>
+	</target>
+	<target name="check.iajc.local" if="iajc.local">
+		<echo message="using patched version of iajc supporting jvmargs"/>
+	</target>
+	<target name="check.iajc.ajtools" unless="iajc.local">
+		<echo message="using version of iajc from aspectjtools.jar"/>
+	</target>
+		
+	<!-- init and clean... -->
+	
+	<target name="init">
+		<mkdir dir="${results.dir}"/>	
+		<mkdir dir="${results.dir}/${target.application.name}"/>	
+		<mkdir dir="${results.dir}/ltw-app"/>	
+		<mkdir dir="${results.dir}/ltw-app/META-INF"/>	
+	</target>
+	
+	<target name="clean" depends="init">
+		<delete dir="${results.dir}"/>
+	</target>
+
+	<!-- classpath to use for all targets -->
+	
+	<path id="iajc.class.path">
+		<path refid="build.class.path"/>
+		<pathelement location="${aspectj.lib.dir}/aspectjrt.jar"/>
+		<path refid="aspectj.compiler.path"/>
+	</path>			
+	
+			
+	<!-- source compilation (ajc style) with various profiling -->
+	
+	<target name="source.compile" depends="init,config-check">
+		<iajc destdir="${results.dir}/${target.application.name}/classes" 
+			  fork="true" maxmem="${ajc.maxmem}"
+			  debug="on"
+			  source="${source.level}" target="${target.level}"
+			  sourcerootsref="source.roots"
+			  time="true"
+			  forkclasspathref="iajc.class.path">
+			<jvmarg value="${hprof.args}"/>
+			<jvmarg value="${gc.args}"/>
+		</iajc>
+		
+		<tstamp>
+			<format property="ajc.runtime" pattern="yyyy-MM-dd'T'HHmmss"/>
+		</tstamp>
+		<property name="ajc.hprof.out" value="${results.dir}/${target.application.name}/ajc.java.hprof.${ajc.runtime}.txt"/>
+		<property name="ajc.gc.out" value="${results.dir}/${target.application.name}/ajc.gc.${ajc.runtime}.txt"/>
+		<move file="java.hprof.txt" tofile="${ajc.hprof.out}"/>		
+		<move file="gc.txt" tofile="${ajc.gc.out}"/>
+		<echo message="hprof data written to ${ajc.hprof.out}"/>
+		<echo message="gc data written to ${ajc.gc.out}"/>
+		<echo message="analyse with e.g. HATS and JTune"/>		
+	</target>
+
+	<target name="source.compile.gc" depends="init,config-check">
+		<tstamp>
+			<format property="ajc.starttime" pattern="HH:mm:ss"/>
+		</tstamp>
+		<echo message="ajc compile started at: ${ajc.starttime}"/>
+		
+		<iajc destdir="${results.dir}/${target.application.name}/classes" 
+			  fork="true" maxmem="${ajc.maxmem}"
+			  debug="on"
+			  source="${source.level}" target="${target.level}"
+			  sourcerootsref="source.roots"
+			  forkclasspathref="iajc.class.path"
+			  time="true">
+			<jvmarg value="${gc.args}"/>
+		</iajc>
+		
+		<tstamp>
+			<format property="ajc.endtime" pattern="HH:mm:ss"/>
+		</tstamp>
+		<echo message="ajc compile ended at: ${ajc.endtime} (started at ${ajc.starttime})"/>
+		<tstamp>
+			<format property="ajc.gc.runtime" pattern="yyyy-MM-dd'T'HHmmss"/>
+		</tstamp>
+		<property name="ajc.gc.only.out" value="${results.dir}/${target.application.name}/ajc.gc.${ajc.gc.runtime}.txt"/>
+		<move file="gc.txt" tofile="${ajc.gc.only.out}"/>
+		<echo message="gc data written to ${ajc.gc.only.out}"/>
+		<echo message="analyze with JTune"/>
+	</target>
+	
+	<!-- binary weaving with various profiling options -->
+	
+	<!-- build an aspect library to use for binary weaving, so that we 
+		 profile weaving only... -->
+	<target name="aspectlib" depends="init">
+		<iajc outjar="${results.dir}/aspectlib.jar"
+			  debug="on"
+			  source="${source.level}"
+			  target="${target.level}"
+			  sourceroots="${test.aspects.src.dir}"
+			  sourceRootCopyFilter="**/*.java,**/*.aj,**/CVS/*"
+			  classpathref="iajc.class.path">
+		</iajc>
+	</target>
+	
+	<target name="binary.weave" depends="init,aspectlib">
+		<iajc outjar="${results.dir}/woven.jar"
+			  debug="on"
+			  source="${source.level}"
+			  target="${target.level}"
+			  fork="true"
+			  forkclasspathref="iajc.class.path"
+			  maxmem="${ajc.maxmem}">
+			<inpath>
+				<pathelement location="${weave.injar}"/>
+			</inpath>
+			<aspectpath>
+				<pathelement location="${results.dir}/aspectlib.jar"/>
+			</aspectpath>
+			<jvmarg value="${hprof.args}"/>
+			<jvmarg value="${gc.args}"/>
+		</iajc>
+		
+		<tstamp>
+			<format property="bw.runtime" pattern="yyyy-MM-dd'T'HHmmss"/>
+		</tstamp>
+		<property name="bw.hprof.out" value="${results.dir}/${target.application.name}/weave.java.hprof.${bw.runtime}.txt"/>
+		<property name="bw.gc.out" value="${results.dir}/${target.application.name}/weave.gc.${bw.runtime}.txt"/>
+		<move file="java.hprof.txt" tofile="${bw.hprof.out}"/>		
+		<move file="gc.txt" tofile="${bw.gc.out}"/>
+		<echo message="hprof data written to ${bw.hprof.out}"/>
+		<echo message="gc data written to ${bw.gc.out}"/>
+		<echo message="analyse with e.g. HATS and JTune"/>		
+	</target>
+
+	<target name="binary.weave.gc" depends="init,aspectlib">
+		<tstamp>
+			<format property="bw.starttime" pattern="HH:mm:ss"/>
+		</tstamp>
+		<echo message="weave started at: ${bw.starttime}"/>
+		
+		<iajc outjar="${results.dir}/woven.jar"
+			  debug="on"
+			  source="${source.level}"
+			  target="${target.level}"
+			  fork="true"
+			  forkclasspathref="iajc.class.path"
+			  maxmem="${ajc.maxmem}">
+			<inpath>
+				<pathelement location="${weave.injar}"/>
+			</inpath>
+			<aspectpath>
+				<pathelement location="${results.dir}/aspectlib.jar"/>
+			</aspectpath>
+			<jvmarg value="${gc.args}"/>
+		</iajc>
+		
+		<tstamp>
+			<format property="bw.endtime" pattern="HH:mm:ss"/>
+		</tstamp>
+		<echo message="weave ended at: ${bw.endtime} (started at ${bw.starttime})"/>
+		<tstamp>
+			<format property="bw.gc.only.runtime" pattern="yyyy-MM-dd'T'HHmmss"/>
+		</tstamp>
+		<property name="bw.gc.only.out" value="${results.dir}/${target.application.name}/weave.gc.${bw.gc.only.runtime}.txt"/>
+		<move file="gc.txt" tofile="${bw.gc.only.out}"/>
+		<echo message="gc data written to ${bw.gc.only.out}"/>
+		<echo message="analyze with JTune"/>
+	</target>
+	
+	<!-- loadtime weaving with various profiling options -->
+	
+	<target name="ltw-app" depends="init"
+		description="builds an application that we can run with ltw. The app does
+		             Class.forName(..) on every type within the jar file passed to
+		             it as an argument, thus forcing all those types (and types they
+		             reference) to be woven)">
+
+		<javac srcdir="ltw-app/src" destdir="${results.dir}/ltw-app">			
+		</javac>
+		<copy file="${ltw.aop.xml}" todir="${results.dir}/ltw-app/META-INF"/>		
+	</target>
+	
+	<target name="check-using-jars" unless="ajtools.jar">
+		<echo message="WARNING: cannot run load-time weaving from workspace dirs"/>
+		<echo message="use.aspectjtools.jar setting will be ignored and the jar"/>
+		<echo message="${aspectj.lib.dir}/aspectjweaver.jar will be used for LTW instead"/>		
+	</target>
+	
+	<target name="loadtime.weave" depends="check-using-jars,aspectlib,ltw-app">
+		<java classname="org.aspectj.profiling.LTWApp"
+			  fork="true"
+			  maxmemory="${ajc.maxmem}">
+			<arg value="${weave.injar}"/>
+			<jvmarg value="${gc.args}"/>
+			<jvmarg value="${hprof.args}"/>
+			<jvmarg value="-javaagent:${aspectj.lib.dir}/aspectjweaver.jar"/>
+			<classpath>
+				<pathelement location="${results.dir}/ltw-app"/>
+				<pathelement location="${results.dir}/aspectlib.jar"/>
+				<pathelement location="${weave.injar}"/>
+				<path refid="iajc.class.path"/>
+			</classpath>
+		</java>
+		<tstamp>		
+			<format property="ltw.runtime" pattern="yyyy-MM-dd'T'HHmmss"/>
+		</tstamp>
+		<property name="ltw.hprof.out" value="${results.dir}/${target.application.name}/ltw.java.hprof.${ltw.runtime}.txt"/>
+		<property name="ltw.gc.out" value="${results.dir}/${target.application.name}/ltw.gc.${ltw.runtime}.txt"/>
+		<move file="java.hprof.txt" tofile="${ltw.hprof.out}"/>		
+		<move file="gc.txt" tofile="${ltw.gc.out}"/>
+		<echo message="hprof data written to ${ltw.hprof.out}"/>
+		<echo message="gc data written to ${ltw.gc.out}"/>
+		<echo message="analyse with e.g. HATS and JTune"/>		
+	</target>
+		
+	<target name="loadtime.weave.gc" depends="check-using-jars,aspectlib,ltw-app">
+		<tstamp>
+			<format property="ltw.starttime" pattern="HH:mm:ss"/>
+		</tstamp>
+		<echo message="ltw started at: ${ltw.starttime}"/>
+		
+		<java classname="org.aspectj.profiling.LTWApp"
+			  fork="true"
+			  maxmemory="${ajc.maxmem}">
+			<arg value="${weave.injar}"/>
+			<jvmarg value="${gc.args}"/>
+			<jvmarg value="-javaagent:${aspectj.lib.dir}/aspectjweaver.jar"/>
+			<classpath>
+				<pathelement location="${results.dir}/ltw-app"/>
+				<pathelement location="${results.dir}/aspectlib.jar"/>
+				<pathelement location="${weave.injar}"/>
+				<path refid="iajc.class.path"/>
+			</classpath>
+		</java>
+		
+		<tstamp>
+			<format property="ltw.endtime" pattern="HH:mm:ss"/>
+		</tstamp>
+		<echo message="ltw ended at: ${ltw.endtime} (started at ${ltw.starttime})"/>
+		<tstamp>
+			<format property="ltw.gc.only.runtime" pattern="yyyy-MM-dd'T'HHmmss"/>
+		</tstamp>
+		<property name="ltw.gc.only.out" value="${results.dir}/${target.application.name}/ltw.gc.${ltw.gc.only.runtime}.txt"/>
+		<move file="gc.txt" tofile="${ltw.gc.only.out}"/>
+		<echo message="gc data written to ${ltw.gc.only.out}"/>
+		<echo message="analyze with JTune"/>
+	</target>
+	
+	<!-- "AJDT-like" compiles with various profiling options -->
+	
+	<target name="prepare-project" depends="init">
+		<delete dir="${results.dir}/ajdt-workspace-root"/>
+		<mkdir dir="${results.dir}/ajdt-workspace-root"/>
+		<mkdir dir="${results.dir}/ajdt-workspace-root/${target.application.name}"/>
+		<mkdir dir="${results.dir}/ajdt-workspace-root/${target.application.name}/base"/>
+		<antcall target="copy.source.files">
+			<param name="todir" value="${results.dir}/ajdt-workspace-root/${target.application.name}/base"/>
+		</antcall>
+	</target>
+	
+	<target name="ajdt.compile" depends="prepare-project">
+
+		<java classname="org.aspectj.systemtest.incremental.tools.AjdeInteractionTestbedLauncher"
+			  fork="true"
+			  maxmemory="${ajc.maxmem}">
+			<arg value="${results.dir}/ajdt-workspace-root"/>
+			<arg value="${target.application.name}"/>
+			<jvmarg value="${gc.args}"/>
+			<jvmarg value="${hprof.args}"/>
+			<classpath>
+				<path refid="iajc.class.path"/>
+				<path refid="ajde.launch.path"/>
+				<pathelement location="${aspectj.lib.dir}/aspectjrt.jar"/>
+			</classpath>
+		</java>
+
+		<tstamp>		
+			<format property="ajdt.runtime" pattern="yyyy-MM-dd'T'HHmmss"/>
+		</tstamp>
+		<property name="ajdt.hprof.out" value="${results.dir}/${target.application.name}/ajdt.java.hprof.${ajdt.runtime}.txt"/>
+		<property name="ajdt.gc.out" value="${results.dir}/${target.application.name}/ajdt.gc.${ajdt.runtime}.txt"/>
+		<move file="java.hprof.txt" tofile="${ajdt.hprof.out}"/>		
+		<move file="gc.txt" tofile="${ajdt.gc.out}"/>
+		<echo message="hprof data written to ${ajdt.hprof.out}"/>
+		<echo message="gc data written to ${ajdt.gc.out}"/>
+		<echo message="analyse with e.g. HATS and JTune"/>		
+
+	</target>
+
+	<target name="ajdt.compile.gc" depends="prepare-project">
+		<tstamp>
+			<format property="ajdt.starttime" pattern="HH:mm:ss"/>
+		</tstamp>
+		<echo message="AJDT started at: ${ajdt.starttime}"/>
+		
+		<java classname="org.aspectj.systemtest.incremental.tools.AjdeInteractionTestbedLauncher"
+			  fork="true"
+			  maxmemory="${ajc.maxmem}">
+			<arg value="${results.dir}/ajdt-workspace-root"/>
+			<arg value="${target.application.name}"/>
+			<jvmarg value="${gc.args}"/>
+			<classpath>
+				<path refid="iajc.class.path"/>
+				<path refid="ajde.launch.path"/>
+				<pathelement location="${aspectj.lib.dir}/aspectjrt.jar"/>
+			</classpath>
+		</java>
+		
+		<tstamp>
+			<format property="ajdt.endtime" pattern="HH:mm:ss"/>
+		</tstamp>
+		<echo message="AJDT ended at: ${ajdt.endtime} (started at ${ajdt.starttime})"/>
+		<tstamp>
+			<format property="ajdt.gc.only.runtime" pattern="yyyy-MM-dd'T'HHmmss"/>
+		</tstamp>
+		<property name="ajdt.gc.only.out" value="${results.dir}/${target.application.name}/ajdt.gc.${ajdt.gc.only.runtime}.txt"/>
+		<move file="gc.txt" tofile="${ajdt.gc.only.out}"/>
+		<echo message="gc data written to ${ajdt.gc.only.out}"/>
+		<echo message="analyze with JTune"/>
+	</target>
+	
+</project>

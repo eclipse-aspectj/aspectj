@@ -45,7 +45,7 @@ import org.aspectj.testing.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 
-	private static boolean VERBOSE = false;
+	public static boolean VERBOSE = false;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -581,7 +581,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	 * Fill in the working directory with the project base files,
 	 * from the 'base' folder.
 	 */
-	private void initialiseProject(String p) {
+	protected void initialiseProject(String p) {
 		File projectSrc=new File(testdataSrcDir+File.separatorChar+p+File.separatorChar+"base");
 		File destination=new File(getWorkingDir(),p);
 		if (!destination.exists()) {destination.mkdir();}

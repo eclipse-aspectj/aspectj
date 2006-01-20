@@ -1,0 +1,5 @@
+<aspectj>
+	<aspects>
+		<aspect name="org.aspectj.profiling.WorkTheWeaver"/>
+	</aspects>	
+</aspectj>

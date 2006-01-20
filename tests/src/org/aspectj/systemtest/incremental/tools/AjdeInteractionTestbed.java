@@ -53,7 +53,7 @@ public class AjdeInteractionTestbed extends TestCase {
 
 	public  static boolean VERBOSE         = false; // do you want the gory details?
 	
-	public  final  static String   testdataSrcDir = "../tests/multiIncremental";
+	public    static String   testdataSrcDir = "../tests/multiIncremental";
 	protected static    File       sandboxDir;
 	
 	private static  final String   SANDBOX_NAME = "ajcSandbox";
@@ -365,6 +365,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 		
 		private String projectName = null;
+		private String classPath = "";
 		
 		public static void setActiveProject(String n) {
 			_instance.projectName = n;
@@ -383,6 +384,10 @@ public class AjdeInteractionTestbed extends TestCase {
 			}
 		}
 
+		public void setClasspath(String path) {
+			this.classPath = path;
+		}
+		
 		// interface impl below
 		
 		// DOESSOMETHING
@@ -429,7 +434,8 @@ public class AjdeInteractionTestbed extends TestCase {
 			String cp =  
 			  new File(testdataSrcDir) + File.pathSeparator +
     		  System.getProperty("sun.boot.class.path") + 
-    		  File.pathSeparator + "../runtime/bin" + 
+    		  File.pathSeparator + "../runtime/bin" +
+    		  File.pathSeparator + this.classPath + 
     		  File.pathSeparator +  System.getProperty("aspectjrt.path") +
     		  File.pathSeparator +  "../lib/junit/junit.jar" +
     		  File.pathSeparator+".."+File.separator+"lib" + File.separator+"test"+File.separator+"aspectjrt.jar";
