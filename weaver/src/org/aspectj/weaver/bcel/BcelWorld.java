@@ -28,13 +28,19 @@ import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.generic.ANEWARRAY;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
 import org.aspectj.apache.bcel.generic.GETSTATIC;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
 import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
 import org.aspectj.apache.bcel.generic.INVOKESTATIC;
+import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
+import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
+import org.aspectj.apache.bcel.generic.NEWARRAY;
+import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
@@ -380,6 +386,46 @@ public class BcelWorld extends World implements Repository {
 		}
         
     }
+	
+	
+	public Member makeJoinPointSignatureForArrayConstruction(LazyClassGen cg, InstructionHandle handle) {
+		Instruction i = handle.getInstruction();
+		ConstantPoolGen cpg = cg.getConstantPoolGen();
+		Member retval = null;
+
+		if (i instanceof ANEWARRAY) {
+			ANEWARRAY arrayInstruction = (ANEWARRAY)i;
+			ObjectType ot = arrayInstruction.getLoadClassType(cpg);
+			UnresolvedType ut = fromBcel(ot);
+			ut = UnresolvedType.makeArray(ut,1);
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[]{ResolvedType.INT});
+			
+		} else if (i instanceof MULTIANEWARRAY) {
+			MULTIANEWARRAY arrayInstruction = (MULTIANEWARRAY)i;
+			UnresolvedType ut = null;
+			short dimensions = arrayInstruction.getDimensions();
+			ObjectType ot = arrayInstruction.getLoadClassType(cpg);
+			if (ot!=null) {
+				ut = fromBcel(ot);
+				ut = UnresolvedType.makeArray(ut,dimensions);
+			} else {
+				Type t = arrayInstruction.getType(cpg);
+				ut = fromBcel(t);
+			}
+			ResolvedType[] parms = new ResolvedType[dimensions];
+			for (int ii=0;ii<dimensions;ii++) parms[ii] = ResolvedType.INT;
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", parms);
+			
+		} else if (i instanceof NEWARRAY) {
+			NEWARRAY arrayInstruction = (NEWARRAY)i;
+			Type ot = arrayInstruction.getType();
+			UnresolvedType ut = fromBcel(ot);
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[]{ResolvedType.INT});
+		} else {
+			throw new BCException("Cannot create array construction signature for this non-array instruction:"+i);
+		}
+		return retval;
+	}
 
     public Member makeJoinPointSignatureForMethodInvocation(LazyClassGen cg, InvokeInstruction ii) {
     	ConstantPoolGen cpg = cg.getConstantPoolGen();

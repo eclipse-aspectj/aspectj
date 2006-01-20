@@ -1683,6 +1683,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 		}
 		
+		// Handling members for the new array join point
+		if (world.isJoinpointArrayConstructionEnabled() && this.isArray()) {
+			if (member.getKind()==Member.CONSTRUCTOR) {
+				ResolvedMemberImpl ret =  
+					new ResolvedMemberImpl(Member.CONSTRUCTOR,this,Modifier.PUBLIC,
+						ResolvedType.VOID,"<init>",world.resolve(member.getParameterTypes()));
+				return ret;
+			}
+		}
+		
 //		if (this.getSuperclass() != ResolvedType.OBJECT && this.getSuperclass() != null) {
 //			return getSuperclass().lookupSyntheticMember(member);
 //		}

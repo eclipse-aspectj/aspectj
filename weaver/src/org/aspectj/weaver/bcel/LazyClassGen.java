@@ -1035,16 +1035,30 @@ public final class LazyClassGen {
     				Constants.INVOKEVIRTUAL));    	
     	} else if(sig.getKind().equals(Member.CONSTRUCTOR)) {
     		BcelWorld w = shadow.getWorld();
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));	
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getExceptions(w))));
-    		list.append(fact.createInvoke(factoryType.getClassName(),
-    				sig.getSignatureMakerName(),
-    				new ObjectType(sig.getSignatureType()),
-    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
-    				Constants.INVOKEVIRTUAL));    	
+    		if (w.isJoinpointArrayConstructionEnabled() && sig.getDeclaringType().isArray()) {
+    			// its the magical new jp
+    			list.append(new PUSH(getConstantPoolGen(),makeString(Modifier.PUBLIC)));
+	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
+	    		list.append(new PUSH(getConstantPoolGen(),""));//makeString("")));//sig.getParameterNames(w))));
+	    		list.append(new PUSH(getConstantPoolGen(),""));//makeString("")));//sig.getExceptions(w))));
+	    		list.append(fact.createInvoke(factoryType.getClassName(),
+	    				sig.getSignatureMakerName(),
+	    				new ObjectType(sig.getSignatureType()),
+	    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
+	    				Constants.INVOKEVIRTUAL));    	
+    		} else {
+	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));	
+	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
+	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
+	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getExceptions(w))));
+	    		list.append(fact.createInvoke(factoryType.getClassName(),
+	    				sig.getSignatureMakerName(),
+	    				new ObjectType(sig.getSignatureType()),
+	    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
+	    				Constants.INVOKEVIRTUAL));    	
+    		}
     	} else if(sig.getKind().equals(Member.FIELD)) {
     		BcelWorld w = shadow.getWorld();
     		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));

@@ -71,6 +71,8 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean xdevPinpoint = false;
 	public boolean showWeavingInformation = false;
 	
+	public String xOptionalJoinpoints = null;
+	
 	// If true - autoboxing behaves differently ...
 	public boolean behaveInJava5Way = false;
 	

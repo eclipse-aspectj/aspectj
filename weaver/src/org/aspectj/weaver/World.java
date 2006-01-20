@@ -86,6 +86,10 @@ public abstract class World implements Dump.INode {
     /** The level of the aspectjrt.jar the code we generate needs to run on */
     private String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
     
+    /** Flags for the new joinpoints that are 'optional' */
+    private boolean optionalJoinpoint_ArrayConstruction = false;  // Command line flag: "arrayconstruction"
+    
+    
     /** 
      * A list of RuntimeExceptions containing full stack information for every
      * type we couldn't find.
@@ -658,6 +662,16 @@ public abstract class World implements Dump.INode {
 	
 	public void setTargetAspectjRuntimeLevel(String s) {
 		targetAspectjRuntimeLevel = s;
+	}
+	
+	public void setOptionalJoinpoints(String jps) {
+		if (jps.indexOf("arrayconstruction")!=-1) {
+			optionalJoinpoint_ArrayConstruction = true;
+		}
+	}
+	
+	public boolean isJoinpointArrayConstructionEnabled() {
+		return optionalJoinpoint_ArrayConstruction;
 	}
 	
 	public String getTargetAspectjRuntimeLevel() {

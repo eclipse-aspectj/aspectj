@@ -379,6 +379,7 @@ public class AjBuildConfig {
         	setProceedOnError(true);
         }
        	setTargetAspectjRuntimeLevel(global.getTargetAspectjRuntimeLevel());
+       	setXJoinpoints(global.getXJoinpoints());
         if (!isXHasMemberEnabled() && global.isXHasMemberEnabled()) {
         	setXHasMemberSupport(true);
         }
@@ -468,6 +469,14 @@ public class AjBuildConfig {
 
 	public void setXserializableAspects(boolean xserializableAspects) {
 		options.xSerializableAspects = xserializableAspects;
+	}
+	
+	public void setXJoinpoints(String jps) {
+		options.xOptionalJoinpoints = jps;
+	}
+	
+	public String getXJoinpoints() {
+		return options.xOptionalJoinpoints;
 	}
 
 	public boolean isXnoInline() {

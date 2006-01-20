@@ -532,6 +532,8 @@ public class BuildArgParser extends Main {
 				buildConfig.setNoAtAspectJAnnotationProcessing(true);
         	} else if (arg.equals("-Xdev:Pinpoint")) { 
 				buildConfig.setXdevPinpointMode(true);
+        	} else if (arg.equals("-Xjoinpoints:arrayconstruction")) {
+        		buildConfig.setXJoinpoints("arrayconstruction");
         	} else if (arg.equals("-noweave") || arg.equals( "-XnoWeave")) {
 				buildConfig.setNoWeave(true);
 			} else if (arg.equals("-XserializableAspects")) {

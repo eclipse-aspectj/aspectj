@@ -28,15 +28,12 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * The changes to expose the new joinpoint are in:
  *   BcelClassWeaver.match(LazyMethodGen mg,InstructionHandle ih,BcelShadow enclosingShadow,List shadowAccumulator)
  *   
- * Determining the type of the array is easy.  Determining the size of the array is not easily statically, it is on the stack.
+ * Determining the type of the array is easy.  Determining the size of the array is not easy statically, it is on the stack.
  * 
  * 
- * to think about:
+ * What still needs testing:
+ * - structure model
  * 
- * args
- * thisJoinPoint - does anything need to manifest in it?
- * wildcards in declaringtype 'Integer*' matches 'Integer[]' ?
- * what is the signature of the joinpoint - are its modifiers simply 'public' ?
  */ 
 
 
@@ -62,6 +59,7 @@ public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {
   public void testUsingTargetAndAfterReturningAdvice() { runTest("using target and after returning");}
   public void testUsingItForReal() { runTest("using it for real");}
   public void testDifferentiatingArrayTypes() { runTest("differentiating array types");}
+  public void testStructureModel() { runTest("structure model");}
 
   //
   public static Test suite() {
