@@ -96,7 +96,17 @@ public class JoinPointSignatureIterator implements Iterator {
 	   	// Walk up hierarchy creating one member for each type up to and including the
     	// first defining type
     	ResolvedType originalDeclaringType = signaturesOfMember.getDeclaringType().resolve(world);
+    	
+    	if (world.isJoinpointArrayConstructionEnabled() && originalDeclaringType.isArray()) { // Aha, this must be the array constructor call join point - a 'special'...
+    		Member m = signaturesOfMember;
+    		ResolvedMember rm = new ResolvedMemberImpl(m.getKind(),m.getDeclaringType(),m.getModifiers(),m.getReturnType(),m.getName(),m.getParameterTypes());
+    		discoveredSignatures.add(new JoinPointSignature(rm,originalDeclaringType));
+    		couldBeFurtherAsYetUndiscoveredSignatures = false;
+    		return;
+    	}
+
     	firstDefiningMember = (ResolvedMemberImpl) signaturesOfMember.resolve(world);
+    	
     	if (firstDefiningMember == null) {
     		couldBeFurtherAsYetUndiscoveredSignatures = false;
     		return;

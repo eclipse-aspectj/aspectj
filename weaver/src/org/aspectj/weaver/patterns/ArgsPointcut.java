@@ -81,8 +81,13 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 	
 	private ResolvedType[] getArgumentsToMatchAgainst(Shadow shadow) {
+		
+		if (shadow.isShadowForArrayConstructionJoinpoint()) {
+		   return shadow.getArgumentTypesForArrayConstructionShadow();
+		}
+		
 		ResolvedType[] argumentsToMatchAgainst = shadow.getIWorld().resolve(shadow.getGenericArgTypes());
-
+		
 		// special treatment for adviceexecution which may have synthetic arguments we
 		// want to ignore.
 		if (shadow.getKind() == Shadow.AdviceExecution) {

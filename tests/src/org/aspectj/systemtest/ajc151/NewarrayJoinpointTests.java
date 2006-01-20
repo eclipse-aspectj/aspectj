@@ -60,6 +60,9 @@ public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {
   public void testUsingItForReal() { runTest("using it for real");}
   public void testDifferentiatingArrayTypes() { runTest("differentiating array types");}
   public void testStructureModel() { runTest("structure model");}
+  
+  
+  public void testOptionoff() { runTest("option deactivated - no match expected");}
 
   //
   public static Test suite() {

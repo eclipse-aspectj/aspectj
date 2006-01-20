@@ -19,6 +19,7 @@ public class AllTestsAspectJ151 {
 		TestSuite suite = new TestSuite("AspectJ 1.5.1 tests");
 		//$JUnit-BEGIN$
 		suite.addTest(Ajc151Tests.suite());
+		suite.addTest(NewarrayJoinpointTests.suite());
         //$JUnit-END$
 		return suite;
 	}

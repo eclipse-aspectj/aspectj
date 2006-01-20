@@ -269,7 +269,8 @@ public class BcelShadow extends Shadow {
 		// this up, every ShadowRange would have three instructionHandle points, the start of 
 		// the arg-setup code, the start of the running code, and the end of the running code.
 		if (getKind() == ConstructorCall) {
-			deleteNewAndDup();
+			if (!world.isJoinpointArrayConstructionEnabled() || !this.getSignature().getDeclaringType().isArray())
+			  deleteNewAndDup(); // no new/dup for new array construction
 			initializeArgVars();
 		} else if (getKind() == PreInitialization) { // pr74952
 			ShadowRange range = getRange();
@@ -377,12 +378,14 @@ public class BcelShadow extends Shadow {
 					Range.InsideBefore);
 			  }
 			  if (getKind() == ConstructorCall) {
-				range.insert((Instruction) InstructionFactory.createDup(1), Range.InsideBefore);
-				range.insert(
-					fact.createNew(
-						(ObjectType) BcelWorld.makeBcelType(
-							getSignature().getDeclaringType())),
-					Range.InsideBefore);
+				if (!world.isJoinpointArrayConstructionEnabled() || !this.getSignature().getDeclaringType().isArray()) {
+					range.insert((Instruction) InstructionFactory.createDup(1), Range.InsideBefore);
+					range.insert(
+						fact.createNew(
+							(ObjectType) BcelWorld.makeBcelType(
+								getSignature().getDeclaringType())),
+						Range.InsideBefore);
+			    }
 			  }
 			}
 		}
@@ -781,7 +784,51 @@ public class BcelShadow extends Shadow {
         retargetAllBranches(callHandle, r.getStart());                
         return s;
     }
+    
+    public static BcelShadow makeArrayConstructorCall(BcelWorld world,LazyMethodGen enclosingMethod,InstructionHandle arrayInstruction,BcelShadow enclosingShadow) {
+    	final InstructionList body = enclosingMethod.getBody();
+    	Member sig = world.makeJoinPointSignatureForArrayConstruction(enclosingMethod.getEnclosingClass(),arrayInstruction);
+    	BcelShadow s = 
+			new BcelShadow(
+				world,
+				ConstructorCall,
+				sig,
+                enclosingMethod, 
+                enclosingShadow);
+        ShadowRange r = new ShadowRange(body);
+        r.associateWithShadow(s);
+        r.associateWithTargets(
+        	Range.genStart(body, arrayInstruction),
+            Range.genEnd(body, arrayInstruction));
+        retargetAllBranches(arrayInstruction, r.getStart());                
+        return s;
+    }
 
+    // see pr77166
+//    public static BcelShadow makeArrayLoadCall(
+//            BcelWorld world,
+//            LazyMethodGen enclosingMethod,
+//            InstructionHandle arrayInstruction,
+//            BcelShadow enclosingShadow) 
+//    {
+//        final InstructionList body = enclosingMethod.getBody();
+//        Member sig = world.makeJoinPointSignatureForArrayLoad(enclosingMethod.getEnclosingClass(),arrayInstruction);
+//        BcelShadow s =
+//            new BcelShadow(
+//                world,
+//                MethodCall,
+//                sig,
+//                enclosingMethod,
+//                enclosingShadow);
+//        ShadowRange r = new ShadowRange(body);
+//        r.associateWithShadow(s);
+//        r.associateWithTargets(
+//        	Range.genStart(body, arrayInstruction),
+//            Range.genEnd(body, arrayInstruction));                
+//        retargetAllBranches(arrayInstruction, r.getStart());
+//        return s;
+//    }
+    
     public static BcelShadow makeMethodCall(
             BcelWorld world,
             LazyMethodGen enclosingMethod,

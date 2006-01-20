@@ -142,7 +142,29 @@ public abstract class Shadow {
         return getSignature().getParameterTypes();
     }
     
+    public boolean isShadowForArrayConstructionJoinpoint() {
+    	return (getKind()==ConstructorCall && signature.getDeclaringType().isArray());
+    }
+    
+    // will return the right length array of ints depending on how many dimensions the array has
+    public ResolvedType[] getArgumentTypesForArrayConstructionShadow() {
+    	String s = signature.getDeclaringType().getSignature();
+		int pos = s.indexOf("[");
+		int dims = 1;
+		while (pos<s.length()) {
+			pos++;
+			if (pos<s.length()) dims+=(s.charAt(pos)=='['?1:0);
+		}
+		if (dims==1) return new ResolvedType[]{ResolvedType.INT};
+		ResolvedType[] someInts = new ResolvedType[dims];
+		for (int i = 0; i < dims;i++) someInts[i] = ResolvedType.INT;
+		return someInts;
+    }
+    
     public UnresolvedType[] getGenericArgTypes() {
+    	if (isShadowForArrayConstructionJoinpoint()) {
+    		return getArgumentTypesForArrayConstructionShadow();
+    	}
     	if (getKind() == FieldSet) return new UnresolvedType[] { getResolvedSignature().getGenericReturnType() };
         return getResolvedSignature().getGenericParameterTypes();    	
     }

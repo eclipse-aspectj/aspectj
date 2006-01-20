@@ -29,6 +29,7 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.generic.ANEWARRAY;
 import org.aspectj.apache.bcel.generic.BranchInstruction;
 import org.aspectj.apache.bcel.generic.CPInstruction;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
@@ -44,8 +45,10 @@ import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.LocalVariableInstruction;
+import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.NEW;
+import org.aspectj.apache.bcel.generic.NEWARRAY;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.PUTFIELD;
 import org.aspectj.apache.bcel.generic.PUTSTATIC;
@@ -1881,7 +1884,40 @@ class BcelClassWeaver implements IClassWeaver {
 			} else {
 					matchInvokeInstruction(mg, ih, ii, enclosingShadow, shadowAccumulator);
 			}
-		} 
+		} else if (world.isJoinpointArrayConstructionEnabled() && 
+				   (i instanceof NEWARRAY || i instanceof ANEWARRAY || i instanceof MULTIANEWARRAY)) {
+			if (canMatch(Shadow.ConstructorCall)) {
+				boolean debug = false;
+				if (debug) System.err.println("Found new array instruction: "+i);
+				if (i instanceof ANEWARRAY) {
+					ANEWARRAY arrayInstruction = (ANEWARRAY)i;
+					ObjectType arrayType = arrayInstruction.getLoadClassType(clazz.getConstantPoolGen());
+					if (debug) System.err.println("Array type is "+arrayType);
+					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world,mg,ih,enclosingShadow);
+					match(ctorCallShadow,shadowAccumulator);
+				} else if (i instanceof NEWARRAY) {
+					NEWARRAY arrayInstruction = (NEWARRAY)i;
+					Type arrayType = arrayInstruction.getType();
+					if (debug) System.err.println("Array type is "+arrayType);
+					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world,mg,ih,enclosingShadow);
+					match(ctorCallShadow,shadowAccumulator);
+				} else if (i instanceof MULTIANEWARRAY) {
+					MULTIANEWARRAY arrayInstruction = (MULTIANEWARRAY)i;
+					ObjectType arrayType = arrayInstruction.getLoadClassType(clazz.getConstantPoolGen());
+					if (debug) System.err.println("Array type is "+arrayType);
+					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world,mg,ih,enclosingShadow);
+					match(ctorCallShadow,shadowAccumulator);
+				}
+			}
+// see pr77166 if you are thinking about implementing this
+//		} else if (i instanceof AALOAD ) {
+//			AALOAD arrayLoad = (AALOAD)i;
+//			Type arrayType = arrayLoad.getType(clazz.getConstantPoolGen());
+//			BcelShadow arrayLoadShadow = BcelShadow.makeArrayLoadCall(world,mg,ih,enclosingShadow);
+//			match(arrayLoadShadow,shadowAccumulator);
+//		} else if (i instanceof AASTORE) {
+//			// ... magic required
+		}
 		// performance optimization... we only actually care about ASTORE instructions, 
 		// since that's what every javac type thing ever uses to start a handler, but for
 		// now we'll do this for everybody.
