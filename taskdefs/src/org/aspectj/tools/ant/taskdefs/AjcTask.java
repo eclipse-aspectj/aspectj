@@ -400,7 +400,10 @@ public class AjcTask extends MatchingTask {
 
     /** true if -XincrementalFile (i.e, setTagFile)*/
     private boolean inIncrementalFileMode; 
-    
+
+    /** used when forking */
+    private CommandlineJava javaCmd = new CommandlineJava();
+
     // also note MatchingTask grabs source files...
     
     public AjcTask() {
@@ -443,6 +446,7 @@ public class AjcTask extends MatchingTask {
         verbose = false;
         xweaveDir = null;
         xdoneSignal = null;
+        javaCmd = new CommandlineJava();
     }
 
     protected void ignore(String ignored) {
@@ -633,6 +637,11 @@ public class AjcTask extends MatchingTask {
     
     public void setMaxmem(String maxMem) {
         this.maxMem = maxMem;
+    }
+    
+    /** support for nested &lt;jvmarg&gt; elements */
+    public Commandline.Argument createJvmarg() {
+    	return this.javaCmd.createVmArgument();
     }
 
 	// ----------------
@@ -1315,7 +1324,6 @@ public class AjcTask extends MatchingTask {
             this.logger.warning("message holder ignored when forking: "
                 + messageHolder.getClass().getName());
         }
-        CommandlineJava javaCmd = new CommandlineJava();
         javaCmd.setClassname(org.aspectj.tools.ajc.Main.class.getName());
         
         final Path vmClasspath = javaCmd.createClasspath(getProject());
