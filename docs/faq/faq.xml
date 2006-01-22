@@ -19,10 +19,10 @@
   <title>Frequently Asked Questions about AspectJ</title>
   <para>Copyright (c) 1997-2001 Xerox Corporation, 
        2002 Palo Alto Research Center, Incorporated,
-       2003-2005 Contributors. All rights reserved.
+       2003-2006 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated January 17, 2006
+  <para>Last updated January 22, 2006
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -277,7 +277,7 @@
           <para>How should I start using AspectJ?</para>
         </question>
         <answer>
-          <para>Many users adopt AspectJ incrementally, first using it
+          <para>Many users adopt AspectJ in stages, first using it
         to understand and validate their systems (relying on it only in
         development) and then using it to implement crosscutting concerns
         in production systems.  AspectJ has been designed to make each
@@ -379,7 +379,7 @@
            popular Java IDE's for viewing and navigating object-oriented
            structures. For many programmers this provides a deeper understanding
            of how aspects work to modularize their concerns and permits them
-           to incrementally extend their development practices without 
+           to extend some of their development practices without 
            having to abandon their existing tools.
           </para>
           <para>
@@ -1001,7 +1001,7 @@ aspect.
             <itemizedlist>
               <listitem>
                 <para>AspectJ is an <emphasis>addition</emphasis> to
-                  Java, and can be incrementally introduced into a project 
+                  Java, and can be introduced into a project 
                   in a way that limits risk. 
                   See <xref linkend="q:startUsingAJ"/> for
                   some suggestions on how to do this.
@@ -1919,7 +1919,40 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
           </itemizedlist>
         </answer>
       </qandaentry>
-    </qandadiv>
+      <qandaentry>
+        <question id="q:howIncrementalWorks"
+            xreflabel="Q: How does incremental mode work?">
+          <para>How does incremental mode work?
+          </para>
+        </question>
+        <answer>
+              <para>In incremental mode, ajc minimizes the files that need
+                  to be recompiled after another file has changed.  In Java,
+                  only the changed files need to be recompiled, but in AspectJ,
+                  other files might also need to be recompiled or re-woven.
+              </para>
+                <para> Depending on what is modified, we may need to re-weave
+                    code.  If you change a pointcut and save it, we currently have
+                    to check everywhere in case a new match is occurring or an old
+                    match is no longer correct.  However, if you simply change
+                    the body of an advice in an aspect, there is (usually) no need
+                    to reweave as the affected classes call the advice and the
+                    advice (by design) maintains its name in the recompiled
+                    aspect. </para>
+                <para> If you make a change to a class (as opposed to an aspect) and
+                    save it, we usually can get away with merely having to
+                    compile that class then weave the existing aspects with it -
+                    rather than doing a full recompile of the entire system.
+                    </para>
+                <para> There are a lot of possible optimizations to the
+                    algorithms we use, by performing more complete analysis of
+                    the change made to a file that will enable us to know more
+                    accurately whether we need to reweave and if we do then what
+                    we need to reweave - we just haven't gotten around to
+                    implementing them yet. </para>
+        </answer>
+      </qandaentry>
+            </qandadiv>
     <qandadiv id="devtools" xreflabel="Integrating AspectJ into your development environment">
       <title>Integrating AspectJ into your development environment</title>
       <qandaentry>
@@ -3153,7 +3186,7 @@ aspect A {
         <answer>
           <para>
             <literal>ajc</literal> 1.0 does not support incremental
-          compilation, but the 1.1 release does when passed the 
+          compilation, but since 1.1 <literal>ajc</literal> does when passed the 
           	<literal>-incremental</literal> option.  It may still recompile
           files that have not changed, if they could be affected by aspects
           in particular ways, but the files compiled should be fewer
@@ -3685,6 +3718,39 @@ aspect A {
 		  </para>
         </answer>
       </qandaentry>
+      <qandaentry>
+        <question id="q:runtimeMemory"
+            xreflabel="Q:What extra memory is required at runtime?">
+          <para>What extra memory is required at runtime?
+          </para>
+        </question>
+        <answer>
+          <para>When running classes produced by the AspectJ weaver or compiler,
+              there are no significant hidden uses of memory.  As would be expected,
+              each aspect is instantiated.  The per-object aspects (like
+              <literal>pertarget</literal> or <literal>perthis</literal>) also
+              use a map to link aspects and the associated object.  When using
+              <literal>cflow</literal>-related pointcuts, a <literal>ThreadLocal</literal>
+              is used to track control flow for each affected thread.
+		  </para>
+		  <para>Of course, the size and code in an aspect can require memory.
+              When referencing the static part of a join point (e.g., 
+              <literal>thisJoinPointStaticPart</literal>), only one object is
+              created.  However, if you reference the join point itself
+              (e.g., <literal>thisJoinPoint</literal>), then one 
+              <literal>JoinPoint</literal> object will be created for each 
+              join point running advice.
+		  </para>
+		  <para>Finally, when using load-time weaving, the weaver can require
+              memory in its own right.  Because the class loader never can 
+              know when it is done loading classes, the weaver can hold on
+              to the aspects required to weave for some time.  There are 
+              strategies for minimizing this (with different trade-off's),
+              so the time and memory required for load-time weaving will
+              vary as load-time weaving evolves.
+		  </para>
+        </answer>
+      </qandaentry>
     </qandadiv>
 
     <qandadiv id="aj11" xreflabel="AspectJ 1.1 and eclipse.org">
@@ -4120,7 +4186,7 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
               The AspectJ 5 release introduces much better support for
               load-time weaving, including declaring concrete aspects
               in XML files and integrating with Java 5 and BEA JRocket
-              JVM's.  See <xref linkend="aspectj5ltw"/>.
+              JVM's.  See <xref linkend="q:aspectj5ltw"/>.
           </para> 
           <para>Some have asked about only weaving particular classes 
           specified at run-time.
@@ -4962,6 +5028,8 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           <para>
           Entries changed recently:
             <itemizedlist>
+        <listitem><para><xref linkend="q:howIncrementalWorks"/></para></listitem>
+        <listitem><para><xref linkend="q:runtimeMemory"/></para></listitem>
         <listitem><para><xref linkend="q:compilerRequired"/></para></listitem>
         <listitem><para><xref linkend="q:aspectj5features"/></para></listitem>
         <listitem><para><xref linkend="q:codeversusannotationstyles"/></para></listitem>
@@ -5114,6 +5182,14 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
                 <row>
                   <entry align="left">Version</entry>
                   <entry align="left">Description</entry>
+                </row>
+                <row>
+                  <entry>AspectJ 1.5</entry>
+                  <entry>Upgrade to support Java 5 language and much better
+                      load-time weaving.
+                  	See <ulink url="README-150.html">README-150.html</ulink>
+                  	for more details.
+                  </entry>
                 </row>
                 <row>
                   <entry>AspectJ 1.1</entry>
