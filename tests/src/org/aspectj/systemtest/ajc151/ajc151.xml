@@ -53,5 +53,15 @@
           </stderr>
         </run>
     </ajc-test>
-
+    
+    <ajc-test dir="bugs151/pr124654" title="generic aspects and annotations">
+        <compile files="GenericAnnotation.java,TestSubAspect.java" options="-1.5"/>
+        <run class="TestSubAspect">
+          <stderr>
+            <line text="Reference pointcut advice. interface MyAnnotation"/>
+            <line text="Inlined pointcut advice. interface MyAnnotation"/>
+            <line text="run running"/>
+          </stderr>
+        </run>
+    </ajc-test>
 </suite>

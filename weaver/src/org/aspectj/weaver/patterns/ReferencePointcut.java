@@ -30,6 +30,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TypeVariable;
+import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -223,9 +224,17 @@ public class ReferencePointcut extends Pointcut {
 								"bad parameter to pointcut reference");
 				return;
 			}
-			if (!p.matchesSubtypes(parameterTypes[i]) && 
-				!p.getExactType().equals(UnresolvedType.OBJECT))
-			{
+			
+			boolean reportProblem = false;
+			if (parameterTypes[i].isTypeVariableReference() && p.getExactType().isTypeVariableReference()) {
+				UnresolvedType One = ((TypeVariableReference)parameterTypes[i]).getTypeVariable().getFirstBound();
+				UnresolvedType Two = ((TypeVariableReference)p.getExactType()).getTypeVariable().getFirstBound();
+				reportProblem = !One.resolve(scope.getWorld()).isAssignableFrom(Two.resolve(scope.getWorld()));
+			} else {
+				reportProblem = !p.matchesSubtypes(parameterTypes[i]) && 
+			    !p.getExactType().equals(UnresolvedType.OBJECT);
+			}
+			if (reportProblem) {
 				scope.message(IMessage.ERROR, p, "incompatible type, expected " +
 						parameterTypes[i].getName() + " found " + p +".  Check the type specified in your pointcut");
 				return;
