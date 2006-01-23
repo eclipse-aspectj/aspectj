@@ -386,7 +386,28 @@ public class ReferenceType extends ResolvedType {
 			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < delegateInterfaces.length; i++) {
-				parameterizedInterfaces[i] = delegateInterfaces[i].parameterizedWith(paramTypes);
+				// We may have to subset the set of parametertypes if the implemented interface
+				// needs less than this type does. (pr124803)
+				
+				// wonder if this could be done with getMemberParameterizationMap() like it is in getSuperclass()?? Something like:
+//				parameterizedInterfaces[i] = delegateInterfaces[i].parameterize(getMemberParameterizationMap()).resolve(world);
+				TypeVariable[] tvarsOnImplementedInterface = delegateInterfaces[i].getTypeVariables();
+				TypeVariable[] tvarsOnThisGenericType = this.genericType.getTypeVariables();
+				ResolvedType parameterizedInterface = null;
+				if (tvarsOnImplementedInterface!=null && tvarsOnThisGenericType!=null) {
+					if (tvarsOnImplementedInterface.length<tvarsOnThisGenericType.length) {
+						// implemented interface is something like 'Generic<T>' where thisGenericType is something like 'Generic<T,Y>'
+						// we need to subset the type parameters based on their name
+						UnresolvedType[] subsetParameterTypes = new ResolvedType[tvarsOnImplementedInterface.length];
+						for (int j = 0; j < subsetParameterTypes.length; j++) {
+							subsetParameterTypes[j] = findTypeParameterInList(tvarsOnImplementedInterface[j].getName(),tvarsOnThisGenericType,paramTypes);
+						}
+						parameterizedInterface = delegateInterfaces[i].parameterizedWith(subsetParameterTypes);
+					}
+				}
+				if (parameterizedInterface==null) parameterizedInterface = delegateInterfaces[i].parameterizedWith(paramTypes);
+				
+				parameterizedInterfaces[i] = parameterizedInterface;
 			}
 			return parameterizedInterfaces;
 		} else if (isRawType()){
@@ -410,6 +431,21 @@ public class ReferenceType extends ResolvedType {
 		return delegate.getDeclaredInterfaces();
 	}
 	
+	/**
+	 * Locates the named type variable in the list of those on this generic type and returns
+	 * the type parameter from the second list supplied.  Returns null if it can't be found
+	 */
+	private UnresolvedType findTypeParameterInList(String name, TypeVariable[] tvarsOnThisGenericType, UnresolvedType[] paramTypes) {
+		int position = -1;
+		for (int i = 0; i < tvarsOnThisGenericType.length; i++) {
+			TypeVariable tv = tvarsOnThisGenericType[i];
+			if (tv.getName().equals(name)) position = i;
+		}
+		if (position == -1 ) return null;
+		return paramTypes[position];
+	}
+	
+
 	/**
 	 * It is possible this type has multiple type variables but the interface we are about to parameterize
 	 * only uses a subset - this method determines the subset to use by looking at the type variable names

@@ -22,6 +22,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testMemberTypesInGenericTypes_pr122458_2()  { runTest("member types in generic types - 2");}
   public void testNPEOnDeclareAnnotation_pr123695() { runTest("Internal nullptr exception with complex declare annotation");}
   public void testHasMemberPackageProblem_pr124105() { runTest("hasMember problems with packages");}
+  public void testDifferentNumbersofTVars_pr124803() { runTest("generics and different numbers of type variables");}
+  public void testDifferentNumbersofTVars_pr124803_2() { runTest("generics and different numbers of type variables - classes");}
   
   /////////////////////////////////////////
   public static Test suite() {

@@ -22,5 +22,27 @@
         </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs151/pr124803" title="generics and different numbers of type variables">
+        <compile files="Test.java,TestAspect.java" options="-1.5 -showWeaveInfo">
+          <message kind="weave" text="Join point 'method-execution(void Test.foo(java.lang.Number))' in Type 'Test' (Test.java:12) advised by after advice from 'TestAspect' (TestAspect.java:4)"/>
+        </compile>
+        <run class="Test">
+          <stderr>
+             <line text="Aspects:execution(void Test.foo(Number))"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr124803" title="generics and different numbers of type variables - classes">
+        <compile files="Test2.java,TestAspect2.java" options="-1.5 -showWeaveInfo">
+          <message kind="weave" text="Join point 'method-execution(void Test2.foo(java.lang.Number))' in Type 'Test2' (Test2.java:12) advised by after advice from 'TestAspect2' (TestAspect2.java:4)"/>
+	      <message kind="weave" text="Join point 'method-execution(void Generic1.foo(java.lang.Number))' in Type 'Generic1' (Test2.java:2) advised by after advice from 'TestAspect2' (TestAspect2.java:4) [with runtime test]"/>
+        </compile>
+        <run class="Test2">
+          <stderr>
+             <line text="Aspects:execution(void Test2.foo(Number))"/>
+          </stderr>
+        </run>
+    </ajc-test>
 
 </suite>
