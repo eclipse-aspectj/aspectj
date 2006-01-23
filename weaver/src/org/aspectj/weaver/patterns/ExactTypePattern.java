@@ -110,7 +110,9 @@ public class ExactTypePattern extends TypePattern {
 	}
 	
 	private boolean matchesTypeVariable(TypeVariableReferenceType matchType) {
-		return false;
+	    // was this method previously coded to return false *on purpose* ??  pr124808
+		return this.type.equals(((TypeVariableReference)matchType).getTypeVariable().getFirstBound());
+		//return false;
 	}
 	
 	protected boolean matchesExactly(ResolvedType matchType, ResolvedType annotatedType) {

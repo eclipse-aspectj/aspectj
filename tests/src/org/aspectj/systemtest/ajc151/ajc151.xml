@@ -44,5 +44,14 @@
           </stderr>
         </run>
     </ajc-test>
+    
+    <ajc-test dir="bugs151/pr124808" title="parameterized collection fields matched via pointcut">
+        <compile files="Test.java,TestAspect.java" options="-1.5"/>
+        <run class="Test">
+          <stderr>
+             <line text="GO Aspects!  get(Set Test.ints)"/>
+          </stderr>
+        </run>
+    </ajc-test>
 
 </suite>

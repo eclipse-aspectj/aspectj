@@ -25,6 +25,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -152,9 +153,16 @@ public abstract class TypePattern extends PatternNode {
 			//System.out.println("    true");
 			return true;
 		}
+		// pr124808
+		Iterator typesIterator = null;
+		if (type.isTypeVariableReference()) {
+			typesIterator = ((TypeVariableReference)type).getTypeVariable().getFirstBound().resolve(type.getWorld()).getDirectSupertypes();
+		} else {
+			typesIterator = type.getDirectSupertypes();
+		}
 		
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
-		for (Iterator i = type.getDirectSupertypes(); i.hasNext(); ) {
+		for (Iterator i = typesIterator; i.hasNext(); ) {
 			ResolvedType superType = (ResolvedType)i.next();
 			// TODO asc generics, temporary whilst matching isnt aware..
 			//if (superType.isParameterizedType()) superType = superType.getRawType().resolve(superType.getWorld());

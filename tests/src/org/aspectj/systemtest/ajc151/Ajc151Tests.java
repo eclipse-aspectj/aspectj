@@ -24,6 +24,7 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testHasMemberPackageProblem_pr124105() { runTest("hasMember problems with packages");}
   public void testDifferentNumbersofTVars_pr124803() { runTest("generics and different numbers of type variables");}
   public void testDifferentNumbersofTVars_pr124803_2() { runTest("generics and different numbers of type variables - classes");}
+  public void testParameterizedCollectionFieldMatching_pr124808() { runTest("parameterized collection fields matched via pointcut");}
   
   /////////////////////////////////////////
   public static Test suite() {
