@@ -40,6 +40,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
@@ -169,7 +170,11 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		makePublic(receiverType);  //???
 		if (isPublic(binding)) return binding;
 		if (binding instanceof InterTypeMethodBinding) return binding;
-
+		
+		if (binding instanceof ParameterizedMethodBinding) { // pr124999
+			binding = binding.original();
+		}
+		
 		ResolvedMember m = null;
 		if (binding.isPrivate() &&  binding.declaringClass != inAspect.binding) {
 			// does this always mean that the aspect is an inner aspect of the bindings

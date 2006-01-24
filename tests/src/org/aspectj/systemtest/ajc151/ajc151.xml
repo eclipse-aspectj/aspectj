@@ -54,6 +54,11 @@
         </run>
     </ajc-test>
     
+    <ajc-test dir="bugs151" title="calling inherited generic method from around advice">
+        <compile files="pr124999.aj" options="-1.5"/>
+        <run class="pr124999"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs151/pr124654" title="generic aspects and annotations">
         <compile files="GenericAnnotation.java,TestSubAspect.java" options="-1.5"/>
         <run class="TestSubAspect">

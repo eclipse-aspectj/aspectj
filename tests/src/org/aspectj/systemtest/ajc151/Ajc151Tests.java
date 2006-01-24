@@ -26,6 +26,7 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testDifferentNumbersofTVars_pr124803_2() { runTest("generics and different numbers of type variables - classes");}
   public void testParameterizedCollectionFieldMatching_pr124808() { runTest("parameterized collection fields matched via pointcut");}
   public void testGenericAspectsAndAnnotations_pr124654() { runTest("generic aspects and annotations");}
+  public void testCallInheritedGenericMethod_pr124999() { runTest("calling inherited generic method from around advice");}
   
   /////////////////////////////////////////
   public static Test suite() {
