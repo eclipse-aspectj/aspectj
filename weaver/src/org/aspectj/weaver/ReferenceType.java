@@ -386,28 +386,14 @@ public class ReferenceType extends ResolvedType {
 			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < delegateInterfaces.length; i++) {
-				// We may have to subset the set of parametertypes if the implemented interface
-				// needs less than this type does. (pr124803)
+				// We may have to sub/super set the set of parametertypes if the implemented interface
+				// needs more or less than this type does. (pr124803/pr125080)
 				
-				// wonder if this could be done with getMemberParameterizationMap() like it is in getSuperclass()?? Something like:
-//				parameterizedInterfaces[i] = delegateInterfaces[i].parameterize(getMemberParameterizationMap()).resolve(world);
-				TypeVariable[] tvarsOnImplementedInterface = delegateInterfaces[i].getTypeVariables();
-				TypeVariable[] tvarsOnThisGenericType = this.genericType.getTypeVariables();
-				ResolvedType parameterizedInterface = null;
-				if (tvarsOnImplementedInterface!=null && tvarsOnThisGenericType!=null) {
-					if (tvarsOnImplementedInterface.length<tvarsOnThisGenericType.length) {
-						// implemented interface is something like 'Generic<T>' where thisGenericType is something like 'Generic<T,Y>'
-						// we need to subset the type parameters based on their name
-						UnresolvedType[] subsetParameterTypes = new ResolvedType[tvarsOnImplementedInterface.length];
-						for (int j = 0; j < subsetParameterTypes.length; j++) {
-							subsetParameterTypes[j] = findTypeParameterInList(tvarsOnImplementedInterface[j].getName(),tvarsOnThisGenericType,paramTypes);
-						}
-						parameterizedInterface = delegateInterfaces[i].parameterizedWith(subsetParameterTypes);
-					}
+				if (delegateInterfaces[i].isParameterizedType()) {
+					parameterizedInterfaces[i] = delegateInterfaces[i].parameterize(getMemberParameterizationMap()).resolve(world);
+				} else {
+					parameterizedInterfaces[i] = delegateInterfaces[i];
 				}
-				if (parameterizedInterface==null) parameterizedInterface = delegateInterfaces[i].parameterizedWith(paramTypes);
-				
-				parameterizedInterfaces[i] = parameterizedInterface;
 			}
 			return parameterizedInterfaces;
 		} else if (isRawType()){
