@@ -69,4 +69,13 @@
           </stderr>
         </run>
     </ajc-test>
+    
+    <ajc-test dir="bugs151" title="incorrectly referencing pointcuts">
+        <compile files="pr122452.aj" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151" title="incorrectly referencing pointcuts - 2">
+        <compile files="pr122452_2.aj" options="-1.5"/>
+    </ajc-test>
+
 </suite>
