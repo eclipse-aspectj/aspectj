@@ -28,8 +28,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testParameterizedCollectionFieldMatching_pr124808() { runTest("parameterized collection fields matched via pointcut");}
   public void testGenericAspectsAndAnnotations_pr124654() { runTest("generic aspects and annotations");}
   public void testCallInheritedGenericMethod_pr124999() { runTest("calling inherited generic method from around advice");}
-  //public void testIncorrectlyReferencingPointcuts_pr122452()    { runTest("incorrectly referencing pointcuts");}
-  //public void testIncorrectlyReferencingPointcuts_pr122452_2()    { runTest("incorrectly referencing pointcuts - 2");}
+  public void testIncorrectlyReferencingPointcuts_pr122452()    { runTest("incorrectly referencing pointcuts");}
+  public void testIncorrectlyReferencingPointcuts_pr122452_2()    { runTest("incorrectly referencing pointcuts - 2");}
   
   public void testMixingNumbersOfTypeParameters_pr125080()   { 
 	  runTest("mixing numbers of type parameters");    

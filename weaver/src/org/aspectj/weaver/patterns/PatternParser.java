@@ -546,8 +546,13 @@ public class PatternParser {
     		onType = null;
     	}
 		
+		String simpleName = name.maybeGetSimpleName();
+		if (simpleName ==  null) {
+			throw new ParserException("(",tokenSource.peek(-1));
+		}
+
 		TypePatternList arguments = parseArgumentsPattern();
-		return new ReferencePointcut(onType, name.maybeGetSimpleName(), arguments);
+		return new ReferencePointcut(onType, simpleName, arguments);
 	}
 	
 	private Pointcut parseDesignatorPointcut(PointcutDesignatorHandler pcdHandler) {
@@ -1325,7 +1330,11 @@ public class PatternParser {
 		if (shouldEnd && t!=IToken.EOF) {
 			throw new ParserException("<string>;",token);
 		}
-
+		// bug 125027: since we've eaten the ";" we need to set the index
+		// to be one less otherwise the end position isn't set correctly.
+		int currentIndex = tokenSource.getIndex();
+		tokenSource.setIndex(currentIndex-1);
+		
 		return result.toString();
 		
 	}

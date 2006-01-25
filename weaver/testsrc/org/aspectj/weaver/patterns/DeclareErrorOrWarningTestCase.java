@@ -44,6 +44,13 @@ public class DeclareErrorOrWarningTestCase extends TestCase {
 			
 	}
 
+	public void testStartAndEndPositionSet() throws IOException {
+		DeclareErrorOrWarning d =
+			parse("declare error: call(void foo()): \"that is bad\";");
+		assertEquals("start position should be 0", 0, d.getStart());
+		assertEquals("end position should be 46", 46, d.getEnd());
+	}
+	
 	private DeclareErrorOrWarning parse(String string) {
 		return (DeclareErrorOrWarning)new PatternParser(string).parseDeclare();
 	}
