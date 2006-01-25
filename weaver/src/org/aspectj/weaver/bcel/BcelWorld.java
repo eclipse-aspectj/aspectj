@@ -306,7 +306,7 @@ public class BcelWorld extends World implements Repository {
 		ReferenceType nameTypeX = (ReferenceType)fromTheMap;
         
         if (nameTypeX == null) {        	
-		    if (jc.isGeneric()) {
+		    if (jc.isGeneric() && isInJava5Mode()) {
 		    	nameTypeX =  ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()),this);
 		        ret = makeBcelObjectType(nameTypeX, jc, true);
 		    	ReferenceType genericRefType = new ReferenceType(
