@@ -14,6 +14,7 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -30,6 +31,19 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   //public void testIncorrectlyReferencingPointcuts_pr122452()    { runTest("incorrectly referencing pointcuts");}
   //public void testIncorrectlyReferencingPointcuts_pr122452_2()    { runTest("incorrectly referencing pointcuts - 2");}
   
+  public void testMixingNumbersOfTypeParameters_pr125080()   { 
+	  runTest("mixing numbers of type parameters");    
+	  GenericsTests.verifyClassSignature(ajc,"AspectInterface","<T:Ljava/lang/Object;S:Ljava/lang/Object;>Ljava/lang/Object;");
+	  GenericsTests.verifyClassSignature(ajc,"AbstractAspect","<T:Ljava/lang/Object;>Ljava/lang/Object;LAspectInterface<TT;Ljava/lang/Integer;>;");
+	  GenericsTests.verifyClassSignature(ajc,"ConcreteAspect","LAbstractAspect<Ljava/lang/String;>;");
+  }
+  
+  public void testMixingNumbersOfTypeParameters_pr125080_2() { 
+	  runTest("mixing numbers of type parameters - 2"); 
+	  GenericsTests.verifyClassSignature(ajc,"AspectInterface","<T:Ljava/lang/Object;S:Ljava/lang/Number;>Ljava/lang/Object;");
+	  GenericsTests.verifyClassSignature(ajc,"AbstractAspect","<T:Ljava/lang/Object;>Ljava/lang/Object;LAspectInterface<TT;Ljava/lang/Integer;>;");
+	  GenericsTests.verifyClassSignature(ajc,"ConcreteAspect","LAbstractAspect<LStudent;>;");
+  }
   
   /////////////////////////////////////////
   public static Test suite() {

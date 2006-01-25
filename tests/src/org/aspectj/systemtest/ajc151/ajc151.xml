@@ -77,5 +77,15 @@
     <ajc-test dir="bugs151" title="incorrectly referencing pointcuts - 2">
         <compile files="pr122452_2.aj" options="-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs151/pr125080" title="mixing numbers of type parameters">
+        <compile files="Test.java" options="-1.5"/>
+        <run class="ConcreteAspect"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr125080" title="mixing numbers of type parameters - 2">
+        <compile files="Test2.java" options="-1.5"/>
+        <run class="ConcreteAspect"/>
+    </ajc-test>
 
 </suite>
