@@ -249,4 +249,11 @@ public class AjASTMatcher extends ASTMatcher {
 				&& safeSubtreeMatch(node.getBody(), o.getBody()));
 	}
 	
+	public boolean match(DefaultTypePattern node, Object other) {
+		return (other instanceof DefaultTypePattern);
+	}
+	
+	public boolean match(SignaturePattern node, Object other) {
+		return (other instanceof SignaturePattern);
+	}
 }

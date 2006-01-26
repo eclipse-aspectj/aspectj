@@ -118,7 +118,76 @@ public abstract class AjASTVisitor extends ASTVisitor {
 		// ajh02: method added
 		// default implementation: do nothing
 	}
-		public boolean visit(PointcutDeclaration node) {
+	
+	public boolean visit(DeclareAnnotationDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareAnnotationDeclaration node) {
+		// default implementation: do nothing
+	}
+	
+	public boolean visit(DeclareAtTypeDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareAtTypeDeclaration node) {
+		// default implementation: do nothing
+	}
+	
+	public boolean visit(DeclareAtConstructorDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareAtConstructorDeclaration node) {
+		// default implementation: do nothing
+	}
+	public boolean visit(DeclareAtMethodDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareAtMethodDeclaration node) {
+		// default implementation: do nothing
+	}
+	public boolean visit(DeclareAtFieldDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareAtFieldDeclaration node) {
+		// default implementation: do nothing
+	}
+	
+	public boolean visit(DeclareErrorDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareErrorDeclaration node) {
+		// default implementation: do nothing
+	}
+	
+	public boolean visit(DeclareParentsDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareParentsDeclaration node) {
+		// default implementation: do nothing
+	}
+	
+	public boolean visit(DeclarePrecedenceDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclarePrecedenceDeclaration node) {
+		// default implementation: do nothing
+	}
+	
+	public boolean visit(DeclareSoftDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareSoftDeclaration node) {
+		// default implementation: do nothing
+	}
+	
+	public boolean visit(DeclareWarningDeclaration node) {
+		return true;
+	}
+	public void endVisit(DeclareWarningDeclaration node) {
+		// default implementation: do nothing
+	}
+	
+	public boolean visit(PointcutDeclaration node) {
 		return true;
 	}
 	
@@ -162,5 +231,17 @@ public abstract class AjASTVisitor extends ASTVisitor {
 	public void endVisit(AdviceDeclaration node) {
 		// default implementation: do nothing
 	}
-
+	
+	public boolean visit(DefaultTypePattern node) {
+		return true;
+	}
+	
+	public void endVisit(DefaultTypePattern node) {
+	}
+	public boolean visit(SignaturePattern node) {
+		return true;
+	}
+	
+	public void endVisit(SignaturePattern node) {
+	}
 }

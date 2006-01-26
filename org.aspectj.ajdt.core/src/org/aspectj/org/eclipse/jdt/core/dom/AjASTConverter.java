@@ -14,6 +14,7 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
@@ -50,6 +51,15 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Scanner;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
+import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.DeclarePrecedence;
+import org.aspectj.weaver.patterns.DeclareSoft;
+import org.aspectj.weaver.patterns.PatternNode;
+import org.aspectj.weaver.patterns.SignaturePattern;
+import org.aspectj.weaver.patterns.TypePattern;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
@@ -377,11 +387,107 @@ public class AjASTConverter extends ASTConverter {
 	
 	
 	public ASTNode convert(DeclareDeclaration declareDecl) {
-		// ajh02: method added
-		checkCanceled(); // ajh02: is this line needed?
-		final org.aspectj.org.eclipse.jdt.core.dom.DeclareDeclaration declareDeclaration = new org.aspectj.org.eclipse.jdt.core.dom.DeclareDeclaration(this.ast,declareDecl.declareDecl);
+		checkCanceled(); // is this line needed?
+		org.aspectj.org.eclipse.jdt.core.dom.DeclareDeclaration declareDeclaration = null;
+		Declare declare = declareDecl.declareDecl;
+		if (declare instanceof DeclareAnnotation) {
+			DeclareAnnotation da = (DeclareAnnotation)declare;
+			if (da.getKind().equals(DeclareAnnotation.AT_TYPE)) {
+				declareDeclaration = new DeclareAtTypeDeclaration(this.ast);
+				((DeclareAtTypeDeclaration)declareDeclaration).setPatternNode(convert(da.getTypePattern()));
+				SimpleName annotationName = new SimpleName(this.ast);
+				annotationName.internalSetIdentifier(new String(da.getAnnotationString()));	
+				((DeclareAtTypeDeclaration)declareDeclaration).setAnnotationName(annotationName);
+			} else if (da.getKind().equals(DeclareAnnotation.AT_CONSTRUCTOR)) {
+				declareDeclaration = new DeclareAtConstructorDeclaration(this.ast);
+				((DeclareAtConstructorDeclaration)declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
+				SimpleName annotationName = new SimpleName(this.ast);
+				annotationName.internalSetIdentifier(new String(da.getAnnotationString()));	
+				((DeclareAtConstructorDeclaration)declareDeclaration).setAnnotationName(annotationName);
+			} else if (da.getKind().equals(DeclareAnnotation.AT_FIELD)) {
+				declareDeclaration = new DeclareAtFieldDeclaration(this.ast);
+				((DeclareAtFieldDeclaration)declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
+				SimpleName annotationName = new SimpleName(this.ast);
+				annotationName.internalSetIdentifier(new String(da.getAnnotationString()));	
+				((DeclareAtFieldDeclaration)declareDeclaration).setAnnotationName(annotationName);
+			} else if (da.getKind().equals(DeclareAnnotation.AT_METHOD)) {
+				declareDeclaration = new DeclareAtMethodDeclaration(this.ast);
+				((DeclareAtMethodDeclaration)declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
+				SimpleName annotationName = new SimpleName(this.ast);
+				annotationName.internalSetIdentifier(new String(da.getAnnotationString()));	
+				((DeclareAtMethodDeclaration)declareDeclaration).setAnnotationName(annotationName);
+			}
+		} else if (declare instanceof DeclareErrorOrWarning){
+			DeclareErrorOrWarning deow = (DeclareErrorOrWarning)declare;
+			if (deow.isError()) {
+				declareDeclaration = new DeclareErrorDeclaration(this.ast);
+				((DeclareErrorDeclaration)declareDeclaration).setPointcut(convert(deow.getPointcut()));
+				StringLiteral message = new StringLiteral(this.ast);
+				message.setEscapedValue(updateString(deow.getMessage()));
+				((DeclareErrorDeclaration)declareDeclaration).setMessage(message);
+			} else {
+				declareDeclaration = new DeclareWarningDeclaration(this.ast);
+				((DeclareWarningDeclaration)declareDeclaration).setPointcut(convert(deow.getPointcut()));
+				StringLiteral message = new StringLiteral(this.ast);
+				message.setEscapedValue(updateString(deow.getMessage()));
+				((DeclareWarningDeclaration)declareDeclaration).setMessage(message);
+			}
+		} else if (declare instanceof DeclareParents) {
+			DeclareParents dp = (DeclareParents)declare;
+			declareDeclaration = new org.aspectj.org.eclipse.jdt.core.dom.DeclareParentsDeclaration(this.ast,dp.isExtends());
+			org.aspectj.org.eclipse.jdt.core.dom.PatternNode pNode = convert(dp.getChild());
+			if (pNode instanceof org.aspectj.org.eclipse.jdt.core.dom.TypePattern) {
+				((DeclareParentsDeclaration)declareDeclaration).setChildTypePattern((org.aspectj.org.eclipse.jdt.core.dom.TypePattern)pNode);
+			}
+			TypePattern[] weaverTypePatterns = dp.getParents().getTypePatterns();
+			List typePatterns = ((DeclareParentsDeclaration)declareDeclaration).parentTypePatterns();
+			for (int i = 0; i < weaverTypePatterns.length; i++) {
+				typePatterns.add(convert(weaverTypePatterns[i]));
+			}
+		} else if (declare instanceof DeclarePrecedence) {
+			declareDeclaration = new org.aspectj.org.eclipse.jdt.core.dom.DeclarePrecedenceDeclaration(this.ast);
+			DeclarePrecedence dp = (DeclarePrecedence)declare;
+			TypePattern[] weaverTypePatterns = dp.getPatterns().getTypePatterns();
+			List typePatterns = ((DeclarePrecedenceDeclaration)declareDeclaration).typePatterns();
+			for (int i = 0; i < weaverTypePatterns.length; i++) {
+				typePatterns.add(convert(weaverTypePatterns[i]));
+			}
+		} else if (declare instanceof DeclareSoft) {
+			declareDeclaration = new DeclareSoftDeclaration(this.ast);
+			DeclareSoft ds = (DeclareSoft)declare;
+			((DeclareSoftDeclaration)declareDeclaration).setPointcut(convert(ds.getPointcut()));
+			org.aspectj.org.eclipse.jdt.core.dom.PatternNode pNode = convert(ds.getException());
+			if (pNode instanceof org.aspectj.org.eclipse.jdt.core.dom.TypePattern) {
+				((DeclareSoftDeclaration)declareDeclaration).setTypePattern((org.aspectj.org.eclipse.jdt.core.dom.TypePattern)pNode);
+			}		
+		}
+		declareDeclaration.setSourceRange(declareDecl.declarationSourceStart,
+				declareDecl.declarationSourceEnd - declareDecl.declarationSourceStart + 1);
 		return declareDeclaration;
 	}
+
+	private String updateString(String message) {
+        StringBuffer sb = new StringBuffer(message);
+        int nextQuote = sb.toString().indexOf("\"");
+        while (nextQuote != -1) {
+			sb.insert(nextQuote,"\\");
+			nextQuote = sb.toString().indexOf("\"");
+		}
+        int nextNewLine = sb.toString().indexOf("\n");
+        while (nextNewLine != -1) {
+			sb.insert(nextNewLine,"\\");
+			nextNewLine = sb.toString().indexOf("\n");
+		}
+        if(!sb.toString().startsWith("\"")) {
+        	sb.insert(0,"\"");
+        }
+        if(!sb.toString().endsWith("\"")) {
+        	sb.insert(sb.toString().length(),"\"");
+        }
+        return sb.toString();
+	}
+	
+	
 	public ASTNode convert(InterTypeFieldDeclaration fieldDecl) {
 		// ajh02: method added
 		checkCanceled(); // ajh02: is this line needed?
@@ -478,6 +584,23 @@ public class AjASTConverter extends ASTConverter {
 		}
 		pointcutDesi.setSourceRange(pointcut.getStart(),(pointcut.getEnd() - pointcut.getStart() + 1));
 		return pointcutDesi;
+	}
+	
+	public org.aspectj.org.eclipse.jdt.core.dom.PatternNode convert(PatternNode patternNode){
+		// this is a stub to be used until dom classes have been created for 
+		// the different weaver TypePattern's
+		org.aspectj.org.eclipse.jdt.core.dom.PatternNode pNode = null;
+		if (patternNode instanceof TypePattern) {
+			TypePattern typePat = (TypePattern)patternNode;
+			pNode = new DefaultTypePattern(this.ast,typePat.toString());
+			pNode.setSourceRange(typePat.getStart(),(typePat.getEnd() - typePat.getStart() + 1));
+		} else if (patternNode instanceof SignaturePattern) {
+			SignaturePattern sigPat = (SignaturePattern)patternNode;
+			pNode = new org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern(this.ast,sigPat.toString());
+			pNode.setSourceRange(sigPat.getStart(),(sigPat.getEnd() - sigPat.getStart() + 1));
+		}
+		return pNode;
+		
 	}
 	
 	public ASTNode convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration annotationTypeMemberDeclaration) {
