@@ -96,8 +96,12 @@ public class AndPointcut extends PointcutDesignator {
 	ASTNode clone0(AST target) {
 		AndPointcut result = new AndPointcut(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setRight((PointcutDesignator)getRight().clone(target));
-		result.setLeft((PointcutDesignator)getLeft().clone(target));
+		if (getRight() != null) {
+			result.setRight((PointcutDesignator)getRight().clone(target));
+		}
+		if (getLeft() != null) {
+			result.setLeft((PointcutDesignator)getLeft().clone(target));
+		}
 		return result;
 	}
 	final boolean subtreeMatch0(ASTMatcher matcher, Object other) {
