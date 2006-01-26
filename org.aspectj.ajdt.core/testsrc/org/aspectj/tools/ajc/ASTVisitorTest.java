@@ -28,7 +28,16 @@ import org.aspectj.org.eclipse.jdt.core.dom.Block;
 import org.aspectj.org.eclipse.jdt.core.dom.BlockComment;
 import org.aspectj.org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.CompilationUnit;
-import org.aspectj.org.eclipse.jdt.core.dom.DeclareDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtConstructorDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtFieldDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtTypeDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareErrorDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareParentsDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclarePrecedenceDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareSoftDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareWarningDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DefaultTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.aspectj.org.eclipse.jdt.core.dom.FieldAccess;
 import org.aspectj.org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -42,16 +51,13 @@ import org.aspectj.org.eclipse.jdt.core.dom.NumberLiteral;
 import org.aspectj.org.eclipse.jdt.core.dom.PointcutDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.PrimitiveType;
 import org.aspectj.org.eclipse.jdt.core.dom.QualifiedName;
+import org.aspectj.org.eclipse.jdt.core.dom.ReferencePointcut;
+import org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.SimpleName;
 import org.aspectj.org.eclipse.jdt.core.dom.StringLiteral;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclarationStatement;
-import org.aspectj.weaver.patterns.DeclareAnnotation;
-import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
-import org.aspectj.weaver.patterns.DeclareParents;
-import org.aspectj.weaver.patterns.DeclarePrecedence;
-import org.aspectj.weaver.patterns.DeclareSoft;
 
 public class ASTVisitorTest extends TestCase {
 	
@@ -86,37 +92,37 @@ public class ASTVisitorTest extends TestCase {
 	}
 	public void testAroundAdvice() {
 		check("aspect A {pointcut a();void around():a(){}}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(aroundAdvice(primitiveType)(simpleName)(block))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(aroundAdvice(primitiveType)(referencePointcut(simpleName))(block))))");
 	}
 	public void testAroundAdviceWithProceed() {
 		// ajh02: currently proceed calls are just normal method calls
 		// could add a special AST node for them if anyone would like
 		check("aspect A {pointcut a();void around():a(){proceed();}}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(aroundAdvice(primitiveType)(simpleName)(block(expressionStatement(methodInvocation(simpleName)))))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(aroundAdvice(primitiveType)(referencePointcut(simpleName))(block(expressionStatement(methodInvocation(simpleName)))))))");
 	}
 	public void testBeforeAdvice() {
 		check("aspect A {pointcut a();before():a(){}}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(beforeAdvice(simpleName)(block))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(beforeAdvice(referencePointcut(simpleName))(block))))");
 	}
 	public void testAfterAdvice() {
 		check("aspect A {pointcut a();after():a(){}}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterAdvice(simpleName)(block))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterAdvice(referencePointcut(simpleName))(block))))");
 	}
 	public void testAfterThrowingAdviceWithNoArgument() {
 		check("aspect A {pointcut a();after()throwing:a(){} }",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterThrowingAdvice(simpleName)(block))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterThrowingAdvice(referencePointcut(simpleName))(block))))");
 	}
 	public void testAfterThrowingAdvice() {
 		check("aspect A {pointcut a();after()throwing(Exception e):a(){} }",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterThrowingAdvice(simpleName)(simpleName)(simpleName)(block))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterThrowingAdvice(referencePointcut(simpleName))(simpleName)(simpleName)(block))))");
 	}
 	public void testAfterReturningAdviceWithNoArgument() {
 		check("aspect A {pointcut a();after()returning:a(){}}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterReturningAdvice(simpleName)(block))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterReturningAdvice(referencePointcut(simpleName))(block))))");
 	}
 	public void testAfterReturningAdvice() {
 		check("aspect A {pointcut a();after()returning(Object o):a(){}}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterReturningAdvice(simpleName)(simpleName)(simpleName)(block))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(afterReturningAdvice(referencePointcut(simpleName))(simpleName)(simpleName)(block))))");
 	}
 	public void testMethodWithStatements() {
 		check("class A {void a(){System.out.println(\"a\");}}",
@@ -124,11 +130,11 @@ public class ASTVisitorTest extends TestCase {
 	}
 	public void testAdviceWithStatements() {
 		check("aspect A {pointcut a();before():a(){System.out.println(\"a\");}}",
-		"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(beforeAdvice(simpleName)(block(expressionStatement(methodInvocation(qualifiedName(simpleName)(simpleName))(simpleName)(stringLiteral)))))))");
+		"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(beforeAdvice(referencePointcut(simpleName))(block(expressionStatement(methodInvocation(qualifiedName(simpleName)(simpleName))(simpleName)(stringLiteral)))))))");
 	}
 	public void testPointcutInAPointcut() {
 		check("aspect A {pointcut a();pointcut b();pointcut c(): a() && b();}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(pointcut(simpleName))(pointcut(simpleName)(simpleName)(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(pointcut(simpleName))(pointcut(simpleName)(referencePointcut(simpleName))(referencePointcut(simpleName)))))");
 	}
 	
 	public void testCallPointcut(){
@@ -225,40 +231,55 @@ public class ASTVisitorTest extends TestCase {
 	
 	public void testDeclareParents(){
 		check("class A{}class B{}aspect C {declare parents : A extends B;}",
-				"(compilationUnit(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents)))");
+				"(compilationUnit(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents(defaultTypePattern)(defaultTypePattern))))");
 	}
 	public void testDeclareWarning(){
 		check("aspect A {pointcut a();declare warning: a(): \"warning\";}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareWarning)))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareWarning(referencePointcut(simpleName))(stringLiteral))))");
 	}
 	public void testDeclareError(){
 		check("aspect A {pointcut a();declare error: a(): \"error\";}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareError)))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareError(referencePointcut(simpleName))(stringLiteral))))");
 	}
 	public void testDeclareSoft(){
 		check("aspect A {pointcut a();declare soft: Exception+: a();}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareSoft)))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareSoft(referencePointcut(simpleName))(defaultTypePattern))))");
 	}
 	public void testDeclarePrecedence(){
 		check("aspect A{}aspect B{declare precedence: B,A;}",
-				"(compilationUnit(aspect(simpleName))(aspect(simpleName)(declarePrecedence)))");
+				"(compilationUnit(aspect(simpleName))(aspect(simpleName)(declarePrecedence(defaultTypePattern)(defaultTypePattern))))");
 	}
-	
+	public void testDeclareAnnotationType(){
+		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @type: C : @MyAnnotation;}",
+				"(compilationUnit(simpleName)(class(simpleName))(aspect(simpleName)(declareAtType(defaultTypePattern)(simpleName))))");
+	}
+	public void testDeclareAnnotationMethod(){
+		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @method:public * C.*(..) : @MyAnnotation;}",
+				"(compilationUnit(simpleName)(class(simpleName))(aspect(simpleName)(declareAtMethod(signaturePattern)(simpleName))))");
+	}
+	public void testDeclareAnnotationField(){
+		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @field: * C+.* : @MyAnnotation;}",
+				"(compilationUnit(simpleName)(class(simpleName))(aspect(simpleName)(declareAtField(signaturePattern)(simpleName))))");
+	}
+	public void testDeclareAnnotationConstructor(){
+		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @constructor: C+.new(..) : @MyAnnotation;}",
+				"(compilationUnit(simpleName)(class(simpleName))(aspect(simpleName)(declareAtConstructor(signaturePattern)(simpleName))))");
+	}
 	public void testPerThis(){
 		check("aspect A perthis(a()) {pointcut a();}",
-				"(compilationUnit(aspect(simpleName)(simpleName)(pointcut(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(referencePointcut(simpleName))(pointcut(simpleName))))");
 	}
 	public void testPerTarget(){
 		check("aspect A pertarget(a()) {pointcut a();}",
-				"(compilationUnit(aspect(simpleName)(simpleName)(pointcut(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(referencePointcut(simpleName))(pointcut(simpleName))))");
 	}
 	public void testPerCFlow(){
 		check("aspect A percflow(a()) {pointcut a();}",
-				"(compilationUnit(aspect(simpleName)(simpleName)(pointcut(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(referencePointcut(simpleName))(pointcut(simpleName))))");
 	}
 	public void testPerCFlowBelow(){
 		check("aspect A percflowbelow(a()) {pointcut a();}",
-				"(compilationUnit(aspect(simpleName)(simpleName)(pointcut(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(referencePointcut(simpleName))(pointcut(simpleName))))");
 	}
 	
 	private void check(String source, String expectedOutput){
@@ -272,6 +293,20 @@ public class ASTVisitorTest extends TestCase {
 		System.err.println("actual:\n" + result);
 		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
 				expectedOutput.equals(result));
+	}
+	
+	private void checkJLS3(String source, String expectedOutput) {
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setCompilerOptions(new HashMap());
+		parser.setSource(source.toCharArray());
+		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);
+		TestVisitor visitor = new TestVisitor();
+		cu2.accept(visitor);
+		String result = visitor.toString();
+		System.err.println("actual:\n" + result);
+		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
+				expectedOutput.equals(result));
+		
 	}
 	
 	/** @deprecated using deprecated code */
@@ -349,6 +384,13 @@ class TestVisitor extends AjASTVisitor {
 		return isVisitingChildren();
 	}	
 	public void endVisit(PointcutDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public boolean visit(ReferencePointcut node) {
+		b.append("(referencePointcut"); //$NON-NLS-1$
+		return isVisitingChildren();
+	}	
+	public void endVisit(ReferencePointcut node) {
 		b.append(")"); //$NON-NLS-1$
 	}
 	public boolean visit(BeforeAdviceDeclaration node) {
@@ -544,29 +586,87 @@ class TestVisitor extends AjASTVisitor {
 	public void endVisit(VariableDeclarationStatement node) {
 		b.append(")"); //$NON-NLS-1$
 	}
-	public boolean visit(DeclareDeclaration node) {
-		System.err.println("visiting a DeclareDeclaration");
-		if (node.declareDecl instanceof DeclareAnnotation){
-			b.append("(declareAnnotation");
-		} else if (node.declareDecl instanceof DeclareErrorOrWarning){
-			if (((DeclareErrorOrWarning)node.declareDecl).isError()){
-				b.append("(declareError");
-			} else {
-				b.append("(declareWarning");
-			}
-		} else if (node.declareDecl instanceof DeclareParents){
-			b.append("(declareParents");
-		} else if (node.declareDecl instanceof DeclarePrecedence){
-			b.append("(declarePrecedence");
-		} else if (node.declareDecl instanceof DeclareSoft){
-			b.append("(declareSoft");
-		} else {
-			// node.declareDecl is null... weird
-			b.append("(declareErrorOrWarning");
-		}
+
+	public boolean visit(DeclareAtTypeDeclaration node) {
+		b.append("(declareAtType");
 		return isVisitingChildren();
 	}
-	public void endVisit(DeclareDeclaration node) {
+	public boolean visit(DeclareAtMethodDeclaration node) {
+		b.append("(declareAtMethod");
+		return isVisitingChildren();
+	}
+	public boolean visit(DeclareAtConstructorDeclaration node) {
+		b.append("(declareAtConstructor");
+		return isVisitingChildren();
+	}
+	public boolean visit(DeclareAtFieldDeclaration node) {
+		b.append("(declareAtField");
+		return isVisitingChildren();
+	}
+	
+	public boolean visit(DeclareErrorDeclaration node) {
+		b.append("(declareError");
+		return isVisitingChildren();
+	}
+	
+	public boolean visit(DeclareParentsDeclaration node) {
+		b.append("(declareParents");
+		return isVisitingChildren();
+	}
+	
+	public boolean visit(DeclarePrecedenceDeclaration node) {
+		b.append("(declarePrecedence");
+		return isVisitingChildren();
+	}
+	
+	public boolean visit(DeclareSoftDeclaration node) {
+		b.append("(declareSoft");
+		return isVisitingChildren();
+	}
+	
+	public boolean visit(DeclareWarningDeclaration node) {
+		b.append("(declareWarning");
+		return isVisitingChildren();
+	}
+	public void endVisit(DeclareErrorDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(DeclareParentsDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(DeclarePrecedenceDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(DeclareAtFieldDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(DeclareAtMethodDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(DeclareAtTypeDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(DeclareAtConstructorDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(DeclareSoftDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(DeclareWarningDeclaration node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public boolean visit(DefaultTypePattern node) {
+		b.append("(defaultTypePattern");
+		return isVisitingChildren();		
+	}
+	public void endVisit(DefaultTypePattern node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public boolean visit(SignaturePattern node) {
+		b.append("(signaturePattern");
+		return isVisitingChildren();		
+	}
+	public void endVisit(SignaturePattern node) {
 		b.append(")"); //$NON-NLS-1$
 	}
 }
