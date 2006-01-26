@@ -33,6 +33,9 @@ public class DefaultPointcut extends PointcutDesignator {
 		this.detail = d;
 	}
 	public String getDetail() { return detail;}
+	public void setDetail(String d) {
+		this.detail = d;
+	}
 	public static List propertyDescriptors(int apiLevel) {
 		List propertyList = new ArrayList(0);
 		createPropertyList(DefaultPointcut.class, propertyList);
