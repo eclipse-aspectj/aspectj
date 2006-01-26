@@ -293,7 +293,7 @@ public class AsmElementFormatter {
 		for (int i = 0; i < argArray.length; i++) {
 			String argName = new String(argArray[i].name);
 			String argType = argArray[i].type.resolvedType.debugName();
-			if (acceptArgument(argName, argType)) { 
+			if (acceptArgument(argName, argArray[i].type.toString())) { 
 				names.add(argName);
 				types.add(argType);
 			}   

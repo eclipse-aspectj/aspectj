@@ -14,6 +14,9 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
@@ -43,6 +46,27 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  GenericsTests.verifyClassSignature(ajc,"AspectInterface","<T:Ljava/lang/Object;S:Ljava/lang/Number;>Ljava/lang/Object;");
 	  GenericsTests.verifyClassSignature(ajc,"AbstractAspect","<T:Ljava/lang/Object;>Ljava/lang/Object;LAspectInterface<TT;Ljava/lang/Integer;>;");
 	  GenericsTests.verifyClassSignature(ajc,"ConcreteAspect","LAbstractAspect<LStudent;>;");
+  }
+  
+  public void testIProgramElementMethods_pr125295() {
+	  runTest("new IProgramElement methods");  
+  	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+
+  	  IProgramElement pe = top.findElementForType("pkg","foo");
+  	  assertNotNull("Couldn't find 'foo' element in the tree",pe);
+  	  // check that the defaults return the fully qualified arg
+  	  assertEquals("foo(int, java.lang.Object)",pe.toLabelString());
+  	  assertEquals("C.foo(int, java.lang.Object)",pe.toLinkLabelString());
+  	  assertEquals("foo(int, java.lang.Object)",pe.toSignatureString());
+  	  // check that can get hold of the non qualified args
+  	  assertEquals("foo(int, Object)",pe.toLabelString(false));
+  	  assertEquals("C.foo(int, Object)",pe.toLinkLabelString(false));
+  	  assertEquals("foo(int, Object)",pe.toSignatureString(false));
+
+  	  IProgramElement pe2 = top.findElementForType("pkg","printParameters");
+  	  assertNotNull("Couldn't find 'printParameters' element in the tree",pe2);
+  	  // the argument is org.aspectj.lang.JoinPoint, check that this is added
+  	  assertFalse("printParameters method should have arguments",pe2.getParameterTypes().isEmpty());	  
   }
   
   /////////////////////////////////////////

@@ -79,6 +79,7 @@ public interface IProgramElement extends Serializable {
 	public String getCorrespondingType(boolean getFullyQualifiedType);
 	
 	public String toSignatureString();
+	public String toSignatureString(boolean getFullyQualifiedArgTypes);
 	
 	public void setRunnable(boolean value);
 	public boolean isRunnable();
@@ -107,11 +108,13 @@ public interface IProgramElement extends Serializable {
 	 * Includes information about the origin of the node.
 	 */
 	public String toLinkLabelString();
+	public String toLinkLabelString(boolean getFullyQualifiedArgTypes);
 
 	/**
 	 * Includes name, parameter types (if any) and details (if any).
 	 */
 	public String toLabelString();
+	public String toLabelString(boolean getFullyQualifiedArgTypes);
 
 	public List getParameterTypes();
 	public void setParameterTypes(List list);

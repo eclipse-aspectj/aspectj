@@ -387,21 +387,34 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public String toSignatureString() {
+		return toSignatureString(true);
+	}
+
+	public String toSignatureString(boolean getFullyQualifiedArgTypes) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
 		
 		if (parameterTypes != null ) {
 			sb.append('('); 
 			for (Iterator it = parameterTypes.iterator(); it.hasNext(); ) {
-				sb.append((String)it.next());
+				String arg = (String)it.next();
+				if (getFullyQualifiedArgTypes) {
+					sb.append(arg);
+				} else {
+					int index = arg.lastIndexOf(".");
+					if (index != -1) {
+						sb.append(arg.substring(index + 1));
+					} else {
+						sb.append(arg);
+					}
+				}
 				if (it.hasNext()) sb.append(", ");
 			}
 			sb.append(')');
 		}
 		
-		return sb.toString();
+		return sb.toString();		
 	}
-
 	
 	public static boolean shortITDNames = true;
 	
@@ -409,6 +422,10 @@ public class ProgramElement implements IProgramElement {
 	 * TODO: move the "parent != null"==>injar heuristic to more explicit 
 	 */
 	public String toLinkLabelString() {
+		return toLinkLabelString(true);
+	}
+
+	public String toLinkLabelString(boolean getFullyQualifiedArgTypes) {
 		String label;
 		if (kind == Kind.CODE || kind == Kind.INITIALIZER) {
 			label = parent.getParent().getName() + ": ";
@@ -435,18 +452,22 @@ public class ProgramElement implements IProgramElement {
 				label = "injar aspect: ";  
 			}
 		}
-		label += toLabelString();
+		label += toLabelString(getFullyQualifiedArgTypes);
 		return label;
 	}
-
+	
 	public String toLabelString() {
-		String label = toSignatureString();
+		return toLabelString(true);
+	}
+
+	public String toLabelString(boolean getFullyQualifiedArgTypes) {
+		String label = toSignatureString(getFullyQualifiedArgTypes);
 		if (details != null) {
 			label += ": " + details;
 		} 
 		return label;
 	}
-
+	
 	private String handle = null;
 	public String getHandleIdentifier() {
 	    if (null == handle) {

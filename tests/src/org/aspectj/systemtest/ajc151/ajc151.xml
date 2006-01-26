@@ -94,4 +94,8 @@
         <run class="ConcreteAspect"/>
     </ajc-test>
 
+    <ajc-test dir="bugs151/pr125295" title="new IProgramElement methods">
+        <compile files="pkg/C.java,pkg/A.aj" options="-emacssym"/>
+    </ajc-test>
+
 </suite>
