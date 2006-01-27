@@ -16,8 +16,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
@@ -60,6 +62,17 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("P1");
 		checkWasntFullBuild();
 		checkCompileWeaveCount(0,0);
+	}
+
+	// source code doesnt matter, we are checking invalid path handling
+	public void testInvalidAspectpath_pr121395() {
+		initialiseProject("P1");
+		File f = new File("foo.jar");
+		Set s = new HashSet();
+		s.add(f);
+		configureAspectPath(s);
+		build("P1"); // This first build will be batch
+		checkForError("invalid aspectpath entry");
 	}
 	
 	

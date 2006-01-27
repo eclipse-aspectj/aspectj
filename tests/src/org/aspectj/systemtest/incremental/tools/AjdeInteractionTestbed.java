@@ -69,6 +69,10 @@ public class AjdeInteractionTestbed extends TestCase {
 	public static void configureNonStandardCompileOptions(String options) {
 		MyBuildOptionsAdapter.setNonStandardOptions(options);
 	}
+	
+	public static void configureAspectPath(Set aspectpath) {
+		MyProjectPropertiesAdapter.setAspectpath(aspectpath);
+	} 
 	// End of methods for configuring the build
 	
 	
@@ -79,6 +83,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		MyStateListener.reset();
 		MyBuildProgressMonitor.reset();
 		MyTaskListManager.reset();
+		MyProjectPropertiesAdapter.reset();
 		
 		// Create a sandbox in which to work
 		createEmptySandbox();
@@ -364,8 +369,13 @@ public class AjdeInteractionTestbed extends TestCase {
 			return _instance;
 		}
 		
+		public static void reset() {
+			_instance.aspectPath=null;
+		}
+		
 		private String projectName = null;
 		private String classPath = "";
+		private Set aspectPath = null;
 		
 		public static void setActiveProject(String n) {
 			_instance.projectName = n;
@@ -386,6 +396,10 @@ public class AjdeInteractionTestbed extends TestCase {
 
 		public void setClasspath(String path) {
 			this.classPath = path;
+		}
+		
+		public static void setAspectpath(Set path) {
+			_instance.aspectPath = path;
 		}
 		
 		// interface impl below
@@ -503,8 +517,8 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public Set getAspectPath() {
-			log("MyProjectProperties.getAspectPath()");
-			return null;
+			log("MyProjectProperties.getAspectPath("+aspectPath+")");
+			return aspectPath;
 		}
 		
 		public static void log(String s) {

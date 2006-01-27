@@ -628,7 +628,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		
 		for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext();) {
 			File f = (File) i.next();
-			bcelWeaver.addLibraryJarFile(f);
+			if (!f.exists()) {
+				IMessage message = new Message("invalid aspectpath entry: "+f.getName(),null,true);
+				handler.handleMessage(message);
+			} else {
+				bcelWeaver.addLibraryJarFile(f);
+			}
 		}
 		
 //		String lintMode = buildConfig.getLintMode();
