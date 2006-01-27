@@ -282,6 +282,21 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		alter("PR85132","inc1");
 		build("PR85132");
 	}
+
+	// parameterization of generic aspects
+	public void testPr125405() {
+		initialiseProject("PR125405");
+		build("PR125405");
+		checkCompileWeaveCount(1,1);
+		alter("PR125405","inc1");
+		build("PR125405");
+		// "only abstract aspects can have type parameters"
+		checkForError("only abstract aspects can have type parameters");
+		alter("PR125405","inc2");
+		build("PR125405");
+		checkCompileWeaveCount(1,1);
+		assertTrue("Should be no errors, but got "+MyTaskListManager.getErrorMessages(),MyTaskListManager.getErrorMessages().size()==0);		
+	}
 	
 	public void testPr92837() {
 		initialiseProject("PR92837");
@@ -566,6 +581,15 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		}
 	}
 	
+	public void checkForError(String anError) {
+		List messages = MyTaskListManager.getErrorMessages();
+		for (Iterator iter = messages.iterator(); iter.hasNext();) {
+			IMessage element = (IMessage) iter.next();
+			if (element.getMessage().indexOf(anError)!=-1) return;
+		}
+		fail("Didn't find the error message:\n'"+anError+"'.\nErrors that occurred:\n"+MyTaskListManager.getErrorMessages());
+	}
+
 	private void collectUpFiles(File location,File base,List collectionPoint) {
 		String contents[] = location.list();
 		if (contents==null) return;

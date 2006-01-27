@@ -660,6 +660,12 @@ public class ReferenceType extends ResolvedType {
 		}
 	}
 	
+	public void demoteToSimpleType() {
+		genericType      = null;
+		typeKind         = TypeKind.SIMPLE;
+		signatureErasure = null;
+	}
+	
 	public ResolvedType getGenericType() {
 		if (isGenericType()) return this;
 		return genericType;

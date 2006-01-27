@@ -69,6 +69,7 @@ import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.UnresolvedType.TypeKind;
  
 /**
  * @author Jim Hugunin
@@ -957,7 +958,18 @@ public class EclipseFactory {
 		}else {
 			simpleTx  = UnresolvedType.forName(getName(binding)); 
 		}
+
 		ReferenceType name  = getWorld().lookupOrCreateName(simpleTx);
+		
+		// A type can change from simple > generic > simple across a set of compiles. We need
+		// to ensure the entry in the typemap is promoted and demoted correctly.  The call
+		// to setGenericType() below promotes a simple to a raw. This call demotes it back
+		// to simple
+		// pr125405
+		if (!binding.isRawType() && !binding.isGenericType() && name.getTypekind()==TypeKind.RAW) {
+			name.demoteToSimpleType();
+		}
+
 		EclipseSourceType t = new EclipseSourceType(name, this, binding, decl, unit);
 		
 		// For generics, go a bit further - build a typex for the generic type
