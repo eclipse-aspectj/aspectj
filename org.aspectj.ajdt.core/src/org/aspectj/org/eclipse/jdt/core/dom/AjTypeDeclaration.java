@@ -76,7 +76,7 @@ public class AjTypeDeclaration extends TypeDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
+     boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
 		if (property == ASPECT_PROPERTY) {
 			if (get) {
 				return isAspect();

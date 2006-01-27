@@ -99,16 +99,20 @@ public class AjAST extends AST {
 	 * Creates an unparented aspect declaration node owned by this AST.
 	 * The name of the aspect is an unspecified, but legal, name; 
 	 * no modifiers; no doc comment; no superclass or superinterfaces;
-	 * an empty body; and a null perclause
+	 * an empty body; a null perclause; and is not privileged
 	 * <p>
 	 * To set the perclause, use this method and then call
 	 * <code>AspectDeclaration.setPerClause(ASTNode)</code>.
 	 * </p>
-	 *  
+	 * <p>
+	 * To create a privileged aspect, use this method and then call
+	 * <code>AspectDeclaration.setPrivileged(true)</code>.
+	 * </p>
+	 *   
 	 * @return a new unparented aspect declaration node
 	 */
 	public AspectDeclaration newAspectDeclaration() {
-		AspectDeclaration result = new AspectDeclaration(this,null);
+		AspectDeclaration result = new AspectDeclaration(this);
 		return result;
 	}
 	

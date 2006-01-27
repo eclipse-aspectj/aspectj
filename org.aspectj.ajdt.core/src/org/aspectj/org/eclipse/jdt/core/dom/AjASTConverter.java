@@ -2117,10 +2117,11 @@ public class AjASTConverter extends ASTConverter {
 		//////////////// ajh02: added
 		if (typeDeclaration instanceof AspectDeclaration){
 			org.aspectj.weaver.patterns.PerClause perClause = ((AspectDeclaration)typeDeclaration).perClause;
+			boolean isPrivileged = ((AspectDeclaration)typeDeclaration).isPrivileged;
 			if (perClause == null){
-				typeDecl = new org.aspectj.org.eclipse.jdt.core.dom.AspectDeclaration(this.ast,null);
+				typeDecl = new org.aspectj.org.eclipse.jdt.core.dom.AspectDeclaration(this.ast,null, isPrivileged);
 			} else {
-				typeDecl = new org.aspectj.org.eclipse.jdt.core.dom.AspectDeclaration(this.ast,convert(perClause));
+				typeDecl = new org.aspectj.org.eclipse.jdt.core.dom.AspectDeclaration(this.ast,convert(perClause), isPrivileged);
 			}
 		}
 		///////////////////////////////

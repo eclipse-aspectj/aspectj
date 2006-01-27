@@ -16,41 +16,63 @@ import java.util.List;
 
 /**
  * AspectDeclaration DOM AST node.
- * has:
- *   everything a TypeDeclaration has.
  * 
- * This class could probably do with some work.
+ * Has everything an AjTypeDeclaration has plus:
+ *      an ASTNode called 'perClause'
+ *   	a boolean called 'privileged'
+ * 
  * @author ajh02
  *
  */
-
 public class AspectDeclaration extends AjTypeDeclaration {
-	
-	protected ASTNode perClause = null; // stays null if the aspect is an _implicit_ persingleton()
-	
+		
 	public static final ChildPropertyDescriptor PERCLAUSE_PROPERTY = 
 		new ChildPropertyDescriptor(AspectDeclaration.class, "perClause", ASTNode.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	public static final SimplePropertyDescriptor PRIVILEGED_PROPERTY = 
+		new SimplePropertyDescriptor(AspectDeclaration.class, "privileged", boolean.class, MANDATORY); //$NON-NLS-1$
+	
+	static {
+		List temporary = new ArrayList();
+		createPropertyList(AspectDeclaration.class, temporary);
+		temporary.addAll(PROPERTY_DESCRIPTORS_2_0);
+		addProperty(PERCLAUSE_PROPERTY, temporary);
+		addProperty(PRIVILEGED_PROPERTY, temporary);
+		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(temporary);
+		
+		temporary.clear();
+		createPropertyList(AspectDeclaration.class, temporary);
+		temporary.addAll(PROPERTY_DESCRIPTORS_3_0);
+		addProperty(PERCLAUSE_PROPERTY, temporary);
+		addProperty(PRIVILEGED_PROPERTY, temporary);
+		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(temporary);
+	}
+	
+	protected ASTNode perClause = null; // stays null if the aspect is an _implicit_ persingleton()
+	/**
+	 * <code>true</code> for a privileged aspect, <code>false</code> otherwise.
+	 * Defaults to not privileged.
+	 */
+	private boolean isPrivileged = false;
+
+	AspectDeclaration(AST ast) {
+		super(ast);
+	}
 	
 	AspectDeclaration(AST ast, ASTNode perClause) {
-		super(ast);
+		this(ast);
 		this.perClause = perClause;
 		setAspect(true);
 	}
 	
-	public ASTNode getPerClause(){
-		return perClause;
-	}
-
-	public void setPerClause(ASTNode perClause) {
-		if (perClause == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.perClause;
-		preReplaceChild(oldChild, perClause, PERCLAUSE_PROPERTY);
-		this.perClause = perClause;
-		postReplaceChild(oldChild, perClause, PERCLAUSE_PROPERTY);
+	AspectDeclaration(AST ast, ASTNode perClause, boolean isPrivileged) {
+		this(ast, perClause);
+		this.isPrivileged = isPrivileged;
 	}
 	
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
 	ASTNode clone0(AST target) {
 		AspectDeclaration result = new AspectDeclaration(target, perClause);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
@@ -65,6 +87,7 @@ public class AspectDeclaration extends AjTypeDeclaration {
 		}
 		result.setInterface(isInterface());
 		result.setAspect(isAspect());
+		result.setPrivileged(isPrivileged());
 		result.setName((SimpleName) getName().clone(target));
 		if (this.ast.apiLevel >= AST.JLS3) {
 			result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
@@ -81,6 +104,9 @@ public class AspectDeclaration extends AjTypeDeclaration {
 		return result;
 	}
 	
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
 	void accept0(ASTVisitor visitor) {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
@@ -107,6 +133,72 @@ public class AspectDeclaration extends AjTypeDeclaration {
 		visitor.endVisit(this);
 	}
 	
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode and AjTypeDeclaration.
+	 */
+	final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
+		if (property == PRIVILEGED_PROPERTY) {
+			if (get) {
+				return isPrivileged();
+			} else {
+				setPrivileged(value);
+				return false;
+			}
+		}
+		// allow default implementation to flag the error
+		return super.internalGetSetBooleanProperty(property, get, value);
+	}	
+	
+	/*
+	 * (omit javadoc for this method) 
+	 * Method declared on ASTNode.
+	 */
+	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property,boolean get, ASTNode child) {
+		if (property == PERCLAUSE_PROPERTY) {
+			if (get) {
+				return getPerClause();
+			} else {
+				setPerClause((ASTNode) child);
+				return null;
+			}
+		}
+		return super.internalGetSetChildProperty(property,get,child);
+	}
+	
+	public ASTNode getPerClause(){
+		return perClause;
+	}
+
+	public void setPerClause(ASTNode perClause) {
+		if (perClause == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.perClause;
+		preReplaceChild(oldChild, perClause, PERCLAUSE_PROPERTY);
+		this.perClause = perClause;
+		postReplaceChild(oldChild, perClause, PERCLAUSE_PROPERTY);
+	}
+	
+	/**
+	 * Returns whether this aspect is a privileged one.
+	 * 
+	 * @return <code>true</code> if this is a privileged aspect
+	 *    declaration, and <code>false</code> otherwise.
+	 */ 
+	public boolean isPrivileged() {
+		return this.isPrivileged;
+	}
+	/**
+	 * Sets whether this aspect is a privileged one
+	 * 
+	 * @param isPrivileged <code>true</code> if this is a privileged aspect
+	 *    declaration, and <code>false</code> otherwise.
+	 */ 
+	public void setPrivileged(boolean isPrivileged) {
+		preValueChange(PRIVILEGED_PROPERTY);
+		this.isPrivileged = isPrivileged; 
+		postValueChange(PRIVILEGED_PROPERTY);
+	}	
 	
 	public List getAdvice() {
 		// ajh02: method added

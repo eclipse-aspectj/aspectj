@@ -8,8 +8,10 @@
  * Contributors: IBM Corporation - initial API and implementation 
  * 				 Helen Hawkins   - iniital version
  *******************************************************************/
-package org.aspectj.org.eclipse.jdt.core.dom;
+package org.aspectj.ajdt.core.dom;
 
+import org.aspectj.org.eclipse.jdt.core.dom.AST;
+import org.aspectj.org.eclipse.jdt.core.dom.AjAST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser.IASTFactory;
 
 public class AjASTFactory implements IASTFactory {

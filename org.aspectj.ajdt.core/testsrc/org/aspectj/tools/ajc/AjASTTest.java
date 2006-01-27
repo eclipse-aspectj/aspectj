@@ -400,6 +400,90 @@ public class AjASTTest extends TestCase {
 		assertNotNull("a new AspectDeclaration should have been created",ad);
 	}
 	
+	public void testPropertyDescriptorsForAspectDeclaration() {
+		AjAST ajast = createAjAST();
+		AspectDeclaration d = ajast.newAspectDeclaration();
+		List props = AspectDeclaration.propertyDescriptors(AST.JLS3);
+		boolean foundJavadoc = false;
+		boolean foundPerClause = false;
+		boolean foundIsPrivileged = false;
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if ((o instanceof ChildPropertyDescriptor)) {
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
+				String id = element.getId();
+				if (id.equals("javadoc")) {
+					foundJavadoc = true;
+				} else if (id.equals("perClause")) {
+					foundPerClause = true;
+				}
+			} else if ((o instanceof SimplePropertyDescriptor)
+					&& ((SimplePropertyDescriptor)o).getId().equals("privileged")) {
+				foundIsPrivileged = true;
+			}
+		}
+		assertTrue("AspectDeclaration should have a javadoc PropertyDescriptor",foundJavadoc);
+		assertTrue("AspectDeclaration should have a perClause PropertyDescriptor",foundPerClause);
+		assertTrue("AspectDeclaration should have an isPrivileged PropertyDescriptor",foundIsPrivileged);
+	}
+			
+	public void testCloneAspectDeclaration() {
+		AjAST ajast = createAjAST();
+		AspectDeclaration d = ajast.newAspectDeclaration();
+		d.setPerClause(ajast.newPerTypeWithin());
+		d.setPrivileged(true);
+		AspectDeclaration copy = (AspectDeclaration)ASTNode.copySubtree(ajast,d);
+		assertNotNull("the AspectDeclaration clone should have a perClause set",
+				copy.getPerClause());
+		assertTrue("the AspectDeclaration clone should be a 'privileged'",
+				copy.isPrivileged());
+	}
+	
+	public void testInternalAspectDeclaration() {
+		AjAST ajast = createAjAST();
+		AspectDeclaration d = ajast.newAspectDeclaration();
+		List props = AspectDeclaration.propertyDescriptors(AST.JLS3);
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof ChildPropertyDescriptor) {
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
+				if (element.getId().equals("perClause")) {
+					assertNull("AspectDeclaration's " + element.getId() + " property" +
+							"should be null since we haven't set it yet",
+							d.getStructuralProperty(element));					
+				}
+			} else if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+				assertNotNull("AspectDeclaration's " + element.getId() + " property" +
+						"should not be null since it is a boolean",
+						d.getStructuralProperty(element));
+			}
+		}
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof ChildPropertyDescriptor) {
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
+				if (element.getId().equals("perClause")) {
+					PerTypeWithin ptw = ajast.newPerTypeWithin();
+					d.setStructuralProperty(element,ptw);
+					assertEquals("AspectDeclaration's perClause property should" +
+							" now be a perTypeWithin",ptw,d.getStructuralProperty(element));
+				} else if (element.getId().equals("javadoc")) {
+					// do nothing since makes no sense to have javadoc
+				}				
+			} else if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+			    if (element.getId().equals("privileged")) {
+					Boolean b = new Boolean(true);
+					d.setStructuralProperty(element,b);
+					assertEquals("AspectDeclaration's isPrivileged property should" +
+							" now be a boolean",b,d.getStructuralProperty(element));
+			    }
+			}
+		}
+	}
+
+	
 	/**
 	 * AsepctDeclarations's have a perClause property - test the getting
 	 * and setting of this property
@@ -412,6 +496,18 @@ public class AjASTTest extends TestCase {
 		ad.setPerClause(pcf);
 		assertEquals("should have set the perClause to be a PerCflow",
 				pcf,ad.getPerClause());
+	}
+	
+	/**
+	 * AsepctDeclarations's have a isPrivileged property - test the getting
+	 * and setting of this property
+	 */
+	public void testSetPrivilegedInAspectDeclaration() {
+		AjAST ajast = createAjAST();
+		AspectDeclaration ad = ajast.newAspectDeclaration();
+		assertFalse("by default the aspect should not be privileged",ad.isPrivileged());
+		ad.setPrivileged(true);
+		assertTrue("the aspect should now privileged",ad.isPrivileged());
 	}
 	
 	// -------------- AfterAdviceDeclaration tests ---------------

@@ -22,6 +22,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.AfterThrowingAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AjASTVisitor;
 import org.aspectj.org.eclipse.jdt.core.dom.AjTypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AroundAdviceDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.AspectDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.Assignment;
 import org.aspectj.org.eclipse.jdt.core.dom.BeforeAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.Block;
@@ -48,6 +49,9 @@ import org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.MethodInvocation;
 import org.aspectj.org.eclipse.jdt.core.dom.NumberLiteral;
+import org.aspectj.org.eclipse.jdt.core.dom.PerCflow;
+import org.aspectj.org.eclipse.jdt.core.dom.PerObject;
+import org.aspectj.org.eclipse.jdt.core.dom.PerTypeWithin;
 import org.aspectj.org.eclipse.jdt.core.dom.PointcutDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.PrimitiveType;
 import org.aspectj.org.eclipse.jdt.core.dom.QualifiedName;
@@ -75,7 +79,9 @@ public class ASTVisitorTest extends TestCase {
 	public void testAspectWithCommentThenPointcut() {
 		check("aspect A{ /** */ pointcut x(); }","(compilationUnit(aspect(simpleName)(pointcut(simpleName))))");
 	}
-				
+	public void testAPrivilegedAspect() {
+		check("privileged aspect AnAspect{}","(compilationUnit(privileged(aspect(simpleName))))");
+	}
 	// original tests
 	public void testAnInterface() {
 		check("interface AnInterface{}","(compilationUnit(interface(simpleName)))");
@@ -267,19 +273,19 @@ public class ASTVisitorTest extends TestCase {
 	}
 	public void testPerThis(){
 		check("aspect A perthis(a()) {pointcut a();}",
-				"(compilationUnit(aspect(simpleName)(referencePointcut(simpleName))(pointcut(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(perObject(referencePointcut(simpleName)))(pointcut(simpleName)))))");
 	}
 	public void testPerTarget(){
 		check("aspect A pertarget(a()) {pointcut a();}",
-				"(compilationUnit(aspect(simpleName)(referencePointcut(simpleName))(pointcut(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(perObject(referencePointcut(simpleName)))(pointcut(simpleName)))))");
 	}
 	public void testPerCFlow(){
 		check("aspect A percflow(a()) {pointcut a();}",
-				"(compilationUnit(aspect(simpleName)(referencePointcut(simpleName))(pointcut(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(perCflow(referencePointcut(simpleName)))(pointcut(simpleName)))))");
 	}
 	public void testPerCFlowBelow(){
 		check("aspect A percflowbelow(a()) {pointcut a();}",
-				"(compilationUnit(aspect(simpleName)(referencePointcut(simpleName))(pointcut(simpleName))))");
+				"(compilationUnit(aspect(simpleName)(perCflow(referencePointcut(simpleName)))(pointcut(simpleName)))))");
 	}
 	
 	private void check(String source, String expectedOutput){
@@ -365,10 +371,13 @@ class TestVisitor extends AjASTVisitor {
 	
 	public boolean visit(TypeDeclaration node) {
 		if (((AjTypeDeclaration)node).isAspect()) {
+			if (((AspectDeclaration) node).isPrivileged()){
+				b.append("(privileged");
+			}
 			b.append("(aspect"); //$NON-NLS-1$
-			//if (((AspectDeclaration)node).getPerClause() != null){
-			//	b.append("{" + ((AspectDeclaration)node).getPerClause() + "}");
-			//}
+//			if (((AspectDeclaration)node).getPerClause() != null){
+//				b.append("{" + ((AspectDeclaration)node).getPerClause() + "}");
+//			}
 		} else if (node.isInterface()){
 			b.append("(interface"); // $NON-NLS-1$
 		} else {
@@ -377,6 +386,11 @@ class TestVisitor extends AjASTVisitor {
 		return isVisitingChildren();
 	}
 	public void endVisit(TypeDeclaration node) {
+		if (((AjTypeDeclaration)node).isAspect()) 
+			if (((AspectDeclaration) node).isPrivileged() 
+					|| ((AspectDeclaration)node).getPerClause() != null) {
+				b.append(")");				
+			}
 		b.append(")"); //$NON-NLS-1$
 	}
 	public boolean visit(PointcutDeclaration node) {
@@ -667,6 +681,27 @@ class TestVisitor extends AjASTVisitor {
 		return isVisitingChildren();		
 	}
 	public void endVisit(SignaturePattern node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public boolean visit(PerObject node) {
+		b.append("(perObject");
+		return isVisitingChildren();		
+	}
+	public boolean visit(PerCflow node) {
+		b.append("(perCflow");
+		return isVisitingChildren();		
+	}
+	public boolean visit(PerTypeWithin node) {
+		b.append("(perTypeWithin");
+		return isVisitingChildren();		
+	}
+	public void endVisit(PerObject node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(PerCflow node) {
+		b.append(")"); //$NON-NLS-1$
+	}
+	public void endVisit(PerTypeWithin node) {
 		b.append(")"); //$NON-NLS-1$
 	}
 }
