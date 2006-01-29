@@ -33,6 +33,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCallInheritedGenericMethod_pr124999() { runTest("calling inherited generic method from around advice");}
   public void testIncorrectlyReferencingPointcuts_pr122452()    { runTest("incorrectly referencing pointcuts");}
   public void testIncorrectlyReferencingPointcuts_pr122452_2()    { runTest("incorrectly referencing pointcuts - 2");}
+  //public void testEmptyPointcut_pr125475()    { runTest("empty pointcut in atAJ");}
+  public void testInlinevisitorNPE_pr123901() { runTest("inlinevisitor NPE");}
   
   public void testMixingNumbersOfTypeParameters_pr125080()   { 
 	  runTest("mixing numbers of type parameters");    

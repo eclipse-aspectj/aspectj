@@ -41,6 +41,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
@@ -96,11 +97,12 @@ public class AccessForInlineVisitor extends ASTVisitor {
 				//!!! understand and fix this case later
 				receiverType = ref.otherBindings[0].declaringClass;
 			}
-			
-			for (int i=0, len=ref.otherBindings.length; i < len; i++) {
+			boolean cont = true; // don't continue if we come across a problem
+			for (int i=0, len=ref.otherBindings.length; i < len && cont; i++) {
 				FieldBinding binding = ref.otherBindings[i];
 				ref.otherBindings[i] = getAccessibleField(binding, receiverType);
-				receiverType = binding.type;
+				if (!(binding instanceof ProblemFieldBinding)) 	receiverType = binding.type;
+				else                                                cont=false;
 			}
 		}
 	}
