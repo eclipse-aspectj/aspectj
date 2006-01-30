@@ -1357,7 +1357,7 @@ public class BcelShadow extends Shadow {
             	LoadInstruction li = (LoadInstruction)searchPtr.getInstruction();
             	li.getIndex();
             	LocalVariableTag lvt = LazyMethodGen.getLocalVariableTag(searchPtr,li.getIndex());
-            	return lvt.getType();
+            	if (lvt!=null) 	return lvt.getType();
             }
             // A field access instruction may tell us the real type of what the clone() call is on
             if (searchPtr.getInstruction() instanceof FieldInstruction) {
@@ -1381,7 +1381,7 @@ public class BcelShadow extends Shadow {
             	return BcelWorld.fromBcel(new ArrayType(Type.OBJECT,ana.getDimensions()));
             }
             throw new BCException("Can't determine real target of clone() when processing instruction "+
-              searchPtr.getInstruction());
+              searchPtr.getInstruction()+".  Perhaps avoid selecting clone with your pointcut?");
     	}
     	return tx;
     }
