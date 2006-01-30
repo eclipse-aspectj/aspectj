@@ -1,0 +1,14 @@
+<aspectj>
+	<aspects>
+<!--	
+        <concrete-aspect name="TraceHelloWorld" extends="org.aspectj.lib.tracing.SimpleTracing">
+        	<pointcut name="tracingScope" expression="within(*)"/>
+        </concrete-aspect>
+-->        
+        <concrete-aspect name="TestSubAtAspect" extends="TestAspect">
+        	<pointcut name="scope" expression=""/>
+        </concrete-aspect>
+	</aspects>
+    
+    <weaver options="-verbose"/>
+</aspectj>

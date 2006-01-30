@@ -103,9 +103,40 @@
     <ajc-test dir="bugs151/pr125295" title="new IProgramElement methods">
         <compile files="pkg/C.java,pkg/A.aj" options="-emacssym"/>
     </ajc-test>
-
-    <ajc-test dir="bugs151/pr125475" title="empty pointcut in atAJ">
+    
+    <ajc-test dir="bugs151/pr125475" title="define empty pointcut using an annotation">
         <compile files="TestEmptyPointcutAtAspect.java" options="-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs151/pr125475" title="define empty pointcut using an annotation - 2">
+        <compile files="TestEmptyPointcutAtAspect2.java" options="-1.5 -showWeaveInfo">
+          <message kind="warning" line="10" text="advice defined in TestEmptyPointcutAtAspect2 has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs151/pr125475" title="define empty pointcut using aop.xml">
+        <compile files="Test.java TestAspect.aj"/>
+        <run class="Test" ltw="aop.xml"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr125480" title="aop.xml aspect inherits abstract method that has concrete implementation in parent">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml"/>
+    </ajc-test>
+
+    
+    <!-- New features down here... when they arent big enough to have their own test file -->
+    
+    <ajc-test dir="features151/ptw" title="exposing withintype">
+        <compile files="ExposedType.java" options="-1.5"/>
+        <run class="ExposedType">
+          <stderr>
+            <line text="here I am execution(void ExposedTypeOne.foo()): for class ExposedTypeOne"/>
+            <line text="here I am execution(void ExposedTypeTwo.foo()): for class ExposedTypeTwo"/>
+            <line text="here I am execution(void ExposedTypeThree.foo()): for class ExposedTypeThree"/>
+          </stderr>
+        </run>
+    </ajc-test>  
 
 </suite>
