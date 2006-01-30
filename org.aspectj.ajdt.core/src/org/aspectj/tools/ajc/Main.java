@@ -77,7 +77,9 @@ public class Main {
 		  + "should be increased from 64M (default) to 128M or even 256M." + LangUtil.EOL + LangUtil.EOL
 		  + "See the AspectJ FAQ available from the documentation link" + LangUtil.EOL
 		  + "on the AspectJ home page at http://www.eclipse.org/aspectj";
-    
+
+	private static final String MESSAGE_HOLDER_OPTION = "-messageHolder";
+	
     /** @param args the String[] of command-line arguments */
     public static void main(String[] args) throws IOException {
         new Main().runMain(args, true);
@@ -195,7 +197,7 @@ public class Main {
     
     /** if not null, run this synchronously after each compile completes */
     private Runnable completionRunner;
-    
+
     public Main() {
         controller = new CommandController();
         commandName = ReflectionFactory.ECLIPSE;
@@ -223,16 +225,19 @@ public class Main {
      */
     public void runMain(String[] args, boolean useSystemExit) {
         final boolean verbose = flagInArgs("-verbose", args);
+        if (null == this.clientHolder) {
+        	this.clientHolder = checkForCustomMessageHolder(args);
+        }
         IMessageHolder holder = clientHolder;
         if (null == holder) {
-            holder = ourHandler;
+           	holder = ourHandler;
             if (verbose) {
                 ourHandler.setInterceptor(MessagePrinter.VERBOSE);
             } else {
                 ourHandler.ignore(IMessage.INFO);
                 ourHandler.setInterceptor(MessagePrinter.TERSE);
             }
-        }
+        } 
         
         // make sure we handle out of memory gracefully...
         try {
@@ -257,6 +262,25 @@ public class Main {
             systemExit(holder);
         }
     }
+
+	/**
+	 * @param args
+	 */
+	private IMessageHolder checkForCustomMessageHolder(String[] args) {
+		IMessageHolder holder = null;
+		final String customMessageHolder = parmInArgs(MESSAGE_HOLDER_OPTION, args);
+		if (customMessageHolder != null) {
+			try {
+				holder = (IMessageHolder) Class.forName(customMessageHolder).newInstance();
+			} 
+			catch(Exception ex) {
+				holder = ourHandler;
+				throw new AbortException("Failed to create custom message holder of class '" +
+						           customMessageHolder + "' : " + ex);
+			}
+		}
+		return holder;
+	}
 
     /**
      * Run without using System.exit(..), putting all messages in holder:
@@ -389,6 +413,10 @@ public class Main {
      */
     public void setHolder(IMessageHolder holder) {
         clientHolder = holder;
+    }
+    
+    public IMessageHolder getHolder() {
+    	return clientHolder;
     }
     
     /**

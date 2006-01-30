@@ -15,6 +15,8 @@ package org.aspectj.tools.ajc;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import org.aspectj.bridge.AbortException;
+
 /**
  * 
  */
@@ -38,5 +40,20 @@ public class MainTest extends AjcTestCase {
 		CompilationResult result = ajc(null,new String[] {"-X"});
 		assertMessages(result,"Expecting xoptions usage message",
 				new MessageSpec(null,null,null,newMessageList(new Message(xoptionText)),null));
+    }
+    
+    public void testDashMessageHolder() {
+    	try {
+    		new Main().runMain(new String[] {"-messageHolder","org.xyz.abc"},false);
+    		fail ("Should have thrown abort exception");
+    	} catch (AbortException ex) {
+    		// good
+    	}
+    }
+    
+    public void testDashMessageHolderOk() {
+    	Main main = new Main();
+    	main.runMain(new String[] {"-messageHolder","org.aspectj.tools.ajc.TestMessageHolder"},false);
+    	assertSame("ajc should be using our message handler",TestMessageHolder.class,main.getHolder().getClass());
     }
 }
