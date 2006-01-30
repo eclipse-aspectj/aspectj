@@ -109,6 +109,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     public static final UnresolvedType   ENUM         = forSignature("Ljava/lang/Enum;");
     public static final UnresolvedType   ANNOTATION   = forSignature("Ljava/lang/annotation/Annotation;");
     public static final UnresolvedType   JAVA_LANG_CLASS = forSignature("Ljava/lang/Class;");
+    public static final UnresolvedType   JAVA_LANG_STRING = forSignature("Ljava/lang/String;");
     public static final UnresolvedType   JAVA_LANG_EXCEPTION = forSignature("Ljava/lang/Exception;");
     public static final UnresolvedType   JAVA_LANG_REFLECT_METHOD = forSignature("Ljava/lang/reflect/Method;");
     public static final UnresolvedType   SUPPRESS_AJ_WARNINGS = forSignature("Lorg/aspectj/lang/annotation/SuppressAjWarnings;");
