@@ -1320,10 +1320,6 @@ public class AjcTask extends MatchingTask {
      *         or if failonerror and there were compile errors.
      */
     protected void executeInOtherVM(String[] args) {
-        if (null != messageHolder) {
-            this.logger.warning("message holder ignored when forking: "
-                + messageHolder.getClass().getName());
-        }
         javaCmd.setClassname(org.aspectj.tools.ajc.Main.class.getName());
         
         final Path vmClasspath = javaCmd.createClasspath(getProject());
@@ -1358,14 +1354,20 @@ public class AjcTask extends MatchingTask {
         File tempFile = null;
         int numArgs = args.length;
         args = GuardedCommand.limitTo(args, MAX_COMMANDLINE, getLocation());
+
         if (args.length != numArgs) {
             tempFile = new File(args[1]);
         }
         try {
+        	boolean setMessageHolderOnForking = (this.messageHolder != null); 
             String[] javaArgs = javaCmd.getCommandline();
-            String[] both = new String[javaArgs.length + args.length];
+            String[] both = new String[javaArgs.length + args.length + (setMessageHolderOnForking ? 2 : 0)];
             System.arraycopy(javaArgs,0,both,0,javaArgs.length);
             System.arraycopy(args,0,both,javaArgs.length,args.length);
+            if (setMessageHolderOnForking) {
+            	both[both.length - 2] = "-messageHolder";
+            	both[both.length - 1] = this.messageHolder.getClass().getName();
+            }
             // try to use javaw instead on windows
             if (both[0].endsWith("java.exe")) {
                 String path = both[0];
