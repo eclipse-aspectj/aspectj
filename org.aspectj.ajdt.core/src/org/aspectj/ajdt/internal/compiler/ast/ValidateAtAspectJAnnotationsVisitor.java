@@ -493,6 +493,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			methodDeclaration.scope.problemReporter().disallowedTargetForAnnotation(ajAnnotations.adviceNameAnnotation);			
 		}
 	
+		boolean noValueSupplied=true;
 		boolean containsIfPcd = false;
 		int[] pcLocation = new int[2];
 		String pointcutExpression = getStringLiteralFor("value",ajAnnotations.pointcutAnnotation,pcLocation);
@@ -500,8 +501,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			ISourceContext context = new EclipseSourceContext(unit.compilationResult,pcLocation[0]);
             Pointcut pc = null;//abstract
             if (pointcutExpression == null  || pointcutExpression.length() == 0) {
-                ;//will have to ensure abstract ()V method
+                noValueSupplied=true; // matches nothing pointcut
             } else {
+            	noValueSupplied=false;
                 pc = new PatternParser(pointcutExpression,context).parsePointcut();
             }
             pcDecl.pointcutDesignator = (pc==null)?null:new PointcutDesignator(pc);
@@ -561,16 +563,17 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		}
 
         if (pcDecl.pointcutDesignator == null) {
-            if (Modifier.isAbstract(methodDeclaration.modifiers)
+            if (Modifier.isAbstract(methodDeclaration.modifiers) 
+                || noValueSupplied // this is a matches nothing pointcut
                 //those 2 checks makes sense for aop.xml concretization but NOT for regular abstraction of pointcut
                 //&& returnsVoid
                 //&& (methodDeclaration.arguments == null || methodDeclaration.arguments.length == 0)) {
                 ) {
                 ;//fine
             } else {
-                methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
-                          methodDeclaration.returnType.sourceEnd,
-                          "Method annotated with @Pointcut() for abstract pointcut must be abstract");
+	                methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
+	                          methodDeclaration.returnType.sourceEnd,
+	                          "Method annotated with @Pointcut() for abstract pointcut must be abstract");
             }
         } else if (Modifier.isAbstract(methodDeclaration.modifiers)) {
             methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,

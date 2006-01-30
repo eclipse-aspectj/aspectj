@@ -1186,16 +1186,20 @@ public class AtAjAttributes {
                     return;//stop
                 }
             } else {
-                if (pointcutExpr != null) {
+            	if (pointcutExpr==null || (pointcutExpr != null && isNullOrEmpty(pointcutExpr.getValue().stringifyValue()))) {
+            		// the matches nothing pointcut (125475/125480) - perhaps not as cleanly supported as it could be.
+            	} else {
+                  if (pointcutExpr != null) {
                     // use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
                     // since for it to be resolved, we will need other pointcuts to be registered as well
                     pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
                     if (pc == null) return;//parse error
                     pc.setLocation(struct.context, -1, -1);//FIXME AVASM !! bMethod is null here..
-                } else {
+                  } else {
                     reportError("Found undefined @Pointcut on a non-abstract method", struct);
                     return;
-                }
+                  }
+            	}
             }
             // do not resolve binding now but lazily
             struct.ajAttributes.add(
