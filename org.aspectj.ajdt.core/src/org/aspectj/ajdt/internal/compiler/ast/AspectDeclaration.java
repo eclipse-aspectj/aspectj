@@ -75,6 +75,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	private AjAttribute.Aspect aspectAttribute;
 	public PerClause perClause;
 	public ResolvedMember aspectOfMethod;
+	//public ResolvedMember ptwGetWithinTypeMethod;
 	public ResolvedMember hasAspectMethod;
 
 
@@ -369,7 +370,7 @@ public class AspectDeclaration extends TypeDeclaration {
 			generatePerTypeWithinHasAspectMethod(classFile);
 			generatePerTypeWithinCreateAspectInstanceMethod(classFile); // generate public static X ajc$createAspectInstance(Class forClass) {
 			// PTWIMPL getWithinType() would need this...
-			// generatePerTypeWithinGetWithinTypeMethod(classFile); // generate public Class getWithinType() {
+			//generatePerTypeWithinGetWithinTypeMethod(classFile); // generate public Class getWithinType() {
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -547,6 +548,15 @@ public class AspectDeclaration extends TypeDeclaration {
 		return interfaceType;
 	}
 	
+	/*private void generatePerTypeWithinGetWithinTypeMethod(ClassFile classFile) {
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
+		generateMethod(classFile,ptwGetWithinTypeMethod,new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				codeStream.aload_0();
+				codeStream.getfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX,typeX)));
+				codeStream.areturn();
+			}});
+	}*/
 	
 	// PTWIMPL Generate aspectOf() method
 	private void generatePerTypeWithinAspectOfMethod(ClassFile classFile) {
@@ -1030,6 +1040,8 @@ public class AspectDeclaration extends TypeDeclaration {
 			    // PTWIMPL Use these variants of aspectOf()/hasAspect()
 				aspectOfMethod  = AjcMemberMaker.perTypeWithinAspectOfMethod(typeX,world.getWorld().isInJava5Mode());
 				hasAspectMethod = AjcMemberMaker.perTypeWithinHasAspectMethod(typeX,world.getWorld().isInJava5Mode());
+				//ptwGetWithinTypeMethod = AjcMemberMaker.perTypeWithinGetWithinTypeMethod(typeX,world.getWorld().isInJava5Mode());
+				//binding.addMethod(world.makeMethodBinding(ptwGetWithinTypeMethod));
 			} else {
 				throw new RuntimeException("bad per clause: " + perClause);	
 			}

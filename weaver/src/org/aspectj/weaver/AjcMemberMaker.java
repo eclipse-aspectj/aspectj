@@ -290,6 +290,17 @@ public class AjcMemberMaker {
 //				"(Ljava/lang/Class;)" + declaringType.getSignature());		
 	}
 	
+	
+	/*public static ResolvedMember perTypeWithinGetWithinTypeMethod(UnresolvedType declaringType, boolean inJava5Mode) {
+		UnresolvedType returnType = null;
+		if (inJava5Mode) {
+			returnType = UnresolvedType.forRawTypeName("java.lang.Class");
+		} else {
+			returnType = UnresolvedType.forSignature("Ljava/lang/Class;");
+		}
+		return new ResolvedMemberImpl(Member.METHOD,declaringType,Modifier.PUBLIC,ResolvedType.JAVA_LANG_STRING,"getWithinType",new UnresolvedType[]{});
+	}*/
+	
 	// PTWIMPL ResolvedMember for hasAspect(), declared in aspect
 	public static ResolvedMember perTypeWithinHasAspectMethod(UnresolvedType declaringType, boolean inJava5Mode) {
 		UnresolvedType parameterType = null;
