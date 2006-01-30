@@ -33,8 +33,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCallInheritedGenericMethod_pr124999() { runTest("calling inherited generic method from around advice");}
   public void testIncorrectlyReferencingPointcuts_pr122452()    { runTest("incorrectly referencing pointcuts");}
   public void testIncorrectlyReferencingPointcuts_pr122452_2()    { runTest("incorrectly referencing pointcuts - 2");}
-  //public void testEmptyPointcut_pr125475()    { runTest("empty pointcut in atAJ");}
   public void testInlinevisitorNPE_pr123901() { runTest("inlinevisitor NPE");}
+  //public void testExposingWithintype_enh123423() { runTest("exposing withintype");}
   
   public void testMixingNumbersOfTypeParameters_pr125080()   { 
 	  runTest("mixing numbers of type parameters");    
@@ -69,6 +69,25 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	  assertNotNull("Couldn't find 'printParameters' element in the tree",pe2);
   	  // the argument is org.aspectj.lang.JoinPoint, check that this is added
   	  assertFalse("printParameters method should have arguments",pe2.getParameterTypes().isEmpty());	  
+  }
+  
+  /*
+   * Load-time weaving bugs and enhancements
+   */
+  public void testEmptyPointcutInAtAspectJ_pr125475 () {
+	  runTest("define empty pointcut using an annotation"); 
+  }
+
+  public void testEmptyPointcutInAtAspectJ_pr125475_2() {
+	  runTest("define empty pointcut using an annotation - 2"); 
+  }
+  
+  public void testEmptyPointcutInAtAspectJWithLTW_pr125475 () {
+	  runTest("define empty pointcut using aop.xml"); 
+  }
+  
+  public void testLTWGeneratedAspectWithAbstractMethod_pr125480 () {
+	  runTest("aop.xml aspect inherits abstract method that has concrete implementation in parent"); 
   }
   
   /////////////////////////////////////////
