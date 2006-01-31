@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 //import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -28,9 +29,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 
 
 public class StatefulNameEnvironment implements INameEnvironment {
-	Map classesFromName;
-	Set packageNames;
-	INameEnvironment baseEnvironment;
+	private Map classesFromName;
+	private Set packageNames;
+	private INameEnvironment baseEnvironment;
 	
 	public StatefulNameEnvironment(INameEnvironment baseEnvironment, Map classesFromName) {
 		this.classesFromName = classesFromName;
@@ -54,6 +55,8 @@ public class StatefulNameEnvironment implements INameEnvironment {
 
 	public void cleanup() {
 		baseEnvironment.cleanup();
+		this.classesFromName = Collections.EMPTY_MAP;
+		this.packageNames = Collections.EMPTY_SET;
 	}
 
 	private NameEnvironmentAnswer findType(String name) {
