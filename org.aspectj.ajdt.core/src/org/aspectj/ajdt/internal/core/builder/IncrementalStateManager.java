@@ -63,7 +63,7 @@ public class IncrementalStateManager {
 		if (debugIncrementalStates) System.err.println("> findStateManagingOutputLocation("+location+") has "+allStates.size()+" states to look through");
 		for (Iterator iter = allStates.iterator(); iter.hasNext();) {
 			AjState element = (AjState) iter.next();
-			AjBuildConfig ajbc = element.buildConfig;
+			AjBuildConfig ajbc = element.getBuildConfig();
 			if (ajbc==null) {
 				// FIXME asc why can it ever be null?
 				if (debugIncrementalStates) System.err.println("  No build configuration for state "+element);
