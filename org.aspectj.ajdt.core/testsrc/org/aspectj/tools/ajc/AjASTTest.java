@@ -62,6 +62,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.SimpleType;
 import org.aspectj.org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.StringLiteral;
 import org.aspectj.org.eclipse.jdt.core.dom.Type;
+import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.TypePattern;
 
 /**
@@ -407,6 +408,7 @@ public class AjASTTest extends TestCase {
 		boolean foundJavadoc = false;
 		boolean foundPerClause = false;
 		boolean foundIsPrivileged = false;
+		boolean foundIsAspect = false;
 		for (Iterator iter = props.iterator(); iter.hasNext();) {
 			Object o = iter.next();
 			if ((o instanceof ChildPropertyDescriptor)) {
@@ -417,14 +419,20 @@ public class AjASTTest extends TestCase {
 				} else if (id.equals("perClause")) {
 					foundPerClause = true;
 				}
-			} else if ((o instanceof SimplePropertyDescriptor)
-					&& ((SimplePropertyDescriptor)o).getId().equals("privileged")) {
-				foundIsPrivileged = true;
+			} else if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+				String id = element.getId();
+				if (id.equals("privileged")) {
+					foundIsPrivileged = true;
+				} else if (id.equals("aspect")) {
+					foundIsAspect = true;
+				}
 			}
 		}
 		assertTrue("AspectDeclaration should have a javadoc PropertyDescriptor",foundJavadoc);
 		assertTrue("AspectDeclaration should have a perClause PropertyDescriptor",foundPerClause);
-		assertTrue("AspectDeclaration should have an isPrivileged PropertyDescriptor",foundIsPrivileged);
+		assertTrue("AspectDeclaration should have a privileged PropertyDescriptor",foundIsPrivileged);
+		assertTrue("AspectDeclaration should have inherited an aspect PropertyDescriptor",foundIsAspect);
 	}
 			
 	public void testCloneAspectDeclaration() {
@@ -688,6 +696,116 @@ public class AjASTTest extends TestCase {
 		assertTrue("AjTypeDeclaration should now be an aspect",d.isAspect());	
 		d.setAspect(false);
 		assertFalse("AjTypeDeclaration should now be a class",d.isAspect());	
+	}
+	
+	public void testPropertyDescriptorsForAjTypeDeclaration() {
+		AjAST ajast = createAjAST();
+		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
+		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		boolean foundAspect = false;
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+				String id = element.getId();
+				if (id.equals("aspect")) {
+					foundAspect = true;
+				}										
+			}
+		}
+		assertTrue("AjTypeDeclaration should have an aspect PropertyDescriptor",foundAspect);
+	}
+		
+	public void testCloneAjTypeDeclaration() {
+		AjAST ajast = createAjAST();
+		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
+		d.setAspect(true);
+		AjTypeDeclaration copy = (AjTypeDeclaration)ASTNode.copySubtree(ajast,d);
+		assertTrue("the AjTypeDeclaration clone should be an aspect",
+				copy.isAspect());
+	}
+	
+	public void testInternalAjTypeDeclaration() {
+		AjAST ajast = createAjAST();
+		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
+		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
+				if (element.getId().equals("aspect")) {
+					assertNotNull("AjTypeDeclaration's " + element.getId() + " property" +
+							" should not be null since it is a boolean",
+							d.getStructuralProperty(element));				
+				} 				
+			}
+		}
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
+				if (element.getId().equals("aspect")) {
+					Boolean b = new Boolean(true);
+					d.setStructuralProperty(element,b);
+					assertEquals("AjTypeDeclaration's aspect property should" +
+						" now be a SignaturePattern",b,d.getStructuralProperty(element));
+				}
+			}
+		}
+	}
+
+	// test for bug 125809 - make sure the property descriptors 
+	// associated with the AspectDeclaration aren't consequently
+	// associated with the AjTypeDeclaration
+	public void testPropertyDescriptorsForAjTypeDeclaration2() {
+		AjAST ajast = createAjAST();
+		AspectDeclaration ad = ajast.newAspectDeclaration();
+		List aspectProps = AspectDeclaration.propertyDescriptors(AST.JLS3);
+		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
+		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		boolean foundPrivileged = false;
+		boolean foundPerClause = false;
+		boolean foundAspect = false;
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+				String id = element.getId();
+				if (id.equals("privileged")) {
+					foundPrivileged = true;
+				}										
+			} else if (o instanceof ChildPropertyDescriptor) {
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
+				if (element.getId().equals("perClause")) {
+					foundPerClause = true;
+				}
+			}
+		}
+		assertFalse("AjTypeDeclaration should not have a privileged PropertyDescriptor",foundPrivileged);
+		assertFalse("AjTypeDeclaration should not have a perClause PropertyDescriptor",foundPerClause);
+	}
+	
+	// test for bug 125809 - make sure the property descriptors 
+	// associated with the AjTypeDeclaration aren't consequently
+	// associated with the TypeDeclaration
+	public void testPropertyDescriptorsForAjTypeDeclaration3() {
+		AjAST ajast = createAjAST();
+		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
+		List ajProps = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		TypeDeclaration td = ajast.newTypeDeclaration();
+		List props = TypeDeclaration.propertyDescriptors(AST.JLS3);
+		boolean foundAspect = false;
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+				String id = element.getId();
+				if (id.equals("aspect")) {
+					foundAspect = true;
+				}										
+			} 
+		}
+		assertFalse("TypeDeclaration should not have an aspect PropertyDescriptor",foundAspect);
 	}
 	
 	// -------------- DeclareAtFieldDeclaration tests ---------------

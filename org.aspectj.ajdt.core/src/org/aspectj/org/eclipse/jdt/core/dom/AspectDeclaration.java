@@ -31,21 +31,24 @@ public class AspectDeclaration extends AjTypeDeclaration {
 
 	public static final SimplePropertyDescriptor PRIVILEGED_PROPERTY = 
 		new SimplePropertyDescriptor(AspectDeclaration.class, "privileged", boolean.class, MANDATORY); //$NON-NLS-1$
+
+	protected static List aspectPROPERTY_DESCRIPTORS_2_0;
+	protected static List aspectPROPERTY_DESCRIPTORS_3_0;
 	
 	static {
 		List temporary = new ArrayList();
 		createPropertyList(AspectDeclaration.class, temporary);
-		temporary.addAll(PROPERTY_DESCRIPTORS_2_0);
+		temporary.addAll(ajPROPERTY_DESCRIPTORS_2_0);
 		addProperty(PERCLAUSE_PROPERTY, temporary);
 		addProperty(PRIVILEGED_PROPERTY, temporary);
-		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(temporary);
+		aspectPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(temporary);
 		
 		temporary.clear();
 		createPropertyList(AspectDeclaration.class, temporary);
-		temporary.addAll(PROPERTY_DESCRIPTORS_3_0);
+		temporary.addAll(ajPROPERTY_DESCRIPTORS_3_0);
 		addProperty(PERCLAUSE_PROPERTY, temporary);
 		addProperty(PRIVILEGED_PROPERTY, temporary);
-		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(temporary);
+		aspectPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(temporary);
 	}
 	
 	protected ASTNode perClause = null; // stays null if the aspect is an _implicit_ persingleton()
@@ -163,6 +166,25 @@ public class AspectDeclaration extends AjTypeDeclaration {
 			}
 		}
 		return super.internalGetSetChildProperty(property,get,child);
+	}
+	
+	/**
+	 * Returns a list of structural property descriptors for this node type.
+	 * Clients must not modify the result.
+	 * 
+	 * @param apiLevel the API level; one of the
+	 * <code>AST.JLS&ast;</code> constants
+
+	 * @return a list of property descriptors (element type: 
+	 * {@link StructuralPropertyDescriptor})
+	 * @since 3.0
+	 */
+	public static List propertyDescriptors(int apiLevel) {
+		if (apiLevel == AST.JLS2_INTERNAL) {
+			return aspectPROPERTY_DESCRIPTORS_2_0;
+		} else {
+			return aspectPROPERTY_DESCRIPTORS_3_0;
+		}
 	}
 	
 	public ASTNode getPerClause(){

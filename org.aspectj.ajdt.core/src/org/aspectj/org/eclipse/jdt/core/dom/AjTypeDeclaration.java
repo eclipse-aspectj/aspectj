@@ -31,6 +31,10 @@ public class AjTypeDeclaration extends TypeDeclaration {
 	public static final SimplePropertyDescriptor ASPECT_PROPERTY = 
 		new SimplePropertyDescriptor(TypeDeclaration.class, "aspect", boolean.class, MANDATORY); //$NON-NLS-1$
 	
+	protected static List ajPROPERTY_DESCRIPTORS_2_0;
+	protected static List ajPROPERTY_DESCRIPTORS_3_0;
+
+	
 	// Need to fix up the property lists created during the super's static initializer
 	static {
 		// Need to fix up the property lists created during the super's static initializer
@@ -38,13 +42,13 @@ public class AjTypeDeclaration extends TypeDeclaration {
 		createPropertyList(TypeDeclaration.class, temporary);
 		temporary.addAll(PROPERTY_DESCRIPTORS_2_0);
 		addProperty(ASPECT_PROPERTY, temporary);
-		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(temporary);
+		ajPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(temporary);
 		
 		temporary.clear();
 		createPropertyList(TypeDeclaration.class, temporary);
 		temporary.addAll(PROPERTY_DESCRIPTORS_3_0);
 		addProperty(ASPECT_PROPERTY, temporary);
-		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(temporary);
+		ajPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(temporary);
 	}
 
 	/**
@@ -72,6 +76,37 @@ public class AjTypeDeclaration extends TypeDeclaration {
 		super(ast);
 	}
 
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	ASTNode clone0(AST target) {
+		AjTypeDeclaration result = new AjTypeDeclaration(target);
+		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.setJavadoc(
+			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
+		if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
+			result.internalSetModifiers(getModifiers());
+			result.setSuperclass(
+					(Name) ASTNode.copySubtree(target, getSuperclass()));
+			result.superInterfaces().addAll(
+					ASTNode.copySubtrees(target, superInterfaces()));
+		}
+		result.setInterface(isInterface());
+		result.setAspect(isAspect());
+		result.setName((SimpleName) getName().clone(target));
+		if (this.ast.apiLevel >= AST.JLS3) {
+			result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
+			result.typeParameters().addAll(
+					ASTNode.copySubtrees(target, typeParameters()));
+			result.setSuperclassType(
+					(Type) ASTNode.copySubtree(target, getSuperclassType()));
+			result.superInterfaceTypes().addAll(
+					ASTNode.copySubtrees(target, superInterfaceTypes()));
+		}
+		result.bodyDeclarations().addAll(
+			ASTNode.copySubtrees(target, bodyDeclarations()));
+		return result;
+	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
@@ -89,7 +124,25 @@ public class AjTypeDeclaration extends TypeDeclaration {
 		return super.internalGetSetBooleanProperty(property, get, value);
 	}
 	
-	
+ 	/**
+ 	 * Returns a list of structural property descriptors for this node type.
+ 	 * Clients must not modify the result.
+ 	 * 
+ 	 * @param apiLevel the API level; one of the
+ 	 * <code>AST.JLS&ast;</code> constants
+
+ 	 * @return a list of property descriptors (element type: 
+ 	 * {@link StructuralPropertyDescriptor})
+ 	 * @since 3.0
+ 	 */
+ 	public static List propertyDescriptors(int apiLevel) {
+ 		if (apiLevel == AST.JLS2_INTERNAL) {
+ 			return ajPROPERTY_DESCRIPTORS_2_0;
+ 		} else {
+ 			return ajPROPERTY_DESCRIPTORS_3_0;
+ 		}
+ 	}
+ 	
 	/**
 	 * Returns whether this type declaration declares a class or an 
 	 * aspect.
