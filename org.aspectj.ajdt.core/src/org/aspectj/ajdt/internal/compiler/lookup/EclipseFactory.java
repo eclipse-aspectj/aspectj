@@ -1020,4 +1020,9 @@ public class EclipseFactory {
 			return fromBinding((MethodBinding)declaringElement);
 		}
 	}
+	
+	public void cleanup() {
+		this.typexToBinding.clear();
+		this.rawTypeXToBinding.clear();
+	}
 }
