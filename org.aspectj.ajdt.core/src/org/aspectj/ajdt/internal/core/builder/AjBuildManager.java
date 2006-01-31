@@ -250,7 +250,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 List files = state.getFilesToCompile(true);
 				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
 				if (AsmManager.attemptIncrementalModelRepairs)
-				    AsmManager.getDefault().processDelta(files,state.addedFiles,state.deletedFiles);
+				    AsmManager.getDefault().processDelta(files,state.getAddedFiles(),state.getDeletedFiles());
                 boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
                 for (int i = 0; (i < 5) && hereWeGoAgain; i++) {
                     // System.err.println("XXXX inc: " + files);
@@ -271,7 +271,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                     if (hereWeGoAgain) {
 					  if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
 					    if (AsmManager.attemptIncrementalModelRepairs)
-						  AsmManager.getDefault().processDelta(files,state.addedFiles,state.deletedFiles);
+						  AsmManager.getDefault().processDelta(files,state.getAddedFiles(),state.getDeletedFiles());
                     }
                 }
                 if (!files.isEmpty()) {
@@ -455,7 +455,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
     
 	private void writeResource(String filename, byte[] content, File srcLocation) throws IOException {
-		if (state.resources.contains(filename)) {
+		if (state.hasResource(filename)) {
 			IMessage msg = new Message("duplicate resource: '" + filename + "'",
 									   IMessage.WARNING,
 									   null,
@@ -475,7 +475,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			fos.write(content);
 			fos.close();
 		}
-		state.resources.add(filename);
+		state.recordResource(filename);
 	}
 	
 	/*
@@ -624,7 +624,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		BcelWeaver bcelWeaver = new BcelWeaver(bcelWorld);
 		state.setWorld(bcelWorld);
 		state.setWeaver(bcelWeaver);
-		state.binarySourceFiles = new HashMap();
+		state.clearBinarySourceFiles();
 		
 		for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext();) {
 			File f = (File) i.next();
@@ -652,7 +652,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext(); ) {
 			File inJar = (File)i.next();
 			List unwovenClasses = bcelWeaver.addJarFile(inJar, buildConfig.getOutputDir(),false);
-			state.binarySourceFiles.put(inJar.getPath(), unwovenClasses);
+			state.recordBinarySource(inJar.getPath(), unwovenClasses);
 		}
 		
 		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
@@ -661,7 +661,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				// its a jar file on the inpath
 				// the weaver method can actually handle dirs, but we don't call it, see next block
 				List unwovenClasses = bcelWeaver.addJarFile(inPathElement,buildConfig.getOutputDir(),true);
-				state.binarySourceFiles.put(inPathElement.getPath(),unwovenClasses);
+				state.recordBinarySource(inPathElement.getPath(),unwovenClasses);
 			} else {
 				// add each class file in an in-dir individually, this gives us the best error reporting
 				// (they are like 'source' files then), and enables a cleaner incremental treatment of
@@ -672,7 +672,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 						bcelWeaver.addClassFile(binSrcs[j], inPathElement, buildConfig.getOutputDir());
 					List ucfl = new ArrayList();
 					ucfl.add(ucf);
-					state.binarySourceFiles.put(binSrcs[j].getPath(),ucfl);
+					state.recordBinarySource(binSrcs[j].getPath(),ucfl);
 				}
 			}
 		}
@@ -804,8 +804,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		//System.out.println("compiling");
 		environment = getLibraryAccess(classpaths, filenames);
 		
-		if (!state.classesFromName.isEmpty()) {
-			environment = new StatefulNameEnvironment(environment, state.classesFromName);
+		if (!state.getClassNameToUCFMap().isEmpty()) {
+			environment = new StatefulNameEnvironment(environment, state.getClassNameToUCFMap());
 		}
 		
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);
@@ -1130,8 +1130,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 						progressListener,
 						this,  // IOutputFilenameProvider
 						this,  // IBinarySourceProvider
-						state.binarySourceFiles,
-						state.resultsFromFile.values(),
+						state.getBinarySourceMap(),
+						state.getResultSetToUseForFullWeave(),
 						buildConfig.isNoWeave(),
 						buildConfig.getProceedOnError(),
 						buildConfig.isNoAtAspectJAnnotationProcessing());

@@ -48,7 +48,7 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  * Holds state needed for incremental compilation
  */
 public class AjState {
-	AjBuildManager buildManager;
+	private AjBuildManager buildManager;
 	
 	// SECRETAPI static so beware of multi-threading bugs...
 	public static IStateListener stateListener = null;
@@ -62,30 +62,90 @@ public class AjState {
 	private long lastSuccessfulBuildTime = -1;
 	private long currentBuildTime = -1;
 	
-	AjBuildConfig buildConfig;
-	AjBuildConfig newBuildConfig;
+	private AjBuildConfig buildConfig;
 	
-//	Map/*<File, List<UnwovenClassFile>*/ classesFromFile = new HashMap();
-	Map/*<File, CompilationResult*/ resultsFromFile = new HashMap();
-	Map/*<File, ReferenceCollection>*/ references = new HashMap();
-	Map/*File, List<UnwovenClassFile>*/ binarySourceFiles = new HashMap();
-	Map/*<String, UnwovenClassFile>*/ classesFromName = new HashMap();
-	List/*File*/ compiledSourceFiles = new ArrayList();
-	List/*String*/ resources = new ArrayList();
+	/**
+	 * Holds the CompilationResult produced by JDT as a result of compiling the given
+	 * source file. InterimCompilationResults are *very* memory intensive and we would 
+	 * like to release them as soon as possible (currently they are retained in memory
+	 * until the next full build).
+	 * 
+	 * Populated in noteResult which adds an InterimCompilationResult (post JDT compile,
+	 * but pre-weave).
+	 * 
+	 * The values() of this Map are passed to AjCompilerAdaptor as the result set to
+	 * use if the weaver indicates that a full weave is required.
+	 * 
+	 * In incremental building, used by addDependentsOf(File) to compute the compile set
+	 * when a given file has been added or modified.
+	 * 
+	 * When processing deleted files, this map is used to see if any of the compilation units
+	 * that came from that file were aspects, and if so, to trigger a full build.
+	 * 
+	 * When deleting class files in preparation for a full build, entries are removed
+	 * from the map.
+	 * 
+	 */
+	private Map/*<File, InterimCompilationResult*/ resultsFromFile = new HashMap();
 	
-	ArrayList/*<String>*/ qualifiedStrings;
-	ArrayList/*<String>*/ simpleStrings;
+	/**
+	 * Populated in noteResult to record the set of types that should be recompiled if
+	 * the given file is modified or deleted. 
+	 * 
+	 * Refered to during addAffectedSourceFiles when calculating incremental compilation set.
+	 */
+	private Map/*<File, ReferenceCollection>*/ references = new HashMap();
 	
-	Set addedFiles;
-	Set deletedFiles;
-	Set /*BinarySourceFile*/addedBinaryFiles;
-	Set /*BinarySourceFile*/deletedBinaryFiles;
+	/**
+	 * Holds UnwovenClassFiles (byte[]s) originating from the given file source. This
+	 * could be a jar file, a directory, or an individual .class file. This is an 
+	 * *expensive* map we would like to release much earlier if possible.
+	 * 
+	 * Populated during AjBuildManager.initBcelWorld().
+	 * 
+	 * Passed into AjCompiler adapter as the set of binary input files to reweave if the
+	 * weaver determines a full weave is required.
+	 * 
+	 * Cleared during initBcelWorld prior to repopulation.
+	 * 
+	 * Used when a file is deleted during incremental compilation to delete all of the
+	 * class files in the output directory that resulted from the weaving of File.
+	 * 
+	 * Used during getBinaryFilesToCompile when compiling incrementally to determine 
+	 * which files should be recompiled if a given input file has changed.
+	 * 
+	 */
+	private Map/*File, List<UnwovenClassFile>*/ binarySourceFiles = new HashMap();
+	
+	/**
+	 * The third of the three expensive collections of state held by AjState to support
+	 * incremental compilation. FQN -> UCF.
+	 * 
+	 * Populated in noteResult to record the set of UnwovenClassFiles (intermediate results)
+	 * that originated from compilation of the class with the given fully-qualified name.
+	 * 
+	 * Used in removeAllResultsOfLastBuild to remove .class files from output directory.
+	 *
+	 * Passed into StatefulNameEnvironment during incremental compilation to support 
+	 * findType lookups.
+	 */
+	private Map/*<String, UnwovenClassFile>*/ classesFromName = new HashMap();
+	
+	
+	private List/*File*/ compiledSourceFiles = new ArrayList();
+	private List/*String*/ resources = new ArrayList();
+	
+	private ArrayList/*<String>*/ qualifiedStrings;
+	private ArrayList/*<String>*/ simpleStrings;
+	
+	private Set addedFiles;
+	private Set deletedFiles;
+	private Set /*BinarySourceFile*/addedBinaryFiles;
+	private Set /*BinarySourceFile*/deletedBinaryFiles;
 	
 	private BcelWeaver weaver;
 	private BcelWorld world;
-	
-	List addedClassFiles;
-	
+		
 	public AjState(AjBuildManager buildManager) {
 		this.buildManager = buildManager;
 	}
@@ -102,8 +162,6 @@ public class AjState {
 	 */
 	boolean prepareForNextBuild(AjBuildConfig newBuildConfig) {
 		currentBuildTime = System.currentTimeMillis();
-		
-		addedClassFiles = new ArrayList();
 		
 		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
 			structuralChangesSinceLastFullBuild.clear();
@@ -152,8 +210,6 @@ public class AjState {
 		boolean couldStillBeIncremental = processDeletedFiles(deletedFiles);
 		
 		if (!couldStillBeIncremental) return false;
-		
-		this.newBuildConfig = newBuildConfig;
 		
 		return true;
 	}
@@ -774,4 +830,52 @@ public class AjState {
 		return lastSuccessfulFullBuildTime;
 	}
 
+	/**
+	 * @return Returns the buildConfig.
+	 */
+	public AjBuildConfig getBuildConfig() {
+		return this.buildConfig;
+	}
+	
+	public Collection getResultSetToUseForFullWeave() {
+		return this.resultsFromFile.values();
+	}
+
+	public void clearBinarySourceFiles() {
+		this.binarySourceFiles = new HashMap();
+	}
+	
+	public void recordBinarySource(String fromPathName, List unwovenClassFiles) {
+		this.binarySourceFiles.put(fromPathName,unwovenClassFiles);
+	}
+	
+	public Map getBinarySourceMap() {
+		return this.binarySourceFiles;
+	}
+	
+	public Map getClassNameToUCFMap() {
+		return this.classesFromName;
+	}
+	
+	public boolean hasResource(String resourceName) {
+		return this.resources.contains(resourceName);
+	}
+	
+	public void recordResource(String resourceName) {
+		this.resources.add(resourceName);
+	}
+
+	/**
+	 * @return Returns the addedFiles.
+	 */
+	public Set getAddedFiles() {
+		return this.addedFiles;
+	}
+
+	/**
+	 * @return Returns the deletedFiles.
+	 */
+	public Set getDeletedFiles() {
+		return this.deletedFiles;
+	}
 }
