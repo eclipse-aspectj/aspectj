@@ -170,6 +170,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	}
 
 	public void afterCompiling(CompilationUnitDeclaration[] units) {
+		this.eWorld.cleanup();
 		try {
 			if (isXNoWeave || (reportedErrors && !proceedOnError)) {
 				// no point weaving... just tell the requestor we're done
