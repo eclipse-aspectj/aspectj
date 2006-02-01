@@ -420,8 +420,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
                 }
             }
         }
-
-		if (hasPointcuts || dec instanceof AspectDeclaration) {
+        
+		if (hasPointcuts || dec instanceof AspectDeclaration || isAnnotationStyleAspectDeclaration(dec)) {
         	ReferenceType name = (ReferenceType)factory.fromEclipse(sourceType);
         	EclipseSourceType eclipseSourceType = (EclipseSourceType)name.getDelegate();
         	eclipseSourceType.checkPointcutDeclarations();
@@ -433,9 +433,22 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
         }
     }
     
-    
+    /**
+     * Return true if the declaration has @Aspect annotation
+     */
+	private boolean isAnnotationStyleAspectDeclaration(TypeDeclaration dec) { 
+        Annotation[] annotations = dec.annotations;
+        boolean isAtAspect = false;
+        if (annotations != null) {
+			for (int i = 0; i < annotations.length  && !isAtAspect; i++) {
+				if (annotations[i].resolvedType.debugName().equals("org.aspectj.lang.annotation.Aspect")) {
+					isAtAspect = true;
+				}
+			}
+		}
+        return isAtAspect;
+	}
 
-	
 	private void buildInterTypeAndPerClause(ClassScope s) {
 		TypeDeclaration dec = s.referenceContext;
 		if (dec instanceof AspectDeclaration) {
