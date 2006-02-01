@@ -437,16 +437,17 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
      * Return true if the declaration has @Aspect annotation
      */
 	private boolean isAnnotationStyleAspectDeclaration(TypeDeclaration dec) { 
-        Annotation[] annotations = dec.annotations;
-        boolean isAtAspect = false;
-        if (annotations != null) {
-			for (int i = 0; i < annotations.length  && !isAtAspect; i++) {
-				if (annotations[i].resolvedType.debugName().equals("org.aspectj.lang.annotation.Aspect")) {
-					isAtAspect = true;
-				}
-			}
-		}
-        return isAtAspect;
+		return false;
+//        Annotation[] annotations = dec.annotations;
+//        boolean isAtAspect = false;
+//        if (annotations != null) {
+//			for (int i = 0; i < annotations.length  && !isAtAspect; i++) {
+//				if (annotations[i].resolvedType.debugName().equals("org.aspectj.lang.annotation.Aspect")) {
+//					isAtAspect = true;
+//				}
+//			}
+//		}
+//        return isAtAspect;
 	}
 
 	private void buildInterTypeAndPerClause(ClassScope s) {

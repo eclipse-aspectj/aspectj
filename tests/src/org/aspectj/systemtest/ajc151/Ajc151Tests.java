@@ -77,10 +77,10 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testAtAspectInheritsAdviceWithTJPAndThis_pr125699 () {
 //	  runTest("inherit adivce with this() and thisJoinPoint"); 
 //  }
-  
-  public void testAtAspectInheritsAbstractPointcut_pr125810 () {
-	  runTest("warning when inherited pointcut not made concrete"); 
-  }
+//  
+//  public void testAtAspectInheritsAbstractPointcut_pr125810 () {
+//	  runTest("warning when inherited pointcut not made concrete"); 
+//  }
   
   /*
    * Load-time weaving bugs and enhancements
