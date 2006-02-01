@@ -421,7 +421,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
             }
         }
         
-		if (hasPointcuts || dec instanceof AspectDeclaration || isAnnotationStyleAspectDeclaration(dec)) {
+		if (hasPointcuts || dec instanceof AspectDeclaration || couldBeAnnotationStyleAspectDeclaration(dec)) {
         	ReferenceType name = (ReferenceType)factory.fromEclipse(sourceType);
         	EclipseSourceType eclipseSourceType = (EclipseSourceType)name.getDelegate();
         	eclipseSourceType.checkPointcutDeclarations();
@@ -434,20 +434,21 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
     }
     
     /**
-     * Return true if the declaration has @Aspect annotation
+     * Return true if the declaration has @Aspect annotation.  Called 'couldBe' rather than
+     * 'is' because someone else may have defined an annotation called Aspect - we can't
+     * verify the full name (including package name) because it may not have been resolved
+     * just yet and rather going through expensive resolution when we dont have to, this
+     * gives us a cheap check that tells us whether to bother.
      */
-	private boolean isAnnotationStyleAspectDeclaration(TypeDeclaration dec) { 
-		return false;
-//        Annotation[] annotations = dec.annotations;
-//        boolean isAtAspect = false;
-//        if (annotations != null) {
-//			for (int i = 0; i < annotations.length  && !isAtAspect; i++) {
-//				if (annotations[i].resolvedType.debugName().equals("org.aspectj.lang.annotation.Aspect")) {
-//					isAtAspect = true;
-//				}
-//			}
-//		}
-//        return isAtAspect;
+	private boolean couldBeAnnotationStyleAspectDeclaration(TypeDeclaration dec) { 
+        Annotation[] annotations = dec.annotations;
+        boolean couldBeAtAspect = false;
+        if (annotations != null) {
+			for (int i = 0; i < annotations.length  && !couldBeAtAspect; i++) {
+				if (annotations[i].toString().equals("@Aspect")) couldBeAtAspect=true;
+			}
+		}
+        return couldBeAtAspect;
 	}
 
 	private void buildInterTypeAndPerClause(ClassScope s) {
