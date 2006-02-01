@@ -124,6 +124,19 @@
         <compile files="AbstractMethods.aj, ConcreteMethods.aj"/>
         <run class="HelloWorld" ltw="aop-tracing.xml"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs151/pr125699" title="inherit adivce with this() and thisJoinPoint">
+        <compile files="Tracing.aj, TestTracing.aj, AtTestTracing.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr125810" title="warning when inherited pointcut not made concrete">
+        <compile files="SuperAspect.aj, SubAspect.aj, SubAtAspect.java" options="-1.5">
+          <message kind="error" line="3" text="inherited abstract pointcut SuperAspect.scope() is not made concrete in SubAspect"/>
+          <message kind="error" line="1" text="inherited abstract pointcut SuperAspect.scope() is not made concrete in SubAspect"/>
+          <message kind="error" line="3" text="inherited abstract pointcut SuperAspect.scope() is not made concrete in SubAtAspect"/>
+          <message kind="error" line="4" text="inherited abstract pointcut SuperAspect.scope() is not made concrete in SubAtAspect"/>
+        </compile>
+    </ajc-test>
 
     
     <!-- New features down here... when they arent big enough to have their own test file -->
