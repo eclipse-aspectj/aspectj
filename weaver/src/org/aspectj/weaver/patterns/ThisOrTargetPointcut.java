@@ -65,6 +65,10 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 			if (kind.neverHasTarget()) targetKindSet.remove(kind);
 		}
 	}
+	
+	public boolean isBinding() {
+		return (type instanceof BindingTypePattern);
+	}
 
 	public ThisOrTargetPointcut(boolean isThis, TypePattern type) {
 		this.isThis = isThis;

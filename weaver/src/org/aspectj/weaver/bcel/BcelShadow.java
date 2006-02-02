@@ -73,6 +73,12 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.IdentityPointcutVisitor;
+import org.aspectj.weaver.patterns.NotPointcut;
+import org.aspectj.weaver.patterns.OrPointcut;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
 
 
 /*
@@ -2428,6 +2434,40 @@ public class BcelShadow extends Shadow {
 				BcelWorld.makeBcelType(munger.getSignature().getReturnType())));
 		return ret;
 	}
+	
+    private static boolean bindsThisOrTarget(Pointcut pointcut) {
+        ThisTargetFinder visitor = new ThisTargetFinder();
+        pointcut.accept(visitor, null);
+        return visitor.bindsThisOrTarget;
+    }
+    
+    private static class ThisTargetFinder extends IdentityPointcutVisitor {
+        boolean bindsThisOrTarget = false;
+
+        public Object visit(ThisOrTargetPointcut node, Object data) {
+        	if (node.isBinding()) {
+                bindsThisOrTarget = true;
+            }
+            return node;
+        }
+
+        public Object visit(AndPointcut node, Object data) {
+            if (!bindsThisOrTarget) node.getLeft().accept(this, data);
+            if (!bindsThisOrTarget) node.getRight().accept(this, data);
+            return node;
+        }
+
+        public Object visit(NotPointcut node, Object data) {
+            if (!bindsThisOrTarget) node.getNegatedPointcut().accept(this, data);
+            return node;
+        }
+
+        public Object visit(OrPointcut node, Object data) {
+            if (!bindsThisOrTarget) node.getLeft().accept(this, data);
+            if (!bindsThisOrTarget) node.getRight().accept(this, data);
+            return node;
+        }
+    }
 
     /**
      * ATAJ Handle the inlining for @AJ aspects
@@ -2490,6 +2530,8 @@ public class BcelShadow extends Shadow {
                 //TODO this logic is actually depending on target as well - test me
                 ret.append(new ALOAD(0));//thisVar
             }
+//    	    if (bindsThisOrTarget(munger.getPointcut())) {                
+            
             for (int i = startIndex, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
                 Type stateType = callbackMethod.getArgumentTypes()[i];
                 BcelWorld.fromBcel(stateType).resolve(world);
