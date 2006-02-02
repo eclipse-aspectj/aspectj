@@ -1716,7 +1716,7 @@ public class AtAjAttributes {
 
         public Object visit(AndPointcut node, Object data) {
             if (!hasIf) node.getLeft().accept(this, data);
-            if (!hasIf) node.getLeft().accept(this, data);
+            if (!hasIf) node.getRight().accept(this, data);
             return node;
         }
 
@@ -1727,7 +1727,7 @@ public class AtAjAttributes {
 
         public Object visit(OrPointcut node, Object data) {
             if (!hasIf) node.getLeft().accept(this, data);
-            if (!hasIf) node.getLeft().accept(this, data);
+            if (!hasIf) node.getRight().accept(this, data);
             return node;
         }
     }
