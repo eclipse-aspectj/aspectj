@@ -22,7 +22,7 @@
        2003-2006 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated January 22, 2006
+  <para>Last updated February 2, 2006
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -3156,6 +3156,10 @@ aspect A {
           <para>When running under an IDE, look to the documentation
           for the IDE to determine how to increase available memory.
           </para>
+          <para>In either case, doing incremental compilations can hold on to
+			  more memory than a one-shot compile process, as the compiler
+			  trades space for time in recompiles.
+          </para>
         </answer>
       </qandaentry> 
       <qandaentry>
@@ -3728,18 +3732,29 @@ aspect A {
           <para>When running classes produced by the AspectJ weaver or compiler,
               there are no significant hidden uses of memory.  As would be expected,
               each aspect is instantiated.  The per-object aspects (like
-              <literal>pertarget</literal> or <literal>perthis</literal>) also
+              <literal>pertarget</literal> or <literal>perthis</literal>)  
+			  in some implementations
               use a map to link aspects and the associated object.  When using
               <literal>cflow</literal>-related pointcuts, a <literal>ThreadLocal</literal>
               is used to track control flow for each affected thread.
 		  </para>
 		  <para>Of course, the size and code in an aspect can require memory.
+			  Aside from normal Java practices, take care with join point references.
               When referencing the static part of a join point (e.g., 
               <literal>thisJoinPointStaticPart</literal>), only one object is
               created.  However, if you reference the join point itself
               (e.g., <literal>thisJoinPoint</literal>), then one 
               <literal>JoinPoint</literal> object will be created for each 
               join point running advice.
+		  </para>
+		  <para>Aspect instances will be garbage collected just like regular objects 
+			  after there are no more strong references to them.  For the default
+			  aspect instantiation model, <literal>issingleton</literal>, the aspect
+			  class retains a reference to the singleton instance, in order to 
+			  implement <literal>static {AspectClass} aspectOf()</literal>, so 
+			  singleton instances will not be garbage collected until the class is.
+			  For long-running or memory-critical programs, consider using weak 
+			  references in singleton aspects for state that should be garbage collected.
 		  </para>
 		  <para>Finally, when using load-time weaving, the weaver can require
               memory in its own right.  Because the class loader never can 
@@ -5028,8 +5043,9 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           <para>
           Entries changed recently:
             <itemizedlist>
-        <listitem><para><xref linkend="q:howIncrementalWorks"/></para></listitem>
         <listitem><para><xref linkend="q:runtimeMemory"/></para></listitem>
+        <listitem><para><xref linkend="q:ajcoom"/></para></listitem>
+        <listitem><para><xref linkend="q:howIncrementalWorks"/></para></listitem>
         <listitem><para><xref linkend="q:compilerRequired"/></para></listitem>
         <listitem><para><xref linkend="q:aspectj5features"/></para></listitem>
         <listitem><para><xref linkend="q:codeversusannotationstyles"/></para></listitem>
