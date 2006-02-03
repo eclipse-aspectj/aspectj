@@ -70,6 +70,10 @@ public class ReferenceType extends ResolvedType {
     public ReferenceType(String signature, World world) {
         super(signature, world);
     }
+
+    public ReferenceType(String signature, String signatureErasure, World world) {
+        super(signature,signatureErasure, world);
+    }
     
     /**
      * Constructor used when creating a parameterized type.

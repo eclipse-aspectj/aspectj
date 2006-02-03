@@ -70,6 +70,10 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	  // the argument is org.aspectj.lang.JoinPoint, check that this is added
   	  assertFalse("printParameters method should have arguments",pe2.getParameterTypes().isEmpty());	  
   }
+
+  public void testParameterizedEnum_pr126316() {
+	  runTest("E extends Enum(E) again");
+  }
   
   /*
    * @AspectJ bugs and enhancements

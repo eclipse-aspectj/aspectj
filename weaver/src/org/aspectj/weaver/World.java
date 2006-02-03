@@ -209,7 +209,7 @@ public abstract class World implements Dump.INode {
         // might be a problem here, not sure '?' should make it to here as a signature, the 
         // proper signature for wildcard '?' is '*'
         	// fault in generic wildcard, can't be done earlier because of init issues
-        	ResolvedType something = new BoundedReferenceType("?",this);
+        	ResolvedType something = new BoundedReferenceType("?","Ljava/lang/Object",this);
         	typeMap.put("?",something);
         	return something;
         }

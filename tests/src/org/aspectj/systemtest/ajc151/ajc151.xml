@@ -138,6 +138,9 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs151" title="E extends Enum(E) again">
+        <compile files="Pr126316.aj" options="-1.5"/>
+    </ajc-test>
     
     <!-- New features down here... when they arent big enough to have their own test file -->
     

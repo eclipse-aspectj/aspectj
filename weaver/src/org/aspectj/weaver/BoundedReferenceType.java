@@ -57,8 +57,8 @@ public class BoundedReferenceType extends ReferenceType {
 	/**
 	 * only for use when resolving GenericsWildcardTypeX or a TypeVariableReferenceType
 	 */
-	protected BoundedReferenceType(String sig, World world) {
-		super(sig,world);
+	protected BoundedReferenceType(String sig, String sigErasure, World world) {
+		super(sig, sigErasure, world);
 		setUpperBound(world.resolve(UnresolvedType.OBJECT));
 		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)getUpperBound()));
 	}

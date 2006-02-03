@@ -31,7 +31,9 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	public TypeVariableReferenceType(
 			TypeVariable aTypeVariable,
 			World aWorld) {
-		super(aTypeVariable.getFirstBound().getSignature(),aWorld);
+		super(aTypeVariable.getFirstBound().getSignature(),
+			  aTypeVariable.getFirstBound().getErasureSignature(),
+			  aWorld);
 		this.typeVariable = aTypeVariable;
 		this.isExtends    = false;
 		this.isSuper      = false;
