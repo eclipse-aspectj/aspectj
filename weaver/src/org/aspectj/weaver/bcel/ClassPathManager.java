@@ -242,16 +242,33 @@ public class ClassPathManager {
 		}
 		
 		private void ensureOpen() {
-			if (zipFile != null) return; // If its not null, the zip is already open
+			if (zipFile != null && openArchives.contains(zipFile)) {
+				if (isReallyOpen()) return;
+			}
 			try {
 				if (openArchives.size()>=maxOpenArchives) {
 					closeSomeArchives(openArchives.size()/10); // Close 10% of those open
 				}
 				zipFile = new ZipFile(file);
+				if (!isReallyOpen()) {
+					throw new BCException("Can't open archive: "+file.getName()+" (size() check failed)");					
+				}
 				openArchives.add(zipFile);
 			} catch (IOException ioe) {
 				throw new BCException("Can't open archive: "+file.getName(),ioe);
 			}
+		}
+		
+		private boolean isReallyOpen() {
+			try {
+				zipFile.size(); // this will fail if the file has been closed for
+				                // some reason;
+				return true;
+			} catch (IllegalStateException ex) {
+				// this means the zip file is closed...
+				return false;
+			}
+			
 		}
 		
 		public void closeSomeArchives(int n) {
