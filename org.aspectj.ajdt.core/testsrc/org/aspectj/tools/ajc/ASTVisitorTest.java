@@ -180,6 +180,38 @@ public class ASTVisitorTest extends TestCase {
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))))");
 	}
 	
+	public void testPointcutWithoutArguments(){
+		check("aspect A {pointcut a(): adviceexecution();}",
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))))");
+	}
+		
+	public void testPointcutWithOnePrimitiveArgument(){
+		check("aspect A {pointcut a(int a): adviceexecution();}",
+		"(compilationUnit(aspect(simpleName)(pointcut(simpleName)(primitiveType)(simpleName))))");
+	}
+
+	public void testPointcutWithTwoPrimitiveArguments(){
+		check("aspect A {pointcut a(int a, double b): adviceexecution();}",
+		"(compilationUnit(aspect(simpleName)(pointcut" +
+		"(simpleName)(primitiveType)(simpleName)(primitiveType)" +
+		"(simpleName))))");
+	}
+
+	public void testPointcutWithOneTypedArgument(){
+		check("aspect A {pointcut a(A a): adviceexecution();}",
+		"(compilationUnit(aspect(simpleName)(pointcut" +
+		"(simpleName)(simpleName)" +
+		"(simpleName))))");
+	}
+
+	public void testPointcutWithTwoTypedArgument(){
+		check("aspect A {pointcut a(A a, B b): adviceexecution();}",
+		"(compilationUnit(aspect(simpleName)(pointcut" +
+		"(simpleName)(simpleName)" +
+		"(simpleName)(simpleName)" +
+		"(simpleName))))");
+	}
+
 	public void testFieldITD(){
 		check("class A {}aspect B {int A.a;}",
 				"(compilationUnit(class(simpleName))(aspect(simpleName)(fieldITD(primitiveType)(simpleName))))");

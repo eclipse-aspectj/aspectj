@@ -525,6 +525,14 @@ public class AjASTConverter extends ASTConverter {
 		} else {
 			pointcutDecl.setDesignator(new org.aspectj.org.eclipse.jdt.core.dom.DefaultPointcut(this.ast,pointcutDeclaration.toString()));
 		}
+		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = pointcutDeclaration.arguments;
+		if (parameters != null) {
+			int parametersLength = parameters.length;
+			for (int i = 0; i < parametersLength; i++) {
+				pointcutDecl.parameters().add(convert(parameters[i]));
+			}
+		}
+		
 //		 The javadoc comment is now got from list store in compilation unit declaration
 		if (this.resolveBindings) {
 			recordNodes(pointcutDecl, pointcutDeclaration);

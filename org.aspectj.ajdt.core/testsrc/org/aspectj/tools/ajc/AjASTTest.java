@@ -45,6 +45,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.DeclareSoftDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareWarningDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DefaultPointcut;
 import org.aspectj.org.eclipse.jdt.core.dom.DefaultTypePattern;
+import org.aspectj.org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.aspectj.org.eclipse.jdt.core.dom.InterTypeFieldDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.NotPointcut;
@@ -391,6 +392,131 @@ public class AjASTTest extends TestCase {
 		pd.setDesignator(rp);
 		assertEquals("should have set the pointcut designator to be " +
 				"the ReferencePointcut",rp,pd.getDesignator());
+	}
+	
+	public void testGetAndSetPointcutArguments(){
+		AjAST ajast = createAjAST();
+		PointcutDeclaration pd = ajast.newPointcutDeclaration();
+		assertEquals("by default the number of arguments is zero",pd.parameters().size(), 0);
+		List l = pd.parameters();
+		assertEquals("there shouldn't be any arguments associated with" +
+				"the pointcut yet",0,l.size());
+		SingleVariableDeclaration p1 = ajast.newSingleVariableDeclaration();
+		l.add(p1);
+		assertEquals("there should be one parameter associated with" +
+				"the pointcut",1,pd.parameters().size());
+		assertEquals("there should be a SingleVariableDeclaration associated with" +
+				"the pointcut",p1,pd.parameters().get(0));
+	}
+
+	public void testPropertyDescriptorsForPointcutDeclaration() {
+		AjAST ajast = createAjAST();
+		PointcutDeclaration d = ajast.newPointcutDeclaration();
+		List props = PointcutDeclaration.propertyDescriptors(AST.JLS3);
+		boolean foundJavadoc = false;
+		boolean foundModifiers = false;
+		boolean foundName = false;
+		boolean foundParamList = false;
+		boolean foundDesignator = false;
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if ((o instanceof ChildPropertyDescriptor)) {
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
+				String id = element.getId();
+				if (id.equals("javadoc")) {
+					foundJavadoc = true;
+				} else if (id.equals("designator")) {
+					foundDesignator = true;
+				} else if (id.equals("name")) {
+					foundName = true;
+				} else {
+					fail("unknown PropertyDescriptor associated with PointcutDeclaration: " + element.getId());
+				}
+			} else if (o instanceof ChildListPropertyDescriptor) {
+				ChildListPropertyDescriptor element = (ChildListPropertyDescriptor)o;
+				if (element.getId().equals("parameters")) {
+					foundParamList= true;					
+				} else if (element.getId().equals("modifiers")) {
+					foundModifiers = true;
+				}
+			} else {
+				fail("unknown PropertyDescriptor associated with PointcutDeclaration: " + o);
+			}
+		}
+		assertTrue("PointcutDeclaration should have a javadoc PropertyDescriptor",foundJavadoc);
+		assertTrue("PointcutDeclaration should have a designator PropertyDescriptor",foundDesignator);
+		assertTrue("PointcutDeclaration should have an name PropertyDescriptor",foundName);
+		assertTrue("PointcutDeclaration should have a parameters PropertyDescriptor",foundParamList);
+		assertTrue("PointcutDeclaration should have a modifiers PropertyDescriptor",foundModifiers);
+	}
+	
+	public void testClonePointcutDeclaration() {
+		AjAST ajast = createAjAST();
+		PointcutDeclaration d = ajast.newPointcutDeclaration();
+		d.setName(ajast.newSimpleName("pointcut_name"));
+		d.parameters().add(ajast.newSingleVariableDeclaration());
+		PointcutDeclaration copy = (PointcutDeclaration)ASTNode.copySubtree(ajast,d);
+		assertEquals("there should be one parameter associated with" +
+				"the pointcut copy",1,copy.parameters().size());
+		assertEquals("the PointcutDeclaration clone should have the name ", "pointcut_name",
+				copy.getName().toString());
+	}
+	
+	public void testInternalPointcutDeclaration() {
+		AjAST ajast = createAjAST();
+		PointcutDeclaration d = ajast.newPointcutDeclaration();
+		List props = PointcutDeclaration.propertyDescriptors(AST.JLS3);
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof ChildPropertyDescriptor) {
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
+				if (element.getId().equals("name")) {
+					assertNotNull("PointcutDeclaration's " + element.getId() + " property" +
+							" should not be null since it is lazily created",
+							d.getStructuralProperty(element));				
+				} else {
+					assertNull("PointcutDeclaration's " + element.getId() + " property" +
+							" should be null since we haven't set it yet",
+							d.getStructuralProperty(element));				
+				}				
+			} else if (o instanceof ChildListPropertyDescriptor) {
+				ChildListPropertyDescriptor element = (ChildListPropertyDescriptor)o;
+				assertNotNull("PointcutDeclaration's " + element.getId() + " property" +
+						"should not be null since it is a list",
+						d.getStructuralProperty(element));
+				boolean isIExtendedModifier = element.getElementType().equals(IExtendedModifier.class);
+				boolean isSingleVariable = element.getElementType().equals(SingleVariableDeclaration.class);
+				assertTrue("should only be able to put SingleVariableDeclaration's" +
+						" (which itself has node type IExtendedModifier) into the list",
+						isIExtendedModifier || isSingleVariable);
+			} else if (o instanceof SimplePropertyDescriptor) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+				assertNotNull("PointcutDeclaration's " + element.getId() + " property" +
+						"should not be null since it is a boolean",
+						d.getStructuralProperty(element));									
+			} else {
+				fail("unknown PropertyDescriptor associated with PointcutDeclaration: " + o);
+			}
+		}
+		for (Iterator iter = props.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			if (o instanceof ChildPropertyDescriptor) {
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
+				if (element.getId().equals("designator")) {
+					ReferencePointcut rp = ajast.newReferencePointcut();
+					d.setStructuralProperty(element,rp);
+					assertEquals("PointcutDeclaration's designator property should" +
+							" now be a ReferencePointcut",rp,d.getStructuralProperty(element));
+				} else if (element.getId().equals("javadoc")) {
+					// do nothing since makes no sense to have javadoc
+				} else if (element.getId().equals("name")) {
+					SimpleName sn = ajast.newSimpleName("p");
+					d.setStructuralProperty(element,sn);
+					assertEquals("PointcutDeclaration's name property should" +
+							" now be a SimpleName",sn,d.getStructuralProperty(element));
+				}
+			} 
+		}
 	}
 	
 	// -------------- AspectDeclaration tests ---------------

@@ -29,6 +29,7 @@ public class AjcTests extends TestCase {
         suite.addTestSuite(ASTVisitorTest.class);
         suite.addTestSuite(ASTitdTest.class);
         suite.addTestSuite(AjASTTest.class);
+        suite.addTestSuite(AjNaiveASTFlattenerTest.class);
         return suite;
     }
 

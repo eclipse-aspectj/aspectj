@@ -19,6 +19,7 @@ import java.util.List;
  * has:
  *   a name
  *   an optional pointcut designator called 'designator'
+ *   a SingleVariableDeclaration list called 'parameters'
  *   javadoc
  *   modifiers
  *   
@@ -36,6 +37,12 @@ public class PointcutDeclaration extends BodyDeclaration {
 	private PointcutDesignator pointcutDesignator = null;
 	public static final ChildPropertyDescriptor DESIGNATOR_PROPERTY = 
 		new ChildPropertyDescriptor(PointcutDeclaration.class, "designator", PointcutDesignator.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "parameters" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor PARAMETERS_PROPERTY = 
+		new ChildListPropertyDescriptor(PointcutDeclaration.class, "parameters", SingleVariableDeclaration.class, CYCLE_RISK); //$NON-NLS-1$
 	
 	public PointcutDesignator getDesignator() {
 		return this.pointcutDesignator;
@@ -110,20 +117,24 @@ public class PointcutDeclaration extends BodyDeclaration {
 	private static final List PROPERTY_DESCRIPTORS_3_0;
 	
 	static {
-		List propertyList = new ArrayList(5);
+		List propertyList = new ArrayList(6);
 		createPropertyList(PointcutDeclaration.class, propertyList);
 		addProperty(JAVADOC_PROPERTY, propertyList);
 		addProperty(MODIFIERS_PROPERTY, propertyList);
 		addProperty(NAME_PROPERTY, propertyList);
 		addProperty(DESIGNATOR_PROPERTY, propertyList);
+		addProperty(PARAMETERS_PROPERTY, propertyList);
+		
 		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
 		
-		propertyList = new ArrayList(5);
+		propertyList = new ArrayList(6);
 		createPropertyList(PointcutDeclaration.class, propertyList);
 		addProperty(JAVADOC_PROPERTY, propertyList);
 		addProperty(MODIFIERS2_PROPERTY, propertyList);
 		addProperty(NAME_PROPERTY, propertyList);
 		addProperty(DESIGNATOR_PROPERTY, propertyList);
+		addProperty(PARAMETERS_PROPERTY, propertyList);
+		
 		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
 	}
 
@@ -161,6 +172,8 @@ public class PointcutDeclaration extends BodyDeclaration {
 		super(ast);
 	}
 	
+	protected ASTNode.NodeList parameters =
+		new ASTNode.NodeList(PARAMETERS_PROPERTY);
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
@@ -225,6 +238,9 @@ public class PointcutDeclaration extends BodyDeclaration {
 		if (property == MODIFIERS2_PROPERTY) {
 			return modifiers();
 		}
+		if (property == PARAMETERS_PROPERTY) {
+			return parameters();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -272,7 +288,11 @@ public class PointcutDeclaration extends BodyDeclaration {
 			result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
 		}
 		result.setName((SimpleName) getName().clone(target));
-		result.setDesignator((PointcutDesignator) getDesignator().clone(target));
+		if (getDesignator() != null) {
+			result.setDesignator((PointcutDesignator) getDesignator().clone(target));
+		}
+		result.parameters().addAll(
+				ASTNode.copySubtrees(target, parameters()));
 		return result;
 	}
 	
@@ -299,16 +319,28 @@ public class PointcutDeclaration extends BodyDeclaration {
 				}
 				acceptChild(ajvis, getName());
 				acceptChild(ajvis, getDesignator());
+				acceptChildren(visitor, this.parameters);
 			}
 			ajvis.endVisit(this);
 		}
 	}
 		
+	/**
+	 * Returns the live ordered list of method parameter declarations for this
+	 * method declaration.
+	 * 
+	 * @return the live list of method parameter declarations
+	 *    (element type: <code>SingleVariableDeclaration</code>)
+	 */ 
+	public List parameters() {
+		return this.parameters;
+	}
+	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 2 * 4;
+		return super.memSize() + 3 * 4;
 	}
 	
 	/* (omit javadoc for this method)
@@ -320,6 +352,7 @@ public class PointcutDeclaration extends BodyDeclaration {
 			+ (this.optionalDocComment == null ? 0 : getJavadoc().treeSize())
 			+ (this.pointcutName == null ? 0 : getName().treeSize())
 			+ (this.modifiers == null ? 0 : this.modifiers.listSize())
+			+ this.parameters.listSize()
 			+ (this.pointcutDesignator == null ? 0 : getDesignator().treeSize());
 	}
 }

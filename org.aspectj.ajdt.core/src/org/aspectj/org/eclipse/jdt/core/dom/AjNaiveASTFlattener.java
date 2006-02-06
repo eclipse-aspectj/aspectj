@@ -514,7 +514,15 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		printIndent();
 		buffer.append(" pointcut ");
 		node.getName().accept(this);
-		buffer.append("():");
+		buffer.append("(");
+		List parameters = node.parameters();
+		for (Iterator iter = parameters.iterator(); iter.hasNext();) {
+			SingleVariableDeclaration element = (SingleVariableDeclaration) iter.next();
+			buffer.append(element.getType().toString()+" "+element.getName());
+			if (iter.hasNext())
+				buffer.append(", ");
+		}
+		buffer.append("):");
 		buffer.append(((DefaultPointcut)node.getDesignator()).getDetail());
 		buffer.append(";\n");
 		return false;
