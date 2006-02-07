@@ -191,6 +191,7 @@ public class Lint {
 	
 	// temporarily suppress the given lint messages
 	public void suppressKinds(Collection lintKind) {
+		if (lintKind.isEmpty()) return;
 		for (Iterator iter = lintKind.iterator(); iter.hasNext();) {
 			Kind k = (Kind) iter.next();
 			k.setSuppressed(true);
@@ -206,6 +207,7 @@ public class Lint {
 	}
 	
 	public void clearSuppressions(Collection lintKind) {
+		if (lintKind.isEmpty()) return;
 		for (Iterator iter = lintKind.iterator(); iter.hasNext();) {
 			Kind k = (Kind) iter.next();
 			k.setSuppressed(false);
