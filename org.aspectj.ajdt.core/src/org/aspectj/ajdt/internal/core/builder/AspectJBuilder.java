@@ -137,10 +137,11 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		}
 		Collection resultSetForFullWeave = unwovenResultCollector.getIntermediateResults();
 		
-		return new AjCompilerAdapter(forCompiler,isBatchBuild,myBcelWorld,
-				     myWeaver,eFactory,unwovenResultCollector,ajNotifier,fileNameProvider,bsProvider,
-					 fullBinarySourceEntries,resultSetForFullWeave,
-					 ajOptions.noWeave,ajOptions.proceedOnError,ajOptions.noAtAspectJProcessing);
+		throw new UnsupportedOperationException("Is anyone actually using the AspectJBuilder class??");
+//		return new AjCompilerAdapter(forCompiler,isBatchBuild,myBcelWorld,
+//				     myWeaver,eFactory,unwovenResultCollector,ajNotifier,fileNameProvider,bsProvider,
+//					 fullBinarySourceEntries,resultSetForFullWeave,
+//					 ajOptions.noWeave,ajOptions.proceedOnError,ajOptions.noAtAspectJProcessing);
 	}		
 	
 	/* (non-Javadoc)
