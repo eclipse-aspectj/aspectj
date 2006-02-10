@@ -80,6 +80,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
         stack = new Stack();
         this.buildConfig = buildConfig;
         internalBuild(cuDeclaration, structureModel);
+        this.buildConfig = null;  // clear reference since this structure is anchored in static
 //        throw new RuntimeException("not implemented");
     }
 	   
