@@ -52,15 +52,15 @@ public class AjCompilerOptions extends CompilerOptions {
     public static final String OPTION_Emacssym                = "org.aspectj.ajdt.core.compiler.model.Emacssym";
 	
 	// constants for irritant levels
-	public static final long InvalidAbsoluteTypeName    = ASTNode.Bit45L;
-	public static final long InvalidWildCardTypeName    = ASTNode.Bit46L;
-	public static final long UnresolvableMember           = ASTNode.Bit47L;
-	public static final long TypeNotExposedToWeaver   = ASTNode.Bit48L;
-	public static final long ShadowNotInStructure       = ASTNode.Bit49L;
-	public static final long UnmatchedSuperTypeInCall   = ASTNode.Bit50L;
-	public static final long CannotImplementLazyTJP     = ASTNode.Bit51L;
-	public static final long NeedSerialVersionUIDField  = ASTNode.Bit52L;
-	public static final long IncompatibleSerialVersion  = ASTNode.Bit53L;
+	public static final long InvalidAbsoluteTypeName    = ASTNode.Bit47L;
+	public static final long InvalidWildCardTypeName    = ASTNode.Bit48L;
+	public static final long UnresolvableMember           = ASTNode.Bit49L;
+	public static final long TypeNotExposedToWeaver   = ASTNode.Bit50L;
+	public static final long ShadowNotInStructure       = ASTNode.Bit51L;
+	public static final long UnmatchedSuperTypeInCall   = ASTNode.Bit52L;
+	public static final long CannotImplementLazyTJP     = ASTNode.Bit53L;
+	public static final long NeedSerialVersionUIDField  = ASTNode.Bit54L;
+	public static final long IncompatibleSerialVersion  = ASTNode.Bit55L;
 
 	public boolean noWeave = false;
 	public boolean xSerializableAspects = false;
@@ -126,6 +126,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		map.put(OPTION_ReportCannotImplementLazyTJP,getSeverityString(CannotImplementLazyTJP));
 		map.put(OPTION_ReportNeedSerialVersionUIDField,getSeverityString(NeedSerialVersionUIDField));
 		map.put(OPTION_ReportIncompatibleSerialVersion,getSeverityString(IncompatibleSerialVersion));
+		map.put(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock,getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock));
 		
 		map.put(OPTION_NoWeave, this.noWeave ? ENABLED : DISABLED);
 		map.put(OPTION_XSerializableAspects,this.xSerializableAspects ? ENABLED : DISABLED);
@@ -158,6 +159,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		if ((optionValue = optionsMap.get(OPTION_ReportCannotImplementLazyTJP)) != null) updateSeverity(CannotImplementLazyTJP, optionValue);
 		if ((optionValue = optionsMap.get(OPTION_ReportNeedSerialVersionUIDField)) != null) updateSeverity(NeedSerialVersionUIDField, optionValue);
 		if ((optionValue = optionsMap.get(OPTION_ReportIncompatibleSerialVersion)) != null) updateSeverity(IncompatibleSerialVersion, optionValue);
+		if ((optionValue = optionsMap.get(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock)) != null) updateSeverity(CompilerOptions.SwallowedExceptionInCatchBlock, optionValue);
 		
 		if ((optionValue = optionsMap.get(OPTION_NoWeave)) != null) {
 			if (ENABLED.equals(optionValue)) {
@@ -263,7 +265,8 @@ public class AjCompilerOptions extends CompilerOptions {
 			UnresolvableMember |
 			TypeNotExposedToWeaver |
 			UnmatchedSuperTypeInCall |
-			CannotImplementLazyTJP;
+			CannotImplementLazyTJP |
+			CompilerOptions.SwallowedExceptionInCatchBlock;
 	}
 	
 	/* (non-Javadoc)
@@ -294,6 +297,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		buf.append("\n\t- cannot implement lazy thisJoinPoint (XLint): ").append(getSeverityString(CannotImplementLazyTJP)); //$NON-NLS-1$
 		buf.append("\n\t- need serialVersionUID field (XLint): ").append(getSeverityString(NeedSerialVersionUIDField)); //$NON-NLS-1$
 		buf.append("\n\t- incompatible serial version (XLint): ").append(getSeverityString(IncompatibleSerialVersion)); //$NON-NLS-1$
+		buf.append("\n\t- swallowed exception in catch block (XLint): ").append(getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock)); //$NON-NLS-1$
 		
 		return buf.toString();
 	}
