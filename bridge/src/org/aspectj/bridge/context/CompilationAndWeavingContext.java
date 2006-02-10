@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.bridge.context;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -118,11 +119,16 @@ public class CompilationAndWeavingContext {
 	
 	// context stacks, one per thread
 	private static Map contextMap = new HashMap();
+	
+	// single thread mode stack
+	private static Stack contextStack = new Stack();
+	
 	// formatters, by phase id
 	private static Map formatterMap = new HashMap();
 	
 	private static ContextFormatter defaultFormatter = new DefaultFormatter();
 	
+	private static boolean multiThreaded = false;
 	
 	/**
 	 * this is a static service
@@ -133,9 +139,12 @@ public class CompilationAndWeavingContext {
 	// for testing...
 	public static void reset() {
 		contextMap = new HashMap();
+		contextStack = new Stack();
 		formatterMap = new HashMap();
 		nextTokenId = 1;
 	}
+	
+	public static void setMultiThreaded(boolean mt) { multiThreaded = mt; }
 	
 	public static void registerFormatter(int phaseId, ContextFormatter aFormatter) {
 		formatterMap.put(new Integer(phaseId),aFormatter);
@@ -149,7 +158,10 @@ public class CompilationAndWeavingContext {
 		Stack explanationStack = new Stack();
 		for (Iterator iter = contextStack.iterator(); iter.hasNext();) {
 			ContextStackEntry entry = (ContextStackEntry) iter.next();
-			explanationStack.push(getFormatter(entry).formatEntry(entry.phaseId,entry.data));
+			Object data = entry.getData();
+			if (data != null) {
+				explanationStack.push(getFormatter(entry).formatEntry(entry.phaseId,data));
+			}
 		}
 		StringBuffer sb = new StringBuffer();
 		while (!explanationStack.isEmpty()) {
@@ -163,7 +175,7 @@ public class CompilationAndWeavingContext {
 	public static ContextToken enteringPhase(int phaseId, Object data) {
 		Stack contextStack = getContextStack();
 		ContextTokenImpl nextToken = nextToken();
-		contextStack.push(new ContextStackEntry(nextToken,phaseId,data));
+		contextStack.push(new ContextStackEntry(nextToken,phaseId,new WeakReference(data)));
 		return nextToken;
 	}
 	
@@ -180,12 +192,17 @@ public class CompilationAndWeavingContext {
 	}
 	
 	private static Stack getContextStack() {
-		if (contextMap.containsKey(Thread.currentThread())) {
-			return (Stack) contextMap.get(Thread.currentThread());
-		} else {
-			Stack contextStack = new Stack();
-			contextMap.put(Thread.currentThread(),contextStack);
+		if (!multiThreaded) {
 			return contextStack;
+		}
+		else {
+			if (contextMap.containsKey(Thread.currentThread())) {
+				return (Stack) contextMap.get(Thread.currentThread());
+			} else {
+				Stack contextStack = new Stack();
+				contextMap.put(Thread.currentThread(),contextStack);
+				return contextStack;
+			}
 		}
 	}
 	
@@ -211,15 +228,24 @@ public class CompilationAndWeavingContext {
 	private static class ContextStackEntry {
 		public ContextTokenImpl contextToken; 
 		public int phaseId;
-		public Object data;
-		public ContextStackEntry(ContextTokenImpl ct, int phase, Object data) {
+		private WeakReference dataRef;
+		public ContextStackEntry(ContextTokenImpl ct, int phase, WeakReference data) {
 			this.contextToken = ct;
 			this.phaseId = phase;
-			this.data = data;
+			this.dataRef = data;
+		}
+		
+		public Object getData() {
+			return dataRef.get();
 		}
 		
 		public String toString() {
-			return CompilationAndWeavingContext.getFormatter(this).formatEntry(phaseId, data);
+			Object data = getData();
+			if (data == null) {
+				return "referenced context entry has gone out of scope";
+			} else {
+				return CompilationAndWeavingContext.getFormatter(this).formatEntry(phaseId, data);				
+			}
 		}
 	}
 	
