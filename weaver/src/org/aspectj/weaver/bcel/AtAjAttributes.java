@@ -1298,8 +1298,8 @@ public class AtAjAttributes {
      *     with javac.
      *  2. creating an AjAttribute called FieldDeclarationLineNumberAttribute 
      *     (much like MethodDeclarationLineNumberAttribute) which we can ask 
-     *     for the offset. This will fix bug 120356 both when compiled with ajc 
-     *     and javac.
+     *     for the offset. This will again only fix bug 120356 when compiled 
+     *     with ajc.
      * 
      * @param deow
      * @param struct
