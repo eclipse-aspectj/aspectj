@@ -72,6 +72,7 @@ public class CompilerDumpTestCase extends AjcTestCase {
 	 */
 	public void testDumpWithWarnings () {
 		String[] args = new String[] { "src/HelloWorld.java", "src/Pointcuts.aj", "src/DeclareWarning.aj" };
+		Dump.preserveOnNextReset();
 		CompilationResult result = ajc(baseDir,args);
 		String fileName = Dump.dump("DumpTestCase.testDumpWithWarnings()");
 		dumpFile = new File(fileName);

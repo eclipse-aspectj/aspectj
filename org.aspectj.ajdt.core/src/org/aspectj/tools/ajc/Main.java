@@ -36,6 +36,7 @@ import org.aspectj.bridge.Version;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.Dump;
 
 /**
  * Programmatic and command-line interface to AspectJ compiler.
@@ -243,10 +244,15 @@ public class Main {
         try {
         	// byte[] b = new byte[100000000]; for testing OoME only!
         	run(args, holder);
-        } catch (OutOfMemoryError outOfMemory) {
+        } 
+        catch (OutOfMemoryError outOfMemory) {
         	IMessage outOfMemoryMessage = new Message(OUT_OF_MEMORY_MSG,null,true);
         	holder.handleMessage(outOfMemoryMessage);
         	systemExit(holder);  // we can't reasonably continue from this point.
+        } 
+        finally {
+        	CompilationAndWeavingContext.reset();
+        	Dump.reset();
         }
 
         boolean skipExit = false;
