@@ -44,6 +44,7 @@ import org.aspectj.ajdt.internal.compiler.IIntermediateResultsRequestor;
 import org.aspectj.ajdt.internal.compiler.IOutputClassFileNameProvider;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
+import org.aspectj.ajdt.internal.compiler.lookup.AnonymousClassPublisher;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
 import org.aspectj.asm.AsmManager;
@@ -176,6 +177,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
     	if (baseHandler instanceof ILifecycleAware) {
     		((ILifecycleAware)baseHandler).buildStarting(!batch);
     	}
+    	CompilationAndWeavingContext.reset();
     	int phase = batch ? CompilationAndWeavingContext.BATCH_BUILD : CompilationAndWeavingContext.INCREMENTAL_BUILD;
     	ContextToken ct = CompilationAndWeavingContext.enteringPhase(phase ,buildConfig);
         try {
@@ -260,6 +262,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                        	CompilationAndWeavingContext.leavingPhase(ct);
                         return false;
                     } 
+                    
+                    if (state.requiresFullBatchBuild()) {
+                    	return batchBuild(buildConfig, baseHandler);
+                    }
+                    
                     binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(false);
                     files = state.getFilesToCompile(false);
                     hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
@@ -829,6 +836,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			handler.handleMessage(new Message("build cancelled:"+oce.getMessage(),IMessage.WARNING,null,null));
 		}
 		// cleanup
+		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(null);
+		AnonymousClassPublisher.aspectOf().setAnonymousClassCreationListener(null);
 		environment.cleanup();
 		environment = null;
 	}
@@ -1108,6 +1117,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	 */
 	public ICompilerAdapter getAdapter(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
 		// complete compiler config and return a suitable adapter...
+		populateCompilerOptionsFromLintSettings(forCompiler);
 		AjProblemReporter pr =
 			new AjProblemReporter(DefaultErrorHandlingPolicies.proceedWithAllProblems(),
 								  forCompiler.options, getProblemFactory());
@@ -1134,10 +1144,24 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 						this,  // IOutputFilenameProvider
 						this,  // IBinarySourceProvider
 						state.getBinarySourceMap(),
-						state.getResultSetToUseForFullWeave(),
 						buildConfig.isNoWeave(),
 						buildConfig.getProceedOnError(),
-						buildConfig.isNoAtAspectJAnnotationProcessing());
+						buildConfig.isNoAtAspectJAnnotationProcessing(),
+						state);
+	}
+	
+	/**
+	 * Some AspectJ lint options need to be known about in the compiler. This is 
+	 * how we pass them over...
+	 * @param forCompiler
+	 */
+	private void populateCompilerOptionsFromLintSettings(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
+		BcelWorld world = this.state.getBcelWorld();
+		IMessage.Kind swallowedExceptionKind = world.getLint().swallowedExceptionInCatchBlock.getKind();
+		Map optionsMap = new HashMap();
+		optionsMap.put(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock, 
+				       swallowedExceptionKind == null ? "ignore" : swallowedExceptionKind.toString());
+		forCompiler.options.set(optionsMap);
 	}
 
 	/* (non-Javadoc)

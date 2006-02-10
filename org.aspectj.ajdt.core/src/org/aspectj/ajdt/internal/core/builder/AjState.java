@@ -15,6 +15,7 @@ package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatExcepti
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.IWeaver;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -64,29 +66,27 @@ public class AjState {
 	
 	private AjBuildConfig buildConfig;
 	
+	private boolean batchBuildRequiredThisTime = false;
+	
 	/**
-	 * Holds the CompilationResult produced by JDT as a result of compiling the given
-	 * source file. InterimCompilationResults are *very* memory intensive and we would 
-	 * like to release them as soon as possible (currently they are retained in memory
-	 * until the next full build).
+	 * Keeps a list of (FQN,Filename) pairs (as ClassFile objects)
+	 * for types that resulted from the compilation of the given
+	 * File.
 	 * 
-	 * Populated in noteResult which adds an InterimCompilationResult (post JDT compile,
-	 * but pre-weave).
+	 * Populated in noteResult and used in addDependentsOf(File)
 	 * 
-	 * The values() of this Map are passed to AjCompilerAdaptor as the result set to
-	 * use if the weaver indicates that a full weave is required.
-	 * 
-	 * In incremental building, used by addDependentsOf(File) to compute the compile set
-	 * when a given file has been added or modified.
-	 * 
-	 * When processing deleted files, this map is used to see if any of the compilation units
-	 * that came from that file were aspects, and if so, to trigger a full build.
-	 * 
-	 * When deleting class files in preparation for a full build, entries are removed
-	 * from the map.
-	 * 
+	 * Added by AMC during state refactoring, 1Q06.
 	 */
-	private Map/*<File, InterimCompilationResult*/ resultsFromFile = new HashMap();
+	private Map/*<File, List<ClassFile>*/ fullyQualifiedTypeNamesResultingFromCompilationUnit = new HashMap();
+	
+	/**
+	 * Source files defining aspects
+	 * 
+	 * Populated in noteResult and used in processDeletedFiles
+	 * 
+	 * Added by AMC during state refactoring, 1Q06.
+	 */
+	private Set sourceFilesDefiningAspects = new HashSet();
 	
 	/**
 	 * Populated in noteResult to record the set of types that should be recompiled if
@@ -163,6 +163,11 @@ public class AjState {
 	boolean prepareForNextBuild(AjBuildConfig newBuildConfig) {
 		currentBuildTime = System.currentTimeMillis();
 		
+		if (this.batchBuildRequiredThisTime) {
+			this.batchBuildRequiredThisTime = false;
+			return false;
+		}
+		
 		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
 			structuralChangesSinceLastFullBuild.clear();
 			return false;
@@ -224,20 +229,10 @@ public class AjState {
     private boolean processDeletedFiles(Set deletedFiles) {
 		for (Iterator iter = deletedFiles.iterator(); iter.hasNext();) {
 			File  aDeletedFile = (File ) iter.next();
-			InterimCompilationResult cr = (InterimCompilationResult)resultsFromFile.get(aDeletedFile);
-			if (cr!=null) {
-				Map compiledTypes = cr.result().compiledTypes;
-				if (compiledTypes!=null) {
-					for (Iterator iterator = compiledTypes.keySet().iterator(); iterator.hasNext();) {
-						char[] className = (char[])iterator.next();
-						ResolvedType rt = world.resolve(new String(className).replace('/','.'));
-						if (rt.isAspect()) { 
-							removeAllResultsOfLastBuild();
-							if (stateListener!=null) stateListener.detectedAspectDeleted(aDeletedFile);
-							return false;
-						}
-					}
-				}
+			if (this.sourceFilesDefiningAspects.contains(aDeletedFile)) {
+				removeAllResultsOfLastBuild();
+				if (stateListener!=null) stateListener.detectedAspectDeleted(aDeletedFile);
+				return false;				
 			}
 		}
 		return true;
@@ -470,15 +465,18 @@ public class AjState {
 	private void deleteClassFiles() {
 		for (Iterator i = deletedFiles.iterator(); i.hasNext(); ) {
 			File deletedFile = (File)i.next();
-			//System.out.println("deleting: " + deletedFile);
 			addDependentsOf(deletedFile);
-			InterimCompilationResult intRes = (InterimCompilationResult) resultsFromFile.get(deletedFile);
-			resultsFromFile.remove(deletedFile);
-			//System.out.println("deleting: " + unwovenClassFiles);
-			if (intRes == null) continue;
-			for (int j=0; j<intRes.unwovenClassFiles().length; j++ ) {
-				deleteClassFile(intRes.unwovenClassFiles()[j]);
+			
+			List cfs = (List) this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(deletedFile);
+			this.fullyQualifiedTypeNamesResultingFromCompilationUnit.remove(deletedFile);
+
+			if (cfs != null) {
+				for (Iterator iter = cfs.iterator(); iter.hasNext();) {
+					ClassFile cf = (ClassFile) iter.next();
+					deleteClassFile(cf);
+				}
 			}
+			
 		}
 	}
 	
@@ -488,7 +486,13 @@ public class AjState {
 			AjBuildConfig.BinarySourceFile deletedFile = (AjBuildConfig.BinarySourceFile) iter.next();
 			List ucfs = (List) binarySourceFiles.get(deletedFile.binSrc.getPath());
 			binarySourceFiles.remove(deletedFile.binSrc.getPath());
-			deleteClassFile((UnwovenClassFile)ucfs.get(0));
+
+			// AMC temp during refactoring
+			UnwovenClassFile ucf = (UnwovenClassFile) ucfs.get(0);
+			ClassFile cf = new ClassFile(ucf.getClassName(),new File(ucf.getFilename()));
+			// end temp
+			
+			deleteClassFile(cf);
 		}
 	}
 	
@@ -552,16 +556,10 @@ public class AjState {
 		}				
 	}
 
-	
-	private void deleteClassFile(UnwovenClassFile classFile) {		
-		classesFromName.remove(classFile.getClassName());
-		
-		weaver.deleteClassFile(classFile.getClassName());
-		try {
-			classFile.deleteRealFile();
-		} catch (IOException e) {
-			//!!! might be okay to ignore
-		}
+	private void deleteClassFile(ClassFile cf) {		
+		classesFromName.remove(cf.fullyQualifiedTypeName);
+		weaver.deleteClassFile(cf.fullyQualifiedTypeName);
+		cf.deleteFromFileSystem();
 	}
 	
 	private UnwovenClassFile createUnwovenClassFile(AjBuildConfig.BinarySourceFile bsf) {
@@ -584,23 +582,122 @@ public class AjState {
 			references.put(sourceFile, new ReferenceCollection(cr.qualifiedReferences, cr.simpleNameReferences));
 		}
 
-		InterimCompilationResult previous = (InterimCompilationResult) resultsFromFile.get(sourceFile);
 		UnwovenClassFile[] unwovenClassFiles = result.unwovenClassFiles();
 		for (int i = 0; i < unwovenClassFiles.length; i++) {
-			UnwovenClassFile lastTimeRound = removeFromPreviousIfPresent(unwovenClassFiles[i],previous);
+			UnwovenClassFile lastTimeRound = (UnwovenClassFile) classesFromName.get(unwovenClassFiles[i].getClassName()); 
 			recordClassFile(unwovenClassFiles[i],lastTimeRound);
 			classesFromName.put(unwovenClassFiles[i].getClassName(),unwovenClassFiles[i]);
 		}
 
-		if (previous != null) {
-			for (int i = 0; i < previous.unwovenClassFiles().length; i++) {
-				if (previous.unwovenClassFiles()[i] != null) {
-					deleteClassFile(previous.unwovenClassFiles()[i]);
+		// need to do this before types are deleted from the World...
+		recordWhetherCompilationUnitDefinedAspect(sourceFile,cr);		
+		deleteTypesThatWereInThisCompilationUnitLastTimeRoundButHaveBeenDeletedInThisIncrement(sourceFile, unwovenClassFiles);
+				
+		recordFQNsResultingFromCompilationUnit(sourceFile,result);
+	}
+
+	/**
+	 * Currently unused, if we ditch classesFromName, we might need this.... (in noteResult)
+	 * @param file
+	 * @return
+	 */
+	private UnwovenClassFile maybeGetExistingClassFileFor(UnwovenClassFile classFile) {
+		File existing = new File(classFile.getFilename());
+		if (!existing.exists()) {
+			return null;
+		} 
+		else {
+			try {
+				return new UnwovenClassFile(classFile.getFilename(),FileUtil.readAsByteArray(existing));
+			} 
+			catch (IOException ex) {
+				throw new IllegalStateException("Unable to read contents of '" + classFile.getFilename() + "' " +
+						"from last compile cycle");
+			}
+		}
+	}
+
+	/**
+	 * @param sourceFile
+	 * @param unwovenClassFiles
+	 */
+	private void deleteTypesThatWereInThisCompilationUnitLastTimeRoundButHaveBeenDeletedInThisIncrement(File sourceFile, UnwovenClassFile[] unwovenClassFiles) {
+		List classFiles = (List) this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
+		if (classFiles != null) {
+			for (int i = 0; i < unwovenClassFiles.length; i++) {
+				// deleting also deletes types from the weaver... don't do this if they are
+				// still present this time around...
+				removeFromClassFilesIfPresent(unwovenClassFiles[i].getClassName(),classFiles);
+			}
+			for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
+				ClassFile cf = (ClassFile) iter.next();
+				deleteClassFile(cf);
+			}
+		}
+	}
+	
+	
+	private void removeFromClassFilesIfPresent(String className, List classFiles) {
+		ClassFile victim = null;
+		for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
+			ClassFile cf = (ClassFile) iter.next();
+			if (cf.fullyQualifiedTypeName.equals(className)) {
+				victim = cf;
+				break;
+			}
+		}
+		if (victim != null) {
+			classFiles.remove(victim);
+		}
+	}
+	
+	/**
+	 * Record the fully-qualified names of the types that were declared in the given
+	 * source file.
+	 * 
+	 * @param sourceFile, the compilation unit
+	 * @param icr, the CompilationResult from compiling it
+	 */
+	private void recordFQNsResultingFromCompilationUnit(File sourceFile, InterimCompilationResult icr) {
+		List classFiles = new ArrayList();
+		UnwovenClassFile[] types = icr.unwovenClassFiles();
+		for (int i = 0; i < types.length; i++) {
+			classFiles.add(new ClassFile(types[i].getClassName(),new File(types[i].getFilename())));
+		}
+		this.fullyQualifiedTypeNamesResultingFromCompilationUnit.put(sourceFile,classFiles);
+	}
+
+	
+	/**
+	 * If this compilation unit defined an aspect, we need to know in case it is
+	 * modified in a future increment.
+	 * 
+	 * @param sourceFile
+	 * @param cr
+	 */
+	private void recordWhetherCompilationUnitDefinedAspect(File sourceFile, CompilationResult cr) {
+		this.sourceFilesDefiningAspects.remove(sourceFile);
+		
+		if (cr!=null) {
+			Map compiledTypes = cr.compiledTypes;
+			if (compiledTypes!=null) {
+				for (Iterator iterator = compiledTypes.keySet().iterator(); iterator.hasNext();) {
+					char[] className = (char[])iterator.next();
+					String typeName = new String(className).replace('/','.');
+					if (typeName.indexOf(IWeaver.SYNTHETIC_CLASS_POSTFIX) == -1) {
+						ResolvedType rt = world.resolve(typeName);
+						if (rt.isMissing()) {
+							throw new IllegalStateException("Type '" + rt.getSignature() + "' not found in world!");
+						}
+						if (rt.isAspect()) {
+							this.sourceFilesDefiningAspects.add(sourceFile);
+							break;
+						}
+					}
 				}
 			}
 		}
-		resultsFromFile.put(sourceFile, result);
-
+		
 	}
 	
 	private UnwovenClassFile removeFromPreviousIfPresent(UnwovenClassFile cf, InterimCompilationResult previous) {
@@ -791,12 +888,15 @@ public class AjState {
 	}
 
 	protected void addDependentsOf(File sourceFile) {
-		InterimCompilationResult intRes = (InterimCompilationResult)resultsFromFile.get(sourceFile);
-		if (intRes == null) return;
+		List cfs = (List) this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
 		
-		for (int i = 0; i < intRes.unwovenClassFiles().length; i++) {
-			addDependentsOf(intRes.unwovenClassFiles()[i].getClassName());
+		if (cfs != null) {
+			for (Iterator iter = cfs.iterator(); iter.hasNext();) {
+				ClassFile cf = (ClassFile) iter.next();
+				addDependentsOf(cf.fullyQualifiedTypeName);
+			}
 		}
+
 	}
 
 	public void setStructureModel(IHierarchy model) {
@@ -837,10 +937,6 @@ public class AjState {
 		return this.buildConfig;
 	}
 	
-	public Collection getResultSetToUseForFullWeave() {
-		return this.resultsFromFile.values();
-	}
-
 	public void clearBinarySourceFiles() {
 		this.binarySourceFiles = new HashMap();
 	}
@@ -878,4 +974,42 @@ public class AjState {
 	public Set getDeletedFiles() {
 		return this.deletedFiles;
 	}
+	
+	public void forceBatchBuildNextTimeAround() {
+		this.batchBuildRequiredThisTime = true;
+	}
+	
+	public boolean requiresFullBatchBuild() {
+		return this.batchBuildRequiredThisTime;
+	}
+	
+	private static class ClassFile {
+		public String fullyQualifiedTypeName;
+		public File   locationOnDisk;
+		
+		public ClassFile(String fqn, File location) {
+			this.fullyQualifiedTypeName = fqn;
+			this.locationOnDisk = location;
+		}
+		
+		public void deleteFromFileSystem() {
+			String namePrefix = locationOnDisk.getName();
+			namePrefix = namePrefix.substring(0,namePrefix.lastIndexOf('.'));
+			final String targetPrefix = namePrefix + IWeaver.CLOSURE_CLASS_PREFIX;
+			File dir = locationOnDisk.getParentFile();
+			if (dir != null) {
+				File[] weaverGenerated = dir.listFiles(new FilenameFilter() {
+					public boolean accept(File dir, String name) {
+						return name.startsWith(targetPrefix);
+					}});
+				if (weaverGenerated!=null) {
+					for (int i = 0; i < weaverGenerated.length; i++) {
+						weaverGenerated[i].delete();
+					}
+				}
+			}
+			locationOnDisk.delete();
+		}
+	}
+
 }
