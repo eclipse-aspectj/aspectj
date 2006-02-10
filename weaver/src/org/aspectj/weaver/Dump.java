@@ -59,6 +59,28 @@ public class Dump {
 	private static Map nodes = new HashMap();
 	private static String lastDumpFileName = UNKNOWN_FILENAME;
 	
+	private static boolean preserveOnNextReset = false;
+	
+	/**
+	 * for testing only, so that we can verify dump contents
+	 * after compilation has completely finished
+	 */
+	public static void preserveOnNextReset() {
+		preserveOnNextReset = true;		
+	}
+	
+	public static void reset() {
+		if (preserveOnNextReset) {
+			preserveOnNextReset = false;
+			return;
+		}
+		else {
+			Dump.nodes = new HashMap();
+			Dump.savedMessageHolder = null;
+		}
+	}
+	
+	
 	/*
 	 * Dump methods
 	 */
@@ -372,4 +394,5 @@ public class Dump {
 		public void visitString (String s);
 		public void visitList (List list);
 	}
+
 }
