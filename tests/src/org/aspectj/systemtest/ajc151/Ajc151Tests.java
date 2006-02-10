@@ -11,12 +11,14 @@
 package org.aspectj.systemtest.ajc151;
 
 import java.io.File;
+import java.util.List;
 
 import junit.framework.Test;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
@@ -84,6 +86,67 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void testAtAspectInheritsAbstractPointcut_pr125810 () {
 	  runTest("warning when inherited pointcut not made concrete"); 
+  }
+  
+  public void testAtAspectDEOWInStructureModel_pr120356() {
+	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
+	  runTest("@AJ deow appear correctly when structure model is generated");  
+  	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+  	   
+  	  // get the IProgramElements corresponding to the @DeclareWarning statement
+  	  // and the method it matches.
+  	  IProgramElement warningMethodIPE = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.METHOD,"warningMethod()");  	   	 
+  	  assertNotNull("Couldn't find 'warningMethod()' element in the tree",warningMethodIPE);
+  	  IProgramElement atDeclareWarningIPE = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.FIELD,"warning");
+  	  assertNotNull("Couldn't find @DeclareWarning element in the tree",atDeclareWarningIPE);
+
+  	  // check that the method has a matches declare relationship with @DeclareWarning
+  	  List matches = AsmManager.getDefault().getRelationshipMap().get(warningMethodIPE);	
+  	  assertNotNull("warningMethod should have some relationships but does not",matches);
+  	  assertTrue("warningMethod should have one relationships but has " + matches.size(),matches.size()==1);
+  	  List matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("warningMethod should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
+  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the @DeclareWarning 'warning' but is IPE with label "
+  			  + target.toLabelString(),atDeclareWarningIPE,target);
+  	  
+  	  // check that the @DeclareWarning has a matches relationship with the warningMethod
+  	  List matchedBy = AsmManager.getDefault().getRelationshipMap().get(atDeclareWarningIPE);
+  	  assertNotNull("@DeclareWarning should have some relationships but does not",matchedBy);
+  	  assertTrue("@DeclareWarning should have one relationship but has " + matchedBy.size(), matchedBy.size() == 1);
+  	  List matchedByTargets = ((Relationship)matchedBy.get(0)).getTargets();
+  	  assertTrue("@DeclareWarning 'matched by' relationship should have one target " +
+  	  		"but has " + matchedByTargets.size(), matchedByTargets.size() == 1);
+  	  IProgramElement matchedByTarget = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchedByTargets.get(0));
+  	  assertEquals("target of relationship should be the warningMethod but is IPE with label "
+  			  + matchedByTarget.toLabelString(),warningMethodIPE,matchedByTarget);
+  	  
+  	  // get the IProgramElements corresponding to the @DeclareError statement
+  	  // and the method it matches.
+  	  IProgramElement errorMethodIPE = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.METHOD,"badMethod()");  	   	 
+  	  assertNotNull("Couldn't find 'badMethod()' element in the tree",errorMethodIPE);
+  	  IProgramElement atDeclarErrorIPE = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.FIELD,"error");
+  	  assertNotNull("Couldn't find @DeclareError element in the tree",atDeclarErrorIPE);
+
+  	  // check that the @DeclareError has a matches relationship with the badMethod
+  	  List matchedByE = AsmManager.getDefault().getRelationshipMap().get(atDeclarErrorIPE);
+  	  assertNotNull("@DeclareError should have some relationships but does not",matchedByE);
+  	  assertTrue("@DeclareError should have one relationship but has " + matchedByE.size(), matchedByE.size() == 1);
+  	  List matchedByTargetsE = ((Relationship)matchedByE.get(0)).getTargets();
+  	  assertTrue("@DeclareError 'matched by' relationship should have one target " +
+  	  		"but has " + matchedByTargetsE.size(), matchedByTargetsE.size() == 1);
+  	  IProgramElement matchedByTargetE = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchedByTargetsE.get(0));
+  	  assertEquals("target of relationship should be the badMethod but is IPE with label "
+  			  + matchedByTargetE.toLabelString(),errorMethodIPE,matchedByTargetE);
+
+  }
+  
+  public void testAtAspectNoNPEWithDEOWWithoutStructureModel_pr120356() {
+	  runTest("@AJ no NPE with deow when structure model isn't generated"); 
   }
   
   /*

@@ -33,6 +33,9 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
@@ -1247,7 +1250,7 @@ public class AtAjAttributes {
                 } else {
                     pc .resolve(binding);
                     DeclareErrorOrWarning deow = new DeclareErrorOrWarning(true, pc, struct.field.getConstantValue().toString());
-                    deow.setLocation(struct.context, -1, -1);
+                    setDeclareErrorOrWarningLocation(deow,struct);
                     struct.ajAttributes.add(new AjAttribute.DeclareAttribute(deow));
                     hasError = true;
                 }
@@ -1274,7 +1277,7 @@ public class AtAjAttributes {
                 } else {
                     pc.resolve(binding);
                     DeclareErrorOrWarning deow = new DeclareErrorOrWarning(false, pc, struct.field.getConstantValue().toString());
-                    deow.setLocation(struct.context, -1, -1);
+                    setDeclareErrorOrWarningLocation(deow,struct);
                     struct.ajAttributes.add(new AjAttribute.DeclareAttribute(deow));
                     return hasWarning = true;
                 }
@@ -1283,6 +1286,40 @@ public class AtAjAttributes {
         return hasError || hasWarning;
     }
 
+    /**
+     * Sets the location for the declare error / warning using the corresponding 
+     * IProgramElement in the structure model. This will only fix bug 120356 if
+     * compiled with -emacssym, however, it does mean that the cross references 
+     * view in AJDT will show the correct information.
+     * 
+     * Other possibilities for fix: 
+     *  1. using the information in ajcDeclareSoft (if this is set correctly) 
+     *     which will fix the problem if compiled with ajc but not if compiled 
+     *     with javac.
+     *  2. creating an AjAttribute called FieldDeclarationLineNumberAttribute 
+     *     (much like MethodDeclarationLineNumberAttribute) which we can ask 
+     *     for the offset. This will fix bug 120356 both when compiled with ajc 
+     *     and javac.
+     * 
+     * @param deow
+     * @param struct
+     */
+    private static void setDeclareErrorOrWarningLocation(DeclareErrorOrWarning deow, AjAttributeFieldStruct struct) {
+        IHierarchy top = AsmManager.getDefault().getHierarchy();
+        if (top.getRoot() != null) {
+        	IProgramElement ipe = top.findElementForLabel(top.getRoot(),
+      			  IProgramElement.Kind.FIELD,struct.field.getName());
+        	if (ipe != null && ipe.getSourceLocation() != null) {
+    			ISourceLocation sourceLocation = ipe.getSourceLocation();
+    			int start = sourceLocation.getOffset();
+    			int end = start + struct.field.getName().length();
+    			deow.setLocation(struct.context,start,end);
+    			return;
+    		}
+		}
+        deow.setLocation(struct.context, -1, -1);												
+    }
+    
     /**
      * Returns a readable representation of a method.
      * Method.toString() is not suitable.
