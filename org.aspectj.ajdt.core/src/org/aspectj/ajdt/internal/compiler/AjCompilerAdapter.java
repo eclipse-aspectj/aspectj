@@ -22,6 +22,7 @@ import java.util.Map;
 import org.aspectj.ajdt.internal.compiler.ast.AddAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.ast.ValidateAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
@@ -60,12 +61,13 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	private IBinarySourceProvider binarySourceProvider;
 	private WeaverMessageHandler weaverMessageHandler;
 	private Map /* fileName |-> List<UnwovenClassFile> */ binarySourceSetForFullWeave = new HashMap();
-	private Collection /*InterimCompilationResult*/ resultSetForFullWeave = Collections.EMPTY_LIST;
 	
 	private ContextToken processingToken = null;
 	private ContextToken resolvingToken = null;
 	private ContextToken analysingToken = null;
 	private ContextToken generatingToken = null;
+	
+	private AjState incrementalCompilationState;
 	
 	List /*InterimResult*/ resultsPendingWeave = new ArrayList();
 
@@ -94,10 +96,10 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 							 IOutputClassFileNameProvider outputFileNameProvider,
 							 IBinarySourceProvider binarySourceProvider,
 							 Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
-							 Collection /* InterimCompilationResult */ resultSetForFullWeave,
 							 boolean isXNoWeave,
 							 boolean proceedOnError,
-							 boolean noAtAspectJProcessing) {
+							 boolean noAtAspectJProcessing,
+							 AjState incrementalCompilationState) {
 		this.compiler = compiler;
 		this.isBatchCompile = isBatchCompile;
 		this.weaver = weaver;
@@ -108,10 +110,10 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		this.isXNoWeave = isXNoWeave;
 		this.proceedOnError = proceedOnError;
 		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
-		this.resultSetForFullWeave = resultSetForFullWeave;
 		this.eWorld = eFactory;
 		this.inJava5Mode = false;
 		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
+		this.incrementalCompilationState = incrementalCompilationState;
 		
 		if (compiler.options.complianceLevel == CompilerOptions.JDK1_5) inJava5Mode = true;
 		
@@ -283,7 +285,12 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 
 		weaver.prepareForWeave();
 		if (weaver.needToReweaveWorld()) {
-			if (!isBatchCompile) addAllKnownClassesToWeaveList(); // if it's batch, they're already on the list...
+			if (!isBatchCompile) {
+				//force full recompilation from source
+				this.incrementalCompilationState.forceBatchBuildNextTimeAround();
+				return;
+//				addAllKnownClassesToWeaveList(); // if it's batch, they're already on the list...
+			}
 			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
 		} else {
 			Map binarySourcesToAdd = binarySourceProvider.getBinarySourcesForThisWeave();
@@ -303,26 +310,6 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			// ???: is this the right point for this? After weaving has finished clear the caches.
 			CflowPointcut.clearCaches();
 		}
-	}
-	
-	private void addAllKnownClassesToWeaveList() {
-		// results pending weave already has some results from this (incremental) compile
-		// add in results from any other source
-		for (Iterator iter = resultSetForFullWeave.iterator(); iter.hasNext();) {
-			InterimCompilationResult ir = (InterimCompilationResult) iter.next();
-			if (!resultsPendingWeave.contains(ir)) {  // equality based on source file name...
-				ir.result().hasBeenAccepted = false;  // it may have been accepted before, start again
-				
-				// Remove DEOWs as they are going to be added again during weaving
-				ir.result().removeProblems(new CompilationResult.ProblemsForRemovalFilter() {
-					public boolean accept(IProblem p) {
-						String s = p.getSupplementaryMessageInfo();
-						if (s != null && s.endsWith("[deow=true]")) return true;
-						return false;
-					}});
-				resultsPendingWeave.add(ir);
-			}			
-		}
-	}
+	}	
 
 }
