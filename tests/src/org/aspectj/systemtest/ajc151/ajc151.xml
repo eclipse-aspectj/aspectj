@@ -168,5 +168,15 @@
           </stderr>
         </run>
     </ajc-test>  
+    
+    <ajc-test dir="features151/swallowedExceptions" title="swallowed exceptions">
+        <compile files="SwallowedException.java">
+            <message kind="warning" line="11" text="Exception swallowed in catch block"/>
+        </compile>
+    </ajc-test>
 
+    <ajc-test dir="features151/swallowedExceptions" title="swallowed exceptions with xlint">
+        <compile files="SwallowedException.java" options="-Xlint:ignore">
+        </compile>
+    </ajc-test>
 </suite>

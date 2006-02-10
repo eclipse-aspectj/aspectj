@@ -109,7 +109,7 @@
 
     <ajc-test dir="bugs" pr="44586"
       title="After throwing advice on ctors doesn't execute for inter-type decl field inits">
-        <compile files="AfterThrowingCtor.java">
+        <compile files="AfterThrowingCtor.java" options="-Xlint:ignore">
         </compile>
   		<run class="AfterThrowingCtor"/>
     </ajc-test>
@@ -207,7 +207,7 @@
     
   <ajc-test dir="bugs" pr="34206"
       title="before():execution(new(..)) does not throw NoAspectBoundException">
-        <compile files="ErroneousExceptionConversion1.java">
+        <compile files="ErroneousExceptionConversion1.java" options="-Xlint:ignore">
         </compile>
         <run class="ErroneousExceptionConversion1"/>
     </ajc-test>

@@ -40,7 +40,7 @@
     <ajc-test dir="incremental/model/introduction" 
     	title="Testing incremental structure model: Intertype declarations (and a declare parents)" 
     	keywords="incremental-test,model-test" >
-        <compile staging="true" options="-incremental,-emacssym" sourceroots="src"/>
+        <compile staging="true" options="-incremental,-emacssym -Xlint:ignore" sourceroots="src"/>
         <inc-compile tag="20"/> <!-- Just 'touched' one file -->
         <inc-compile tag="30"/> <!-- Just 'touched another aspect -->
      </ajc-test>

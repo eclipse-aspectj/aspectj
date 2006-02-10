@@ -91,13 +91,16 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// Make simple changes to a project, adding a class and an aspect
 	public void testAddingAnAspect() {
 		initialiseProject("P1");
-		build("P1");
+		build("P1");							// build 1, weave 1
 		alter("P1","inc1"); // adds a class
 		alter("P1","inc2"); // adds an aspect
-		build("P1");
+		build("P1");                            // build 1,
 		long timeTakenForFullBuildAndWeave = getTimeTakenForBuild();
-		checkWasntFullBuild();
-		checkCompileWeaveCount(2,3);
+		checkWasFullBuild();  // it *will* be a full build under the new 
+		                      // "back-to-the-source strategy
+		checkCompileWeaveCount(5,3); // we compile X and A (the delta) find out that
+		                             // an aspect has changed, go back to the source
+									 // and compile X,A,C, then weave them all.
 		build("P1");
 		long timeTakenForSimpleIncBuild = getTimeTakenForBuild();
 		// I don't think this test will have timing issues as the times should be *RADICALLY* different
@@ -145,7 +148,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		alter("P1","inc1"); // adds a class
 		alter("P1","inc2"); // adds an aspect
 		build("P1");
-		checkWasntFullBuild();
+		checkWasFullBuild();  // adding an aspect makes us go back to the source
 	}
 	
 	
@@ -307,7 +310,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkForError("only abstract aspects can have type parameters");
 		alter("PR125405","inc2");
 		build("PR125405");
-		checkCompileWeaveCount(1,1);
+		checkCompileWeaveCount(2,1);
 		assertTrue("Should be no errors, but got "+MyTaskListManager.getErrorMessages(),MyTaskListManager.getErrorMessages().size()==0);		
 	}
 	
@@ -348,10 +351,10 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("pr114875");
 		alter("pr114875","inc1");
 		build("pr114875");
-		checkWasntFullBuild();
+		checkWasFullBuild();
 		alter("pr114875","inc2");
 		build("pr114875");
-		checkWasntFullBuild();
+		checkWasFullBuild();  // back to the source for an aspect change
 	}
 	
 	public void testPr117882() {
@@ -362,7 +365,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkWasFullBuild();
 		alter("PR117882","inc1");
 		build("PR117882");
-		checkWasntFullBuild();
+		checkWasFullBuild();  // back to the source for an aspect
 //		AjdeInteractionTestbed.VERBOSE=false;
 //		AjdeInteractionTestbed.configureBuildStructureModel(false);
 	}
@@ -375,7 +378,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkWasFullBuild();
 		alter("PR117882_2","inc1");
 		build("PR117882_2");
-		checkWasntFullBuild();
+		checkWasFullBuild();  // back to the source...
 		//checkCompileWeaveCount(1,4);
 		//fullBuild("PR117882_2");
 		//checkWasFullBuild();
@@ -390,7 +393,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkWasFullBuild();
 		alter("PR115251","inc1");
 		build("PR115251");
-		checkWasntFullBuild();
+		checkWasFullBuild();  // back to the source
 	}
 	
 
@@ -502,7 +505,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("PR113257");
 		alter("PR113257","inc1");
 		build("PR113257");
-		checkWasntFullBuild();
+		checkWasFullBuild();  // back to the source
 		alter("PR113257","inc1");
 		build("PR113257");
 	}
@@ -512,7 +515,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("PR123612");
 		alter("PR123612","inc1");
 		build("PR123612");
-		checkWasntFullBuild();
+		checkWasFullBuild(); // back to the source
 	}
 	
 	// other possible tests:

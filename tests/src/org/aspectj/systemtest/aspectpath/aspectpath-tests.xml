@@ -102,7 +102,7 @@
 	<ajc-test 
 		dir="bugs/interfaceLibrary"
 		title="exception clause for aspect-declared interface methods - positive">
-		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"/>
+		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java" options="-Xlint:ignore"/>
 		<run class="Client"/>
 		</ajc-test>
 
@@ -117,7 +117,7 @@
 	<ajc-test 
 		dir="bugs/interfaceLibrary"
 		title="exception clause for aspect-declared class methods - positive">
-		<compile files="ClassClient.java,LibraryClassAspect.java,lib/LibraryClass.java"/>
+		<compile files="ClassClient.java,LibraryClassAspect.java,lib/LibraryClass.java" options="-Xlint:ignore"/>
 		<run class="ClassClient"/>
 		</ajc-test>
 
@@ -132,7 +132,7 @@
 	<ajc-test dir="bugs/interfaceLibrary"
 		pr="41175"
 		title="exception clause for aspect-declared interface methods - positive binary">
-		<compile files="Client.java" aspectpath="lib.jar"/>
+		<compile files="Client.java" aspectpath="lib.jar" options="-Xlint:ignore"/>
 		<run class="Client"/>
 		</ajc-test>
 
@@ -147,7 +147,7 @@
 	<ajc-test dir="bugs/interfaceLibrary"
 		pr="41175"
 		title="exception clause for aspect-declared class methods - positive binary">
-		<compile files="ClassClient.java" aspectpath="libClass.jar"/>
+		<compile files="ClassClient.java" aspectpath="libClass.jar" options="-Xlint:ignore"/>
 		<run class="ClassClient"/>
 		</ajc-test>
 

@@ -77,6 +77,13 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("E extends Enum(E) again");
   }
   
+  public void testSwallowedException() {
+	  runTest("swallowed exceptions");
+  }
+  
+  public void testSwallowedExceptionIgnored() {
+	  runTest("swallowed exceptions with xlint");
+  }
   /*
    * @AspectJ bugs and enhancements
    */

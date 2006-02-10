@@ -175,7 +175,7 @@
     <ajc-test dir="new" pr="248"
       title=", PR#249, PR#250 advice on constructor sites"
       keywords="from-resolved_10x">
-        <compile files="NewSiteAdvice.java"/>
+        <compile files="NewSiteAdvice.java" options="-Xlint:ignore"/>
         <run class="NewSiteAdvice"/>
     </ajc-test>
 
@@ -200,7 +200,7 @@
     <ajc-test dir="new/extraThrows" pr="259"
       title="throws Exception clause is unnecessarily added to Driver.main method"
       keywords="from-resolved_10x">
-        <compile files="Driver.java"/>
+        <compile files="Driver.java" options="-Xlint:ignore"/>
         <run class="Driver"/>
     </ajc-test>
 
@@ -617,7 +617,7 @@
 
     <ajc-test dir="new" pr="318" title="Handlers problem"
       keywords="from-resolved_10x">
-        <compile files="PR318.java"/>
+        <compile files="PR318.java" options="-Xlint:ignore"/>
         <run class="PR318"/>
     </ajc-test>
 
@@ -818,7 +818,7 @@
 
     <ajc-test dir="new" title="Basic test for cflow pointcuts [eachcflow]"
       keywords="from-resolved_10x">
-        <compile files="CFlowPoints.java"/>
+        <compile files="CFlowPoints.java" options="-Xlint:ignore"/>
         <run class="CFlowPoints"/>
     </ajc-test>
 
@@ -852,7 +852,7 @@
     <ajc-test dir="new" pr="114"
       title=", PR#115 checks the ordering of catch clauses"
       keywords="from-resolved_10x">
-        <compile files="OrderOfCatches.java"/>
+        <compile files="OrderOfCatches.java" options="-Xlint:ignore"/>
         <run class="OrderOfCatches"/>
     </ajc-test>
 
@@ -949,7 +949,7 @@
     <ajc-test dir="new"
       title="exceptions thrown and caught in advice, particularly try+proceed"
       keywords="from-resolved_10x">
-        <compile files="TryAndProceed.java"/>
+        <compile files="TryAndProceed.java" options="-Xlint:ignore"/>
         <run class="TryAndProceed"/>
     </ajc-test>
 
@@ -1640,7 +1640,7 @@
     <ajc-test dir="new/packageAccessPR556" pr="556"
       title="aspects should get package access outside the file"
       keywords="from-resolved_10rc3">
-        <compile files="base1/p/C1.java,base2/p/C2.java"/>
+        <compile files="base1/p/C1.java,base2/p/C2.java" options="-Xlint:ignore"/>
         <run class="p.C1"/>
     </ajc-test>
 
@@ -1731,7 +1731,7 @@
     <ajc-test dir="new"
       title="changing this in around's proceed reported by Rich Price"
       keywords="from-resolved_104">
-        <compile files="AroundChangeThis.java" options="-1.4"/>
+        <compile files="AroundChangeThis.java" options="-1.4 -Xlint:ignore"/>
         <run class="AroundChangeThis"/>
     </ajc-test>
 

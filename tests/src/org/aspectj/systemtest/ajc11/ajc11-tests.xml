@@ -446,7 +446,7 @@
 
     <ajc-test dir="bugs" pr="34925"
       title="declare soft and throw statements">
-        <compile files="ConvertToUnchecked.java"/>
+        <compile files="ConvertToUnchecked.java" options="-Xlint:ignore"/>
         <run class="ConvertToUnchecked"/>
     </ajc-test>
     
@@ -499,13 +499,13 @@
     
     <ajc-test dir="bugs" pr="36564"
       title="Internal compiler error with thisJoinPoint.getStaticPart()">
-        <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java"/>
+        <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java" options="-Xlint:ignore"/>
         <run class="tjpStaticPart.Test"/>
     </ajc-test>
     
     <ajc-test dir="bugs" pr="29665"
       title="Inconsistant stack height with around">
-        <compile files="StackError.java"/>
+        <compile files="StackError.java" options="-Xlint:ignore"/>
         <run class="StackError"/>
     </ajc-test>
     

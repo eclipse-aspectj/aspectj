@@ -51,7 +51,9 @@
         	<message kind="warning" line="17" text="aa * *(..) throws Exception"/>
         	<message kind="warning" line="37" text="aa call void m() throws Exception"/>
         	<message kind="warning" line="38" text="aa call void m() throws Exception"/>
-        </compile>
+            <message kind="warning" line="37" text="Exception swallowed in catch block"/>
+            <message kind="warning" line="38" text="Exception swallowed in catch block"/>
+       </compile>
         <run class="pr119749">
             <stdout>
              <line text="execution(void pr119749.C.m()): execMe[Me]"/>
@@ -358,7 +360,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="java5/reflection" title="reflection on itds">
-		<compile files="InterTypeDeclarations.aj,ReflectOnCodeStyleITDs.java" options="-1.5"></compile>
+		<compile files="InterTypeDeclarations.aj,ReflectOnCodeStyleITDs.java" options="-1.5 -Xlint:ignore"></compile>
 		<run class="ReflectOnCodeStyleITDs" classpath="../lib/bcel/bcel.jar">
 		  <stdout>
 		  	<line text="public C.new(int, int, int)"/>
@@ -392,7 +394,7 @@
 	</ajc-test>
 
 	<ajc-test dir="java5/reflection" title="reflection on @DeclareParents">
-		<compile files="AtAspectJDeclareParents.aj,ReflectOnAtAspectJDeclareParents.java" options="-1.5"></compile>
+		<compile files="AtAspectJDeclareParents.aj,ReflectOnAtAspectJDeclareParents.java" options="-1.5 -Xlint:ignore"></compile>
 		<run class="ReflectOnAtAspectJDeclareParents" classpath="../lib/bcel/bcel.jar">
 		  <stdout>
 		    <line text="declare parents : C implements I"/>
@@ -412,7 +414,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="compatibility/case2" title="generating code for a 1.2.1 runtime - 2">
-		<compile files="TrackingErrors.aj,A.java" options="-Xajruntimetarget:1.2"/>
+		<compile files="TrackingErrors.aj,A.java" options="-Xajruntimetarget:1.2 -Xlint:ignore"/>
 		<run class="A" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
 	</ajc-test>
 		
@@ -454,7 +456,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs150" title="declare soft and exclusions" pr="103097">
-		<compile files="Pr103097.aj"/>
+		<compile files="Pr103097.aj" options="-Xlint:ignore"/>
 		<run class="Pr103097"/>
 	</ajc-test>
 		    
@@ -995,7 +997,7 @@
     </ajc-test>
 
     <ajc-test dir="decs" pr="42743" title="declare soft w. catch block">
-        <compile files="VerifyError.aj">
+        <compile files="VerifyError.aj" options="-Xlint:ignore">
         </compile>
         <run class="VerifyError"/>
     </ajc-test>
@@ -1055,7 +1057,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs150" pr="83645" title="pertypewithin({interface}) illegal field modifier">
-        <compile files="PR83645.java"/>
+        <compile files="PR83645.java" options="-Xlint:ignore"/>
         <run class="PR83645"/>
     </ajc-test>
     
@@ -1586,7 +1588,7 @@
     <!-- end of atOverride tests with ITDs -->
 
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
-        <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5"/>
+        <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.5 -Xlint:ignore"/>
     </ajc-test>
 
     <ajc-test dir="java5/varargs" title="varargs in constructor sig" vm="1.5">
@@ -2480,7 +2482,7 @@
    <!-- ======================================================================================= -->
     
    <ajc-test dir="java5/pertypewithin" title="basic ptw test">
-       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java"/>
+       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java" options="-Xlint:ignore"/>
        <run class="p.A">
            <stderr>
                <line text="hi from A"/>
@@ -2494,7 +2496,7 @@
    </ajc-test> 
 
    <ajc-test dir="java5/pertypewithin" title="ptw hasAspect">
-       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java"/>
+       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java" options="-Xlint:ignore"/>
        <run class="p.B">
            <stderr>
                <line text="hi from B"/>
@@ -2509,7 +2511,7 @@
    </ajc-test> 
    
     <ajc-test dir="java5/pertypewithin" title="ptw aspectOf">
-       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java"/>
+       <compile files="A.java,B.java,C.java,D.java,Main.java,X.java" options="-Xlint:ignore"/>
        <run class="p.C"/>
    </ajc-test> 
 

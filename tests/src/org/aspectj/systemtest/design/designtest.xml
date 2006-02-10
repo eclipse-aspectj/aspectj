@@ -50,7 +50,9 @@
 
     <ajc-test dir="design/intro"
       title="declared exceptions are checked correctly on intros">
-        <compile files="ExceptionsCP.java"/>
+      <compile files="ExceptionsCP.java">
+        <message kind="warning" line="10" text="Exception swallowed in catch block"/>        
+      </compile>
         <run class="ExceptionsCP"/>
     </ajc-test>
 
@@ -77,7 +79,7 @@
 
     <ajc-test dir="design/reflect" title="Checking new joinpoints"
       keywords="from-design">
-        <compile files="Coverage.java"/>
+        <compile files="Coverage.java" options="-Xlint:ignore"/>
         <run class="Coverage"/>
     </ajc-test>
 
