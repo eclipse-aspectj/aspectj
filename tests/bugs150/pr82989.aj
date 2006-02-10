@@ -13,6 +13,7 @@ privileged aspect B {
     try {
       m1(); 
     } catch(E e) { // accessor generated for m1() should be defined to throw E
+    	System.err.println(e);
     }
   }
 }
