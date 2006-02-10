@@ -111,6 +111,9 @@ public class Lint {
 	public final Kind unorderedAdviceAtShadow =
 		new Kind("unorderedAdviceAtShadow","at this shadow {0} no precedence is specified between advice applying from aspect {1} and aspect {2}");
 	
+	public final Kind swallowedExceptionInCatchBlock = 
+		new Kind("swallowedExceptionInCatchBlock","exception swallowed in catch block");
+	
 	// there are a lot of messages in the cant find type family - I'm defining an umbrella lint warning that
 	// allows a user to control their severity (for e.g. ltw or binary weaving)
 	public final Kind cantFindType =
