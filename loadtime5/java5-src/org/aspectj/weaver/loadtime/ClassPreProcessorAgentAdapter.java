@@ -15,6 +15,8 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+
 /**
  * Java 1.5 adapter for class pre processor
  *
@@ -29,6 +31,7 @@ public class ClassPreProcessorAgentAdapter implements ClassFileTransformer {
 
     static {
         try {
+        	CompilationAndWeavingContext.setMultiThreaded(true);
             s_preProcessor = new Aj();
             s_preProcessor.initialize();
         } catch (Exception e) {
