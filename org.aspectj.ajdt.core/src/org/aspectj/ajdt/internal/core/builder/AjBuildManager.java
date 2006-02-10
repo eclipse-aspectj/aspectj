@@ -498,6 +498,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				(resourceName.indexOf("/CVS/") != -1) ||
 				(resourceName.endsWith("/CVS")) ||
 				(resourceName.endsWith(".class")) ||
+				(resourceName.startsWith(".svn/")) || 
+				(resourceName.indexOf("/.svn/")!=-1) ||
+				(resourceName.endsWith("/.svn")) ||
 				(resourceName.toUpperCase().equals(MANIFEST_NAME))
 		    )
 		{
