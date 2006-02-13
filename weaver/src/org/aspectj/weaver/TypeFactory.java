@@ -78,8 +78,8 @@ public class TypeFactory {
 	 */
 	public static UnresolvedType createTypeFromSignature(String signature) {
 		if (signature.equals(ResolvedType.MISSING_NAME)) return ResolvedType.MISSING;
-		
-		if (signature.startsWith(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER)) {
+		char firstChar = signature.charAt(0);
+		if (firstChar=='P') {
 			// parameterized type, calculate signature erasure and type parameters
 			
 			// (see pr122458) It is possible for a parameterized type to have *no* type parameters visible in its signature.
@@ -102,34 +102,34 @@ public class TypeFactory {
 			UnresolvedType ret = UnresolvedType.SOMETHING;
 			ret.typeKind = TypeKind.WILDCARD;
 			return ret;
-		} else if(signature.startsWith("+")) {
+		} else if(firstChar=='+') { 
 			// ? extends ...
 			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
 			UnresolvedType ret = new UnresolvedType(signature);
 			ret.typeKind = TypeKind.WILDCARD;
 			ret.setUpperBound(bound);
 			return ret;
-		} else if (signature.startsWith("-")) {
+		} else if (firstChar=='-') { 
 			// ? super ...
 			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
 			UnresolvedType ret = new UnresolvedType(signature);
 			ret.typeKind = TypeKind.WILDCARD;
 			ret.setLowerBound(bound);
 			return ret;
-		} else if (signature.startsWith("T")) {
+		} else if (firstChar=='T') {
 			String typeVariableName = signature.substring(1);
 			if (typeVariableName.endsWith(";")) {
 				typeVariableName = typeVariableName.substring(0, typeVariableName.length() -1);
 			}
 			return new UnresolvedTypeVariableReferenceType(new TypeVariable(typeVariableName));
-		} else if (signature.startsWith("[")) {
+		} else if (firstChar=='[') { 
 			int dims = 0;
 			while (signature.charAt(dims)=='[') dims++;
 			UnresolvedType componentType = createTypeFromSignature(signature.substring(dims));
 			return new UnresolvedType(signature,
 					signature.substring(0,dims)+componentType.getErasureSignature());
 		} else if (signature.length()==1) { // could be a primitive
-		  switch (signature.charAt(0)) {
+		  switch (firstChar) {
 		  	  case 'V': return ResolvedType.VOID;
 		  	  case 'Z': return ResolvedType.BOOLEAN;
 			  case 'B': return ResolvedType.BYTE;
