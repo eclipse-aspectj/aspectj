@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.aspectj.ajdt.core.AspectJCore;
-import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
+import org.aspectj.ajdt.internal.compiler.CompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.IBinarySourceProvider;
 import org.aspectj.ajdt.internal.compiler.ICompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.ICompilerAdapterFactory;
@@ -28,20 +28,10 @@ import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
-import org.aspectj.ajdt.internal.compiler.CompilerAdapter;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.weaver.Lint;
-import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.aspectj.org.eclipse.jdt.core.IJavaModelMarker;
 import org.aspectj.org.eclipse.jdt.core.JavaCore;
 import org.aspectj.org.eclipse.jdt.core.JavaModelException;
@@ -53,6 +43,15 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.BuildNotifier;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.IncrementalImageBuilder;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.JavaBuilder;
+import org.aspectj.weaver.Lint;
+import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 
 /**
  * @author colyer
