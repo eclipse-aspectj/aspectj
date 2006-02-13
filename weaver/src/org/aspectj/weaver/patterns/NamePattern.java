@@ -21,6 +21,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
 public class NamePattern extends PatternNode {
 	char[] pattern;
 	int starCount = 0;
+	private int hashcode = -1;
 
 	public static final NamePattern ELLIPSIS = new NamePattern("");
 	public static final NamePattern ANY = new NamePattern("*");
@@ -35,6 +36,7 @@ public class NamePattern extends PatternNode {
 		for (int i=0, len=pattern.length; i<len; i++) {
 			if (pattern[i] == '*') starCount++;
 		}
+		hashcode = new String(pattern).hashCode();
 	}
 	
 	public boolean matches(char[] a2) {
@@ -122,13 +124,18 @@ public class NamePattern extends PatternNode {
 	public boolean equals(Object other) {
 		if (other instanceof NamePattern) {
 			NamePattern otherPat = (NamePattern)other;
-			return otherPat.starCount == this.starCount &&
-			     new String(otherPat.pattern).equals(new String(this.pattern));
+			if (otherPat.starCount!=this.starCount) return false;
+			if (otherPat.pattern.length!=this.pattern.length) return false;
+			for (int i = 0; i < this.pattern.length; i++) {
+				if (this.pattern[i]!=otherPat.pattern[i]) return false;			
+			}
+			return true;
 		}
 		return false;
 	}
+	
     public int hashCode() {
-        return new String(pattern).hashCode();
+    	return hashcode;
     }
     
     

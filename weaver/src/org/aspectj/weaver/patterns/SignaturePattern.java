@@ -55,6 +55,7 @@ public class SignaturePattern extends PatternNode {
     private TypePatternList parameterTypes;
     private ThrowsPattern throwsPattern;
     private AnnotationTypePattern annotationPattern;
+    private transient int hashcode = -1;
     	
 	public SignaturePattern(Member.Kind kind, ModifiersPattern modifiers,
 	                         TypePattern returnType, TypePattern declaringType,
@@ -96,7 +97,7 @@ public class SignaturePattern extends PatternNode {
 			annotationPattern = annotationPattern.resolveBindings(scope,bindings,false);
 			checkForIncorrectTargetKind(annotationPattern,scope,true);
 		}
-		
+		hashcode =-1;
     	return this;
     }
     
@@ -629,16 +630,18 @@ public class SignaturePattern extends PatternNode {
 			&& o.annotationPattern.equals(this.annotationPattern);
     }
     public int hashCode() {
-        int result = 17;
-        result = 37*result + kind.hashCode();
-        result = 37*result + modifiers.hashCode();
-        result = 37*result + returnType.hashCode();
-        result = 37*result + declaringType.hashCode();
-        result = 37*result + name.hashCode();
-        result = 37*result + parameterTypes.hashCode();
-        result = 37*result + throwsPattern.hashCode();
-        result = 37*result + annotationPattern.hashCode();
-        return result;
+    	if (hashcode==-1) {
+          hashcode = 17;
+          hashcode = 37*hashcode + kind.hashCode();
+          hashcode = 37*hashcode + modifiers.hashCode();
+          hashcode = 37*hashcode + returnType.hashCode();
+          hashcode = 37*hashcode + declaringType.hashCode();
+          hashcode = 37*hashcode + name.hashCode();
+          hashcode = 37*hashcode + parameterTypes.hashCode();
+          hashcode = 37*hashcode + throwsPattern.hashCode();
+          hashcode = 37*hashcode + annotationPattern.hashCode();
+    	}
+        return hashcode;
     }
     
 	public void write(DataOutputStream s) throws IOException {
