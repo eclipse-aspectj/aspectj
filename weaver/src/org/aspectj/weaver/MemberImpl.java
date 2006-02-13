@@ -60,7 +60,9 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
             Object[] returnAndParams = signatureToTypes(signature,false);
             this.returnType = (UnresolvedType) returnAndParams[0];
             this.parameterTypes = (UnresolvedType[]) returnAndParams[1];
-			signature = typesToSignature(returnType,parameterTypes,true);
+// always safe not to do this ?!?            
+//          String oldsig=new String(signature);
+//			signature = typesToSignature(returnType,parameterTypes,true);
         }
     }
 
@@ -158,6 +160,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     private static Object[] signatureToTypes(String sig,boolean keepParameterizationInfo) {
         List l = new ArrayList();
         int i = 1;
+        boolean hasAnyAnglies = sig.indexOf('<')!=-1;
         while (true) {
             char c = sig.charAt(i);
             if (c == ')') break; // break out when the hit the ')'
@@ -165,8 +168,8 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
             while (c == '[') c = sig.charAt(++i);
             if (c == 'L' || c == 'P') {
 				int nextSemicolon = sig.indexOf(';',start);
-				int firstAngly = sig.indexOf('<',start);
-				if (firstAngly == -1 || firstAngly>nextSemicolon) {
+				int firstAngly = (hasAnyAnglies?sig.indexOf('<',start):-1);
+				if (!hasAnyAnglies || firstAngly == -1 || firstAngly>nextSemicolon) {
                   i = nextSemicolon + 1;
                   l.add(UnresolvedType.forSignature(sig.substring(start, i)));
 				} else {
@@ -186,10 +189,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 					}
 					// posn now points to the correct nextSemicolon :)
 					i=posn;
-					String toProcess = null;
-					toProcess = sig.substring(start,i);
-					UnresolvedType tx = UnresolvedType.forSignature(toProcess);
-					l.add(tx);					
+					l.add(UnresolvedType.forSignature(sig.substring(start,i)));					
 				}
             } else if (c=='T') { // assumed 'reference' to a type variable, so just "Tname;"
 				int nextSemicolon = sig.indexOf(';',start);
