@@ -1092,6 +1092,11 @@ public class BcelWeaver implements IWeaver {
 			if (!theType.isAspect()) {
 				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
 				if (classType==null) {
+					
+					// bug 119882 - see above comment for bug 113531
+					ReferenceTypeDelegate theDelegate = ((ReferenceType)theType).getDelegate();
+					if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) continue;
+
 					throw new BCException("Can't find bcel delegate for "+className+" type="+theType.getClass());
 				}
 		        weaveAndNotify(classFile, classType, requestor);

@@ -485,6 +485,35 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 					.getMessage());
 	}
 
+	// Stage 1: Compile the 4 files, pack.A2 extends pack.A1 (aspects) where
+	//          A2 uses a protected field in A1 and pack.C2 extends pack.C1 (classes)
+	//          where C2 uses a protected field in C1
+	// Stage 2: make the field private in class C1 ==> compile errors in C2
+	// Stage 3: make the field private in aspect A1 whilst there's the compile
+	//          error. 
+	// There shouldn't be a BCExcpetion saying can't find delegate for pack.C2
+	public void testPr119882() {
+		initialiseProject("PR119882");
+		build("PR119882");
+		assertFalse("build should have compiled ok",MyTaskListManager.hasErrorMessages());
+		alter("PR119882","inc1");
+		build("PR119882");
+		//fullBuild("PR119882");
+		assertEquals("error message should be 'i cannot be resolved' ",
+				"i cannot be resolved",
+				((IMessage)MyTaskListManager.getErrorMessages().get(0))
+					.getMessage());
+		alter("PR119882","inc2");
+		build("PR119882");
+		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
+				MyErrorHandler.getErrorMessages().isEmpty());	
+		assertEquals("error message should be 'i cannot be resolved' ",
+				"i cannot be resolved",
+				((IMessage)MyTaskListManager.getErrorMessages().get(0))
+					.getMessage());
+
+	}
+	
 	public void testPr112736() {
 		AjdeInteractionTestbed.VERBOSE = true;
 		initialiseProject("PR112736");
