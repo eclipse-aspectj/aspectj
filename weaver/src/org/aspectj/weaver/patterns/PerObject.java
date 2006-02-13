@@ -15,37 +15,40 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
 public class PerObject extends PerClause {
 	private boolean isThis;
 	private Pointcut entry;
-	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
-	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	
+	private static final int thisKindSet;
+	private static final int targetKindSet;
+	
 	static {
-		for (Iterator iter = Shadow.ALL_SHADOW_KINDS.iterator(); iter.hasNext();) {
-			Shadow.Kind kind = (Shadow.Kind) iter.next();
-			if (kind.neverHasThis()) thisKindSet.remove(kind);
-			if (kind.neverHasTarget()) targetKindSet.remove(kind);
+		int thisFlags = Shadow.ALL_SHADOW_KINDS_BITS;
+		int targFlags = Shadow.ALL_SHADOW_KINDS_BITS;
+		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
+			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
+			if (kind.neverHasThis()) thisFlags-=kind.bit;
+			if (kind.neverHasTarget()) targFlags-=kind.bit;
 		}
+		thisKindSet = thisFlags;
+		targetKindSet=targFlags;
 	}
 	
 	public PerObject(Pointcut entry, boolean isThis) {
@@ -57,7 +60,7 @@ public class PerObject extends PerClause {
 		return visitor.visit(this,data);
 	}
 	
-	public Set couldMatchKinds() {
+	public int couldMatchKinds() {
 		return isThis ? thisKindSet : targetKindSet;
 	}
 	

@@ -15,9 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
@@ -32,16 +30,17 @@ import org.aspectj.weaver.ast.Test;
 
 public class WithincodePointcut extends Pointcut {
 	private SignaturePattern signature;
-    private static final Set matchedShadowKinds = new HashSet();
+    private static final int matchedShadowKinds;
     static {
-    	matchedShadowKinds.addAll(Shadow.ALL_SHADOW_KINDS);
+    	int flags = Shadow.ALL_SHADOW_KINDS_BITS;
     	for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (Shadow.SHADOW_KINDS[i].isEnclosingKind()) 
-				matchedShadowKinds.remove(Shadow.SHADOW_KINDS[i]);
+				flags -= Shadow.SHADOW_KINDS[i].bit;
 		}
     	// these next two are needed for inlining of field initializers
-    	matchedShadowKinds.add(Shadow.ConstructorExecution);
-    	matchedShadowKinds.add(Shadow.Initialization);
+    	flags|=Shadow.ConstructorExecution.bit;
+    	flags|=Shadow.Initialization.bit;
+    	matchedShadowKinds = flags;
     }
 	
 	public WithincodePointcut(SignaturePattern signature) {
@@ -53,7 +52,7 @@ public class WithincodePointcut extends Pointcut {
         return signature;
     }
 
-	public Set couldMatchKinds() {
+	public int couldMatchKinds() {
 		return matchedShadowKinds;
 	}
 	

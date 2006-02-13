@@ -17,11 +17,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
@@ -56,15 +53,21 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	private TypePattern type;
 	private String declarationText;
 
-	private static final Set thisKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
-	private static final Set targetKindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	private static final int thisKindSet;
+	private static final int targetKindSet;
+	
 	static {
-		for (Iterator iter = Shadow.ALL_SHADOW_KINDS.iterator(); iter.hasNext();) {
-			Shadow.Kind kind = (Shadow.Kind) iter.next();
-			if (kind.neverHasThis()) thisKindSet.remove(kind);
-			if (kind.neverHasTarget()) targetKindSet.remove(kind);
+		int thisFlags = Shadow.ALL_SHADOW_KINDS_BITS;
+		int targFlags = Shadow.ALL_SHADOW_KINDS_BITS;
+		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
+			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
+			if (kind.neverHasThis()) thisFlags-=kind.bit;
+			if (kind.neverHasTarget()) targFlags-=kind.bit;
 		}
+		thisKindSet = thisFlags;
+		targetKindSet=targFlags;
 	}
+	
 	
 	public boolean isBinding() {
 		return (type instanceof BindingTypePattern);
@@ -89,7 +92,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return ret;
 	}
 	
-	public Set couldMatchKinds() {
+	public int couldMatchKinds() {
 		return isThis ? thisKindSet : targetKindSet;
 	}
 

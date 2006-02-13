@@ -13,10 +13,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
@@ -48,13 +46,15 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	private ExactAnnotationTypePattern annotationTypePattern;
     private ShadowMunger munger = null; // only set after concretization
     private String declarationText;
-    private static final Set matchedShadowKinds = new HashSet();
+    
+    private static final int matchedShadowKinds;
     static {
-    	matchedShadowKinds.addAll(Shadow.ALL_SHADOW_KINDS);
+    	int flags = Shadow.ALL_SHADOW_KINDS_BITS;
     	for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (Shadow.SHADOW_KINDS[i].isEnclosingKind()) 
-				matchedShadowKinds.remove(Shadow.SHADOW_KINDS[i]);
+				flags -= Shadow.SHADOW_KINDS[i].bit;
 		}
+    	matchedShadowKinds=flags;
     }
 	
 	public WithinCodeAnnotationPointcut(ExactAnnotationTypePattern type) {
@@ -74,7 +74,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
         return annotationTypePattern;
     }
 
-	public Set couldMatchKinds() {
+	public int couldMatchKinds() {
 		return matchedShadowKinds;
 	}
 	

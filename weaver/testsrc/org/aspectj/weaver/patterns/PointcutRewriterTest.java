@@ -212,73 +212,73 @@ public class PointcutRewriterTest extends TestCase {
 	public void testDetermineKindSetOfAnd() {
 		Pointcut oneKind = getPointcut("execution(* foo(..)) && this(Boo)");
 		AndPointcut rewritten = (AndPointcut) prw.rewrite(oneKind);
-		assertEquals("Only one kind",1,rewritten.couldMatchKinds().size());
-		assertTrue("It's Shadow.MethodExecution",rewritten.couldMatchKinds().contains(Shadow.MethodExecution));
+		assertEquals("Only one kind",1,Shadow.howMany(rewritten.couldMatchKinds()));
+		assertTrue("It's Shadow.MethodExecution",Shadow.MethodExecution.isSet(rewritten.couldMatchKinds()));
 	}
 	
 	public void testKindSetOfExecution() {
 		Pointcut p = getPointcut("execution(* foo(..))");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.MethodExecution",p.couldMatchKinds().contains(Shadow.MethodExecution));
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.MethodExecution",Shadow.MethodExecution.isSet(p.couldMatchKinds()));
 		p = getPointcut("execution(new(..))");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.ConstructorExecution",p.couldMatchKinds().contains(Shadow.ConstructorExecution));		
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.ConstructorExecution",Shadow.ConstructorExecution.isSet(p.couldMatchKinds()));		
 	}
 	
 	public void testKindSetOfCall() {
 		Pointcut p = getPointcut("call(* foo(..))");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.MethodCall",p.couldMatchKinds().contains(Shadow.MethodCall));
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.MethodCall",Shadow.MethodCall.isSet(p.couldMatchKinds()));
 		p = getPointcut("call(new(..))");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.ConstructorCall",p.couldMatchKinds().contains(Shadow.ConstructorCall));		
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.ConstructorCall",Shadow.ConstructorCall.isSet(p.couldMatchKinds()));		
 	}
 	
 	public void testKindSetOfAdviceExecution() {
 		Pointcut p = getPointcut("adviceexecution()");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.AdviceExecution",p.couldMatchKinds().contains(Shadow.AdviceExecution));		
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.AdviceExecution",Shadow.AdviceExecution.isSet(p.couldMatchKinds()));		
 	}
 	
 	public void testKindSetOfGet() {
 		Pointcut p = getPointcut("get(* *)");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.FieldGet",p.couldMatchKinds().contains(Shadow.FieldGet));
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.FieldGet",Shadow.FieldGet.isSet(p.couldMatchKinds()));
 	}
 	
 	public void testKindSetOfSet() {
 		Pointcut p = getPointcut("set(* *)");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.FieldSet",p.couldMatchKinds().contains(Shadow.FieldSet));						
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.FieldSet",Shadow.FieldSet.isSet(p.couldMatchKinds()));						
 	}
 	
 	public void testKindSetOfHandler() {
 		Pointcut p = getPointcut("handler(*)");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.ExceptionHandler",p.couldMatchKinds().contains(Shadow.ExceptionHandler));								
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.ExceptionHandler",Shadow.ExceptionHandler.isSet(p.couldMatchKinds()));								
 	}
 	
 	public void testKindSetOfInitialization() {
 		Pointcut p = getPointcut("initialization(new (..))");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.Initialization",p.couldMatchKinds().contains(Shadow.Initialization));							
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.Initialization",Shadow.Initialization.isSet(p.couldMatchKinds()));							
 	}
 	
 	public void testKindSetOfPreInitialization() {
 		Pointcut p = getPointcut("preinitialization(new (..))");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.PreInitialization",p.couldMatchKinds().contains(Shadow.PreInitialization));									
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.PreInitialization",Shadow.PreInitialization.isSet(p.couldMatchKinds()));									
 	}
 	
 	public void testKindSetOfStaticInitialization() {
 		Pointcut p = getPointcut("staticinitialization(*)");
-		assertEquals("Only one kind",1,p.couldMatchKinds().size());
-		assertTrue("It's Shadow.StaticInitialization",p.couldMatchKinds().contains(Shadow.StaticInitialization));							
+		assertEquals("Only one kind",1,Shadow.howMany(p.couldMatchKinds()));
+		assertTrue("It's Shadow.StaticInitialization",Shadow.StaticInitialization.isSet(p.couldMatchKinds()));							
 	}
 	
 	public void testKindSetOfThis() {
 		Pointcut p = getPointcut("this(Foo)");
-		Set matches = p.couldMatchKinds();
+		Set matches = Shadow.toSet(p.couldMatchKinds());
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
 			assertFalse("No kinds that don't have a this",kind.neverHasThis());
@@ -290,7 +290,7 @@ public class PointcutRewriterTest extends TestCase {
 		}
 		// + @
 		p = getPointcut("@this(Foo)");
-		matches = p.couldMatchKinds();
+		matches = Shadow.toSet(p.couldMatchKinds());
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
 			assertFalse("No kinds that don't have a this",kind.neverHasThis());
@@ -304,7 +304,7 @@ public class PointcutRewriterTest extends TestCase {
 	
 	public void testKindSetOfTarget() {
 		Pointcut p = getPointcut("target(Foo)");
-		Set matches = p.couldMatchKinds();
+		Set matches = Shadow.toSet(p.couldMatchKinds());
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
 			assertFalse("No kinds that don't have a target",kind.neverHasTarget());
@@ -316,7 +316,7 @@ public class PointcutRewriterTest extends TestCase {
 		}
 		// + @
 		p = getPointcut("@target(Foo)");
-		matches = p.couldMatchKinds();
+		matches = Shadow.toSet(p.couldMatchKinds());
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
 			assertFalse("No kinds that don't have a target",kind.neverHasTarget());
@@ -330,28 +330,28 @@ public class PointcutRewriterTest extends TestCase {
 	
 	public void testKindSetOfArgs() {
 		Pointcut p = getPointcut("args(..)");
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);
 		// + @
 		p = getPointcut("@args(..)");
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);
 	}
 	
 	public void testKindSetOfAnnotation() {
 		Pointcut p = getPointcut("@annotation(Foo)");
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));		
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);		
 	}
 	
 	public void testKindSetOfWithin() {
 		Pointcut p = getPointcut("within(*)");
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);
 		// + @
 		p = getPointcut("@within(Foo)");
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);
 	}
 	
 	public void testKindSetOfWithinCode() {
 		Pointcut p = getPointcut("withincode(* foo(..))");
-		Set matches = p.couldMatchKinds();
+		Set matches = Shadow.toSet(p.couldMatchKinds());
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
 			assertFalse("No kinds that are themselves enclosing",
@@ -366,7 +366,7 @@ public class PointcutRewriterTest extends TestCase {
 		assertTrue("Need init for inlined field inits",matches.contains(Shadow.Initialization));
 		// + @
 		p = getPointcut("@withincode(Foo)");
-		matches = p.couldMatchKinds();
+		matches = Shadow.toSet(p.couldMatchKinds());
 		for (Iterator iter = matches.iterator(); iter.hasNext();) {
 			Shadow.Kind kind = (Shadow.Kind) iter.next();
 			assertFalse("No kinds that are themselves enclosing",kind.isEnclosingKind());
@@ -380,29 +380,29 @@ public class PointcutRewriterTest extends TestCase {
 	
 	public void testKindSetOfIf() {
 		Pointcut p = new IfPointcut(null,0);
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);
 		p = IfPointcut.makeIfTruePointcut(Pointcut.CONCRETE);
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);
 		p = IfPointcut.makeIfFalsePointcut(Pointcut.CONCRETE);
-		assertTrue("Nothing",p.couldMatchKinds().isEmpty());
+		assertTrue("Nothing",p.couldMatchKinds()==Shadow.NO_SHADOW_KINDS_BITS);
 	}
 	
 	public void testKindSetOfCflow() {
 		Pointcut p = getPointcut("cflow(this(Foo))");
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);
 		// [below]
 		p = getPointcut("cflowbelow(this(Foo))");
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);
 	}
 	
 	public void testKindSetInNegation() {
 		Pointcut p = getPointcut("!execution(new(..))");
-		assertTrue("All kinds",p.couldMatchKinds().containsAll(Shadow.ALL_SHADOW_KINDS));		
+		assertTrue("All kinds",p.couldMatchKinds()==Shadow.ALL_SHADOW_KINDS_BITS);		
 	}
 	
 	public void testKindSetOfOr() {
 		Pointcut p = getPointcut("execution(new(..)) || get(* *)");
-		Set matches = p.couldMatchKinds();
+		Set matches = Shadow.toSet(p.couldMatchKinds());
 		assertEquals("2 kinds",2,matches.size());
 		assertTrue("ConstructorExecution",matches.contains(Shadow.ConstructorExecution));
 		assertTrue("FieldGet",matches.contains(Shadow.FieldGet));

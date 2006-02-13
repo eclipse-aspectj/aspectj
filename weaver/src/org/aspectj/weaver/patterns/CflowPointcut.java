@@ -23,7 +23,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
@@ -34,8 +33,8 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
@@ -79,8 +78,8 @@ public class CflowPointcut extends Pointcut {
 		return isBelow;
 	}
 
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 	
 	// enh 76055

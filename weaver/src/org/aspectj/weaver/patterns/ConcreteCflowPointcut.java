@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
@@ -46,8 +45,8 @@ public class ConcreteCflowPointcut extends Pointcut {
 		this.pointcutKind = CFLOW;
 	}
     
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 	
     public FuzzyBoolean fastMatch(FastMatchInfo type) {

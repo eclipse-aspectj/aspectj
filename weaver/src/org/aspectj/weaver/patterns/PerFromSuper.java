@@ -16,7 +16,6 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
@@ -38,8 +37,8 @@ public class PerFromSuper extends PerClause {
 		return visitor.visit(this,data);
 	}
 	
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {

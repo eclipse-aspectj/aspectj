@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
@@ -84,8 +83,8 @@ public class AnnotationPointcut extends NameBindingPointcut {
         return annotationTypePattern;
     }
 
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 	
 	public Pointcut parameterizeWith(Map typeVariableMap) {

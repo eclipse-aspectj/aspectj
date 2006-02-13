@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
@@ -35,9 +34,9 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
 public class PerCflow extends PerClause {
 	private boolean isBelow;
@@ -54,8 +53,8 @@ public class PerCflow extends PerClause {
 		return visitor.visit(this,data);
 	}
 	
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 	
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {

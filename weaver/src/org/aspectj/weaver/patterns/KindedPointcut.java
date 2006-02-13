@@ -15,9 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
@@ -40,7 +38,7 @@ import org.aspectj.weaver.ast.Test;
 public class KindedPointcut extends Pointcut {
 	Shadow.Kind kind;
 	private SignaturePattern signature;
-	private Set matchKinds;
+	private int matchKinds;
     
     private ShadowMunger munger = null; // only set after concretization
 
@@ -50,8 +48,7 @@ public class KindedPointcut extends Pointcut {
         this.kind = kind;
         this.signature = signature;
         this.pointcutKind = KINDED;
-        this.matchKinds = new HashSet();
-        matchKinds.add(kind);
+        this.matchKinds = kind.bit;
     }
     public KindedPointcut(
         Shadow.Kind kind,
@@ -68,7 +65,7 @@ public class KindedPointcut extends Pointcut {
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#couldMatchKinds()
 	 */
-	public Set couldMatchKinds() {
+	public int couldMatchKinds() {
 		return matchKinds;
 	}
 	

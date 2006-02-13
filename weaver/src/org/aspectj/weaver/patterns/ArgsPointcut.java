@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -65,8 +64,8 @@ public class ArgsPointcut extends NameBindingPointcut {
     	return ret;
     }
     
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;  // empty args() matches jps with no args
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;  // empty args() matches jps with no args
 	}
 
     public FuzzyBoolean fastMatch(FastMatchInfo type) {

@@ -181,12 +181,19 @@ class BcelClassWeaver implements IClassWeaver {
     	}
     	for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
 			ShadowMunger munger = (ShadowMunger) iter.next();
-			Set couldMatchKinds = munger.getPointcut().couldMatchKinds();
-			for (Iterator kindIterator = couldMatchKinds.iterator(); 
-			     kindIterator.hasNext();) {
-				Shadow.Kind aKind = (Shadow.Kind) kindIterator.next();
-				perKindShadowMungers[aKind.getKey()].add(munger);
+			
+			int couldMatchKinds = munger.getPointcut().couldMatchKinds();
+			for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
+				Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
+				if (kind.isSet(couldMatchKinds)) perKindShadowMungers[kind.getKey()].add(munger);
 			}
+			
+//			Set couldMatchKinds = munger.getPointcut().couldMatchKinds();
+//			for (Iterator kindIterator = couldMatchKinds.iterator(); 
+//			     kindIterator.hasNext();) {
+//				Shadow.Kind aKind = (Shadow.Kind) kindIterator.next();
+//				perKindShadowMungers[aKind.getKey()].add(munger);
+//			}
 		}
     	
     	if (!perKindShadowMungers[Shadow.Initialization.getKey()].isEmpty())

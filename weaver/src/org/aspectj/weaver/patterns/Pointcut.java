@@ -15,9 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.TypeSafeEnum;
@@ -121,9 +119,10 @@ public abstract class Pointcut extends PatternNode {
 	public abstract FuzzyBoolean fastMatch(FastMatchInfo info);
 	
 	/**
-	 * The set of ShadowKinds that this Pointcut could possibly match  
+	 * The set of ShadowKinds that this Pointcut could possibly match -
+	 * an int whose bits are set according to the Kinds specified in Shadow.java
 	 */
-	public abstract /*Enum*/Set/*<Shadow.Kind>*/ couldMatchKinds();
+	public abstract int couldMatchKinds();
 	
 	public String[] getTypeVariablesInScope() {
 		return typeVariablesInScope;
@@ -141,7 +140,7 @@ public abstract class Pointcut extends PatternNode {
 		if (shadow.shadowId == lastMatchedShadowId) return lastMatchedShadowResult;
 		FuzzyBoolean ret;
 		// this next test will prevent a lot of un-needed matching going on....
-		if (couldMatchKinds().contains(shadow.getKind())) {
+		if (shadow.getKind().isSet(couldMatchKinds())) {
 			ret = matchInternal(shadow);
 		} else {
 			ret = FuzzyBoolean.NO;
@@ -326,8 +325,8 @@ public abstract class Pointcut extends PatternNode {
 			return Literal.FALSE; // can only get here if an earlier error occurred
 		}
 
-		public Set couldMatchKinds() {
-			return Collections.EMPTY_SET;
+		public int couldMatchKinds() {
+			return Shadow.NO_SHADOW_KINDS_BITS;
 		}
 		
 		public FuzzyBoolean fastMatch(FastMatchInfo type) {

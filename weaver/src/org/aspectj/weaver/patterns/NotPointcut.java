@@ -16,7 +16,6 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
@@ -39,8 +38,8 @@ public class NotPointcut extends Pointcut {
 		setLocation(pointcut.getSourceContext(), startPos, pointcut.getEnd());		
 	}
 
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 	
 	public Pointcut getNegatedPointcut() { return body; }

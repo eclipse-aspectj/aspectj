@@ -16,7 +16,6 @@ package org.aspectj.weaver;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -258,29 +257,55 @@ public abstract class Shadow {
     public static final Kind Initialization       = new Kind(JoinPoint.INITIALIZATION, 10,  false);
     public static final Kind ExceptionHandler     = new Kind(JoinPoint.EXCEPTION_HANDLER, 11,  true);
     
+    // Bits here are 1<<(Kind.getKey()) - and unfortunately keys didn't start at zero so bits here start at 2
+    public static final int MethodCallBit           = 0x002; 
+    public static final int ConstructorCallBit      = 0x004;
+    public static final int MethodExecutionBit      = 0x008;
+    public static final int ConstructorExecutionBit = 0x010;
+    public static final int FieldGetBit             = 0x020;
+    public static final int FieldSetBit             = 0x040;
+    public static final int StaticInitializationBit = 0x080;
+    public static final int PreInitializationBit    = 0x100;
+    public static final int AdviceExecutionBit      = 0x200;
+    public static final int InitializationBit       = 0x400;
+    public static final int ExceptionHandlerBit     = 0x800;
+    
     public static final int MAX_SHADOW_KIND = 11;
     public static final Kind[] SHADOW_KINDS = new Kind[] {
     	MethodCall, ConstructorCall, MethodExecution, ConstructorExecution,
     	FieldGet, FieldSet, StaticInitialization, PreInitialization,
     	AdviceExecution, Initialization, ExceptionHandler,
     };
-
-    public static final Set ALL_SHADOW_KINDS;   
+    
+    public static final int ALL_SHADOW_KINDS_BITS;
+    public static final int NO_SHADOW_KINDS_BITS;
+    
     static {
-    	HashSet aSet = new HashSet();
-    	for (int i = 0; i < SHADOW_KINDS.length; i++) {
-			aSet.add(SHADOW_KINDS[i]);
-		}
-    	ALL_SHADOW_KINDS = Collections.unmodifiableSet(aSet);
+    	ALL_SHADOW_KINDS_BITS = 0xffe;
+    	NO_SHADOW_KINDS_BITS  = 0x000;	
     }
+    
+    /**
+     * Return count of how many bits set in the supplied parameter.
+     */
+	public static int howMany(int i) {
+		int count = 0;
+		for (int j = 0; j <SHADOW_KINDS.length; j++) {
+			if ((i&SHADOW_KINDS[j].bit)!=0) count++;
+		}
+		return count;
+	}
 
     /** A type-safe enum representing the kind of shadows
      */
 	public static final class Kind extends TypeSafeEnum {
 //		private boolean argsOnStack;  //XXX unused
 
+		public int bit;
+
 		public Kind(String name, int key, boolean argsOnStack) {
 			super(name, key);
+			bit = 1<<key;
 //			this.argsOnStack = argsOnStack;
 		}
 
@@ -297,55 +322,55 @@ public abstract class Shadow {
 			return true;
 		}
 		
+		public boolean isSet(int i) {
+			return (i&bit)!=0;
+		}
+		
 		// XXX revisit along with removal of priorities
 		public boolean hasHighPriorityExceptions() {
 			return !isTargetSameAsThis();
 		}
+
 		
+		private final static int hasReturnValueFlag = 
+			MethodCallBit | ConstructorCallBit | MethodExecutionBit | FieldGetBit | AdviceExecutionBit;
 		/**
 		 * These shadow kinds have return values that can be bound in
 		 * after returning(Dooberry doo) advice.
 		 * @return
 		 */
 		public boolean hasReturnValue() {
-			return 
-				this == MethodCall ||
-				this == ConstructorCall ||
-				this == MethodExecution ||
-				this == FieldGet ||
-				this == AdviceExecution;
+			return (bit&hasReturnValueFlag)!=0;
 		}
 		
 		
+		private final static int isEnclosingKindFlag = 
+			MethodExecutionBit | ConstructorExecutionBit | AdviceExecutionBit | StaticInitializationBit | InitializationBit;
 		/**
 		 * These are all the shadows that contains other shadows within them and
 		 * are often directly associated with methods.
 		 */
 		public boolean isEnclosingKind() {
-			return this == MethodExecution || this == ConstructorExecution ||
-					this == AdviceExecution || this == StaticInitialization
-					|| this == Initialization;
+			return (bit&isEnclosingKindFlag)!=0;
 		}
 		
+		private final static int isTargetSameAsThisFlag =
+			MethodExecutionBit | ConstructorExecutionBit | StaticInitializationBit | 
+			PreInitializationBit | AdviceExecutionBit | InitializationBit;
 		public boolean isTargetSameAsThis() {
-			return this == MethodExecution 
-				|| this == ConstructorExecution 
-				|| this == StaticInitialization
-				|| this == PreInitialization
-				|| this == AdviceExecution
-				|| this == Initialization;
+			return (bit&isTargetSameAsThisFlag)!=0;
 		}
 		
+		private final static int neverHasTargetFlag=
+			ConstructorCallBit | ExceptionHandlerBit | PreInitializationBit | StaticInitializationBit;
 		public boolean neverHasTarget() {
-			return this == ConstructorCall
-				|| this == ExceptionHandler
-				|| this == PreInitialization
-				|| this == StaticInitialization;
+			return (bit&neverHasTargetFlag)!=0;
 		}
-		
+
+		private final static int neverHasThisFlag=
+			PreInitializationBit | StaticInitializationBit;
 		public boolean neverHasThis() {
-			return this == PreInitialization
-				|| this == StaticInitialization;
+			return (bit&neverHasThisFlag)!=0;
 		}
 		
 		
@@ -645,4 +670,18 @@ public abstract class Shadow {
     public String toResolvedString(World world) {
     	return getKind() + "(" + world.resolve(getSignature()).toGenericString() + ")";
     }
+
+    /**
+     * Convert a bit array for the shadow kinds into a set of them... should only 
+     * be used for testing - mainline code should do bit manipulation!
+     */
+	public static Set toSet(int i) {
+		Set results = new HashSet();
+		for (int j = 0; j < Shadow.SHADOW_KINDS.length; j++) {
+			Kind k = Shadow.SHADOW_KINDS[j];
+			if (k.isSet(i)) results.add(k);
+		}
+		return results;
+	}
+
 }

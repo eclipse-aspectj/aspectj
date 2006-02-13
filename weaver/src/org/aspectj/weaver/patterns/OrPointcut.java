@@ -15,9 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
@@ -29,7 +27,7 @@ import org.aspectj.weaver.ast.Test;
 
 public class OrPointcut extends Pointcut {
 	Pointcut left, right;
-	private Set couldMatchKinds;
+	private int couldMatchKinds;
 
 	public OrPointcut(Pointcut left, Pointcut right) {
 		super();
@@ -37,11 +35,10 @@ public class OrPointcut extends Pointcut {
 		this.right = right;
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 		this.pointcutKind = OR;
-		this.couldMatchKinds = new HashSet(left.couldMatchKinds());
-		this.couldMatchKinds.addAll(right.couldMatchKinds());
+		this.couldMatchKinds = left.couldMatchKinds() | right.couldMatchKinds();
 	}
 
-	public Set couldMatchKinds() {
+	public int couldMatchKinds() {
 		return couldMatchKinds;
 	}
 

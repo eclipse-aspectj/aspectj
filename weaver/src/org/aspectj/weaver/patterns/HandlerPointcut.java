@@ -15,9 +15,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
@@ -40,17 +38,14 @@ import org.aspectj.weaver.ast.Test;
 public class HandlerPointcut extends Pointcut {
 	TypePattern exceptionType;
 
-	private static final Set MATCH_KINDS = new HashSet();
-	static {
-		MATCH_KINDS.add(Shadow.ExceptionHandler);
-	}
+	private static final int MATCH_KINDS = Shadow.ExceptionHandler.bit;
 	
 	public HandlerPointcut(TypePattern exceptionType) {
 		this.exceptionType = exceptionType;
 		this.pointcutKind = HANDLER;
 	}
 
-	public Set couldMatchKinds() {
+	public int couldMatchKinds() {
 		return MATCH_KINDS;
 	}
 	

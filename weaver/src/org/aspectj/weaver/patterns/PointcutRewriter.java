@@ -307,9 +307,9 @@ public class PointcutRewriter {
 				if (((IfPointcut)element).alwaysFalse()) return Pointcut.makeMatchesNothing(element.state);
 			}
 			// If it can't match anything, the whole AND can't match anything
-			if (element.couldMatchKinds().isEmpty()) return element;
+			if (element.couldMatchKinds()==Shadow.NO_SHADOW_KINDS_BITS) return element;
 		}
-		if (apc.couldMatchKinds().isEmpty()) return Pointcut.makeMatchesNothing(apc.state);
+		if (apc.couldMatchKinds()==Shadow.NO_SHADOW_KINDS_BITS) return Pointcut.makeMatchesNothing(apc.state);
 		// write out with cheapest on left
 		Iterator iter = nodes.iterator();
 		Pointcut result = (Pointcut) iter.next();

@@ -71,6 +71,7 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
@@ -571,7 +572,7 @@ public class BcelWeaver implements IWeaver {
     // common.
     private void validateBindings(Pointcut dnfPointcut, Pointcut userPointcut, int numFormals, String[] names) {
     	if (numFormals == 0) return; // nothing to check
-    	if (dnfPointcut.couldMatchKinds().isEmpty()) return; // cant have problems if you dont match!
+    	if (dnfPointcut.couldMatchKinds()==Shadow.NO_SHADOW_KINDS_BITS) return; // cant have problems if you dont match!
     	if (dnfPointcut instanceof OrPointcut) {
     		OrPointcut orBasedDNFPointcut = (OrPointcut) dnfPointcut;
     		Pointcut[] leftBindings = new Pointcut[numFormals];
@@ -591,19 +592,18 @@ public class BcelWeaver implements IWeaver {
     		Pointcut[] newRightBindings = new Pointcut[numFormals];
     		validateOrBranch((OrPointcut)left,userPointcut,numFormals,names,leftBindings,newRightBindings);    		
     	} else {
-    		if (left.couldMatchKinds().size() > 0)
+    		if (left.couldMatchKinds()!=Shadow.NO_SHADOW_KINDS_BITS)
     			validateSingleBranch(left, userPointcut, numFormals, names, leftBindings);
     	}
     	if (right instanceof OrPointcut) {
     		Pointcut[] newLeftBindings = new Pointcut[numFormals];
     		validateOrBranch((OrPointcut)right,userPointcut,numFormals,names,newLeftBindings,rightBindings);
     	} else {
-    		if (right.couldMatchKinds().size() > 0)
+    		if (right.couldMatchKinds()!=Shadow.NO_SHADOW_KINDS_BITS)
     			validateSingleBranch(right, userPointcut, numFormals, names, rightBindings);    		
     	}
-		Set kindsInCommon = left.couldMatchKinds();
-		kindsInCommon.retainAll(right.couldMatchKinds());
-		if (!kindsInCommon.isEmpty() && couldEverMatchSameJoinPoints(left,right)) {
+		int kindsInCommon = left.couldMatchKinds() & right.couldMatchKinds();
+		if (kindsInCommon!=Shadow.NO_SHADOW_KINDS_BITS && couldEverMatchSameJoinPoints(left,right)) {
 			// we know that every branch binds every formal, so there is no ambiguity
 			// if each branch binds it in exactly the same way...
 			List ambiguousNames = new ArrayList();

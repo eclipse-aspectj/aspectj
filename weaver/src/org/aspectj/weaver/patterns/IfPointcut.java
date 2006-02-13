@@ -15,11 +15,9 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.lang.JoinPoint;
@@ -73,8 +71,8 @@ public class IfPointcut extends Pointcut {
         this.extraParameterFlags = -1;//allows to keep track of the @Aj style
     }
 
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
@@ -393,8 +391,8 @@ public class IfPointcut extends Pointcut {
             this.pointcutKind = Pointcut.IF_FALSE;
 		}
 		
-		public Set couldMatchKinds() {
-			return Collections.EMPTY_SET;
+		public int couldMatchKinds() {
+			return Shadow.NO_SHADOW_KINDS_BITS;
 		}
 		
 		public boolean alwaysFalse() {

@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
@@ -67,8 +66,8 @@ public class ReferencePointcut extends Pointcut {
 		this.pointcutKind = REFERENCE;
 	}
 	
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 
 

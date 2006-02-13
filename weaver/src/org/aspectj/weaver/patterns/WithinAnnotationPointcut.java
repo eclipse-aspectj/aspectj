@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
@@ -65,8 +64,8 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
         return annotationTypePattern;
     }
 
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 	
 	public Pointcut parameterizeWith(Map typeVariableMap) {

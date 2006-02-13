@@ -14,9 +14,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -26,17 +24,16 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
-//import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
 import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
 
 // PTWIMPL Represents a parsed pertypewithin()
@@ -45,7 +42,7 @@ public class PerTypeWithin extends PerClause {
 	private TypePattern typePattern;
 	
 	// Any shadow could be considered within a pertypewithin() type pattern
-	private static final Set kindSet = new HashSet(Shadow.ALL_SHADOW_KINDS);
+	private static final int kindSet = Shadow.ALL_SHADOW_KINDS_BITS;
 	
 	public TypePattern getTypePattern() {
 		return typePattern;
@@ -59,7 +56,7 @@ public class PerTypeWithin extends PerClause {
 		return visitor.visit(this,data);
 	}
 	
-	public Set couldMatchKinds() {
+	public int couldMatchKinds() {
 		return kindSet;
 	}
 	

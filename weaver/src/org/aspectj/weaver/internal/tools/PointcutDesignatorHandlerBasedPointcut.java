@@ -14,7 +14,6 @@ package org.aspectj.weaver.internal.tools;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
@@ -74,8 +73,8 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut{
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#couldMatchKinds()
 	 */
-	public Set couldMatchKinds() {
-		return Shadow.ALL_SHADOW_KINDS;
+	public int couldMatchKinds() {
+		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 
 	/* (non-Javadoc)
