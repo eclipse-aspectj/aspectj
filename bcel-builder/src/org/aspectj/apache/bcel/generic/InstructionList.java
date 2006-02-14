@@ -75,7 +75,7 @@ import java.util.ArrayList;
  * A list is finally dumped to a byte code array with <a
  * href="#getByteCode()">getByteCode</a>.
  *
- * @version $Id: InstructionList.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.3 2006/02/14 13:32:07 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Instruction
  * @see     InstructionHandle
@@ -133,22 +133,17 @@ public class InstructionList implements Serializable {
    * @return target position's instruction handle if available
    */
   public static InstructionHandle findHandle(InstructionHandle[] ihs,
-					     int[] pos, int count,
-					     int target) {
+					     int[] pos, int count,int target) {
     int l=0, r = count - 1;
     
-    /* Do a binary search since the pos array is orderd.
-     */
+    // Do a binary search since the pos array is ordered
+    int i,j;
     do {
-      int i = (l + r) / 2;
-      int j = pos[i];
-
-      if(j == target) // target found
- 	return ihs[i];
-      else if(target < j) // else constrain search area
-	r = i - 1;
-      else // target > j
-	l = i + 1;
+      i = (l + r) / 2;
+      j = pos[i];
+	  if (j == target)       return ihs[i]; // found it
+      else if (target < j)  r=i-1; // else constrain search area
+      else                  l=i+1; // target > j
     } while(l <= r);
 
     return null;
@@ -165,6 +160,14 @@ public class InstructionList implements Serializable {
   public InstructionHandle findHandle(int pos) {
     InstructionHandle[] ihs = getInstructionHandles();
     return findHandle(ihs, byte_positions, length, pos);
+  }
+  
+  public InstructionHandle[] getInstructionsAsArray() {
+	  return getInstructionHandles();
+  }
+  
+  public InstructionHandle findHandle(int pos,InstructionHandle[] instructionArray) {
+	  return findHandle(instructionArray,byte_positions,length,pos);
   }
 
   /**

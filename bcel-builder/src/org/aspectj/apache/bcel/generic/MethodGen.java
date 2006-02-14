@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.5 2005/09/28 20:10:19 acolyer Exp $
+ * @version $Id: MethodGen.java,v 1.6 2006/02/14 13:32:07 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -196,107 +196,111 @@ public class MethodGen extends FieldGenOrMethodGen {
    * @param class_name class name containing this method
    * @param cp constant pool
    */
+  
   public MethodGen(Method m, String class_name, ConstantPoolGen cp) {
-    this(m.getAccessFlags(), Type.getReturnType(m.getSignature()),
-	 Type.getArgumentTypes(m.getSignature()), null /* may be overridden anyway */,
-	 m.getName(), class_name,
-	 ((m.getAccessFlags() & (Constants.ACC_ABSTRACT | Constants.ACC_NATIVE)) == 0)?
-	 new InstructionList(m.getCode().getCode()) : null,
-	 cp);
+	  
+    this(
+    		m.getAccessFlags(), 
+    		Type.getReturnType(m.getSignature()),
+    		Type.getArgumentTypes(m.getSignature()), 
+    		null /* may be overridden anyway */,
+    		m.getName(), 
+    		class_name,
+    		((m.getAccessFlags() & (Constants.ACC_ABSTRACT | Constants.ACC_NATIVE)) == 0)? new InstructionList(m.getCode().getCode()) : null,
+    		cp);
 
     Attribute[] attributes = m.getAttributes();
-    for(int i=0; i < attributes.length; i++) {
+    for (int i=0; i < attributes.length; i++) {
       Attribute a = attributes[i];
 
-      if(a instanceof Code) {
-	Code c = (Code)a;
-	setMaxStack(c.getMaxStack());
-	setMaxLocals(c.getMaxLocals());
+      if (a instanceof Code) {
+    	  Code c = (Code)a;
+    	  setMaxStack(c.getMaxStack());
+    	  setMaxLocals(c.getMaxLocals());
 	
-	CodeException[] ces = c.getExceptionTable();
+    	  CodeException[] ces = c.getExceptionTable();
 	
-	if(ces != null) {
-	  for(int j=0; j < ces.length; j++) {
-            CodeException ce     = ces[j];
-            int           type   = ce.getCatchType();
-            ObjectType    c_type = null;
+    	  InstructionHandle[] arrayOfInstructions = il.getInstructionsAsArray();
+	
+    	  // process the exception table
+    	  // - 
+    	  if (ces != null) {
+			for (int j = 0; j < ces.length; j++) {
+				CodeException ce = ces[j];
+				int type = ce.getCatchType();
+				ObjectType c_type = null;
 
-	    if(type > 0) {
-	      String cen = m.getConstantPool().getConstantString(type, Constants.CONSTANT_Class);
-	      c_type = new ObjectType(cen);
-	    }
+				if (type > 0) {
+					String cen = m.getConstantPool().getConstantString(	type, Constants.CONSTANT_Class);
+					c_type = new ObjectType(cen);
+				}
 
-	    int end_pc = ce.getEndPC();
-	    int length = m.getCode().getCode().length;
-	    
-	    InstructionHandle end;
+				int end_pc = ce.getEndPC();
+				int length = m.getCode().getCode().length;
 
-	    if(length == end_pc) { // May happen, because end_pc is exclusive
-	      end = il.getEnd();
-	    } else {
-	      end = il.findHandle(end_pc);
-	      end = end.getPrev(); // Make it inclusive
-	    }
+				InstructionHandle end;
 
-	    addExceptionHandler(il.findHandle(ce.getStartPC()), end,
-				il.findHandle(ce.getHandlerPC()), c_type);
-	  }
-	}
+				if (length == end_pc) { // May happen, because end_pc is exclusive
+					end = il.getEnd();
+				} else {
+					end = il.findHandle(end_pc, arrayOfInstructions);// il.findHandle(end_pc);
+					end = end.getPrev(); // Make it inclusive
+				}
 
-	Attribute[] c_attributes = c.getAttributes();
-	for(int j=0; j < c_attributes.length; j++) {
-	  a = c_attributes[j];
-
-	  if(a instanceof LineNumberTable) {
-	    LineNumber[] ln = ((LineNumberTable)a).getLineNumberTable();
-
-	    for(int k=0; k < ln.length; k++) {
-	      LineNumber l = ln[k];
-	      addLineNumber(il.findHandle(l.getStartPC()), l.getLineNumber());
-	    }
-	  } else if(a instanceof LocalVariableTable) {
-	    LocalVariable[] lv = ((LocalVariableTable)a).getLocalVariableTable();
-
-	    removeLocalVariables();
-
-	    for(int k=0; k < lv.length; k++) {
-	      LocalVariable     l     = lv[k];
-	      InstructionHandle start = il.findHandle(l.getStartPC());
-	      InstructionHandle end   = il.findHandle(l.getStartPC() + l.getLength());
-	      // AMC, this actually gives us the first instruction AFTER the range,
-	      // so move back one... (findHandle can't cope with mid-instruction indices)
-	      if (end != null) end = end.getPrev();
-
-	      // Repair malformed handles
-	      if(null == start) {
-		start = il.getStart();
-	      }
-
-	      if(null == end) {
-		end = il.getEnd();
-	      }
-
-	      addLocalVariable(l.getName(), Type.getType(l.getSignature()),
-			       l.getIndex(), start, end);
-	    }
-	  } else
-	    addCodeAttribute(a);
-	}
-      } else if(a instanceof ExceptionTable) {
-	String[] names = ((ExceptionTable)a).getExceptionNames();
-	for(int j=0; j < names.length; j++)
-	  addException(names[j]);
-      } else if (a instanceof RuntimeAnnotations) {
-		RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)a;
-		List l = runtimeAnnotations.getAnnotations();
-		for (Iterator it = l.iterator(); it.hasNext();) {
-			Annotation element = (Annotation) it.next();
-			addAnnotation(new AnnotationGen(element,cp,false));
+				addExceptionHandler(
+						il.findHandle(ce.getStartPC(),arrayOfInstructions),
+						end, 
+						il.findHandle(ce.getHandlerPC(),arrayOfInstructions),
+						c_type);
+			}
 		}
-      } else {
-      	addAttribute(a);
-      }
-    }
+
+			Attribute[] codeAttrs = c.getAttributes();
+			for (int j = 0; j < codeAttrs.length; j++) {
+				a = codeAttrs[j];
+
+				if (a instanceof LineNumberTable) {
+					LineNumber[] ln = ((LineNumberTable) a).getLineNumberTable();
+
+					for (int k = 0; k < ln.length; k++) {
+						LineNumber l = ln[k];
+						addLineNumber(il.findHandle(l.getStartPC(),arrayOfInstructions),
+								l.getLineNumber());
+					}
+				} else if (a instanceof LocalVariableTable) {
+					LocalVariable[] lv = ((LocalVariableTable) a).getLocalVariableTable();
+
+					removeLocalVariables();
+
+					for (int k = 0; k < lv.length; k++) {
+						LocalVariable l = lv[k];
+						InstructionHandle start = il.findHandle(l.getStartPC(), arrayOfInstructions);
+						InstructionHandle end   = il.findHandle(l.getStartPC() + l.getLength(), arrayOfInstructions);
+						// AMC, this actually gives us the first instruction AFTER the range,
+						// so move back one... (findHandle can't cope with mid-instruction indices)
+						if (end != null) end = end.getPrev();
+						// Repair malformed handles
+						if (null == start) start = il.getStart();
+						if (null == end)   end = il.getEnd();
+
+						addLocalVariable(l.getName(), Type.getType(l.getSignature()), l.getIndex(), start, end);
+					}
+				} else addCodeAttribute(a);
+			}
+		} else if (a instanceof ExceptionTable) {
+			String[] names = ((ExceptionTable) a).getExceptionNames();
+			for (int j = 0; j < names.length; j++) addException(names[j]);
+		} else if (a instanceof RuntimeAnnotations) {
+			RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations) a;
+			List l = runtimeAnnotations.getAnnotations();
+			for (Iterator it = l.iterator(); it.hasNext();) {
+				Annotation element = (Annotation) it.next();
+				addAnnotation(new AnnotationGen(element, cp, false));
+			}
+		} else {
+			addAttribute(a);
+		}
+	}
   }
 
   /**
@@ -315,21 +319,13 @@ public class MethodGen extends FieldGenOrMethodGen {
 					   InstructionHandle start,
 					   InstructionHandle end) {
     byte t = type.getType();
-
-    if(t != Constants.T_ADDRESS) {
+    if (t != Constants.T_ADDRESS) {
       int  add = type.getSize();
-    
-      if(slot + add > max_locals) 
-	max_locals = slot + add;
-      
+      if (slot + add > max_locals) max_locals = slot + add;
       LocalVariableGen l = new LocalVariableGen(slot, name, type, start, end);
       int i;
-      
-      if((i = variable_vec.indexOf(l)) >= 0) // Overwrite if necessary
-	variable_vec.set(i, l);
-      else
-	variable_vec.add(l);
-
+      if ((i = variable_vec.indexOf(l)) >= 0) variable_vec.set(i, l); // Overwrite if necessary
+      else variable_vec.add(l);
       return l;
     } else {
       throw new IllegalArgumentException("Can not use " + type + 
