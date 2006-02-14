@@ -892,6 +892,11 @@ public final class LazyMethodGen {
     	isSynthetic = true;
     }    	
         
+    private static class LVPosition {
+    	InstructionHandle start = null;
+    	InstructionHandle end = null;
+    }
+    
     /** fill the newly created method gen with our body, 
      * inspired by InstructionList.copy()
      */
@@ -910,11 +915,11 @@ public final class LazyMethodGen {
         LinkedList exceptionList = new LinkedList();   
 
 		// map from localvariabletag to instruction handle
-        Map localVariableStarts = new HashMap();
-        Map localVariableEnds = new HashMap();
+        Map localVariables = new HashMap();
 
         int currLine = -1;
-        
+		int lineNumberOffset = (fromFilename == null) ? 0: getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
+		
         while (oldInstructionHandle != null) {
             if (map.get(oldInstructionHandle) == null) {
             	// must be a range instruction since they're the only things we didn't copy across
@@ -933,7 +938,6 @@ public final class LazyMethodGen {
                 // now deal with line numbers 
                 // and store up info for local variables
                 InstructionTargeter[] targeters = oldInstructionHandle.getTargeters();
-				int lineNumberOffset = (fromFilename == null) ? 0: getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
                 if (targeters != null) {
                     for (int k = targeters.length - 1; k >= 0; k--) {
                         InstructionTargeter targeter = targeters[k];
@@ -945,10 +949,16 @@ public final class LazyMethodGen {
                             }
                         } else if (targeter instanceof LocalVariableTag) {
                             LocalVariableTag lvt = (LocalVariableTag) targeter;
-                            if (localVariableStarts.get(lvt) == null) {
-                            	localVariableStarts.put(lvt, newInstructionHandle);
+                            LVPosition p = (LVPosition)localVariables.get(lvt);
+                            // If we don't know about it, create a new position and store
+                            // If we do know about it - update its end position
+                            if (p==null) {
+                            	LVPosition newp = new LVPosition();
+                            	newp.start=newp.end=newInstructionHandle;
+                            	localVariables.put(lvt,newp);
+                            } else {
+                            	p.end = newInstructionHandle;
                             }
-                            localVariableEnds.put(lvt, newInstructionHandle);
                         }
                     }
                 }
@@ -960,7 +970,7 @@ public final class LazyMethodGen {
         }
 	
         addExceptionHandlers(gen, map, exceptionList);       
-        addLocalVariables(gen, localVariableStarts, localVariableEnds);
+        addLocalVariables(gen,localVariables);
         
         // JAVAC adds line number tables (with just one entry) to generated accessor methods - this
         // keeps some tools that rely on finding at least some form of linenumbertable happy.
@@ -970,8 +980,8 @@ public final class LazyMethodGen {
         	gen.addLineNumber(gen.getInstructionList().getStart(),1);
         }
     }
-
-	private void addLocalVariables(MethodGen gen, Map localVariableStarts, Map localVariableEnds) {
+    
+    private void addLocalVariables(MethodGen gen, Map localVariables) {
 		// now add local variables
         gen.removeLocalVariables();
 
@@ -981,32 +991,28 @@ public final class LazyMethodGen {
 		// through the rest of the compiler.
         
         Map duplicatedLocalMap = new HashMap();
-		List keys = new ArrayList(); 
-        keys.addAll(localVariableStarts.keySet());
-        for (Iterator iter = keys.iterator(); iter.hasNext(); ) {
+        for (Iterator iter = localVariables.keySet().iterator(); iter.hasNext(); ) {
             LocalVariableTag tag = (LocalVariableTag) iter.next();
         	// have we already added one with the same slot number and start location?  
         	// if so, just continue.
-        	InstructionHandle start = (InstructionHandle) localVariableStarts.get(tag);
+            LVPosition lvpos = (LVPosition)localVariables.get(tag);
+        	InstructionHandle start = lvpos.start;
         	Set slots = (Set) duplicatedLocalMap.get(start);
 	       	if (slots == null) {
 	       		slots = new HashSet();
 	       		duplicatedLocalMap.put(start, slots);	
-	       	}
-	       	if (slots.contains(new Integer(tag.getSlot()))) {
+	       	} else if (slots.contains(new Integer(tag.getSlot()))) {
 	       		// we already have a var starting at this tag with this slot
 	       		continue;
 	       	}
 	       	slots.add(new Integer(tag.getSlot()));
 
-            gen.addLocalVariable(
-                tag.getName(), 
+            gen.addLocalVariable(tag.getName(), 
                 BcelWorld.makeBcelType(tag.getType()),
-                tag.getSlot(),
-                (InstructionHandle) localVariableStarts.get(tag),
-                (InstructionHandle) localVariableEnds.get(tag));
+                tag.getSlot(),(InstructionHandle) start,(InstructionHandle) lvpos.end);
         }
 	}
+
 
 	private void addExceptionHandlers(MethodGen gen, Map map, LinkedList exnList) {
 		// now add exception handlers
