@@ -133,7 +133,7 @@ public class SimpleElementValue extends ElementValue {
     		return Integer.toString(b.getBytes());
     	  case PRIMITIVE_CHAR:
     		ConstantInteger ch = (ConstantInteger)cpool.getConstant(idx,Constants.CONSTANT_Integer);
-    		return Integer.toString(ch.getBytes());
+    		return new Character((char)ch.getBytes()).toString();
     	  case PRIMITIVE_BOOLEAN:
     		ConstantInteger bo = (ConstantInteger)cpool.getConstant(idx,Constants.CONSTANT_Integer);
     		if (bo.getBytes() == 0) return "false";

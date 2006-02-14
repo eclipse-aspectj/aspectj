@@ -202,7 +202,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		checkValue(ann,"dval","33.4");
 		checkValue(ann,"sval","99");
 		checkValue(ann,"bval","2");
-		checkValue(ann,"cval","5");
+		checkValue(ann,"cval",new Character('5').toString());
 		checkValue(ann,"zval","false");
 		
 	}
