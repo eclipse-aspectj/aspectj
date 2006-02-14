@@ -64,6 +64,8 @@
   <target name="push">
     <copy file="bcel.jar" todir="../lib/bcel" />
     <copy file="bcel-src.zip" todir="../lib/bcel" />
+  	<delete file="bcel.jar"/>
+  	<delete file="bcel-src.zip"/>
   </target>
 	
   <target name="buildTheJars">
