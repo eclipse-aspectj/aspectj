@@ -37,6 +37,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testIncorrectlyReferencingPointcuts_pr122452_2()    { runTest("incorrectly referencing pointcuts - 2");}
   public void testInlinevisitorNPE_pr123901() { runTest("inlinevisitor NPE");}
   //public void testExposingWithintype_enh123423() { runTest("exposing withintype");}
+  //public void testMissingImport_pr127299() { runTest("missing import gives funny message");}
+  public void testUnusedInterfaceMessage_pr120527() { runTest("incorrect unused interface message");}
   
   public void testMixingNumbersOfTypeParameters_pr125080()   { 
 	  runTest("mixing numbers of type parameters");    

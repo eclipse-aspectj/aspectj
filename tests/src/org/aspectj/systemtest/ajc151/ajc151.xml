@@ -7,6 +7,14 @@
         <compile files="pr122458.aj" options="-1.5 -emacssym"/>
     </ajc-test>  
     
+    <ajc-test dir="bugs151/pr127299" title="missing import gives funny message">
+        <compile files="ModelErrorConversion.aj" options="-1.5"/>
+    </ajc-test>  
+    
+    <ajc-test dir="bugs151/pr120527" title="incorrect unused interface message">
+        <compile files="Bugs.aj" options="-warn:unusedPrivate"/>
+    </ajc-test>  
+    
     <ajc-test dir="bugs151/pr123901" title="inlinevisitor NPE">
         <compile files="A.java,B.java" options="-1.5">
           <message kind="error" line="5" text="a.A cannot be resolved or is not a field"/>
