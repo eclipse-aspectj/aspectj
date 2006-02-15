@@ -530,7 +530,7 @@ public class BcelShadow extends Shadow {
 		UnresolvedType inType = enclosingMethod.getEnclosingClass().getType();
 		
 		ResolvedMemberImpl sig = MemberImpl.makeExceptionHandlerSignature(inType, catchType);					
-		sig.parameterNames = new String[] {findHandlerParamName(startOfHandler)};
+		sig.setParameterNames(new String[] {findHandlerParamName(startOfHandler)});
 		
         BcelShadow s =
             new BcelShadow(

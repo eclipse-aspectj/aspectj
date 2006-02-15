@@ -33,7 +33,7 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, AnnotatedElement, TypeVariableDeclaringElement, ResolvedMember {
     
-    public String[] parameterNames = null;
+    private String[] parameterNames = null;
     protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;
     /**
      * if this member is a parameterized version of a member in a generic type,
@@ -490,7 +490,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return getDeclaringType().resolve(world).getSourceContext();
 	}
 
-	public final String[] getParameterNames() {
+	public String[] getParameterNames() {
+		
 		return parameterNames;
 	}
 	public final void setParameterNames(String[] pnames) {

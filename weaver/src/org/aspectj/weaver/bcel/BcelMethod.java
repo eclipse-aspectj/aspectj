@@ -81,10 +81,22 @@ final class BcelMethod extends ResolvedMemberImpl {
 			? UnresolvedType.NONE
 			: UnresolvedType.forNames(exnTable.getExceptionNames());
 			
+	}
+	
+	public String[] getParameterNames() {
+		determineParameterNames();
+		return super.getParameterNames();
+	}
+
+	private boolean parameterNamesInitialized = false;
+	
+	public void determineParameterNames() {
+		if (parameterNamesInitialized) return;
+		parameterNamesInitialized=true;
 		LocalVariableTable varTable = method.getLocalVariableTable();
 		int len = getArity();
 		if (varTable == null) {
-			this.parameterNames = Utility.makeArgNames(len);
+			setParameterNames(Utility.makeArgNames(len));
 		} else {
 			UnresolvedType[] paramTypes = getParameterTypes();
 			String[] paramNames = new String[len];
@@ -98,7 +110,7 @@ final class BcelMethod extends ResolvedMemberImpl {
 				}
 				index += paramTypes[i].getSize();
 			}
-			this.parameterNames = paramNames;
+			setParameterNames(paramNames);
 		}
 	}
 
