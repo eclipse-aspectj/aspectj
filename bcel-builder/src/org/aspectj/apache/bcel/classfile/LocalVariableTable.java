@@ -58,25 +58,33 @@ import  org.aspectj.apache.bcel.Constants;
 import  java.io.*;
 
 /**
- * This class represents colection of local variables in a
+ * This class represents collection of local variables in a
  * method. This attribute is contained in the <em>Code</em> attribute.
  *
- * @version $Id: LocalVariableTable.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: LocalVariableTable.java,v 1.3 2006/02/15 09:15:34 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  * @see LocalVariable
+ * 
+ * Updates: Andy 14Feb06 - Made unpacking of the data lazy, depending on someone
+ *          actually asking for it.
  */
 public class LocalVariableTable extends Attribute {
-  private int             local_variable_table_length; // Table of local
-  private LocalVariable[] local_variable_table;        // variables
+	
+  // if 'isInPackedState' then this data needs unpacking
+  private boolean isInPackedState = false;
+  private byte[]  data; 
+  
+  private int             localVariableTableLength;
+  private LocalVariable[] localVariableTable;
 
+  
   /**
    * Initialize from another object. Note that both objects use the same
    * references (shallow copy). Use copy() for a physical copy.
    */
   public LocalVariableTable(LocalVariableTable c) {
-    this(c.getNameIndex(), c.getLength(), c.getLocalVariableTable(),
-	 c.getConstantPool());
+    this(c.getNameIndex(), c.getLength(), c.getLocalVariableTable(),c.getConstantPool());
   }
 
   /**
@@ -104,14 +112,14 @@ public class LocalVariableTable extends Attribute {
   LocalVariableTable(int name_index, int length, DataInputStream file,
 		     ConstantPool constant_pool) throws IOException
   {
-    this(name_index, length, (LocalVariable[])null, constant_pool);
-
-    local_variable_table_length = (file.readUnsignedShort());
-    local_variable_table = new LocalVariable[local_variable_table_length];
-
-    for(int i=0; i < local_variable_table_length; i++)
-      local_variable_table[i] = new LocalVariable(file, constant_pool);
+    super(Constants.ATTR_LOCAL_VARIABLE_TABLE,name_index, length, constant_pool);
+    data = new byte[length];
+    int byteReads = file.read(data);
+    isInPackedState = true;
+    // assert(bytesRead==length)
   }
+    
+    
 
   /**
    * Called by objects that are traversing the nodes of the tree implicitely
@@ -121,6 +129,7 @@ public class LocalVariableTable extends Attribute {
    * @param v Visitor object
    */
   public void accept(Visitor v) {
+	unpack();
     v.visitLocalVariableTable(this);
   }
 
@@ -133,32 +142,38 @@ public class LocalVariableTable extends Attribute {
   public final void dump(DataOutputStream file) throws IOException
   {
     super.dump(file);
-    file.writeShort(local_variable_table_length);
-    for(int i=0; i < local_variable_table_length; i++)
-      local_variable_table[i].dump(file);
+    if (isInPackedState) {
+        file.write(data);
+    } else {
+  	    file.writeShort(localVariableTableLength);
+  	    for(int i=0; i < localVariableTableLength; i++)
+  	      localVariableTable[i].dump(file);
+    }
   }
 
   /**
    * @return Array of local variables of method.
    */  
   public final LocalVariable[] getLocalVariableTable() {
-    return local_variable_table;
+	unpack();
+    return localVariableTable;
   }    
 
   /** @return first matching variable using index
    */
   public final LocalVariable getLocalVariable(int index) {
-    for(int i=0; i < local_variable_table_length; i++)
-      if(local_variable_table[i].getIndex() == index)
-	return local_variable_table[i];
-
+	unpack();
+    for(int i=0; i < localVariableTableLength; i++)
+      if (localVariableTable[i].getIndex() == index) return localVariableTable[i];
     return null;
   }
 
   public final void setLocalVariableTable(LocalVariable[] local_variable_table)
   {
-    this.local_variable_table = local_variable_table;
-    local_variable_table_length = (local_variable_table == null)? 0 :
+	data=null;
+	isInPackedState=false;
+    this.localVariableTable = local_variable_table;
+    localVariableTableLength = (local_variable_table == null)? 0 :
       local_variable_table.length;
   }
 
@@ -167,11 +182,11 @@ public class LocalVariableTable extends Attribute {
    */ 
   public final String toString() {
     StringBuffer buf = new StringBuffer("");
+    unpack();
+    for(int i=0; i < localVariableTableLength; i++) {
+      buf.append(localVariableTable[i].toString());
 
-    for(int i=0; i < local_variable_table_length; i++) {
-      buf.append(local_variable_table[i].toString());
-
-      if(i < local_variable_table_length - 1)
+      if(i < localVariableTableLength - 1)
 	buf.append('\n');
     }
 
@@ -182,15 +197,38 @@ public class LocalVariableTable extends Attribute {
    * @return deep copy of this attribute
    */
   public Attribute copy(ConstantPool constant_pool) {
+	unpack();
     LocalVariableTable c = (LocalVariableTable)clone();
 
-    c.local_variable_table = new LocalVariable[local_variable_table_length];
-    for(int i=0; i < local_variable_table_length; i++)
-      c.local_variable_table[i] = local_variable_table[i].copy();
+    c.localVariableTable = new LocalVariable[localVariableTableLength];
+    for(int i=0; i < localVariableTableLength; i++)
+      c.localVariableTable[i] = localVariableTable[i].copy();
 
     c.constant_pool = constant_pool;
     return c;
   }
 
-  public final int getTableLength() { return local_variable_table_length; }
+  public final int getTableLength() { 
+	  unpack();
+	  return localVariableTableLength; 
+  }
+  
+  // ---
+  // Unpacks the byte array into the table
+  private void unpack() {
+	if (!isInPackedState) return;
+	try {
+  	    ByteArrayInputStream bs = new ByteArrayInputStream(data);
+		DataInputStream dis = new DataInputStream(bs);
+		localVariableTableLength = (dis.readUnsignedShort());
+		localVariableTable = new LocalVariable[localVariableTableLength];
+		for (int i=0; i < localVariableTableLength; i++)
+		  localVariableTable[i] = new LocalVariable(dis,constant_pool);
+	    dis.close();
+	    data = null; // throw it away now
+    } catch (IOException e) {
+		throw new RuntimeException("Unpacking of LocalVariableTable attribute failed");
+	}
+	isInPackedState=false;
+  }
 }
