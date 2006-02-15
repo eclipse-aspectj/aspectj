@@ -42,6 +42,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -54,8 +55,11 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
+import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclareSoft;
+import org.aspectj.weaver.patterns.TypePattern;
 
 /**
  * Extends problem reporter to support compiler-side implementation of declare soft. 
@@ -415,8 +419,27 @@ public class AjProblemReporter extends ProblemReporter {
     
     public void unusedPrivateType(TypeDeclaration typeDecl) {
     	// don't output unused type warnings for aspects!
-    	if (!(typeDecl instanceof AspectDeclaration))
-    		super.unusedPrivateType(typeDecl);
+    	if (typeDecl instanceof AspectDeclaration) return;
+    	if (typeDecl.enclosingType!=null && (typeDecl.enclosingType instanceof AspectDeclaration)) {
+    		AspectDeclaration ad = (AspectDeclaration)typeDecl.enclosingType;
+    		if (ad.concreteName!=null) {
+    			List declares = ad.concreteName.declares;
+    			for (Iterator iter = declares.iterator(); iter.hasNext();) {
+					Object dec = (Object) iter.next();
+					if (dec instanceof DeclareParents) {
+						DeclareParents decp = (DeclareParents)dec;
+						TypePattern[] newparents = decp.getParents().getTypePatterns();
+						for (int i = 0; i < newparents.length; i++) {
+							TypePattern pattern = newparents[i];
+							UnresolvedType ut = pattern.getExactType();
+							if (ut==null) continue;
+							if (CharOperation.compareWith(typeDecl.binding.signature(),ut.getSignature().toCharArray())==0) return;
+						}
+					}
+				}
+    		}
+    	}
+    	super.unusedPrivateType(typeDecl);
     }
 
     public void unusedPrivateMethod(AbstractMethodDeclaration methodDecl) {
