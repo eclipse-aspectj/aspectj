@@ -28,6 +28,7 @@
       title="errors in inheritance of multiple concrete methods"
       keywords="from-design">
         <compile files="MultiInheritCF.java">
+<!-- the error is:       error at java\lang\Object.java::0 can't override int I2.toString() with java.lang.String java.lang.Object.toString() return types don't match-->
 			<message kind="error" line="0"/>
 			<message kind="error" line="17"/>
 			<message kind="error" line="18"/>
