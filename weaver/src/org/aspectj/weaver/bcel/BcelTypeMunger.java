@@ -1110,15 +1110,19 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             // getfield
             body.append(InstructionConstants.ALOAD_0);
             body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
-            BranchInstruction ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
+            BranchInstruction ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
             body.append(ifNonNull);
-            InstructionHandle ifNonNullElse = body.append(InstructionConstants.ALOAD_0);
+            
+            // Create and store a new instance
+           	body.append(InstructionConstants.ALOAD_0);
             body.append(fact.createNew(munger.getImplClassName()));
             body.append(InstructionConstants.DUP);
             body.append(fact.createInvoke(munger.getImplClassName(), "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
             body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+            
+            // if not null use the instance we've got
+            InstructionHandle ifNonNullElse =  body.append(InstructionConstants.ALOAD_0);
             ifNonNull.setTarget(ifNonNullElse);
-            body.append(InstructionConstants.ALOAD_0);
             body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 
             //args

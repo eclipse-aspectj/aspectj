@@ -182,6 +182,17 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs151/pr122370" title="@AJ declare parents retains field state">
+        <compile files="moody/AnnotationMoodImplementor.java, moody/AnnotationMoodIndicator.java, moody/Mood.java, moody/MainClass.java" options="-1.5"/>
+       <run class="moody.MainClass">
+            <stdout>
+             <line text="ami0's mood is HAPPY"/>
+             <line text="ami1's mood is now JOLLY"/>
+             <line text="ami0's mood is still HAPPY"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
     <!-- New features down here... when they arent big enough to have their own test file -->
     
     <ajc-test dir="features151/ptw" title="exposing withintype">

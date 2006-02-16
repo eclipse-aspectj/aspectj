@@ -164,6 +164,10 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("@AJ without JoinPoint import");
   }
   
+  public void testAtAspectDeclareParentsRetainsFieldState_pr122370() {
+	  runTest("@AJ declare parents retains field state");
+  }
+  
   /*
    * Load-time weaving bugs and enhancements
    */
