@@ -39,6 +39,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   //public void testExposingWithintype_enh123423() { runTest("exposing withintype");}
   //public void testMissingImport_pr127299() { runTest("missing import gives funny message");}
   public void testUnusedInterfaceMessage_pr120527() { runTest("incorrect unused interface message");}
+  public void testAtAspectInheritsAdviceWithTJPAndThis_pr125699 () { runTest("inherit advice with this() and thisJoinPoint");  }
+  public void testAtAspectInheritsAdviceWithTJPAndThis_pr125699_2 () {runTest("inherit advice with this() and thisJoinPoint - 2");  }
   
   public void testMixingNumbersOfTypeParameters_pr125080()   { 
 	  runTest("mixing numbers of type parameters");    

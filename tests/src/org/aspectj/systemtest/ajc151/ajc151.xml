@@ -133,10 +133,22 @@
         <run class="HelloWorld" ltw="aop-tracing.xml"/>
     </ajc-test>
     
-    <ajc-test dir="bugs151/pr125699" title="inherit adivce with this() and thisJoinPoint">
-        <compile files="Tracing.aj, TestTracing.aj, AtTestTracing.java" options="-1.5"/>
+    <ajc-test dir="bugs151/pr125699" title="inherit advice with this() and thisJoinPoint">
+        <compile files="Tracing.aj, TestTracing.aj, AtTestTracing.java" options="-1.5">
+          <message kind="warning" line="13" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
+          <message kind="warning" line="8" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
+          <message kind="warning" line="3" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
     </ajc-test>
-    
+
+    <ajc-test dir="bugs151/pr125699" title="inherit advice with this() and thisJoinPoint - 2">
+        <compile files="Tracing.aj, SubAbstractTracing.aj, SubAtAj.java" options="-1.5">
+          <message kind="warning" line="13" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
+          <message kind="warning" line="8" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
+          <message kind="warning" line="3" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
+    </ajc-test>
+
     <ajc-test dir="bugs151/pr125810" title="warning when inherited pointcut not made concrete">
         <compile files="SuperAspect.aj, SubAspect.aj, SubAtAspect.java" options="-1.5">
           <message kind="error" line="3" text="inherited abstract pointcut SuperAspect.scope() is not made concrete in SubAspect"/>

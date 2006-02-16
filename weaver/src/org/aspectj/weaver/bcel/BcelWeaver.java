@@ -502,9 +502,12 @@ public class BcelWeaver implements IWeaver {
 				if (advice.getSignature() != null) {
 					final int numFormals;
                     final String names[];
-                    //ATAJ for @AJ aspect, the formal have to be checked according to the argument number
-                    // since xxxJoinPoint presence or not have side effects
-                    if (advice.getConcreteAspect().isAnnotationStyleAspect()) {
+                    // If the advice is being concretized in a @AJ aspect *and* the advice was declared in
+                    // an @AJ aspect (it could have been inherited from a code style aspect) then
+                    // evaluate the alternative set of formals. pr125699
+                    if (advice.getConcreteAspect().isAnnotationStyleAspect()
+                    	&& advice.getDeclaringAspect()!=null 
+                    	&& advice.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
                         numFormals = advice.getBaseParameterCount();
                         int numArgs = advice.getSignature().getParameterTypes().length;
                         if (numFormals > 0) {
