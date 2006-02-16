@@ -1230,7 +1230,7 @@ public class AjcTask extends MatchingTask {
         if (null == holder) {
             MessageHandler mhandler = new MessageHandler(true);
 			final IMessageHandler delegate;
-              delegate  = new AntMessageHandler(this.logger,this.verbose);
+              delegate  = new AntMessageHandler(this.logger,this.verbose, false);
             mhandler.setInterceptor(delegate);
             holder = mhandler;
             numPreviousErrors = 0;
@@ -2030,11 +2030,13 @@ public static class GuardedCommand {
 private static class AntMessageHandler implements IMessageHandler {
 
 	private TaskLogger logger;
-	private boolean taskLevelVerbose;
-	
-	public AntMessageHandler(TaskLogger logger, boolean taskVerbose) {
+    private final boolean taskLevelVerbose;
+    private final boolean handledMessage;
+    
+	public AntMessageHandler(TaskLogger logger, boolean taskVerbose, boolean handledMessage) {
 		this.logger = logger;
 		this.taskLevelVerbose = taskVerbose;
+        this.handledMessage = handledMessage;
 	}
 	
 	/* (non-Javadoc)
@@ -2067,7 +2069,7 @@ private static class AntMessageHandler implements IMessageHandler {
 		} else {
 			throw new BuildException("Unknown message kind from AspectJ compiler: " + messageKind.toString());
 		}
-		return true;
+		return handledMessage;
 	}
 
 	/* (non-Javadoc)
