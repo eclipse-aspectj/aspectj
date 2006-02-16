@@ -160,6 +160,10 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("@AJ no NPE with deow when structure model isn't generated"); 
   }
   
+  public void testAtAspectWithoutJoinPointImport_pr121616() {
+	  runTest("@AJ without JoinPoint import");
+  }
+  
   /*
    * Load-time weaving bugs and enhancements
    */

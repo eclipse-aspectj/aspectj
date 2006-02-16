@@ -176,6 +176,12 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs151" title="@AJ without JoinPoint import">
+        <compile files="pr121616.java" options="-1.5">
+          <message kind="error" line="13" text="JoinPoint cannot be resolved to a type"/>
+        </compile>
+    </ajc-test>
+
     <!-- New features down here... when they arent big enough to have their own test file -->
     
     <ajc-test dir="features151/ptw" title="exposing withintype">

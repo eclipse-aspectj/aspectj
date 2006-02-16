@@ -147,6 +147,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
+		if (methodDeclaration.hasErrors()) {
+			return false;
+		}
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.VALIDATING_AT_ASPECTJ_ANNOTATIONS, methodDeclaration.selector);
 		ajAnnotations = new AspectJAnnotations(methodDeclaration.annotations);
 		if (!methodDeclaration.getClass().equals(AjMethodDeclaration.class)) {
