@@ -549,6 +549,8 @@ public class BuildArgParser extends Main {
             	if (arg.endsWith(":compress")) {
             		showWarning("-Xreweavable:compress is no longer available - reweavable is now default");
             	}
+			} else if (arg.startsWith("-Xset:")) {
+				buildConfig.setXconfigurationInfo(arg.substring(6));
 			} else if (arg.startsWith("-XnotReweavable")) {
             	buildConfig.setXnotReweavable(true);
 			} else if (arg.equals("-XnoInline")) {

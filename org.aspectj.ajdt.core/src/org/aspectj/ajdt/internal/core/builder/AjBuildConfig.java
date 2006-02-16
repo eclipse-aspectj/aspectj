@@ -386,6 +386,7 @@ public class AjBuildConfig {
         if (!isXNotReweavable() && global.isXNotReweavable()) {
         	setXnotReweavable(true);
         }
+        setXconfigurationInfo(global.getXconfigurationInfo());
     }
 
     void join(Collection local, Collection global) {
@@ -497,6 +498,13 @@ public class AjBuildConfig {
 
 	public void setXnotReweavable(boolean b) {
 		options.xNotReweavable = b;
+	}
+	
+	public void setXconfigurationInfo(String info) {
+		options.xConfigurationInfo = info;
+	}
+	public String getXconfigurationInfo() {
+		return options.xConfigurationInfo;
 	}
 	
 	public void setXHasMemberSupport(boolean enabled) {

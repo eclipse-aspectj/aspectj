@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.WeakHashMap;
 
 import org.aspectj.asm.IHierarchy;
@@ -89,6 +90,7 @@ public abstract class World implements Dump.INode {
     /** Flags for the new joinpoints that are 'optional' */
     private boolean optionalJoinpoint_ArrayConstruction = false;  // Command line flag: "arrayconstruction"
     
+    private Properties extraConfiguration = null;
     
     /** 
      * A list of RuntimeExceptions containing full stack information for every
@@ -655,6 +657,35 @@ public abstract class World implements Dump.INode {
 	public void setBehaveInJava5Way(boolean b) {
     	behaveInJava5Way = b;
     }
+	
+	public void performExtraConfiguration(String config) {
+		if (config==null) return;
+		// Bunch of name value pairs to split
+		extraConfiguration = new Properties();
+		int pos =-1;
+		while ((pos=config.indexOf(","))!=-1) {
+			String nvpair = config.substring(0,pos);
+			int pos2 = nvpair.indexOf("=");
+			if (pos2!=-1) {
+				String n = nvpair.substring(0,pos2);
+				String v = nvpair.substring(pos2+1);
+				extraConfiguration.setProperty(n,v);
+			}
+			config = config.substring(pos+1);
+		}
+		if (config.length()>0) {
+			int pos2 = config.indexOf("=");
+			if (pos2!=-1) {
+				String n = config.substring(0,pos2);
+				String v = config.substring(pos2+1);
+				extraConfiguration.setProperty(n,v);
+			}
+		}
+	}
+	
+	public Properties getExtraConfiguration() {
+		return extraConfiguration;
+	}
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;

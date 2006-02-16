@@ -79,6 +79,8 @@ public class AjCompilerOptions extends CompilerOptions {
 	// Specifies the level of the aspectjrt.jar we are targetting
 	public String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
 	
+	public String xConfigurationInfo;
+	
 	// these next four not exposed by IDEs
 	public boolean generateModel = false;
 	public boolean generateJavaDocsInModel = false;
