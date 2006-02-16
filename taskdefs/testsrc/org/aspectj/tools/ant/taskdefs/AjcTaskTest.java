@@ -17,10 +17,12 @@
 package org.aspectj.tools.ant.taskdefs;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -40,6 +42,9 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
 /**
+ * AjcTask test cases.
+ * Please put new ones with others between ------- comments.
+ * 
  * Some API tests, but mostly functional tests driving
  * the task execute using data in ../taskdefs/testdata.
  * This will re-run in forked mode for any nonfailing
@@ -157,7 +162,112 @@ public class AjcTaskTest extends TestCase {
 		deleteTempDir();
 		MESSAGES.setLength(0);
 	}
+    private void checkRun(AjcTask task, String exceptionString) {
+        try {
+            task.execute();
+            assertTrue(null == exceptionString);
+        } catch (BuildException e) {
+            if (null == exceptionString) {
+                assertTrue("unexpected " + e.getMessage(), false);
+            } else {
+                String m = e.getMessage();
+                if (null == m) {
+                    assertTrue("not " + exceptionString, false);
+                } else if (-1 == m.indexOf(exceptionString)) {
+                    assertEquals(exceptionString, e.getMessage());
+                }
+            }
+        }
 
+    }
+
+    private void checkContains(String[] cmd, String option, boolean contains) {
+        for (int i = 0; i < cmd.length; i++) {
+            if (option.equals(cmd[i])) {
+                if (contains) {
+                    return;
+                } else {
+                    assertTrue(
+                        "not expecting " + option + " in " + Arrays.asList(cmd),
+                        false);
+                }
+            }
+        }
+        if (contains) {
+            assertTrue(
+                "expecting " + option + " in " + Arrays.asList(cmd),
+                false);
+        }
+    }
+    protected AjcTask getTask(String input) {
+        return getTask(input, getTempDir());
+    }
+
+    protected AjcTask getTask(String input, File destDir) {
+        AjcTask task = new AjcTask();
+        Project p = new Project();
+        task.setProject(p);
+        if (null != destDir) {
+            task.setDestdir(destDir);
+        }
+        if (NOFILE.equals(input)) {
+            // add nothing
+        } else if (input.endsWith(".lst")) {
+            if (-1 != input.indexOf(",")) {
+                throw new IllegalArgumentException(
+                    "lists not supported: " + input);
+            } else if (null == testdataDir) {
+                throw new Error("testdata not found - run in ../taskdefs");
+            } else {
+                String path = testdataDir + File.separator + input;
+                task.setArgfiles(new Path(task.getProject(), path));
+            }
+        } else if ((input.endsWith(".java") || input.endsWith(".aj"))) {
+            FilenameSelector fns = new FilenameSelector();
+            fns.setName(input);
+            task.addFilename(fns);
+        } else {
+            String path = testdataDir + File.separator + input;
+            task.setSourceRoots(new Path(task.getProject(), path));
+        }
+        task.setClasspath(new Path(p, "../lib/test/aspectjrt.jar"));
+        return task;
+    }
+
+    /** used in testMessageHolderClassName */
+    public static class InfoHolder extends MessageHandler {
+        public InfoHolder() {
+        }
+        public boolean handleMessage(IMessage message) {
+            if (0 == IMessage.INFO.compareTo(message.getKind())) {
+                AjcTaskTest.collectMessage(message.getMessage());
+            }
+            return true;
+        }
+    }
+
+    /** used in testMessageHolderClassName */
+    public static class Holder extends MessageHandler {
+        public Holder() {
+        }
+        public boolean handleMessage(IMessage message) {
+            IMessage.Kind kind = message.getKind();
+            if (IMessage.ERROR.isSameOrLessThan(kind)) {
+                String m = kind.toString();
+                AjcTaskTest.collectMessage(m.substring(0, 1));
+            }
+            return true;
+        }
+    }
+
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // Start of test cases
+    
 	public void testNullDestDir() {
 		AjcTask task = getTask(NOFILE, null);
 		String[] cmd = task.makeCommand();
@@ -313,24 +423,6 @@ public class AjcTaskTest extends TestCase {
 		logFile.delete();
 	}
 
-    private void checkRun(AjcTask task, String exceptionString) {
-		try {
-			task.execute();
-			assertTrue(null == exceptionString);
-		} catch (BuildException e) {
-			if (null == exceptionString) {
-				assertTrue("unexpected " + e.getMessage(), false);
-			} else {
-				String m = e.getMessage();
-				if (null == m) {
-					assertTrue("not " + exceptionString, false);
-				} else if (-1 == m.indexOf(exceptionString)) {
-					assertEquals(exceptionString, e.getMessage());
-				}
-			}
-		}
-
-	}
 
 	public void testCommandEditor() {
 		String className = VerboseCommandEditor.class.getName();
@@ -409,84 +501,6 @@ public class AjcTaskTest extends TestCase {
 		// XXX need aspect to stub out System.getProperty(..) 
 	}
 
-    private void checkContains(String[] cmd, String option, boolean contains) {
-        for (int i = 0; i < cmd.length; i++) {
-            if (option.equals(cmd[i])) {
-                if (contains) {
-                    return;
-                } else {
-                    assertTrue(
-                        "not expecting " + option + " in " + Arrays.asList(cmd),
-                        false);
-                }
-            }
-        }
-        if (contains) {
-            assertTrue(
-                "expecting " + option + " in " + Arrays.asList(cmd),
-                false);
-        }
-    }
-	protected AjcTask getTask(String input) {
-		return getTask(input, getTempDir());
-	}
-
-	protected AjcTask getTask(String input, File destDir) {
-		AjcTask task = new AjcTask();
-		Project p = new Project();
-		task.setProject(p);
-		if (null != destDir) {
-			task.setDestdir(destDir);
-		}
-		if (NOFILE.equals(input)) {
-			// add nothing
-		} else if (input.endsWith(".lst")) {
-			if (-1 != input.indexOf(",")) {
-				throw new IllegalArgumentException(
-					"lists not supported: " + input);
-			} else if (null == testdataDir) {
-				throw new Error("testdata not found - run in ../taskdefs");
-			} else {
-				String path = testdataDir + File.separator + input;
-				task.setArgfiles(new Path(task.getProject(), path));
-			}
-		} else if ((input.endsWith(".java") || input.endsWith(".aj"))) {
-			FilenameSelector fns = new FilenameSelector();
-			fns.setName(input);
-			task.addFilename(fns);
-		} else {
-			String path = testdataDir + File.separator + input;
-			task.setSourceRoots(new Path(task.getProject(), path));
-		}
-		task.setClasspath(new Path(p, "../lib/test/aspectjrt.jar"));
-		return task;
-	}
-
-    /** used in testMessageHolderClassName */
-    public static class InfoHolder extends MessageHandler {
-        public InfoHolder() {
-        }
-        public boolean handleMessage(IMessage message) {
-            if (0 == IMessage.INFO.compareTo(message.getKind())) {
-                AjcTaskTest.collectMessage(message.getMessage());
-            }
-            return true;
-        }
-    }
-
-	/** used in testMessageHolderClassName */
-	public static class Holder extends MessageHandler {
-		public Holder() {
-		}
-		public boolean handleMessage(IMessage message) {
-			IMessage.Kind kind = message.getKind();
-			if (IMessage.ERROR.isSameOrLessThan(kind)) {
-				String m = kind.toString();
-				AjcTaskTest.collectMessage(m.substring(0, 1));
-			}
-			return true;
-		}
-	}
 
 	public void testMessageHolderClassName() {
 		AjcTask task = getTask("compileError.lst");
@@ -562,8 +576,28 @@ public class AjcTaskTest extends TestCase {
 	/** failonerror should default to true, unlike other booleans */
 	public void testCompileErrorFailOnErrorDefault() {
 		AjcTask task = getTask("compileError.lst");
-		runTest(task, BuildException.class, MessageHolderChecker.ONE_ERROR);
+        final PrintStream serr = System.err;
+        try {
+            System.setErr(new PrintStream(new java.io.ByteArrayOutputStream()));
+            runTest(task, BuildException.class, MessageHolderChecker.ONE_ERROR);
+        } finally {
+            System.setErr(serr);
+        }
 	}
+    public void testCompileErrorListDefaultHolder() {
+        AjcTask task = getTask("compileError.lst");
+        final PrintStream serr = System.err;
+        try {
+            System.setErr(new PrintStream(new java.io.ByteArrayOutputStream()));
+            task.execute();
+            fail("expected BuildException from failed compile by default");
+        } catch (BuildException t) {
+            // ok
+        } finally {
+            System.setErr(serr);
+            deleteTempDir();
+        }
+    }
 
 	public void testDefaultList() {
 		AjcTask task = getTask("default.lst");
@@ -735,6 +769,13 @@ public class AjcTaskTest extends TestCase {
 		assertTrue(customName + " missing",outxmlFile.exists());
 	}
 
+    // End of test cases
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // ------------------------------------------------------
+    // ------------------------------------------------------
 	protected void runTest(
 		AjcTask task,
 		Class exceptionType,
