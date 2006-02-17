@@ -3,6 +3,11 @@
 <!-- AspectJ v1.5.1 Tests -->
 <suite>
     
+    <ajc-test dir="bugs151/pr123553" title="generic advice parameters">
+        <compile files="A.java" options="-1.5"/>
+        <run class="A"/>
+    </ajc-test>  
+    
     <ajc-test dir="bugs151" title="member types in generic types">
         <compile files="pr122458.aj" options="-1.5 -emacssym"/>
     </ajc-test>  

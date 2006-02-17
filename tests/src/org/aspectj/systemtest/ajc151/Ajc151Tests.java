@@ -23,7 +23,8 @@ import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-	  
+    
+  public void testGenericAdviceParameters_pr123553()    { runTest("generic advice parameters");}
   public void testMemberTypesInGenericTypes_pr122458()    { runTest("member types in generic types");}
   public void testMemberTypesInGenericTypes_pr122458_2()  { runTest("member types in generic types - 2");}
   public void testNPEOnDeclareAnnotation_pr123695() { runTest("Internal nullptr exception with complex declare annotation");}
