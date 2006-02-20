@@ -778,6 +778,20 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     public static final Primitive BOOLEAN = new Primitive("Z", 1, 7);
     public static final Missing   MISSING = new Missing();
     
+    /** Reset the static state in the primitive types */
+    public static void resetPrimitives() {
+    	BYTE.world=null;
+    	CHAR.world=null;
+    	DOUBLE.world=null;
+    	FLOAT.world=null;
+    	INT.world=null;
+    	LONG.world=null;
+    	SHORT.world=null;
+    	VOID.world=null;
+    	BOOLEAN.world=null;
+    }
+    
+    
     // ---- types
     public static ResolvedType makeArray(ResolvedType type, int dim) {
     	if (dim == 0) return type;
