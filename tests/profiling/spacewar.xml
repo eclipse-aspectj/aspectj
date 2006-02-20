@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<!--
+    Copyright 2006 contributors.
+  
+    All rights reserved. 
+    This program and the accompanying materials are made available 
+    under the terms of the Eclipse Public License v1.0 
+    which accompanies this distribution and is available at 
+    http://eclipse.org/legal/epl-v10.html 
+
+    Contributors: Andy Clement
+-->
+
+<project name="spacewar" default="spacewar-usage">
+
+	<!-- imported by master build.xml when using the spacewar
+		 source tree as the basis for profiling the compiler -->
+	
+	<target name="spacewar-usage">
+		<echo message="this file contains only path definitions"/>
+		<echo message="these are used to customize the target application used by"/>
+		<echo message="the profiling tests. Set the target.application.definitions.file"/>
+		<echo message="property to point to your own replacement of this file to"/>
+		<echo message="profile compilation of an alternate project"/>		
+	</target>
+	
+	<!-- any target.application.definitions.file must define the following paths:
+		  * source.roots  (used for from source and ajdt compilation tests)
+		  * build.class.path (the class path needed to build the application)
+		 it must also define the copy.source.files target needed by the ajdt build
+	-->
+	
+	<!-- the source roots used for compilation. -->
+	<path id="source.roots">
+		<pathelement location="../../ajdoc/testdata/spacewar"/>
+	</path>
+	
+	<!-- the classpath needed for compilation -->
+	<path id="build.class.path">
+	</path>
+
+	<!-- the source files used for AJDT project-based compilation -->
+	<target name="copy.source.files" depends="init">
+		<echo message="copying source files to ${todir}"/>
+		<copy todir="${todir}">
+			<!--fileset dir="${spacewar.install.dir}/src"
+				     includes="**/*.java,**/*.aj"/-->
+		</copy>
+	</target>
+	
+</project>
