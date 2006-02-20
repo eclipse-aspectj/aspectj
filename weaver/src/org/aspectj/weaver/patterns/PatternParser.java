@@ -139,7 +139,7 @@ public class PatternParser {
 			eat(":");
 			ret = parseSoft();
 		} else {
-			throw new ParserException("expected one of error, warning, parents, soft, dominates",
+			throw new ParserException("expected one of error, warning, parents, soft, precedence, @type, @method, @constructor, @field",
 				tokenSource.peek(-1));
 		}
 	    int endPos = tokenSource.peek(-1).getEnd();
