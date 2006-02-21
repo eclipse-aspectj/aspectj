@@ -33,9 +33,11 @@ import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.AccessRestriction;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
@@ -59,6 +61,7 @@ import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.FakeAnnotation;
 import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
@@ -756,21 +759,49 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 		TypeBinding tb = factory.makeTypeBinding(aspectType);
 		
+		// Hideousness follows:
 		
+		// There are multiple situations to consider here and they relate to the combinations of
+		// where the annotation is coming from and where the annotation is going to be put:
+		//
+		// 1. Straight full build, all from source - the annotation is from a dec@type and
+		//    is being put on some type.  Both types are real SourceTypeBindings. WORKS
+		// 2. Incremental build, changing the affected type - the annotation is from a
+		//    dec@type in a BinaryTypeBinding (so has to be accessed via bcel) and the
+		//    affected type is a real SourceTypeBinding.  Mostly works (pr128665)
+		// 3. ?
 		
-		
-		// TODO asc determine if there really is a problem here (see comment below)
-		
-		// ClassCastException here means we probably have either a parameterized type or a raw type, we need the
-		// commented out code to get it to work ... currently uncommented because I've not seen a case where its
-		// required yet ...
 		SourceTypeBinding stb = (SourceTypeBinding)tb;
-		MethodBinding[]	mbs = stb.getMethods(decA.getAnnotationMethod().toCharArray());
-		long abits = mbs[0].getAnnotationTagBits(); // ensure resolved
-		TypeDeclaration typeDecl = ((SourceTypeBinding)mbs[0].declaringClass).scope.referenceContext;
-		AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
-		Annotation[] toAdd = methodDecl.annotations; // this is what to add
-		abits = toAdd[0].resolvedType.getAnnotationTagBits();
+		Annotation[] toAdd = null;
+		long abits = 0;
+		
+		// Might have to retrieve the annotation through BCEL and construct an eclipse one for it.
+		if (stb instanceof BinaryTypeBinding) {
+			ReferenceType rt = (ReferenceType)factory.fromEclipse(stb);
+			ResolvedMember[] methods = rt.getDeclaredMethods();
+			ResolvedMember decaMethod = null;
+			String nameToLookFor = decA.getAnnotationMethod();
+			for (int i = 0; i < methods.length; i++) {
+				if (methods[i].getName().equals(nameToLookFor)) {decaMethod = methods[i];break;}
+			}
+			if (decaMethod!=null) { // could assert this ...
+				AnnotationX[] axs = decaMethod.getAnnotations();
+				toAdd = new Annotation[1];
+				toAdd[0] = createAnnotationFromBcelAnnotation(axs[0],decaMethod.getSourceLocation().getOffset(),factory);
+				// BUG BUG BUG - We dont test these abits are correct, in fact we'll be very lucky if they are.
+				// What does that mean?  It means on an incremental compile you might get away with an
+				// annotation that isn't allowed on a type being put on a type.
+				abits = toAdd[0].resolvedType.getAnnotationTagBits(); 
+			}		
+		} else {
+			// much nicer, its a real SourceTypeBinding so we can stay in eclipse land
+			MethodBinding[]	mbs = stb.getMethods(decA.getAnnotationMethod().toCharArray());
+			abits = mbs[0].getAnnotationTagBits(); // ensure resolved
+			TypeDeclaration typeDecl = ((SourceTypeBinding)mbs[0].declaringClass).scope.referenceContext;
+			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
+			toAdd = methodDecl.annotations; // this is what to add
+			abits = toAdd[0].resolvedType.getAnnotationTagBits();
+		}
 		
 		if (sourceType instanceof BinaryTypeBinding) {
 			// In this case we can't access the source type binding to add a new annotation, so let's put something
@@ -877,6 +908,31 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		sourceType.scope.referenceContext.annotations = newset;
 		CompilationAndWeavingContext.leavingPhase(tok);
 		return true;
+	}
+	
+	/**
+	 * Transform an annotation from its AJ form to an eclipse form.  We *DONT* care about the
+	 * values of the annotation.  that is because it is only being stuck on a type during
+	 * type completion to allow for other constructs (decps, decas) that might be looking for it -
+	 * when the class actually gets to disk it wont have this new annotation on it and during
+	 * weave time we will do the right thing copying across values too.
+	 */
+	private static Annotation createAnnotationFromBcelAnnotation(AnnotationX annX,int pos, EclipseFactory factory) {
+		String name = annX.getTypeName();
+		TypeBinding tb = factory.makeTypeBinding(annX.getSignature());
+		char[][] typeName = CharOperation.splitOn('.',name.toCharArray());
+		long[] positions = new long[] {pos};
+		TypeReference annType = new QualifiedTypeReference(typeName,positions);
+		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+		ann.resolvedType=tb; // yuck - is this OK in all cases?
+		// We don't need membervalues...
+//		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+//		MemberValuePair[] mvps = new MemberValuePair[2];
+//		mvps[0] = new MemberValuePair("value".toCharArray(),pos,pos,pcExpr);
+//		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+//		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
+//		ann.memberValuePairs = mvps;
+		return ann;
 	}
 
 	private boolean isAnnotationTargettingSomethingOtherThanAnnotationOrNormal(long abits) {
