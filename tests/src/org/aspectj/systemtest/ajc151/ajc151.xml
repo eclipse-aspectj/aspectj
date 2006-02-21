@@ -208,6 +208,10 @@
         </run>
     </ajc-test>
 
+    <ajc-test dir="bugs151" title="@AJ no npe with pointcut containing or, this and a wildcard">
+        <compile files="pr128237.java" options="-1.5"/>
+    </ajc-test>
+
     <!-- New features down here... when they arent big enough to have their own test file -->
     
     <ajc-test dir="features151/ptw" title="exposing withintype">

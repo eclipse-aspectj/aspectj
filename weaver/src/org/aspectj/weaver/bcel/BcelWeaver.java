@@ -611,7 +611,11 @@ public class BcelWeaver implements IWeaver {
 			// if each branch binds it in exactly the same way...
 			List ambiguousNames = new ArrayList();
 			for (int i = 0; i < numFormals; i++) {
-				if (!leftBindings[i].equals(rightBindings[i])) {
+				if (leftBindings[i] == null) {
+					if (rightBindings[i] != null) {
+						ambiguousNames.add(names[i]);
+					}
+				} else if (!leftBindings[i].equals(rightBindings[i])) {
 					ambiguousNames.add(names[i]);
 				}
 			}

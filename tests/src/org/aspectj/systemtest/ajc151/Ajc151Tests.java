@@ -170,6 +170,10 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("@AJ declare parents retains field state");
   }
   
+  public void testAtAspectNoNPEWithPcdContainingOrThisAndWildcard_pr128237() {
+	  runTest("@AJ no npe with pointcut containing or, this and a wildcard");
+  }
+  
   /*
    * Load-time weaving bugs and enhancements
    */
