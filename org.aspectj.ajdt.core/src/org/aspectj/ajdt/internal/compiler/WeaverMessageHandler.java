@@ -18,6 +18,7 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -60,6 +61,17 @@ public class WeaverMessageHandler implements IMessageHandler {
 			  if (!currentlyWeaving.equals(((EclipseSourceLocation)sLoc).getCompilationResult()))
 			  return sink.handleMessage(message);
 			  //  throw new RuntimeException("Primary source location must match the file we are currently processing!");
+			}
+		}
+		// bug 128618 - want to do a similar thing as in bug 62073 above, however
+		// we're not an EclipseSourceLocation we're a SourceLocation.
+		if (sLoc instanceof SourceLocation) {
+			SourceLocation sl = (SourceLocation)sLoc;
+			if (currentlyWeaving != null && sl.getSourceFile() != null) {
+				if (!String.valueOf(currentlyWeaving.getFileName()).equals( sl.getSourceFile().getAbsolutePath())) {
+					return sink.handleMessage(message);
+					//throw new RuntimeException("Primary source location must match the file we are currently processing!");
+				}
 			}
 		}
 		

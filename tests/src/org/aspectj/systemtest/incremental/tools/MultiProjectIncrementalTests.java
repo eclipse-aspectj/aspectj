@@ -314,6 +314,24 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		assertTrue("Should be no errors, but got "+MyTaskListManager.getErrorMessages(),MyTaskListManager.getErrorMessages().size()==0);		
 	}
 	
+	public void testPr128618() {
+		initialiseProject("PR128618_1");
+		initialiseProject("PR128618_2");
+		configureNewProjectDependency("PR128618_2","PR128618_1");
+		assertTrue("there should be no warning messages before we start",
+				MyTaskListManager.getWarningMessages().isEmpty());
+		build("PR128618_1");
+		build("PR128618_2");
+		IMessage msg = (IMessage)(MyTaskListManager.getWarningMessages().get(0));
+		assertEquals("warning should be against the FFDC.aj resource","FFDC.aj",msg.getSourceLocation().getSourceFile().getName());
+		alter("PR128618_2","inc1");
+		build("PR128618_2");
+		checkWasntFullBuild();
+		IMessage msg2 = (IMessage)(MyTaskListManager.getWarningMessages().get(0));
+		assertEquals("warning should be against the FFDC.aj resource","FFDC.aj",msg2.getSourceLocation().getSourceFile().getName());
+		assertFalse("a new warning message should have been generated", msg.equals(msg2));
+	}
+	
 	public void testPr92837() {
 		initialiseProject("PR92837");
 		build("PR92837");
