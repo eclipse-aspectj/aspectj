@@ -87,6 +87,14 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("swallowed exceptions");
   }
   
+  public void testAtAspectVerifyErrorWithAfterThrowingAndthisJoinPoint_pr122742() {
+	  runTest("@AJ VerifyError with @AfterThrowing and thisJoinPoint argument");
+  }
+  
+  public void testAtAspectVerifyErrorWithAfterReturningAndthisJoinPoint_pr122742() {
+	  runTest("@AJ VerifyError with @AfterReturning and thisJoinPoint argument");
+  }
+  
   public void testSwallowedExceptionIgnored() {
 	  runTest("swallowed exceptions with xlint");
   }

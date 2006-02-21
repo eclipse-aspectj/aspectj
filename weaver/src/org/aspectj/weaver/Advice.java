@@ -285,6 +285,20 @@ public abstract class Advice extends ShadowMunger {
 	public UnresolvedType getExtraParameterType() {
 		if (!hasExtraParameter()) return ResolvedType.MISSING;
 		if (signature instanceof ResolvedMember) {
+			if (getConcreteAspect().isAnnotationStyleAspect()) {
+				// bug 122742 - if we're an annotation style aspect then one 
+				// of the extra parameters could be JoinPoint which we want
+				// to ignore
+				int baseParmCnt = getBaseParameterCount();
+				UnresolvedType[] genericParameterTypes = ((ResolvedMember)signature).getGenericParameterTypes();
+				while ((baseParmCnt + 1 < genericParameterTypes.length)
+						&& (genericParameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_JOINPOINT)
+								|| genericParameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_STATICJOINPOINT)
+								|| genericParameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT))) {
+					baseParmCnt++;
+				}
+				return ((ResolvedMember)signature).getGenericParameterTypes()[baseParmCnt];
+			}
 			return ((ResolvedMember)signature).getGenericParameterTypes()[getBaseParameterCount()];
 		} else {
 			return signature.getParameterTypes()[getBaseParameterCount()];

@@ -14,8 +14,20 @@
     
     <ajc-test dir="bugs151/pr127299" title="missing import gives funny message">
         <compile files="ModelErrorConversion.aj" options="-1.5"/>
-    </ajc-test>  
-    
+    </ajc-test>
+      
+    <ajc-test dir="bugs151/pr122742" title="@AJ VerifyError with @AfterThrowing and thisJoinPoint argument">
+    	<compile files="AfterThrowingTest.java" options="-1.5"/>
+    	<run class="AfterThrowingTest">
+    	</run>
+    </ajc-test>
+
+    <ajc-test dir="bugs151/pr122742" title="@AJ VerifyError with @AfterReturning and thisJoinPoint argument">
+    	<compile files="AfterReturningTest.java" options="-1.5"/>
+    	<run class="AfterReturningTest">
+    	</run>
+    </ajc-test>
+   
     <ajc-test dir="bugs151/pr120527" title="incorrect unused interface message">
         <compile files="Bugs.aj" options="-warn:unusedPrivate"/>
     </ajc-test>  
