@@ -626,12 +626,14 @@ public class AjdeInteractionTestbed extends TestCase {
 		private boolean receivedBatchBuildMessage = false;
 		private List errorMessages = new ArrayList();
 		private List warningMessages = new ArrayList();
+		private List weavingMessages = new ArrayList();
 		
 		public static void reset() {
 			_instance.receivedNonIncrementalBuildMessage=false;
 			_instance.receivedBatchBuildMessage=false;
 			_instance.errorMessages.clear();
 			_instance.warningMessages.clear();
+			_instance.weavingMessages.clear();
 		}
 		
 //		public static boolean defaultedToBatch() {
@@ -654,6 +656,10 @@ public class AjdeInteractionTestbed extends TestCase {
 			return _instance.warningMessages;
 		}
 		
+		public static List/*IMessage*/ getWeavingMessages() {
+			return _instance.weavingMessages;
+		}
+		
 		public static TaskListManager getInstance() { 
 			return _instance;
 		}
@@ -668,12 +674,9 @@ public class AjdeInteractionTestbed extends TestCase {
 //				if (message.getMessage().startsWith(CANT_BUILD_INCREMENTAL_INDICATION)) _instance.receivedNonIncrementalBuildMessage=true;
 //				if (message.getMessage().startsWith(DOING_BATCH_BUILD_INDICATION)) _instance.receivedBatchBuildMessage=true;
 //			}
-			if (message.getKind()==IMessage.ERROR) {
-				errorMessages.add(message);
-			}
-			if (message.getKind()==IMessage.WARNING) {
-				warningMessages.add(message);
-			}
+			if (message.getKind()==IMessage.ERROR) errorMessages.add(message);
+			if (message.getKind()==IMessage.WARNING) warningMessages.add(message);
+			if (message.getKind()==IMessage.WEAVEINFO) weavingMessages.add(message);
 			log("TaskListManager.addSourcelineTask("+message+")");
 		}
 

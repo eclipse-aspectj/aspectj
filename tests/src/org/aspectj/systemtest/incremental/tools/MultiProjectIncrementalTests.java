@@ -515,7 +515,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 	
 	public void testPr112736() {
-		AjdeInteractionTestbed.VERBOSE = true;
+	//	AjdeInteractionTestbed.VERBOSE = true;
 		initialiseProject("PR112736");
 		build("PR112736");
 		checkWasFullBuild();
@@ -545,6 +545,52 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		alter("PR123612","inc1");
 		build("PR123612");
 		checkWasFullBuild(); // back to the source
+	}
+	
+
+	public void testPr128655() {
+		configureNonStandardCompileOptions("-showWeaveInfo");
+		initialiseProject("pr128655");
+		build("pr128655");
+		List firstBuildMessages = MyTaskListManager.getWeavingMessages();
+		assertTrue("Should be at least one message about the dec @type, but there were none",firstBuildMessages.size()>0);
+		alter("pr128655","inc1");
+		build("pr128655");
+		checkWasntFullBuild(); // back to the source
+		List secondBuildMessages = MyTaskListManager.getWeavingMessages();
+		// check they are the same
+		for (int i = 0; i < firstBuildMessages.size(); i++) {
+			IMessage m1 = (IMessage)firstBuildMessages.get(i);
+			IMessage m2 = (IMessage)secondBuildMessages.get(i);
+			if (!m1.toString().equals(m2.toString())) {
+				System.err.println("Message during first build was: "+m1);
+				System.err.println("Message during second build was: "+m1);
+				fail("The two messages should be the same, but are not: \n"+m1+"!="+m2);
+			}
+		}
+	}
+	
+	// Similar to above, but now the annotation is in the default package
+	public void testPr128655_2() {
+		configureNonStandardCompileOptions("-showWeaveInfo");
+		initialiseProject("pr128655_2");
+		build("pr128655_2");
+		List firstBuildMessages = MyTaskListManager.getWeavingMessages();
+		assertTrue("Should be at least one message about the dec @type, but there were none",firstBuildMessages.size()>0);
+		alter("pr128655_2","inc1");
+		build("pr128655_2");
+		checkWasntFullBuild(); // back to the source
+		List secondBuildMessages = MyTaskListManager.getWeavingMessages();
+		// check they are the same
+		for (int i = 0; i < firstBuildMessages.size(); i++) {
+			IMessage m1 = (IMessage)firstBuildMessages.get(i);
+			IMessage m2 = (IMessage)secondBuildMessages.get(i);
+			if (!m1.toString().equals(m2.toString())) {
+				System.err.println("Message during first build was: "+m1);
+				System.err.println("Message during second build was: "+m1);
+				fail("The two messages should be the same, but are not: \n"+m1+"!="+m2);
+			}
+		}
 	}
 	
 	// other possible tests:
