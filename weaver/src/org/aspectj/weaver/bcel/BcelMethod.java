@@ -275,6 +275,9 @@ final class BcelMethod extends ResolvedMemberImpl {
 		 return genericReturnType;
 	 }
 	 
+	 /** For testing only */
+	 public Method getMethod() { return method; }
+	 
 	 private void unpackGenericSignature() {
 		 if (unpackedGenericSignature) return;
  		 if (!world.isInJava5Mode()) { 
