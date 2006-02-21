@@ -278,7 +278,8 @@ public final class LazyMethodGen {
     	if (!checkedXsetOption) {
         	Properties p = enclosingClass.getWorld().getExtraConfiguration();
         	if (p!=null) {
-        		avoidUseOfBcelGenObjects = Boolean.parseBoolean(p.getProperty("optimizeWithTags","true"));
+        		String s = p.getProperty("optimizeWithTags","true");
+        		avoidUseOfBcelGenObjects = s.equalsIgnoreCase("true");
         		if (!avoidUseOfBcelGenObjects) 
         			enclosingClass.getWorld().getMessageHandler().handleMessage(MessageUtil.info("[optimizeWithTags=false] Disabling optimization to use Tags rather than Gens"));
         	}
