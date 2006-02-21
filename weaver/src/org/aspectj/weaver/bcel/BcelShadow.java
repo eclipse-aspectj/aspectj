@@ -43,6 +43,7 @@ import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.LoadInstruction;
+import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.NEW;
 import org.aspectj.apache.bcel.generic.ObjectType;
@@ -1344,12 +1345,13 @@ public class BcelShadow extends Shadow {
      */
     public UnresolvedType ensureTargetTypeIsCorrect(UnresolvedType tx) {
     	
-    	
-    	if (tx.equals(ResolvedType.OBJECT) && getKind() == MethodCall && 
-    	    getSignature().getReturnType().equals(ResolvedType.OBJECT) && 
-			getSignature().getArity()==0 && 
-			getSignature().getName().charAt(0) == 'c' &&
-			getSignature().getName().equals("clone")) {
+    	Member msig = getSignature();
+    	if (msig.getArity()==0 && 
+    		getKind() == MethodCall && 
+        	msig.getName().charAt(0) == 'c' &&
+    		tx.equals(ResolvedType.OBJECT) && 
+    		msig.getReturnType().equals(ResolvedType.OBJECT) && 
+			msig.getName().equals("clone")) {
     		
     		// Lets go back through the code from the start of the shadow
             InstructionHandle searchPtr = range.getStart().getPrev();
@@ -1363,7 +1365,7 @@ public class BcelShadow extends Shadow {
             	LoadInstruction li = (LoadInstruction)searchPtr.getInstruction();
             	li.getIndex();
             	LocalVariableTag lvt = LazyMethodGen.getLocalVariableTag(searchPtr,li.getIndex());
-            	if (lvt!=null) 	return lvt.getType();
+            	if (lvt!=null) 	return UnresolvedType.forSignature(lvt.getType());
             }
             // A field access instruction may tell us the real type of what the clone() call is on
             if (searchPtr.getInstruction() instanceof FieldInstruction) {

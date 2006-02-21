@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,15 +8,15 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
+ *   Andy Clement   pushed down into bcel module
  * ******************************************************************/
 
 
-package org.aspectj.weaver.bcel;
-
-import org.aspectj.weaver.UnresolvedType;
+package org.aspectj.apache.bcel.generic;
 
 public final class LocalVariableTag extends Tag {
-    private final UnresolvedType type;
+	private Type type; // not always known, in which case signature has to be used
+    private final String signature;
     private final String name;
     private int slot;
     private final int startPos;
@@ -24,22 +24,26 @@ public final class LocalVariableTag extends Tag {
 
     // AMC - pr101047, two local vars with the same name can share the same slot, but must in that case
     // have different start positions.
-    public LocalVariableTag(UnresolvedType type, String name, int slot, int startPosition) {
-        this.type = type;
+    public LocalVariableTag(String sig, String name, int slot, int startPosition) {
+        this.signature = sig;
+        this.name = name;
+        this.slot = slot;
+        this.startPos = startPosition;
+    }
+    
+    public LocalVariableTag(Type t,String sig, String name, int slot, int startPosition) {
+    	this.type = t;
+        this.signature = sig;
         this.name = name;
         this.slot = slot;
         this.startPos = startPosition;
     }
 
-    public String getName() {
-        return name;
-    }
-    public int getSlot() {
-        return slot;
-    }
-    public UnresolvedType getType() {
-        return type;
-    }
+
+    public String getName()   {return name;}
+    public int getSlot()      {return slot;}
+    public String getType()   {return signature;}
+    public Type getRealType() {return type;}
     
     public void updateSlot(int newSlot) {
     	this.slot = newSlot;
@@ -51,18 +55,20 @@ public final class LocalVariableTag extends Tag {
     // ---- from Object
     
     public String toString() {
-        return "local " + slot + ": " + type + " " + name;
+        return "local " + slot + ": " + signature + " " + name;
     }
+
     public boolean equals(Object other) {
         if (!(other instanceof LocalVariableTag)) return false;
         LocalVariableTag o = (LocalVariableTag)other;
-        return o.type.equals(type) && o.name.equals(name) && o.slot == slot && o.startPos == startPos;
+        return o.slot == slot && o.startPos == startPos && o.signature.equals(signature) && o.name.equals(name); 
     }
-    private volatile int hashCode = 0;
+    
+    private int hashCode = 0;
     public int hashCode() {
         if (hashCode == 0) {
             int ret = 17;
-            ret = 37*ret + type.hashCode();
+            ret = 37*ret + signature.hashCode();
             ret = 37*ret + name.hashCode();
             ret = 37*ret + slot;
             ret = 37*ret + startPos;

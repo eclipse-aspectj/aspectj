@@ -44,6 +44,7 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.LDC;
+import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.SIPUSH;
@@ -655,9 +656,8 @@ public class Utility {
 //		}
 //		return getSourceLine(ih.getNext());
 //	}
-	
 
-	public static int getSourceLine(InstructionHandle ih) {
+	public static int getSourceLine(InstructionHandle ih) {//,boolean goforwards) {
 		int lookahead=0;
 		// arbitrary rule that we will never lookahead more than 100 instructions for a line #
 		while (lookahead++ < 100) {
@@ -672,11 +672,16 @@ public class Utility {
 	                }
 	            }
 	        }
-	        ih = ih.getNext();
+//	        if (goforwards) ih=ih.getNext(); else 
+	        	ih=ih.getPrev();
 		}
 		//System.err.println("no line information available for: " + ih);
         return -1;
 	}
+
+//	public static int getSourceLine(InstructionHandle ih) {
+//		return getSourceLine(ih,false);
+//	}
 	
 	// assumes that there is no already extant source line tag.  Otherwise we'll have to be better.
 	public static void setSourceLine(InstructionHandle ih, int lineNumber) {

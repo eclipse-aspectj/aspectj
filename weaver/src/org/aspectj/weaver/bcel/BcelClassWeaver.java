@@ -55,6 +55,7 @@ import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.RET;
 import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.Select;
+import org.aspectj.apache.bcel.generic.Tag;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
@@ -769,7 +770,7 @@ class BcelClassWeaver implements IClassWeaver {
             			Annotation a = decaM.getAnnotationX().getBcelAnnotation();
             			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
             			Method oldMethod = mg.getMethod();
-            			MethodGen myGen = new MethodGen(oldMethod,clazz.getClassName(),clazz.getConstantPoolGen());
+            			MethodGen myGen = new MethodGen(oldMethod,clazz.getClassName(),clazz.getConstantPoolGen(),false);// dont use tags, they won't get repaired like for woven methods.
             			myGen.addAnnotation(ag);
             			Method newMethod = myGen.getMethod();
             			mg.addAnnotation(decaM.getAnnotationX());

@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,16 +8,15 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
+ *   Andy Clement   pushed down into bcel module
  * ******************************************************************/
 
 
-package org.aspectj.weaver.bcel;
+package org.aspectj.apache.bcel.generic;
 
-import org.aspectj.apache.bcel.generic.InstructionHandle;
-import org.aspectj.apache.bcel.generic.InstructionTargeter;
 
 /** A tag is an instruction-targeter that doesn't bother remembering its target(s) */
-abstract class Tag implements InstructionTargeter, Cloneable {
+public abstract class Tag implements InstructionTargeter, Cloneable {
 
     public Tag() {
     }

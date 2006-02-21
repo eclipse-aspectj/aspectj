@@ -197,6 +197,7 @@ abstract class Range implements InstructionTargeter {
         // assert isRangeHandle(ih)
 		Range ret = null;
         InstructionTargeter[] targeters = ih.getTargeters();
+        if (targeters!=null) {
         for (int i = targeters.length - 1; i >= 0; i--) {
             if (targeters[i] instanceof Range) {
             	Range r = (Range) targeters[i];
@@ -205,7 +206,10 @@ abstract class Range implements InstructionTargeter {
             	ret = (Range) targeters[i];
             }
         }
-		if (ret == null) throw new BCException("shouldn't happen");
+        }
+		if (ret == null) {
+			throw new BCException("shouldn't happen");
+		}
 		return ret;
     }
 

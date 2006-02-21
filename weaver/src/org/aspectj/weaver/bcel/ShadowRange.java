@@ -21,6 +21,7 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.LocalVariableInstruction;
+import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.RET;
 import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.TargetLostException;

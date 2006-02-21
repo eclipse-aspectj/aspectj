@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 
@@ -44,15 +45,19 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.LineNumberGen;
+import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.LocalVariableGen;
 import org.aspectj.apache.bcel.generic.LocalVariableInstruction;
+import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Select;
+import org.aspectj.apache.bcel.generic.Tag;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
@@ -94,6 +99,27 @@ public final class LazyMethodGen {
     private BcelMethod memberView;
     private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
     int highestLineNumber = 0;
+    
+
+    /*
+     * This option specifies whether we let the BCEL classes create LineNumberGens and LocalVariableGens
+     * or if we make it create LineNumberTags and LocalVariableTags.  Up until 1.5.1 we always created
+     * Gens - then on return from the MethodGen ctor we took them apart, reprocessed them all and 
+     * created Tags. (see unpackLocals/unpackLineNumbers).  As we have our own copy of Bcel, why not create
+     * the right thing straightaway?  So setting this to true will call the MethodGen ctor() in such
+     * a way that it creates Tags - removing the need for unpackLocals/unpackLineNumbers - HOWEVER see
+     * the ensureAllLineNumberSetup() method for some other relevant info.
+     * 
+     * Whats the difference between a Tag and a Gen?  A Tag is more lightweight, it doesn't know which
+     * instructions it targets, it relies on the instructions targetting *it* - this reduces the amount
+     * of targeter manipulation we have to do.
+     * 
+     * Because this *could* go wrong - it passes all our tests, but you never know, the option:
+     * -Xset:optimizeWithTags=false
+     * will turn it *OFF*
+     */
+	public static boolean avoidUseOfBcelGenObjects = true;
+	public static boolean checkedXsetOption = false;
 
 	/** This is nonnull if this method is the result of an "inlining".  We currently
 	 * copy methods into other classes for around advice.  We add this field so
@@ -248,9 +274,20 @@ public final class LazyMethodGen {
     private void initialize() {
     	if (returnType != null) return; 
     	
+    	// Check whether we need to configure the optimization
+    	if (!checkedXsetOption) {
+        	Properties p = enclosingClass.getWorld().getExtraConfiguration();
+        	if (p!=null) {
+        		avoidUseOfBcelGenObjects = Boolean.parseBoolean(p.getProperty("optimizeWithTags","true"));
+        		if (!avoidUseOfBcelGenObjects) 
+        			enclosingClass.getWorld().getMessageHandler().handleMessage(MessageUtil.info("[optimizeWithTags=false] Disabling optimization to use Tags rather than Gens"));
+        	}
+        	checkedXsetOption=true;
+        }
+    	
     	//System.err.println("initializing: " + getName() + ", " + enclosingClass.getName() + ", " + returnType + ", " + savedMethod);
     	
-		MethodGen gen = new MethodGen(savedMethod, enclosingClass.getName(), enclosingClass.getConstantPoolGen());
+		MethodGen gen = new MethodGen(savedMethod, enclosingClass.getName(), enclosingClass.getConstantPoolGen(),avoidUseOfBcelGenObjects);
         
 		this.returnType = gen.getReturnType();
 		this.argumentTypes = gen.getArgumentTypes();
@@ -273,10 +310,16 @@ public final class LazyMethodGen {
         } else {
         	//body = new InstructionList(savedMethod.getCode().getCode());
             body = gen.getInstructionList();
-            
+
             unpackHandlers(gen);
-            unpackLineNumbers(gen);
-            unpackLocals(gen);
+            
+			if (avoidUseOfBcelGenObjects) {
+				ensureAllLineNumberSetup(gen);
+			    highestLineNumber = gen.getHighestlinenumber();
+			} else {
+				unpackLineNumbers(gen);
+			    unpackLocals(gen);
+			}
         }
         assertGoodBody();
         
@@ -363,6 +406,33 @@ public final class LazyMethodGen {
         gen.removeLineNumbers();
     }
 
+    /**
+     * On entry to this method we have a method whose instruction stream contains a few instructions 
+     * that have line numbers assigned to them (LineNumberTags).  The aim is to ensure every instruction
+     * has the right line number. This is necessary because some of them may be extracted out into other
+     * methods - and it'd be useful for them to maintain the source line number for debugging.
+     */
+    private void ensureAllLineNumberSetup(MethodGen gen) {
+        LineNumberTag lr = null;
+        boolean skip = false;
+        for (InstructionHandle ih = body.getStart(); ih != null; ih = ih.getNext()) {
+            InstructionTargeter[] targeters = ih.getTargeters();
+            skip = false;
+            if (targeters != null) {
+                for (int i = targeters.length - 1; i >= 0; i--) {
+                    InstructionTargeter targeter = targeters[i];
+                    if (targeter instanceof LineNumberTag) {
+                        lr = (LineNumberTag) targeter;
+                        skip=true;
+                    }
+                }
+            }
+            if (lr != null && !skip) {
+                ih.addTargeter(lr);
+            }
+        }
+    }
+
     private void unpackLocals(MethodGen gen) {
         Set locals = new HashSet();
         for (InstructionHandle ih = body.getStart(); ih != null; ih = ih.getNext()) {
@@ -373,7 +443,7 @@ public final class LazyMethodGen {
                     InstructionTargeter targeter = targeters[i];
                     if (targeter instanceof LocalVariableGen) {
                         LocalVariableGen lng = (LocalVariableGen) targeter;
-                        LocalVariableTag lr = new LocalVariableTag(BcelWorld.fromBcel(lng.getType()), lng.getName(), lng.getIndex(), lng.getStart().getPosition());
+                        LocalVariableTag lr = new LocalVariableTag(lng.getType().getSignature()/*BcelWorld.fromBcel(lng.getType())*/, lng.getName(), lng.getIndex(), lng.getStart().getPosition());
                         if (lng.getStart() == ih) {
                             locals.add(lr);
                         } else {
@@ -1006,9 +1076,13 @@ public final class LazyMethodGen {
 	       		continue;
 	       	}
 	       	slots.add(new Integer(tag.getSlot()));
-
-            gen.addLocalVariable(tag.getName(), 
-                BcelWorld.makeBcelType(tag.getType()),
+	       	Type t = tag.getRealType();
+	       	if (t==null) {
+	       		t = BcelWorld.makeBcelType(UnresolvedType.forSignature(tag.getType()));
+	       	}
+            gen.addLocalVariable(
+            		tag.getName(),
+            		t,
                 tag.getSlot(),(InstructionHandle) start,(InstructionHandle) lvpos.end);
         }
 	}

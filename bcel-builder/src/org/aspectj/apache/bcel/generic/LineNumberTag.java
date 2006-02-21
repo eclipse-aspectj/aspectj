@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -7,11 +7,12 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC         initial implementation 
+ *   Andy Clement   pushed down into bcel module
  * ******************************************************************/
 
 
-package org.aspectj.weaver.bcel;
+package org.aspectj.apache.bcel.generic;
 
 /** we don't actually target instructions, but instructions target us. */
 public class LineNumberTag extends Tag {

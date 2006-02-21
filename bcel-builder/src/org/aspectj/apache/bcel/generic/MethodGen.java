@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.6 2006/02/14 13:32:07 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.7 2006/02/21 10:49:15 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -100,6 +100,7 @@ public class MethodGen extends FieldGenOrMethodGen {
   private int             max_stack;
   private InstructionList il;
   private boolean         strip_attributes;
+  private int highestLineNumber = 0;
 
   private ArrayList       variable_vec    = new ArrayList();
   private ArrayList       line_number_vec = new ArrayList();
@@ -188,6 +189,8 @@ public class MethodGen extends FieldGenOrMethodGen {
       }
     }
   }
+  
+  public int getHighestlinenumber() { return highestLineNumber; }
 
   /**
    * Instantiate from existing method.
@@ -198,6 +201,10 @@ public class MethodGen extends FieldGenOrMethodGen {
    */
   
   public MethodGen(Method m, String class_name, ConstantPoolGen cp) {
+	  this(m,class_name,cp,false);
+  }
+  
+  public MethodGen(Method m, String class_name, ConstantPoolGen cp,boolean useTags) {
 	  
     this(
     		m.getAccessFlags(), 
@@ -261,29 +268,63 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 				if (a instanceof LineNumberTable) {
 					LineNumber[] ln = ((LineNumberTable) a).getLineNumberTable();
-
-					for (int k = 0; k < ln.length; k++) {
-						LineNumber l = ln[k];
-						addLineNumber(il.findHandle(l.getStartPC(),arrayOfInstructions),
-								l.getLineNumber());
+					if (useTags) {
+						// abracadabra, lets create tags rather than linenumbergens.
+						for (int k = 0; k < ln.length; k++) {
+							LineNumber l = ln[k];
+							int lnum = l.getLineNumber();
+							if (lnum>highestLineNumber) highestLineNumber=lnum;
+							LineNumberTag lt = new LineNumberTag(lnum);
+							il.findHandle(l.getStartPC(),arrayOfInstructions).addTargeter(lt);
+						}
+					} else {
+						for (int k = 0; k < ln.length; k++) {
+							LineNumber l = ln[k];
+							addLineNumber(il.findHandle(l.getStartPC(),arrayOfInstructions),
+									l.getLineNumber());
+						}
 					}
 				} else if (a instanceof LocalVariableTable) {
-					LocalVariable[] lv = ((LocalVariableTable) a).getLocalVariableTable();
+					
+					// Lets have a go at creating Tags directly
+					if (useTags) {
+						LocalVariable[] lv = ((LocalVariableTable) a).getLocalVariableTable();
+						
+						for (int k = 0; k < lv.length; k++) {
+							LocalVariable l = lv[k];
+							Type t = Type.getType(l.getSignature());
+							LocalVariableTag lvt = new LocalVariableTag(t,l.getSignature(),l.getName(),l.getIndex(),l.getStartPC());
+							InstructionHandle start = il.findHandle(l.getStartPC(), arrayOfInstructions);
+							byte b = t.getType();
+							if (b!= Constants.T_ADDRESS) {
+								int increment = t.getSize();
+								if (l.getIndex()+increment>max_locals) max_locals = l.getIndex()+increment;
+							}
+							int end = l.getStartPC()+l.getLength();
+							do {
+								start.addTargeter(lvt);
+								start = start.getNext();
+							} while (start!=null && start.getPosition()<end);
+						}
+					} else {
+					
+						LocalVariable[] lv = ((LocalVariableTable) a).getLocalVariableTable();
 
-					removeLocalVariables();
-
-					for (int k = 0; k < lv.length; k++) {
-						LocalVariable l = lv[k];
-						InstructionHandle start = il.findHandle(l.getStartPC(), arrayOfInstructions);
-						InstructionHandle end   = il.findHandle(l.getStartPC() + l.getLength(), arrayOfInstructions);
-						// AMC, this actually gives us the first instruction AFTER the range,
-						// so move back one... (findHandle can't cope with mid-instruction indices)
-						if (end != null) end = end.getPrev();
-						// Repair malformed handles
-						if (null == start) start = il.getStart();
-						if (null == end)   end = il.getEnd();
-
-						addLocalVariable(l.getName(), Type.getType(l.getSignature()), l.getIndex(), start, end);
+						removeLocalVariables();
+	
+						for (int k = 0; k < lv.length; k++) {
+							LocalVariable l = lv[k];
+							InstructionHandle start = il.findHandle(l.getStartPC(), arrayOfInstructions);
+							InstructionHandle end   = il.findHandle(l.getStartPC() + l.getLength(), arrayOfInstructions);
+							// AMC, this actually gives us the first instruction AFTER the range,
+							// so move back one... (findHandle can't cope with mid-instruction indices)
+							if (end != null) end = end.getPrev();
+							// Repair malformed handles
+							if (null == start) start = il.getStart();
+							if (null == end)   end = il.getEnd();
+	
+							addLocalVariable(l.getName(), Type.getType(l.getSignature()), l.getIndex(), start, end);
+						}
 					}
 				} else addCodeAttribute(a);
 			}
