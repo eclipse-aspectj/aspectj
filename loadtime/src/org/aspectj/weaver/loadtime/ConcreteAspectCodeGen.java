@@ -164,7 +164,14 @@ public class ConcreteAspectCodeGen {
             ResolvedMember method = (ResolvedMember) methods.next();
             if (method.isAbstract()) {
                 if ("()V".equals(method.getSignature())) {
-                    elligibleAbstractions.add(method.getName());
+                	String n = method.getName();
+                	if (n.startsWith("ajc$pointcut")) { // Allow for the abstract pointcut being from a code style aspect compiled with -1.5 (see test for 128744)
+                		n = n.substring(14);
+                		n = n.substring(0,n.indexOf("$"));
+                		elligibleAbstractions.add(n);
+                	} else {
+                		elligibleAbstractions.add(method.getName());
+                	}
                 } else {
                     reportError("Abstract method '" + method.getName() + "' cannot be concretized as a pointcut (illegal signature, must have no arguments, must return void): " + stringify());
                     return false;

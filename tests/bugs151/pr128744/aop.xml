@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<aspectj>
+  <aspects>
+    <aspect name="World" /> 
+    <concrete-aspect name="World1" extends="World">
+      <pointcut name="monitoredOperation" expression="execution(* sayHello())" /> 
+    </concrete-aspect>
+  </aspects>
+
+  <weaver options="-verbose -showWeaveInfo" /> 
+</aspectj>

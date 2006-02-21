@@ -132,6 +132,16 @@
         <run class="Test" ltw="aop.xml"/>
     </ajc-test>
     
+    <ajc-test dir="bugs151/pr128744" title="broken ltw">
+        <compile files="Hello.java World.java" options="-1.5" />
+        <run class="Hello" ltw="aop.xml">
+        	<stdout>
+                <line text="Hello"/>
+                <line text="World"/>
+            </stdout>
+        </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs151/pr125480" title="aop.xml aspect inherits abstract method that has concrete implementation in parent">
         <compile files="HelloWorld.java"/>
         <compile files="AbstractMethods.aj, ConcreteMethods.aj"/>
