@@ -27,6 +27,7 @@ import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.IScope;
 import org.aspectj.weaver.patterns.PatternNodeVisitor;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.reflect.ReflectionFastMatchInfo;
 import org.aspectj.weaver.reflect.ReflectionShadow;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 import org.aspectj.weaver.tools.ContextBasedMatcher;
@@ -60,14 +61,18 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut{
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
-		try {
-			return FuzzyBoolean.fromBoolean(
-				this.matcher.couldMatchJoinPointsInType(
-						Class.forName(info.getType().getName(),false,world.getClassLoader()))
-				);
-		} catch (ClassNotFoundException cnfEx) {
-			return FuzzyBoolean.MAYBE;
+		if (info instanceof ReflectionFastMatchInfo) {
+			try {
+				return FuzzyBoolean.fromBoolean(
+					this.matcher.couldMatchJoinPointsInType(
+							Class.forName(info.getType().getName(),false,world.getClassLoader()),
+							((ReflectionFastMatchInfo)info).getMatchingContext())
+					);
+			} catch (ClassNotFoundException cnfEx) {
+				return FuzzyBoolean.MAYBE;
+			}
 		}
+		throw new IllegalStateException("Can only match user-extension pcds against Reflection FastMatchInfo objects");
 	}
 
 	/* (non-Javadoc)

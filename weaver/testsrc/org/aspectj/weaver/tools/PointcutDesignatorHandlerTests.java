@@ -60,6 +60,15 @@ public class PointcutDesignatorHandlerTests extends TestCase {
 		assertEquals("service.*",beanHandler.getExpressionLastAskedToParse());
 	}
 	
+	public void testParseWithHandlerAndMultipleSegments() { 
+		if (needToSkip) return;
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+		BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+		parser.registerPointcutDesignatorHandler(beanHandler);
+		parser.parsePointcutExpression("bean(org.xyz.someapp..*)");
+		assertEquals("org.xyz.someapp..*",beanHandler.getExpressionLastAskedToParse());	
+	}
+	
 	public void testStaticMatch() throws Exception {
 		if (needToSkip) return;
 		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
@@ -95,7 +104,19 @@ public class PointcutDesignatorHandlerTests extends TestCase {
 		assertFalse(sm.matchesJoinPoint(null, null, null).matches());
 	}
 	
-
+	public void testFastMatch() {
+		if (needToSkip) return;
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+		BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+		parser.registerPointcutDesignatorHandler(beanHandler);
+		PointcutExpression pc = parser.parsePointcutExpression("bean(myBean)");
+		DefaultMatchingContext context = new DefaultMatchingContext();
+		context.addContextBinding("beanName","myBean");
+		pc.setMatchingContext(context);
+		assertTrue(pc.couldMatchJoinPointsInType(String.class));
+		context.addContextBinding("beanName","yourBean");
+		assertFalse(pc.couldMatchJoinPointsInType(String.class));		
+	}
 
 	private class BeanDesignatorHandler implements PointcutDesignatorHandler {
 
@@ -130,11 +151,19 @@ public class PointcutDesignatorHandlerTests extends TestCase {
 		}
 
 
+		public boolean couldMatchJoinPointsInType(Class aClass) {
+			return true;
+		}
+		
 		/* (non-Javadoc)
 		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#couldMatchJoinPointsInType(java.lang.Class)
 		 */
-		public boolean couldMatchJoinPointsInType(Class aClass) {
-			return true;
+		public boolean couldMatchJoinPointsInType(Class aClass, MatchingContext context) {
+			if (this.beanNamePattern.equals(context.getBinding("beanName"))) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 

@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
@@ -23,13 +24,13 @@ import org.aspectj.weaver.patterns.ArgsAnnotationPointcut;
 import org.aspectj.weaver.patterns.ArgsPointcut;
 import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.ExposedState;
-import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.NotAnnotationTypePattern;
 import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
+import org.aspectj.weaver.reflect.ReflectionFastMatchInfo;
 import org.aspectj.weaver.reflect.ReflectionShadow;
 import org.aspectj.weaver.reflect.ShadowMatchImpl;
 import org.aspectj.weaver.tools.DefaultMatchingContext;
@@ -69,7 +70,9 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 	
 	public boolean couldMatchJoinPointsInType(Class aClass) {
-		return pointcut.fastMatch(new FastMatchInfo(world.resolve(aClass.getName()),null)).maybeTrue();
+		ResolvedType matchType = world.resolve(aClass.getName());
+		ReflectionFastMatchInfo info = new ReflectionFastMatchInfo(matchType,null,this.matchContext);
+		return pointcut.fastMatch(info).maybeTrue();
 	}
 	
 	public boolean mayNeedDynamicTest() {
