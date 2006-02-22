@@ -1679,15 +1679,16 @@ class BcelClassWeaver implements IClassWeaver {
 	
 	private boolean match(LazyMethodGen mg) {
 		BcelShadow enclosingShadow;
-
 		List shadowAccumulator = new ArrayList();
+		
+		boolean startsAngly = mg.getName().charAt(0)=='<';
 		// we want to match ajsynthetic constructors...
-		if (mg.getName().equals("<init>")) {
+		if (startsAngly && mg.getName().equals("<init>")) {
 			return matchInit(mg, shadowAccumulator);
 		} else if (!shouldWeaveBody(mg)) { //.isAjSynthetic()) {
 			return false;			
 		} else {
-			if (mg.getName().equals("<clinit>")) {
+			if (startsAngly && mg.getName().equals("<clinit>")) {
 				clinitShadow = enclosingShadow = BcelShadow.makeStaticInitialization(world, mg);
 				//System.err.println(enclosingShadow);
 			} else if (mg.isAdviceMethod()) {
@@ -1720,7 +1721,7 @@ class BcelClassWeaver implements IClassWeaver {
 				}
 			}
 			// FIXME asc change from string match if we can, rather brittle.  this check actually prevents field-exec jps
-			if (canMatch(enclosingShadow.getKind()) && !mg.getName().startsWith("ajc$interFieldInit")) {
+			if (canMatch(enclosingShadow.getKind()) && !(mg.getName().charAt(0)=='a' && mg.getName().startsWith("ajc$interFieldInit"))) {
 				if (match(enclosingShadow, shadowAccumulator)) {
 					enclosingShadow.init();
 				}
