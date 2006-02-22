@@ -42,6 +42,7 @@ public class BcelTests extends TestCase {
         suite.addTestSuite(UtilityTestCase.class); 
         suite.addTestSuite(WeaveOrderTestCase.class); 
         suite.addTestSuite(WorldTestCase.class); 
+        suite.addTestSuite(AsmDelegateTests.class); 
         suite.addTestSuite(ZipTestCase.class); 
         //$JUnit-END$
         return suite;

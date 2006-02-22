@@ -36,6 +36,11 @@ public abstract class WeaveTestCase extends TestCase {
 	public BcelWorld world = new BcelWorld();
     {
         world.addPath(classDir);
+        // Some of the tests in here rely on comparing output from dumping the delegates - if 
+        // we are using ASM delegates we don't know the names of parameters (they are irrelevant...)
+        // and are missing from the dumping of asm delegates.  This switch ensures we
+        // continue to use BCEL for these tests.
+        world.setFastDelegateSupport(false); 
     }
 
     public WeaveTestCase(String name) {
