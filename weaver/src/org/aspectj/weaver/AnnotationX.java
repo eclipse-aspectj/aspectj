@@ -20,15 +20,23 @@ import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
+import org.aspectj.apache.bcel.classfile.Utility;
 
 /**
- * An AnnotationX is the 'holder' for a BCEL annotation - we have this holder
- * so that types about the bcel weaver package can work with something not
- * BCEL specific.
+ * AnnotationX instances are holders for an annotation from either Bcel or
+ * ASM.  We have this holder so that types about the bcel weaver package 
+ * can work with something not bytecode toolkit specific.
  */
 public class AnnotationX {
 	
-  private Annotation theRealAnnotation;
+  public static final AnnotationX[] NONE = new AnnotationX[0];
+  
+  private Annotation theRealBcelAnnotation;
+  private AnnotationAJ theRealASMAnnotation;
+  private int mode = -1;
+  private final static int MODE_ASM = 1;
+  private final static int  MODE_BCEL = 2;
+  
   private ResolvedType signature = null;
   
   // @target meta-annotation related stuff, built lazily
@@ -37,12 +45,19 @@ public class AnnotationX {
   private Set         supportedTargets            = null;
   
   public AnnotationX(Annotation a,World world) {
-  	theRealAnnotation = a;
-  	signature = UnresolvedType.forSignature(theRealAnnotation.getTypeSignature()).resolve(world);
+  	theRealBcelAnnotation = a;
+  	signature = UnresolvedType.forSignature(theRealBcelAnnotation.getTypeSignature()).resolve(world);
+  	mode = MODE_BCEL;
+  }
+  
+  public AnnotationX(AnnotationAJ a,World world) {
+	  	theRealASMAnnotation = a;
+	  	signature = UnresolvedType.forSignature(theRealASMAnnotation.getTypeSignature()).resolve(world);
+	  	mode= MODE_ASM;
   }
 
   public Annotation getBcelAnnotation() {
-	return theRealAnnotation;
+	return theRealBcelAnnotation;
   }
   
   public UnresolvedType getSignature() {
@@ -50,16 +65,19 @@ public class AnnotationX {
   }
   
   public String toString() {
-  	return theRealAnnotation.toString();
+	  if (mode==MODE_BCEL) return theRealBcelAnnotation.toString();
+	  else 				   return theRealASMAnnotation.toString();
   }
 
 
   public String getTypeName() {
-	return theRealAnnotation.getTypeName();
+	if (mode==MODE_BCEL) return theRealBcelAnnotation.getTypeName();
+	else				 return Utility.signatureToString(theRealASMAnnotation.getTypeSignature());
   }
 
   public String getTypeSignature() {
-	return theRealAnnotation.getTypeSignature();
+	  if (mode==MODE_BCEL) return theRealBcelAnnotation.getTypeSignature();
+		else				 return theRealASMAnnotation.getTypeSignature();
   }
 
   
@@ -68,9 +86,9 @@ public class AnnotationX {
    * return true if this annotation can target an annotation type
    */
   public boolean allowedOnAnnotationType() {
-  	ensureAtTargetInitialized();
-  	if (atTargetAnnotation == null) return true; // if no target specified, then return true
-  	return supportedTargets.contains("ANNOTATION_TYPE");
+	  	ensureAtTargetInitialized();
+	  	if (atTargetAnnotation == null) return true; // if no target specified, then return true
+	  	return supportedTargets.contains("ANNOTATION_TYPE");
   }
 
   /**
@@ -159,7 +177,7 @@ public class AnnotationX {
   }
 
   public boolean isRuntimeVisible() {
-	return theRealAnnotation.isRuntimeVisible();
+	return theRealBcelAnnotation.isRuntimeVisible();
   }
 
 }
