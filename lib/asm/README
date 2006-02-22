@@ -1,0 +1,9 @@
+asm-aj.jar is a processed version of an asm jar with the package prefix org.aspectj added.
+We add the prefix to avoid clashing with other versions of asm that may be on a users
+classpath.
+
+To pick up a new version of asm and use it in AspectJ, use the build.xml script.  It 
+requires jarjar (which you will have to download).
+
+---
+22-Feb-06: asm-aj.jar is the packaged prefixed version of asm-2.2.1.jar

@@ -1,0 +1,12 @@
+<project name="asm-packaging" default="rename" basedir=".">
+
+	<target name="rename">
+		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="jarjar-0.6.jar"/>
+	        <jarjar jarfile="asm-aj.jar">
+	            <!--fileset dir="build/main"/-->
+	            <zipfileset src="asm-2.2.1.jar"/>
+	            <rule pattern="org.objectweb.**" result="org.aspectj.org.objectweb.@1"/>
+	        </jarjar>
+	</target>
+
+</project>
