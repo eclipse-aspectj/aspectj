@@ -40,15 +40,17 @@ class BcelAttributes {
 			if (a instanceof Unknown) {
 				Unknown u = (Unknown) a;
 				String name = u.getName();
-				if (name.startsWith(AjAttribute.AttributePrefix)) {
-					if (name.endsWith(WeaverVersionInfo.AttributeName)) {
-						version = (AjAttribute.WeaverVersionInfo)AjAttribute.read(version,name,u.getBytes(),context,msgHandler);
-						if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
-							throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
-									WeaverVersionInfo.toCurrentVersionString()+" but the class "+classname+" is version "+version.toString());
-						}
-                    }
-					forSecondPass.add(a);
+				if (name.charAt(0)=='o') { // 'o'rg.aspectj
+					if (name.startsWith(AjAttribute.AttributePrefix)) {
+						if (name.endsWith(WeaverVersionInfo.AttributeName)) {
+							version = (AjAttribute.WeaverVersionInfo)AjAttribute.read(version,name,u.getBytes(),context,msgHandler);
+							if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
+								throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
+										WeaverVersionInfo.toCurrentVersionString()+" but the class "+classname+" is version "+version.toString());
+							}
+	                    }
+						forSecondPass.add(a);
+					}
 				}
 			}
 		}
