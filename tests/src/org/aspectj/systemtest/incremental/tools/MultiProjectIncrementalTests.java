@@ -322,6 +322,8 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				MyTaskListManager.getWarningMessages().isEmpty());
 		build("PR128618_1");
 		build("PR128618_2");
+		List warnings = MyTaskListManager.getWarningMessages();
+		assertTrue("Should be one warning, but there are #"+warnings.size(),warnings.size()==1);
 		IMessage msg = (IMessage)(MyTaskListManager.getWarningMessages().get(0));
 		assertEquals("warning should be against the FFDC.aj resource","FFDC.aj",msg.getSourceLocation().getSourceFile().getName());
 		alter("PR128618_2","inc1");
