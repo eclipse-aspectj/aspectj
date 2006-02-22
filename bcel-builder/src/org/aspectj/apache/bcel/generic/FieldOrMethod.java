@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
  * Super class for InvokeInstruction and FieldInstruction, since they have
  * some methods in common!
  *
- * @version $Id: FieldOrMethod.java,v 1.4 2005/09/19 15:12:36 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.5 2006/02/22 14:58:25 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends CPInstruction implements LoadClass {
@@ -72,6 +72,15 @@ public abstract class FieldOrMethod extends CPInstruction implements LoadClass {
    */
   FieldOrMethod() {}
 
+  private boolean dontKnowSignature=true;
+  private String signature;
+  
+  private boolean dontKnowName =true;
+  private String name;
+  
+  private boolean dontKnowClassname =true;
+  private String classname;
+  
   /**
    * @param index to constant pool
    */
@@ -82,30 +91,42 @@ public abstract class FieldOrMethod extends CPInstruction implements LoadClass {
   /** @return signature of referenced method/field.
    */
   public String getSignature(ConstantPoolGen cpg) {
-    ConstantPool        cp   = cpg.getConstantPool();
-    ConstantCP          cmr  = (ConstantCP)cp.getConstant(index);
-    ConstantNameAndType cnat = (ConstantNameAndType)cp.getConstant(cmr.getNameAndTypeIndex());
-
-    return ((ConstantUtf8)cp.getConstant(cnat.getSignatureIndex())).getBytes();
+	if (dontKnowSignature) {
+	    ConstantPool        cp   = cpg.getConstantPool();
+	    ConstantCP          cmr  = (ConstantCP)cp.getConstant(index);
+	    ConstantNameAndType cnat = (ConstantNameAndType)cp.getConstant(cmr.getNameAndTypeIndex());
+	
+	    signature = ((ConstantUtf8)cp.getConstant(cnat.getSignatureIndex())).getBytes();
+	    dontKnowSignature=false;
+	}
+	return signature;
   }
 
   /** @return name of referenced method/field.
    */
   public String getName(ConstantPoolGen cpg) {
-    ConstantPool        cp   = cpg.getConstantPool();
-    ConstantCP          cmr  = (ConstantCP)cp.getConstant(index);
-    ConstantNameAndType cnat = (ConstantNameAndType)cp.getConstant(cmr.getNameAndTypeIndex());
-    return ((ConstantUtf8)cp.getConstant(cnat.getNameIndex())).getBytes();
+	  if (dontKnowName) {
+	    ConstantPool        cp   = cpg.getConstantPool();
+	    ConstantCP          cmr  = (ConstantCP)cp.getConstant(index);
+	    ConstantNameAndType cnat = (ConstantNameAndType)cp.getConstant(cmr.getNameAndTypeIndex());
+	    name = ((ConstantUtf8)cp.getConstant(cnat.getNameIndex())).getBytes();
+		dontKnowName = false;
+	  }
+	  return name;
   }
 
   /** @return name of the referenced class/interface
    */
   public String getClassName(ConstantPoolGen cpg) {
-    ConstantPool cp  = cpg.getConstantPool();
-    ConstantCP   cmr = (ConstantCP)cp.getConstant(index);
-    String str = cp.getConstantString(cmr.getClassIndex(), org.aspectj.apache.bcel.Constants.CONSTANT_Class);
-    if (str.charAt(0)=='[') return str;
-    else return str.replace('/', '.');
+	if (dontKnowClassname) {
+	    ConstantPool cp  = cpg.getConstantPool();
+	    ConstantCP   cmr = (ConstantCP)cp.getConstant(index);
+	    String str = cp.getConstantString(cmr.getClassIndex(), org.aspectj.apache.bcel.Constants.CONSTANT_Class);
+	    if (str.charAt(0)=='[') classname= str;
+	    else classname= str.replace('/', '.');
+	    dontKnowClassname = false;
+	}
+	return classname;
   }
 
   /** @return type of the referenced class/interface
