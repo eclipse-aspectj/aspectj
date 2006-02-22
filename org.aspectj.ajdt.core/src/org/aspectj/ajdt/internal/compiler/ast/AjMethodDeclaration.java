@@ -13,10 +13,10 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.AjAttribute;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.aspectj.weaver.AjAttribute;
 
 /**
  * Root class for all MethodDeclaration objects created by the parser.
@@ -26,7 +26,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
  */
 public class AjMethodDeclaration extends MethodDeclaration {
 
-	private List attributes = new ArrayList();
+	private List attributes = null;
 	
 	/**
 	 * @param compilationResult
@@ -38,6 +38,7 @@ public class AjMethodDeclaration extends MethodDeclaration {
 	// general purpose hook to add an AjAttribute to this method
 	// used by @AspectJ visitor to add pointcut attribute to @Advice
 	protected void addAttribute(EclipseAttributeAdapter eaa) {
+		if (attributes==null) attributes = new ArrayList();
 		attributes.add(eaa);
 	}
 	
@@ -46,7 +47,7 @@ public class AjMethodDeclaration extends MethodDeclaration {
 	 */
 	protected int generateInfoAttributes(ClassFile classFile,boolean addAjSynthetic) {
 		// add extra attributes into list then call 2-arg version of generateInfoAttributes...
-		List extras = attributes;
+		List extras = (attributes==null?new ArrayList():attributes);
 		addDeclarationStartLineAttribute(extras,classFile);
 		if (addAjSynthetic) {
 			extras.add(new EclipseAttributeAdapter(new AjAttribute.AjSynthetic()));
