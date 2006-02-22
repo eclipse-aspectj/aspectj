@@ -20,10 +20,12 @@ import java.util.Collections;
 
 import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.SourceContextImpl;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -350,6 +352,15 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	
 	public ReflectionBasedResolvedMemberImpl createResolvedMemberFor(Member aMember) {
 		return null;
+	}
+	
+	public String getSourcefilename() {
+      // crappy guess..
+      return resolvedType.getName() + ".class";
+	}
+
+	public ISourceContext getSourceContext() {
+		return SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
 	}
 
 }

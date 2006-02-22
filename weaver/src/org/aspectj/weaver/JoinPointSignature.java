@@ -122,6 +122,10 @@ public class JoinPointSignature implements ResolvedMember {
 	public String[] getParameterNames() {
 		return realMember.getParameterNames();
 	}
+	
+	public void setParameterNames(String[] names) {
+		realMember.setParameterNames(names);
+	}
 
 	public String[] getParameterNames(World world) {
 		return realMember.getParameterNames(world);

@@ -48,7 +48,6 @@ public class ReferenceType extends ResolvedType {
 	ReferenceType genericType = null;
 	
 	ReferenceTypeDelegate delegate = null;
-	ISourceContext sourceContext = null;
 	int startPos = 0;
 	int endPos = 0;
     
@@ -347,12 +346,12 @@ public class ReferenceType extends ResolvedType {
     }
 
 	public ISourceContext getSourceContext() {
-		return sourceContext;
+		return delegate.getSourceContext();
 	}
 	
 	public ISourceLocation getSourceLocation() {
-		if (sourceContext == null) return null;
-		return sourceContext.makeSourceLocation(new Position(startPos, endPos));
+		ISourceContext isc = delegate.getSourceContext();
+		return isc.makeSourceLocation(new Position(startPos, endPos));
 	}
 
 	public boolean isExposedToWeaver() {
@@ -601,8 +600,9 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	public void setDelegate(ReferenceTypeDelegate delegate) {
+		if (this.delegate!=null && this.delegate.getSourceContext()!=SourceContextImpl.UNKNOWN_SOURCE_CONTEXT) 
+			((AbstractReferenceTypeDelegate)delegate).setSourceContext(this.delegate.getSourceContext());
 		this.delegate = delegate;
-		
 		for(Iterator it = this.derivativeTypes.iterator(); it.hasNext(); ) {
 			ReferenceType dependent = (ReferenceType) it.next();
 			dependent.setDelegate(delegate);
@@ -636,10 +636,6 @@ public class ReferenceType extends ResolvedType {
 
 	public void setEndPos(int endPos) {
 		this.endPos = endPos;
-	}
-
-	public void setSourceContext(ISourceContext sourceContext) {
-		this.sourceContext = sourceContext;
 	}
 
 	public void setStartPos(int startPos) {

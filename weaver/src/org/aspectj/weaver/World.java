@@ -92,6 +92,18 @@ public abstract class World implements Dump.INode {
     
     private Properties extraConfiguration = null;
     
+    // Records whether ASM is around ... so we might use it for delegates
+    protected static boolean isASMAround;
+    
+    static {
+    	try {
+    		Class c = Class.forName("org.aspectj.org.objectweb.asm.ClassVisitor");
+    		isASMAround = true;
+    	} catch (ClassNotFoundException cnfe) {
+    		isASMAround = false;
+    	}
+    }
+    
     /** 
      * A list of RuntimeExceptions containing full stack information for every
      * type we couldn't find.
@@ -307,6 +319,7 @@ public abstract class World implements Dump.INode {
 			// ======= simple and raw types ===============
 			String erasedSignature = ty.getErasureSignature();
     		ReferenceType simpleOrRawType = new ReferenceType(erasedSignature, this);
+    		if (ty.needsModifiableDelegate()) simpleOrRawType.setNeedsModifiableDelegate(true);
 	    	ReferenceTypeDelegate delegate = resolveDelegate(simpleOrRawType);
 	    	// 117854
 //	    	if (delegate == null) return ResolvedType.MISSING;
@@ -683,6 +696,9 @@ public abstract class World implements Dump.INode {
 		}
 	}
 	
+	/**
+	 * may return null
+	 */
 	public Properties getExtraConfiguration() {
 		return extraConfiguration;
 	}
@@ -1041,6 +1057,16 @@ public abstract class World implements Dump.INode {
 	}
 	public void forgetTypeVariablesCurrentlyBeingProcessed(Class baseClass) {
 		workInProgress1.remove(baseClass);
+	}
+
+	public void flush() {
+//		System.err.println("BEFORE FLUSHING");
+//		System.err.println(typeMap.toString());
+		typeMap.expendableMap.clear();
+//		System.err.println("AFTER FLUSHING");
+//		System.err.println(typeMap.toString());
+//		System.gc();
+		System.gc();
 	}
 
     // ---

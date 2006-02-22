@@ -46,7 +46,7 @@ public class TypeFactory {
 		}
 		ResolvedType[] resolvedParameters = inAWorld.resolve(someTypeParameters);
 		ReferenceType pType = new ReferenceType(baseType,resolvedParameters,inAWorld);
-		pType.setSourceContext(aBaseType.getSourceContext());
+//		pType.setSourceContext(aBaseType.getSourceContext());
 		return (ReferenceType) pType.resolve(inAWorld);
 	}
 	
@@ -66,7 +66,7 @@ public class TypeFactory {
 			if (!aBaseType.isRawType()) throw new IllegalStateException("Expecting generic type");
 		}
 		ReferenceType rType = new ReferenceType(aBaseType,inAWorld);
-		rType.setSourceContext(aBaseType.getSourceContext());
+		//rType.setSourceContext(aBaseType.getSourceContext());
 		return (ReferenceType) rType.resolve(inAWorld);
 	}
 	

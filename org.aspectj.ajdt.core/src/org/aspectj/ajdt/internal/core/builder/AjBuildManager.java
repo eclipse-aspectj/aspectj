@@ -108,7 +108,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	 * that there is only one builder present, so if two extendsion reset it, only
 	 * the latter will get used.
 	 */
-	private static AsmHierarchyBuilder asmHierarchyBuilder = new AsmHierarchyBuilder();
+	public static AsmHierarchyBuilder asmHierarchyBuilder = new AsmHierarchyBuilder();
 	
 	static {
 		CompilationAndWeavingContext.registerFormatter(

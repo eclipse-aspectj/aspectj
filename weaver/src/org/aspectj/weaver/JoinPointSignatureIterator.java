@@ -13,6 +13,7 @@ package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -32,11 +33,11 @@ public class JoinPointSignatureIterator implements Iterator {
 	ResolvedType firstDefiningType;
 	private World world;
 	private List /*JoinPointSignature*/ discoveredSignatures = new ArrayList();
-	private List additionalSignatures = new ArrayList();
+	private List additionalSignatures = Collections.EMPTY_LIST;
 	private Iterator discoveredSignaturesIterator = null;
 	private Iterator superTypeIterator = null;
 	private Set visitedSuperTypes = new HashSet();
-	private List /*SearchPair*/ yetToBeProcessedSuperMembers = new ArrayList();
+	private List /*SearchPair*/ yetToBeProcessedSuperMembers = null;//new ArrayList();
 	
 	private boolean iteratingOverDiscoveredSignatures = true;
 	private boolean couldBeFurtherAsYetUndiscoveredSignatures = true;
@@ -184,14 +185,17 @@ public class JoinPointSignatureIterator implements Iterator {
 						ResolvedType declaringType = (ResolvedType) iter.next();
 						ResolvedMember member = foundMember.withSubstituteDeclaringType(declaringType);
 						discoveredSignatures.add(member);  // for next time we are reset
+						if (additionalSignatures==Collections.EMPTY_LIST) additionalSignatures=new ArrayList();
 						additionalSignatures.add(member);  // for this time
 					}				   	
 					// if this was a parameterized type, look in the generic type that backs it too
 					if (superType.isParameterizedType() && (foundMember.backingGenericMember != null)) {
 						ResolvedMember member =new JoinPointSignature(foundMember.backingGenericMember,foundMember.declaringType.resolve(world)); 
 						discoveredSignatures.add(member);  // for next time we are reset
+						if (additionalSignatures==Collections.EMPTY_LIST) additionalSignatures=new ArrayList();
 						additionalSignatures.add(member);  // for this time
 					}
+					if (yetToBeProcessedSuperMembers==null) yetToBeProcessedSuperMembers=new ArrayList();
 					yetToBeProcessedSuperMembers.add(new SearchPair(foundMember,superType));
 					return true;
 				} else {
@@ -199,7 +203,7 @@ public class JoinPointSignatureIterator implements Iterator {
 				}
     		}
     	}
-    	if (!yetToBeProcessedSuperMembers.isEmpty()) {
+    	if (yetToBeProcessedSuperMembers!=null && !yetToBeProcessedSuperMembers.isEmpty()) {
     		SearchPair nextUp = (SearchPair) yetToBeProcessedSuperMembers.remove(0);
     		firstDefiningType = nextUp.type;
     		firstDefiningMember = nextUp.member;

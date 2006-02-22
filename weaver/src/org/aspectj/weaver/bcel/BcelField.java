@@ -113,6 +113,11 @@ final class BcelField extends ResolvedMemberImpl {
 	    annotationTypes.toArray(ret);
 	    return ret;
     }
+	
+	public AnnotationX[] getAnnotations() {
+		ensureAnnotationTypesRetrieved();
+		return annotations;
+	}
     
 	private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null) {

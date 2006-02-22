@@ -47,10 +47,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	// the case.  It is up to the caller to work out where that is!
 	// Once determined the caller may choose to stash the annotations in this member...
 	private boolean isAnnotatedElsewhere = false; // this field is not serialized.
-	private boolean isAjSynthetic = true;
+	private boolean isAjSynthetic = false;
     
     // generic methods have type variables
-	private TypeVariable[] typeVariables;
+	protected TypeVariable[] typeVariables;
     
     // these three fields hold the source location of this member
 	protected int start, end;
@@ -276,6 +276,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     public boolean isAjSynthetic() {
     	return isAjSynthetic;
     }
+    
+    protected void setAjSynthetic(boolean b) {isAjSynthetic= b;}
 	
 	public boolean hasAnnotations() {
 		return  (annotationTypes!=null);
@@ -491,7 +493,6 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public String[] getParameterNames() {
-		
 		return parameterNames;
 	}
 	public final void setParameterNames(String[] pnames) {
@@ -507,11 +508,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	
     public ISourceLocation getSourceLocation() {
     	//System.out.println("get context: " + this + " is " + sourceContext);
-    	if (sourceContext == null) {
+    	if (getSourceContext() == null) {
     		//System.err.println("no context: " + this);
     		return null;
     	}
-    	return sourceContext.makeSourceLocation(this);
+    	return getSourceContext().makeSourceLocation(this);
     }
     
 	public int getEnd() {
@@ -529,6 +530,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	public void setPosition(int sourceStart, int sourceEnd) {
 		this.start = sourceStart;
 		this.end = sourceEnd;
+	}
+	
+	public void setDeclaringType(ReferenceType rt) {
+		declaringType = rt;
 	}
 
 	public void setSourceContext(ISourceContext sourceContext) {
@@ -838,8 +843,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	   StringBuffer r = new StringBuffer();
 	   
 	   // modifiers
-	   String mods = Modifier.toString(modifiers);
-	   if (mods.length()!=0) r.append(mods).append(" ");
+	   int mods = modifiers;
+	   if ((mods & 4096)>0) mods = mods -4096; // remove synthetic (added in the ASM case but not in the BCEL case...)
+	   if ((mods & 512)>0) mods = mods -512; // remove interface (added in the BCEL case but not in the ASM case...)
+	   if ((mods & 131072)>0) mods = mods -131072; // remove deprecated (added in the ASM case but not in the BCEL case...)
+	   String modsStr = Modifier.toString(mods);
+	   if (modsStr.length()!=0) r.append(modsStr).append("("+mods+")").append(" ");
 	   
 	   // type variables
 	   if (typeVariables!=null && typeVariables.length>0) {
@@ -853,7 +862,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	   }
 	   
 	   // 'declaring' type
-	   r.append(returnType.toDebugString());
+	   r.append(getGenericReturnType().toDebugString());
    	   r.append(' ');
    	   
    	   // name
@@ -864,8 +873,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
   	   // parameter signature if a method
    	   if (kind != FIELD) {
    		 r.append("(");
-   		 UnresolvedType[] params = parameterTypes;
-   		 boolean parameterNamesExist = parameterNames!=null && parameterNames.length==params.length;
+   		 UnresolvedType[] params = getGenericParameterTypes();
+   		 boolean parameterNamesExist = showParameterNames && parameterNames!=null && parameterNames.length==params.length;
          if (params.length != 0) {
        	   for (int i=0, len = params.length; i < len; i++) {
              if (i>0) r.append(", ");
@@ -877,6 +886,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
    	   }
 	   return r.toString();
    }
+   
+   // SECRETAPI - controlling whether parameter names come out in the debug string (for testing purposes)
+   public static boolean showParameterNames = true;
 	
    public String toGenericString() {
     	StringBuffer buf = new StringBuffer();

@@ -57,6 +57,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public ISourceContext getSourceContext(World world);
 
 	public String[] getParameterNames();
+	public void setParameterNames(String[] names);
 
 	public String[] getParameterNames(World world);
 

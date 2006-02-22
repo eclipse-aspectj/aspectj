@@ -61,6 +61,10 @@ public interface ReferenceTypeDelegate {
 	public ReferenceType getResolvedTypeX();
 	public boolean doesNotExposeShadowMungers();
 	
+	public ISourceContext getSourceContext();
+	
+	public String getSourcefilename();
+	
 	public String getDeclaredGenericSignature();
 	
 }

@@ -97,7 +97,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		this.declaration = declaration;
 		this.unit = unit;
 		
-		resolvedTypeX.setSourceContext(new EclipseSourceContext(declaration.compilationResult));
+		setSourceContext(new EclipseSourceContext(declaration.compilationResult));
 		resolvedTypeX.setStartPos(declaration.sourceStart);
 		resolvedTypeX.setEndPos(declaration.sourceEnd);
 	}

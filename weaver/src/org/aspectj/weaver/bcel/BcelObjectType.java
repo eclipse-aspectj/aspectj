@@ -27,9 +27,9 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
-import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -41,6 +41,7 @@ import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.SourceContextImpl;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -120,18 +121,21 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
         super(resolvedTypeX, exposedToWeaver);
         this.javaClass = javaClass;
 
-        //ATAJ: set the delegate right now for @AJ poincut, else it is done too late to lookup
+        //ATAJ: set the delegate right now for @AJ pointcut, else it is done too late to lookup
         // @AJ pc refs annotation in class hierarchy
         resolvedTypeX.setDelegate(this);
 
-        if (resolvedTypeX.getSourceContext() == null) {
-        	resolvedTypeX.setSourceContext(new BcelSourceContext(this));
+//        if (resolvedTypeX.getSourceContext() == null) {
+//        	resolvedTypeX.
+        if (resolvedTypeX.getSourceContext()==SourceContextImpl.UNKNOWN_SOURCE_CONTEXT) {
+           setSourceContext(new SourceContextImpl(this));
         }
         
         // this should only ever be java.lang.Object which is 
         // the only class in Java-1.4 with no superclasses
         isObject = (javaClass.getSuperclassNameIndex() == 0);
         unpackAspectAttributes();
+        setSourcefilename(javaClass.getSourceFileName());
     }
     
     
@@ -265,7 +269,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	private void unpackAspectAttributes() {
         isUnpacked = true;
-
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
@@ -309,8 +312,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			} else if (a instanceof AjAttribute.PrivilegedAttribute) {
 				privilegedAccess = ((AjAttribute.PrivilegedAttribute)a).getAccessedMembers();
 			} else if (a instanceof AjAttribute.SourceContextAttribute) {
-				if (getResolvedTypeX().getSourceContext() instanceof BcelSourceContext) {
-					((BcelSourceContext)getResolvedTypeX().getSourceContext()).addAttributeInfo((AjAttribute.SourceContextAttribute)a);
+				if (getResolvedTypeX().getSourceContext() instanceof SourceContextImpl) {
+					AjAttribute.SourceContextAttribute sca = (AjAttribute.SourceContextAttribute)a;
+					((SourceContextImpl)getResolvedTypeX().getSourceContext()).configureFromAttribute(sca.getSourceFileName(),sca.getLineBreaks());
 				}
 			} else if (a instanceof AjAttribute.WeaverVersionInfo) {
 				wvInfo = (AjAttribute.WeaverVersionInfo)a; // Set the weaver version used to build this type
@@ -443,26 +447,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public boolean isAnnotationWithRuntimeRetention() {
-		return getRetentionPolicy().equals("RUNTIME");
-//	    if (!isAnnotation()) {
-//	        return false;
-//	    } else {
-//	        Annotation[] annotationsOnThisType = javaClass.getAnnotations();
-//	        for (int i = 0; i < annotationsOnThisType.length; i++) {
-//	            Annotation a = annotationsOnThisType[i];
-//	            if (a.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
-//	                List values = a.getValues();
-//	                boolean isRuntime = false;
-//	                for (Iterator it = values.iterator(); it.hasNext();) {
-//                        ElementNameValuePair element = (ElementNameValuePair) it.next();
-//                        ElementValue v = element.getValue();
-//                        isRuntime = v.stringifyValue().equals("RUNTIME");
-//                    }
-//	                return isRuntime;
-//	            }
-//	        }
-//		}
-//	    return false;
+		return (getRetentionPolicy()==null?false:getRetentionPolicy().equals("RUNTIME"));
 	}
 	
 	
@@ -510,29 +495,32 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	        for (int i = 0; i < annotationsOnThisType.length; i++) {
 	            Annotation a = annotationsOnThisType[i];
 	            if (a.getTypeName().equals(UnresolvedType.AT_TARGET.getName())) {
-	                List values = a.getValues();
-	                for (Iterator it = values.iterator(); it.hasNext();) {
-                        ElementNameValuePair element = (ElementNameValuePair) it.next();
-                        ElementValue v = element.getValue();
-                        String targetKind = v.stringifyValue();
-                        if (targetKind.equals("ANNOTATION_TYPE")) {
-							targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
-                        } else if (targetKind.equals("CONSTRUCTOR")) {
-							targetKinds.add(AnnotationTargetKind.CONSTRUCTOR);
-						} else if (targetKind.equals("FIELD")) {
-							targetKinds.add(AnnotationTargetKind.FIELD);
-						} else if (targetKind.equals("LOCAL_VARIABLE")) {
-							targetKinds.add(AnnotationTargetKind.LOCAL_VARIABLE);
-						} else if (targetKind.equals("METHOD")) {
-							targetKinds.add(AnnotationTargetKind.METHOD);
-						} else if (targetKind.equals("PACKAGE")) {
-							targetKinds.add(AnnotationTargetKind.PACKAGE);
-						} else if (targetKind.equals("PARAMETER")) {
-							targetKinds.add(AnnotationTargetKind.PARAMETER);
-						} else if (targetKind.equals("TYPE")) {
-							targetKinds.add(AnnotationTargetKind.TYPE);
-						} 
-                    }
+	            	ArrayElementValue arrayValue = (ArrayElementValue)((ElementNameValuePair)a.getValues().get(0)).getValue();
+	            	ElementValue[] evs = arrayValue.getElementValuesArray();
+	            	if (evs!=null) {
+	            		for (int j = 0; j < evs.length; j++) {
+	            	
+							ElementValue v = evs[j];
+							String targetKind = v.stringifyValue();
+							if (targetKind.equals("ANNOTATION_TYPE")) {
+								targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
+							} else if (targetKind.equals("CONSTRUCTOR")) {
+								targetKinds.add(AnnotationTargetKind.CONSTRUCTOR);
+							} else if (targetKind.equals("FIELD")) {
+								targetKinds.add(AnnotationTargetKind.FIELD);
+							} else if (targetKind.equals("LOCAL_VARIABLE")) {
+								targetKinds.add(AnnotationTargetKind.LOCAL_VARIABLE);
+							} else if (targetKind.equals("METHOD")) {
+								targetKinds.add(AnnotationTargetKind.METHOD);
+							} else if (targetKind.equals("PACKAGE")) {
+								targetKinds.add(AnnotationTargetKind.PACKAGE);
+							} else if (targetKind.equals("PARAMETER")) {
+								targetKinds.add(AnnotationTargetKind.PARAMETER);
+							} else if (targetKind.equals("TYPE")) {
+								targetKinds.add(AnnotationTargetKind.TYPE);
+							} 
+	            		}
+					}
 	            }
 	        }
 			if (!targetKinds.isEmpty()) {
@@ -547,10 +535,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return getResolvedTypeX().isSynthetic();
 	}
 
-	public ISourceLocation getSourceLocation() {
-		return getResolvedTypeX().getSourceContext().makeSourceLocation(0, 0); //FIXME ??? we can do better than this
-	}
-	
 	public AjAttribute.WeaverVersionInfo getWeaverVersionAttribute() {
 		return wvInfo;
 	}
@@ -687,7 +671,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (isGeneric()) {
 			// update resolved typex to point at generic type not raw type.
 			ReferenceType genericType = (ReferenceType) this.resolvedTypeX.getGenericType();
-			genericType.setSourceContext(this.resolvedTypeX.getSourceContext());
+			//genericType.setSourceContext(this.resolvedTypeX.getSourceContext());
 			genericType.setStartPos(this.resolvedTypeX.getStartPos());
 			this.resolvedTypeX = genericType;
 		}
@@ -750,6 +734,31 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public String toString() {
 		return (javaClass==null?"BcelObjectType":"BcelObjectTypeFor:"+javaClass.getClassName());
 	}
+	
+    // for testing - if we have this attribute, return it - will return null if it doesnt know anything 
+	public AjAttribute[] getAttributes(String name) {
+		List results = new ArrayList();
+		List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler(),AjAttribute.WeaverVersionInfo.UNKNOWN);
+		for (Iterator iter = l.iterator(); iter.hasNext();) {
+			AjAttribute element = (AjAttribute) iter.next();		
+			if (element.getNameString().equals(name)) results.add(element);
+		}
+		if (results.size()>0) {
+			return (AjAttribute[])results.toArray(new AjAttribute[]{});
+		}
+		return null;
+	}
+	
+	// for testing - use with the method above - this returns *all* including those that are not Aj attributes
+	public String[] getAttributeNames() {
+		Attribute[] as = javaClass.getAttributes();
+		String[] strs = new String[as.length];
+		for (int j = 0; j < as.length; j++) {
+			strs[j] = as[j].getName();
+		}
+		return strs;
+	}
+	
 	
 } 
     

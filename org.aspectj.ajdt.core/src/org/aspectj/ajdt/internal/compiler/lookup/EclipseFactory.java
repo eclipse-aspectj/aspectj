@@ -81,6 +81,7 @@ public class EclipseFactory {
 	private LookupEnvironment lookupEnvironment;
 	private boolean xSerializableAspects;
 	private World world;
+	public Collection finishedTypeMungers = null;
 	
 	// We can get clashes if we don't treat raw types differently - we end up looking
 	// up a raw and getting the generic type (pr115788)
@@ -397,7 +398,6 @@ public class EclipseFactory {
 		return getWorld().getDeclareAnnotationOnMethods();
 	}
 	
-	public Collection finishedTypeMungers = null;
 	
 	public boolean areTypeMungersFinished() {
 		return finishedTypeMungers != null;
@@ -987,7 +987,6 @@ public class EclipseFactory {
 			}
 			name.setGenericType(complexName);
 			complexName.setDelegate(t);
-			complexName.setSourceContext(t.getResolvedTypeX().getSourceContext());
 		}
 				
 		name.setDelegate(t);
@@ -1024,5 +1023,6 @@ public class EclipseFactory {
 	public void cleanup() {
 		this.typexToBinding.clear();
 		this.rawTypeXToBinding.clear();
+		this.finishedTypeMungers = null;
 	}
 }

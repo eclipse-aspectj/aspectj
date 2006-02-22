@@ -148,7 +148,9 @@ public class BcelWeaver implements IWeaver {
      */
     public ResolvedType addLibraryAspect(String aspectName) {
         // 1 - resolve as is
-        ResolvedType type = world.resolve(UnresolvedType.forName(aspectName), true);
+    	UnresolvedType unresolvedT = UnresolvedType.forName(aspectName);
+    	unresolvedT.setNeedsModifiableDelegate(true);
+        ResolvedType type = world.resolve(unresolvedT, true);
         if (type.isMissing()) {
             // fallback on inner class lookup mechanism
             String fixedName = aspectName;
@@ -159,7 +161,9 @@ public class BcelWeaver implements IWeaver {
                 fixedNameChars[hasDot] = '$';
                 fixedName = new String(fixedNameChars);
                 hasDot = fixedName.lastIndexOf('.');
-                type = world.resolve(UnresolvedType.forName(fixedName), true);
+                UnresolvedType ut = UnresolvedType.forName(fixedName);
+                ut.setNeedsModifiableDelegate(true);
+                type = world.resolve(ut, true);
                 if (!type.isMissing()) {
                     break;
                 }
@@ -1276,8 +1280,8 @@ public class BcelWeaver implements IWeaver {
 			//classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData()));
 			// new: reweavable default with clever diff
 			classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
-		} else {
-			classType.resetState();
+//		} else {
+//			classType.resetState();
 		}
 	}
 
@@ -1672,4 +1676,11 @@ public class BcelWeaver implements IWeaver {
     public World getWorld() {
         return world;
     }
+
+	public void tidyUp() {
+	    shadowMungerList = null; // setup by prepareForWeave
+		typeMungerList = null; // setup by prepareForWeave
+	    lateTypeMungerList = null; // setup by prepareForWeave
+		declareParentsList = null; // setup by prepareForWeave
+	}
 }

@@ -14,10 +14,12 @@
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
@@ -36,6 +38,7 @@ import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
@@ -142,6 +145,32 @@ final class BcelMethod extends ResolvedMemberImpl {
 				throw new BCException("weird method attribute " + a);
 			}
 		}
+	}
+	
+	// for testing - if we have this attribute, return it - will return null if it doesnt know anything 
+	public AjAttribute[] getAttributes(String name) {
+		List results = new ArrayList();
+		List l = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler(),bcelObjectType.getWeaverVersionAttribute());
+		for (Iterator iter = l.iterator(); iter.hasNext();) {
+			AjAttribute element = (AjAttribute) iter.next();		
+			if (element.getNameString().equals(name)) results.add(element);
+		}
+		if (results.size()>0) {
+			return (AjAttribute[])results.toArray(new AjAttribute[]{});
+		}
+		return null;
+	}
+	
+	// for testing - use with the method above
+	public String[] getAttributeNames(boolean onlyIncludeAjOnes) {
+		Attribute[] as = method.getAttributes();
+		List names = new ArrayList();
+		String[] strs = new String[as.length];
+		for (int j = 0; j < as.length; j++) {
+			if (!onlyIncludeAjOnes || as[j].getName().startsWith(AjAttribute.AttributePrefix))
+			  names.add(as[j].getName());
+		}
+		return (String[])names.toArray(new String[]{});
 	}
 
 	public boolean isAjSynthetic() {
@@ -294,6 +323,24 @@ final class BcelMethod extends ResolvedMemberImpl {
 				// generic method declaration
 				canBeParameterized = true;
 			 }
+ 			 
+ 			typeVariables = new TypeVariable[mSig.formalTypeParameters.length];
+	    	  for (int i = 0; i < typeVariables.length; i++) {
+				Signature.FormalTypeParameter methodFtp = mSig.formalTypeParameters[i];
+				try {
+					typeVariables[i] = BcelGenericSignatureToTypeXConverter.formalTypeParameter2TypeVariable(
+							methodFtp, 
+							mSig.formalTypeParameters,
+							world);
+				} catch (GenericSignatureFormatException e) {
+					// this is a development bug, so fail fast with good info
+					throw new IllegalStateException(
+							"While getting the type variables for method " + this.toString()
+							+ " with generic signature " + mSig + 
+							" the following error condition was detected: " + e.getMessage());
+				}
+			  }
+ 			 
  			 Signature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
  			 Signature.FormalTypeParameter[] formals = new
  			 	Signature.FormalTypeParameter[parentFormals.length + mSig.formalTypeParameters.length];

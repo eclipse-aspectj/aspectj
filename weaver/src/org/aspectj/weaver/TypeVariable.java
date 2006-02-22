@@ -21,6 +21,7 @@ import java.util.Set;
  */
 public class TypeVariable {
 	
+	public static final TypeVariable[] NONE = new TypeVariable[0];
 	/**
 	 * whether or not the bounds of this type variable have been 
 	 * resolved
