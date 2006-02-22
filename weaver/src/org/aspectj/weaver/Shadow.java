@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +50,7 @@ public abstract class Shadow {
     private Member matchingSignature;
     private ResolvedMember resolvedSignature;
 	protected final Shadow enclosingShadow;
-    protected List mungers = new ArrayList(1);
+    protected List mungers = Collections.EMPTY_LIST;
 
     public int shadowId = nextShadowID++;  // every time we build a shadow, it gets a new id
 
@@ -442,7 +443,10 @@ public abstract class Shadow {
 	
 	
     public void addMunger(ShadowMunger munger) {
-    	if (checkMunger(munger)) this.mungers.add(munger);
+    	if (checkMunger(munger)) {
+    		if (mungers==Collections.EMPTY_LIST) mungers = new ArrayList();
+    		this.mungers.add(munger);
+    	}
     }
  
     public final void implement() {
