@@ -702,6 +702,8 @@ public abstract class World implements Dump.INode {
 	public Properties getExtraConfiguration() {
 		return extraConfiguration;
 	}
+	public final static String xsetCAPTURE_ALL_CONTEXT = "captureAllContext"; // default false
+	
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;

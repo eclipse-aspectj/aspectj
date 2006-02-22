@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
@@ -61,6 +62,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
@@ -88,6 +90,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.ExactTypePattern;
 
@@ -167,6 +170,16 @@ class BcelClassWeaver implements IClassWeaver {
 		fastMatchShadowMungers(shadowMungers);
 		
 		initializeSuperInitializerMap(ty.getResolvedTypeX());
+		if (!checkedXsetForLowLevelContextCapturing) {
+			Properties p = world.getExtraConfiguration();
+        	if (p!=null) {
+        		String s = p.getProperty(World.xsetCAPTURE_ALL_CONTEXT,"false");
+        		captureLowLevelContext = s.equalsIgnoreCase("true");
+        		if (captureLowLevelContext) 
+        			world.getMessageHandler().handleMessage(MessageUtil.info("["+World.xsetCAPTURE_ALL_CONTEXT+"=true] Enabling collection of low level context for debug/crash messages"));
+        	}
+			checkedXsetForLowLevelContextCapturing=true;
+		}
 	} 
 	
 
@@ -2148,31 +2161,49 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 	}
 	
+	// static ... so all worlds will share the config for the first one created...
+	private static boolean checkedXsetForLowLevelContextCapturing = false;
+	private static boolean captureLowLevelContext = false;
+	
     private boolean match(BcelShadow shadow, List shadowAccumulator) {
     	//System.err.println("match: " + shadow);
-    	ContextToken shadowMatchToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MATCHING_SHADOW, shadow);
-        boolean isMatched = false;
-        for (Iterator i = shadowMungers.iterator(); i.hasNext(); ) {
-            ShadowMunger munger = (ShadowMunger)i.next();
-            ContextToken mungerMatchToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MATCHING_POINTCUT, munger.getPointcut());
-            if (munger.match(shadow, world)) {
-            	
-				WeaverMetrics.recordMatchResult(true);// Could pass: munger
-                shadow.addMunger(munger);
-                isMatched = true;
-			    if (shadow.getKind() == Shadow.StaticInitialization) {
-				  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
-			    }
-				
-            } else {
-            	WeaverMetrics.recordMatchResult(false); // Could pass: munger
-        	}
-            CompilationAndWeavingContext.leavingPhase(mungerMatchToken);
-        }       
-
-        if (isMatched) shadowAccumulator.add(shadow);
-        CompilationAndWeavingContext.leavingPhase(shadowMatchToken);
-        return isMatched;
+    	if (captureLowLevelContext) { // duplicate blocks - one with context capture, one without, seems faster than multiple 'ifs()'
+	    	ContextToken shadowMatchToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MATCHING_SHADOW, shadow);
+	        boolean isMatched = false;
+	        for (Iterator i = shadowMungers.iterator(); i.hasNext(); ) {
+	            ShadowMunger munger = (ShadowMunger)i.next();
+	            ContextToken mungerMatchToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MATCHING_POINTCUT, munger.getPointcut());
+	            if (munger.match(shadow, world)) {
+					WeaverMetrics.recordMatchResult(true);// Could pass: munger
+	                shadow.addMunger(munger);
+	                isMatched = true;
+				    if (shadow.getKind() == Shadow.StaticInitialization) {
+					  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
+				    }
+	            } else {
+	            	WeaverMetrics.recordMatchResult(false); // Could pass: munger
+	        	}
+	            CompilationAndWeavingContext.leavingPhase(mungerMatchToken);
+	        }       
+	
+	        if (isMatched) shadowAccumulator.add(shadow);
+	        CompilationAndWeavingContext.leavingPhase(shadowMatchToken);
+	        return isMatched;
+    	} else {
+	        boolean isMatched = false;
+	        for (Iterator i = shadowMungers.iterator(); i.hasNext(); ) {
+	            ShadowMunger munger = (ShadowMunger)i.next();
+	            if (munger.match(shadow, world)) {
+	                shadow.addMunger(munger);
+	                isMatched = true;
+				    if (shadow.getKind() == Shadow.StaticInitialization) {
+					  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
+				    }
+	        	}
+	        }       	
+	        if (isMatched) shadowAccumulator.add(shadow);
+	        return isMatched;
+    	}
     }
     
     // ----
