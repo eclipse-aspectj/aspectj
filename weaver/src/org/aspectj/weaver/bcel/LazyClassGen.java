@@ -221,7 +221,9 @@ public final class LazyClassGen {
 
         BcelWorld world = new BcelWorld(path);
 
-        LazyClassGen clazz = new LazyClassGen(BcelWorld.getBcelObjectType(world.resolve(name)));
+        UnresolvedType ut = UnresolvedType.forName(name);
+        ut.setNeedsModifiableDelegate(true);
+        LazyClassGen clazz = new LazyClassGen(BcelWorld.getBcelObjectType(world.resolve(ut)));
         clazz.print(out);
         out.println();
     }
