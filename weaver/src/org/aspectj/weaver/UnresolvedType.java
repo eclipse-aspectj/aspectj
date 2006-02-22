@@ -553,6 +553,15 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 		return signatureErasure;
 	}
 	
+	private boolean needsModifiableDelegate =false;
+	public boolean needsModifiableDelegate() {
+		return needsModifiableDelegate;
+	}
+	
+	public void setNeedsModifiableDelegate(boolean b) {
+		this.needsModifiableDelegate=b;
+	}
+	
 	public UnresolvedType getRawType() {
 		return UnresolvedType.forSignature(getErasureSignature());
 	}
@@ -799,6 +808,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 	
 	public static UnresolvedType[] readArray(DataInputStream s) throws IOException {
 		int len = s.readShort();
+		if (len==0) return UnresolvedType.NONE;
 		UnresolvedType[] types = new UnresolvedType[len];
 		for (int i=0; i < len; i++) {
 			types[i] = UnresolvedType.read(s);
