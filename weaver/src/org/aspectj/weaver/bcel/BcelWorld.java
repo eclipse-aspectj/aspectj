@@ -21,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -47,6 +48,7 @@ import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
@@ -64,6 +66,7 @@ import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.Aspect;
+import org.aspectj.weaver.asm.AsmDelegate;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -73,7 +76,10 @@ public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
 
     private Repository delegate;
-
+    
+    private boolean fastDelegateSupportEnabled = isASMAround;
+    private boolean checkedXsetAsmOffOption=false;
+    
 	//private ClassPathManager aspectPath = null;
 	// private List aspectPathEntries;
 	
@@ -95,6 +101,14 @@ public class BcelWorld extends World implements Repository {
 		return classPath;
 		
 	}
+	
+
+    public void setFastDelegateSupport(boolean b) { 
+    	if (b && !isASMAround) {
+    		throw new BCException("Unable to activate fast delegate support, ASM classes cannot be found");
+    	}
+    	fastDelegateSupportEnabled = b; 
+    }
 		
 	private static List getPathEntries(String s) {
 		List ret = new ArrayList();
@@ -223,7 +237,7 @@ public class BcelWorld extends World implements Repository {
         }
         return ret;
     }
-
+    
     public static UnresolvedType fromBcel(Type t) {
         return UnresolvedType.forSignature(t.getSignature());
     }
@@ -240,26 +254,89 @@ public class BcelWorld extends World implements Repository {
         return resolve(fromBcel(t));
     }       
 
+    private int packageRestrictionsForFastDelegates = 0; // 0=dontknow 1=no  2=yes
+    private List packagePrefixRestrictionList = null;
+    
+    public boolean isNotOnPackageRestrictedList(String s) {
+    	if (packageRestrictionsForFastDelegates==0) {
+    		Properties p = getExtraConfiguration();
+    		String possiblePackageRestrictions = (p==null?null:p.getProperty("fastDelegateRestrictions"));
+    		if (possiblePackageRestrictions==null) {
+    			packageRestrictionsForFastDelegates=1;
+    		} else {
+    			packageRestrictionsForFastDelegates=2;
+    			packagePrefixRestrictionList=new ArrayList();
+	    		StringTokenizer st = new StringTokenizer(possiblePackageRestrictions,":");
+	    		while (st.hasMoreTokens()) {
+	    			packagePrefixRestrictionList.add(st.nextToken());
+	    		}
+    		}
+    	}
+    	if (packageRestrictionsForFastDelegates==1) return true;
+    	if (packageRestrictionsForFastDelegates==2) {
+    		for (Iterator iter = packagePrefixRestrictionList.iterator(); iter.hasNext();) {
+				String element = (String) iter.next();
+				if (s.startsWith(element)) {
+//					System.err.println("Not creating fast delegate for "+s);
+					return false;
+				}
+			}
+    	}
+    	return true;
+    }
 
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
         String name = ty.getName();
         JavaClass jc = null;
+        
+        // Check *once* whether the user has switched asm support off
+    	if (!checkedXsetAsmOffOption) {
+    		if (isASMAround) { // dont bother if its not...
+	        	Properties p = getExtraConfiguration();
+	        	if (p!=null) {
+	        		String s = p.getProperty("activateLightweightDelegates","true");
+	        		fastDelegateSupportEnabled = s.equalsIgnoreCase("true");
+	        		if (!fastDelegateSupportEnabled) 
+	        			getMessageHandler().handleMessage(MessageUtil.info("[activateLightweightDelegates=false] Disabling optimization to use lightweight delegates for non-woven types"));
+	        	}
+    		}
+        	checkedXsetAsmOffOption=true;
+        }
+    	// fastDelegateSupportEnabled=false;
+    	
         //UnwovenClassFile classFile = (UnwovenClassFile)sourceJavaClasses.get(name);
         //if (classFile != null) jc = classFile.getJavaClass();
-//		if (jc == null) {
-//		    jc = lookupJavaClass(aspectPath, name);
-//		}
-        if (jc == null) {
-        	jc = lookupJavaClass(classPath, name);
-        }       
-        if (jc == null) {
-        	return null;
+        if (fastDelegateSupportEnabled && classPath!=null && !ty.needsModifiableDelegate() && isNotOnPackageRestrictedList(name)) {
+	        ClassPathManager.ClassFile cf = classPath.find(ty);
+	        if (cf==null) {
+	        	return null;
+	        } else {
+	        	return buildAsmDelegate(ty,cf);
+	        }
         } else {
-        	return makeBcelObjectType(ty, jc, false);
-        }
+	        if (jc == null) {
+	        	jc = lookupJavaClass(classPath, name);
+	        }       
+	        if (jc == null) {
+	        	return null;
+	        } else {
+	        	return buildBcelDelegate(ty, jc, false);
+	        }
+	    }
 	}
 	
-	protected BcelObjectType makeBcelObjectType(ReferenceType resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
+    private ReferenceTypeDelegate buildAsmDelegate(ReferenceType type,ClassPathManager.ClassFile t) {
+    	AsmDelegate asmDelegate;
+		try {
+			asmDelegate = new AsmDelegate(type,t.getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return asmDelegate;
+	}
+    
+	public BcelObjectType buildBcelDelegate(ReferenceType resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
 		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc, exposedToWeaver);
 		return ret;
 	}
@@ -309,7 +386,7 @@ public class BcelWorld extends World implements Repository {
 		    if (jc.isGeneric() && isInJava5Mode()) {
 		    
 		    	nameTypeX =  ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()),this);
-		        ret = makeBcelObjectType(nameTypeX, jc, true);
+		        ret = buildBcelDelegate(nameTypeX, jc, true);
 		    	ReferenceType genericRefType = new ReferenceType(
 		    			UnresolvedType.forGenericTypeSignature(signature,ret.getDeclaredGenericSignature()),this);
 				nameTypeX.setDelegate(ret);
@@ -318,11 +395,11 @@ public class BcelWorld extends World implements Repository {
 		       	typeMap.put(signature, nameTypeX);
 		    } else {
 	        	nameTypeX = new ReferenceType(signature, this);
-	            ret = makeBcelObjectType(nameTypeX, jc, true);
+	            ret = buildBcelDelegate(nameTypeX, jc, true);
 	           	typeMap.put(signature, nameTypeX);
 		    }
         } else {
-            ret = makeBcelObjectType(nameTypeX, jc, true);
+            ret = buildBcelDelegate(nameTypeX, jc, true);
         }
 		return ret;
 	}
