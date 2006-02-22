@@ -16,6 +16,7 @@ package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -170,11 +171,14 @@ public class BcelShadow extends Shadow {
 
 	public BcelShadow copyInto(LazyMethodGen recipient, BcelShadow enclosing) {
 		BcelShadow s = new BcelShadow(world, getKind(), getSignature(), recipient, enclosing);
-		List src = mungers;
-		List dest = s.mungers;
-		
-		for (Iterator i = src.iterator(); i.hasNext(); ) {
-			dest.add(i.next());
+		if (mungers.size()>0) {
+			List src = mungers;
+			if (s.mungers==Collections.EMPTY_LIST) s.mungers = new ArrayList();
+			List dest = s.mungers;
+	
+			for (Iterator i = src.iterator(); i.hasNext(); ) {
+				dest.add(i.next());
+			}
 		}
 		return s;
 	}
