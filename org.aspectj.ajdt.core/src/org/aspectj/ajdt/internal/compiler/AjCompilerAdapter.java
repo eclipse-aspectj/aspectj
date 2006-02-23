@@ -115,8 +115,14 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		if (compiler.options.complianceLevel == CompilerOptions.JDK1_5) inJava5Mode = true;
 		
 		IMessageHandler msgHandler = world.getMessageHandler();
-		weaverMessageHandler = new WeaverMessageHandler(msgHandler, compiler);
-		world.setMessageHandler(weaverMessageHandler);
+		// Do we need to reset the message handler or create a new one? (This saves a ton of memory lost on incremental compiles...)
+		if (msgHandler instanceof WeaverMessageHandler) {
+			((WeaverMessageHandler)msgHandler).resetCompiler(null);
+			weaverMessageHandler = (WeaverMessageHandler)msgHandler;
+		} else {
+			weaverMessageHandler = new WeaverMessageHandler(msgHandler, compiler);
+			world.setMessageHandler(weaverMessageHandler);
+		}
 	}
 
 	// the compilation lifecycle methods below are called in order as compilation progresses...
