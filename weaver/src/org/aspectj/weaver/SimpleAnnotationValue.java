@@ -55,7 +55,7 @@ public class SimpleAnnotationValue extends AnnotationValue {
 		  case 'B': // byte
 			  return Byte.toString(theByte);
 		  case 'C': // char
-			  return Character.valueOf(theChar).toString();
+			  return new Character(theChar).toString();
 		  case 'D': // double
 			  return Double.toString(theDouble);
 		  case 'F': // float
@@ -67,7 +67,7 @@ public class SimpleAnnotationValue extends AnnotationValue {
 		  case 'S': // short
 			  return Short.toString(theShort);
 		  case 'Z': // boolean
-			  return Boolean.valueOf(theBoolean).toString();
+			  return new Boolean(theBoolean).toString();
 		  case 's': // String
 			  return theString;
 		  default: throw new BCException("Do not understand this kind: "+valueKind);
