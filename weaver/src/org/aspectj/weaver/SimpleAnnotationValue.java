@@ -11,8 +11,6 @@
  * ******************************************************************/
  package org.aspectj.weaver;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class SimpleAnnotationValue extends AnnotationValue {
 
 	public SimpleAnnotationValue(int kind) {
@@ -32,8 +30,7 @@ public class SimpleAnnotationValue extends AnnotationValue {
 			case AnnotationValue.PRIMITIVE_SHORT: theShort = ((Short)value).shortValue(); break;
 			case AnnotationValue.PRIMITIVE_BOOLEAN: theBoolean = ((Boolean)value).booleanValue(); break;
 			default:
-				System.err.println("value = "+whatKindIsThis(kind));
-				throw new NotImplementedException();
+			    throw new BCException("Not implemented for this kind: "+whatKindIsThis(kind));
 		}
 	}
 
@@ -73,7 +70,7 @@ public class SimpleAnnotationValue extends AnnotationValue {
 			  return Boolean.toString(theBoolean);
 		  case 's': // String
 			  return theString;
-		  default: throw new NotImplementedException();
+		  default: throw new BCException("Do not understand this kind: "+valueKind);
 		}
 	}
 	

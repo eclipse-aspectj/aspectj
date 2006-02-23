@@ -16,13 +16,13 @@ import org.aspectj.weaver.AnnotationAnnotationValue;
 import org.aspectj.weaver.AnnotationNameValuePair;
 import org.aspectj.weaver.AnnotationValue;
 import org.aspectj.weaver.ArrayAnnotationValue;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ClassAnnotationValue;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.SimpleAnnotationValue;
 import org.aspectj.org.objectweb.asm.AnnotationVisitor;
 import org.aspectj.org.objectweb.asm.Type;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Constructed with an annotation to 'fill in' with the values we encounter whilst visting it.
@@ -58,8 +58,7 @@ class AnnVisitor implements AnnotationVisitor {
 	  if (val!=null) {
 		  a.addNameValuePair(new AnnotationNameValuePair(name,val));
 	  } else {
-		  System.err.println("Choking on "+name+" = "+value);
-		  throw new NotImplementedException();
+		  throw new BCException("Annotation visitor choked on "+name+" = "+value);
 	  }
   }
 

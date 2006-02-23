@@ -19,8 +19,6 @@ import org.aspectj.org.objectweb.asm.ClassReader;
 import org.aspectj.org.objectweb.asm.ClassWriter;
 import org.aspectj.org.objectweb.asm.Label;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 class AjASMAttribute extends Attribute {
 	
 	private boolean unpacked = false;
@@ -49,7 +47,7 @@ class AjASMAttribute extends Attribute {
      * These attributes are read only, an attempt to write them violates this fundamental assumption.
      */
     protected ByteVector write(ClassWriter cw, byte[] code, int len, int maxStack, int maxLocals) {
-    	throw new NotImplementedException();// "Attempt to write out the AjASMAttribute for "+this.type);
+    	throw new BCException("Attempt to write out the AjASMAttribute for "+this.type);
         // return new ByteVector().putByteArray(data, 0, data.length);
     }
      

@@ -18,13 +18,13 @@ import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationAnnotationValue;
 import org.aspectj.weaver.AnnotationValue;
 import org.aspectj.weaver.ArrayAnnotationValue;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ClassAnnotationValue;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.SimpleAnnotationValue;
 import org.aspectj.org.objectweb.asm.AnnotationVisitor;
 import org.aspectj.org.objectweb.asm.Type;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 class ArrayAnnotationVisitor implements AnnotationVisitor {
 	List arrayValues = new ArrayList();
@@ -51,8 +51,7 @@ class ArrayAnnotationVisitor implements AnnotationVisitor {
 		  if (val!=null) {
 			  arrayValues.add(val);
 		  } else {
-			  System.err.println("Choking on "+name+" = "+value);
-			  throw new NotImplementedException();
+			  throw new BCException("ArrayAnnotationVisitor choking on "+name+" = "+value);
 		  }
 	  }
 	
