@@ -161,8 +161,8 @@ public class ReflectionShadow extends Shadow {
 		this.enclosingType = enclosingType;
 		this.enclosingMember = enclosingMember;
 		this.matchContext = withContext;
-		if (world instanceof ReflectionWorld) {
-			this.annotationFinder = ((ReflectionWorld)world).getAnnotationFinder();
+		if (world instanceof IReflectionWorld) {
+			this.annotationFinder = ((IReflectionWorld)world).getAnnotationFinder();
 		}
 	}
 	

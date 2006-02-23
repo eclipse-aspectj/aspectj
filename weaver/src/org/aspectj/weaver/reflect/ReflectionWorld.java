@@ -36,7 +36,7 @@ import org.aspectj.weaver.patterns.PerClause.Kind;
  * (creation of mungers etc..).
  *
  */
-public class ReflectionWorld extends World {
+public class ReflectionWorld extends World implements IReflectionWorld {
 
 	private ClassLoader classLoader;
 	private AnnotationFinder annotationFinder;
@@ -46,9 +46,7 @@ public class ReflectionWorld extends World {
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
 		this.classLoader = ReflectionWorld.class.getClassLoader();
-		if (LangUtil.is15VMOrGreater()) {
-			initializeAnnotationFinder(this.classLoader);
-		}
+		this.annotationFinder = makeAnnotationFinderIfAny(classLoader, this);
 	}
 	
 	public ReflectionWorld(ClassLoader aClassLoader) {
@@ -56,17 +54,18 @@ public class ReflectionWorld extends World {
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
 		this.classLoader = aClassLoader;
-		if (LangUtil.is15VMOrGreater()) {
-			initializeAnnotationFinder(this.classLoader);
-		}
+		this.annotationFinder = makeAnnotationFinderIfAny(classLoader, this);
 	}
 
-	private void initializeAnnotationFinder(ClassLoader loader) {
+	public static AnnotationFinder makeAnnotationFinderIfAny(ClassLoader loader, World world) {
+		AnnotationFinder annotationFinder = null;
 		try {
-			Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
-			this.annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
-			this.annotationFinder.setClassLoader(loader);
-			this.annotationFinder.setWorld(this);
+			if (LangUtil.is15VMOrGreater()) {
+				Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
+				annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
+				annotationFinder.setClassLoader(loader);
+				annotationFinder.setWorld(world);
+			}
 		} catch(ClassNotFoundException ex) {
 			// must be on 1.4 or earlier
 		} catch(IllegalAccessException ex) {
@@ -75,6 +74,7 @@ public class ReflectionWorld extends World {
 		} catch(InstantiationException ex) {
 			throw new BCException("AspectJ internal error",ex);
 		}
+		return annotationFinder;
 	}
 	
 	public ClassLoader getClassLoader() {
@@ -85,14 +85,21 @@ public class ReflectionWorld extends World {
 		return this.annotationFinder;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.aspectj.weaver.reflect.IReflectionWorld#resolve(java.lang.Class)
+	 */
 	public ResolvedType resolve(Class aClass) {
+		return resolve(this, aClass);
+	}
+	
+	public static ResolvedType resolve(World world, Class aClass) {
 		// classes that represent arrays return a class name that is the signature of the array type, ho-hum...
 		String className = aClass.getName();
 		if (aClass.isArray()) {
-			return resolve(UnresolvedType.forSignature(className));
+			return world.resolve(UnresolvedType.forSignature(className));
 		}
 		else{
-			return resolve(className);
+			return world.resolve(className);
 		} 
 	}
 	

@@ -26,14 +26,14 @@ public class ReflectionWorldTest extends TestCase {
 	}
 	
 	public void testArrayTypes() {
-		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
+		IReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 		String[] strArray = new String[1];
 		ResolvedType rt = world.resolve(strArray.getClass());
 		assertTrue(rt.isArray());
 	}
 	
 	public void testPrimitiveTypes() {
-		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
+		IReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 		assertEquals("int",ResolvedType.INT,world.resolve(int.class));
 		assertEquals("void",ResolvedType.VOID,world.resolve(void.class));
 	}
