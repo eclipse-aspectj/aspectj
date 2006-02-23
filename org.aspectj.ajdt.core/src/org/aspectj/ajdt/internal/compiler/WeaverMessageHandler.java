@@ -43,6 +43,11 @@ public class WeaverMessageHandler implements IMessageHandler {
 		this.compiler = compiler;
 	}
 	
+	public void resetCompiler(Compiler c) {
+		this.compiler = c;
+		currentlyWeaving=null;
+	}
+	
 	public void setCurrentResult(CompilationResult result) {
 		currentlyWeaving = result;
 	}
