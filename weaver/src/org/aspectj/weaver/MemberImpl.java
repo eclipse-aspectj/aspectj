@@ -30,7 +30,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     protected String name;
     protected UnresolvedType[] parameterTypes;
     private final String signature;
-	private final String declaredSignature; // TODO asc Is this redundant? Is it needed for generics?
     private String paramSignature;
     
     /**
@@ -52,7 +51,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         this.modifiers = modifiers;
         this.name = name;
         this.signature = signature;
-		this.declaredSignature = signature;
         if (kind == FIELD) {
             this.returnType = UnresolvedType.forSignature(signature);
             this.parameterTypes = UnresolvedType.NONE;
@@ -83,10 +81,8 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         this.parameterTypes = parameterTypes;
         if (kind == FIELD) {
             this.signature         = returnType.getErasureSignature();
-			this.declaredSignature = returnType.getSignature();
         } else {
             this.signature         = typesToSignature(returnType, parameterTypes,true);
-			this.declaredSignature = typesToSignature(returnType,parameterTypes,false);
         }
     }
     
@@ -476,13 +472,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 */
     public String getSignature() { return signature; }
 	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getDeclaredSignature()
-	 */
-	public String getDeclaredSignature() { return declaredSignature;}
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getArity()
-	 */
     public int getArity() { return parameterTypes.length; }
   
     /* (non-Javadoc)

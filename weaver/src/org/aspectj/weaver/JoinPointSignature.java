@@ -267,10 +267,6 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getSignature();
 	}
 
-	public String getDeclaredSignature() {
-		return realMember.getDeclaredSignature();
-	}
-
 	public int getArity() {
 		return realMember.getArity();
 	}

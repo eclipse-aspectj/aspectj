@@ -80,9 +80,6 @@ public interface Member {
      */
     public Iterator getJoinPointSignatures(World world);
 
-	/** TODO ASC Should return the non-erased version of the signature... untested */
-	public String getDeclaredSignature();
-
 	public int getArity();
 
 	/**
