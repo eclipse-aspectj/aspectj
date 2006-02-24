@@ -29,6 +29,19 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
 
+    /* (non-Javadoc)
+	 * @see org.aspectj.testing.XMLBasedAjcTestCase#setUp()
+	 */
+	protected void setUp() throws Exception {
+		super.setUp();
+		AjState.FORCE_INCREMENTAL_DURING_TESTING = true;
+	}
+	
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
+	}
+  
   public void test001() throws Exception {
     runTest("expect class added in initial incremental tests");
     nextIncrement(false);

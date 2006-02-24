@@ -52,6 +52,12 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	protected void setUp() throws Exception {
 		super.setUp();
 		AjdeInteractionTestbed.VERBOSE = VERBOSE;
+		AjState.FORCE_INCREMENTAL_DURING_TESTING = true;
+	}
+	
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
 	}
 	
 	

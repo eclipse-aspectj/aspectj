@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
+import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
@@ -388,11 +389,13 @@ public class AjctestsAdapter extends TestSuite {
                 throw new Error("need to re-init");
             }
             try {
+            	AjState.FORCE_INCREMENTAL_DURING_TESTING = true;
                 result.startTest(this);
                 suite.runTest(this, result);
             } finally {
                 result.endTest(this);
                 suite = null;
+                AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
             }
         }
 

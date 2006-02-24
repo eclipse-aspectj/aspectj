@@ -12,6 +12,8 @@
 
 package org.aspectj.testing.drivers;
 
+import org.aspectj.ajdt.internal.core.builder.AjState;
+
 import junit.framework.*;
 
 /*
@@ -41,5 +43,21 @@ public class AjcHarnessTestsUsingJUnit extends TestCase {
         
 	public AjcHarnessTestsUsingJUnit(String name) {
 		super(name);
+	}
+	
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	protected void setUp() throws Exception {
+		super.setUp();
+		AjState.FORCE_INCREMENTAL_DURING_TESTING = true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#tearDown()
+	 */
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
 	}
 }
