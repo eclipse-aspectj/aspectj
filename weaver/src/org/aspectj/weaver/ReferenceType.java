@@ -134,6 +134,11 @@ public class ReferenceType extends ResolvedType {
     	return !isParameterizedType() && !isRawType() && delegate.isGeneric();
     }
 
+    public String getGenericSignature() {
+    	String sig = delegate.getDeclaredGenericSignature();
+    	return (sig == null) ? "" : sig;
+    }
+    
     public AnnotationX[] getAnnotations() {
     	return delegate.getAnnotations();
     }

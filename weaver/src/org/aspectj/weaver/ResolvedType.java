@@ -1831,6 +1831,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 	
+	/**
+	 * overriden by ReferenceType to return the gsig for a generic type
+	 * @return
+	 */
+	public String getGenericSignature() {
+		return "";
+	}
+	
+	
 	public ResolvedType parameterizedWith(UnresolvedType[] typeParameters) {
 		if (!(isGenericType() || isParameterizedType())) return this;
 		return TypeFactory.createParameterizedType(this.getGenericType(), typeParameters, getWorld());
