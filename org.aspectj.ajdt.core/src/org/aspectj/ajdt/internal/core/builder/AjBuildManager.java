@@ -119,6 +119,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	
 	private IProgressListener progressListener = null;
 	
+	private boolean environmentSupportsIncrementalCompilation = false;
 	private int compiledCount;
 	private int sourceFileCount;
 
@@ -144,6 +145,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	public AjBuildManager(IMessageHandler holder) {
 		super();
         this.handler = CountingMessageHandler.makeCountingMessageHandler(holder);
+	}
+	
+	public void environmentSupportsIncrementalCompilation(boolean itDoes) {
+		this.environmentSupportsIncrementalCompilation = itDoes;
 	}
 
     /** @return true if we should generate a model as a side-effect */
@@ -184,6 +189,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         	if (batch) {
         		this.state = new AjState(this);
         	}
+        	
+        	this.state.setCouldBeSubsequentIncrementalBuild(this.environmentSupportsIncrementalCompilation);
         	
             boolean canIncremental = state.prepareForNextBuild(buildConfig);
             if (!canIncremental && !batch) { // retry as batch?
@@ -992,6 +999,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 
 	private void setBuildConfig(AjBuildConfig buildConfig) {
 		this.buildConfig = buildConfig;
+		if (!this.environmentSupportsIncrementalCompilation) {
+			this.environmentSupportsIncrementalCompilation = 
+				(buildConfig.isIncrementalMode() || buildConfig.isIncrementalFileMode());
+		}
 		handler.reset();
 	}
 	

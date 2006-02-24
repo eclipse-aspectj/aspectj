@@ -24,6 +24,7 @@ public class AjStateTest extends TestCase {
     private AjBuildConfig newConfig;
     
     public void testNoChange() {
+    	aRightState.setCouldBeSubsequentIncrementalBuild(true);
         assertTrue("Can do incremental",aRightState.prepareForNextBuild(newConfig));
     }
     

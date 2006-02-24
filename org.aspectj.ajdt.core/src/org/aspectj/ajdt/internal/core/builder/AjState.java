@@ -42,11 +42,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
-import org.aspectj.org.eclipse.jdt.internal.core.util.Util;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IWeaver;
 import org.aspectj.weaver.ReferenceType;
-import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -60,9 +58,11 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  */
 public class AjState {
 	private AjBuildManager buildManager;
+	private boolean couldBeSubsequentIncrementalBuild = false;
 	
 	// SECRETAPI static so beware of multi-threading bugs...
 	public static IStateListener stateListener = null;
+	public static boolean FORCE_INCREMENTAL_DURING_TESTING = false;
 
 	private IHierarchy structureModel;
 	private IRelationshipMap relmap;
@@ -175,6 +175,10 @@ public class AjState {
 		this.buildManager = buildManager;
 	}
 	
+	public void setCouldBeSubsequentIncrementalBuild(boolean yesThereCould) {
+		this.couldBeSubsequentIncrementalBuild = yesThereCould;
+	}
+	
 	void successfulCompile(AjBuildConfig config,boolean wasFullBuild) {
 		buildConfig = config;
 		lastSuccessfulBuildTime = currentBuildTime;
@@ -187,7 +191,11 @@ public class AjState {
 	 */
 	boolean prepareForNextBuild(AjBuildConfig newBuildConfig) {
 		currentBuildTime = System.currentTimeMillis();
-		
+
+		if (!maybeIncremental()) {
+			return false;
+		}
+
 		if (this.batchBuildRequiredThisTime) {
 			this.batchBuildRequiredThisTime = false;
 			return false;
@@ -433,8 +441,12 @@ public class AjState {
 		return thisTime;
 	}
 
+	private boolean maybeIncremental() {
+		return (FORCE_INCREMENTAL_DURING_TESTING || this.couldBeSubsequentIncrementalBuild);
+	}
+	
 	public Map /* String -> List<ucf> */ getBinaryFilesToCompile(boolean firstTime) {
-		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
+		if (lastSuccessfulBuildTime == -1 || buildConfig == null || !maybeIncremental()) {
 			return binarySourceFiles;
 		}
 		// else incremental...
@@ -595,6 +607,10 @@ public class AjState {
 	}
 	
 	public void noteResult(InterimCompilationResult result) {
+		if (!maybeIncremental()) {
+			return;
+		}
+		
 		File sourceFile = new File(result.fileName());
 		CompilationResult cr = result.result();
 
@@ -1028,13 +1044,15 @@ public class AjState {
 	
 	public void recordBinarySource(String fromPathName, List unwovenClassFiles) {
 		this.binarySourceFiles.put(fromPathName,unwovenClassFiles);
-		List simpleClassFiles = new LinkedList();
-		for (Iterator iter = unwovenClassFiles.iterator(); iter.hasNext();) {
-			UnwovenClassFile ucf = (UnwovenClassFile) iter.next();
-			ClassFile cf = getClassFileFor(ucf);
-			simpleClassFiles.add(cf);
+		if (this.maybeIncremental()) {
+			List simpleClassFiles = new LinkedList();
+			for (Iterator iter = unwovenClassFiles.iterator(); iter.hasNext();) {
+				UnwovenClassFile ucf = (UnwovenClassFile) iter.next();
+				ClassFile cf = getClassFileFor(ucf);
+				simpleClassFiles.add(cf);
+			}
+			this.inputClassFilesBySource.put(fromPathName,simpleClassFiles);
 		}
-		this.inputClassFilesBySource.put(fromPathName,simpleClassFiles);
 	}
 
 	/**
