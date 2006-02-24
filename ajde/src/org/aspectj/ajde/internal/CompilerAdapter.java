@@ -605,6 +605,7 @@ public class CompilerAdapter {
 				this.messageHandler = new MessageHandlerAdapter();
 			}
 			buildManager = new AjBuildManager(messageHandler);
+			buildManager.environmentSupportsIncrementalCompilation(true);
             // XXX need to remove the properties file each time!
 			initialized = true;
 		}
