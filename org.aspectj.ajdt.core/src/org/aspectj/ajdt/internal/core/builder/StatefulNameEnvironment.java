@@ -14,27 +14,32 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 //import java.util.HashMap;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
+import org.aspectj.util.FileUtil;
 
 
 public class StatefulNameEnvironment implements INameEnvironment {
 	private Map classesFromName;
+	private Map inflatedClassFilesCache;
 	private Set packageNames;
 	private INameEnvironment baseEnvironment;
 	
 	public StatefulNameEnvironment(INameEnvironment baseEnvironment, Map classesFromName) {
 		this.classesFromName = classesFromName;
+		this.inflatedClassFilesCache = new HashMap();
 		this.baseEnvironment = baseEnvironment;
 		
 		packageNames = new HashSet();
@@ -60,18 +65,29 @@ public class StatefulNameEnvironment implements INameEnvironment {
 	}
 
 	private NameEnvironmentAnswer findType(String name) {
-		UnwovenClassFile cf = (UnwovenClassFile)classesFromName.get(name);
-		//System.err.println("find: " + name + " found: " + cf);
-		
-		if (cf == null) return null;
-
-		try {
-			//System.out.println("from cache: " + name);
-			return new NameEnvironmentAnswer(
-					new ClassFileReader(cf.getBytes(), cf.getFilename().toCharArray()),
-					null /* no access restriction */);
-		} catch (ClassFormatException e) {
-			return null; //!!! seems to match FileSystem behavior
+		if (this.inflatedClassFilesCache.containsKey(name)) {
+			return (NameEnvironmentAnswer) this.inflatedClassFilesCache.get(name);
+		}
+		else {
+			File fileOnDisk = (File)classesFromName.get(name);
+			//System.err.println("find: " + name + " found: " + cf);
+			
+			if (fileOnDisk == null) return null;
+	
+			try {
+				//System.out.println("from cache: " + name);
+				byte[] bytes = FileUtil.readAsByteArray(fileOnDisk);
+				NameEnvironmentAnswer ret = 
+					new NameEnvironmentAnswer(
+						new ClassFileReader(bytes, fileOnDisk.getAbsolutePath().toCharArray()),
+						null /* no access restriction */);
+				this.inflatedClassFilesCache.put(name,ret);
+				return ret;
+			} catch (ClassFormatException e) {
+				return null; //!!! seems to match FileSystem behavior
+			} catch (IOException ex) {
+				return null; // see above...
+			}
 		}
 	}
 

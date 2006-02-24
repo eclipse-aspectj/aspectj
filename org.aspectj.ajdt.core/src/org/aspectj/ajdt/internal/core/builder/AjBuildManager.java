@@ -234,6 +234,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 }
                 binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
                 performCompilation(buildConfig.getFiles());
+                state.clearBinarySourceFiles(); // we don't want these hanging around...
                 if (handler.hasErrors()) {
                    	CompilationAndWeavingContext.leavingPhase(ct);
                     return false;
@@ -815,8 +816,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		//System.out.println("compiling");
 		environment = getLibraryAccess(classpaths, filenames);
 		
-		if (!state.getClassNameToUCFMap().isEmpty()) {
-			environment = new StatefulNameEnvironment(environment, state.getClassNameToUCFMap());
+		if (!state.getClassNameToFileMap().isEmpty()) {
+			environment = new StatefulNameEnvironment(environment, state.getClassNameToFileMap());
 		}
 		
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);

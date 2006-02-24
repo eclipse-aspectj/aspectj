@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,11 +37,19 @@ import org.aspectj.bridge.SourceLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryField;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
+import org.aspectj.org.eclipse.jdt.internal.core.util.Util;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IWeaver;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
@@ -71,7 +80,8 @@ public class AjState {
 	/**
 	 * Keeps a list of (FQN,Filename) pairs (as ClassFile objects)
 	 * for types that resulted from the compilation of the given
-	 * File.
+	 * File. Note :- the ClassFile objects contain no byte code, 
+	 * they are simply a Filename,typename pair.
 	 * 
 	 * Populated in noteResult and used in addDependentsOf(File)
 	 * 
@@ -86,7 +96,7 @@ public class AjState {
 	 * 
 	 * Added by AMC during state refactoring, 1Q06.
 	 */
-	private Set sourceFilesDefiningAspects = new HashSet();
+	private Set/*<File>*/ sourceFilesDefiningAspects = new HashSet();
 	
 	/**
 	 * Populated in noteResult to record the set of types that should be recompiled if
@@ -99,7 +109,9 @@ public class AjState {
 	/**
 	 * Holds UnwovenClassFiles (byte[]s) originating from the given file source. This
 	 * could be a jar file, a directory, or an individual .class file. This is an 
-	 * *expensive* map we would like to release much earlier if possible.
+	 * *expensive* map. It is cleared immediately following a batch build, and the
+	 * cheaper inputClassFilesBySource map is kept for processing of any subsequent
+	 * incremental builds.
 	 * 
 	 * Populated during AjBuildManager.initBcelWorld().
 	 * 
@@ -116,11 +128,24 @@ public class AjState {
 	 * 
 	 */
 	private Map/*File, List<UnwovenClassFile>*/ binarySourceFiles = new HashMap();
+
+	/**
+	 * Initially a duplicate of the information held in binarySourceFiles, with the
+	 * key difference that the values are ClassFiles (type name, File) not UnwovenClassFiles
+	 * (which also have all the byte code in them). After a batch build, binarySourceFiles
+	 * is cleared, leaving just this much lighter weight map to use in processing 
+	 * subsequent incremental builds.
+	 */
+	private Map/*<File,List<ClassFile>*/ inputClassFilesBySource = new HashMap();
 	
 	/**
-	 * The third of the three expensive collections of state held by AjState to support
-	 * incremental compilation. FQN -> UCF.
-	 * 
+	 * Holds structure information on types as they were at the end of the last
+	 * build. It would be nice to get rid of this too, but can't see an easy way to do
+	 * that right now. 
+	 */
+	private Map/*FQN,CompactStructureRepresentation*/ resolvedTypeStructuresFromLastBuild = new HashMap();
+	
+	/**
 	 * Populated in noteResult to record the set of UnwovenClassFiles (intermediate results)
 	 * that originated from compilation of the class with the given fully-qualified name.
 	 * 
@@ -129,7 +154,7 @@ public class AjState {
 	 * Passed into StatefulNameEnvironment during incremental compilation to support 
 	 * findType lookups.
 	 */
-	private Map/*<String, UnwovenClassFile>*/ classesFromName = new HashMap();
+	private Map/*<String, File>*/ classesFromName = new HashMap();
 	
 	
 	private List/*File*/ compiledSourceFiles = new ArrayList();
@@ -319,7 +344,7 @@ public class AjState {
 	 * lastSBT is the last build time for the state asking the question
 	 */
 	private boolean hasStructuralChangedSince(File file,long lastSuccessfulBuildTime) {
-		long lastModTime = file.lastModified();
+		//long lastModTime = file.lastModified();
 		Long l = (Long)structuralChangesSinceLastFullBuild.get(file.getAbsolutePath());
 		long strucModTime = -1;
 		if (l!=null) strucModTime = l.longValue();
@@ -426,6 +451,9 @@ public class AjState {
 				ucfs.add(ucf);
 				addDependentsOf(ucf.getClassName());
 				binarySourceFiles.put(bsf.binSrc.getPath(),ucfs);
+				List cfs = new ArrayList(1);
+				cfs.add(getClassFileFor(ucf));
+				this.inputClassFilesBySource.put(bsf.binSrc.getPath(), cfs);
 				toWeave.put(bsf.binSrc.getPath(),ucfs);
 			}
 			deleteBinaryClassFiles();
@@ -441,20 +469,16 @@ public class AjState {
 	 */
 	private void removeAllResultsOfLastBuild() {
 	    // remove all binarySourceFiles, and all classesFromName...
-	    for (Iterator iter = binarySourceFiles.values().iterator(); iter.hasNext();) {
-            List ucfs = (List) iter.next();
-            for (Iterator iterator = ucfs.iterator(); iterator.hasNext();) {
-                UnwovenClassFile ucf = (UnwovenClassFile) iterator.next();
-                try {
-                    ucf.deleteRealFile();
-                } catch (IOException ex) { /* we did our best here */ } 
+	    for (Iterator iter = this.inputClassFilesBySource.values().iterator(); iter.hasNext();) {
+            List cfs = (List) iter.next();
+            for (Iterator iterator = cfs.iterator(); iterator.hasNext();) {
+                ClassFile cf = (ClassFile) iterator.next();
+                cf.deleteFromFileSystem();
             }
         }
 	    for (Iterator iterator = classesFromName.values().iterator(); iterator.hasNext();) {
-            UnwovenClassFile ucf = (UnwovenClassFile) iterator.next();
-            try {
-                ucf.deleteRealFile();
-            } catch (IOException ex) { /* we did our best here */ }  
+            File f = (File) iterator.next();
+            new ClassFile("",f).deleteFromFileSystem();
         }
 	    for (Iterator iter = resources.iterator(); iter.hasNext();) {
             String resource = (String) iter.next();
@@ -484,15 +508,11 @@ public class AjState {
 		// range of bsf is ucfs, domain is files (.class and jars) in inpath/jars
 		for (Iterator iter = deletedBinaryFiles.iterator(); iter.hasNext();) {
 			AjBuildConfig.BinarySourceFile deletedFile = (AjBuildConfig.BinarySourceFile) iter.next();
-			List ucfs = (List) binarySourceFiles.get(deletedFile.binSrc.getPath());
-			binarySourceFiles.remove(deletedFile.binSrc.getPath());
-
-			// AMC temp during refactoring
-			UnwovenClassFile ucf = (UnwovenClassFile) ucfs.get(0);
-			ClassFile cf = new ClassFile(ucf.getClassName(),new File(ucf.getFilename()));
-			// end temp
-			
-			deleteClassFile(cf);
+			List cfs = (List) this.inputClassFilesBySource.get(deletedFile.binSrc.getPath());
+			for (Iterator iterator = cfs.iterator(); iterator.hasNext();) {
+				deleteClassFile((ClassFile)iterator.next());				
+			}
+			this.inputClassFilesBySource.remove(deletedFile.binSrc.getPath());
 		}
 	}
 	
@@ -584,9 +604,9 @@ public class AjState {
 
 		UnwovenClassFile[] unwovenClassFiles = result.unwovenClassFiles();
 		for (int i = 0; i < unwovenClassFiles.length; i++) {
-			UnwovenClassFile lastTimeRound = (UnwovenClassFile) classesFromName.get(unwovenClassFiles[i].getClassName()); 
+			File lastTimeRound = (File) classesFromName.get(unwovenClassFiles[i].getClassName()); 
 			recordClassFile(unwovenClassFiles[i],lastTimeRound);
-			classesFromName.put(unwovenClassFiles[i].getClassName(),unwovenClassFiles[i]);
+			classesFromName.put(unwovenClassFiles[i].getClassName(),new File(unwovenClassFiles[i].getFilename()));
 		}
 
 		// need to do this before types are deleted from the World...
@@ -713,111 +733,176 @@ public class AjState {
 		return null;
 	}
 	
-	private void recordClassFile(UnwovenClassFile thisTime, UnwovenClassFile lastTime) {
-		if (simpleStrings == null) return; // batch build
+	private void recordClassFile(UnwovenClassFile thisTime, File lastTime) {
+		if (simpleStrings == null) {
+			// batch build
+			// record resolved type for structural comparisions in future increments
+			// this records a second reference to a structure already held in memory
+			// by the world.
+			ResolvedType rType = world.resolve(thisTime.getClassName());
+			if (!rType.isMissing()) {
+				this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactStructureRepresentation(rType));
+			}
+			return;
+		}
 
+		CompactStructureRepresentation existingStructure = (CompactStructureRepresentation) this.resolvedTypeStructuresFromLastBuild.get(thisTime.getClassName());
+		ReferenceType newResolvedType = (ReferenceType) world.resolve(thisTime.getClassName());
+		if (!newResolvedType.isMissing()) {
+			this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactStructureRepresentation(newResolvedType));
+		}
+		
 		if (lastTime == null) {
 			addDependentsOf(thisTime.getClassName());
 			return;
 		}
 
+		if (newResolvedType.isMissing()) {
+			return;
+		}
+
 		byte[] newBytes = thisTime.getBytes();
-		byte[] oldBytes = lastTime.getBytes();
-		boolean bytesEqual = (newBytes.length == oldBytes.length);
-		for (int i = 0; (i < oldBytes.length) && bytesEqual; i++) {
-			if (newBytes[i] != oldBytes[i]) bytesEqual = false;
-		}
-		if (!bytesEqual) {
-			try {
-				ClassFileReader reader = new ClassFileReader(oldBytes, lastTime.getFilename().toCharArray());
-				// ignore local types since they're only visible inside a single method
-				if (!(reader.isLocal() || reader.isAnonymous()) && 
-						reader.hasStructuralChanges(newBytes)) {
+		try {
+			ClassFileReader reader = new ClassFileReader(newBytes, lastTime.getAbsolutePath().toCharArray());
+			// ignore local types since they're only visible inside a single method
+			if (!(reader.isLocal() || reader.isAnonymous())) {
+				if (hasStructuralChanges(reader,existingStructure)) {
 					structuralChangesSinceLastFullBuild.put(thisTime.getFilename(),new Long(currentBuildTime));
-					addDependentsOf(lastTime.getClassName());
+					addDependentsOf(new String(reader.getName()).replace('/','.'));
 				}
-			} catch (ClassFormatException e) {
-				addDependentsOf(lastTime.getClassName());
-			}			
-		}
+			}
+		} catch (ClassFormatException e) {
+			addDependentsOf(thisTime.getClassName());
+		}							
 	}
 	
+	
+	/**
+	 * Compare the class structure of the new intermediate (unwoven) class with the
+	 * existingResolvedType of the same class that we have in the world, looking for
+	 * any structural differences (and ignoring aj members resulting from weaving....)
+	 * 
+	 * Warning : long but boring method implementation... 
+	 * @param reader
+	 * @param existingType
+	 * @return
+	 */
+	private boolean hasStructuralChanges(ClassFileReader reader, CompactStructureRepresentation existingType) {
+		// mirrors the checks in ClassFileReader.hasStructuralChanges, but compares against
+		// ref type delegate instead of old bytes
+		if (existingType == null) {
+			return true;
+		}
+		
+		// modifiers
+		if (!modifiersEqual(reader.getModifiers(),existingType.modifiers)) {
+			return true;
+		}
+		
+		// generic signature
+		if (!equal(reader.getGenericSignature(),existingType.genericSignature)) {
+			return true;
+		}
+		
+		// superclass name
+		if (!equal(reader.getSuperclassName(),existingType.superclassName)) {
+			return true;
+		}
+		
+		// interfaces
+		char[][] existingIfs = existingType.interfaces;
+		char[][] newIfsAsChars = reader.getInterfaceNames();
+		if (newIfsAsChars == null) { newIfsAsChars = new char[0][]; }
+		char[][] newIfs = new char[newIfsAsChars.length][];
+		if (existingIfs.length != newIfs.length) {
+			return true;
+		}
+		new_interface_loop: for (int i = 0; i < newIfs.length; i++) {
+			for (int j = 0; j < existingIfs.length; j++) {
+				if (equal(existingIfs[j],newIfs[i])) {
+					continue new_interface_loop;
+				}
+			}
+			return true;
+		}
+		
+		// fields
+		MemberStructure[] existingFields = existingType.fields;
+		IBinaryField[] newFields = reader.getFields();
+		if (newFields == null) { newFields = new IBinaryField[0]; }
+		if (newFields.length != existingFields.length) {
+			return true;
+		}
+		new_field_loop: for (int i = 0; i < newFields.length; i++) {
+			char[] fieldName = newFields[i].getName();
+			for (int j = 0; j < existingFields.length; j++) {
+				if (equal(existingFields[j].name,fieldName)) {
+					if (!modifiersEqual(newFields[i].getModifiers(),existingFields[j].modifiers)) {
+						return true;
+					}
+					if (!equal(existingFields[j].signature,newFields[i].getTypeName())) {
+						return true;
+					}
+					continue new_field_loop;
+				}
+			}
+			return true;
+		}
+		
+		// methods
+		MemberStructure[] existingMethods = existingType.methods;
+		IBinaryMethod[] newMethods = reader.getMethods();
+		if (newMethods == null) { newMethods = new IBinaryMethod[0]; }
+		if (newMethods.length != existingMethods.length) {
+			return true;
+		}
+		new_method_loop: for (int i = 0; i < newMethods.length; i++) {
+			char[] methodName = newMethods[i].getSelector();
+			for (int j = 0; j < existingMethods.length; j++) {
+				if (equal(existingMethods[j].name,methodName)) {
+					// candidate match
+					if (!equal(newMethods[i].getMethodDescriptor(),existingMethods[j].signature)) {
+						continue; // might be overloading
+					} 
+					else {
+						// matching sigs
+						if (!modifiersEqual(newMethods[i].getModifiers(),existingMethods[j].modifiers)) {
+							return true;
+						}
+						continue new_method_loop;
+					}
+				}
+			}
+			return true; // (no match found)
+		}
+		
+		return false;
+	}
 
-//	public void noteClassesFromFile(CompilationResult result, String sourceFileName, List unwovenClassFiles) {
-//		File sourceFile = new File(sourceFileName);
-//		
-//		if (result != null) {
-//			references.put(sourceFile, new ReferenceCollection(result.qualifiedReferences, result.simpleNameReferences));
-//		}
-//		
-//		List previous = (List)classesFromFile.get(sourceFile);
-//		List newClassFiles = new ArrayList();
-//		for (Iterator i = unwovenClassFiles.iterator(); i.hasNext();) {
-//			UnwovenClassFile cf = (UnwovenClassFile) i.next();
-//			cf = writeClassFile(cf, findAndRemoveClassFile(cf.getClassName(), previous));
-//			newClassFiles.add(cf);
-//			classesFromName.put(cf.getClassName(), cf);
-//		}
-//		
-//		if (previous != null && !previous.isEmpty()) {
-//			for (Iterator i = previous.iterator(); i.hasNext();) {
-//				UnwovenClassFile cf = (UnwovenClassFile) i.next();
-//				deleteClassFile(cf);
-//			}
-//		}
-//
-//		classesFromFile.put(sourceFile, newClassFiles);
-//		resultsFromFile.put(sourceFile, result);
-//	}
-//
-//	private UnwovenClassFile findAndRemoveClassFile(String name, List previous) {
-//		if (previous == null) return null;
-//		for (Iterator i = previous.iterator(); i.hasNext();) {
-//			UnwovenClassFile cf = (UnwovenClassFile) i.next();
-//			if (cf.getClassName().equals(name)) {
-//				i.remove();
-//				return cf;
-//			} 
-//		}
-//		return null;
-//	}
-//
-//	private UnwovenClassFile writeClassFile(UnwovenClassFile cf, UnwovenClassFile previous) {
-//		if (simpleStrings == null) { // batch build
-//			addedClassFiles.add(cf);
-//			return cf;
-//		}
-//		
-//		try {
-//			if (previous == null) {
-//				addedClassFiles.add(cf);
-//				addDependentsOf(cf.getClassName());
-//				return cf;
-//			} 
-//			
-//			byte[] oldBytes = previous.getBytes();
-//			byte[] newBytes = cf.getBytes();
-//			//if (this.compileLoop > 1) { // only optimize files which were recompiled during the dependent pass, see 33990
-//				notEqual : if (newBytes.length == oldBytes.length) {
-//					for (int i = newBytes.length; --i >= 0;) {
-//						if (newBytes[i] != oldBytes[i]) break notEqual;
-//					}
-//					//addedClassFiles.add(previous); //!!! performance wasting
-//					buildManager.bcelWorld.addSourceObjectType(previous.getJavaClass());
-//					return previous; // bytes are identical so skip them
-//				}
-//			//}
-//			ClassFileReader reader = new ClassFileReader(oldBytes, previous.getFilename().toCharArray());
-//			// ignore local types since they're only visible inside a single method
-//			if (!(reader.isLocal() || reader.isAnonymous()) && reader.hasStructuralChanges(newBytes)) {
-//				addDependentsOf(cf.getClassName());
-//			}
-//		} catch (ClassFormatException e) {
-//			addDependentsOf(cf.getClassName());
-//		}
-//		addedClassFiles.add(cf);
-//		return cf;
-//	}
+	private boolean modifiersEqual(int eclipseModifiers, int resolvedTypeModifiers) {
+		resolvedTypeModifiers = resolvedTypeModifiers & CompilerModifiers.AccJustFlag;
+		eclipseModifiers = eclipseModifiers & CompilerModifiers.AccJustFlag;
+		if ((eclipseModifiers & CompilerModifiers.AccSuper) != 0) {
+			eclipseModifiers -= CompilerModifiers.AccSuper;
+		}
+		return (eclipseModifiers == resolvedTypeModifiers);
+	}
+	
+	private boolean equal(char[] c1, char[] c2) {
+		if (c1 == null && c2 == null) {
+			return true;
+		}
+		if (c1 == null || c2 == null) {
+			return false;
+		}
+		if (c1.length != c2.length) {
+			return false;
+		}
+		for (int i = 0; i < c1.length; i++) {
+			if (c1[i] != c2[i]) return false;
+		}
+		return true;
+	}
 	
 	private static StringSet makeStringSet(List strings) {
 		StringSet ret = new StringSet(strings.size());
@@ -943,13 +1028,28 @@ public class AjState {
 	
 	public void recordBinarySource(String fromPathName, List unwovenClassFiles) {
 		this.binarySourceFiles.put(fromPathName,unwovenClassFiles);
+		List simpleClassFiles = new LinkedList();
+		for (Iterator iter = unwovenClassFiles.iterator(); iter.hasNext();) {
+			UnwovenClassFile ucf = (UnwovenClassFile) iter.next();
+			ClassFile cf = getClassFileFor(ucf);
+			simpleClassFiles.add(cf);
+		}
+		this.inputClassFilesBySource.put(fromPathName,simpleClassFiles);
+	}
+
+	/**
+	 * @param ucf
+	 * @return
+	 */
+	private ClassFile getClassFileFor(UnwovenClassFile ucf) {
+		return new ClassFile(ucf.getClassName(),new File(ucf.getFilename()));
 	}
 	
 	public Map getBinarySourceMap() {
 		return this.binarySourceFiles;
 	}
 	
-	public Map getClassNameToUCFMap() {
+	public Map getClassNameToFileMap() {
 		return this.classesFromName;
 	}
 	
@@ -1012,4 +1112,59 @@ public class AjState {
 		}
 	}
 
+	private static class CompactStructureRepresentation {
+		
+		public CompactStructureRepresentation(ResolvedType forType) {
+			this.className = forType.getName().replace('.','/').toCharArray();
+			this.modifiers = forType.getModifiers();
+			this.genericSignature = forType.getGenericSignature().toCharArray();
+			if (this.genericSignature.length == 0) {
+				this.genericSignature = null;
+			}
+			this.superclassName = forType.getSuperclass().getName().replace('.','/').toCharArray();
+			ResolvedType[] rTypes = forType.getDeclaredInterfaces();
+			this.interfaces = new char[rTypes.length][];
+			for (int i = 0; i < rTypes.length; i++) {
+				this.interfaces[i] = rTypes[i].getName().replace('.','/').toCharArray();
+			}
+			ResolvedMember[] rFields = forType.getDeclaredFields();
+			this.fields = new MemberStructure[rFields.length];
+			for (int i = 0; i < rFields.length; i++) {
+				this.fields[i] = new MemberStructure();
+				this.fields[i].name = rFields[i].getName().toCharArray();
+				this.fields[i].modifiers = rFields[i].getModifiers();
+				this.fields[i].signature = rFields[i].getReturnType().getSignature().toCharArray();
+			}
+			ResolvedMember[] rMethods = forType.getDeclaredMethods();
+			this.methods = new MemberStructure[rMethods.length];
+			for (int i = 0; i < rMethods.length; i++) {
+				this.methods[i] = new MemberStructure();
+				this.methods[i].name = rMethods[i].getName().toCharArray();
+				this.methods[i].modifiers = rMethods[i].getModifiers();
+				StringBuffer sig = new StringBuffer();
+				sig.append("(");
+				UnresolvedType[] pTypes = rMethods[i].getParameterTypes();
+				for (int j = 0; j < pTypes.length; j++) {
+					sig.append(pTypes[j].getSignature());
+				}
+				sig.append(")");
+				sig.append(rMethods[i].getReturnType().getSignature());
+				this.methods[i].signature = sig.toString().toCharArray();
+			}
+		}
+		
+		char[] className;
+		int modifiers;
+		char[] genericSignature;
+		char[] superclassName;
+		char[][] interfaces;
+		MemberStructure[] fields;
+		MemberStructure[] methods;
+	}
+	
+	private static class MemberStructure {
+		char[] name;
+		int modifiers;
+		char[] signature;
+	}
 }
