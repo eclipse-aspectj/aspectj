@@ -470,7 +470,12 @@ public class ReferenceType extends ResolvedType {
 				TypeVariableReference tvrt = (TypeVariableReference)tParm;
 				TypeVariable tv = tvrt.getTypeVariable();
 				int rank = getRank(tv.getName());
-				retVal[i]= paramTypes[rank];
+				// -1 probably means it is a reference to a type variable on the outer generic type (see pr129566)
+				if (rank!=-1) {
+					retVal[i] = paramTypes[rank];
+				} else {
+					retVal[i] = tParms[i];
+				}
 			} else {
 				retVal[i] = tParms[i];
 			}
