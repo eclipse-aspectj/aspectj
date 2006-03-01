@@ -8,6 +8,10 @@
         <run class="A"/>
     </ajc-test>  
     
+     <ajc-test dir="bugs151/pr129566" title="arrayindexoutofbounds">
+        <compile files="SkipList.java" options="-1.5"/>
+    </ajc-test>  
+    
     <ajc-test dir="bugs151" title="member types in generic types">
         <compile files="pr122458.aj" options="-1.5 -emacssym"/>
     </ajc-test>  

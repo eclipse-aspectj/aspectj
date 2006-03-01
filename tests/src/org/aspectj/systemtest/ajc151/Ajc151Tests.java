@@ -43,9 +43,18 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAtAspectInheritsAdviceWithTJPAndThis_pr125699 () { runTest("inherit advice with this() and thisJoinPoint");  }
   public void testAtAspectInheritsAdviceWithTJPAndThis_pr125699_2 () {runTest("inherit advice with this() and thisJoinPoint - 2");  }
   public void testBrokenLTW_pr128744() { runTest("broken ltw"); }
+  public void testArrayindexoutofbounds_pr129566() { 
+	  runTest("arrayindexoutofbounds");
+	  // public class SkipList<T extends Comparable> extends Object implements Set<T>, Iterable<T>
+	  GenericsTests.verifyClassSignature(ajc,"common.SkipList","<T::Ljava/lang/Comparable;>Ljava/lang/Object;Ljava/util/Set<TT;>;Ljava/lang/Iterable<TT;>;");
+	  // protected class SkipListElement<E> extends Object
+	  GenericsTests.verifyClassSignature(ajc,"common.SkipList$SkipListElement","<E:Ljava/lang/Object;>Ljava/lang/Object;");
+	  // protected class SkipListIterator<E> implements Iterator<T>
+	  GenericsTests.verifyClassSignature(ajc,"common.SkipList$SkipListIterator","<E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/util/Iterator<TT;>;");
+  }
   
   public void testMixingNumbersOfTypeParameters_pr125080()   { 
-	  runTest("mixing numbers of type parameters");    
+	  runTest("mixing numbers of type parameters");
 	  GenericsTests.verifyClassSignature(ajc,"AspectInterface","<T:Ljava/lang/Object;S:Ljava/lang/Object;>Ljava/lang/Object;");
 	  GenericsTests.verifyClassSignature(ajc,"AbstractAspect","<T:Ljava/lang/Object;>Ljava/lang/Object;LAspectInterface<TT;Ljava/lang/Integer;>;");
 	  GenericsTests.verifyClassSignature(ajc,"ConcreteAspect","LAbstractAspect<Ljava/lang/String;>;");
