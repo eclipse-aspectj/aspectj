@@ -14,11 +14,16 @@
             <listitem> <para>Compile-time weaving is the simplest approach. When you have the source code
                 for an application, ajc will compile from source and produce woven class files as
                 output. The invocation of the weaver is integral to the ajc compilation process. The
-                aspects themselves may be in source or binary form. </para></listitem>
+                aspects themselves may be in source or binary form. 
+                If the aspects are required for the affected classes to compile, then
+                you must weave at compile-time.  Aspects are required, e.g., when they
+                add members to a class and other classes being compiled reference the 
+                added members.
+                </para></listitem>
             <listitem> <para>Post-compile weaving (also sometimes called binary weaving) is used to weave
                 existing class files and JAR files. As with compile-time weaving,
                 the aspects used for weaving may be in source or binary form,
-                and may themselves be woven by aspects. </para></listitem>
+                and may themselves be woven by aspects.</para></listitem>
             <listitem> <para>Load-time weaving (LTW) is simply binary weaving defered until the point that
                 a class loader loads a class file and defines the class to the JVM. To support this,
                 one or more "weaving class loaders", either provided explicitly by the run-time
