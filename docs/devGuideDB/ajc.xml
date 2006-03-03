@@ -19,38 +19,40 @@
   <refsect1 id="ajc" xreflabel="ajc">
     <title>Description</title>
 
-    <para>The <command>ajc</command> command compiles AspectJ and Java
-      language files, weaving aspects as necessary to produce .class files 
-      compliant with any Java VM (1.1 or later). 
-      To do bytecode weaving, it also accepts input classes or aspects 
-      in binary form.
+    <para>The <command>ajc</command> command compiles and weaves AspectJ and 
+      Java source and .class files, producing .class files compliant with any 
+      Java VM (1.1 or later).  It combines compilation and bytecode weaving
+      and supports incremental builds; you can also weave bytecode
+      at run-time using <xref linkend="ltw"/>.
       </para>
 
     <para> The arguments after the options specify the source file(s) to compile.
-        (Specify source classes using the <parameter>-injars</parameter> or
-        <parameter>-inpath</parameter> options, below.)
-        Files may be listed directly on the command line, or listed in a file.
+        To specify source classes, use <parameter>-inpath</parameter> (below).
+        Files may be listed directly on the command line or in a file.
         The <parameter>-argfile <replaceable>file</replaceable></parameter> 
         and <parameter>@<replaceable>file</replaceable></parameter> forms
-        are equivalent, and are interpreted as meaning all the files listed in
-        the specified file.  Each line in these files should contain one option
-        or filename. Comments, as in Java, start with <literal>//</literal> and
-        extend to the end of the line.
+        are equivalent, and are interpreted as meaning all the arguments 
+        listed in the specified file. 
     </para>
 
     <para>	
-        <command>NB:</command> 
-        You must explicitly pass <command>ajc</command> all sources necessary 
-        for the compilation.  When compiling source files containing aspects
-        or pointcuts, be sure 
-        to include the source files for any types affected by the aspects or
-        picked out by the pointcuts.  
-        (To exclude types from the scope affected by the aspect, 
-         change the corresponding pointcut or declaration.)
-        This is necessary because, unlike javac, ajc does not search the 
-        sourcepath for classes.
-        You may use the <parameter>-sourceroots</parameter> option to specify
-        as source all the .aj and .java files in a set of directory trees.
+        <command>Note:</command> 
+        You must explicitly pass <command>ajc</command> all necessary sources.
+        Be sure to include the source not only for the
+        aspects or pointcuts but also for any affected types.  
+        Specifying all sources is necessary because, unlike javac, ajc does not 
+        search the sourcepath for classes.
+        (For a discussion of what affected types might be required,
+         see <ulink url="../progguide/implementation.html">The AspectJ
+         Programming Guide, Implementation Appendix</ulink>.)
+    <para>
+    </para>
+        To specify sources, you can list source files as arguments or use the 
+        options <parameter>-sourceroots</parameter> or <parameter>-inpath</parameter>.
+        If there are multiple sources for any type, the result is undefined
+        since ajc has no way to determine which source is correct.  (This 
+        happens most often when users include the destination directory
+        on the inpath and rebuild.)
     </para>
 
     <refsect2>
@@ -82,11 +84,11 @@
       <varlistentry>
         <term>-aspectpath <replaceable>Path</replaceable></term>
         <listitem><para>
-        Weave binary aspects from Jars and directories on path into all sources.
+        Weave binary aspects from jar files and directories on path into all sources.
         The aspects should have been output by the same version
         of the compiler.
-        To run the output classes requires putting all the 
-        aspectpath entries on the run classpath.
+        When running the output classes, the run classpath should contain 
+        all aspectpath entries.
         Path, like classpath, is a single argument containing
         a list of paths to jar files, delimited by the platform-
         specific classpath delimiter.
@@ -96,9 +98,20 @@
       <varlistentry>
         <term>-argfile <replaceable>File</replaceable></term>
         <listitem><para>
-          The file is a line-delimited list of arguments.
-          These arguments are inserted into the argument list.
-        </para></listitem>
+          The file contains a line-delimited list of arguments.
+		  Each line in the file should contain one option, filename, or
+		  argument string (e.g., a classpath or inpath). 
+		  Arguments read from the file are inserted into the argument list
+		  for the command.  Relative paths in the file are calculated from
+		  the directory containing the file (not the current working directory).
+		  Comments, as in Java, start with <literal>//</literal> and
+          extend to the end of the line.  Options specified in argument
+          files may override rather than extending existing option values,
+          so avoid specifying options like <replaceable>-classpath</replaceable>
+          in argument files unlike the argument file is the only build
+          specification.  The form <replaceable>@file</replaceable> is the same
+          as specifying <replaceable>-argfile file</replaceable>.
+		</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -155,7 +168,7 @@
       <varlistentry>
         <term>-emacssym</term>
         <listitem><para>
-          Generate .ajesym symbol files for emacs support
+          Generate .ajesym symbol files for emacs support (deprecated).
         </para></listitem>
       </varlistentry>
 
@@ -244,8 +257,8 @@
       </varlistentry>
 
       <varlistentry>
-        <term>-target <replaceable>[1.1 to 1.4]</replaceable></term>
-        <listitem><para>Specify classfile target setting (1.1 to 1.4, default is 1.2)
+        <term>-target <replaceable>[1.1 to 1.5]</replaceable></term>
+        <listitem><para>Specify classfile target setting (1.1 to 1.5, default is 1.2)
         </para></listitem>
       </varlistentry>
 
@@ -415,7 +428,8 @@
       <varlistentry>
         <term>-Xnoweave</term>
         <listitem><para>(Experimental) produce unwoven class files
-        for input using -injars.
+        for input using -injars. (deprecated - .class files are by
+        default reweavable and can be input using -inpath.)
         </para></listitem>
       </varlistentry>
       
@@ -580,18 +594,16 @@ ajc @sources.lst</programlisting>
 
       </example>
       <example id="examplebytecode">
-        <title>An example using -injars and -aspectpath</title>
-        <para>Bytecode weaving using -injars:
-          AspectJ 1.1 supports weaving from input zip or jar files containing 
-          class files.  Using input jars is like compiling the corresponding 
+        <title>An example using -inpath and -aspectpath</title>
+        <para>Bytecode weaving using -inpath:
+          AspectJ 1.2 supports weaving .class files in input zip/jar files 
+          and directories. 
+          Using input jars is like compiling the corresponding 
           source files, and all binaries are emitted to output.  Although 
           Java-compliant compilers may differ in their output, ajc should 
           take as input any class files produced by javac, jikes, eclipse, 
-          and, of course, ajc.  Aspects included in -injars will be woven into
-          like other .class files, but they will specify any crosscutting
-          code (i.e., they will not be woven into other types).  To use
-          aspects in their binary form to specify crosscutting,
-          see -aspectpath below.
+          and, of course, ajc.  Aspects included in -inpath will be woven into
+          like other .class files, and they will affect other types as usual.
         </para>
         <para>Aspect libraries using -aspectpath:
           AspectJ 1.1 supports weaving from read-only libraries containing 
@@ -674,7 +686,7 @@ commands to your environment as needed.
     <listitem><para>
 (b) Build the application with tracing:</para> 
         <programlisting>
-    ajc -injars app.jar -aspectpath tracelib.jar -outjar tracedapp.jar 
+    ajc -inpath app.jar -aspectpath tracelib.jar -outjar tracedapp.jar 
         </programlisting>
     </listitem></itemizedlist>
 
