@@ -56,7 +56,6 @@ package org.aspectj.apache.bcel.classfile;
 
 import org.aspectj.apache.bcel.Constants;
 import java.io.*;
-import java.util.*;
 
 /**
  * This class represents a reference to an unknown (i.e.,
@@ -69,7 +68,7 @@ import java.util.*;
  * org.aspectj.apache.bcel.classfile.AttributeReader)">Attribute.addAttributeReader</a>.
 
  *
- * @version $Id: Unknown.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Unknown.java,v 1.3 2006/03/04 10:43:17 aclement Exp $
  * @see org.aspectj.apache.bcel.classfile.Attribute
  * @see org.aspectj.apache.bcel.classfile.AttributeReader
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
@@ -78,20 +77,21 @@ public final class Unknown extends Attribute {
   private byte[] bytes;
   private String name;
 
-  private static HashMap unknown_attributes = new HashMap();
+  // evil static - removed by Andy C - no apparent users (4 Mar 06)
+//  private static HashMap unknown_attributes = new HashMap();
 
   /** @return array of unknown attributes, but just one for each kind.
    */
-  static Unknown[] getUnknownAttributes() {
-    Unknown[] unknowns = new Unknown[unknown_attributes.size()];
-    Iterator  entries  = unknown_attributes.values().iterator();
-
-    for(int i=0; entries.hasNext(); i++)
-      unknowns[i] = (Unknown)entries.next();
-
-    unknown_attributes.clear();
-    return unknowns;
-  }
+//  static Unknown[] getUnknownAttributes() {
+//    Unknown[] unknowns = new Unknown[unknown_attributes.size()];
+//    Iterator  entries  = unknown_attributes.values().iterator();
+//
+//    for(int i=0; entries.hasNext(); i++)
+//      unknowns[i] = (Unknown)entries.next();
+//
+//    unknown_attributes.clear();
+//    return unknowns;
+//  }
 
   /**
    * Initialize from another object. Note that both objects use the same
@@ -117,7 +117,7 @@ public final class Unknown extends Attribute {
 
     name = ((ConstantUtf8)constant_pool.getConstant(name_index,
 						    Constants.CONSTANT_Utf8)).getBytes();
-    unknown_attributes.put(name, this);
+//    unknown_attributes.put(name, this);
   }
 
   /**
