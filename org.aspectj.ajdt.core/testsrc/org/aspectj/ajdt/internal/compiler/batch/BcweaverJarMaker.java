@@ -111,7 +111,7 @@ public class BcweaverJarMaker {
 		args.add("-outjar");
 		args.add("../weaver/testdata/megatraceNoweave.jar");
 
-		args.add("-noweave");
+		args.add("-XterminateAfterCompilation");
 
 		args.add("-classpath");
         args.add(AjcTests.aspectjrtClasspath());

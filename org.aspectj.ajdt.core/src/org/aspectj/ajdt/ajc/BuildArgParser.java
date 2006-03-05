@@ -537,8 +537,10 @@ public class BuildArgParser extends Main {
 				buildConfig.setXdevPinpointMode(true);
         	} else if (arg.equals("-Xjoinpoints:arrayconstruction")) {
         		buildConfig.setXJoinpoints("arrayconstruction");
-        	} else if (arg.equals("-noweave") || arg.equals( "-XnoWeave")) {
-				buildConfig.setNoWeave(true);
+        	} else if (arg.equals("-noWeave") || arg.equals( "-XnoWeave")) {
+				showWarning("the noweave option is no longer required and is being ignored");
+        	} else if (arg.equals( "-XterminateAfterCompilation")) {
+				buildConfig.setTerminateAfterCompilation(true);
 			} else if (arg.equals("-XserializableAspects")) {
 				buildConfig.setXserializableAspects(true);
 			} else if (arg.equals("-XlazyTjp")) {

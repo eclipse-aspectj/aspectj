@@ -25,7 +25,7 @@
     
   <ajc-test dir="new/options11"  pr="36329"
    	  comment="the line number might change, we're really interested only in the files here"
-      title="The compiler crashes when using aspect libraries created without using -noweave">
+      title="The compiler crashes when using aspect libraries created without using -terminateAfterCompile">
         <compile files="Main.java,injar.jar,Aspect.java,aspectlib1.jar,aspectlib2.jar">
             <message kind="error" line="0"/>
         </compile>

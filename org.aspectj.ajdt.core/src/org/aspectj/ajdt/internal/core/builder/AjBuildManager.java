@@ -1157,7 +1157,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 						this,  // IOutputFilenameProvider
 						this,  // IBinarySourceProvider
 						state.getBinarySourceMap(),
-						buildConfig.isNoWeave(),
+						buildConfig.isTerminateAfterCompilation(),
 						buildConfig.getProceedOnError(),
 						buildConfig.isNoAtAspectJAnnotationProcessing(),
 						state);

@@ -37,7 +37,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public static final String OPTION_ReportIncompatibleSerialVersion   = "org.aspectj.ajdt.core.compiler.lint.BrokeSerialVersionCompatibility";
 	
 	// General AspectJ Compiler options (excludes paths etc, these are handled separately)
-	public static final String OPTION_NoWeave                 = "org.aspectj.ajdt.core.compiler.weaver.NoWeave";
+	public static final String OPTION_TerminateAfterCompilation                 = "org.aspectj.ajdt.core.compiler.weaver.TerminateAfterCompilation";
 	public static final String OPTION_XSerializableAspects    = "org.aspectj.ajdt.core.compiler.weaver.XSerializableAspects";
 	public static final String OPTION_XLazyThisJoinPoint      = "org.aspectj.ajdt.core.compiler.weaver.XLazyThisJoinPoint";
 	public static final String OPTION_XNoInline               = "org.aspectj.ajdt.core.compiler.weaver.XNoInline";
@@ -62,7 +62,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public static final long NeedSerialVersionUIDField  = ASTNode.Bit54L;
 	public static final long IncompatibleSerialVersion  = ASTNode.Bit55L;
 
-	public boolean noWeave = false;
+	public boolean terminateAfterCompilation = false;
 	public boolean xSerializableAspects = false;
 	public boolean xLazyThisJoinPoint = false;
 	public boolean xNoInline = false;
@@ -130,7 +130,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		map.put(OPTION_ReportIncompatibleSerialVersion,getSeverityString(IncompatibleSerialVersion));
 		map.put(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock,getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock));
 		
-		map.put(OPTION_NoWeave, this.noWeave ? ENABLED : DISABLED);
+		map.put(OPTION_TerminateAfterCompilation, this.terminateAfterCompilation ? ENABLED : DISABLED);
 		map.put(OPTION_XSerializableAspects,this.xSerializableAspects ? ENABLED : DISABLED);
 		map.put(OPTION_XLazyThisJoinPoint,this.xLazyThisJoinPoint ? ENABLED : DISABLED);
 		map.put(OPTION_XNoInline,this.xNoInline ? ENABLED : DISABLED);
@@ -163,11 +163,11 @@ public class AjCompilerOptions extends CompilerOptions {
 		if ((optionValue = optionsMap.get(OPTION_ReportIncompatibleSerialVersion)) != null) updateSeverity(IncompatibleSerialVersion, optionValue);
 		if ((optionValue = optionsMap.get(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock)) != null) updateSeverity(CompilerOptions.SwallowedExceptionInCatchBlock, optionValue);
 		
-		if ((optionValue = optionsMap.get(OPTION_NoWeave)) != null) {
+		if ((optionValue = optionsMap.get(OPTION_TerminateAfterCompilation)) != null) {
 			if (ENABLED.equals(optionValue)) {
-				this.noWeave = true;
+				this.terminateAfterCompilation = true;
 			} else if (DISABLED.equals(optionValue)) {
-				this.noWeave = false;
+				this.terminateAfterCompilation = false;
 			}
 		}
 		if ((optionValue = optionsMap.get(OPTION_XSerializableAspects)) != null) {
@@ -278,7 +278,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		StringBuffer buf = new StringBuffer( super.toString() );
 		// now add AspectJ additional options
 		buf.append("\n\tAspectJ Specific Options:");
-		buf.append("\n\t- no weave: ").append(this.noWeave ? ENABLED : DISABLED); //$NON-NLS-1$
+		buf.append("\n\t- terminate after compilation: ").append(this.terminateAfterCompilation ? ENABLED : DISABLED); //$NON-NLS-1$
 		buf.append("\n\t- no inline (X option): ").append(this.xNoInline ? ENABLED : DISABLED); //$NON-NLS-1$
 		buf.append("\n\t- generate serializable aspects (X option): ").append(this.xSerializableAspects ? ENABLED : DISABLED); //$NON-NLS-1$
 		buf.append("\n\t- lazy thisJoinPoint (X option): ").append(this.xLazyThisJoinPoint ? ENABLED : DISABLED); //$NON-NLS-1$

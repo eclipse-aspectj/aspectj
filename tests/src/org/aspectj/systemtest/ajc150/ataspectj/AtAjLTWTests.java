@@ -36,8 +36,8 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 		runTest("RunThemAllWithJavacCompiledAndLTW");
 	}
 
-	public void testAjcLTWPerClauseTest_XnoWeave() {
-		runTest("AjcLTW PerClauseTest -XnoWeave");
+	public void testAjcLTWPerClauseTest_XterminateAfterCompilation() {
+		runTest("AjcLTW PerClauseTest -XterminateAfterCompilation");
 	}
 
 	public void testAjcLTWPerClauseTest_Xreweavable() {
@@ -48,8 +48,8 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("JavaCAjcLTW PerClauseTest");
     }
 
-    public void testAjcLTWAroundInlineMungerTest_XnoWeave() {
-        runTest("AjcLTW AroundInlineMungerTest -XnoWeave");
+    public void testAjcLTWAroundInlineMungerTest_XterminateAfterCompilation() {
+        runTest("AjcLTW AroundInlineMungerTest -XterminateAfterCompilation");
     }
 
     public void testAjcLTWAroundInlineMungerTest_Xreweavable() {

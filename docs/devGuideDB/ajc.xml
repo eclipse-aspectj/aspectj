@@ -111,7 +111,7 @@
           in argument files unlike the argument file is the only build
           specification.  The form <replaceable>@file</replaceable> is the same
           as specifying <replaceable>-argfile file</replaceable>.
-		</para></listitem>
+        </para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -426,10 +426,8 @@
       </varlistentry>
 
       <varlistentry>
-        <term>-Xnoweave</term>
-        <listitem><para>(Experimental) produce unwoven class files
-        for input using -injars. (deprecated - .class files are by
-        default reweavable and can be input using -inpath.)
+        <term>-XterminateAfterCompilation</term>
+        <listitem><para>Causes compiler to terminate before weaving
         </para></listitem>
       </varlistentry>
       

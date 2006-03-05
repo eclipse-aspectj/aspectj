@@ -5,10 +5,10 @@
         <ant file="ajc-ant.xml" target="javac.ltw" verbose="true"/>
     </ajc-test>
 
-    <ajc-test dir="java5/ataspectj" title="AjcLTW PerClauseTest -XnoWeave">
+    <ajc-test dir="java5/ataspectj" title="AjcLTW PerClauseTest -XterminateAfterCompilation">
         <compile
                 files="ataspectj/PerClauseTest.java,ataspectj/PerClauseTestAspects.java,ataspectj/TestHelper.java"
-                options="-1.5 -XnoWeave"/>
+                options="-1.5 -XterminateAfterCompilation"/>
         <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>
     </ajc-test>
 
@@ -22,7 +22,7 @@
     <ajc-test dir="java5/ataspectj" title="JavaCAjcLTW PerClauseTest">
         <compile
                 files="ataspectj/PerClauseTest.java,ataspectj/TestHelper.java,ataspectj/PerClauseTestAspects.java"
-                options="-1.5 -XnoWeave"/>
+                options="-1.5 -XterminateAfterCompilation"/>
         <comment>
             aspectOf methods will be pushed in, ignore warning for adviceDidNotMatch but still do the logic for them
             since such just added methods are an interesting case (percflow ajc$perCflowStack advice)
@@ -35,10 +35,10 @@
         <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>
     </ajc-test>
 
-    <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -XnoWeave">
+    <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -XterminateAfterCompilation">
         <compile
                 files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java"
-                options="-1.5 -XnoWeave"/>
+                options="-1.5 -XterminateAfterCompilation"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
@@ -140,7 +140,7 @@
     	/>
     	<compile
     		files="ataspectj/ltwlog/Aspect1.java"
-    		options="-1.5 -XnoWeave"
+    		options="-1.5 -XterminateAfterCompilation"
     	>
         </compile>	
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-silent.xml">
@@ -159,7 +159,7 @@
     	/>
     	<compile
     		files="ataspectj/ltwlog/Aspect1.java"
-    		options="-1.5 -XnoWeave"
+    		options="-1.5 -XterminateAfterCompilation"
     	>
         </compile>	
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verbose.xml">
@@ -184,7 +184,7 @@
     	/>
     	<compile
     		files="ataspectj/ltwlog/Aspect1.java"
-    		options="-1.5 -XnoWeave"
+    		options="-1.5 -XterminateAfterCompilation"
     	>
         </compile>	
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verboseandshow.xml">
@@ -210,7 +210,7 @@
     	/>
     	<compile
     		files="ataspectj/ltwlog/Aspect1.java"
-    		options="-1.5 -XnoWeave"
+    		options="-1.5 -XterminateAfterCompilation"
     	>
         </compile>	
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-messagehandler.xml">
@@ -259,7 +259,7 @@
     <ajc-test dir="java5/ataspectj" title="Concrete@Aspect">
         <compile
             files="ataspectj/ConcreteAtAspectTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -XnoWeave"
+            options="-1.5 -XterminateAfterCompilation"
             />
         <run class="ataspectj.ConcreteAtAspectTest" ltw="ataspectj/aop-concreteataspect.xml"/>
     </ajc-test>
@@ -267,7 +267,7 @@
     <ajc-test dir="java5/ataspectj" title="ConcreteAspect">
         <compile
             files="ataspectj/ConcreteAspectTest.aj,ataspectj/TestHelper.java"
-            options="-1.5 -Xdev:NoAtAspectJProcessing -XnoWeave"
+            options="-1.5 -Xdev:NoAtAspectJProcessing -XterminateAfterCompilation"
             />
         <run class="ataspectj.ConcreteAspectTest" ltw="ataspectj/aop-concreteaspect.xml"/>
     </ajc-test>
@@ -275,7 +275,7 @@
     <ajc-test dir="java5/ataspectj" title="ConcretePrecedenceAspect">
         <compile
             files="ataspectj/ConcretePrecedenceAspectTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -Xdev:NoAtAspectJProcessing -XnoWeave"
+            options="-1.5 -Xdev:NoAtAspectJProcessing -XterminateAfterCompilation"
             />
         <run class="ataspectj.ConcretePrecedenceAspectTest" ltw="ataspectj/aop-concreteprecedenceaspect.xml"/>
     </ajc-test>
@@ -283,14 +283,14 @@
     <ajc-test dir="java5/ataspectj" title="AspectOfWhenAspectNotInInclude">
         <compile
             files="ataspectj/bugs/AspectOfWhenAspectNotInIncludeTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -XnoWeave"/>
+            options="-1.5 -XterminateAfterCompilation"/>
         <run class="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest" ltw="ataspectj/bugs/aop-aspectofwhenaspectnotinincludetest.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AppContainer">
         <compile
             files="ataspectj/hierarchy/AppContainerTest.java,ataspectj/hierarchy/app/SubApp.java,ataspectj/TestHelper.java"
-            options="-1.5 -XnoWeave"
+            options="-1.5 -XterminateAfterCompilation"
             />
         <ant file="ajc-ant.xml" target="ltw.AppContainer" verbose="true"/>
     </ajc-test>

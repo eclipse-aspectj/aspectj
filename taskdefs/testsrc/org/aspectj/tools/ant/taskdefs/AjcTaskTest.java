@@ -714,7 +714,7 @@ public class AjcTaskTest extends TestCase {
 		task.setNoExit(true); // ok to override Ant?
 		task.setNoImportError(true);
 		task.setNowarn(true);
-		task.setXNoweave(true);
+		task.setXTerminateAfterCompilation(true);
 		task.setPreserveAllLocals(true);
 		task.setProceedOnError(true);
 		task.setReferenceInfo(true);

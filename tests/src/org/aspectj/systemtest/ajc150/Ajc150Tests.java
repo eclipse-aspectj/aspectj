@@ -833,8 +833,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("IllegalAccessError with around advice on interface method call not self");
   }
   
-  public void testIllegalAccessErrorWithAroundAdviceNoWeaveLTW_pr119657() {
-	  runTest("IllegalAccessError with around advice on interface method call using -XnoWeave and LTW");
+  public void testIllegalAccessErrorWithAroundAdviceTerminateAfterCompilationLTW_pr119657() {
+	  runTest("IllegalAccessError with around advice on interface method call using -XterminateAfterCompilation and LTW");
   }
   
   public void testIllegalAccessErrorWithAroundAdviceLTW_pr119657() {

@@ -365,10 +365,10 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	}	
 
 	public void testNonStandardOptions() {
-		buildOptions.setNonStandardOptions( "-XnoWeave" );
+		buildOptions.setNonStandardOptions( "-XterminateAfterCompilation" );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
-		assertTrue( "XnoWeave", buildConfig.isNoWeave() );
+		assertTrue( "XterminateAfterCompilation", buildConfig.isTerminateAfterCompilation() );
 		buildOptions.setNonStandardOptions( "-XserializableAspects" );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
 		assertTrue( "XserializableAspects", buildConfig.isXserializableAspects() );

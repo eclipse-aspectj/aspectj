@@ -36,7 +36,7 @@ public class AjCompilerOptionsTest extends TestCase {
 	}
 	
 	public void testDefaultValues() {
-		assertFalse(options.noWeave);
+		assertFalse(options.terminateAfterCompilation);
 		assertFalse(options.xSerializableAspects);
 		assertFalse(options.xLazyThisJoinPoint);
 		assertFalse(options.xNoInline);
@@ -59,7 +59,7 @@ public class AjCompilerOptionsTest extends TestCase {
 	}
 	
 	public void testDirectSet() {
-		options.noWeave = true;
+		options.terminateAfterCompilation = true;
 		options.xSerializableAspects = true;
 		options.xLazyThisJoinPoint = true;
 		options.xNoInline = true;
@@ -70,7 +70,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		options.noAtAspectJProcessing = true;
 
 		Map map = options.getMap();
-		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_NoWeave));
+		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_TerminateAfterCompilation));
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XSerializableAspects));
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XLazyThisJoinPoint));
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XNoInline));
@@ -94,7 +94,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		map.put(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField,CompilerOptions.WARNING);
 		map.put(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion,CompilerOptions.ERROR);
 		
-		map.put(AjCompilerOptions.OPTION_NoWeave,CompilerOptions.ENABLED);
+		map.put(AjCompilerOptions.OPTION_TerminateAfterCompilation,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_XSerializableAspects,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_XLazyThisJoinPoint,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_XNoInline,CompilerOptions.ENABLED);
@@ -106,7 +106,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		
 		options.set(map);
 		
-		assertTrue(options.noWeave);
+		assertTrue(options.terminateAfterCompilation);
 		assertTrue(options.xSerializableAspects);
 		assertTrue(options.xLazyThisJoinPoint);
 		assertTrue(options.xNoInline);

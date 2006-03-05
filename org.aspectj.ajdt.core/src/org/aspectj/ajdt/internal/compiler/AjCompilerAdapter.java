@@ -48,7 +48,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	private EclipseFactory eWorld;
 	private boolean isBatchCompile;
 	private boolean reportedErrors;
-	private boolean isXNoWeave;
+	private boolean isXTerminateAfterCompilation;
 	private boolean proceedOnError;
 	private boolean inJava5Mode;
 	private boolean noAtAspectJAnnotationProcessing;
@@ -81,7 +81,6 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	 * @param resultSetForFullWeave if we are doing an incremental build, and the weaver determines
 	 *                              that we need to weave the world, this is the set of intermediate
 	 *                              results that will be passed to the weaver.
-	 * @param isXNoWeave
 	 */
 	public AjCompilerAdapter(Compiler compiler,
 							 boolean isBatchCompile,
@@ -93,7 +92,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 							 IOutputClassFileNameProvider outputFileNameProvider,
 							 IBinarySourceProvider binarySourceProvider,
 							 Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
-							 boolean isXNoWeave,
+							 boolean isXterminateAfterCompilation,
 							 boolean proceedOnError,
 							 boolean noAtAspectJProcessing,
 							 AjState incrementalCompilationState) {
@@ -104,7 +103,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		this.progressListener = progressListener;
 		this.outputFileNameProvider = outputFileNameProvider;
 		this.binarySourceProvider = binarySourceProvider;
-		this.isXNoWeave = isXNoWeave;
+		this.isXTerminateAfterCompilation = isXterminateAfterCompilation;
 		this.proceedOnError = proceedOnError;
 		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
 		this.eWorld = eFactory;
@@ -177,7 +176,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	public void afterCompiling(CompilationUnitDeclaration[] units) {
 		this.eWorld.cleanup();
 		try {
-			if (isXNoWeave || (reportedErrors && !proceedOnError)) {
+			if (isXTerminateAfterCompilation || (reportedErrors && !proceedOnError)) {
 				// no point weaving... just tell the requestor we're done
 				notifyRequestor();
 			} else {
@@ -207,7 +206,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			intermediateResultsRequestor.acceptResult(intRes);
 		}
 		
-		if (isXNoWeave) {
+		if (isXTerminateAfterCompilation) {
 			acceptResult(unit.compilationResult);
 		} else {
 			resultsPendingWeave.add(intRes);

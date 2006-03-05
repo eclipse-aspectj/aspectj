@@ -288,11 +288,11 @@ public class AjcTask extends MatchingTask {
     private static final ICommandEditor COMMAND_EDITOR;
             
     static {
-        // many now deprecated: reweavable*, noWeave, ...
+        // many now deprecated: reweavable*
         String[] xs = new String[] 
             {   "serializableAspects", "incrementalFile", "lazyTjp",
         		"reweavable", "reweavable:compress", "notReweavable", "noInline",
-            	"noWeave","hasMember",
+            	"terminateAfterCompilation","hasMember",
                 "ajruntimelevel:1.2", "ajruntimelevel:1.5", 
                 
                 //, "targetNearSource", "OcodeSize",
@@ -502,12 +502,20 @@ public class AjcTask extends MatchingTask {
     	cmd.addFlag("-version", version);
     }
 
-    public void setXNoweave(boolean noweave) {  
-        cmd.addFlag("-XnoWeave", noweave);
+    public void setXTerminateAfterCompilation(boolean b) {  
+        cmd.addFlag("-XterminateAfterCompilation", b);
     }
 
     public void setXReweavable(boolean reweavable) {
     	cmd.addFlag("-Xreweavable",reweavable);
+    }
+    
+    public void setXNoWeave(boolean b) {
+    	if (logger!=null) logger.warning("the noweave option is no longer required and is being ignored");
+    }
+    
+    public void setNoWeave(boolean b) {
+    	if (logger!=null) logger.warning("the noweave option is no longer required and is being ignored");
     }
     
     public void setXNotReweavable(boolean notReweavable) {
@@ -1882,8 +1890,8 @@ public class AjcTask extends MatchingTask {
                 setXlint(flag.substring(7));
             } else if ("-Xlintfile".equals(flag)) {
                 setXlintfile(new File(in.next()));
-            } else if ("-Xnoweave".equals(flag)) {
-                setXNoweave(true);
+            } else if ("-XterminateAfterCompilation".equals(flag)) {
+                setXTerminateAfterCompilation(true);
 			} else if ("-Xreweavable".equals(flag)) {
 				setXReweavable(true);
             } else if ("-XnotReweavable".equals(flag)) {

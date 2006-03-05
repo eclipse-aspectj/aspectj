@@ -38,7 +38,7 @@ public class InPathTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 // test removed from suite since aspects are *always* generated reweavable
 //  public void test004(){
-//    runTest("The compiler crashes when using aspect libraries created without using -noweave");
+//    runTest("The compiler crashes when using aspect libraries created without using -terminateAfterCompilation");
 //  }
 
   public void test005(){

@@ -6165,9 +6165,9 @@
      </run>
    </ajc-test>
    
-   <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call using -XnoWeave and LTW">
+   <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call using -XterminateAfterCompilation and LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java"/>
-     <compile files="accounts/recovery/Recovery.aj" options="-XnoWeave"/>
+     <compile files="accounts/recovery/Recovery.aj" options="-XterminateAfterCompilation"/>
      <run class="services.account.StockQuoteServiceTest" ltw="aop.xml">
        <stdout>
            <line text="Recovery.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>

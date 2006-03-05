@@ -94,7 +94,7 @@ runTest "$ajrt${PS}jars/weaveUserLib.jar" weaveUserLib
 ## 3: generate aspect library
 compile -d classes \
      -classpath "$ajrt" \
-     -noweave \
+     -XterminateAfterCompilation \
      -outjar jars/aspectLib.jar \
      -argfile aspects.lst
 #makeJar aspectLib

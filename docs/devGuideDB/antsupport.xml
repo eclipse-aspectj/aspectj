@@ -432,20 +432,17 @@
                     own entries.  The other permitted ones (currently) are
                     serializableAspects, incrementalFile, lazyTjp,
         		reweavable, notReweavable, noInline,
-            	noWeave,
+            	terminateAfterCompilation,
                 ajruntimelevel:1.2, and ajruntimelevel:1.5.
                 Of these, some were deprecated in AspectJ 5
-                    (reweavable, noWeave, etc.).
+                    (reweavable, terminateAfterCompilation, etc.).
 				</para></entry>
 			</row>
 			<row>
-				<entry><para>Xnoweave
+				<entry><para>XterminateAfterCompilation
 				</para></entry>
-				<entry><para>		
-				Experimental option to produce binaries that can only be used as input 
-				for the <literal>-injars</literal> or <literal>-inpath</literal> option.
-				Usually aspects are compiled normally and put on the
-				<literal>aspectpath</literal>.
+				<entry><para>
+				Terminates before the weaving process, dumping out unfinished class files.
 				</para></entry>
 			</row>
 			</tbody>

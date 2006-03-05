@@ -354,8 +354,8 @@ public class AjBuildConfig {
         if (null == lintSpecFile) {
             lintSpecFile = global.lintSpecFile;
         }
-        if (!isNoWeave() && global.isNoWeave()) {
-            setNoWeave(true);
+        if (!isTerminateAfterCompilation() && global.isTerminateAfterCompilation()) {
+            setTerminateAfterCompilation(true);
         }
         if ((null == outputDir) && (null == outputJar)) {
             if (null != global.outputDir) {
@@ -456,12 +456,12 @@ public class AjBuildConfig {
 		}
 	}
 	
-	public boolean isNoWeave() {
-		return options.noWeave;
+	public boolean isTerminateAfterCompilation() {
+		return options.terminateAfterCompilation;
 	}
 
-	public void setNoWeave(boolean noWeave) {
-		options.noWeave = noWeave;
+	public void setTerminateAfterCompilation(boolean b) {
+		options.terminateAfterCompilation = b;
 	}
 
 	public boolean isXserializableAspects() {

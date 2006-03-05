@@ -30,7 +30,7 @@ public class AspectJCore extends JavaCore {
 	public static final String COMPILER_PB_NEED_SERIAL_VERSION_UID     = AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField;
 	public static final String COMPILER_PB_INCOMPATIBLE_SERIAL_VERSION = AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion;
 	
-	public static final String COMPILER_NO_WEAVE             = AjCompilerOptions.OPTION_NoWeave;
+	public static final String COMPILER_TERMINATE_AFTER_COMPILATION             = AjCompilerOptions.OPTION_TerminateAfterCompilation;
 	public static final String COMPILER_SERIALIZABLE_ASPECTS = AjCompilerOptions.OPTION_XSerializableAspects;
 	public static final String COMPILER_LAZY_TJP             = AjCompilerOptions.OPTION_XLazyThisJoinPoint;
 	public static final String COMPILER_NO_ADVICE_INLINE     = AjCompilerOptions.OPTION_XNoInline;
