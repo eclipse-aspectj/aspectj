@@ -151,4 +151,21 @@ public class PerCflow extends PerClause {
 		if (isBelow) return  "percflowbelow(" + entry + ")";
 		return "percflow(" + entry + ")";
 	}
+	
+    public boolean equals(Object other) {
+    	if (!(other instanceof PerCflow)) return false;
+    	PerCflow pc = (PerCflow)other;   
+    	return (pc.isBelow && isBelow)
+    			&& ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect))
+    			&& ((pc.entry == null) ? (entry == null) : pc.entry.equals(entry));
+    }
+    
+    public int hashCode() {
+        int result = 17;
+        result = 37*result + (isBelow?0:1);
+        result = 37*result + ((inAspect == null) ? 0 : inAspect.hashCode());
+        result = 37*result + ((entry == null) ? 0 : entry.hashCode());   
+        return result;
+    }
+	
 }

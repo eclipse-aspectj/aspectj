@@ -144,4 +144,16 @@ public class PerSingleton extends PerClause {
 		return "";
 	}
 
+    public boolean equals(Object other) {
+    	if (!(other instanceof PerSingleton)) return false;
+    	PerSingleton pc = (PerSingleton)other;   
+    	return ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect));
+    }
+    
+    public int hashCode() {
+        int result = 17;
+        result = 37*result + ((inAspect == null) ? 0 : inAspect.hashCode());
+        return result;
+    }
+	
 }

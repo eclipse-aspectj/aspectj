@@ -116,4 +116,19 @@ public class PerFromSuper extends PerClause {
 		return kind;
 	}
 
+    public boolean equals(Object other) {
+    	if (!(other instanceof PerFromSuper)) return false;
+    	PerFromSuper pc = (PerFromSuper)other;   
+    	return pc.kind.equals(kind) 
+    			&& ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect));
+    }
+    
+    public int hashCode() {
+        int result = 17;
+        result = 37*result + kind.hashCode();
+        result = 37*result + ((inAspect == null) ? 0 : inAspect.hashCode());     
+        return result;
+    }
+    
+	
 }

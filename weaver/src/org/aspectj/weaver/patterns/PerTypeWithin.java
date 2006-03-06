@@ -209,4 +209,19 @@ public class PerTypeWithin extends PerClause {
 		}
 		return FuzzyBoolean.NO;
 	}
+	
+    public boolean equals(Object other) {
+    	if (!(other instanceof PerTypeWithin)) return false;
+    	PerTypeWithin pc = (PerTypeWithin)other;   
+    	return ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect))
+    	   		&& ((pc.typePattern == null) ? (typePattern == null) : pc.typePattern.equals(typePattern));
+    }
+    
+    public int hashCode() {
+        int result = 17;
+        result = 37*result + ((inAspect == null) ? 0 : inAspect.hashCode());
+        result = 37*result + ((typePattern == null) ? 0 : typePattern.hashCode());
+        return result;
+    }
+	
 }

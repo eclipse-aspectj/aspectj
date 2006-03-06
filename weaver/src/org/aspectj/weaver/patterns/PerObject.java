@@ -171,4 +171,20 @@ public class PerObject extends PerClause {
 	public Pointcut getEntry() {
 		return entry;
 	}
+	
+    public boolean equals(Object other) {
+    	if (!(other instanceof PerObject)) return false;
+    	PerObject pc = (PerObject)other;   
+    	return (pc.isThis && isThis)
+    			&& ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect))
+    			&& ((pc.entry == null) ? (entry == null) : pc.entry.equals(entry));
+    }
+    
+    public int hashCode() {
+        int result = 17;
+        result = 37*result + (isThis?0:1);
+        result = 37*result + ((inAspect == null) ? 0 : inAspect.hashCode());
+        result = 37*result + ((entry == null) ? 0 : entry.hashCode());   
+        return result;
+    }
 }
