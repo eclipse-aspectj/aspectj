@@ -34,6 +34,7 @@ import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
@@ -44,6 +45,7 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.IWeaver;
+import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -816,12 +818,12 @@ public class AjState {
 		}
 		
 		// generic signature
-		if (!equal(reader.getGenericSignature(),existingType.genericSignature)) {
+		if (!CharOperation.equals(reader.getGenericSignature(),existingType.genericSignature)) {
 			return true;
 		}
 		
 		// superclass name
-		if (!equal(reader.getSuperclassName(),existingType.superclassName)) {
+		if (!CharOperation.equals(reader.getSuperclassName(),existingType.superclassName)) {
 			return true;
 		}
 		
@@ -835,7 +837,7 @@ public class AjState {
 		}
 		new_interface_loop: for (int i = 0; i < newIfs.length; i++) {
 			for (int j = 0; j < existingIfs.length; j++) {
-				if (equal(existingIfs[j],newIfs[i])) {
+				if (CharOperation.equals(existingIfs[j],newIfs[i])) {
 					continue new_interface_loop;
 				}
 			}
@@ -846,17 +848,27 @@ public class AjState {
 		MemberStructure[] existingFields = existingType.fields;
 		IBinaryField[] newFields = reader.getFields();
 		if (newFields == null) { newFields = new IBinaryField[0]; }
-		if (newFields.length != existingFields.length) {
+		// remove any ajc$XXX fields from those we compare with
+		// the existing fields - bug 129163
+		List nonGenFields = new ArrayList();
+		for (int i = 0; i < newFields.length; i++) {
+			IBinaryField field = newFields[i];
+			if (!CharOperation.prefixEquals(NameMangler.AJC_DOLLAR_PREFIX,field.getName())) {
+					nonGenFields.add(field);
+			}
+		}
+		if (nonGenFields.size() != existingFields.length) {
 			return true;
 		}
-		new_field_loop: for (int i = 0; i < newFields.length; i++) {
-			char[] fieldName = newFields[i].getName();
+		new_field_loop: for (Iterator iter = nonGenFields.iterator(); iter.hasNext();) {
+			IBinaryField field = (IBinaryField) iter.next();
+			char[] fieldName = field.getName();
 			for (int j = 0; j < existingFields.length; j++) {
-				if (equal(existingFields[j].name,fieldName)) {
-					if (!modifiersEqual(newFields[i].getModifiers(),existingFields[j].modifiers)) {
+				if (CharOperation.equals(existingFields[j].name,fieldName)) {
+					if (!modifiersEqual(field.getModifiers(),existingFields[j].modifiers)) {
 						return true;
 					}
-					if (!equal(existingFields[j].signature,newFields[i].getTypeName())) {
+					if (!CharOperation.equals(existingFields[j].signature,field.getTypeName())) {
 						return true;
 					}
 					continue new_field_loop;
@@ -869,20 +881,34 @@ public class AjState {
 		MemberStructure[] existingMethods = existingType.methods;
 		IBinaryMethod[] newMethods = reader.getMethods();
 		if (newMethods == null) { newMethods = new IBinaryMethod[0]; }
-		if (newMethods.length != existingMethods.length) {
+		// remove the aspectOf, hasAspect, clinit and ajc$XXX methods 
+		// from those we compare with the existing methods - bug 129163
+		List nonGenMethods = new ArrayList();
+		for (int i = 0; i < newMethods.length; i++) {
+			IBinaryMethod method = newMethods[i];
+			char[] methodName = method.getSelector();
+			if (!CharOperation.equals(methodName,NameMangler.METHOD_ASPECTOF) && 
+				!CharOperation.equals(methodName,NameMangler.METHOD_HASASPECT) &&
+				!CharOperation.equals(methodName,NameMangler.STATIC_INITIALIZER) && 
+				!CharOperation.prefixEquals(NameMangler.AJC_DOLLAR_PREFIX,methodName)) {
+				nonGenMethods.add(method);
+			}
+		}
+		if (nonGenMethods.size() != existingMethods.length) {
 			return true;
 		}
-		new_method_loop: for (int i = 0; i < newMethods.length; i++) {
-			char[] methodName = newMethods[i].getSelector();
+		new_method_loop: for (Iterator iter = nonGenMethods.iterator(); iter.hasNext();) {
+			IBinaryMethod method = (IBinaryMethod) iter.next();
+			char[] methodName = method.getSelector();
 			for (int j = 0; j < existingMethods.length; j++) {
-				if (equal(existingMethods[j].name,methodName)) {
+				if (CharOperation.equals(existingMethods[j].name,methodName)) {
 					// candidate match
-					if (!equal(newMethods[i].getMethodDescriptor(),existingMethods[j].signature)) {
+					if (!CharOperation.equals(method.getMethodDescriptor(),existingMethods[j].signature)) {
 						continue; // might be overloading
 					} 
 					else {
 						// matching sigs
-						if (!modifiersEqual(newMethods[i].getModifiers(),existingMethods[j].modifiers)) {
+						if (!modifiersEqual(method.getModifiers(),existingMethods[j].modifiers)) {
 							return true;
 						}
 						continue new_method_loop;
@@ -902,22 +928,6 @@ public class AjState {
 			eclipseModifiers -= CompilerModifiers.AccSuper;
 		}
 		return (eclipseModifiers == resolvedTypeModifiers);
-	}
-	
-	private boolean equal(char[] c1, char[] c2) {
-		if (c1 == null && c2 == null) {
-			return true;
-		}
-		if (c1 == null || c2 == null) {
-			return false;
-		}
-		if (c1.length != c2.length) {
-			return false;
-		}
-		for (int i = 0; i < c1.length; i++) {
-			if (c1[i] != c2[i]) return false;
-		}
-		return true;
 	}
 	
 	private static StringSet makeStringSet(List strings) {

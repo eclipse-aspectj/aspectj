@@ -20,9 +20,12 @@ public class NameMangler {
 	private NameMangler() {
 		throw new RuntimeException("static");
 	}
-	
+	public static final char[] AJC_DOLLAR_PREFIX = {'a', 'j', 'c','$'};
 	public static final String PREFIX = "ajc$";
 	public static final String ITD_PREFIX = PREFIX + "interType$";
+	public static final char[] METHOD_ASPECTOF = {'a', 's', 'p','e','c','t','O','f'};
+	public static final char[] METHOD_HASASPECT = {'h', 'a', 's','A','s','p','e','c','t'};
+	public static final char[] STATIC_INITIALIZER = {'<', 'c', 'l','i','n','i','t','>'};
 	
 	public static final String CFLOW_STACK_TYPE = "org.aspectj.runtime.internal.CFlowStack";
 	public static final String CFLOW_COUNTER_TYPE="org.aspectj.runtime.internal.CFlowCounter";

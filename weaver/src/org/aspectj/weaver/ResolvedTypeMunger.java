@@ -406,4 +406,6 @@ public abstract class ResolvedTypeMunger {
 	public boolean isLateMunger() {
 		return false;
 	}
+	
+	
 }

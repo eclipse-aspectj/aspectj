@@ -74,5 +74,8 @@ public class BcelCflowStackFieldAdder extends BcelTypeMunger {
 	public boolean matches(ResolvedType onType) {
 		return onType.equals(cflowStackField.getDeclaringType());
 	}
+	public boolean existsToSupportShadowMunging() {
+		return true;
+	}
 
 }

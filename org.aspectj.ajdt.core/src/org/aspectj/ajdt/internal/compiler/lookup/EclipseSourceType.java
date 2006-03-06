@@ -226,11 +226,21 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return resolvedPointcutDeclaration;
 	}
 
+	/**
+	 * This method may not return all fields, for example it may
+	 * not include the ajc$initFailureCause or ajc$perSingletonInstance
+	 * fields - see bug 129613
+	 */
 	public ResolvedMember[] getDeclaredFields() {
 		if (declaredFields == null) fillDeclaredMembers();
 		return declaredFields;
 	}
 
+	/**
+	 * This method may not return all methods, for example it may
+	 * not include clinit, aspectOf, hasAspect or ajc$postClinit 
+	 * methods - see bug 129613
+	 */
 	public ResolvedMember[] getDeclaredMethods() {
 		if (declaredMethods == null) fillDeclaredMembers();
 		return declaredMethods;
