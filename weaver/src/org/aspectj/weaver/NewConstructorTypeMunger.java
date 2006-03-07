@@ -40,6 +40,26 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 
 	}
 	
+    public boolean equals(Object other) {
+    	if (!(other instanceof NewConstructorTypeMunger)) return false;
+    	NewConstructorTypeMunger o = (NewConstructorTypeMunger)other;	
+    	return ((o.syntheticConstructor == null) ? (syntheticConstructor == null ) 
+    				: syntheticConstructor.equals(o.syntheticConstructor))
+    			& ((o.explicitConstructor == null) ? (explicitConstructor == null ) 
+    				: explicitConstructor.equals(o.explicitConstructor));
+    }
+
+    private volatile int hashCode = 0;
+    public int hashCode() {
+    	if (hashCode == 0) {
+    	 	int result = 17;
+    	    result = 37*result + ((syntheticConstructor == null) ? 0 : syntheticConstructor.hashCode());
+    	    result = 37*result + ((explicitConstructor == null) ? 0 : explicitConstructor.hashCode());
+    	    hashCode = result;
+		}
+	    return hashCode;
+    }
+	
 	// doesnt seem required....
 //	public ResolvedMember getDispatchMethod(UnresolvedType aspectType) {
 //		return AjcMemberMaker.interMethodBody(signature, aspectType);
@@ -78,6 +98,8 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 
 	public void setExplicitConstructor(ResolvedMember explicitConstructor) {
 		this.explicitConstructor = explicitConstructor;
+		// reset hashCode so that its recalculated with new value
+		hashCode = 0;
 	}
 	
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {

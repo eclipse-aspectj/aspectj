@@ -1645,6 +1645,25 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		return munger.getTypeVariableAliases();
 	}
 	
+	public boolean equals(Object other) {
+        if (! (other instanceof BcelTypeMunger))  return false;
+        BcelTypeMunger o = (BcelTypeMunger) other;
+        return ((o.getMunger() == null) ? (getMunger() == null) : o.getMunger().equals(getMunger()))
+               && ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()));
+    }
+	   
+    private volatile int hashCode = 0;
+    public int hashCode() {
+       if (hashCode == 0) {
+            int result = 17;
+	        result = 37*result + ((getMunger() == null) ? 0 : getMunger().hashCode());
+	        result = 37*result + ((getAspectType() == null) ? 0 : getAspectType().hashCode());
+            hashCode = result;
+       }
+       return hashCode;
+    }
+	
+	
 	/**
 	 * Some type mungers are created purely to help with the implementation of shadow mungers.  
 	 * For example to support the cflow() pointcut we create a new cflow field in the aspect, and

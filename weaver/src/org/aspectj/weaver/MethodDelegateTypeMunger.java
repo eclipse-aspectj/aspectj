@@ -55,6 +55,26 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
         this.implClassName = implClassName;
     }
 
+    public boolean equals(Object other) {
+    	if (!(other instanceof MethodDelegateTypeMunger)) return false;
+    	MethodDelegateTypeMunger o = (MethodDelegateTypeMunger)other;
+    	return ((o.aspect == null) ? (aspect == null ) : aspect.equals(o.aspect))
+    			&& ((o.typePattern == null) ? (typePattern == null ) : typePattern.equals(o.typePattern))
+    			&& ((o.implClassName == null) ? (implClassName == null) : implClassName.equals(o.implClassName));
+    }
+
+    private volatile int hashCode = 0;
+    public int hashCode() {
+    	if (hashCode == 0) {
+    	 	int result = 17;
+    	    result = 37*result + ((aspect == null) ? 0 : aspect.hashCode());
+    	    result = 37*result + ((typePattern == null) ? 0 : typePattern.hashCode());
+    	    result = 37*result + ((implClassName == null) ? 0 : implClassName.hashCode());
+    	    hashCode = result;
+		}
+	    return hashCode;
+    }
+    
     public ResolvedMember getDelegate(ResolvedType targetType) {
         return AjcMemberMaker.itdAtDeclareParentsField(
                 targetType,
@@ -130,6 +150,20 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
             this.typePattern = typePattern;
         }
 
+        public boolean equals(Object other) {
+        	if (!(other instanceof FieldHostTypeMunger)) return false;
+        	FieldHostTypeMunger o = (FieldHostTypeMunger)other;
+        	return ((o.aspect == null) ? (aspect == null ) : aspect.equals(o.aspect))
+        			&& ((o.typePattern == null) ? (typePattern == null ) : typePattern.equals(o.typePattern));
+        }
+
+        public int hashCode() {
+    	 	int result = 17;
+    	    result = 37*result + ((aspect == null) ? 0 : aspect.hashCode());
+    	    result = 37*result + ((typePattern == null) ? 0 : typePattern.hashCode());
+    	    return result;
+        }
+        
         public void write(DataOutputStream s) throws IOException {
             kind.write(s);
             signature.write(s);

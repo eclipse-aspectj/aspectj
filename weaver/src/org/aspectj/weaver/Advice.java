@@ -240,6 +240,8 @@ public abstract class Advice extends ShadowMunger {
 	// only called as part of parameterization....
 	public void setSignature(Member signature) {
 		this.signature = signature;
+		// reset hashCode value so it can be recalculated next time
+		hashCode = 0;
 	}
 	
 	public boolean hasExtraParameter() {
@@ -366,22 +368,26 @@ public abstract class Advice extends ShadowMunger {
 //			+ signature
 //			+ ")";
 	}
+	
+	// XXX this perhaps ought to take account of the other fields in advice ...
     public boolean equals(Object other) {
         if (! (other instanceof Advice)) return false;
         Advice o = (Advice) other;
-        return o.attribute.equals(attribute) 
-        	&& o.pointcut.equals(pointcut) 
-        	&& o.signature.equals(signature);
+        return o.kind.equals(kind) 
+        	&& ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut))
+        	&& ((o.signature == null) ? (signature == null) : o.signature.equals(signature));
+
     }
-    private volatile int hashCode = 0;
+
+	private volatile int hashCode = 0;
     public int hashCode() {
-        if (hashCode == 0) {
+    	if (hashCode == 0) {
             int result = 17;
             result = 37*result + kind.hashCode();
-            result = 37*result + pointcut.hashCode();
-            if (signature != null) result = 37*result + signature.hashCode();
-            hashCode = result;
-        }
+            result = 37*result + ((pointcut == null) ? 0 : pointcut.hashCode());
+            result = 37*result + ((signature == null) ? 0 : signature.hashCode());
+            hashCode = result;			
+		}
         return hashCode;
     }
  

@@ -30,6 +30,24 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 		this.testPointcut  = testPointcut;
 	}
 
+	public boolean equals(Object other) {
+	  	if (!(other instanceof PerTypeWithinTargetTypeMunger)) return false;
+	  	PerTypeWithinTargetTypeMunger o = (PerTypeWithinTargetTypeMunger)other;
+	   	return ((o.testPointcut == null) ? (testPointcut == null ) : testPointcut.equals(o.testPointcut))
+	   			&& ((o.aspectType == null) ? (aspectType == null ) : aspectType.equals(o.aspectType));
+	}
+
+	private volatile int hashCode = 0;
+	public int hashCode() {
+		if (hashCode == 0) {
+			int result = 17;
+		    result = 37*result + ((testPointcut == null) ? 0 : testPointcut.hashCode());
+		    result = 37*result + ((aspectType == null) ? 0 : aspectType.hashCode());
+		    hashCode = result;
+		}
+	    return hashCode;
+	}
+	
 	public void write(DataOutputStream s) throws IOException {
 		throw new RuntimeException("shouldn't be serialized");
 	}

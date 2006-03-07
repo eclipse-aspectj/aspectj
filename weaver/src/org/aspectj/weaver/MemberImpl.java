@@ -365,22 +365,10 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     public boolean equals(Object other) {
         if (! (other instanceof Member)) return false;
         Member o = (Member) other;
-
-        return (kind == o.getKind() 
-            && name.equals(o.getName()) 
-            && signature.equals(o.getSignature())
-            && declaringType.equals(o.getDeclaringType()));
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#compareTo(java.lang.Object)
-	 */
-    public int compareTo(Object other) {
-    	Member o = (Member) other;
-    	
-    	int i = getName().compareTo(o.getName());
-    	if (i != 0) return i;
-    	return getSignature().compareTo(o.getSignature());
+        return (getKind() == o.getKind() 
+            && getName().equals(o.getName()) 
+            && getSignature().equals(o.getSignature())
+            && getDeclaringType().equals(o.getDeclaringType()));
     }
     
     /** 
@@ -392,15 +380,26 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     public int hashCode() {
         if (hashCode == 0) {
             int result = 17;
-            result = 37*result + kind.hashCode();
-            result = 37*result + name.hashCode();
-            result = 37*result + signature.hashCode();
-            result = 37*result + declaringType.hashCode();
+            result = 37*result + getKind().hashCode();
+            result = 37*result + getName().hashCode();
+            result = 37*result + getSignature().hashCode();
+            result = 37*result + getDeclaringType().hashCode();
             hashCode = result;
         } 
         return hashCode;
     }
 
+    /* (non-Javadoc)
+	 * @see org.aspectj.weaver.Member#compareTo(java.lang.Object)
+	 */
+    public int compareTo(Object other) {
+    	Member o = (Member) other;
+    	
+    	int i = getName().compareTo(o.getName());
+    	if (i != 0) return i;
+    	return getSignature().compareTo(o.getSignature());
+    }
+    
     public String toString() {
     	StringBuffer buf = new StringBuffer();
     	buf.append(returnType.getName());

@@ -93,4 +93,22 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	    return nftm;
 	}
 
+    public boolean equals(Object other) {
+        if (! (other instanceof NewFieldTypeMunger)) return false;
+        NewFieldTypeMunger o = (NewFieldTypeMunger) other;
+        return kind.equals(o.kind)
+        		&& ((o.signature == null) ? (signature == null ) : signature.equals(o.signature))
+        		&& ((o.declaredSignature == null) ? (declaredSignature == null ) : declaredSignature.equals(o.declaredSignature))
+        		&& ((o.typeVariableAliases == null) ? (typeVariableAliases == null ) : typeVariableAliases.equals(o.typeVariableAliases));
+    }
+	   
+    public int hashCode() {
+    	int result = 17;
+        result = 37*result + kind.hashCode();
+        result = 37*result + ((signature == null) ? 0 : signature.hashCode());
+        result = 37*result + ((declaredSignature == null) ? 0 : declaredSignature.hashCode());
+        result = 37*result + ((typeVariableAliases == null) ? 0 : typeVariableAliases.hashCode());
+        return result;
+    }
+	
 }

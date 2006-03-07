@@ -35,4 +35,21 @@ public class AnnotationOnTypeMunger extends ResolvedTypeMunger {
 	public AnnotationX getNewAnnotation() {
 		return newAnnotation;
 	}
+
+    public boolean equals(Object other) {
+    	if (!(other instanceof AnnotationOnTypeMunger)) return false;
+    	AnnotationOnTypeMunger o = (AnnotationOnTypeMunger)other;
+    	return newAnnotation.getSignature().equals(o.newAnnotation.getSignature());
+    }
+
+    private volatile int hashCode = 0;
+    public int hashCode() {
+    	if (hashCode == 0) {
+    		int result = 17;
+    	    result = 37*result + newAnnotation.getSignature().hashCode();
+    	    hashCode = result;
+		}
+	    return hashCode;
+    }
+	
 }

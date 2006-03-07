@@ -33,5 +33,19 @@ public class NewParentTypeMunger extends ResolvedTypeMunger {
 		return newParent;
 	}
 
-
+    public boolean equals(Object other) {
+        if (! (other instanceof NewParentTypeMunger)) return false;
+        NewParentTypeMunger o = (NewParentTypeMunger) other;
+        return newParent.equals(o.newParent);
+    }
+	   
+    private volatile int hashCode = 0;
+    public int hashCode() {
+	    if (hashCode == 0) {
+	    	int result = 17;
+	    	result = 37*result + newParent.hashCode();
+	    	hashCode = result;
+	    }
+        return hashCode;
+    }
 }
