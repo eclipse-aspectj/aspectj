@@ -560,10 +560,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("PR113257");
 		alter("PR113257","inc1");
 		build("PR113257");
-		// THIS should be a full build, however, so that the patches
-		// for bug 129163 can be applied incrementally have changed this...
-		//checkWasFullBuild();  // back to the source
-		checkWasntFullBuild();
+		checkWasFullBuild();  // back to the source
 		alter("PR113257","inc1");
 		build("PR113257");
 	}
@@ -573,10 +570,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("PR123612");
 		alter("PR123612","inc1");
 		build("PR123612");
-		// THIS should be a full build, however, so that the patches
-		// for bug 129163 can be applied incrementally have changed this...
-		//checkWasFullBuild(); // back to the source
-		checkWasntFullBuild();
+		checkWasFullBuild(); // back to the source
 	}
 	
 

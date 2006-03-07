@@ -15,8 +15,10 @@ package org.aspectj.weaver;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -26,6 +28,7 @@ import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.DeclareSoft;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.PointcutRewriter;
 
 
 /**
@@ -192,7 +195,22 @@ public class CrosscuttingMembers {
 		return ret;
 	}
 
-	public boolean replaceWith(CrosscuttingMembers other) {
+	/**
+	 * Updates the records if something has changed. This is called at most twice, firstly
+	 * whilst collecting ITDs and declares. At this point the CrosscuttingMembers we're 
+	 * comparing ourselves with doesn't know about shadowmungers. Therefore a straight comparison
+	 * with the existing list of shadowmungers would return that something has changed
+	 * even though it might not have, so in this first round we ignore the shadowMungers. 
+	 * The second time this is called is whilst we're preparing to weave. At this point 
+	 * we know everything in the system and so we're able to compare the shadowMunger list.
+	 * (see bug 129163)
+	 * 
+	 * @param other
+	 * @param careAboutShadowMungers
+	 * @return true if something has changed since the last time this method was
+	 *         called, false otherwise
+	 */
+	public boolean replaceWith(CrosscuttingMembers other,boolean careAboutShadowMungers) {
 		boolean changed = false;
 		
 		if (perClause == null || !perClause.equals(other.perClause)) {
@@ -202,12 +220,32 @@ public class CrosscuttingMembers {
 		
 		//XXX all of the below should be set equality rather than list equality
 		//System.err.println("old: " + shadowMungers + " new: " + other.shadowMungers);
-		if (!shadowMungers.equals(other.shadowMungers)) {
-			changed = true;
-			shadowMungers = other.shadowMungers;
-		}
 		
-		if (!typeMungers.equals(other.typeMungers)) {
+  	    if (careAboutShadowMungers) {
+		    // bug 129163: use set equality rather than list equality 
+			Set theseShadowMungers = new HashSet();
+			theseShadowMungers.addAll(shadowMungers);
+			Set otherShadowMungers = new HashSet();
+			otherShadowMungers.addAll(other.shadowMungers);
+			
+			PointcutRewriter pr = new PointcutRewriter();
+			for (Iterator iter = otherShadowMungers.iterator(); iter.hasNext();) {
+				ShadowMunger munger = (ShadowMunger) iter.next();
+				Pointcut p = munger.getPointcut();
+				Pointcut newP = pr.rewrite(p);
+				munger.setPointcut(newP);
+			}
+			if (!theseShadowMungers.equals(otherShadowMungers)) {
+				changed = true;
+				shadowMungers = other.shadowMungers;
+			}
+  	    }
+		// bug 129163: use set equality rather than list equality
+		Set theseTypeMungers = new HashSet();
+		theseTypeMungers.addAll(typeMungers);
+		Set otherTypeMungers = new HashSet();
+		otherTypeMungers.addAll(other.typeMungers);
+		if (!theseTypeMungers.equals(otherTypeMungers)) {
 			changed = true;
 			typeMungers = other.typeMungers;
 		}

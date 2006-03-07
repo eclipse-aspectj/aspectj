@@ -165,7 +165,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				typesToProcess.add(stb);
 			}
 		}
-
+		factory.getWorld().getCrosscuttingMembersSet().reset();
 		while (typesToProcess.size()>0) {
 			// removes types from the list as they are processed...
 			collectAllITDsAndDeclares((SourceTypeBinding)typesToProcess.get(0),typesToProcess);
@@ -391,10 +391,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
         
         if (dec instanceof AspectDeclaration) {
             ResolvedType typeX = factory.fromEclipse(dec.binding);
-            factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX);
+            factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX,false);
         
             if (typeX.getSuperclass().isAspect() && !typeX.getSuperclass().isExposedToWeaver()) {
-                factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX.getSuperclass());
+                factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX.getSuperclass(),false);
             }
         }
         

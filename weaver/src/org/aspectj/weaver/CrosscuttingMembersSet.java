@@ -44,17 +44,21 @@ public class CrosscuttingMembersSet {
 	private List declareAnnotationOnFields = null; 
 	private List declareAnnotationOnMethods= null; // includes ctors
 	private List declareDominates          = null;
+	private boolean changedSinceLastReset = false;
 	
 	public CrosscuttingMembersSet(World world) {
 		this.world = world;
 	}
 
+	public boolean addOrReplaceAspect(ResolvedType aspectType) {
+		return addOrReplaceAspect(aspectType,true);
+	}
 
 	/**
 	 * @return whether or not that was a change to the global signature
 	 * 			XXX for efficiency we will need a richer representation than this
 	 */
-	public boolean addOrReplaceAspect(ResolvedType aspectType) {
+	public boolean addOrReplaceAspect(ResolvedType aspectType,boolean careAboutShadowMungers) {
 		boolean change = false;
 		CrosscuttingMembers xcut = (CrosscuttingMembers)members.get(aspectType);
 		if (xcut == null) {
@@ -63,7 +67,7 @@ public class CrosscuttingMembersSet {
 			CflowPointcut.clearCaches(aspectType);
 			change = true;
 		} else {
-			if (xcut.replaceWith(aspectType.collectCrosscuttingMembers())) {
+			if (xcut.replaceWith(aspectType.collectCrosscuttingMembers(),careAboutShadowMungers)) {
 				clearCaches();
 
 				CflowPointcut.clearCaches(aspectType);
@@ -74,13 +78,14 @@ public class CrosscuttingMembersSet {
 		}
 		if (aspectType.isAbstract()) {
 			// we might have sub-aspects that need to re-collect their crosscutting members from us
-			boolean ancestorChange = addOrReplaceDescendantsOf(aspectType); 
+			boolean ancestorChange = addOrReplaceDescendantsOf(aspectType,careAboutShadowMungers); 
 			change = change || ancestorChange;
 		}
+		changedSinceLastReset = changedSinceLastReset || change;
 		return change;
 	}
     
-	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType) {
+	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType,boolean careAboutShadowMungers) {
 		//System.err.println("Looking at descendants of "+aspectType.getName());
 		Set knownAspects = members.keySet();
 		Set toBeReplaced = new HashSet();
@@ -93,7 +98,7 @@ public class CrosscuttingMembersSet {
 		boolean change = false;
 		for (Iterator it = toBeReplaced.iterator(); it.hasNext(); ) {
 			ResolvedType next = (ResolvedType)it.next();
-			boolean thisChange = addOrReplaceAspect(next);
+			boolean thisChange = addOrReplaceAspect(next,careAboutShadowMungers);
 			change = change || thisChange;
 		}
 		return change;
@@ -255,5 +260,13 @@ public class CrosscuttingMembersSet {
 		return null;
 	}
 
+	public void reset() {
+		changedSinceLastReset = false;
+	}
+	
+	public boolean hasChangedSinceLastReset() {
+		return changedSinceLastReset;
+	}
+	
 	
 }

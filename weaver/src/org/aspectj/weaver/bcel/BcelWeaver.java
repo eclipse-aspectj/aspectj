@@ -430,7 +430,7 @@ public class BcelWeaver implements IWeaver {
 	// ---- weave preparation
 
     public void prepareForWeave() {
-    	needToReweaveWorld = false;
+    	needToReweaveWorld = xcutSet.hasChangedSinceLastReset();
 
     	CflowPointcut.clearCaches();
     	
