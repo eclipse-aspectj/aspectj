@@ -63,4 +63,7 @@ public class PrivilegedAccessMunger extends ResolvedTypeMunger {
         return result;
     }
 	
+ 	public boolean existsToSupportShadowMunging() {
+		return true;
+	}
 }

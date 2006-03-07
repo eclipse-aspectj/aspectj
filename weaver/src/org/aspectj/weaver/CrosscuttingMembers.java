@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -240,12 +241,43 @@ public class CrosscuttingMembers {
 				shadowMungers = other.shadowMungers;
 			}
   	    }
-		// bug 129163: use set equality rather than list equality
+  	    
+		// bug 129163: use set equality rather than list equality and
+  	    // if we dont care about shadow mungers then ignore those 
+  	    // typeMungers which are created to help with the implementation 
+  	    // of shadowMungers
 		Set theseTypeMungers = new HashSet();
-		theseTypeMungers.addAll(typeMungers);
 		Set otherTypeMungers = new HashSet();
-		otherTypeMungers.addAll(other.typeMungers);
-		if (!theseTypeMungers.equals(otherTypeMungers)) {
+		if (!careAboutShadowMungers) {
+			for (Iterator iter = typeMungers.iterator(); iter.hasNext();) {
+				Object o = iter.next();
+				if (o instanceof BcelTypeMunger) {
+					BcelTypeMunger typeMunger = (BcelTypeMunger) o;
+					if (!typeMunger.existsToSupportShadowMunging()) {
+						theseTypeMungers.add(typeMunger);
+					}				
+				} else {
+					theseTypeMungers.add(o);
+				}
+			}
+			
+			for (Iterator iter = other.typeMungers.iterator(); iter.hasNext();) {
+				Object o = iter.next();
+				if (o instanceof BcelTypeMunger) {
+					BcelTypeMunger typeMunger = (BcelTypeMunger) o;
+					if (!typeMunger.existsToSupportShadowMunging()) {
+						otherTypeMungers.add(typeMunger);
+					}
+				} else {
+					otherTypeMungers.add(o);
+				}
+			}
+		} else {
+			theseTypeMungers.addAll(typeMungers);
+			otherTypeMungers.addAll(other.typeMungers);
+		}
+  	    
+  	    if (!theseTypeMungers.equals(otherTypeMungers)) {
 			changed = true;
 			typeMungers = other.typeMungers;
 		}

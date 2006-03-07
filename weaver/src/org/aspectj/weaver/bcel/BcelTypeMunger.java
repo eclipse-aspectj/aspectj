@@ -1677,7 +1677,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * and so can be ignored in some comparison.
 	 */
 	public boolean existsToSupportShadowMunging() {
-		return false; // Does this need to delegate to the ResolvedTypeMunger field held in the BcelTypeMunger?
+		if (munger != null) {
+			return munger.existsToSupportShadowMunging();
+		}
+		return false; 
 	}
 }
 		
