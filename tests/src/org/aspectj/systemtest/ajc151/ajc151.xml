@@ -228,6 +228,24 @@
         <compile files="pr128237.java" options="-1.5"/>
     </ajc-test>
 
+    <ajc-test dir="bugs151" title="Generic aspects with annotation type parameters">
+        <compile files="GenericAspectWithAnnotationTypeParameter.aj" options="-1.5"/>
+        <run class="GenericAspectWithAnnotationTypeParameter">
+            <stdout>
+                <line text="annotation match - no binding"/>
+                <line text="execution with annotation match"/>
+                <line text="annotation match - binding"/>
+                <line text="hello"/>
+            </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151" title="Pointcut interfaces">
+        <compile files="pr130869.aj" options="-1.5">
+          <message kind="warning" line="30" text="no directly runnable classes"/>
+        </compile>
+    </ajc-test>
+
     <!-- New features down here... when they arent big enough to have their own test file -->
     
     <ajc-test dir="features151/ptw" title="exposing withintype">

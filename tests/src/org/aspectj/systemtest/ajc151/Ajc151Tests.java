@@ -210,6 +210,14 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("aop.xml aspect inherits abstract method that has concrete implementation in parent"); 
   }
   
+  public void testGenericAspectsWithAnnotationTypeParameters() {
+	  runTest("Generic aspects with annotation type parameters");
+  }
+  
+  public void testPointcutInterfaces_pr130869() {
+	  runTest("Pointcut interfaces");
+  }
+  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc151Tests.class);
@@ -218,5 +226,6 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return new File("../tests/src/org/aspectj/systemtest/ajc151/ajc151.xml");
   }
+
   
 }

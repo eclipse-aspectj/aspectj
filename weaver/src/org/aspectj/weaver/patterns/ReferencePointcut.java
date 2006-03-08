@@ -138,6 +138,9 @@ public class ReferencePointcut extends Pointcut {
 		} else {
 			searchType = scope.getEnclosingType();
 		}
+		if (searchType.isTypeVariableReference()) {
+			searchType = ((TypeVariableReference)searchType).getTypeVariable().getUpperBound().resolve(scope.getWorld());
+		}
 		
 		
 		arguments.resolveBindings(scope, bindings, true, true);
@@ -173,7 +176,7 @@ public class ReferencePointcut extends Pointcut {
 		}
 		
 		if (Modifier.isAbstract(pointcutDef.getModifiers())) {
-			if (onType != null) {
+			if (onType != null  && !onType.isTypeVariableReference()) {
 				scope.message(IMessage.ERROR, this, 
 								"can't make static reference to abstract pointcut");
 				return;
@@ -209,7 +212,7 @@ public class ReferencePointcut extends Pointcut {
 			} else if (onType.isGenericType()) {
 				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_REFERENCE_POINTCUT_IN_RAW_TYPE),
 						getSourceLocation()));
-			}
+			} 
 		}
 		
 		for (int i=0,len=arguments.size(); i < len; i++) {
@@ -274,8 +277,26 @@ public class ReferencePointcut extends Pointcut {
 				if (searchStart.isMissing()) {
 					return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 				}
-			}
 			
+				if (onType.isTypeVariableReference()) {
+					// need to replace on type with the binding for the type variable
+					// in the declaring type
+					if (declaringType.isParameterizedType()) {
+						TypeVariable[] tvs = declaringType.getGenericType().getTypeVariables();
+						String typeVariableName = ((TypeVariableReference)onType).getTypeVariable().getName();
+						for (int i = 0; i < tvs.length; i++) {
+							if (tvs[i].getName().equals(typeVariableName)) {
+								ResolvedType realOnType = declaringType.getTypeParameters()[i].resolve(declaringType.getWorld());
+								onType = realOnType;
+								searchStart = realOnType;
+								break;
+							}
+						}
+					}
+				}
+
+			}
+
 			if (declaringType == null) declaringType = searchStart;
 			pointcutDec = declaringType.findPointcut(name);
 			boolean foundMatchingPointcut = (pointcutDec != null && pointcutDec.isPrivate());
