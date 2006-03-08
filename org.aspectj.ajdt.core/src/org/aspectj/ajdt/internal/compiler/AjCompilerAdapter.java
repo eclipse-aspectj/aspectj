@@ -116,7 +116,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		IMessageHandler msgHandler = world.getMessageHandler();
 		// Do we need to reset the message handler or create a new one? (This saves a ton of memory lost on incremental compiles...)
 		if (msgHandler instanceof WeaverMessageHandler) {
-			((WeaverMessageHandler)msgHandler).resetCompiler(null);
+			((WeaverMessageHandler)msgHandler).resetCompiler(compiler);
 			weaverMessageHandler = (WeaverMessageHandler)msgHandler;
 		} else {
 			weaverMessageHandler = new WeaverMessageHandler(msgHandler, compiler);

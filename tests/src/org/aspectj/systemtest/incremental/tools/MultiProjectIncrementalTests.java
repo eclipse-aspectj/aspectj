@@ -619,6 +619,21 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		}
 	}
 	
+	public void testPr129163() {
+		configureBuildStructureModel(true);
+		initialiseProject("PR129613");
+		build("PR129613");
+		alter("PR129613","inc1");
+		build("PR129613");
+		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
+				MyErrorHandler.getErrorMessages().isEmpty());
+		assertEquals("warning message should be 'no match for this type name: File [Xlint:invalidAbsoluteTypeName]' ",
+				"no match for this type name: File [Xlint:invalidAbsoluteTypeName]",
+				((IMessage)MyTaskListManager.getWarningMessages().get(0))
+					.getMessage());
+		configureBuildStructureModel(false);
+	}
+	
 	// other possible tests:
 	// - memory usage (freemem calls?)
 	// - relationship map
