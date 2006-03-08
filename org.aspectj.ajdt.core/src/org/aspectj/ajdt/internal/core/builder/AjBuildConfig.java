@@ -386,6 +386,7 @@ public class AjBuildConfig {
         if (!isXNotReweavable() && global.isXNotReweavable()) {
         	setXnotReweavable(true);
         }
+        setOutxmlName(global.getOutxmlName());
         setXconfigurationInfo(global.getXconfigurationInfo());
     }
 
