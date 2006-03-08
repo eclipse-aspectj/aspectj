@@ -30,7 +30,12 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 // bcel to AjAttribute.
 class BcelAttributes {
 
-	public static List readAjAttributes(String classname,Attribute[] as, ISourceContext context,IMessageHandler msgHandler,AjAttribute.WeaverVersionInfo version) {
+	/**
+	 * Process an array of Bcel attributes - looking for those with the name prefix org.aspectj.weaver.  The returned 
+	 * list contains the AspectJ attributes identified and unpacked to 'AjAttribute' objects.
+	 */
+	public static List readAjAttributes(String classname,Attribute[] as, ISourceContext context,
+			                              IMessageHandler msgHandler,AjAttribute.WeaverVersionInfo version) {
 		List l = new ArrayList();
 		
 		// first pass, look for version
