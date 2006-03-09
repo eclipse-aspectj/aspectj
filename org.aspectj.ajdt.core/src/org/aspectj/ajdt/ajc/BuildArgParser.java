@@ -533,6 +533,8 @@ public class BuildArgParser extends Main {
 				buildConfig.setGenerateJavadocsInModelMode(true);
 			} else if (arg.equals("-Xdev:NoAtAspectJProcessing")) { 
 				buildConfig.setNoAtAspectJAnnotationProcessing(true);
+			} else if (arg.equals("-XaddSerialVersionUID")) {
+				buildConfig.setAddSerialVerUID(true);
         	} else if (arg.equals("-Xdev:Pinpoint")) { 
 				buildConfig.setXdevPinpointMode(true);
         	} else if (arg.equals("-Xjoinpoints:arrayconstruction")) {

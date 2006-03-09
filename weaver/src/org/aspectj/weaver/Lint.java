@@ -114,6 +114,9 @@ public class Lint {
 	public final Kind swallowedExceptionInCatchBlock = 
 		new Kind("swallowedExceptionInCatchBlock","exception swallowed in catch block");
 	
+	public final Kind calculatingSerialVersionUID =
+		new Kind("calculatingSerialVersionUID","calculated SerialVersionUID for type {0} to be {1}");
+	
 	// there are a lot of messages in the cant find type family - I'm defining an umbrella lint warning that
 	// allows a user to control their severity (for e.g. ltw or binary weaving)
 	public final Kind cantFindType =

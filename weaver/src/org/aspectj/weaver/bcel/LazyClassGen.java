@@ -39,6 +39,7 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.generic.BasicType;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
@@ -68,6 +69,7 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
+
 
 /**
  * Lazy lazy lazy.
@@ -99,6 +101,8 @@ public final class LazyClassGen {
     
 	private boolean isSerializable = false;
 	private boolean hasSerialVersionUIDField = false;
+	private boolean serialVersionUIDRequiresInitialization = false;
+	private long    calculatedSerialVersionUID;
 	private boolean hasClinit = false;
 	
 	// ---
@@ -279,12 +283,28 @@ public final class LazyClassGen {
 					hasClinit = true;					
 				}
 			}
+			
+			// Do we need to calculate an SUID and add it?
+			if (!hasSerialVersionUIDField && world.isAddSerialVerUID()) {
+	        	calculatedSerialVersionUID = myGen.getSUID();
+	        	Field fg = new FieldGen(
+	        			Constants.ACC_PRIVATE|Constants.ACC_FINAL|Constants.ACC_STATIC,
+	        			BasicType.LONG,"serialVersionUID",getConstantPoolGen()).getField();
+	        	addField(fg);
+	        	hasSerialVersionUIDField=true;
+	        	serialVersionUIDRequiresInitialization=true;
+	        	// warn about what we've done?
+	        	if (world.getLint().calculatingSerialVersionUID.isEnabled())
+	        		world.getLint().calculatingSerialVersionUID.signal(
+	        				new String[]{getClassName(),Long.toString(calculatedSerialVersionUID)+"L"},null,null);
+	        }
 		}
 
         Method[] methods = myGen.getMethods();
         for (int i = 0; i < methods.length; i++) {
             addMethodGen(new LazyMethodGen(methods[i], this));
         }
+        
     }
 
 	public static boolean hasSerialVersionUIDField (ResolvedType type) {
@@ -935,10 +955,21 @@ public final class LazyClassGen {
 //    }
 
     private void addAjcInitializers() {
-    	if (tjpFields.size() == 0) return;
+    	if (tjpFields.size() == 0 && !serialVersionUIDRequiresInitialization) return;
+    	InstructionList il = null;
     	
-    	InstructionList il = initializeAllTjps();
-
+    	if (tjpFields.size()>0) {
+    	    il = initializeAllTjps();
+    	}
+    	
+    	if (serialVersionUIDRequiresInitialization) {
+    		if (il==null) {
+    			il= new InstructionList();
+    		}
+    	    il.append(new PUSH(getConstantPoolGen(),calculatedSerialVersionUID));
+    	    il.append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG, Constants.PUTSTATIC));
+    	}
+    	
     	getStaticInitializer().getBody().insert(il);
     }
     

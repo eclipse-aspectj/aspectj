@@ -80,6 +80,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
 	
 	public String xConfigurationInfo;
+	public boolean addSerialVerUID = false;
 	
 	// these next four not exposed by IDEs
 	public boolean generateModel = false;

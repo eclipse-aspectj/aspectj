@@ -432,6 +432,16 @@
       </varlistentry>
       
       <varlistentry>
+        <term>-XaddSerialVersionUID</term>
+        <listitem><para>Causes the compiler to calculate and add
+        the SerialVersionUID field to any type implementing
+        Serializable that is affected by an aspect.  The field
+        is calculated based on the class before weaving has
+        taken place.
+        </para></listitem>
+      </varlistentry>
+      
+      <varlistentry>
         <term>-Xreweavable[:compress]</term>
         <listitem><para>(Experimental - deprecated as now default) 
             Runs weaver in reweavable mode which causes

@@ -90,6 +90,9 @@ public abstract class World implements Dump.INode {
     /** Flags for the new joinpoints that are 'optional' */
     private boolean optionalJoinpoint_ArrayConstruction = false;  // Command line flag: "arrayconstruction"
     
+    private boolean addSerialVerUID = false;
+    
+    
     private Properties extraConfiguration = null;
     
     // Records whether ASM is around ... so we might use it for delegates
@@ -1061,6 +1064,9 @@ public abstract class World implements Dump.INode {
 		workInProgress1.remove(baseClass);
 	}
 
+    public void setAddSerialVerUID(boolean b) { addSerialVerUID=b;}
+    public boolean isAddSerialVerUID() { return addSerialVerUID;}
+    
 	public void flush() {
 //		System.err.println("BEFORE FLUSHING");
 //		System.err.println(typeMap.toString());

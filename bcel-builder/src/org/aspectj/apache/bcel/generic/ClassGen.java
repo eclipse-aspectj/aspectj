@@ -54,7 +54,14 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.lang.reflect.Modifier;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,8 +84,10 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * existing java class (file).
  *
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.5 2005/03/10 12:15:04 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.6 2006/03/09 17:25:48 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ *
+ * Upgraded, Andy Clement 9th Mar 06 - calculates SUID
  */
 public class ClassGen extends AccessFlags implements Cloneable {
   /* Corresponds to the fields found in a JavaClass object.
@@ -537,5 +546,154 @@ public class ClassGen extends AccessFlags implements Cloneable {
    */
   public final boolean isEnum() {
   	return (access_flags & Constants.ACC_ENUM) != 0;
+  }
+  
+  /**
+   * Calculate the SerialVersionUID for a class.
+   */  
+  public long getSUID() {
+  	try {
+        Field[] fields   = getFields();
+        Method[] methods = getMethods();
+        
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	DataOutputStream dos = new DataOutputStream(baos);
+    	
+    	// 1. classname
+    	dos.writeUTF(getClassName());
+    	
+    	// 2. classmodifiers: ACC_PUBLIC, ACC_FINAL, ACC_INTERFACE, and ACC_ABSTRACT
+    	int classmods = 0; 
+    	classmods|=(isPublic()?Constants.ACC_PUBLIC:0); 
+    	classmods|=(isFinal()?Constants.ACC_FINAL:0);
+    	classmods|=(isInterface()?Constants.ACC_INTERFACE:0);
+    	if (isInterface() && isAbstract()) { // remove abstract if we have it but have no methods 
+    		if (methods.length>0) classmods|=Constants.ACC_ABSTRACT;
+    	}
+    	dos.writeInt(classmods);
+    	
+    	// 3. ordered list of interfaces
+    	List list = new ArrayList();
+        String[] names = getInterfaceNames();
+        if (names!=null) {
+        	Arrays.sort(names);
+        	for (int i = 0; i < names.length; i++) dos.writeUTF(names[i]);
+        }
+    
+        // 4. ordered list of fields (ignoring private static and private transient fields):
+        //  (relevant modifiers are ACC_PUBLIC, ACC_PRIVATE, 
+        //   ACC_PROTECTED, ACC_STATIC, ACC_FINAL, ACC_VOLATILE, 
+        //   ACC_TRANSIENT)
+        list.clear();
+        for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			if (!(field.isPrivate() && field.isStatic()) && 
+				!(field.isPrivate() && field.isTransient())) list.add(field);
+		}
+        Collections.sort(list,new FieldComparator());
+        int relevantFlags = Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED |
+        					Constants.ACC_STATIC | Constants.ACC_FINAL | Constants.ACC_VOLATILE | Constants.ACC_TRANSIENT;
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
+			Field f = (Field) iter.next();
+			dos.writeUTF(f.getName());
+	    	dos.writeInt(relevantFlags&f.getModifiers());
+	    	dos.writeUTF(f.getType().getSignature());
+		}
+
+        // some up front method processing: discover clinit, init and ordinary methods of interest:
+        list.clear(); // now used for methods
+        List ctors = new ArrayList();
+        boolean hasClinit = false;
+        for (int i = 0; i < methods.length; i++) {
+        	Method m = methods[i];
+        	boolean couldBeInitializer = m.getName().charAt(0)=='<';
+        	if (couldBeInitializer && m.getName().equals("<clinit>")) {
+        		hasClinit=true;
+        	} else if (couldBeInitializer && m.getName().equals("<init>")) {
+        		if (!m.isPrivate()) ctors.add(m);
+        	} else {
+        	    if (!m.isPrivate()) list.add(m);
+        	}
+		}
+        Collections.sort(ctors, new ConstructorComparator());
+        Collections.sort(list, new MethodComparator());
+        
+        
+		//      5. If a class initializer exists, write out the following:
+		//            1. The name of the method, <clinit>.
+		//            2. The modifier of the method, java.lang.reflect.Modifier.STATIC, written as a 32-bit integer.
+		//            3. The descriptor of the method, ()V. 
+        if (hasClinit) {
+        	dos.writeUTF("<clinit>");
+        	dos.writeInt(Modifier.STATIC);
+        	dos.writeUTF("()V");
+        }
+        
+        // for methods and constructors: 
+        //               ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED, ACC_STATIC, ACC_FINAL, ACC_SYNCHRONIZED, 
+        //               ACC_NATIVE, ACC_ABSTRACT and ACC_STRICT
+        relevantFlags = 	
+        	Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED |
+        	Constants.ACC_STATIC | Constants.ACC_FINAL | Constants.ACC_SYNCHRONIZED | 
+        	Constants.ACC_NATIVE | Constants.ACC_ABSTRACT | Constants.ACC_STRICT;
+        
+		// 6. sorted non-private constructors
+        for (Iterator iter = ctors.iterator(); iter.hasNext();) {
+			Method m = (Method) iter.next();
+			dos.writeUTF(m.getName()); // <init>
+			dos.writeInt(relevantFlags & m.getModifiers());
+			dos.writeUTF(m.getSignature().replace('/','.'));
+		}
+
+        // 7. sorted non-private methods 
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
+			Method m = (Method) iter.next();
+			dos.writeUTF(m.getName());
+			dos.writeInt(relevantFlags & m.getModifiers());
+			dos.writeUTF(m.getSignature().replace('/','.'));
+		}
+        dos.flush();
+        dos.close();
+        byte[] bs = baos.toByteArray();
+        MessageDigest md = MessageDigest.getInstance("SHA");
+        byte[] result = md.digest(bs);
+                
+        long suid = 0L;
+        int pos = result.length>8?7:result.length-1; // use the bytes we have
+        while (pos>=0) {
+        	suid = suid<<8 | ((long)result[pos--]&0xff);
+        }
+
+        // if it was definetly 8 everytime...
+        //	    long suid = ((long)(sha[0]&0xff) | (long)(sha[1]&0xff) << 8  |
+		//	                 (long)(sha[2]&0xff) << 16 | (long)(sha[3]&0xff) << 24 |
+		//	                 (long)(sha[4]&0xff) << 32 | (long)(sha[5]&0xff) << 40 |
+		//	                 (long)(sha[6]&0xff) << 48 | (long)(sha[7]&0xff) << 56);
+	    return suid;
+  	} catch (Exception e) {
+  		System.err.println("Unable to calculate suid for "+getClassName());
+  		throw new RuntimeException(e);
+  	}
+  }
+  
+  private static class FieldComparator implements Comparator {
+		public int compare(Object arg0, Object arg1) { 
+			return ((Field)arg0).getName().compareTo(((Field)arg1).getName());
+		}
+  }
+  private static class ConstructorComparator implements Comparator {
+		public int compare(Object arg0, Object arg1) { 
+			// can ignore the name...
+			return ((Method)arg0).getSignature().compareTo(((Method)arg1).getSignature());
+		}
+  }
+  private static class MethodComparator implements Comparator {
+		public int compare(Object arg0, Object arg1) { 
+			Method m1 = (Method)arg0;
+			Method m2 = (Method)arg1;
+			int result = m1.getName().compareTo(m2.getName());
+			if (result!=0) return result;
+			return m1.getSignature().compareTo(m2.getSignature());
+		}
   }
 }

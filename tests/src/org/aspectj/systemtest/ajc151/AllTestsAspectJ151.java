@@ -21,6 +21,7 @@ public class AllTestsAspectJ151 {
 		suite.addTest(Ajc151Tests.suite());
 		suite.addTest(NewarrayJoinpointTests.suite());
 		suite.addTest(AtAroundTests.suite());
+		suite.addTest(SerialVersionUIDTests.suite());
         //$JUnit-END$
 		return suite;
 	}

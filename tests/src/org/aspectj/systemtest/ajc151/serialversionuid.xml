@@ -1,0 +1,37 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.1 Tests -->
+<suite>
+    
+    <ajc-test dir="features151/serialveruid" title="basic">
+        <compile files="Basic.java" options="-1.5 -XaddSerialVersionUID"/>
+        <run class="Basic">
+          <stderr>
+             <line text="SerialVersionUID is 7052682057082172300"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features151/serialveruid" title="basic - lint">
+        <compile files="Basic.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+          <message kind="warning" text="calculated SerialVersionUID for type Basic"/>
+        </compile>
+        <run class="Basic">
+          <stderr>
+             <line text="SerialVersionUID is 7052682057082172300"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features151/serialveruid" title="horrible">
+        <compile files="BigHorribleClass.java,AnAspect.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+          <message kind="warning" text="calculated SerialVersionUID for type BigHorribleClass"/>
+        </compile>
+        <run class="BigHorribleClass">
+          <stderr>
+             <line text="SerialVersionUID is 6512414869923012873"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+</suite>

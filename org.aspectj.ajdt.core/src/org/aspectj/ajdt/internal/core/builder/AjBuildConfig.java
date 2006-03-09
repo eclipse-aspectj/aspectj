@@ -388,6 +388,7 @@ public class AjBuildConfig {
         }
         setOutxmlName(global.getOutxmlName());
         setXconfigurationInfo(global.getXconfigurationInfo());
+        setAddSerialVerUID(global.isAddSerialVerUID());
     }
 
     void join(Collection local, Collection global) {
@@ -522,6 +523,13 @@ public class AjBuildConfig {
 	
 	public boolean isXdevPinpoint() {
 		return options.xdevPinpoint;
+	}
+	
+	public void setAddSerialVerUID(boolean b) {
+		options.addSerialVerUID = b;
+	}
+	public boolean isAddSerialVerUID() {
+		return options.addSerialVerUID;
 	}
 		
 
