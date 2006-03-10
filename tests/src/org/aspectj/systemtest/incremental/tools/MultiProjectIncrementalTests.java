@@ -619,6 +619,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		}
 	}
 	
+	// test for comment #31 - NPE
 	public void testPr129163() {
 		configureBuildStructureModel(true);
 		initialiseProject("PR129613");
@@ -631,6 +632,58 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				"no match for this type name: File [Xlint:invalidAbsoluteTypeName]",
 				((IMessage)MyTaskListManager.getWarningMessages().get(0))
 					.getMessage());
+		configureBuildStructureModel(false);
+	}
+	
+	// test for comment #0 - adding a comment to a class file shouldn't
+	// cause us to go back to source and recompile everything. To force this
+	// to behave like AJDT we need to include the aspect in 'inc1' so that
+	// when AjState looks at its timestamp it thinks the aspect has been modified. 
+	// The logic within CrosscuttingMembers should then work out correctly 
+	// that there haven't really been any changes within the aspect and so 
+	// we shouldn't go back to source.
+	public void testPr129163_2() {
+		// want to behave like AJDT
+		configureBuildStructureModel(true);
+		initialiseProject("pr129163_2");
+		build("pr129163_2");
+		checkWasFullBuild();
+		alter("pr129163_2","inc1");
+		build("pr129163_2");
+		checkWasntFullBuild(); // shouldn't be a full build because the 
+		                       // aspect hasn't changed
+		configureBuildStructureModel(false);
+	}
+	
+	// test for comment #6 - simulates AJDT core builder test testBug99133a -
+	// changing the contents of a method within a class shouldn't force a 
+	// full build of a dependant project. To force this to behave like AJDT
+	// 'inc1' of the dependant project should just be a copy of 'base' so that
+	// AjState thinks somethings changed within the dependant project and 
+	// we do a build. Similarly, 'inc1' of the project depended on should 
+	// include the aspect even though nothing's changed within it. This causes
+	// AjState to think that the aspect has changed. Together its then up to 
+	// logic within CrosscuttingMembers and various equals methods to decide
+	// correctly that we don't have to go back to source.
+	public void testPr129163_3() {
+		configureBuildStructureModel(true);
+		initialiseProject("PR129163_4");
+		build("PR129163_4");
+		checkWasFullBuild(); // should be a full build because initializing project
+		initialiseProject("PR129163_3");
+		configureNewProjectDependency("PR129163_3","PR129163_4");
+		build("PR129163_3");
+		checkWasFullBuild(); // should be a full build because initializing project
+		alter("PR129163_4","inc1");
+		build("PR129163_4");
+		checkWasntFullBuild(); // should be an incremental build because although
+		                       // "inc1" includes the aspect A1.aj, it actually hasn't
+							   // changed so we shouldn't go back to source
+		alter("PR129163_3","inc1");
+		build("PR129163_3");
+		checkWasntFullBuild(); // should be an incremental build because nothing has
+			                   // changed within the class and no aspects have changed
+		                       // within the running of the test
 		configureBuildStructureModel(false);
 	}
 	
