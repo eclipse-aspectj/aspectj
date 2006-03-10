@@ -84,6 +84,9 @@ public abstract class World implements Dump.INode {
     /** When behaving in a Java 5 way autoboxing is considered */
     private boolean behaveInJava5Way = false;
     
+    /** Determines if this world could be used for multiple compiles */
+    private boolean incrementalCompileCouldFollow = false;
+    
     /** The level of the aspectjrt.jar the code we generate needs to run on */
     private String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
     
@@ -94,6 +97,12 @@ public abstract class World implements Dump.INode {
     
     
     private Properties extraConfiguration = null;
+    private boolean checkedAdvancedConfiguration=false;
+    // Xset'table options
+    private boolean fastDelegateSupportEnabled = isASMAround;
+	private boolean runMinimalMemory = true;
+
+	
     
     // Records whether ASM is around ... so we might use it for delegates
     protected static boolean isASMAround;
@@ -706,7 +715,8 @@ public abstract class World implements Dump.INode {
 		return extraConfiguration;
 	}
 	public final static String xsetCAPTURE_ALL_CONTEXT = "captureAllContext"; // default false
-	
+	public final static String xsetACTIVATE_LIGHTWEIGHT_DELEGATES = "activateLightweightDelegates"; // default true
+	public final static String xsetRUN_MINIMAL_MEMORY ="runMinimalMemory"; // default true
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -758,7 +768,7 @@ public abstract class World implements Dump.INode {
 		public static int policy  = USE_SOFT_REFS; 
 
 		// Map of types that never get thrown away
-		private Map tMap = new HashMap();
+		private Map /* String -> ResolvedType */ tMap = new HashMap();
 		
 		// Map of types that may be ejected from the cache if we need space
 		private Map expendableMap = new WeakHashMap();
@@ -853,7 +863,10 @@ public abstract class World implements Dump.INode {
 			while (rq.poll()!=null) collectedTypes++;
 		}
 		
-		/** Lookup a type by its signature */
+		/** 
+		 * Lookup a type by its signature, always look 
+		 * in the real map before the expendable map 
+		 */
 		public ResolvedType get(String key) {
 			checkq();
 			ResolvedType ret = (ResolvedType) tMap.get(key);
@@ -882,14 +895,11 @@ public abstract class World implements Dump.INode {
 				if (policy==USE_WEAK_REFS) { 
 					WeakReference wref = (WeakReference)expendableMap.remove(key);
 					if (wref!=null) ret = (ResolvedType)wref.get();
-					return ret;
 				} else if (policy==USE_SOFT_REFS) {
 					SoftReference wref = (SoftReference)expendableMap.remove(key);
 					if (wref!=null) ret = (ResolvedType)wref.get();
-					return ret;
 				} else {
 					ret = (ResolvedType)expendableMap.remove(key);
-					return ret;
 				}
 			}
 			return ret;
@@ -1068,15 +1078,48 @@ public abstract class World implements Dump.INode {
     public boolean isAddSerialVerUID() { return addSerialVerUID;}
     
 	public void flush() {
-//		System.err.println("BEFORE FLUSHING");
-//		System.err.println(typeMap.toString());
 		typeMap.expendableMap.clear();
-//		System.err.println("AFTER FLUSHING");
-//		System.err.println(typeMap.toString());
-//		System.gc();
-		System.gc();
 	}
-
-    // ---
+	
+	 public void ensureAdvancedConfigurationProcessed() {
+	    	// Check *once* whether the user has switched asm support off
+	    	if (!checkedAdvancedConfiguration) {
+	        	Properties p = getExtraConfiguration();
+	        	if (p!=null) {
+					if (isASMAround) { // dont bother if its not...
+		        		String s = p.getProperty(xsetACTIVATE_LIGHTWEIGHT_DELEGATES,"true");
+		        		fastDelegateSupportEnabled = s.equalsIgnoreCase("true");
+		        		if (!fastDelegateSupportEnabled) 
+		        			getMessageHandler().handleMessage(MessageUtil.info("[activateLightweightDelegates=false] Disabling optimization to use lightweight delegates for non-woven types"));
+					}
+					// wonder if this should be based on whether an incremental build can follow?
+					String s = p.getProperty(xsetRUN_MINIMAL_MEMORY,"false");
+	        		runMinimalMemory = s.equalsIgnoreCase("true");
+//	        		if (runMinimalMemory) 
+//	        			getMessageHandler().handleMessage(MessageUtil.info("[runMinimalMemory=true] Optimizing bcel processing (and cost of performance) to use less memory"));
+	    		}
+	        	checkedAdvancedConfiguration=true;
+	        }
+	    }
+	    
+	    public boolean isRunMinimalMemory() {
+	      ensureAdvancedConfigurationProcessed();
+	    	  return runMinimalMemory;
+	    }
+	    
+	    public void setFastDelegateSupport(boolean b) { 
+	    	  if (b && !isASMAround) {
+	    		throw new BCException("Unable to activate fast delegate support, ASM classes cannot be found");
+	    	  }
+	    	  fastDelegateSupportEnabled = b; 
+	    }
+	    
+	    public boolean isFastDelegateSupportEnabled() {
+	    	  ensureAdvancedConfigurationProcessed();
+	    	  return fastDelegateSupportEnabled;
+	    }
+	        
+	    public void setIncrementalCompileCouldFollow(boolean b) {incrementalCompileCouldFollow = b;}
+	    public boolean couldIncrementalCompileFollow()           {return incrementalCompileCouldFollow;}
 	
 }

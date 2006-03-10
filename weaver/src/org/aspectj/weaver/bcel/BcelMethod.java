@@ -57,6 +57,14 @@ final class BcelMethod extends ResolvedMemberImpl {
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
 	private World world;
 	private BcelObjectType bcelObjectType;
+	
+	private boolean parameterNamesInitialized = false;
+
+	 private boolean canBeParameterized = false;
+	 // genericized version of return and parameter types
+	 private boolean unpackedGenericSignature = false;
+	 private UnresolvedType genericReturnType = null;
+	 private UnresolvedType[] genericParameterTypes = null;
 
 	BcelMethod(BcelObjectType declaringType, Method method) {
 		super(
@@ -91,7 +99,6 @@ final class BcelMethod extends ResolvedMemberImpl {
 		return super.getParameterNames();
 	}
 
-	private boolean parameterNamesInitialized = false;
 	
 	public void determineParameterNames() {
 		if (parameterNamesInitialized) return;
@@ -264,6 +271,7 @@ final class BcelMethod extends ResolvedMemberImpl {
 	 }
 	 
 	 private void ensureAnnotationTypesRetrieved() {
+		if (method == null) return; // must be ok, we have evicted it
 		if (annotationTypes == null || method.getAnnotations().length!=annotations.length) { // sometimes the list changes underneath us!
     		Annotation annos[] = method.getAnnotations();
     		annotationTypes = new HashSet();
@@ -274,11 +282,10 @@ final class BcelMethod extends ResolvedMemberImpl {
 				annotationTypes.add(rtx);
 				annotations[i] = new AnnotationX(annotation,world);
 			}
-    	}
+    		}
 	}
 	 
 
-	 private boolean canBeParameterized = false;
 	 /**
 	  * A method can be parameterized if it has one or more generic
 	  * parameters. A generic parameter (type variable parameter) is
@@ -289,10 +296,6 @@ final class BcelMethod extends ResolvedMemberImpl {
 		return canBeParameterized;
 	}
 	 
-	 // genericized version of return and parameter types
-	 private boolean unpackedGenericSignature = false;
-	 private UnresolvedType genericReturnType = null;
-	 private UnresolvedType[] genericParameterTypes = null;
 	 
 	 public UnresolvedType[] getGenericParameterTypes() {
 		 unpackGenericSignature();
@@ -309,16 +312,15 @@ final class BcelMethod extends ResolvedMemberImpl {
 	 
 	 private void unpackGenericSignature() {
 		 if (unpackedGenericSignature) return;
+		 unpackedGenericSignature = true;
  		 if (!world.isInJava5Mode()) { 
  			 this.genericReturnType = getReturnType();
  			 this.genericParameterTypes = getParameterTypes();
  			 return;
  		 }
- 		 // ok, we have work to do...
-		 unpackedGenericSignature = true;
 		 String gSig = method.getGenericSignature();
 		 if (gSig != null) {
-			 Signature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(method.getGenericSignature());
+			 Signature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(gSig);//method.getGenericSignature());
  			 if (mSig.formalTypeParameters.length > 0) {
 				// generic method declaration
 				canBeParameterized = true;
@@ -380,6 +382,17 @@ final class BcelMethod extends ResolvedMemberImpl {
 		 } else {
 			 genericReturnType = getReturnType();
 			 genericParameterTypes = getParameterTypes();
+		 }
+	 }
+	 
+	 public void evictWeavingState() {
+		 if (method != null) {
+			 unpackGenericSignature();
+			 unpackJavaAttributes();
+			 ensureAnnotationTypesRetrieved();
+			 determineParameterNames();
+// 			 this.sourceContext = SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
+			 method = null;
 		 }
 	 }
 }

@@ -13,6 +13,7 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -122,14 +123,20 @@ final class BcelField extends ResolvedMemberImpl {
 	private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null) {
     		Annotation annos[] = field.getAnnotations();
-    		annotationTypes = new HashSet();
-    		annotations = new AnnotationX[annos.length];
-    		for (int i = 0; i < annos.length; i++) {
-				Annotation annotation = annos[i];
-				ResolvedType rtx = world.resolve(UnresolvedType.forName(annotation.getTypeName()));
-				annotationTypes.add(rtx);
-				annotations[i] = new AnnotationX(annotation,world);
-			}
+    		if (annos==null || annos.length==0) {
+    			annotationTypes = Collections.EMPTY_SET;
+    			annotations     = AnnotationX.NONE;
+    		} else {
+	    		annotationTypes = new HashSet();
+	    		annotations = new AnnotationX[annos.length];
+	    		for (int i = 0; i < annos.length; i++) {
+					Annotation annotation = annos[i];
+					System.err.println(annotation);
+					ResolvedType rtx = world.resolve(UnresolvedType.forName(annotation.getTypeName()));
+					annotationTypes.add(rtx);
+					annotations[i] = new AnnotationX(annotation,world);
+				}
+    		}
     	}
 	}
     
@@ -142,6 +149,9 @@ final class BcelField extends ResolvedMemberImpl {
 		ret[len] = annotation;
 		annotations = ret;
 		
+		if (annotationTypes==Collections.EMPTY_SET) {
+			annotationTypes = new HashSet();
+		}
 		// Add it to the set of annotation types
 		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(world));
 		// FIXME asc this call here suggests we are managing the annotations at
@@ -198,4 +208,14 @@ final class BcelField extends ResolvedMemberImpl {
 			genericFieldType = getReturnType();
 		}
 	}
+	
+	 public void evictWeavingState() {
+		 if (field != null) {
+			 unpackGenericSignature();
+			 unpackAttributes(world);
+			 ensureAnnotationTypesRetrieved();
+// 			 this.sourceContext = SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
+			 field = null;
+		 }
+	 }
 }

@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -8,8 +8,8 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
+ *     RonBodkin/AndyClement optimizations for memory consumption/speed
  * ******************************************************************/
-
 
 package org.aspectj.weaver.bcel;
 
@@ -26,10 +26,12 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -45,18 +47,18 @@ import org.aspectj.weaver.SourceContextImpl;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 import org.aspectj.weaver.patterns.PerClause;
 
-
-
-// ??? exposed for testing
 public class BcelObjectType extends AbstractReferenceTypeDelegate {
-    private JavaClass javaClass;
-    private boolean isObject = false;  // set upon construction
+    public JavaClass javaClass;
 	private LazyClassGen lazyClassGen = null;  // set lazily if it's an aspect
 
-	// lazy, for no particular reason I can discern
+	// Java related stuff
+	private int modifiers;
+	private String className;
+	private String superclassName;
     private ResolvedType[] interfaces = null;
     private ResolvedType superClass = null;
     private ResolvedMember[] fields = null;
@@ -64,69 +66,68 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     private ResolvedType[] annotationTypes = null;
     private AnnotationX[] annotations = null;
     private TypeVariable[] typeVars = null;
+	private String   retentionPolicy;
+	private AnnotationTargetKind[] annotationTargetKinds;
 
-    // track unpackAttribute. In some case (per clause inheritance) we encounter
-    // unpacked state when calling getPerClause
-    // this whole thing would require more clean up (AV)
-    private boolean isUnpacked = false;
-
-    // strangely non-lazy
-    private ResolvedPointcutDefinition[] pointcuts = null;
-	private PerClause perClause = null;
-	private WeaverStateInfo weaverState = null;
+    // Aspect related stuff (pointcuts *could* be in a java class)
 	private AjAttribute.WeaverVersionInfo wvInfo = AjAttribute.WeaverVersionInfo.UNKNOWN;
+    private ResolvedPointcutDefinition[] pointcuts = null;
+	private ResolvedMember[] privilegedAccess = null;
+	private WeaverStateInfo weaverState = null;
+	private PerClause perClause = null;
 	private List typeMungers = Collections.EMPTY_LIST;
 	private List declares = Collections.EMPTY_LIST;
-	private ResolvedMember[] privilegedAccess = null;
 
-	private boolean discoveredWhetherAnnotationStyle = false;
+	private Signature.FormalTypeParameter[] formalsForResolution = null;
+	private ClassSignature cachedGenericClassTypeSignature;
+	private String declaredSignature = null;
+	
+
+	private boolean hasBeenWoven = false;
+	private boolean isGenericType = false;
+	private boolean isInterface;
+	private boolean isEnum;
+	private boolean isAnnotation;
+	private boolean isAnonymous;
+	private boolean isNested;
+	private boolean isObject = false;  // set upon construction
     private boolean isAnnotationStyleAspect = false;// set upon construction
 	private boolean isCodeStyleAspect = false; // not redundant with field above!
 
-//  TODO asc need soon but not just yet...
-	private boolean haveLookedForDeclaredSignature = false;
-	private String declaredSignature = null;
-	private boolean isGenericType = false;
+	private int bitflag = 0x0000;
 	
-	private boolean discoveredRetentionPolicy = false;
-	private String retentionPolicy;
-	private boolean discoveredAnnotationTargetKinds = false;
-	private AnnotationTargetKind[] annotationTargetKinds;
+	// discovery bits
+	private static final int DISCOVERED_ANNOTATION_RETENTION_POLICY = 0x0001;
+	private static final int UNPACKED_GENERIC_SIGNATURE             = 0x0002;
+	private static final int UNPACKED_AJATTRIBUTES                  = 0x0004; // see note(1) below
+	private static final int DISCOVERED_ANNOTATION_TARGET_KINDS     = 0x0008;
+	private static final int DISCOVERED_DECLARED_SIGNATURE          = 0x0010;
+	private static final int DISCOVERED_WHETHER_ANNOTATION_STYLE    = 0x0020;
+	private static final int DAMAGED                                = 0x0040; // see note(2) below	
 	
-	
-	/**
+	/*
+	 * Notes:
+	 * note(1):
+	 * in some cases (perclause inheritance) we encounter unpacked state when calling getPerClause
+	 * 
+	 * note(2):
 	 * A BcelObjectType is 'damaged' if it has been modified from what was original constructed from
 	 * the bytecode.  This currently happens if the parents are modified or an annotation is added -
-	 * ideally BcelObjectType should be immutable but that's a bigger piece of work!!!!!!!!!! XXX
+	 * ideally BcelObjectType should be immutable but that's a bigger piece of work. XXX
 	 */
-	private boolean damaged = false;
 
-	public Collection getTypeMungers() {
-		return typeMungers;	
-	}
 	
-
-	public Collection getDeclares() {
-		return declares;
-	}
+	// ------------------ construction and initialization
 	
-	public Collection getPrivilegedAccesses() {
-		if (privilegedAccess == null) return Collections.EMPTY_LIST;
-		return Arrays.asList(privilegedAccess);
-	}
-	
-    
-    // IMPORTANT! THIS DOESN'T do real work on the java class, just stores it away.
     BcelObjectType(ReferenceType resolvedTypeX, JavaClass javaClass, boolean exposedToWeaver) {
         super(resolvedTypeX, exposedToWeaver);
         this.javaClass = javaClass;
+        initializeFromJavaclass();
 
         //ATAJ: set the delegate right now for @AJ pointcut, else it is done too late to lookup
         // @AJ pc refs annotation in class hierarchy
         resolvedTypeX.setDelegate(this);
 
-//        if (resolvedTypeX.getSourceContext() == null) {
-//        	resolvedTypeX.
         if (resolvedTypeX.getSourceContext()==SourceContextImpl.UNKNOWN_SOURCE_CONTEXT) {
            setSourceContext(new SourceContextImpl(this));
         }
@@ -134,25 +135,104 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
         // this should only ever be java.lang.Object which is 
         // the only class in Java-1.4 with no superclasses
         isObject = (javaClass.getSuperclassNameIndex() == 0);
-        unpackAspectAttributes();
+        ensureAspectJAttributesUnpacked();
         setSourcefilename(javaClass.getSourceFileName());
     }
-    
     
     // repeat initialization
     public void setJavaClass(JavaClass newclass) {
     	this.javaClass = newclass;
     	resetState();
+    	initializeFromJavaclass();
     }
     
-   
+    private void initializeFromJavaclass() {
+		isInterface         = javaClass.isInterface();
+		isEnum              = javaClass.isEnum();
+		isAnnotation        = javaClass.isAnnotation();
+		isAnonymous         = javaClass.isAnonymous();
+		isNested            = javaClass.isNested();    
+		modifiers           = javaClass.getAccessFlags();
+		superclassName      = javaClass.getSuperclassName();
+		className           = javaClass.getClassName();
+		cachedGenericClassTypeSignature = javaClass.getGenericClassTypeSignature();
+    }
+
+
     
+    
+    // --- getters
+	
+    // Java related
+	public boolean isInterface()  {return isInterface;}
+	public boolean isEnum()       {return isEnum;}
+	public boolean isAnnotation() {return isAnnotation;}
+	public boolean isAnonymous()  {return isAnonymous;}
+	public boolean isNested()     {return isNested;}
+    public int getModifiers()     {return modifiers;}
+	
+	
+    
+
+    /**
+     * Must take into account generic signature
+     */
+    public ResolvedType getSuperclass() {
+        if (isObject) return null;
+    	ensureGenericSignatureUnpacked();
+        if (superClass == null) {
+            superClass = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(superclassName));
+        }
+        return superClass;
+    }
+        
+    /**
+     * Retrieves the declared interfaces - this allows for the generic signature on a type.  If specified
+     * then the generic signature is used to work out the types - this gets around the results of
+     * erasure when the class was originally compiled.
+     */
+    public ResolvedType[] getDeclaredInterfaces() {
+    	ensureGenericSignatureUnpacked();
+        if (interfaces == null) {
+            String[] ifaceNames = javaClass.getInterfaceNames();
+            interfaces = new ResolvedType[ifaceNames.length];
+            for (int i = 0, len = ifaceNames.length; i < len; i++) {
+                interfaces[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(ifaceNames[i]));
+            }
+        }
+        return interfaces;
+    }
+    
+    public ResolvedMember[] getDeclaredMethods() {
+    	ensureGenericSignatureUnpacked();
+        if (methods == null) {
+	        Method[] ms = javaClass.getMethods();
+			methods = new ResolvedMember[ms.length];
+			for (int i = ms.length - 1; i >= 0; i--) {
+				methods[i] = new BcelMethod(this, ms[i]);
+			}
+        }
+        return methods;
+    }			
+    
+    public ResolvedMember[] getDeclaredFields() {
+    	ensureGenericSignatureUnpacked();
+        if (fields == null) {
+            Field[] fs = javaClass.getFields();
+            fields = new ResolvedMember[fs.length];
+            for (int i = 0, len = fs.length; i < len; i++) {
+                fields[i] = new BcelField(this, fs[i]);
+            }
+        }
+        return fields;
+    }
+
     
     public TypeVariable[] getTypeVariables() {
-    	if (!isGeneric()) return new TypeVariable[0];
+    	if (!isGeneric()) return TypeVariable.NONE;
     	
     	if (typeVars == null) {
-	    	Signature.ClassSignature classSig = javaClass.getGenericClassTypeSignature();
+	    	Signature.ClassSignature classSig = cachedGenericClassTypeSignature;//javaClass.getGenericClassTypeSignature();
 	    	typeVars = new TypeVariable[classSig.formalTypeParameters.length];
 	    	for (int i = 0; i < typeVars.length; i++) {
 				Signature.FormalTypeParameter ftp = classSig.formalTypeParameters[i];
@@ -172,82 +252,21 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     	}
     	return typeVars;
     }
-    
-    public int getModifiers() {
-        return javaClass.getAccessFlags();
-    }
 
-    /**
-     * Must take into account generic signature
-     */
-    public ResolvedType getSuperclass() {
-        if (isObject) return null;
-    	unpackGenericSignature();
-        if (superClass == null) {
-            superClass = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(javaClass.getSuperclassName()));
-        }
-        return superClass;
-    }
-        
-    /**
-     * Retrieves the declared interfaces - this allows for the generic signature on a type.  If specified
-     * then the generic signature is used to work out the types - this gets around the results of
-     * erasure when the class was originally compiled.
-     */
-    public ResolvedType[] getDeclaredInterfaces() {
-    	unpackGenericSignature();
-        if (interfaces == null) {
-            String[] ifaceNames = javaClass.getInterfaceNames();
-            interfaces = new ResolvedType[ifaceNames.length];
-            for (int i = 0, len = ifaceNames.length; i < len; i++) {
-                interfaces[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(ifaceNames[i]));
-            }
-        }
-        return interfaces;
-    }
     
-    public ResolvedMember[] getDeclaredMethods() {
-    	unpackGenericSignature();
-        if (methods == null) {
-	        Method[] ms = javaClass.getMethods();
-			ResolvedMember[] ret = new ResolvedMember[ms.length];
-			for (int i = ms.length - 1; i >= 0; i--) {
-				ret[i] = new BcelMethod(this, ms[i]);
-			}
-			methods = ret;
-        }
-        return methods;
-    }			
-    
-    public ResolvedMember[] getDeclaredFields() {
-    	unpackGenericSignature();
-        if (fields == null) {
-            Field[] fs = javaClass.getFields();
-            ResolvedMember[] ret = new ResolvedMember[fs.length];
-            for (int i = 0, len = fs.length; i < len; i++) {
-                ret[i] = new BcelField(this, fs[i]);
-            }
-            fields = ret;
-        }
-        return fields;
-    }
+	// Aspect related
+	public Collection getTypeMungers() {return typeMungers;}
+	public Collection getDeclares()    {return declares;}
+	
+	public Collection getPrivilegedAccesses() {
+		if (privilegedAccess == null) return Collections.EMPTY_LIST;
+		return Arrays.asList(privilegedAccess);
+	}
 
-	// ----
-	// fun based on the aj attributes 
-
-    public ResolvedMember[] getDeclaredPointcuts() {
+	public ResolvedMember[] getDeclaredPointcuts() {
         return pointcuts;
     }           
 
-	//??? method only used for testing
-	public void addPointcutDefinition(ResolvedPointcutDefinition d) {
-		damaged = true;
-		int len = pointcuts.length;
-		ResolvedPointcutDefinition[] ret = new ResolvedPointcutDefinition[len+1];
-		System.arraycopy(pointcuts, 0, ret, 0, len);
-		ret[len] = d;
-		pointcuts = ret;
-	}
 
     public boolean isAspect() {
 		return perClause != null;
@@ -260,22 +279,27 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
      * @return true for @AJ aspect
      */
     public boolean isAnnotationStyleAspect() {
-		if (!discoveredWhetherAnnotationStyle) {
-			discoveredWhetherAnnotationStyle = true;
+    	if ((bitflag&DISCOVERED_WHETHER_ANNOTATION_STYLE)==0) {
+    		bitflag|=DISCOVERED_WHETHER_ANNOTATION_STYLE;
 			isAnnotationStyleAspect = !isCodeStyleAspect && hasAnnotation(AjcMemberMaker.ASPECT_ANNOTATION);
 		}
         return isAnnotationStyleAspect;
     }
 
-	private void unpackAspectAttributes() {
-        isUnpacked = true;
+    /**
+     * Process any org.aspectj.weaver attributes stored against the class.
+     */
+	private void ensureAspectJAttributesUnpacked() {
+		if ((bitflag&UNPACKED_AJATTRIBUTES)!=0) return;
+		bitflag|=UNPACKED_AJATTRIBUTES;
+		IMessageHandler msgHandler = getResolvedTypeX().getWorld().getMessageHandler();
+		// Pass in empty list that can store things for readAj5 to process
+        List l = BcelAttributes.readAjAttributes(className,javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),msgHandler,AjAttribute.WeaverVersionInfo.UNKNOWN);
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
-		// Pass in empty list that can store things for readAj5 to process
-        List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler(),AjAttribute.WeaverVersionInfo.UNKNOWN);
 		processAttributes(l,pointcuts,false);
-		l = AtAjAttributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), getResolvedTypeX().getWorld().getMessageHandler(),isCodeStyleAspect);
+		l = AtAjAttributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), msgHandler,isCodeStyleAspect);
 		AjAttribute.Aspect deferredAspectAttribute = processAttributes(l,pointcuts,true);
 		
 		this.pointcuts = (ResolvedPointcutDefinition[]) 
@@ -326,21 +350,29 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	public PerClause getPerClause() {
-        if (!isUnpacked) {
-            unpackAspectAttributes();
-        }
+        ensureAspectJAttributesUnpacked();
 		return perClause;
 	}
     
-    JavaClass getJavaClass() {
+    public JavaClass getJavaClass() {
         return javaClass;
     }
     
     public void ensureDelegateConsistent() {
-    	if (damaged) {resetState();damaged=false;}
+    	if ((bitflag&DAMAGED)!=0) {resetState();}
     }
     
     public void resetState() {
+    	if (javaClass == null) {
+    		// we might store the classname and allow reloading? 
+    		// At this point we are relying on the world to not evict if it might want to reweave multiple times  
+    		throw new BCException("can't weave evicted type");
+    	}
+    	
+    	bitflag=0x0000;
+    	
+    	this.annotationTypes = null;
+    	this.annotations = null;
 		this.interfaces = null;
     	this.superClass = null;
     	this.fields = null;
@@ -349,13 +381,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     	this.perClause = null;
     	this.weaverState = null;
     	this.lazyClassGen = null;
-    	this.annotations = null;
-    	this.annotationTypes = null;
+    	hasBeenWoven=false;
     	
     	isObject = (javaClass.getSuperclassNameIndex() == 0);
-        unpackAspectAttributes();
-		discoveredWhetherAnnotationStyle = false;
 		isAnnotationStyleAspect=false;
+        ensureAspectJAttributesUnpacked();
     }
     
     public void finishedWith() {
@@ -382,12 +412,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
     public void printWackyStuff(PrintStream out) {
-    	if (typeMungers.size() > 0) {
-			out.println("  TypeMungers: " + typeMungers);
-    	}
-    	if (declares.size() > 0) {
-    		out.println("     declares: " + declares);
-    	}
+    	if (typeMungers.size() > 0) out.println("  TypeMungers: " + typeMungers);
+    	if (declares.size() > 0)    out.println("     declares: " + declares);
     }
     
     /**
@@ -401,7 +427,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     		//System.err.println("creating lazy class gen for: " + this);
     		ret = new LazyClassGen(this);
     		//ret.print(System.err);
-    		//System.err.println("made LCG from : " + this.getJavaClass().getSuperclassName() );
+    		//System.err.println("made LCG from : " + this.getJavaClass().getSuperclassName );
     		if (isAspect()) {
     			lazyClassGen = ret;
     		}				
@@ -409,36 +435,64 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     	return ret;
     }
 
-	public boolean isInterface() {
-		return javaClass.isInterface();
+	
+	public boolean isSynthetic() {
+		return getResolvedTypeX().isSynthetic();
+	}
+
+	public AjAttribute.WeaverVersionInfo getWeaverVersionAttribute() {
+		return wvInfo;
+	}
+
+	public void addParent(ResolvedType newParent) {
+		bitflag|=DAMAGED;
+		if (newParent.isClass()) {
+			superClass = newParent;
+		} else {
+			ResolvedType[] oldInterfaceNames = getDeclaredInterfaces();
+			int len = oldInterfaceNames.length;
+			ResolvedType[] newInterfaceNames = new ResolvedType[len+1];
+			System.arraycopy(oldInterfaceNames, 0, newInterfaceNames, 0, len);
+			newInterfaceNames[len] = newParent;
+			
+			interfaces = newInterfaceNames;
+		}
+		//System.err.println("javaClass: " + Arrays.asList(javaClass.getInterfaceNames()) + " super " + superclassName);
+		//if (lazyClassGen != null) lazyClassGen.print();
+	}
+
+
+
+	// -- annotation related
+
+	public ResolvedType[] getAnnotationTypes() {
+    	ensureAnnotationsUnpacked();
+    	return annotationTypes;
+    }
+
+	public AnnotationX[] getAnnotations() {
+		ensureAnnotationsUnpacked();
+		return annotations;
+	}
+
+	public boolean hasAnnotation(UnresolvedType ofType) {
+		ensureAnnotationsUnpacked();
+		for (int i = 0; i < annotationTypes.length; i++) {
+			ResolvedType ax = annotationTypes[i];
+			if (ax.equals(ofType)) return true;
+		}
+		return false;
 	}
 	
-	public boolean isEnum() {
-		return javaClass.isEnum();
-	}
-	
-	public boolean isAnnotation() {
-		return javaClass.isAnnotation();
-	}
-	
-	public boolean isAnonymous() {
-		return javaClass.isAnonymous();
-	}
-	
-	public boolean isNested() {
-		return javaClass.isNested();
-	}
-	
+	// evil mutator - adding state not stored in the java class
 	public void addAnnotation(AnnotationX annotation) {
-		damaged = true;
-		// Add it to the set of annotations
+		bitflag|=DAMAGED;
 		int len = annotations.length;
 		AnnotationX[] ret = new AnnotationX[len+1];
 		System.arraycopy(annotations, 0, ret, 0, len);
 		ret[len] = annotation;
 		annotations = ret;
 		
-		// Add it to the set of annotation types
 		len = annotationTypes.length;
 		ResolvedType[] ret2 = new ResolvedType[len+1];
 		System.arraycopy(annotationTypes,0,ret2,0,len);
@@ -450,26 +504,25 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return (getRetentionPolicy()==null?false:getRetentionPolicy().equals("RUNTIME"));
 	}
 	
-	
 	public String getRetentionPolicy() {
-		if (discoveredRetentionPolicy) return retentionPolicy;
-		discoveredRetentionPolicy=true;
-        retentionPolicy=null; // null means we have no idea
-		if (isAnnotation()) {
-	        Annotation[] annotationsOnThisType = javaClass.getAnnotations();
-	        for (int i = 0; i < annotationsOnThisType.length; i++) {
-	            Annotation a = annotationsOnThisType[i];
-	            if (a.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
-	                List values = a.getValues();
-	                boolean isRuntime = false;
-	                for (Iterator it = values.iterator(); it.hasNext();) {
-                        ElementNameValuePair element = (ElementNameValuePair) it.next();
-                        ElementValue v = element.getValue();
-                        retentionPolicy = v.stringifyValue();
-                        return retentionPolicy;
-                    }
-	            }
-	        }
+		if ((bitflag&DISCOVERED_ANNOTATION_RETENTION_POLICY)==0) {
+			bitflag|=DISCOVERED_ANNOTATION_RETENTION_POLICY;
+	        retentionPolicy=null; // null means we have no idea
+			if (isAnnotation()) {
+				ensureAnnotationsUnpacked();
+				for (int i = annotations.length-1; i>=0; i--) {
+					AnnotationX ax = annotations[i];
+					if (ax.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
+		                List values = ax.getBcelAnnotation().getValues();
+		                for (Iterator it = values.iterator(); it.hasNext();) {
+	                        ElementNameValuePair element = (ElementNameValuePair) it.next();
+	                        ElementValue v = element.getValue();
+	                        retentionPolicy = v.stringifyValue();
+	                        return retentionPolicy;
+	                    }
+					}
+				}
+			}
 		}
 	    return retentionPolicy;
 	}
@@ -486,8 +539,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public AnnotationTargetKind[] getAnnotationTargetKinds() {
-		if (discoveredAnnotationTargetKinds) return annotationTargetKinds;
-		discoveredAnnotationTargetKinds = true;
+		if ((bitflag&DISCOVERED_ANNOTATION_TARGET_KINDS)!=0) return annotationTargetKinds;
+		bitflag|=DISCOVERED_ANNOTATION_TARGET_KINDS;
 		annotationTargetKinds = null; // null means we have no idea or the @Target annotation hasn't been used
 		List targetKinds = new ArrayList();
 		if (isAnnotation()) {
@@ -499,26 +552,15 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	            	ElementValue[] evs = arrayValue.getElementValuesArray();
 	            	if (evs!=null) {
 	            		for (int j = 0; j < evs.length; j++) {
-	            	
-							ElementValue v = evs[j];
-							String targetKind = v.stringifyValue();
-							if (targetKind.equals("ANNOTATION_TYPE")) {
-								targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
-							} else if (targetKind.equals("CONSTRUCTOR")) {
-								targetKinds.add(AnnotationTargetKind.CONSTRUCTOR);
-							} else if (targetKind.equals("FIELD")) {
-								targetKinds.add(AnnotationTargetKind.FIELD);
-							} else if (targetKind.equals("LOCAL_VARIABLE")) {
-								targetKinds.add(AnnotationTargetKind.LOCAL_VARIABLE);
-							} else if (targetKind.equals("METHOD")) {
-								targetKinds.add(AnnotationTargetKind.METHOD);
-							} else if (targetKind.equals("PACKAGE")) {
-								targetKinds.add(AnnotationTargetKind.PACKAGE);
-							} else if (targetKind.equals("PARAMETER")) {
-								targetKinds.add(AnnotationTargetKind.PARAMETER);
-							} else if (targetKind.equals("TYPE")) {
-								targetKinds.add(AnnotationTargetKind.TYPE);
-							} 
+							String targetKind = evs[j].stringifyValue();
+							if (targetKind.equals("ANNOTATION_TYPE")) {       targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
+							} else if (targetKind.equals("CONSTRUCTOR")) {    targetKinds.add(AnnotationTargetKind.CONSTRUCTOR);
+							} else if (targetKind.equals("FIELD")) {          targetKinds.add(AnnotationTargetKind.FIELD);
+							} else if (targetKind.equals("LOCAL_VARIABLE")) { targetKinds.add(AnnotationTargetKind.LOCAL_VARIABLE);
+							} else if (targetKind.equals("METHOD")) {         targetKinds.add(AnnotationTargetKind.METHOD);
+							} else if (targetKind.equals("PACKAGE")) {        targetKinds.add(AnnotationTargetKind.PACKAGE);
+							} else if (targetKind.equals("PARAMETER")) {      targetKinds.add(AnnotationTargetKind.PARAMETER);
+							} else if (targetKind.equals("TYPE")) {           targetKinds.add(AnnotationTargetKind.TYPE);} 
 	            		}
 					}
 	            }
@@ -531,96 +573,44 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return annotationTargetKinds;
 	}
 	
-	public boolean isSynthetic() {
-		return getResolvedTypeX().isSynthetic();
-	}
-
-	public AjAttribute.WeaverVersionInfo getWeaverVersionAttribute() {
-		return wvInfo;
-	}
-
-	public void addParent(ResolvedType newParent) {
-		damaged = true;
-		if (newParent.isClass()) {
-			superClass = newParent;
-		} else {
-			ResolvedType[] oldInterfaceNames = getDeclaredInterfaces();
-			int len = oldInterfaceNames.length;
-			ResolvedType[] newInterfaceNames = new ResolvedType[len+1];
-			System.arraycopy(oldInterfaceNames, 0, newInterfaceNames, 0, len);
-			newInterfaceNames[len] = newParent;
-			
-			interfaces = newInterfaceNames;
-		}
-		//System.err.println("javaClass: " + Arrays.asList(javaClass.getInterfaceNames()) + " super " + javaClass.getSuperclassName());
-		//if (lazyClassGen != null) lazyClassGen.print();
-	}
-
-
-
-	public boolean hasAnnotation(UnresolvedType ofType) {
-		ensureAnnotationTypesRetrieved();
-		for (int i = 0; i < annotationTypes.length; i++) {
-			ResolvedType annX = annotationTypes[i];
-			if (annX.equals(ofType)) return true;
-		}
-		return false;
-	}
+	// --- unpacking methods
 	
-	private void ensureAnnotationTypesRetrieved() {
+	private void ensureAnnotationsUnpacked() {
 		if (annotationTypes == null) {
     		Annotation annos[] = javaClass.getAnnotations();
-    		annotationTypes = new ResolvedType[annos.length];
-    		annotations = new AnnotationX[annos.length];
-    		for (int i = 0; i < annos.length; i++) {
-				Annotation annotation = annos[i];
-				ResolvedType rtx = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(annotation.getTypeName()));
-				annotationTypes[i] = rtx;
-				annotations[i] = new AnnotationX(annotation,getResolvedTypeX().getWorld());
-			}
+    		if (annos==null || annos.length==0) {
+    			annotationTypes = ResolvedType.NONE;
+    			annotations     = AnnotationX.NONE;
+    		} else {
+    			World w = getResolvedTypeX().getWorld();
+	    		annotationTypes = new ResolvedType[annos.length];
+	    		annotations     = new AnnotationX[annos.length];
+	    		for (int i = 0; i < annos.length; i++) {
+					Annotation annotation = annos[i];
+					annotationTypes[i] = w.resolve(UnresolvedType.forName(annotation.getTypeName()));
+					annotations[i]     = new AnnotationX(annotation,w);
+				}
+    		}
     	}
 	}
 	
-	public ResolvedType[] getAnnotationTypes() {
-    	ensureAnnotationTypesRetrieved();
-    	return annotationTypes;
-    }
-	
-	/** 
-	 * Releases annotations wrapped in an annotationX
-	 */
-	public AnnotationX[] getAnnotations() {
-		ensureAnnotationTypesRetrieved();
-		return annotations;
-	}
+	// ---
 
 
 	public String getDeclaredGenericSignature() {
-		if (!haveLookedForDeclaredSignature) {
-			haveLookedForDeclaredSignature = true;
-			Attribute[] as = javaClass.getAttributes();
-			for (int i = 0; i < as.length && declaredSignature==null; i++) {
-				Attribute attribute = as[i];
-				if (attribute instanceof Signature) declaredSignature = ((Signature)attribute).getSignature();
-			}
-			if (declaredSignature!=null) isGenericType= (declaredSignature.charAt(0)=='<');
-		}
+		ensureGenericInfoProcessed();
 		return declaredSignature;
 	}
 	
 	Signature.ClassSignature getGenericClassTypeSignature() {
-		return javaClass.getGenericClassTypeSignature();
+		return cachedGenericClassTypeSignature;
 	}
 	
-	private boolean genericSignatureUnpacked = false;
-	private Signature.FormalTypeParameter[] formalsForResolution = null;
 		
-	private void unpackGenericSignature() {
-		if (genericSignatureUnpacked) return;
-		if (!getResolvedTypeX().getWorld().isInJava5Mode()) {
-			return;
-		}
-		genericSignatureUnpacked = true;
+	private void ensureGenericSignatureUnpacked() {
+		if ((bitflag&UNPACKED_GENERIC_SIGNATURE)!=0) return;
+		bitflag|=UNPACKED_GENERIC_SIGNATURE;
+		if (!getResolvedTypeX().getWorld().isInJava5Mode()) return;
 		Signature.ClassSignature cSig = getGenericClassTypeSignature();
 		if (cSig != null) {
 			formalsForResolution = cSig.formalTypeParameters;
@@ -647,8 +637,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			} catch (GenericSignatureFormatException e) {
 				// development bug, fail fast with good info
 				throw new IllegalStateException(
-						"While determing the generic superclass of " + this.javaClass.getClassName()
-						+ " with generic signature " + this.javaClass.getGenericSignature() + " the following error was detected: "
+						"While determining the generic superclass of " + this.className
+						+ " with generic signature " + getDeclaredGenericSignature()+ " the following error was detected: "
 						+ e.getMessage());
 			}
 			this.interfaces = new ResolvedType[cSig.superInterfaceSignatures.length];
@@ -662,8 +652,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				} catch (GenericSignatureFormatException e) {
 					// development bug, fail fast with good info
 					throw new IllegalStateException(
-							"While determing the generic superinterfaces of " + this.javaClass.getClassName()
-							+ " with generic signature " + this.javaClass.getGenericSignature() + " the following error was detected: "
+							"While determing the generic superinterfaces of " + this.className
+							+ " with generic signature " + getDeclaredGenericSignature() +" the following error was detected: "
 							+ e.getMessage());
 				}
 			}
@@ -678,7 +668,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public Signature.FormalTypeParameter[] getAllFormals() {
-		unpackGenericSignature();
+		ensureGenericSignatureUnpacked();
 		if (formalsForResolution == null) {
 			return new Signature.FormalTypeParameter[0];
 		} else {
@@ -687,13 +677,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	private boolean isNestedClass() {
-		return javaClass.getClassName().indexOf('$') != -1;
+		return className.indexOf('$') != -1;
 	}
 	
 	private ReferenceType getOuterClass() {
 		if (!isNestedClass()) throw new IllegalStateException("Can't get the outer class of a non-nested type");
-		int lastDollar = javaClass.getClassName().lastIndexOf('$');
-		String superClassName = javaClass.getClassName().substring(0,lastDollar);
+		int lastDollar = className.lastIndexOf('$');
+		String superClassName = className.substring(0,lastDollar);
 		UnresolvedType outer = UnresolvedType.forName(superClassName);
 		return (ReferenceType) outer.resolve(getResolvedTypeX().getWorld());
 	}
@@ -724,7 +714,16 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return ret;
 	}
 	
-	private void ensureGenericInfoProcessed() { getDeclaredGenericSignature();}
+	private void ensureGenericInfoProcessed() { 
+		if ((bitflag & DISCOVERED_DECLARED_SIGNATURE)!=0) return;
+		bitflag |= DISCOVERED_DECLARED_SIGNATURE;
+		Attribute[] as = javaClass.getAttributes();
+		for (int i = 0; i < as.length && declaredSignature==null; i++) {
+			Attribute attribute = as[i];
+			if (attribute instanceof Signature) declaredSignature = ((Signature)attribute).getSignature();
+		}
+		if (declaredSignature!=null) isGenericType= (declaredSignature.charAt(0)=='<');
+	}
 	
 	public boolean isGeneric() {
 	  ensureGenericInfoProcessed();
@@ -732,9 +731,51 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public String toString() {
-		return (javaClass==null?"BcelObjectType":"BcelObjectTypeFor:"+javaClass.getClassName());
+		return (javaClass==null?"BcelObjectType":"BcelObjectTypeFor:"+className);
 	}
 	
+	// --- state management
+	
+	public void evictWeavingState() {
+		// Can't chuck all this away 
+		if (getResolvedTypeX().getWorld().couldIncrementalCompileFollow()) return;
+		if (javaClass != null) {
+			// Force retrieval of any lazy information		
+			ensureAnnotationsUnpacked();
+			ensureGenericInfoProcessed();
+
+		    interfaces=null; // force reinit - may get us the right instances!
+		    superClass=null;
+			getDeclaredInterfaces();
+			getDeclaredFields();
+			getDeclaredMethods();
+			
+			// The lazyClassGen is preserved for aspects - it exists to enable around advice
+			// inlining since the method will need 'injecting' into the affected class.  If
+			// XnoInline is on, we can chuck away the lazyClassGen since it won't be required
+			// later.
+			if (getResolvedTypeX().getWorld().isXnoInline()) lazyClassGen=null;
+			
+			// discard expensive bytecode array containing reweavable info
+			if (weaverState != null) {
+				weaverState.setReweavable(false);
+				weaverState.setUnwovenClassFileData(null);
+			}
+	        for (int i = methods.length - 1; i >= 0; i--) methods[i].evictWeavingState();
+	        for (int i = fields.length - 1;  i >= 0; i--)  fields[i].evictWeavingState();
+			javaClass = null;
+//			setSourceContext(SourceContextImpl.UNKNOWN_SOURCE_CONTEXT); // bit naughty
+		}
+	}
+	
+	public void weavingCompleted() {
+		hasBeenWoven = true;
+		if (getResolvedTypeX().getWorld().isRunMinimalMemory()) evictWeavingState();
+	}
+	
+	// --- methods for testing
+
+
     // for testing - if we have this attribute, return it - will return null if it doesnt know anything 
 	public AjAttribute[] getAttributes(String name) {
 		List results = new ArrayList();
@@ -759,6 +800,19 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return strs;
 	}
 	
+	// for testing
+	public void addPointcutDefinition(ResolvedPointcutDefinition d) {
+		bitflag|=DAMAGED;
+		int len = pointcuts.length;
+		ResolvedPointcutDefinition[] ret = new ResolvedPointcutDefinition[len+1];
+		System.arraycopy(pointcuts, 0, ret, 0, len);
+		ret[len] = d;
+		pointcuts = ret;
+	}
+	
+	public boolean hasBeenWoven() { 
+		return hasBeenWoven;
+	}
 	
 } 
     

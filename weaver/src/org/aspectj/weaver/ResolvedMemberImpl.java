@@ -926,5 +926,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 		// Do generic aspects with ITDs that share type variables with the aspect and the target type and have their own tvars cause this to be messier?
 	}
+
+	public void evictWeavingState() { }
 }
    

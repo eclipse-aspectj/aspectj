@@ -48,7 +48,6 @@ import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
@@ -77,8 +76,6 @@ public class BcelWorld extends World implements Repository {
 
     private Repository delegate;
     
-    private boolean fastDelegateSupportEnabled = isASMAround;
-    private boolean checkedXsetAsmOffOption=false;
     
 	//private ClassPathManager aspectPath = null;
 	// private List aspectPathEntries;
@@ -103,12 +100,7 @@ public class BcelWorld extends World implements Repository {
 	}
 	
 
-    public void setFastDelegateSupport(boolean b) { 
-    	if (b && !isASMAround) {
-    		throw new BCException("Unable to activate fast delegate support, ASM classes cannot be found");
-    	}
-    	fastDelegateSupportEnabled = b; 
-    }
+    
 		
 	private static List getPathEntries(String s) {
 		List ret = new ArrayList();
@@ -288,25 +280,10 @@ public class BcelWorld extends World implements Repository {
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
         String name = ty.getName();
         JavaClass jc = null;
-        
-        // Check *once* whether the user has switched asm support off
-    	if (!checkedXsetAsmOffOption) {
-    		if (isASMAround) { // dont bother if its not...
-	        	Properties p = getExtraConfiguration();
-	        	if (p!=null) {
-	        		String s = p.getProperty("activateLightweightDelegates","true");
-	        		fastDelegateSupportEnabled = s.equalsIgnoreCase("true");
-	        		if (!fastDelegateSupportEnabled) 
-	        			getMessageHandler().handleMessage(MessageUtil.info("[activateLightweightDelegates=false] Disabling optimization to use lightweight delegates for non-woven types"));
-	        	}
-    		}
-        	checkedXsetAsmOffOption=true;
-        }
-    	// fastDelegateSupportEnabled=false;
-    	
+    	    ensureAdvancedConfigurationProcessed();
         //UnwovenClassFile classFile = (UnwovenClassFile)sourceJavaClasses.get(name);
         //if (classFile != null) jc = classFile.getJavaClass();
-        if (fastDelegateSupportEnabled && classPath!=null && !ty.needsModifiableDelegate() && isNotOnPackageRestrictedList(name)) {
+        if (isFastDelegateSupportEnabled() && classPath!=null && !ty.needsModifiableDelegate() && isNotOnPackageRestrictedList(name)) {
 	        ClassPathManager.ClassFile cf = classPath.find(ty);
 	        if (cf==null) {
 	        	return null;

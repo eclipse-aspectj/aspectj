@@ -157,4 +157,6 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public void resetKind(Kind newKind);
     public void resetModifiers(int newModifiers);
     public void resetReturnTypeToObjectArray();
+    
+	public void evictWeavingState();
 }

@@ -404,4 +404,6 @@ public class JoinPointSignature implements ResolvedMember {
 	public ResolvedMember getBackingGenericMember() {
 		return realMember.getBackingGenericMember();
 	}
+
+	public void evictWeavingState() { realMember.evictWeavingState(); }
 }
