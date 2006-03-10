@@ -331,7 +331,7 @@ public abstract class WeaveTestCase extends TestCase {
     public void checkShadowSet(List l, String[] ss) {
     	outer:
     	for (int i = 0, len = ss.length; i < len; i++) {
-    		inner:
+    		//inner:
     		for (Iterator j = l.iterator(); j.hasNext(); ) {
     			BcelShadow shadow = (BcelShadow) j.next();
     			String shadowString = shadow.toString();

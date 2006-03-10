@@ -29,7 +29,8 @@ public class StringToType {
 		StringTokenizer strTok = new StringTokenizer(typeNames,",");
 		Type[] ret = new Type[strTok.countTokens()];
 		int index = 0;
-		outer: while (strTok.hasMoreTokens()) {
+		//outer: 
+			while (strTok.hasMoreTokens()) {
 			String typeName = strTok.nextToken().trim();
 			ret[index++] = stringToType(typeName, classScope);
 		}
