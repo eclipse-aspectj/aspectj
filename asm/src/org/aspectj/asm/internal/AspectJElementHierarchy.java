@@ -384,6 +384,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public void flushHandleMap() {
 		handleMap.clear();
 	}
+	public void flushFileMap() {
+		fileMap.clear();
+	}
 
 	public void updateHandleMap(Set deletedFiles) {
 		// Only delete the entries we need to from the handle map - for performance reasons
