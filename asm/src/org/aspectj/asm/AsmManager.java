@@ -271,7 +271,7 @@ public class AsmManager {
 	private static class CanonicalFilePathMap {
 		private static final int MAX_SIZE = 4000;
 		
-		private Map pathMap = new HashMap(MAX_SIZE);
+		private Map pathMap = new HashMap(20);
 
 //		// guards to ensure correctness and liveness
 //		private boolean cacheInUse = false;
