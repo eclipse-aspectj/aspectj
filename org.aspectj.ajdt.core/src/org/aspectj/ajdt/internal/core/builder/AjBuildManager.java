@@ -338,6 +338,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         	}
             ret = !handler.hasErrors();
             if (getBcelWorld()!=null) getBcelWorld().tidyUp();
+            getWeaver().tidyUp();
             // bug 59895, don't release reference to handler as may be needed by a nested call
             //handler = null;
         }

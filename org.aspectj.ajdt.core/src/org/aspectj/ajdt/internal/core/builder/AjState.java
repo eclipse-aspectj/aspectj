@@ -1195,4 +1195,9 @@ public class AjState {
 		int modifiers;
 		char[] signature;
 	}
+	
+	public void wipeAllKnowledge() {
+		buildManager.state = null;
+		buildManager.setStructureModel(null);
+	}
 }
