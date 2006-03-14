@@ -67,7 +67,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 * Reset for every compilation unit.
 	 */
 	private CompilationResult currCompilationResult;
-	
+	private String filename;
+	int[] lineseps;
 	/**
 	 * 
 	 * @param cuDeclaration
@@ -76,19 +77,23 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 */
     public void buildStructureForCompilationUnit(CompilationUnitDeclaration cuDeclaration, IHierarchy structureModel, AjBuildConfig buildConfig) {
     	currCompilationResult = cuDeclaration.compilationResult();
+    	filename = new String(currCompilationResult.fileName);
+    	lineseps = currCompilationResult.lineSeparatorPositions;
     	LangUtil.throwIaxIfNull(currCompilationResult, "result");
         stack = new Stack();
         this.buildConfig = buildConfig;
         internalBuild(cuDeclaration, structureModel);
         this.buildConfig = null;  // clear reference since this structure is anchored in static
+        currCompilationResult=null;
+        stack.clear();
 //        throw new RuntimeException("not implemented");
     }
 	   
     private void internalBuild(CompilationUnitDeclaration unit, IHierarchy structureModel) {
         LangUtil.throwIaxIfNull(structureModel, "structureModel");        
-        if (!currCompilationResult.equals(unit.compilationResult())) {
-            throw new IllegalArgumentException("invalid unit: " + unit);
-        }
+//        if (!currCompilationResult.equals(unit.compilationResult())) {
+//            throw new IllegalArgumentException("invalid unit: " + unit);
+//        }
         // ---- summary
         // add unit to package (or root if no package),
         // first removing any duplicate (XXX? removes children if 3 classes in same file?)
@@ -109,18 +114,13 @@ public class AsmHierarchyBuilder extends ASTVisitor {
                 new String(file.getName()),
                 IProgramElement.Kind.FILE_JAVA,
                 sourceLocation,
-                0,
-                "",
-                new ArrayList());
+                0,null,null);
         }
 
 		cuNode.addChild(new ProgramElement(
 			"import declarations",
 			IProgramElement.Kind.IMPORT_REFERENCE,
-			null,
-			0,
-			"",
-			new ArrayList()));		
+			null,0,null,null));
 
         final IProgramElement addToNode = genAddToNode(unit, structureModel);
         
@@ -233,9 +233,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			name,
 			kind,
 			makeLocation(typeDeclaration),
-			typeModifiers,			
-			"",
-			new ArrayList());
+			typeModifiers,		null,null);	
 		peNode.setSourceSignature(genSourceSignature(typeDeclaration));
 		peNode.setFormalComment(generateJavadocComment(typeDeclaration));
 		
@@ -277,9 +275,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			name,
 			kind,
 			makeLocation(memberTypeDeclaration),
-			typeModifiers,
-			"",
-			new ArrayList());
+			typeModifiers,null,null);
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
 		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
 		
@@ -327,9 +323,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			fullName,
 			kind,
 			makeLocation(memberTypeDeclaration),
-			memberTypeDeclaration.modifiers,
-			"",
-			new ArrayList());
+			memberTypeDeclaration.modifiers,null,null);
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
 		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
 		// if we're something like 'new Runnable(){..}' then set the 
@@ -381,23 +375,19 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			InterTypeDeclaration itd = (InterTypeDeclaration) methodDeclaration;
 			ResolvedMember sig = itd.getSignature();
 			peNode = new ProgramElement(
-						"",
+						null,
 						IProgramElement.Kind.ERROR,
 						makeLocation(methodDeclaration),
-						(sig!=null?sig.getModifiers():0),
-						"",
-						new ArrayList());  
+						(sig!=null?sig.getModifiers():0),null,null);
 		
 		} else {
 			peNode = new ProgramElement(
-				"",
+				null,
 				IProgramElement.Kind.ERROR,
 				makeLocation(methodDeclaration),
-				methodDeclaration.modifiers, 
-				"",
-				new ArrayList());  
+				methodDeclaration.modifiers,null,null); 
 		}
-		formatter.genLabelAndKind(methodDeclaration, peNode);
+		formatter.genLabelAndKind(methodDeclaration, peNode); // will set the name
 		genBytecodeInfo(methodDeclaration, peNode);
 		List namedPointcuts = genNamedPointcuts(methodDeclaration);
 		addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
@@ -419,7 +409,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		
 		// TODO: add return type test
 		if (peNode.getKind().equals(IProgramElement.Kind.METHOD)) {
-			if ((peNode.toLabelString().equals("main(String[])")
+			if ((peNode.getName().charAt(0)=='m') && 
+			       (peNode.toLabelString().equals("main(String[])")
 					|| peNode.toLabelString().equals("main(java.lang.String[])"))
 				&& peNode.getModifiers().contains(IProgramElement.Modifiers.STATIC)
 				&& peNode.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC)) {
@@ -524,24 +515,38 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 		return output.toString();
 	}
-	
+//	protected void genBytecodeInfo(MethodDeclaration methodDeclaration, IProgramElement peNode) {
+//		if (methodDeclaration.binding != null) {
+//			String memberName = "";
+//			String memberBytecodeSignature = "";
+//			try { 
+//		    	EclipseFactory factory = ((AjLookupEnvironment)methodDeclaration.scope.environment()).factory;
+//				Member member = factory.makeResolvedMember(methodDeclaration.binding);
+//				memberName = member.getName();
+//				memberBytecodeSignature = member.getSignature();
+//			} catch (BCException bce) {  // bad type name 
+//				memberName = "<undefined>";
+//			} catch (NullPointerException npe) {
+//				memberName = "<undefined>";
+//			} 
+//			
+//			peNode.setBytecodeName(memberName);
+//			peNode.setBytecodeSignature(memberBytecodeSignature);
+//		}
+//		((IProgramElement)stack.peek()).addChild(peNode);
+//	}
 	protected void genBytecodeInfo(MethodDeclaration methodDeclaration, IProgramElement peNode) {
 		if (methodDeclaration.binding != null) {
-			String memberName = "";
-			String memberBytecodeSignature = "";
 			try { 
-		    	EclipseFactory factory = ((AjLookupEnvironment)methodDeclaration.scope.environment()).factory;
+		    	    EclipseFactory factory = ((AjLookupEnvironment)methodDeclaration.scope.environment()).factory;
 				Member member = factory.makeResolvedMember(methodDeclaration.binding);
-				memberName = member.getName();
-				memberBytecodeSignature = member.getSignature();
+				peNode.setBytecodeName(member.getName());
+				peNode.setBytecodeSignature(member.getSignature());
 			} catch (BCException bce) {  // bad type name 
-				memberName = "<undefined>";
+				bce.printStackTrace();
 			} catch (NullPointerException npe) {
-				memberName = "<undefined>";
-			} 
-			
-			peNode.setBytecodeName(memberName);
-			peNode.setBytecodeSignature(memberBytecodeSignature);
+				npe.printStackTrace();
+			} 			
 		}
 		((IProgramElement)stack.peek()).addChild(peNode);
 	}
@@ -563,8 +568,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				IProgramElement.Kind.IMPORT_REFERENCE,	
 				makeLocation(importRef),
 				0,
-				"", 
-				new ArrayList());	
+				null,null);
 			
 			ProgramElement imports = (ProgramElement)((ProgramElement)stack.peek()).getChildren().get(0);
 			imports.addChild(0, peNode);
@@ -589,13 +593,13 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	      peNode = new ProgramElement(
 			new String(fieldDeclaration.name),IProgramElement.Kind.ENUM_VALUE,	
 			makeLocation(fieldDeclaration),   fieldDeclaration.modifiers,
-			"", new ArrayList());
+			null,null);
 		  peNode.setCorrespondingType(fieldDeclaration.binding.type.debugName());
 		} else {		
 		  peNode = new ProgramElement(
 			new String(fieldDeclaration.name),IProgramElement.Kind.FIELD,	
 			makeLocation(fieldDeclaration),   fieldDeclaration.modifiers,
-			"", new ArrayList());
+			null,null);
 		  peNode.setCorrespondingType(fieldDeclaration.type.toString());
 		}
 		peNode.setSourceSignature(genSourceSignature(fieldDeclaration));
@@ -708,8 +712,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			IProgramElement.Kind.CONSTRUCTOR,	
 			makeLocation(constructorDeclaration),
 			constructorDeclaration.modifiers,
-			"",
-			new ArrayList());  
+			null,null);
 		
 		peNode.setModifiers(constructorDeclaration.modifiers);
 		peNode.setSourceSignature(genSourceSignature(constructorDeclaration));
@@ -788,21 +791,22 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			"...",
 			IProgramElement.Kind.INITIALIZER,	
 			makeLocation(initializer),
-			initializer.modifiers,
-			"",
-			new ArrayList());	
+			initializer.modifiers,null,null);
+//			"",
+//			new ArrayList());	
 		((IProgramElement)stack.peek()).addChild(peNode);
 		stack.push(peNode);
 		initializer.block.traverse(this, scope);
 		stack.pop();
+		inInitializer=null;
 		return false;	
 	}
 
 	// ??? handle non-existant files
 	protected ISourceLocation makeLocation(ASTNode node) {		
 		String fileName = "";
-		if (currCompilationResult.getFileName() != null) {
-			fileName = new String(currCompilationResult.getFileName());
+		if (filename != null) {
+			fileName = this.filename;
 		}
 		// AMC - different strategies based on node kind
 		int startLine = getStartLine(node);
@@ -827,8 +831,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 //		if (  n instanceof AbstractVariableDeclaration ) return getStartLine( (AbstractVariableDeclaration)n);
 //		if (  n instanceof AbstractMethodDeclaration ) return getStartLine( (AbstractMethodDeclaration)n);
 //		if (  n instanceof TypeDeclaration ) return getStartLine( (TypeDeclaration)n);
-		return ProblemHandler.searchLineNumber(
-			currCompilationResult.lineSeparatorPositions,
+		return ProblemHandler.searchLineNumber(lineseps,
+//			currCompilationResult.lineSeparatorPositions,
 			n.sourceStart);		
 	}
 	
@@ -839,8 +843,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (  n instanceof AbstractVariableDeclaration ) return getEndLine( (AbstractVariableDeclaration)n);
 		if (  n instanceof AbstractMethodDeclaration ) return getEndLine( (AbstractMethodDeclaration)n);
 		if (  n instanceof TypeDeclaration ) return getEndLine( (TypeDeclaration)n);	
-		return ProblemHandler.searchLineNumber(
-			currCompilationResult.lineSeparatorPositions,
+		return ProblemHandler.searchLineNumber(lineseps,
+//			currCompilationResult.lineSeparatorPositions,
 			n.sourceEnd);
 	}
 	
@@ -857,8 +861,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( AbstractVariableDeclaration avd ){
-		return ProblemHandler.searchLineNumber(
-			currCompilationResult.lineSeparatorPositions,
+		return ProblemHandler.searchLineNumber(lineseps,
+//			currCompilationResult.lineSeparatorPositions,
 			avd.declarationSourceEnd);		
 	}
 	
@@ -875,8 +879,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( AbstractMethodDeclaration amd) {
-		return ProblemHandler.searchLineNumber(
-			currCompilationResult.lineSeparatorPositions,
+		return ProblemHandler.searchLineNumber(lineseps,
+//			currCompilationResult.lineSeparatorPositions,
 			amd.declarationSourceEnd);
 	}
 	
@@ -893,8 +897,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( TypeDeclaration td){
-		return ProblemHandler.searchLineNumber(
-			currCompilationResult.lineSeparatorPositions,
+		return ProblemHandler.searchLineNumber(lineseps,
+//			currCompilationResult.lineSeparatorPositions,
 			td.declarationSourceEnd);
 	}
 
