@@ -313,6 +313,9 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			// ???: is this the right point for this? After weaving has finished clear the caches.
 			CflowPointcut.clearCaches();
 			weaver.tidyUp();
+			IMessageHandler imh = weaver.getWorld().getMessageHandler();
+			if (imh instanceof WeaverMessageHandler)
+			  ((WeaverMessageHandler)imh).resetCompiler(null);
 		}
 	}	
 
