@@ -17,6 +17,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.aspectj.asm.AsmManager;
+
 
 /**
  * Central point for all things incremental...
@@ -45,7 +47,12 @@ public class IncrementalStateManager {
 	}
 	
 	public static void clearIncrementalStates() {
+		for (Iterator iter = incrementalStates.values().iterator(); iter.hasNext();) {
+			AjState element = (AjState) iter.next();
+			element.wipeAllKnowledge();
+		}
 		incrementalStates.clear();
+		AsmManager.getDefault().createNewASM(); // forget what you know...
 	}
 	
 	public static Set getConfigFilesKnown() {
