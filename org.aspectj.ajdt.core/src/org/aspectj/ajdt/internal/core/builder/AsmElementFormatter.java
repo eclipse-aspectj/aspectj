@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
@@ -47,6 +48,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
  */
 public class AsmElementFormatter {
 
+	public static final String UNDEFINED="<undefined>";
 	public static final String DECLARE_PRECEDENCE = "precedence";
 	public static final String DECLARE_SOFT = "soft";
 	public static final String DECLARE_PARENTS = "parents";
@@ -55,6 +57,7 @@ public class AsmElementFormatter {
 	public static final String DECLARE_UNKNONWN = "<unknown declare>";
 	public static final String POINTCUT_ABSTRACT = "<abstract pointcut>";
 	public static final String POINTCUT_ANONYMOUS = "<anonymous pointcut>";
+	public static final String DOUBLE_DOTS = "..";
 	public static final int MAX_MESSAGE_LENGTH = 18;
 	public static final String DEC_LABEL = "declare";
 
@@ -68,33 +71,34 @@ public class AsmElementFormatter {
 				node.setCorrespondingType(ad.returnType.toString()); //returnTypeToString(0));
 			}
 	
-			String details = "";
+			StringBuffer details = new StringBuffer();
 			if (ad.pointcutDesignator != null) {	
 				if (ad.pointcutDesignator.getPointcut() instanceof ReferencePointcut) {
 					ReferencePointcut rp = (ReferencePointcut)ad.pointcutDesignator.getPointcut();
-					details += rp.name + "..";
+					details.append(rp.name).append("..");
 				} else if (ad.pointcutDesignator.getPointcut() instanceof AndPointcut) {
 					AndPointcut ap = (AndPointcut)ad.pointcutDesignator.getPointcut();
 					if (ap.getLeft() instanceof ReferencePointcut) {
-						details += ap.getLeft().toString() + "..";	
+						details.append(ap.getLeft().toString()).append(DOUBLE_DOTS);	
 					} else {
-						details += POINTCUT_ANONYMOUS + "..";
+						details.append(POINTCUT_ANONYMOUS).append(DOUBLE_DOTS);
 					}
 				} else if (ad.pointcutDesignator.getPointcut() instanceof OrPointcut) {
 					OrPointcut op = (OrPointcut)ad.pointcutDesignator.getPointcut();
 					if (op.getLeft() instanceof ReferencePointcut) {
-						details += op.getLeft().toString() + "..";	
+						details.append(op.getLeft().toString()).append(DOUBLE_DOTS);	
 					} else {
-						details += POINTCUT_ANONYMOUS + "..";
+						details.append(POINTCUT_ANONYMOUS).append(DOUBLE_DOTS);
 					}
 				} else {
-					details += POINTCUT_ANONYMOUS;
+					details.append(POINTCUT_ANONYMOUS);
 				}
 			} else {
-				details += POINTCUT_ABSTRACT;
+				details.append(POINTCUT_ABSTRACT);
 			} 
 			node.setName(ad.kind.toString());
-			node.setDetails(details);
+			//if (details.length()!=0) 
+			node.setDetails(details.toString());
 			setParameters(methodDeclaration, node);
 
 		} else if (methodDeclaration instanceof PointcutDeclaration) { 
@@ -228,18 +232,20 @@ public class AsmElementFormatter {
                         //Note: AV: implicit single advice type support here (should be enforced somewhere as well (APT etc))
                         Annotation annotation = methodDeclaration.annotations[i];
                         String annotationSig = new String(annotation.type.getTypeBindingPublic(methodDeclaration.scope).signature());
-                        if ("Lorg/aspectj/lang/annotation/Pointcut;".equals(annotationSig)) {
-                            node.setKind(IProgramElement.Kind.POINTCUT);
-                            break;
-                        } else if ("Lorg/aspectj/lang/annotation/Before;".equals(annotationSig)
-                                   || "Lorg/aspectj/lang/annotation/After;".equals(annotationSig)
-                                   || "Lorg/aspectj/lang/annotation/AfterReturning;".equals(annotationSig)
-                                   || "Lorg/aspectj/lang/annotation/AfterThrowing;".equals(annotationSig)
-                                   || "Lorg/aspectj/lang/annotation/Around;".equals(annotationSig)) {
-                            node.setKind(IProgramElement.Kind.ADVICE);
-                            //TODO AV - all are considered anonymous - is that ok?
-                            node.setDetails(POINTCUT_ANONYMOUS);
-                            break;
+                        if (annotationSig!=null && annotationSig.charAt(1)=='o') {
+	                        if ("Lorg/aspectj/lang/annotation/Pointcut;".equals(annotationSig)) {
+	                            node.setKind(IProgramElement.Kind.POINTCUT);
+	                            break;
+	                        } else if ("Lorg/aspectj/lang/annotation/Before;".equals(annotationSig)
+	                                   || "Lorg/aspectj/lang/annotation/After;".equals(annotationSig)
+	                                   || "Lorg/aspectj/lang/annotation/AfterReturning;".equals(annotationSig)
+	                                   || "Lorg/aspectj/lang/annotation/AfterThrowing;".equals(annotationSig)
+	                                   || "Lorg/aspectj/lang/annotation/Around;".equals(annotationSig)) {
+	                            node.setKind(IProgramElement.Kind.ADVICE);
+	                            //TODO AV - all are considered anonymous - is that ok?
+	                            node.setDetails(POINTCUT_ANONYMOUS);
+	                            break;
+	                        }
                         }
                     }
                 }
@@ -284,24 +290,29 @@ public class AsmElementFormatter {
 
 	private void setParameters(MethodDeclaration md, IProgramElement pe) {
 		Argument[] argArray = md.arguments;
-		List names = new ArrayList();
-		List types = new ArrayList();
-		pe.setParameterNames(names);
-		pe.setParameterTypes(types);
-		
-		if (argArray == null) return;
-		for (int i = 0; i < argArray.length; i++) {
-			String argName = new String(argArray[i].name);
-			String argType = argArray[i].type.resolvedType.debugName();
-			if (acceptArgument(argName, argArray[i].type.toString())) { 
-				names.add(argName);
-				types.add(argType);
-			}   
+		if (argArray == null) {
+			pe.setParameterNames(Collections.EMPTY_LIST);
+			pe.setParameterTypes(Collections.EMPTY_LIST);
+		} else {
+			List names = new ArrayList();
+			List types = new ArrayList();
+			
+			for (int i = 0; i < argArray.length; i++) {
+				String argName = new String(argArray[i].name);
+				String argType = argArray[i].type.resolvedType.debugName();
+				if (acceptArgument(argName, argArray[i].type.toString())) { 
+					names.add(argName);
+					types.add(argType);
+				}   
+			}
+			pe.setParameterNames(names);
+			pe.setParameterTypes(types);
 		}
 	}
 
 	// TODO: fix this way of determing ajc-added arguments, make subtype of Argument with extra info
 	private boolean acceptArgument(String name, String type) {
+		if (name.charAt(0)!='a' && type.charAt(0)!='o') return true;
 		return !name.startsWith("ajc$this_") 
 			&& !type.equals("org.aspectj.lang.JoinPoint.StaticPart")
 			&& !type.equals("org.aspectj.lang.JoinPoint")
