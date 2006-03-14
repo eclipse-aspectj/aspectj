@@ -41,6 +41,7 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
+import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
@@ -460,6 +461,7 @@ public class WeavingAdaptor {
 		private List unwovenClasses = new ArrayList(); /* List<UnovenClassFile> */
 		private UnwovenClassFile wovenClass;
         private boolean isApplyAtAspectJMungersOnly = false;
+        private BcelObjectType delegate;
 
         public WeavingClassFileProvider (String name, byte[] bytes) {
 			this.unwovenClass = new UnwovenClassFile(name,bytes);
@@ -469,7 +471,7 @@ public class WeavingAdaptor {
 				dump(name, bytes, true);
 			}
 
-			bcelWorld.addSourceObjectType(unwovenClass.getJavaClass());
+			delegate = bcelWorld.addSourceObjectType(unwovenClass.getJavaClass());
 		}
 
         public void setApplyAtAspectJMungersOnly() {
@@ -518,7 +520,9 @@ public class WeavingAdaptor {
 
 				public void weavingClasses() {}
 
-				public void weaveCompleted() {}
+				public void weaveCompleted() {
+					if (delegate!=null) delegate.weavingCompleted();
+				}
 			};				
 		}
 	}
