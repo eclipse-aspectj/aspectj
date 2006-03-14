@@ -13,7 +13,6 @@
 
 package org.aspectj.weaver;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -274,10 +273,7 @@ public class AsmRelationshipProvider {
 		IProgramElement peNode = new ProgramElement(
 			shadow.toString(),
 			IProgramElement.Kind.CODE,
-			peLoc,
-			0,
-			"",
-			new ArrayList());
+			peLoc,0,null,null);
 				
 		peNode.setBytecodeName(shadowSig.getName());
 		peNode.setBytecodeSignature(shadowSig.getSignature());
