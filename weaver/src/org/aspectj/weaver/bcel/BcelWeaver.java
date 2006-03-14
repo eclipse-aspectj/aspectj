@@ -1299,6 +1299,7 @@ public class BcelWeaver implements IWeaver {
 		} else {
 			requestor.acceptResult(classFile);
 		}
+//		classType.weavingCompleted();
 		CompilationAndWeavingContext.leavingPhase(tok);
     }
     
