@@ -14,8 +14,11 @@
 package org.aspectj.asm.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.HierarchyWalker;
@@ -28,71 +31,59 @@ import org.aspectj.bridge.ISourceLocation;
  * @author Mik Kersten
  */
 public class ProgramElement implements IProgramElement {
-		
+	
 	private static final long serialVersionUID = 171673495267384449L;
+	public static boolean shortITDNames = true;
 	
-	protected IProgramElement parent = null;
-	protected String name = "";
-	// children.listIterator() should support remove() operation
-	protected List children = new ArrayList();
-	protected IMessage message = null;
-	protected ISourceLocation sourceLocation = null;
+	private final static String UNDEFINED = "<undefined>";
+	private static int AccPublic = 0x0001;
+	private static int AccPrivate = 0x0002;
+	private static int AccProtected = 0x0004;
+	private static int AccPrivileged = 0x0006;  // XXX is this right?
+	private static int AccStatic = 0x0008;
+	private static int AccFinal = 0x0010;
+	private static int AccSynchronized = 0x0020;
+	private static int AccVolatile = 0x0040;
+	private static int AccTransient = 0x0080;
+	private static int AccNative = 0x0100;
+	private static int AccInterface = 0x0200;
+	private static int AccAbstract = 0x0400;
+	private static int AccStrictfp = 0x0800;
 
-	private List modifiers = new ArrayList();
-	private List relations = new ArrayList();
-
+	
+	
+	protected String name;
 	private Kind kind;
-	private Accessibility accessibility;
-	private String declaringType = "";
-	private String formalComment = "";
-	//private String packageName = null;
-	private boolean runnable = false;
-	private boolean implementor = false; 
-	private boolean overrider = false;
+	protected IProgramElement parent = null;
+	protected List children = Collections.EMPTY_LIST;
+	private Map kvpairs = Collections.EMPTY_MAP;	
+	protected ISourceLocation sourceLocation = null;
+	private int modifiers;
+	private String handle = null;
+
+
     
-	private String bytecodeName;
-	private String bytecodeSignature;
-//	private String fullSignature;
-	private String returnType;
+	// --- ctors
 	
-	private List parameterNames = null;
-	private List parameterTypes = null;
-	
-	private String details = null;
-	
-	private ExtraInformation info;
-    
-	/**
-	 * Used during de-externalization.
-	 */
+	/** Used during de-externalization */
 	public ProgramElement() { }
 
-	/**
-	 * Use to create program element nodes that do not correspond to source locations.
-	 */
-	public ProgramElement(
-		String name, 
-		Kind kind, 
-		List children) {
+	/** Use to create program element nodes that do not correspond to source locations */
+	public ProgramElement (String name,Kind kind,List children) {
 		this.name = name;
 		this.kind = kind;
-		setChildren(children);
+		if (children!=null) setChildren(children);
 	}
 	
-	public ProgramElement(
-		String name,
-		IProgramElement.Kind kind,
-		ISourceLocation sourceLocation,
-		int modifiers,
-		String formalComment,
-		List children)
-	{
+	public ProgramElement (String name, IProgramElement.Kind kind, ISourceLocation sourceLocation,
+		                    int modifiers, String comment, List children) {
 		this(name, kind, children);
-		this.sourceLocation = sourceLocation;
-		this.kind = kind;
-		this.formalComment = formalComment;
-		this.modifiers = genModifiers(modifiers);
-		this.accessibility = genAccessibility(modifiers);
+		this.sourceLocation = //ISourceLocation.EMPTY;
+		sourceLocation;
+		setFormalComment(comment);
+//		if (comment!=null && comment.length()>0) formalComment = comment;
+		this.modifiers = modifiers;
+//		this.accessibility = genAccessibility(modifiers);
 		cacheByHandle();
 	}
 	
@@ -103,41 +94,55 @@ public class ProgramElement implements IProgramElement {
 		String name, 
 		Kind kind, 
 		int modifiers, 
-		Accessibility accessibility,
+		//Accessibility accessibility,
 		String declaringType, 
 		String packageName, 
-		String formalComment, 
+		String comment, 
 		ISourceLocation sourceLocation,
 		List relations, 
 		List children, 
 		boolean member) {
 
 		this(name, kind, children);
-		this.sourceLocation = sourceLocation;
+		this.sourceLocation = 
+			//ISourceLocation.EMPTY;
+			sourceLocation;
 		this.kind = kind;
-		this.modifiers = genModifiers(modifiers);
-		this.accessibility = accessibility;
-		this.declaringType = declaringType;
+		this.modifiers = modifiers;
+//		this.accessibility = accessibility;
+		setDeclaringType(declaringType);//this.declaringType = declaringType;
 		//this.packageName = packageName;
-		this.formalComment = formalComment;
-		this.relations = relations;
+		setFormalComment(comment);
+//		if (comment!=null && comment.length()>0) formalComment = comment;
+		if (relations!=null && relations.size()!=0) setRelations(relations);
+//		this.relations = relations;
 		cacheByHandle();
 	}
 
 	public List getModifiers() {
-		return modifiers;
+		return genModifiers(modifiers);
 	}
 
 	public Accessibility getAccessibility() {
-		return accessibility;
+		return genAccessibility(modifiers); // accessibility
 	}
 	
-	public void setAccessibility(Accessibility a) {
-		accessibility=a;
+//	public void setAccessibility(Accessibility a) {
+//		
+//		//accessibility=a;
+//	}
+	
+	public void setDeclaringType(String t) {
+		if (t!=null && t.length()>0) {
+			if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+			kvpairs.put("declaringType",t);
+		}
 	}
 
 	public String getDeclaringType() {
-		return declaringType;
+		String dt = (String)kvpairs.get("declaringType");
+		if (dt==null) return ""; // assumption that not having one means "" is at HtmlDecorator line 111
+		return dt;
 	}
 
 	public String getPackageName() {
@@ -161,15 +166,18 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setSourceLocation(ISourceLocation sourceLocation) {
-		this.sourceLocation = sourceLocation;
+		//this.sourceLocation = sourceLocation;
 	}
 
 	public IMessage getMessage() {
-		return message;
+		return (IMessage)kvpairs.get("message");
+//		return message;
 	}
 
 	public void setMessage(IMessage message) {
-		this.message = message;
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		kvpairs.put("message",message);
+//		this.message = message;
 	}
 
 	public IProgramElement getParent() {
@@ -185,41 +193,57 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setRunnable(boolean value) {
-		this.runnable = value;	
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		if (value) kvpairs.put("isRunnable","true");
+		else       kvpairs.remove("isRunnable");
+//		this.runnable = value;	
 	}
 
 	public boolean isRunnable() {
-		return runnable;	
+		return kvpairs.get("isRunnable")!=null;
+//		return runnable;	
 	}
 
 	public boolean isImplementor() {
-		return implementor;	
+		return kvpairs.get("isImplementor")!=null;
+//		return implementor;	
 	}
 
 	public void setImplementor(boolean value) {
-		this.implementor = value;	
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		if (value) kvpairs.put("isImplementor","true");
+		else       kvpairs.remove("isImplementor");
+//		this.implementor = value;	
 	}
 	
 	public boolean isOverrider() {
-		return overrider;		
+		return kvpairs.get("isOverrider")!=null;
+//		return overrider;		
 	}
 
 	public void setOverrider(boolean value) {
-		this.overrider = value;	
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		if (value) kvpairs.put("isOverrider","true");
+		else       kvpairs.remove("isOverrider");
+//		this.overrider = value;	
 	}
 
 	public List getRelations() {
-		return relations;
+		return (List)kvpairs.get("relations");
+//		return relations;
 	}
 
 	public void setRelations(List relations) {
 		if (relations.size() > 0) {
-			this.relations = relations;
+			if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+			kvpairs.put("relations",relations);
+//			this.relations = relations;
 		}
 	}
 
 	public String getFormalComment() {
-		return formalComment;
+		return (String)kvpairs.get("formalComment");
+//		return formalComment;
 	}
 
 	public String toString() {
@@ -246,54 +270,50 @@ public class ProgramElement implements IProgramElement {
 		else return IProgramElement.Accessibility.PACKAGE;
 	}
 	
-	// XXX these names and values are from org.eclipse.jdt.internal.compiler.env.IConstants
-	private static int AccPublic = 0x0001;
-	private static int AccPrivate = 0x0002;
-	private static int AccProtected = 0x0004;
-	private static int AccPrivileged = 0x0006;  // XXX is this right?
-	private static int AccStatic = 0x0008;
-	private static int AccFinal = 0x0010;
-	private static int AccSynchronized = 0x0020;
-	private static int AccVolatile = 0x0040;
-	private static int AccTransient = 0x0080;
-	private static int AccNative = 0x0100;
-//	private static int AccInterface = 0x0200;
-	private static int AccAbstract = 0x0400;
-//	private static int AccStrictfp = 0x0800;
 
-	private String sourceSignature;
 	
 	
 	public String getBytecodeName() {
-		return bytecodeName;
+		String s = (String)kvpairs.get("bytecodeName");
+		if (s==null) return UNDEFINED;
+		return s;
 	}
 
 	public String getBytecodeSignature() {
-		return bytecodeSignature;
+		String s = (String)kvpairs.get("bytecodeSignature");
+//		if (s==null) return UNDEFINED;
+		return s;
 	}
 
-	public void setBytecodeName(String bytecodeName) {
-		this.bytecodeName = bytecodeName;
+	public void setBytecodeName(String s) {
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		kvpairs.put("bytecodeName",s);
 	}
 
-	public void setBytecodeSignature(String bytecodeSignature) {
-		this.bytecodeSignature = bytecodeSignature;
+	public void setBytecodeSignature(String s) {
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		kvpairs.put("bytecodeSignature",s);
 	}
  
 	public String getSourceSignature() {
-		return sourceSignature;
+		return (String)kvpairs.get("sourceSignature");
 	}
 
 	public void setSourceSignature(String string) {
-		sourceSignature = string;
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+//		System.err.println(name+" SourceSig=>"+string);
+		kvpairs.put("sourceSignature",string);
+//		sourceSignature = string;
 	}
 	
 	public void setKind(Kind kind) {
 		this.kind = kind;
 	}
 
-	public void setCorrespondingType(String returnType) {
-		this.returnType = returnType;
+	public void setCorrespondingType(String s) {
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		kvpairs.put("returnType",s);
+//		this.returnType = s;
 	}
 
 	public String getCorrespondingType() {
@@ -301,6 +321,8 @@ public class ProgramElement implements IProgramElement {
 	}
 	
 	public String getCorrespondingType(boolean getFullyQualifiedType) {
+		String returnType = (String)kvpairs.get("returnType");
+		if (returnType==null) returnType="";
 		if (getFullyQualifiedType) {
 			return returnType;
 		}
@@ -328,17 +350,13 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void addChild(IProgramElement child) {
-		if (children == null) {
-			children = new ArrayList();
-		}
+		if (children == null || children==Collections.EMPTY_LIST) children = new ArrayList();
 		children.add(child);
 		child.setParent(this);
 	}
     
 	public void addChild(int position, IProgramElement child) {
-		if (children == null) {
-			children = new ArrayList();
-		}
+		if (children == null || children==Collections.EMPTY_LIST) children = new ArrayList();
 		children.add(position, child);
 		child.setParent(this);
 	}
@@ -354,10 +372,10 @@ public class ProgramElement implements IProgramElement {
 
 	public IProgramElement walk(HierarchyWalker walker) {
 		if (children!=null) {
-		for (Iterator it = children.iterator(); it.hasNext(); ) {
-			IProgramElement child = (IProgramElement)it.next();
-			walker.process(child);	
-		} 
+			for (Iterator it = children.iterator(); it.hasNext(); ) {
+				IProgramElement child = (IProgramElement)it.next();
+				walker.process(child);	
+			} 
 		}
 		return this;
 	}
@@ -383,7 +401,7 @@ public class ProgramElement implements IProgramElement {
 	}
 	
 	public void setModifiers(int i) {
-		this.modifiers = genModifiers(i);
+		this.modifiers = i;
 	}
 
 	public String toSignatureString() {
@@ -394,9 +412,10 @@ public class ProgramElement implements IProgramElement {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
 		
-		if (parameterTypes != null ) {
+		List ptypes = getParameterTypes();
+		if (ptypes != null) {
 			sb.append('('); 
-			for (Iterator it = parameterTypes.iterator(); it.hasNext(); ) {
+			for (Iterator it = ptypes.iterator(); it.hasNext(); ) {
 				String arg = (String)it.next();
 				if (getFullyQualifiedArgTypes) {
 					sb.append(arg);
@@ -416,7 +435,6 @@ public class ProgramElement implements IProgramElement {
 		return sb.toString();		
 	}
 	
-	public static boolean shortITDNames = true;
 	
 	/**
 	 * TODO: move the "parent != null"==>injar heuristic to more explicit 
@@ -462,49 +480,59 @@ public class ProgramElement implements IProgramElement {
 
 	public String toLabelString(boolean getFullyQualifiedArgTypes) {
 		String label = toSignatureString(getFullyQualifiedArgTypes);
+		String details = getDetails();
 		if (details != null) {
 			label += ": " + details;
 		} 
 		return label;
 	}
 	
-	private String handle = null;
 	public String getHandleIdentifier() {
 	    if (null == handle) {
 			if (sourceLocation != null) {
-                return AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceLocation);
+                handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceLocation);
 //			    return genHandleIdentifier(sourceLocation);
 			} 
 	    }
 	    return handle;
 	}
 	
-	public List getParameterNames() {
-		return parameterNames;
+	public List getParameterNames() { 
+		List parameterNames = (List)kvpairs.get("parameterNames");
+		return parameterNames; 
+	}
+	public void setParameterNames(List list) { 
+		if (list==null || list.size()==0) return;
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		kvpairs.put("parameterNames",list);
+		//parameterNames = list; 
 	}
 
-	public List getParameterTypes() {
-		return parameterTypes;
+	public List getParameterTypes() { 
+		List parameterTypes = (List)kvpairs.get("parameterTypes");
+		return parameterTypes; 
 	}
-
-	public void setParameterNames(List list) {
-		parameterNames = list;
-	}
-
-	public void setParameterTypes(List list) {
-		parameterTypes = list;
+	public void setParameterTypes(List list) { 
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		if (list==null || list.size()==0) kvpairs.put("parameterTypes",Collections.EMPTY_LIST);
+		else                               kvpairs.put("parameterTypes",list);
+//		parameterTypes = list; 
 	}
 
 	public String getDetails() {
-		return details;
+		String details = (String)kvpairs.get("details");
+		return details; 
 	}
-
-	public void setDetails(String string) {
-		details = string;
+	public void setDetails(String string) { 
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		kvpairs.put("details",string);
 	}
 	
-	public void setFormalComment(String formalComment) {
-		this.formalComment = formalComment;
+	public void setFormalComment(String txt) { 
+		if (txt!=null && txt.length()>0) {
+			if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+			kvpairs.put("formalComment",txt);
+		}
 	}
 	
 	/** AMC added to speed up findByHandle lookups in AspectJElementHierarchy */
@@ -514,16 +542,16 @@ public class ProgramElement implements IProgramElement {
 			AspectJElementHierarchy hierarchy = (AspectJElementHierarchy) 
 				AsmManager.getDefault().getHierarchy();
 			hierarchy.cache(handle,this);
+			//System.err.println("Cache size now "+hierarchy.handleMap.size());
 		}
 	}
 
-	public void setExtraInfo(ExtraInformation info) {
-		this.info = info;
-		
-	}
-
+	public void setExtraInfo(ExtraInformation info) { 
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		kvpairs.put("ExtraInformation",info);
+		}
 	public ExtraInformation getExtraInfo() {
-		return info;
+		return (ExtraInformation)kvpairs.get("ExtraInformation");
 	}
 }
 
