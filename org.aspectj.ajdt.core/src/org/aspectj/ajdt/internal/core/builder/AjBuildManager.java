@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -132,7 +131,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	// FIXME asc should this really be in here?
 	private IHierarchy structureModel;
 	public AjBuildConfig buildConfig;
-	private List aspectNames = new LinkedList();
 	
 	AjState state = new AjState(this);
     
@@ -535,9 +533,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		PrintStream ps = new PrintStream(baos);
 		ps.println("<aspectj>");
 		ps.println("<aspects>");
-		for (Iterator i = aspectNames.iterator(); i.hasNext();) {
-			String name = (String)i.next();
-			ps.println("<aspect name=\"" + name + "\"/>");
+		if (state.getAspectNames() != null) {
+			for (Iterator i = state.getAspectNames().iterator(); i.hasNext();) {
+				String name = (String)i.next();
+				ps.println("<aspect name=\"" + name + "\"/>");
+			}			
 		}
 		ps.println("</aspects>");
 		ps.println("</aspectj>");
@@ -951,7 +951,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				ResolvedType type = world.resolve(name);
 //				System.err.println("? writeAspectName() type=" + type);
 				if (type.isAspect()) {
-					aspectNames.add(name);
+					if (state.getAspectNames() == null) {
+						state.initializeAspectNamesList();
+					}
+					if (!state.getAspectNames().contains(name)) {
+						state.getAspectNames().add(name);
+					}
 				}
 			}
 		};

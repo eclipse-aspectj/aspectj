@@ -161,6 +161,7 @@ public class AjState {
 	
 	private List/*File*/ compiledSourceFiles = new ArrayList();
 	private List/*String*/ resources = new ArrayList();
+	private List/*String*/ aspectNames;
 	
 	private ArrayList/*<String>*/ qualifiedStrings;
 	private ArrayList/*<String>*/ simpleStrings;
@@ -1199,5 +1200,13 @@ public class AjState {
 	public void wipeAllKnowledge() {
 		buildManager.state = null;
 		buildManager.setStructureModel(null);
+	}
+	
+	public List getAspectNames() {
+		return aspectNames;
+	}
+	
+	public void initializeAspectNamesList() {
+		this.aspectNames = new LinkedList();
 	}
 }

@@ -11,9 +11,11 @@
 * ******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -687,6 +689,54 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		configureBuildStructureModel(false);
 	}
 	
+	public void testPr131505() {
+		configureNonStandardCompileOptions("-outxml");
+		initialiseProject("PR131505");
+		build("PR131505");
+		checkWasFullBuild();
+		// aop.xml file shouldn't contain any aspects
+		checkXMLAspectCount("PR131505","",0);
+		// add a new aspect A which should be included in the aop.xml file
+		alter("PR131505","inc1");
+		build("PR131505");
+		checkWasFullBuild();
+		checkXMLAspectCount("PR131505","",1);
+		checkXMLAspectCount("PR131505","A",1);
+		// make changes to the class file which shouldn't affect the contents
+		// of the aop.xml file
+		alter("PR131505","inc2");
+		build("PR131505");
+		checkWasntFullBuild();
+		checkXMLAspectCount("PR131505","",1);
+		checkXMLAspectCount("PR131505","A",1);		
+		// add another new aspect A1 which should also be included in the aop.xml file
+		// ...there should be no duplicate entries in the file
+		alter("PR131505","inc3");
+		build("PR131505");
+		checkWasFullBuild();
+		checkXMLAspectCount("PR131505","",2);
+		checkXMLAspectCount("PR131505","A1",1);
+		checkXMLAspectCount("PR131505","A",1);
+		// delete aspect A1 which meanss that aop.xml file should only contain A
+		File a1 = new File(getWorkingDir().getAbsolutePath() 
+				+ File.separatorChar + "PR131505" + File.separatorChar + "A1.aj");
+		a1.delete();
+		build("PR131505");
+		checkWasFullBuild();
+		checkXMLAspectCount("PR131505","",1);
+		checkXMLAspectCount("PR131505","A1",0);
+		checkXMLAspectCount("PR131505","A",1);	
+		// add another aspect called A which is in a different package, both A
+		// and pkg.A should be included in the aop.xml file
+		alter("PR131505","inc4");
+		build("PR131505");
+		checkWasFullBuild();
+		checkXMLAspectCount("PR131505","",2);
+		checkXMLAspectCount("PR131505","A",1);
+		checkXMLAspectCount("PR131505","pkg.A",1);
+	}
+	
+	
 	// other possible tests:
 	// - memory usage (freemem calls?)
 	// - relationship map
@@ -848,4 +898,43 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	private static void log(String msg) {
 		if (VERBOSE) System.out.println(msg);
 	}
+	
+	/**
+	 * Count the number of times a specified aspectName appears in the default
+	 * aop.xml file and compare with the expected number of occurrences. If just 
+	 * want to count the number of aspects mentioned within the file then 
+	 * pass "" for the aspectName, otherwise, specify the name of the 
+	 * aspect interested in.
+	 */
+	private void checkXMLAspectCount(String projectName, String aspectName, int expectedOccurrences) {
+		int aspectCount = 0;
+		File aopXML = new File(getWorkingDir().getAbsolutePath() 
+				+ File.separatorChar + projectName + File.separatorChar 
+				+ "bin" + File.separatorChar + "META-INF" + File.separatorChar + "aop.xml");
+
+		if (!aopXML.exists()) {
+			fail("Expected file " + aopXML.getAbsolutePath() + " to exist but it doesn't");
+		}
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(aopXML));
+			String line = reader.readLine();
+			while (line != null) {
+				if (aspectName.equals("") && line.indexOf("aspect name=\"") != -1) {
+					aspectCount++;
+				} else if (line.indexOf("aspect name=\""+aspectName+"\"") != -1) {
+					aspectCount++;
+				}
+				line = reader.readLine();
+			}
+			reader.close();
+		} catch (IOException ie) {
+			ie.printStackTrace();
+		}
+		if (aspectCount != expectedOccurrences) {
+			fail("Expected aspect " + aspectName + " to appear " + expectedOccurrences + " times" +
+					" in the aop.xml file but found " + aspectCount + " occurrences");
+		}
+	}
+	
+	
 }
