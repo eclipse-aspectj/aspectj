@@ -84,7 +84,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * existing java class (file).
  *
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.6 2006/03/09 17:25:48 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.7 2006/03/16 11:01:53 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  *
  * Upgraded, Andy Clement 9th Mar 06 - calculates SUID
@@ -672,7 +672,8 @@ public class ClassGen extends AccessFlags implements Cloneable {
 	    return suid;
   	} catch (Exception e) {
   		System.err.println("Unable to calculate suid for "+getClassName());
-  		throw new RuntimeException(e);
+  		e.printStackTrace();
+  		throw new RuntimeException("Unable to calculate suid for "+getClassName()+": "+e.toString());
   	}
   }
   
