@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.ajc151;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Test;
@@ -110,6 +111,85 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void testGenericAspectWithUnknownType_pr131933() {
 	  runTest("no ClassCastException with generic aspect and unknown type");
+  }
+  
+  public void testStructureModelForGenericITD_pr131932() {
+ 	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
+	  runTest("structure model for generic itd");
+	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+ 	   
+  	  // get the IProgramElements corresponding to the ITDs and classes
+  	  IProgramElement foo = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.CLASS,"Foo");
+  	  assertNotNull("Couldn't find Foo element in the tree",foo);
+  	  IProgramElement bar = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.CLASS,"Bar");
+  	  assertNotNull("Couldn't find Bar element in the tree",bar);
+
+  	  IProgramElement method = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.INTER_TYPE_METHOD,"Bar.getFirst()");  	   	 
+  	  assertNotNull("Couldn't find 'Bar.getFirst()' element in the tree",method);
+  	  IProgramElement field = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.INTER_TYPE_FIELD,"Bar.children");  	   	 
+  	  assertNotNull("Couldn't find 'Bar.children' element in the tree",field);
+  	  IProgramElement constructor = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR,"Foo.Foo(List<T>)");  	   	 
+  	  assertNotNull("Couldn't find 'Foo.Foo(List<T>)' element in the tree",constructor);
+  	  
+  	  // check that the relationship map has 'itd method declared on bar'
+  	  List matches = AsmManager.getDefault().getRelationshipMap().get(method);
+  	  assertNotNull("itd Bar.getFirst() should have some relationships but does not",matches);
+  	  assertTrue("method itd should have one relationship but has " + matches.size(), matches.size() == 1);
+  	  List matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("itd Bar.getFirst() should have one target but has " + matchesTargets.size(),matchesTargets.size() == 1);
+  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the Bar class but is IPE with label "
+  			  + target.toLabelString(),bar,target);
+
+  	  // check that the relationship map has 'itd field declared on bar'
+  	  matches = AsmManager.getDefault().getRelationshipMap().get(field);
+  	  assertNotNull("itd Bar.children should have some relationships but does not",matches);
+  	  assertTrue("field itd should have one relationship but has " + matches.size(), matches.size() == 1);
+  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("itd Bar.children should have one target but has " + matchesTargets.size(),matchesTargets.size() == 1);
+  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the Bar class but is IPE with label "
+  			  + target.toLabelString(),bar,target);
+
+  	  // check that the relationship map has 'itd constructor declared on foo'
+  	  matches = AsmManager.getDefault().getRelationshipMap().get(constructor);
+  	  assertNotNull("itd Foo.Foo(List<T>) should have some relationships but does not",matches);
+  	  assertTrue("constructor itd should have one relationship but has " + matches.size(), matches.size() == 1);
+  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("itd Foo.Foo(List<T>) should have one target but has " + matchesTargets.size(),matchesTargets.size() == 1);
+  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the Foo class but is IPE with label "
+  			  + target.toLabelString(),foo,target);
+  	  
+  	  // check that the relationship map has 'bar aspect declarations method and field itd'
+  	  matches = AsmManager.getDefault().getRelationshipMap().get(bar);
+  	  assertNotNull("Bar should have some relationships but does not",matches);
+  	  assertTrue("Bar should have one relationship but has " + matches.size(), matches.size() == 1);
+  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("Bar should have two targets but has " + matchesTargets.size(),matchesTargets.size() == 2);
+  	  for (Iterator iter = matchesTargets.iterator(); iter.hasNext();) {
+		  String element = (String) iter.next();
+		  target = AsmManager.getDefault().getHierarchy().findElementForHandle(element);
+		  if (!target.equals(method) && !target.equals(field)) {
+			  fail("Expected rel target to be " + method.toLabelString() + " or " + field.toLabelString() 
+					+ ", found " + target.toLabelString());
+		  }
+	  }
+
+  	  // check that the relationship map has 'foo aspect declarations constructor itd'
+ 	  matches = AsmManager.getDefault().getRelationshipMap().get(foo);
+  	  assertNotNull("Foo should have some relationships but does not",matches);
+  	  assertTrue("Foo should have one relationship but has " + matches.size(), matches.size() == 1);
+  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("Foo should have one target but has " + matchesTargets.size(),matchesTargets.size() == 1);
+ 	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the Foo.Foo(List<T>) itd but is IPE with label "
+  			  + target.toLabelString(),constructor,target);
   }
   
   /*

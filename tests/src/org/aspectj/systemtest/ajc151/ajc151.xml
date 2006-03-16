@@ -252,6 +252,9 @@
         </compile>
     </ajc-test> 
 
+    <ajc-test dir="bugs151" title="structure model for generic itd">
+        <compile files="pr131932.aj" options="-1.5 -emacssym"/>
+    </ajc-test>
 
     <!-- New features down here... when they arent big enough to have their own test file -->
     

@@ -107,6 +107,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		}
 		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
 		nmtm.setDeclaredSignature(getSignature());
+		nmtm.setSourceLocation(getSourceLocation());
 		return nmtm;
 	}
 	

@@ -90,6 +90,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		}
 		NewFieldTypeMunger nftm = new NewFieldTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
 	    nftm.setDeclaredSignature(getSignature());
+	    nftm.setSourceLocation(getSourceLocation());
 	    return nftm;
 	}
 

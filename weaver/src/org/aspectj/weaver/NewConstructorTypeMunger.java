@@ -136,7 +136,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		  // For raw and 'normal' parameterized targets  (e.g. Interface, Interface<String>)
 		  parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
 		}
-		return new NewConstructorTypeMunger(parameterizedSignature,syntheticConstructor,explicitConstructor,getSuperMethodsCalled(),typeVariableAliases);
+		NewConstructorTypeMunger nctm = new NewConstructorTypeMunger(parameterizedSignature,syntheticConstructor,explicitConstructor,getSuperMethodsCalled(),typeVariableAliases);
+		nctm.setSourceLocation(getSourceLocation());
+		return nctm;
 	}
 
 }
