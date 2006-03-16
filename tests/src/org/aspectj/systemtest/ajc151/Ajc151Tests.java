@@ -107,6 +107,11 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testSwallowedExceptionIgnored() {
 	  runTest("swallowed exceptions with xlint");
   }
+  
+  public void testGenericAspectWithUnknownType_pr131933() {
+	  runTest("no ClassCastException with generic aspect and unknown type");
+  }
+  
   /*
    * @AspectJ bugs and enhancements
    */

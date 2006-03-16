@@ -246,6 +246,13 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs151" title="no ClassCastException with generic aspect and unknown type">
+        <compile files="pr131933.aj" options="-1.5">
+          <message kind="error" line="5" text="can't bind type name 'MyList'"/>
+        </compile>
+    </ajc-test> 
+
+
     <!-- New features down here... when they arent big enough to have their own test file -->
     
     <ajc-test dir="features151/ptw" title="exposing withintype">

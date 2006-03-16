@@ -188,8 +188,7 @@ public abstract class TypePattern extends PatternNode {
 	
 	public UnresolvedType resolveExactType(IScope scope, Bindings bindings) {
 		TypePattern p = resolveBindings(scope, bindings, false, true);
-		if (p == NO) return ResolvedType.MISSING;
-		
+		if (!(p instanceof ExactTypePattern)) return ResolvedType.MISSING;
 		return ((ExactTypePattern)p).getType();
 	}
 	
