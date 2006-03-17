@@ -427,7 +427,7 @@ public class ProgramElement implements IProgramElement {
 						sb.append(arg);
 					}
 				}
-				if (it.hasNext()) sb.append(", ");
+				if (it.hasNext()) sb.append(",");
 			}
 			sb.append(')');
 		}

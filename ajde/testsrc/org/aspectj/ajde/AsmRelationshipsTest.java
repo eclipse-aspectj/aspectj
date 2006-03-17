@@ -82,7 +82,7 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 	public void testInterTypeDeclarations() {		
 		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.xxx", "Point", 
 			"declared on", "aspect declarations", IProgramElement.Kind.INTER_TYPE_FIELD);	
-		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.check(int, Line)", 
+		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.check(int,Line)", 
 			"Point", "declared on", "aspect declarations", IProgramElement.Kind.INTER_TYPE_METHOD);	
 	}
 

@@ -111,7 +111,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		assertNotNull(fieldNode);		
 		assertEquals(fieldNode.toLabelString(), fieldMsg);
 
-		String methodMsg = "Point.check(int, Line)";
+		String methodMsg = "Point.check(int,Line)";
 		IProgramElement methodNode = model.findElementForLabel(aspect, IProgramElement.Kind.INTER_TYPE_METHOD, methodMsg);
 		assertNotNull(methodNode);		
 		assertEquals(methodNode.toLabelString(), methodMsg);
@@ -135,7 +135,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		assertNotNull(ptctNode);		
 		assertEquals(ptctNode.toLabelString(), ptct);		
 
-		String params = "namedWithArgs(int, int)";
+		String params = "namedWithArgs(int,int)";
 		IProgramElement paramsNode = model.findElementForSignature(aspect, IProgramElement.Kind.POINTCUT, params);
 		assertNotNull(paramsNode);		
 		assertEquals(paramsNode.toLabelString(), params);	
@@ -176,7 +176,7 @@ public class AsmDeclarationsTest extends AjdeTestCase {
 		assertNotNull(namedWithOneArgNode);		
 		assertEquals(namedWithOneArgNode.toLabelString(), namedWithOneArg);		
 
-		String afterReturning = "afterReturning(int, int): namedWithArgs..";
+		String afterReturning = "afterReturning(int,int): namedWithArgs..";
 		IProgramElement afterReturningNode = model.findElementForLabel(aspect, IProgramElement.Kind.ADVICE, afterReturning);
 		assertNotNull(afterReturningNode);		
 		assertEquals(afterReturningNode.toLabelString(), afterReturning);

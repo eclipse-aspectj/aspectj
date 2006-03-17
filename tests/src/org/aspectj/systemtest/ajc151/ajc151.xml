@@ -256,6 +256,10 @@
         <compile files="pr131932.aj" options="-1.5 -emacssym"/>
     </ajc-test>
 
+    <ajc-test dir="bugs151" title="declare annotation appears in structure model when in same file">
+        <compile files="pr132130.aj" options="-1.5 -emacssym"/>
+    </ajc-test>
+
     <!-- New features down here... when they arent big enough to have their own test file -->
     
     <ajc-test dir="features151/ptw" title="exposing withintype">

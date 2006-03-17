@@ -170,7 +170,7 @@ public class CoverageTestCase extends AjdocTestCase {
         
 		String[] strings = { 
 				"after(): named..",
-				"afterReturning(int, int): namedWithArgs..",
+				"afterReturning(int,int): namedWithArgs..",
 				"afterThrowing(): named..",
 				"before(): named..",
 				"around(int): namedWithOneArg..",

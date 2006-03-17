@@ -75,13 +75,13 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	  IProgramElement pe = top.findElementForType("pkg","foo");
   	  assertNotNull("Couldn't find 'foo' element in the tree",pe);
   	  // check that the defaults return the fully qualified arg
-  	  assertEquals("foo(int, java.lang.Object)",pe.toLabelString());
-  	  assertEquals("C.foo(int, java.lang.Object)",pe.toLinkLabelString());
-  	  assertEquals("foo(int, java.lang.Object)",pe.toSignatureString());
+  	  assertEquals("foo(int,java.lang.Object)",pe.toLabelString());
+  	  assertEquals("C.foo(int,java.lang.Object)",pe.toLinkLabelString());
+  	  assertEquals("foo(int,java.lang.Object)",pe.toSignatureString());
   	  // check that can get hold of the non qualified args
-  	  assertEquals("foo(int, Object)",pe.toLabelString(false));
-  	  assertEquals("C.foo(int, Object)",pe.toLinkLabelString(false));
-  	  assertEquals("foo(int, Object)",pe.toSignatureString(false));
+  	  assertEquals("foo(int,Object)",pe.toLabelString(false));
+  	  assertEquals("C.foo(int,Object)",pe.toLinkLabelString(false));
+  	  assertEquals("foo(int,Object)",pe.toSignatureString(false));
 
   	  IProgramElement pe2 = top.findElementForType("pkg","printParameters");
   	  assertNotNull("Couldn't find 'printParameters' element in the tree",pe2);
@@ -190,6 +190,70 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
   	  assertEquals("target of relationship should be the Foo.Foo(List<T>) itd but is IPE with label "
   			  + target.toLabelString(),constructor,target);
+  }
+  
+  
+  public void testDeclareAnnotationAppearsInStructureModel_pr132130() {
+	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
+	  runTest("declare annotation appears in structure model when in same file");
+	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+	  
+  	  // get the IProgramElements corresponding to the different code entries
+  	  IProgramElement decam = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,"declare @method: * debit(..) : @Secured(role = \"supervisor\")");  	   	 
+  	  assertNotNull("Couldn't find 'declare @method' element in the tree",decam);
+  	  IProgramElement method = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.METHOD,"debit(long,long)");
+  	  assertNotNull("Couldn't find the 'debit(long,long)' method element in the tree",method);
+  	  IProgramElement decac = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR,"declare @constructor: BankAccount+.new(..) : @Secured(role = \"supervisor\")");  	   	 
+  	  assertNotNull("Couldn't find 'declare @constructor' element in the tree",decac);
+  	  IProgramElement ctr = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.CONSTRUCTOR,"BankAccount(String,int)");
+  	  assertNotNull("Couldn't find the 'BankAccount(String,int)' constructor element in the tree",ctr);
+
+  	  
+  	  // check that decam has a annotates relationship with the debit method
+  	  List matches = AsmManager.getDefault().getRelationshipMap().get(decam);	
+  	  assertNotNull("'declare @method' should have some relationships but does not",matches);
+  	  assertTrue("'declare @method' should have one relationships but has " + matches.size(),matches.size()==1);
+  	  List matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("'declare @method' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
+  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the 'debit(long,long)' method but is IPE with label "
+  			  + target.toLabelString(),method,target);
+  	  
+  	  // check that the debit method has an annotated by relationship with the declare @method
+  	  matches = AsmManager.getDefault().getRelationshipMap().get(method);	
+  	  assertNotNull("'debit(long,long)' should have some relationships but does not",matches);
+  	  assertTrue("'debit(long,long)' should have one relationships but has " + matches.size(),matches.size()==1);
+  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("'debit(long,long)' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
+  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the 'declare @method' ipe but is IPE with label "
+  			  + target.toLabelString(),decam,target);
+
+  	  // check that decac has a annotates relationship with the constructor
+  	  matches = AsmManager.getDefault().getRelationshipMap().get(decac);	
+  	  assertNotNull("'declare @method' should have some relationships but does not",matches);
+  	  assertTrue("'declare @method' should have one relationships but has " + matches.size(),matches.size()==1);
+  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("'declare @method' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
+  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the 'debit(long, long)' method but is IPE with label "
+  			  + target.toLabelString(),ctr,target);
+  	  
+  	  // check that the constructor has an annotated by relationship with the declare @constructor
+  	  matches = AsmManager.getDefault().getRelationshipMap().get(ctr);	
+  	  assertNotNull("'debit(long, long)' should have some relationships but does not",matches);
+  	  assertTrue("'debit(long, long)' should have one relationships but has " + matches.size(),matches.size()==1);
+  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("'debit(long, long)' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
+  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the 'declare @method' ipe but is IPE with label "
+  			  + target.toLabelString(),decac,target);
+
+
   }
   
   /*
