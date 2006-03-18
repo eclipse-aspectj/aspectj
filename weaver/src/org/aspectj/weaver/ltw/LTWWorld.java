@@ -180,5 +180,8 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		}
     	return null;
     }
+    public boolean isRunMinimalMemory() {
+	     return true;
+    }
     
 }
