@@ -771,6 +771,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public void weavingCompleted() {
 		hasBeenWoven = true;
 		if (getResolvedTypeX().getWorld().isRunMinimalMemory()) evictWeavingState();
+		if (getSourceContext()!=null && !getResolvedTypeX().isAspect()) getSourceContext().tidy();
 	}
 	
 	// --- methods for testing
