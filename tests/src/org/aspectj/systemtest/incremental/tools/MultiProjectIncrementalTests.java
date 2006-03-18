@@ -271,6 +271,90 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==0);
 	}
 	
+	/**
+	 * The C.java file modified in this test has an inner class - this means the inner class
+	 * has a this$0 field and <init>(C) ctor to watch out for when checking for structural changes
+	 *
+	 */
+	public void testStateManagement3() {		
+		File binDirForInterproject1 = new File(getFile("interprojectdeps1","bin"));
+		
+		initialiseProject("interprojectdeps1");
+		build("interprojectdeps1"); // full build
+		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(binDirForInterproject1);
+		assertTrue("There should be state for project P1",ajs!=null);
+		assertTrue("Should be no struc changes as its a full build: "+
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==0);
+		
+		
+		alter("interprojectdeps1","inc1"); // adds a space to C.java
+		build("interprojectdeps1");
+		checkWasntFullBuild();
+		ajs = IncrementalStateManager.findStateManagingOutputLocation(new File(getFile("interprojectdeps1","bin")));
+		assertTrue("There should be state for project interprojectdeps1",ajs!=null);
+		checkWasntFullBuild();
+		assertTrue("Shouldn't be any structural changes but there were "+
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==0);
+	}
+	
+	/**
+	 * The C.java file modified in this test has an inner class - which has two ctors - this checks
+	 * how they are mangled with an instance of C.
+	 *
+	 */
+	public void testStateManagement4() {		
+		File binDirForInterproject2 = new File(getFile("interprojectdeps2","bin"));
+		
+		initialiseProject("interprojectdeps2");
+		build("interprojectdeps2"); // full build
+		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(binDirForInterproject2);
+		assertTrue("There should be state for project interprojectdeps2",ajs!=null);
+		assertTrue("Should be no struc changes as its a full build: "+
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==0);
+		
+		
+		alter("interprojectdeps2","inc1"); // minor change to C.java
+		build("interprojectdeps2");
+		checkWasntFullBuild();
+		ajs = IncrementalStateManager.findStateManagingOutputLocation(new File(getFile("interprojectdeps2","bin")));
+		assertTrue("There should be state for project interprojectdeps1",ajs!=null);
+		checkWasntFullBuild();
+		assertTrue("Shouldn't be any structural changes but there were "+
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==0);
+	}
+	
+	/**
+	 * The C.java file modified in this test has an inner class - it has two ctors but
+	 * also a reference to C.this in it - which will give rise to an accessor being
+	 * created in C
+	 *
+	 */
+	public void testStateManagement5() {		
+		File binDirForInterproject3 = new File(getFile("interprojectdeps3","bin"));
+		
+		initialiseProject("interprojectdeps3");
+		build("interprojectdeps3"); // full build
+		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(binDirForInterproject3);
+		assertTrue("There should be state for project interprojectdeps3",ajs!=null);
+		assertTrue("Should be no struc changes as its a full build: "+
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==0);
+		
+		
+		alter("interprojectdeps3","inc1"); // minor change to C.java
+		build("interprojectdeps3");
+		checkWasntFullBuild();
+		ajs = IncrementalStateManager.findStateManagingOutputLocation(new File(getFile("interprojectdeps3","bin")));
+		assertTrue("There should be state for project interprojectdeps1",ajs!=null);
+		checkWasntFullBuild();
+		assertTrue("Shouldn't be any structural changes but there were "+
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==0);
+	}
 	
 	/**
 	 * Now the most complex test.  Create a dependancy between two projects.  Building
@@ -527,9 +611,11 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		alter("PR119882","inc1");
 		build("PR119882");
 		//fullBuild("PR119882");
+		List errors = MyTaskListManager.getErrorMessages();
+		assertTrue("Should be at least one error, but got none",errors.size()==1);
 		assertEquals("error message should be 'i cannot be resolved' ",
 				"i cannot be resolved",
-				((IMessage)MyTaskListManager.getErrorMessages().get(0))
+				((IMessage)errors.get(0))
 					.getMessage());
 		alter("PR119882","inc2");
 		build("PR119882");
@@ -537,7 +623,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				MyErrorHandler.getErrorMessages().isEmpty());	
 		assertEquals("error message should be 'i cannot be resolved' ",
 				"i cannot be resolved",
-				((IMessage)MyTaskListManager.getErrorMessages().get(0))
+				((IMessage)errors.get(0))
 					.getMessage());
 
 	}
