@@ -37,6 +37,8 @@ public class SourceContextImpl implements ISourceContext {
 		return new File(delegate.getSourcefilename());
 	}
 	
+	public void tidy() {}
+	
 	public int getOffset() { return 0; }
 		
 		/*
@@ -94,5 +96,6 @@ public class SourceContextImpl implements ISourceContext {
 		public ISourceLocation makeSourceLocation(IHasPosition position) {return null;}
 		public ISourceLocation makeSourceLocation(int line, int offset) {return null;}
 		public int getOffset() {return 0;}
+		public void tidy() {}
 	};
 }

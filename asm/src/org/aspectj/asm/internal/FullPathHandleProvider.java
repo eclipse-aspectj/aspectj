@@ -62,4 +62,12 @@ public class FullPathHandleProvider implements IElementHandleProvider {
         st.nextToken(); // skip over the file
         return new Integer(st.nextToken()).intValue();
     }
+
+	public int getOffSetForHandle(String handle) {
+		StringTokenizer st = new StringTokenizer(handle, ID_DELIM);
+        st.nextToken(); // skip over the file
+        st.nextToken(); // skip over the line number
+        st.nextToken(); // skip over the column
+        return new Integer(st.nextToken()).intValue();
+	}
 }

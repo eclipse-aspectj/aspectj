@@ -19,4 +19,5 @@ public interface ISourceContext {
 	public ISourceLocation makeSourceLocation(IHasPosition position);
 	public ISourceLocation makeSourceLocation(int line, int offset);
 	public int getOffset();
+	public void tidy();
 }

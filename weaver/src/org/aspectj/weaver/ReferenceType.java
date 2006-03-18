@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
@@ -610,7 +611,8 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	public void setDelegate(ReferenceTypeDelegate delegate) {
-		if (this.delegate!=null && this.delegate.getSourceContext()!=SourceContextImpl.UNKNOWN_SOURCE_CONTEXT) 
+		// Don't copy from BcelObjectType to EclipseSourceType - the context may be tidied (result null'd) after previous weaving
+		if (this.delegate!=null && !(this.delegate instanceof BcelObjectType) && this.delegate.getSourceContext()!=SourceContextImpl.UNKNOWN_SOURCE_CONTEXT) 
 			((AbstractReferenceTypeDelegate)delegate).setSourceContext(this.delegate.getSourceContext());
 		this.delegate = delegate;
 		for(Iterator it = this.derivativeTypes.iterator(); it.hasNext(); ) {

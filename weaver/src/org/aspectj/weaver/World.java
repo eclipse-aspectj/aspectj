@@ -100,8 +100,8 @@ public abstract class World implements Dump.INode {
     private boolean checkedAdvancedConfiguration=false;
     // Xset'table options
     private boolean fastDelegateSupportEnabled = isASMAround;
-	private boolean runMinimalMemory = true;
-
+	private boolean runMinimalMemory = false;
+	public boolean forDEBUG_structuralChangesCode = false;
 	
     
     // Records whether ASM is around ... so we might use it for delegates
@@ -717,6 +717,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetCAPTURE_ALL_CONTEXT = "captureAllContext"; // default false
 	public final static String xsetACTIVATE_LIGHTWEIGHT_DELEGATES = "activateLightweightDelegates"; // default true
 	public final static String xsetRUN_MINIMAL_MEMORY ="runMinimalMemory"; // default true
+	public final static String xsetDEBUG_STRUCTURAL_CHANGES_CODE = "debugStructuralChangesCode"; // default false
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1086,21 +1087,27 @@ public abstract class World implements Dump.INode {
 	    	if (!checkedAdvancedConfiguration) {
 	        	Properties p = getExtraConfiguration();
 	        	if (p!=null) {
-					if (isASMAround) { // dont bother if its not...
-		        		String s = p.getProperty(xsetACTIVATE_LIGHTWEIGHT_DELEGATES,"true");
-		        		fastDelegateSupportEnabled = s.equalsIgnoreCase("true");
-		        		if (!fastDelegateSupportEnabled) 
-		        			getMessageHandler().handleMessage(MessageUtil.info("[activateLightweightDelegates=false] Disabling optimization to use lightweight delegates for non-woven types"));
-					}
-					// wonder if this should be based on whether an incremental build can follow?
-					String s = p.getProperty(xsetRUN_MINIMAL_MEMORY,"false");
+	        		
+				if (isASMAround) { // dont bother if its not...
+	        		String s = p.getProperty(xsetACTIVATE_LIGHTWEIGHT_DELEGATES,"true");
+	        		fastDelegateSupportEnabled = s.equalsIgnoreCase("true");
+	        		if (!fastDelegateSupportEnabled) 
+	        			getMessageHandler().handleMessage(MessageUtil.info("[activateLightweightDelegates=false] Disabling optimization to use lightweight delegates for non-woven types"));
+				}
+				
+				String s = p.getProperty(xsetRUN_MINIMAL_MEMORY,"false");
 	        		runMinimalMemory = s.equalsIgnoreCase("true");
 //	        		if (runMinimalMemory) 
 //	        			getMessageHandler().handleMessage(MessageUtil.info("[runMinimalMemory=true] Optimizing bcel processing (and cost of performance) to use less memory"));
+	        		
+	        		
+	        		s = p.getProperty(xsetDEBUG_STRUCTURAL_CHANGES_CODE,"false");
+	        		forDEBUG_structuralChangesCode = s.equalsIgnoreCase("true");
+	        		
 	    		}
 	        	checkedAdvancedConfiguration=true;
-	        }
-	    }
+        }
+     }
 	    
 	    public boolean isRunMinimalMemory() {
 	      ensureAdvancedConfigurationProcessed();

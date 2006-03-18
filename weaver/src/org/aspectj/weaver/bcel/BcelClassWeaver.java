@@ -1058,7 +1058,7 @@ class BcelClassWeaver implements IClassWeaver {
 		for (int i = 0; i < dontAddMeTwice.length; i++){
 			Annotation ann = dontAddMeTwice[i];
 			if (ann != null && decaF.getAnnotationX().getTypeName().equals(ann.getTypeName())){
-				dontAddMeTwice[i] = null; // incase it really has been added twice!
+				//dontAddMeTwice[i] = null; // incase it really has been added twice!
 				return true;
 			}
 		}

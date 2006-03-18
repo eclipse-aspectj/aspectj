@@ -17,15 +17,17 @@ import java.io.File;
 
 import org.aspectj.ajdt.internal.core.builder.EclipseAdapterUtils;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 
 public class EclipseSourceLocation implements ISourceLocation {
     private static String NO_CONTEXT = "USE_NULL--NO_CONTEXT_AVAILABLE";
 	CompilationResult result;    
+//	EclipseSourceContext eclipseContext;
 	int startPos, endPos;
+	String filename;
     // lazy but final
     File file;
     int startLine = -1;
@@ -36,6 +38,7 @@ public class EclipseSourceLocation implements ISourceLocation {
 	public EclipseSourceLocation(CompilationResult result, int startPos, int endPos) {
 		super();
 		this.result = result;
+		if (result!=null && result.fileName!=null) this.filename = new String(result.fileName);
 		this.startPos = startPos;
 		this.endPos = endPos;
 	}
@@ -58,19 +61,20 @@ public class EclipseSourceLocation implements ISourceLocation {
 
 	public File getSourceFile() {
 		if (null == file) {
-            if ((null == result) 
-                || (null == result.fileName)
-                || (0 == result.fileName.length)) {
+			if (filename==null) {
+//            if ((null == result) 
+//                || (null == result.fileName)
+//                || (0 == result.fileName.length)) {
                 file = ISourceLocation.NO_FILE;
             } else {
-                file = new File(new String(result.fileName)); 
+                file = new File(filename);//new String(result.fileName)); 
             }
         }
         return file;
 	}
 
 	public int getLine() {
-		if (-1 == startLine) {
+		if (-1 == startLine && result!=null) {
             startLine = ProblemHandler.searchLineNumber(result.lineSeparatorPositions, startPos);
         }
         return startLine;

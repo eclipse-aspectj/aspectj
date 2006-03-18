@@ -68,5 +68,9 @@ public class EclipseSourceContext implements ISourceContext {
         }
         return sl;
 	}
+    
+    public void tidy() {
+    	  result=null;
+    }
 
 }

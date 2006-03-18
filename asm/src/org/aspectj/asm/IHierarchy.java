@@ -91,6 +91,7 @@ public interface IHierarchy extends Serializable {
 	 * @return		a new structure node for the file if it was not found in the model
 	 */
 	public IProgramElement findElementForSourceLine(String sourceFilePath, int lineNumber);
+	public IProgramElement findElementForOffSet(String sourceFilePath, int lineNumber, int offSet);
 	
 	public String getConfigFile();
 	

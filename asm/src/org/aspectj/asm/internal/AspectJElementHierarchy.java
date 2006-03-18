@@ -43,11 +43,12 @@ public class AspectJElementHierarchy implements IHierarchy {
         // int col = new Integer(st.nextToken()).intValue(); TODO: use column number when available
         String file = AsmManager.getDefault().getHandleProvider().getFileForHandle(handle); // st.nextToken();
         int line = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(handle); // st.nextToken();
+        int offSet = AsmManager.getDefault().getHandleProvider().getOffSetForHandle(handle); 
         
         String canonicalSFP = AsmManager.getDefault().getCanonicalFilePath(new File(file));
-		IProgramElement ret = findNodeForSourceLineHelper(root,canonicalSFP, line);
+		IProgramElement ret = findNodeForSourceLineHelper(root,canonicalSFP, line, offSet);
 		if (ret!=null) {
-			handleMap.put(handle,ret);
+			cache(handle,ret);
 		}
 		return ret;
 	}
@@ -245,7 +246,18 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public IProgramElement findElementForSourceLine(String sourceFilePath, int lineNumber) {
 		String canonicalSFP = AsmManager.getDefault().getCanonicalFilePath(
 									new File(sourceFilePath));
-		IProgramElement node = findNodeForSourceLineHelper(root, canonicalSFP, lineNumber);
+		IProgramElement node = findNodeForSourceLineHelper(root, canonicalSFP, lineNumber, -1);
+		if (node != null) {
+			return node;	
+		} else {			
+			return createFileStructureNode(sourceFilePath);
+		}
+	}
+
+	public IProgramElement findElementForOffSet(String sourceFilePath, int lineNumber, int offSet) {
+		String canonicalSFP = AsmManager.getDefault().getCanonicalFilePath(
+									new File(sourceFilePath));
+		IProgramElement node = findNodeForSourceLineHelper(root, canonicalSFP, lineNumber, offSet);
 		if (node != null) {
 			return node;	
 		} else {
@@ -267,9 +279,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 	}
 
 
-	private IProgramElement findNodeForSourceLineHelper(IProgramElement node, String sourceFilePath, int lineNumber) {
-		if (matches(node, sourceFilePath, lineNumber) 
-			&& !hasMoreSpecificChild(node, sourceFilePath, lineNumber)) {
+	private IProgramElement findNodeForSourceLineHelper(IProgramElement node, String sourceFilePath, int lineNumber, int offSet) {
+		if (matches(node, sourceFilePath, lineNumber, offSet) 
+			&& !hasMoreSpecificChild(node, sourceFilePath, lineNumber, offSet)) {
 			return node;	
 		} 
 		
@@ -278,15 +290,16 @@ public class AspectJElementHierarchy implements IHierarchy {
 				IProgramElement foundNode = findNodeForSourceLineHelper(
 					(IProgramElement)it.next(), 
 					sourceFilePath, 
-					lineNumber); 		
+					lineNumber,
+					offSet); 		
 				if (foundNode != null) return foundNode;
 			}
 		}
 		
 		return null;		
 	}
-
-	private boolean matches(IProgramElement node, String sourceFilePath, int lineNumber) {
+	
+	private boolean matches(IProgramElement node, String sourceFilePath, int lineNumber, int offSet) {
 //		try {			
 //			if (node != null && node.getSourceLocation() != null)
 //				System.err.println("====\n1: " + 
@@ -296,6 +309,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 			return node != null 
 				&& node.getSourceLocation() != null
 				&& node.getSourceLocation().getSourceFile().getAbsolutePath().equals(sourceFilePath)
+				&& ((offSet != -1 && node.getSourceLocation().getOffset() == offSet) 
+						|| offSet == -1 )
 				&& ((node.getSourceLocation().getLine() <= lineNumber
 					&& node.getSourceLocation().getEndLine() >= lineNumber)
 					||
@@ -307,10 +322,10 @@ public class AspectJElementHierarchy implements IHierarchy {
 //		} 
 	}
 	
-	private boolean hasMoreSpecificChild(IProgramElement node, String sourceFilePath, int lineNumber) {
+	private boolean hasMoreSpecificChild(IProgramElement node, String sourceFilePath, int lineNumber, int offSet) {
 		for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement child = (IProgramElement)it.next();
-			if (matches(child, sourceFilePath, lineNumber)) return true;
+			if (matches(child, sourceFilePath, lineNumber, offSet)) return true;
 		}
 		return false;
 	}
@@ -336,8 +351,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 		// TODO: use column number when available
         String file = AsmManager.getDefault().getHandleProvider().getFileForHandle(handle); // st.nextToken();
         int line = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(handle); // st.nextToken();
+        int offSet = AsmManager.getDefault().getHandleProvider().getOffSetForHandle(handle);
         
-		ret = findElementForSourceLine(file, line);
+		ret = findElementForOffSet(file, line, offSet);
 		if (ret != null) { 
 			cache(handle,(ProgramElement)ret);
 		}
@@ -371,9 +387,11 @@ public class AspectJElementHierarchy implements IHierarchy {
 //		}
 //		return null;
 //	}
-
-	protected void cache(String handle, ProgramElement pe) {
-		handleMap.put(handle,pe);
+	
+	protected void cache(String handle, IProgramElement pe) {
+		if (!AsmManager.isCompletingTypeBindings()) {
+			handleMap.put(handle,pe);
+		}
 	}
 
 	public void flushTypeMap() {

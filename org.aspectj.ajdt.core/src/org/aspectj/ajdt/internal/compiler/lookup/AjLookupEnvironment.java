@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.WeaveMessage;
@@ -117,6 +118,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	
 	//??? duplicates some of super's code
 	public void completeTypeBindings() {
+		AsmManager.setCompletingTypeBindings(true);
 		ContextToken completeTypeBindingsToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COMPLETING_TYPE_BINDINGS, "");
 //		builtInterTypesAndPerClauses = false;
 		//pendingTypesToWeave = new ArrayList();
@@ -251,8 +253,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
                 
 		stepCompleted = BUILD_FIELDS_AND_METHODS;
 		lastCompletedUnitIndex = lastUnitIndex;
-		
-		CompilationAndWeavingContext.leavingPhase(completeTypeBindingsToken);
+		AsmManager.setCompletingTypeBindings(false);
+		CompilationAndWeavingContext.leavingPhase(completeTypeBindingsToken);	
 	}
 	
 	

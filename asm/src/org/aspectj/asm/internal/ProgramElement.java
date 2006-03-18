@@ -78,13 +78,11 @@ public class ProgramElement implements IProgramElement {
 	public ProgramElement (String name, IProgramElement.Kind kind, ISourceLocation sourceLocation,
 		                    int modifiers, String comment, List children) {
 		this(name, kind, children);
-		this.sourceLocation = //ISourceLocation.EMPTY;
-		sourceLocation;
+		this.sourceLocation = sourceLocation;
 		setFormalComment(comment);
 //		if (comment!=null && comment.length()>0) formalComment = comment;
 		this.modifiers = modifiers;
 //		this.accessibility = genAccessibility(modifiers);
-		cacheByHandle();
 	}
 	
 	/**
@@ -104,9 +102,7 @@ public class ProgramElement implements IProgramElement {
 		boolean member) {
 
 		this(name, kind, children);
-		this.sourceLocation = 
-			//ISourceLocation.EMPTY;
-			sourceLocation;
+		this.sourceLocation = sourceLocation;
 		this.kind = kind;
 		this.modifiers = modifiers;
 //		this.accessibility = accessibility;
@@ -116,7 +112,6 @@ public class ProgramElement implements IProgramElement {
 //		if (comment!=null && comment.length()>0) formalComment = comment;
 		if (relations!=null && relations.size()!=0) setRelations(relations);
 //		this.relations = relations;
-		cacheByHandle();
 	}
 
 	public List getModifiers() {

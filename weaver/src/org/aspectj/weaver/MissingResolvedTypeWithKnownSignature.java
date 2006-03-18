@@ -119,6 +119,8 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 				return 0;
 			}
 			
+			public void tidy() {}
+			
 		};
 	}
 

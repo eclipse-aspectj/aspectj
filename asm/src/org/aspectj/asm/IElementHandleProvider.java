@@ -53,4 +53,6 @@ public interface IElementHandleProvider {
      */
     public int getLineNumberForHandle(String handle);
     
+    public int getOffSetForHandle(String handle);
+    
 }

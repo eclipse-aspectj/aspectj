@@ -386,6 +386,7 @@ public class PointcutParser {
     			public int getOffset() {
     				return 0;
     			}
+    			public void tidy() {}
     		};
     		return new AtAjAttributes.BindingScope(inType,sourceContext,formalBindings);
     	}

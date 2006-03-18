@@ -64,6 +64,8 @@ public class AsmManager {
 	private static String  dumpFilename = "";
 	private static boolean reporting = false;
 
+	private static boolean completingTypeBindings = false;
+	
 //	static {
 //		setReporting("c:/model.nfo",true,true,true,true);
 //	}
@@ -72,7 +74,7 @@ public class AsmManager {
     	hierarchy = new AspectJElementHierarchy();
 //    	List relationships = new ArrayList();
 		mapper = new RelationshipMap(hierarchy);
-        handleProvider = new FullPathHandleProvider(); 
+        handleProvider = new OptimizedFullPathHandleProvider(); 
     }
 	
 	public void createNewASM() {
@@ -844,6 +846,12 @@ public class AsmManager {
      * guarding of expensive operations on an empty/null model.
      */
 	public static boolean isCreatingModel() { return creatingModel;}
+	
+	public static void setCompletingTypeBindings(boolean b) {
+		completingTypeBindings = b;
+	}
+	
+	public static boolean isCompletingTypeBindings() { return completingTypeBindings; }
 	
 }
 
