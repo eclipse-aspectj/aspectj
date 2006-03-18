@@ -41,6 +41,7 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -522,6 +523,7 @@ public class WeavingAdaptor {
 
 				public void weaveCompleted() {
 					if (delegate!=null) delegate.weavingCompleted();
+					ResolvedType.resetPrimitives();
 				}
 			};				
 		}
