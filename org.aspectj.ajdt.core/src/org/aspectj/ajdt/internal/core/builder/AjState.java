@@ -44,8 +44,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IWeaver;
-import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -760,7 +760,12 @@ public class AjState {
 			// by the world.
 			ResolvedType rType = world.resolve(thisTime.getClassName());
 			if (!rType.isMissing()) {
-				this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactStructureRepresentation(rType));
+				try {
+					ClassFileReader reader = new ClassFileReader(thisTime.getBytes(), null);
+					this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactStructureRepresentation(reader));
+				} catch (ClassFormatException cfe) {
+					throw new BCException("Unexpected problem processing class",cfe);
+				}
 			}
 			return;
 		}
@@ -768,7 +773,12 @@ public class AjState {
 		CompactStructureRepresentation existingStructure = (CompactStructureRepresentation) this.resolvedTypeStructuresFromLastBuild.get(thisTime.getClassName());
 		ReferenceType newResolvedType = (ReferenceType) world.resolve(thisTime.getClassName());
 		if (!newResolvedType.isMissing()) {
-			this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactStructureRepresentation(newResolvedType));
+			try {
+				ClassFileReader reader = new ClassFileReader(thisTime.getBytes(), null);
+				this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactStructureRepresentation(reader));
+			} catch (ClassFormatException cfe) {
+				throw new BCException("Unexpected problem processing class",cfe);
+			}
 		}
 		
 		if (lastTime == null) {
@@ -779,13 +789,15 @@ public class AjState {
 		if (newResolvedType.isMissing()) {
 			return;
 		}
-
+		world.ensureAdvancedConfigurationProcessed();
 		byte[] newBytes = thisTime.getBytes();
 		try {
 			ClassFileReader reader = new ClassFileReader(newBytes, lastTime.getAbsolutePath().toCharArray());
 			// ignore local types since they're only visible inside a single method
 			if (!(reader.isLocal() || reader.isAnonymous())) {
 				if (hasStructuralChanges(reader,existingStructure)) {
+					if (world.forDEBUG_structuralChangesCode) 
+						System.err.println("Detected a structural change in "+thisTime.getFilename());
 					structuralChangesSinceLastFullBuild.put(thisTime.getFilename(),new Long(currentBuildTime));
 					addDependentsOf(new String(reader.getName()).replace('/','.'));
 				}
@@ -795,11 +807,18 @@ public class AjState {
 		}							
 	}
 	
-	
+	private static final char[][] EMPTY_CHAR_ARRAY = new char[0][];
+	private static final char[] BRACKET_V = {')','V'};
 	/**
 	 * Compare the class structure of the new intermediate (unwoven) class with the
 	 * existingResolvedType of the same class that we have in the world, looking for
 	 * any structural differences (and ignoring aj members resulting from weaving....)
+	 * 
+	 * Some notes from Andy... lot of problems here, which I've eventually resolved
+	 * by building the compactstructure based on a classfilereader, rather than on a
+	 * ResolvedType.  There are accessors for inner types and funky fields that the
+	 * compiler creates to support the language - for non-static inner types it
+	 * also mangles ctors to be prefixed with an instance of the surrounding type.
 	 * 
 	 * Warning : long but boring method implementation... 
 	 * @param reader
@@ -807,8 +826,6 @@ public class AjState {
 	 * @return
 	 */
 	private boolean hasStructuralChanges(ClassFileReader reader, CompactStructureRepresentation existingType) {
-		// mirrors the checks in ClassFileReader.hasStructuralChanges, but compares against
-		// ref type delegate instead of old bytes
 		if (existingType == null) {
 			return true;
 		}
@@ -831,14 +848,12 @@ public class AjState {
 		// interfaces
 		char[][] existingIfs = existingType.interfaces;
 		char[][] newIfsAsChars = reader.getInterfaceNames();
-		if (newIfsAsChars == null) { newIfsAsChars = new char[0][]; }
-		char[][] newIfs = new char[newIfsAsChars.length][];
-		if (existingIfs.length != newIfs.length) {
-			return true;
-		}
-		new_interface_loop: for (int i = 0; i < newIfs.length; i++) {
+		if (newIfsAsChars == null) { newIfsAsChars = EMPTY_CHAR_ARRAY; } // damn I'm lazy...
+		if (existingIfs == null) { existingIfs = EMPTY_CHAR_ARRAY; }
+		if (existingIfs.length != newIfsAsChars.length) return true;
+		new_interface_loop: for (int i = 0; i < newIfsAsChars.length; i++) {
 			for (int j = 0; j < existingIfs.length; j++) {
-				if (CharOperation.equals(existingIfs[j],newIfs[i])) {
+				if (CharOperation.equals(existingIfs[j],newIfsAsChars[i])) {
 					continue new_interface_loop;
 				}
 			}
@@ -849,85 +864,127 @@ public class AjState {
 		MemberStructure[] existingFields = existingType.fields;
 		IBinaryField[] newFields = reader.getFields();
 		if (newFields == null) { newFields = new IBinaryField[0]; }
+
+		// all redundant for now ... could be an optimization at some point...
 		// remove any ajc$XXX fields from those we compare with
 		// the existing fields - bug 129163
-		List nonGenFields = new ArrayList();
-		for (int i = 0; i < newFields.length; i++) {
-			IBinaryField field = newFields[i];
-			if (!CharOperation.prefixEquals(NameMangler.AJC_DOLLAR_PREFIX,field.getName())) {
-					nonGenFields.add(field);
-			}
-		}
-		if (nonGenFields.size() != existingFields.length) {
-			return true;
-		}
-		new_field_loop: for (Iterator iter = nonGenFields.iterator(); iter.hasNext();) {
-			IBinaryField field = (IBinaryField) iter.next();
-			char[] fieldName = field.getName();
-			for (int j = 0; j < existingFields.length; j++) {
-				if (CharOperation.equals(existingFields[j].name,fieldName)) {
-					if (!modifiersEqual(field.getModifiers(),existingFields[j].modifiers)) {
-						return true;
+//		List nonGenFields = new ArrayList();
+//		for (int i = 0; i < newFields.length; i++) {
+//			IBinaryField field = newFields[i];
+//			//if (!CharOperation.prefixEquals(NameMangler.AJC_DOLLAR_PREFIX,field.getName())) { // this would skip ajc$ fields
+//			//if ((field.getModifiers()&0x1000)==0) // 0x1000 => synthetic    - this will skip synthetic fields (eg. this$0)
+//			nonGenFields.add(field);
+//			//}
+//		}
+		if (newFields.length != existingFields.length) return true;
+		new_field_loop: 
+			for (int i = 0; i < newFields.length; i++) {
+				IBinaryField field = newFields[i];
+				char[] fieldName = field.getName();
+				for (int j = 0; j < existingFields.length; j++) {
+					if (CharOperation.equals(existingFields[j].name,fieldName)) {
+						if (!modifiersEqual(field.getModifiers(),existingFields[j].modifiers)) {
+							return true;
+						}
+						if (!CharOperation.equals(existingFields[j].signature,field.getTypeName())) {
+							return true;
+						}
+						continue new_field_loop;
 					}
-					if (!CharOperation.equals(existingFields[j].signature,field.getTypeName())) {
-						return true;
-					}
-					continue new_field_loop;
 				}
+				return true;
 			}
-			return true;
-		}
 		
 		// methods
 		MemberStructure[] existingMethods = existingType.methods;
 		IBinaryMethod[] newMethods = reader.getMethods();
 		if (newMethods == null) { newMethods = new IBinaryMethod[0]; }
-		// remove the aspectOf, hasAspect, clinit and ajc$XXX methods 
-		// from those we compare with the existing methods - bug 129163
-		List nonGenMethods = new ArrayList();
-		for (int i = 0; i < newMethods.length; i++) {
-			IBinaryMethod method = newMethods[i];
-			char[] methodName = method.getSelector();
-			if (!CharOperation.equals(methodName,NameMangler.METHOD_ASPECTOF) && 
-				!CharOperation.equals(methodName,NameMangler.METHOD_HASASPECT) &&
-				!CharOperation.equals(methodName,NameMangler.STATIC_INITIALIZER) && 
-				!CharOperation.prefixEquals(NameMangler.AJC_DOLLAR_PREFIX,methodName)) {
-				nonGenMethods.add(method);
-			}
-		}
-		if (nonGenMethods.size() != existingMethods.length) {
-			return true;
-		}
-		new_method_loop: for (Iterator iter = nonGenMethods.iterator(); iter.hasNext();) {
-			IBinaryMethod method = (IBinaryMethod) iter.next();
-			char[] methodName = method.getSelector();
-			for (int j = 0; j < existingMethods.length; j++) {
-				if (CharOperation.equals(existingMethods[j].name,methodName)) {
-					// candidate match
-					if (!CharOperation.equals(method.getMethodDescriptor(),existingMethods[j].signature)) {
-						continue; // might be overloading
-					} 
-					else {
-						// matching sigs
-						if (!modifiersEqual(method.getModifiers(),existingMethods[j].modifiers)) {
-							return true;
+		
+		// all redundant for now ... could be an optimization at some point...
+		
+		// Ctors in a non-static inner type have an 'extra parameter' of the enclosing type.
+		// If skippableDescriptorPrefix gets set here then it is set to the descriptor portion
+		// for this 'extra parameter'.  For an inner class of pkg.Foo the skippable descriptor
+		// prefix will be '(Lpkg/Foo;' - so later when comparing <init> methods we know what to
+		// compare.
+		// IF THIS CODE NEEDS TO GET MORE COMPLICATED, I THINK ITS WORTH RIPPING IT ALL OUT AND
+		// CREATING THE STRUCTURAL CHANGES OBJECT BASED ON CLASSREADER OUTPUT RATHER THAN
+		// THE RESOLVEDTYPE - THEN THERE WOULD BE NO NEED TO TREAT SOME METHODS IN A PECULIAR
+		// WAY.
+//		char[] skippableDescriptorPrefix = null;
+//		char[] enclosingTypeName = reader.getEnclosingTypeName();
+//		boolean isStaticType = Modifier.isStatic(reader.getModifiers());
+//		if (!isStaticType && enclosingTypeName!=null) {
+//			StringBuffer sb = new StringBuffer();
+//			sb.append("(L").append(new String(enclosingTypeName)).append(";");
+//			skippableDescriptorPrefix = sb.toString().toCharArray();
+//		}
+//		
+//		
+//		// remove the aspectOf, hasAspect, clinit and ajc$XXX methods 
+//		// from those we compare with the existing methods - bug 129163
+//		List nonGenMethods = new ArrayList();
+//		for (int i = 0; i < newMethods.length; i++) {
+//			IBinaryMethod method = newMethods[i];
+////			if ((method.getModifiers() & 0x1000)!=0) continue;  // 0x1000 => synthetic    - will cause us to skip access$0 - is this always safe?
+//			char[] methodName = method.getSelector();
+////			if (!CharOperation.equals(methodName,NameMangler.METHOD_ASPECTOF) && 
+////				!CharOperation.equals(methodName,NameMangler.METHOD_HASASPECT) &&
+////				!CharOperation.equals(methodName,NameMangler.STATIC_INITIALIZER) && 
+////				!CharOperation.prefixEquals(NameMangler.AJC_DOLLAR_PREFIX,methodName) &&
+////				!CharOperation.prefixEquals(NameMangler.CLINIT,methodName)) { 
+//				  nonGenMethods.add(method);
+////			}
+//		}
+		if (newMethods.length != existingMethods.length) return true;
+		new_method_loop: 
+			for (int i = 0; i < newMethods.length; i++) {
+				IBinaryMethod method = newMethods[i];
+				char[] methodName = method.getSelector();
+				for (int j = 0; j < existingMethods.length; j++) {
+					if (CharOperation.equals(existingMethods[j].name,methodName)) {
+						// candidate match
+						if (!CharOperation.equals(method.getMethodDescriptor(),existingMethods[j].signature)) {
+						// ok, the descriptors don't match, but is this a funky ctor on a non-static inner
+						// type?
+//						boolean mightBeOK = 
+//							skippableDescriptorPrefix!=null &&  // set for inner types
+//							CharOperation.equals(methodName,NameMangler.INIT) && // ctor
+//		                     CharOperation.prefixEquals(skippableDescriptorPrefix,method.getMethodDescriptor()); // checking for prefix on the descriptor
+//						if (mightBeOK) {
+//							// OK, so the descriptor starts something like '(Lpkg/Foo;' - we now may need to look at the rest of the 
+//							// descriptor if it takes >1 parameter.
+//							// eg. could be (Lpkg/C;Ljava/lang/String;) where the skippablePrefix is (Lpkg/C;
+//							char [] md = method.getMethodDescriptor();
+//							char[] remainder = CharOperation.subarray(md, skippableDescriptorPrefix.length, md.length);
+//							if (CharOperation.equals(remainder,BRACKET_V)) continue new_method_loop; // no other parameters to worry about
+//							char[] comparableSig = CharOperation.subarray(existingMethods[j].signature, 1, existingMethods[j].signature.length);
+//							boolean match = CharOperation.equals(comparableSig, remainder);
+//							if (match) continue new_method_loop;
+//						}
+							continue; // might be overloading
+						} else {
+							// matching sigs
+							if (!modifiersEqual(method.getModifiers(),existingMethods[j].modifiers)) {
+								return true;
+							}
+							continue new_method_loop;
 						}
-						continue new_method_loop;
 					}
 				}
+				return true; // (no match found)
 			}
-			return true; // (no match found)
-		}
 		
 		return false;
 	}
 
+
 	private boolean modifiersEqual(int eclipseModifiers, int resolvedTypeModifiers) {
 		resolvedTypeModifiers = resolvedTypeModifiers & CompilerModifiers.AccJustFlag;
 		eclipseModifiers = eclipseModifiers & CompilerModifiers.AccJustFlag;
-		if ((eclipseModifiers & CompilerModifiers.AccSuper) != 0) {
-			eclipseModifiers -= CompilerModifiers.AccSuper;
-		}
+//		if ((eclipseModifiers & CompilerModifiers.AccSuper) != 0) {
+//			eclipseModifiers -= CompilerModifiers.AccSuper;
+//		}
 		return (eclipseModifiers == resolvedTypeModifiers);
 	}
 	
@@ -1143,6 +1200,57 @@ public class AjState {
 
 	private static class CompactStructureRepresentation {
 		
+		char[] className;
+		int modifiers;
+		char[] genericSignature;
+		char[] superclassName;
+		char[][] interfaces;
+		MemberStructure[] fields;
+		MemberStructure[] methods;
+		
+		public CompactStructureRepresentation(ClassFileReader cfr) {
+			this.className = cfr.getName();  // slashes...
+			this.modifiers = cfr.getModifiers();
+			this.genericSignature = cfr.getGenericSignature();
+//			if (this.genericSignature.length == 0) {
+//				this.genericSignature = null;
+//			}
+			this.superclassName = cfr.getSuperclassName(); // slashes...
+			interfaces = cfr.getInterfaceNames();
+			
+			
+
+			IBinaryField[] rFields = cfr.getFields();
+			this.fields = new MemberStructure[rFields==null?0:rFields.length];
+			if (rFields!=null) {
+				for (int i = 0; i < rFields.length; i++) {
+					this.fields[i] = new MemberStructure();
+					this.fields[i].name = rFields[i].getName();
+					this.fields[i].modifiers = rFields[i].getModifiers();
+					this.fields[i].signature = rFields[i].getTypeName();
+				}
+			}
+			
+			IBinaryMethod[] rMethods = cfr.getMethods();
+			this.methods = new MemberStructure[rMethods==null?0:rMethods.length];
+			if (rMethods!=null) {
+				for (int i = 0; i < rMethods.length; i++) {
+					this.methods[i] = new MemberStructure();
+					this.methods[i].name = rMethods[i].getSelector();
+					this.methods[i].modifiers = rMethods[i].getModifiers();
+	//				StringBuffer sig = new StringBuffer();
+	//				sig.append("(");
+	//				UnresolvedType[] pTypes = rMethods[i].getMethodDescriptor();
+	//				for (int j = 0; j < pTypes.length; j++) {
+	//					sig.append(pTypes[j].getSignature());
+	//				}
+	//				sig.append(")");
+	//				sig.append(rMethods[i].getReturnType().getSignature());
+					this.methods[i].signature =rMethods[i].getMethodDescriptor();// sig.toString().toCharArray();
+				}
+			}
+		}
+		
 		public CompactStructureRepresentation(ResolvedType forType) {
 			this.className = forType.getName().replace('.','/').toCharArray();
 			this.modifiers = forType.getModifiers();
@@ -1181,14 +1289,6 @@ public class AjState {
 				this.methods[i].signature = sig.toString().toCharArray();
 			}
 		}
-		
-		char[] className;
-		int modifiers;
-		char[] genericSignature;
-		char[] superclassName;
-		char[][] interfaces;
-		MemberStructure[] fields;
-		MemberStructure[] methods;
 	}
 	
 	private static class MemberStructure {
