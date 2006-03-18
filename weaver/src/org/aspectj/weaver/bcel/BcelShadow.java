@@ -1134,11 +1134,13 @@ public class BcelShadow extends Shadow {
 			if (munger instanceof Advice) {
 				if ( ((Advice)munger).getKind() == AdviceKind.Around) {
 					if (munger.getSourceLocation()!=null) { // do we know enough to bother reporting?
-						world.getLint().canNotImplementLazyTjp.signal(
-						    new String[] {toString()},
-						    getSourceLocation(),
-						    new ISourceLocation[] { munger.getSourceLocation() }
-						);
+						if (world.getLint().canNotImplementLazyTjp.isEnabled()) {
+							world.getLint().canNotImplementLazyTjp.signal(
+							    new String[] {toString()},
+							    getSourceLocation(),
+							    new ISourceLocation[] { munger.getSourceLocation() }
+							);
+						}
 					}
 					return false;
 				}
