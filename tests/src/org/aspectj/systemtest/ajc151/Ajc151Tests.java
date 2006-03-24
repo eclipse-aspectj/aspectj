@@ -25,6 +25,12 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     
+	// reported on the list...
+//  public void testDeca() { runTest("doubly annotating a method with declare");}
+	
+  public void testCrashingWithASM_pr132926_1() { runTest("crashing on annotation type resolving with asm - 1");}
+  public void testCrashingWithASM_pr132926_2() { runTest("crashing on annotation type resolving with asm - 2");}
+  public void testCrashingWithASM_pr132926_3() { runTest("crashing on annotation type resolving with asm - 3");}
   public void testGenericAdviceParameters_pr123553()    { runTest("generic advice parameters");}
   public void testMemberTypesInGenericTypes_pr122458()    { runTest("member types in generic types");}
   public void testMemberTypesInGenericTypes_pr122458_2()  { runTest("member types in generic types - 2");}

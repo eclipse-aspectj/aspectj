@@ -2,11 +2,38 @@
 
 <!-- AspectJ v1.5.1 Tests -->
 <suite>
+
+    <ajc-test dir="bugs151/pr132926" pr="132926" title="crashing on annotation type resolving with asm - 1">
+     <compile files="InputAnnotation.java,AffectedType.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr132926" pr="132926" title="crashing on annotation type resolving with asm - 2">
+     <compile files="InputAnnotation.java" outjar="foo.jar" options="-1.5"/>
+     <compile files="AffectedType.java" classpath="foo.jar" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr132926" pr="132926" title="crashing on annotation type resolving with asm - 3">
+     <compile files="InputAnnotation2.java" outjar="foo.jar" options="-1.5"/>
+     <compile files="AffectedType.java" classpath="foo.jar" options="-1.5">
+     	<message kind="error" line="9" text="AffectedType is not a valid target for annotation InputAnnotation, this annotation can only be applied to these element types {METHOD}"/>
+     </compile>
+    </ajc-test>
     
     <ajc-test dir="bugs151/pr123553" title="generic advice parameters">
         <compile files="A.java" options="-1.5"/>
         <run class="A"/>
     </ajc-test>  
+    
+    <ajc-test dir="bugs151/Deca" title="doubly annotating a method with declare">
+      <compile files="DecA.java" options="-1.5"/>
+      <run class="DecA">
+        <stderr>
+          <line text="There are 2 annotations on public void m()"/>
+          <line text="1) @One()"/>
+          <line text="2) @Two()"/>
+        </stderr>
+      </run>
+    </ajc-test>
     
      <ajc-test dir="bugs151/pr129566" title="arrayindexoutofbounds">
         <compile files="SkipList.java" options="-1.5"/>

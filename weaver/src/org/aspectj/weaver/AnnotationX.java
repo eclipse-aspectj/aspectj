@@ -154,17 +154,38 @@ public class AnnotationX {
   		lookedForAtTargetAnnotation = true;
   		atTargetAnnotation = retrieveAnnotationOnAnnotation(UnresolvedType.AT_TARGET);
   		if (atTargetAnnotation != null) {
-  			supportedTargets = new HashSet();
-  			List values = atTargetAnnotation.getBcelAnnotation().getValues();
-  		  	ElementNameValuePair envp = (ElementNameValuePair)values.get(0);
-  		  	ArrayElementValue aev = (ArrayElementValue)envp.getValue();
-  		  	ElementValue[] evs = aev.getElementValuesArray();
-  		  	for (int i = 0; i < evs.length; i++) {
-  				EnumElementValue ev = (EnumElementValue)evs[i];
-  				supportedTargets.add(ev.getEnumValueString());
-  			}
+  			supportedTargets = atTargetAnnotation.getTargets();
   		}
   	}
+  }
+  
+  /**
+   * For the @Target annotation, this will return a set of the elementtypes it can be applied to.
+   * For non @Target annotations, it returns null.
+   */
+  public Set /* of String */ getTargets() {
+	  if (!signature.equals(UnresolvedType.AT_TARGET)) return null;
+	  Set supportedTargets = new HashSet();
+	  if (mode==MODE_BCEL) {
+	    List values = getBcelAnnotation().getValues();
+	  	ElementNameValuePair envp = (ElementNameValuePair)values.get(0);
+	  	ArrayElementValue aev = (ArrayElementValue)envp.getValue();
+	  	ElementValue[] evs = aev.getElementValuesArray();
+	  	for (int i = 0; i < evs.length; i++) {
+			EnumElementValue ev = (EnumElementValue)evs[i];
+			supportedTargets.add(ev.getEnumValueString());
+		}
+	  } else {
+		  List values = theRealASMAnnotation.getNameValuePairs();
+		  AnnotationNameValuePair nvp = (AnnotationNameValuePair)values.get(0);
+		  ArrayAnnotationValue aav = (ArrayAnnotationValue)nvp.getValue();
+		  AnnotationValue[] avs = aav.getValues();
+		  for (int i = 0; i < avs.length; i++) {
+			AnnotationValue value = avs[i];
+			supportedTargets.add(value.stringify());
+		  }
+	  }
+	  return supportedTargets;
   }
 
   /**
