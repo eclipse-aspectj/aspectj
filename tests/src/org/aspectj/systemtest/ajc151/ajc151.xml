@@ -24,13 +24,33 @@
         <run class="A"/>
     </ajc-test>  
     
-    <ajc-test dir="bugs151/Deca" title="doubly annotating a method with declare">
+    <ajc-test dir="bugs151/pr133298" title="doubly annotating a method with declare">
       <compile files="DecA.java" options="-1.5"/>
       <run class="DecA">
         <stderr>
           <line text="There are 2 annotations on public void m()"/>
-          <line text="1) @One()"/>
-          <line text="2) @Two()"/>
+          <line text="1) One"/>
+          <line text="2) Two"/>
+		  <line text="There are 2 annotations on public Target(int):"/>
+		  <line text="1) Four"/>
+		  <line text="2) Three"/>
+		  <line text="There are 2 annotations on public int x:"/>
+		  <line text="1) Five"/>
+		  <line text="2) Six"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr133298" title="doubly annotating a method with declare - 2">
+      <compile files="DecA2.java" options="-1.5"/>
+      <run class="DecA2">
+        <stderr>
+          <line text="There are 2 annotations on public void Target.m()"/>
+          <line text="1) One"/>
+          <line text="2) Two"/>
+          <line text="There are 2 annotations on public void A.m()"/>
+          <line text="1) One"/>
+          <line text="2) Two"/>
         </stderr>
       </run>
     </ajc-test>
