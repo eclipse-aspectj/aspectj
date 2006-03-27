@@ -227,7 +227,7 @@ public class AsmElementFormatter {
 
                 //TODO AV - could speed up if we could dig only for @Aspect declaring types (or aspect if mixed style allowed)
                 //??? how to : node.getParent().getKind().equals(IProgramElement.Kind.ASPECT)) {
-                if (true && methodDeclaration!=null && methodDeclaration.annotations != null) {
+                if (true && methodDeclaration!=null && methodDeclaration.annotations != null && methodDeclaration.scope!=null) {
                     for (int i = 0; i < methodDeclaration.annotations.length; i++) {
                         //Note: AV: implicit single advice type support here (should be enforced somewhere as well (APT etc))
                         Annotation annotation = methodDeclaration.annotations[i];
