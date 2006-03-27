@@ -12,7 +12,7 @@ public aspect AnnotatedAspect08 {
 	declare error: set(* *) : "hum bahbug";
 	
 	@AnyAnnotation
-	declare soft : execution(* *) : Exception;
+	declare soft : Exception: execution(* *(..));
 	
 	@ConstructorAnnotation
 	declare parents : A implements I;
