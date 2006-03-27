@@ -3,10 +3,30 @@
 <!-- AspectJ v1.5.1 Tests -->
 <suite>
 
+    <ajc-test dir="bugs151/pr98901" title="annotations and itds">
+     <compile files="Failing.java" options="-1.5"/>
+     <run class="Failing">
+       <stderr>
+          <line text="On TestInterface:@TestAnnotation(value=true)"/>
+          <line text="On Failing:@TestAnnotation(value=true)"/>
+       </stderr>
+     </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs151/pr98901" title="annotations and itds - 2">
+     <compile files="Failing2.java" options="-1.5"/>
+     <run class="Failing2">
+       <stderr>
+          <line text="On TestInterface:@TestAnnotation(value=true)"/>
+          <line text="On Failing2:@TestAnnotation(value=true)"/>
+       </stderr>
+     </run>
+    </ajc-test>
+
     <ajc-test dir="bugs151/pr132926" pr="132926" title="crashing on annotation type resolving with asm - 1">
      <compile files="InputAnnotation.java,AffectedType.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs151/pr132926" pr="132926" title="crashing on annotation type resolving with asm - 2">
      <compile files="InputAnnotation.java" outjar="foo.jar" options="-1.5"/>
      <compile files="AffectedType.java" classpath="foo.jar" options="-1.5"/>

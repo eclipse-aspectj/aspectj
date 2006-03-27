@@ -24,7 +24,9 @@ import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-    
+
+  public void testAnnotationsAndItds_pr98901() { runTest("annotations and itds");}
+  public void testAnnotationsAndItds_pr98901_2() { runTest("annotations and itds - 2");}
   public void testCircularGenerics_pr133307() { runTest("circular generics");}
   //  public void testDeca() { runTest("doubly annotating a method with declare");}	
   //  public void testDeca2() { runTest("doubly annotating a method with declare - 2");}	

@@ -875,8 +875,29 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 			  ResolvedMember mangledInterMethod =
 					AjcMemberMaker.interMethod(unMangledInterMethod, aspectType, false);
-		
+			  
 			  LazyMethodGen mg = makeMethodGen(gen, mangledInterMethod);
+			  
+			  // From 98901#29 - need to copy annotations across
+			  if (weaver.getWorld().isInJava5Mode()){
+					AnnotationX annotationsOnRealMember[] = null;
+					ResolvedType toLookOn = aspectType;
+					if (aspectType.isRawType()) toLookOn = aspectType.getGenericType();
+					ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn,memberHoldingAnyAnnotations,false);
+					if (realMember==null) throw new BCException("Couldn't find ITD holder member '"+
+							memberHoldingAnyAnnotations+"' on aspect "+aspectType);
+					annotationsOnRealMember = realMember.getAnnotations();
+					
+					if (annotationsOnRealMember!=null) {
+						for (int i = 0; i < annotationsOnRealMember.length; i++) {
+							AnnotationX annotationX = annotationsOnRealMember[i];
+							Annotation a = annotationX.getBcelAnnotation();
+							AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
+							mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+						}
+					}
+			  }
+
 			  if (mungingInterface) {
 				// we want the modifiers of the ITD to be used for all *implementors* of the
 				// interface, but the method itself we add to the interface must be public abstract
