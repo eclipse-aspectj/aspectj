@@ -137,7 +137,7 @@
             <title>Configuring Load-time Weaving with aop.xml files</title>
             
             <para>The weaver is configured using one or more <literal>META-INF/aop.xml</literal>
-                files located on the class loader search path. Each file may define a list of
+                files located on the class loader search path. Each file may declare a list of
                 aspects to be used for weaving, type patterns describing which types
                 should woven, and a set of options to be passed to the weaver. In addition AspectJ 5
                 supports the definition of concrete aspects in XML. Aspects defined in this way
@@ -226,7 +226,7 @@
                 behaviour a lint warning is issued
                 if an aspect is not declared as a result of of applying these filters.
                 Also note <literal>aspect</literal> and <literal>concrete-aspect</literal> elements
-                must be used to delare aspects to the weaver i.e. <literal>include</literal> and <literal>exclude</literal>
+                must be used to declare aspects to the weaver i.e. <literal>include</literal> and <literal>exclude</literal>
                 elements cannot be used find aspects on the class loader search path.
             </para>
             
@@ -240,7 +240,7 @@
             <para> When several configuration files are visible from a given weaving class loader
                 their contents are conceptually merged. 
                 The files are merged in the order they are
-                found on the search path (regular <literal>getResourceAsStream</literal> lookup)
+                found on the search path (with a regular <literal>getResourceAsStream</literal> lookup)
                 according to the following rules: </para>
             <itemizedlist>
                 <!-- FIXME AV - looks like we can refine conf in a child CL - not good -->
@@ -264,8 +264,8 @@
 
             <para>It is not an error for the same aspect to be defined to the weaver in 
                 more than one visible <literal>META-INF/aop.xml</literal> file. 
-                However, if a concrete aspect
-                is defined in more than aop.xml file then an error will be issued.
+                However, if the same concrete aspect
+                is defined in more than one aop.xml file then an error will be issued.
                 A concrete aspect 
                 defined in this way will be used to weave types loaded by the
                 class loader that loaded the aop.xml file in which it was defined. 
@@ -323,7 +323,7 @@
             ]]></programlisting>
             <para>
                 This aspect (in either style) can be made concrete using <literal>META-INF/aop.xml</literal>.
-                It defines the abstract pointcut <literal>within()</literal>. When using this mechanism the 
+                It defines the abstract pointcut <literal>scope()</literal>. When using this mechanism the 
                 following rules apply:
                 <itemizedlist>
                     <listitem><para>The parent aspect must be abstract. It can be an @AspectJ or a
@@ -336,15 +336,26 @@
                     <listitem><para>The concrete aspect may not implement methods so the abstract aspect it 
                             extends may not contain any abstract methods.</para></listitem>
                 </itemizedlist>
+            </para>
+		
+            <para>
+		        <emphasis>A limitation of the implementation of this feature in AspectJ 1.5.0 is that aspects defined using
+		        aop.xml are not exposed to the weaver. This means that they are not affected by advice and ITDs defined in
+		        other aspects. Support for this capability will be considered in a future release.</emphasis>
+            </para>
+                
+            <para>
                 If more complex aspect inheritance is required use regular aspect
                 inheritance instead of XML.
                 The following XML definition shows a valid concrete sub-aspect for the abstract aspects above:
             </para>
             <programlisting><![CDATA[
             <aspectj>
-                <conrete-aspect name="mypack.__My__AbstractAspect" extends="mypack.AbstractAspect">
-                    <pointcut name="scope" expression="within(yourpackage..*)"/>
-                </concrete-aspect>
+                <aspects>
+                    <concrete-aspect name="mypack.__My__AbstractAspect" extends="mypack.AbstractAspect">
+                        <pointcut name="scope" expression="within(yourpackage..*)"/>
+                    </concrete-aspect>
+                <aspects>
             </aspectj>
             ]]></programlisting>
             <para>
@@ -385,8 +396,10 @@
             </para>
             <programlisting><![CDATA[
                 <aspectj>
-                    <concrete-aspect name="mypack.__MyDeclarePrecedence"
-                                     precedence="*..*Security*, Logging+, *"/>
+                    <aspects>
+                        <concrete-aspect name="mypack.__MyDeclarePrecedence"
+                                         precedence="*..*Security*, Logging+, *"/>
+                    </aspects>
                 </aspectj>
             ]]></programlisting>
             <para>
