@@ -399,7 +399,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			if (peNode.getKind().equals(IProgramElement.Kind.INTER_TYPE_FIELD)) {
 				peNode.setCorrespondingType(methodDeclaration.returnType.toString());
 			} else {
-				peNode.setCorrespondingType(methodDeclaration.returnType.resolvedType.debugName());				
+				if (methodDeclaration.returnType.resolvedType!=null) 
+					peNode.setCorrespondingType(methodDeclaration.returnType.resolvedType.debugName());
+				else 
+					peNode.setCorrespondingType(null);
 			}
 		} else {
 		  peNode.setCorrespondingType(null);	
