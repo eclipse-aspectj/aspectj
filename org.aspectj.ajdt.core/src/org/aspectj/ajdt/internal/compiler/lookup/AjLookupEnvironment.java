@@ -254,6 +254,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		stepCompleted = BUILD_FIELDS_AND_METHODS;
 		lastCompletedUnitIndex = lastUnitIndex;
 		AsmManager.setCompletingTypeBindings(false);
+		factory.getWorld().getCrosscuttingMembersSet().verify();
 		CompilationAndWeavingContext.leavingPhase(completeTypeBindingsToken);	
 	}
 	

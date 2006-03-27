@@ -19,6 +19,10 @@
      </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs151/pr133307" title="circular generics">
+      <compile files="Broken.aj" options="-1.5"/>
+    </ajc-test>  
+    
     <ajc-test dir="bugs151/pr123553" title="generic advice parameters">
         <compile files="A.java" options="-1.5"/>
         <run class="A"/>

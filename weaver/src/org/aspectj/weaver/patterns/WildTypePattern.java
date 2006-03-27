@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
@@ -925,46 +926,115 @@ public class WildTypePattern extends TypePattern {
 		
 		// now check that each typeParameter pattern, if exact, matches the bounds
 		// of the type variable.
-		return checkBoundsOK(scope,genericType,requireExactType);
 		
-		// return true;
+		// pr133307 - delay verification until type binding completion, these next few lines replace
+		// the call to checkBoundsOK
+		if (!boundscheckingoff) {
+			VerifyBoundsForTypePattern verification = 
+				new VerifyBoundsForTypePattern(scope,genericType,requireExactType,typeParameters,getSourceLocation());
+			scope.getWorld().getCrosscuttingMembersSet().recordNecessaryCheck(verification);
+		}
+//		return checkBoundsOK(scope,genericType,requireExactType);
+		
+		 return true;
 	}
 	
-	public boolean checkBoundsOK(IScope scope,ResolvedType genericType,boolean requireExactType) {
-		if (boundscheckingoff) return true;
-		TypeVariable[] tvs = genericType.getTypeVariables();
-		TypePattern[] typeParamPatterns = typeParameters.getTypePatterns();
-		if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
-			for (int i = 0; i < tvs.length; i++) {
-				UnresolvedType ut = typeParamPatterns[i].getExactType();
-				boolean continueCheck = true;
-				// FIXME asc dont like this but ok temporary measure.  If the type parameter 
-				// is itself a type variable (from the generic aspect) then assume it'll be
-				// ok... (see pr112105)  Want to break this? Run GenericAspectK test.
-				if (ut.isTypeVariableReference()) {
-					continueCheck = false;
-				}
-				
-				if (continueCheck &&	
-						!tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
-					// issue message that type parameter does not meet specification
-					String parameterName = ut.getName();
-					if (ut.isTypeVariableReference()) parameterName = ((TypeVariableReference)ut).getTypeVariable().getDisplayName();
-					String msg = 
-						WeaverMessages.format(
-							WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS,
-							parameterName,
-							new Integer(i+1),
-							tvs[i].getDisplayName(),
-							genericType.getName());
-					if (requireExactType)  scope.message(MessageUtil.error(msg,getSourceLocation()));	
-					else				   scope.message(MessageUtil.warn(msg,getSourceLocation()));	
-					return false;
+	/**
+	 * By capturing the verification in this class, rather than performing it in verifyTypeParameters(),
+	 * we can cope with situations where the interactions between generics and declare parents would
+	 * otherwise cause us problems.  For example, if verifying as we go along we may report a problem
+	 * which would have been fixed by a declare parents that we haven't looked at yet.  If we
+	 * create and store a verification object, we can verify this later when the type system is
+	 * considered 'complete'
+	 */
+	static class VerifyBoundsForTypePattern implements IVerificationRequired {
+		
+		private IScope scope;
+		private ResolvedType genericType;
+		private boolean requireExactType;
+		private TypePatternList typeParameters = TypePatternList.EMPTY;
+		private ISourceLocation sLoc;
+		
+		public VerifyBoundsForTypePattern(IScope scope, ResolvedType genericType, boolean requireExactType,
+				TypePatternList typeParameters, ISourceLocation sLoc) {
+			this.scope = scope;
+			this.genericType = genericType;
+			this.requireExactType = requireExactType;
+			this.typeParameters = typeParameters;
+			this.sLoc = sLoc;
+		}
+		
+		public void verify() {
+			TypeVariable[] tvs = genericType.getTypeVariables();
+			TypePattern[] typeParamPatterns = typeParameters.getTypePatterns();
+			if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
+				for (int i = 0; i < tvs.length; i++) {
+					UnresolvedType ut = typeParamPatterns[i].getExactType();
+					boolean continueCheck = true;
+					// FIXME asc dont like this but ok temporary measure.  If the type parameter 
+					// is itself a type variable (from the generic aspect) then assume it'll be
+					// ok... (see pr112105)  Want to break this? Run GenericAspectK test.
+					if (ut.isTypeVariableReference()) {
+						continueCheck = false;
+					}
+					
+					System.err.println("Verifying "+ut.getName()+" meets bounds for "+tvs[i]);
+					if (continueCheck &&	
+							!tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
+						// issue message that type parameter does not meet specification
+						String parameterName = ut.getName();
+						if (ut.isTypeVariableReference()) parameterName = ((TypeVariableReference)ut).getTypeVariable().getDisplayName();
+						String msg = 
+							WeaverMessages.format(
+								WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS,
+								parameterName,
+								new Integer(i+1),
+								tvs[i].getDisplayName(),
+								genericType.getName());
+						if (requireExactType)  scope.message(MessageUtil.error(msg,sLoc));	
+						else				   scope.message(MessageUtil.warn(msg,sLoc));	
+					}
 				}
 			}
 		}
-		return true;
 	}
+
+	// pr133307 - moved to verification object
+//	public boolean checkBoundsOK(IScope scope,ResolvedType genericType,boolean requireExactType) {
+//		if (boundscheckingoff) return true;
+//		TypeVariable[] tvs = genericType.getTypeVariables();
+//		TypePattern[] typeParamPatterns = typeParameters.getTypePatterns();
+//		if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
+//			for (int i = 0; i < tvs.length; i++) {
+//				UnresolvedType ut = typeParamPatterns[i].getExactType();
+//				boolean continueCheck = true;
+//				// FIXME asc dont like this but ok temporary measure.  If the type parameter 
+//				// is itself a type variable (from the generic aspect) then assume it'll be
+//				// ok... (see pr112105)  Want to break this? Run GenericAspectK test.
+//				if (ut.isTypeVariableReference()) {
+//					continueCheck = false;
+//				}
+//				
+//				if (continueCheck &&	
+//						!tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
+//					// issue message that type parameter does not meet specification
+//					String parameterName = ut.getName();
+//					if (ut.isTypeVariableReference()) parameterName = ((TypeVariableReference)ut).getTypeVariable().getDisplayName();
+//					String msg = 
+//						WeaverMessages.format(
+//							WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS,
+//							parameterName,
+//							new Integer(i+1),
+//							tvs[i].getDisplayName(),
+//							genericType.getName());
+//					if (requireExactType)  scope.message(MessageUtil.error(msg,getSourceLocation()));	
+//					else				   scope.message(MessageUtil.warn(msg,getSourceLocation()));	
+//					return false;
+//				}
+//			}
+//		}
+//		return true;
+//	}
 	
 	public boolean isStar() {
 		boolean annPatternStar = annotationPattern == AnnotationTypePattern.ANY;

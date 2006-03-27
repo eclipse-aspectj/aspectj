@@ -4491,7 +4491,8 @@
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - H">
      <compile files="GenericAspectH.aj" options="-1.5">
        <message kind="error" line="7" text="Type java.lang.String does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericAspect$SimpleI"/>
-       <message kind="error" line="16" text="The method m4(String) is undefined for the type Base"/>
+	   <!-- see pr133307, shame about this -->
+       <!--message kind="error" line="16" text="The method m4(String) is undefined for the type Base"/-->
      </compile>
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - I">

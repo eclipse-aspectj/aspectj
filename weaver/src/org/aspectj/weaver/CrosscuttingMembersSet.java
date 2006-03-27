@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.IVerificationRequired;
 
 /**
  * This holds on to all CrosscuttingMembers for a world.  It handles 
@@ -45,6 +46,8 @@ public class CrosscuttingMembersSet {
 	private List declareAnnotationOnMethods= null; // includes ctors
 	private List declareDominates          = null;
 	private boolean changedSinceLastReset = false;
+
+	private List /*IVerificationRequired*/ verificationList = null; // List of things to be verified once the type system is 'complete'
 	
 	public CrosscuttingMembersSet(World world) {
 		this.world = world;
@@ -261,12 +264,36 @@ public class CrosscuttingMembersSet {
 	}
 
 	public void reset() {
+		verificationList=null;
 		changedSinceLastReset = false;
 	}
 	
 	public boolean hasChangedSinceLastReset() {
 		return changedSinceLastReset;
 	}
+
+	/**
+	 * Record something that needs verifying when we believe the type system is complete.
+	 * Used for things that can't be verified as we go along - for example some
+	 * recursive type variable references (pr133307)
+	 */
+	public void recordNecessaryCheck(IVerificationRequired verification) {
+		if (verificationList==null) verificationList = new ArrayList();
+		verificationList.add(verification);
+	}
 	
+	
+	/**
+	 * Called when type bindings are complete - calls all registered verification
+	 * objects in turn.
+	 */
+	public void verify() {
+		if (verificationList==null) return;
+		for (Iterator iter = verificationList.iterator(); iter.hasNext();) {
+			IVerificationRequired element = (IVerificationRequired) iter.next();
+			element.verify();
+		}
+		verificationList = null;
+	}
 	
 }
