@@ -410,6 +410,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	
 	private FormalBinding[] buildFormalAdviceBindingsFrom(MethodDeclaration mDecl) {
 		if (mDecl.arguments == null) return new FormalBinding[0];
+		if (mDecl.binding == null) return new FormalBinding[0];
 		EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(mDecl.scope);
 		String extraArgName = maybeGetExtraArgName();
 		if (extraArgName == null) extraArgName = "";
@@ -417,7 +418,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		for (int i = 0; i < mDecl.arguments.length; i++) {
             Argument arg = mDecl.arguments[i];
             String name = new String(arg.name);
-			TypeBinding argTypeBinding = mDecl.binding.parameters[i];
+            TypeBinding argTypeBinding = mDecl.binding.parameters[i];
             UnresolvedType type = factory.fromBinding(argTypeBinding);
 			if  (CharOperation.equals(joinPoint,argTypeBinding.signature()) ||
 				 CharOperation.equals(joinPointStaticPart,argTypeBinding.signature()) ||
