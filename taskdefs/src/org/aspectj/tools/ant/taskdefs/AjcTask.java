@@ -293,7 +293,7 @@ public class AjcTask extends MatchingTask {
             {   "serializableAspects", "incrementalFile", "lazyTjp",
         		"reweavable", "reweavable:compress", "notReweavable", "noInline",
             	"terminateAfterCompilation","hasMember",
-                "ajruntimelevel:1.2", "ajruntimelevel:1.5", 
+                "ajruntimetarget:1.2", "ajruntimetarget:1.5", 
                 
                 //, "targetNearSource", "OcodeSize",
                  };
