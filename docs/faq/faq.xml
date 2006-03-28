@@ -22,7 +22,7 @@
        2003-2006 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated February 2, 2006
+  <para>Last updated March 28, 2006
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -1402,15 +1402,57 @@ aspect PublicErrorLogging {
           <para>Can I use AspectJ with J2ME?</para>
         </question>
         <answer>
-        	<para>We have not tested with J2ME, but we understand that users
-        		are deploying AspectJ-compiled programs successfully in J2ME.
-        		It should work if your program is otherwise J2ME-compatible
-        		and if you avoid using <literal>cflow</literal>-based pointcuts 
-        		or <literal>thisJoinPoint</literal>.
-        		To ensure that the program is limited to J2ME API's, 
-        		you should supply the runtime on the bootclasspath.
-        		(Fair warning: there was an email about this not working, 
-        		but there has been no bug report.)
+        	<para>The J2ME platform has several different components.
+        	The diagram below shows how the different profiles
+        	build on top of the two configurations CDC (Connected Device
+        	Configuration) and CLDC (Connected Limited Device Configuration):
+        		<programlisting>
+    --------------
+    |  Personal  |
+    --------------      --------
+    | Foundation |      | MIDP |
+  ------------------  ------------------
+  |      CDC       |  |      CLDC      |
+------------------------------------------
+|                 Java                   |
+------------------------------------------  
+                </programlisting>
+            Which configuration you have dictates the restrictions when
+            running AspectJ compiled programs.    
+        	</para>
+        	<para>
+        	If you're running with a profile which sits on top of CDC then
+        	there are not, as far as we are aware, any restrictions when 
+        	running AspectJ compiled code on this flavour of J2ME. 
+        	</para>
+        	<para>
+        	If you're running with a profile sitting on top of CLDC 1.1
+        	you are currently unable to use the <literal>thisJoinPoint,
+        	thisJoinPointStaticPart</literal> and <literal>
+        	thisEnclosingJoinPointStaticPart</literal> variables, the 
+        	<literal>cflow</literal> and <literal>cflowbelow</literal> 
+        	pointcuts and the <literal>percflow</literal> and <literal>
+        	percflowbelow</literal> perClauses.
+        	</para>
+        	<para>
+        	Finally, if you're running with a profile which sits on top
+        	of CLDC 1.0 you have all the restrictions of CLDC 1.1. There may
+        	be further restrictions due to the lack of types corresponding
+        	to the primitive types (e.g. Integer.TYPE), however, at the
+        	time of writing we have been unable to do any extensive testing
+        	on this.
+        </para>
+        <para>
+        Note that the aspectj runtime jar is now (as of AspectJ5) quite
+        large but only a small subset is required for executing code
+        in J2ME environments.  We plan to ship a second aspectjrt.jar
+        built for the J2ME environment at some point.
+        </para>
+        <para>
+        For more discussion and to raise any issues you have with
+        AspectJ and J2ME, refer to
+        	<ulink url="https://bugs.eclipse.org/bugs/show_bug.cgi?id=92933">
+               bugzilla entry 92933</ulink>.        	
         	</para>
         </answer>
       </qandaentry>
