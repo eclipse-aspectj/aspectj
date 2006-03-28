@@ -82,6 +82,7 @@ public class CflowBelowStackTest extends TestCase {
                     ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
                     coverage = (Map<String, Map<String, Integer>>) ois.readObject();
                     ois.close();
+                    file.delete();
                 } else {
                     coverage = new HashMap<String, Map<String, Integer>>();
                 }
