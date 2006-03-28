@@ -28,8 +28,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAnnotationsAndItds_pr98901() { runTest("annotations and itds");}
   public void testAnnotationsAndItds_pr98901_2() { runTest("annotations and itds - 2");}
   public void testCircularGenerics_pr133307() { runTest("circular generics");}
-  //  public void testDeca() { runTest("doubly annotating a method with declare");}	
-  //  public void testDeca2() { runTest("doubly annotating a method with declare - 2");}	
+  public void testDeca() { runTest("doubly annotating a method with declare");}	
+  public void testDeca2() { runTest("doubly annotating a method with declare - 2");}	
   public void testCrashingWithASM_pr132926_1() { runTest("crashing on annotation type resolving with asm - 1");}
   public void testCrashingWithASM_pr132926_2() { runTest("crashing on annotation type resolving with asm - 2");}
   public void testCrashingWithASM_pr132926_3() { runTest("crashing on annotation type resolving with asm - 3");}

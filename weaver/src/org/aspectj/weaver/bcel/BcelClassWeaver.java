@@ -768,7 +768,7 @@ class BcelClassWeaver implements IClassWeaver {
             	// Single first pass
             	List worthRetrying = new ArrayList();
             	boolean modificationOccured = false;
-            	
+            	List /*AnnotationGen*/ annotationsToAdd = null;
             	for (Iterator iter = decaMs.iterator(); iter.hasNext();) {
             		DeclareAnnotation decaM = (DeclareAnnotation) iter.next();
             		
@@ -779,15 +779,12 @@ class BcelClassWeaver implements IClassWeaver {
             				unusedDecams.remove(decaM);
             				continue; // skip this one...
             			}
-            			
+
+            			if (annotationsToAdd==null) annotationsToAdd = new ArrayList();
             			Annotation a = decaM.getAnnotationX().getBcelAnnotation();
             			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
-            			Method oldMethod = mg.getMethod();
-            			MethodGen myGen = new MethodGen(oldMethod,clazz.getClassName(),clazz.getConstantPoolGen(),false);// dont use tags, they won't get repaired like for woven methods.
-            			myGen.addAnnotation(ag);
-            			Method newMethod = myGen.getMethod();
+            			annotationsToAdd.add(ag);
             			mg.addAnnotation(decaM.getAnnotationX());
-            			members.set(memberCounter,new LazyMethodGen(newMethod,clazz));
             			
             			AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
             			reportMethodCtorWeavingMessage(clazz, mg.getMemberView(), decaM,mg.getDeclarationLineNumber());
@@ -815,6 +812,12 @@ class BcelClassWeaver implements IClassWeaver {
                 				unusedDecams.remove(decaM);
             					continue; // skip this one...
             				}
+            				
+            				if (annotationsToAdd==null) annotationsToAdd = new ArrayList();
+                			Annotation a = decaM.getAnnotationX().getBcelAnnotation();
+                			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
+                			annotationsToAdd.add(ag);
+                			
             				mg.addAnnotation(decaM.getAnnotationX());
             				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
             				isChanged = true;
@@ -826,6 +829,17 @@ class BcelClassWeaver implements IClassWeaver {
             		}
             		worthRetrying.removeAll(forRemoval);
             	}
+            	if (annotationsToAdd!=null) {
+            		Method oldMethod = mg.getMethod();
+        			MethodGen myGen = new MethodGen(oldMethod,clazz.getClassName(),clazz.getConstantPoolGen(),false);// dont use tags, they won't get repaired like for woven methods.
+            		for (Iterator iter = annotationsToAdd.iterator(); iter.hasNext();) {
+						AnnotationGen a = (AnnotationGen) iter.next();
+						myGen.addAnnotation(a);						
+					}
+            		Method newMethod = myGen.getMethod();
+            		members.set(memberCounter,new LazyMethodGen(newMethod,clazz));
+            	}
+            	
             }
           }
 	  	  checkUnusedDeclareAtTypes(unusedDecams, false);
