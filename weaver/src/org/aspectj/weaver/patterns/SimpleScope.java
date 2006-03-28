@@ -44,6 +44,9 @@ public class SimpleScope implements IScope {
 	public UnresolvedType lookupType(String name, IHasPosition location) {
 		for (int i=0; i<importedNames.length; i++) {
 			String importedName = importedNames[i];
+//			// make sure we're matching against the
+//			// type name rather than part of it
+//			if (importedName.endsWith("." + name)) {
 			if (importedName.endsWith(name)) {
 				return world.resolve(importedName);
 			}

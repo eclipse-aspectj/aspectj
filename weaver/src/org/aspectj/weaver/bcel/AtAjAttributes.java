@@ -1587,6 +1587,26 @@ public class AtAjAttributes {
         public ISourceLocation makeSourceLocation(IHasPosition location) {
             return m_sourceContext.makeSourceLocation(location);
         }
+        
+        public UnresolvedType lookupType(String name, IHasPosition location) {
+        	// bug 126560  
+        	if (m_enclosingType != null) {
+        		// add the package we're in to the list of imported
+            	// prefixes so that we can find types in the same package 
+			String pkgName = m_enclosingType.getPackageName();
+			if (pkgName != null && !pkgName.equals("")) {
+				String[] currentImports = getImportedPrefixes();
+				String[] newImports = new String[currentImports.length + 1];
+				for (int i = 0; i < currentImports.length; i++) {
+					newImports[i] = currentImports[i];
+				}
+				newImports[currentImports.length] = pkgName.concat(".");
+				setImportedPrefixes(newImports);
+			}
+		}
+        	return super.lookupType(name,location);
+        }
+        
     }
 
     /**

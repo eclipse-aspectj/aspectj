@@ -3,6 +3,24 @@
 <!-- AspectJ v1.5.1 Tests -->
 <suite>
 
+    <ajc-test dir="bugs151/pr132349" title="ITD on inner type of generic type">
+     <compile files="TopLevelType.java" options="-1.5"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs151/pr126560" title="@AJ deow doesn't throw an invalidAbsoluteTypeName when specify type in the same package">
+        <compile files="pkg1/C.java, pkg1/A.java" options="-1.5">
+          <message kind="error" line="8" text="error"/>
+          <message kind="warning" line="5" text="warning"/>
+	    </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs151/pr126560" title="@AJ deow doesn't throw an invalidAbsoluteTypeName when specify type in the same file">
+        <compile files="pkg2/InOneFile.java" options="-1.5">
+          <message kind="warning" line="14" text="call hello"/>
+          <message kind="error" line="15" text="call hi"/>
+	    </compile>
+    </ajc-test>
+
     <ajc-test dir="bugs151/pr98901" title="annotations and itds">
      <compile files="Failing.java" options="-1.5"/>
      <run class="Failing">

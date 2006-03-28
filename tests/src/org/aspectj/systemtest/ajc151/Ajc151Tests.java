@@ -25,6 +25,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+ // public void testItdOnInnerTypeOfGenericType_pr132349() { runTest("ITD on inner type of generic type");}
   public void testAnnotationsAndItds_pr98901() { runTest("annotations and itds");}
   public void testAnnotationsAndItds_pr98901_2() { runTest("annotations and itds - 2");}
   public void testCircularGenerics_pr133307() { runTest("circular generics");}
@@ -52,6 +53,15 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAtAspectInheritsAdviceWithTJPAndThis_pr125699 () { runTest("inherit advice with this() and thisJoinPoint");  }
   public void testAtAspectInheritsAdviceWithTJPAndThis_pr125699_2 () {runTest("inherit advice with this() and thisJoinPoint - 2");  }
   public void testBrokenLTW_pr128744() { runTest("broken ltw"); }
+  
+  public void testAtAspectNoInvalidAbsoluteTypeName_pr126560() {
+	  runTest("@AJ deow doesn't throw an invalidAbsoluteTypeName when specify type in the same package");
+  }
+  
+  public void testAtAspectNoInvalidAbsoluteTypeName_pr126560_2() {
+	  runTest("@AJ deow doesn't throw an invalidAbsoluteTypeName when specify type in the same file");
+  }
+  
   public void testArrayindexoutofbounds_pr129566() { 
 	  runTest("arrayindexoutofbounds");
 	  // public class SkipList<T extends Comparable> extends Object implements Set<T>, Iterable<T>
