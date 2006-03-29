@@ -3,6 +3,44 @@
 <!-- AspectJ v1.5.1 Tests -->
 <suite>
 
+    <!-- atDecp begin -->
+   
+    <!-- something simple -->
+    <ajc-test dir="bugs151/atDecp/case1" title="atDecp - simple">
+      <compile files="MainClass.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Extending interface set for type 'moody.AnnotationMoodImplementor' (MainClass.java) to include 'moody.AnnotationMoodIndicator$Moody' (MainClass.java)"/>
+	    <message kind="weave" text="Type 'moody.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'moody.AnnotationMoodIndicator' (MainClass.java:'moody.Mood moody.AnnotationMoodIndicator$Moody.getMood()')"/>
+	    <message kind="weave" text="Type 'moody.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'moody.AnnotationMoodIndicator' (MainClass.java:'void moody.AnnotationMoodIndicator$Moody.setMood(moody.Mood)')"/>
+      </compile>
+      <run class="moody.MainClass">
+         <stderr>
+           <line text="ami0's mood is HAPPY"/>
+           <line text="ami1's mood is now JOLLY"/>
+           <line text="ami0's mood is still HAPPY"/>
+         </stderr>
+      </run>
+    </ajc-test>
+    
+    <!-- applying parent based on annotation -->
+    <ajc-test dir="bugs151/atDecp/case2" title="atDecp - annotation">
+      <compile files="MainClass.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Extending interface set for type 'moody.AnnotationMoodImplementor' (MainClass.java) to include 'moody.AnnotationMoodIndicator$Moody' (MainClass.java)"/>
+	    <message kind="weave" text="Type 'moody.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'moody.AnnotationMoodIndicator' (MainClass.java:'moody.Mood moody.AnnotationMoodIndicator$Moody.getMood()')"/>
+	    <message kind="weave" text="Type 'moody.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'moody.AnnotationMoodIndicator' (MainClass.java:'void moody.AnnotationMoodIndicator$Moody.setMood(moody.Mood)')"/>
+      </compile>
+      <run class="moody.MainClass">
+         <stderr>
+           <line text="ami0's mood is HAPPY"/>
+           <line text="ami1's mood is now JOLLY"/>
+           <line text="ami0's mood is still HAPPY"/>
+         </stderr>
+      </run>
+    </ajc-test>
+    
+    
+    <!-- atDecp end -->
+
+
     <ajc-test dir="bugs151/pr132349" title="ITD on inner type of generic type">
      <compile files="TopLevelType.java" options="-1.5"/>
     </ajc-test>

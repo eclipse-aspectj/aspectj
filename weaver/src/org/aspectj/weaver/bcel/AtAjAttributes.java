@@ -55,10 +55,10 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.Bindings;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
-import org.aspectj.weaver.patterns.ExactTypePattern;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.IScope;
 import org.aspectj.weaver.patterns.IdentityPointcutVisitor;
@@ -668,22 +668,20 @@ public class AtAjAttributes {
                 TypePattern typePattern = parseTypePattern(decpPattern, struct);
                 ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(struct.enclosingType.getWorld());
                 if (fieldType.isInterface()) {
-                    TypePattern parent = new ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()), false, false);
-                    parent.resolve(struct.enclosingType.getWorld());
+                    TypePattern parent = parseTypePattern(fieldType.getName(),struct);
+                    FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+	                IScope binding = new BindingScope(struct.enclosingType,struct.context,bindings);
                     // first add the declare implements like
                     List parents = new ArrayList(1); parents.add(parent);
-                    DeclareParents dp = new DeclareParents(
-                            typePattern,
-                            parents,
-                            false
-                        );
+                    DeclareParents dp = new DeclareParents(typePattern,parents,false);
+                    dp.resolve(binding); // resolves the parent and child parts of the decp
+                    
+                    // resolve this so that we can use it for the MethodDelegateMungers below.
+                    // eg. '@Coloured *' will change from a WildTypePattern to an 'AnyWithAnnotationTypePattern' after this resolution
+                    typePattern = typePattern.resolveBindings(binding, Bindings.NONE, false, false);
                     //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
                     dp.setLocation(struct.context,0,0); // not ideal...
-                    struct.ajAttributes.add(
-                            new AjAttribute.DeclareAttribute(
-                                    dp
-                            )
-                    );
+                    struct.ajAttributes.add(new AjAttribute.DeclareAttribute(dp));
 
 
                     // do we have a defaultImpl=xxx.class (ie implementation)
