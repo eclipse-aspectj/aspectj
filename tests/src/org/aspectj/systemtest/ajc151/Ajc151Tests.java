@@ -29,6 +29,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // Some @DeclareParents testing
   public void testAtDecp_1() { runTest("atDecp - simple");}
   public void testAtDecp_2() { runTest("atDecp - annotation");}
+  public void testAtDecp_3() { runTest("atDecp - binary interface");}
+  public void testAtDecp_4() { runTest("atDecp - binary interface - 2");}
 
   public void testAnnotationsAndItds_pr98901() { runTest("annotations and itds");}
   public void testAnnotationsAndItds_pr98901_2() { runTest("annotations and itds - 2");}

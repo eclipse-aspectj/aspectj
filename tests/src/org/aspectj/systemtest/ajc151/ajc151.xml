@@ -37,6 +37,39 @@
       </run>
     </ajc-test>
     
+    <!-- when interface is binary -->
+    <ajc-test dir="bugs151/atDecp/case3" title="atDecp - binary interface">
+      <compile files="Mood.java,Moody.java" outjar="moody.jar" options="-1.5"/>
+      <compile files="MainClass.java" classpath="moody.jar" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Extending interface set for type 'theapp.AnnotationMoodImplementor' (MainClass.java) to include 'moody.Moody' (MainClass.java)"/>
+        <message kind="weave" text="Type 'theapp.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'theapp.AnnotationMoodIndicator' (MainClass.java:'moody.Mood moody.Moody.getMood()')"/>
+        <message kind="weave" text="Type 'theapp.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'theapp.AnnotationMoodIndicator' (MainClass.java:'void moody.Moody.setMood(moody.Mood)')"/>
+      </compile>
+      <run class="theapp.MainClass">
+         <stderr>
+           <line text="ami0's mood is HAPPY"/>
+           <line text="ami1's mood is now JOLLY"/>
+           <line text="ami0's mood is still HAPPY"/>
+         </stderr>
+      </run>
+    </ajc-test>
+    
+    <!-- when interface is binary and implementation is not an inner  -->
+    <ajc-test dir="bugs151/atDecp/case4" title="atDecp - binary interface - 2">
+      <compile files="Mood.java,Moody.java" outjar="moody.jar" options="-1.5"/>
+      <compile files="MainClass.java,AnnotationMoodImplementor.java,TheAspect.java,MoodyImpl.java" classpath="moody.jar" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Extending interface set for type 'theapp.AnnotationMoodImplementor' (AnnotationMoodImplementor.java) to include 'moody.Moody' (TheAspect.java)"/>
+        <message kind="weave" text="Type 'theapp.AnnotationMoodImplementor' (AnnotationMoodImplementor.java) has intertyped method from 'theapp.AnnotationMoodIndicator' (TheAspect.java:'moody.Mood moody.Moody.getMood()')"/>
+        <message kind="weave" text="Type 'theapp.AnnotationMoodImplementor' (AnnotationMoodImplementor.java) has intertyped method from 'theapp.AnnotationMoodIndicator' (TheAspect.java:'void moody.Moody.setMood(moody.Mood)')"/>
+      </compile>
+      <run class="theapp.MainClass">
+         <stderr>
+           <line text="ami0's mood is HAPPY"/>
+           <line text="ami1's mood is now JOLLY"/>
+           <line text="ami0's mood is still HAPPY"/>
+         </stderr>
+      </run>
+    </ajc-test>
     
     <!-- atDecp end -->
 
