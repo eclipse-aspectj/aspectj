@@ -41,7 +41,6 @@ import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.Utility;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.loadtime.definition.DocumentParser;
-import org.aspectj.weaver.ltw.LTWWorld;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.GeneratedClassHandler;
@@ -105,7 +104,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         	return;
         }
         
-        bcelWorld = new LTWWorld(
+        bcelWorld = new BcelWorld(
                 loader, getMessageHandler(), new ICrossReferenceHandler() {
                     public void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind, boolean runtimeTest) {
                         ;// for tools only
