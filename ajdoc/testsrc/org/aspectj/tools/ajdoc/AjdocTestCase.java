@@ -273,4 +273,27 @@ public class AjdocTestCase extends TestCase{
 		}
         org.aspectj.tools.ajdoc.Main.main(args);
 	}
+	
+	/**
+	 * Run the ajdoc command with the given visibility argument,
+	 * the default source level and the given input directories. 
+	 */
+	public void runAjdoc(String visibility, String lstFile) {
+		if (!visibility.equals("public") 
+				&& !visibility.equals("protected")
+				&& !visibility.equals("private")) {
+				fail("need to pass 'public','protected' or 'private' visibility to ajdoc");
+		}
+ 	
+ 		String[] args = new String[8];
+		args[0] = "-" + visibility;
+		args[1] = "-classpath";
+		args[2] = AjdocTests.ASPECTJRT_PATH.getPath();
+		args[3] = "-d";
+		args[4] = getAbsolutePathOutdir();
+		args[5] = "-sourcepath";
+		args[6] = getAbsoluteProjectDir();
+		args[7] = "@" + getAbsoluteProjectDir() + File.separatorChar + lstFile;
+        org.aspectj.tools.ajdoc.Main.main(args);
+	}
 }

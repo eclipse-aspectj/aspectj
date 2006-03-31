@@ -11,6 +11,8 @@
  * ******************************************************************/
  package org.aspectj.tools.ajdoc;
 
+import java.io.File;
+
 
 /**
  * @author Mik Kersten
@@ -32,4 +34,8 @@ public class SpacewarTestCase extends AjdocTestCase {
 		runAjdoc("public",dirs);
 	}
 
+	public void testPr134063() {
+		String lstFile = "spacewar" + File.separatorChar + "demo.lst";
+		runAjdoc("private",lstFile);
+	}
 }

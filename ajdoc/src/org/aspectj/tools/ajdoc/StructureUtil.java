@@ -44,7 +44,11 @@ public class StructureUtil {
 	 * @return null if a relationship of that kind is not found
 	 */
 	public static List /*String*/ getTargets(IProgramElement node, IRelationship.Kind kind, String relName) {
-		List relations = AsmManager.getDefault().getRelationshipMap().get(node);
+		List relations = new ArrayList();
+		List rels = AsmManager.getDefault().getRelationshipMap().get(node);
+		if (rels != null) {
+			relations.addAll(rels);
+		}
 	    for (Iterator iter = node.getChildren().iterator(); iter.hasNext();) {
 			IProgramElement child = (IProgramElement) iter.next();
 			// if we're not a type, or if we are and the child is code, then
@@ -54,25 +58,29 @@ public class StructureUtil {
 					|| child.getKind().equals(IProgramElement.Kind.CODE) ) {
 				List childRelations = AsmManager.getDefault().getRelationshipMap().get(child);
 				if (childRelations != null) {
-					if (relations == null) {
-						relations = childRelations;
-					} else {
-						relations.addAll(childRelations);
+					for (Iterator iterator = childRelations.iterator(); iterator
+							.hasNext();) {
+						IRelationship rel = (IRelationship) iterator.next();
+						if (!relations.contains(rel)) {
+							relations.add(rel);
+						}
 					}
 				}					
 			}
 		}			
-		List targets = null; 
 	    if (relations == null || relations.isEmpty()) return null;
+		List targets = new ArrayList(); 
 		for (Iterator it = relations.iterator(); it.hasNext(); ) {
 	      	IRelationship rtn = (IRelationship)it.next();
 	      	if (rtn.getKind().equals(kind)
 	      			&& ((relName != null  && relName.equals(rtn.getName()))
 	      					|| relName == null)){
-	      		if (targets == null) {
-	      			targets = rtn.getTargets();
-				} else {
-					targets.addAll(rtn.getTargets());
+	      		List targs = rtn.getTargets();
+	      		for (Iterator iter = targs.iterator(); iter.hasNext();) {
+					String element = (String) iter.next();
+					if (!targets.contains(element)) {
+						targets.add(element);
+					}
 				}
 	      	}
 	     }
