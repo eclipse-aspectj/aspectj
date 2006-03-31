@@ -709,11 +709,11 @@ public class Main implements Config {
 
     /* This section of code handles errors that occur during compilation */
     static final String internalErrorMessage =
-                                              "Please copy the following text into an email message and send it,\n" +
-                                              "along with any additional information you can add to:            \n" +
-                                              "                                                                 \n" +
-                                              "       aspectj-dev@eclipse.org                           \n" +
-                                              "                                                                 \n";
+        "                                                                  \n"+
+        "If this has not already been logged as a bug raised please raise  \n"+
+        "a new AspectJ bug at https://bugs.eclipse.org/bugs including the  \n"+
+        "text below. To make the bug a priority, please also include a test\n"+
+        "program that can reproduce this problem.\n ";
 
     static public void handleInternalError(Throwable uncaughtThrowable) {
         System.err.println("An internal error occured in ajdoc");
