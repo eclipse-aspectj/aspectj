@@ -243,7 +243,7 @@ public class Main {
         // make sure we handle out of memory gracefully...
         try {
         	// byte[] b = new byte[100000000]; for testing OoME only!
-        	run(args, holder);
+        	 run(args, holder);
         } 
         catch (OutOfMemoryError outOfMemory) {
         	IMessage outOfMemoryMessage = new Message(OUT_OF_MEMORY_MSG,null,true);
@@ -268,6 +268,17 @@ public class Main {
             systemExit(holder);
         }
     }
+    
+    // put calls around run() call above to allowing connecting jconsole
+//    private void pause(int ms) {
+//    	  try {
+//    		  System.err.println("Pausing for "+ms+"ms");
+//    		  System.gc();
+//    		  Thread.sleep(ms);
+//    		  System.gc();
+//    		  System.err.println("Continuing");
+//    	  } catch (Exception e) {}
+//    }
 
 	/**
 	 * @param args
