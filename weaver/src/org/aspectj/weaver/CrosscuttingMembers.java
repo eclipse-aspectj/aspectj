@@ -277,6 +277,38 @@ public class CrosscuttingMembers {
 			otherTypeMungers.addAll(other.typeMungers);
 		}
   	    
+  	    // initial go at equivalence logic rather than set compare (see pr133532)
+//		if (theseTypeMungers.size()!=otherTypeMungers.size()) {
+//			changed = true;
+//			typeMungers = other.typeMungers;
+//		} else {
+//			boolean foundInequality=false;
+//			for (Iterator iter = theseTypeMungers.iterator(); iter.hasNext() && !foundInequality;) {
+//				Object thisOne = (Object) iter.next();
+//				boolean foundInOtherSet = false;
+//				for (Iterator iterator = otherTypeMungers.iterator(); iterator.hasNext();) {
+//					Object otherOne = (Object) iterator.next();
+//					if (thisOne instanceof ConcreteTypeMunger && otherOne instanceof ConcreteTypeMunger) {
+//						if (((ConcreteTypeMunger)thisOne).equivalentTo(otherOne)) {
+//							foundInOtherSet=true;
+//						} else if (thisOne.equals(otherOne)) {
+//							foundInOtherSet=true;
+//						}
+//					} else {
+//						if (thisOne.equals(otherOne)) {
+//							foundInOtherSet=true;
+//						} 
+//					}
+//				}
+//				if (!foundInOtherSet) foundInequality=true;
+//			}
+//			if (foundInequality) {
+//				changed = true;
+//				typeMungers = other.typeMungers;
+////			} else {
+////				typeMungers = other.typeMungers;
+//			}
+//		}
   	    if (!theseTypeMungers.equals(otherTypeMungers)) {
 			changed = true;
 			typeMungers = other.typeMungers;
