@@ -196,22 +196,26 @@ public class AjState {
 		currentBuildTime = System.currentTimeMillis();
 
 		if (!maybeIncremental()) {
+			if (listenerDefined()) getListener().recordDecision("Preparing for build: not going to be incremental because either not in AJDT or incremental deactivated");
 			return false;
 		}
 
 		if (this.batchBuildRequiredThisTime) {
 			this.batchBuildRequiredThisTime = false;
+			if (listenerDefined()) getListener().recordDecision("Preparing for build: not going to be incremental this time because batch build explicitly forced");
 			return false;
 		}
 		
 		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
 			structuralChangesSinceLastFullBuild.clear();
+			if (listenerDefined()) getListener().recordDecision("Preparing for build: not going to be incremental because no successful previous full build");
 			return false;
 		}
 		
 		// we don't support incremental with an outjar yet
 		if (newBuildConfig.getOutputJar() != null) {
 			structuralChangesSinceLastFullBuild.clear();
+			if (listenerDefined()) getListener().recordDecision("Preparing for build: not going to be incremental because outjar being used");
 			return false;
 		}
 		
@@ -226,6 +230,7 @@ public class AjState {
 		    removeAllResultsOfLastBuild();
 			if (stateListener!=null) stateListener.pathChangeDetected();
 			structuralChangesSinceLastFullBuild.clear();
+			if (listenerDefined()) getListener().recordDecision("Preparing for build: not going to be incremental because path change detected (one of classpath/aspectpath/inpath/injars)");
 		    return false;
 		}
 		
@@ -249,9 +254,13 @@ public class AjState {
 		deletedBinaryFiles.removeAll(newBinaryFiles);
 			
 		boolean couldStillBeIncremental = processDeletedFiles(deletedFiles);
+
+		if (!couldStillBeIncremental) {
+			if (listenerDefined()) getListener().recordDecision("Preparing for build: not going to be incremental because an aspect was deleted");
+			return false;
+		}
 		
-		if (!couldStillBeIncremental) return false;
-		
+		if (listenerDefined()) getListener().recordDecision("Preparing for build: planning to be an incremental build");
 		return true;
 	}
 		
@@ -997,11 +1006,22 @@ public class AjState {
 		return ret;
 	}
 		
-	
+
+    private String stringifyList(List l) {
+    	  StringBuffer sb = new StringBuffer();
+    	  sb.append("{");
+    	  for (Iterator iter = l.iterator(); iter.hasNext();) {
+			Object el = (Object) iter.next();
+			sb.append(el);
+			if (iter.hasNext()) sb.append(",");
+		}
+    	  sb.append("}");
+    	  return sb.toString();
+    }
 	
 	protected void addAffectedSourceFiles(List addTo, List lastTimeSources) {
 		if (qualifiedStrings.isEmpty() && simpleStrings.isEmpty()) return;
-
+		if (listenerDefined()) getListener().recordDecision("Examining whether any other files now need compilation based just compiling: '"+stringifyList(lastTimeSources)+"'");
 		// the qualifiedStrings are of the form 'p1/p2' & the simpleStrings are just 'X'
 		char[][][] qualifiedNames = ReferenceCollection.internQualifiedNames(makeStringSet(qualifiedStrings));
 		// if a well known qualified name was found then we can skip over these
@@ -1022,9 +1042,22 @@ public class AjState {
 				File file = (File)entry.getKey();
 				if (file.exists()) {
 					if (!lastTimeSources.contains(file)) {  //??? O(n**2)
+						if (listenerDefined()) {
+							getListener().recordDecision("Need to recompile '"+file.getName().toString()+"'");
+						}
 						addTo.add(file);
 					}
 				}
+			}
+		}
+		// add in the things we compiled previously - I know that seems crap but otherwise we may pull woven
+		// stuff off disk (since we no longer have UnwovenClassFile objects) in order to satisfy references
+		// in the new files we are about to compile (see pr133532)
+		// XXX Promote addTo to a Set - then we don't need this rubbish? but does it need to be ordered?
+		if (addTo.size()>0) {
+			for (Iterator iter = lastTimeSources.iterator(); iter.hasNext();) {
+				Object element = (Object) iter.next();
+				if (!addTo.contains(element)) addTo.add(element);
 			}
 		}
 		
@@ -1308,5 +1341,14 @@ public class AjState {
 	
 	public void initializeAspectNamesList() {
 		this.aspectNames = new LinkedList();
+	}
+	
+	// Will allow us to record decisions made during incremental processing, hopefully aid in debugging
+	public boolean listenerDefined() {
+		return stateListener!=null;
+	}
+	
+	public IStateListener getListener() {
+		return stateListener;
 	}
 }

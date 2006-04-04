@@ -31,5 +31,9 @@ public abstract class AbstractStateListener implements IStateListener {
 	public void detectedAspectDeleted(File f) {	}
 
 	public void buildSuccessful(boolean wasFullBuild) {	}
+	
+	public void recordDecision(String decision) {}
+	
+	public void recordInformation(String info) {}
 
 }

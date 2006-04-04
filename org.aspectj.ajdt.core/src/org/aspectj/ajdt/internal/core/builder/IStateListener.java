@@ -40,5 +40,16 @@ public interface IStateListener {
 	public void detectedAspectDeleted(File f);
 
 	public void buildSuccessful(boolean wasFullBuild);
+	
+	/**
+	 * When a decision is made during compilation (such as needing to recompile some new file, or drop back to batch) this
+	 * method is called with the decision.
+	 */
+	public void recordDecision(String decision);
+	
+	/**
+	 * Provides feedback during compilation on what stage we are at
+	 */
+	public void recordInformation(String info);
 
 }

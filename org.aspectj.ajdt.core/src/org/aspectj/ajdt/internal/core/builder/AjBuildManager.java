@@ -192,7 +192,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         	
             boolean canIncremental = state.prepareForNextBuild(buildConfig);
             if (!canIncremental && !batch) { // retry as batch?
-               	CompilationAndWeavingContext.leavingPhase(ct);
+             CompilationAndWeavingContext.leavingPhase(ct);
+             if (state.listenerDefined()) state.getListener().recordDecision("Falling back to batch compilation");
             	return doBuild(buildConfig, baseHandler, true);
             }
             this.handler = 
@@ -225,10 +226,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             }
             
             if (buildConfig.getOutputJar() != null) {
-            	if (!openOutputStream(buildConfig.getOutputJar())) {
-                   	CompilationAndWeavingContext.leavingPhase(ct);
-                   	return false;
-            	}
+            	 if (!openOutputStream(buildConfig.getOutputJar())) {
+                CompilationAndWeavingContext.leavingPhase(ct);
+                return false;
+            	 }
             }
             
             if (batch) {
@@ -261,15 +262,19 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				    AsmManager.getDefault().processDelta(files,state.getAddedFiles(),state.getDeletedFiles());
                 boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
                 for (int i = 0; (i < 5) && hereWeGoAgain; i++) {
+                	   if (state.listenerDefined()) 
+                		   state.getListener().recordInformation("Starting incremental compilation loop "+(i+1)+" of possibly 5");
                     // System.err.println("XXXX inc: " + files);
                
                     performCompilation(files);
                     if (handler.hasErrors() || (progressListener!=null && progressListener.isCancelledRequested())) {
-                       	CompilationAndWeavingContext.leavingPhase(ct);
+                        CompilationAndWeavingContext.leavingPhase(ct);
                         return false;
                     } 
                     
                     if (state.requiresFullBatchBuild()) {
+                    	if (state.listenerDefined()) 
+                 		   state.getListener().recordInformation(" Dropping back to full build");
                     	return batchBuild(buildConfig, baseHandler);
                     }
                     
@@ -343,6 +348,18 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         return ret;
     }
     
+    private String stringifyList(List l) {
+      if (l==null) return "";
+    	  StringBuffer sb = new StringBuffer();
+    	  sb.append("{");
+    	  for (Iterator iter = l.iterator(); iter.hasNext();) {
+			Object el = (Object) iter.next();
+			sb.append(el);
+			if (iter.hasNext()) sb.append(",");
+		}
+    	  sb.append("}");
+    	  return sb.toString();
+    }
 
 	private boolean openOutputStream(File outJar)  {
 		try {
