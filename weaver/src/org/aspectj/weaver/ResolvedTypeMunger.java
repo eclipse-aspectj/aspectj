@@ -316,11 +316,13 @@ public abstract class ResolvedTypeMunger {
 	protected static List readInTypeAliases(VersionedDataInputStream s) throws IOException {
 		if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
 			int count = s.readInt();
-			List aliases = new ArrayList();
-			for (int i=0;i<count;i++) {
-				aliases.add(s.readUTF());
+			if (count!=0) {
+				List aliases = new ArrayList();
+				for (int i=0;i<count;i++) {
+					aliases.add(s.readUTF());
+				}
+				return aliases;
 			}
-			return aliases;
 		}
 		return null;
 	}
