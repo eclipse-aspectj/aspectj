@@ -822,6 +822,29 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkXMLAspectCount("PR131505","pkg.A",1);
 	}
 	
+	public void testPr133532() {
+		initialiseProject("PR133532");
+		build("PR133532");
+		alter("PR133532","inc1");
+		build("PR133532");
+		alter("PR133532","inc2");
+		build("PR133532");
+		assertTrue("There should be no errors reported:\n"+MyTaskListManager.getErrorMessages(),
+				MyTaskListManager.getErrorMessages().isEmpty());	
+	}
+	
+	public void testPr133532_2() {
+		initialiseProject("pr133532_2");
+		build("pr133532_2");
+		alter("pr133532_2","inc2");
+		build("pr133532_2");
+		assertTrue("There should be no errors reported:\n"+MyTaskListManager.getErrorMessages(),
+				MyTaskListManager.getErrorMessages().isEmpty());	
+		String decisions = AjdeInteractionTestbed.MyStateListener.getDecisions();
+		String expect="Need to recompile 'A.aj'";
+		assertTrue("Couldn't find build decision: '"+expect+"' in the list of decisions made:\n"+decisions,
+				  decisions.indexOf(expect)!=-1);
+	}
 	
 	// other possible tests:
 	// - memory usage (freemem calls?)

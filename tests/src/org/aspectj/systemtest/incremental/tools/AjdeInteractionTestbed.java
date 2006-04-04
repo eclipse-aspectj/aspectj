@@ -80,6 +80,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
+		if (AjState.stateListener==null) AjState.stateListener=MyStateListener.getInstance();
 		MyStateListener.reset();
 		MyBuildProgressMonitor.reset();
 		MyTaskListManager.reset();
@@ -87,6 +88,11 @@ public class AjdeInteractionTestbed extends TestCase {
 		
 		// Create a sandbox in which to work
 		createEmptySandbox();
+	}
+	
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		AjState.stateListener=null;
 	}
 	
 	/** Drives a build */
@@ -452,6 +458,10 @@ public class AjdeInteractionTestbed extends TestCase {
     		  File.pathSeparator + this.classPath + 
     		  File.pathSeparator +  System.getProperty("aspectjrt.path") +
     		  File.pathSeparator +  "../lib/junit/junit.jar" +
+    		  "c:/batik/batik-1.6/lib/batik-util.jar;"+
+    		  "c:/batik/batik-1.6/lib/batik-awt-util.jar;"+
+    		  "c:/batik/batik-1.6/lib/batik-dom.jar;"+
+    		  "c:/batik/batik-1.6/lib/batik-svggen.jar;"+
     		  File.pathSeparator+".."+File.separator+"lib" + File.separator+"test"+File.separator+"aspectjrt.jar";
 			
 			// look at dependant projects
@@ -801,10 +811,11 @@ public class AjdeInteractionTestbed extends TestCase {
 		public static boolean informedAboutKindOfBuild;
 		public static boolean fullBuildOccurred;
 		public static List detectedDeletions = new ArrayList();
-		
+		public static StringBuffer decisions = new StringBuffer();
 		
 		public static void reset() {
 			informedAboutKindOfBuild=false;
+			decisions = new StringBuffer();
 			fullBuildOccurred=false;
 			if (detectedDeletions!=null) detectedDeletions.clear();
 		}
@@ -823,9 +834,19 @@ public class AjdeInteractionTestbed extends TestCase {
 			fullBuildOccurred=wasFullBuild;
 		}
 		
+		public static String getDecisions() {
+			return decisions.toString();
+		}
+		
 		public static boolean wasFullBuild() {
 			if (!informedAboutKindOfBuild) throw new RuntimeException("I never heard about what kind of build it was!!");
 			return fullBuildOccurred;
+		}
+
+		// not needed just yet...
+//		public void recordInformation(String s) { decisions.append(s).append("\n");}
+		public void recordDecision(String s) {
+			decisions.append(s).append("\n");
 		}
 	};
 }

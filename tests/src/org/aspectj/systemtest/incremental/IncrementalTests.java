@@ -133,12 +133,16 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		public void buildSuccessful(boolean wasFullBuild) {}
 	  };
 	  MyStateListener sl = new MyStateListener();
-	  AjState.stateListener = sl;
-	  runTest("change source");
-	  nextIncrement(false);
-	  copyFileAndDoIncrementalBuild("changes/Main.20.java","src/app/Main.java");
-	  assertTrue("Did not expect a path change to be detected ",!sl.pathChange);
-	  run("app.Main");
+	  try {
+	       AjState.stateListener = sl;
+		  runTest("change source");
+		  nextIncrement(false);
+		  copyFileAndDoIncrementalBuild("changes/Main.20.java","src/app/Main.java");
+		  assertTrue("Did not expect a path change to be detected ",!sl.pathChange);
+		  run("app.Main");
+	  } finally {
+		  AjState.stateListener=null;
+	  }
   }
 
   public void test009() throws Exception {
