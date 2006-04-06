@@ -55,6 +55,7 @@ import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -2104,8 +2105,14 @@ public class BcelShadow extends Shadow {
 //          world.getMessageHandler().handleMessage(msg);
         }
         //??? might want some checks here to give better errors
-        BcelObjectType ot = BcelWorld.getBcelObjectType((declaringType.isParameterizedType()?declaringType.getGenericType():declaringType)); 
-        
+        ResolvedType rt = (declaringType.isParameterizedType()?declaringType.getGenericType():declaringType);
+        BcelObjectType ot = BcelWorld.getBcelObjectType(rt); 
+//        if (ot==null) {
+//        	world.getMessageHandler().handleMessage(
+//        	  MessageUtil.warn("Unable to find modifiable delegate for the aspect '"+rt.getName()+"' containing around advice - cannot implement inlining",munger.getSourceLocation()));
+//        	weaveAroundClosure(munger, hasDynamicTest);
+//			return;
+//        }
 		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
 		if (!adviceMethod.getCanInline()) {
 			weaveAroundClosure(munger, hasDynamicTest);

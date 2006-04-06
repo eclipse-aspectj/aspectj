@@ -244,8 +244,11 @@ public class BcelWorld extends World implements Repository {
     
     public ResolvedType resolve(Type t) {
         return resolve(fromBcel(t));
-    }       
-
+    } 
+    
+    // SECRETAPI: used for testing ASM loading of delegates...
+    public boolean fallbackToLoadingBcelDelegatesForAspects = true;
+    
     private int packageRestrictionsForFastDelegates = 0; // 0=dontknow 1=no  2=yes
     private List packagePrefixRestrictionList = null;
     
@@ -288,7 +291,22 @@ public class BcelWorld extends World implements Repository {
 	        if (cf==null) {
 	        	return null;
 	        } else {
-	        	return buildAsmDelegate(ty,cf);
+	        	ReferenceTypeDelegate delegate =  buildAsmDelegate(ty,cf);
+	        	if (fallbackToLoadingBcelDelegatesForAspects && delegate.isAspect()) {
+	        		// bugger - pr135001 - we can't inline around advice from an aspect because we don't load the instructions.
+	        		// fixing this quick to get AJDT upgraded with a good 1.5.2dev build.
+	        		// other fixes would be:
+	        		// 1. record that we are loading the superclass for an aspect, so we know to make it a BCEL delegate
+	        		//
+	        		// the 'fix' here is only reasonable because there are many less aspects than classes!
+	        		
+	        		// Create a BCEL delegate
+	        		if (jc == null) jc = lookupJavaClass(classPath, name);
+	    	        if (jc == null) return delegate; // worrying situation ?!?
+	    	        else            return buildBcelDelegate(ty, jc, false);
+	        	} else {
+	        		return delegate;
+	        	}
 	        }
         } else {
 	        if (jc == null) {

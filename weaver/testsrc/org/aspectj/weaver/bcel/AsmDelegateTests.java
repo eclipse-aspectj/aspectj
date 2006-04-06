@@ -57,8 +57,10 @@ public class AsmDelegateTests extends AbstractWorldTestCase {
 	// --- testcode
 
     public void testWeDontGoBang() {
+        world.fallbackToLoadingBcelDelegatesForAspects = false;
     	ResolvedType rt = world.resolve("SimpleAspect");
     	ReferenceTypeDelegate delegate = ((ReferenceType)rt).getDelegate();
+    	
     	assertTrue("Should be an ASM delegate but is "+delegate.getClass(),
     			   delegate.getClass().toString().equals("class org.aspectj.weaver.asm.AsmDelegate"));
     }
@@ -392,8 +394,10 @@ public class AsmDelegateTests extends AbstractWorldTestCase {
      * Load up the AspectFromHell and take it apart...
      */
     public void testLoadingAttributesForTypes() {
-    	BcelWorld slowWorld = new BcelWorld(BcweaverTests.TESTDATA_PATH+"/forAsmDelegateTesting/stuff.jar");slowWorld.setFastDelegateSupport(false);
+    	BcelWorld slowWorld = new BcelWorld(BcweaverTests.TESTDATA_PATH+"/forAsmDelegateTesting/stuff.jar");
+    	slowWorld.setFastDelegateSupport(false);
         BcelWorld fastWorld = new BcelWorld(BcweaverTests.TESTDATA_PATH+"/forAsmDelegateTesting/stuff.jar");
+        fastWorld.fallbackToLoadingBcelDelegatesForAspects = false;
         
         ReferenceType bcelT = (ReferenceType)slowWorld.resolve("AspectFromHell");
         ReferenceType asmT  = (ReferenceType)fastWorld.resolve("AspectFromHell");
@@ -416,7 +420,8 @@ public class AsmDelegateTests extends AbstractWorldTestCase {
     	boolean debug = false;
     	BcelWorld slowWorld = new BcelWorld(BcweaverTests.TESTDATA_PATH+"/forAsmDelegateTesting/stuff.jar");slowWorld.setFastDelegateSupport(false);
         BcelWorld fastWorld = new BcelWorld(BcweaverTests.TESTDATA_PATH+"/forAsmDelegateTesting/stuff.jar");
-        
+        fastWorld.fallbackToLoadingBcelDelegatesForAspects = false;
+
         ReferenceType bcelT = (ReferenceType)slowWorld.resolve("AspectFromHell");
         ReferenceType asmT  = (ReferenceType)fastWorld.resolve("AspectFromHell");
         

@@ -1,0 +1,18 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.2 Tests -->
+<suite>
+
+    <ajc-test dir="bugs152/pr135001" title="aspect libraries and asm">
+      <compile files="AbstractAspect.java" outjar="lib.jar" options="-1.5"/>
+      <compile files="Foo.java,ConcreteAspect.java" classpath="lib.jar" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void Foo.foo())' in Type 'Foo' (Foo.java:3) advised by around advice from 'ConcreteAspect' (AbstractAspect.java:5)"/>
+      </compile>
+      <run class="Foo">
+         <stderr>
+           <line text="In the advice!"/>
+         </stderr>
+      </run>
+    </ajc-test>
+    
+</suite>
