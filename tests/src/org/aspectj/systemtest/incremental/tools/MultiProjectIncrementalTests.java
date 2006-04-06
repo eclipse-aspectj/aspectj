@@ -846,6 +846,20 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				  decisions.indexOf(expect)!=-1);
 	}
 	
+	public void testPr134541() {
+		initialiseProject("PR134541");
+		build("PR134541");
+		assertEquals("[Xlint:adviceDidNotMatch] should be associated with line 5",5,
+				((IMessage)MyTaskListManager.getWarningMessages().get(0)).getSourceLocation().getLine());
+		alter("PR134541","inc1");
+		build("PR134541");
+		checkWasntFullBuild(); // we've only added a white space therefore we 
+		                       // shouldn't be doing a full build
+		assertEquals("[Xlint:adviceDidNotMatch] should now be associated with line 7",7,
+				((IMessage)MyTaskListManager.getWarningMessages().get(0)).getSourceLocation().getLine());
+	}
+	
+	
 	// other possible tests:
 	// - memory usage (freemem calls?)
 	// - relationship map

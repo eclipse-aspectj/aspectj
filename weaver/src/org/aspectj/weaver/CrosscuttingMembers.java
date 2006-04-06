@@ -238,8 +238,12 @@ public class CrosscuttingMembers {
 			}
 			if (!theseShadowMungers.equals(otherShadowMungers)) {
 				changed = true;
-				shadowMungers = other.shadowMungers;
 			}
+			// replace the existing list of shadowmungers with the 
+			// new ones in case anything like the sourcelocation has
+			// changed, however, don't want this flagged as a change
+			// which will force a full build - bug 134541
+			shadowMungers = other.shadowMungers;
   	    }
   	    
 		// bug 129163: use set equality rather than list equality and

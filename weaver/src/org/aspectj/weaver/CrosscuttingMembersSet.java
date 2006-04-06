@@ -76,6 +76,11 @@ public class CrosscuttingMembersSet {
 				CflowPointcut.clearCaches(aspectType);
 				change = true;
 			} else {
+				if (careAboutShadowMungers) {
+					// bug 134541 - even though we haven't changed we may have updated the 
+					// sourcelocation for the shadowMunger which we need to pick up
+					shadowMungers = null;
+				}
 				change = false;
 			}
 		}
