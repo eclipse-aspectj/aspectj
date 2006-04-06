@@ -55,7 +55,6 @@ import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
