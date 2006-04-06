@@ -39,9 +39,12 @@ import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.ReferencePointcut;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.TypePatternList;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 /**
  * @author Mik Kersten
@@ -299,7 +302,20 @@ public class AsmElementFormatter {
 			
 			for (int i = 0; i < argArray.length; i++) {
 				String argName = new String(argArray[i].name);
-				String argType = argArray[i].type.resolvedType.debugName();
+				String argType = "<UnknownType>"; // pr135052
+				TypeReference typeR = argArray[i].type;
+				if (typeR!=null) {
+					TypeBinding typeB = typeR.resolvedType;
+					if (typeB==null) {
+						if (typeR.getTypeName()!=null) 
+							  argType = CharOperation.toString(typeR.getTypeName());						
+					} else {
+						argType = typeB.debugName();
+					}
+				}
+				
+				
+//				String argType = argArray[i].type.resolvedType.debugName();
 				if (acceptArgument(argName, argArray[i].type.toString())) { 
 					names.add(argName);
 					types.add(argType);
