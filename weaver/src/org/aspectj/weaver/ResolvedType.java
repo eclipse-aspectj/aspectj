@@ -2080,7 +2080,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	protected boolean ajMembersNeedParameterization() {
 		if (isParameterizedType()) return true;
-		if (getSuperclass() != null) return ((ReferenceType)getSuperclass()).ajMembersNeedParameterization();
+		if (getSuperclass() != null) return getSuperclass().ajMembersNeedParameterization();
 		return false;
 	}
 
@@ -2088,7 +2088,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		Map myMap = getMemberParameterizationMap();
 		if (myMap.size() == 0) {
 			// might extend a parameterized aspect that we also need to consider...
-			if (getSuperclass() != null) return ((ReferenceType)getSuperclass()).getAjMemberParameterizationMap();
+			if (getSuperclass() != null) return getSuperclass().getAjMemberParameterizationMap();
 		}
 		return myMap;
 	}
