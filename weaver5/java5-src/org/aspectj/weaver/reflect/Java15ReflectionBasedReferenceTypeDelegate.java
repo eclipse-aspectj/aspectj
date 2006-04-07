@@ -245,6 +245,10 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			Pointcut[] pcs = this.myType.getDeclaredPointcuts();
 			pointcuts = new ResolvedMember[pcs.length];
 			PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(classLoader);
+			World world = getWorld();
+			if (world instanceof ReflectionWorld) {
+				parser.setWorld((ReflectionWorld)getWorld());
+			}
 			for (int i = 0; i < pcs.length; i++) {
 				AjType<?>[] ptypes = pcs[i].getParameterTypes();
 				String[] pnames = pcs[i].getParameterNames();
