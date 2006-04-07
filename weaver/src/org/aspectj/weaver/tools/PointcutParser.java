@@ -214,6 +214,10 @@ public class PointcutParser {
         setClassLoader(PointcutParser.class.getClassLoader());
     }
     
+    public void setWorld(ReflectionWorld aWorld) {
+    	this.world = aWorld;
+    }
+    
     /**
      * Set the classloader that this parser should use for
      * type resolution.
