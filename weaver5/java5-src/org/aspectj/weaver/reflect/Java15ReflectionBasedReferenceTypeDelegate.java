@@ -54,6 +54,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	private String genericSignature = null;
 	private JavaLangTypeToResolvedTypeConverter typeConverter;
 	private Java15AnnotationFinder annotationFinder = null;
+	private ArgNameFinder argNameFinder = null;
 	
 
 	public Java15ReflectionBasedReferenceTypeDelegate() {}
@@ -63,6 +64,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		super.initialize(aType, aClass, classLoader, aWorld);
 		myType = AjTypeSystem.getAjType(aClass);
 		annotationFinder = new Java15AnnotationFinder();
+		argNameFinder = annotationFinder;
 		annotationFinder.setClassLoader(classLoader);
 		this.typeConverter = new JavaLangTypeToResolvedTypeConverter(aWorld);
 	}
@@ -133,8 +135,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		}
 		 return superclass;
 	}
-	
-	
+		
 	public TypeVariable[] getTypeVariables() {
 		TypeVariable[] workInProgressSetOfVariables = (TypeVariable[])getResolvedTypeX().getWorld().getTypeVariablesCurrentlyBeingProcessed(getBaseClass());
 		if (workInProgressSetOfVariables!=null) {
@@ -253,7 +254,10 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 				AjType<?>[] ptypes = pcs[i].getParameterTypes();
 				String[] pnames = pcs[i].getParameterNames();
 				if (pnames.length != ptypes.length) {
-					throw new IllegalStateException("Required parameter names not available when parsing pointcut " + pcs[i].getName() + " in type " + getResolvedTypeX().getName());
+					pnames = tryToDiscoverParameterNames(pcs[i]);
+					if (pnames == null || (pnames.length != ptypes.length)) {
+						throw new IllegalStateException("Required parameter names not available when parsing pointcut " + pcs[i].getName() + " in type " + getResolvedTypeX().getName());
+					}
 				}
 				PointcutParameter[] parameters = new PointcutParameter[ptypes.length];
 				for (int j = 0; j < parameters.length; j++) {
@@ -270,6 +274,17 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			}
 		}
 		return pointcuts;
+	}
+	
+	// for @AspectJ pointcuts compiled by javac only...
+	private String[] tryToDiscoverParameterNames(Pointcut pcut) {
+		Method[] ms = pcut.getDeclaringType().getJavaClass().getDeclaredMethods();
+		for(Method m : ms) {
+			if (m.getName().equals(pcut.getName())) {
+				return argNameFinder.getParameterNames(m);
+			}
+		}
+		return null;
 	}
 	
 	public boolean isAnnotation() {

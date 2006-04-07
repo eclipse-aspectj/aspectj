@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.weaver.ResolvedType;
@@ -32,7 +34,7 @@ import org.aspectj.weaver.World;
  * Find the given annotation (if present) on the given object
  *
  */
-public class Java15AnnotationFinder implements AnnotationFinder {
+public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 	
 	private Repository bcelRepository;
 	private ClassLoader classLoader;
@@ -160,4 +162,40 @@ public class Java15AnnotationFinder implements AnnotationFinder {
 		return ret;
 	}
 	
+	public String[] getParameterNames(Member forMember) {
+		if (!(forMember instanceof AccessibleObject)) return null;
+		
+		try {
+			JavaClass jc = bcelRepository.loadClass(forMember.getDeclaringClass());
+			LocalVariableTable lvt = null;
+			int numVars = 0;
+			if (forMember instanceof Method) {
+				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)forMember);
+				lvt = bcelMethod.getLocalVariableTable();
+				numVars = bcelMethod.getArgumentTypes().length;
+			} else if (forMember instanceof Constructor) {
+				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor)forMember);
+				lvt = bcelCons.getLocalVariableTable();
+				numVars = bcelCons.getArgumentTypes().length;
+			}
+			return getParameterNamesFromLVT(lvt,numVars);
+		} catch (ClassNotFoundException cnfEx) {
+			; // no luck
+		}
+		
+		return null;
+	}
+	
+	private String[] getParameterNamesFromLVT(LocalVariableTable lvt, int numVars) {
+		LocalVariable[] vars = lvt.getLocalVariableTable();
+		if (vars.length < numVars) {
+			// basic error, we can't get the names...
+			return null;
+		}
+		String[] ret = new String[numVars];
+		for(int i = 0; i < numVars; i++) {
+			ret[i] = vars[i+1].getName();
+		}
+		return ret;
+	}
 }
