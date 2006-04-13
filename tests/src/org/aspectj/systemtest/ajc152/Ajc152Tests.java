@@ -16,8 +16,9 @@ import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+	
   public void testAspectLibrariesAndASM_pr135001() { runTest("aspect libraries and asm");}
-  
+  public void testStackOverflow_pr136258() { runTest("stack overflow");}
   
   /////////////////////////////////////////
   public static Test suite() {

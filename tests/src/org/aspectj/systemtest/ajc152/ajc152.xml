@@ -15,4 +15,9 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr136258" title="stack overflow">
+      <compile files="StatisticsTypeImpl.java" options="-1.5"/>
+      <run class="StatisticsTypeImpl"/>
+    </ajc-test>
+    
 </suite>

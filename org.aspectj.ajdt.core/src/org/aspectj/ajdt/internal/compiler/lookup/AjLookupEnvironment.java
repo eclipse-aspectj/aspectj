@@ -298,14 +298,14 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	public void doSupertypesFirst(ReferenceBinding rb,Collection yetToProcess) {
 	    if (rb instanceof SourceTypeBinding) {
 		    if (yetToProcess.contains(rb)) {
-		    	collectAllITDsAndDeclares((SourceTypeBinding)rb, yetToProcess);
+		    		collectAllITDsAndDeclares((SourceTypeBinding)rb, yetToProcess);
 		    }
 	    } else if (rb instanceof ParameterizedTypeBinding) {
 	        // If its a PTB we need to pull the SourceTypeBinding out of it.
-	    	ParameterizedTypeBinding ptb = (ParameterizedTypeBinding)rb;
-	    	if (ptb.type instanceof SourceTypeBinding && yetToProcess.contains(ptb.type)) {
-	    		collectAllITDsAndDeclares((SourceTypeBinding)ptb.type, yetToProcess);
-	    	}
+	    		ParameterizedTypeBinding ptb = (ParameterizedTypeBinding)rb;
+		    	if (ptb.type instanceof SourceTypeBinding && yetToProcess.contains(ptb.type)) {
+		    		collectAllITDsAndDeclares((SourceTypeBinding)ptb.type, yetToProcess);
+		    	}
 	    }
 	}
 	/**
@@ -316,8 +316,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 */
 	private void collectAllITDsAndDeclares(SourceTypeBinding sourceType, Collection yetToProcess) {
 		// Look at the supertype first
-		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES, sourceType.sourceName);
-		
+		//ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES, sourceType.sourceName);
+
+         yetToProcess.remove(sourceType);
 		// look out our direct supertype
 		doSupertypesFirst(sourceType.superclass(),yetToProcess);
 	    
@@ -331,8 +332,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		
         buildInterTypeAndPerClause(sourceType.scope);
         addCrosscuttingStructures(sourceType.scope);
-        yetToProcess.remove(sourceType);
-		CompilationAndWeavingContext.leavingPhase(tok);
+		//CompilationAndWeavingContext.leavingPhase(tok);
 	}
 	
 	/**
