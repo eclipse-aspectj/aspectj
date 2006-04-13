@@ -316,7 +316,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 */
 	private void collectAllITDsAndDeclares(SourceTypeBinding sourceType, Collection yetToProcess) {
 		// Look at the supertype first
-		//ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES, sourceType.sourceName);
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES, sourceType.sourceName);
 
          yetToProcess.remove(sourceType);
 		// look out our direct supertype
@@ -332,7 +332,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		
         buildInterTypeAndPerClause(sourceType.scope);
         addCrosscuttingStructures(sourceType.scope);
-		//CompilationAndWeavingContext.leavingPhase(tok);
+		CompilationAndWeavingContext.leavingPhase(tok);
 	}
 	
 	/**
