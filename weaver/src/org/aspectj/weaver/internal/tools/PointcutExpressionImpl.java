@@ -20,6 +20,7 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.AbstractPatternNodeVisitor;
+import org.aspectj.weaver.patterns.AnnotationPointcut;
 import org.aspectj.weaver.patterns.ArgsAnnotationPointcut;
 import org.aspectj.weaver.patterns.ArgsPointcut;
 import org.aspectj.weaver.patterns.CflowPointcut;
@@ -30,6 +31,8 @@ import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
+import org.aspectj.weaver.patterns.WithinAnnotationPointcut;
+import org.aspectj.weaver.patterns.WithinCodeAnnotationPointcut;
 import org.aspectj.weaver.reflect.ReflectionFastMatchInfo;
 import org.aspectj.weaver.reflect.ReflectionShadow;
 import org.aspectj.weaver.reflect.ShadowMatchImpl;
@@ -251,6 +254,21 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		private boolean hasDynamicContent = false;
 		
 		public boolean hasDynamicContent() { return hasDynamicContent; }
+		
+		public Object visit(WithinAnnotationPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
+		
+		public Object visit(WithinCodeAnnotationPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
+		
+		public Object visit(AnnotationPointcut node, Object data) {
+			hasDynamicContent = true;
+			return null;
+		}
 		
 		public Object visit(ArgsAnnotationPointcut node, Object data) {
 			hasDynamicContent = true;
