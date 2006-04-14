@@ -276,6 +276,13 @@ public class Java15PointcutExpressionTest extends TestCase {
 		assertFalse("should not match",sm2.alwaysMatches());				
 	}
 	
+	public void testJavaLangMatching() throws Exception {
+		PointcutExpression ex = parser.parsePointcutExpression("@within(java.lang.Deprecated)");
+		Method foo = GoldenOldie.class.getMethod("foo");
+		ShadowMatch sm1 = ex.matchesMethodExecution(foo);
+		assertTrue("should match",sm1.alwaysMatches());
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
@@ -323,6 +330,10 @@ public class Java15PointcutExpressionTest extends TestCase {
 		public void setFriends(List<C> friends) {}
 	}
 
+	@Deprecated
+	static class GoldenOldie {
+		public void foo() {}
+	}
 }
 
 
