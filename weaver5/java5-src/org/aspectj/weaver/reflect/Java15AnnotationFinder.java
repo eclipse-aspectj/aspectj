@@ -118,7 +118,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			// convert to our Annotation type
 			Set<ResolvedType> annSet = new HashSet<ResolvedType>();
 			for (int i = 0; i < anns.length; i++) {
-				annSet.add(UnresolvedType.forName(anns[i].getTypeName()).resolve(world));
+				annSet.add(world.resolve(UnresolvedType.forSignature(anns[i].getTypeSignature())));
 			}
 			return annSet;
 		} catch (ClassNotFoundException cnfEx) {
@@ -146,7 +146,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			if (anns == null) return new ResolvedType[0];
 			ResolvedType[] ret = new ResolvedType[anns.length];
 			for (int i = 0; i < ret.length; i++) {
-				ret[i] = inWorld.resolve(anns[i].getTypeName());
+				ret[i] = inWorld.resolve(UnresolvedType.forSignature(anns[i].getTypeSignature()));
 			}
 			return ret;
 		} catch (ClassNotFoundException cnfEx) {
