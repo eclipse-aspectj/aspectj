@@ -15,6 +15,7 @@ package org.aspectj.weaver.bcel;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -89,8 +90,14 @@ public class ClassPathManager {
 		String name = type.getName();
 		for (Iterator i = entries.iterator(); i.hasNext(); ) {
 			Entry entry = (Entry)i.next();
-			ClassFile ret = entry.find(name);
-			if (ret != null) return ret;
+			try {
+				ClassFile ret = entry.find(name);
+				if (ret != null) return ret;
+			} catch (IOException ioe) {
+				// this is NOT an error: it's valid to have missing classpath entries
+				i.remove();
+			}
+
 		}
 		return null;
 	}
@@ -113,7 +120,11 @@ public class ClassPathManager {
 		List ret = new ArrayList();
 		for (Iterator i = entries.iterator(); i.hasNext(); ) {
 			Entry entry = (Entry)i.next();
-			ret.addAll(entry.getAllClassFiles());
+			try {
+				ret.addAll(entry.getAllClassFiles());
+			} catch (IOException e) {
+				i.remove();
+			}
 		}
 		return ret;
 	}
@@ -127,8 +138,8 @@ public class ClassPathManager {
 	}
 
 	public abstract static class Entry {
-		public abstract ClassFile find(String name);
-		public abstract List getAllClassFiles();
+		public abstract ClassFile find(String name) throws IOException;
+		public abstract List getAllClassFiles() throws IOException;
 	}
 	
 	private static class FileClassFile extends ClassFile {
@@ -221,7 +232,7 @@ public class ClassPathManager {
 			return zipFile;
 		}
 		
-		public ClassFile find(String name) {
+		public ClassFile find(String name) throws IOException {
 			ensureOpen();
 			String key = name.replace('.', '/') + ".class";
 			ZipEntry entry = zipFile.getEntry(key);
@@ -229,7 +240,7 @@ public class ClassPathManager {
 			else               return null; // This zip will be closed when necessary...
 		}
 		
-		public List getAllClassFiles() {
+		public List getAllClassFiles() throws IOException {
 			ensureOpen();
 			List ret = new ArrayList();
 			for (Enumeration e = zipFile.entries(); e.hasMoreElements(); ) {
@@ -241,22 +252,18 @@ public class ClassPathManager {
 			return ret;
 		}
 		
-		private void ensureOpen() {
+		private void ensureOpen() throws IOException {
 			if (zipFile != null && openArchives.contains(zipFile)) {
 				if (isReallyOpen()) return;
 			}
-			try {
-				if (openArchives.size()>=maxOpenArchives) {
-					closeSomeArchives(openArchives.size()/10); // Close 10% of those open
-				}
-				zipFile = new ZipFile(file);
-				if (!isReallyOpen()) {
-					throw new BCException("Can't open archive: "+file.getName()+" (size() check failed)");					
-				}
-				openArchives.add(zipFile);
-			} catch (IOException ioe) {
-				throw new BCException("Can't open archive: "+file.getName(),ioe);
+			if (openArchives.size()>=maxOpenArchives) {
+				closeSomeArchives(openArchives.size()/10); // Close 10% of those open
 			}
+			zipFile = new ZipFile(file);
+			if (!isReallyOpen()) {
+				throw new FileNotFoundException("Can't open archive: "+file.getName()+" (size() check failed)");					
+			}
+			openArchives.add(zipFile);
 		}
 		
 		private boolean isReallyOpen() {
