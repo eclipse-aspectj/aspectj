@@ -19,6 +19,8 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
   public void testAspectLibrariesAndASM_pr135001() { runTest("aspect libraries and asm");}
   public void testStackOverflow_pr136258() { runTest("stack overflow");}
+  public void testIncorrectOverridesEvaluation13() { runTest("incorrect overrides evaluation - 1.3"); }
+  public void testIncorrectOverridesEvaluation15() { runTest("incorrect overrides evaluation - 1.5"); }
   
   /////////////////////////////////////////
   public static Test suite() {
