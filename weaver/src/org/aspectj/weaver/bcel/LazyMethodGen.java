@@ -1464,6 +1464,12 @@ public final class LazyMethodGen {
     	return memberView.isAjSynthetic();
     }
     
+
+    boolean isSynthetic() {
+    	if (memberView == null) return false;
+    	return memberView.isSynthetic();
+    }
+    
     public ISourceLocation getSourceLocation() {
       if (memberView!=null) return memberView.getSourceLocation();
       return null;

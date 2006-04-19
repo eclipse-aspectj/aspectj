@@ -22,6 +22,7 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
+import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
@@ -47,6 +48,8 @@ final class BcelMethod extends ResolvedMemberImpl {
 
 	private Method method;
 	private boolean isAjSynthetic;
+	private boolean isSynthetic;
+	private boolean knowIfSynthetic = false;
 	private ShadowMunger associatedShadowMunger;
 	private ResolvedPointcutDefinition preResolvedPointcut;  // used when ajc has pre-resolved the pointcut of some @Advice
 	
@@ -395,4 +398,30 @@ final class BcelMethod extends ResolvedMemberImpl {
 			 method = null;
 		 }
 	 }
+
+	public boolean isSynthetic() {
+		if (!knowIfSynthetic) workOutIfSynthetic();
+		return isSynthetic;
+	}
+
+	// Pre Java5 synthetic is an attribute 'Synthetic', post Java5 it is a modifier (4096 or 0x1000)
+	private void workOutIfSynthetic() {
+		knowIfSynthetic=true;
+		JavaClass jc = bcelObjectType.getJavaClass();
+		isSynthetic=false;
+		if (jc==null) return; // what the hell has gone wrong?
+		if (jc.getMajor()<49/*Java5*/) {
+			// synthetic is an attribute
+			String[] synthetics =  getAttributeNames(false);
+			if (synthetics!=null) {
+				for (int i = 0; i < synthetics.length; i++) {
+					if (synthetics[i].equals("Synthetic")) {isSynthetic=true;break;}
+				}
+			}
+		} else {
+			// synthetic is a modifier (4096)
+			isSynthetic = (modifiers&4096)!=0;
+		}
+	}
+
 }

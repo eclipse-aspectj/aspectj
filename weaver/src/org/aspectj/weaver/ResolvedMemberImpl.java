@@ -333,7 +333,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     }
     
 	public boolean isSynthetic() {
-		return false;
+		// See Bcelmethod.isSynthetic() which takes account of preJava5 Synthetic modifier
+		return (modifiers & 4096)!=0; // do we know better? 
 	}
 
     public void write(DataOutputStream s) throws IOException {
