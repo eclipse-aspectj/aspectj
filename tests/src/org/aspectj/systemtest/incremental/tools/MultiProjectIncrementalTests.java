@@ -821,6 +821,15 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		checkXMLAspectCount("PR131505","A",1);
 		checkXMLAspectCount("PR131505","pkg.A",1);
 	}
+
+	public void testPr136585() {
+		initialiseProject("PR136585");
+		build("PR136585");
+		alter("PR136585","inc1");
+		build("PR136585");
+		assertTrue("There should be no errors reported:\n"+MyTaskListManager.getErrorMessages(),
+				MyTaskListManager.getErrorMessages().isEmpty());	
+	}
 	
 	public void testPr133532() {
 		initialiseProject("PR133532");

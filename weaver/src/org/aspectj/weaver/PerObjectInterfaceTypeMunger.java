@@ -28,10 +28,10 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
     private TypePattern lazyTestTypePattern;
     
     public boolean equals(Object other) {
-    	if (!(other instanceof PerObjectInterfaceTypeMunger)) return false;
+    	if (other==null || !(other instanceof PerObjectInterfaceTypeMunger)) return false;
   		PerObjectInterfaceTypeMunger o = (PerObjectInterfaceTypeMunger)other;
-    	return ((o.testPointcut == null) ? (testPointcut == null ) : testPointcut.equals(o.testPointcut))
-    			&& ((o.lazyTestTypePattern == null) ? (lazyTestTypePattern == null ) : lazyTestTypePattern.equals(o.lazyTestTypePattern));
+    	return ((testPointcut == null) ? (o.testPointcut == null ) : testPointcut.equals(o.testPointcut))
+    			&& ((lazyTestTypePattern == null) ? (o.lazyTestTypePattern == null ) : lazyTestTypePattern.equals(o.lazyTestTypePattern));
     }
 
     private volatile int hashCode = 0;
