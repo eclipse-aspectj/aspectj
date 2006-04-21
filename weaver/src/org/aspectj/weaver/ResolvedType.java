@@ -345,6 +345,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
         while (i.hasNext()) {
             ResolvedMember f = (ResolvedMember) i.next();
             if (matches(f, m)) return f;
+            if (f.hasBackingGenericMember() && m.getName().equals(f.getName())) { // might be worth checking the method behind the parameterized method (see pr137496)
+            	  if (matches(f.getBackingGenericMember(),m)) return f;
+            }
         }
         return null; //ResolvedMember.Missing;
         //throw new BCException("can't find " + m);
