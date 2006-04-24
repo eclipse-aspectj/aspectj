@@ -20,6 +20,25 @@
       <run class="StatisticsTypeImpl"/>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr138158" title="not at withincode">
+      <compile files="Boo.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void Boo.m())' in Type 'Boo' (Boo.java:9) advised by before advice from 'X' (Boo.java:19)"/>
+      </compile>
+      <run class="Boo"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137568" title="complicated generics declaration">
+      <compile files="C.java" options="-emacssym -1.5"/>
+      <run class="C"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138143" title="npe on duplicate method with ataj">
+      <compile files="AspectClass.java" options="-1.5">
+        <message kind="error" line="7" text="Duplicate method incomingMessage() in type AspectClass"/>
+        <message kind="error" line="12" text="Duplicate method incomingMessage() in type AspectClass"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs152/pr137496" title="pointcuts and generics - B">
       <compile files="B.java" options="-1.5 -showWeaveInfo">
         <!--message kind="weave" text="Join point 'method-call(java.lang.String C.pm(java.lang.String))' in Type 'B' (B.java:20) advised by before advice from 'X' (B.java:26)"/-->
