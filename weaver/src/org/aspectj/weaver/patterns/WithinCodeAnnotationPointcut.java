@@ -154,10 +154,11 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 				
 			state.set(btp.getFormalIndex(),var);
 		} 
-		if (matchInternal(shadow).alwaysTrue()) 
-			return Literal.TRUE;
-		else 
-			return Literal.FALSE;
+		return Literal.TRUE;
+//		if (matchInternal(shadow).alwaysTrue()) 
+//			return Literal.TRUE;
+//		else 
+//			return Literal.FALSE;
 	}
 
 	
