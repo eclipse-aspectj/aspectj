@@ -104,6 +104,21 @@ public class TypeFactory {
 			return ret;
 		} else if(firstChar=='+') { 
 			// ? extends ...
+	/*
+			// this bound calc is for bug pr137568 ... don't like duplicating this here from above...
+			String subsig = signature.substring(1);
+			int startOfParams = subsig.indexOf('<');
+			int endOfParams = subsig.lastIndexOf('>');
+			UnresolvedType bound = null;
+			if (startOfParams==-1) {
+				bound = new UnresolvedType(subsig);
+			} else {
+				String signatureErasure = "L" + subsig.substring(1,startOfParams) + ";";
+				UnresolvedType[] typeParams = createTypeParams(subsig.substring(startOfParams +1, endOfParams));
+				bound = new UnresolvedType(subsig,signatureErasure,typeParams);
+			}
+	*/
+			//all that replaces: 
 			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
 			UnresolvedType ret = new UnresolvedType(signature);
 			ret.typeKind = TypeKind.WILDCARD;
