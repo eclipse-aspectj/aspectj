@@ -27,6 +27,13 @@
       <run class="Boo"/>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr138158" title="not at within - 3">
+      <compile files="Doo.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Soo' (Doo.java:20) advised by before advice from 'X' (Doo.java:25)"/>
+      </compile>
+      <run class="Doo"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs152/pr138158" title="not at withincode - 2">
       <compile files="Foo.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Foo' (Foo.java:14) advised by before advice from 'X' (Foo.java:26)"/>

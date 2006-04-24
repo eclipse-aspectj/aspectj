@@ -143,7 +143,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 			
 			state.set(btp.getFormalIndex(),var);
 		} 
-		return Literal.TRUE;
+		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 
 	/* (non-Javadoc)
