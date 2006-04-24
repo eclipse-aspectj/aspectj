@@ -17,7 +17,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
-  public void testNotAtWithincode_pr138158() { runTest("not at withincode");}
+  //public void testNotAtWithincode_pr138158() { runTest("not at withincode");}
   //public void testComplexGenericDecl_pr137568() { runTest("complicated generics declaration");}
   public void testNpeOnDup_pr138143() { runTest("npe on duplicate method with ataj");}
   public void testPointcutsAndGenerics_pr137496_1() { runTest("pointcuts and generics - B");}
