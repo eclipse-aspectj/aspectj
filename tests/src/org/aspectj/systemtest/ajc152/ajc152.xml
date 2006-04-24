@@ -20,11 +20,19 @@
       <run class="StatisticsTypeImpl"/>
     </ajc-test>
     
-    <ajc-test dir="bugs152/pr138158" title="not at withincode">
+    <ajc-test dir="bugs152/pr138158" title="not at withincode - 1">
       <compile files="Boo.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'method-call(void Boo.m())' in Type 'Boo' (Boo.java:9) advised by before advice from 'X' (Boo.java:19)"/>
       </compile>
       <run class="Boo"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138158" title="not at withincode - 2">
+      <compile files="Foo.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Foo' (Foo.java:14) advised by before advice from 'X' (Foo.java:26)"/>
+		<message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Foo' (Foo.java:18) advised by before advice from 'X' (Foo.java:23)"/>
+      </compile>
+      <run class="Foo"/>
     </ajc-test>
     
     <ajc-test dir="bugs152/pr137568" title="complicated generics declaration">
