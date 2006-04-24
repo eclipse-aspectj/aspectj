@@ -186,7 +186,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				}  else if ((amd.annotations != null) && isAnnotationStylePointcut(amd.annotations)) {
 					// consider pointcuts defined via annotations
 					ResolvedPointcutDefinition df = makeResolvedPointcutDefinition(amd);
-					declaredPointcuts.add(df);
+					if (df!=null) declaredPointcuts.add(df);
 				} else {
 					if (amd.binding == null || !amd.binding.isValidBinding()) continue;
 					ResolvedMember member = factory.makeResolvedMember(amd.binding);
@@ -214,6 +214,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	private ResolvedPointcutDefinition makeResolvedPointcutDefinition(AbstractMethodDeclaration md) {
+		if (md.binding==null) return null; // there is another error that has caused this... pr138143
 		ResolvedPointcutDefinition resolvedPointcutDeclaration = new ResolvedPointcutDefinition(
             factory.fromBinding(md.binding.declaringClass), 
             md.modifiers, 
