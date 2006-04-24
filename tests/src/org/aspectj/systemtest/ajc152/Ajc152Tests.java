@@ -31,7 +31,15 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testStackOverflow_pr136258() { runTest("stack overflow");}
   public void testIncorrectOverridesEvaluation13() { runTest("incorrect overrides evaluation - 1.3"); }
   public void testIncorrectOverridesEvaluation15() { runTest("incorrect overrides evaluation - 1.5"); }
+
+  // known failures, uncomment when working.
+//  public void testReferencePCutInDeclareWarning_pr138215() { runTest("Reference pointcut fails inside @DeclareWarning");}
+//  public void testReferencePCutInPerClause_pr138219() { runTest("Can't use a FQ Reference pointcut in any pointcut expression referenced by a per-clause");}
+//  public void testDoubleAnnotationMatching_pr138223() { runTest("Double at annotation matching (no binding)");}
   
+// this next one reported as a bug by Rob Harrop, but I can't reproduce the failure yet...
+//public void testAtAspectWithReferencePCPerClause_pr138220() { runTest("@Aspect with reference pointcut in perclause");}  
+
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc152Tests.class);

@@ -133,4 +133,25 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr138215" pr="138215" title="Reference pointcut fails inside @DeclareWarning">
+      <compile files="pr138215.aj" options="-1.5">
+        <message kind="warning" line="17" text="no foos please"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138219" pr="138219" title="Can't use a FQ Reference pointcut in any pointcut expression referenced by a per-clause">
+      <compile files="PerThisWithReference.aj,SomeOtherType.aj" options="-1.5">
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138220" pr="138220" title="@Aspect with reference pointcut in perclause">
+      <compile files="AtAspectWithPerClause.aj" options="-1.5">
+      </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr138223" pr="138223" title="Double at annotation matching (no binding)">
+      <compile files="DoubleAnnotationMatching.aj" options="-1.5">
+      </compile>
+    </ajc-test>
+
 </suite>
