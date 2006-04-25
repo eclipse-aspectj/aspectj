@@ -27,6 +27,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testPointcutsAndGenerics_pr137496_3() { runTest("pointcuts and generics - E");}
   public void testPointcutsAndGenerics_pr137496_4() { runTest("pointcuts and generics - F");}
   public void testPointcutsAndGenerics_pr137496_5() { runTest("pointcuts and generics - G");}
+  public void testPointcutsAndGenerics_pr137496_6() { runTest("pointcuts and generics - H");}
   public void testAspectLibrariesAndASM_pr135001() { runTest("aspect libraries and asm");}
   public void testStackOverflow_pr136258() { runTest("stack overflow");}
   public void testIncorrectOverridesEvaluation13() { runTest("incorrect overrides evaluation - 1.3"); }

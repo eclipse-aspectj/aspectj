@@ -3179,7 +3179,11 @@ public class BcelShadow extends Shadow {
         if (getKind() == PreInitialization) {
         	returnType = UnresolvedType.OBJECTARRAY;
         } else {
-        	returnType = getReturnType();
+
+	    	if (getKind() == ConstructorCall) returnType = getSignature().getDeclaringType();
+	    	else if (getKind() == FieldSet) returnType = ResolvedType.VOID;
+	    	else returnType = getSignature().getReturnType().resolve(world);
+//        	returnType = getReturnType(); // for this and above lines, see pr137496
         }
         return
             new LazyMethodGen(
