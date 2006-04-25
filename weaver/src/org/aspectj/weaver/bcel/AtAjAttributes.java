@@ -1236,17 +1236,10 @@ public class AtAjAttributes {
                     reportError("@DeclareError used on a non String constant field", struct);
                     return false;
                 }
-                FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
-                IScope binding = new BindingScope(
-                        struct.enclosingType,
-                        struct.context,
-                        bindings
-                );
                 Pointcut pc = parsePointcut(declareError.getValue().stringifyValue(), struct, false);
                 if (pc == null) {
                     hasError = false;//cannot parse pointcut
-                } else {
-                    pc .resolve(binding);
+                } else {                	 
                     DeclareErrorOrWarning deow = new DeclareErrorOrWarning(true, pc, struct.field.getConstantValue().toString());
                     setDeclareErrorOrWarningLocation(deow,struct);
                     struct.ajAttributes.add(new AjAttribute.DeclareAttribute(deow));
@@ -1263,17 +1256,10 @@ public class AtAjAttributes {
                     reportError("@DeclareWarning used on a non String constant field", struct);
                     return false;
                 }
-                FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
-                IScope binding = new BindingScope(
-                        struct.enclosingType,
-                        struct.context,
-                        bindings
-                );
                 Pointcut pc = parsePointcut(declareWarning.getValue().stringifyValue(), struct, false);
                 if (pc == null) {
                     hasWarning = false;//cannot parse pointcut
                 } else {
-                    pc.resolve(binding);
                     DeclareErrorOrWarning deow = new DeclareErrorOrWarning(false, pc, struct.field.getConstantValue().toString());
                     setDeclareErrorOrWarningLocation(deow,struct);
                     struct.ajAttributes.add(new AjAttribute.DeclareAttribute(deow));

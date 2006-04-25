@@ -48,7 +48,12 @@ import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.AtAjAttributes.BindingScope;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
+import org.aspectj.weaver.patterns.FormalBinding;
+import org.aspectj.weaver.patterns.IScope;
 import org.aspectj.weaver.patterns.PerClause;
 
 public class BcelObjectType extends AbstractReferenceTypeDelegate {
@@ -304,6 +309,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		
 		this.pointcuts = (ResolvedPointcutDefinition[]) 
 			pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+		
+		resolveAnnotationDeclares(l);
 
 		if (deferredAspectAttribute != null) {
 			// we can finally process the aspect and its associated perclause...
@@ -348,6 +355,29 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		}
 		return deferredAspectAttribute;
 	}
+    
+    /**
+     * Extra processing step needed because declares that come from annotations are not pre-resolved.
+     * We can't do the resolution until *after* the pointcuts have been resolved.
+     * @param attributeList
+     */
+    private void resolveAnnotationDeclares(List attributeList) {
+    	FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+        IScope bindingScope = new BindingScope(
+                getResolvedTypeX(),
+                getResolvedTypeX().getSourceContext(),
+                bindings
+        );
+		for (Iterator iter = attributeList.iterator(); iter.hasNext();) {
+			AjAttribute a = (AjAttribute) iter.next();
+			if (a instanceof AjAttribute.DeclareAttribute) {
+				Declare decl = (((AjAttribute.DeclareAttribute)a).getDeclare());
+				if (decl instanceof DeclareErrorOrWarning) {
+				  decl.resolve(bindingScope);
+				}
+			}
+		}    	
+    }
 
 	public PerClause getPerClause() {
         ensureAspectJAttributesUnpacked();
