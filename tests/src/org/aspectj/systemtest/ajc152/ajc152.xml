@@ -165,4 +165,22 @@
       </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs152/pr138286" pr="138286" title="No ClassCastException with perThis">
+      <compile files="A.aj" options="-1.5 -showWeaveInfo">      
+	    <message kind="weave" text="Join point 'initialization(void A.&lt;init&gt;())' in Type 'A' (A.aj:9) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'initialization(void Soo.&lt;init&gt;())' in Type 'Soo' (A.aj:31) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'initialization(void Goo.&lt;init&gt;())' in Type 'Goo' (A.aj:27) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'initialization(void Foo.&lt;init&gt;())' in Type 'Foo' (A.aj:25) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'initialization(void Boo.&lt;init&gt;())' in Type 'Boo' (A.aj:29) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+      </compile>
+      <run class="A">
+        <stderr>
+          <line text="class Foo"/>
+          <line text="class Boo"/>
+          <line text="class Boo"/> <!-- this one is because of the super() call in Soo's default ctor -->
+          <line text="class Soo"/>
+        </stderr>
+      </run>
+    </ajc-test>
+
 </suite>

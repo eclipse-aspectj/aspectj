@@ -38,6 +38,8 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testReferencePCutInPerClause_pr138219() { runTest("Can't use a FQ Reference pointcut in any pointcut expression referenced by a per-clause");}
 //  public void testDoubleAnnotationMatching_pr138223() { runTest("Double at annotation matching (no binding)");}
   
+  public void testNoClassCastExceptionWithPerThis_pr138286() { runTest("No ClassCastException with perThis");}
+  
 // this next one reported as a bug by Rob Harrop, but I can't reproduce the failure yet...
 //public void testAtAspectWithReferencePCPerClause_pr138220() { runTest("@Aspect with reference pointcut in perclause");}  
 

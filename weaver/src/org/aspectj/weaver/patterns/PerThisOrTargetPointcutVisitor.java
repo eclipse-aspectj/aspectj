@@ -67,7 +67,7 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
         if (m_isTarget) {
             return MAYBE;
         } else {
-            return node.getAnnotationTypePattern();
+        	return new AnyWithAnnotationTypePattern( node.getAnnotationTypePattern());
         }
     }
 
@@ -125,9 +125,9 @@ public class PerThisOrTargetPointcutVisitor extends IdentityPointcutVisitor {
 
     public Object visit(ThisOrTargetAnnotationPointcut node, Object data) {
         if (m_isTarget && !node.isThis()) {
-            return node.getAnnotationTypePattern();
+        	return new AnyWithAnnotationTypePattern( node.getAnnotationTypePattern());
         } else if (!m_isTarget && node.isThis()) {
-            return node.getAnnotationTypePattern();
+        	return new AnyWithAnnotationTypePattern( node.getAnnotationTypePattern());
         } else {
             // perthis(@target(Foo))
             return MAYBE;
