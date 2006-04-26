@@ -784,7 +784,8 @@ public class AjcTask extends MatchingTask {
         while (tokens.hasMoreTokens()) {
             String token = tokens.nextToken().trim();
             if (1 < token.length()) {
-                if (VALID_XOPTIONS.contains(token)) {
+            	// new special case: allow -Xset:anything
+                if (VALID_XOPTIONS.contains(token) || token.indexOf("set:")==0) {
                     cmd.addFlag("-X" + token, true); 
                 } else {
                     ignore("-X" + token);
