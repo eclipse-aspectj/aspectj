@@ -20,6 +20,15 @@
       <run class="StatisticsTypeImpl"/>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr138798" title="atWithinCodeBug">
+      <compile files="ErrorHandling.aj" options="-1.5"/>
+      <run class="ErrorHandling">
+         <stderr>
+           <line text="Caught in foo"/>
+         </stderr>
+      </run>      
+    </ajc-test>
+    
     <ajc-test dir="bugs152/pr138158" title="not at withincode - 1">
       <compile files="Boo.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'method-call(void Boo.m())' in Type 'Boo' (Boo.java:9) advised by before advice from 'X' (Boo.java:19)"/>

@@ -32,6 +32,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testStackOverflow_pr136258() { runTest("stack overflow");}
   public void testIncorrectOverridesEvaluation13() { runTest("incorrect overrides evaluation - 1.3"); }
   public void testIncorrectOverridesEvaluation15() { runTest("incorrect overrides evaluation - 1.5"); }
+  public void testAtWithinCodeBug_pr138798() { runTest("atWithinCodeBug"); }
 
   // known failures, uncomment when working.
   public void testReferencePCutInDeclareWarning_pr138215() { runTest("Reference pointcut fails inside @DeclareWarning");}
