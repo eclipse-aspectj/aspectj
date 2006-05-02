@@ -192,4 +192,9 @@
       </run>
     </ajc-test>
 
+	<ajc-test dir="bugs152/pr139749" pr="139749" title="Super calls in @AspectJ advice">
+	  <compile files="AroundAdvicePassingPjpAsArgToSuper.java" options="-1.5">
+	  </compile>
+	  <run class="a.b.c.AroundAdvicePassingPjpAsArgToSuper"/>
+	</ajc-test>
 </suite>
