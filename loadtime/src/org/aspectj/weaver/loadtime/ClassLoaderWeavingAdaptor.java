@@ -71,7 +71,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     	this.weavingContext = wContext;
     }
 
-    void initialize(final ClassLoader loader, IWeavingContext wContext) {
+    protected void initialize(final ClassLoader loader, IWeavingContext wContext) {
         //super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
         this.generatedClassHandler = new GeneratedClassHandler() {
             /**
