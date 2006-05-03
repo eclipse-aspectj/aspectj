@@ -16,7 +16,6 @@ package org.aspectj.runtime.reflect;
 
 import org.aspectj.lang.Signature;
 
-import java.lang.ref.SoftReference;
 import java.util.StringTokenizer;
 
 abstract class SignatureImpl implements Signature {
@@ -27,7 +26,7 @@ abstract class SignatureImpl implements Signature {
     String name;
     String declaringTypeName;
     Class declaringType;
-    SoftReference toStringCacheRef;
+    Cache stringCache;
     
     SignatureImpl(int modifiers, String name, Class declaringType) {
         this.modifiers = modifiers;
@@ -39,19 +38,25 @@ abstract class SignatureImpl implements Signature {
     
     /* Use a soft cache for the short, middle and long String representations */
 	String toString (StringMaker sm) {
-		String[] toStringCache = null;
-		if (toStringCacheRef == null || toStringCacheRef.get() == null) {
-			toStringCache = new String[3];
-			if (useCache) toStringCacheRef = new SoftReference(toStringCache);
+		String result = null;
+		if (useCache) {
+			if (stringCache == null) {
+				try {
+					stringCache = new CacheImpl();
+				} catch (Throwable t) {
+					useCache = false;
+				}
+			} else {
+				result = stringCache.get(sm.cacheOffset);
+			}
 		}
-		else {
-			toStringCache = (String[])toStringCacheRef.get();
+		if (result == null) {
+			result = createToString(sm);
 		}
-		
-		if (toStringCache[sm.cacheOffset] == null) {
-			toStringCache[sm.cacheOffset] = createToString(sm);
+		if (useCache) {
+			stringCache.set(sm.cacheOffset, result);
 		}
-		return toStringCache[sm.cacheOffset];
+		return result;
 	}
     
     public final String toString() { return toString(StringMaker.middleStringMaker); }
@@ -192,4 +197,31 @@ abstract class SignatureImpl implements Signature {
 		return useCache;
 	}
 
+	private static interface Cache {
+
+		String get(int cacheOffset);
+
+		void set(int cacheOffset, String result);	
+		
+	}
+	
+	// separate implementation so we don't need SoftReference to hold the field...
+	private static final class CacheImpl implements Cache {		
+		private java.lang.ref.SoftReference toStringCacheRef;
+		public CacheImpl() { 
+			toStringCacheRef = new java.lang.ref.SoftReference(new String[3]);
+		}
+		
+		public String get(int cacheOffset) {
+			return array()[cacheOffset];
+		}
+
+		public void set(int cacheOffset, String result) {
+			array()[cacheOffset] = result;
+		}
+		
+		private String[] array() {
+			return (String[])toStringCacheRef.get();
+		}
+	}
 }
