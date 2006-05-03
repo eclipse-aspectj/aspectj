@@ -165,8 +165,12 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
                             realizedCannotInline = true;
                         } else {
                             // specific handling for super.foo() calls, where foo is non public
-                            if (aspectType.getSuperclass() != null
-                                    && aspectType.getSuperclass().getName().equals(callee.getName())) {
+                        	ResolvedType memberType = m_aspectGen.getWorld().resolve(resolvedMember.getDeclaringType());
+                        	if (!aspectType.equals(memberType) &&
+                        		memberType.isAssignableFrom(aspectType)) {
+                        		// old test was...
+  //                            if (aspectType.getSuperclass() != null
+  //                                    && aspectType.getSuperclass().getName().equals(resolvedMember.getDeclaringType().getName())) {
                                 ResolvedMember accessor = createOrGetInlineAccessorForSuperDispatch(resolvedMember);
                                 InvokeInstruction newInst = factory.createInvoke(
                                         aspectType.getName(),
