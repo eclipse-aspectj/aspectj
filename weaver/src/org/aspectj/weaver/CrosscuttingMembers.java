@@ -354,7 +354,7 @@ public class CrosscuttingMembers {
 			declareAnnotationsOnMethods = other.declareAnnotationsOnMethods;
 		}
 		
-		return changed;
+		return true;//changed; // extremely temporary change for 134471
 	}
 
 	public PerClause getPerClause() {

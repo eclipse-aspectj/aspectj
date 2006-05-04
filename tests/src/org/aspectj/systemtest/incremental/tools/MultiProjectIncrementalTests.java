@@ -394,7 +394,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 
 	// parameterization of generic aspects
-	public void testPr125405() {
+	public void xpr134471_testPr125405() {
 		initialiseProject("PR125405");
 		build("PR125405");
 		checkCompileWeaveCount(1,1);
@@ -732,7 +732,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// The logic within CrosscuttingMembers should then work out correctly 
 	// that there haven't really been any changes within the aspect and so 
 	// we shouldn't go back to source.
-	public void testPr129163_2() {
+	public void  xpr134471_testPr129163_2() {
 		// want to behave like AJDT
 		configureBuildStructureModel(true);
 		initialiseProject("pr129163_2");
@@ -755,7 +755,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// AjState to think that the aspect has changed. Together its then up to 
 	// logic within CrosscuttingMembers and various equals methods to decide
 	// correctly that we don't have to go back to source.
-	public void testPr129163_3() {
+	public void  xpr134471_testPr129163_3() {
 		configureBuildStructureModel(true);
 		initialiseProject("PR129163_4");
 		build("PR129163_4");
@@ -777,7 +777,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		configureBuildStructureModel(false);
 	}
 	
-	public void testPr131505() {
+	public void  xpr134471_testPr131505() {
 		configureNonStandardCompileOptions("-outxml");
 		initialiseProject("PR131505");
 		build("PR131505");
@@ -857,7 +857,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				  decisions.indexOf(expect)!=-1);
 	}
 	
-	public void testPr134541() {
+	public void  xpr134471_testPr134541() {
 		initialiseProject("PR134541");
 		build("PR134541");
 		assertEquals("[Xlint:adviceDidNotMatch] should be associated with line 5",5,
@@ -871,7 +871,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 	
 	
-	public void xtestPr134471() {
+	public void testPr134471() {
 //		super.VERBOSE=true;
 		configureBuildStructureModel(true);
 		AsmManager.setReporting("c:/foo.txt",true,true,true,true);
@@ -922,12 +922,12 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		assertTrue("Should be 2 elements on the second build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
 	}
 	
-	public void xtestPr134471_2() {
+	public void testPr134471_2() {
 		AsmManager.setReporting("c:/foo.txt",true,true,true,true);
 		configureBuildStructureModel(true);
 		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
-		initialiseProject("PR134471");
-		build("PR134471");
+		initialiseProject("PR134471_2");
+		build("PR134471_2");
 		IProgramElement ipe = checkForNode("pkg","A",true);
 		IProgramElement adviceNode = findAdvice(ipe);
 		List relatedElements = getRelatedElements(adviceNode);
@@ -950,7 +950,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 			List targs = ir.getTargets();
 			String t1 = (String)targs.get(0);
 			int ii = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(t1);
-			assertTrue("Advice should be on line 7?? but is on line "+ii,ii==7);
+			assertTrue("After first build, advice should be on line 7?? but is on line "+ii,ii==7);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Couldn't determine if the line number for the advice was right?!?");
@@ -959,8 +959,8 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		
 		//IProgramElement advisedNode = AsmManager.getDefault().getHierarchy().findElementForHandle((String)relatedElements.get(1));
 		// No structural change but the advice has moved down a few lines.
-		alter("PR134471","inc1");
-		build("PR134471");
+		alter("PR134471_2","inc1");
+		build("PR134471_2");
 		ipe = checkForNode("pkg","A",true);
 		adviceNode = findAdvice(ipe);
 		relatedElements = getRelatedElements(adviceNode);
@@ -983,7 +983,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 			List targs = ir.getTargets();
 			String t1 = (String)targs.get(0);
 			int ii = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(t1);
-			assertTrue("Advice should be on line 11?? but is on line "+ii,ii==11);
+			assertTrue("After second build, advice should be on line 11?? but is on line "+ii,ii==11);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Couldn't determine if the line number for the advice was right?!?");
