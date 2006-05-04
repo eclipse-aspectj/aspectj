@@ -27,6 +27,8 @@ import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.testing.util.FileUtil;
 
@@ -869,6 +871,177 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 	
 	
+	public void xtestPr134471() {
+//		super.VERBOSE=true;
+		configureBuildStructureModel(true);
+		AsmManager.setReporting("c:/foo.txt",true,true,true,true);
+		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
+		initialiseProject("PR134471");
+		build("PR134471");
+		IProgramElement ipe = checkForNode("pkg","A",true);
+		IProgramElement adviceNode = findAdvice(ipe);
+		List relatedElements = getRelatedElements(adviceNode);
+		StringBuffer debugString = new StringBuffer();
+		if (relatedElements!=null) {
+			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {	
+				String element = (String) iter.next();
+				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
+			}
+		}
+		// debug should be: 'p()' and 'method-call(void pkg.C.method2())' - first is 'uses pointcut' relation, second is 'advises'
+		assertTrue("Should be 2 elements on the first build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
+
+		try {
+			IProgramElement cNode = checkForNode("pkg","C",true);
+			IProgramElement mNode = findCode(cNode);
+			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
+			List rels = (List)irm.get(mNode);
+			IRelationship ir = (IRelationship)rels.get(0);
+			List targs = ir.getTargets();
+			String t1 = (String)targs.get(0);
+			int ii = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(t1);
+			assertTrue("Advice should be on line 7?? but is on line "+ii,ii==7);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Couldn't determine if the line number for the advice was right?!?");
+		}
+		// No change to the aspect at all !
+		alter("PR134471","inc1");
+		build("PR134471");
+		ipe = checkForNode("pkg","A",true);
+		adviceNode = findAdvice(ipe);
+		relatedElements = getRelatedElements(adviceNode);
+		debugString = new StringBuffer();
+		if (relatedElements!=null) {
+			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {	
+				String element = (String) iter.next();
+				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
+			}
+		}
+		// debug should be: 'p()' and 'method-call(void pkg.C.method2())' - first is 'uses pointcut' relation, second is 'advises'
+		assertTrue("Should be 2 elements on the second build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
+	}
+	
+	public void xtestPr134471_2() {
+		AsmManager.setReporting("c:/foo.txt",true,true,true,true);
+		configureBuildStructureModel(true);
+		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
+		initialiseProject("PR134471");
+		build("PR134471");
+		IProgramElement ipe = checkForNode("pkg","A",true);
+		IProgramElement adviceNode = findAdvice(ipe);
+		List relatedElements = getRelatedElements(adviceNode);
+		StringBuffer debugString = new StringBuffer();
+		if (relatedElements!=null) {
+			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {	
+				String element = (String) iter.next();
+				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
+			}
+		}
+		// debug should be: 'p()' and 'method-call(void pkg.C.method2())' - first is 'uses pointcut' relation, second is 'advises'
+		assertTrue("Should be 2 elements on the first build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
+		
+		try {
+			IProgramElement cNode = checkForNode("pkg","C",true);
+			IProgramElement mNode = findCode(cNode);
+			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
+			List rels = (List)irm.get(mNode);
+			IRelationship ir = (IRelationship)rels.get(0);
+			List targs = ir.getTargets();
+			String t1 = (String)targs.get(0);
+			int ii = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(t1);
+			assertTrue("Advice should be on line 7?? but is on line "+ii,ii==7);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Couldn't determine if the line number for the advice was right?!?");
+		}
+
+		
+		//IProgramElement advisedNode = AsmManager.getDefault().getHierarchy().findElementForHandle((String)relatedElements.get(1));
+		// No structural change but the advice has moved down a few lines.
+		alter("PR134471","inc1");
+		build("PR134471");
+		ipe = checkForNode("pkg","A",true);
+		adviceNode = findAdvice(ipe);
+		relatedElements = getRelatedElements(adviceNode);
+		debugString = new StringBuffer();
+		if (relatedElements!=null) {
+			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {	
+				String element = (String) iter.next();
+				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
+			}
+		}
+		// debug should be: 'p()' and 'method-call(void pkg.C.method2())' - first is 'uses pointcut' relation, second is 'advises'
+		assertTrue("Should be 2 elements on the second build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
+		
+		try {
+			IProgramElement cNode = checkForNode("pkg","C",true);
+			IProgramElement mNode = findCode(cNode);
+			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
+			List rels = (List)irm.get(mNode);
+			IRelationship ir = (IRelationship)rels.get(0);
+			List targs = ir.getTargets();
+			String t1 = (String)targs.get(0);
+			int ii = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(t1);
+			assertTrue("Advice should be on line 11?? but is on line "+ii,ii==11);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Couldn't determine if the line number for the advice was right?!?");
+		}
+	}
+	
+	// ---
+	
+	private List/*IProgramElement*/ getRelatedElements(IProgramElement advice) {
+		List output = null;
+		IRelationshipMap map = AsmManager.getDefault().getRelationshipMap();
+		List/*IRelationship*/ rels = (List)map.get(advice);
+		for (Iterator iter = rels.iterator(); iter.hasNext();) {
+			IRelationship element = (IRelationship) iter.next();
+			List/*String*/ targets = element.getTargets();
+			if (output==null) output = new ArrayList();
+			output.addAll(targets);
+		}
+		return output;
+	}
+	
+	private IProgramElement findAdvice(IProgramElement ipe) {
+		return findAdvice(ipe,1);
+	}
+	
+	private IProgramElement findAdvice(IProgramElement ipe,int whichOne) {
+		if (ipe.getKind()==IProgramElement.Kind.ADVICE) {
+			whichOne=whichOne-1;
+			if (whichOne==0) return ipe;
+		}
+		List kids = ipe.getChildren();
+		for (Iterator iter = kids.iterator(); iter.hasNext();) {
+			IProgramElement kid = (IProgramElement) iter.next();
+			IProgramElement found = findAdvice(kid,whichOne);
+			if (found!=null) return found;
+		}
+		return null;
+	}
+	
+	private IProgramElement findCode(IProgramElement ipe) {
+		return findCode(ipe,1);
+	}
+	
+	private IProgramElement findCode(IProgramElement ipe,int whichOne) {
+		if (ipe.getKind()==IProgramElement.Kind.CODE) {
+			whichOne=whichOne-1;
+			if (whichOne==0) return ipe;
+		}
+		List kids = ipe.getChildren();
+		for (Iterator iter = kids.iterator(); iter.hasNext();) {
+			IProgramElement kid = (IProgramElement) iter.next();
+			IProgramElement found = findCode(kid,whichOne);
+			if (found!=null) return found;
+		}
+		return null;
+	}
+	
+	
 	// other possible tests:
 	// - memory usage (freemem calls?)
 	// - relationship map
@@ -896,7 +1069,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		assertTrue("Should have been a full (batch) build",wasFullBuild());
 	}
 	
-	private void checkForNode(String packageName,String typeName,boolean shouldBeFound) {
+	private IProgramElement checkForNode(String packageName,String typeName,boolean shouldBeFound) {
 		IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForType(packageName,typeName);
 		if (shouldBeFound) {
            if (ipe==null) printModel();
@@ -905,6 +1078,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		   if (ipe!=null) printModel();
 		   assertTrue("Should have NOT been able to find '"+packageName+"."+typeName+"' in the asm",ipe==null);
 		}
+		return ipe;	
 	}
 
 
