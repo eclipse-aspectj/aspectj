@@ -397,14 +397,14 @@ public class BuildArgParser extends Main {
 					while (st.hasMoreTokens()) {
 						String filename = st.nextToken();
 						File file = makeFile(filename);
-						if (file.exists() && FileUtil.hasZipSuffix(filename)) {
+						if (FileUtil.isZipFile(file)) {
 							inPath.add(file);    
 						} else {
 							if (file.isDirectory()) {
 								inPath.add(file);
 							} else 
 		            		
-							showError("bad inpath component: " + filename);  
+							showWarning("skipping missing, empty or corrupt inpath entry: " + filename);  
 						}
 					}
 					buildConfig.setInPath(inPath);
@@ -420,7 +420,7 @@ public class BuildArgParser extends Main {
 		            while (st.hasMoreTokens()) {
 		            	String filename = st.nextToken();
 		            	File jarFile = makeFile(filename);
-		            	if (jarFile.exists() && FileUtil.hasZipSuffix(filename)) {
+		            	if (FileUtil.isZipFile(jarFile)) {
 			            	buildConfig.getInJars().add(jarFile);    
 		            	} else {
 		            		File dirFile = makeFile(filename);
@@ -428,7 +428,7 @@ public class BuildArgParser extends Main {
 		            			buildConfig.getInJars().add(dirFile);
 		            		} else 
 		            		
-                            showError("bad injar: " + filename);  
+                            showWarning("skipping missing, empty or corrupt injar: " + filename);  
 		            	}
 		            }
 					
@@ -442,10 +442,10 @@ public class BuildArgParser extends Main {
 		            while (st.hasMoreTokens()) {
 		            	String filename = st.nextToken();
 		            	File jarFile = makeFile(filename);
-                        if (jarFile.exists() && (FileUtil.hasZipSuffix(filename) || jarFile.isDirectory())) {
+                        if (FileUtil.isZipFile(jarFile) || jarFile.isDirectory()) {
 			            	buildConfig.getAspectpath().add(jarFile);    
 		            	} else {
-                            showError("bad aspectpath: " + filename);
+                            showWarning("skipping missing, empty or corrupt aspectpath entry: " + filename);  
 		            	}
 		            }
 					
@@ -476,7 +476,7 @@ public class BuildArgParser extends Main {
 				if (args.size() > nextArgIndex) {
 //					buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_OutJAR, CompilerOptions.GENERATE);
 					File jarFile = makeFile(((ConfigParser.Arg)args.get(nextArgIndex)).getValue());
-					if (FileUtil.hasZipSuffix(jarFile)) {
+					if (!jarFile.isDirectory()) {
 						try {
 							if (!jarFile.exists()) {
                                 jarFile.createNewFile();

@@ -510,7 +510,7 @@ public class Sandbox {
             int len = (null == paths ? 0 : paths.length);
             for (int j = 0; j < len; j++) {
                 File f = paths[j];
-                if (FileUtil.hasZipSuffix(f) && (!readable || f.canRead())) {
+                if (FileUtil.isZipFile(f) && (!readable || f.canRead())) {
                     result.add(f);
                 }
 			}

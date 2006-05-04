@@ -197,4 +197,30 @@
 	  </compile>
 	  <run class="a.b.c.AroundAdvicePassingPjpAsArgToSuper"/>
 	</ajc-test>
+	
+	  <ajc-test dir="bugs152/pr137235"  pr="137235"
+		title="directory with .jar extension: source and outjar">
+	    <compile files="directory.jar/Hello.java" outjar="directory.jar/run.custom"/>
+        <run class="Hello" classpath="$sandbox/directory.jar/run.custom">
+          <stdout>
+            <line text="Hello Java"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137235"  pr="137235"
+		title="directory with .jar extension"  >
+	    <compile files="directory.jar/Before.java" outjar="directory.jar/inOne.custom"/>
+	    <compile files="directory.jar/BeforeExec.aj" outjar="directory.jar/inTwo"/>
+	    <compile files="directory.jar/Rename.aj" outjar="directory.jar/weave.jar"/>
+	    <compile files="directory.jar/Hello.java" inpath="directory.jar/inOne.custom,directory.jar/inTwo" aspectpath="directory.jar/weave.jar" outjar="directory.jar/outJar.jar"/>
+        <run class="Hello" classpath="$sandbox/directory.jar/outJar.jar,$sandbox/directory.jar/weave.jar">
+          <stdout>
+            <line text="Before call"/>
+            <line text="Before execution"/>
+            <line text="Hello AspectJ not just Java"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
 </suite>

@@ -89,6 +89,25 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   		runTest("Override suppressing of warning when advice doesn't match using -Xlint:warning");
   	}
   	
+  	public void testNonstandardJarFiles() {
+  		runTest("Nonstandard jar file extensions");  		
+  	}
+  	
+  	public void testOddzipOnClasspath() {  	
+		runTest("Odd zip on classpath");  		
+  	}
+  	
+  	// separate bugzilla patch has this one... commented out
+//  	public void testSeparateCompilationDeclareParentsCall() {
+//  		runTest("Separate compilation with ltw: declare parents and call");
+//  	}
+//  	
+//  	public void testChildAspectDoesntWeaveParentDeclareParentsCall() {
+//		setSystemProperty(WeavingAdaptor.WEAVING_ADAPTOR_VERBOSE,"true");
+//		setSystemProperty(WeavingAdaptor.SHOW_WEAVE_INFO_PROPERTY,"true");
+//  		runTest("Child loader aspect won't weave parent loader: declare parents and call");
+//  	}
+  	
   	/*
   	 * Allow system properties to be set and restored
   	 * TODO maw move to XMLBasedAjcTestCase or RunSpec

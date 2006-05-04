@@ -115,6 +115,7 @@ public class BuildArgParserTestCase extends TestCase {
 		String FILE_PATH =   "@" + TEST_DIR + "configWithClasspathExtdirsBootCPArgs.lst";
 		AjBuildConfig config = genBuildConfig(new String[] { FILE_PATH }, messageWriter);
 		List classpath = config.getFullClasspath();
+		// note that empty or corrupt jars are NOT included in the classpath
 		// should have three entries, resolved relative to location of .lst file
 		assertEquals("Three entries in classpath",3,classpath.size());
 		Iterator cpIter = classpath.iterator();
@@ -506,6 +507,71 @@ public class BuildArgParserTestCase extends TestCase {
         assertTrue("Warnings: " + messageHolder,!messageHolder.hasAnyMessage(IMessage.WARNING, true));
 		assertEquals("Wrong outxml","custom/aop.xml",config.getOutxmlName());
 		assertTrue("Following option currupted",config.getShowWeavingInformation());
+	}
+
+	public void testNonstandardInjars() {
+		AjBuildConfig config = setupNonstandardPath("-injars");
+		assertEquals("bad path: " + config.getInJars(), 3, config.getInJars().size());
+	}
+	
+	public void testNonstandardInpath() {
+		AjBuildConfig config = setupNonstandardPath("-inpath");
+		assertEquals("bad path: " + config.getInpath(), 3, config.getInpath().size());
+	}
+	
+	public void testNonstandardAspectpath() {
+		AjBuildConfig config = setupNonstandardPath("-aspectpath");
+		assertEquals("bad path: " + config.getAspectpath(), 3, config.getAspectpath().size());
+	}
+
+	public void testNonstandardClasspath() throws IOException {
+		AjBuildConfig config = setupNonstandardPath("-classpath");
+		checkPathSubset(config.getClasspath());
+	}
+	
+	public void testNonstandardBootpath() throws IOException {
+		AjBuildConfig config = setupNonstandardPath("-bootclasspath");
+		checkPathSubset(config.getBootclasspath());
+	}
+	
+	private void checkPathSubset(List path) throws IOException {
+		String files[] = { "aspectjJar.file", "jarChild", "parent.zip" };
+		for (int i = 0; i < files.length; i++) {
+			File file = new File(NONSTANDARD_JAR_DIR+files[i]);
+			assertTrue("bad path: " + path, path.contains(file.getCanonicalPath()));			
+		}
+	}
+
+	public void testNonstandardOutjar() {
+		final String OUT_JAR = NONSTANDARD_JAR_DIR + File.pathSeparator + "outputFile";
+		
+		AjBuildConfig config = genBuildConfig(new String[] { 
+			"-outjar", OUT_JAR }, 
+			messageWriter);
+
+		File newJar = new File(OUT_JAR);
+		assertEquals(
+			getCanonicalPath(newJar),config.getOutputJar().getAbsolutePath()); 
+	
+		newJar.delete();
+	}
+
+	public void testNonstandardOutputDirectorySetting() throws InvalidInputException {
+		String filePath = AjdtAjcTests.TESTDATA_PATH + File.separator + "ajc.jar" + File.separator;
+		File testDir = new File(filePath);
+		AjBuildConfig config = genBuildConfig(new String[] {  "-d", filePath }, messageWriter);
+		
+		assertEquals(testDir.getAbsolutePath(), config.getOutputDir().getAbsolutePath());	
+	}
+	
+	private static final String NONSTANDARD_JAR_DIR = AjdtAjcTests.TESTDATA_PATH + "/OutjarTest/folder.jar/";
+	
+	private AjBuildConfig setupNonstandardPath(String pathType) {
+		String NONSTANDARD_PATH_ENTRY = NONSTANDARD_JAR_DIR+"aspectjJar.file" + File.pathSeparator + NONSTANDARD_JAR_DIR+"aspectJar.file" + File.pathSeparator + NONSTANDARD_JAR_DIR+"jarChild" + File.pathSeparator + NONSTANDARD_JAR_DIR+"parent.zip";		
+		
+		return genBuildConfig(new String[] { 
+			pathType, NONSTANDARD_PATH_ENTRY }, 
+			messageWriter);
 	}
 	
 	protected void setUp() throws Exception {

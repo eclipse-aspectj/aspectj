@@ -317,8 +317,7 @@ public class WeavingAdaptor {
 	private void addAspectLibrary(String aspectLibraryName) {
 		File aspectLibrary = new File(aspectLibraryName);
 		if (aspectLibrary.isDirectory()
-                || (aspectLibrary.isFile() 
-                        && FileUtil.hasZipSuffix(aspectLibraryName))) {
+                || (FileUtil.isZipFile(aspectLibrary))) {
 			try {
 				info("adding aspect library: '" + aspectLibrary + "'");
 				weaver.addLibraryJarFile(aspectLibrary);

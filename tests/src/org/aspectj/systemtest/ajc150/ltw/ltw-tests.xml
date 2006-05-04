@@ -1,6 +1,5 @@
 
 <!-- Load-time weaving tests -->
-
 	<ajc-test dir="ltw"
       title="Ensure 1st aspect is rewoven when weaving 2nd aspect"
       keywords="reweavable">
@@ -339,4 +338,133 @@
         	</stderr>
         </run>
     </ajc-test>
+
+	<!-- based on "Ensure 1st aspect is rewoven when weaving 2nd aspect" -->
+	<ajc-test dir="ltw"
+      title="Nonstandard jar file extensions" pr="137235">
+        <compile
+        	files="folder.jar/Main.java, folder.jar/Aspect1.aj"
+			outjar="folder.jar/main1.zip"
+            options="-showWeaveInfo"
+        >
+        	<message kind="weave" text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
+        </compile>	
+        <compile
+        	classpath="$sandbox/folder.jar/main1.zip"
+        	files="Aspect2.aj"
+        	outjar="aspect2Jar"
+            options="-showWeaveInfo"
+        >
+        </compile>	
+        <run class="Main" ltw="aop-ltwreweavable.xml" classpath="$sandbox/folder.jar/main1.zip,$sandbox/aspect2Jar">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+	  	    	<line text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
+				<line text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)"/>
+                <line text="Aspect1.before_test1"/>
+                <line text="Aspect2.before_test2"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+	<ajc-test dir="ltw"
+      title="Odd zip on classpath" pr="137235">
+        <compile
+        	files="folder.jar/Main.java, folder.jar/Aspect1.aj"
+			outjar="folder.jar/main1.archive"
+            options="-showWeaveInfo"
+        >
+        	<message kind="weave" text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
+        </compile>	
+        <compile
+        	classpath="$sandbox/folder.jar/main1.archive"
+        	files="Aspect2.aj"
+        	outjar="aspect2Jar"
+            options="-showWeaveInfo"
+        >
+        </compile>	
+        <run class="Main" ltw="aop-ltwreweavable.xml" classpath="$sandbox/folder.jar/main1.archive,$sandbox/aspect2Jar">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+	  	    	<line text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
+				<line text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)"/>
+                <line text="Aspect1.before_test1"/>
+                <line text="Aspect2.before_test2"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+<!--    
+commented out: reported in another bugzilla bug...
+
+	<ajc-test dir="ltw/hier"
+      title="Separate compilation with ltw: declare parents and call"
+      keywords="ltw">
+        <compile
+        	files="util/A.aj,util/T.aj"
+        />
+        <compile
+        	files="child/Executor.aj,child/Advisor.aj,top/SimpleMain.aj"
+        >
+        	<message kind="warning" text="this affected type is not exposed to the weaver: util.A"/>
+		</compile>        
+        <run class="top.SimpleMain" ltw="aop-single.xml">
+        	<stdout>
+                <line text="T call"/>
+        	</stdout>
+        	<stderr>
+        	    <line text="weaveinfo Extending interface set for type 'util.A' (A.aj) to include 'util.T' (Advisor.aj)"/>
+	        	< - - TODO: fix up any errors in the expected output when the join point actually matches - - >
+				<line text="weaveinfo Join point 'method-call(void A.foo())' in Type 'child.Executor' (Executor.aj:19) advised by before advice from 'child.Advisor' (Advisor.aj:20)"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+
+	<ajc-test dir="ltw/hier"
+      title="Child loader aspect won't weave parent loader: declare parents and call"
+      keywords="ltw">
+        <compile
+        	files="top/HierMain.aj"
+        />
+        <compile
+        	files="util/A.aj,util/T.aj"
+			outjar="util.jar"
+        />
+        <compile
+        	files="child/Executor.aj,child/Advisor.aj"
+        	classpath="util.jar"
+            options="-outxml"
+            outjar="child.zip"
+        >
+        	<message kind="warning" text="this affected type is not exposed to the weaver: util.A"/>
+		</compile>        
+		< - - limitation: to turn on load-time weaving we HAVE to have a top-level aop.xml file
+		   since we don't want any top-level aspects, we deploy an empty one! 
+		   the important aop.xml file in this test was created with -outxml and lives in child.jar - - >
+        <run class="top.HierMain" ltw="null-aop.xml">
+        	<stdout/>
+        	<stderr>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
+	        	<line text="info weaving 'top.HierMain'"/>
+                <line text="info AspectJ Weaver Version"/>
+                <line text="info register classloader"/>
+                <line text="info using"/>
+                <line text="info using file:"/>
+                <line text="info register aspect child.Advisor"/>
+                <line text="info weaving 'child.Executor'"/>
+                <line text="info weaving 'util.A'"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+-->
     

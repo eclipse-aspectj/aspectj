@@ -467,13 +467,16 @@
     <ajc-test dir="bugs"  pr="43714"
     	title="weaving using an empty jar in -injars"  >
         <compile files="notAJar.jar" outjar="outJar.jar"> 
-        	<message kind="error" line="0"/>
+        	<message kind="warning" text="build config error: skipping missing, empty or corrupt inpath entry"/>
+        	<message kind="error" text="no sources specified"/>
+        	<message kind="fail"/>
         </compile>
     </ajc-test>
 	
 	 <ajc-test dir="bugs"  pr="43714"
     	title="weaving using an empty jar in -aspectpath"  >
         <compile files="WeaveLocal.java" aspectpath="notAJar.jar" outjar="outJar.jar" >         	
+        	<message kind="warning" text="build config error: skipping missing, empty or corrupt aspectpath entry"/>
         </compile>
     </ajc-test>
     

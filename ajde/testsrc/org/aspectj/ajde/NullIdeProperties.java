@@ -33,6 +33,7 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
 	private Set sourceRoots;
 	private Set aspectPath;
 	private String outJar;
+	private String outputPath = "bin";
 
 	public NullIdeProperties(String testProjectPath) {
 		this.testProjectPath = testProjectPath;
@@ -75,7 +76,11 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
     }
 
     public String getOutputPath() {
-    	return testProjectPath + "/bin"; 
+    	return testProjectPath + "/" + outputPath; 
+    }
+    
+    public void setOutputPath(String outputPath) {
+    	this.outputPath = outputPath;
     }
 
     public String getAjcWorkingDir() {

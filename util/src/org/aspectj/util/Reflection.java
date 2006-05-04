@@ -136,7 +136,7 @@ public class Reflection {
 //            if (!file.canRead()) {
 //                throw new IllegalArgumentException("cannot read " + file);
 //            }
-            if (FileUtil.hasZipSuffix(file)) {
+            if (FileUtil.isZipFile(file)) {
                 libs.add(file);
             } else if (file.isDirectory()) {
                 dirs.add(file);

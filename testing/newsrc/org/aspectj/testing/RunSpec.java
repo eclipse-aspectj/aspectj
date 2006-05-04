@@ -14,7 +14,9 @@ package org.aspectj.testing;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
@@ -53,12 +55,49 @@ public class RunSpec implements ITestStep {
 //		System.err.println("? execute() inTestCase='" + inTestCase + "', ltwFile=" + ltwFile);
 		boolean useLtw = copyLtwFile(inTestCase.getSandboxDirectory());
 		copyXlintFile(inTestCase.getSandboxDirectory());
-		AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(),args,getClasspath(),useLtw);
-		if (stdErrSpec != null) {
-			stdErrSpec.matchAgainst(rr.getStdErr());
+		try {
+			setSystemProperty("test.base.dir", inTestCase.getSandboxDirectory().getAbsolutePath());
+			
+			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(),args,getClasspath(),useLtw);
+			
+			if (stdErrSpec != null) {
+				stdErrSpec.matchAgainst(rr.getStdErr());
+			}
+			if (stdOutSpec != null) {
+				stdOutSpec.matchAgainst(rr.getStdOut());
+			}
+		} finally {
+			restoreProperties();
 		}
-		if (stdOutSpec != null) {
-			stdOutSpec.matchAgainst(rr.getStdOut());
+	}
+	
+	/* 
+	 * Logic to save/restore system properties. Copied from LTWTests.
+	 * As Matthew noted, need to refactor LTWTests to use this 
+  	 */
+
+	private Properties savedProperties = new Properties();
+  	 	
+	public void setSystemProperty (String key, String value) {
+		Properties systemProperties = System.getProperties();
+		copyProperty(key,systemProperties,savedProperties);
+		systemProperties.setProperty(key,value);
+	}
+	
+	private static void copyProperty (String key, Properties from, Properties to) {
+		String value = from.getProperty(key,NULL);
+		to.setProperty(key,value);
+	}
+	
+	private final static String NULL = "null";
+
+	protected void restoreProperties() {
+		Properties systemProperties = System.getProperties();
+		for (Enumeration enu = savedProperties.keys(); enu.hasMoreElements(); ) {
+			String key = (String)enu.nextElement();
+			String value = savedProperties.getProperty(key);
+			if (value == NULL) systemProperties.remove(key);
+			else systemProperties.setProperty(key,value);
 		}
 	}
 
@@ -84,7 +123,7 @@ public class RunSpec implements ITestStep {
 	
 	public String getClasspath() {
 		if (cpath == null) return null;
-		return this.cpath.replace('/', File.separatorChar);
+		return this.cpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
 	}
  	
 	public void setClasspath(String cpath) {

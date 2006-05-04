@@ -98,6 +98,29 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 		assertTrue("Build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
 		compareInjarsToBin(injar1,"src","bin");
 	}
+
+	public void testInjarsToOddBin () {
+		Set injars = new HashSet();
+		File injar1 = openFile(injar1Name);
+		injars.add(injar1);
+		ideManager.getProjectProperties().setOutputPath("crazy.jar");
+		ideManager.getProjectProperties().setInJars(injars);
+		assertTrue("Build failed",doSynchronousBuild("config2.lst"));
+		assertTrue("Build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
+		compareInjarsToBin(injar1,"src","crazy.jar");
+	}
+	
+	public void testInjarsToOutjarOddNames () {
+		Set injars = new HashSet();
+		File injar1 = openFile("input1");
+		File outjar = openFile(outjarName+".fozout");
+		injars.add(injar1);
+		ideManager.getProjectProperties().setInJars(injars);
+		ideManager.getProjectProperties().setOutJar(outjar.getAbsolutePath());
+		assertTrue("Build failed",doSynchronousBuild("config2.lst"));
+		assertTrue("Build warnings",ideManager.getCompilationSourceLineTasks().isEmpty());
+		compareJars(injar1,"src",outjar);
+	}
 	
 	/*
 	 * Ensure bin contains all non-Java resouces from source and injars

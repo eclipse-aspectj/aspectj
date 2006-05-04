@@ -54,7 +54,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		doSynchronousBuild("bad-injar.lst");
 		messages = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
 		message = (NullIdeTaskListManager.SourceLineTask)messages.get(0);
-		assertTrue(message.getContainedMessage().getMessage().indexOf("bad inpath") != -1);
+		assertTrue(message.getContainedMessage().getMessage().indexOf("skipping missing, empty or corrupt inpath entry") != -1);
 	}
 
 	public void testErrorMessages() throws IOException {

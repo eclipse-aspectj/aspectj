@@ -30,8 +30,6 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
 /**
  * @author websterm
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class WeavingURLClassLoaderTest extends TestCase {
 
@@ -431,6 +429,35 @@ public class WeavingURLClassLoaderTest extends TestCase {
             failWithException(ex);
         }
     }
+    
+	public void testWeavingURLClassLoaderOddJars() throws Exception {
+		URL classes = FileUtil.getFileURL(new File(TEST_BASE+"/test.jar/main.file"));
+		URL aspectjrt = FileUtil.getFileURL(new File(ASPECTJRT));
+		URL aspects = FileUtil.getFileURL(new File(TEST_BASE+"/aspectNoExt"));
+		URL[] classURLs = new URL[] { aspects, classes, aspectjrt };
+		URL[] aspectURLs = new URL[] { aspects };
+		WeavingURLClassLoader loader = new WeavingURLClassLoader(classURLs,aspectURLs,getClass().getClassLoader());
+
+        Class clazz = loader.loadClass("packag.Main");
+        invokeMain(clazz,new String[] { }); 
+	}
+	
+	public void testWeavingURLClassLoaderMissingJars() throws Exception {
+		try {
+			URL classes = FileUtil.getFileURL(new File(TEST_BASE+"/test.jar/main.file"));
+			URL aspectjrt = FileUtil.getFileURL(new File(ASPECTJRT));
+			URL aspects = FileUtil.getFileURL(new File(TEST_BASE+"/MissingFile"));
+			URL[] classURLs = new URL[] { aspects, classes, aspectjrt };
+			URL[] aspectURLs = new URL[] { aspects };
+			WeavingURLClassLoader loader = new WeavingURLClassLoader(classURLs,aspectURLs,getClass().getClassLoader());
+	
+	        Class clazz = loader.loadClass("packag.Main");
+	        invokeMain(clazz,new String[] { }); 
+			fail("Should reject bad aspect MissingFile");
+		} catch (AbortException ae) {
+			assertTrue("Unexpected cause: "+ae.getMessage(), ae.getMessage().indexOf("bad aspect library")!=-1);
+		}
+	}
     
     private void doTestZipAspects(String aspectLib) throws Exception {
         File classZip = new File(TEST_BASE + "/main.zip");        

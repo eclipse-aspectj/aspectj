@@ -65,22 +65,23 @@ public class ClassPathManager {
 	public void addPath (String name, IMessageHandler handler) {
 		File f = new File(name);
 		String lc = name.toLowerCase();
-		if (lc.endsWith(".jar") || lc.endsWith(".zip")) {
+		if (!f.isDirectory()) {
 			if (!f.isFile()) {
-			MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_MISSING,name));
-			return;
+				if (!lc.endsWith(".jar") || lc.endsWith(".zip")) {
+					// heuristic-only: ending with .jar or .zip means probably a zip file
+					MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_MISSING,name));
+				} else { 
+					MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.DIRECTORY_ENTRY_MISSING,name));
+				}
+				return;
 			}
 			try {
 				entries.add(new ZipFileEntry(f));
 			} catch (IOException ioe) {
-			MessageUtil.warn(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_INVALID,name,ioe.getMessage()));
-			return;
+				MessageUtil.warn(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_INVALID,name,ioe.getMessage()));
+				return;
 			}
 		} else {
-			if (!f.isDirectory()) {
-			MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.DIRECTORY_ENTRY_MISSING,name));
-			return;
-			}
 			entries.add(new DirEntry(f));
 		}
 	}

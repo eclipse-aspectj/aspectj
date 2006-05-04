@@ -17,7 +17,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.zip.*;
-import java.util.zip.ZipFile;
 
 
 /**
@@ -33,7 +32,7 @@ public class FileUtil {
     
     public static final FileFilter ZIP_FILTER = new FileFilter() {
         public boolean accept(File file) {
-            return hasZipSuffix(file);
+            return isZipFile(file);
         }
         public String toString() { 
             return "ZIP_FILTER"; 
@@ -70,15 +69,19 @@ public class FileUtil {
         PERMIT_CVS = LangUtil.getBoolean(name, false);
     }
 
-    /** @return true if file path has a zip/jar suffix */
-    public static boolean hasZipSuffix(File file) {
-        return ((null != file) && hasZipSuffix(file.getPath()));
+    /** @return true if file exists and is a zip file */
+    public static boolean isZipFile(File file) {
+        try {
+			return (null != file) && new ZipFile(file) != null;
+		} catch (IOException e) {
+			return false;
+		}
     }
 
     /** @return true if path ends with .zip or .jar */
-    public static boolean hasZipSuffix(String path) {
-        return ((null != path) && (0 != zipSuffixLength(path)));
-    }
+//    public static boolean hasZipSuffix(String path) {
+//        return ((null != path) && (0 != zipSuffixLength(path)));
+//    }
     
     /** @return 0 if file has no zip/jar suffix or 4 otherwise  */
     public static int zipSuffixLength(File file) {

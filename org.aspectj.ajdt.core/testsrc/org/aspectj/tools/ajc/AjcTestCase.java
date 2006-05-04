@@ -558,7 +558,8 @@ public class AjcTestCase extends TestCase {
 		lastRunResult = null;
 		StringBuffer cp = new StringBuffer();
 		if (classpath != null) {
-			cp.append(classpath);
+			// allow replacing this special variable, rather than copying all files to allow tests of jars that don't end in .jar
+			cp.append(substituteSandbox(classpath));
 			cp.append(File.pathSeparator);
 		}
 		cp.append(ajc.getSandboxDirectory().getAbsolutePath());
@@ -622,6 +623,10 @@ public class AjcTestCase extends TestCase {
 		}
 		return lastRunResult;
 	}
+
+	private String substituteSandbox(String classpath) {
+		return classpath.replace("$sandbox", ajc.getSandboxDirectory().getAbsolutePath());
+	}
     
     /**
      * Any central pre-processing of args.
@@ -639,6 +644,7 @@ public class AjcTestCase extends TestCase {
         		args[i] = adaptToPlatform(args[i]);
             if ("-classpath".equals(args[i])) {
                 cpIndex = i;
+                args[i+1] = substituteSandbox(args[i+1]);
                 String next = args[i+1];
                 hasruntime = ((null != next) 
                         && (-1 != next.indexOf("aspectjrt.jar")));

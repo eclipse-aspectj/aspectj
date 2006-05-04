@@ -1106,12 +1106,8 @@ public class AjcTask extends MatchingTask {
                     || (null != inpathDirCopyFilter)) {
                 String path = outjar.getAbsolutePath();
                 int len = FileUtil.zipSuffixLength(path);
-                if (len < 1) {
-                    this.logger.info("not copying resources - weird outjar: " + path);
-                } else {
-                    path = path.substring(0, path.length()-len) + ".tmp.jar";
-                    tmpOutjar = new File(path);
-                }
+                path = path.substring(0, path.length()-len) + ".tmp.jar";
+                tmpOutjar = new File(path);
             }
             if (null == tmpOutjar) {                
                 cmd.addFlagged("-outjar", outjar.getAbsolutePath());        

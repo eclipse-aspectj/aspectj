@@ -359,13 +359,22 @@ public class AjcTaskTest extends TestCase {
     }
     
     public void testInpathDirCopyFilterWithJar() throws IOException {
+    	checkInpathCopy("testInpathDirCopyFilterWithJar-out.jar");
+    }
+
+    // test resource copying for oddball jar files that don't end in .jar
+    public void testInpathDirCopyFilterWithOddjar() throws IOException {
+    	checkInpathCopy("testInpathDirCopyFilterWithJar-outJarFile");
+    }
+    
+    private void checkInpathCopy(String outjarFileStr) throws IOException {
         // inpathDirCopyFilter works with output jar
         File destDir = getTempDir();
         assertTrue(
             "unable to create " + destDir,
             destDir.canRead() || destDir.mkdirs());
         AjcTask task = getTask(NOFILE, null);        
-        File destJar = new File(destDir, "testInpathDirCopyFilterWithJar-out.jar");
+        File destJar = new File(destDir, outjarFileStr);
         task.setOutjar(destJar);
         Project p = task.getProject();
         Path indirs = new Path(p);
