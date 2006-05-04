@@ -297,7 +297,7 @@ public class DeclareAnnotationTests extends XMLBasedAjcTestCase {
 	  	assertTrue("Couldn't find 'declare @type' element in the tree",ipe!=null);
 	  	
 	    List l = AsmManager.getDefault().getRelationshipMap().get(ipe);
-	  	assertTrue("Should have a relationship but does not ",l.size()>0);
+	  	assertTrue("Should have a relationship but does not ",l!=null && l.size()>0);
 	  	
 	  	ipe = top.findElementForLabel(top.getRoot(),
 	  		IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
