@@ -57,7 +57,7 @@ package org.aspectj.apache.bcel;
 /**
  * Constants for the project, mostly defined in the JVM specification.
  *
- * @version $Id: Constants.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: Constants.java,v 1.3 2006/05/04 11:28:26 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Constants {
@@ -69,6 +69,12 @@ public interface Constants {
   public final static short MINOR_1_2 = 0;
   public final static short MAJOR_1_3 = 47;
   public final static short MINOR_1_3 = 0;
+  public final static short MAJOR_1_4 = 48;
+  public final static short MINOR_1_4 = 0;
+  public final static short MAJOR_1_5 = 49;
+  public final static short MINOR_1_5 = 0;
+  public final static short MAJOR_1_6 = 50;
+  public final static short MINOR_1_6 = 0;
   public final static short MAJOR     = MAJOR_1_1; // Defaults
   public final static short MINOR     = MINOR_1_1;
 
