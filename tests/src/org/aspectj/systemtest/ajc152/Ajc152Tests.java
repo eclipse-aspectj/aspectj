@@ -46,7 +46,8 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //public void testAtAspectWithReferencePCPerClause_pr138220() { runTest("@Aspect with reference pointcut in perclause");}  
 
   public void testJarChecking_pr137235_1() { runTest("directory with .jar extension: source and outjar"); }	    
-  public void testJarChecking_pr137235_2() { runTest("directory with .jar extension"); }	  
+  public void testJarChecking_pr137235_2() { runTest("directory with .jar extension"); }
+  public void testMakePreMethodNPE_pr136393() { runTest("NPE in makePreMethod");}
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc152Tests.class);

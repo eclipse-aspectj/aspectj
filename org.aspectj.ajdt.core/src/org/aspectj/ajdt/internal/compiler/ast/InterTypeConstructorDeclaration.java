@@ -180,7 +180,8 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		MethodBinding explicitConstructor = null;
 		if (explicitConstructorCall != null) {
 			explicitConstructor = explicitConstructorCall.binding;
-			if (explicitConstructor.alwaysNeedsAccessMethod()) {
+			// If it is null then we are going to report something else is wrong with this code!
+			if (explicitConstructor!=null && explicitConstructor.alwaysNeedsAccessMethod()) {
 				explicitConstructor = explicitConstructor.getAccessMethod(true);
 			}
 		}
@@ -305,12 +306,11 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	
 	
 	private AjAttribute makeAttribute(EclipseFactory world) {
-		if (explicitConstructorCall != null && !(explicitConstructorCall.binding instanceof ProblemMethodBinding)) {
+		if (explicitConstructorCall != null && (explicitConstructorCall.binding!=null) && !(explicitConstructorCall.binding instanceof ProblemMethodBinding)) {
 			MethodBinding explicitConstructor = explicitConstructorCall.binding;
 			if (explicitConstructor.alwaysNeedsAccessMethod()) {
 				explicitConstructor = explicitConstructor.getAccessMethod(true);
 			}
-			
 			
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
 				world.makeResolvedMember(explicitConstructor));
