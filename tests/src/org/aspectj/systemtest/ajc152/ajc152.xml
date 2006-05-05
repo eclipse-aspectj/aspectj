@@ -223,4 +223,11 @@
         </run>
     </ajc-test>
     
+	<ajc-test dir="bugs152/pr136393" title="NPE in makePreMethod">
+	  <compile files="World.aj" options="-1.5">
+  	    <message kind="warning" line="10" text="this affected type is not exposed to the weaver: java.lang.String [Xlint:typeNotExposedToWeaver]"/>
+	    <message kind="error" line="11" text="h cannot be resolved"/>
+	    <message kind="error" line="16" text="Stystems cannot be resolved"/>
+	  </compile>
+	</ajc-test>
 </suite>
