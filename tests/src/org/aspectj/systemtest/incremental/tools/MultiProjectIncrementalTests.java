@@ -403,7 +403,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 
 	// parameterization of generic aspects
-	public void xpr134471_testPr125405() {
+	public void testPr125405() {
 		initialiseProject("PR125405");
 		build("PR125405");
 		checkCompileWeaveCount(1,1);
@@ -741,7 +741,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// The logic within CrosscuttingMembers should then work out correctly 
 	// that there haven't really been any changes within the aspect and so 
 	// we shouldn't go back to source.
-	public void  xpr134471_testPr129163_2() {
+	public void  testPr129163_2() {
 		// want to behave like AJDT
 		configureBuildStructureModel(true);
 		initialiseProject("pr129163_2");
@@ -764,7 +764,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// AjState to think that the aspect has changed. Together its then up to 
 	// logic within CrosscuttingMembers and various equals methods to decide
 	// correctly that we don't have to go back to source.
-	public void  xpr134471_testPr129163_3() {
+	public void  testPr129163_3() {
 		configureBuildStructureModel(true);
 		initialiseProject("PR129163_4");
 		build("PR129163_4");
@@ -786,7 +786,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		configureBuildStructureModel(false);
 	}
 	
-	public void  xpr134471_testPr131505() {
+	public void  testPr131505() {
 		configureNonStandardCompileOptions("-outxml");
 		initialiseProject("PR131505");
 		build("PR131505");
@@ -866,7 +866,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				  decisions.indexOf(expect)!=-1);
 	}
 	
-	public void  xpr134471_testPr134541() {
+	public void  testPr134541() {
 		initialiseProject("PR134541");
 		build("PR134541");
 		assertEquals("[Xlint:adviceDidNotMatch] should be associated with line 5",5,
@@ -880,7 +880,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 	
 	
-	public void testPr134471() {
+	public void xtestPr134471() {
 //		super.VERBOSE=true;
 		configureBuildStructureModel(true);
 		AsmManager.setReporting("c:/foo.txt",true,true,true,true);
@@ -931,7 +931,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		assertTrue("Should be 2 elements on the second build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
 	}
 	
-	public void testPr134471_2() {
+	public void xtestPr134471_2() {
 		AsmManager.setReporting("c:/foo.txt",true,true,true,true);
 		configureBuildStructureModel(true);
 		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
