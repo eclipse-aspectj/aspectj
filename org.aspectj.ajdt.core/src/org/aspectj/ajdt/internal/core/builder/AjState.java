@@ -46,7 +46,6 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IWeaver;
-import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -780,7 +779,7 @@ public class AjState {
 		}
 
 		CompactStructureRepresentation existingStructure = (CompactStructureRepresentation) this.resolvedTypeStructuresFromLastBuild.get(thisTime.getClassName());
-		ReferenceType newResolvedType = (ReferenceType) world.resolve(thisTime.getClassName());
+		ResolvedType newResolvedType = world.resolve(thisTime.getClassName());
 		if (!newResolvedType.isMissing()) {
 			try {
 				ClassFileReader reader = new ClassFileReader(thisTime.getBytes(), null);

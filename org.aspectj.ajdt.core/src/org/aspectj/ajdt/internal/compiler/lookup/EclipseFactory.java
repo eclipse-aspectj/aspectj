@@ -932,6 +932,11 @@ public class EclipseFactory {
 		typexToBinding.put(fromBinding(binding), binding);
 	}
 
+	public void addTypeBindingAndStoreInWorld(TypeBinding binding) {
+		UnresolvedType ut = fromBinding(binding);
+		typexToBinding.put(ut, binding);
+		world.lookupOrCreateName(ut);
+	}
 
 	public Shadow makeShadow(ASTNode location, ReferenceContext context) {
 		return EclipseShadow.makeShadow(this, location, context);

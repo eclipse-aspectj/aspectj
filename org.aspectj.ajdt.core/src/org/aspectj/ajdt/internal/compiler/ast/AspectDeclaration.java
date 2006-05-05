@@ -359,7 +359,6 @@ public class AspectDeclaration extends TypeDeclaration {
 		} else if (perClause.getKind() == PerClause.PEROBJECT) {
 			TypeBinding interfaceType = 
 				generatePerObjectInterface(classFile);
-			world.addTypeBinding(interfaceType);
 			generatePerObjectAspectOfMethod(classFile, interfaceType);
 			generatePerObjectHasAspectMethod(classFile, interfaceType);
 			generatePerObjectBindMethod(classFile, interfaceType);
@@ -541,7 +540,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		    AjcMemberMaker.perObjectInterfaceType(typeX);
 		HelperInterfaceBinding interfaceType =
 			new HelperInterfaceBinding(this.binding, interfaceTypeX);
-		world.addTypeBinding(interfaceType);
+		world.addTypeBindingAndStoreInWorld(interfaceType);
 		interfaceType.addMethod(world, AjcMemberMaker.perObjectInterfaceGet(typeX));
 		interfaceType.addMethod(world, AjcMemberMaker.perObjectInterfaceSet(typeX));
 		interfaceType.generateClass(compilationResult, classFile);

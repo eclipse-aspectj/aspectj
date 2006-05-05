@@ -160,7 +160,16 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		build("P1");
 		checkWasFullBuild();  // adding an aspect makes us go back to the source
 	}
-	
+
+	public void testPr134371() {
+		initialiseProject("PR134371");
+		build("PR134371");
+		alter("PR134371","inc1");
+		build("PR134371");
+		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
+				MyErrorHandler.getErrorMessages().isEmpty());		
+
+	}
 	
 	/** 
 	 * Setup up two simple projects and build them in turn - check the
