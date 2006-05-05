@@ -245,11 +245,26 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		if (pointcuts == null) {
 			Pointcut[] pcs = this.myType.getDeclaredPointcuts();
 			pointcuts = new ResolvedMember[pcs.length];
-			PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(classLoader);
+			InternalUseOnlyPointcutParser parser = null;
 			World world = getWorld();
 			if (world instanceof ReflectionWorld) {
-				parser.setWorld((ReflectionWorld)getWorld());
+				parser = new InternalUseOnlyPointcutParser(classLoader,(ReflectionWorld)getWorld());
+			} else {
+				parser = new InternalUseOnlyPointcutParser(classLoader);
 			}
+						
+			// phase 1, create legitimate entries in pointcuts[] before we attempt to resolve *any* of the pointcuts
+			// resolution can sometimes cause us to recurse, and this two stage process allows us to cope with that
+			for (int i = 0; i < pcs.length; i++) {
+				AjType<?>[] ptypes = pcs[i].getParameterTypes();
+				UnresolvedType[] weaverPTypes = new UnresolvedType[ptypes.length];
+				for (int j = 0; j < weaverPTypes.length; j++) {
+					weaverPTypes[j] = UnresolvedType.forName(ptypes[j].getName());
+				}
+				pointcuts[i] = new DeferredResolvedPointcutDefinition(getResolvedTypeX(),pcs[i].getModifiers(),pcs[i].getName(),weaverPTypes);				
+			}
+			// phase 2, now go back round and resolve in-place all of the pointcuts
+			PointcutParameter[][] parameters = new PointcutParameter[pcs.length][];
 			for (int i = 0; i < pcs.length; i++) {
 				AjType<?>[] ptypes = pcs[i].getParameterTypes();
 				String[] pnames = pcs[i].getParameterNames();
@@ -259,18 +274,18 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 						throw new IllegalStateException("Required parameter names not available when parsing pointcut " + pcs[i].getName() + " in type " + getResolvedTypeX().getName());
 					}
 				}
-				PointcutParameter[] parameters = new PointcutParameter[ptypes.length];
-				for (int j = 0; j < parameters.length; j++) {
-					parameters[j] = parser.createPointcutParameter(pnames[j],ptypes[j].getJavaClass());
-				}
-				String pcExpr = pcs[i].getPointcutExpression().toString();
-				PointcutExpressionImpl pEx = (PointcutExpressionImpl) parser.parsePointcutExpression(pcExpr,getBaseClass(),parameters);
-				org.aspectj.weaver.patterns.Pointcut pc = pEx.getUnderlyingPointcut();
-				UnresolvedType[] weaverPTypes = new UnresolvedType[ptypes.length];
-				for (int j = 0; j < weaverPTypes.length; j++) {
-					weaverPTypes[j] = UnresolvedType.forName(ptypes[j].getName());
-				}
-				pointcuts[i] = new ResolvedPointcutDefinition(getResolvedTypeX(),pcs[i].getModifiers(),pcs[i].getName(),weaverPTypes,pc);
+				parameters[i] = new PointcutParameter[ptypes.length];
+				for (int j = 0; j < parameters[i].length; j++) {
+					parameters[i][j] = parser.createPointcutParameter(pnames[j],ptypes[j].getJavaClass());
+				}				String pcExpr = pcs[i].getPointcutExpression().toString();
+				org.aspectj.weaver.patterns.Pointcut pc = parser.resolvePointcutExpression(pcExpr,getBaseClass(),parameters[i]);
+				((ResolvedPointcutDefinition)pointcuts[i]).setParameterNames(pnames);
+				((ResolvedPointcutDefinition)pointcuts[i]).setPointcut(pc);
+			}
+			// phase 3, now concretize them all
+			for (int i = 0; i < pointcuts.length; i++) {
+				ResolvedPointcutDefinition rpd = (ResolvedPointcutDefinition) pointcuts[i];
+				rpd.setPointcut(parser.concretizePointcutExpression(rpd.getPointcut(), getBaseClass(), parameters[i]));
 			}
 		}
 		return pointcuts;

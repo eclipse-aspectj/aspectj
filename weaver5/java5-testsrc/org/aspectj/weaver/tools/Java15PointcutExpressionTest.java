@@ -283,6 +283,22 @@ public class Java15PointcutExpressionTest extends TestCase {
 		assertTrue("should match",sm1.alwaysMatches());
 	}
 	
+	public void testReferencePCsInSameType() throws Exception {
+		PointcutExpression ex = parser.parsePointcutExpression("org.aspectj.weaver.tools.Java15PointcutExpressionTest.NamedPointcutResolution.c()",NamedPointcutResolution.class,new PointcutParameter[0]);
+		ShadowMatch sm = ex.matchesMethodExecution(a);
+		assertTrue("should match",sm.alwaysMatches());
+		sm = ex.matchesMethodExecution(b);
+		assertTrue("does not match",sm.neverMatches());
+	}
+	
+	public void testReferencePCsInOtherType() throws Exception {
+		PointcutExpression ex = parser.parsePointcutExpression("org.aspectj.weaver.tools.Java15PointcutExpressionTest.ExternalReferrer.d()",ExternalReferrer.class,new PointcutParameter[0]);
+		ShadowMatch sm = ex.matchesMethodExecution(a);
+		assertTrue("should match",sm.alwaysMatches());
+		sm = ex.matchesMethodExecution(b);
+		assertTrue("does not match",sm.neverMatches());		
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
@@ -333,6 +349,26 @@ public class Java15PointcutExpressionTest extends TestCase {
 	@Deprecated
 	static class GoldenOldie {
 		public void foo() {}
+	}
+	
+	private static class NamedPointcutResolution {
+		
+		@Pointcut("execution(* *(..))")
+		public void a() {}
+		
+		@Pointcut("this(org.aspectj.weaver.tools.Java15PointcutExpressionTest.A)")
+		public void b() {}
+		
+		@Pointcut("a() && b()")
+		public void c() {}
+	}
+	
+	private static class ExternalReferrer {
+		
+	  @Pointcut("org.aspectj.weaver.tools.Java15PointcutExpressionTest.NamedPointcutResolution.a() && " + 
+			    "org.aspectj.weaver.tools.Java15PointcutExpressionTest.NamedPointcutResolution.b())")
+	  public void d() {}
+		
 	}
 }
 

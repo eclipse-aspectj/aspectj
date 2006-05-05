@@ -181,7 +181,7 @@ public class PointcutParser {
      * <li>The pointcut expression must be anonymous with no formals allowed.
      * </ul>
      */
-    private PointcutParser() {
+    protected PointcutParser() {
         supportedPrimitives = getAllSupportedPointcutPrimitives();
         setClassLoader(PointcutParser.class.getClassLoader());
     }
@@ -214,7 +214,7 @@ public class PointcutParser {
         setClassLoader(PointcutParser.class.getClassLoader());
     }
     
-    public void setWorld(ReflectionWorld aWorld) {
+    protected void setWorld(ReflectionWorld aWorld) {
     	this.world = aWorld;
     }
     
@@ -223,7 +223,7 @@ public class PointcutParser {
      * type resolution.
      * @param aLoader
      */
-    private void setClassLoader(ClassLoader aLoader) {
+    protected void setClassLoader(ClassLoader aLoader) {
     	this.classLoader = aLoader;
     	world = new ReflectionWorld(this.classLoader);
     }
@@ -305,23 +305,8 @@ public class PointcutParser {
     throws UnsupportedPointcutPrimitiveException, IllegalArgumentException {
     	 PointcutExpressionImpl pcExpr = null;
          try {
-        	 PatternParser parser = new PatternParser(expression);
-        	 parser.setPointcutDesignatorHandlers(pointcutDesignators, world);
-             Pointcut pc = parser.parsePointcut();
-             validateAgainstSupportedPrimitives(pc,expression);
-             IScope resolutionScope = buildResolutionScope((inScope == null ? Object.class : inScope),formalParameters);
-             pc = pc.resolve(resolutionScope);
-             ResolvedType declaringTypeForResolution = null;
-             if (inScope != null) {
-            	 declaringTypeForResolution = getWorld().resolve(inScope.getName());
-             } else {
-            	 declaringTypeForResolution = ResolvedType.OBJECT.resolve(getWorld());
-             }
-             IntMap arity = new IntMap(formalParameters.length);
-             for (int i = 0; i < formalParameters.length; i++) {
-            	 arity.put(i, i);
-             }             
-             pc = pc.concretize(declaringTypeForResolution, declaringTypeForResolution, arity);
+        	 Pointcut pc = resolvePointcutExpression(expression,inScope,formalParameters);  
+             pc = concretizePointcutExpression(pc,inScope,formalParameters);
              validateAgainstSupportedPrimitives(pc,expression); // again, because we have now followed any ref'd pcuts
              pcExpr = new PointcutExpressionImpl(pc,expression,formalParameters,getWorld());
          } catch (ParserException pEx) {
@@ -330,6 +315,37 @@ public class PointcutParser {
         	 	throw new IllegalArgumentException(rwEx.getMessage());
          }
          return pcExpr;
+    }
+    
+    protected Pointcut resolvePointcutExpression(
+    		String expression, 
+    		Class inScope,
+    		PointcutParameter[] formalParameters) {
+    	try {
+      	 PatternParser parser = new PatternParser(expression);
+    	 parser.setPointcutDesignatorHandlers(pointcutDesignators, world);
+         Pointcut pc = parser.parsePointcut();
+         validateAgainstSupportedPrimitives(pc,expression);
+         IScope resolutionScope = buildResolutionScope((inScope == null ? Object.class : inScope),formalParameters);
+         pc = pc.resolve(resolutionScope);
+         return pc;
+    	} catch (ParserException pEx) {
+             throw new IllegalArgumentException(buildUserMessageFromParserException(expression,pEx));
+        }
+    }
+    
+    protected Pointcut concretizePointcutExpression(Pointcut pc, Class inScope, PointcutParameter[] formalParameters) {
+        ResolvedType declaringTypeForResolution = null;
+        if (inScope != null) {
+       	 declaringTypeForResolution = getWorld().resolve(inScope.getName());
+        } else {
+       	 declaringTypeForResolution = ResolvedType.OBJECT.resolve(getWorld());
+        }
+        IntMap arity = new IntMap(formalParameters.length);
+        for (int i = 0; i < formalParameters.length; i++) {
+       	 arity.put(i, i);
+        }             
+        return pc.concretize(declaringTypeForResolution, declaringTypeForResolution, arity);
     }
     
     /**
