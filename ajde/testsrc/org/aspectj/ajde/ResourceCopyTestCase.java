@@ -280,8 +280,8 @@ public class ResourceCopyTestCase extends AjdeTestCase {
 	public static final FileFilter aspectjResourceFileFilter = new FileFilter() {
 		public boolean accept(File pathname) {
 			String name = pathname.getName().toLowerCase();
-			return (!name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj"));
-
+			boolean isCVSRelated = name.indexOf("/cvs/")!=-1;
+			return (!isCVSRelated && !name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj"));
 		}
 	};
 
