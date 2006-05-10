@@ -76,5 +76,20 @@ public class Relationship implements IRelationship {
 	public boolean hasRuntimeTest() {
 		return hasRuntimeTest;
 	}
+	
+	// For repairing the relationship map on incremental builds, we need
+	// to know the direction of the relationship: either 'affects' or 'affected by'
+	// this set are considered the 'affects' relationship.  If we know which direction
+	// it is in, we know which ones should be removed when a particular resource
+	// is modified because the subsequent reweave will re-add it.
+	public boolean isAffects() {
+	    // TODO should be a well defined set (enum type) with a flag for this...
+		return name.equals("advises") || 
+		        name.equals("declares on") || 
+		        name.equals("softens") ||
+		        name.equals("matched by") || 
+		        name.equals("declared on") || 
+		        name.equals("annotates");
+	}
 
 }

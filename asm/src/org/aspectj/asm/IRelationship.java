@@ -83,4 +83,6 @@ public interface IRelationship extends Serializable {
 			return ALL[ordinal];
 		}
 	}
+
+	public boolean isAffects();
 }
