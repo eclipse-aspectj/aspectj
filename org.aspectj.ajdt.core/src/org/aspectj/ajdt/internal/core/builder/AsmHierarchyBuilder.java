@@ -52,7 +52,7 @@ import org.aspectj.weaver.patterns.*;
 public class AsmHierarchyBuilder extends ASTVisitor {
 
 	protected AsmElementFormatter formatter = new AsmElementFormatter();
-	
+	public static boolean shouldAddUsesPointcut = true;
 	/**
 	 * Reset for every compilation unit.
 	 */
@@ -390,7 +390,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		formatter.genLabelAndKind(methodDeclaration, peNode); // will set the name
 		genBytecodeInfo(methodDeclaration, peNode);
 		List namedPointcuts = genNamedPointcuts(methodDeclaration);
-		addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
+		if (shouldAddUsesPointcut) addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
 		
 		if (methodDeclaration.returnType!=null) {
 			// if we don't make the distinction between ITD fields and other
