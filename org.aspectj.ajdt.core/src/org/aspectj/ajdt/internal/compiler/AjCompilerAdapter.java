@@ -286,6 +286,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			}			
 		}
 
+		weaver.setIsBatchWeave(isBatchCompile);
 		weaver.prepareForWeave();
 		if (weaver.needToReweaveWorld()) {
 			if (!isBatchCompile) {
