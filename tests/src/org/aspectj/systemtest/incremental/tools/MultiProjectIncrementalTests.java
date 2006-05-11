@@ -24,13 +24,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.core.builder.AjState;
+import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.testing.util.FileUtil;
+import org.aspectj.weaver.World;
 
 /**
  * The superclass knows all about talking through Ajde to the compiler.
@@ -62,6 +65,103 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
+	}
+	
+
+	/*
+	A.aj
+	package pack;
+	public aspect A {
+	        pointcut p() : call(* C.method
+	        before() : p() { // line 7
+	        }
+	}
+
+	C.java
+	package pack;
+	public class C {
+	        public void method1() {
+	          method2(); // line 6
+	        }
+	        public void method2() {   }
+	        public void method3() { 
+	          method2();  // line 13
+	        }
+
+	}*/
+	public void testDontLoseAdviceMarkers_pr134471() {
+		try {
+			AsmHierarchyBuilder.shouldAddUsesPointcut=false;
+			configureBuildStructureModel(true);
+			initialiseProject("P4");
+			build("P4");
+			dumpAJDEStructureModel("after full build where advice is applying");
+			// should be 4 relationship entries
+	
+			// In inc1 the first advised line is 'commented out'
+			alter("P4","inc1");
+			build("P4");
+			checkWasntFullBuild();
+			dumpAJDEStructureModel("after inc build where first advised line is gone");
+			// should now be 2 relationship entries
+			
+			// This will be the line 6 entry in C.java
+			IProgramElement codeElement = findCode(checkForNode("pack","C",true));
+			
+			// This will be the line 7 entry in A.java
+			IProgramElement advice = findAdvice(checkForNode("pack","A",true));
+			
+			IRelationshipMap asmRelMap = AsmManager.getDefault().getRelationshipMap();
+			assertEquals("There should be two relationships in the relationship map",
+					2,asmRelMap.getEntries().size());
+	
+			for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
+				String sourceOfRelationship = (String) iter.next();
+				IProgramElement ipe = AsmManager.getDefault().getHierarchy()
+										.findElementForHandle(sourceOfRelationship);
+				assertNotNull("expected to find IProgramElement with handle " 
+						+ sourceOfRelationship + " but didn't",ipe);
+				if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
+					assertEquals("expected source of relationship to be " +
+							advice.toString() + " but found " +
+							ipe.toString(),advice,ipe);
+				} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
+					assertEquals("expected source of relationship to be " +
+							codeElement.toString() + " but found " +
+							ipe.toString(),codeElement,ipe);
+				} else {
+					fail("found unexpected relationship source " + ipe 
+							+ " with kind " + ipe.getKind()+" when looking up handle: "+sourceOfRelationship);
+				}
+				List relationships = asmRelMap.get(ipe);
+				assertNotNull("expected " + ipe.getName() +" to have some " +
+						"relationships",relationships);
+				for (Iterator iterator = relationships.iterator(); iterator.hasNext();) {
+					Relationship rel = (Relationship) iterator.next();
+					List targets = rel.getTargets();
+					for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
+						String t = (String) iterator2.next();
+						IProgramElement link = AsmManager.getDefault().getHierarchy().findElementForHandle(t);
+						if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
+							assertEquals("expected target of relationship to be " +
+									codeElement.toString() + " but found " +
+									link.toString(),codeElement,link);
+						} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
+							assertEquals("expected target of relationship to be " +
+									advice.toString() + " but found " +
+									link.toString(),advice,link);	
+						} else {
+							fail("found unexpected relationship source " + ipe.getName() 
+									+ " with kind " + ipe.getKind());
+						}
+					}				
+				}
+			}
+			
+		} finally {
+			AsmHierarchyBuilder.shouldAddUsesPointcut=true;
+			configureBuildStructureModel(false);
+		}
 	}
 	
 	
@@ -640,7 +740,6 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 	
 	public void testPr112736() {
-	//	AjdeInteractionTestbed.VERBOSE = true;
 		initialiseProject("PR112736");
 		build("PR112736");
 		checkWasFullBuild();
@@ -741,7 +840,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// The logic within CrosscuttingMembers should then work out correctly 
 	// that there haven't really been any changes within the aspect and so 
 	// we shouldn't go back to source.
-	public void  testPr129163_2() {
+	public void testPr129163_2() {
 		// want to behave like AJDT
 		configureBuildStructureModel(true);
 		initialiseProject("pr129163_2");
@@ -764,7 +863,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	// AjState to think that the aspect has changed. Together its then up to 
 	// logic within CrosscuttingMembers and various equals methods to decide
 	// correctly that we don't have to go back to source.
-	public void  testPr129163_3() {
+	public void testPr129163_3() {
 		configureBuildStructureModel(true);
 		initialiseProject("PR129163_4");
 		build("PR129163_4");
@@ -786,7 +885,7 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		configureBuildStructureModel(false);
 	}
 	
-	public void  testPr131505() {
+	public void testPr131505() {
 		configureNonStandardCompileOptions("-outxml");
 		initialiseProject("PR131505");
 		build("PR131505");
@@ -866,80 +965,248 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				  decisions.indexOf(expect)!=-1);
 	}
 	
-	public void  testPr134541() {
+	public void testPr134541() {
 		initialiseProject("PR134541");
 		build("PR134541");
 		assertEquals("[Xlint:adviceDidNotMatch] should be associated with line 5",5,
 				((IMessage)MyTaskListManager.getWarningMessages().get(0)).getSourceLocation().getLine());
 		alter("PR134541","inc1");
 		build("PR134541");
-		checkWasntFullBuild(); // we've only added a white space therefore we 
-		                       // shouldn't be doing a full build
+		if (World.compareLocations)
+		  checkWasFullBuild(); // the line number has changed... but nothing structural about the code
+		else 
+		  checkWasntFullBuild(); // the line number has changed... but nothing structural about the code
 		assertEquals("[Xlint:adviceDidNotMatch] should now be associated with line 7",7,
 				((IMessage)MyTaskListManager.getWarningMessages().get(0)).getSourceLocation().getLine());
 	}
 	
 	
-	public void xtestPr134471() {
-//		super.VERBOSE=true;
+	// 134471 related tests perform incremental compilation and verify features of the structure model post compile
+	public void testPr134471_IncrementalCompilationAndModelUpdates() {
+		try {
+			AsmHierarchyBuilder.shouldAddUsesPointcut=false;
 		configureBuildStructureModel(true);
-		AsmManager.setReporting("c:/foo.txt",true,true,true,true);
 		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
+		
+		// Step1.  Build the code, simple advice from aspect A onto class C
 		initialiseProject("PR134471");
 		build("PR134471");
-		IProgramElement ipe = checkForNode("pkg","A",true);
-		IProgramElement adviceNode = findAdvice(ipe);
-		List relatedElements = getRelatedElements(adviceNode);
-		StringBuffer debugString = new StringBuffer();
-		if (relatedElements!=null) {
-			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {	
-				String element = (String) iter.next();
-				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
-			}
-		}
-		// debug should be: 'p()' and 'method-call(void pkg.C.method2())' - first is 'uses pointcut' relation, second is 'advises'
-		assertTrue("Should be 2 elements on the first build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
-
-		try {
-			IProgramElement cNode = checkForNode("pkg","C",true);
-			IProgramElement mNode = findCode(cNode);
-			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
-			List rels = (List)irm.get(mNode);
-			IRelationship ir = (IRelationship)rels.get(0);
-			List targs = ir.getTargets();
-			String t1 = (String)targs.get(0);
-			int ii = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(t1);
-			assertTrue("Advice should be on line 7?? but is on line "+ii,ii==7);
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Couldn't determine if the line number for the advice was right?!?");
-		}
-		// No change to the aspect at all !
+		
+		// Step2. Quick check that the advice points to something...
+		IProgramElement nodeForTypeA = checkForNode("pkg","A",true);
+		IProgramElement nodeForAdvice = findAdvice(nodeForTypeA);
+		List relatedElements = getRelatedElements(nodeForAdvice,1);
+		
+		// Step3. Check the advice applying at the first 'code' join point in pkg.C is from aspect pkg.A, line 7
+		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
+		int line = programElement.getSourceLocation().getLine();
+		assertTrue("advice should be at line 7 - but is at line "+line,line==7);
+		
+		// Step4. Simulate the aspect being saved but with no change at all in it
 		alter("PR134471","inc1");
 		build("PR134471");
-		ipe = checkForNode("pkg","A",true);
-		adviceNode = findAdvice(ipe);
-		relatedElements = getRelatedElements(adviceNode);
-		debugString = new StringBuffer();
-		if (relatedElements!=null) {
-			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {	
-				String element = (String) iter.next();
-				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
-			}
+
+		// Step5. Quick check that the advice points to something...
+		nodeForTypeA = checkForNode("pkg","A",true);
+		nodeForAdvice = findAdvice(nodeForTypeA);
+		relatedElements = getRelatedElements(nodeForAdvice,1);
+
+		// Step6. Check the advice applying at the first 'code' join point in pkg.C is from aspect pkg.A, line 7
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("advice should be at line 7 - but is at line "+line,line==7);
+		} finally {
+		AsmHierarchyBuilder.shouldAddUsesPointcut=true;
 		}
-		// debug should be: 'p()' and 'method-call(void pkg.C.method2())' - first is 'uses pointcut' relation, second is 'advises'
-		assertTrue("Should be 2 elements on the second build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
 	}
 	
-	public void xtestPr134471_2() {
-		AsmManager.setReporting("c:/foo.txt",true,true,true,true);
+	// now the advice moves down a few lines - hopefully the model will notice... see discussion in 134471
+	public void testPr134471_MovingAdvice() {
 		configureBuildStructureModel(true);
 		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
+		
+		// Step1. build the project
 		initialiseProject("PR134471_2");
 		build("PR134471_2");
-		IProgramElement ipe = checkForNode("pkg","A",true);
-		IProgramElement adviceNode = findAdvice(ipe);
-		List relatedElements = getRelatedElements(adviceNode);
+		
+		// Step2. confirm advice is from correct location
+		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
+		int line = programElement.getSourceLocation().getLine();
+		assertTrue("advice should be at line 7 - but is at line "+line,line==7);
+		
+		// Step3. No structural change to the aspect but the advice has moved down a few lines... (change in source location)
+		alter("PR134471_2","inc1");
+		build("PR134471_2");
+		checkWasFullBuild(); // this is true whilst we consider sourcelocation in the type/shadow munger equals() method - have to until the handles are independent of location
+		
+		// Step4. Check we have correctly realised the advice moved to line 11
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("advice should be at line 11 - but is at line "+line,line==11);
+	}
+	
+
+	public void testAddingAndRemovingDecwWithStructureModel() {
+		configureBuildStructureModel(true);
+		initialiseProject("P3");
+		build("P3");
+		alter("P3","inc1");
+		build("P3");
+		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
+				MyErrorHandler.getErrorMessages().isEmpty());		
+		alter("P3","inc2");
+		build("P3");
+		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
+				MyErrorHandler.getErrorMessages().isEmpty());		
+		configureBuildStructureModel(false);
+	}
+		
+	
+	// same as first test with an extra stage that asks for C to be recompiled, it should still be advised...
+	public void testPr134471_IncrementallyRecompilingTheAffectedClass() {
+		try {
+			AsmHierarchyBuilder.shouldAddUsesPointcut=false;
+		configureBuildStructureModel(true);
+		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
+		
+		// Step1. build the project
+		initialiseProject("PR134471");
+		build("PR134471");
+		
+		// Step2. confirm advice is from correct location
+		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
+		int line = programElement.getSourceLocation().getLine();
+		assertTrue("advice should be at line 7 - but is at line "+line,line==7);
+
+		// Step3. No change to the aspect at all
+		alter("PR134471","inc1");
+		build("PR134471");
+		
+		// Step4. Quick check that the advice points to something...
+		IProgramElement nodeForTypeA = checkForNode("pkg","A",true);
+		IProgramElement nodeForAdvice = findAdvice(nodeForTypeA);
+		List relatedElements = getRelatedElements(nodeForAdvice,1);
+		
+	    // Step5. No change to the file C but it should still be advised afterwards
+		alter("PR134471","inc2");
+		build("PR134471");
+		checkWasntFullBuild();
+	
+		// Step6. confirm advice is from correct location
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("advice should be at line 7 - but is at line "+line,line==7);		
+	} finally {
+		AsmHierarchyBuilder.shouldAddUsesPointcut=true;
+		}
+
+	}
+
+	// similar to previous test but with 'declare warning' as well as advice
+	public void testPr134471_IncrementallyRecompilingAspectContainingDeclare() {
+		configureBuildStructureModel(true);
+		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
+		
+		// Step1. build the project
+		initialiseProject("PR134471_3");
+		build("PR134471_3");
+		checkWasFullBuild();
+		
+		// Step2. confirm declare warning is from correct location, decw matches line 7 in pkg.C
+		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
+		int line = programElement.getSourceLocation().getLine();
+		assertTrue("declare warning should be at line 10 - but is at line "+line,line==10);
+		
+		// Step3. confirm advice is from correct location, advice matches line 6 in pkg.C
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),6));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("advice should be at line 7 - but is at line "+line,line==7);
+
+		// Step4. Move declare warning in the aspect
+		alter("PR134471_3","inc1");
+		build("PR134471_3");
+		checkWasFullBuild();
+
+		// Step5. confirm declare warning is from correct location, decw (now at line 12) in pkg.A matches line 7 in pkg.C
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
+
+		// Step6. Now just simulate 'resave' of the aspect, nothing has changed
+		alter("PR134471_3","inc2");
+		build("PR134471_3");
+		checkWasntFullBuild();
+
+		// Step7. confirm declare warning is from correct location, decw (now at line 12) in pkg.A matches line 7 in pkg.C
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
+
+	}
+	
+	// similar to previous test but with 'declare warning' as well as advice
+	public void testPr134471_IncrementallyRecompilingTheClassAffectedByDeclare() {
+		configureBuildStructureModel(true);
+		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
+		
+		// Step1. build the project
+		initialiseProject("PR134471_3");
+		build("PR134471_3");
+		checkWasFullBuild();
+		
+		// Step2. confirm declare warning is from correct location, decw matches line 7 in pkg.C
+		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
+		int line = programElement.getSourceLocation().getLine();
+		assertTrue("declare warning should be at line 10 - but is at line "+line,line==10);
+		
+		// Step3. confirm advice is from correct location, advice matches line 6 in pkg.C
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),6));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("advice should be at line 7 - but is at line "+line,line==7);
+
+		// Step4. Move declare warning in the aspect
+		alter("PR134471_3","inc1");
+		build("PR134471_3");
+		checkWasFullBuild();
+
+		// Step5. confirm declare warning is from correct location, decw (now at line 12) in pkg.A matches line 7 in pkg.C
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
+
+		// Step6. Now just simulate 'resave' of the aspect, nothing has changed
+		alter("PR134471_3","inc2");
+		build("PR134471_3");
+		checkWasntFullBuild();
+
+		// Step7. confirm declare warning is from correct location, decw (now at line 12) in pkg.A matches line 7 in pkg.C
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
+
+		// Step8. Now just simulate resave of the pkg.C type - no change at all... are relationships gonna be repaired OK?
+		alter("PR134471_3","inc3");
+		build("PR134471_3");
+		checkWasntFullBuild();
+
+		// Step9. confirm declare warning is from correct location, decw (now at line 12) in pkg.A matches line 7 in pkg.C
+		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
+		line = programElement.getSourceLocation().getLine();
+		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
+
+	}
+
+	// --- helper code ---
+	
+	/**
+	 * Retrieve program elements related to this one regardless of the relationship.  A JUnit assertion is
+	 * made that the number that the 'expected' number are found.
+	 * 
+	 * @param programElement Program element whose related elements are to be found
+	 * @param expected the number of expected related elements
+	 */
+	private List/*IProgramElement*/ getRelatedElements(IProgramElement programElement,int expected) {
+		List relatedElements = getRelatedElements(programElement);
 		StringBuffer debugString = new StringBuffer();
 		if (relatedElements!=null) {
 			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {	
@@ -947,64 +1214,23 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
 			}
 		}
-		// debug should be: 'p()' and 'method-call(void pkg.C.method2())' - first is 'uses pointcut' relation, second is 'advises'
-		assertTrue("Should be 2 elements on the first build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
-		
-		try {
-			IProgramElement cNode = checkForNode("pkg","C",true);
-			IProgramElement mNode = findCode(cNode);
-			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
-			List rels = (List)irm.get(mNode);
-			IRelationship ir = (IRelationship)rels.get(0);
-			List targs = ir.getTargets();
-			String t1 = (String)targs.get(0);
-			int ii = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(t1);
-			assertTrue("After first build, advice should be on line 7?? but is on line "+ii,ii==7);
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Couldn't determine if the line number for the advice was right?!?");
-		}
-
-		
-		//IProgramElement advisedNode = AsmManager.getDefault().getHierarchy().findElementForHandle((String)relatedElements.get(1));
-		// No structural change but the advice has moved down a few lines.
-		alter("PR134471_2","inc1");
-		build("PR134471_2");
-		ipe = checkForNode("pkg","A",true);
-		adviceNode = findAdvice(ipe);
-		relatedElements = getRelatedElements(adviceNode);
-		debugString = new StringBuffer();
-		if (relatedElements!=null) {
-			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {	
-				String element = (String) iter.next();
-				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
-			}
-		}
-		// debug should be: 'p()' and 'method-call(void pkg.C.method2())' - first is 'uses pointcut' relation, second is 'advises'
-		assertTrue("Should be 2 elements on the second build, but there are not:\n "+debugString,relatedElements!=null && relatedElements.size()==2);
-		
-		try {
-			IProgramElement cNode = checkForNode("pkg","C",true);
-			IProgramElement mNode = findCode(cNode);
-			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
-			List rels = (List)irm.get(mNode);
-			IRelationship ir = (IRelationship)rels.get(0);
-			List targs = ir.getTargets();
-			String t1 = (String)targs.get(0);
-			int ii = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(t1);
-			assertTrue("After second build, advice should be on line 11?? but is on line "+ii,ii==11);
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Couldn't determine if the line number for the advice was right?!?");
-		}
+		assertTrue("Should be "+expected+" element"+(expected>1?"s":"")+" related to this one '"+programElement+
+				"' but found :\n "+debugString,relatedElements!=null && relatedElements.size()==1);
+		return relatedElements;
 	}
 	
-	// ---
+	private IProgramElement getFirstRelatedElement(IProgramElement programElement) {
+		List rels = getRelatedElements(programElement,1);
+		return AsmManager.getDefault().getHierarchy().findElementForHandle((String)rels.get(0));
+	}
+
+	
 	
 	private List/*IProgramElement*/ getRelatedElements(IProgramElement advice) {
 		List output = null;
 		IRelationshipMap map = AsmManager.getDefault().getRelationshipMap();
 		List/*IRelationship*/ rels = (List)map.get(advice);
+		if (rels==null) fail("Did not find any related elements!");
 		for (Iterator iter = rels.iterator(); iter.hasNext();) {
 			IRelationship element = (IRelationship) iter.next();
 			List/*String*/ targets = element.getTargets();
@@ -1032,19 +1258,25 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		return null;
 	}
 	
+	/**
+	 * Finds the first 'code' program element below the element supplied - will return null if there aren't any
+	 */
 	private IProgramElement findCode(IProgramElement ipe) {
-		return findCode(ipe,1);
+		return findCode(ipe,-1);
 	}
 	
-	private IProgramElement findCode(IProgramElement ipe,int whichOne) {
+	/**
+	 * Searches a hierarchy of program elements for a 'code' element at the specified line number, a line number
+	 * of -1 means just return the first one you find
+	 */
+	private IProgramElement findCode(IProgramElement ipe,int linenumber) {
 		if (ipe.getKind()==IProgramElement.Kind.CODE) {
-			whichOne=whichOne-1;
-			if (whichOne==0) return ipe;
+			if (linenumber==-1 || ipe.getSourceLocation().getLine()==linenumber) return ipe;
 		}
 		List kids = ipe.getChildren();
 		for (Iterator iter = kids.iterator(); iter.hasNext();) {
 			IProgramElement kid = (IProgramElement) iter.next();
-			IProgramElement found = findCode(kid,whichOne);
+			IProgramElement found = findCode(kid,linenumber);
 			if (found!=null) return found;
 		}
 		return null;
@@ -1249,6 +1481,38 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 			fail("Expected aspect " + aspectName + " to appear " + expectedOccurrences + " times" +
 					" in the aop.xml file but found " + aspectCount + " occurrences");
 		}
+	}
+	
+	
+	private void dumpAJDEStructureModel(String prefix) {
+		System.out.println("======================================");//$NON-NLS-1$
+		System.out.println("start of AJDE structure model:"+prefix); //$NON-NLS-1$
+
+		IRelationshipMap asmRelMap = AsmManager.getDefault().getRelationshipMap();
+		for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
+			String sourceOfRelationship = (String) iter.next();
+			IProgramElement ipe = AsmManager.getDefault().getHierarchy()
+									.findElementForHandle(sourceOfRelationship);
+			System.err.println("Examining source relationship handle: "+sourceOfRelationship);
+			List relationships = asmRelMap.get(ipe);
+			if (relationships != null) {
+				for (Iterator iterator = relationships.iterator(); iterator.hasNext();) {
+					Relationship rel = (Relationship) iterator.next();
+					List targets = rel.getTargets();
+					for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
+						String t = (String) iterator2.next();
+						IProgramElement link = AsmManager.getDefault().getHierarchy().findElementForHandle(t);
+						System.out.println(""); //$NON-NLS-1$
+						System.out.println("      sourceOfRelationship " + sourceOfRelationship); //$NON-NLS-1$
+						System.out.println("          relationship " + rel.getName()); //$NON-NLS-1$
+						System.out.println("              target " + link.getName()); //$NON-NLS-1$
+					}
+				}
+				
+			}
+		}
+		System.out.println("End of AJDE structure model"); //$NON-NLS-1$
+		System.out.println("======================================");//$NON-NLS-1$
 	}
 	
 	
