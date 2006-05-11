@@ -466,11 +466,69 @@ public class AsmManager {
 		}
 	}
 	
+	private void dumprelsStderr(String key) {
+		System.err.println("Relationships dump follows: "+key);
+		IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
+		int ctr = 1;
+		Set entries = irm.getEntries();
+		for (Iterator iter = entries.iterator(); iter.hasNext();) {
+			String hid = (String) iter.next();
+			List rels =  irm.get(hid);
+			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
+				IRelationship ir = (IRelationship) iterator.next();
+				List targets = ir.getTargets();
+				for (Iterator iterator2 = targets.iterator();
+					iterator2.hasNext();
+					) {
+					String thid = (String) iterator2.next();
+					System.err.println("Hid:"+(ctr++)+":(targets="+targets.size()+") "+hid+" ("+ir.getName()+") "+thid);
+				}
+			}
+		}
+		System.err.println("End of relationships dump for: "+key);
+	}
+	
 	//===================== DELTA PROCESSING CODE ============== start ==========//
 	
 	// XXX shouldn't be aware of the delimiter
 	private String getFilename(String hid) {
 		return hid.substring(0,hid.indexOf("|"));
+	}
+	
+	/**
+	 * Removes the hierarchy structure for the specified files from the structure model.
+	 * Returns true if it deleted anything
+	 */
+	public boolean removeStructureModelForFiles(Writer fw,Collection files) throws IOException {
+
+		IHierarchy model = AsmManager.getDefault().getHierarchy();
+		
+		boolean modelModified = false;
+		
+		Set deletedNodes = new HashSet();
+		for (Iterator iter = files.iterator(); iter.hasNext();) {
+			File fileForCompilation = (File) iter.next();
+			String correctedPath = AsmManager.getDefault().getCanonicalFilePath(fileForCompilation);
+			IProgramElement progElem = (IProgramElement)model.findInFileMap(correctedPath);
+			if (progElem!=null) {
+				// Found it, let's remove it
+				if (dumpDeltaProcessing) {
+					fw.write("Deleting "+progElem+" node for file "+fileForCompilation+"\n");
+				}
+				removeNode(progElem);
+				deletedNodes.add(getFilename(progElem.getHandleIdentifier()));
+				if (!model.removeFromFileMap(correctedPath.toString())) 
+						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
+				modelModified = true;
+			} 
+		}
+		if (modelModified) model.updateHandleMap(deletedNodes);
+		return modelModified;
+	}
+	
+	private void flushModelCache() {
+		IHierarchy model = AsmManager.getDefault().getHierarchy();
+		model.flushTypeMap();		
 	}
 	
 	// This code is *SLOW* but it isnt worth fixing until we address the
@@ -512,7 +570,8 @@ public class AsmManager {
 		}
 	}
 	
-	public void processDelta(List filesToBeCompiled,Set files_added,Set files_deleted) {
+	
+	public void processDelta(List files_tobecompiled,Set files_added,Set files_deleted) {
 
 		try {
 			Writer fw = null;
@@ -522,148 +581,346 @@ public class AsmManager {
 				FileWriter filew = new FileWriter(dumpFilename,true);
 				fw = new BufferedWriter(filew);
 				fw.write("=== Processing delta changes for the model ===\n");
-				fw.write("Files for compilation:#"+filesToBeCompiled.size()+":"+filesToBeCompiled+"\n");
+				fw.write("Files for compilation:#"+files_tobecompiled.size()+":"+files_tobecompiled+"\n");
 				fw.write("Files added          :#"+files_added.size()+":"+files_added+"\n");
 				fw.write("Files deleted        :#"+files_deleted.size()+":"+files_deleted+"\n");
 			}
 			
 			long stime = System.currentTimeMillis();
 			
-			fixupStructureModel(fw,filesToBeCompiled,files_added,files_deleted);
+			boolean modificationOccurred = false;
 			
+			//fixupStructureModel(fw,filesToBeCompiled,files_added,files_deleted);
+			// Let's remove all the files that are deleted on this compile
+			modificationOccurred = 
+				removeStructureModelForFiles(fw,files_deleted) | 
+				modificationOccurred;
 			long etime1 = System.currentTimeMillis(); // etime1-stime = time to fix up the model
 		
-			IHierarchy model = AsmManager.getDefault().getHierarchy();
+			repairRelationships(fw);	
+			long etime2 = System.currentTimeMillis(); // etime2-stime = time to repair the relationship map
 			
-			// Some of this code relies on the fact that relationships are always in pairs, so you know
-			// if you are the target of a relationship because you are also the source of a relationship
-			// This seems a valid assumption for now...
-		
-			//TODO Speed this code up by making this assumption:
-			// the only piece of the handle that is interesting is the file name.  We are working at file granularity, if the
-			// file does not exist (i.e. its not in the filemap) then any handle inside that file cannot exist.
-			if (dumpDeltaProcessing) fw.write("Repairing relationships map:\n");
-		
-			// Now sort out the relationships map
-			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
-			Set sourcesToRemove = new HashSet(); 
-			Set nonExistingHandles = new HashSet(); // Cache of handles that we *know* are invalid
-			int srchandlecounter = 0;
-			int tgthandlecounter = 0;
+			modificationOccurred = 
+				removeStructureModelForFiles(fw,files_tobecompiled) | 
+				modificationOccurred;
 			
+			if (dumpDeltaProcessing) {
+				fw.write("===== Delta Processing timing ==========\n");
+				fw.write("Hierarchy="+(etime1-stime)+"ms   Relationshipmap="+(etime2-etime1)+"ms\n");
+				fw.write("===== Traversal ========================\n");
+//				fw.write("Source handles processed="+srchandlecounter+"\n");
+//				fw.write("Target handles processed="+tgthandlecounter+"\n");
+				fw.write("========================================\n");
+				fw.flush();fw.close();
+			
+			}			
+			reportModelInfo("After delta processing");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	/**
+	 * two kinds of relationships
+	 * 
+	 * A  affects    B
+	 * B  affectedBy A
+	 * 
+	 * Both of these relationships are added when 'B' is modified.  Concrete examples are 
+	 * 'advises/advisedby' or 'annotates/annotatedby'.
+	 * 
+	 * What we need to do is when 'B' is going to be woven, remove all relationships that may
+	 * reoccur when it is woven.
+	 * So - remove 'affects' relationships where the target is 'B', remove all 'affectedBy'
+	 *     relationships where the source is 'B'.
+	 * 
+	 */
+	public void removeRelationshipsTargettingThisType(String typename) {
+		boolean debug=false;
+		if (debug) System.err.println(">>removeRelationshipsTargettingThisType "+typename);
+		String pkg = null;
+		String type= typename;
+		int lastSep = typename.lastIndexOf('.');
+		if (lastSep != -1) {
+			pkg = typename.substring(0,lastSep);
+			type= typename.substring(lastSep+1);
+		}
+		boolean didsomething=false;
+		IProgramElement typeNode = hierarchy.findElementForType(pkg,type);
+		
+		// Reasons for that being null:
+		// 1. the file has fundamental errors and so doesn't exist in the model (-proceedOnError probably forced us to weave)
+		if (typeNode == null) return;
+
+		Set sourcesToRemove  = new HashSet(); 
+
+		// Iterate over the source handles in the relationships map, the aim here is to remove any 'affected by' 
+		// relationships where the source of the relationship is the specified type (since it will be readded 
+		// when the type is woven)
+		Set sourcehandlesSet = mapper.getEntries();
+		List relationshipsToRemove = new ArrayList();
+		for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter.hasNext();) {
+			String hid = (String) keyiter.next();			
+	  		IProgramElement sourceElement = hierarchy.getElement(hid);
+	  		if (sourceElement == null || sameType(hid,sourceElement,typeNode)) {
+	  			// worth continuing as there may be a relationship to remove
+	  			relationshipsToRemove.clear();
+		  		List relationships = mapper.get(hid);
+				for (Iterator reliter = relationships.iterator();reliter.hasNext();) {
+					IRelationship rel = (IRelationship) reliter.next();
+					if (rel.getKind()==IRelationship.Kind.USES_POINTCUT) continue; // these relationships are added at compile time, argh
+					if (rel.isAffects()) continue; // we want 'affected by' relationships - (e.g. advised by)
+					relationshipsToRemove.add(rel); // all the relationships can be removed, regardless of the target(s)
+				}
+				// Now, were any relationships emptied during that processing and so need removing for this source handle
+				if (relationshipsToRemove.size()>0) {
+					didsomething=true;
+					if (relationshipsToRemove.size() == relationships.size()) sourcesToRemove.add(hid);
+					else {
+						for (int i = 0 ;i<relationshipsToRemove.size();i++)
+							relationships.remove(relationshipsToRemove.get(i));
+					}
+				}
+	  		}
+		}
+//		 Remove sources that have no valid relationships any more
+		for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
+			String hid = (String) srciter.next();
+//			System.err.println("  source handle: all relationships have gone for "+hid);
+			mapper.removeAll(hid);
+			IProgramElement ipe = hierarchy.getElement(hid);
+			if (ipe!=null) {
+				// If the relationship was hanging off a 'code' node, delete it.
+				if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
+					if (debug) System.err.println("  source handle: it was code node, removing that as well... code="+ipe+" parent="+ipe.getParent());
+					removeSingleNode(ipe);
+				} 
+			}
+		}
+		
+		if (debug) dumprelsStderr("after processing 'affectedby'");
+	if (didsomething) {		// did we do anything?
+		sourcesToRemove.clear();
+			// removing 'affects' relationships
+			if (debug) dumprelsStderr("before processing 'affects'");
 			// Iterate over the source handles in the relationships map
-			Set keyset = irm.getEntries(); // These are source handles
-			for (Iterator keyiter = keyset.iterator(); keyiter.hasNext();) {
-				String hid = (String) keyiter.next();
-				srchandlecounter++;
-				
-				// Do we already know this handle points to nowhere?
-				if (nonExistingHandles.contains(hid)) {
-					sourcesToRemove.add(hid);
-				} else {
-			  		// We better check if it actually exists
-			  		IProgramElement existingElement = model.getElement(hid);
-			  		if (dumpDeltaProcessing) fw.write("Looking for handle ["+hid+"] in model, found: "+existingElement+"\n");
-			  
-			 		// Did we find it?
-			  		if (existingElement == null) {
-						// No, so delete this relationship
-						sourcesToRemove.add(hid);
-						nonExistingHandles.add(hid); // Speed up a bit you swine
-			  		} else {
-			  			// Ok, so the source is valid, what about the targets?
-						List relationships = irm.get(hid);
-						List relationshipsToRemove = new ArrayList();
-						// Iterate through the relationships against this source handle
-						for (Iterator reliter = relationships.iterator();reliter.hasNext();) {
-							IRelationship rel = (IRelationship) reliter.next();
-							List targets = rel.getTargets();
-							List targetsToRemove = new ArrayList();
+			sourcehandlesSet = mapper.getEntries();
+			for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter.hasNext();) {
+				String hid = (String) keyiter.next();			
+		  		IProgramElement sourceElement = hierarchy.getElement(hid);
+	
+		  		relationshipsToRemove.clear();
+		  		List relationships = mapper.get(hid);
+				for (Iterator reliter = relationships.iterator();reliter.hasNext();) {
+					IRelationship rel = (IRelationship) reliter.next();
+					if (rel.getKind()==IRelationship.Kind.USES_POINTCUT) continue; // these relationships are added at compile time, argh
+					if (!rel.isAffects()) continue;
+					List targets = rel.getTargets();
+					List targetsToRemove = new ArrayList();
 					
-							// Iterate through the targets for this relationship
-							for (Iterator targetIter = targets.iterator();targetIter.hasNext();) {
-								String targethid = (String) targetIter.next();
-								tgthandlecounter++;
-								// Do we already know it doesn't exist?
-								if (nonExistingHandles.contains(targethid)) {
-									if (dumpDeltaProcessing) fw.write("Target handle ["+targethid+"] for srchid["+hid+"]rel["+rel.getName()+"] does not exist\n");
-									targetsToRemove.add(targethid);
-								} else {
-									// We better check
-									IProgramElement existingTarget = model.getElement(targethid);
-									if (existingTarget == null) {
-										if (dumpDeltaProcessing) fw.write("Target handle ["+targethid+"] for srchid["+hid+"]rel["+rel.getName()+"] does not exist\n");
-										targetsToRemove.add(targethid);
-										nonExistingHandles.add(targethid);
-									}
-								}
-							}
-							
-							// Do we have some targets that need removing?
-							if (targetsToRemove.size()!=0) {
-								// Are we removing *all* of the targets for this relationship (i.e. removing the relationship)
-								if (targetsToRemove.size()==targets.size()) {
-									if (dumpDeltaProcessing) fw.write("No targets remain for srchid["+hid+"] rel["+rel.getName()+"]: removing it\n");
-									relationshipsToRemove.add(rel);							
-								} else {
-									// Remove all the targets that are no longer valid
-						  			for (Iterator targsIter = targetsToRemove.iterator();targsIter.hasNext();) {
-							  			String togo = (String) targsIter.next();
-							  			targets.remove(togo);
-						  			}
-						  			// Should have already been caught above, but lets double check ...
-						  			if (targets.size()==0) {
-										if (dumpDeltaProcessing) fw.write("No targets remain for srchid["+hid+"] rel["+rel.getName()+"]: removing it\n");
-						  				relationshipsToRemove.add(rel); // TODO Should only remove this relationship for the srchid?
-						  			}
-								}
-							}
+					// find targets that target the type we are interested in, they need removing
+					for (Iterator targetsIter = targets.iterator(); targetsIter.hasNext();) {
+						String targethid = (String) targetsIter.next();					
+						// Does this point to the same type?
+						IProgramElement existingTarget = hierarchy.getElement(targethid);
+						if (existingTarget == null || sameType(targethid,existingTarget,typeNode)) targetsToRemove.add(targethid);					
+					}
+	
+					if (targetsToRemove.size()!=0) {
+						if (targetsToRemove.size()==targets.size()) relationshipsToRemove.add(rel);							
+						else {
+							// Remove all the targets that are no longer valid
+				  			for (Iterator targsIter = targetsToRemove.iterator();targsIter.hasNext();) {
+					  			String togo = (String) targsIter.next();
+					  			targets.remove(togo);
+				  			}
 						}
-						// Now, were any relationships emptied during that processing and so need removing for this source handle
-						if (relationshipsToRemove.size()>0) {
-							// Are we removing *all* of the relationships for this source handle?
-							if (relationshipsToRemove.size() == relationships.size()) { 
-								// We know they are all going to go, so just delete the source handle.
-								sourcesToRemove.add(hid);
-							} else {
-								for (int i = 0 ;i<relationshipsToRemove.size();i++) {
-									IRelationship irel = (IRelationship)relationshipsToRemove.get(i);
-									verifyAssumption(irm.remove(hid,irel),"Failed to remove relationship "+irel.getName()+" for shid "+hid);
-								}
-								List rels = irm.get(hid);
-								if (rels==null || rels.size()==0) sourcesToRemove.add(hid);
-							}
-						}
+					}
+				}
+				// Now, were any relationships emptied during that processing and so need removing for this source handle
+				if (relationshipsToRemove.size()>0) {
+					// Are we removing *all* of the relationships for this source handle?
+					if (relationshipsToRemove.size() == relationships.size()) sourcesToRemove.add(hid);
+					else {
+						for (int i = 0 ;i<relationshipsToRemove.size();i++)
+							relationships.remove(relationshipsToRemove.get(i));
 					}
 				}
 			}
 			// Remove sources that have no valid relationships any more
 			for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
 				String hid = (String) srciter.next();
-				irm.removeAll(hid);
-				IProgramElement ipe = model.getElement(hid);
+	//			System.err.println("  source handle: all relationships have gone for "+hid);
+				mapper.removeAll(hid);
+				IProgramElement ipe = hierarchy.getElement(hid);
 				if (ipe!=null) {
 					// If the relationship was hanging off a 'code' node, delete it.
 					if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
+						if (debug) System.err.println("  source handle: it was code node, removing that as well... code="+ipe+" parent="+ipe.getParent());
 						removeSingleNode(ipe);
 					} 
 				}
 			}
-			long etime2 = System.currentTimeMillis(); // etime2-stime = time to repair the relationship map
-			if (dumpDeltaProcessing) {
-				fw.write("===== Delta Processing timing ==========\n");
-				fw.write("Hierarchy="+(etime1-stime)+"ms   Relationshipmap="+(etime2-etime1)+"ms\n");
-				fw.write("===== Traversal ========================\n");
-				fw.write("Source handles processed="+srchandlecounter+"\n");
-				fw.write("Target handles processed="+tgthandlecounter+"\n");
-				fw.write("========================================\n");
-				fw.flush();fw.close();
-			}
-			reportModelInfo("After delta processing");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+			if (debug) dumprelsStderr("after processing 'affects'");
+	}
 
+		if (debug) System.err.println("<<removeRelationshipsTargettingThisFile");
+	}
+	
+	/**
+	 * Return true if the target element is in the type specified.
+	 */
+	private boolean sameType(String hid,IProgramElement target, IProgramElement type) {
+		IProgramElement containingType = target;
+		if (target==null) 
+			throw new RuntimeException("target can't be null!");
+		if (type==null) 
+			throw new RuntimeException("type can't be null!");
+		if (target.getKind().isSourceFile()) {
+			// @AJ aspect with broken relationship endpoint - we couldn't find the real 
+			// endpoint (the declare parents or ITD or similar) so defaulted to the
+			// first line of the source file...
+			
+			// FRAGILE
+			// Let's assume the worst, and that it is the same type if the source files
+			// are the same.  This will break for multiple top level types in a file...
+			if (target.getSourceLocation()==null) return false; // these four possibilities should really be FIXED so we don't have this situation
+			if (type.getSourceLocation()==null) return false;
+			if (target.getSourceLocation().getSourceFile()==null) return false;
+			if (type.getSourceLocation().getSourceFile()==null) return false;
+			return (target.getSourceLocation().getSourceFile().equals(type.getSourceLocation().getSourceFile()));
+		}
+		while (!containingType.getKind().isType()) {
+//			System.err.println("Checked: "+containingType.getKind()+" "+containingType);
+			containingType = containingType.getParent();
+		}
+		return (type.equals(containingType));
+	}
+
+	/**
+	 * Go through all the relationships in the model, if any endpoints no longer exist (the node it
+	 * points to has been deleted from the model) then delete the relationship.  
+	 */
+	private void repairRelationships(Writer fw) {
+		try {
+		IHierarchy model = AsmManager.getDefault().getHierarchy();
+		//TODO Speed this code up by making this assumption:
+		// the only piece of the handle that is interesting is the file name.  We are working at file granularity, if the
+		// file does not exist (i.e. its not in the filemap) then any handle inside that file cannot exist.
+		if (dumpDeltaProcessing) fw.write("Repairing relationships map:\n");
+	
+		// Now sort out the relationships map
+		IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
+		Set sourcesToRemove = new HashSet(); 
+		Set nonExistingHandles = new HashSet(); // Cache of handles that we *know* are invalid
+		int srchandlecounter = 0;
+		int tgthandlecounter = 0;
+		
+		// Iterate over the source handles in the relationships map
+		Set keyset = irm.getEntries(); // These are source handles
+		for (Iterator keyiter = keyset.iterator(); keyiter.hasNext();) {
+			String hid = (String) keyiter.next();
+			srchandlecounter++;
+			
+			// Do we already know this handle points to nowhere?
+			if (nonExistingHandles.contains(hid)) {
+				sourcesToRemove.add(hid);
+			} else {
+		  		// We better check if it actually exists
+		  		IProgramElement existingElement = model.getElement(hid);
+		  		if (dumpDeltaProcessing) fw.write("Looking for handle ["+hid+"] in model, found: "+existingElement+"\n");
+		  
+		 		// Did we find it?
+		  		if (existingElement == null) {
+					// No, so delete this relationship
+					sourcesToRemove.add(hid);
+					nonExistingHandles.add(hid); // Speed up a bit you swine
+		  		} else {
+		  			// Ok, so the source is valid, what about the targets?
+					List relationships = irm.get(hid);
+					List relationshipsToRemove = new ArrayList();
+					// Iterate through the relationships against this source handle
+					for (Iterator reliter = relationships.iterator();reliter.hasNext();) {
+						IRelationship rel = (IRelationship) reliter.next();
+						List targets = rel.getTargets();
+						List targetsToRemove = new ArrayList();
+				
+						// Iterate through the targets for this relationship
+						for (Iterator targetIter = targets.iterator();targetIter.hasNext();) {
+							String targethid = (String) targetIter.next();
+							tgthandlecounter++;
+							// Do we already know it doesn't exist?
+							if (nonExistingHandles.contains(targethid)) {
+								if (dumpDeltaProcessing) fw.write("Target handle ["+targethid+"] for srchid["+hid+"]rel["+rel.getName()+"] does not exist\n");
+								targetsToRemove.add(targethid);
+							} else {
+								// We better check
+								IProgramElement existingTarget = model.getElement(targethid);
+								if (existingTarget == null) {
+									if (dumpDeltaProcessing) fw.write("Target handle ["+targethid+"] for srchid["+hid+"]rel["+rel.getName()+"] does not exist\n");
+									targetsToRemove.add(targethid);
+									nonExistingHandles.add(targethid);
+								}
+							}
+						}
+						
+						// Do we have some targets that need removing?
+						if (targetsToRemove.size()!=0) {
+							// Are we removing *all* of the targets for this relationship (i.e. removing the relationship)
+							if (targetsToRemove.size()==targets.size()) {
+								if (dumpDeltaProcessing) fw.write("No targets remain for srchid["+hid+"] rel["+rel.getName()+"]: removing it\n");
+								relationshipsToRemove.add(rel);							
+							} else {
+								// Remove all the targets that are no longer valid
+					  			for (Iterator targsIter = targetsToRemove.iterator();targsIter.hasNext();) {
+						  			String togo = (String) targsIter.next();
+						  			targets.remove(togo);
+					  			}
+					  			// Should have already been caught above, but lets double check ...
+					  			if (targets.size()==0) {
+									if (dumpDeltaProcessing) fw.write("No targets remain for srchid["+hid+"] rel["+rel.getName()+"]: removing it\n");
+					  				relationshipsToRemove.add(rel); // TODO Should only remove this relationship for the srchid?
+					  			}
+							}
+						}
+					}
+					// Now, were any relationships emptied during that processing and so need removing for this source handle
+					if (relationshipsToRemove.size()>0) {
+						// Are we removing *all* of the relationships for this source handle?
+						if (relationshipsToRemove.size() == relationships.size()) { 
+							// We know they are all going to go, so just delete the source handle.
+							sourcesToRemove.add(hid);
+						} else {
+							// MEMORY LEAK - we don't remove the relationships !!
+							for (int i = 0 ;i<relationshipsToRemove.size();i++) {
+								IRelationship irel = (IRelationship)relationshipsToRemove.get(i);
+								verifyAssumption(irm.remove(hid,irel),"Failed to remove relationship "+irel.getName()+" for shid "+hid);
+							}
+							List rels = irm.get(hid);
+							if (rels==null || rels.size()==0) sourcesToRemove.add(hid);
+						}
+					}
+				}
+			}
+		}
+		// Remove sources that have no valid relationships any more
+		for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
+			String hid = (String) srciter.next();
+			irm.removeAll(hid);
+			IProgramElement ipe = model.getElement(hid);
+			if (ipe!=null) {
+				// If the relationship was hanging off a 'code' node, delete it.
+				if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
+					//System.err.println("Deleting code node");
+					removeSingleNode(ipe);
+				} 
+			}
+		}
+		} catch (IOException ioe) {
+			System.err.println("Failed to repair relationships:");
+			ioe.printStackTrace();
+		}
 	}
     
 	/**
