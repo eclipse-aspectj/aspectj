@@ -406,6 +406,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 		fileMap.clear();
 	}
 
+    // TODO rename this method ... it does more than just the handle map
 	public void updateHandleMap(Set deletedFiles) {
 		// Only delete the entries we need to from the handle map - for performance reasons
 		List forRemoval = new ArrayList();
@@ -418,6 +419,29 @@ public class AspectJElementHierarchy implements IHierarchy {
 			String handle = (String) iter.next();
 			handleMap.remove(handle);
 		}
+		forRemoval.clear();
+		k = typeMap.keySet();
+		for (Iterator iter = k.iterator(); iter.hasNext();) {
+			String element = (String) iter.next();
+			IProgramElement ipe = (IProgramElement)typeMap.get(element);
+			if (deletedFiles.contains(getFilename(ipe.getHandleIdentifier()))) forRemoval.add(element);
+		}
+		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
+			String handle = (String) iter.next();
+			typeMap.remove(handle);
+		}
+		forRemoval.clear();
+		k = fileMap.keySet();
+		for (Iterator iter = k.iterator(); iter.hasNext();) {
+			String element = (String) iter.next();
+			IProgramElement ipe = (IProgramElement)fileMap.get(element);
+			if (deletedFiles.contains(getFilename(ipe.getHandleIdentifier()))) forRemoval.add(element);
+		}
+		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
+			String handle = (String) iter.next();
+			fileMap.remove(handle);
+		}
+		
 	}
 	
     // XXX shouldn't be aware of the delimiter
