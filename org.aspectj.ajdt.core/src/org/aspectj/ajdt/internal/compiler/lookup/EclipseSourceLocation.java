@@ -136,4 +136,26 @@ public class EclipseSourceLocation implements ISourceLocation {
         if (getOffset()>=0) { sb.append("::").append(getOffset()); }
         return sb.toString();
     }
+    
+	private volatile int hashCode = -1;
+    public int hashCode() {
+    	  if (hashCode == -1) {
+            int result = 17;
+            // other parts important?
+            result = 37*result + getLine();
+            result = 37*result + getOffset();
+            result = 37*result + (filename==null?0:filename.hashCode());
+            hashCode = result;			
+		}
+        return hashCode;
+    }
+    
+    public boolean equals(Object other) {
+        if (! (other instanceof EclipseSourceLocation)) return super.equals(other);
+        EclipseSourceLocation o = (EclipseSourceLocation) other;
+        return 
+          getLine()==o.getLine() &&
+          getOffset()==o.getOffset() &&
+          ((filename==null)?(o.filename==null):o.filename.equals(filename));
+    }
 }
