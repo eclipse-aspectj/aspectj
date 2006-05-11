@@ -176,6 +176,15 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	public void afterCompiling(CompilationUnitDeclaration[] units) {
 		this.eWorld.cleanup();
 		try {
+			// not great ... but one more check before we continue, see pr132314
+			if (!reportedErrors && units!=null) {
+				for (int i = 0; i < units.length; i++) {
+					if (units[i]!=null && units[i].compilationResult!=null && units[i].compilationResult.hasErrors()) {
+						reportedErrors = true;
+						break;
+					}
+				}
+			}
 			if (isXTerminateAfterCompilation || (reportedErrors && !proceedOnError)) {
 				// no point weaving... just tell the requestor we're done
 				notifyRequestor();
