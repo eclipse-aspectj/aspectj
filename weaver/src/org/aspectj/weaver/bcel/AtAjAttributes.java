@@ -509,7 +509,7 @@ public class AtAjAttributes {
                 // could not parse it, ignore the aspect
                 return false;
             } else {
-                perClause.setLocation(struct.context, struct.context.getOffset(), struct.context.getOffset()+1);//FIXME AVASM
+                perClause.setLocation(struct.context, -1,-1);//struct.context.getOffset(), struct.context.getOffset()+1);//FIXME AVASM
                 // FIXME asc see related comment way about about the version...
                 struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
                 AjAttribute.Aspect aspectAttribute = new AjAttribute.Aspect(perClause);
@@ -680,7 +680,8 @@ public class AtAjAttributes {
                     // eg. '@Coloured *' will change from a WildTypePattern to an 'AnyWithAnnotationTypePattern' after this resolution
                     typePattern = typePattern.resolveBindings(binding, Bindings.NONE, false, false);
                     //TODO kick ISourceLocation sl = struct.bField.getSourceLocation();    ??
-                    dp.setLocation(struct.context,0,0); // not ideal...
+                    // dp.setLocation(dp.getDeclaringType().getSourceContext(), dp.getDeclaringType().getSourceLocation().getOffset(), dp.getDeclaringType().getSourceLocation().getOffset());
+                    dp.setLocation(struct.context,-1,-1); // not ideal...
                     struct.ajAttributes.add(new AjAttribute.DeclareAttribute(dp));
 
 
