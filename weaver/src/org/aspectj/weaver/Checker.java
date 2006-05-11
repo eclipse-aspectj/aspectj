@@ -101,6 +101,28 @@ public class Checker extends ShadowMunger {
     public boolean mustCheckExceptions() { return true; }
 
 
+	// XXX this perhaps ought to take account of the other fields in advice ...
+    public boolean equals(Object other) {
+        if (! (other instanceof Checker)) return false;
+        Checker o = (Checker) other;
+        return  
+          o.isError == isError &&
+        	 ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut)) &&
+          (World.compareLocations?((o.getSourceLocation()==null) ? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true) // pr134471 - remove when handles are improved to be independent of location
+        	;
+    }
+
+	private volatile int hashCode = -1;
+    public int hashCode() {
+    	if (hashCode == -1) {
+            int result = 17;
+            result = 37*result + (isError?1:0);
+            result = 37*result + ((pointcut == null) ? 0 : pointcut.hashCode());
+            hashCode = result;			
+		}
+        return hashCode;
+    }
+
 	public boolean isError() {
 		return isError;
 	}
