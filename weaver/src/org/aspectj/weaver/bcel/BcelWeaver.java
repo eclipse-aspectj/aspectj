@@ -45,6 +45,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.ISourceLocation;
@@ -124,6 +125,7 @@ public class BcelWeaver implements IWeaver {
 	private Manifest manifest = null;
     private boolean needToReweaveWorld = false;
 
+    private boolean isBatchWeave = true;
     private List shadowMungerList = null; // setup by prepareForWeave
 	private List typeMungerList = null; // setup by prepareForWeave
     private List lateTypeMungerList = null; // setup by prepareForWeave
@@ -429,6 +431,10 @@ public class BcelWeaver implements IWeaver {
 
 	// ---- weave preparation
 
+    public void setIsBatchWeave(boolean b) {
+    		isBatchWeave=b;
+    }
+    
     public void prepareForWeave() {
     	needToReweaveWorld = xcutSet.hasChangedSinceLastReset();
 
@@ -988,6 +994,14 @@ public class BcelWeaver implements IWeaver {
     	ContextToken weaveToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING, "");
     	Collection wovenClassNames = new ArrayList();
     	IWeaveRequestor requestor = input.getRequestor();
+
+    	   for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+            if (AsmManager.isCreatingModel() && !isBatchWeave) {
+		       // remove all relationships where this file being woven is the target of the relationship
+		       AsmManager.getDefault().removeRelationshipsTargettingThisType(classFile.getClassName());
+	        }
+    	   }
 
         // special case for AtAspectJMungerOnly - see #113587
         if (input.isApplyAtAspectJMungersOnly()) {
