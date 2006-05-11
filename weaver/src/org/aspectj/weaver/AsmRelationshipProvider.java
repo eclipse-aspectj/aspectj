@@ -90,7 +90,7 @@ public class AsmRelationshipProvider {
 
 	  if (!AsmManager.isCreatingModel()) return;
 		String sourceHandle = "";
-		if (munger.getSourceLocation()!=null) {
+		if (munger.getSourceLocation()!=null && munger.getSourceLocation().getOffset()!=-1) {
 			sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 										munger.getSourceLocation().getSourceFile(),
 										munger.getSourceLocation().getLine(),
