@@ -375,7 +375,9 @@ public abstract class Advice extends ShadowMunger {
         Advice o = (Advice) other;
         return o.kind.equals(kind) 
         	&& ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut))
-        	&& ((o.signature == null) ? (signature == null) : o.signature.equals(signature));
+        	&& ((o.signature == null) ? (signature == null) : o.signature.equals(signature))
+        	&& (World.compareLocations?((o.getSourceLocation()==null) ? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true) // pr134471 - remove when handles are improved to be independent of location
+        	;
 
     }
 

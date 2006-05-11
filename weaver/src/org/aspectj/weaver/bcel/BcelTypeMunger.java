@@ -1672,7 +1672,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         if (! (other instanceof BcelTypeMunger))  return false;
         BcelTypeMunger o = (BcelTypeMunger) other;
         return ((o.getMunger() == null) ? (getMunger() == null) : o.getMunger().equals(getMunger()))
-               && ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()));
+               && ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()))
+               && (World.compareLocations?((o.getSourceLocation()==null)? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true); // pr134471 - remove when handles are improved to be independent of location
+               
     }
 	   
     private volatile int hashCode = 0;
