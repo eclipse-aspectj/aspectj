@@ -203,7 +203,6 @@ public class CflowPointcut extends Pointcut {
 		List innerCflowEntries = new ArrayList(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 
-		Object field = getCflowfield(concreteEntry,concreteAspect);
 		
 		// Four routes of interest through this code (did I hear someone say refactor??)
 		// 1) no state in the cflow - we can use a counter *and* we have seen this pointcut
@@ -218,6 +217,8 @@ public class CflowPointcut extends Pointcut {
 		if (freeVars==null || freeVars.length == 0) { // No state, so don't use a stack, use a counter.
 		  ResolvedMember localCflowField = null;
 
+		  Object field = getCflowfield(concreteEntry,concreteAspect,"counter");
+		  
 		  // Check if we have already got a counter for this cflow pointcut
 		  if (field != null) {
 		   	localCflowField = (ResolvedMember)field; // Use the one we already have
@@ -235,7 +236,7 @@ public class CflowPointcut extends Pointcut {
 		  	concreteAspect.crosscuttingMembers.addConcreteShadowMunger(
 		    Advice.makeCflowEntry(world,concreteEntry,isBelow,localCflowField,freeVars==null?0:freeVars.length,innerCflowEntries,inAspect));
 	    
-			putCflowfield(concreteEntry,concreteAspect,localCflowField); // Remember it
+			putCflowfield(concreteEntry,concreteAspect,localCflowField,"counter"); // Remember it
 	      }
 		    
 		  Pointcut ret = new ConcreteCflowPointcut(localCflowField, null,true);
@@ -275,6 +276,7 @@ public class CflowPointcut extends Pointcut {
 				slots.add(slot);
 			}
 			ResolvedMember localCflowField = null;
+			Object field = getCflowfield(concreteEntry,concreteAspect,"stack");
 			if (field != null) {
 				localCflowField = (ResolvedMember)field;
 			} else {
@@ -293,7 +295,7 @@ public class CflowPointcut extends Pointcut {
 			
 			  concreteAspect.crosscuttingMembers.addTypeMunger(
 				world.makeCflowStackFieldAdder(localCflowField));
-			  putCflowfield(concreteEntry,concreteAspect,localCflowField);
+			  putCflowfield(concreteEntry,concreteAspect,localCflowField,"stack");
 		    }
 			Pointcut ret = new ConcreteCflowPointcut(localCflowField, slots,false);
 			ret.copyLocationFrom(this);
@@ -307,28 +309,27 @@ public class CflowPointcut extends Pointcut {
 		cflowBelowFields.clear();
 	}
 	
-	private String getKey(Pointcut p,ResolvedType a) {
+	private String getKey(Pointcut p,ResolvedType a,String stackOrCounter) {
 	  StringBuffer sb = new StringBuffer();
 	  sb.append(a.getName());
 	  sb.append("::");
 	  sb.append(p.toString());
+	  sb.append("::");
+	  sb.append(stackOrCounter);
 	  return sb.toString();
 	}
 	
-	private Object getCflowfield(Pointcut pcutkey, ResolvedType concreteAspect) {
-		String key = getKey(pcutkey,concreteAspect);
+	private Object getCflowfield(Pointcut pcutkey, ResolvedType concreteAspect,String stackOrCounter) {
+		String key = getKey(pcutkey,concreteAspect,stackOrCounter);
 		Object o =null;
-		if (isBelow) {
-			o = cflowBelowFields.get(key);
-		} else {
-			o = cflowFields.get(key);
-		}
+		if (isBelow) o = cflowBelowFields.get(key);
+		else         o = cflowFields.get(key);
 		//System.err.println("Retrieving for key "+key+" returning "+o);
 		return o;
 	}
 	
-	private void putCflowfield(Pointcut pcutkey,ResolvedType concreteAspect,Object o) {
-		String key = getKey(pcutkey,concreteAspect);
+	private void putCflowfield(Pointcut pcutkey,ResolvedType concreteAspect,Object o,String stackOrCounter) {
+		String key = getKey(pcutkey,concreteAspect,stackOrCounter);
 		//System.err.println("Storing cflow field for key"+key);
 		if (isBelow) {
 			cflowBelowFields.put(key,o);
