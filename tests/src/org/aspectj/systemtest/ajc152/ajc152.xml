@@ -24,6 +24,32 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr136026" title="verifyerror">
+      <compile files="CflowOrder.java" options="-1.5"/>
+      <run class="CflowOrder"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr136026" title="verifyerror - 2">
+      <compile files="CflowOrderOriginal.java" options="-1.5"/>
+      <run class="bugs.CflowOrderOriginal">
+        <stderr>
+          <line text="Starting CflowOrder.main(..)"/>
+          <line text="topAnnotated"/>
+          <!--line text=" Join point: call(void bugs.CflowOrderOriginal.A.foo())"/>
+          <line text=" Enclosing join point: execution(void bugs.CflowOrderOriginal.A.main(String[]))"/>
+          <line text=" Annotation: @bugs.CflowOrderOriginal$Annotation(value=A.foo)"/-->
+          <line text="nonTopAnnotated"/>
+          <!--line text=" Join point: call(void bugs.CflowOrderOriginal.B.foo())"/>
+          <line text=" Enclosing join point: execution(void bugs.CflowOrderOriginal.A.foo())"/>
+          <line text=" Annotation: @bugs.CflowOrderOriginal$Annotation(value=B.foo)"/-->
+          <line text="B.foo()"/>
+          <line text="A.foo()"/>
+          <line text="A.main(..)"/>
+          <line text="Ending CflowOrder.main(..)"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs152/pr136258" title="stack overflow">
       <compile files="StatisticsTypeImpl.java" options="-1.5"/>
       <run class="StatisticsTypeImpl"/>
