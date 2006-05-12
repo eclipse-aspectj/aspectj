@@ -1,0 +1,94 @@
+This document describes the set of tests we need to build to have complete coverage
+of incremental compilation for AspectJ. 
+
+Please add additional test descriptions if you uncover basic scenarios that are missing.
+
+ -- work-in-progress...
+ -- Adrian Colyer, 12-05-2006
+ 
+ Types referred to in test specifications:
+ ==========================================
+ 
+ For the test descriptions that follow I assume a set of types with the following
+ relationships:
+ 
+ "Aspect" is an aspect
+ "AbstractAspect" is the parent of "ConcreteAspect"
+ "AspectDelegate" is a type called from within the body of the aspect
+ 
+ "Class" is any class
+ "SuperClass" is the parent of ....
+ "SubClass"
+ 
+ "ClassDelegate" is a type called from within Class, SuperClass, SubClass
+ 
+ Test categories:
+ ================
+ 
+ * Simple changes to a class advised by an aspect
+ 
+ * Changes in parent type affecting weaving of sub-types (advice)
+ 
+ * Simple changes to a class that is the target of one or more ITDs
+ 
+ * Changes in parent type affecting ITD matching
+ 
+ * Simple changes in an aspect
+    - "Harmless" aspect changes (whitespace, add method / field etc.)
+    - Change advice body (before / after)
+    - Change advice body (around)
+ 
+ * Simple changes in AbstractAspect
+
+ * Simple changes in ConcreteAspect
+ 
+ * Cflow and cflow below
+ 
+ * Aspect instantiation - change to types such that they fall inside/outside of perclause matching
+ 
+ * Changes in AspectDelegate that should cause recompilation of Aspect
+ 
+ * Changes in ClassDelegate that should cause recompilation of Class
+ 
+ * Changes in ClassDelegate that should cause recompilation of SuperClass
+ 
+ * "Combos" - harder tests that exercise several features in combination
+ 
+ Simple Changes to Class
+ =======================
+ 
+ Class is advised by Aspect.
+ 
+ INC-01 Change method signature in Class so that method that was previously unadvised now is. Structure model should
+        update *all* markers for the Class with the new line numbers, and add new marker (both advised and advised-by)
+        Expect 1xcompile, 1xincremental weave
+        
+ INC-02 As above, but change signature so that previously advised member is no longer advised.
+ 
+ INC-03 Change a method that was advised, and remains advised after change - check line no's updated for relationships
+   
+ INC-04 Implement an additional interface in the Class, so that advice now matches
+ 
+ INC-05 Add interface to Class, causing declare parents to match where it did not previously
+ 
+ INC-06 As above but remove interface
+ 
+ INC-07 Whitespace change in class with declare warning markers
+ 
+ Simple Changes to Aspect
+ ========================
+ 
+ Class is advised by Aspect.
+ 
+ INC-11 Whitespace change in an aspect
+ 
+ INC-12 Add method to an aspect
+ 
+ INC-13 Change body of before advice
+ 
+ INC-14 Change pointcut expression
+ 
+ INC-15 Change body of around advice
+ 
+ 
+ 
