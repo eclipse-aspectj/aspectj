@@ -18,13 +18,13 @@
 	<ajc-test dir="bugs/lazyTjpXLintWarning"
 		title="no XLint warning: thisJoinPoint not lazy (no if PCD) but would have been stopped anyway by around advice">
 		<compile options="-Xlint:warning" files="Scenario3.aj">
-		  <message kind="warning" line="14" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at method-execution(void Test.main(java.lang.String[])) [Xlint:noGuardForLazyTjp]"/>
+			<message kind="warning" line="14" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
 		</compile>
 	</ajc-test>
 	
 	<ajc-test dir="bugs/lazyTjpXLintWarning" title="no XLint warning: thisJoinPoint cannot be built lazily">
 		<compile options="-Xlint:warning" files="Scenario4.aj">
-			<message kind="warning" line="9" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at method-execution(void Test.main(java.lang.String[]))"/>
+			<message kind="warning" line="9" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard"/>
 		</compile>
 	</ajc-test>
 	
@@ -52,23 +52,23 @@
 	<ajc-test dir="bugs/lazyTjpXLintWarning"
 		title="lazytjp: warning when if missing on before advice">
 		<compile options="-Xlint:warning" files="LazyTjpTest2.java">
-		  <message kind="warning" line="16" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at method-execution(void LazyTjpTest2.test2())"/>
+		  <message kind="warning" line="16" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard"/>
 		</compile>
 	</ajc-test>
 	
 	<ajc-test dir="bugs/lazyTjpXLintWarning"
 		title="lazytjp: warning when if missing on after advice">
 		<compile options="-Xlint:warning" files="LazyTjpTest3.java">
-		  <message kind="warning" line="17" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at method-execution(void LazyTjpTest3.test2())"/>
+		  <message kind="warning" line="17" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard"/>
 		</compile>
 	</ajc-test>
 	
 	<ajc-test dir="bugs/lazyTjpXLintWarning"
 		title="lazytjp: multiple clashing advice preventing lazytjp">
 		<compile options="-Xlint:warning" files="LazyTjpTest4.java">
-		  <message kind="warning" line="13" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at method-execution(void LazyTjpTest4.test1())"/>
+		  <message kind="warning" line="13" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard"/>
 		  <message kind="warning" line="3"  text="can not implement lazyTjp at joinpoint method-execution(void LazyTjpTest4.test1()) because of advice conflicts, see secondary locations to find conflicting advice"/>
-		  <message kind="warning" line="17" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at method-execution(void LazyTjpTest4.test1())"/>
+		  <message kind="warning" line="17" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard"/>
 		</compile>
 	</ajc-test>
 	
@@ -76,7 +76,7 @@
 		title="lazytjp: interfering before and around">
 		<compile options="-Xlint:warning" files="LazyTjpTest5.java">
 		  <message kind="warning" line="3" text="can not implement lazyTjp at joinpoint method-execution(void LazyTjpTest5.test1()) because of advice conflicts, see secondary locations to find conflicting advice"/>
-		  <message kind="warning" line="13" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at method-execution(void LazyTjpTest5.test1())"/>
+		  <message kind="warning" line="13" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard"/>
 		</compile>
 	</ajc-test>
     

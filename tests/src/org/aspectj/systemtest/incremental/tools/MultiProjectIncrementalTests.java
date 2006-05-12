@@ -885,6 +885,28 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		configureBuildStructureModel(false);
 	}
 	
+
+	public void testPr133117() {
+		configureNonStandardCompileOptions("-Xlint:warning");
+		initialiseProject("PR133117");
+		build("PR133117");
+		assertTrue("There should only be one xlint warning message reported:\n"
+				+MyTaskListManager.getWarningMessages(),
+				MyTaskListManager.getWarningMessages().size()==1);	
+		alter("PR133117","inc1");
+		build("PR133117");
+		List warnings = MyTaskListManager.getWarningMessages();
+		List noGuardWarnings = new ArrayList();
+		for (Iterator iter = warnings.iterator(); iter.hasNext();) {
+			IMessage element = (IMessage) iter.next();
+			if (element.getMessage().indexOf("Xlint:noGuardForLazyTjp") != -1) {
+				noGuardWarnings.add(element);
+			}
+		}
+		assertTrue("There should only be two Xlint:noGuardForLazyTjp warning message reported:\n"
+				+noGuardWarnings,noGuardWarnings.size() == 2);
+	}
+	
 	public void testPr131505() {
 		configureNonStandardCompileOptions("-outxml");
 		initialiseProject("PR131505");

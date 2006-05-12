@@ -23,7 +23,6 @@ import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
@@ -56,6 +55,7 @@ public class BcelAdvice extends Advice {
 	private ExposedState exposedState;
     
     private boolean hasMatchedAtLeastOnce = false;
+    private boolean hasReportedNoGuardForLazyTJP = false;
 
 	public BcelAdvice(
 		AjAttribute.AdviceAttribute attribute,
@@ -156,13 +156,14 @@ public class BcelAdvice extends Advice {
 				// collect up the problematic advice
 				((BcelShadow)shadow).addAdvicePreventingLazyTjp(this);
 			}
-			if (!isAround && !hasGuardTest && world.getLint().noGuardForLazyTjp.isEnabled()) {
+			if (!hasReportedNoGuardForLazyTJP && !isAround && !hasGuardTest && world.getLint().noGuardForLazyTjp.isEnabled()) {
 				// can't build tjp lazily, no suitable test...
+				// ... only want to record it once against the advice(bug 133117)
 				world.getLint().noGuardForLazyTjp.signal(
-					    new String[] {shadow.toString()},
-					    getSourceLocation(),
-					    new ISourceLocation[] { ((BcelShadow)shadow).getSourceLocation() }
-					);				
+						"",
+					    getSourceLocation()
+				);	
+				hasReportedNoGuardForLazyTJP = true;
 			}
         }
         

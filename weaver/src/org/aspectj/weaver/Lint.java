@@ -100,7 +100,7 @@ public class Lint {
 		new Kind("uncheckedAdviceConversion","unchecked conversion when advice applied at shadow {0}, expected {1} but advice uses {2}");
  
 	public final Kind noGuardForLazyTjp =
-		new Kind("noGuardForLazyTjp","can not build thisJoinPoint lazily for this advice since it has no suitable guard.  The advice applies at {0}");
+		new Kind("noGuardForLazyTjp","can not build thisJoinPoint lazily for this advice since it has no suitable guard");
 	
 	public final Kind noExplicitConstructorCall = 
 		new Kind("noExplicitConstructorCall","inter-type constructor does not contain explicit constructor call: field initializers in the target type will not be executed");
