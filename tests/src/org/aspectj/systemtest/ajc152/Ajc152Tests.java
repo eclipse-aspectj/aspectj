@@ -17,6 +17,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+  public void testAnnotationsAndGenericsBCException_pr129704() { runTest("annotations and generics leading to BCException");}
   public void testMethodTooBigAfterWeaving_pr138384() { runTest("method too big"); }
   public void testNotAtWithincode_pr138158_1() { runTest("not at withincode - 1");}
   public void testNotAtWithincode_pr138158_2() { runTest("not at withincode - 2");}

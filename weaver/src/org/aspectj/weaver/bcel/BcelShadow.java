@@ -1559,8 +1559,9 @@ public class BcelShadow extends Shadow {
     	ResolvedType[] annotations = null;
     	Member relevantMember = getSignature();
     	ResolvedType  relevantType   = relevantMember.getDeclaringType().resolve(world);
-    	
-    	if (getKind() == Shadow.StaticInitialization) {
+	if (relevantType.isRawType() || relevantType.isParameterizedType()) relevantType = relevantType.getGenericType();
+
+	if (getKind() == Shadow.StaticInitialization) {
     		annotations  = relevantType.resolve(world).getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
@@ -1596,7 +1597,7 @@ public class BcelShadow extends Shadow {
     		//ResolvedMember rm[] = relevantType.getDeclaredMethods();
     		Member foundMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		
-    		annotations = getAnnotations(foundMember, relevantMember,relevantType);
+    		annotations = getAnnotations(foundMember, relevantMember, relevantType);
     		relevantMember = foundMember;
             relevantMember = getRelevantMember(foundMember, relevantMember,relevantType);
             

@@ -15,6 +15,15 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr129704" title="annotations and generics leading to BCException">
+      <compile files="A.java" options="-1.5"/>
+      <run class="A">
+        <stderr>
+          <line text="@Marker()"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs152/pr136258" title="stack overflow">
       <compile files="StatisticsTypeImpl.java" options="-1.5"/>
       <run class="StatisticsTypeImpl"/>
