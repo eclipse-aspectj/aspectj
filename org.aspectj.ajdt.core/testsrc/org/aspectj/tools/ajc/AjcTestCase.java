@@ -625,7 +625,14 @@ public class AjcTestCase extends TestCase {
 	}
 
 	private String substituteSandbox(String classpath) {
-		return classpath.replace("$sandbox", ajc.getSandboxDirectory().getAbsolutePath());
+		// the longhand form of the non 1.3 API: classpath.replace("$sandbox", ajc.getSandboxDirectory().getAbsolutePath());
+		while (classpath.indexOf("$sandbox")!=-1) {
+			int pos = classpath.indexOf("$sandbox");
+			String firstbit = classpath.substring(0,pos);
+			String endbit = classpath.substring(pos+8);
+			classpath = firstbit+ ajc.getSandboxDirectory().getAbsolutePath()+endbit;
+		}
+		return classpath;
 	}
     
     /**
