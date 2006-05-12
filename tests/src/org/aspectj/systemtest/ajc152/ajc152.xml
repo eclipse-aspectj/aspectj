@@ -20,6 +20,13 @@
       <run class="StatisticsTypeImpl"/>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr138384" title="method too big">
+      <compile files="BigMethod.java" options="-1.5"> <!-- will be 67628 bytes in the big method -->
+        <message kind="error" line="1" text="problem generating method BigMethod.i_am_a_big_method : Code size too big: 67629"/>
+      </compile>
+      <!--run class="BigMethod"/-->
+    </ajc-test>
+    
     <ajc-test dir="bugs152/pr138798" title="atWithinCodeBug">
       <compile files="ErrorHandling.aj" options="-1.5"/>
       <run class="ErrorHandling">

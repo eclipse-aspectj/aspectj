@@ -75,7 +75,7 @@ import java.util.ArrayList;
  * A list is finally dumped to a byte code array with <a
  * href="#getByteCode()">getByteCode</a>.
  *
- * @version $Id: InstructionList.java,v 1.3 2006/02/14 13:32:07 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.4 2006/05/12 08:17:43 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Instruction
  * @see     InstructionHandle
@@ -986,8 +986,11 @@ public class InstructionList implements Serializable {
       System.err.println(e);
       return null;
     }
+    byte[] byteCode = b.toByteArray();
+    if (byteCode.length > Constants.MAX_CODE_SIZE) 
+    	  throw new ClassGenException("Code size too big: " + byteCode.length);
 
-    return b.toByteArray();
+    return byteCode;
   }
 
   /**
