@@ -1581,12 +1581,26 @@ public class BcelWeaver implements IWeaver {
 					return clazz;
 				}
 			} catch (RuntimeException re) {
-				String messageText = "trouble in: \n" + clazz.toLongString();
+				String classDebugInfo = null;
+				try {
+					classDebugInfo = clazz.toLongString();
+				} catch (Exception e) {
+					// recover from crash whilst producing debug string
+					classDebugInfo = clazz.getClassName();
+				}
+				String messageText = "trouble in: \n" + classDebugInfo;
 				getWorld().getMessageHandler().handleMessage(
 						new Message(messageText,IMessage.ABORT,re,null)
 						);
 			} catch (Error re) {
-				String messageText = "trouble in: \n" + clazz.toLongString();
+				String classDebugInfo = null;
+				try {
+					classDebugInfo = clazz.toLongString();
+				} catch (Exception e) {
+					// recover from crash whilst producing debug string
+					classDebugInfo = clazz.getClassName();
+				}
+				String messageText = "trouble in: \n" + classDebugInfo;
 				getWorld().getMessageHandler().handleMessage(
 						new Message(messageText,IMessage.ABORT,re,null)
 						);
