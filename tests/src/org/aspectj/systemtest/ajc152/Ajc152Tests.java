@@ -17,6 +17,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+  public void testVerifyErrorLTW_pr135068() { runTest("ltw verifyerror");}
+  public void testVerifyErrorLTW_pr135068_2() { runTest("ltw verifyerror - 2");}
+  public void testVerifyErrorLTW_pr135068_3() { runTest("ltw verifyerror - 3");}
+  public void testVerifyErrorLTW_pr135068_4() { runTest("ltw verifyerror - 4");}
   public void testVerifyErrorForComplexCflow_pr136026() { runTest("verifyerror");}
   public void testVerifyErrorForComplexCflow_pr136026_2() { runTest("verifyerror - 2");}
   public void testAnnotationsAndGenericsBCException_pr129704() { runTest("annotations and generics leading to BCException");}

@@ -272,4 +272,31 @@
 	    <message kind="error" line="16" text="Stystems cannot be resolved"/>
 	  </compile>
 	</ajc-test>
+	
+	<ajc-test dir="bugs152/pr135068" title="ltw verifyerror">
+	    <compile files="C.java,Ajava.java" options="-1.5 -XnoInline"/>
+	    <run class="C"/>
+    </ajc-test>
+    
+    	<ajc-test dir="bugs152/pr135068" title="ltw verifyerror - 2">
+	    <compile files="C2.java,Ajava2.java" options="-1.5 -XnoInline">
+	      <message kind="error" line="13" text="advice can not be declared static"/>
+	    </compile>
+    </ajc-test>
+    
+    	<ajc-test dir="bugs152/pr135068" title="ltw verifyerror - 3">
+	    <compile files="t/C.java" options="-1.5"/>
+        <compile files="t/Ajava.java" options="-1.5">
+          <message kind="warning" line="13" text="advice defined"/>
+        </compile>
+        <run class="t.C" ltw="aop.xml"/>
+    </ajc-test>
+    
+    	<ajc-test dir="bugs152/pr135068" title="ltw verifyerror - 4">
+	    <compile files="t/C2.java" options="-1.5"/>
+        <compile files="t/Ajava2.java" options="-1.5">
+	      <message kind="error" line="13" text="advice can not be declared static"/>
+        </compile>
+    </ajc-test>
+    
 </suite>

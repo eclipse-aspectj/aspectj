@@ -40,6 +40,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
@@ -435,6 +436,20 @@ public class AtAjAttributes {
             );
             ;// go ahead
         }
+        
+        // semantic check - advice must not be static
+        if (hasAtAspectJAnnotation && struct.method.isStatic()) {
+            msgHandler.handleMessage(MessageUtil.error("Advice cannot be declared static '" + methodToString(struct.method) + "'",type.getSourceLocation()));
+//                    new Message(
+//                            "Advice cannot be declared static '" + methodToString(struct.method) + "'",
+//                            IMessage.ERROR,
+//                            null,
+//                            type.getSourceLocation()
+//                    )
+//            );
+            ;// go ahead
+        }
+        
         // semantic check for non around advice must return void
         if (hasAtAspectJAnnotationMustReturnVoid && !Type.VOID.equals(struct.method.getReturnType())) {
             msgHandler.handleMessage(

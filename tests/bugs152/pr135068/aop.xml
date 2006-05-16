@@ -1,0 +1,9 @@
+<aspectj>
+  <aspects>
+    <aspect name="t.Ajava"/>
+  </aspects>
+
+  <weaver>
+    <include within="t..*"/>
+  </weaver>
+</aspectj>

@@ -282,6 +282,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	 * 3) Advice must not have any other @AspectJ annotations
 	 * 4) After throwing advice must declare the thrown formal
 	 * 5) After returning advice must declare the returning formal
+	 * 6) Advice must not be static
 	 */
 	private void validateAdvice(MethodDeclaration methodDeclaration) {
 		
@@ -294,6 +295,11 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		if (!Modifier.isPublic(methodDeclaration.modifiers)) {
 			methodDeclaration.scope.problemReporter()
 				.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"advice must be public");
+		}
+
+		if (Modifier.isStatic(methodDeclaration.modifiers)) {
+			methodDeclaration.scope.problemReporter()
+				.signalError(methodDeclaration.sourceStart,methodDeclaration.sourceEnd,"advice can not be declared static");
 		}
 				
 		if (ajAnnotations.hasMultipleAdviceAnnotations) {
