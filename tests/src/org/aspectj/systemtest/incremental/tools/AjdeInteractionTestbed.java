@@ -27,6 +27,7 @@ import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.BuildOptionsAdapter;
 import org.aspectj.ajde.BuildProgressMonitor;
 import org.aspectj.ajde.ErrorHandler;
+import org.aspectj.ajde.OutputLocationManager;
 import org.aspectj.ajde.ProjectPropertiesAdapter;
 import org.aspectj.ajde.TaskListManager;
 import org.aspectj.ajdt.internal.core.builder.AbstractStateListener;
@@ -480,6 +481,10 @@ public class AjdeInteractionTestbed extends TestCase {
 			log("MyProjectProperties.getOutputPath() [returning "+dir+"]");
 			return dir;
 		}
+		
+	    public OutputLocationManager getOutputLocationManager() {
+	    	return null;
+	    }
 
 		public String getBootClasspath() {
 			log("MyProjectProperties.getBootClasspath()");

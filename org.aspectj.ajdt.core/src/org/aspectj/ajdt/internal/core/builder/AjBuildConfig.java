@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.util.FileUtil;
 
 /**
@@ -43,6 +44,7 @@ public class AjBuildConfig {
 	private File outputDir;
 	private File outputJar;
 	private String outxmlName;
+	private CompilationResultDestinationManager compilationResultDestinationManager = null;
 	private List/*File*/ sourceRoots = new ArrayList();
 	private List/*File*/ files = new ArrayList();
 	private List /*File*/ binaryFiles = new ArrayList();  // .class files in indirs...
@@ -131,7 +133,15 @@ public class AjBuildConfig {
 	public File getOutputDir() {  
 		return outputDir;
 	}
+	
+	public CompilationResultDestinationManager getCompilationResultDestinationManager() {
+		return this.compilationResultDestinationManager;
+	}
 
+	public void setCompilationResultDestinationManager(CompilationResultDestinationManager mgr) {
+		this.compilationResultDestinationManager = mgr;
+	}
+	
 	public void setFiles(List files) {
 		this.files = files;
 	}

@@ -113,6 +113,10 @@ public class BrowserProperties implements ProjectPropertiesAdapter {
     public void setOutputPath(String path) {
         preferencesAdapter.setProjectPreference("build.outputpath", path);
     }
+    
+    public OutputLocationManager getOutputLocationManager() {
+    	return null;
+    }
 
     public String getUserClasspath() {
         return preferencesAdapter.getProjectPreference("build.classpath");

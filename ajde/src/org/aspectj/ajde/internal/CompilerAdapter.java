@@ -576,6 +576,12 @@ public class CompilerAdapter {
                 config.setOutputJar(new File( outJar ) );  
             }
         }
+        
+        // set compilation result destination manager if not set
+        if (config.getCompilationResultDestinationManager() == null &&
+        	properties.getOutputLocationManager() != null) {
+        	config.setCompilationResultDestinationManager(new OutputLocationAdapter(properties.getOutputLocationManager()));
+        }
 
         join(config.getSourceRoots(), properties.getSourceRoots());
         join(config.getInJars(), properties.getInJars());

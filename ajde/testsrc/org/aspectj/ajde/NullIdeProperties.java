@@ -83,6 +83,10 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
     	this.outputPath = outputPath;
     }
 
+    public OutputLocationManager getOutputLocationManager() {
+    	return null;
+    }
+
     public String getAjcWorkingDir() {
     	return testProjectPath + "/ajworkingdir";	
     }

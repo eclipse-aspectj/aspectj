@@ -44,6 +44,12 @@ public interface ProjectPropertiesAdapter {
     public String getClasspath();
 
     public String getOutputPath();
+    
+    /** 
+     * A non-null OutputLocationManager takes precedence over getOutputPath...
+     * @return
+     */
+    public OutputLocationManager getOutputLocationManager();
 
 //    public String getAjcWorkingDir();
 

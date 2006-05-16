@@ -23,7 +23,6 @@ import org.aspectj.ajde.ui.*;
 import org.aspectj.ajde.ui.internal.*;
 import org.aspectj.ajde.ui.swing.*;
 import org.aspectj.asm.*;
-import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.*;
 import org.aspectj.util.FileUtil;
 
@@ -376,6 +375,10 @@ class ProjectProperties implements ProjectPropertiesAdapter {
     public void setOutJar(String input){ outJar = input; }
     public String getOutJar() { return outJar; }
     public String getOutputPath() { return outputDir; }
+    
+    public OutputLocationManager getOutputLocationManager() {
+    	return null;
+    }
 
     // not known if used - log any calls to it
     public List getBuildConfigFiles() { return logs("buildConfigFiles"); }
