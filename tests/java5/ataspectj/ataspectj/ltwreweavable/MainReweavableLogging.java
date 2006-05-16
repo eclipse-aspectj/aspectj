@@ -37,7 +37,7 @@ public class MainReweavableLogging implements Advisable {
     }
 
     public static void main (String[] args) {
-        String ERROR_STRING = "error aspect 'ataspectj.ltwreweavable.AspectReweavableLogging' woven into 'ataspectj.ltwreweavable.MainReweavableLogging' must be declared in an aop.xml file.";
+        String ERROR_STRING = "error aspect 'ataspectj.ltwreweavable.AspectReweavableLogging' woven into 'ataspectj.ltwreweavable.MainReweavableLogging' must be defined to the weaver (placed on the aspectpath, or defined in an aop.xml file if using LTW).";
         if(Boolean.getBoolean("aspectDeclared")){
             //if the aspect is declared there should not be an error
             if (MessageHolder.startsAs( Arrays.asList(  new String[]{ ERROR_STRING }  )) ) {
