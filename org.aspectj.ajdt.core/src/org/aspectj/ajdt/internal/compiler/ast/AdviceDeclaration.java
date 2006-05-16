@@ -243,7 +243,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			codeStream.checkcast(returnType);
 		}
 		AstUtil.generateReturn(returnType, codeStream);
-		
+		codeStream.recordPositionsFrom(0,1);
 		classFile.completeCodeAttribute(codeAttributeOffset);
 		attributeNumber++;
 		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);

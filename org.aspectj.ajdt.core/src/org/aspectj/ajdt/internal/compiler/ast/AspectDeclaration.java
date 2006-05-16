@@ -430,10 +430,10 @@ public class AspectDeclaration extends TypeDeclaration {
 		MethodDeclaration md = AstUtil.makeMethodDeclaration(methodBinding);
 		md.scope = initializerScope;
 		codeStream.reset(md,classFile);
-		
 		// body starts here
 		gen.generate(codeStream);
 		// body ends here
+		if (codeStream.pcToSourceMapSize==0) codeStream.recordPositionsFrom(0,1);
 		classFile.completeCodeAttribute(codeAttributeOffset);
 		attributeNumber++;
 		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
