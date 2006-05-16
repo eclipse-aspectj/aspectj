@@ -63,9 +63,12 @@ public class CrosscuttingMembers {
 	private List declareAnnotationsOnField   = new ArrayList();
 	private List declareAnnotationsOnMethods = new ArrayList(); // includes ctors
 	
-	public CrosscuttingMembers(ResolvedType inAspect) {
+	private boolean shouldConcretizeIfNeeded = true;
+	
+	public CrosscuttingMembers(ResolvedType inAspect, boolean shouldConcretizeIfNeeded) {
 		this.inAspect = inAspect;
 		this.world = inAspect.getWorld();
+		this.shouldConcretizeIfNeeded = shouldConcretizeIfNeeded;
 	}
 	
 //	public void addConcreteShadowMungers(Collection c) {
@@ -214,9 +217,11 @@ public class CrosscuttingMembers {
 	public boolean replaceWith(CrosscuttingMembers other,boolean careAboutShadowMungers) {
 		boolean changed = false;
 		
-		if (perClause == null || !perClause.equals(other.perClause)) {
-			changed = true;
-			perClause = other.perClause;
+		if (careAboutShadowMungers) {
+			if (perClause == null || !perClause.equals(other.perClause)) {
+				changed = true;
+				perClause = other.perClause;
+			}
 		}
 		
 		//XXX all of the below should be set equality rather than list equality
@@ -357,12 +362,12 @@ public class CrosscuttingMembers {
 		return changed;
 	}
 
-	public PerClause getPerClause() {
-		return perClause;
-	}
-
 	public void setPerClause(PerClause perClause) {
-		this.perClause = perClause.concretize(inAspect);
+		if (this.shouldConcretizeIfNeeded) {
+			this.perClause = perClause.concretize(inAspect);
+		} else {
+			this.perClause = perClause;
+		}
 	}
 
 	public List getDeclareDominates() {

@@ -196,7 +196,7 @@ public class PointcutResidueTestCase extends WeaveTestCase {
             	0, -1, -1, null, null);
 
 		ResolvedType inAspect = world.resolve("Aspect");
-		CrosscuttingMembers xcut = new CrosscuttingMembers(inAspect);
+		CrosscuttingMembers xcut = new CrosscuttingMembers(inAspect,true);
 		inAspect.crosscuttingMembers = xcut;
 		
         ShadowMunger cp = pp.concretize(inAspect, world, null);

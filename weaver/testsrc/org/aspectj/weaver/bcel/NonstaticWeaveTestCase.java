@@ -45,7 +45,7 @@ public class NonstaticWeaveTestCase extends WeaveTestCase {
 		per.resolve(new TestScope(new String[0], new String[0], world));
 		
 		ResolvedType onAspect = world.resolve("Aspect");
-		CrosscuttingMembers xcut = new CrosscuttingMembers(onAspect);
+		CrosscuttingMembers xcut = new CrosscuttingMembers(onAspect,true);
 		onAspect.crosscuttingMembers = xcut;
 		
 		per = per.concretize(onAspect);
@@ -64,7 +64,7 @@ public class NonstaticWeaveTestCase extends WeaveTestCase {
 		per.resolve(new TestScope(new String[0], new String[0], world));
 		
 		ResolvedType onAspect = world.resolve("Aspect");
-		CrosscuttingMembers xcut = new CrosscuttingMembers(onAspect);
+		CrosscuttingMembers xcut = new CrosscuttingMembers(onAspect,true);
 		onAspect.crosscuttingMembers = xcut;
 		per = per.concretize(onAspect);
 

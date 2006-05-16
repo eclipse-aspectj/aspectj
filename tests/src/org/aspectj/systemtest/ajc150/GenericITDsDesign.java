@@ -81,7 +81,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 					      System.getProperty("java.class.path"));
 		recentWorld = new BcelWorld(cp.toString());
 		ReferenceType resolvedType = (ReferenceType)recentWorld.resolve(classname);
-		CrosscuttingMembers cmembers = resolvedType.collectCrosscuttingMembers();
+		CrosscuttingMembers cmembers = resolvedType.collectCrosscuttingMembers(true);
 		List tmungers = cmembers.getTypeMungers();
 		return tmungers;
 	}

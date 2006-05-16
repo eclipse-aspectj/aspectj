@@ -61,22 +61,22 @@ public class CrosscuttingMembersSet {
 	 * @return whether or not that was a change to the global signature
 	 * 			XXX for efficiency we will need a richer representation than this
 	 */
-	public boolean addOrReplaceAspect(ResolvedType aspectType,boolean careAboutShadowMungers) {
+	public boolean addOrReplaceAspect(ResolvedType aspectType, boolean inWeavingPhase) {
 		boolean change = false;
 		CrosscuttingMembers xcut = (CrosscuttingMembers)members.get(aspectType);
 		if (xcut == null) {
-			members.put(aspectType, aspectType.collectCrosscuttingMembers());
+			members.put(aspectType, aspectType.collectCrosscuttingMembers(inWeavingPhase));
 			clearCaches();
 			CflowPointcut.clearCaches(aspectType);
 			change = true;
 		} else {
-			if (xcut.replaceWith(aspectType.collectCrosscuttingMembers(),careAboutShadowMungers)) {
+			if (xcut.replaceWith(aspectType.collectCrosscuttingMembers(inWeavingPhase),inWeavingPhase)) {
 				clearCaches();
 
 				CflowPointcut.clearCaches(aspectType);
 				change = true;
 			} else {
-				if (!World.compareLocations && careAboutShadowMungers) {
+				if (!World.compareLocations && inWeavingPhase) {
 					// bug 134541 - even though we haven't changed we may have updated the 
 					// sourcelocation for the shadowMunger which we need to pick up
 					shadowMungers = null;
@@ -86,14 +86,14 @@ public class CrosscuttingMembersSet {
 		}
 		if (aspectType.isAbstract()) {
 			// we might have sub-aspects that need to re-collect their crosscutting members from us
-			boolean ancestorChange = addOrReplaceDescendantsOf(aspectType,careAboutShadowMungers); 
+			boolean ancestorChange = addOrReplaceDescendantsOf(aspectType,inWeavingPhase); 
 			change = change || ancestorChange;
 		}
 		changedSinceLastReset = changedSinceLastReset || change;
 		return change;
 	}
     
-	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType,boolean careAboutShadowMungers) {
+	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType, boolean inWeavePhase) {
 		//System.err.println("Looking at descendants of "+aspectType.getName());
 		Set knownAspects = members.keySet();
 		Set toBeReplaced = new HashSet();
@@ -106,7 +106,7 @@ public class CrosscuttingMembersSet {
 		boolean change = false;
 		for (Iterator it = toBeReplaced.iterator(); it.hasNext(); ) {
 			ResolvedType next = (ResolvedType)it.next();
-			boolean thisChange = addOrReplaceAspect(next,careAboutShadowMungers);
+			boolean thisChange = addOrReplaceAspect(next,inWeavePhase);
 			change = change || thisChange;
 		}
 		return change;

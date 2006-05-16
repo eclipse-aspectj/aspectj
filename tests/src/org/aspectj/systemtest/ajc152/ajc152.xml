@@ -202,8 +202,18 @@
     </ajc-test>
     
     <ajc-test dir="bugs152/pr138219" pr="138219" title="Can't use a FQ Reference pointcut in any pointcut expression referenced by a per-clause">
-      <compile files="PerThisWithReference.aj,SomeOtherType.aj" options="-1.5">
+      <compile files="PerThisWithReference.aj,SomeOtherType.aj,RegularPCWithReference.aj" options="-1.5">
       </compile>
+      <run class="PerThisWithReference">
+        <stdout>
+         <line text="before PerThisWithReference:1"/>
+         <line text="before PerThisWithReference:2"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr130722" pr="130722" title="FQ Reference pointcut from perclause ref pc">
+      <compile files="test/Test.java,test/PointcutConsumer.aj,test1/PointcutProvider.aj"/>
     </ajc-test>
     
     <ajc-test dir="bugs152/pr138220" pr="138220" title="@Aspect with reference pointcut in perclause">

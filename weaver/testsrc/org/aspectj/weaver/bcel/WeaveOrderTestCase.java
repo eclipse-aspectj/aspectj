@@ -80,7 +80,7 @@ public class WeaveOrderTestCase extends WeaveTestCase {
 			new PatternParser("declare precedence: java.lang.String, java.lang.Throwable").parseDeclare();
 		//??? concretize dom
 		ResolvedType aType =  world.resolve("Aspect");
-		CrosscuttingMembers xcut = new CrosscuttingMembers(aType);
+		CrosscuttingMembers xcut = new CrosscuttingMembers(aType,true);
 		aType.crosscuttingMembers = xcut;
 		xcut.addDeclare(dom);
 		world.getCrosscuttingMembersSet().addFixedCrosscuttingMembers(aType);
@@ -108,7 +108,7 @@ public class WeaveOrderTestCase extends WeaveTestCase {
 			new PatternParser("declare precedence: *, java.lang.String, java.lang.Throwable").parseDeclare();
 		//??? concretize dom
 		ResolvedType aType =  world.resolve("Aspect");
-		CrosscuttingMembers xcut = new CrosscuttingMembers(aType);
+		CrosscuttingMembers xcut = new CrosscuttingMembers(aType,true);
 		aType.crosscuttingMembers = xcut;
 		xcut.addDeclare(dom);
 		world.getCrosscuttingMembersSet().addFixedCrosscuttingMembers(aType);

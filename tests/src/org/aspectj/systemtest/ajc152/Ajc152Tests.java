@@ -44,7 +44,8 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   // known failures, uncomment when working.
   public void testReferencePCutInDeclareWarning_pr138215() { runTest("Reference pointcut fails inside @DeclareWarning");}
-//  public void testReferencePCutInPerClause_pr138219() { runTest("Can't use a FQ Reference pointcut in any pointcut expression referenced by a per-clause");}
+  public void testReferencePCutInPerClause_pr138219() { runTest("Can't use a FQ Reference pointcut in any pointcut expression referenced by a per-clause");}
+  public void testReferencePCutInPerClause_pr130722() { runTest("FQ Reference pointcut from perclause ref pc"); }
 //  public void testDoubleAnnotationMatching_pr138223() { runTest("Double at annotation matching (no binding)");}
   public void testSuperCallsInAtAspectJAdvice_pr139749() { runTest("Super calls in @AspectJ advice");}
 

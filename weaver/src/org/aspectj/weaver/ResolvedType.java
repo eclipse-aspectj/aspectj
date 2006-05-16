@@ -498,8 +498,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	//??? collecting data-structure, shouldn't really be a field
     public CrosscuttingMembers crosscuttingMembers;
 
-	public CrosscuttingMembers collectCrosscuttingMembers() {
-		crosscuttingMembers = new CrosscuttingMembers(this);
+	public CrosscuttingMembers collectCrosscuttingMembers(boolean shouldConcretizeIfNeeded) {
+		crosscuttingMembers = new CrosscuttingMembers(this,shouldConcretizeIfNeeded);
 		crosscuttingMembers.setPerClause(getPerClause());
 		crosscuttingMembers.addShadowMungers(collectShadowMungers());
 		crosscuttingMembers.addTypeMungers(getTypeMungers());
