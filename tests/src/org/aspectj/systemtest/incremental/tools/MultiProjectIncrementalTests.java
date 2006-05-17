@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
@@ -617,6 +618,30 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		alter("PR115251","inc1");
 		build("PR115251");
 		checkWasFullBuild();  // back to the source
+	}
+	
+
+	/**
+	 * Checks we aren't leaking mungers across compiles (accumulating multiple instances of the same one that
+	 * all do the same thing).  On the first compile the munger is added late on - so at the time we set
+	 * the count it is still zero.  On the subsequent compiles we know about this extra one.
+	 */
+	public void testPr141956_IncrementallyCompilingAtAj() {
+		initialiseProject("PR141956");
+		build("PR141956");
+		assertTrue("Should be zero but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==0);
+		alter("PR141956","inc1");
+		build("PR141956");
+		assertTrue("Should be only one but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==1);
+		alter("PR141956","inc1");
+		build("PR141956");
+		assertTrue("Should be only one but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==1);
+		alter("PR141956","inc1");
+		build("PR141956");
+		assertTrue("Should be only one but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==1);
+		alter("PR141956","inc1");
+		build("PR141956");
+		assertTrue("Should be only one but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==1);
 	}
 	
 

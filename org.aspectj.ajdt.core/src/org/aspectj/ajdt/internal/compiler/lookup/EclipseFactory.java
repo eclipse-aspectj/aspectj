@@ -76,6 +76,7 @@ import org.aspectj.weaver.UnresolvedType.TypeKind;
  */
 public class EclipseFactory {
 	public static boolean DEBUG = false;
+	public static int debug_mungerCount = -1;
 	
 	private AjBuildManager buildManager;
 	private LookupEnvironment lookupEnvironment;
@@ -410,8 +411,10 @@ public class EclipseFactory {
 		
 		// XXX by Andy: why do we mix up the mungers here? it means later we know about two sets
 		// and the late ones are a subset of the complete set? (see pr114436)
-        baseTypeMungers.addAll(getWorld().getCrosscuttingMembersSet().getLateTypeMungers());
-
+		// XXX by Andy removed this line finally, see pr141956
+        //   baseTypeMungers.addAll(getWorld().getCrosscuttingMembersSet().getLateTypeMungers());
+		debug_mungerCount=baseTypeMungers.size();
+		
 		for (Iterator i = baseTypeMungers.iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger munger = (ConcreteTypeMunger) i.next();
 			EclipseTypeMunger etm = makeEclipseTypeMunger(munger);
