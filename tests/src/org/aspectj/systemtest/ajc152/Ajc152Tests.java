@@ -16,7 +16,11 @@ import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-	
+
+//	public void testMisbehavingDeclareAnnotation_pr135865() { runTest("misbehaving declare annotation");}
+  public void testCompletelyBrokenAopConcretization_pr142165_1() { runTest("broken concretization");}
+  public void testCompletelyBrokenAopConcretization_pr142165_2() { runTest("broken concretization - 2");}
+  public void testCompletelyBrokenAopConcretization_pr142165_3() { runTest("broken concretization - 3");}
   public void testVerifyErrorLTW_pr135068() { runTest("ltw verifyerror");}
   public void testVerifyErrorLTW_pr135068_2() { runTest("ltw verifyerror - 2");}
   public void testVerifyErrorLTW_pr135068_3() { runTest("ltw verifyerror - 3");}

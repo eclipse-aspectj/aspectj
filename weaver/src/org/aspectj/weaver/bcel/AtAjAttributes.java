@@ -1720,7 +1720,9 @@ public class AtAjAttributes {
      */
     private static Pointcut parsePointcut(String pointcutString, AjAttributeStruct struct, boolean allowIf) {
         try {
-            Pointcut pointcut = new PatternParser(pointcutString, struct.context).parsePointcut();
+        	PatternParser parser = new PatternParser(pointcutString, struct.context);
+            Pointcut pointcut = parser.parsePointcut();
+            parser.checkEof();
             if (!allowIf && pointcutString.indexOf("if()") >= 0 && hasIf(pointcut)) {
                 reportError("if() pointcut is not allowed at this pointcut location '" + pointcutString +"'", struct);
                 return null;
@@ -1728,10 +1730,12 @@ public class AtAjAttributes {
             pointcut.setLocation(struct.context, -1, -1);//FIXME -1,-1 is not good enough
             return pointcut;
         } catch (ParserException e) {
-            reportError("Invalid pointcut '" + pointcutString + "': " + e.toString(), struct);
+            reportError("Invalid pointcut '" + pointcutString + "': " + e.toString() +
+            		(e.getLocation()==null?"":" at position "+e.getLocation().getStart()), struct);
             return null;
         }
     }
+    
 
     private static boolean hasIf(Pointcut pointcut) {
         IfFinder visitor = new IfFinder();

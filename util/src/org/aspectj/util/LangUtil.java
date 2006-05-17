@@ -710,7 +710,7 @@ public class LangUtil {
         while (-1 != (loc = in.indexOf(sought, start))) {
             result.append(in.substring(start, loc));
             if (!LangUtil.isEmpty(replace)) {
-                result.append(in.substring(start, loc));
+                result.append(replace);
             }
             start = loc + len;
         }

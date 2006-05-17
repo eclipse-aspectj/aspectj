@@ -1424,6 +1424,12 @@ public class PatternParser {
 		return next.getString() == token;
 	}
 
+	public void checkEof() {
+		IToken last = tokenSource.next();
+		if (last != IToken.EOF) {
+			throw new ParserException("unexpected pointcut element", last);
+		}
+	}
 	
 	public PatternParser(String data) {
 		this(BasicTokenSource.makeTokenSource(data,null));
