@@ -22,7 +22,6 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotatedElement;
-import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -194,12 +193,23 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			UnresolvedType annotationType = btp.getAnnotationType();
 			Var var = shadow.getKindedAnnotationVar(annotationType);
 			
-			// This should not happen, we shouldn't have gotten this far 
-			// if we weren't going to find the annotation
-			if (var == null) throw new BCException("Impossible! annotation=["+annotationType+
-					                               "]  shadow=["+shadow+" at "+shadow.getSourceLocation()+
-												   "]    pointcut is at ["+getSourceLocation()+"]");//return Literal.FALSE;
-
+			// At this point, var *could* be null.  The only reason this could happen (if we aren't failing...)
+			// is if another binding annotation designator elsewhere in the pointcut is going to expose the annotation
+			// eg.  (execution(* a*(..)) && @annotation(foo)) || (execution(* b*(..)) && @this(foo))
+			// where sometimes @annotation will be providing the value, and sometimes
+			// @this will be providing the value (see pr138223)
+			
+			// If we are here for other indecipherable reasons (it's not the case above...) then
+			// you might want to uncomment this next bit of code to collect the diagnostics
+//			if (var == null) throw new BCException("Impossible! annotation=["+annotationType+
+//					                               "]  shadow=["+shadow+" at "+shadow.getSourceLocation()+
+//												 "]    pointcut is at ["+getSourceLocation()+"]");
+			if (var==null) {
+				if (matchInternal(shadow).alwaysTrue()) 
+					return Literal.TRUE;
+				else 
+					return Literal.FALSE;
+			}
 			state.set(btp.getFormalIndex(),var);
 		}
 		if (matchInternal(shadow).alwaysTrue()) 

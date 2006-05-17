@@ -250,6 +250,15 @@
     <ajc-test dir="bugs152/pr138223" pr="138223" title="Double at annotation matching (no binding)">
       <compile files="DoubleAnnotationMatching.aj" options="-1.5">
       </compile>
+      <run class="DoubleAnnotationMatching">
+        <stderr>
+          <line text="advice running at execution(void Foo.a())"/>
+          <line text="advice running at execution(void TxTrueFoo.a())"/>
+          <line text="advice running at execution(void TxTrueFoo.b())"/>
+          <line text="advice running at execution(void TxTrueFoo.c())"/>
+          <line text="advice running at execution(void TxFalseFoo.a())"/>
+        </stderr>
+      </run>
     </ajc-test>
 
     <ajc-test dir="bugs152/pr138286" pr="138286" title="No ClassCastException with perThis">
