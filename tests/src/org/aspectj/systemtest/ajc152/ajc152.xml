@@ -16,7 +16,7 @@
     </ajc-test>
     
     <ajc-test dir="bugs152/pr135865" title="misbehaving declare annotation">
-      <compile files="B.java,A.java" options="-1.5">
+      <compile files="B.java,A.java" options="-1.5 -Xlint:ignore">
       	<!--message kind="weave" text="Join point 'method-call(void B.foo())' in Type 'A' (A.java:32) advised by before advice from 'Aspect' (A.java:22) [with runtime test]"/>
       	<message kind="weave" text="Join point 'method-call(void A.foo())' in Type 'A' (A.java:33) advised by before advice from 'Aspect' (A.java:22) [with runtime test]"/>
       	<message kind="weave" text="' void B.goo()' (A.java:7) is annotated with @Ann method annotation from 'Aspect' (A.java:27)"/-->
@@ -24,7 +24,19 @@
       <run class="A">
         <stdout>
           <line text="Join point: call(void B.foo())"/>
-          <line text="Join point: call(void B.goo())"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr135865" title="misbehaving declare annotation - 2">
+      <compile files="A.java,B.java" options="-1.5 -Xlint:ignore">
+      	<!--message kind="weave" text="Join point 'method-call(void B.foo())' in Type 'A' (A.java:32) advised by before advice from 'Aspect' (A.java:22) [with runtime test]"/>
+      	<message kind="weave" text="Join point 'method-call(void A.foo())' in Type 'A' (A.java:33) advised by before advice from 'Aspect' (A.java:22) [with runtime test]"/>
+      	<message kind="weave" text="' void B.goo()' (A.java:7) is annotated with @Ann method annotation from 'Aspect' (A.java:27)"/-->
+      </compile>
+      <run class="A">
+        <stdout>
+          <line text="Join point: call(void B.foo())"/>
         </stdout>
       </run>
     </ajc-test>

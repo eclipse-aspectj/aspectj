@@ -5,17 +5,7 @@ import java.lang.annotation.*;
 
 aspect Aspect {
 
-  // Call to an annotated method
-  pointcut annotated(Ann b) : call(@Ann * *(..)) && @annotation(b);
-
-  // Top level call to an annotated method
-  pointcut annotatedTop(Ann b) : annotated(b) && !cflowbelow(annotated(Ann));
-
-  // Non top level call
-  pointcut annotatedNotTop(Ann b, Ann bTopo) : 
-    annotated(b) && cflowbelow(annotatedTop(bTopo));
-
-  before(Ann b, Ann bTopo) : annotatedNotTop(b, bTopo) {
+  before() : call(@Ann * *(..)) { 
     System.out.println("\tJoin point: " + thisJoinPointStaticPart);
   }
 
@@ -24,7 +14,7 @@ aspect Aspect {
 }
 
 public class A {
-  @Ann void foo() { new B().foo(); new B().goo();}
+  void foo() { new B().foo(); }
   public static void main(String[] args) { new A().foo(); }
 }
 
