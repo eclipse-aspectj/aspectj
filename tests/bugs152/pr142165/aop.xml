@@ -1,0 +1,11 @@
+<aspectj>
+ <weaver options="-Xnoinline"/>
+    <aspects>
+      <concrete-aspect name="AA"
+                       extends="A">
+                         
+   <pointcut name="p" expression="within(SomeType) AND execution(* foo(..))" />                         
+                         
+ </concrete-aspect>
+    </aspects>
+</aspectj>

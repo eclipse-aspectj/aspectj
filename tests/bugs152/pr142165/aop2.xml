@@ -1,0 +1,11 @@
+<aspectj>
+ <weaver options="-Xnoinline"/>
+    <aspects>
+      <concrete-aspect name="AA"
+                       extends="A">
+                         
+   <pointcut name="p" expression="(within(*) AND (call(java.lang.String*.new(..)) || call(java.lang.Object.new(..))) )"/>
+                         
+ </concrete-aspect>
+    </aspects>
+</aspectj>
