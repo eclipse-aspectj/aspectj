@@ -92,7 +92,7 @@ public class AjcTestCase extends TestCase {
 	public final static PrintStream out = System.out;
 	private final static DelegatingOutputStream delegatingErr;
 	private final static DelegatingOutputStream delegatingOut;
-	public final static boolean DEFAULT_VERBOSE = false;//getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose",false); 
+	public final static boolean DEFAULT_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose",true); 
 	public final static boolean DEFAULT_ERR_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose.err",DEFAULT_VERBOSE); 
 	public final static boolean DEFAULT_OUT_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose.out",DEFAULT_VERBOSE); 
 
