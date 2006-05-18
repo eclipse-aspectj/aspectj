@@ -246,6 +246,29 @@
       <compile files="AtAspectWithPerClause.aj" options="-1.5">
       </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs152/pr125480" title="aop.xml aspect inheriting abstract method ">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml">
+          <stdout>
+            <line text="advice running"/>
+            <line text="Hello World!"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr125480/case2" title="aop.xml aspect inheriting abstract method - code style">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml">
+          <stdout>
+            <line text="advice running"/>
+            <line text="Hello World!"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
 
     <ajc-test dir="bugs152/pr138223" pr="138223" title="Double at annotation matching (no binding)">
       <compile files="DoubleAnnotationMatching.aj" options="-1.5">

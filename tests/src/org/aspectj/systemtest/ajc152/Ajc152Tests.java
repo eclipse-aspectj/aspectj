@@ -17,6 +17,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  public void testLTWGeneratedAspectAbstractMethod_pr125480() { runTest("aop.xml aspect inheriting abstract method ");} 
+  public void testLTWGeneratedAspectAbstractMethod_pr125480_2() { runTest("aop.xml aspect inheriting abstract method - code style");} 
   //public void testSuperITDExplosion_pr134425() { runTest("super ITDs");}
   //public void testMisbehavingDeclareAnnotation_pr135865() { runTest("misbehaving declare annotation");}
   //public void testMisbehavingDeclareAnnotation_pr135865_2() { runTest("misbehaving declare annotation - 2");}
