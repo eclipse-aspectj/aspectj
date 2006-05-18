@@ -404,4 +404,13 @@
       <run class="Derived"/>
     </ajc-test>
     
+    <!-- wont work whilst the compiler BuildArgParser.setDebugOptions is always switching debug on -->
+    <ajc-test dir="bugs152/pr129408" title="long winded ataj messages">
+      <compile files="AtAj.java" options="-XterminateAfterCompilation -g:none -1.5"/>
+      <compile files="C.java" options="-g:none -1.5"/>
+      <run class="C" ltw="aop.xml">
+         <!-- should check for expected stderr output here -->
+      </run>
+    </ajc-test>
+    
 </suite>
