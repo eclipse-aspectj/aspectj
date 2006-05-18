@@ -318,12 +318,6 @@
         </run>
     </ajc-test>
     
-    <ajc-test dir="bugs151/pr125480" title="aop.xml aspect inherits abstract method that has concrete implementation in parent">
-        <compile files="HelloWorld.java"/>
-        <compile files="AbstractMethods.aj, ConcreteMethods.aj"/>
-        <run class="HelloWorld" ltw="aop-tracing.xml"/>
-    </ajc-test>
-    
     <ajc-test dir="bugs151/pr125699" title="inherit advice with this() and thisJoinPoint">
         <compile files="Tracing.aj, TestTracing.aj, AtTestTracing.java" options="-1.5">
           <message kind="warning" line="13" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>

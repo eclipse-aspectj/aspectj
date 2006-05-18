@@ -378,11 +378,7 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testEmptyPointcutInAtAspectJWithLTW_pr125475 () {
 	  runTest("define empty pointcut using aop.xml"); 
   }
-  
-  public void testLTWGeneratedAspectWithAbstractMethod_pr125480 () {
-	  runTest("aop.xml aspect inherits abstract method that has concrete implementation in parent"); 
-  }
-  
+
   public void testGenericAspectsWithAnnotationTypeParameters() {
 	  runTest("Generic aspects with annotation type parameters");
   }
