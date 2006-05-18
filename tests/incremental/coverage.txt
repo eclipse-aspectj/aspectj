@@ -22,42 +22,10 @@ Please add additional test descriptions if you uncover basic scenarios that are 
  
  "ClassDelegate" is a type called from within Class, SuperClass, SubClass
  
- Test categories:
- ================
- 
- * Simple changes to a class advised by an aspect
- 
- * Changes in parent type affecting weaving of sub-types (advice)
- 
- * Simple changes to a class that is the target of one or more ITDs
- 
- * Changes in parent type affecting ITD matching
- 
- * Simple changes in an aspect
-    - "Harmless" aspect changes (whitespace, add method / field etc.)
-    - Change advice body (before / after)
-    - Change advice body (around)
- 
- * Simple changes in AbstractAspect
-
- * Simple changes in ConcreteAspect
- 
- * Cflow and cflow below
- 
- * Aspect instantiation - change to types such that they fall inside/outside of perclause matching
- 
- * Changes in AspectDelegate that should cause recompilation of Aspect
- 
- * Changes in ClassDelegate that should cause recompilation of Class
- 
- * Changes in ClassDelegate that should cause recompilation of SuperClass
- 
- * "Combos" - harder tests that exercise several features in combination
- 
  Simple Changes to Class
  =======================
  
- Class is advised by Aspect.
+ Class is advised by Aspect (both advice + ITD member(s)).
  
  INC-01 Change method signature in Class so that method that was previously unadvised now is. Structure model should
         update *all* markers for the Class with the new line numbers, and add new marker (both advised and advised-by)
@@ -74,6 +42,10 @@ Please add additional test descriptions if you uncover basic scenarios that are 
  INC-06 As above but remove interface
  
  INC-07 Whitespace change in class with declare warning markers
+
+ INC-08 Add interface X to Class, so that a declare parents now matches, adding additional interface Y.
+        Another aspect in the system advises all calls to "foo" on instances of Y. Class has a foo method - 
+        all types that call Class.foo should be rewoven. 
  
  Simple Changes to Aspect
  ========================
@@ -89,6 +61,51 @@ Please add additional test descriptions if you uncover basic scenarios that are 
  INC-14 Change pointcut expression
  
  INC-15 Change body of around advice
+ 
+ INC-16 Add new advice to aspect
+ 
+ INC-17 Add new declare parents statement to aspect
+ 
+ INC-18 Change declare parents statement
+ 
+ Hierarchical Class Changes
+ ==========================
+ 
+ INC-20 Add interface to SuperClass such that operations in SubClass now become eligible for advising
+ 
+ INC-21 Add method to SuperClass such that (now overridding) method in SubClass becomes eligible for advising
+ 
+ INC-22 Add method to SuperClass with same signature as one ITD'd on an interface implemented by SubClass
+ 
+ Hierarchical Aspect Changes
+ ===========================
+ 
+ INC-30 Change advice body in abstract aspect
+
+ INC-31 Change comment in abstract aspect
+ 
+ Delegate tests
+ ===============
+ 
+ INC-40 Change signature of operation in ClassDelegate, Class should be recompiled and re-woven
+  
+ INC-41 Change signature of operation in AspectDelegate, aspect should be recompiled and world re-woven  
+  
+ Cflow tests
+ ============
+ 
+ INC-50 A simple cflow is started by a join point in class Start and used in join point matching in Class. 
+        Compile Class, Start, and Aspect. Change Start to remove the join point that starts the cflow.
+
+ INC-51 As above, but make a white-space change in Aspect
+ 
+ INC-52 As INC-50, but change Class
+ 
+ INC-53 As 50, but cflow binds a context variable
+ 
+ INC-54 As above, but make a white-space change in Aspect
+ 
+ INC-55 As INC-53, but change Class
  
  
  
