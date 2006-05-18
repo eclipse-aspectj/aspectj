@@ -1,0 +1,10 @@
+<aspectj>
+	<aspects>
+        <concrete-aspect name="TraceHelloWorld" extends="ConcreteMethods">
+        	<pointcut name="tracingScope" expression="within(HelloWorld) AND call(* println(..))"/>
+        </concrete-aspect>
+	</aspects>
+    
+    <weaver options=""/>
+</aspectj>
+
