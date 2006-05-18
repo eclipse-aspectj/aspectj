@@ -17,6 +17,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  //public void testSuperITDExplosion_pr134425() { runTest("super ITDs");}
   //public void testMisbehavingDeclareAnnotation_pr135865() { runTest("misbehaving declare annotation");}
   //public void testMisbehavingDeclareAnnotation_pr135865_2() { runTest("misbehaving declare annotation - 2");}
   public void testCompletelyBrokenAopConcretization_pr142165_1() { runTest("broken concretization");}

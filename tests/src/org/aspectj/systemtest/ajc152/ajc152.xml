@@ -376,4 +376,9 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr134425" title="super ITDs">
+      <compile files="Derived.aj" options="-1.5"/>
+      <run class="Derived"/>
+    </ajc-test>
+    
 </suite>
