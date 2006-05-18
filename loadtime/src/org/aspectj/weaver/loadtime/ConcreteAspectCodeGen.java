@@ -170,7 +170,9 @@ public class ConcreteAspectCodeGen {
                 		n = n.substring(0,n.indexOf("$"));
                 		elligibleAbstractions.add(n);
                 	} else {
-                		elligibleAbstractions.add(method.getName());
+                		// Only interested in abstract methods that take no parameters and are marked @Pointcut
+                		if (hasPointcutAnnotation(method))
+                			elligibleAbstractions.add(method.getName());
                 	}
                 } else {
                     reportError("Abstract method '" + method.getName() + "' cannot be concretized as a pointcut (illegal signature, must have no arguments, must return void): " + stringify());
@@ -208,6 +210,17 @@ public class ConcreteAspectCodeGen {
         sb.append(m_concreteAspect.extend);
         sb.append("'/> in aop.xml");
         return sb.toString();
+    }
+    
+    private boolean hasPointcutAnnotation(ResolvedMember member) {
+    	  AnnotationX[] as = member.getAnnotations();
+    	  if (as==null || as.length==0) return false;
+    	  for (int i = 0; i < as.length; i++) {
+			if (as[i].getTypeSignature().equals("Lorg/aspectj/lang/annotation/Pointcut;")) {
+				return true;
+			}
+		}
+    	  return false;
     }
 
     /**
