@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.aspectj.asm.IRelationship;
+import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.ICrossReferenceHandler;
@@ -183,7 +184,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             registerDump(weaver, loader, definitions);
         } catch (Exception e) {
             enabled = false;// will allow very fast skip in shouldWeave()
-            warn("register definition failed",e);
+            warn("register definition failed",(e instanceof AbortException)?null:e);
         }
     }
 
