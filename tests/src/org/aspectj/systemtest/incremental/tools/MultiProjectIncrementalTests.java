@@ -187,6 +187,33 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 	}
 	
 	
+	/**
+	 * Build a project containing a resource - then mark the resource readOnly(), then
+	 * do an inc-compile, it will report an error about write access to the resource
+	 * in the output folder being denied
+	 */
+	/*public void testProblemCopyingResources_pr138171() {
+		initialiseProject("PR138171");
+		
+		File f=getProjectRelativePath("PR138171","res.txt");
+		Map m = new HashMap();
+		m.put("res.txt",f);
+		AjdeInteractionTestbed.MyProjectPropertiesAdapter.getInstance().setSourcePathResources(m);
+		build("PR138171");
+		File f2 = getProjectOutputRelativePath("PR138171","res.txt");
+		boolean successful = f2.setReadOnly();
+		
+		alter("PR138171","inc1");
+		AjdeInteractionTestbed.MyProjectPropertiesAdapter.getInstance().setSourcePathResources(m);
+		build("PR138171");
+		List msgs = MyTaskListManager.getErrorMessages();
+		assertTrue("there should be one message but there are "+(msgs==null?0:msgs.size())+":\n"+msgs,msgs!=null && msgs.size()==1);
+		IMessage msg = (IMessage)msgs.get(0);
+		String exp = "unable to copy resource to output folder: 'res.txt'";
+		assertTrue("Expected message to include this text ["+exp+"] but it does not: "+msg,msg.toString().indexOf(exp)!=-1);
+	}*/
+	
+	
 	// Make simple changes to a project, adding a class
 	public void testSimpleChanges() {
 		initialiseProject("P1");
@@ -1561,6 +1588,15 @@ public class MultiProjectIncrementalTests extends AjdeInteractionTestbed {
 		System.out.println("End of AJDE structure model"); //$NON-NLS-1$
 		System.out.println("======================================");//$NON-NLS-1$
 	}
-	
+
+	private File getProjectRelativePath(String p,String filename) {
+		File projDir = new File(getWorkingDir(),p);
+		return new File(projDir,filename);
+	}
+
+	private File getProjectOutputRelativePath(String p,String filename) {
+		File projDir = new File(getWorkingDir(),p);
+		return new File(projDir,"bin"+File.separator+filename);
+	}
 	
 }

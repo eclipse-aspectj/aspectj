@@ -372,17 +372,19 @@ public class AjdeInteractionTestbed extends TestCase {
 		static MyProjectPropertiesAdapter _instance = new MyProjectPropertiesAdapter();
 		private MyProjectPropertiesAdapter() {}
 		
-		public static ProjectPropertiesAdapter getInstance() { 
+		public static MyProjectPropertiesAdapter getInstance() { 
 			return _instance;
 		}
 		
 		public static void reset() {
 			_instance.aspectPath=null;
+			_instance.sourcePathResources=null;
 		}
 		
 		private String projectName = null;
 		private String classPath = "";
 		private Set aspectPath = null;
+		private Map sourcePathResources = null;
 		
 		public static void setActiveProject(String n) {
 			_instance.projectName = n;
@@ -399,6 +401,10 @@ public class AjdeInteractionTestbed extends TestCase {
 			} else {
 				l.add(projectItDependsOn);
 			}
+		}
+		
+		public void setSourcePathResources(Map m) {
+			this.sourcePathResources = m;
 		}
 
 		public void setClasspath(String path) {
@@ -518,7 +524,7 @@ public class AjdeInteractionTestbed extends TestCase {
 
 		public Map getSourcePathResources() {
 			log("MyProjectProperties.getSourcePathResources()");
-			return null;
+			return sourcePathResources;
 		}
 
 		public String getOutJar() {
