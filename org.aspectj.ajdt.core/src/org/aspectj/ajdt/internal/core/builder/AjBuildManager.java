@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -505,10 +506,18 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			if (buildConfig.getCompilationResultDestinationManager() != null) {
 				destDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForResource(srcLocation.getAbsolutePath());
 			}
-			OutputStream fos = 
-				FileUtil.makeOutputStream(new File(destDir,filename));
-			fos.write(content);
-			fos.close();
+			try {
+				OutputStream fos = 
+					FileUtil.makeOutputStream(new File(destDir,filename));
+				fos.write(content);
+				fos.close();
+			} catch (FileNotFoundException fnfe) {
+				IMessage msg = new Message("unable to copy resource to output folder: '" + filename + "' - reason: "+fnfe.getMessage(),
+										   IMessage.ERROR,
+										   null,
+										   new SourceLocation(srcLocation,0));
+				handler.handleMessage(msg);
+			}
 		}
 		state.recordResource(filename);
 	}
