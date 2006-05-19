@@ -504,7 +504,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		} else {
 			File destDir = buildConfig.getOutputDir();
 			if (buildConfig.getCompilationResultDestinationManager() != null) {
-				destDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForResource(srcLocation.getAbsolutePath());
+				destDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForResource(srcLocation);
 			}
 			try {
 				OutputStream fos = 
@@ -955,7 +955,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				File destinationPath = buildConfig.getOutputDir();
 				if (buildConfig.getCompilationResultDestinationManager() != null) {
 					destinationPath = 
-						buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(new String(unitResult.fileName));
+						buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(new File(new String(unitResult.fileName)));
 				}
 				String outFile;
 				if (destinationPath == null) {

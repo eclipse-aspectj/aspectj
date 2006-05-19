@@ -19,6 +19,7 @@ import org.aspectj.systemtest.design.DesignTests;
 import org.aspectj.systemtest.incremental.IncrementalTests;
 import org.aspectj.systemtest.incremental.model.IncrementalModelTests;
 import org.aspectj.systemtest.incremental.tools.MultiProjectIncrementalTests;
+import org.aspectj.systemtest.incremental.tools.OutputLocationManagerTests;
 import org.aspectj.systemtest.inpath.InPathTests;
 import org.aspectj.systemtest.options.OptionsTests;
 import org.aspectj.systemtest.pre10x.AjcPre10xTests;
@@ -43,6 +44,7 @@ public class AllTests {
 		suite.addTest(DesignTests.suite());
 		suite.addTest(IncrementalTests.suite());
 		suite.addTestSuite(MultiProjectIncrementalTests.class);
+		suite.addTestSuite(OutputLocationManagerTests.class);
 		suite.addTest(IncrementalModelTests.suite());
 		//suite.addTest(KnownLimitationsTests.class);
 		suite.addTest(OptionsTests.suite());

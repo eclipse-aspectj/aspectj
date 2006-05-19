@@ -24,12 +24,12 @@ public class OutputLocationAdapter implements CompilationResultDestinationManage
 		this.locationManager = mgr;
 	}
 	
-	public File getOutputLocationForClass(String compilationUnitName) {
-		return this.locationManager.getOutputLocationForClass(compilationUnitName);
+	public File getOutputLocationForClass(File compilationUnit) {
+		return this.locationManager.getOutputLocationForClass(compilationUnit);
 	}
 
-	public File getOutputLocationForResource(String resourceName) {
-		return this.locationManager.getOutputLocationForResource(resourceName);
+	public File getOutputLocationForResource(File resource) {
+		return this.locationManager.getOutputLocationForResource(resource);
 	}
 
 }

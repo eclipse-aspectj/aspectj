@@ -74,6 +74,14 @@ public class AjdeInteractionTestbed extends TestCase {
 	public static void configureAspectPath(Set aspectpath) {
 		MyProjectPropertiesAdapter.setAspectpath(aspectpath);
 	} 
+	
+	public static void configureOutputLocationManager(OutputLocationManager mgr) {
+		MyProjectPropertiesAdapter.setOutputLocationManager(mgr);
+	}
+	
+	public static void configureResourceMap(Map resourcesMap) {
+		MyProjectPropertiesAdapter.setSourcePathResources(resourcesMap);
+	}
 	// End of methods for configuring the build
 	
 	
@@ -385,6 +393,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		private String classPath = "";
 		private Set aspectPath = null;
 		private Map sourcePathResources = null;
+		private OutputLocationManager outputLocationManager = null;
 		
 		public static void setActiveProject(String n) {
 			_instance.projectName = n;
@@ -403,8 +412,8 @@ public class AjdeInteractionTestbed extends TestCase {
 			}
 		}
 		
-		public void setSourcePathResources(Map m) {
-			this.sourcePathResources = m;
+		public static void setSourcePathResources(Map m) {
+			_instance.sourcePathResources = m;
 		}
 
 		public void setClasspath(String path) {
@@ -488,8 +497,12 @@ public class AjdeInteractionTestbed extends TestCase {
 			return dir;
 		}
 		
+		public static void setOutputLocationManager(OutputLocationManager mgr) {
+			_instance.outputLocationManager = mgr;
+		}
+		
 	    public OutputLocationManager getOutputLocationManager() {
-	    	return null;
+	    	return this.outputLocationManager;
 	    }
 
 		public String getBootClasspath() {

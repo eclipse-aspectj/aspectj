@@ -578,9 +578,10 @@ public class CompilerAdapter {
         }
         
         // set compilation result destination manager if not set
+        OutputLocationManager outputLocationManager = properties.getOutputLocationManager();
         if (config.getCompilationResultDestinationManager() == null &&
-        	properties.getOutputLocationManager() != null) {
-        	config.setCompilationResultDestinationManager(new OutputLocationAdapter(properties.getOutputLocationManager()));
+        	outputLocationManager != null) {
+        	config.setCompilationResultDestinationManager(new OutputLocationAdapter(outputLocationManager));
         }
 
         join(config.getSourceRoots(), properties.getSourceRoots());
