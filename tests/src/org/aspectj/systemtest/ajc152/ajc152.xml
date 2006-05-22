@@ -14,6 +14,24 @@
          </stderr>
       </run>
     </ajc-test>
+
+    <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type">
+     <compile files="TopLevelType.java" options="-1.5"/>
+     <run class="TopLevelType"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type - 2">
+     <compile files="TopLevelType2.java" options="-1.5">
+       <message kind="error" line="12"/> <!-- error message is currently crap - its a parser message -->
+     </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type - 3">
+     <compile files="TopLevelType3.java" options="-1.5">
+       <message kind="error" line="12" text="Cannot make inter-type declarations on parameterized types"/>
+       <message kind="error" line="7" text="The method someMethod() is undefined for the type TopLevelType3.NestedType"/>
+     </compile>
+    </ajc-test>
     
     <ajc-test dir="bugs152/pr135865" title="misbehaving declare annotation">
       <compile files="B.java,A.java" options="-1.5 -Xlint:ignore">
@@ -402,6 +420,10 @@
     <ajc-test dir="bugs152/pr134425" title="super ITDs">
       <compile files="Derived.aj" options="-1.5"/>
       <run class="Derived"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr128443" title="covariance and decp - 1">
+      <compile files="Covariance.java" options="-1.5"/>
     </ajc-test>
     
     <!-- wont work whilst the compiler BuildArgParser.setDebugOptions is always switching debug on -->

@@ -27,11 +27,13 @@ import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -177,6 +179,9 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 	protected void resolveOnType(ClassScope classScope) {
 		checkSpec();
+		
+		if (onType==null) return; // error reported elsewhere.
+		
 		// If they did supply a parameterized single type reference, we need to do
 		// some extra checks...
 		if (onType instanceof ParameterizedSingleTypeReference) {
@@ -186,6 +191,15 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 			if (!onTypeBinding.isValidBinding()) {
 				classScope.problemReporter().invalidType(onType, onTypeBinding);
 				ignoreFurtherInvestigation = true;
+			}
+			if (onTypeBinding.isParameterizedType()) {
+				// might be OK... pr132349
+				ParameterizedTypeBinding ptb = (ParameterizedTypeBinding)onTypeBinding;
+				if (ptb.isNestedType()) {
+					if (ptb.typeVariables()==null || ptb.typeVariables().length==0) {
+						if (ptb.enclosingType().isRawType()) onTypeBinding = ptb.type;
+					}
+				}
 			}
 		}
 	}
@@ -350,9 +364,26 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
 			ot = new SingleTypeReference(pref.token,pos);
 		}
-
+		
 		// resolve it
 		ReferenceBinding rb = (ReferenceBinding)ot.getTypeBindingPublic(scope.parent);
+		
+		if (ot instanceof ParameterizedQualifiedTypeReference) { // pr132349
+			ParameterizedQualifiedTypeReference pref = (ParameterizedQualifiedTypeReference) ot;
+			if (pref.typeArguments!=null && pref.typeArguments.length!=0) {
+				scope.problemReporter().signalError(sourceStart,sourceEnd,
+				  "Cannot make inter-type declarations on parameterized types");
+				// to prevent disgusting cascading errors after this problem - lets null out what leads to them (pr105038)
+				this.arguments=null;
+				this.returnType=new SingleTypeReference(TypeReference.VOID,0L);
+				
+				this.ignoreFurtherInvestigation=true;
+				ReferenceBinding closestMatch = null;
+				rb = new ProblemReferenceBinding(ot.getParameterizedTypeName(),closestMatch,0);		
+				onType=null;
+			}
+		}
+		
 
 		if (rb instanceof TypeVariableBinding) {
 			scope.problemReporter().signalError(sourceStart,sourceEnd,

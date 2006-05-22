@@ -17,6 +17,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  public void testItdOnInnerTypeOfGenericType_pr132349() { runTest("ITD on inner type of generic type");}
+  public void testItdOnInnerTypeOfGenericType_pr132349_2() { runTest("ITD on inner type of generic type - 2");}
+  public void testItdOnInnerTypeOfGenericType_pr132349_3() { runTest("ITD on inner type of generic type - 3");}
+//  public void testCovarianceAndDecp_pr128443_1() { runTest("covariance and decp - 1"); }
   public void testLTWGeneratedAspectAbstractMethod_pr125480() { runTest("aop.xml aspect inheriting abstract method ");} 
   public void testLTWGeneratedAspectAbstractMethod_pr125480_2() { runTest("aop.xml aspect inheriting abstract method - code style");} 
   //public void testSuperITDExplosion_pr134425() { runTest("super ITDs");}
