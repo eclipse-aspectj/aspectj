@@ -74,10 +74,6 @@
     <!-- atDecp end -->
 
 
-    <ajc-test dir="bugs151/pr132349" title="ITD on inner type of generic type">
-     <compile files="TopLevelType.java" options="-1.5"/>
-    </ajc-test>
-
     <ajc-test dir="bugs151/pr126560" title="@AJ deow doesn't throw an invalidAbsoluteTypeName when specify type in the same package">
         <compile files="pkg1/C.java, pkg1/A.java" options="-1.5">
           <message kind="error" line="8" text="error"/>

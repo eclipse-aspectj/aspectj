@@ -24,7 +24,6 @@ import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-  // public void testItdOnInnerTypeOfGenericType_pr132349() { runTest("ITD on inner type of generic type");}
 
   // Some @DeclareParents testing
   public void testAtDecp_1() { runTest("atDecp - simple");}
