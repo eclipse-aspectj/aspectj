@@ -17,6 +17,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  public void testComplexGenericDecl_pr137568() { runTest("complicated generics declaration");}
   public void testItdOnInnerTypeOfGenericType_pr132349() { runTest("ITD on inner type of generic type");}
   public void testItdOnInnerTypeOfGenericType_pr132349_2() { runTest("ITD on inner type of generic type - 2");}
   public void testItdOnInnerTypeOfGenericType_pr132349_3() { runTest("ITD on inner type of generic type - 3");}
@@ -40,7 +41,6 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testNotAtWithincode_pr138158_1() { runTest("not at withincode - 1");}
   public void testNotAtWithincode_pr138158_2() { runTest("not at withincode - 2");}
   public void testNotAtWithincode_pr138158_3() { runTest("not at within - 3");}
-//  public void testComplexGenericDecl_pr137568() { runTest("complicated generics declaration");}
   public void testNpeOnDup_pr138143() { runTest("npe on duplicate method with ataj");}
   public void testPointcutsAndGenerics_pr137496_1() { runTest("pointcuts and generics - B");}
   public void testPointcutsAndGenerics_pr137496_2() { runTest("pointcuts and generics - D");}
@@ -53,14 +53,11 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testIncorrectOverridesEvaluation13() { runTest("incorrect overrides evaluation - 1.3"); }
   public void testIncorrectOverridesEvaluation15() { runTest("incorrect overrides evaluation - 1.5"); }
   public void testAtWithinCodeBug_pr138798() { runTest("atWithinCodeBug"); }
-
-  // known failures, uncomment when working.
   public void testReferencePCutInDeclareWarning_pr138215() { runTest("Reference pointcut fails inside @DeclareWarning");}
   public void testReferencePCutInPerClause_pr138219() { runTest("Can't use a FQ Reference pointcut in any pointcut expression referenced by a per-clause");}
   public void testReferencePCutInPerClause_pr130722() { runTest("FQ Reference pointcut from perclause ref pc"); }
   public void testDoubleAnnotationMatching_pr138223() { runTest("Double at annotation matching (no binding)");}
   public void testSuperCallsInAtAspectJAdvice_pr139749() { runTest("Super calls in @AspectJ advice");}
-
   public void testNoClassCastExceptionWithPerThis_pr138286() { runTest("No ClassCastException with perThis");}
   
 // this next one reported as a bug by Rob Harrop, but I can't reproduce the failure yet...

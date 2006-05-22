@@ -19,11 +19,18 @@
 //}
 
 interface IGuard<P> {}
+
 interface Guard<P> extends IGuard<P> {}
+
+class GuardImpl<X> implements Guard<X> {}
+
 public class C<T> {
+  
   private boolean checkGuards(Class<? extends IGuard<T>>[] guardClz) throws Exception { return false;}
-  public static void main(String []argv) {
-    Guard<String> g = new Guard<String>();
-    new C<String>().checkGuards(g.getClass());//Guard.class);
+  
+  public static void main(String []argv) throws Exception {
+    GuardImpl<String> g = new GuardImpl<String>();
+    //new C<String>().checkGuards(g.getClass());//Guard.class);
+    new C<String>().checkGuards(new Class[]{g.getClass()});//Guard.class);
   }
 }

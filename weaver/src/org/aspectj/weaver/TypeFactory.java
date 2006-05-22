@@ -70,6 +70,24 @@ public class TypeFactory {
 		return (ReferenceType) rType.resolve(inAWorld);
 	}
 	
+	/**
+	 * Creates a sensible unresolvedtype from some signature, for example:
+	 * signature = LIGuard<TT;>;
+	 * bound =  toString=IGuard<T>   sig=PIGuard<TT;>;     sigErasure=LIGuard;  kind=parameterized
+	 */
+	private static UnresolvedType convertSigToType(String aSignature) {	
+	    UnresolvedType bound = null;
+		int startOfParams = aSignature.indexOf('<');
+		if (startOfParams==-1) {
+			bound = UnresolvedType.forSignature(aSignature);
+		} else {
+			int endOfParams = aSignature.lastIndexOf('>');
+			String signatureErasure = "L" + aSignature.substring(1,startOfParams) + ";";
+			UnresolvedType[] typeParams = createTypeParams(aSignature.substring(startOfParams +1, endOfParams));
+			bound = new UnresolvedType("P"+aSignature.substring(1),signatureErasure,typeParams);
+		}
+		return bound;
+	}
 	
 	/**
 	 * Used by UnresolvedType.read, creates a type from a full signature.
@@ -81,7 +99,6 @@ public class TypeFactory {
 		char firstChar = signature.charAt(0);
 		if (firstChar=='P') {
 			// parameterized type, calculate signature erasure and type parameters
-			
 			// (see pr122458) It is possible for a parameterized type to have *no* type parameters visible in its signature.
 			// This happens for an inner type of a parameterized type which simply inherits the type parameters
 			// of its parent.  In this case it is parameterized but theres no < in the signature.
@@ -98,38 +115,27 @@ public class TypeFactory {
 				UnresolvedType[] typeParams = createTypeParams(signature.substring(startOfParams +1, endOfParams));
 				return new UnresolvedType(signature,signatureErasure,typeParams);
 			}
+			// can't replace above with convertSigToType - leads to stackoverflow
 		} else if (signature.equals("?")){
 			UnresolvedType ret = UnresolvedType.SOMETHING;
 			ret.typeKind = TypeKind.WILDCARD;
 			return ret;
 		} else if(firstChar=='+') { 
 			// ? extends ...
-	/*
-			// this bound calc is for bug pr137568 ... don't like duplicating this here from above...
-			String subsig = signature.substring(1);
-			int startOfParams = subsig.indexOf('<');
-			int endOfParams = subsig.lastIndexOf('>');
-			UnresolvedType bound = null;
-			if (startOfParams==-1) {
-				bound = new UnresolvedType(subsig);
-			} else {
-				String signatureErasure = "L" + subsig.substring(1,startOfParams) + ";";
-				UnresolvedType[] typeParams = createTypeParams(subsig.substring(startOfParams +1, endOfParams));
-				bound = new UnresolvedType(subsig,signatureErasure,typeParams);
-			}
-	*/
-			//all that replaces: 
-			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
 			UnresolvedType ret = new UnresolvedType(signature);
 			ret.typeKind = TypeKind.WILDCARD;
-			ret.setUpperBound(bound);
+			
+//			UnresolvedType bound1 = UnresolvedType.forSignature(signature.substring(1));
+//			UnresolvedType bound2 = convertSigToType(signature.substring(1));
+			ret.setUpperBound(convertSigToType(signature.substring(1)));
 			return ret;
 		} else if (firstChar=='-') { 
 			// ? super ...
-			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
+//			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
+//			UnresolvedType bound2 = convertSigToType(signature.substring(1));
 			UnresolvedType ret = new UnresolvedType(signature);
 			ret.typeKind = TypeKind.WILDCARD;
-			ret.setLowerBound(bound);
+			ret.setLowerBound(convertSigToType(signature.substring(1)));
 			return ret;
 		} else if (firstChar=='T') {
 			String typeVariableName = signature.substring(1);
