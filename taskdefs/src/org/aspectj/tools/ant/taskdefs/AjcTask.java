@@ -510,6 +510,11 @@ public class AjcTask extends MatchingTask {
     	cmd.addFlag("-Xreweavable",reweavable);
     }
     
+
+    public void setXJoinpoints(String optionalJoinpoints) {
+      	cmd.addFlag("-Xjoinpoints:"+optionalJoinpoints,true);
+    }
+    
     public void setXNoWeave(boolean b) {
     	if (logger!=null) logger.warning("the noweave option is no longer required and is being ignored");
     }
@@ -785,7 +790,8 @@ public class AjcTask extends MatchingTask {
             String token = tokens.nextToken().trim();
             if (1 < token.length()) {
             	// new special case: allow -Xset:anything
-                if (VALID_XOPTIONS.contains(token) || token.indexOf("set:")==0) {
+                if (VALID_XOPTIONS.contains(token) || token.indexOf("set:")==0 ||
+                		token.indexOf("joinpoints:")==0) {
                     cmd.addFlag("-X" + token, true); 
                 } else {
                     ignore("-X" + token);
