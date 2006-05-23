@@ -287,6 +287,33 @@
         </run>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr142466" title="aop.xml aspect inheriting but not concretizing abstract method">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml">
+          <stderr>
+            <line text="error Abstract method 'void ConcreteMethods.foo(int)' cannot be concretized in XML:"/>
+            <line text="warning register definition failed"/>
+          </stderr>
+          <stdout>
+            <line text="Hello World!"/>
+          </stdout>
+        </run>
+    </ajc-test>
+     
+    <ajc-test dir="bugs152/pr142466/case2" title="aop.xml aspect inheriting but not concretizing abstract method - 2">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml">
+          <stderr>
+            <line text="error Abstract method 'void AbstractMethods.test()' cannot be concretized in XML"/>
+            <line text="warning register definition failed"/>
+          </stderr>
+          <stdout>
+            <line text="Hello World!"/>
+          </stdout>
+        </run>
+    </ajc-test>   
 
     <ajc-test dir="bugs152/pr138223" pr="138223" title="Double at annotation matching (no binding)">
       <compile files="DoubleAnnotationMatching.aj" options="-1.5">

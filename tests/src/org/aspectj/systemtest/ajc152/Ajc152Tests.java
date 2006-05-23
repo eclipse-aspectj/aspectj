@@ -17,6 +17,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  public void testConcretizingAbstractMethods_pr142466() { runTest("aop.xml aspect inheriting but not concretizing abstract method");}
+  public void testConcretizingAbstractMethods_pr142466_2() { runTest("aop.xml aspect inheriting but not concretizing abstract method - 2");}
   public void testComplexGenericDecl_pr137568() { runTest("complicated generics declaration");}
   public void testItdOnInnerTypeOfGenericType_pr132349() { runTest("ITD on inner type of generic type");}
   public void testItdOnInnerTypeOfGenericType_pr132349_2() { runTest("ITD on inner type of generic type - 2");}

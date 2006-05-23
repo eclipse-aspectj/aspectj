@@ -38,9 +38,12 @@ import org.aspectj.weaver.patterns.PerSingleton;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Generates bytecode for concrete-aspect
@@ -159,27 +162,35 @@ public class ConcreteAspectCodeGen {
 
         // must have all abstractions defined
         List elligibleAbstractions = new ArrayList();
-        Iterator methods = m_parent.getMethods();
-        while (methods.hasNext()) {
-            ResolvedMember method = (ResolvedMember) methods.next();
-            if (method.isAbstract()) {
-                if ("()V".equals(method.getSignature())) {
-                	String n = method.getName();
-                	if (n.startsWith("ajc$pointcut")) { // Allow for the abstract pointcut being from a code style aspect compiled with -1.5 (see test for 128744)
-                		n = n.substring(14);
-                		n = n.substring(0,n.indexOf("$"));
-                		elligibleAbstractions.add(n);
-                	} else {
-                		// Only interested in abstract methods that take no parameters and are marked @Pointcut
-                		if (hasPointcutAnnotation(method))
-                			elligibleAbstractions.add(method.getName());
-                	}
-                } else {
-                    reportError("Abstract method '" + method.getName() + "' cannot be concretized as a pointcut (illegal signature, must have no arguments, must return void): " + stringify());
-                    return false;
-                }
+        
+        Collection abstractMethods = getOutstandingAbstractMethods(m_parent);
+        for (Iterator iter = abstractMethods.iterator(); iter.hasNext();) {
+			ResolvedMember method = (ResolvedMember) iter.next();
+			if ("()V".equals(method.getSignature())) {
+			 String n = method.getName();
+            	 if (n.startsWith("ajc$pointcut")) { // Allow for the abstract pointcut being from a code style aspect compiled with -1.5 (see test for 128744)
+            		n = n.substring(14);
+            		n = n.substring(0,n.indexOf("$"));
+            		elligibleAbstractions.add(n);         
+            	 } else if (hasPointcutAnnotation(method)) {
+         			elligibleAbstractions.add(method.getName());
+            	 } else {
+             	 // error, an outstanding abstract method that can't be concretized in XML
+            		 reportError("Abstract method '" + method.toString() + "' cannot be concretized in XML: " + stringify());
+                  return false;
+            	 }
+            } else {
+            	  if (method.getName().startsWith("ajc$pointcut") || hasPointcutAnnotation(method)) {
+            		// it may be a pointcut but it doesn't meet the requirements for XML concretization
+            		reportError("Abstract method '" + method.toString() + "' cannot be concretized as a pointcut (illegal signature, must have no arguments, must return void): " + stringify());
+                 return false;
+            	  } else {
+            		// error, an outstanding abstract method that can't be concretized in XML
+                 reportError("Abstract method '" + method.toString() + "' cannot be concretized in XML: " + stringify());
+                 return false;
+            	  }
             }
-        }
+		}
         List pointcutNames = new ArrayList();
         for (Iterator it = m_concreteAspect.pointcuts.iterator(); it.hasNext();) {
             Definition.Pointcut abstractPc = (Definition.Pointcut) it.next();
@@ -198,7 +209,38 @@ public class ConcreteAspectCodeGen {
         return m_isValid;
     }
 
-    /**
+    private Collection getOutstandingAbstractMethods(ResolvedType type) {
+    		Map collector = new HashMap();
+    		// let's get to the top of the hierarchy and then walk down ... recording abstract methods then removing
+    		// them if they get defined further down the hierarchy
+    		getOutstandingAbstractMethodsHelper(type,collector);
+		return collector.values();
+	}
+    
+    // We are trying to determine abstract methods left over at the bottom of a hierarchy that have not been
+    // concretized.
+    private void getOutstandingAbstractMethodsHelper(ResolvedType type,Map collector) {
+    	  if (type==null) return;
+    	  // Get to the top
+    	  if (type!=null && !type.equals(ResolvedType.OBJECT)) {
+    		  if (type.getSuperclass()!=null)
+    		    getOutstandingAbstractMethodsHelper(type.getSuperclass(),collector);
+    	  }
+    	  ResolvedMember[] rms = type.getDeclaredMethods();
+    	  if (rms!=null) {
+	    	  for (int i = 0; i < rms.length; i++) {
+				ResolvedMember member = rms[i];
+				String key = member.getName()+member.getSignature();
+				if (member.isAbstract()) {
+					collector.put(key,member);
+				} else {
+					collector.remove(key);
+				}
+		  }
+    	  }
+    }
+
+	/**
      * Rebuild the XML snip that defines this concrete aspect, for log error purpose
      *
      * @return string repr.
