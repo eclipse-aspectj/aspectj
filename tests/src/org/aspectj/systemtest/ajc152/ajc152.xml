@@ -15,6 +15,16 @@
       </run>
     </ajc-test>
 
+	<ajc-test dir="bugs152/pr126355" title="bizarre generic error with itds">
+     <compile files="Pair.java" options="-1.5"/>
+     <compile files="Test.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr126355" title="bizarre generic error with itds - 2">
+     <compile files="Pair.java" options="-1.5"/>
+     <compile files="Test.java" options="-1.5"/>
+    </ajc-test>
+
     <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type">
      <compile files="TopLevelType.java" options="-1.5"/>
      <run class="TopLevelType"/>

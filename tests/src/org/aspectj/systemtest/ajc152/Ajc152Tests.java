@@ -17,6 +17,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  public void testFunkyGenericErrorWithITDs_pr126355() { runTest("bizarre generic error with itds");}
   public void testConcretizingAbstractMethods_pr142466() { runTest("aop.xml aspect inheriting but not concretizing abstract method");}
   public void testConcretizingAbstractMethods_pr142466_2() { runTest("aop.xml aspect inheriting but not concretizing abstract method - 2");}
   public void testComplexGenericDecl_pr137568() { runTest("complicated generics declaration");}
@@ -68,6 +69,12 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testJarChecking_pr137235_1() { runTest("directory with .jar extension: source and outjar"); }	    
   public void testJarChecking_pr137235_2() { runTest("directory with .jar extension"); }
   public void testMakePreMethodNPE_pr136393() { runTest("NPE in makePreMethod");}
+
+//  public void testFunkyGenericErrorWithITDs_pr126355_2() { 
+//	  runTest("bizarre generic error with itds - 2");
+//	  // public class Pair<F,S> affected by pertarget aspect
+//	  GenericsTests.verifyClassSignature(ajc,"Pair","<F:Ljava/lang/Object;S:Ljava/lang/Object;>Ljava/lang/Object;LIdempotentCache$ajcMightHaveAspect;;");
+//  }
 
   // tests that can't be included for some reason
 

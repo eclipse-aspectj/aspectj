@@ -480,12 +480,19 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			superClass = newParent;
 		} else {
 			ResolvedType[] oldInterfaceNames = getDeclaredInterfaces();
-			int len = oldInterfaceNames.length;
-			ResolvedType[] newInterfaceNames = new ResolvedType[len+1];
-			System.arraycopy(oldInterfaceNames, 0, newInterfaceNames, 0, len);
-			newInterfaceNames[len] = newParent;
-			
-			interfaces = newInterfaceNames;
+			int exists = -1;
+			for (int i = 0; i < oldInterfaceNames.length; i++) {
+				ResolvedType type = oldInterfaceNames[i];
+				if (type.equals(newParent)) {exists = i;break; }
+			}
+			if (exists==-1) {
+				int len = oldInterfaceNames.length;
+				ResolvedType[] newInterfaceNames = new ResolvedType[len+1];
+				System.arraycopy(oldInterfaceNames, 0, newInterfaceNames, 0, len);
+				newInterfaceNames[len] = newParent;
+				
+				interfaces = newInterfaceNames;
+			}
 		}
 		//System.err.println("javaClass: " + Arrays.asList(javaClass.getInterfaceNames()) + " super " + superclassName);
 		//if (lazyClassGen != null) lazyClassGen.print();
