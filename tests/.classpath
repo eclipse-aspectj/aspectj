@@ -15,5 +15,6 @@
 	<classpathentry kind="src" path="testsrc"/>
 	<classpathentry kind="var" path="JAVA_HOME/lib/tools.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/testing-util"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
