@@ -176,6 +176,8 @@ public interface JoinPoint {
     static String PREINITIALIZATION = "preinitialization";
     static String INITIALIZATION = "initialization";
     static String EXCEPTION_HANDLER = "exception-handler";
+    static String SYNCHRONIZATION_LOCK = "lock";
+    static String SYNCHRONIZATION_UNLOCK = "unlock";
 
     static String ADVICE_EXECUTION = "adviceexecution"; 
 

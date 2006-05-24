@@ -341,6 +341,40 @@ public final class Factory {
         return ret;    	
     }
     
+    public LockSignature makeLockSig(String stringRep) {
+        LockSignatureImpl ret = new LockSignatureImpl(stringRep);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
+    public LockSignature makeLockSig() {
+    	Class declaringTypeClass = makeClass("Ljava/lang/Object;",lookupClassLoader);
+    	LockSignatureImpl ret = new LockSignatureImpl(declaringTypeClass);
+       	ret.setLookupClassLoader(lookupClassLoader);
+      	return ret;
+    }
+    public LockSignature makeLockSig(Class declaringType) {
+    	LockSignatureImpl ret = new LockSignatureImpl(declaringType);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;    	
+    }
+    
+    public UnlockSignature makeUnlockSig(String stringRep) {
+    	UnlockSignatureImpl ret = new UnlockSignatureImpl(stringRep);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
+    public UnlockSignature makeUnlockSig() {
+    	Class declaringTypeClass = makeClass("Ljava/lang/Object;",lookupClassLoader);
+    	UnlockSignatureImpl ret = new UnlockSignatureImpl(declaringTypeClass);
+       	ret.setLookupClassLoader(lookupClassLoader);
+      	return ret;
+    }
+    public UnlockSignature makeUnlockSig(Class declaringType) {
+    	UnlockSignatureImpl ret = new UnlockSignatureImpl(declaringType);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;    	
+    }
+    
 
     public SourceLocation makeSourceLoc(int line, int col)
     {
