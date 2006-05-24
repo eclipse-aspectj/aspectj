@@ -1,0 +1,40 @@
+  public void e()    org.aspectj.weaver.MethodDeclarationLineNumber: 48:904
+:
+                    ALOAD_0     // LInvestigation; this   (line 49)
+                    DUP
+                    ASTORE_1
+                    MONITORENTER
+    finally -> E3
+    |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 50)
+    |               LDC "hello"
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    |               NEW java.lang.String   (line 51)
+    |               DUP
+    |               INVOKESPECIAL java.lang.String.<init> ()V
+    |               DUP
+    |               ASTORE_2
+    |               MONITORENTER
+    | finally -> E1
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 52)
+    | |             LDC "other"
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | |             ALOAD_2   (line 51)
+    | |             MONITOREXIT
+    | finally -> E1
+    |               GOTO L0
+    | finally -> E1
+    | |         E1: ALOAD_2
+    | |             MONITOREXIT
+    | finally -> E1
+    |               ATHROW
+    |           L0: ALOAD_1   (line 49)
+    |               MONITOREXIT
+    finally -> E3
+                    GOTO L1
+    finally -> E3
+    |           E3: ALOAD_1
+    |               MONITOREXIT
+    finally -> E3
+                    ATHROW
+                L1: RETURN   (line 55)
+  end public void e()

@@ -1,0 +1,22 @@
+  public static void b()    org.aspectj.weaver.MethodDeclarationLineNumber: 17:340
+:
+                    LDC C
+                    DUP
+                    ASTORE_0
+                    MONITORENTER
+    finally -> E1
+    |               GETSTATIC java.lang.System.err Ljava/io/PrintStream;   (line 18)
+    |               LDC "hello"
+    |               INVOKESTATIC Five.aspectOf ()LFive;
+    |               INVOKEVIRTUAL Five.ajc$before$Five$1$af123de3 ()V
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    |               ALOAD_0
+    |               MONITOREXIT
+    |               RETURN   (line 19)
+    finally -> E1
+    finally -> E1
+    |           E1: ALOAD_0
+    |               MONITOREXIT
+    finally -> E1
+                    ATHROW
+  end public static void b()

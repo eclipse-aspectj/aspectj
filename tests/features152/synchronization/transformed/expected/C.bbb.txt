@@ -1,0 +1,38 @@
+  public static void bbb()    org.aspectj.weaver.MethodDeclarationLineNumber: 15:316
+:
+                    GETSTATIC C.class$1 Ljava/lang/Class;
+                    DUP
+                    IFNONNULL L0
+                    POP
+    catch java.lang.ClassNotFoundException -> E0
+    |               LDC "C"
+    |               INVOKESTATIC java.lang.Class.forName (Ljava/lang/String;)Ljava/lang/Class;
+    catch java.lang.ClassNotFoundException -> E0
+                    DUP
+                    PUTSTATIC C.class$1 Ljava/lang/Class;
+                    GOTO L0
+                E0: NEW java.lang.NoClassDefFoundError
+                    DUP_X1
+                    SWAP
+                    INVOKEVIRTUAL java.lang.Throwable.getMessage ()Ljava/lang/String;
+                    INVOKESPECIAL java.lang.NoClassDefFoundError.<init> (Ljava/lang/String;)V
+                    ATHROW
+                L0: DUP
+                    ASTORE_0
+                    MONITORENTER
+    finally -> E2
+    |               GETSTATIC java.lang.System.err Ljava/io/PrintStream;   (line 16)
+    |               LDC "hello"
+    |               INVOKESTATIC Six.aspectOf ()LSix;
+    |               INVOKEVIRTUAL Six.ajc$before$Six$1$cb48297b ()V
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    |               ALOAD_0
+    |               MONITOREXIT
+    |               RETURN   (line 17)
+    finally -> E2
+    finally -> E2
+    |           E2: ALOAD_0
+    |               MONITOREXIT
+    finally -> E2
+                    ATHROW
+  end public static void bbb()

@@ -1,0 +1,35 @@
+  public void c()    org.aspectj.weaver.MethodDeclarationLineNumber: 26:439
+:
+                    ALOAD_0     // LInvestigation; this   (line 27)
+                    DUP
+                    ASTORE_1
+                    MONITORENTER
+    finally -> E2
+    | catch java.io.IOException -> E0
+    | |             NEW java.io.File   (line 29)
+    | |             DUP
+    | |             LDC "fred"
+    | |             INVOKESPECIAL java.io.File.<init> (Ljava/lang/String;)V
+    | |             ASTORE_2
+    | |             NEW java.io.FileInputStream   (line 30)
+    | |             DUP
+    | |             ALOAD_2     // Ljava/io/File; f
+    | |             INVOKESPECIAL java.io.FileInputStream.<init> (Ljava/io/File;)V
+    | |             POP
+    | |             GOTO L0
+    | catch java.io.IOException -> E0
+    |           E0: POP   (line 31)
+    |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 32)
+    |               LDC "bang"
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    |           L0: ALOAD_1   (line 27)
+    |               MONITOREXIT
+    finally -> E2
+                    GOTO L1
+    finally -> E2
+    |           E2: ALOAD_1
+    |               MONITOREXIT
+    finally -> E2
+                    ATHROW
+                L1: RETURN   (line 35)
+  end public void c()

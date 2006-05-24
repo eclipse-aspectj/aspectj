@@ -1,0 +1,38 @@
+  public void d()    org.aspectj.weaver.MethodDeclarationLineNumber: 38:706
+:
+                    ALOAD_0     // LInvestigation; this   (line 39)
+                    DUP
+                    ASTORE_1
+                    MONITORENTER
+    finally -> E1
+    |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 40)
+    |               LDC "hello"
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    |               ALOAD_1   (line 39)
+    |               MONITOREXIT
+    finally -> E1
+                    GOTO L0
+    finally -> E1
+    |           E1: ALOAD_1
+    |               MONITOREXIT
+    finally -> E1
+                    ATHROW
+                L0: ALOAD_0     // LInvestigation; this   (line 42)
+                    DUP
+                    ASTORE_1
+                    MONITORENTER
+    finally -> E3
+    |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 43)
+    |               LDC "world"
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    |               ALOAD_1   (line 42)
+    |               MONITOREXIT
+    finally -> E3
+                    GOTO L1
+    finally -> E3
+    |           E3: ALOAD_1
+    |               MONITOREXIT
+    finally -> E3
+                    ATHROW
+                L1: RETURN   (line 45)
+  end public void d()

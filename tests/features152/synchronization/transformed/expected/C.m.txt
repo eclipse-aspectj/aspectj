@@ -1,0 +1,23 @@
+  public void m()    org.aspectj.weaver.MethodDeclarationLineNumber: 16:496
+:
+                    ALOAD_0
+                    DUP
+                    ASTORE_1
+                    MONITORENTER
+    finally -> E1
+    |               GETSTATIC java.lang.System.err Ljava/io/PrintStream;   (line 17)
+    |               LDC "hello"
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    |               ALOAD_1
+    |               MONITOREXIT
+    |               GOTO L0   (line 18)
+    finally -> E1
+    finally -> E1
+    |           E1: ALOAD_1
+    |               MONITOREXIT
+    finally -> E1
+                    ATHROW
+                L0: INVOKESTATIC Four.aspectOf ()LFour;
+                    INVOKEVIRTUAL Four.ajc$afterReturning$Four$1$c2776aed ()V
+                    RETURN
+  end public void m()

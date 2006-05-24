@@ -1,0 +1,26 @@
+  public void m4()    org.aspectj.weaver.MethodDeclarationLineNumber: 35:1007
+:
+    catch java.lang.Throwable -> E1
+    |               ALOAD_0     // LC; this   (line 36)
+    |               DUP
+    |               ASTORE_1
+    |               MONITORENTER
+    | finally -> E0
+    | |             GETSTATIC java.lang.System.err Ljava/io/PrintStream;   (line 37)
+    | |             LDC "hello"
+    | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    | |             NEW MyException   (line 38)
+    | |             DUP
+    | |             INVOKESPECIAL MyException.<init> ()V
+    | |             ATHROW
+    | |         E0: ALOAD_1   (line 36)
+    | |             MONITOREXIT
+    | finally -> E0
+    |               ATHROW
+    catch java.lang.Throwable -> E1
+                E1: ASTORE_2
+                    INVOKESTATIC Three.aspectOf ()LThree;
+                    INVOKEVIRTUAL Three.ajc$afterThrowing$Three$4$40be0dfb ()V
+                    ALOAD_2
+                    ATHROW
+  end public void m4()

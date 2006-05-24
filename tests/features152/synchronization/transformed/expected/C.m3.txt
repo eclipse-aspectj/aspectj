@@ -1,0 +1,23 @@
+  public void m3()    org.aspectj.weaver.MethodDeclarationLineNumber: 20:747
+:
+                    ALOAD_0
+                    DUP
+                    ASTORE_1
+                    MONITORENTER
+    finally -> E1
+    |               GETSTATIC java.lang.System.err Ljava/io/PrintStream;   (line 21)
+    |               LDC "hello"
+    |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+    |               ALOAD_1
+    |               MONITOREXIT
+    |               GOTO L0   (line 22)
+    finally -> E1
+    finally -> E1
+    |           E1: ALOAD_1
+    |               MONITOREXIT
+    finally -> E1
+                    ATHROW
+                L0: INVOKESTATIC Three.aspectOf ()LThree;
+                    INVOKEVIRTUAL Three.ajc$afterReturning$Three$1$3f09355c ()V
+                    RETURN
+  end public void m3()

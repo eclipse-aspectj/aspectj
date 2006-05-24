@@ -1,0 +1,8 @@
+<aspectj>
+        <aspects>
+                <aspect name="LockAspect1"/>
+        </aspects>
+
+        <weaver options=" -showWeaveInfo -Xjoinpoints:synchronization,trivial">
+        </weaver>
+</aspectj>
