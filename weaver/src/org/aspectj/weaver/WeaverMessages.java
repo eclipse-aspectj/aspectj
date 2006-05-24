@@ -100,6 +100,7 @@ public class WeaverMessages {
 	public static final String IF_IN_PERCLAUSE = "ifInPerClause";
 	public static final String IF_LEXICALLY_IN_CFLOW = "ifLexicallyInCflow";
 	public static final String ONLY_BEFORE_ON_HANDLER = "onlyBeforeOnHandler";
+	public static final String NO_AROUND_ON_SYNCHRONIZATION = "noAroundOnSynchronization";
 	public static final String AROUND_ON_PREINIT = "aroundOnPreInit";
 	public static final String AROUND_ON_INIT = "aroundOnInit";
 	public static final String AROUND_ON_INTERFACE_STATICINIT = "aroundOnInterfaceStaticInit";
