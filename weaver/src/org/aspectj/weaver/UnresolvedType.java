@@ -115,6 +115,7 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     public static final UnresolvedType   SUPPRESS_AJ_WARNINGS = forSignature("Lorg/aspectj/lang/annotation/SuppressAjWarnings;");
     public static final UnresolvedType   AT_TARGET = forSignature("Ljava/lang/annotation/Target;");
     public static final UnresolvedType   SOMETHING = new UnresolvedType("?");
+    public static final UnresolvedType[] ARRAY_WITH_JUST_OBJECT = new UnresolvedType[]{OBJECT};
 
     // this doesn't belong here and will get moved to ResolvedType later in the refactoring
 	public static final String MISSING_NAME = "@missing@";
