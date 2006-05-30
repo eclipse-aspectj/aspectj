@@ -339,6 +339,17 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs152/pr144465" title="ltw with serialversionUID creation">
+      <compile files="BigHorribleClass.java"/>
+      <compile files="AnAspect.java"/>
+      <run class="BigHorribleClass" ltw="aop1.xml">
+        <stderr>
+          <line text="weaveinfo Join point 'staticinitialization(void BigHorribleClass.&lt;clinit&gt;())'"/>
+          <line text="SerialVersionUID is "/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs152/pr125480" title="aop.xml aspect inheriting abstract method ">
         <compile files="HelloWorld.java"/>
         <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>

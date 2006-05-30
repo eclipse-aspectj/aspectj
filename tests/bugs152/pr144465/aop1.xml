@@ -1,0 +1,8 @@
+<aspectj>
+        <aspects>
+                <aspect name="AnAspect"/>
+        </aspects>
+
+        <weaver options="-showWeaveInfo -XaddSerialVersionUID">
+        </weaver>
+</aspectj>
