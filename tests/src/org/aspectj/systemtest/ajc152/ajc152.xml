@@ -14,6 +14,70 @@
          </stderr>
       </run>
     </ajc-test>
+    
+	<ajc-test dir="bugs152/pr122253" title="aspects14 - persingleton">
+     <compile files="Singleton.java"/>
+     <run class="Singleton">
+       <stderr>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? SingletonInstance : SingletonInstance"/>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? SingletonInstance : SingletonInstance"/>
+       </stderr>
+     </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs152/pr122253" title="aspects14 - percflow">
+     <compile files="PerCflow.java"/>
+     <run class="PerCflow">
+       <stderr>
+         <line text="before"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+         <line text="during"/>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? PerCflowInstance : PerCflowInstance"/>
+         <line text="after"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+       </stderr>
+     </run>
+    </ajc-test>
+     
+     <ajc-test dir="bugs152/pr122253" title="aspects14 - perthis">
+     <compile files="PerThis.java"/>
+     <run class="PerThis">
+       <stderr>
+         <line text="before"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+         <line text="during"/>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? PerThisInstance : PerThisInstance"/>
+         <line text="after"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+       </stderr>
+     </run>
+    </ajc-test>
+        
+     <ajc-test dir="bugs152/pr122253" title="aspects14 - pertypewithin">
+     <compile files="PerTypeWithin.java"/>
+     <run class="PerTypeWithin">
+       <stderr>
+         <line text="before"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+         <line text="during"/>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? PerTypeWithinInstance : PerTypeWithinInstance"/>
+         <line text="after"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+       </stderr>
+     </run>
+    </ajc-test>
+    
 
 	<ajc-test dir="bugs152/pr126355" title="bizarre generic error with itds">
      <compile files="Pair.java" options="-1.5"/>
