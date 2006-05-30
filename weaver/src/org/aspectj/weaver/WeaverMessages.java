@@ -32,6 +32,7 @@ public class WeaverMessages {
 	public static final String WILDCARD_NOT_ALLOWED = "wildcardTypePatternNotAllowed";
 	public static final String FIELDS_CANT_HAVE_VOID_TYPE = "fieldCantBeVoid";
 	public static final String NO_NEWARRAY_JOINPOINTS_BY_DEFAULT = "noNewArrayJoinpointsByDefault";
+	public static final String UNSUPPORTED_POINTCUT_PRIMITIVE = "unsupportedPointcutPrimitive";
 	
 	public static final String DECP_OBJECT = "decpObject";
 	public static final String CANT_EXTEND_SELF="cantExtendSelf";

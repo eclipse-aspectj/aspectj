@@ -11,6 +11,8 @@
  * ******************************************************************/
 package org.aspectj.weaver.tools;
 
+import org.aspectj.weaver.WeaverMessages;
+
 /**
  * @author colyer
  *
@@ -23,8 +25,7 @@ public class UnsupportedPointcutPrimitiveException extends RuntimeException {
 	private String pointcutExpression;
 	
 	public UnsupportedPointcutPrimitiveException(String pcExpression, PointcutPrimitive primitive) {
-		super("Pointcut expression " + pcExpression + " contains unsupported pointcut primitive '" + 
-				  primitive.getName() + "'");
+		super(WeaverMessages.format(WeaverMessages.UNSUPPORTED_POINTCUT_PRIMITIVE,pcExpression,primitive.getName()));
 		this.pointcutExpression = pcExpression;
 		this.unsupportedPrimitive = primitive;
 	}
