@@ -213,7 +213,11 @@ abstract class SignatureImpl implements Signature {
 		}
 		
 		public String get(int cacheOffset) {
-			return array()[cacheOffset];
+          String[] cachedArray = array();
+          if (cachedArray == null) {
+ 		     return null;
+ 		  }
+ 		  return cachedArray[cacheOffset];
 		}
 
 		public void set(int cacheOffset, String result) {
