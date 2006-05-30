@@ -294,6 +294,7 @@ public class AjcTask extends MatchingTask {
         		"reweavable", "reweavable:compress", "notReweavable", "noInline",
             	"terminateAfterCompilation","hasMember",
                 "ajruntimetarget:1.2", "ajruntimetarget:1.5", 
+                "addSerialVersionUID"
                 
                 //, "targetNearSource", "OcodeSize",
                  };
@@ -525,6 +526,10 @@ public class AjcTask extends MatchingTask {
     
     public void setXNotReweavable(boolean notReweavable) {
     	cmd.addFlag("-XnotReweavable",notReweavable);
+    }
+
+    public void setXaddSerialVersionUID(boolean addUID) {
+    	cmd.addFlag("-XaddSerialVersionUID",addUID);
     }
     
     public void setXNoInline(boolean noInline) {

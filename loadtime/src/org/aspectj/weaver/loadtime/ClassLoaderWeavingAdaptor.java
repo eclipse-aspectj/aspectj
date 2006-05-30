@@ -221,6 +221,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         world.setXnoInline(weaverOption.noInline);
         // AMC - autodetect as per line below, needed for AtAjLTWTests.testLTWUnweavable
         world.setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+        world.setAddSerialVerUID(weaverOption.addSerialVersionUID);
 
         /* First load defaults */
 		bcelWorld.getLint().loadDefaultProperties();

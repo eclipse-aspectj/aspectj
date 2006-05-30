@@ -37,6 +37,7 @@ public class Options {
     private final static String OPTION_verbose = "-verbose";
     private final static String OPTION_reweavable = "-Xreweavable";//notReweavable is default for LTW
     private final static String OPTION_noinline = "-Xnoinline";
+    private final static String OPTION_addSerialVersionUID = "-XaddSerialVersionUID";
     private final static String OPTION_hasMember = "-XhasMember";
     private final static String OPTION_pinpoint = "-Xdev:pinpoint";
     private final static String OPTION_showWeaveInfo = "-showWeaveInfo";
@@ -88,6 +89,8 @@ public class Options {
                 weaverOption.lazyTjp = true;
             } else if (arg.equalsIgnoreCase(OPTION_noinline)) {
                 weaverOption.noInline = true;
+            } else if (arg.equalsIgnoreCase(OPTION_addSerialVersionUID)) {
+            	weaverOption.addSerialVersionUID=true;
             } else if (arg.equalsIgnoreCase(OPTION_noWarn) || arg.equalsIgnoreCase(OPTION_noWarnNone)) {
                 weaverOption.noWarn = true;
             } else if (arg.equalsIgnoreCase(OPTION_proceedOnError)) {
@@ -151,6 +154,7 @@ public class Options {
         boolean verbose;
         boolean notReWeavable = true;//default to notReweavable for LTW (faster)
         boolean noInline;
+        boolean addSerialVersionUID;
         boolean showWeaveInfo;
         boolean pinpoint;
         IMessageHandler messageHandler;
