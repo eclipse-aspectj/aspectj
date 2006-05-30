@@ -13,10 +13,15 @@ package org.aspectj.systemtest.ajc152;
 import java.io.File;
 import junit.framework.Test;
 
+//import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  public void testAspects14PerSingleton_pr122253() { runTest("aspects14 - persingleton");}
+  public void testAspects14PerCflow_pr122253() { runTest("aspects14 - percflow");}
+  public void testAspects14PerThis_pr122253() { runTest("aspects14 - perthis");}
+  public void testAspects14PerTypeWithin_pr122253() { runTest("aspects14 - pertypewithin");}
   public void testFunkyGenericErrorWithITDs_pr126355() { runTest("bizarre generic error with itds");}
   public void testConcretizingAbstractMethods_pr142466() { runTest("aop.xml aspect inheriting but not concretizing abstract method");}
   public void testConcretizingAbstractMethods_pr142466_2() { runTest("aop.xml aspect inheriting but not concretizing abstract method - 2");}
