@@ -232,7 +232,7 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR,"declare @constructor: BankAccount+.new(..) : @Secured(role = \"supervisor\")");  	   	 
   	  assertNotNull("Couldn't find 'declare @constructor' element in the tree",decac);
   	  IProgramElement ctr = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.CONSTRUCTOR,"BankAccount(String,int)");
+  			  IProgramElement.Kind.CONSTRUCTOR,"BankAccount(java.lang.String,int)");
   	  assertNotNull("Couldn't find the 'BankAccount(String,int)' constructor element in the tree",ctr);
 
   	  

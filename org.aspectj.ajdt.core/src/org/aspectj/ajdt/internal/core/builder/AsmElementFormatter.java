@@ -40,6 +40,7 @@ import org.aspectj.weaver.patterns.ReferencePointcut;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.TypePatternList;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
@@ -291,7 +292,7 @@ public class AsmElementFormatter {
 //		return args;
 //	}
 
-	private void setParameters(MethodDeclaration md, IProgramElement pe) {
+	public void setParameters(AbstractMethodDeclaration md, IProgramElement pe) {
 		Argument[] argArray = md.arguments;
 		if (argArray == null) {
 			pe.setParameterNames(Collections.EMPTY_LIST);

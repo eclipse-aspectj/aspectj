@@ -11,9 +11,15 @@
 package org.aspectj.systemtest.ajc152;
 
 import java.io.File;
+import java.util.List;
+
 import junit.framework.Test;
 
 //import org.aspectj.systemtest.ajc150.GenericsTests;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -67,6 +73,41 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testDoubleAnnotationMatching_pr138223() { runTest("Double at annotation matching (no binding)");}
   public void testSuperCallsInAtAspectJAdvice_pr139749() { runTest("Super calls in @AspectJ advice");}
   public void testNoClassCastExceptionWithPerThis_pr138286() { runTest("No ClassCastException with perThis");}
+  
+  public void testDeclareAtMethodRelationship_pr143924() {
+	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
+	  runTest("declare @method relationship");
+	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+	  
+  	  // get the IProgramElements corresponding to the different code entries
+  	  IProgramElement decam = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
+  			  "declare @method: * debit(..) : @Secured(role = \"supervisor\")");  	   	 
+  	  assertNotNull("Couldn't find 'declare @method' element in the tree",decam);
+  	  IProgramElement method = top.findElementForLabel(top.getRoot(),
+  			  IProgramElement.Kind.METHOD,"debit(java.lang.String,long)");
+  	  assertNotNull("Couldn't find the 'debit(String,long)' method element in the tree",method);
+
+  	  List matches = AsmManager.getDefault().getRelationshipMap().get(decam);	
+  	  assertNotNull("'declare @method' should have some relationships but does not",matches);
+  	  assertTrue("'declare @method' should have one relationships but has " + matches.size(),matches.size()==1);
+  	  List matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("'declare @method' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
+  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the 'debit(java.lang.String,long)' method but is IPE with label "
+  			  + target.toLabelString(),method,target);
+  	  
+  	  // check that the debit method has an annotated by relationship with the declare @method
+  	  matches = AsmManager.getDefault().getRelationshipMap().get(method);	
+  	  assertNotNull("'debit(java.lang.String,long)' should have some relationships but does not",matches);
+  	  assertTrue("'debit(java.lang.String,long)' should have one relationships but has " + matches.size(),matches.size()==1);
+  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
+  	  assertTrue("'debit(java.lang.String,long)' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
+  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
+  	  assertEquals("target of relationship should be the 'declare @method' ipe but is IPE with label "
+  			  + target.toLabelString(),decam,target);
+  	  
+  }
   
 // this next one reported as a bug by Rob Harrop, but I can't reproduce the failure yet...
 //public void testAtAspectWithReferencePCPerClause_pr138220() { runTest("@Aspect with reference pointcut in perclause");}  

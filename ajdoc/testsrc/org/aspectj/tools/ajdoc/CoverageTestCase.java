@@ -211,7 +211,7 @@ public class CoverageTestCase extends AjdocTestCase {
 				"before(): getP..",
 				"HREF=\"../foo/Point.html#getX()\"",
 				"before(): setP..",
-				"HREF=\"../foo/Point.html\"><tt>foo.Point</tt></A>, <A HREF=\"../foo/Point.html#Point()\"><tt>foo.Point.Point()</tt></A>, <A HREF=\"../foo/Point.html#setX(int)\"",
+				"HREF=\"../foo/Point.html\"><tt>foo.Point</tt></A>, <A HREF=\"../foo/Point.html#Point()\"><tt>foo.Point.Point</tt></A>, <A HREF=\"../foo/Point.html#setX(int)\"",
 				"before(): initializationP..",
 				"HREF=\"../foo/Point.html#Point()\"",
 				"before(): staticinitializationP..",

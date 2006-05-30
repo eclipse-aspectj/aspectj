@@ -369,8 +369,7 @@ public class AsmRelationshipProvider {
 	  Type[] args = method.getArgumentTypes();
 	  for (int i = 0; i < args.length; i++) {
 			Type type2 = args[i];
-			String s = Utility.signatureToString(type2.getSignature());
-			if (s.lastIndexOf(".")!=-1) s =s.substring(s.lastIndexOf(".")+1);
+			String s = Utility.signatureToString(type2.getSignature(),false);
 			parmString.append(s);
 			if ((i+1)<args.length) parmString.append(",");
 	  }

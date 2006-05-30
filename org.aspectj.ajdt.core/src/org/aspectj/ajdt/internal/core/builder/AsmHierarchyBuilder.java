@@ -711,12 +711,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 		argumentsSignature.append(")");
 		IProgramElement peNode = new ProgramElement(
-			new String(constructorDeclaration.selector)+argumentsSignature,
+			new String(constructorDeclaration.selector),
 			IProgramElement.Kind.CONSTRUCTOR,	
 			makeLocation(constructorDeclaration),
 			constructorDeclaration.modifiers,
 			null,null);
-		
+		formatter.setParameters(constructorDeclaration, peNode);
 		peNode.setModifiers(constructorDeclaration.modifiers);
 		peNode.setSourceSignature(genSourceSignature(constructorDeclaration));
 		

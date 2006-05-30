@@ -527,6 +527,12 @@
       <compile files="Covariance.java" options="-1.5"/>
     </ajc-test>
     
+    <ajc-test dir="bugs152" title="declare @method relationship">
+     <compile files="pr143924.aj" options="-1.5 -showWeaveInfo -emacssym">
+        <message kind="weave" text="'public void BankAccount.debit(String,long)' (pr143924.aj:7) is annotated with @Secured"/>
+     </compile>
+    </ajc-test>
+
     <!-- wont work whilst the compiler BuildArgParser.setDebugOptions is always switching debug on -->
     <ajc-test dir="bugs152/pr129408" title="long winded ataj messages">
       <compile files="AtAj.java" options="-XterminateAfterCompilation -g:none -1.5"/>
