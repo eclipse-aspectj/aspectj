@@ -112,7 +112,8 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
             generatePerObjectAspectOfMethod(gen);
             generatePerObjectHasAspectMethod(gen);
             generatePerObjectBindMethod(gen);
-            generatePerObjectGetSetMethods(gen);
+            // these will be added by the PerObjectInterface munger that affects the type - pr144602
+//            generatePerObjectGetSetMethods(gen); 
         } else if (kind == PerClause.PERCFLOW) {
             generatePerCflowAspectOfMethod(gen);
             generatePerCflowHasAspectMethod(gen);
@@ -173,19 +174,20 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         if (kind == PerClause.SINGLETON) {
             ResolvedMember perSingletonFieldInfo = AjcMemberMaker.perSingletonField(aspectType);
             classGen.addField(makeFieldGen(classGen, perSingletonFieldInfo).getField(), null);
-        } else if (kind == PerClause.PEROBJECT) {
-            ResolvedMember perObjectFieldInfo = AjcMemberMaker.perObjectField(aspectType, aspectType);
-            classGen.addField(makeFieldGen(classGen, perObjectFieldInfo).getField(), null);
-            // if lazy generation of the inner interface MayHaveAspect works on LTW (see previous note)
-            // it should be done here.
+// pr144602 - don't need to do this, PerObjectInterface munger will do it
+//        } else if (kind == PerClause.PEROBJECT) {
+//           ResolvedMember perObjectFieldInfo = AjcMemberMaker.perObjectField(aspectType, aspectType);
+//            classGen.addField(makeFieldGen(classGen, perObjectFieldInfo).getField(), null);
+//            // if lazy generation of the inner interface MayHaveAspect works on LTW (see previous note)
+//            // it should be done here.
         } else if (kind == PerClause.PERCFLOW) {
             ResolvedMember perCflowFieldInfo = AjcMemberMaker.perCflowField(aspectType);
             classGen.addField(makeFieldGen(classGen, perCflowFieldInfo).getField(), null);
         } else if (kind == PerClause.PERTYPEWITHIN) {
             ResolvedMember perTypeWithinForField = AjcMemberMaker.perTypeWithinWithinTypeField(aspectType, aspectType);
             classGen.addField(makeFieldGen(classGen, perTypeWithinForField).getField(), null);
-        } else {
-            throw new Error("Should not happen - no such kind " + kind.toString());
+//        } else {
+//            throw new Error("Should not happen - no such kind " + kind.toString());
         }
     }
 
@@ -577,4 +579,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         );
     }
 
+//    public boolean isLateTypeMunger() {
+  //  	return true;
+    //}
 }
