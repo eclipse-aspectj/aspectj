@@ -390,7 +390,7 @@ public class PointcutParser {
     	if (formalParameters == null) formalParameters = new PointcutParameter[0];
     	FormalBinding[] formalBindings = new FormalBinding[formalParameters.length];
     	for (int i = 0; i < formalBindings.length; i++) {
-			formalBindings[i] = new FormalBinding(UnresolvedType.forName(formalParameters[i].getType().getName()),formalParameters[i].getName(),i);			
+			formalBindings[i] = new FormalBinding(toUnresolvedType(formalParameters[i].getType()),formalParameters[i].getName(),i);			
 		}
     	if (inScope == null) {
     		return new SimpleScope(getWorld(),formalBindings);
@@ -409,6 +409,14 @@ public class PointcutParser {
     			public void tidy() {}
     		};
     		return new AtAjAttributes.BindingScope(inType,sourceContext,formalBindings);
+    	}
+    }
+    
+    private UnresolvedType toUnresolvedType(Class clazz) {
+    	if (clazz.isArray()) {
+			return UnresolvedType.forSignature(clazz.getName().replace('.','/'));
+    	} else {
+    		return UnresolvedType.forName(clazz.getName());
     	}
     }
     

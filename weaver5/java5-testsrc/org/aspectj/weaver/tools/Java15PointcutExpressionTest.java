@@ -14,6 +14,7 @@ package org.aspectj.weaver.tools;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.List;
 
 import org.aspectj.lang.annotation.Pointcut;
@@ -299,6 +300,14 @@ public class Java15PointcutExpressionTest extends TestCase {
 		assertTrue("does not match",sm.neverMatches());		
 	}
 	
+	public void testArrayTypeInArgs() throws Exception {
+		PointcutParameter[] params = new PointcutParameter[3];
+		params[0] = parser.createPointcutParameter("d", Date.class);
+		params[1] = parser.createPointcutParameter("s", String.class);
+		params[2] = parser.createPointcutParameter("ss", String[].class);
+		PointcutExpression ex = parser.parsePointcutExpression("org.aspectj.weaver.tools.Java15PointcutExpressionTest.UsesArrays.pc(d,s,ss)",UsesArrays.class,params);
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
@@ -368,6 +377,13 @@ public class Java15PointcutExpressionTest extends TestCase {
 	  @Pointcut("org.aspectj.weaver.tools.Java15PointcutExpressionTest.NamedPointcutResolution.a() && " + 
 			    "org.aspectj.weaver.tools.Java15PointcutExpressionTest.NamedPointcutResolution.b())")
 	  public void d() {}
+		
+	}
+	
+	private static class UsesArrays {
+		
+		@Pointcut("execution(* *(..)) && args(d,s,ss)")
+		public void pc(Date d, String s, String[] ss) {}
 		
 	}
 }

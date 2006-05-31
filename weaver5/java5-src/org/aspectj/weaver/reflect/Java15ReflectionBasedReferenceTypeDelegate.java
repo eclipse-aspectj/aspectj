@@ -257,7 +257,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 				AjType<?>[] ptypes = pcs[i].getParameterTypes();
 				UnresolvedType[] weaverPTypes = new UnresolvedType[ptypes.length];
 				for (int j = 0; j < weaverPTypes.length; j++) {
-					weaverPTypes[j] = UnresolvedType.forName(ptypes[j].getName());
+					weaverPTypes[j] = this.typeConverter.fromType(ptypes[j].getJavaClass()) ;
 				}
 				pointcuts[i] = new DeferredResolvedPointcutDefinition(getResolvedTypeX(),pcs[i].getModifiers(),pcs[i].getName(),weaverPTypes);				
 			}
