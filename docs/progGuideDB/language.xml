@@ -716,7 +716,7 @@ aspect A  {
           pointcut above is required to avoid the <literal>printPC</literal> 
           pointcut applying to the <literal>System.out.println</literal>
           call in the advice body. If this was not present a recursive call
-          would result as the pointcut would apply to it's own advice.
+          would result as the pointcut would apply to its own advice.
           (See <xref linkend="pitfalls-infiniteLoops"/> for more details.)
       </para>
 

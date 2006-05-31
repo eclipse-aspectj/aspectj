@@ -1071,7 +1071,7 @@ aspect A {
 
         <para>
           The if pointcut picks out join points based on a dynamic property.
-          It's syntax takes an expression, which must evaluate to a boolean
+          its syntax takes an expression, which must evaluate to a boolean
           true or false.  Within this expression, the
           <literal>thisJoinPoint</literal> object is available.  So one
           (extremely inefficient) way of picking out all call join points would
