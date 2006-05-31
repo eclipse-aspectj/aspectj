@@ -94,6 +94,12 @@
      <run class="TopLevelType"/>
     </ajc-test>
     
+    
+    <ajc-test dir="bugs152/pr144602" title="atAJ perthis aspect verification error">
+     <compile files="MyAspect.aj" options="-1.5"/>
+     <run class="MyAspect"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type - 2">
      <compile files="TopLevelType2.java" options="-1.5">
        <message kind="error" line="12"/> <!-- error message is currently crap - its a parser message -->
@@ -339,7 +345,7 @@
       </compile>
     </ajc-test>
     
-    <ajc-test dir="bugs152/pr144465" title="ltw with serialversionUID creation">
+   <ajc-test dir="bugs152/pr144465" title="ltw with serialversionUID creation">
       <compile files="BigHorribleClass.java"/>
       <compile files="AnAspect.java"/>
       <run class="BigHorribleClass" ltw="aop1.xml">

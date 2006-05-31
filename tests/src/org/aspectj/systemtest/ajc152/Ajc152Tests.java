@@ -24,6 +24,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  public void testAtAJVerificationError_pr144602() { runTest("atAJ perthis aspect verification error");}
   public void testLTWAndGeneratingSUID_pr144465() { runTest("ltw with serialversionUID creation"); }
   public void testAspects14PerSingleton_pr122253() { runTest("aspects14 - persingleton");}
   public void testAspects14PerCflow_pr122253() { runTest("aspects14 - percflow");}
