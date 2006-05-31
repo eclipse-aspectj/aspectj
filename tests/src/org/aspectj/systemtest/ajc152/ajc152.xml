@@ -319,6 +319,55 @@
       </compile>
     </ajc-test>
     
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 1">
+      <compile files="MethodExecution.aj" options="-warn:+unusedThrown">
+		<message kind="warning" line="30" text="The declared exception SQLException is not actually thrown by the method needsToThrow() from type C"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 2">
+      <compile files="MethodCall.aj" options="-warn:+unusedThrown">
+		<message kind="warning" line="36" text="The declared exception FileNotFoundException is not actually thrown by the method m4() from type C1"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 3">
+      <compile files="InnerMethodCall.aj" options="-warn:+unusedThrown">
+		<message kind="warning" line="44" text="The declared exception FileNotFoundException is not actually thrown by the method m4() from type C1"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 4">
+      <compile files="AdviceExecution.aj" options="-1.5 -warn:+unusedThrown"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 5">
+      <compile files="ExceptionHandler.aj" options="-warn:+unusedThrown">
+		<message kind="warning" line="34" text="The declared exception MyException is not actually thrown by the method throwingMethod2() from type C"/>
+	  </compile>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 6">
+      <compile files="Initialization.aj" options="-warn:+unusedThrown"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 7">
+      <compile files="ConstructorCall.aj" options="-warn:+unusedThrown"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 8">
+      <compile files="ConstructorExecution.aj" options="-warn:+unusedThrown"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 9">
+      <compile files="MethodCallInDiffClass.aj" options="-warn:+unusedThrown"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 10">
+      <compile files="InnerMethodCall2.aj" options="-warn:+unusedThrown"/>
+    </ajc-test>
+
     <ajc-test dir="bugs152/pr138215" pr="138215" title="Reference pointcut fails inside @DeclareWarning">
       <compile files="pr138215.aj" options="-1.5">
         <message kind="warning" line="17" text="no foos please"/>
