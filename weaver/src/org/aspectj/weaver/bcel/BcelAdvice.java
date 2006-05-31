@@ -28,6 +28,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.IEclipseSourceContext;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
@@ -186,6 +187,34 @@ public class BcelAdvice extends Advice {
     public void implementOn(Shadow s) {
         hasMatchedAtLeastOnce=true;
         BcelShadow shadow = (BcelShadow) s;
+        
+        // remove any unnecessary exceptions if the compiler option is set to
+        // error or warning and if this piece of advice throws exceptions
+        // (bug 129282). This may be expanded to include other compiler warnings
+        // at the moment it only deals with 'declared exception is not thrown'
+        if (!shadow.getWorld().isIgnoringUnusedDeclaredThrownException() 
+        		&& !thrownExceptions.isEmpty()) {
+        	Member member = shadow.getSignature();
+        	if (member instanceof BcelMethod) {
+        		removeUnnecessaryProblems((BcelMethod)member, 
+        				((BcelMethod)member).getDeclarationLineNumber());
+			} else {
+				// we're in a call shadow therefore need the line number of the
+				// declared method (which may be in a different type). However,
+		        // we want to remove the problems from the CompilationResult
+				// held within the current type's EclipseSourceContext so need
+				// the enclosing shadow too
+				ResolvedMember resolvedMember = shadow.getSignature().resolve(shadow.getWorld());
+				if (resolvedMember instanceof BcelMethod 
+						&& shadow.getEnclosingShadow() instanceof BcelShadow) { 
+					Member enclosingMember = shadow.getEnclosingShadow().getSignature();
+					if (enclosingMember instanceof BcelMethod) {
+						removeUnnecessaryProblems((BcelMethod)enclosingMember,
+								((BcelMethod)resolvedMember).getDeclarationLineNumber());
+					}
+				}
+			}
+		}
 
         //FIXME AV - see #75442, this logic is not enough so for now comment it out until we fix the bug
 //        // callback for perObject AJC MightHaveAspect postMunge (#75442)
@@ -250,6 +279,16 @@ public class BcelAdvice extends Advice {
         }
     }
 
+    private void removeUnnecessaryProblems(BcelMethod method, int problemLineNumber) {
+		ISourceContext sourceContext = method.getSourceContext();
+		if (sourceContext instanceof IEclipseSourceContext) {
+			if (sourceContext != null 
+				&& sourceContext instanceof IEclipseSourceContext) {
+				((IEclipseSourceContext)sourceContext).removeUnnecessaryProblems(method, problemLineNumber);						
+			}
+		}
+    }
+    
     // ---- implementations
 	
 	private Collection collectCheckedExceptions(UnresolvedType[] excs) {

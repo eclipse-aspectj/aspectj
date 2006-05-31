@@ -112,6 +112,9 @@ public abstract class World implements Dump.INode {
     // Records whether ASM is around ... so we might use it for delegates
     protected static boolean isASMAround;
     
+	private long errorThreshold;
+	private long warningThreshold;
+    
     static {
     	try {
     		Class c = Class.forName("org.aspectj.org.objectweb.asm.ClassVisitor");
@@ -687,6 +690,31 @@ public abstract class World implements Dump.INode {
 	public void setBehaveInJava5Way(boolean b) {
     	behaveInJava5Way = b;
     }
+	
+	/**
+	 * Set the error and warning threashold which can be taken from 
+	 * CompilerOptions (see bug 129282)
+	 * 
+	 * @param errorThreshold
+	 * @param warningThreshold
+	 */
+	public void setErrorAndWarningThreshold(long errorThreshold, long warningThreshold) {
+		this.errorThreshold = errorThreshold;
+		this.warningThreshold = warningThreshold;
+	}
+	
+	/**
+	 * @return true if ignoring the UnusedDeclaredThrownException and false if
+	 *         this compiler option is set to error or warning
+	 */
+	public boolean isIgnoringUnusedDeclaredThrownException() {
+		// the 0x800000 is CompilerOptions.UnusedDeclaredThrownException
+		// which is ASTNode.bit24
+		if((this.errorThreshold & 0x800000) != 0 
+				|| (this.warningThreshold & 0x800000) != 0)
+			return false;
+		return true;
+	}
 	
 	public void performExtraConfiguration(String config) {
 		if (config==null) return;

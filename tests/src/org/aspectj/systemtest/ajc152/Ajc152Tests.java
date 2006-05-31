@@ -24,6 +24,16 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_1() {runTest("no unnecessary declaration of thrown exception warning - 1");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_2() {runTest("no unnecessary declaration of thrown exception warning - 2");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_3() {runTest("no unnecessary declaration of thrown exception warning - 3");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_4() {runTest("no unnecessary declaration of thrown exception warning - 4");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_5() {runTest("no unnecessary declaration of thrown exception warning - 5");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_6() {runTest("no unnecessary declaration of thrown exception warning - 6");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_7() {runTest("no unnecessary declaration of thrown exception warning - 7");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_8() {runTest("no unnecessary declaration of thrown exception warning - 8");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_9() {runTest("no unnecessary declaration of thrown exception warning - 9");}
+  public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_10() {runTest("no unnecessary declaration of thrown exception warning - 10");}  
   public void testAtAJVerificationError_pr144602() { runTest("atAJ perthis aspect verification error");}
   public void testLTWAndGeneratingSUID_pr144465() { runTest("ltw with serialversionUID creation"); }
   public void testAspects14PerSingleton_pr122253() { runTest("aspects14 - persingleton");}

@@ -18,13 +18,16 @@ import java.io.File;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.weaver.IHasPosition;
-import org.aspectj.weaver.ISourceContext;
+import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult.ProblemsForRemovalFilter;
+import org.aspectj.weaver.IEclipseSourceContext;
+import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.Member;
 
 
 
-public class EclipseSourceContext implements ISourceContext {
+public class EclipseSourceContext implements IEclipseSourceContext {
 	
 	CompilationResult result;
 	int offset = 0;
@@ -73,4 +76,36 @@ public class EclipseSourceContext implements ISourceContext {
     	  result=null;
     }
 
+	public void removeUnnecessaryProblems(Member member, int problemLineNumber) {
+		if (result == null) return; 
+		IProblem[] probs = result.getProblems();
+		for (int i = 0; i < probs.length; i++) {
+			IProblem problem = probs[i];
+			if (problem == null) continue;
+			if (problem.getID() == IProblem.UnusedMethodDeclaredThrownException 
+					|| problem.getID() == IProblem.UnusedConstructorDeclaredThrownException) {
+				if (problem.getSourceLineNumber() == problemLineNumber) {
+					UnusedDeclaredThrownExceptionFilter filter = 
+						new UnusedDeclaredThrownExceptionFilter(problem);
+					result.removeProblems(filter);	
+				}
+			}
+		}
+	}
+
+	private class UnusedDeclaredThrownExceptionFilter implements ProblemsForRemovalFilter {	
+		private IProblem problemToRemove;
+
+		public UnusedDeclaredThrownExceptionFilter(IProblem p) {
+			problemToRemove = p;
+		}
+
+		public boolean accept(IProblem p) {
+			if (p.equals(problemToRemove)) {
+				return true;
+			}
+			return false;
+		}
+
+	}
 }
