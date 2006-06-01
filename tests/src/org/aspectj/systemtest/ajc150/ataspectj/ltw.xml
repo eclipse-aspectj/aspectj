@@ -88,12 +88,18 @@
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest">
         <compile
+                files="ataspectj/EmptyAspect.aj"
+                options="-1.5 -Xlint:ignore"/>
+        <compile
                 files="ataspectj/DumpTest.java,ataspectj/DumpTestTheDump.java,ataspectj/TestHelper.java"
                 options="-1.5"/>
         <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dump.xml"/>
     </ajc-test>
     
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest before and after">
+        <compile
+                files="ataspectj/EmptyAspect.aj"
+                options="-1.5 -Xlint:ignore"/>
         <compile
                 files="com/foo/bar/Test.java, com/foo/bar/Test$$EnhancerByCGLIB$$12345.java"
                 options="-1.5"/>
@@ -106,6 +112,7 @@
                 <line text="info AspectJ Weaver Version"/>
                 <line text="info register classloader"/>
                 <line text="info using"/>
+				<line text="info register aspect ataspectj.EmptyAspect"/>
         		<line text="info weaving 'com.foo.bar.Test'"/>
             </stderr>
         </run>
@@ -119,6 +126,9 @@
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest proxy">
+        <compile
+                files="ataspectj/EmptyAspect.aj"
+                options="-1.5 -Xlint:ignore"/>
         <compile
                 files="ataspectj/TestProxyGenerator.java,ataspectj/TestInterface.java"
                 options="-1.5"/>
@@ -250,7 +260,7 @@
 
     <ajc-test dir="java5/ataspectj" title="Compile time aspects declared to ltw weaver">
         <compile
-                files="ataspectj/ltwlog/MessageHolder.java,ataspectj/ltwreweavable/MainReweavableLogging.java,ataspectj/ltwreweavable/AspectReweavableLogging.java,ataspectj/ltwreweavable/Advisable.java"
+                files="ataspectj/ltwlog/MessageHolder.java,ataspectj/ltwreweavable/MainReweavableLogging.java,ataspectj/ltwreweavable/AspectReweavableLogging.java,ataspectj/ltwreweavable/Advisable.java,ataspectj/ltwreweavable/EmptyAtAspect.java"
                 options="-1.5"
                 outjar="main1.jar"/>
         <ant file="ajc-ant.xml" target="ltw.oldAspectsDeclared" verbose="true"/>

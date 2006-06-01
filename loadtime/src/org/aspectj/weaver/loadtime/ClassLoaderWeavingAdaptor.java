@@ -122,11 +122,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
         // register the definitions
         registerDefinitions(weaver, loader, definitions);
+        if (enabled) {
 
-        //bcelWorld.setResolutionLoader(loader.getParent());//(ClassLoader)null);//
-        
-        // after adding aspects
-        weaver.prepareForWeave();
+            //bcelWorld.setResolutionLoader(loader.getParent());//(ClassLoader)null);//
+            
+            // after adding aspects
+            weaver.prepareForWeave();
+        }
+        else {
+        	bcelWorld = null;
+        	weaver = null;
+        }
     }
 
     /**
@@ -367,6 +373,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     }
                 }
             }
+        }
+        
+        /* We didn't register any aspects so disable the adaptor */
+        if (namespace == null) {
+        	enabled = false;
+    		info("no aspects registered. Disabling weaver for class loader " + getClassLoaderName(loader));
         }
     }
 

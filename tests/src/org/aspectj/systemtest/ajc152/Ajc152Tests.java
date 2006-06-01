@@ -15,7 +15,6 @@ import java.util.List;
 
 import junit.framework.Test;
 
-//import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
@@ -133,6 +132,11 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //	  // public class Pair<F,S> affected by pertarget aspect
 //	  GenericsTests.verifyClassSignature(ajc,"Pair","<F:Ljava/lang/Object;S:Ljava/lang/Object;>Ljava/lang/Object;LIdempotentCache$ajcMightHaveAspect;;");
 //  }
+	
+	public void testNoAspects(){
+//		setSystemProperty(WeavingAdaptor.WEAVING_ADAPTOR_VERBOSE,"true");
+		runTest("Ensure no weaving without included aspects");
+	}
 
   // tests that can't be included for some reason
 

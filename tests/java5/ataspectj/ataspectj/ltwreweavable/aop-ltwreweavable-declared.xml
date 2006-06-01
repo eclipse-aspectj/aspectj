@@ -2,5 +2,6 @@
     <weaver options="-XmessageHandlerClass:ataspectj.ltwlog.MessageHolder"/>
     <aspects>
         <aspect name="ataspectj.ltwreweavable.AspectReweavableLogging"/>
+		<aspect name="ataspectj.ltwreweavable.EmptyAtAspect"/>
     </aspects>
 </aspectj>

@@ -607,5 +607,27 @@
          <!-- should check for expected stderr output here -->
       </run>
     </ajc-test>
+
+	<ajc-test dir="ltw"
+      title="Ensure no weaving without included aspects"
+      keywords="reweavable">
+        <compile
+        	files="TestMain.java, Main.java"
+        >
+        </compile>	
+        <run class="TestMain" ltw="aop-optionsonly.xml">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+				<line text="info AspectJ Weaver Version"/>
+				<line text="info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+				<line text="info using"/>
+				<line text="info no aspects registered. Disabling weaver for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+            </stderr>
+        </run>
+    </ajc-test>
     
 </suite>
