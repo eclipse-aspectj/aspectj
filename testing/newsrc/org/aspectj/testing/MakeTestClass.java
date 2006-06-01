@@ -30,9 +30,9 @@ public class MakeTestClass {
 		" * Copyright (c) 2004 IBM Corporation\n" +
 		" * All rights reserved.\n" + 
 		" * This program and the accompanying materials are made available\n" + 
-		" * under the terms of the Common Public License v1.0\n" + 
+		" * under the terms of the Eclipse Public License v1.0\n" + 
 		" * which accompanies this distribution and is available at\n" + 
-		" * http://www.eclipse.org/legal/cpl-v10.html \n" + 
+		" * http://www.eclipse.org/legal/epl-v10.html \n" + 
 		" * \n" +  
 		" * ******************************************************************/\n" +
 		"package org.aspectj.systemtest.XXX;\n" +

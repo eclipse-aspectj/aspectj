@@ -2,9 +2,9 @@
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved. 
  * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
+ * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
+ * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
@@ -70,7 +70,7 @@ public class Checklics extends MatchingTask {
 		final String LIC_APL =
 			"Apache Software Foundation (http://www.apache.org/)";
 		final String LIC_MPL = "http://aspectj.org/MPL/";
-        final String LIC_CPL = "Common Public License";
+        final String LIC_CPL = "Eclipse Public License";
         final String LIC_ECPL = " Public License";
 		License APL = new License(APACHE_TAG, LIC_APL, APACHE);
 		License MPL = new License(MPL_TAG, LIC_MPL, XEROX);
@@ -553,9 +553,9 @@ class HeaderInfo {
     void writeRest(PrintWriter writer) {
         writer.println(" * All rights reserved. ");
         writer.println(" * This program and the accompanying materials are made available ");
-        writer.println(" * under the terms of the Common Public License v1.0 ");
+        writer.println(" * under the terms of the Eclipse Public License v1.0 ");
         writer.println(" * which accompanies this distribution and is available at ");
-        writer.println(" * http://www.eclipse.org/legal/cpl-v10.html ");
+        writer.println(" * http://www.eclipse.org/legal/epl-v10.html ");
         writer.println(" *  ");
         writer.println(" * Contributors: ");
         writer.println(" *     Xerox/PARC     initial implementation ");
@@ -579,9 +579,9 @@ class HeaderInfo {
  *               2002 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved. 
  * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
+ * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Xerox/PARC     initial implementation
