@@ -3,9 +3,9 @@
  *               2002 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved. 
  * This program and the accompanying materials are made available 
- * under the terms of the Common Public License v1.0 
+ * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/cpl-v10.html 
+ * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
@@ -52,7 +52,7 @@ public class OptionsFrame extends JFrame {
     private static final String ABOUT_TEXT =
         "\nThe AspectJ compiler and core tools are produced by the\n" +
         "AspectJ project.\n\n" +
-        "This software is distributed under the Common Public License\n" +
+        "This software is distributed under the Eclipse Public License\n" +
         "version 1.0, approved by the Open Source Initiative as\n" +
         "conforming to the Open Source Definition.\n\n" +
         "For support or for more information about the AspectJ\n" +
