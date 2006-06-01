@@ -537,8 +537,8 @@ public class BuildArgParser extends Main {
 				buildConfig.setAddSerialVerUID(true);
         	} else if (arg.equals("-Xdev:Pinpoint")) { 
 				buildConfig.setXdevPinpointMode(true);
-        	} else if (arg.equals("-Xjoinpoints:arrayconstruction")) {
-        		buildConfig.setXJoinpoints("arrayconstruction");
+        	} else if (arg.startsWith("-Xjoinpoints:")) {
+        		buildConfig.setXJoinpoints(arg.substring(13));
         	} else if (arg.equals("-noWeave") || arg.equals( "-XnoWeave")) {
 				showWarning("the noweave option is no longer required and is being ignored");
         	} else if (arg.equals( "-XterminateAfterCompilation")) {
