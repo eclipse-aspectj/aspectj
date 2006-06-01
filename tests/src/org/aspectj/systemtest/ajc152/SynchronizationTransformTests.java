@@ -13,6 +13,7 @@ package org.aspectj.systemtest.ajc152;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -283,7 +284,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 	private void saveMethod(File f,LazyMethodGen m) {
 		System.out.println("Saving method into "+f.getName());
 		try {
-			m.print(new PrintStream(f),null);
+			m.print(new PrintStream(new FileOutputStream(f)),null);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			fail("Couldn't store the method in file "+f);
