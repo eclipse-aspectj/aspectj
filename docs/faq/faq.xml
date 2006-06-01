@@ -164,7 +164,10 @@
           <para>How is AspectJ licensed?</para>
         </question>
         <answer>
-          <para>AspectJ 1.1 source code and documentation is available under the
+          <para>AspectJ 1.5.2 source code and documentation is available under the
+            <ulink url="http://eclipse.org/legal/epl-v10.html">Eclipse Public License 1.0</ulink>.
+          </para>
+          <para>AspectJ 1.1 through 1.5.1 source code and documentation is available under the
             <ulink url="http://eclipse.org/legal/cpl-v10.html">Common Public License 1.0</ulink>.
           </para>
           <para>The AspectJ 1.0 tools are open-source software available under the
