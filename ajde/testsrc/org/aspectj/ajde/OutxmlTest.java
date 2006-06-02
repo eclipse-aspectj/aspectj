@@ -13,6 +13,9 @@ package org.aspectj.ajde;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -101,6 +104,30 @@ public class OutxmlTest extends AjdeTestCase {
 		File aopxml = openFile(BIN_DIR + "/" + CUSTOM_AOPXML_NAME);
 		assertFalse(CUSTOM_AOPXML_NAME + " should not exisit",aopxml.exists());
 		assertJarContainsEntry(outjar,CUSTOM_AOPXML_NAME);
+	}
+
+	/**
+	 * Aim: Test "-outxml" option produces a warning if "META-INF/aop.xml 
+	 * already exists in source
+	 * 
+	 */
+	public void testOutxmlToOutjarWithAop_xml () {
+		File f = new File( AjdeTests.testDataPath(PROJECT_DIR + "/src-resources"));
+		Set roots = new HashSet();
+		roots.add(f);
+		ideManager.getProjectProperties().setSourceRoots(roots);
+		File outjar = openFile(OUTJAR_NAME);
+		ideManager.getProjectProperties().setOutJar(outjar.getAbsolutePath());
+		assertTrue("Build failed: " + ideManager.getCompilationSourceLineTasks(),doSynchronousBuild("outxml-to-outjar-with-aop_xml.lst"));
+//		assertTrue("Build warnings: " + ideManager.getCompilationSourceLineTasks(),ideManager.getCompilationSourceLineTasks().isEmpty());
+		assertFalse("Build warnings for exisiting resource expected",ideManager.getCompilationSourceLineTasks().isEmpty());
+		List msgs = NullIdeManager.getIdeManager().getCompilationSourceLineTasks();
+		String msg = ((NullIdeTaskListManager.SourceLineTask)msgs.get(0)).message.getMessage();
+		assertTrue("Wrong message: " + msg,msg.startsWith("-outxml/-outxmlfile option ignored because resource already exists:"));
+		
+		File aopxml = openFile(BIN_DIR + "/" + DEFAULT_AOPXML_NAME);
+		assertFalse(DEFAULT_AOPXML_NAME + " should not exisit",aopxml.exists());
+		assertJarContainsEntry(outjar,DEFAULT_AOPXML_NAME);
 	}
 
 	private void assertJarContainsEntry (File file, String entryName) {

@@ -120,19 +120,32 @@ public class NullIdeProperties implements ProjectPropertiesAdapter {
     }
     
 	public Map getSourcePathResources() {
-		File srcBase = new File(getProjectSourcePath());
-		File[] fromResources = FileUtil.listFiles(srcBase, new FileFilter() {
-			public boolean accept(File pathname) {
-				String name = pathname.getName().toLowerCase();
-				return !name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj");
-			}
-		});
 		Map map = new HashMap();
-		for (int i = 0; i < fromResources.length; i++) {
-			String normPath = FileUtil.normalizedPath(fromResources[i] ,srcBase);
-			map.put(normPath, fromResources[i]);
 
+		/* Allow the user to override the testProjectPath by using sourceRoots */ 
+		File[] srcBase;
+		if (sourceRoots == null || sourceRoots.isEmpty()) {
+			srcBase = new File[] { new File(getProjectSourcePath()) };
 		}
+		else {
+			srcBase = new File[sourceRoots.size()];
+			sourceRoots.toArray(srcBase);
+		}
+		
+		for (int j = 0; j < srcBase.length; j++) {
+			File[] fromResources = FileUtil.listFiles(srcBase[j], new FileFilter() {
+				public boolean accept(File pathname) {
+					String name = pathname.getName().toLowerCase();
+					return !name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj");
+				}
+			});
+			for (int i = 0; i < fromResources.length; i++) {
+				String normPath = FileUtil.normalizedPath(fromResources[i] ,srcBase[j]);
+				map.put(normPath, fromResources[i]);
+
+			}
+		}
+		
 		return map;
 	}
 

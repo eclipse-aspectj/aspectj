@@ -132,6 +132,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	// FIXME asc should this really be in here?
 	private IHierarchy structureModel;
 	public AjBuildConfig buildConfig;
+	private boolean ignoreOutxml;
 	
 	AjState state = new AjState(this);
     
@@ -495,6 +496,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			handler.handleMessage(msg);
 			return;
 		}
+		if (filename.equals(buildConfig.getOutxmlName())) {
+			ignoreOutxml = true;
+			IMessage msg = new Message("-outxml/-outxmlfile option ignored because resource already exists: '" + filename + "'",
+					   IMessage.WARNING,
+					   null,
+					   new SourceLocation(srcLocation,0));
+			handler.handleMessage(msg);
+		}
 		if (zos != null) {
 			ZipEntry newEntry = new ZipEntry(filename);  //??? get compression scheme right
 			
@@ -555,6 +564,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
 	
 	private void writeOutxmlFile () throws IOException {
+		if (ignoreOutxml) return;
+		
 		String filename = buildConfig.getOutxmlName();
 //		System.err.println("? AjBuildManager.writeOutxmlFile() outxml=" + filename);
 //		System.err.println("? AjBuildManager.writeOutxmlFile() outputDir=" + buildConfig.getOutputDir());
