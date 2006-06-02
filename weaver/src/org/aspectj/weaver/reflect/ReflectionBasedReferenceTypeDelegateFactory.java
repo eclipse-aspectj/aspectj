@@ -48,6 +48,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		}
 	}
 	
+	// can return 'null' if we can't find the class
 	private static ReflectionBasedReferenceTypeDelegate create15Delegate(ReferenceType forReferenceType, Class forClass, ClassLoader usingClassLoader, World inWorld) {
 		try {
 			Class delegateClass = Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate");//,false,usingClassLoader);//ReflectionBasedReferenceTypeDelegate.class.getClassLoader()); 
@@ -55,7 +56,8 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 			ret.initialize(forReferenceType,forClass,usingClassLoader,inWorld);
 			return ret;
 		} catch (ClassNotFoundException cnfEx) {
-			throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate was not found on classpath");
+			return null;
+			//throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate was not found on classpath");
 		} catch (InstantiationException insEx) {
 			throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but InstantiationException: " + insEx + " occured");
 		} catch (IllegalAccessException illAccEx) {
@@ -71,7 +73,8 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 				GenericSignatureInformationProvider ret = (GenericSignatureInformationProvider) cons.newInstance(new Object[] {inWorld});
 				return ret;				
 			} catch (ClassNotFoundException cnfEx) {
-				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider was not found on classpath");
+				// drop through and create a 14 provider...
+				// throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider was not found on classpath");
 			} catch (NoSuchMethodException nsmEx) {
 				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + nsmEx + " occured");
 			} catch (InstantiationException insEx) {
@@ -81,9 +84,8 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 			} catch (IllegalAccessException illAcc) {
 				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + illAcc + " occured");								
 			}
-		} else {
-			return new Java14GenericSignatureInformationProvider();
 		}
+		return new Java14GenericSignatureInformationProvider();
 	}
 	
 	/**
