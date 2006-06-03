@@ -206,26 +206,38 @@ abstract class SignatureImpl implements Signature {
 	}
 	
 	// separate implementation so we don't need SoftReference to hold the field...
-	private static final class CacheImpl implements Cache {		
+	private static final class CacheImpl implements Cache {
 		private java.lang.ref.SoftReference toStringCacheRef;
-		public CacheImpl() { 
-			toStringCacheRef = new java.lang.ref.SoftReference(new String[3]);
+
+		public CacheImpl() {
+			makeCache();
 		}
-		
+
 		public String get(int cacheOffset) {
-          String[] cachedArray = array();
-          if (cachedArray == null) {
- 		     return null;
- 		  }
- 		  return cachedArray[cacheOffset];
+			String[] cachedArray = array();
+			if (cachedArray == null) {
+				return null;
+			}
+			return cachedArray[cacheOffset];
 		}
 
 		public void set(int cacheOffset, String result) {
-			array()[cacheOffset] = result;
+			String[] cachedArray = array();
+			if (cachedArray == null) {
+				cachedArray = makeCache();
+			}
+			cachedArray[cacheOffset] = result;
 		}
-		
+
 		private String[] array() {
-			return (String[])toStringCacheRef.get();
+			return (String[]) toStringCacheRef.get();
 		}
+
+		private String[] makeCache() {
+			String[] array = new String[3];
+			toStringCacheRef = new java.lang.ref.SoftReference(array);
+			return array;
+		}
+
 	}
 }
