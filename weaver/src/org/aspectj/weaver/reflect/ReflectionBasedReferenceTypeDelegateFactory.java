@@ -51,13 +51,12 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	// can return 'null' if we can't find the class
 	private static ReflectionBasedReferenceTypeDelegate create15Delegate(ReferenceType forReferenceType, Class forClass, ClassLoader usingClassLoader, World inWorld) {
 		try {
-			Class delegateClass = Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate");//,false,usingClassLoader);//ReflectionBasedReferenceTypeDelegate.class.getClassLoader()); 
+			Class delegateClass = Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate",true,usingClassLoader);//,false,usingClassLoader);//ReflectionBasedReferenceTypeDelegate.class.getClassLoader()); 
 			ReflectionBasedReferenceTypeDelegate ret = (ReflectionBasedReferenceTypeDelegate) delegateClass.newInstance();
 			ret.initialize(forReferenceType,forClass,usingClassLoader,inWorld);
 			return ret;
 		} catch (ClassNotFoundException cnfEx) {
-			return null;
-			//throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate was not found on classpath");
+			throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate was not found on classpath");
 		} catch (InstantiationException insEx) {
 			throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but InstantiationException: " + insEx + " occured");
 		} catch (IllegalAccessException illAccEx) {
