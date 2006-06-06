@@ -22,9 +22,11 @@ import java.util.Map;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.HierarchyWalker;
+import org.aspectj.asm.INameConvertor;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.util.CharOperation;
 
 
 /**
@@ -408,16 +410,22 @@ public class ProgramElement implements IProgramElement {
 		sb.append(name);
 		
 		List ptypes = getParameterTypes();
-		if (ptypes != null) {
+		if (ptypes != null && (!ptypes.isEmpty() 
+				|| this.kind.equals(IProgramElement.Kind.METHOD))
+				|| this.kind.equals(IProgramElement.Kind.CONSTRUCTOR)
+				|| this.kind.equals(IProgramElement.Kind.ADVICE)
+				|| this.kind.equals(IProgramElement.Kind.POINTCUT)
+				|| this.kind.equals(IProgramElement.Kind.INTER_TYPE_METHOD)
+				|| this.kind.equals(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR)) {
 			sb.append('('); 
 			for (Iterator it = ptypes.iterator(); it.hasNext(); ) {
-				String arg = (String)it.next();
+				char[] arg = (char[])it.next();
 				if (getFullyQualifiedArgTypes) {
 					sb.append(arg);
 				} else {
-					int index = arg.lastIndexOf(".");
+					int index = CharOperation.lastIndexOf('.',arg);
 					if (index != -1) {
-						sb.append(arg.substring(index + 1));
+						sb.append(CharOperation.subarray(arg,index+1,arg.length));
 					} else {
 						sb.append(arg);
 					}
@@ -503,17 +511,35 @@ public class ProgramElement implements IProgramElement {
 		//parameterNames = list; 
 	}
 
-	public List getParameterTypes() { 
-		List parameterTypes = (List)kvpairs.get("parameterTypes");
-		return parameterTypes; 
+	public List getParameterTypes() {
+		List l = getParameterSignatures();
+		if (l == null || l.isEmpty()) {
+			return Collections.EMPTY_LIST;
+		}
+		List params = new ArrayList();
+		for (Iterator iter = l.iterator(); iter.hasNext();) {
+			char[] param = (char[])iter.next();
+			INameConvertor convertor = AsmManager.getDefault().getHierarchy().getNameConvertor();
+			if (convertor != null) {
+				params.add(convertor.convertName(param));				
+			} else {
+				params.add(param);
+			}
+		}
+		return params;
 	}
-	public void setParameterTypes(List list) { 
-		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
-		if (list==null || list.size()==0) kvpairs.put("parameterTypes",Collections.EMPTY_LIST);
-		else                               kvpairs.put("parameterTypes",list);
-//		parameterTypes = list; 
+	
+	public List getParameterSignatures() {
+		List parameters = (List)kvpairs.get("parameterSigs");
+		return parameters;
 	}
 
+	public void setParameterSignatures(List list) {
+		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
+		if (list==null || list.size()==0) kvpairs.put("parameterSigs",Collections.EMPTY_LIST);
+		else kvpairs.put("parameterSigs",list);
+	}
+	
 	public String getDetails() {
 		String details = (String)kvpairs.get("details");
 		return details; 

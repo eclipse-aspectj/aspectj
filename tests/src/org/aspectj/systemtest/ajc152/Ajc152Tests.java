@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.ajc152;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Test;
@@ -128,6 +129,60 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testJarChecking_pr137235_2() { runTest("directory with .jar extension"); }
   public void testMakePreMethodNPE_pr136393() { runTest("NPE in makePreMethod");}
 
+  public void testGetParameterHandles_pr141730() {
+	  runTest("new IProgramElement handle methods");  
+	  
+	  checkParametersForIPE("intMethod(int)",IProgramElement.Kind.METHOD,"I",true);
+	  checkParametersForIPE("stringMethod(java.lang.String)",IProgramElement.Kind.METHOD,"Ljava/lang/String;",true);
+	  checkParametersForIPE("myClassMethod(MyClass)",IProgramElement.Kind.METHOD,"LMyClass;",true);
+	  checkParametersForIPE("genericMethod(java.util.List<java.lang.String>)",IProgramElement.Kind.METHOD,"Pjava/util/List<Ljava/lang/String;>;",true);
+	  checkParametersForIPE("genericMethod2(MyGenericClass<java.lang.String,MyClass>)",IProgramElement.Kind.METHOD,"PMyGenericClass<Ljava/lang/String;LMyClass;>;",true);
+	  checkParametersForIPE("main(java.lang.String[])",IProgramElement.Kind.METHOD,"[Ljava/lang/String;",true);
+	  checkParametersForIPE("multiMethod(java.lang.String[][])",IProgramElement.Kind.METHOD,"[[Ljava/lang/String;",true);
+	  checkParametersForIPE("intArray(int[])",IProgramElement.Kind.METHOD,"[I",true);
+	  
+  	  IHierarchy top = AsmManager.getDefault().getHierarchy();      
+  	  IProgramElement twoArgsMethod = top.findElementForLabel(
+  			  top.getRoot(),IProgramElement.Kind.METHOD,"twoArgsMethod(int,java.lang.String)");
+      assertNotNull("Couldn't find 'twoArgsMethod(int,java.lang.String)' element in the tree",twoArgsMethod);
+      List l = twoArgsMethod.getParameterSignatures();
+      assertEquals("",((char[])l.get(0))[0],'I');
+      boolean eq = equals(((char[])l.get(1)),"Ljava/lang/String;".toCharArray());
+      assertTrue("expected parameter to be 'Ljava/lang/String;' but found '" +
+        		new String(((char[])l.get(1))) + "'",eq);
+  }
+  
+  public void testGetParameterTypes_pr141730() {
+	  runTest("new IProgramElement handle methods"); 
+	  
+	  checkParametersForIPE("intMethod(int)",IProgramElement.Kind.METHOD,"int",false);
+	  checkParametersForIPE("stringMethod(java.lang.String)",IProgramElement.Kind.METHOD,"java.lang.String",false);
+	  checkParametersForIPE("myClassMethod(MyClass)",IProgramElement.Kind.METHOD,"MyClass",false);
+	  checkParametersForIPE("genericMethod(java.util.List<java.lang.String>)",IProgramElement.Kind.METHOD,"java.util.List<java.lang.String>",false);
+	  checkParametersForIPE("genericMethod2(MyGenericClass<java.lang.String,MyClass>)",IProgramElement.Kind.METHOD,"MyGenericClass<java.lang.String,MyClass>",false);
+	  checkParametersForIPE("main(java.lang.String[])",IProgramElement.Kind.METHOD,"java.lang.String[]",false);
+	  checkParametersForIPE("multiMethod(java.lang.String[][])",IProgramElement.Kind.METHOD,"java.lang.String[][]",false);
+	  checkParametersForIPE("intArray(int[])",IProgramElement.Kind.METHOD,"int[]",false);
+  }
+  
+  public void testToSignatureString_pr141730() {
+	  runTest("new IProgramElement handle methods"); 
+	  
+	  checkSignatureOfIPE("main(java.lang.String[])",IProgramElement.Kind.METHOD);
+	  checkSignatureOfIPE("C",IProgramElement.Kind.CLASS);
+	  checkSignatureOfIPE("C()",IProgramElement.Kind.CONSTRUCTOR);
+	  checkSignatureOfIPE("method()",IProgramElement.Kind.METHOD);
+	  checkSignatureOfIPE("p()",IProgramElement.Kind.POINTCUT);
+	  checkSignatureOfIPE("before(): p..",IProgramElement.Kind.ADVICE,"before()");
+	  checkSignatureOfIPE("MyClass.method()",IProgramElement.Kind.INTER_TYPE_METHOD);
+	  checkSignatureOfIPE("multiMethod(java.lang.String[][])",IProgramElement.Kind.METHOD);
+	  checkSignatureOfIPE("intArray(int[])",IProgramElement.Kind.METHOD);
+	  checkSignatureOfIPE("MyClass.MyClass()",IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
+  }
+
+  
+
+  
 //  public void testFunkyGenericErrorWithITDs_pr126355_2() { 
 //	  runTest("bizarre generic error with itds - 2");
 //	  // public class Pair<F,S> affected by pertarget aspect
@@ -143,6 +198,55 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   // Not valid whilst the ajc compiler forces debug on (ignores -g:none) - it will be green but is invalid, trust me
   // public void testLongWindedMessages_pr129408() { runTest("long winded ataj messages");}
+
+  // ---------------- helper methods ---------------
+  
+   /**
+    * taken from CharOperation
+    */
+	private final boolean equals(char[] first, char[] second) {
+		if (first == second)
+			return true;
+		if (first == null || second == null)
+			return false;
+		if (first.length != second.length)
+			return false;
+
+		for (int i = first.length; --i >= 0;)
+			if (first[i] != second[i])
+				return false;
+		return true;
+	}
+  
+	private void checkParametersForIPE(String ipeLabel, IProgramElement.Kind kind, String expectedParm, boolean getHandles) {
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IProgramElement ipe = top.findElementForLabel(top.getRoot(),kind,ipeLabel);
+	    assertNotNull("Couldn't find '" + ipeLabel + "' element in the tree",ipe);
+	    List l = new ArrayList();
+	    if (getHandles) {
+	    	l = ipe.getParameterSignatures();
+	    } else {
+	    	l = ipe.getParameterTypes();
+	    }
+	    boolean eq = equals(((char[])l.get(0)),expectedParm.toCharArray());
+	    assertTrue("expected parameter to be '" + expectedParm + "' but found '" +
+	      		new String(((char[])l.get(0))) + "'",eq);
+	}
+  
+	private void checkSignatureOfIPE(String ipeLabel, IProgramElement.Kind kind) {
+		checkSignatureOfIPE(ipeLabel,kind,ipeLabel);
+	}
+	
+	private void checkSignatureOfIPE(String ipeLabel, IProgramElement.Kind kind, String expectedSig) {
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IProgramElement ipe = top.findElementForLabel(
+				  top.getRoot(),kind,ipeLabel);
+	    assertNotNull("Couldn't find '" + ipeLabel + "' element in the tree",ipe);
+      	assertEquals("expected signature to be '"+ expectedSig + "' but was " +
+				  ipe.toSignatureString(true),expectedSig,ipe.toSignatureString(true));
+		
+	}
+	
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc152Tests.class);

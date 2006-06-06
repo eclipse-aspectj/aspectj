@@ -109,7 +109,7 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	  IProgramElement pe2 = top.findElementForType("pkg","printParameters");
   	  assertNotNull("Couldn't find 'printParameters' element in the tree",pe2);
   	  // the argument is org.aspectj.lang.JoinPoint, check that this is added
-  	  assertFalse("printParameters method should have arguments",pe2.getParameterTypes().isEmpty());	  
+  	  assertFalse("printParameters method should have arguments",pe2.getParameterSignatures().isEmpty());	  
   }
 
   public void testParameterizedEnum_pr126316() {
@@ -156,8 +156,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   			  IProgramElement.Kind.INTER_TYPE_FIELD,"Bar.children");  	   	 
   	  assertNotNull("Couldn't find 'Bar.children' element in the tree",field);
   	  IProgramElement constructor = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR,"Foo.Foo(List<T>)");  	   	 
-  	  assertNotNull("Couldn't find 'Foo.Foo(List<T>)' element in the tree",constructor);
+  			  IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR,"Foo.Foo(java.util.List<T>)");  	   	 
+  	  assertNotNull("Couldn't find 'Foo.Foo(java.util.List<T>)' element in the tree",constructor);
   	  
   	  // check that the relationship map has 'itd method declared on bar'
   	  List matches = AsmManager.getDefault().getRelationshipMap().get(method);

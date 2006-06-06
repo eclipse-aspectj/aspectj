@@ -102,4 +102,7 @@ public interface IHierarchy extends Serializable {
 	public void flushHandleMap();
 
 	public void updateHandleMap(Set deletedFiles);
+	
+	public void setNameConvertor(INameConvertor convertor);
+	public INameConvertor getNameConvertor();
 }

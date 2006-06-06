@@ -25,7 +25,14 @@ import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -39,13 +46,6 @@ import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.ReferencePointcut;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.TypePatternList;
-import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 /**
  * @author Mik Kersten
@@ -296,34 +296,31 @@ public class AsmElementFormatter {
 		Argument[] argArray = md.arguments;
 		if (argArray == null) {
 			pe.setParameterNames(Collections.EMPTY_LIST);
-			pe.setParameterTypes(Collections.EMPTY_LIST);
+			pe.setParameterSignatures(Collections.EMPTY_LIST);
 		} else {
 			List names = new ArrayList();
-			List types = new ArrayList();
-			
+			List paramSigs = new ArrayList();
 			for (int i = 0; i < argArray.length; i++) {
 				String argName = new String(argArray[i].name);
-				String argType = "<UnknownType>"; // pr135052
-				TypeReference typeR = argArray[i].type;
-				if (typeR!=null) {
-					TypeBinding typeB = typeR.resolvedType;
-					if (typeB==null) {
-						if (typeR.getTypeName()!=null) 
-							  argType = CharOperation.toString(typeR.getTypeName());						
-					} else {
-						argType = typeB.debugName();
+				//String argType = "<UnknownType>"; // pr135052
+				if (acceptArgument(argName, argArray[i].type.toString())) {
+					TypeReference typeR = argArray[i].type;
+					if (typeR!=null) {
+						TypeBinding typeB = typeR.resolvedType;
+						if (typeB==null) {
+							typeB = typeR.resolveType(md.scope);
+						}
+						EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(md.scope);
+						UnresolvedType ut = factory.fromBinding(typeB);
+						paramSigs.add(ut.getSignature().toCharArray());
 					}
-				}
-				
-				
-//				String argType = argArray[i].type.resolvedType.debugName();
-				if (acceptArgument(argName, argArray[i].type.toString())) { 
 					names.add(argName);
-					types.add(argType);
-				}   
+				}
 			}
 			pe.setParameterNames(names);
-			pe.setParameterTypes(types);
+			if (!paramSigs.isEmpty()) {
+				pe.setParameterSignatures(paramSigs);
+			}
 		}
 	}
 

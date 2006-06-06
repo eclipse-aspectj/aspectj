@@ -116,11 +116,12 @@ public interface IProgramElement extends Serializable {
 	public String toLabelString();
 	public String toLabelString(boolean getFullyQualifiedArgTypes);
 
-	public List getParameterTypes();
-	public void setParameterTypes(List list);
-
 	public List getParameterNames();
 	public void setParameterNames(List list);
+	
+	public List getParameterSignatures();
+	public void setParameterSignatures(List list);
+	public List getParameterTypes();
 	
 	/**
 	 * The format of the string handle is not specified, but is stable across 

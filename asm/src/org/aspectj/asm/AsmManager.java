@@ -77,8 +77,9 @@ public class AsmManager {
         handleProvider = new OptimizedFullPathHandleProvider(); 
     }
 	
-	public void createNewASM() {
+	public void createNewASM(INameConvertor convertor) {
 		hierarchy = new AspectJElementHierarchy();
+		hierarchy.setNameConvertor(convertor);
 		mapper = new RelationshipMap(hierarchy);
 	}
 	
