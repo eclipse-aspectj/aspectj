@@ -278,11 +278,21 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
         }
         assertTrue("Errors:"+errors.toString(),errors.length()==0);
         
+        // the good old ibm vm seems to offer clinit through its reflection support (see pr145322)
+        if (rms1.length==rms2.length) return;
         if (barfIfClinitMissing) {
         	// the numbers must be exact
             assertEquals(rms1.length,rms2.length);        	
         } else {
         	// the numbers can be out by one in favour of bcel
+        	if (rms1.length!=(rms2.length+1)) {
+        		for (int i = 0; i < rms1.length; i++) {
+					System.err.println("bcel"+i+" is "+rms1[i]);
+				}
+        		for (int i = 0; i < rms2.length; i++) {
+					System.err.println("refl"+i+" is "+rms2[i]);
+				}
+        	}
         	assertTrue("Should be one extra (clinit) in BCEL case, but bcel="+rms1.length+" reflect="+rms2.length,rms1.length==rms2.length+1);
         }
     }
