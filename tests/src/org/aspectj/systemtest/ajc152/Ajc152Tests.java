@@ -24,7 +24,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-  //public void testBrokenIfArgsCflowAtAj_pr145018() { runTest("ataj crashing with cflow, if and args");}
+//  public void testverifyErrNoTypeCflowField_pr145693() {runTest("verifyErrNoTypeCflowField");}
+//  public void testBrokenIfArgsCflowAtAj_pr145018() { runTest("ataj crashing with cflow, if and args");}
+//  public void testItdCallingGenericMethod_pr145391() { runTest("itd calling generic method");}
+//  public void testItdCallingGenericMethod_pr145391_2() { runTest("itd calling generic method - 2");}
   public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_1() {runTest("no unnecessary declaration of thrown exception warning - 1");}
   public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_2() {runTest("no unnecessary declaration of thrown exception warning - 2");}
   public void testNoUnnecessaryDeclarationOfThrownExcp_pr129282_3() {runTest("no unnecessary declaration of thrown exception warning - 3");}
