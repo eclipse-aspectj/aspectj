@@ -52,7 +52,7 @@ public class IncrementalStateManager {
 			element.wipeAllKnowledge();
 		}
 		incrementalStates.clear();
-		AsmManager.getDefault().createNewASM(null); // forget what you know...
+		AsmManager.getDefault().createNewASM(); // forget what you know...
 	}
 	
 	public static Set getConfigFilesKnown() {

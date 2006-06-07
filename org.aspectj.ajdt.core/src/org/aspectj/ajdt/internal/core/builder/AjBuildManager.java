@@ -49,7 +49,6 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
-import org.aspectj.asm.INameConvertor;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.AbortException;
@@ -84,8 +83,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFacto
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.TypeFactory;
-import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -634,7 +631,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
      	AsmManager.setCreatingModel(config.isEmacsSymMode() || config.isGenerateModelMode());
      	if (!AsmManager.isCreatingModel()) return;
 
-		AsmManager.getDefault().createNewASM(new NameConverter());
+		AsmManager.getDefault().createNewASM();
 		// AsmManager.getDefault().getRelationshipMap().clear();
 		IHierarchy model = AsmManager.getDefault().getHierarchy();
         String rootLabel = "<root>";
@@ -1276,16 +1273,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				sb.append(File.pathSeparator);				
 			}
 			return sb.toString();
-		}
-		
-	}
-	
-	private class NameConverter implements INameConvertor {
-
-		public char[] convertName(char[] name) {
-			UnresolvedType ut = TypeFactory.createTypeFromSignature(new String(name));
-			ResolvedType rt = getWorld().resolve(ut);
-			return rt.getName().toCharArray();
 		}
 		
 	}

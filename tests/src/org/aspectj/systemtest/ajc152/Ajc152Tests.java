@@ -21,6 +21,7 @@ import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.util.CharOperation;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -150,7 +151,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
       assertNotNull("Couldn't find 'twoArgsMethod(int,java.lang.String)' element in the tree",twoArgsMethod);
       List l = twoArgsMethod.getParameterSignatures();
       assertEquals("",((char[])l.get(0))[0],'I');
-      boolean eq = equals(((char[])l.get(1)),"Ljava/lang/String;".toCharArray());
+      boolean eq = CharOperation.equals(((char[])l.get(1)),"Ljava/lang/String;".toCharArray());
       assertTrue("expected parameter to be 'Ljava/lang/String;' but found '" +
         		new String(((char[])l.get(1))) + "'",eq);
   }
@@ -204,23 +205,6 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   // ---------------- helper methods ---------------
   
-   /**
-    * taken from CharOperation
-    */
-	private final boolean equals(char[] first, char[] second) {
-		if (first == second)
-			return true;
-		if (first == null || second == null)
-			return false;
-		if (first.length != second.length)
-			return false;
-
-		for (int i = first.length; --i >= 0;)
-			if (first[i] != second[i])
-				return false;
-		return true;
-	}
-  
 	private void checkParametersForIPE(String ipeLabel, IProgramElement.Kind kind, String expectedParm, boolean getHandles) {
 		IHierarchy top = AsmManager.getDefault().getHierarchy();
 		IProgramElement ipe = top.findElementForLabel(top.getRoot(),kind,ipeLabel);
@@ -231,7 +215,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	    } else {
 	    	l = ipe.getParameterTypes();
 	    }
-	    boolean eq = equals(((char[])l.get(0)),expectedParm.toCharArray());
+	    boolean eq = CharOperation.equals(((char[])l.get(0)),expectedParm.toCharArray());
 	    assertTrue("expected parameter to be '" + expectedParm + "' but found '" +
 	      		new String(((char[])l.get(0))) + "'",eq);
 	}

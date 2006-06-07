@@ -29,7 +29,6 @@ public class AspectJElementHierarchy implements IHierarchy {
 	
 	protected  IProgramElement root = null;
     protected String configFile = null;
-    private transient INameConvertor convertor = null;
 
     private Map fileMap = null;
     private Map handleMap = null;
@@ -448,14 +447,6 @@ public class AspectJElementHierarchy implements IHierarchy {
     // XXX shouldn't be aware of the delimiter
 	private String getFilename(String hid) {
 		return hid.substring(0,hid.indexOf("|"));
-	}
-
-	public void setNameConvertor(INameConvertor convertor) {
-		this.convertor = convertor;
-	}
-
-	public INameConvertor getNameConvertor() {
-		return convertor;
 	}
 
 }

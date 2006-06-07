@@ -22,11 +22,11 @@ import java.util.Map;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.HierarchyWalker;
-import org.aspectj.asm.INameConvertor;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.CharOperation;
+import org.aspectj.util.NameConvertor;
 
 
 /**
@@ -519,12 +519,7 @@ public class ProgramElement implements IProgramElement {
 		List params = new ArrayList();
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			char[] param = (char[])iter.next();
-			INameConvertor convertor = AsmManager.getDefault().getHierarchy().getNameConvertor();
-			if (convertor != null) {
-				params.add(convertor.convertName(param));				
-			} else {
-				params.add(param);
-			}
+			params.add(NameConvertor.convertFromSignature(param));
 		}
 		return params;
 	}

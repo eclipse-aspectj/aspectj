@@ -45,4 +45,62 @@ public class CharOperation {
 		return -1;
 	}
 	
+	/**
+	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
+	 */	
+	public static final int indexOf(char toBeFound, char[] array) {
+		for (int i = 0; i < array.length; i++)
+			if (toBeFound == array[i])
+				return i;
+		return -1;
+	}
+	
+	/**
+	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
+	 */	
+	public static final char[] concat(char[] first, char[] second) {
+		if (first == null)
+			return second;
+		if (second == null)
+			return first;
+
+		int length1 = first.length;
+		int length2 = second.length;
+		char[] result = new char[length1 + length2];
+		System.arraycopy(first, 0, result, 0, length1);
+		System.arraycopy(second, 0, result, length1, length2);
+		return result;
+	}
+	
+	/**
+	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
+	 */	
+	public static final boolean equals(char[] first, char[] second) {
+		if (first == second)
+			return true;
+		if (first == null || second == null)
+			return false;
+		if (first.length != second.length)
+			return false;
+
+		for (int i = first.length; --i >= 0;)
+			if (first[i] != second[i])
+				return false;
+		return true;
+	}
+	
+	/**
+	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
+	 */	
+	public static final void replace(
+		char[] array,
+		char toBeReplaced,
+		char replacementChar) {
+		if (toBeReplaced != replacementChar) {
+			for (int i = 0, max = array.length; i < max; i++) {
+				if (array[i] == toBeReplaced)
+					array[i] = replacementChar;
+			}
+		}
+	}
 }
