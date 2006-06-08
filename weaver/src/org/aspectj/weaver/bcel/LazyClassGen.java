@@ -1299,17 +1299,12 @@ public final class LazyClassGen {
 	// and if one of them is missing we fail, and it's not worth failing just to put out
 	// a warning message!
 	private boolean implementsSerializable(ResolvedType aType) {
+		if (aType.getSignature().equals(UnresolvedType.SERIALIZABLE.getSignature())) return true;
+		
 		ResolvedType[] interfaces = aType.getDeclaredInterfaces();
 		for (int i = 0; i < interfaces.length; i++) {
-			if (interfaces[i].getSignature().equals(UnresolvedType.SERIALIZABLE.getSignature())) {
-				return true;
-			} else {
-				if (interfaces[i].isMissing()) continue;
-				ResolvedType superInterface = interfaces[i].getSuperclass();
-				if (superInterface != null && !superInterface.isMissing()) {
-					if (implementsSerializable(superInterface)) return true;
-				}
-			}
+			if (interfaces[i].isMissing()) continue;
+			if (implementsSerializable(interfaces[i])) return true;
 		}
 		ResolvedType superType = aType.getSuperclass();
 		if (superType != null && !superType.isMissing()) {
