@@ -36,6 +36,8 @@ import org.aspectj.apache.bcel.generic.CPInstruction;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
+import org.aspectj.apache.bcel.generic.GOTO;
+import org.aspectj.apache.bcel.generic.GOTO_W;
 import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
 import org.aspectj.apache.bcel.generic.IndexedInstruction;
 import org.aspectj.apache.bcel.generic.Instruction;
@@ -45,7 +47,11 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
+import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.LocalVariableInstruction;
+import org.aspectj.apache.bcel.generic.LocalVariableTag;
+import org.aspectj.apache.bcel.generic.MONITORENTER;
+import org.aspectj.apache.bcel.generic.MONITOREXIT;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.NEW;
@@ -476,6 +482,11 @@ class BcelClassWeaver implements IClassWeaver {
         for (Iterator i = methodGens.iterator(); i.hasNext();) {
             LazyMethodGen mg = (LazyMethodGen)i.next();
 			if (! mg.hasBody()) continue;
+			if (world.isJoinpointSynchronizationEnabled() && 
+				world.areSynchronizationPointcutsInUse() && 
+				mg.getMethod().isSynchronized()) {
+				transformSynchronizedMethod(mg);
+			}
 			boolean shadowMungerMatched = match(mg);
 			if (shadowMungerMatched) {
 				// For matching mungers, add their declaring aspects to the list that affected this type
@@ -491,7 +502,6 @@ class BcelClassWeaver implements IClassWeaver {
 			implement(mg);
 		}
 			
-        
         // if we matched any initialization shadows, we inline and weave
 		if (!initializationShadows.isEmpty()) {
 			// Repeat next step until nothing left to inline...cant go on 
@@ -1418,6 +1428,441 @@ class BcelClassWeaver implements IClassWeaver {
 		recipient.getBody().append(call, inlineInstructions);
 		Utility.deleteInstruction(call, recipient);
 	}
+	
+//	public BcelVar genTempVar(UnresolvedType typeX) {
+//	   return new BcelVar(typeX.resolve(world), genTempVarIndex(typeX.getSize()));
+//	}
+//	 
+//    private int genTempVarIndex(int size) {
+//        return enclosingMethod.allocateLocal(size);
+//    }
+	
+	
+	
+	/**
+	 * Input method is a synchronized method, we remove the bit flag for synchronized and
+	 * then insert a try..finally block
+	 * 
+	 * Some jumping through firey hoops required - depending on the input code level (1.5 or not)
+	 * we may or may not be able to use the LDC instruction that takes a class literal (doesnt on
+	 * <1.5).
+	 * 
+	 * FIXME asc Before promoting -Xjoinpoints:synchronization to be a standard option, this needs a bunch of
+	 * tidying up - there is some duplication that can be removed.  
+	 */
+	public static void transformSynchronizedMethod(LazyMethodGen synchronizedMethod) {
+//		System.err.println("DEBUG: Transforming synchronized method: "+synchronizedMethod.getName());
+		final InstructionFactory fact	= synchronizedMethod.getEnclosingClass().getFactory();
+		InstructionList body    = synchronizedMethod.getBody();
+		InstructionList prepend = new InstructionList();
+		Type enclosingClassType = BcelWorld.makeBcelType(synchronizedMethod.getEnclosingClass().getType());
+		Type javaLangClassType  = Type.getType(Class.class);
+		
+		
+		// STATIC METHOD TRANSFORMATION
+		if (synchronizedMethod.isStatic()) {
+			
+			// What to do here depends on the level of the class file!
+			// LDC can handle class literals in Java5 and above *sigh*
+			if (synchronizedMethod.getEnclosingClass().isAtLeastJava5()) {
+				// MONITORENTER logic:
+				// 0:   ldc     #2; //class C
+				// 2:   dup
+				// 3:   astore_0
+				// 4:   monitorenter
+				int slotForLockObject = synchronizedMethod.allocateLocal(enclosingClassType);
+				prepend.append(fact.createConstant(enclosingClassType));
+				prepend.append(InstructionFactory.createDup(1));
+				prepend.append(InstructionFactory.createStore(enclosingClassType, slotForLockObject));
+				prepend.append(InstructionFactory.MONITORENTER);
+				
+				// MONITOREXIT logic:
+				
+				// We basically need to wrap the code from the method in a finally block that
+				// will ensure monitorexit is called.  Content on the finally block seems to
+				// be always:
+				// 
+				// E1: ALOAD_1
+				//     MONITOREXIT
+				//     ATHROW
+				//
+				// so lets build that:
+				InstructionList finallyBlock = new InstructionList();
+				finallyBlock.append(InstructionFactory.createLoad(Type.getType(java.lang.Class.class),slotForLockObject));
+				finallyBlock.append(InstructionConstants.MONITOREXIT);
+				finallyBlock.append(InstructionConstants.ATHROW);
+				
+//				finally -> E1
+//				|               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 21)
+//				|               LDC "hello"
+//				|               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+//				|               ALOAD_1   (line 20)
+//				|               MONITOREXIT
+//				finally -> E1
+//				                GOTO L0
+//				finally -> E1
+//				|           E1: ALOAD_1
+//				|               MONITOREXIT
+//				finally -> E1
+//				                ATHROW
+//				            L0: RETURN   (line 23)
+				
+				// search for 'returns' and make them jump to the aload_<n>,monitorexit
+				InstructionHandle walker = body.getStart();
+				List rets = new ArrayList();
+				while (walker!=null) { 
+					if (walker.getInstruction() instanceof ReturnInstruction) {
+						rets.add(walker);
+					}
+					walker = walker.getNext();
+				}
+				if (rets.size()>0) {
+					// need to ensure targeters for 'return' now instead target the load instruction
+					// (so we never jump over the monitorexit logic)
+					
+					for (Iterator iter = rets.iterator(); iter.hasNext();) {
+						InstructionHandle element = (InstructionHandle) iter.next();
+						InstructionList monitorExitBlock = new InstructionList();
+						monitorExitBlock.append(InstructionFactory.createLoad(enclosingClassType,slotForLockObject));
+						monitorExitBlock.append(InstructionConstants.MONITOREXIT);
+						//monitorExitBlock.append(Utility.copyInstruction(element.getInstruction()));
+						//element.setInstruction(InstructionFactory.createLoad(classType,slotForThis));
+						InstructionHandle monitorExitBlockStart = body.insert(element,monitorExitBlock);
+						
+						// now move the targeters from the RET to the start of the monitorexit block
+						InstructionTargeter[] targeters = element.getTargeters();
+						if (targeters!=null) {
+							for (int i = 0; i < targeters.length; i++) {
+						
+								InstructionTargeter targeter = targeters[i];
+								// what kinds are there?
+								if (targeter instanceof LocalVariableTag) {
+									// ignore
+								} else if (targeter instanceof LineNumberTag) {
+									// ignore
+								} else if (targeter instanceof GOTO || targeter instanceof GOTO_W) {
+									// move it...
+									targeter.updateTarget(element, monitorExitBlockStart);	
+								} else if (targeter instanceof BranchInstruction) {
+									// move it
+									targeter.updateTarget(element, monitorExitBlockStart);
+								} else {
+									throw new RuntimeException("Unexpected targeter encountered during transform: "+targeter);
+								}
+							}		
+						}
+					}
+				}
+			
+				// now the magic, putting the finally block around the code
+		        InstructionHandle finallyStart = finallyBlock.getStart();
+
+				InstructionHandle tryPosition   = body.getStart();
+				InstructionHandle catchPosition = body.getEnd();
+				body.insert(body.getStart(),prepend); // now we can put the monitorenter stuff on
+				synchronizedMethod.getBody().append(finallyBlock);			
+				synchronizedMethod.addExceptionHandler(tryPosition, catchPosition,finallyStart,null/*==finally*/,false);
+				synchronizedMethod.addExceptionHandler(finallyStart,finallyStart.getNext(),finallyStart,null,false);
+			} else {
+
+				// TRANSFORMING STATIC METHOD ON PRE JAVA5
+				
+				// Hideous nightmare, class literal references prior to Java5
+			
+			// YIKES! this is just the code for MONITORENTER !
+//		0:   getstatic       #59; //Field class$1:Ljava/lang/Class;
+//		3:   dup
+//		4:   ifnonnull       32
+//		7:   pop
+// try
+//		8:   ldc     #61; //String java.lang.String
+//		10:  invokestatic    #44; //Method java/lang/Class.forName:(Ljava/lang/String;)Ljava/lang/Class;
+//		13:  dup
+// catch
+//		14:  putstatic       #59; //Field class$1:Ljava/lang/Class;
+//		17:  goto    32
+//		20:  new     #46; //class java/lang/NoClassDefFoundError
+//		23:  dup_x1
+//		24:  swap
+//		25:  invokevirtual   #52; //Method java/lang/Throwable.getMessage:()Ljava/lang/String;
+//		28:  invokespecial   #54; //Method java/lang/NoClassDefFoundError."<init>":(Ljava/lang/String;)V
+//		31:  athrow
+//		32:  dup <-- partTwo (branch target)
+//		33:  astore_0
+//		34:  monitorenter
+//			
+//			plus exceptiontable entry!
+//			  8    13    20   Class java/lang/ClassNotFoundException
+			Type classType = BcelWorld.makeBcelType(synchronizedMethod.getEnclosingClass().getType());
+			Type clazzType = Type.getType(Class.class);
+		
+			InstructionList parttwo = new InstructionList();
+			parttwo.append(InstructionFactory.createDup(1));
+			int slotForThis = synchronizedMethod.allocateLocal(classType);
+			parttwo.append(InstructionFactory.createStore(clazzType, slotForThis)); // ? should be the real type ? String or something?
+			parttwo.append(InstructionFactory.MONITORENTER);
+		
+			String fieldname = synchronizedMethod.getEnclosingClass().allocateField("class$");
+			System.err.println("Going to use field name "+fieldname);
+			Field f = new FieldGen(Modifier.STATIC | Modifier.PRIVATE,
+				    Type.getType(Class.class),fieldname,synchronizedMethod.getEnclosingClass().getConstantPoolGen()).getField();
+			synchronizedMethod.getEnclosingClass().addField(f, null);
+			
+//			10:  invokestatic    #44; //Method java/lang/Class.forName:(Ljava/lang/String;)Ljava/lang/Class;
+//			13:  dup
+//			14:  putstatic       #59; //Field class$1:Ljava/lang/Class;
+//			17:  goto    32
+//			20:  new     #46; //class java/lang/NoClassDefFoundError
+//			23:  dup_x1
+//			24:  swap
+//			25:  invokevirtual   #52; //Method java/lang/Throwable.getMessage:()Ljava/lang/String;
+//			28:  invokespecial   #54; //Method java/lang/NoClassDefFoundError."<init>":(Ljava/lang/String;)V
+//			31:  athrow
+			prepend.append(fact.createGetStatic("C", fieldname, Type.getType(Class.class)));
+			prepend.append(InstructionFactory.createDup(1));
+			prepend.append(InstructionFactory.createBranchInstruction(Constants.IFNONNULL, parttwo.getStart()));
+			prepend.append(InstructionFactory.POP);
+			
+			prepend.append(fact.createConstant("C"));
+			InstructionHandle tryInstruction = prepend.getEnd();
+			prepend.append(fact.createInvoke("java.lang.Class", "forName", clazzType,new Type[]{ Type.getType(String.class)}, Constants.INVOKESTATIC));
+			InstructionHandle catchInstruction = prepend.getEnd();
+			prepend.append(InstructionFactory.createDup(1));
+			
+			prepend.append(fact.createPutStatic(synchronizedMethod.getEnclosingClass().getType().getName(), fieldname, Type.getType(Class.class)));
+			prepend.append(InstructionFactory.createBranchInstruction(Constants.GOTO, parttwo.getStart()));
+			
+			// start of catch block 
+			InstructionList catchBlockForLiteralLoadingFail = new InstructionList();
+			catchBlockForLiteralLoadingFail.append(fact.createNew((ObjectType)Type.getType(NoClassDefFoundError.class)));
+			catchBlockForLiteralLoadingFail.append(InstructionFactory.createDup_1(1));
+			catchBlockForLiteralLoadingFail.append(InstructionFactory.SWAP);
+			catchBlockForLiteralLoadingFail.append(fact.createInvoke("java.lang.Throwable", "getMessage", Type.getType(String.class),new Type[]{}, Constants.INVOKEVIRTUAL));
+			catchBlockForLiteralLoadingFail.append(fact.createInvoke("java.lang.NoClassDefFoundError", "<init>", Type.VOID,new Type[]{ Type.getType(String.class)}, Constants.INVOKESPECIAL));
+			catchBlockForLiteralLoadingFail.append(InstructionFactory.ATHROW);
+			InstructionHandle catchBlockStart = catchBlockForLiteralLoadingFail.getStart();
+			prepend.append(catchBlockForLiteralLoadingFail);
+			prepend.append(parttwo);
+//			 MONITORENTER
+			// pseudocode: load up 'this' (var0), dup it, store it in a new local var (for use with monitorexit) and call monitorenter:
+			// ALOAD_0, DUP, ASTORE_<n>, MONITORENTER
+//			prepend.append(InstructionFactory.createLoad(classType,0));
+//			prepend.append(InstructionFactory.createDup(1));
+//			int slotForThis = synchronizedMethod.allocateLocal(classType);
+//			prepend.append(InstructionFactory.createStore(classType, slotForThis));
+//			prepend.append(InstructionFactory.MONITORENTER);
+			
+			// MONITOREXIT
+			// here be dragons
+			
+			// We basically need to wrap the code from the method in a finally block that
+			// will ensure monitorexit is called.  Content on the finally block seems to
+			// be always:
+			// 
+			// E1: ALOAD_1
+			//     MONITOREXIT
+			//     ATHROW
+			//
+			// so lets build that:
+			InstructionList finallyBlock = new InstructionList();
+			finallyBlock.append(InstructionFactory.createLoad(Type.getType(java.lang.Class.class),slotForThis));
+			finallyBlock.append(InstructionConstants.MONITOREXIT);
+			finallyBlock.append(InstructionConstants.ATHROW);
+			
+//			finally -> E1
+//			|               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 21)
+//			|               LDC "hello"
+//			|               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+//			|               ALOAD_1   (line 20)
+//			|               MONITOREXIT
+//			finally -> E1
+//			                GOTO L0
+//			finally -> E1
+//			|           E1: ALOAD_1
+//			|               MONITOREXIT
+//			finally -> E1
+//			                ATHROW
+//			            L0: RETURN   (line 23)
+			//frameEnv.put(donorFramePos, thisSlot);
+			
+			// search for 'returns' and make them to the aload_<n>,monitorexit
+			InstructionHandle walker = body.getStart();
+			List rets = new ArrayList();
+			while (walker!=null) { //!walker.equals(body.getEnd())) {
+				if (walker.getInstruction() instanceof ReturnInstruction) {
+					rets.add(walker);
+				}
+				walker = walker.getNext();
+			}
+			if (rets.size()>0) {
+				// need to ensure targeters for 'return' now instead target the load instruction
+				// (so we never jump over the monitorexit logic)
+				
+				for (Iterator iter = rets.iterator(); iter.hasNext();) {
+					InstructionHandle element = (InstructionHandle) iter.next();
+//					System.err.println("Adding monitor exit block at "+element);
+					InstructionList monitorExitBlock = new InstructionList();
+					monitorExitBlock.append(InstructionFactory.createLoad(classType,slotForThis));
+					monitorExitBlock.append(InstructionConstants.MONITOREXIT);
+					//monitorExitBlock.append(Utility.copyInstruction(element.getInstruction()));
+					//element.setInstruction(InstructionFactory.createLoad(classType,slotForThis));
+					InstructionHandle monitorExitBlockStart = body.insert(element,monitorExitBlock);
+					
+					// now move the targeters from the RET to the start of the monitorexit block
+					InstructionTargeter[] targeters = element.getTargeters();
+					if (targeters!=null) {
+						for (int i = 0; i < targeters.length; i++) {
+					
+							InstructionTargeter targeter = targeters[i];
+							// what kinds are there?
+							if (targeter instanceof LocalVariableTag) {
+								// ignore
+							} else if (targeter instanceof LineNumberTag) {
+								// ignore
+							} else if (targeter instanceof GOTO || targeter instanceof GOTO_W) {
+								// move it...
+								targeter.updateTarget(element, monitorExitBlockStart);
+							} else if (targeter instanceof BranchInstruction) {
+								// move it
+								targeter.updateTarget(element, monitorExitBlockStart);
+							} else {
+								throw new RuntimeException("Unexpected targeter encountered during transform: "+targeter);
+							}
+						}		
+					}
+				}
+			}
+//			body = rewriteWithMonitorExitCalls(body,fact,true,slotForThis,classType);
+//			synchronizedMethod.setBody(body);
+		
+			// now the magic, putting the finally block around the code
+	        InstructionHandle finallyStart = finallyBlock.getStart();
+
+			InstructionHandle tryPosition   = body.getStart();
+			InstructionHandle catchPosition = body.getEnd();
+			body.insert(body.getStart(),prepend); // now we can put the monitorenter stuff on
+
+			synchronizedMethod.getBody().append(finallyBlock);			
+			synchronizedMethod.addExceptionHandler(tryPosition, catchPosition,finallyStart,null/*==finally*/,false);
+			synchronizedMethod.addExceptionHandler(tryInstruction, catchInstruction,catchBlockStart,(ObjectType)Type.getType(ClassNotFoundException.class),true);
+			synchronizedMethod.addExceptionHandler(finallyStart,finallyStart.getNext(),finallyStart,null,false);
+			}
+		} else {
+			
+			// TRANSFORMING NON STATIC METHOD 
+			Type classType = BcelWorld.makeBcelType(synchronizedMethod.getEnclosingClass().getType());
+			// MONITORENTER
+			// pseudocode: load up 'this' (var0), dup it, store it in a new local var (for use with monitorexit) and call monitorenter:
+			// ALOAD_0, DUP, ASTORE_<n>, MONITORENTER
+			prepend.append(InstructionFactory.createLoad(classType,0));
+			prepend.append(InstructionFactory.createDup(1));
+			int slotForThis = synchronizedMethod.allocateLocal(classType);
+			prepend.append(InstructionFactory.createStore(classType, slotForThis));
+			prepend.append(InstructionFactory.MONITORENTER);
+//			body.insert(body.getStart(),prepend);
+			
+			// MONITOREXIT
+			
+			// We basically need to wrap the code from the method in a finally block that
+			// will ensure monitorexit is called.  Content on the finally block seems to
+			// be always:
+			// 
+			// E1: ALOAD_1
+			//     MONITOREXIT
+			//     ATHROW
+			//
+			// so lets build that:
+			InstructionList finallyBlock = new InstructionList();
+			finallyBlock.append(InstructionFactory.createLoad(classType,slotForThis));
+			finallyBlock.append(InstructionConstants.MONITOREXIT);
+			finallyBlock.append(InstructionConstants.ATHROW);
+			
+//			finally -> E1
+//			|               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 21)
+//			|               LDC "hello"
+//			|               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
+//			|               ALOAD_1   (line 20)
+//			|               MONITOREXIT
+//			finally -> E1
+//			                GOTO L0
+//			finally -> E1
+//			|           E1: ALOAD_1
+//			|               MONITOREXIT
+//			finally -> E1
+//			                ATHROW
+//			            L0: RETURN   (line 23)
+			//frameEnv.put(donorFramePos, thisSlot);
+			
+			// search for 'returns' and make them to the aload_<n>,monitorexit
+			InstructionHandle walker = body.getStart();
+			List rets = new ArrayList();
+			while (walker!=null) { //!walker.equals(body.getEnd())) {
+				if (walker.getInstruction() instanceof ReturnInstruction) {
+					rets.add(walker);
+				}
+				walker = walker.getNext();
+			}
+			if (rets.size()>0) {
+				// need to ensure targeters for 'return' now instead target the load instruction
+				// (so we never jump over the monitorexit logic)
+				
+				for (Iterator iter = rets.iterator(); iter.hasNext();) {
+					InstructionHandle element = (InstructionHandle) iter.next();
+//					System.err.println("Adding monitor exit block at "+element);
+					InstructionList monitorExitBlock = new InstructionList();
+					monitorExitBlock.append(InstructionFactory.createLoad(classType,slotForThis));
+					monitorExitBlock.append(InstructionConstants.MONITOREXIT);
+					//monitorExitBlock.append(Utility.copyInstruction(element.getInstruction()));
+					//element.setInstruction(InstructionFactory.createLoad(classType,slotForThis));
+					InstructionHandle monitorExitBlockStart = body.insert(element,monitorExitBlock);
+					
+					// now move the targeters from the RET to the start of the monitorexit block
+					InstructionTargeter[] targeters = element.getTargeters();
+					if (targeters!=null) {
+						for (int i = 0; i < targeters.length; i++) {
+					
+							InstructionTargeter targeter = targeters[i];
+							// what kinds are there?
+							if (targeter instanceof LocalVariableTag) {
+								// ignore
+							} else if (targeter instanceof LineNumberTag) {
+								// ignore
+							} else if (targeter instanceof GOTO || targeter instanceof GOTO_W) {
+								// move it...
+								targeter.updateTarget(element, monitorExitBlockStart);
+							} else if (targeter instanceof BranchInstruction) {
+								// move it
+								targeter.updateTarget(element, monitorExitBlockStart);
+							} else {
+								throw new RuntimeException("Unexpected targeter encountered during transform: "+targeter);
+							}
+						}		
+					}
+				}
+			}
+		
+			// now the magic, putting the finally block around the code
+	        InstructionHandle finallyStart = finallyBlock.getStart();
+
+			InstructionHandle tryPosition   = body.getStart();
+			InstructionHandle catchPosition = body.getEnd();
+			body.insert(body.getStart(),prepend); // now we can put the monitorenter stuff on
+			synchronizedMethod.getBody().append(finallyBlock);			
+			synchronizedMethod.addExceptionHandler(tryPosition, catchPosition,finallyStart,null/*==finally*/,false);
+			synchronizedMethod.addExceptionHandler(finallyStart,finallyStart.getNext(),finallyStart,null,false);
+			// also the exception handling for the finally block jumps to itself
+			
+			// max locals will already have been modified in the allocateLocal() call
+			
+//			synchronized bit is removed on LazyMethodGen.pack()
+		}
+		
+		// gonna have to go through and change all aload_0s to load the var from a variable,
+		// going to add a new variable for the this var
+
+	}
+	
+	
 
 	/** generate the instructions to be inlined.
 	 * 
@@ -1583,6 +2028,137 @@ class BcelClassWeaver implements IClassWeaver {
 		if (!keepReturns) ret.append(footer);
 		return ret;
 	}
+
+	static InstructionList rewriteWithMonitorExitCalls(InstructionList sourceList,InstructionFactory fact,boolean keepReturns,int monitorVarSlot,Type monitorVarType)
+		{
+			InstructionList footer = new InstructionList();
+			InstructionHandle end = footer.append(InstructionConstants.NOP);
+
+			InstructionList newList = new InstructionList();
+
+			Map srcToDest  = new HashMap();
+			
+			// first pass: copy the instructions directly, populate the srcToDest map,
+			// fix frame instructions
+			for (InstructionHandle src = sourceList.getStart(); src != null; src = src.getNext()) {
+				Instruction fresh = Utility.copyInstruction(src.getInstruction());
+				InstructionHandle dest;
+				if (src.getInstruction() == Range.RANGEINSTRUCTION) {
+					dest = newList.append(Range.RANGEINSTRUCTION);
+				} else if (fresh instanceof ReturnInstruction) {
+					if (keepReturns) {
+						newList.append(InstructionFactory.createLoad(monitorVarType,monitorVarSlot));
+						newList.append(InstructionConstants.MONITOREXIT);
+						dest = newList.append(fresh);
+					} else {
+						dest = 
+							newList.append(InstructionFactory.createBranchInstruction(Constants.GOTO, end));
+					}
+				} else if (fresh instanceof BranchInstruction) {
+					dest = newList.append((BranchInstruction) fresh);
+				} else if (
+					fresh instanceof LocalVariableInstruction || fresh instanceof RET) {
+					IndexedInstruction indexed = (IndexedInstruction) fresh;
+					int oldIndex = indexed.getIndex();
+					int freshIndex;
+//					if (!frameEnv.hasKey(oldIndex)) {
+//						freshIndex = recipient.allocateLocal(2);
+//						frameEnv.put(oldIndex, freshIndex);
+//					} else {
+						freshIndex = oldIndex;//frameEnv.get(oldIndex);
+//					}
+					indexed.setIndex(freshIndex);
+					dest = newList.append(fresh);
+				} else {
+					dest = newList.append(fresh);
+				}
+				srcToDest.put(src, dest);
+			}
+			
+			// second pass: retarget branch instructions, copy ranges and tags
+			Map tagMap = new HashMap();
+			Map shadowMap = new HashMap();		
+			for (InstructionHandle dest = newList.getStart(), src = sourceList.getStart(); 
+					dest != null; 
+					dest = dest.getNext(), src = src.getNext()) {
+				Instruction inst = dest.getInstruction();
+				
+				// retarget branches
+				if (inst instanceof BranchInstruction) {
+					BranchInstruction branch = (BranchInstruction) inst;
+					InstructionHandle oldTarget = branch.getTarget();
+					InstructionHandle newTarget =
+						(InstructionHandle) srcToDest.get(oldTarget);
+					if (newTarget == null) {
+						// assert this is a GOTO
+						// this was a return instruction we previously replaced
+					} else {
+						branch.setTarget(newTarget);
+						if (branch instanceof Select) {
+							Select select = (Select) branch;
+							InstructionHandle[] oldTargets = select.getTargets();
+							for (int k = oldTargets.length - 1; k >= 0; k--) {
+								select.setTarget(
+									k,
+									(InstructionHandle) srcToDest.get(oldTargets[k]));
+							}
+						}
+					}
+				}			
+				
+				//copy over tags and range attributes
+		        InstructionTargeter[] srcTargeters = src.getTargeters();
+		        if (srcTargeters != null) { 
+		            for (int j = srcTargeters.length - 1; j >= 0; j--) {
+		                InstructionTargeter old = srcTargeters[j];
+		                if (old instanceof Tag) {
+		                	 Tag oldTag = (Tag) old;
+		                	 Tag fresh = (Tag) tagMap.get(oldTag);
+		                	 if (fresh == null) {
+		                		fresh = oldTag.copy();
+		                		tagMap.put(oldTag, fresh);
+		                	 }
+		                	 dest.addTargeter(fresh);
+		                } else if (old instanceof ExceptionRange) {
+		                	 ExceptionRange er = (ExceptionRange) old;
+		                	 if (er.getStart() == src) {
+		                		ExceptionRange freshEr =
+		                			new ExceptionRange(newList/*recipient.getBody()*/,er.getCatchType(),er.getPriority());
+		                		freshEr.associateWithTargets(
+									dest,
+									(InstructionHandle)srcToDest.get(er.getEnd()),
+									(InstructionHandle)srcToDest.get(er.getHandler()));
+		                	}
+						}
+/*else if (old instanceof ShadowRange) {
+							ShadowRange oldRange = (ShadowRange) old;
+							if (oldRange.getStart() == src) {
+								BcelShadow oldShadow = oldRange.getShadow();
+								BcelShadow freshEnclosing =
+									oldShadow.getEnclosingShadow() == null
+										? null
+										: (BcelShadow) shadowMap.get(oldShadow.getEnclosingShadow());
+								BcelShadow freshShadow =
+									oldShadow.copyInto(recipient, freshEnclosing);
+								ShadowRange freshRange = new ShadowRange(recipient.getBody());
+								freshRange.associateWithShadow(freshShadow);
+								freshRange.associateWithTargets(
+									dest,
+									(InstructionHandle) srcToDest.get(oldRange.getEnd()));
+								shadowMap.put(oldRange, freshRange);
+								//recipient.matchedShadows.add(freshShadow);
+								// XXX should go through the NEW copied shadow and update
+								// the thisVar, targetVar, and argsVar
+								// ??? Might want to also go through at this time and add
+								// "extra" vars to the shadow. 
+							}
+						}*/
+		            }
+		        }			
+			}
+			if (!keepReturns) newList.append(footer);
+			return newList;
+		}
 
 	/** generate the argument stores in preparation for inlining.
 	 * 
@@ -1953,6 +2529,17 @@ class BcelClassWeaver implements IClassWeaver {
 //			match(arrayLoadShadow,shadowAccumulator);
 //		} else if (i instanceof AASTORE) {
 //			// ... magic required
+		} else if ( world.isJoinpointSynchronizationEnabled() &&
+				   ((i instanceof MONITORENTER) || (i instanceof MONITOREXIT))) {
+			// if (canMatch(Shadow.Monitoring)) {
+			  if (i instanceof MONITORENTER) {
+				  BcelShadow monitorEntryShadow = BcelShadow.makeMonitorEnter(world,mg,ih,enclosingShadow);
+				  match(monitorEntryShadow,shadowAccumulator);
+			  } else {
+				  BcelShadow monitorExitShadow = BcelShadow.makeMonitorExit(world,mg,ih,enclosingShadow);
+				  match(monitorExitShadow,shadowAccumulator);
+			  }
+			// }
 		}
 		// performance optimization... we only actually care about ASTORE instructions, 
 		// since that's what every javac type thing ever uses to start a handler, but for
