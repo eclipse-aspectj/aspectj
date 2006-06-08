@@ -845,12 +845,21 @@ public final class LazyMethodGen {
         InstructionHandle end1 = Range.genEnd(body, end);
                 
         ExceptionRange er = 
-        	new ExceptionRange(body, BcelWorld.fromBcel(catchType), highPriority);
+        	new ExceptionRange(body, (catchType==null?null:BcelWorld.fromBcel(catchType)), highPriority);
         er.associateWithTargets(start1, end1, handlerStart);
     }
 
     public int getAccessFlags() {
         return accessFlags;
+    }
+    
+    public int getAccessFlagsWithoutSynchronized() {
+    		if (isSynchronized()) return accessFlags -  Modifier.SYNCHRONIZED;
+    		return accessFlags;
+    }
+    
+    public boolean isSynchronized() {
+    		return (accessFlags & Modifier.SYNCHRONIZED)!=0;
     }
     
     public void setAccessFlags(int newFlags) {
@@ -910,9 +919,13 @@ public final class LazyMethodGen {
     
     public MethodGen pack() {
     	//killNops();
+    	int flags = getAccessFlags();
+    	if (enclosingClass.getWorld().isJoinpointSynchronizationEnabled()) {
+    	    flags = getAccessFlagsWithoutSynchronized();
+    	}
         MethodGen gen =
             new MethodGen(
-                getAccessFlags(),
+                flags,
                 getReturnType(),
                 getArgumentTypes(),
                 null, //getArgumentNames(),

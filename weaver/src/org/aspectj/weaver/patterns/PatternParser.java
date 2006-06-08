@@ -309,7 +309,7 @@ public class PatternParser {
 //		IToken possibleTypeVariableToken = tokenSource.peek();
 //		String[] typeVariables = maybeParseSimpleTypeVariableList();
 		if (kind.equals("execution") || kind.equals("call") || 
-						kind.equals("get") || kind.equals("set")) {
+			kind.equals("get") || kind.equals("set")) {
 			p = parseKindedPointcut(kind);
 		} else if (kind.equals("args")) {
 			p = parseArgsPointcut();
@@ -339,6 +339,8 @@ public class PatternParser {
 			TypePattern typePat = parseTypePattern(false);
 			eat(")");
 			p = new HandlerPointcut(typePat);
+		} else  if (kind.equals("lock") || kind.equals("unlock")) {
+			p = parseMonitorPointcut(kind);
 		} else  if (kind.equals("initialization")) {
 			eat("(");
 			SignaturePattern sig = parseConstructorSignaturePattern();
@@ -618,6 +620,35 @@ public class PatternParser {
 		}
 		eat(")");
 		return new KindedPointcut(shadowKind, sig);
+	}
+	
+	/** Covers the 'lock()' and 'unlock()' pointcuts */
+	private KindedPointcut parseMonitorPointcut(String kind) {
+		eat("(");
+		TypePattern type = TypePattern.ANY;
+		eat(")");
+		
+		if (kind.equals("lock")) {
+			return new KindedPointcut(Shadow.SynchronizationLock,
+				    new SignaturePattern(Member.MONITORENTER, ModifiersPattern.ANY, 
+						TypePattern.ANY, 
+						TypePattern.ANY,
+//						type,
+						NamePattern.ANY, 
+						TypePatternList.ANY, 
+						ThrowsPattern.ANY,
+						AnnotationTypePattern.ANY));
+		} else {
+			return new KindedPointcut(Shadow.SynchronizationUnlock,
+				    new SignaturePattern(Member.MONITORENTER, ModifiersPattern.ANY, 
+						TypePattern.ANY, 
+						TypePattern.ANY, 
+//						type,
+						NamePattern.ANY, 
+						TypePatternList.ANY, 
+						ThrowsPattern.ANY,
+						AnnotationTypePattern.ANY));
+		}
 	}
 	
 	public TypePattern parseTypePattern() {
