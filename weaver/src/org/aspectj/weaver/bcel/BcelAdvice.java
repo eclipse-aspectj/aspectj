@@ -14,6 +14,7 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
@@ -216,6 +218,14 @@ public class BcelAdvice extends Advice {
 			}
 		}
 
+        if (shadow.getIWorld().isJoinpointSynchronizationEnabled() &&
+        		shadow.getKind()==Shadow.MethodExecution &&
+        		(s.getSignature().getModifiers() & Modifier.SYNCHRONIZED)!=0) {
+			Message m = new Message("advice matching the synchronized method shadow '"+shadow.toString()+
+    				"' will be executed outside the lock rather than inside (compiler limitation)",shadow.getSourceLocation(),false,new ISourceLocation[]{getSourceLocation()});
+        	  shadow.getIWorld().getMessageHandler().handleMessage(m);
+        }
+        
         //FIXME AV - see #75442, this logic is not enough so for now comment it out until we fix the bug
 //        // callback for perObject AJC MightHaveAspect postMunge (#75442)
 //        if (getConcreteAspect() != null

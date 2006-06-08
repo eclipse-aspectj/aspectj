@@ -702,6 +702,10 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     		return "makeInitializerSig";
     	} else if (kind == ADVICE) {
     		return "makeAdviceSig";
+    	} else if (kind == MONITORENTER) {
+    		return "makeLockSig";
+    	} else if (kind == MONITOREXIT) {
+    		return "makeUnlockSig";
     	} else {
     		throw new RuntimeException("unimplemented");
     	}
@@ -729,6 +733,10 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     		return "org.aspectj.lang.reflect.InitializerSignature";
     	} else if (kind == ADVICE) {
     		return "org.aspectj.lang.reflect.AdviceSignature";
+    	} else if (kind == MONITORENTER) {
+    		return "org.aspectj.lang.reflect.LockSignature";
+    	} else if (kind == MONITOREXIT) {
+    		return "org.aspectj.lang.reflect.UnlockSignature";
     	} else {
     		throw new RuntimeException("unimplemented");
     	}
@@ -753,6 +761,8 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     		return getStaticInitializationSignatureString(world);
     	} else if (kind == ADVICE) {
     		return getAdviceSignatureString(world);
+    	} else if (kind == MONITORENTER || kind == MONITOREXIT) {
+    		return getMonitorSignatureString(world);
     	} else {
     		throw new RuntimeException("unimplemented");
     	}
@@ -824,6 +834,21 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         buf.append(makeString(getExceptions(world)));
         buf.append('-');
         buf.append(makeString(getReturnType()));
+        buf.append('-');
+        return buf.toString();
+	}
+	
+	protected String getMonitorSignatureString(World world) {
+        StringBuffer buf = new StringBuffer();
+        buf.append(makeString(Modifier.STATIC));    // modifiers
+        buf.append('-');
+        buf.append(getName());                      // name
+        buf.append('-');
+        buf.append(makeString(getDeclaringType())); // Declaring Type
+        buf.append('-');
+        buf.append(makeString(getParameterTypes()[0])); // Parameter Types
+        buf.append('-');
+        buf.append("");                                 // Parameter names
         buf.append('-');
         return buf.toString();
 	}
