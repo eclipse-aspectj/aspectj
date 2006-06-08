@@ -50,18 +50,18 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * x matching execution(synchronized * *(..)) for transformed code
  * x warning message for execution() hitting a synchronized method
  * x ensure verifier runs over generated code (done by just executing the code as part of the test spec)
+ * - Ant task support for -Xjoinpoints
  * TAG: Completion of PHASE2
  * 
  *
  * TAG: Finished
  *  
- * 'Other' work items:
+ * Future work items:
  * - optimize matching for transformed methods since we *know* the type we are locking on
  * - supporting type pattern in lock() unlock() - this is not entirely trivial as kinded pointcuts do not usually have any residue
  * - weaving messages include 'unusual' strings for the join points, not the 
  *   same as revealed by thisJoinPoint.getSignature() in code - handler is probably similar
  * - documentation
- * - Ant task support for -Xjoinpoints
  * - lazy translation of synchronized methods, rather than eager
  * - applying execution(* *(..)) correctly to transformed methods (i.e. inside lock/unlock)
  * - use knowledge of type containing synchronized methods to optimize matching of (un)lock() - not always needing residue
