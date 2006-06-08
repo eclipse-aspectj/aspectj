@@ -14,6 +14,7 @@
 package org.aspectj.weaver;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -146,6 +147,10 @@ public abstract class Shadow {
     	return (getKind()==ConstructorCall && signature.getDeclaringType().isArray());
     }
     
+    public boolean isShadowForMonitor() {
+    	return (getKind()==SynchronizationLock || getKind()==SynchronizationUnlock);
+    }
+    
     // will return the right length array of ints depending on how many dimensions the array has
     public ResolvedType[] getArgumentTypesForArrayConstructionShadow() {
     	String s = signature.getDeclaringType().getSignature();
@@ -164,6 +169,9 @@ public abstract class Shadow {
     public UnresolvedType[] getGenericArgTypes() {
     	if (isShadowForArrayConstructionJoinpoint()) {
     		return getArgumentTypesForArrayConstructionShadow();
+    	}
+    	if (isShadowForMonitor()) {
+    		return UnresolvedType.ARRAY_WITH_JUST_OBJECT;
     	}
     	if (getKind() == FieldSet) return new UnresolvedType[] { getResolvedSignature().getGenericReturnType() };
         return getResolvedSignature().getGenericParameterTypes();    	
@@ -236,8 +244,9 @@ public abstract class Shadow {
     
 	
 	public UnresolvedType getReturnType() {
-		if (kind == ConstructorCall) return getSignature().getDeclaringType();
-		else if (kind == FieldSet) return ResolvedType.VOID;
+		if (kind == ConstructorCall)                        return getSignature().getDeclaringType();
+		else if (kind == FieldSet)                          return ResolvedType.VOID;
+		else if (kind == SynchronizationLock || kind==SynchronizationUnlock) return ResolvedType.VOID;
 		return getResolvedSignature().getGenericReturnType();
 	}
 
@@ -257,6 +266,8 @@ public abstract class Shadow {
     public static final Kind AdviceExecution      = new Kind(JoinPoint.ADVICE_EXECUTION, 9,  false);
     public static final Kind Initialization       = new Kind(JoinPoint.INITIALIZATION, 10,  false);
     public static final Kind ExceptionHandler     = new Kind(JoinPoint.EXCEPTION_HANDLER, 11,  true);
+    public static final Kind SynchronizationLock  = new Kind(JoinPoint.SYNCHRONIZATION_LOCK, 12,  true);
+    public static final Kind SynchronizationUnlock= new Kind(JoinPoint.SYNCHRONIZATION_UNLOCK, 13,  true);
     
     // Bits here are 1<<(Kind.getKey()) - and unfortunately keys didn't start at zero so bits here start at 2
     public static final int MethodCallBit           = 0x002; 
@@ -270,20 +281,22 @@ public abstract class Shadow {
     public static final int AdviceExecutionBit      = 0x200;
     public static final int InitializationBit       = 0x400;
     public static final int ExceptionHandlerBit     = 0x800;
+    public static final int SynchronizationLockBit  =0x1000;
+    public static final int SynchronizationUnlockBit=0x2000;
     
-    public static final int MAX_SHADOW_KIND = 11;
+    public static final int MAX_SHADOW_KIND = 13;
     public static final Kind[] SHADOW_KINDS = new Kind[] {
     	MethodCall, ConstructorCall, MethodExecution, ConstructorExecution,
     	FieldGet, FieldSet, StaticInitialization, PreInitialization,
-    	AdviceExecution, Initialization, ExceptionHandler,
+    	AdviceExecution, Initialization, ExceptionHandler,SynchronizationLock,SynchronizationUnlock
     };
     
     public static final int ALL_SHADOW_KINDS_BITS;
     public static final int NO_SHADOW_KINDS_BITS;
     
     static {
-    	ALL_SHADOW_KINDS_BITS = 0xffe;
-    	NO_SHADOW_KINDS_BITS  = 0x000;	
+    	ALL_SHADOW_KINDS_BITS = 0x3ffe;
+    	NO_SHADOW_KINDS_BITS  = 0x0000;	
     }
     
     /**
@@ -363,7 +376,7 @@ public abstract class Shadow {
 		}
 		
 		private final static int neverHasTargetFlag=
-			ConstructorCallBit | ExceptionHandlerBit | PreInitializationBit | StaticInitializationBit;
+			ConstructorCallBit | ExceptionHandlerBit | PreInitializationBit | StaticInitializationBit | SynchronizationLockBit | SynchronizationUnlockBit;
 		public boolean neverHasTarget() {
 			return (bit&neverHasTargetFlag)!=0;
 		}
@@ -395,6 +408,8 @@ public abstract class Shadow {
 				case 9: return AdviceExecution;
 				case 10: return Initialization;
 				case 11: return ExceptionHandler;
+				case 12: return SynchronizationLock;
+				case 13: return SynchronizationUnlock;
 			}
 			throw new BCException("unknown kind: " + key);
 		}		
@@ -577,6 +592,25 @@ public abstract class Shadow {
 		       aKind.equals(AdviceKind.Around) ||
 		       aKind.equals(AdviceKind.Softener))) return;
 		
+		// synchronized blocks are implemented with multiple monitor_exit instructions in the bytecode
+		// (one for normal exit from the method, one for abnormal exit), we only want to tell the user
+		// once we have advised the end of the sync block, even though under the covers we will have
+		// woven both exit points
+		if (this.kind==Shadow.SynchronizationUnlock) {
+			if (advice.lastReportedMonitorExitJoinpointLocation==null) {
+				// this is the first time through, let's continue...
+				advice.lastReportedMonitorExitJoinpointLocation = getSourceLocation();
+			} else {
+			  if (areTheSame(getSourceLocation(),advice.lastReportedMonitorExitJoinpointLocation)) {
+				  // Don't report it again!
+				  advice.lastReportedMonitorExitJoinpointLocation=null;
+				  return;
+			  }
+			  // hmmm, this means some kind of nesting is going on, urgh
+			  advice.lastReportedMonitorExitJoinpointLocation=getSourceLocation();
+			}
+		}
+		
 		String description = advice.getKind().toString();
 		String advisedType = this.getEnclosingType().getName();
 		String advisingType= advice.getConcreteAspect().getName();
@@ -603,6 +637,17 @@ public abstract class Shadow {
 		getIWorld().getMessageHandler().handleMessage(msg);
 	}
 
+
+	private boolean areTheSame(ISourceLocation locA, ISourceLocation locB) {
+		if (locA==null) return locB==null;
+		if (locB==null) return false;
+		if (locA.getLine()!=locB.getLine()) return false;
+		File fA = locA.getSourceFile();
+		File fB = locA.getSourceFile();
+		if (fA==null) return fB==null;
+		if (fB==null) return false;
+		return fA.getName().equals(fB.getName());
+	}
 
 	public IRelationship.Kind determineRelKind(ShadowMunger munger) {
 		AdviceKind ak = ((Advice)munger).getKind();

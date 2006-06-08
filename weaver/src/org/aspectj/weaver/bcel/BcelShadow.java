@@ -814,6 +814,32 @@ public class BcelShadow extends Shadow {
         retargetAllBranches(arrayInstruction, r.getStart());                
         return s;
     }
+    
+    public static BcelShadow makeMonitorEnter(BcelWorld world,LazyMethodGen enclosingMethod,InstructionHandle monitorInstruction,BcelShadow enclosingShadow) {
+      final InstructionList body = enclosingMethod.getBody();
+      Member sig = world.makeJoinPointSignatureForMonitorEnter(enclosingMethod.getEnclosingClass(),monitorInstruction);
+      BcelShadow s = new BcelShadow(world,SynchronizationLock,sig,enclosingMethod,enclosingShadow);
+      ShadowRange r = new ShadowRange(body);
+      r.associateWithShadow(s);
+      r.associateWithTargets(
+      	Range.genStart(body, monitorInstruction),
+          Range.genEnd(body, monitorInstruction));
+      retargetAllBranches(monitorInstruction, r.getStart());                
+      return s;
+    }
+    
+    public static BcelShadow makeMonitorExit(BcelWorld world,LazyMethodGen enclosingMethod,InstructionHandle monitorInstruction,BcelShadow enclosingShadow) {
+        final InstructionList body = enclosingMethod.getBody();
+        Member sig = world.makeJoinPointSignatureForMonitorExit(enclosingMethod.getEnclosingClass(),monitorInstruction);
+        BcelShadow s = new BcelShadow(world,SynchronizationUnlock,sig,enclosingMethod,enclosingShadow);
+        ShadowRange r = new ShadowRange(body);
+        r.associateWithShadow(s);
+        r.associateWithTargets(
+        	Range.genStart(body, monitorInstruction),
+            Range.genEnd(body, monitorInstruction));
+        retargetAllBranches(monitorInstruction, r.getStart());                
+        return s;
+      }
 
     // see pr77166
 //    public static BcelShadow makeArrayLoadCall(

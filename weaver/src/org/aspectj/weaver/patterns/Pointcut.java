@@ -29,8 +29,10 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.bcel.PoliceExtensionUse;
 
 /**
  * The lifecycle of Pointcuts is modeled by Pointcut.State.   It has three things:
@@ -308,6 +310,13 @@ public abstract class Pointcut extends PatternNode {
 		ret.pointcutKind = kind;
 		return ret;
 		
+	}
+	
+	public void check(ISourceContext ctx,World world) {
+	    	PoliceExtensionUse pointcutPolice = new PoliceExtensionUse(world,this);
+	    	this.accept(pointcutPolice, null);
+	    	if (pointcutPolice.synchronizationDesignatorEncountered())
+	    		world.setSynchronizationPointcutsInUse();
 	}
 	
 

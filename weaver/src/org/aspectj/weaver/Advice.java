@@ -43,6 +43,8 @@ public abstract class Advice extends ShadowMunger {
     protected UnresolvedType[] bindingParameterTypes;
     
     protected List/*Lint.Kind*/ suppressedLintKinds = null; // based on annotations on this advice
+    
+    ISourceLocation lastReportedMonitorExitJoinpointLocation = null;
 
     public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars, List innerCflowEntries, ResolvedType inAspect){
     	Advice ret = world.createAdviceMunger(isBelow ? AdviceKind.CflowBelowEntry : AdviceKind.CflowEntry,
@@ -111,6 +113,19 @@ public abstract class Advice extends ShadowMunger {
 				if (kind.isAfter() || kind == AdviceKind.Around) {
 					world.showMessage(IMessage.WARNING,
 							WeaverMessages.format(WeaverMessages.ONLY_BEFORE_ON_HANDLER),
+							getSourceLocation(), shadow.getSourceLocation());
+					return false;
+				}
+			}
+			if (shadow.getKind()==Shadow.SynchronizationLock ||
+				shadow.getKind()==Shadow.SynchronizationUnlock) {
+				if (kind==AdviceKind.Around
+//					Don't work, see comments in SynchronizationTests
+//					&& attribute.getProceedCallSignatures()!=null
+//					&& attribute.getProceedCallSignatures().length!=0
+					) {
+					world.showMessage(IMessage.WARNING,
+							WeaverMessages.format(WeaverMessages.NO_AROUND_ON_SYNCHRONIZATION),
 							getSourceLocation(), shadow.getSourceLocation());
 					return false;
 				}

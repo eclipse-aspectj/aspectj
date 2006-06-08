@@ -96,13 +96,15 @@ public abstract class World implements Dump.INode {
     private String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
     
     /** Flags for the new joinpoints that are 'optional' */
-    private boolean optionalJoinpoint_ArrayConstruction = false;  // Command line flag: "arrayconstruction"
+    private boolean optionalJoinpoint_ArrayConstruction = false;  // Command line flag: "-Xjoinpoints:arrayconstruction"
+    private boolean optionalJoinpoint_Synchronization   = false;  // Command line flag: "-Xjoinpoints:synchronization"
     
     private boolean addSerialVerUID = false;
     
     
     private Properties extraConfiguration = null;
     private boolean checkedAdvancedConfiguration=false;
+    private boolean synchronizationPointcutsInUse = false;
     // Xset'table options
     private boolean fastDelegateSupportEnabled = isASMAround;
 	private boolean runMinimalMemory = false;
@@ -762,13 +764,16 @@ public abstract class World implements Dump.INode {
 	
 	public void setOptionalJoinpoints(String jps) {
 		if (jps==null) return;
-		if (jps.indexOf("arrayconstruction")!=-1) {
-			optionalJoinpoint_ArrayConstruction = true;
-		}
+		if (jps.indexOf("arrayconstruction")!=-1) optionalJoinpoint_ArrayConstruction = true;
+		if (jps.indexOf("trivial")!=-1)           optionalJoinpoint_Trivial = true;
+		if (jps.indexOf("synchronization")!=-1)   optionalJoinpoint_Synchronization = true;
 	}
 	
 	public boolean isJoinpointArrayConstructionEnabled() {
 		return optionalJoinpoint_ArrayConstruction;
+	}
+	public boolean isJoinpointSynchronizationEnabled() {
+		return optionalJoinpoint_Synchronization;
 	}
 	
 	public String getTargetAspectjRuntimeLevel() {
@@ -1162,4 +1167,6 @@ public abstract class World implements Dump.INode {
 	    public void setIncrementalCompileCouldFollow(boolean b) {incrementalCompileCouldFollow = b;}
 	    public boolean couldIncrementalCompileFollow()           {return incrementalCompileCouldFollow;}
 	
+	    public void setSynchronizationPointcutsInUse() {synchronizationPointcutsInUse =true;}
+	    public boolean areSynchronizationPointcutsInUse() {return synchronizationPointcutsInUse;}
 }
