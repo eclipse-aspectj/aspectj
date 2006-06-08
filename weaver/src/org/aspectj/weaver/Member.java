@@ -35,6 +35,8 @@ public interface Member {
                 case 5: return POINTCUT;
                 case 6: return ADVICE;
                 case 7: return HANDLER;
+                case 8: return MONITORENTER;
+                case 9: return MONITOREXIT;
             }
             throw new BCException("weird kind " + key);
         }
@@ -48,6 +50,9 @@ public interface Member {
 	public static final Kind POINTCUT = new Kind("POINTCUT", 5);
 	public static final Kind ADVICE = new Kind("ADVICE", 6);
 	public static final Kind HANDLER = new Kind("HANDLER", 7);
+	public static final Kind MONITORENTER = new Kind("MONITORENTER", 8);
+	public static final Kind MONITOREXIT = new Kind("MONITOREXIT", 9);
+
 
 	public ResolvedMember resolve(World world);
 

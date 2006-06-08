@@ -39,6 +39,8 @@ import org.aspectj.apache.bcel.generic.INVOKESTATIC;
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
+import org.aspectj.apache.bcel.generic.MONITORENTER;
+import org.aspectj.apache.bcel.generic.MONITOREXIT;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.NEWARRAY;
 import org.aspectj.apache.bcel.generic.ObjectType;
@@ -460,6 +462,15 @@ public class BcelWorld extends World implements Repository {
         
     }
 	
+	public Member makeJoinPointSignatureForMonitorEnter(LazyClassGen cg,InstructionHandle h) {
+		MONITORENTER i = (MONITORENTER)h.getInstruction();
+		return MemberImpl.monitorEnter();
+	}
+
+	public Member makeJoinPointSignatureForMonitorExit(LazyClassGen cg,InstructionHandle h) {
+		MONITOREXIT i = (MONITOREXIT)h.getInstruction();
+		return MemberImpl.monitorExit();
+	}
 	
 	public Member makeJoinPointSignatureForArrayConstruction(LazyClassGen cg, InstructionHandle handle) {
 		Instruction i = handle.getInstruction();

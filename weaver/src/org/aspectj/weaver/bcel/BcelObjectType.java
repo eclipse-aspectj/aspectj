@@ -299,7 +299,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		bitflag|=UNPACKED_AJATTRIBUTES;
 		IMessageHandler msgHandler = getResolvedTypeX().getWorld().getMessageHandler();
 		// Pass in empty list that can store things for readAj5 to process
-        List l = BcelAttributes.readAjAttributes(className,javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),msgHandler,AjAttribute.WeaverVersionInfo.UNKNOWN);
+        List l = BcelAttributes.readAjAttributes(className,javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld(),AjAttribute.WeaverVersionInfo.UNKNOWN);
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
@@ -817,7 +817,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     // for testing - if we have this attribute, return it - will return null if it doesnt know anything 
 	public AjAttribute[] getAttributes(String name) {
 		List results = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld().getMessageHandler(),AjAttribute.WeaverVersionInfo.UNKNOWN);
+		List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld(),AjAttribute.WeaverVersionInfo.UNKNOWN);
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute element = (AjAttribute) iter.next();		
 			if (element.getNameString().equals(name)) results.add(element);

@@ -129,7 +129,7 @@ final class BcelMethod extends ResolvedMemberImpl {
 
 	private void unpackAjAttributes(World world) {
 		associatedShadowMunger = null;
-        List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler(),bcelObjectType.getWeaverVersionAttribute());
+        List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world,bcelObjectType.getWeaverVersionAttribute());
 		processAttributes(world, as);
 		as = AtAjAttributes.readAj5MethodAttributes(method, this, world.resolve(getDeclaringType()), preResolvedPointcut,getSourceContext(world), world.getMessageHandler());
 		processAttributes(world,as);
@@ -160,7 +160,7 @@ final class BcelMethod extends ResolvedMemberImpl {
 	// for testing - if we have this attribute, return it - will return null if it doesnt know anything 
 	public AjAttribute[] getAttributes(String name) {
 		List results = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world.getMessageHandler(),bcelObjectType.getWeaverVersionAttribute());
+		List l = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world,bcelObjectType.getWeaverVersionAttribute());
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute element = (AjAttribute) iter.next();		
 			if (element.getNameString().equals(name)) results.add(element);

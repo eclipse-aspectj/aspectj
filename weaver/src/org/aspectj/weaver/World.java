@@ -765,7 +765,6 @@ public abstract class World implements Dump.INode {
 	public void setOptionalJoinpoints(String jps) {
 		if (jps==null) return;
 		if (jps.indexOf("arrayconstruction")!=-1) optionalJoinpoint_ArrayConstruction = true;
-		if (jps.indexOf("trivial")!=-1)           optionalJoinpoint_Trivial = true;
 		if (jps.indexOf("synchronization")!=-1)   optionalJoinpoint_Synchronization = true;
 	}
 	
