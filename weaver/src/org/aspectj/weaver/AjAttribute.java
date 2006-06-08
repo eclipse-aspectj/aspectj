@@ -19,7 +19,6 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.FileUtil;
@@ -85,7 +84,7 @@ public abstract class AjAttribute {
 		}
 	}
 	
-	public static AjAttribute read(AjAttribute.WeaverVersionInfo v, String name, byte[] bytes, ISourceContext context,IMessageHandler msgHandler) {
+	public static AjAttribute read(AjAttribute.WeaverVersionInfo v, String name, byte[] bytes, ISourceContext context,World w) {
 		try {
 			if (bytes == null) bytes = new byte[0];
 			VersionedDataInputStream s = new VersionedDataInputStream(new ByteArrayInputStream(bytes));
@@ -99,9 +98,13 @@ public abstract class AjAttribute {
 			} else if (name.equals(WeaverVersionInfo.AttributeName)) {
 				return WeaverVersionInfo.read(s);
 			} else if (name.equals(AdviceAttribute.AttributeName)) {
-				return AdviceAttribute.read(s, context);
+				AdviceAttribute aa = AdviceAttribute.read(s, context);
+				aa.getPointcut().check(context,w);
+				return aa;
 			} else if (name.equals(PointcutDeclarationAttribute.AttributeName)) {
-				return new PointcutDeclarationAttribute(ResolvedPointcutDefinition.read(s, context));
+				PointcutDeclarationAttribute pda =  new PointcutDeclarationAttribute(ResolvedPointcutDefinition.read(s, context));
+				pda.pointcutDef.getPointcut().check(context,w);
+				return pda;
 			} else if (name.equals(TypeMunger.AttributeName)) {
 				return new TypeMunger(ResolvedTypeMunger.read(s, context));
 			} else if (name.equals(AjSynthetic.AttributeName)) {
@@ -116,8 +119,8 @@ public abstract class AjAttribute {
 				return EffectiveSignatureAttribute.read(s, context);
 			} else {
 				// We have to tell the user about this...
-				if (msgHandler == null) throw new BCException("unknown attribute" + name);
-				msgHandler.handleMessage(MessageUtil.warn("unknown attribute encountered "+name));
+				if (w == null || w.getMessageHandler()==null) throw new BCException("unknown attribute" + name);
+				w.getMessageHandler().handleMessage(MessageUtil.warn("unknown attribute encountered "+name));
 				return null;
 			}
 		} catch (IOException e) {
@@ -655,7 +658,6 @@ public abstract class AjAttribute {
 		}
 
 	}	
-
 
 
 }
