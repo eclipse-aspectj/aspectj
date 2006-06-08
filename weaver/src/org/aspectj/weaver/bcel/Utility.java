@@ -43,6 +43,7 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
+import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.LDC;
 import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.ObjectType;
@@ -784,4 +785,27 @@ public class Utility {
         }
         return suppressedWarnings;
      }
+    
+     // not yet used...
+	 public static boolean isSimple(Method method) {
+		if (method.getCode()==null) return true;
+		if (method.getCode().getCode().length>10) return false;
+		InstructionList instrucs = new InstructionList(method.getCode().getCode()); // expensive!
+		InstructionHandle InstrHandle = instrucs.getStart();
+		while (InstrHandle != null) {                  
+		  Instruction Instr = InstrHandle.getInstruction();
+		  int opCode = Instr.getOpcode();
+		  // if current instruction is a branch instruction, see if it's a backward branch.
+		  // if it is return immediately (can't be trivial)
+		  if (Instr instanceof BranchInstruction) {
+		      BranchInstruction BI = (BranchInstruction) Instr;
+		      if (BI.getIndex() < 0) return false;
+		  } else if (Instr instanceof InvokeInstruction) {
+			  // if current instruction is an invocation, indicate that it can't be trivial
+		      return false;
+		  }
+		  InstrHandle = InstrHandle.getNext();
+		}
+		return true;
+	 }
 }
