@@ -1055,7 +1055,21 @@ public final class LazyClassGen {
     				new ObjectType(sig.getSignatureType()),
     				new Type[] { Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING },
     				Constants.INVOKEVIRTUAL));
-    	} else if (sig.getKind().equals(Member.HANDLER)) {
+   	    } else if (sig.getKind().equals(Member.MONITORENTER)) {
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(fact.createInvoke(factoryType.getClassName(), 
+    				sig.getSignatureMakerName(),
+    				new ObjectType(sig.getSignatureType()),
+    				new Type[] { Type.STRING},
+    				Constants.INVOKEVIRTUAL));
+    	} else if (sig.getKind().equals(Member.MONITOREXIT)) {
+    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(fact.createInvoke(factoryType.getClassName(), 
+    				sig.getSignatureMakerName(),
+    				new ObjectType(sig.getSignatureType()),
+    				new Type[] { Type.STRING},
+    				Constants.INVOKEVIRTUAL));
+     	} else if (sig.getKind().equals(Member.HANDLER)) {
     		BcelWorld w = shadow.getWorld();
     		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
     		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
@@ -1312,6 +1326,30 @@ public final class LazyClassGen {
 		}
 		return false;
 	}
+	
+	public boolean isAtLeastJava5() {
+		return (myGen.getMajor()>=Constants.MAJOR_1_5);
+	}
 
+	/**
+	 * Return the next available field name with the specified 'prefix', e.g.
+	 * for prefix 'class$' where class$0, class$1 exist then return class$2
+	 */
+	public String allocateField(String prefix) {
+		int highestAllocated = -1;
+		Field[] fs = getFieldGens();
+		for (int i = 0; i < fs.length; i++) {
+			Field field = fs[i];
+			if (field.getName().startsWith(prefix)) {
+				try {
+					int num = Integer.parseInt(field.getName().substring(prefix.length()));
+					if (num>highestAllocated) highestAllocated = num;
+				} catch (NumberFormatException nfe) {
+					// something wrong with the number on the end of that field...
+				}
+			}
+		}
+		return prefix+Integer.toString(highestAllocated+1);
+	}
 
 }
