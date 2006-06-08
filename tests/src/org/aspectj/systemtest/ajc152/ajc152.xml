@@ -105,6 +105,15 @@
      <compile files="Test.java" options="-1.5"/>
     </ajc-test>
     
+	<ajc-test dir="bugs152/pr145950" title="fails to discover Serializable">
+     <compile files="Indirect.java" options="-1.5 -XaddSerialVersionUID"/>
+     <run class="Indirect">
+       <stderr>
+         <line text="SerialVersionUID is "/>
+       </stderr>
+     </run>
+    </ajc-test>
+        
 	<ajc-test dir="bugs152/pr145018" title="ataj crashing with cflow, if and args">
      <compile files="Broken.aj" options="-1.5"/>
      <run class="Broken">
