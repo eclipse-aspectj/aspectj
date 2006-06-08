@@ -52,10 +52,6 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * x ensure verifier runs over generated code (done by just executing the code as part of the test spec)
  * TAG: Completion of PHASE2
  * 
- * 
- * Need sorting before claiming complete:
- * - coping with asking 'regular' AspectJ to process an Aspect built by this variant of AJ that provides lock()/unlock()
- * - targetting 1.2 runtime
  *
  * TAG: Finished
  *  
@@ -89,9 +85,6 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * 
  * Problems:
  * - Can't run it on a 1.2.1 runtime - just not practical
- * - It ain't going to work with the aspectjrt.jar 1.5.0 that websphere will be shipping.
- *   *IF* someone manages to get into a situation where they ask for the signature of a lock jp, but the lock
- *   jp won't have been exposed if they weren't weaving with a 1.5 weaver...
  * 
  * 
  * Method transformation, example:
