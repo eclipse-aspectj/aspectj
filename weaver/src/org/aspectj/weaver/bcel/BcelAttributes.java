@@ -19,10 +19,10 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
-import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 
@@ -35,7 +35,7 @@ class BcelAttributes {
 	 * list contains the AspectJ attributes identified and unpacked to 'AjAttribute' objects.
 	 */
 	public static List readAjAttributes(String classname,Attribute[] as, ISourceContext context,
-			                              IMessageHandler msgHandler,AjAttribute.WeaverVersionInfo version) {
+			                              World w,AjAttribute.WeaverVersionInfo version) {
 		List l = new ArrayList();
 		
 		// first pass, look for version
@@ -48,7 +48,7 @@ class BcelAttributes {
 				if (name.charAt(0)=='o') { // 'o'rg.aspectj
 					if (name.startsWith(AjAttribute.AttributePrefix)) {
 						if (name.endsWith(WeaverVersionInfo.AttributeName)) {
-							version = (AjAttribute.WeaverVersionInfo)AjAttribute.read(version,name,u.getBytes(),context,msgHandler);
+							version = (AjAttribute.WeaverVersionInfo)AjAttribute.read(version,name,u.getBytes(),context,w);
 							if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
 								throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
 										WeaverVersionInfo.toCurrentVersionString()+" but the class "+classname+" is version "+version.toString());
@@ -63,7 +63,7 @@ class BcelAttributes {
 		for (int i = forSecondPass.size()-1; i >= 0; i--) {
 			Unknown a = (Unknown)forSecondPass.get(i);
 			String name = a.getName();
-			AjAttribute attr = AjAttribute.read(version,name,a.getBytes(),context,msgHandler); 
+			AjAttribute attr = AjAttribute.read(version,name,a.getBytes(),context,w); 
 			if (attr!=null) l.add(attr);
 		}
 		return l;

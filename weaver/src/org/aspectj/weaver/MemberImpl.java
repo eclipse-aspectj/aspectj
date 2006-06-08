@@ -213,6 +213,15 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         Object[] pair = signatureToTypes(signature,false);
         return method(declaring, mods, (UnresolvedType) pair[0], name, (UnresolvedType[]) pair[1]);
     }
+
+    public static MemberImpl monitorEnter() {
+    	return new MemberImpl(MONITORENTER,UnresolvedType.OBJECT,Modifier.STATIC,ResolvedType.VOID,"<lock>",UnresolvedType.ARRAY_WITH_JUST_OBJECT);
+    }
+
+    public static MemberImpl monitorExit() {
+    	return new MemberImpl(MONITOREXIT,UnresolvedType.OBJECT,Modifier.STATIC,ResolvedType.VOID,"<unlock>",UnresolvedType.ARRAY_WITH_JUST_OBJECT);
+    }
+
     public static Member pointcut(UnresolvedType declaring, String name, String signature) {
         Object[] pair = signatureToTypes(signature,false);
         return pointcut(declaring, 0, (UnresolvedType) pair[0], name, (UnresolvedType[]) pair[1]);

@@ -313,10 +313,11 @@ public abstract class Pointcut extends PatternNode {
 	}
 	
 	public void check(ISourceContext ctx,World world) {
-	    	PoliceExtensionUse pointcutPolice = new PoliceExtensionUse(world,this);
-	    	this.accept(pointcutPolice, null);
-	    	if (pointcutPolice.synchronizationDesignatorEncountered())
-	    		world.setSynchronizationPointcutsInUse();
+		// this is a quick visitor...
+    	PoliceExtensionUse pointcutPolice = new PoliceExtensionUse(world,this);
+    	this.accept(pointcutPolice, null);
+    	if (pointcutPolice.synchronizationDesignatorEncountered())
+    		world.setSynchronizationPointcutsInUse();
 	}
 	
 

@@ -57,7 +57,7 @@ class AjASMAttribute extends Attribute {
 	 
 	 public AjAttribute unpack(AsmDelegate relatedDelegate) {
 		 if (unpacked) throw new BCException("Don't unpack an attribute twice!");
-		 AjAttribute attr = AjAttribute.read(relatedDelegate.weaverVersion,type,data,relatedDelegate.getSourceContext(),relatedDelegate.getWorld().getMessageHandler());
+		 AjAttribute attr = AjAttribute.read(relatedDelegate.weaverVersion,type,data,relatedDelegate.getSourceContext(),relatedDelegate.getWorld());
 		 unpacked=true;
 		 return attr;
 	 }
