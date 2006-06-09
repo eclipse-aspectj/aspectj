@@ -63,7 +63,7 @@ public class Aj implements ClassPreProcessor {
             	return bytes;
             }
             return weavingAdaptor.weaveClass(className, bytes);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
             // would make sense at least in test f.e. see TestHelper.handleMessage()
             t.printStackTrace();

@@ -15,6 +15,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
+import org.aspectj.weaver.loadtime.JRockitAgentTest;
 import org.aspectj.weaver.loadtime.WeavingURLClassLoaderTest;
 import org.aspectj.weaver.loadtime.test.DocumentParserTest;
 
@@ -28,6 +29,7 @@ public class LoadtimeModuleTests extends TestCase {
 
         suite.addTestSuite(DocumentParserTest.class);
         suite.addTestSuite(WeavingURLClassLoaderTest.class);
+        suite.addTestSuite(JRockitAgentTest.class);
         return suite;
     }
 
