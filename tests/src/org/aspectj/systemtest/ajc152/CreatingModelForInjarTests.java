@@ -20,7 +20,7 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.weaver.World;
+//import org.aspectj.weaver.World;
 
 public class CreatingModelForInjarTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
@@ -115,12 +115,12 @@ public class CreatingModelForInjarTests extends org.aspectj.testing.XMLBasedAjcT
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		World.createInjarHierarchy = true;
+//		World.createInjarHierarchy = true;
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-        World.createInjarHierarchy = false;
+//        World.createInjarHierarchy = false;
 	}
 
 	// ///////////////////////////////////////
