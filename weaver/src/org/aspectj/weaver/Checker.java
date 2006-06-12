@@ -13,11 +13,17 @@
 
 package org.aspectj.weaver;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 import org.aspectj.asm.IRelationship;
-import org.aspectj.bridge.*;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.Pointcut;
 
 
 public class Checker extends ShadowMunger {
@@ -127,4 +133,8 @@ public class Checker extends ShadowMunger {
 		return isError;
 	}
 
+	public ResolvedType getResolvedDeclaringAspect() {
+		// The aspect which declares this deow is the declaring type
+		return getDeclaringType();
+	}
 }

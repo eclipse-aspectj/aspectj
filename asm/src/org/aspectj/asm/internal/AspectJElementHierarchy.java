@@ -272,8 +272,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 			lastSlash = sourceFilePath.lastIndexOf('/');
 		}
 		String fileName = sourceFilePath.substring(lastSlash+1);
-		IProgramElement fileNode = new ProgramElement(fileName, IProgramElement.Kind.FILE_JAVA, null);
-		fileNode.setSourceLocation(new SourceLocation(new File(sourceFilePath), 1, 1));
+		IProgramElement fileNode = new ProgramElement(fileName, IProgramElement.Kind.FILE_JAVA, new SourceLocation(new File(sourceFilePath), 1, 1),0,null,null);
+		//fileNode.setSourceLocation();
 		fileNode.addChild(NO_STRUCTURE);
 		return fileNode;
 	}

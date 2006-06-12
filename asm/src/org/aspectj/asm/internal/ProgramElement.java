@@ -162,8 +162,10 @@ public class ProgramElement implements IProgramElement {
 		return sourceLocation;
 	}
 
+	// not really sure why we have this setter ... how can we be in the situation where we didn't
+	// know the location when we built the node but we learned it later on?
 	public void setSourceLocation(ISourceLocation sourceLocation) {
-		//this.sourceLocation = sourceLocation;
+//		this.sourceLocation = sourceLocation;
 	}
 
 	public IMessage getMessage() {

@@ -13,12 +13,19 @@
 
 package org.aspectj.weaver;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.PartialOrder;
+import org.aspectj.weaver.bcel.BcelAdvice;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -91,11 +98,14 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		if (null == handle) {
 			ISourceLocation sl = getSourceLocation();
 			if (sl != null) {
+				if (World.createInjarHierarchy) {
+					createHierarchy();
+				} 
 				handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 				            sl.getSourceFile(),
 				            sl.getLine(),
 				            sl.getColumn(),
-							sl.getOffset());
+							sl.getOffset());					
 			}
 		}
 		return handle;
@@ -141,4 +151,118 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
      * @return true if munger has to check that its exceptions can be throwned based on the shadow
      */
     public abstract boolean mustCheckExceptions();
+    
+    /**
+     * Returns the ResolvedType corresponding to the aspect in which this
+     * shadowMunger is declared. This is different for deow's and advice.
+     */
+    public abstract ResolvedType getResolvedDeclaringAspect();
+    
+    public void createHierarchy() {
+    	IProgramElement sourceFileNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(getSourceLocation());
+    	if (!sourceFileNode.getKind().equals(IProgramElement.Kind.FILE_JAVA)) {
+			return;
+		}
+    	String name = sourceFileNode.getName();
+    	sourceFileNode.setName(name + " (binary)");
+    	
+    	ResolvedType aspect = getResolvedDeclaringAspect();
+    	
+    	// create package ipe if one exists....
+    	IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+    	if (aspect.getPackageName() != null) {
+    		// check that there doesn't already exist a node with this name
+    		IProgramElement pkgNode = AsmManager.getDefault().getHierarchy().findElementForLabel(
+    				root,IProgramElement.Kind.PACKAGE,aspect.getPackageName());
+    		// note packages themselves have no source location
+    		if (pkgNode == null) {
+    			pkgNode = new ProgramElement(
+    					aspect.getPackageName(), 
+    	                IProgramElement.Kind.PACKAGE, 
+    	                new ArrayList());
+    			root.addChild(pkgNode);
+			}
+    		pkgNode.addChild(sourceFileNode);
+		} else {
+			root.addChild(sourceFileNode);
+		}
+    	
+       	// remove the error child from the 'A.aj' node
+    	if (sourceFileNode instanceof ProgramElement) {
+			IProgramElement errorNode = (IProgramElement) sourceFileNode.getChildren().get(0);
+			if (errorNode.getKind().equals(IProgramElement.Kind.ERROR)) {
+				((ProgramElement)sourceFileNode).removeChild(errorNode);
+			}
+		}
+    	
+    	// add and create empty import declaration ipe
+    	sourceFileNode.addChild(new ProgramElement(
+    			"import declarations",
+    			IProgramElement.Kind.IMPORT_REFERENCE,
+    			null,0,null,null)); 
+
+    	// add and create aspect ipe
+    	IProgramElement aspectNode = new ProgramElement(
+    			aspect.getSimpleName(),
+    			IProgramElement.Kind.ASPECT,
+    			aspect.getSourceLocation(),
+    			aspect.getModifiers(),
+    			null,null); 
+    	sourceFileNode.addChild(aspectNode);
+    	
+    	addChildNodes(aspectNode,aspect.getDeclaredPointcuts());
+
+    	addChildNodes(aspectNode,aspect.getDeclaredAdvice());
+    	addChildNodes(aspectNode,aspect.getDeclares());
+    }
+    
+    private void addChildNodes(IProgramElement parent,ResolvedMember[] children) {
+       	for (int i = 0; i < children.length; i++) {
+			ResolvedMember pcd = children[i];
+			if (pcd instanceof ResolvedPointcutDefinition) {
+				ResolvedPointcutDefinition rpcd = (ResolvedPointcutDefinition)pcd;
+				parent.addChild(new ProgramElement(
+						pcd.getName(),
+						IProgramElement.Kind.POINTCUT,
+					    rpcd.getPointcut().getSourceLocation(),
+						pcd.getModifiers(),
+						null,
+						Collections.EMPTY_LIST));
+			} 
+		}
+    }
+    
+    private void addChildNodes(IProgramElement parent, Collection children) {
+    	for (Iterator iter = children.iterator(); iter.hasNext();) {
+			Object element = (Object) iter.next();
+			if (element instanceof DeclareErrorOrWarning) {
+				DeclareErrorOrWarning decl = (DeclareErrorOrWarning)element;
+			   	IProgramElement deowNode = new ProgramElement(
+		    			decl.isError() ? "declare error" : "declare warning",
+		    			decl.isError() ? IProgramElement.Kind.DECLARE_ERROR : IProgramElement.Kind.DECLARE_WARNING,
+		    			getSourceLocation(),
+		    			this.getDeclaringType().getModifiers(),
+		    			null,null); 
+		    	deowNode.setDetails("\"" + genDeclareMessage(decl.getMessage()) + "\"");
+		    	parent.addChild(deowNode);
+			} else if (element instanceof BcelAdvice) {
+				BcelAdvice advice = (BcelAdvice)element;
+		    	parent.addChild(new ProgramElement(
+				advice.kind.getName(),
+				IProgramElement.Kind.ADVICE,
+				getSourceLocation(),
+				advice.signature.getModifiers(),null,Collections.EMPTY_LIST));
+			}
+		}
+    }
+    
+	// taken from AsmElementFormatter
+	private String genDeclareMessage(String message) {
+		int length = message.length();
+		if (length < 18) {
+			return message;
+		} else {
+			return message.substring(0, 17) + "..";
+		}
+	}
 }

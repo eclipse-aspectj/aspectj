@@ -19,6 +19,7 @@ public class AllTestsAspectJ152 {
 		TestSuite suite = new TestSuite("AspectJ 1.5.2 tests");
 		//$JUnit-BEGIN$
 		suite.addTest(Ajc152Tests.suite());
+		suite.addTest(CreatingModelForInjarTests.suite());
 		suite.addTest(SynchronizationTests.suite());
 		suite.addTest(SynchronizationTransformTests.suite());
         //$JUnit-END$

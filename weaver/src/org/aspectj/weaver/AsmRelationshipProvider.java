@@ -61,7 +61,11 @@ public class AsmRelationshipProvider {
 			checker.getSourceLocation().getLine(),
 			checker.getSourceLocation().getColumn(),
 			checker.getSourceLocation().getOffset());
-			
+
+		if (World.createInjarHierarchy) {
+			checker.createHierarchy();
+		}
+
 		String targetHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
 			shadow.getSourceLocation().getSourceFile(),
 			shadow.getSourceLocation().getLine(),

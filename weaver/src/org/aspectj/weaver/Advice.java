@@ -428,5 +428,11 @@ public abstract class Advice extends ShadowMunger {
 	public ResolvedType getConcreteAspect() {
 		return concreteAspect;
 	}
+	
+	public ResolvedType getResolvedDeclaringAspect() {
+		// The aspect which declares this piece of advice 
+		// is 'concreteAspect' since 'declaringType' is null
+		return concreteAspect;
+	}
 
 }
