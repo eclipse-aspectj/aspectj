@@ -444,9 +444,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 		
 	}
 	
-    // XXX shouldn't be aware of the delimiter
 	private String getFilename(String hid) {
-		return hid.substring(0,hid.indexOf("|"));
+		return AsmManager.getDefault().getHandleProvider().getFileForHandle(hid);
 	}
 
 }

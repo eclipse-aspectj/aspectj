@@ -490,9 +490,8 @@ public class AsmManager {
 	
 	//===================== DELTA PROCESSING CODE ============== start ==========//
 	
-	// XXX shouldn't be aware of the delimiter
 	private String getFilename(String hid) {
-		return hid.substring(0,hid.indexOf("|"));
+		return getHandleProvider().getFileForHandle(hid);
 	}
 	
 	/**
