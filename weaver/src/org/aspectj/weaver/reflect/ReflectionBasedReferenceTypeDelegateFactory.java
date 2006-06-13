@@ -51,7 +51,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	// can return 'null' if we can't find the class
 	private static ReflectionBasedReferenceTypeDelegate create15Delegate(ReferenceType forReferenceType, Class forClass, ClassLoader usingClassLoader, World inWorld) {
 		try {
-			Class delegateClass = Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate",true,usingClassLoader);//,false,usingClassLoader);//ReflectionBasedReferenceTypeDelegate.class.getClassLoader()); 
+			Class delegateClass = Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate");
 			ReflectionBasedReferenceTypeDelegate ret = (ReflectionBasedReferenceTypeDelegate) delegateClass.newInstance();
 			ret.initialize(forReferenceType,forClass,usingClassLoader,inWorld);
 			return ret;

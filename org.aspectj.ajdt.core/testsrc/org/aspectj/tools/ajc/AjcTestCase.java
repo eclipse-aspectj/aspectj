@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -31,7 +32,6 @@ import junit.framework.TestCase;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.util.TestUtil;
-import org.aspectj.weaver.loadtime.WeavingURLClassLoader;
 
 /**
  * A TestCase class that acts as the superclass for all test cases wishing
@@ -71,6 +71,7 @@ public class AjcTestCase extends TestCase {
         + File.pathSeparator+ ".."+File.separator+"loadtime"+File.separator+"bin" 
         + File.pathSeparator+ ".."+File.separator+"weaver"+File.separator+"bin" 
         + File.pathSeparator+ ".."+File.separator+"weaver5"+File.separator+"bin" 
+        + File.pathSeparator+ ".."+File.separator+"lib"+File.separator+"bcel"+File.separator+"bcel.jar" 
         
         // When the build machine executes the tests, it is using code built into jars rather than code build into
         // bin directories.  This means for the necessary types to be found we have to put these jars on the classpath:
@@ -554,7 +555,7 @@ public class AjcTestCase extends TestCase {
 	 * bridge, and util projects will all be appended to the classpath, as will any jars in
 	 * the sandbox.
 	 */
-	public RunResult run(String className, String[] args, String classpath, boolean useLTW)  {
+	public RunResult run(String className, String[] args, final String classpath, boolean useLTW)  {
 		lastRunResult = null;
 		StringBuffer cp = new StringBuffer();
 		if (classpath != null) {
@@ -563,43 +564,43 @@ public class AjcTestCase extends TestCase {
 			cp.append(File.pathSeparator);
 		}
 		cp.append(ajc.getSandboxDirectory().getAbsolutePath());
-		cp.append(DEFAULT_CLASSPATH_ENTRIES);
 		getAnyJars(ajc.getSandboxDirectory(),cp);
-		classpath = cp.toString();
+		
+		URLClassLoader cLoader;
+		ClassLoader parent = getClass().getClassLoader().getParent();
+		
+		/* Sandbox -> AspectJ -> Extension -> Bootstrap */
+		if (useLTW) {
+			ClassLoader aspectjLoader = new URLClassLoader(getURLs(DEFAULT_CLASSPATH_ENTRIES),parent);
+			URL[] urls = getURLs(cp.toString());
+			cLoader = createWeavingClassLoader(urls,aspectjLoader);
+
+		}
+		/* Sandbox + AspectJ -> Extension -> Bootstrap */
+		else {
+			cp.append(DEFAULT_CLASSPATH_ENTRIES);
+			URL[] urls = getURLs(cp.toString());
+			cLoader = new URLClassLoader(urls,parent);
+		}
+
 		StringBuffer command = new StringBuffer("java -classpath ");
-		command.append(classpath);
+		command.append(cp.toString());
 		command.append(" ");
 		command.append(className);
 		for (int i = 0; i < args.length; i++) {
 			command.append(" ");
 			command.append(args[i]);
 		}
+
 		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
-		StringTokenizer strTok = new StringTokenizer(classpath,File.pathSeparator);
-		URL[] urls = new URL[strTok.countTokens()];
-		try {
-			for (int i = 0; i < urls.length; i++) {
-				urls[i] = new File(strTok.nextToken()).getCanonicalFile().toURL();
-			}
-		} catch (Exception malEx) {
-			fail("Bad classpath specification: " + classpath);
-		}
-		
-		URLClassLoader cLoader;
-		if (useLTW) {
-			ClassLoader parent = getClass().getClassLoader();
-			cLoader = new WeavingURLClassLoader(urls,parent);
-		}
-		else {
-			cLoader = new URLClassLoader(urls,null);
-		}
-
 		try {
 			try {
 				Class testerClass = cLoader.loadClass("org.aspectj.testing.Tester");
 				Method setBaseDir = testerClass.getDeclaredMethod("setBASEDIR",new Class[] {File.class});
 				setBaseDir.invoke(null,new Object[] {ajc.getSandboxDirectory()});
+			} catch (InvocationTargetException itEx) {
+				fail ("Unable to prepare org.aspectj.testing.Tester for test run: " + itEx.getTargetException());
 			} catch (Exception ex) {
 				fail ("Unable to prepare org.aspectj.testing.Tester for test run: " + ex);
 			}
@@ -622,6 +623,42 @@ public class AjcTestCase extends TestCase {
 			stopCapture(baosErr,baosOut);
 		}
 		return lastRunResult;
+	}
+	
+	/* Must create weaving class loader reflectively using new parent so we 
+	 * don't have a reference to a World loaded from CLASSPATH which won't
+	 * be able to resolve Java 5 specific extensions and may cause
+	 * ClassCastExceptions
+	 */  
+	private URLClassLoader createWeavingClassLoader (URL[] urls, ClassLoader parent) {
+		URLClassLoader loader = null;
+		
+		try {
+			Class loaderClazz = Class.forName("org.aspectj.weaver.loadtime.WeavingURLClassLoader",false,parent);
+			Class[] parameterTypes = new Class[] { urls.getClass(), ClassLoader.class };
+			Object[] parameters = new Object[] { urls, parent };
+			Constructor constructor = loaderClazz.getConstructor(parameterTypes);
+			loader = (URLClassLoader)constructor.newInstance(parameters);
+		}
+		catch (Exception ex) {
+			fail("Cannot create weaving class loader: " + ex.toString());
+		}
+		
+		return loader;
+	}
+	
+	private URL[] getURLs (String classpath) {
+		StringTokenizer strTok = new StringTokenizer(classpath,File.pathSeparator);
+		URL[] urls = new URL[strTok.countTokens()];
+		try {
+			for (int i = 0; i < urls.length; i++) {
+				urls[i] = new File(strTok.nextToken()).getCanonicalFile().toURL();
+			}
+		} catch (Exception malEx) {
+			fail("Bad classpath specification: " + classpath);
+		}
+		
+		return urls;
 	}
 
 	private String substituteSandbox(String classpath) {
