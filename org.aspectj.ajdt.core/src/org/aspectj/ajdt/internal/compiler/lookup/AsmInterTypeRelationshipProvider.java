@@ -15,6 +15,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 //import java.io.IOException;
 
 import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.weaver.ResolvedType;
@@ -48,17 +49,15 @@ public class AsmInterTypeRelationshipProvider {
 	
 		if (munger.getSourceLocation() != null
 			&& munger.getSourceLocation() != null) {
-			String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
-				munger.getSourceLocation().getSourceFile(),
-				munger.getSourceLocation().getLine(),
-				munger.getSourceLocation().getColumn(),
-				munger.getSourceLocation().getOffset());
-				
-			String targetHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
-				onType.getSourceLocation().getSourceFile(),
-				onType.getSourceLocation().getLine(),
-				onType.getSourceLocation().getColumn(),
-				onType.getSourceLocation().getOffset());
+			IProgramElement sourceIPE = AsmManager.getDefault().getHierarchy()
+				.findElementForSourceLine(munger.getSourceLocation());
+			String sourceHandle = AsmManager.getDefault().getHandleProvider()
+				.createHandleIdentifier(sourceIPE);
+			
+			IProgramElement targetIPE = AsmManager.getDefault().getHierarchy()
+				.findElementForSourceLine(onType.getSourceLocation());
+			String targetHandle = AsmManager.getDefault().getHandleProvider()
+				.createHandleIdentifier(targetIPE);
 				
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			if (sourceHandle != null && targetHandle != null) {

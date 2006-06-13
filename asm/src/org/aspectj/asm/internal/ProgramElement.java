@@ -493,19 +493,25 @@ public class ProgramElement implements IProgramElement {
 	}
 	
 	public String getHandleIdentifier() {
-	    if (null == handle) {
-			if (sourceLocation != null) {
-                handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceLocation);
-//			    return genHandleIdentifier(sourceLocation);
-			} 
-	    }
-	    return handle;
+		return getHandleIdentifier(true);
+	}
+	
+	public String getHandleIdentifier(boolean create) {
+		if (null == handle && create) {
+            handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(this);			
+		}
+		return handle;
+	}
+	
+	public void setHandleIdentifier(String handle) {
+		this.handle = handle;
 	}
 	
 	public List getParameterNames() { 
 		List parameterNames = (List)kvpairs.get("parameterNames");
 		return parameterNames; 
 	}
+	
 	public void setParameterNames(List list) { 
 		if (list==null || list.size()==0) return;
 		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();

@@ -101,11 +101,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				if (World.createInjarHierarchy) {
 					createHierarchy();
 				} 
-				handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(
-				            sl.getSourceFile(),
-				            sl.getLine(),
-				            sl.getColumn(),
-							sl.getOffset());					
+				IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForSourceLine(sl);
+				handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(ipe);
 			}
 		}
 		return handle;

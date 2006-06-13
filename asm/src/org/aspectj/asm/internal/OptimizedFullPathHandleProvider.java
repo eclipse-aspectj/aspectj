@@ -21,10 +21,11 @@ import java.util.StringTokenizer;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IElementHandleProvider;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 
 /**
- * Not currently used - uses int keys rather than the full file path as the first part of the handle.
+ * Uses int keys rather than the full file path as the first part of the handle.
  */
 public class OptimizedFullPathHandleProvider implements IElementHandleProvider {
 
@@ -95,5 +96,19 @@ public class OptimizedFullPathHandleProvider implements IElementHandleProvider {
         st.nextToken(); // skip over the line number
         st.nextToken(); // skip over the column
         return new Integer(st.nextToken()).intValue();
+	}
+
+	public String createHandleIdentifier(IProgramElement ipe) {
+		if (ipe.getHandleIdentifier(false) != null) {
+			return ipe.getHandleIdentifier(false);
+		}
+		String handle = null;  
+		if (ipe.getSourceLocation() != null) {
+			handle = createHandleIdentifier(ipe.getSourceLocation());
+		} else {
+			handle = createHandleIdentifier(ISourceLocation.NO_FILE,-1,-1,-1);
+		}
+		ipe.setHandleIdentifier(handle);
+		return handle;
 	}
 }

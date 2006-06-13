@@ -127,9 +127,11 @@ public interface IProgramElement extends Serializable {
 	 * The format of the string handle is not specified, but is stable across 
 	 * compilation sessions.
 	 * 
-	 * @return	a string representtaion of this element
+	 * @return	a string representation of this element
 	 */
 	public String getHandleIdentifier();
+	public String getHandleIdentifier(boolean create);
+	public void setHandleIdentifier(String handle);
 	
 	/**
 	 * @return	a string representation of this node and all of its children (recursive)

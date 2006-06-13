@@ -38,6 +38,11 @@ public interface IElementHandleProvider {
     public String createHandleIdentifier(File sourceFile, int line,int column,int offset);
 
     /**
+     * @return  a String uniquely identifying this element
+     */
+	public String createHandleIdentifier(IProgramElement ipe);
+    
+    /**
      * NOTE: this is necessary for the current implementation to look up nodes, 
      * but we may want to consider removing it.
      * 

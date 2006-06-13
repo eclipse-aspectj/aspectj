@@ -26,6 +26,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
+		configureBuildStructureModel(false);
 	}
 
 	public void build(String projectName) {

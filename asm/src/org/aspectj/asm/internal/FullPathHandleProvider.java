@@ -17,9 +17,12 @@ import java.util.StringTokenizer;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IElementHandleProvider;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 
 /**
+ * HandleProvider of the form '<full path to src file>|line|column|offset'
+ * 
  * @author Mik Kersten
  */
 public class FullPathHandleProvider implements IElementHandleProvider {
@@ -69,5 +72,19 @@ public class FullPathHandleProvider implements IElementHandleProvider {
         st.nextToken(); // skip over the line number
         st.nextToken(); // skip over the column
         return new Integer(st.nextToken()).intValue();
+	}
+
+	public String createHandleIdentifier(IProgramElement ipe) {
+		if (ipe.getHandleIdentifier(false) != null) {
+			return ipe.getHandleIdentifier(false);
+		}
+		String handle = null;  
+		if (ipe.getSourceLocation() != null) {
+			handle = createHandleIdentifier(ipe.getSourceLocation());
+		} else {
+			handle = createHandleIdentifier(ISourceLocation.NO_FILE,-1,-1,-1);
+		}
+		ipe.setHandleIdentifier(handle);
+		return handle;
 	}
 }

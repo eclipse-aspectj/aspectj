@@ -430,10 +430,18 @@ public class AsmHierarchyBuilder extends ASTVisitor {
             ReferencePointcut rp = (ReferencePointcut) it.next();
             ResolvedMember member = getPointcutDeclaration(rp, declaration);
             if (member != null) {
-                IRelationship foreward = AsmManager.getDefault().getRelationshipMap().get(peNode.getHandleIdentifier(), IRelationship.Kind.USES_POINTCUT, "uses pointcut", false, true);
-                foreward.addTarget(AsmManager.getDefault().getHandleProvider().createHandleIdentifier(member.getSourceLocation()));            
+                IRelationship foreward = AsmManager.getDefault().getRelationshipMap()
+                		.get(peNode.getHandleIdentifier(), 
+                				IRelationship.Kind.USES_POINTCUT, "uses pointcut", false, true);
+                IProgramElement forwardIPE = AsmManager.getDefault().getHierarchy()
+                		.findElementForSourceLine(member.getSourceLocation());
+                foreward.addTarget(AsmManager.getDefault().getHandleProvider()
+                		.createHandleIdentifier(forwardIPE));            
                 
-                IRelationship back = AsmManager.getDefault().getRelationshipMap().get(AsmManager.getDefault().getHandleProvider().createHandleIdentifier(member.getSourceLocation()), IRelationship.Kind.USES_POINTCUT, "pointcut used by", false, true);
+                IRelationship back = AsmManager.getDefault().getRelationshipMap()
+                		.get(AsmManager.getDefault().getHandleProvider()
+                				.createHandleIdentifier(forwardIPE), 
+                				IRelationship.Kind.USES_POINTCUT, "pointcut used by", false, true);
                 back.addTarget(peNode.getHandleIdentifier());             
             } 
         }        

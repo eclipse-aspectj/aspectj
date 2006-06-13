@@ -37,16 +37,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public IProgramElement getElement(String handle) {
 		IProgramElement cachedEntry = (IProgramElement)handleMap.get(handle);
 		if (cachedEntry!=null) return cachedEntry;
-		
-//		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
-//        int line = new Integer(st.nextToken()).intValue();
-        // int col = new Integer(st.nextToken()).intValue(); TODO: use column number when available
-        String file = AsmManager.getDefault().getHandleProvider().getFileForHandle(handle); // st.nextToken();
-        int line = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(handle); // st.nextToken();
-        int offSet = AsmManager.getDefault().getHandleProvider().getOffSetForHandle(handle); 
-        
-        String canonicalSFP = AsmManager.getDefault().getCanonicalFilePath(new File(file));
-		IProgramElement ret = findNodeForSourceLineHelper(root,canonicalSFP, line, offSet);
+		IProgramElement ret = findElementForHandle(handle);
 		if (ret!=null) {
 			cache(handle,ret);
 		}
@@ -68,7 +59,10 @@ public class AspectJElementHierarchy implements IHierarchy {
 	}
 	
 	public boolean removeFromFileMap(Object key) {
-		return (fileMap.remove(key)!=null);
+		if (fileMap.containsKey(key)) {
+			return (fileMap.remove(key)!=null);
+		}
+		return true;	
 	}
 
 	public void setFileMap(HashMap fileMap) {
@@ -344,30 +338,26 @@ public class AspectJElementHierarchy implements IHierarchy {
 		IProgramElement ret = (IProgramElement) handleMap.get(handle);
 		if (ret != null) return ret;
 		
-//		StringTokenizer st = new StringTokenizer(handle, ProgramElement.ID_DELIM);
-//		String file = st.nextToken();
-//		int line = new Integer(st.nextToken()).intValue();
-//		int col = new Integer(st.nextToken()).intValue();
-		// TODO: use column number when available
-        String file = AsmManager.getDefault().getHandleProvider().getFileForHandle(handle); // st.nextToken();
-        int line = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(handle); // st.nextToken();
-        int offSet = AsmManager.getDefault().getHandleProvider().getOffSetForHandle(handle);
-        
-		ret = findElementForOffSet(file, line, offSet);
-		if (ret != null) { 
+		ret = findElementForHandle(root,handle);
+		if (ret != null) {
 			cache(handle,(ProgramElement)ret);
 		}
 		return ret;
-		
-//		IProgramElement parent = findElementForType(packageName, typeName);
-//		if (parent == null) return null;
-//		if (kind == IProgramElement.Kind.CLASS ||
-//			kind == IProgramElement.Kind.ASPECT) {
-//				return parent;
-//		} else {
-//			return findElementForSignature(parent, kind, name);	
-//		}	
 	}
+	
+	private IProgramElement findElementForHandle(IProgramElement parent, String handle) {
+		for (Iterator it = parent.getChildren().iterator(); it.hasNext(); ) {
+			IProgramElement node = (IProgramElement)it.next();
+			if (handle.equals(node.getHandleIdentifier())) {
+				return node;
+			} else {
+				IProgramElement childSearch = findElementForHandle(node,handle);
+				if (childSearch != null) return childSearch;
+			}
+		}
+		return null;
+	}
+	
 //	
 //	private IProgramElement findElementForBytecodeInfo(
 //		IProgramElement node, 
