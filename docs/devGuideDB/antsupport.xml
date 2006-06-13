@@ -481,7 +481,15 @@
 				<entry><para>verbose
 				</para></entry>
 				<entry><para>
-				If true, emit compiler status messages during the compile.				
+				If true, log compiler verbose messages as Project.INFO during the compile.
+				</para></entry>
+			</row>
+			<row>
+				<entry><para>logCommand
+				</para></entry>
+				<entry><para>
+				If true, log compiler command elements as Project.INFO
+				(rather than the usual Project.VERBOSE level).				
 				</para></entry>
 			</row>
 			<row>

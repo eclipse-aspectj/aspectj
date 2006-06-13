@@ -22,13 +22,16 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import junit.framework.TestCase;
 
+import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
@@ -715,25 +718,48 @@ public class AjcTaskTest extends TestCase {
 		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
 	}
 
-	public void testDefaultFileComplete() {
-		AjcTask task = getTask("default.lst");
-		task.setDebugLevel("none");
-		task.setDeprecation(true);
-		task.setFailonerror(false);
-		task.setNoExit(true); // ok to override Ant?
-		task.setNoImportError(true);
-		task.setNowarn(true);
-		task.setXTerminateAfterCompilation(true);
-		task.setPreserveAllLocals(true);
-		task.setProceedOnError(true);
-		task.setReferenceInfo(true);
-		task.setSource("1.3");
-		task.setTarget("1.1");
-		task.setTime(true);
-		task.setVerbose(true);
-		task.setXlint("info");
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.INFOS);
-	}
+    public void testDefaultFileComplete() {
+        AjcTask task = getTask("default.lst");
+        defaultSettings(task);
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.INFOS);
+    }
+    private void defaultSettings(AjcTask task) {
+        task.setDebugLevel("none");
+        task.setDeprecation(true);
+        task.setFailonerror(false);
+        task.setNoExit(true); // ok to override Ant?
+        task.setNoImportError(true);
+        task.setNowarn(true);
+        task.setXTerminateAfterCompilation(true);
+        task.setPreserveAllLocals(true);
+        task.setProceedOnError(true);
+        task.setReferenceInfo(true);
+        task.setSource("1.3");
+        task.setTarget("1.1");
+        task.setTime(true);
+        task.setVerbose(true);
+        task.setXlint("info");        
+    }
+    
+    public void testLogCommand() {
+        final String DEFAULT = "default.lst";
+        AjcTask task = getTask(DEFAULT);
+        defaultSettings(task);
+        task.setVerbose(false);
+        task.setLogCommand(true);
+        LogListener listener = new LogListener(Project.MSG_INFO);
+        task.getProject().addBuildListener(listener);
+        runTest(task, NO_EXCEPTION, MessageHolderChecker.INFOS);
+        String[] results = listener.getResults();
+        boolean matched = false;
+        for (int i = 0; !matched && (i < results.length); i++) {
+            String s = results[i];
+            matched = (null != s) && (-1 != s.indexOf(DEFAULT));
+        }
+        if (!matched) {
+            fail(DEFAULT + " not found in " + Arrays.asList(results));
+        }
+    }
 
 	public void testXOptions() {
 		String[] xopts = new String[] {
@@ -937,6 +963,27 @@ public class AjcTaskTest extends TestCase {
 			}
 		}
 	}
+    private static class LogListener implements BuildListener {
+        private final ArrayList results = new ArrayList();
+        private final int priority;
+        private LogListener(int priority) {
+            this.priority = priority;
+        }
+        public void buildFinished(BuildEvent event) {}
+        public void buildStarted(BuildEvent event) {}
+        public void messageLogged(BuildEvent event) {
+            if (priority == event.getPriority()) {
+                results.add(event.getMessage());
+            }
+        }
+        public void targetFinished(BuildEvent event) {}
+        public void targetStarted(BuildEvent event) {}
+        public void taskFinished(BuildEvent event) {}
+        public void taskStarted(BuildEvent event) {}
+        String[] getResults() {
+            return (String[]) results.toArray(new String[0]);
+        }
+    }
 }
 class SnoopingCommandEditor implements ICommandEditor {
 	private static final String[] NONE = new String[0];

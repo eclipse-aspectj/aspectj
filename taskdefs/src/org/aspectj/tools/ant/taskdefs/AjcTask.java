@@ -402,6 +402,9 @@ public class AjcTask extends MatchingTask {
     /** true if -XincrementalFile (i.e, setTagFile)*/
     private boolean inIncrementalFileMode; 
 
+    /** log command in non-verbose mode */
+    private boolean logCommand; 
+
     /** used when forking */
     private CommandlineJava javaCmd = new CommandlineJava();
 
@@ -447,6 +450,7 @@ public class AjcTask extends MatchingTask {
         verbose = false;
         xweaveDir = null;
         xdoneSignal = null;
+        logCommand = false;
         javaCmd = new CommandlineJava();
     }
 
@@ -495,6 +499,10 @@ public class AjcTask extends MatchingTask {
         inIncrementalMode = incremental;
     }
 
+    public void setLogCommand(boolean logCommand) {
+        this.logCommand = logCommand;
+    }
+    
     public void setHelp(boolean help) {  
         cmd.addFlag("-help", help);
     }
@@ -1063,7 +1071,11 @@ public class AjcTask extends MatchingTask {
         verifyOptions();
         try {
             String[] args = makeCommand();
-            logVerbose("ajc " + Arrays.asList(args));
+            if (logCommand) {
+                log("ajc " + Arrays.asList(args));                
+            } else {
+                logVerbose("ajc " + Arrays.asList(args));
+            }
             if (!fork) {
                 executeInSameVM(args);
             } else { // when forking, Adapter handles failonerror
