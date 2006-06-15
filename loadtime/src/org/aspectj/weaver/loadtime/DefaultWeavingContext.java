@@ -44,7 +44,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 * @return null as we are not in an OSGi environment (therefore no bundles)
 	 */
 	public String getBundleIdFromURL(URL url) {
-		return null;
+		return "";
 	}
 
 	/**
@@ -54,4 +54,10 @@ public class DefaultWeavingContext implements IWeavingContext {
     	return ((loader!=null)?loader.getClass().getName()+"@"+loader.hashCode():"null");
 	}
 
+	/**
+	 * @return filename
+	 */
+	public String getFile(URL url) {
+    	return url.getFile();
+	}
 }

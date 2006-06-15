@@ -82,10 +82,11 @@ public class JRockitAgentTest extends TestCase {
 			for (int i = 0; i < urls.length; i++) {
 				Object pathElement;
 				URL url = urls[i];
-				File file = new File(url.getFile());
+				if (debug) System.out.println("JRockitClassLoader.JRockitClassLoader() url=" + url.getPath());
+				File file = new File(encode(url.getFile()));
 				if (debug) System.out.println("JRockitClassLoader.JRockitClassLoader() file" + file);
 				if (file.isDirectory()) pathElement = file;
-				else if (file.getName().endsWith(".jar")) pathElement = new JarFile(file);
+				else if (file.exists() && file.getName().endsWith(".jar")) pathElement = new JarFile(file);
 				else throw new RuntimeException(file.getAbsolutePath().toString());
 				path.add(pathElement);
 			}
@@ -97,6 +98,22 @@ public class JRockitAgentTest extends TestCase {
 			byte[] bytes = new byte[] {};
 			Class[] parameterTypes = new Class[] { java.lang.ClassLoader.class, java.lang.String.class, bytes.getClass() }; 
 			preProcess = agentClazz.getMethod("preProcess",parameterTypes);
+		}
+		
+		/* Get rid of escaped characters */
+		private String encode (String s) {
+			StringBuffer result = new StringBuffer();
+			int i = s.indexOf("%");
+			while (i != -1) {
+				result.append(s.substring(0,i));
+				String escaped = s.substring(i+1,i+3);
+				s = s.substring(i+3);
+				Integer value = Integer.valueOf(escaped,16);
+				result.append(new Character((char)value.intValue()));
+				i = s.indexOf("%");
+			}
+			result.append(s);
+			return result.toString();
 		}
 		
 		protected Class findClass(String name) throws ClassNotFoundException {

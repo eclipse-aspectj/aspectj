@@ -199,6 +199,10 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("Ensure no weaving without included aspects");
 	}
 
+	public void testWeaveinfoMessages (){
+		runTest("weaveinfo messages with include and exclude");
+	}
+
   // tests that can't be included for some reason
 
   // Not valid whilst the ajc compiler forces debug on (ignores -g:none) - it will be green but is invalid, trust me

@@ -668,4 +668,23 @@
         </run>
     </ajc-test>
     
+   <ajc-test dir="ltw" title="weaveinfo messages with include and exclude">
+      <compile files="EmptyTest1.java, EmptyTest2.java"/>
+      <compile files="EmptyAspect.aj"/>
+      <run class="EmptyTest1" ltw="aop-emptytests.xml">
+        	<stdout>
+                <line text="EmptyTest1.main()"/>
+                <line text="EmptyTest2.main()"/>
+            </stdout>
+        <stderr>
+			<line text="info AspectJ Weaver Version"/>
+			<line text="info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+			<line text="info using configuration"/>
+			<line text="info register aspect EmptyAspect"/>
+          <line text="info weaving"/>
+          <line text="info not weaving"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
 </suite>

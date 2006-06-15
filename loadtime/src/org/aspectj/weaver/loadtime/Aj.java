@@ -152,7 +152,7 @@ public class Aj implements ClassPreProcessor {
      * @return       true if classes have been generated.
      */
     public boolean generatedClassesExist(ClassLoader loader){
-    	return ((ClassLoaderWeavingAdaptor)WeaverContainer.getWeaver(loader, weavingContext)).generatedClassesExist();
+    	return ((ClassLoaderWeavingAdaptor)WeaverContainer.getWeaver(loader, weavingContext)).generatedClassesExistFor(null);
     }
     
     public void flushGeneratedClasses(ClassLoader loader){

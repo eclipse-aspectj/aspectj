@@ -49,4 +49,10 @@ public interface IWeavingContext {
 	 */
 	public String getClassLoaderName ();
 
+	/**
+	 * Format a URL
+	 * @return filename
+	 */
+	public String getFile(URL url);
+
 }

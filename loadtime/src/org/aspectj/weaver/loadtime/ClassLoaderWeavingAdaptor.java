@@ -166,7 +166,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
     			while (xmls.hasMoreElements()) {
     			    URL xml = (URL) xmls.nextElement();
-    			    info("using " + xml.getFile());
+    			    info("using configuration " + weavingContext.getFile(xml));
     			    definitions.add(DocumentParser.parse(xml));
     			}
     		}
@@ -332,6 +332,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 String aspectClassName = (String) aspects.next();
                 if (acceptAspect(aspectClassName)) {
                 	info("register aspect " + aspectClassName);
+//                	System.err.println("? ClassLoaderWeavingAdaptor.registerAspects() aspectName=" + aspectClassName + ", loader=" + loader + ", bundle=" + weavingContext.getClassLoaderName());
                     /*ResolvedType aspect = */weaver.addLibraryAspect(aspectClassName);
 
                     //generate key for SC
@@ -375,6 +376,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 }
             }
         }
+//        System.out.println("ClassLoaderWeavingAdaptor.registerAspects() classloader=" + weavingContext.getClassLoaderName() + ", namespace=" + namespace);
         
         /* We didn't register any aspects so disable the adaptor */
         if (namespace == null) {
@@ -606,6 +608,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @return Returns the key.
 	 */
 	public String getNamespace() {
+//		System.out.println("ClassLoaderWeavingAdaptor.getNamespace() classloader=" +  weavingContext.getClassLoaderName() + ", namespace=" + namespace);
 		if(namespace==null) return "";
 		else return new String(namespace);
 	}
@@ -613,19 +616,20 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     /**
      * Check to see if any classes are stored in the generated classes cache.
      * Then flush the cache if it is not empty
+     * @param className TODO
      * @return true if a class has been generated and is stored in the cache
      */
-    public boolean generatedClassesExist(){
-    	if(generatedClasses.size()>0) {
-    		return true;
-    	}
-    	return false;
+    public boolean generatedClassesExistFor (String className) {
+//    	System.err.println("? ClassLoaderWeavingAdaptor.generatedClassesExist() classname=" + className + ", size=" + generatedClasses);
+    	if (className == null) return !generatedClasses.isEmpty();
+    	else return generatedClasses.containsKey(className);
     }
 
     /**
      * Flush the generated classes cache
      */
-    public void flushGeneratedClasses(){
+    public void flushGeneratedClasses() {
+//    	System.err.println("? ClassLoaderWeavingAdaptor.flushGeneratedClasses() generatedClasses=" + generatedClasses);
     	generatedClasses = new HashMap();
     }
 

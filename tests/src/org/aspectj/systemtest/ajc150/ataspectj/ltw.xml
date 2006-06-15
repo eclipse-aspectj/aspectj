@@ -113,6 +113,7 @@
                 <line text="info register classloader"/>
                 <line text="info using"/>
 				<line text="info register aspect ataspectj.EmptyAspect"/>
+        		<line text="info not weaving 'com.foo.bar.Test$$EnhancerByCGLIB$$12345'"/>
         		<line text="info weaving 'com.foo.bar.Test'"/>
             </stderr>
         </run>

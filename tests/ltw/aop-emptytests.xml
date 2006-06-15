@@ -1,0 +1,8 @@
+<aspectj>
+	<aspects>
+		<aspect name="EmptyAspect"/>
+	</aspects>
+	<weaver options="-verbose">
+		<include within="*1"/>
+	</weaver>
+</aspectj>

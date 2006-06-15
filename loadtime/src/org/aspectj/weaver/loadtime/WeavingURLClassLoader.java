@@ -151,6 +151,13 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	public void acceptClass (String name, byte[] bytes) {
 		generatedClasses.put(name,bytes);
 	}
+
+//	protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+//		System.err.println("> WeavingURLClassLoader.loadClass() name=" + name);
+//		Class clazz= super.loadClass(name, resolve);
+//		System.err.println("< WeavingURLClassLoader.loadClass() clazz=" + clazz + ", loader=" + clazz.getClassLoader());
+//		return clazz;
+//	}
 	
 //	private interface ClassPreProcessorAdaptor extends ClassPreProcessor {
 //		public void addURL(URL url);
