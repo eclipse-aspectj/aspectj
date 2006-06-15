@@ -12,7 +12,6 @@
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.aspectj.ajde.Ajde;
@@ -37,6 +35,7 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.util.FileUtil;
 
 /**
  * This class uses Ajde in the same way that an IDE (e.g. AJDT) does.
@@ -57,7 +56,6 @@ public class AjdeInteractionTestbed extends TestCase {
 	public    static String   testdataSrcDir = "../tests/multiIncremental";
 	protected static    File       sandboxDir;
 	
-	private static  final String   SANDBOX_NAME = "ajcSandbox";
 	private static boolean buildModel;
 	
 	// Methods for configuring the build
@@ -96,7 +94,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		MyProjectPropertiesAdapter.reset();
 		
 		// Create a sandbox in which to work
-		createEmptySandbox();
+		sandboxDir = FileUtil.createEmptySandbox();
 	}
 	
 	protected void tearDown() throws Exception {
@@ -291,39 +289,6 @@ public class AjdeInteractionTestbed extends TestCase {
 	}
 	
 	// Infrastructure below here
-	
-	private void createEmptySandbox() {
-		String os = System.getProperty("os.name");
-		File tempDir = null;
-		// AMC - I did this rather than use the JDK default as I hate having to go look 
-		// in c:\documents and settings\......... for the results of a failed test.
-		if (os.startsWith("Windows")) {
-            //Alex: try D first since NTFS on mine while FAT leads to failure..
-			tempDir = new File("D:\\temp");
-			if (!tempDir.exists()) {
-                tempDir = new File("C:\\temp");
-                if (!tempDir.exists()) {
-                    tempDir.mkdir();
-                }
-            }
-		} else {
-		 	tempDir = new File("/tmp");
-		}
-		File sandboxRoot = new File(tempDir,SANDBOX_NAME);
-		if (!sandboxRoot.exists()) {
-			sandboxRoot.mkdir();
-		}
-
-		org.aspectj.util.FileUtil.deleteContents(sandboxRoot);
-
-		try {
-			sandboxDir = File.createTempFile("ajcTest",".tmp",sandboxRoot);
-			sandboxDir.delete();
-			sandboxDir.mkdir();
-		} catch (IOException ioEx) {
-			throw new AssertionFailedError("Unable to create sandbox directory for test");
-		}
-	}
 	
 	private static void log(String msg) {
 		if (VERBOSE) System.out.println(msg);

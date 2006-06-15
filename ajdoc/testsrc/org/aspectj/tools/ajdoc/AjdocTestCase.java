@@ -13,6 +13,8 @@ package org.aspectj.tools.ajdoc;
 import java.io.File;
 import java.io.IOException;
 
+import org.aspectj.util.FileUtil;
+
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
@@ -25,7 +27,6 @@ public class AjdocTestCase extends TestCase{
 
 	public final static String testdataSrcDir = "../ajdoc/testdata";
 	protected static File sandboxDir;	
-	private static final String SANDBOX_NAME = "ajcSandbox";
 	private String docOutdir, projectDir;
 
 	
@@ -34,7 +35,7 @@ public class AjdocTestCase extends TestCase{
 		docOutdir = null;
 		projectDir = null;
 		// Create a sandbox in which to work
-		createEmptySandbox();
+		sandboxDir = FileUtil.createEmptySandbox();
 		// create the ajdocworkdingdir in the sandbox
 		Main.setOutputWorkingDir(getWorkingDir().getAbsolutePath());
 	}
@@ -43,40 +44,6 @@ public class AjdocTestCase extends TestCase{
 		super.tearDown();
 		// reset where ajdocworkingdir is created
 		Main.resetOutputWorkingDir();
-	}
-	
-	// Taken from AjdeInteractionTestbed 
-	private void createEmptySandbox() {
-		String os = System.getProperty("os.name");
-		File tempDir = null;
-		// AMC - I did this rather than use the JDK default as I hate having to go look 
-		// in c:\documents and settings\......... for the results of a failed test.
-		if (os.startsWith("Windows")) {
-            //Alex: try D first since NTFS on mine while FAT leads to failure..
-			tempDir = new File("D:\\temp");
-			if (!tempDir.exists()) {
-                tempDir = new File("C:\\temp");
-                if (!tempDir.exists()) {
-                    tempDir.mkdir();
-                }
-            }
-		} else {
-		 	tempDir = new File("/tmp");
-		}
-		File sandboxRoot = new File(tempDir,SANDBOX_NAME);
-		if (!sandboxRoot.exists()) {
-			sandboxRoot.mkdir();
-		}
-
-		org.aspectj.util.FileUtil.deleteContents(sandboxRoot);
-
-		try {
-			sandboxDir = File.createTempFile("ajcTest",".tmp",sandboxRoot);
-			sandboxDir.delete();
-			sandboxDir.mkdir();
-		} catch (IOException ioEx) {
-			throw new AssertionFailedError("Unable to create sandbox directory for test");
-		}
 	}
 	
 	/**

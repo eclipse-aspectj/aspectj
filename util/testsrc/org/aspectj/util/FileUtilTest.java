@@ -706,5 +706,10 @@ public class FileUtilTest extends TestCase {
             assertTrue("written: " + pipe.totalWritten(), false);
         }
     }
+    
+    public void testCreateEmptySandbox () {
+    	File sandbox = FileUtil.createEmptySandbox();
+    	assertTrue("Sandbox does not exist",sandbox.exists());
+    }
 
 }

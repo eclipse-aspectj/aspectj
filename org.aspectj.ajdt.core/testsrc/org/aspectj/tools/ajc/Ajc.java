@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import junit.framework.AssertionFailedError;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
@@ -45,8 +44,6 @@ import org.aspectj.util.FileUtil;
  */
 public class Ajc {
 
-	private static final String SANDBOX_NAME = "ajcSandbox";
-	
 	private static final String TESTER_PATH = 
 		".."+File.separator+"testing-client"+File.separator+"bin"
 	    + File.pathSeparator+".."+File.separator+"runtime"   +File.separator+"bin"
@@ -183,7 +180,7 @@ public class Ajc {
 		
 		try {
 			if (!isIncremental && shouldEmptySandbox) {
-				createEmptySandbox();
+				sandbox = FileUtil.createEmptySandbox();
 			}
 			args = adjustToSandbox(args,!isIncremental);
 			MessageHandler holder = new MessageHandler();
@@ -256,7 +253,7 @@ public class Ajc {
 	 * Get the sandbox directory used for the compilation.
 	 */
 	public File getSandboxDirectory() {
-		if (sandbox == null) {createEmptySandbox();}
+		if (sandbox == null) {sandbox = FileUtil.createEmptySandbox();}
 		return sandbox;
 	}
 	
@@ -280,33 +277,6 @@ public class Ajc {
 			if (args[i].trim().equals("-incremental")) return true;
 		}
 		return false;
-	}
-	
-	private void createEmptySandbox() {
-		String os = System.getProperty("os.name");
-		File tempDir = null;
-		// AMC - I did this rather than use the JDK default as I hate having to go look
-		// in c:\documents and settings\......... for the results of a failed test.
-		if (os.startsWith("Windows")) {
-			tempDir = new File("C:\\temp");
-			if (!tempDir.exists()) {tempDir.mkdir();}
-		} else {
-		 	tempDir = new File("/tmp");
-		}
-		File sandboxRoot = new File(tempDir,SANDBOX_NAME);
-		if (!sandboxRoot.exists()) {
-			sandboxRoot.mkdir();
-		}
-
-		FileUtil.deleteContents(sandboxRoot);
-
-		try {
-			sandbox = File.createTempFile("ajcTest",".tmp",sandboxRoot);
-			sandbox.delete();
-			sandbox.mkdir();
-		} catch (IOException ioEx) {
-			throw new AssertionFailedError("Unable to create sandbox directory for test");
-		}
 	}
 	
 	/**
