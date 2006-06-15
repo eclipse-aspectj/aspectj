@@ -13,40 +13,10 @@
 
 package org.aspectj.util;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-
-import junit.framework.AssertionFailedError;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.zip.*;
 
 
 /**
@@ -1356,8 +1326,6 @@ public class FileUtil {
         }
     }
 
-	private static final String SANDBOX_NAME = "ajcSandbox";
-
     private FileUtil() { throw new Error("utility class"); }
 	
 	public static List makeClasspath(URL[] urls) {
@@ -1540,48 +1508,5 @@ public class FileUtil {
         protected void completing(long totalWritten, Throwable thrown) {
         }
     }
-
-	public static File createEmptySandbox() {
-		File sandbox;
-		
-		String os = System.getProperty("os.name");
-		File tempDir = null;
-		// AMC - I did this rather than use the JDK default as I hate having to go look
-		// in c:\documents and settings\......... for the results of a failed test.
-		if (os.startsWith("Windows")) {
-			tempDir = new File("C:\\temp");
-			if (!tempDir.exists()) {tempDir.mkdir();}
-		} else {
-		 	tempDir = new File("/tmp");
-		}
-		File sandboxRoot = new File(tempDir,SANDBOX_NAME);
-		if (!sandboxRoot.exists()) {
-			sandboxRoot.mkdir();
-		}
-	
-	
-		try {
-			File workspace = new File(".." + File.separator);
-			String workspaceName = workspace.getCanonicalPath();
-			int index = workspaceName.lastIndexOf(File.separator);
-			workspaceName = workspaceName.substring(index+1);
-	
-			File workspaceRoot = new File(sandboxRoot,workspaceName);
-			if (!workspaceRoot.exists()) {
-				workspaceRoot.mkdir();
-			}
-			
-			deleteContents(workspaceRoot);
-	
-			sandbox = File.createTempFile("ajcTest",".tmp",workspaceRoot);
-			sandbox.delete();
-			sandbox.mkdir();
-	
-		} catch (IOException ioEx) {
-			throw new AssertionFailedError("Unable to create sandbox directory for test");
-		}
-		
-		return sandbox;
-	}
 
 }

@@ -13,10 +13,10 @@ package org.aspectj.tools.ajdoc;
 import java.io.File;
 import java.io.IOException;
 
-import org.aspectj.util.FileUtil;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+
+import org.aspectj.tools.ajc.Ajc;
 
 /**
  * This class is the super class of all Ajdoc tests. It creates
@@ -35,7 +35,7 @@ public class AjdocTestCase extends TestCase{
 		docOutdir = null;
 		projectDir = null;
 		// Create a sandbox in which to work
-		sandboxDir = FileUtil.createEmptySandbox();
+		sandboxDir = Ajc.createEmptySandbox();
 		// create the ajdocworkdingdir in the sandbox
 		Main.setOutputWorkingDir(getWorkingDir().getAbsolutePath());
 	}

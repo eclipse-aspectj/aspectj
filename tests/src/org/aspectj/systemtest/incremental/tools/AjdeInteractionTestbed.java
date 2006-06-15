@@ -35,7 +35,7 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.util.FileUtil;
+import org.aspectj.tools.ajc.Ajc;
 
 /**
  * This class uses Ajde in the same way that an IDE (e.g. AJDT) does.
@@ -94,7 +94,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		MyProjectPropertiesAdapter.reset();
 		
 		// Create a sandbox in which to work
-		sandboxDir = FileUtil.createEmptySandbox();
+		sandboxDir = Ajc.createEmptySandbox();
 	}
 	
 	protected void tearDown() throws Exception {
