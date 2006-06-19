@@ -52,7 +52,6 @@
     <ajc-test dir="design/intro"
       title="declared exceptions are checked correctly on intros">
       <compile files="ExceptionsCP.java">
-        <message kind="warning" line="10" text="Exception swallowed in catch block"/>        
       </compile>
         <run class="ExceptionsCP"/>
     </ajc-test>

@@ -51,8 +51,6 @@
         	<message kind="warning" line="17" text="aa * *(..) throws Exception"/>
         	<message kind="warning" line="37" text="aa call void m() throws Exception"/>
         	<message kind="warning" line="38" text="aa call void m() throws Exception"/>
-            <message kind="warning" line="37" text="Exception swallowed in catch block"/>
-            <message kind="warning" line="38" text="Exception swallowed in catch block"/>
        </compile>
         <run class="pr119749">
             <stdout>

@@ -531,7 +531,6 @@
         <compile files="UndeclaredThrows.java">
             <message kind="error" line="12"/>
             <message kind="error" line="18"/>
-            <message kind="warning" line="18" text="Exception swallowed in catch block"/>
         </compile>
     </ajc-test>
 
