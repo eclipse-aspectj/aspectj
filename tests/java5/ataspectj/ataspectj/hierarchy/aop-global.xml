@@ -2,5 +2,6 @@
     <weaver options="-1.5 -XmessageHandlerClass:ataspectj.TestHelper -Xlint:ignore"/>
     <aspects>
         <aspect name="ataspectj.hierarchy.AppContainerTest.BaseAspect"/>
+        <concrete-aspect name="pcalc" precedence="ataspectj.hierarchy.AppContainerTest.BaseAspect,*"/>
     </aspects>
 </aspectj>
