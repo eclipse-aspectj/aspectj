@@ -31,6 +31,7 @@ import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.weaver.World;
 
 /**
@@ -79,14 +80,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			configureBuildStructureModel(true);
 			initialiseProject("P4");
 			build("P4");
-			dumpAJDEStructureModel("after full build where advice is applying");
+			Ajc.dumpAJDEStructureModel("after full build where advice is applying");
 			// should be 4 relationship entries
 	
 			// In inc1 the first advised line is 'commented out'
 			alter("P4","inc1");
 			build("P4");
 			checkWasntFullBuild();
-			dumpAJDEStructureModel("after inc build where first advised line is gone");
+			Ajc.dumpAJDEStructureModel("after inc build where first advised line is gone");
 			// should now be 2 relationship entries
 			
 			// This will be the line 6 entry in C.java
@@ -1439,38 +1440,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			fail("Expected aspect " + aspectName + " to appear " + expectedOccurrences + " times" +
 					" in the aop.xml file but found " + aspectCount + " occurrences");
 		}
-	}
-	
-	
-	private void dumpAJDEStructureModel(String prefix) {
-		System.out.println("======================================");//$NON-NLS-1$
-		System.out.println("start of AJDE structure model:"+prefix); //$NON-NLS-1$
-
-		IRelationshipMap asmRelMap = AsmManager.getDefault().getRelationshipMap();
-		for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
-			String sourceOfRelationship = (String) iter.next();
-			IProgramElement ipe = AsmManager.getDefault().getHierarchy()
-									.findElementForHandle(sourceOfRelationship);
-			System.err.println("Examining source relationship handle: "+sourceOfRelationship);
-			List relationships = asmRelMap.get(ipe);
-			if (relationships != null) {
-				for (Iterator iterator = relationships.iterator(); iterator.hasNext();) {
-					Relationship rel = (Relationship) iterator.next();
-					List targets = rel.getTargets();
-					for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
-						String t = (String) iterator2.next();
-						IProgramElement link = AsmManager.getDefault().getHierarchy().findElementForHandle(t);
-						System.out.println(""); //$NON-NLS-1$
-						System.out.println("      sourceOfRelationship " + sourceOfRelationship); //$NON-NLS-1$
-						System.out.println("          relationship " + rel.getName()); //$NON-NLS-1$
-						System.out.println("              target " + link.getName()); //$NON-NLS-1$
-					}
-				}
-				
-			}
-		}
-		System.out.println("End of AJDE structure model"); //$NON-NLS-1$
-		System.out.println("======================================");//$NON-NLS-1$
 	}
 
 	private File getProjectRelativePath(String p,String filename) {

@@ -17,12 +17,17 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import junit.framework.AssertionFailedError;
 
 
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationshipMap;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -430,6 +435,46 @@ public class Ajc {
 			}
 		}
 		return ret;
+	}
+	
+	public static void dumpAJDEStructureModel(String prefix) {
+		dumpAJDEStructureModel(prefix, false);
+	}
+	
+	public static void dumpAJDEStructureModel(String prefix, boolean useHandles) {
+		System.out.println("======================================");//$NON-NLS-1$
+		System.out.println("start of AJDE structure model:"+prefix); //$NON-NLS-1$
+
+		IRelationshipMap asmRelMap = AsmManager.getDefault().getRelationshipMap();
+		for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
+			String sourceOfRelationship = (String) iter.next();
+			System.err.println("Examining source relationship handle: "+sourceOfRelationship);
+			List relationships = null;
+			if (useHandles) {
+				relationships = asmRelMap.get(sourceOfRelationship);
+			} else {
+				IProgramElement ipe = AsmManager.getDefault().getHierarchy()
+										.findElementForHandle(sourceOfRelationship);
+				relationships = asmRelMap.get(ipe);
+			}
+			if (relationships != null) {
+				for (Iterator iterator = relationships.iterator(); iterator.hasNext();) {
+					Relationship rel = (Relationship) iterator.next();
+					List targets = rel.getTargets();
+					for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
+						String t = (String) iterator2.next();
+						IProgramElement link = AsmManager.getDefault().getHierarchy().findElementForHandle(t);
+						System.out.println(""); //$NON-NLS-1$
+						System.out.println("      sourceOfRelationship " + sourceOfRelationship); //$NON-NLS-1$
+						System.out.println("          relationship " + rel.getName()); //$NON-NLS-1$
+						System.out.println("              target " + link.getName()); //$NON-NLS-1$
+					}
+				}
+				
+			}
+		}
+		System.out.println("End of AJDE structure model"); //$NON-NLS-1$
+		System.out.println("======================================");//$NON-NLS-1$
 	}
 }
 

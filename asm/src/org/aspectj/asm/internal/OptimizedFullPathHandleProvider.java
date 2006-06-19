@@ -99,6 +99,7 @@ public class OptimizedFullPathHandleProvider implements IElementHandleProvider {
 	}
 
 	public String createHandleIdentifier(IProgramElement ipe) {
+		if (ipe == null) return null;
 		if (ipe.getHandleIdentifier(false) != null) {
 			return ipe.getHandleIdentifier(false);
 		}

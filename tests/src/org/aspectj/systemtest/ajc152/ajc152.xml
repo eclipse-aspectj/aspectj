@@ -667,6 +667,16 @@
             </stderr>
         </run>
     </ajc-test>
+
+	<ajc-test dir="bugs152/pr141730/aspectpath" title="ensure aspectpath injar relationships are correct when not filling in model">
+      <compile files="MyFoo.java" aspectpath="aspectpath.jar" options="-emacssym"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs152/pr141730/inpath" title="ensure inpath injar relationships are correct when not filling in model">
+      <compile files="MyBar.aj, MyAnnotation.java, NewClass.java" inpath="inpath.jar" options="-1.5 -emacssym">
+			<message kind="warning" line="20" text="System.out should not be called"/>
+	  </compile>
+    </ajc-test>
     
    <ajc-test dir="ltw" title="weaveinfo messages with include and exclude">
       <compile files="EmptyTest1.java, EmptyTest2.java"/>

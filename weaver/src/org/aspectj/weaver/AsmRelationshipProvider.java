@@ -54,27 +54,29 @@ public class AsmRelationshipProvider {
 		if (shadow.getSourceLocation() == null || checker.getSourceLocation() == null) return;
 		
 		// Ensure a node for the target exists
-		IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
+		IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(),shadow);
+		if (targetNode == null) return;
+		String targetHandle = AsmManager.getDefault().getHandleProvider()
+				.createHandleIdentifier(targetNode);
+		if (targetHandle == null) return;
+
 		IProgramElement sourceNode = AsmManager.getDefault().getHierarchy()
 				.findElementForSourceLine(checker.getSourceLocation());
 		String sourceHandle = AsmManager.getDefault().getHandleProvider()
 				.createHandleIdentifier(sourceNode);
-		String targetHandle = AsmManager.getDefault().getHandleProvider()
-				.createHandleIdentifier(targetNode);
+		if (sourceHandle == null) return;
 				
 		if (World.createInjarHierarchy) {
 			checker.createHierarchy();
 		}
 
 		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
-		if (sourceHandle != null && targetHandle != null) {
-			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE, MATCHED_BY,false,true);
-			foreward.addTarget(targetHandle);
+		IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE, MATCHED_BY,false,true);
+		foreward.addTarget(targetHandle);
 				
-			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, MATCHES_DECLARE,false,true);
-			if (back != null && back.getTargets() != null) {
-				back.addTarget(sourceHandle);
-			}
+		IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, MATCHES_DECLARE,false,true);
+		if (back != null && back.getTargets() != null) {
+			back.addTarget(sourceHandle);
 		}
 	}
 
@@ -85,34 +87,32 @@ public class AsmRelationshipProvider {
 		ResolvedType originatingAspect) {
 
 	  if (!AsmManager.isCreatingModel()) return;
-		String sourceHandle = "";
-		if (munger.getSourceLocation()!=null && munger.getSourceLocation().getOffset()!=-1) {
-			IProgramElement sourceNode = AsmManager.getDefault().getHierarchy()
-					.findElementForSourceLine(munger.getSourceLocation());
-			sourceHandle = AsmManager.getDefault().getHandleProvider()
-					.createHandleIdentifier(sourceNode);
-		} else {
-			IProgramElement sourceNode = AsmManager.getDefault().getHierarchy()
-					.findElementForSourceLine(originatingAspect.getSourceLocation());
-			sourceHandle = AsmManager.getDefault().getHandleProvider()
-					.createHandleIdentifier(sourceNode);
-		}
 		if (originatingAspect.getSourceLocation() != null) {
+			String sourceHandle = "";
+			if (munger.getSourceLocation()!=null && munger.getSourceLocation().getOffset()!=-1) {
+				IProgramElement sourceNode = AsmManager.getDefault().getHierarchy()
+						.findElementForSourceLine(munger.getSourceLocation());
+				sourceHandle = AsmManager.getDefault().getHandleProvider()
+						.createHandleIdentifier(sourceNode);
+			} else {
+				IProgramElement sourceNode = AsmManager.getDefault().getHierarchy()
+						.findElementForSourceLine(originatingAspect.getSourceLocation());
+				sourceHandle = AsmManager.getDefault().getHandleProvider()
+						.createHandleIdentifier(sourceNode);
+			}
+			if (sourceHandle == null) return;
 			IProgramElement targetNode = AsmManager.getDefault().getHierarchy()
 					.findElementForSourceLine(onType.getSourceLocation());
 			String targetHandle = AsmManager.getDefault().getHandleProvider()
 					.createHandleIdentifier(targetNode);
-				
+			if (targetHandle == null) return;
+			
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
-			if (sourceHandle != null && targetHandle != null) {
-				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES,false,true);
-				foreward.addTarget(targetHandle);
-//				foreward.getTargets().add(targetHandle);
-				
-				IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY,false,true);
-				back.addTarget(sourceHandle);
-//				back.getTargets().add(sourceHandle);  
-			}
+			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES,false,true);
+			foreward.addTarget(targetHandle);
+			
+			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY,false,true);
+			back.addTarget(sourceHandle);
 		}
 	}
 	
@@ -123,20 +123,20 @@ public class AsmRelationshipProvider {
 				.findElementForSourceLine(decp);
 		String sourceHandle = AsmManager.getDefault().getHandleProvider()
 				.createHandleIdentifier(sourceNode);
+		if (sourceHandle == null) return;
+		
 		IProgramElement targetNode = AsmManager.getDefault().getHierarchy()
 				.findElementForSourceLine(targetType.getSourceLocation());
 		String targetHandle = AsmManager.getDefault().getHandleProvider()
 				.createHandleIdentifier(targetNode);
+		if (targetHandle == null) return;
 		
 		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
-		if (sourceHandle != null && targetHandle != null) {
-			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES,false,true);
-			foreward.addTarget(targetHandle);
+		IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES,false,true);
+		foreward.addTarget(targetHandle);
 				
-			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY,false,true);
-			back.addTarget(sourceHandle);
-		}
-		
+		IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY,false,true);
+		back.addTarget(sourceHandle);
 	}
 	
 	/**
@@ -150,20 +150,20 @@ public class AsmRelationshipProvider {
 	    		.findElementForSourceLine(declareAnnotationLocation);
 	    String sourceHandle = AsmManager.getDefault().getHandleProvider()
 	    		.createHandleIdentifier(sourceNode);
+	    if (sourceHandle == null) return;
 
 	    IProgramElement targetNode = AsmManager.getDefault().getHierarchy()
 				.findElementForSourceLine(annotatedLocation);
 	    String targetHandle = AsmManager.getDefault().getHandleProvider()
 				.createHandleIdentifier(targetNode);
-				
+		if (targetHandle == null) return;
+	    
 		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
-		if (sourceHandle != null && targetHandle != null) {
-			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
-			foreward.addTarget(targetHandle);
+		IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
+		foreward.addTarget(targetHandle);
 				
-			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
-			back.addTarget(sourceHandle);
-		}
+		IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
+		back.addTarget(sourceHandle);
 	}
 	
 	public void adviceMunger(IHierarchy model, Shadow shadow, ShadowMunger munger) {
@@ -179,12 +179,14 @@ public class AsmRelationshipProvider {
 
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
+			if (targetNode == null) return;
 			boolean runtimeTest = ((BcelAdvice)munger).hasDynamicTests();
 			
 			// Work out extra info to inform interested UIs !
 			IProgramElement.ExtraInformation ai = new IProgramElement.ExtraInformation();
 
 			String adviceHandle = advice.getHandle(); 
+			if (adviceHandle == null) return;
 			
 			// What kind of advice is it?
 			// TODO: Prob a better way to do this but I just want to
@@ -195,27 +197,20 @@ public class AsmRelationshipProvider {
 			if (adviceElement != null) {
 				adviceElement.setExtraInfo(ai);	
 			}
-			
-			if (adviceHandle != null && targetNode != null) {
-		
-				if (targetNode != null) {
-                    String targetHandle = targetNode.getHandleIdentifier(); 
-                    if (advice.getKind().equals(AdviceKind.Softener)) {
-                        IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.DECLARE_SOFT, SOFTENS,runtimeTest,true);
-                        if (foreward != null) foreward.addTarget(targetHandle);//foreward.getTargets().add(targetHandle);
+            String targetHandle = targetNode.getHandleIdentifier(); 
+            if (advice.getKind().equals(AdviceKind.Softener)) {
+            	IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.DECLARE_SOFT, SOFTENS,runtimeTest,true);
+                if (foreward != null) foreward.addTarget(targetHandle);//foreward.getTargets().add(targetHandle);
                         
-                        IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, SOFTENED_BY,runtimeTest,true);
-                        if (back != null)     back.addTarget(adviceHandle);//back.getTargets().add(adviceHandle);
-                    } else {
-    					IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES,runtimeTest,true);
-    					if (foreward != null) foreward.addTarget(targetHandle);//foreward.getTargets().add(targetHandle);
+                IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE, SOFTENED_BY,runtimeTest,true);
+                if (back != null) back.addTarget(adviceHandle);//back.getTargets().add(adviceHandle);
+            } else {
+            	IRelationship foreward = mapper.get(adviceHandle, IRelationship.Kind.ADVICE, ADVISES,runtimeTest,true);
+    			if (foreward != null) foreward.addTarget(targetHandle);//foreward.getTargets().add(targetHandle);
     					
-    					IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY,runtimeTest,true);
-    					if (back != null)     back.addTarget(adviceHandle);//back.getTargets().add(adviceHandle);
-                    }
-                }
-			}
-
+    			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.ADVICE, ADVISED_BY,runtimeTest,true);
+    			if (back != null)     back.addTarget(adviceHandle);//back.getTargets().add(adviceHandle);
+            }
 		}
 	}
 
@@ -381,22 +376,22 @@ public class AsmRelationshipProvider {
 	  if (methodElem == null) return;
 	  
 	  try {
+		  String targetHandle = methodElem.getHandleIdentifier();
+		  if (targetHandle == null) return; 
 		  
 		  IProgramElement sourceNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(sourceLocation);
 		  String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceNode);
-			  	
-	    String targetHandle = methodElem.getHandleIdentifier();
-	    IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
-		if (sourceHandle != null && targetHandle != null) {
-				IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
-				foreward.addTarget(targetHandle);
+		  if (sourceHandle == null) return;	
+		  
+		  IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
+		  IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
+		  foreward.addTarget(targetHandle);
 					
-				IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
-				back.addTarget(sourceHandle);
-		}
-        } catch (Throwable t) { // I'm worried about that code above, this will make sure we don't explode if it plays up
-          t.printStackTrace(); // I know I know .. but I don't want to lose it!
-        }
+		  IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
+		  back.addTarget(sourceHandle);
+       } catch (Throwable t) { // I'm worried about that code above, this will make sure we don't explode if it plays up
+    	   t.printStackTrace(); // I know I know .. but I don't want to lose it!
+       }
 	}
 	
     /**
@@ -422,19 +417,19 @@ public class AsmRelationshipProvider {
         IProgramElement fieldElem = AsmManager.getDefault().getHierarchy().findElementForSignature(typeElem,IProgramElement.Kind.FIELD,field.getName());
         if (fieldElem== null) return;
 
-		  IProgramElement sourceNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(sourceLocation);
-		  String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceNode);
-		  	
 		String targetHandle = fieldElem.getHandleIdentifier();
+		if (targetHandle == null) return;
+        
+		IProgramElement sourceNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(sourceLocation);
+		String sourceHandle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceNode);
+		if (sourceHandle == null) return;  	
 		
         IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
-		if (sourceHandle != null && targetHandle != null) {
-			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
-			foreward.addTarget(targetHandle);
+		IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES,false,true);
+		foreward.addTarget(targetHandle);
 				
-			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
-			back.addTarget(sourceHandle);
-		}
+		IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY,false,true);
+		back.addTarget(sourceHandle);
 	}
 	
 }

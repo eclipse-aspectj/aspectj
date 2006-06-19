@@ -35,13 +35,7 @@ public class AspectJElementHierarchy implements IHierarchy {
     private Map typeMap = null;
     
 	public IProgramElement getElement(String handle) {
-		IProgramElement cachedEntry = (IProgramElement)handleMap.get(handle);
-		if (cachedEntry!=null) return cachedEntry;
-		IProgramElement ret = findElementForHandle(handle);
-		if (ret!=null) {
-			cache(handle,ret);
-		}
-		return ret;
+		return findElementForHandleOrCreate(handle, false);
 	}
 
     public IProgramElement getRoot() {
@@ -332,13 +326,22 @@ public class AspectJElementHierarchy implements IHierarchy {
 		this.configFile = configFile;
 	}
 	
-	// TODO: optimize this lookup
 	public IProgramElement findElementForHandle(String handle) {
+		return findElementForHandleOrCreate(handle,true);
+	}
+	
+	// TODO: optimize this lookup
+	// only want to create a file node if can't find the IPE if called through
+	// findElementForHandle() to mirror behaviour before pr141730
+	private IProgramElement findElementForHandleOrCreate(String handle, boolean create) {
 		// try the cache first...
 		IProgramElement ret = (IProgramElement) handleMap.get(handle);
 		if (ret != null) return ret;
 		
 		ret = findElementForHandle(root,handle);
+		if (ret == null && create) {
+			ret = createFileStructureNode(getFilename(handle));
+		}
 		if (ret != null) {
 			cache(handle,(ProgramElement)ret);
 		}

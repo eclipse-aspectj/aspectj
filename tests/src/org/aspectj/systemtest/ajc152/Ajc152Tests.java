@@ -12,6 +12,7 @@ package org.aspectj.systemtest.ajc152;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Test;
@@ -19,9 +20,11 @@ import junit.framework.Test;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.CharOperation;
+import org.aspectj.weaver.World;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -185,8 +188,105 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  checkSignatureOfIPE("MyClass.MyClass()",IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
   }
 
-  
+  // if not filling in the model for aspects contained in jar files then
+  // want to ensure that the relationship map is correct and has nodes
+  // which can be used in AJDT - ensure no NPE occurs for the end of
+  // the relationship with aspectpath
+  public void testAspectPathRelWhenNotFillingInModel_pr141730() {
+	  World.createInjarHierarchy = false;
+	  try {
+		  runTest("ensure aspectpath injar relationships are correct when not filling in model");
+		  
+		  // expecting:
+		  // 	sourceOfRelationship main in MyFoo.java
+          //		relationship advised by
+          //			target MyBar.aj
+		  // 
+		  // and
+		  //
+		  // 	sourceOfRelationship MyBar.aj
+          //		relationship advises
+          //			target main in MyFoo.java
 
+		  
+		  IHierarchy top = AsmManager.getDefault().getHierarchy();
+		  IRelationshipMap asmRelMap = AsmManager.getDefault().getRelationshipMap();
+		  assertEquals("expected two sources of relationships but only found " 
+				  + asmRelMap.getEntries().size(),2,asmRelMap.getEntries().size());
+		  for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
+			  String sourceOfRelationship = (String) iter.next();
+			  IProgramElement ipe = top.findElementForHandle(sourceOfRelationship);
+			  List relationships = asmRelMap.get(ipe);
+			  if (ipe.getName().equals("MyBar.aj")) {
+				  assertEquals("expected MyBar.aj to have one relationships but found "
+						  + relationships.size(),1,relationships.size());	
+				  Relationship rel = (Relationship)relationships.get(0);
+				  assertEquals("expected relationship to be 'advises' but was " 
+						  + rel.getName(), "advises", rel.getName());
+				  List targets = rel.getTargets();
+				  assertEquals("expected one target but found " + targets.size(),1,targets.size());
+				  IProgramElement link = top.findElementForHandle((String)targets.get(0));
+				  assertEquals("expected target 'method-call(void foo.MyFoo.main())' but target " + link.getName(),
+						  "method-call(void foo.MyFoo.main())",link.getName());
+				  String fileName = link.getSourceLocation().getSourceFile().toString();
+				  assertTrue("expected 'main' to be in class MyFoo.java but found it " +
+				  		"in " + fileName,fileName.indexOf("MyFoo.java") != -1);
+			  } else if (ipe.getName().equals("method-call(void foo.MyFoo.main())")) {
+				  String fileName = ipe.getSourceLocation().getSourceFile().toString();
+				  assertTrue("expected 'method-call(void foo.MyFoo.main())' to be in " +
+				  		"class MyFoo.java but found it in"
+				  		+ fileName,fileName.indexOf("MyFoo.java") != -1);
+				  assertEquals("expected 'method-call(void foo.MyFoo.main())' " +
+				  		"to have one relationships but found "
+						  + relationships.size(),1,relationships.size());	
+				  Relationship rel = (Relationship)relationships.get(0);
+				  assertEquals("expected relationship to be 'advised by' but was " 
+						  + rel.getName(), "advised by", rel.getName());
+				  List targets = rel.getTargets();
+				  assertEquals("expected one target but found " + targets.size(),1,targets.size());
+				  IProgramElement link = top.findElementForHandle((String)targets.get(0));
+				  assertEquals("expected target 'MyBar.aj' but target " + link.getName(),
+						  "MyBar.aj",link.getName());
+				  
+			  } else {
+				  fail("unexpected element " + ipe.getName() + " in the relationship map");
+			  }
+		  }
+	  } finally {
+		  World.createInjarHierarchy = true;
+	  }
+  }
+
+  // if not filling in the model for classes contained in jar files then
+  // want to ensure that the relationship map is correct and has nodes
+  // which can be used in AJDT - ensure no NPE occurs for the end of
+  // the relationship with inpath
+  public void testNoNPEWithInpathWhenNotFillingInModel_pr141730() {
+	  World.createInjarHierarchy = false;
+	  try {
+		  runTest("ensure inpath injar relationships are correct when not filling in model");
+		  // the aspect used for this test has advice, declare parents, deow,
+		  // and declare @type, @constructor, @field and @method. We only expect
+		  // there to be relationships in the map for declare parents and declare @type
+		  // (provided the model isn't being filled in) because the logic in the other
+		  // addXXXRelationship methods use AspectJElementHierarchy.findElementForType().
+		  // This method which returns null because there is no such ipe. The relationship is
+		  // therefore not added to the model. Adding declare @type and declare parents
+		  // uses AspectJElementHierarchy.findElementForHandle() which returns the file
+		  // node ipe if it can't find one for the given handle. Therefore the relationships
+		  // are added against the file node. Before change to using ipe's to create handles
+		  // we also had the deow relationship, however, now we don't because this also
+		  // uses findElementForType to find the targetNode which in the inpath case is null.
+		  
+		  // just check that the number of entries is what we expect:
+		  // We expect 3 (the declare @type and declare parents statements plus the filenode)
+		  IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
+		  assertEquals("expected 3 entries in the relationship map but found " 
+				  + relMap.getEntries().size(), 3, relMap.getEntries().size());
+	  } finally {
+		  World.createInjarHierarchy = true;
+	  }
+  }
   
 //  public void testFunkyGenericErrorWithITDs_pr126355_2() { 
 //	  runTest("bizarre generic error with itds - 2");
