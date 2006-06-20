@@ -97,6 +97,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testDoubleAnnotationMatching_pr138223() { runTest("Double at annotation matching (no binding)");}
   public void testSuperCallsInAtAspectJAdvice_pr139749() { runTest("Super calls in @AspectJ advice");}
   public void testNoClassCastExceptionWithPerThis_pr138286() { runTest("No ClassCastException with perThis");}
+  public void testGenericAspectHierarchyWithBounds_pr147845() { runTest("Generic abstract aspect hierarchy with bounds"); }
   
   public void testDeclareAtMethodRelationship_pr143924() {
 	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);

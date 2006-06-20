@@ -219,23 +219,24 @@ public class TypeVariable {
 		if (tvrt.hasLowerBound() != (getLowerBound() != null)) return false;
 		if (tvrt.hasLowerBound() && tvrt.getLowerBound() != getLowerBound()) return false;
 		// either we both have bounds, or neither of us have bounds
-		if ((tvrt.additionalInterfaceBounds != null) != (additionalInterfaceBounds != null)) return false;
+		ReferenceType[] tvrtBounds = tvrt.getAdditionalBounds();
+		if ((tvrtBounds != null) != (additionalInterfaceBounds != null)) return false;
 		if (additionalInterfaceBounds != null) {
 			// we both have bounds, compare
-			if (tvrt.additionalInterfaceBounds.length != additionalInterfaceBounds.length) return false;
+			if (tvrtBounds.length != additionalInterfaceBounds.length) return false;
 			Set aAndNotB = new HashSet();
 			Set bAndNotA = new HashSet();
 			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
 				aAndNotB.add(additionalInterfaceBounds[i]);
 			}
-			for (int i = 0; i < tvrt.additionalInterfaceBounds.length; i++) {
-				bAndNotA.add(tvrt.additionalInterfaceBounds[i]);
+			for (int i = 0; i < tvrtBounds.length; i++) {
+				bAndNotA.add(tvrtBounds[i]);
 			}
 			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
 				bAndNotA.remove(additionalInterfaceBounds[i]);
 			}
-			for (int i = 0; i < tvrt.additionalInterfaceBounds.length; i++) {
-				aAndNotB.remove(tvrt.additionalInterfaceBounds[i]);
+			for (int i = 0; i < tvrtBounds.length; i++) {
+				aAndNotB.remove(tvrtBounds[i]);
 			}
 			if (! (aAndNotB.isEmpty() && bAndNotA.isEmpty()) ) return false;
 		}

@@ -712,5 +712,12 @@
         </stderr>
       </run>
     </ajc-test>
+
+	<ajc-test dir="bugs152/pr147845" title="Generic abstract aspect hierarchy with bounds">
+      <compile files="GenericAspectHierarchy.aj" options="-1.5">
+        <message kind="warning" line="25" text="a match"/>
+        <message kind="warning" line="27" text="a match"/>     
+      </compile>
+    </ajc-test>
     
 </suite>
