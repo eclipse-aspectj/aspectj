@@ -19,6 +19,7 @@ import junit.framework.Test;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 //import org.aspectj.weaver.World;
 
@@ -79,6 +80,28 @@ public class CreatingModelForInjarTests extends org.aspectj.testing.XMLBasedAjcT
 		}
 		assertEquals("expected one package called 'pkg' but found " + numberOfPkgs,1,numberOfPkgs);		
 	}
+	
+	public void testAdviceInRelMap() {
+		runTest("advice and deow");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IProgramElement adviceNode = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE,"before()");
+		IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
+		List adviceRels = relMap.get(adviceNode);
+		assertFalse("expected before advice to have relationships but did not",adviceRels.isEmpty());
+	}
+	
+	public void testDeclareWarningInRelMap() {
+		runTest("advice and deow");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IProgramElement dwNode = top.findElementForLabel(top.getRoot(),
+				IProgramElement.Kind.DECLARE_WARNING,
+				"declare warning: \"There should be n..\"");
+		IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
+		List dwRels = relMap.get(dwNode);
+		assertFalse("expected declare warning to have relationships but did not",dwRels.isEmpty());
+	}
+	
+	// --------------------- Helper methods ---------------------
 	
 	private IProgramElement getPkgNode() {
 		IHierarchy top = AsmManager.getDefault().getHierarchy();

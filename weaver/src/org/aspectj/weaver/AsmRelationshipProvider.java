@@ -52,6 +52,10 @@ public class AsmRelationshipProvider {
 	public void checkerMunger(IHierarchy model, Shadow shadow, Checker checker) {
 	  if (!AsmManager.isCreatingModel()) return;
 		if (shadow.getSourceLocation() == null || checker.getSourceLocation() == null) return;
+
+		if (World.createInjarHierarchy) {
+			checker.createHierarchy();
+		}
 		
 		// Ensure a node for the target exists
 		IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(),shadow);
@@ -59,17 +63,13 @@ public class AsmRelationshipProvider {
 		String targetHandle = AsmManager.getDefault().getHandleProvider()
 				.createHandleIdentifier(targetNode);
 		if (targetHandle == null) return;
-
+		
 		IProgramElement sourceNode = AsmManager.getDefault().getHierarchy()
 				.findElementForSourceLine(checker.getSourceLocation());
 		String sourceHandle = AsmManager.getDefault().getHandleProvider()
 				.createHandleIdentifier(sourceNode);
 		if (sourceHandle == null) return;
 				
-		if (World.createInjarHierarchy) {
-			checker.createHierarchy();
-		}
-
 		IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 		IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE, MATCHED_BY,false,true);
 		foreward.addTarget(targetHandle);

@@ -37,12 +37,12 @@ import java.util.Set;
 public interface IRelationshipMap extends Serializable {
  
  	/**
- 	 * @return	an empty list if the element is not found.
+ 	 * @return	null if the element is not found.
  	 */
 	public List/*IRelationship*/ get(IProgramElement source);
 
 	/**
-	 * @return	an empty list if the element is not found.
+	 * @return	null if the element is not found.
 	 */	
 	public List/*IRelationship*/ get(String handle);
 
