@@ -553,7 +553,7 @@ class BcelClassWeaver implements IClassWeaver {
     // **************************** start of bridge method creation code *****************
     
     // debug flag for bridge method creation
-	private static boolean debug=false;
+	public static boolean debug=false;
     
 	
 	// FIXME asc tidy this lot up !!
