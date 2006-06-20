@@ -1168,7 +1168,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             );
 
             mg.getBody().append(body);
-            // XXX make sure to check that we set exceptions properly on this guy.
             weaver.addLazyMethodGen(mg);
             weaver.getLazyClassGen().warnOnAddedMethod(mg.getMethod(),getSignature().getSourceLocation());
             return true;

@@ -734,6 +734,9 @@ public class AtAjAttributes {
                                             + defaultImplClassName
                                             + "\" has no public no-arg constructor", struct);
                             }
+                            if (!fieldType.isAssignableFrom(impl)) {
+                            	reportError("@DeclareParents: defaultImpl=\""+defaultImplClassName+"\" does not implement the interface '"+fieldType.toString()+"'",struct);
+                            }
                         }
 
                     }

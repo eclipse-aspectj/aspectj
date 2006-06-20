@@ -227,7 +227,7 @@ public class BcelWorld extends World implements Repository {
     static String[] makeBcelTypesAsClassNames(UnresolvedType[] types) {
         String[] ret = new String[types.length];
         for (int i = 0, len = types.length; i < len; i++) {
-            ret[i] = types[i].getClassName();//makeBcelType(types[i]);
+            ret[i] = types[i].getName();
         }
         return ret;
     }

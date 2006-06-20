@@ -630,6 +630,22 @@
     <ajc-test dir="bugs152" title="new IProgramElement handle methods">
       <compile files="pr141730.aj" options="-emacssym -1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs152/pr147701" title="package for exception ignored">
+      <compile files="TestBean.java" options="-1.5"/>
+      <run class="a.b.c.TestBean"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr147701" title="package for exception ignored - 2">
+      <compile files="TestBean2.java" options="-1.5"/>
+      <run class="a.b.c.TestBean2"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr147701" title="package for exception ignored - 3">
+      <compile files="TestBean3.java" options="-1.5">
+        <message kind="error" text="@DeclareParents: defaultImpl=&quot;a.b.c.Impl&quot; does not implement the interface 'a.b.c.I'"/>
+      </compile>
+    </ajc-test>
 
     <ajc-test dir="bugs152" title="declare @method relationship">
      <compile files="pr143924.aj" options="-1.5 -showWeaveInfo -emacssym">
