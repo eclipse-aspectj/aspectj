@@ -720,4 +720,14 @@
       </compile>
     </ajc-test>
     
+   <ajc-test dir="bugs152/pr147801" title="duplicate bridge methods">
+      <compile files="Advisor.aj" inpath="foo.jar" options="-1.5"/>
+      <run class="Foo">
+        <stderr>
+          <line text="x"/>
+          <line text="1) public Sub Foo.getParameterMetaData() throws MyException"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
 </suite>

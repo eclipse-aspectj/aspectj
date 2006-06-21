@@ -1,0 +1,6 @@
+<aspectj>
+ <weaver options="-verbose"/>
+    <aspects>
+      <aspect name="Advisor"/>
+    </aspects>
+</aspectj>

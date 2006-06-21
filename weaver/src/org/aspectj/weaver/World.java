@@ -112,6 +112,7 @@ public abstract class World implements Dump.INode {
     private boolean fastDelegateSupportEnabled = isASMAround;
 	private boolean runMinimalMemory = false;
 	public boolean forDEBUG_structuralChangesCode = false;
+	public boolean forDEBUG_bridgingCode = false;
 	
     
     // Records whether ASM is around ... so we might use it for delegates
@@ -756,6 +757,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetACTIVATE_LIGHTWEIGHT_DELEGATES = "activateLightweightDelegates"; // default true
 	public final static String xsetRUN_MINIMAL_MEMORY ="runMinimalMemory"; // default true
 	public final static String xsetDEBUG_STRUCTURAL_CHANGES_CODE = "debugStructuralChangesCode"; // default false
+	public final static String xsetDEBUG_BRIDGING = "debugBridging"; // default false
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1136,16 +1138,19 @@ public abstract class World implements Dump.INode {
 				}
 				
 				String s = p.getProperty(xsetRUN_MINIMAL_MEMORY,"false");
-	        		runMinimalMemory = s.equalsIgnoreCase("true");
-//	        		if (runMinimalMemory) 
-//	        			getMessageHandler().handleMessage(MessageUtil.info("[runMinimalMemory=true] Optimizing bcel processing (and cost of performance) to use less memory"));
+        		runMinimalMemory = s.equalsIgnoreCase("true");
+//	        	if (runMinimalMemory) 
+//	        		getMessageHandler().handleMessage(MessageUtil.info("[runMinimalMemory=true] Optimizing bcel processing (and cost of performance) to use less memory"));
+        		
+        		
+        		s = p.getProperty(xsetDEBUG_STRUCTURAL_CHANGES_CODE,"false");
+        		forDEBUG_structuralChangesCode = s.equalsIgnoreCase("true");
+        		
+        		s = p.getProperty(xsetDEBUG_BRIDGING,"false");
+        		forDEBUG_bridgingCode = s.equalsIgnoreCase("true");
 	        		
-	        		
-	        		s = p.getProperty(xsetDEBUG_STRUCTURAL_CHANGES_CODE,"false");
-	        		forDEBUG_structuralChangesCode = s.equalsIgnoreCase("true");
-	        		
-	    		}
-	        	checkedAdvancedConfiguration=true;
+    		}
+        	checkedAdvancedConfiguration=true;
         }
      }
 	    
