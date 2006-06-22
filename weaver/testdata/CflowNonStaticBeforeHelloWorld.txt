@@ -1,6 +1,6 @@
 public class HelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // HelloWorld this   (line 5)
+                    ALOAD_0     // LHelloWorld; this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void HelloWorld.<init>())
     |               RETURN
@@ -29,6 +29,7 @@ public class HelloWorld extends java.lang.Object:
     |               ATHROW
     |           L1: GETSTATIC Aspect.ajc$perCflowStack Lorg/aspectj/runtime/internal/CFlowStack;
     |               INVOKEVIRTUAL org.aspectj.runtime.internal.CFlowStack.pop ()V
+    |               RETURN
     |               RETURN
     method-execution(void HelloWorld.main(java.lang.String[]))
   end public static void main(String[])

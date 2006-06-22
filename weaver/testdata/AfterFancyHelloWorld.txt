@@ -1,6 +1,6 @@
 public abstract class FancyHelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // FancyHelloWorld this   (line 7)
+                    ALOAD_0     // LFancyHelloWorld; this   (line 7)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void FancyHelloWorld.<init>())
     | catch java.lang.Throwable -> E0
@@ -11,6 +11,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ALOAD_1
     |               ATHROW
     |           L0: INVOKESTATIC Aspect.ajc_after_constructor_execution ()V
+    |               RETURN
     |               RETURN
     constructor-execution(void FancyHelloWorld.<init>())
   end public void <init>()
@@ -34,7 +35,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | |             ASTORE_1
     | | finally -> E5
     | | | catch java.lang.Exception -> E4
-    | | | |         ALOAD_1     // java.io.PrintStream out   (line 11)
+    | | | |         ALOAD_1     // Ljava/io/PrintStream; out   (line 11)
     | | | |         LDC "bye"
     | | | | method-call(void java.io.PrintStream.println(java.lang.String))
     | | | | | catch java.lang.Throwable -> E2
@@ -52,8 +53,8 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | | | |         GOTO L3
     | | | catch java.lang.Exception -> E4
     | | |       E4: ASTORE_2   (line 12)
-    | | |           ALOAD_1     // java.io.PrintStream out   (line 13)
-    | | |           ALOAD_2     // java.lang.Exception e
+    | | |           ALOAD_1     // Ljava/io/PrintStream; out   (line 13)
+    | | |           ALOAD_2     // Ljava/lang/Exception; e
     | | | method-call(void java.io.PrintStream.println(java.lang.Object))
     | | | | catch java.lang.Throwable -> E1
     | | | | |       INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/Object;)V
@@ -76,7 +77,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | |         L3: JSR L4
     | |             GOTO L6
     | |         L4: ASTORE_3
-    | |             ALOAD_1     // java.io.PrintStream out   (line 15)
+    | |             ALOAD_1     // Ljava/io/PrintStream; out   (line 15)
     | |             LDC "finally"
     | | method-call(void java.io.PrintStream.println(java.lang.String))
     | | | catch java.lang.Throwable -> E0
@@ -100,6 +101,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ATHROW
     |           L7: INVOKESTATIC Aspect.ajc_after_method_execution ()V
     |               RETURN
+    |               RETURN
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
   end public static void main(String[])
 
@@ -108,7 +110,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | catch java.lang.Throwable -> E4
     | |             ICONST_0   (line 20)
     | |             ISTORE_0
-    | |             ILOAD_0     // int x   (line 21)
+    | |             ILOAD_0     // I x   (line 21)
     | |             LDC "name"
     | | method-call(int java.lang.String.hashCode())
     | | | catch java.lang.Throwable -> E3
@@ -124,7 +126,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | | |           NOP
     | | method-call(int java.lang.String.hashCode())
     | |             IADD
-    | |             ISTORE_0     // int x
+    | |             ISTORE_0     // I x
     | |             LDC "name"   (line 22)
     | |             ASTORE_2
     | | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
@@ -143,7 +145,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | | |           INVOKESTATIC Aspect.ajc_after_constructor_call ()V
     | | |           NOP
     | | constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
-    | |             ILOAD_0     // int x
+    | |             ILOAD_0     // I x
     | | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
     | | | catch java.lang.Throwable -> E1
     | | | |         INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;
@@ -170,6 +172,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | | |           INVOKESTATIC Aspect.ajc_after_method_call ()V
     | | |           NOP
     | | method-call(java.lang.String java.lang.StringBuffer.toString())
+    | |             ASTORE 7
     | |             GOTO L4
     | catch java.lang.Throwable -> E4
     |           E4: ASTORE 6
@@ -177,6 +180,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ALOAD 6
     |               ATHROW
     |           L4: INVOKESTATIC Aspect.ajc_after_method_execution ()V
+    |               ALOAD 7
     |               ARETURN
     method-execution(java.lang.String FancyHelloWorld.getName())
   end public static String getName()

@@ -1,6 +1,6 @@
 public class HelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // HelloWorld this   (line 5)
+                    ALOAD_0     // LHelloWorld; this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void HelloWorld.<init>())
     | catch java.lang.Throwable -> E0
@@ -11,6 +11,7 @@ public class HelloWorld extends java.lang.Object:
     |               ALOAD_1
     |               ATHROW
     |           L0: INVOKESTATIC Aspect.ajc_after_constructor_execution ()V
+    |               RETURN
     |               RETURN
     constructor-execution(void HelloWorld.<init>())
   end public void <init>()
@@ -52,6 +53,7 @@ public class HelloWorld extends java.lang.Object:
     |               ALOAD_3
     |               ATHROW
     |           L2: INVOKESTATIC Aspect.ajc_after_method_execution ()V
+    |               RETURN
     |               RETURN
     method-execution(void HelloWorld.main(java.lang.String[]))
   end public static void main(String[])

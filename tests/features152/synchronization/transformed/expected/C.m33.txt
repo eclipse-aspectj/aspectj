@@ -17,8 +17,9 @@
     |               MONITOREXIT
     finally -> E1
                     ATHROW
-                L0: GOTO L1   (line 33)
-                L1: INVOKESTATIC Three.aspectOf ()LThree;
+                L0: NOP   (line 33)
+                    INVOKESTATIC Three.aspectOf ()LThree;
                     INVOKEVIRTUAL Three.ajc$afterReturning$Three$3$b48e4ae1 ()V
+                    RETURN
                     RETURN
   end public void m33()

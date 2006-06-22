@@ -1,6 +1,6 @@
 public abstract class FancyHelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // FancyHelloWorld this   (line 7)
+                    ALOAD_0     // LFancyHelloWorld; this   (line 7)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void FancyHelloWorld.<init>())
     |               RETURN
@@ -24,14 +24,14 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ASTORE_1
     | finally -> E1
     | | catch java.lang.Exception -> E0
-    | | |           ALOAD_1     // java.io.PrintStream out   (line 11)
+    | | |           ALOAD_1     // Ljava/io/PrintStream; out   (line 11)
     | | |           LDC "bye"
     | | |           INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
     | | |           GOTO L1
     | | catch java.lang.Exception -> E0
     | |         E0: ASTORE_2   (line 12)
-    | |             ALOAD_1     // java.io.PrintStream out   (line 13)
-    | |             ALOAD_2     // java.lang.Exception e
+    | |             ALOAD_1     // Ljava/io/PrintStream; out   (line 13)
+    | |             ALOAD_2     // Ljava/lang/Exception; e
     | |             INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/Object;)V
     | finally -> E1
     |               GOTO L1
@@ -42,7 +42,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |           L1: JSR L2
     |               GOTO L3
     |           L2: ASTORE_3
-    |               ALOAD_1     // java.io.PrintStream out   (line 15)
+    |               ALOAD_1     // Ljava/io/PrintStream; out   (line 15)
     |               LDC "finally"
     |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
     |               RET 3   (line 10)
@@ -54,16 +54,16 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     method-execution(java.lang.String FancyHelloWorld.getName())
     |               ICONST_0   (line 20)
     |               ISTORE_0
-    |               ILOAD_0     // int x   (line 21)
+    |               ILOAD_0     // I x   (line 21)
     |               LDC "name"
     |               INVOKEVIRTUAL java.lang.String.hashCode ()I
     |               IADD
-    |               ISTORE_0     // int x
+    |               ISTORE_0     // I x
     |               NEW java.lang.StringBuffer   (line 22)
     |               DUP
     |               LDC "name"
     |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    |               ILOAD_0     // int x
+    |               ILOAD_0     // I x
     |               INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;
     |               INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
     |               ARETURN

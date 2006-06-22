@@ -729,5 +729,14 @@
         </stderr>
       </run>
     </ajc-test>
-    
+	
+	<ajc-test dir="bugs152/pr148007" title="jrockit boolean fun">
+		<compile files="test/BooleanUnitTest.java, test/LoggingAspect.aj"/>
+		<run class="test.BooleanUnitTest"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs152/pr148007/purejava" title="jrockit boolean fun (no aspects)">
+		<compile files="test/BooleanUnitTest.java, test/LoggingAspect.java" options="-inlineJSR"/>
+		<run class="test.BooleanUnitTest"/>
+    </ajc-test>    
 </suite>

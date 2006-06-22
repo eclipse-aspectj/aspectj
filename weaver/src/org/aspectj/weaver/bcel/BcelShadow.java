@@ -1741,8 +1741,17 @@ public class BcelShadow extends Shadow {
         }
         InstructionList retList;
         InstructionHandle afterAdvice;
+        BcelVar returnValueVar = null;
+        
         if (ret != null) {
-            retList = new InstructionList(ret);
+        	if (this.getReturnType() != ResolvedType.VOID) {
+	        	returnValueVar = genTempVar(this.getReturnType());
+	            retList = new InstructionList();
+	            returnValueVar.appendLoad(retList,getFactory());
+        	} else {
+        		retList = new InstructionList(ret);
+        	}
+            retList.append(ret);
             afterAdvice = retList.getStart();
         } else /* if (munger.hasDynamicTests()) */ {
         	/*
@@ -1765,6 +1774,7 @@ public class BcelShadow extends Shadow {
         }
 
         InstructionList advice = new InstructionList();
+        
         BcelVar tempVar = null;
         if (munger.hasExtraParameter()) {
             UnresolvedType tempVarType = getReturnType();
@@ -1779,17 +1789,32 @@ public class BcelShadow extends Shadow {
             }
         }
         advice.append(munger.getAdviceInstructions(this, tempVar, afterAdvice));            
-
+        
         if (ret != null) {
             InstructionHandle gotoTarget = advice.getStart();           
 			for (Iterator i = returns.iterator(); i.hasNext();) {
 				InstructionHandle ih = (InstructionHandle) i.next();
-				Utility.replaceInstruction(
-					ih,
-					InstructionFactory.createBranchInstruction(
-						Constants.GOTO,
-						gotoTarget),
-					enclosingMethod);
+				// pr148007, work around JRockit bug
+				// replace ret with store into returnValueVar, followed by goto if not
+				// at the end of the instruction list...
+				InstructionList newInstructions = new InstructionList();
+				if (returnValueVar != null) {
+		            if (munger.hasExtraParameter()) {
+		            	// we have to dup the return val before consuming it...
+		            	newInstructions.append(InstructionFactory.createDup(this.getReturnType().getSize()));
+		            }
+					// store the return value into this var
+					returnValueVar.appendStore(newInstructions,getFactory());
+				}
+				if (!isLastInstructionInRange(ih,range)) {
+					newInstructions.append(InstructionFactory.createBranchInstruction(
+							Constants.GOTO,
+							gotoTarget));
+				}
+				if (newInstructions.isEmpty()) {
+					newInstructions.append(InstructionConstants.NOP);
+				}
+				Utility.replaceInstruction(ih,newInstructions,enclosingMethod);
 			}
             range.append(advice);
             range.append(retList);
@@ -1797,6 +1822,10 @@ public class BcelShadow extends Shadow {
             range.append(advice);
             range.append(retList);
         }
+    }
+    
+    private boolean isLastInstructionInRange(InstructionHandle ih, ShadowRange aRange) {
+    	return ih.getNext() == aRange.getEnd();
     }
     
     public void weaveAfterThrowing(BcelAdvice munger, UnresolvedType catchType) {

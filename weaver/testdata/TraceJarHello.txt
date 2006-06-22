@@ -1,6 +1,6 @@
 public class DynamicHelloWorld extends java.lang.Object implements java.io.Serializable:
   public void <init>():
-                    ALOAD_0     // DynamicHelloWorld this   (line 8)
+                    ALOAD_0     // LDynamicHelloWorld; this   (line 8)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void DynamicHelloWorld.<init>())
     |               RETURN
@@ -24,7 +24,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
                     DUP
                     LDC "expected and caught: "
                     INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-                    ALOAD_1     // java.lang.UnsupportedOperationException t
+                    ALOAD_1     // Ljava/lang/UnsupportedOperationException; t
                     INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
                     INVOKEVIRTUAL java.lang.StringBuffer.toString ()Ljava/lang/String;
                     INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
@@ -67,23 +67,25 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               INVOKESPECIAL DynamicHelloWorld$AjcClosure3.<init> ([Ljava/lang/Object;)V
     |               INVOKEVIRTUAL Trace.ajc$around$Trace$2$a986034c (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
     |               CHECKCAST java.lang.String
-    |               GOTO L0
-    |           L0: DUP
+    |               DUP
     |               ASTORE 7
+    |               DUP
+    |               ASTORE 8
     |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
     |               ALOAD_0
-    |               ALOAD 7
+    |               ALOAD 8
     |               INVOKEVIRTUAL MyTrace.ajc$afterReturning$MyTrace$1$2b31dfa3 (Ljava/lang/Object;Ljava/lang/Object;)V
+    |               ALOAD 7
     |               ARETURN
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
   end String doit(String, java.util.List)
 
   static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List):
-                    ALOAD_2     // java.util.List l   (line 21)
-                    ALOAD_1     // java.lang.String s
+                    ALOAD_2     // Ljava/util/List; l   (line 21)
+                    ALOAD_1     // Ljava/lang/String; s
                     INVOKEINTERFACE java.util.List.add (Ljava/lang/Object;)Z
                     POP
-                    ALOAD_2     // java.util.List l   (line 22)
+                    ALOAD_2     // Ljava/util/List; l   (line 22)
                     INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
                     ARETURN
   end static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List)

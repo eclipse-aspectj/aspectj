@@ -562,6 +562,15 @@ public class Utility {
 		deleteInstruction(ih, fresh, enclosingMethod);
     }
     
+    public static void replaceInstruction(
+    	InstructionHandle ih,
+    	InstructionList replacementInstructions,
+    	LazyMethodGen enclosingMethod) {
+    	InstructionList il = enclosingMethod.getBody();
+    	InstructionHandle fresh = il.append(ih, replacementInstructions);
+    	deleteInstruction(ih,fresh,enclosingMethod);
+    }
+       
 	/** delete an instruction handle and retarget all targeters of the deleted instruction
 	 * to the next instruction.  Obviously, this should not be used to delete
 	 * a control transfer instruction unless you know what you're doing.

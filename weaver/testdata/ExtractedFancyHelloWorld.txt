@@ -1,6 +1,6 @@
 public abstract class FancyHelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // FancyHelloWorld this   (line 7)
+                    ALOAD_0     // LFancyHelloWorld; this   (line 7)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void FancyHelloWorld.<init>())
     |               ALOAD_0
@@ -63,7 +63,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
                     ASTORE_1   (line 9)
     finally -> E1
     | catch java.lang.Exception -> E0
-    | |             ALOAD_1     // java.io.PrintStream out   (line 11)
+    | |             ALOAD_1     // Ljava/io/PrintStream; out   (line 11)
     | |             LDC "bye"
     | |             ASTORE_3
     | |             ASTORE 5
@@ -75,8 +75,8 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | |             GOTO L0
     | catch java.lang.Exception -> E0
     |           E0: ASTORE 7   (line 12)
-    |               ALOAD_1     // java.io.PrintStream out   (line 13)
-    |               ALOAD 7
+    |               ALOAD_1     // Ljava/io/PrintStream; out   (line 13)
+    |               ALOAD 7     // Ljava/lang/Exception; e
     |               ASTORE 9
     |               ASTORE 11
     | method-call(void java.io.PrintStream.println(java.lang.Object))
@@ -93,7 +93,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
                 L0: JSR L1
                     GOTO L2
                 L1: ASTORE 15
-                    ALOAD_1     // java.io.PrintStream out   (line 15)
+                    ALOAD_1     // Ljava/io/PrintStream; out   (line 15)
                     LDC "finally"
                     ASTORE 17
                     ASTORE 19
@@ -136,7 +136,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
   static final String getName_extracted10():
                     ICONST_0   (line 20)
                     ISTORE_0
-                    ILOAD_0     // int x   (line 21)
+                    ILOAD_0     // I x   (line 21)
                     LDC "name"
                     ASTORE_2
     method-call(int java.lang.String.hashCode())
@@ -144,14 +144,14 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               INVOKESTATIC FancyHelloWorld.hashCode_extracted6 (Ljava/lang/String;)I
     method-call(int java.lang.String.hashCode())
                     IADD
-                    ISTORE_0     // int x
+                    ISTORE_0     // I x
                     LDC "name"   (line 22)
                     ASTORE 4
     constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
     |               ALOAD 4
     |               INVOKESTATIC FancyHelloWorld.init$_extracted7 (Ljava/lang/String;)Ljava/lang/StringBuffer;
     constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
-                    ILOAD_0     // int x
+                    ILOAD_0     // I x
                     ISTORE 6
                     ASTORE 8
     method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
