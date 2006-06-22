@@ -1725,105 +1725,175 @@ public class BcelShadow extends Shadow {
     }
 	
 	/**
-	 * We guarantee that the return value is on the top of the stack when
-	 * munger.getAdviceInstructions() will be run
-	 * (Unless we have a void return type in which case there's nothing)
+	 * The basic strategy here is to add a set of instructions at the end of 
+	 * the shadow range that dispatch the advice, and then return whatever the
+	 * shadow was going to return anyway.
+	 * 
+	 * To achieve this, we note all the return statements in the advice, and 
+	 * replace them with code that:
+	 * 1) stores the return value on top of the stack in a temp var
+	 * 2) jumps to the start of our advice block
+	 * 3) restores the return value at the end of the advice block before
+	 * ultimately returning
+	 * 
+	 * We also need to bind the return value into a returning parameter, if the
+	 * advice specified one.
 	 */
     public void weaveAfterReturning(BcelAdvice munger) {
-        // InstructionFactory fact = getFactory();
-        List returns = new ArrayList();
-        Instruction ret = null;
-        for (InstructionHandle ih = range.getStart(); ih != range.getEnd(); ih = ih.getNext()) {
-            if (ih.getInstruction() instanceof ReturnInstruction) {
-                returns.add(ih);
-                ret = Utility.copyInstruction(ih.getInstruction());
-            }
-        }
-        InstructionList retList;
-        InstructionHandle afterAdvice;
+        List returns = findReturnInstructions();
+        boolean hasReturnInstructions = !returns.isEmpty();
+        
+        // list of instructions that handle the actual return from the join point
+        InstructionList retList = new InstructionList();
+                
+        // variable that holds the return value
         BcelVar returnValueVar = null;
         
-        if (ret != null) {
-        	if (this.getReturnType() != ResolvedType.VOID) {
-	        	returnValueVar = genTempVar(this.getReturnType());
-	            retList = new InstructionList();
-	            returnValueVar.appendLoad(retList,getFactory());
-        	} else {
-        		retList = new InstructionList(ret);
-        	}
-            retList.append(ret);
-            afterAdvice = retList.getStart();
-        } else /* if (munger.hasDynamicTests()) */ {
-        	/*
-        	 * 
- 27:  getstatic       #72; //Field ajc$cflowCounter$0:Lorg/aspectj/runtime/internal/CFlowCounter;
- 30:  invokevirtual   #87; //Method org/aspectj/runtime/internal/CFlowCounter.dec:()V
- 33:  aload   6
- 35:  athrow
- 36:  nop
- 37:  getstatic       #72; //Field ajc$cflowCounter$0:Lorg/aspectj/runtime/internal/CFlowCounter;
- 40:  invokevirtual   #87; //Method org/aspectj/runtime/internal/CFlowCounter.dec:()V
- 43:  d2i
- 44:  invokespecial   #23; //Method java/lang/Object."<init>":()V
-        	 */
-            retList = new InstructionList(InstructionConstants.NOP);            
-            afterAdvice = retList.getStart();
-//        } else {
-//        	retList = new InstructionList();
-//        	afterAdvice = null;
+        if (hasReturnInstructions) {
+        	returnValueVar = generateReturnInstructions(returns,retList);
+        } else  {
+        	// we need at least one instruction, as the target for jumps
+            retList.append(InstructionConstants.NOP);            
         }
 
-        InstructionList advice = new InstructionList();
+        // list of instructions for dispatching to the advice itself
+        InstructionList advice = getAfterReturningAdviceDispatchInstructions(
+        		munger, retList.getStart());            
         
-        BcelVar tempVar = null;
-        if (munger.hasExtraParameter()) {
-            UnresolvedType tempVarType = getReturnType();
-            if (tempVarType.equals(ResolvedType.VOID)) {
-            	tempVar = genTempVar(UnresolvedType.OBJECT);
-            	advice.append(InstructionConstants.ACONST_NULL);
-            	tempVar.appendStore(advice, getFactory());
-            } else {
-	            tempVar = genTempVar(tempVarType);
-	            advice.append(InstructionFactory.createDup(tempVarType.getSize()));
-	            tempVar.appendStore(advice, getFactory());
-            }
-        }
-        advice.append(munger.getAdviceInstructions(this, tempVar, afterAdvice));            
-        
-        if (ret != null) {
+        if (hasReturnInstructions) {
             InstructionHandle gotoTarget = advice.getStart();           
 			for (Iterator i = returns.iterator(); i.hasNext();) {
 				InstructionHandle ih = (InstructionHandle) i.next();
-				// pr148007, work around JRockit bug
-				// replace ret with store into returnValueVar, followed by goto if not
-				// at the end of the instruction list...
-				InstructionList newInstructions = new InstructionList();
-				if (returnValueVar != null) {
-		            if (munger.hasExtraParameter()) {
-		            	// we have to dup the return val before consuming it...
-		            	newInstructions.append(InstructionFactory.createDup(this.getReturnType().getSize()));
-		            }
-					// store the return value into this var
-					returnValueVar.appendStore(newInstructions,getFactory());
-				}
-				if (!isLastInstructionInRange(ih,range)) {
-					newInstructions.append(InstructionFactory.createBranchInstruction(
-							Constants.GOTO,
-							gotoTarget));
-				}
-				if (newInstructions.isEmpty()) {
-					newInstructions.append(InstructionConstants.NOP);
-				}
-				Utility.replaceInstruction(ih,newInstructions,enclosingMethod);
+				retargetReturnInstruction(munger.hasExtraParameter(), returnValueVar, gotoTarget, ih);
 			}
-            range.append(advice);
-            range.append(retList);
-        } else {            
-            range.append(advice);
-            range.append(retList);
-        }
+        }            
+         
+        range.append(advice);
+        range.append(retList);
     }
+
+	/**
+	 * @return a list of all the return instructions in the range of this shadow
+	 */
+	private List findReturnInstructions() {
+		List returns = new ArrayList();
+        for (InstructionHandle ih = range.getStart(); ih != range.getEnd(); ih = ih.getNext()) {
+            if (ih.getInstruction() instanceof ReturnInstruction) {
+                returns.add(ih);
+            }
+        }
+		return returns;
+	}
+
+	/**
+	 * Given a list containing all the return instruction handles for this shadow,
+	 * finds the last return instruction and copies it, making this the ultimate
+	 * return. If the shadow has a non-void return type, we also create a temporary
+	 * variable to hold the return value, and load the value from this var before
+	 * returning (see pr148007 for why we do this - it works around a JRockit bug,
+	 * and is also closer to what javac generates)
+	 * @param returns list of all the return instructions in the shadow
+	 * @param returnInstructions instruction list into which the return instructions should
+	 * be generated
+	 * @return the variable holding the return value, if needed
+	 */
+	private BcelVar generateReturnInstructions(List returns, InstructionList returnInstructions) {
+		BcelVar returnValueVar = null;
+    	InstructionHandle lastReturnHandle = (InstructionHandle)returns.get(returns.size() - 1);
+    	Instruction newReturnInstruction = Utility.copyInstruction(lastReturnHandle.getInstruction());
+    	if (this.hasANonVoidReturnType()) {
+        	returnValueVar = genTempVar(this.getReturnType());
+            returnValueVar.appendLoad(returnInstructions,getFactory());
+    	} else {
+    		returnInstructions.append(newReturnInstruction);
+    	}
+    	returnInstructions.append(newReturnInstruction);
+    	return returnValueVar;
+	}
     
+	/**
+	 * @return true, iff this shadow returns a value
+	 */
+	private boolean hasANonVoidReturnType() {
+		return this.getReturnType() != ResolvedType.VOID;
+	}
+
+	/**
+	 * Get the list of instructions used to dispatch to the after advice
+	 * @param munger
+	 * @param firstInstructionInReturnSequence
+	 * @return
+	 */
+	private InstructionList getAfterReturningAdviceDispatchInstructions(BcelAdvice munger, InstructionHandle firstInstructionInReturnSequence) {
+		InstructionList advice = new InstructionList();
+        
+        BcelVar tempVar = null;
+        if (munger.hasExtraParameter()) {
+            tempVar = insertAdviceInstructionsForBindingReturningParameter(advice);
+        }
+        advice.append(munger.getAdviceInstructions(this, tempVar, firstInstructionInReturnSequence));
+		return advice;
+	}
+
+	/**
+	 * If the after() returning(Foo f) form is used, bind the return value to the parameter.
+	 * If the shadow returns void, bind null.
+	 * @param advice
+	 * @return
+	 */
+	private BcelVar insertAdviceInstructionsForBindingReturningParameter(InstructionList advice) {
+		BcelVar tempVar;
+		UnresolvedType tempVarType = getReturnType();
+		if (tempVarType.equals(ResolvedType.VOID)) {
+			tempVar = genTempVar(UnresolvedType.OBJECT);
+			advice.append(InstructionConstants.ACONST_NULL);
+			tempVar.appendStore(advice, getFactory());
+		} else {
+		    tempVar = genTempVar(tempVarType);
+		    advice.append(InstructionFactory.createDup(tempVarType.getSize()));
+		    tempVar.appendStore(advice, getFactory());
+		}
+		return tempVar;
+	}
+
+
+	/**
+	 * Helper method for weaveAfterReturning
+	 * 
+	 * Each return instruction in the method body is retargeted by calling this method.
+	 * The return instruction is replaced by up to three instructions:
+	 * 1) if the shadow returns a value, and that value is bound to an after returning
+	 * parameter, then we DUP the return value on the top of the stack
+	 * 2) if the shadow returns a value, we store it in the returnValueVar (it will
+	 * be retrieved from here when we ultimately return after the advice dispatch)
+	 * 3) if the return was the last instruction, we add a NOP (it will fall through
+	 * to the advice dispatch), otherwise we add a GOTO that branches to the
+	 * supplied gotoTarget (start of the advice dispatch)
+	 */
+	private void retargetReturnInstruction(boolean hasReturningParameter, BcelVar returnValueVar, InstructionHandle gotoTarget, InstructionHandle returnHandle) {
+		// pr148007, work around JRockit bug
+		// replace ret with store into returnValueVar, followed by goto if not
+		// at the end of the instruction list...
+		InstructionList newInstructions = new InstructionList();
+		if (returnValueVar != null) {
+		    if (hasReturningParameter) {
+		    	// we have to dup the return val before consuming it...
+		    	newInstructions.append(InstructionFactory.createDup(this.getReturnType().getSize()));
+		    }
+			// store the return value into this var
+			returnValueVar.appendStore(newInstructions,getFactory());
+		}
+		if (!isLastInstructionInRange(returnHandle,range)) {
+			newInstructions.append(InstructionFactory.createBranchInstruction(
+					Constants.GOTO,
+					gotoTarget));
+		}
+		if (newInstructions.isEmpty()) {
+			newInstructions.append(InstructionConstants.NOP);
+		}
+		Utility.replaceInstruction(returnHandle,newInstructions,enclosingMethod);
+	}
+
     private boolean isLastInstructionInRange(InstructionHandle ih, ShadowRange aRange) {
     	return ih.getNext() == aRange.getEnd();
     }
