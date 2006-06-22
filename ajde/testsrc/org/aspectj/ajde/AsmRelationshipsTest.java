@@ -14,6 +14,7 @@ package org.aspectj.ajde;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
@@ -31,7 +32,10 @@ public class AsmRelationshipsTest extends AjdeTestCase {
 		super(name);
 	}
 
+	// see pr148027
 	public void testUsesPointcut() {
+		if (!AsmHierarchyBuilder.shouldAddUsesPointcut) return;
+		
 	    IProgramElement ptUsage = AsmManager.getDefault().getHierarchy().findElementForType(null, "PointcutUsage");
 	    assertNotNull(ptUsage);
 	    IProgramElement pts = AsmManager.getDefault().getHierarchy().findElementForType(null, "Pointcuts");

@@ -14,6 +14,7 @@ import java.io.File;
 import junit.framework.Test;
 
 import org.aspectj.ajde.ui.StructureModelUtil;
+import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
@@ -58,17 +59,29 @@ public class IncrementalModelTests extends org.aspectj.testing.XMLBasedAjcTestCa
     // <!-- BetaA has a new piece of handler advice added -->
     nextIncrement(true);
 	copyFileAndDoIncrementalBuild("changes/primary/BetaA.20.java","src/primary/BetaA.java");
-    StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=3");
+	if (AsmHierarchyBuilder.shouldAddUsesPointcut) {
+		StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=3");
+	} else {
+		StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=2");
+	}
 
     // <!-- secondary.GammaA added, also advises the same handler -->
     nextIncrement(true);
 	copyFileAndDoIncrementalBuild("changes/secondary/GammaA.30.java","src/secondary/GammaA.java");
-    StructureModelUtil.checkModel("code=1,advice=2,RelationshipMapSize=5");
+    if (AsmHierarchyBuilder.shouldAddUsesPointcut) {
+        StructureModelUtil.checkModel("code=1,advice=2,RelationshipMapSize=5");		
+	} else {
+	    StructureModelUtil.checkModel("code=1,advice=2,RelationshipMapSize=3");
+	}
 
     // <!-- primary.BetaA deleted -->
     nextIncrement(true);
     deleteFileAndDoIncrementalBuild("src/primary/BetaA.java");
-    StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=3");
+    if (AsmHierarchyBuilder.shouldAddUsesPointcut) {
+        StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=3");		
+	} else {
+	    StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=2");
+	}
 
   }
   
@@ -79,12 +92,21 @@ public class IncrementalModelTests extends org.aspectj.testing.XMLBasedAjcTestCa
     // <!-- BetaA has a new piece of advice added -->
     nextIncrement(true);
 	copyFileAndDoIncrementalBuild("changes/primary/BetaA.20.java","src/primary/BetaA.java");
-    StructureModelUtil.checkModel("code=2,advice=2,java source file=3,RelationshipMapSize=6");
+	if (AsmHierarchyBuilder.shouldAddUsesPointcut) {
+		 StructureModelUtil.checkModel("code=2,advice=2,java source file=3,RelationshipMapSize=6");
+	} else {
+		 StructureModelUtil.checkModel("code=2,advice=2,java source file=3,RelationshipMapSize=4");
+	}
+   
     
     // <!-- BetaA has a piece of advice removed -->
     nextIncrement(true);
 	copyFileAndDoIncrementalBuild("changes/primary/BetaA.30.java","src/primary/BetaA.java");
-    StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=3");
+	if (AsmHierarchyBuilder.shouldAddUsesPointcut) {
+	    StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=3");
+	} else {
+	    StructureModelUtil.checkModel("code=1,advice=1,RelationshipMapSize=2");
+	}
     
     // <!-- BetaA other piece of advice removed (now empty) -->
     nextIncrement(true);

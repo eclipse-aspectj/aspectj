@@ -729,7 +729,11 @@
         </stderr>
       </run>
     </ajc-test>
-	
+    
+	<ajc-test dir="bugs152/pr148027" title="ensure pcd declare in class appears in model">
+      <compile files="A.aj, C.aj" options="-emacssym"/>
+    </ajc-test>
+
 	<ajc-test dir="bugs152/pr148007" title="jrockit boolean fun">
 		<compile files="test/BooleanUnitTest.java, test/LoggingAspect.aj"/>
 		<run class="test.BooleanUnitTest"/>

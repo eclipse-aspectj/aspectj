@@ -52,7 +52,9 @@ import org.aspectj.weaver.patterns.*;
 public class AsmHierarchyBuilder extends ASTVisitor {
 
 	protected AsmElementFormatter formatter = new AsmElementFormatter();
-	public static boolean shouldAddUsesPointcut = true;
+	// pr148027 - stop generating uses pointcut/pointcut used by relationship
+	// until we do it in the same way as other relationships.
+	public static boolean shouldAddUsesPointcut = false;
 	/**
 	 * Reset for every compilation unit.
 	 */

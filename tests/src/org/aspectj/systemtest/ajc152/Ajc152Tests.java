@@ -17,6 +17,7 @@ import java.util.List;
 
 import junit.framework.Test;
 
+import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
@@ -290,6 +291,29 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		  IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
 		  assertEquals("expected 3 entries in the relationship map but found " 
 				  + relMap.getEntries().size(), 3, relMap.getEntries().size());
+	  } finally {
+		  World.createInjarHierarchy = true;
+	  }
+  }
+  
+  public void testPCDInClassAppearsInModel_pr148027() {
+	  // only want to test that its there if we're creating the uses pointcut
+	  // relationship. This should be addressed by pr148027
+	  if (!AsmHierarchyBuilder.shouldAddUsesPointcut) return;
+	  World.createInjarHierarchy = false;
+	  try {
+		  runTest("ensure pcd declare in class appears in model");
+		  IHierarchy top = AsmManager.getDefault().getHierarchy();
+		  IProgramElement pcd = top.findElementForLabel(top.getRoot(),IProgramElement.Kind.POINTCUT,"pointcutInClass()");
+		  IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
+		  List relationships = relMap.get(pcd);
+		  assertNotNull("expected relationships for pointcut " + pcd.toLinkLabelString()
+				  + " but didn't", relationships);
+		  
+		  pcd = top.findElementForLabel(top.getRoot(),IProgramElement.Kind.POINTCUT,"pointcutInAspect()");
+		  relationships = relMap.get(pcd);
+		  assertNotNull("expected relationships for pointcut " + pcd.toLinkLabelString()
+				  + " but didn't", relationships);
 	  } finally {
 		  World.createInjarHierarchy = true;
 	  }

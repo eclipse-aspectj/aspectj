@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
-import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
@@ -76,7 +75,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}*/
 	public void testDontLoseAdviceMarkers_pr134471() {
 		try {
-			AsmHierarchyBuilder.shouldAddUsesPointcut=false;
+			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=false;
 			configureBuildStructureModel(true);
 			initialiseProject("P4");
 			build("P4");
@@ -144,7 +143,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			}
 			
 		} finally {
-			AsmHierarchyBuilder.shouldAddUsesPointcut=true;
+			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=true;
 			configureBuildStructureModel(false);
 		}
 	}
@@ -1042,7 +1041,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// 134471 related tests perform incremental compilation and verify features of the structure model post compile
 	public void testPr134471_IncrementalCompilationAndModelUpdates() {
 		try {
-			AsmHierarchyBuilder.shouldAddUsesPointcut=false;
+			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=false;
 		configureBuildStructureModel(true);
 		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
 		
@@ -1074,7 +1073,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("advice should be at line 7 - but is at line "+line,line==7);
 		} finally {
-		AsmHierarchyBuilder.shouldAddUsesPointcut=true;
+		// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=true;
 		}
 	}
 	
@@ -1123,7 +1122,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// same as first test with an extra stage that asks for C to be recompiled, it should still be advised...
 	public void testPr134471_IncrementallyRecompilingTheAffectedClass() {
 		try {
-			AsmHierarchyBuilder.shouldAddUsesPointcut=false;
+			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=false;
 		configureBuildStructureModel(true);
 		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
 		
@@ -1155,7 +1154,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("advice should be at line 7 - but is at line "+line,line==7);		
 	} finally {
-		AsmHierarchyBuilder.shouldAddUsesPointcut=true;
+		// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=true;
 		}
 
 	}
