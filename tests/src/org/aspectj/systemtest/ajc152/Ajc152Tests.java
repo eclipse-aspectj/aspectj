@@ -33,6 +33,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testBrokenIfArgsCflowAtAj_pr145018() { runTest("ataj crashing with cflow, if and args");}
 //  public void testItdCallingGenericMethod_pr145391() { runTest("itd calling generic method");}
 //  public void testItdCallingGenericMethod_pr145391_2() { runTest("itd calling generic method - 2");}
+//  public void testAdviceNotWovenAspectPath_pr147841() { runTest("advice not woven on aspectpath");}
   public void testDuplicateBridgeMethods_pr147801_1() { runTest("duplicate bridge methods");}
   public void testPackageIgnoredForException_pr147701_1() { runTest("package for exception ignored");}
   public void testPackageIgnoredForException_pr147701_2() { runTest("package for exception ignored - 2");}
