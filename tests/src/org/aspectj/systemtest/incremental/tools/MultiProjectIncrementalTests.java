@@ -244,6 +244,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 	}
 	
+/*
+	public void testRefactoring_pr148285() {
+		configureBuildStructureModel(true);
+		initialiseProject("PR148285");
+		build("PR148285");
+		System.err.println("xxx");
+		alter("PR148285","inc1");
+		build("PR148285");
+	}
+*/
+	
 	
 	/**
 	 * In order for this next test to run, I had to move the weaver/world pair we keep in the
