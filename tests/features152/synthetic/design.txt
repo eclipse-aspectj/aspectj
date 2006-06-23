@@ -1,0 +1,63 @@
+This table shows the members we create as a result of aspect declarations and weaving,
+and whether they should be marked synthetic or not.
+
+Inside aspects:
+==================
+
+name						type		description									synthetic
+-----------------------------------------------------------------------------------------
+ajc$preClinit				method		start of static initialization					yes
+ajc$postClinit				method		end of static initialization          			yes
+ajc$perCflowPush			method    	start a cflow									yes
+ajc$perCflowStack	    	field		cflow stack										yes
+ajc$perSingletonInstance 	field		singleton instance								yes
+ajc$initFailureCause      	field		exception during init							yes
+ajc$withinType				field		type for perwithin aspects						yes
+ajc$perObjectBind			method		creation of perobject aspects					yes
+ajc$getInstance				method		perwithin instance accessor					yes
+ajc$createAspectInstance	method		creates ptw aspect								yes
+aspectOf					method		generated aspectOf method						yes?* (it has no matching source code)
+hasAspect					method		generated hasAspect method						yes?* (it has no matching source code)
+ajc$superDispatch$<STname>$name		super method accessor (for around advice)		yes
+ajc$inlineAccessMethod$<AName>$<TName>$<mname> accessor for around advice			yes
+ajc$inlineAccessFieldGet$... method	for around advice								yes
+ajc$inlineAccessFieldSet$... method	for around advice								yes
+ajc$preInterConstructor$<AName>$<TName> method	ITD cons							yes
+ajc$postInterConstructor$<AName>$<TName> method	ITD cons							yes
+ajc$interFieldInit$...			method	initializer for ITD field						yes
+ajc$interFieldSetDispatch$...  method set of ITD field								yes
+ajc$interFieldGetDispatch$...	method	get of ITD field								yes
+ajc$interMethodDispatch1$...	method	dispatch for ITD method						yes
+ajc$interMethod$<AName>$<TName>$<name> method	body of ITD method						no
+ajc$before$...					method	before advice									no
+ajc$after$...					method	after advice									no
+ajc$around$...					method	around advice									no
+ajc$afterReturning$...			method	after returning advice							no
+ajc$afterThrowing$...			method	after throwing	advice							no
+ajc$declare...					method	declare statement								yes
+ajc$if_...						method	if statement inside pointcut					yes
+ajc$pointcut$...				method	pointcut declaration							yes
+ajc$around$.....proceed		method	proceed method for around advice				yes
+
+Inside classes:
+===================
+ajc$pointcut$...				method	pointcut declaration							yes
+
+
+Inside woven types:
+===================
+
+ajc$<TName>$perObjectField					field	holds per-object aspect instance		yes
+ajc$<TName>$ptwAspectInstance 				field	holds per-type-within aspect			yes		
+<AName>$ajcMightHaveAspect					interface added to per-xxx aspects				n/a
+ajc$<AName>$perObjectGet					method	on types with ajcMightHaveAspect		yes
+ajc$<AName>$perObjectSet					method	on types with ajcMightHaveAspect		yes
+ajc$<AName>$localAspectOf					method	get ptw aspect instance				yes
+ajc$privMethod$<Tname>$<AName>$<mname>  	method	privileged accessor						yes
+ajc$privFieldGet$<Tname>$<AName>$<fname> 	method	privileged accessor						yes
+ajc$privFieldSet$<Tname>$<AName>$<fname> 	method	privileged mutator						yes
+ajc$<AName>$<DPType>						field	@DeclareParents delegate				yes
+ajc$interField$...							field	ITD-field								yes
+ajc$interFieldGet$...						method  on target of ITD-field					yes
+ajc$interFieldSet$...						method  on target of ITD-field					yes
+ajc$interMethodDispatch2$...				method	on target of ITD-method				yes
