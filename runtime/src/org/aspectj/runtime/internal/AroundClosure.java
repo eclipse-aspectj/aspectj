@@ -10,6 +10,7 @@
  * Contributors: 
  *     Xerox/PARC     initial implementation 
  *    Alex Vasseur    wired up for @AJ proceeding
+ *    Andy Clement 23-06-06 added extras for @AJ
  * ******************************************************************/
 
 
@@ -19,6 +20,12 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 public abstract class AroundClosure {
     protected Object[] state;
+
+    // Records with the related joinpoint has a this or a target and whether 
+    // either of them are bound in the pointcut.  Set in the 'link' call made
+    // at each matching join point... (see pr126167)
+    // bit6 being 1 means the flags haven't been initialized
+    protected int bitflags = 0x100000; 
     protected Object[] preInitializationState;
 
     public AroundClosure() {
@@ -28,7 +35,7 @@ public abstract class AroundClosure {
     	this.state = state;
     }
     
-    
+    public int getFlags() {return bitflags;}
 
     public Object[] getState() {
       return state;
@@ -52,6 +59,18 @@ public abstract class AroundClosure {
         //TODO is this cast safe ?
         ProceedingJoinPoint jp = (ProceedingJoinPoint)state[state.length-1];
         jp.set$AroundClosure(this);
+        return jp;
+    }
+
+    /**
+     * This method is called to implicitly associate the closure with the joinpoint
+     * as required for @AJ aspect proceed()
+     */
+    public ProceedingJoinPoint linkClosureAndJoinPoint(int flags) {
+        //TODO is this cast safe ?
+        ProceedingJoinPoint jp = (ProceedingJoinPoint)state[state.length-1];
+        jp.set$AroundClosure(this);
+        this.bitflags = flags;
         return jp;
     }
 }

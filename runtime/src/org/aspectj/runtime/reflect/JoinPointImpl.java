@@ -106,17 +106,73 @@ class JoinPointImpl implements ProceedingJoinPoint {
         if (arc == null)
             return null;
         else {
+
+        	// Based on the bit flags in the AroundClosure we can determine what to
+        	// expect in the adviceBindings array.  We may or may not be expecting
+        	// the first value to be a new this or a new target... (see pr126167)
+        	int flags = arc.getFlags();
+        	boolean unset             = (flags &0x100000)!=0;
+        	boolean thisTargetTheSame = (flags &0x010000)!=0;
+        	boolean hasThis           = (flags &0x001000)!=0;
+        	boolean bindsThis         = (flags &0x000100)!=0;
+        	boolean hasTarget         = (flags &0x000010)!=0;
+        	boolean bindsTarget       = (flags &0x000001)!=0;
+        	
             // state is always consistent with caller?,callee?,formals...,jp
             Object[] state = arc.getState();
-            for (int i = state.length-2; i >= 0; i--) {
-                int formalIndex = (adviceBindings.length - 1) - (state.length-2) + i;
-                if (formalIndex >= 0 && formalIndex < adviceBindings.length) {
-                    state[i] = adviceBindings[formalIndex];
-                }
+            
+            // these next two numbers can differ because some join points have a this and 
+            // target that are the same (eg. call) - and yet you can bind this and target 
+            // separately.
+            
+            // In the state array, [0] may be this, [1] may be target
+            
+            int firstArgumentIndexIntoAdviceBindings = 0;
+            int firstArgumentIndexIntoState = 0;
+            firstArgumentIndexIntoState+=(hasThis?1:0);
+            firstArgumentIndexIntoState+=(hasTarget&&!thisTargetTheSame?1:0);
+            if (hasThis) {
+            	if (bindsThis) {
+            		// replace [0] (this)
+	            	firstArgumentIndexIntoAdviceBindings=1;
+	            	state[0]=adviceBindings[0];
+            	} else {
+            		// leave state[0] alone, its OK
+            	}
             }
+            if (hasTarget) {
+            	if (bindsTarget) {
+                  if (thisTargetTheSame) {
+                	  // this and target are the same so replace state[0]
+		        	  firstArgumentIndexIntoAdviceBindings=1+(bindsThis?1:0);
+		        	  state[0]=adviceBindings[(bindsThis?1:0)];
+		          } else {
+		        	  // need to replace the target, and it is different to this, whether
+		        	  // that means replacing state[0] or state[1] depends on whether
+		        	  // the join point has a this
+		        	  firstArgumentIndexIntoAdviceBindings=(hasThis?1:0)+1;
+		        	  state[hasThis?1:0]=adviceBindings[hasThis?1:0]; 	  
+		          }
+            	} else {
+            		// leave state[0]/state[1] alone, they are OK
+            	}
+            }
+            
+            // copy the rest across
+            for (int i=firstArgumentIndexIntoAdviceBindings;i<adviceBindings.length;i++) {
+            	state[firstArgumentIndexIntoState+(i-firstArgumentIndexIntoAdviceBindings)]=adviceBindings[i];
+            }
+            
+            // old code that did this, didnt allow this/target overriding
+//            for (int i = state.length-2; i >= 0; i--) {
+//                int formalIndex = (adviceBindings.length - 1) - (state.length-2) + i;
+//                if (formalIndex >= 0 && formalIndex < adviceBindings.length) {
+//                    state[i] = adviceBindings[formalIndex];
+//                }
+//            }
             return arc.run(state);
         }
     }
-
+    
 
 }

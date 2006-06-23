@@ -2174,10 +2174,6 @@ public class BcelShadow extends Shadow {
 		range.insert(entryInstructions, Range.InsideBefore);
 	}
     
-    public void weaveAroundInline(
-    	BcelAdvice munger,
-    	boolean hasDynamicTest)
-	{
 		/* Implementation notes:
 		 * 
 		 * AroundInline still extracts the instructions of the original shadow into 
@@ -2208,6 +2204,7 @@ public class BcelShadow extends Shadow {
 		 * new method for the advice can also be re-lined.  We are not doing that
 		 * presently.
 		 */
+    public void weaveAroundInline(BcelAdvice munger,boolean hasDynamicTest) {
 		 
 		// !!! THIS BLOCK OF CODE SHOULD BE IN A METHOD CALLED weaveAround(...);
         Member mungerSig = munger.getSignature();
@@ -2246,9 +2243,8 @@ public class BcelShadow extends Shadow {
 
         // specific test for @AJ proceedInInners
         if (munger.getConcreteAspect().isAnnotationStyleAspect()) {
-            // if we can't find one proceed()
-            // we suspect that the call is happening in an inner class
-            // so we don't inline it.
+            // if we can't find one proceed() we suspect that the call 
+        	// is happening in an inner class so we don't inline it.
             // Note: for code style, this is done at Aspect compilation time.
             boolean canSeeProceedPassedToOther = false;
             InstructionHandle curr = adviceMethod.getBody().getStart();
@@ -2285,29 +2281,25 @@ public class BcelShadow extends Shadow {
 		final InstructionFactory fact = getFactory();
 		
 		// now generate the aroundBody method
+		// eg. "private static final void method_aroundBody0(M, M, String, org.aspectj.lang.JoinPoint)"
         LazyMethodGen extractedMethod = 
         	extractMethod(
-        		NameMangler.aroundCallbackMethodName(
-        			getSignature(),
-        			getEnclosingClass()),
+        		NameMangler.aroundCallbackMethodName(getSignature(),getEnclosingClass()),
 				Modifier.PRIVATE,
-				munger
-            );
-        			
+				munger);
         			
         // now extract the advice into its own method
         String adviceMethodName =
-			NameMangler.aroundCallbackMethodName(
-							getSignature(),
-							getEnclosingClass()) + "$advice";
+			NameMangler.aroundCallbackMethodName(getSignature(),getEnclosingClass()) + "$advice";
         
-		List argVarList = new ArrayList();
-		List proceedVarList = new ArrayList();
+		List argVarList      = new ArrayList();
+		List proceedVarList  = new ArrayList();
 		int extraParamOffset = 0;
 		
 		// Create the extra parameters that are needed for passing to proceed
 		// This code is very similar to that found in makeCallToCallback and should
 		// be rationalized in the future
+		
 		if (thisVar != null) {
 			argVarList.add(thisVar);
 			proceedVarList.add(new BcelVar(thisVar.getType(), extraParamOffset));
@@ -2612,13 +2604,6 @@ public class BcelShadow extends Shadow {
     /**
      * ATAJ Handle the inlining for @AJ aspects
      *
-     * @param fact
-     * @param callbackMethod
-     * @param munger
-     * @param localAdviceMethod
-     * @param argVarList
-     * @param isProceedWithArgs
-     * @return
      */
     private InstructionList getRedoneProceedCallForAnnotationStyle(
         InstructionFactory fact,
@@ -2630,8 +2615,6 @@ public class BcelShadow extends Shadow {
     {
         // Notes:
         // proceedingjp is on stack (since user was calling pjp.proceed(...)
-        // the boxed args to proceed() are on stack as well (Object[]) unless
-        // the call is to pjp.proceed(<noarg>)
 
         // new Object[]{new Integer(argAdvice1-1)};// arg of proceed
         // call to proceed(..) is NOT made
@@ -2646,15 +2629,19 @@ public class BcelShadow extends Shadow {
         // int res = .. from original code
 
         //Note: we just don't care about the proceed map etc
+    	// (we would need to care if we allow repositioning of arguments in advice signature)
 
         InstructionList ret = new InstructionList();
 
         // store the Object[] array on stack if proceed with args
         if (isProceedWithArgs) {
+        	
+        	// STORE the Object[] into a local variable
             Type objectArrayType = Type.getType("[Ljava/lang/Object;");
             int localProceedArgArray = localAdviceMethod.allocateLocal(objectArrayType);
             ret.append(InstructionFactory.createStore(objectArrayType, localProceedArgArray));
 
+            // STORE the ProceedingJoinPoint instance into a local variable
             Type proceedingJpType = Type.getType("Lorg/aspectj/lang/ProceedingJoinPoint;");
             int localJp = localAdviceMethod.allocateLocal(proceedingJpType);
             ret.append(InstructionFactory.createStore(proceedingJpType, localJp));
@@ -2664,22 +2651,74 @@ public class BcelShadow extends Shadow {
             // TODO do we want to try catch ClassCast and AOOBE exception ?
 
             // special logic when withincode is static or not
-            int startIndex = 0;
-            if (thisVar != null) {
-                startIndex = 1;
-                //TODO this logic is actually depending on target as well - test me
-                ret.append(new ALOAD(0));//thisVar
-            }
-//    	    if (bindsThisOrTarget(munger.getPointcut())) {                
             
-            for (int i = startIndex, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
+            // This next bit of code probably makes more sense if you read its implementation for
+            // weaveAroundClosure() - see JoinPointImpl.proceed(Object[]).  Basically depending
+            // on whether the join point has a this/target and whether the pointcut binds this/target
+            // then the arguments to the 'new' proceed call need to be reorganized. (pr126167)
+        	boolean relatedPointcutBindsThis = bindsThis(munger);
+        	boolean relatedPointcutBindsTarget = bindsTarget(munger);
+        	boolean targetIsSameAsThis = getKind().isTargetSameAsThis();
+        	
+        	// two numbers can differ because a pointcut may bind both this/target and yet at the
+        	// join point this and target are the same (eg. call)
+            int indexIntoObjectArrayForArguments=0;
+            int indexIntoCallbackMethodForArguments = 0;
+            if (hasThis()) {
+            	if (relatedPointcutBindsThis) {
+            		if (!(relatedPointcutBindsTarget && targetIsSameAsThis)) {
+	            		// they have supplied new this as first entry in object array
+	            		 ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
+	                     ret.append(Utility.createConstant(fact, 0));
+	                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
+	                     ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[0]));
+	                     indexIntoCallbackMethodForArguments++;
+            		 }
+                    indexIntoObjectArrayForArguments=1;
+            	} else {
+            		// use local variable 0 (which is 'this' for a non-static method)
+            		ret.append(new ALOAD(0));
+                	indexIntoCallbackMethodForArguments++;
+            	}
+            }
+            
+            if (hasTarget()) {
+            	if (relatedPointcutBindsTarget) {
+            		if (getKind().isTargetSameAsThis()) {
+            			 ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
+                         ret.append(Utility.createConstant(fact, relatedPointcutBindsThis?1:0));
+                         ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
+                         ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[0]));
+                         indexIntoObjectArrayForArguments++;
+                         indexIntoCallbackMethodForArguments++;
+            		} else {
+            			 int position =(hasThis()&& relatedPointcutBindsThis?1:0);
+	           			 ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
+	                     ret.append(Utility.createConstant(fact, position));
+	                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
+	                     ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[position]));
+	                     indexIntoObjectArrayForArguments=position+1;
+	             		 indexIntoCallbackMethodForArguments++;
+            		}
+            	} else {
+                	if (getKind().isTargetSameAsThis()) {
+                		//ret.append(new ALOAD(0));
+                	} else {
+                		ret.append(InstructionFactory.createLoad(localAdviceMethod.getArgumentTypes()[0],hasThis()?1:0));
+                		indexIntoCallbackMethodForArguments++;
+                	}
+            	}
+            }
+            
+            
+            for (int i = indexIntoCallbackMethodForArguments, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
                 Type stateType = callbackMethod.getArgumentTypes()[i];
                 BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
                     ret.append(new ALOAD(localJp));// from localAdvice signature
                 } else {
                     ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
-                    ret.append(Utility.createConstant(fact, i-startIndex));
+                    ret.append(Utility.createConstant(fact, i-indexIntoCallbackMethodForArguments +indexIntoObjectArrayForArguments));
                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
                     ret.append(Utility.createConversion(
                             fact,
@@ -2688,6 +2727,7 @@ public class BcelShadow extends Shadow {
                     ));
                 }
             }
+
         } else {
             Type proceedingJpType = Type.getType("Lorg/aspectj/lang/ProceedingJoinPoint;");
             int localJp = localAdviceMethod.allocateLocal(proceedingJpType);
@@ -2802,7 +2842,72 @@ public class BcelShadow extends Shadow {
 //        return ret;
     }
 
-    public void weaveAroundClosure(BcelAdvice munger, boolean hasDynamicTest) {
+    private boolean bindsThis(BcelAdvice munger) {
+    	UsesThisVisitor utv = new UsesThisVisitor();
+    	munger.getPointcut().accept(utv, null);
+		return utv.usesThis;
+	}
+
+    private boolean bindsTarget(BcelAdvice munger) {
+    	UsesTargetVisitor utv = new UsesTargetVisitor();
+    	munger.getPointcut().accept(utv, null);
+		return utv.usesTarget;
+	}
+    
+    private static class UsesThisVisitor extends IdentityPointcutVisitor {
+        boolean usesThis = false;
+        
+        public Object visit(ThisOrTargetPointcut node, Object data) {
+        	if (node.isThis() && node.isBinding()) usesThis=true;
+        	return node;
+        }
+
+        public Object visit(AndPointcut node, Object data) {
+            if (!usesThis) node.getLeft().accept(this, data);
+            if (!usesThis) node.getRight().accept(this, data);
+            return node;
+        }
+
+        public Object visit(NotPointcut node, Object data) {
+            if (!usesThis) node.getNegatedPointcut().accept(this, data);
+            return node;
+        }
+
+        public Object visit(OrPointcut node, Object data) {
+            if (!usesThis) node.getLeft().accept(this, data);
+            if (!usesThis) node.getRight().accept(this, data);
+            return node;
+        }
+    }
+    
+
+    private static class UsesTargetVisitor extends IdentityPointcutVisitor {
+        boolean usesTarget = false;
+        
+        public Object visit(ThisOrTargetPointcut node, Object data) {
+        	if (!node.isThis() && node.isBinding()) usesTarget=true;
+        	return node;
+        }
+
+        public Object visit(AndPointcut node, Object data) {
+            if (!usesTarget) node.getLeft().accept(this, data);
+            if (!usesTarget) node.getRight().accept(this, data);
+            return node;
+        }
+
+        public Object visit(NotPointcut node, Object data) {
+            if (!usesTarget) node.getNegatedPointcut().accept(this, data);
+            return node;
+        }
+
+        public Object visit(OrPointcut node, Object data) {
+            if (!usesTarget) node.getLeft().accept(this, data);
+            if (!usesTarget) node.getRight().accept(this, data);
+            return node;
+        }
+    }
+
+	public void weaveAroundClosure(BcelAdvice munger, boolean hasDynamicTest) {
     	InstructionFactory fact = getFactory();
 
 		enclosingMethod.setCanInline(false);
@@ -2895,9 +3000,19 @@ public class BcelShadow extends Shadow {
 			}
 		}
 
+		// initialize the bit flags for this shadow
+		int bitflags                                 =0x000000;
+		if (getKind().isTargetSameAsThis()) bitflags|=0x010000;
+		if (hasThis())                      bitflags|=0x001000;
+		if (bindsThis(munger))              bitflags|=0x000100;
+		if (hasTarget())                    bitflags|=0x000010;
+		if (bindsTarget(munger))            bitflags|=0x000001;
+		
         // ATAJ for @AJ aspect we need to link the closure with the joinpoint instance
         if (munger.getConcreteAspect()!=null && munger.getConcreteAspect().isAnnotationStyleAspect() 
            && munger.getDeclaringAspect()!=null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
+        	// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int
+        	closureInstantiation.append(fact.createConstant(new Integer(bitflags)));
             closureInstantiation.append(Utility.createInvoke(
                     getFactory(),
                     getWorld(),
@@ -2906,7 +3021,7 @@ public class BcelShadow extends Shadow {
                             UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
                             Modifier.PUBLIC,
                             "linkClosureAndJoinPoint",
-                            "()Lorg/aspectj/lang/ProceedingJoinPoint;"
+                            "(I)Lorg/aspectj/lang/ProceedingJoinPoint;"
                             )
             ));
         }
