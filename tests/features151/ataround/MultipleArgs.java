@@ -1,24 +1,25 @@
-
+import java.util.*;
 import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.*;
 
 @Aspect
-public class X {
+public class MultipleArgs {
 
 
-  @Before("call(* callone(..)) && !within(X) && args(a,b,c)") 
-  public void b1(ProceedingJoinPoint pjp,int a,String b,List c) {
+  @Around("call(* callone(..)) && !within((MultipleArgs)) && args(a,b,c)") 
+  public void a1(ProceedingJoinPoint pjp,int a,String b,List c) {
     System.err.println("advice running");
     pjp.proceed(new Object[]{a,b,c});
   }
 
-  @Before("call(* calltwo(..)) && !within(X) && args(a,b,c)") 
-  public void b1(ProceedingJoinPoint pjp,String b,List c,int a) {
+  @Around("call(* calltwo(..)) && !within((MultipleArgs)) && args(a,b,c)") 
+  public void a2(ProceedingJoinPoint pjp,String b,List c,int a) {
     System.err.println("advice running");
     pjp.proceed(new Object[]{a,b,c});
   }
 
-  @Before("call(* callone(..)) && !within(X) && args(a,b,c) && this(o)") 
-  public void b1(ProceedingJoinPoint pjp,int a,String b,List c,Object o) {
+  @Around("call(* callone(..)) && !within((MultipleArgs)) && args(a,b,c) && this(o)") 
+  public void a3(ProceedingJoinPoint pjp,int a,String b,List c,Object o) {
     System.err.println("advice running");
     pjp.proceed(new Object[]{o,a,b,c});
   }

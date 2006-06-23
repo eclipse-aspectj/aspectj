@@ -2,7 +2,7 @@ import org.aspectj.lang.*;
 import org.aspectj.lang.annotation.*;
 
 @Aspect
-public class ProceedAspect {
+public class BugCase2 {
 
   @Pointcut("execution(* setAge(..)) && args(i)")
   void setAge(int i) {}
@@ -12,10 +12,13 @@ public class ProceedAspect {
    System.err.println("advice running");
    return thisJoinPoint.proceed(new Object[]{i*2});
  }
+  public static void main(String []argv) {
+    Foo.main(argv);
+  }
 }
 
 
-public class Foo {
+ class Foo {
   int a;
   public void setAge(int i) {
      System.err.println("Setting age to "+i);

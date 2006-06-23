@@ -4,19 +4,41 @@ import org.aspectj.lang.annotation.*;
 
 @Aspect
 public class A7 {
-  M newM = new M("2");
+  N newN = new N();
 
   @Around("call(void M.method(String)) && args(p) && this(t)")
-  public void a( ProceedingJoinPoint pjp, M t,String p) throws Throwable {
+  public void a( ProceedingJoinPoint pjp, N t,String p) throws Throwable {
     System.err.println("advice from ataj aspect");
-    pjp.proceed(new Object[]{newM,"faked"});
+    pjp.proceed(new Object[]{newN,"faked"});
   }
 
   public static void main(String []argv) {
-    M.main(argv);
+    N.main(argv);
   }
 }
 
+class N {
+ public static void main( String[] args ) {
+   N n = new N();
+   n.methodCaller("real");
+ }
+
+
+ public void methodCaller(String param) {
+   M m = new M("1");
+   m.method(param);
+ }
+
+}
+
+
+class M {
+ String prefix;
+ public M(String prefix) { this.prefix = prefix; }
+ public void method(String s) { System.err.println(prefix+s); }
+}
+
+/*
 class M {
 
  String prefix;
@@ -35,3 +57,4 @@ class M {
  public void method(String s) { System.err.println(prefix+s); }
 
 }
+*/

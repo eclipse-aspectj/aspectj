@@ -12,11 +12,14 @@ public class BugCase1 {
          System.err.println("advice running");
          return thisJoinPoint.proceed(new Object[]{i*2}); 
        }
+  public static void main(String []argv) {
+    Foo.main(argv);
+  }
 
 }
 
 
-public class Foo {
+class Foo {
   int a;
   public void setAge(int i) {
      System.err.println("Setting age to "+i);

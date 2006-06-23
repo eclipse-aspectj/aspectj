@@ -10,7 +10,7 @@ public class A10 {
   @Around("call(void M.method(String)) && args(p) && this(t) && target(t2)")
   public void a( ProceedingJoinPoint pjp, M t,String p, M t2) throws Throwable {
     System.err.println("advice from ataj aspect");
-    pjp.proceed(new Object[]{newM2,"faked",newM3});
+    pjp.proceed(new Object[]{newM2,newM3,"faked"});
   }
 
   public static void main(String []argv) {

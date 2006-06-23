@@ -14,6 +14,16 @@
         </run>
     </ajc-test>
     
+    <ajc-test dir="features151/ataround" title="annotation style - basic - noinline">
+        <compile files="A1.java" options="-1.5 -XnoInline"/>
+        <run class="A1">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="faked"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
     <ajc-test dir="features151/ataround" title="annotation style - basic">
         <compile files="A1.java" options="-1.5"/>
         <run class="A1">
@@ -26,37 +36,8 @@
     
     
     
-   
-    
-     <ajc-test dir="features151/ataround" title="code style - forget to pass target">
-        <compile files="X2.java" options="-1.5">
-          <message kind="error" line="7" text="too few arguments to proceed, expected 2"/>
-        </compile>
-     </ajc-test>
-    
-     <ajc-test dir="features151/ataround" title="annotation style - forget to pass target">
-        <compile files="A2.java" options="-1.5">
-          <message kind="error" line="7" text="too few arguments to proceed, expected 2"/>
-        </compile>
-     </ajc-test>
- 
- 
-     <ajc-test dir="features151/ataround" title="code style - incorrect arg types">
-        <compile files="X3.java" options="-1.5">
-          <message kind="error" line="7" text="Type mismatch: cannot convert from String to M"/>
-          <message kind="error" line="7" text="Type mismatch: cannot convert from M to String"/>
-        </compile>
-     </ajc-test>
-    
-     <ajc-test dir="features151/ataround" title="annotation style - incorrect arg types">
-        <compile files="A3.java" options="-1.5">
-          <message kind="error" line="7" text="too few arguments to proceed, expected 2"/>
-        </compile>
-     </ajc-test>    
      
-     
-     
-     <ajc-test dir="features151/ataround" title="code style - correct usage, binding and passing new target for call">
+     <ajc-test dir="features151/ataround" title="code style - correct usage, binding and passing same target for call">
         <compile files="X4.java" options="-1.5"/>
         <run class="X4">
           <stderr>
@@ -66,7 +47,17 @@
         </run>
      </ajc-test>
     
-     <ajc-test dir="features151/ataround" title="annotation style - correct usage, binding and passing new target for call">
+     <ajc-test dir="features151/ataround" title="annotation style - correct usage, binding and passing same target for call - noinline">
+        <compile files="A4.java" options="-1.5 -XnoInline"/>
+        <run class="A4">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="1faked"/>
+          </stderr>
+        </run>
+     </ajc-test>   
+     
+     <ajc-test dir="features151/ataround" title="annotation style - correct usage, binding and passing same target for call">
         <compile files="A4.java" options="-1.5"/>
         <run class="A4">
           <stderr>
@@ -78,9 +69,10 @@
      
      
      
-     <ajc-test dir="features151/ataround" title="code style - changing target for call">
-        <compile files="X5.java" options="-1.5"/>
-        <run class="X5">
+     
+     <ajc-test dir="features151/ataround" title="code style - correct usage, binding and passing new target for call">
+        <compile files="X42.java" options="-1.5"/>
+        <run class="X42">
           <stderr>
              <line text="advice from code aspect"/>
              <line text="2faked"/>
@@ -88,9 +80,19 @@
         </run>
      </ajc-test>
     
-     <ajc-test dir="features151/ataround" title="annotation style - changing target for call">
-        <compile files="A5.java" options="-1.5"/>
-        <run class="A5">
+     <ajc-test dir="features151/ataround" title="annotation style - correct usage, binding and passing new target for call - noinline">
+        <compile files="A42.java" options="-1.5 -XnoInline"/>
+        <run class="A42">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="2faked"/>
+          </stderr>
+        </run>
+     </ajc-test>   
+     
+     <ajc-test dir="features151/ataround" title="annotation style - correct usage, binding and passing new target for call">
+        <compile files="A42.java" options="-1.5"/>
+        <run class="A42">
           <stderr>
              <line text="advice from ataj aspect"/>
              <line text="2faked"/>
@@ -100,25 +102,20 @@
      
      
      
-     <ajc-test dir="features151/ataround" title="code style - changing target for call - reverse order">
-        <compile files="X6.java" options="-1.5"/>
-        <run class="X6">
-          <stderr>
-             <line text="advice from code aspect"/>
-             <line text="2faked"/>
-          </stderr>
-        </run>
+     
+     
+     <ajc-test dir="features151/ataround" title="code style - forget to pass target">
+        <compile files="X2.java" options="-1.5">
+          <message kind="error" line="7" text="too few arguments to proceed, expected 2"/>
+        </compile>
      </ajc-test>
     
-     <ajc-test dir="features151/ataround" title="annotation style - changing target for call - reverse order">
-        <compile files="A6.java" options="-1.5"/>
-        <run class="A6">
-          <stderr>
-             <line text="advice from ataj aspect"/>
-             <line text="2faked"/>
-          </stderr>
-        </run>
-     </ajc-test>   
+     <ajc-test dir="features151/ataround" title="annotation style - forget to pass target">
+        <compile files="A2.java" options="-1.5">
+          <message kind="error" line="7" text="too few arguments to proceed, expected 2"/>
+        </compile>
+     </ajc-test>
+     
      
      
      
@@ -127,6 +124,16 @@
         <run class="X7">
           <stderr>
              <line text="advice from code aspect"/>
+             <line text="1faked"/>
+          </stderr>
+        </run>
+     </ajc-test>
+     
+     <ajc-test dir="features151/ataround" title="annotation style - bind this on call - change on proceed - no effect - noinline">
+        <compile files="A7.java" options="-1.5 -XnoInline"/>
+        <run class="A7">
+          <stderr>
+             <line text="advice from ataj aspect"/>
              <line text="1faked"/>
           </stderr>
         </run>
@@ -154,17 +161,44 @@
         </run>
      </ajc-test>
      
-     <ajc-test dir="features151/ataround" title="annotation style - bind this on execution - change on proceed - works">
-        <compile files="A8.java" options="-1.5"/>
+     <ajc-test dir="features151/ataround" title="annotation style - bind this on execution - change on proceed - works - noinline">
+        <compile files="A8.java" options="-1.5 -XnoInline"/>
         <run class="A8">
           <stderr>
-             <line text="advice from code aspect"/>
+             <line text="advice from ataj aspect"/>
              <line text="2faked"/>
           </stderr>
         </run>
      </ajc-test>
 
+     <ajc-test dir="features151/ataround" title="annotation style - bind this on execution - change on proceed - works">
+        <compile files="A8.java" options="-1.5"/>
+        <run class="A8">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="2faked"/>
+          </stderr>
+        </run>
+     </ajc-test>
+     
 
+
+ 
+     <ajc-test dir="features151/ataround" title="code style - incorrect arg types">
+        <compile files="X3.java" options="-1.5">
+          <message kind="error" line="7" text="Type mismatch: cannot convert from String to M"/>
+          <message kind="error" line="7" text="Type mismatch: cannot convert from M to String"/>
+        </compile>
+     </ajc-test>
+    
+     <ajc-test dir="features151/ataround" title="annotation style - incorrect arg types">
+        <compile files="A3.java" options="-1.5">
+          <message kind="error" line="7" text="too few arguments to proceed, expected 2"/>
+        </compile>
+     </ajc-test>    
+     
+     
+     
 
      <ajc-test dir="features151/ataround" title="code style - bind this and target on execution - change on proceed - works">
         <compile files="X9.java" options="-1.5"/>
@@ -176,17 +210,29 @@
         </run>
      </ajc-test>
      
+     <ajc-test dir="features151/ataround" title="annotation style - bind this and target on execution - change on proceed - works - noinline">
+        <compile files="A9.java" options="-1.5 -XnoInline"/>
+        <run class="A9">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="3faked"/>
+          </stderr>
+        </run>
+     </ajc-test> 
+     
      <ajc-test dir="features151/ataround" title="annotation style - bind this and target on execution - change on proceed - works">
         <compile files="A9.java" options="-1.5"/>
         <run class="A9">
           <stderr>
-             <line text="advice from code aspect"/>
+             <line text="advice from ataj aspect"/>
              <line text="3faked"/>
           </stderr>
         </run>
-     </ajc-test>
-
-
+     </ajc-test> 
+     
+     
+     
+     
 
      <ajc-test dir="features151/ataround" title="code style - bind this and target on call - change on proceed - works">
         <compile files="X10.java" options="-1.5"/>
@@ -198,15 +244,115 @@
         </run>
      </ajc-test>     
      
-     <ajc-test dir="features151/ataround" title="annotation style - bind this and target on call - change on proceed - works">
+     <ajc-test dir="features151/ataround" title="annotation style - bind this and target on call - change on proceed - works - noinline">
         <compile files="A10.java" options="-1.5"/>
         <run class="A10">
           <stderr>
-             <line text="advice from code aspect"/>
+             <line text="advice from ataj aspect"/>
              <line text="3faked"/>
           </stderr>
         </run>
      </ajc-test>     
+
+     <ajc-test dir="features151/ataround" title="annotation style - bind this and target on call - change on proceed - works">
+        <compile files="A10.java" options="-1.5"/>
+        <run class="A10">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="3faked"/>
+          </stderr>
+        </run>
+     </ajc-test>     
+     
+     
+     
+     
+     <ajc-test dir="features151/ataround" title="breaking it - one">
+        <compile files="Break1.java" options="-1.5"/>
+        <run class="Break1">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="1faked"/>
+          </stderr>
+        </run>
+     </ajc-test>     
+     
+     <ajc-test dir="features151/ataround" title="breaking it - two">
+        <compile files="Break2.java" options="-1.5"/>
+        <run class="Break2">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="1faked"/>
+          </stderr>
+        </run>
+     </ajc-test>     
+     
+     
+     <ajc-test dir="features151/ataround" title="bug case one">
+        <compile files="BugCase1.java" options="-1.5"/>
+        <run class="BugCase1">
+          <stderr>
+             <line text="advice running"/>
+             <line text="Setting age to 10"/>
+          </stderr>
+        </run>
+     </ajc-test>     
+    
+     <ajc-test dir="features151/ataround" title="bug case two">
+        <compile files="BugCase2.java" options="-1.5"/>
+        <run class="BugCase2">
+          <stderr>
+             <line text="advice running"/>
+             <line text="Setting age to 10"/>
+          </stderr>
+        </run>
+     </ajc-test>     
+     
+     
+     <ajc-test dir="features151/ataround" title="multiple args">
+        <compile files="MultipleArgs.java" options="-1.5"/>
+        <run class="MultipleArgs">
+          <stderr>
+             <line text="advice running"/>
+             <line text="advice running"/>
+             <line text="advice running"/>
+          </stderr>
+        </run>
+     </ajc-test>     
+    
+   
+     
+     
+     
+     
+     
+     <ajc-test dir="features151/ataround" title="code style - changing target for call - reverse order">
+        <compile files="X6.java" options="-1.5"/>
+        <run class="X6">
+          <stderr>
+             <line text="advice from code aspect"/>
+             <line text="2faked"/>
+          </stderr>
+        </run>
+     </ajc-test>
+    
+     <ajc-test dir="features151/ataround" title="annotation style - changing target for call - reverse order">
+        <compile files="A6.java" options="-1.5"/>
+        <run class="A6">
+          <stderr>
+             <line text="advice from ataj aspect"/>
+             <line text="2faked"/>
+          </stderr>
+        </run>
+     </ajc-test>   
+     
+     
+     
+     
+     
+
+
+
 
 
 

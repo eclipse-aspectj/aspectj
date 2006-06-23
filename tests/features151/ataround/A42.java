@@ -1,14 +1,15 @@
-// Simple - don't attempt to alter target for proceed, just change the arg
+// Bind the target and pass in the right order
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 
 @Aspect
-public class A1 {
+public class A42 {
+  M newM = new M("2");
 
-  @Around("call(void M.method(String)) && args(p)")
-  public void a( ProceedingJoinPoint pjp, String p) throws Throwable {
+  @Around("call(void M.method(String)) && args(p) && target(t)")
+  public void a( ProceedingJoinPoint pjp, M t, String p) throws Throwable {
     System.err.println("advice from ataj aspect");
-    pjp.proceed( new Object[] { "faked" } );
+    pjp.proceed(new Object[]{newM,"faked"});
   }
 
   public static void main(String []argv) {
@@ -23,9 +24,9 @@ class M {
   public M(String prefix) { this.prefix = prefix; }
 
   public static void main( String[] args ) {
-    M m = new M(">");
+    M m = new M("1");
     m.method("real");
   }
 
-  public void method(String s) { System.err.println(s); }
+  public void method(String s) { System.err.println(prefix+s); }
 }
