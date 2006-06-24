@@ -250,6 +250,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		addVersionAttributeIfNecessary(classFile);
 		
 		if (generateSyntheticPointcutMethod) {
+			this.binding.modifiers |= AccSynthetic;
 			super.generateCode(classScope,classFile);
 		}
 		return;

@@ -63,6 +63,7 @@ import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
@@ -86,6 +87,8 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
  */
 
 public final class LazyMethodGen {
+	private static final int ACC_SYNTHETIC    = 0x1000;
+	
     private        int             accessFlags;
     private  Type            returnType;
     private final String          name;
@@ -918,6 +921,8 @@ public final class LazyMethodGen {
     // ---- packing!
     
     public MethodGen pack() {
+    	forceSyntheticForAjcMagicMembers();
+    	
     	//killNops();
     	int flags = getAccessFlags();
     	if (enclosingClass.getWorld().isJoinpointSynchronizationEnabled()) {
@@ -957,9 +962,13 @@ public final class LazyMethodGen {
         }
         
         if (isSynthetic) {
-			ConstantPoolGen cpg = gen.getConstantPool();
-			int index = cpg.addUtf8("Synthetic");
-			gen.addAttribute(new Synthetic(index, 0, new byte[0], cpg.getConstantPool()));
+        	if (enclosingClass.getWorld().isInJava5Mode()) {
+        		gen.setModifiers(gen.getModifiers() | ACC_SYNTHETIC);
+        	}
+        	// belt and braces, do the attribute even on Java 5 in addition to the modifier flag
+   			ConstantPoolGen cpg = gen.getConstantPool();
+   			int index = cpg.addUtf8("Synthetic");
+   			gen.addAttribute(new Synthetic(index, 0, new byte[0], cpg.getConstantPool()));        		
         }
         
         if (hasBody()) {
@@ -972,7 +981,18 @@ public final class LazyMethodGen {
         return gen;
     }
     
-    public void makeSynthetic() {
+    private void forceSyntheticForAjcMagicMembers() {	
+		if (NameMangler.isSyntheticMethod(getName(), inAspect())) {
+			makeSynthetic();
+		}
+	}
+    
+    private boolean inAspect() {
+    	BcelObjectType objectType = enclosingClass.getBcelObjectType();
+    	return (objectType == null ? false : objectType.isAspect()); 
+    }
+
+	public void makeSynthetic() {
     	isSynthetic = true;
     }    	
         

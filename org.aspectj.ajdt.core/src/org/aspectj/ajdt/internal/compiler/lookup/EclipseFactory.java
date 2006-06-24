@@ -27,6 +27,7 @@ import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.org.eclipse.jdt.core.Flags;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
@@ -49,12 +50,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import org.aspectj.weaver.BoundedReferenceType;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ReferenceType;
@@ -734,6 +737,10 @@ public class EclipseFactory {
 				Constant.NotAConstant);
 		typeVariableToTypeBinding.clear();
 		currentType = null;
+		
+		if (member.getName().startsWith(NameMangler.PREFIX)) {
+			fb.modifiers |= Flags.AccSynthetic;
+		}
 		return fb;
 	}
 
@@ -815,6 +822,11 @@ public class EclipseFactory {
 		if (tvbs!=null) mb.typeVariables = tvbs;
 		typeVariableToTypeBinding.clear();
 		currentType = null;
+		
+		if (NameMangler.isSyntheticMethod(member.getName(), true)) {
+			mb.modifiers |= Flags.AccSynthetic;
+		}
+		
 		return mb;
 	}
 

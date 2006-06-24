@@ -103,6 +103,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testGenericAspectHierarchyWithBounds_pr147845() { runTest("Generic abstract aspect hierarchy with bounds"); }
   public void testJRockitBooleanReturn_pr148007() { runTest("jrockit boolean fun");}
   public void testJRockitBooleanReturn2_pr148007() { runTest("jrockit boolean fun (no aspects)");}
+  public void testSyntheticAjcMembers_pr147711() { runTest("synthetic ajc$ members"); }
   
   public void testDeclareAtMethodRelationship_pr143924() {
 	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);

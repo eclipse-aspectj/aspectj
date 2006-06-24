@@ -61,3 +61,5 @@ ajc$interField$...							field	ITD-field								yes
 ajc$interFieldGet$...						method  on target of ITD-field					yes
 ajc$interFieldSet$...						method  on target of ITD-field					yes
 ajc$interMethodDispatch2$...				method	on target of ITD-method				yes
+
+** note - also make sure that every ajc$ field we introduce in a woven type is marked as transient.

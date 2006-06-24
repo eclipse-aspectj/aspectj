@@ -37,6 +37,7 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.generic.BasicType;
@@ -79,6 +80,8 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
  * Things are slightly different if this represents an Aspect.
  */
 public final class LazyClassGen {
+	
+	private static final int ACC_SYNTHETIC    = 0x1000;
 	
 	int highestLineNumber = 0; // ---- JSR 45 info
 	
@@ -1230,8 +1233,44 @@ public final class LazyClassGen {
 
 	private void addField(Field field) {
 		myGen.addField(field);
+		makeSyntheticAndTransientIfNeeded(field);
 	}
 	
+	private void makeSyntheticAndTransientIfNeeded(Field field) {
+		if (field.getName().startsWith(NameMangler.PREFIX)) {
+			// it's an aj added field
+			// first do transient
+			if (!field.isStatic()) {
+				field.setModifiers(field.getModifiers() | Constants.ACC_TRANSIENT);
+			}
+			// then do synthetic
+			if (getWorld().isInJava5Mode()) {
+				// add the synthetic modifier flag
+				field.setModifiers(field.getModifiers() | ACC_SYNTHETIC);
+			}
+			if (!hasSyntheticAttribute(field.getAttributes())) {
+	       	  // belt and braces, do the attribute even on Java 5 in addition to the modifier flag
+			  Attribute[] oldAttrs = field.getAttributes();
+			  Attribute[] newAttrs = new Attribute[oldAttrs.length + 1];
+			  System.arraycopy(oldAttrs, 0, newAttrs, 0, oldAttrs.length);
+   			  ConstantPoolGen cpg = myGen.getConstantPool();
+   			  int index = cpg.addUtf8("Synthetic");
+   			  Attribute synthetic  = new Synthetic(index, 0, new byte[0], cpg.getConstantPool());
+   			  newAttrs[newAttrs.length - 1] = synthetic;
+   			  field.setAttributes(newAttrs);
+			}
+		}
+	}
+	
+	private boolean hasSyntheticAttribute(Attribute[] attributes) {
+		for (int i = 0; i < attributes.length; i++) {
+			if (attributes[i].getName().equals("Synthetic")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void replaceField(Field oldF, Field newF){
 		myGen.removeField(oldF);
 		myGen.addField(newF);

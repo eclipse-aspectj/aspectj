@@ -1,8 +1,8 @@
 public class HelloWorld extends java.lang.Object:
-  private static final org.aspectj.lang.JoinPoint$EnclosingStaticPart ajc$tjp_0
-  private static final org.aspectj.lang.JoinPoint$EnclosingStaticPart ajc$tjp_1
+  private static final org.aspectj.lang.JoinPoint$EnclosingStaticPart ajc$tjp_0 [Synthetic]
+  private static final org.aspectj.lang.JoinPoint$EnclosingStaticPart ajc$tjp_1 [Synthetic]
   public void <init>():
-                    ALOAD_0     // HelloWorld this   (line 5)
+                    ALOAD_0     // LHelloWorld; this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void HelloWorld.<init>())
     |               GETSTATIC HelloWorld.ajc$tjp_0 Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;

@@ -54,6 +54,31 @@ public class NameMangler {
 
 	public static final String INITFAILURECAUSE_FIELD_NAME = PREFIX + "initFailureCause";
 	
+	public static boolean isSyntheticMethod(String methodName, boolean declaredInAspect) {
+		if (methodName.startsWith(PREFIX)) {
+			// it's synthetic unless it is an advice method
+			if (methodName.startsWith("ajc$before") ||
+			    methodName.startsWith("ajc$after")) {
+				return false;
+			} else if (methodName.startsWith("ajc$around")) {
+				// around advice method is not synthetic, but generated proceed is...
+				return (methodName.endsWith("proceed"));
+			} else if (methodName.startsWith("ajc$interMethod$")) {
+				return false;  // body of an itd-m
+			}
+			return true;
+		}
+		else if (methodName.indexOf("_aroundBody") != -1) {
+			return true;
+		}
+		else if (declaredInAspect) {
+			if (methodName.equals("aspectOf") || methodName.equals("hasAspect")) {
+				return true;
+			}
+		} 
+		return false;
+	}
+	
 	public static String perObjectInterfaceGet(UnresolvedType aspectType) {
 		return makeName(aspectType.getNameAsIdentifier(), "perObjectGet");
 	}

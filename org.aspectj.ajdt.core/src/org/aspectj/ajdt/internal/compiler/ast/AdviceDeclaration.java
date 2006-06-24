@@ -22,6 +22,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
+import org.aspectj.org.eclipse.jdt.core.Flags;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -123,7 +124,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		if (kind == AdviceKind.Around) {
 			ReferenceBinding[] exceptions = 
 				new ReferenceBinding[] { upperScope.getJavaLangThrowable() };
-			proceedMethodBinding = new MethodBinding(Modifier.STATIC,
+			proceedMethodBinding = new MethodBinding(Modifier.STATIC | Flags.AccSynthetic,
 				"proceed".toCharArray(), binding.returnType,
 				resize(baseArgumentCount+1, binding.parameters),
 				exceptions, binding.declaringClass);

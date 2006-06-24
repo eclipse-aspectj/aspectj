@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
+import org.aspectj.org.eclipse.jdt.core.Flags;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
@@ -104,6 +105,7 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 	 * corresponding method as the anchor for the declared annotation
 	 */
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
+		this.binding.modifiers |= Flags.AccSynthetic;
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.DeclareAttribute(declareDecl)));
 		if (shouldDelegateCodeGeneration()) {
 			super.generateCode(classScope,classFile);
