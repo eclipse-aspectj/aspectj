@@ -803,7 +803,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			TypeDeclaration typeDecl = ((SourceTypeBinding)mbs[0].declaringClass).scope.referenceContext;
 			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
 			toAdd = methodDecl.annotations; // this is what to add
-			abits = toAdd[0].resolvedType.getAnnotationTagBits();
+			if (toAdd[0].resolvedType!=null) // pr148536
+			  abits = toAdd[0].resolvedType.getAnnotationTagBits();
 		}
 		
 		if (sourceType instanceof BinaryTypeBinding) {
