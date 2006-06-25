@@ -33,6 +33,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 
 
@@ -57,7 +58,13 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, ASTNode location) {
 		if (baseMethod.alwaysNeedsAccessMethod()) return baseMethod;
 		
-		ResolvedMember key = inAspect.factory.makeResolvedMember(baseMethod);
+		ResolvedMember key = null;
+		
+		if (baseMethod instanceof ParameterizedMethodBinding) {
+			key = inAspect.factory.makeResolvedMember(((ParameterizedMethodBinding)baseMethod).original());
+		} else {
+			key = inAspect.factory.makeResolvedMember(baseMethod);
+		}
 		if (accessors.containsKey(key)) return (MethodBinding)accessors.get(key);
 		
 		MethodBinding ret;
