@@ -102,6 +102,16 @@
      <compile files="GenericType.java" options="-1.5"/>
      <run class="GenericType"/>
     </ajc-test>
+    
+	<ajc-test dir="bugs152/pr148536" title="NPE for unknown annotation">
+     <compile files="Bug.java" options="-1.5">
+       <message kind="error" line="2" text="SomeAnnotation cannot be resolved to a type"/>
+     </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr148537" title="classcast annotation value">
+     <compile files="MyClass.java,MyAspect.java" options="-1.5"/>
+    </ajc-test>
 
 	<ajc-test dir="bugs152/pr145391" title="itd calling generic method - 2">
      <compile files="GenericType2.java" options="-1.5"/>
