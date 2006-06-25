@@ -112,6 +112,11 @@
 	<ajc-test dir="bugs152/pr148537" title="classcast annotation value">
      <compile files="MyClass.java,MyAspect.java" options="-1.5"/>
     </ajc-test>
+    
+	<ajc-test dir="bugs152/pr148545" title="nosuchmethoderror for privileged aspect">
+     <compile files="MyClass.java,MyAspect.java,MyAnnotation.java,MyEnum.java" options="-1.5"/>
+     <run class="MyClass"/>
+    </ajc-test>
 
 	<ajc-test dir="bugs152/pr145391" title="itd calling generic method - 2">
      <compile files="GenericType2.java" options="-1.5"/>
