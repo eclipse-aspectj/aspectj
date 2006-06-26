@@ -36,6 +36,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testAdviceNotWovenAspectPath_pr147841() { runTest("advice not woven on aspectpath");}
 //  public void testClassCastForInvalidAnnotationValue_pr148537() { runTest("classcast annotation value");}
   public void testPrivilegeGeneric_pr148545() { runTest("nosuchmethoderror for privileged aspect");}
+  public void testPrivilegeGeneric_pr148545_2() { runTest("nosuchmethoderror for privileged aspect - 2");}
   public void testUnknownAnnotationNPE() { runTest("NPE for unknown annotation");}
   public void testDuplicateBridgeMethods_pr147801_1() { runTest("duplicate bridge methods");}
   public void testPackageIgnoredForException_pr147701_1() { runTest("package for exception ignored");}

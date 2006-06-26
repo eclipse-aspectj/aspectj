@@ -114,8 +114,15 @@
     </ajc-test>
     
 	<ajc-test dir="bugs152/pr148545" title="nosuchmethoderror for privileged aspect">
-     <compile files="MyClass.java,MyAspect.java,MyAnnotation.java,MyEnum.java" options="-1.5"/>
-     <run class="MyClass"/>
+      <compile files="MyClass.java,MyAspect.java,MyAnnotation.java,MyEnum.java" options="-1.5"/>
+      <run class="MyClass"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr148545" title="nosuchmethoderror for privileged aspect - 2">
+      <compile files="MyClass.java,MyAspect2.java,MyAnnotation.java,MyEnum.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-execution(void MyClass.test())' in Type 'MyClass' (MyClass.java:8) advised by around advice from 'MyAspect2' (MyAspect2.java:5)"/>
+      </compile>
+      <run class="MyClass"/>
     </ajc-test>
 
 	<ajc-test dir="bugs152/pr145391" title="itd calling generic method - 2">
