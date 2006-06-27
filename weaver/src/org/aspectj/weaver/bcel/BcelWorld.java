@@ -479,11 +479,10 @@ public class BcelWorld extends World implements Repository {
 
 		if (i instanceof ANEWARRAY) {
 			ANEWARRAY arrayInstruction = (ANEWARRAY)i;
-			ObjectType ot = arrayInstruction.getLoadClassType(cpg);
+			Type ot = arrayInstruction.getType(cpg);
 			UnresolvedType ut = fromBcel(ot);
 			ut = UnresolvedType.makeArray(ut,1);
 			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[]{ResolvedType.INT});
-			
 		} else if (i instanceof MULTIANEWARRAY) {
 			MULTIANEWARRAY arrayInstruction = (MULTIANEWARRAY)i;
 			UnresolvedType ut = null;

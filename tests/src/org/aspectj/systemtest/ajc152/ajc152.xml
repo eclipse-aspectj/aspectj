@@ -783,4 +783,13 @@
         <compile files="TheWholeShow.aj" options="-1.5"/>
         <run class="TheWholeShow"/>
     </ajc-test>    
+    
+    <ajc-test dir="bugs152/pr148786" title="freaky new array joinpoint">
+        <compile files="A.java" options="-Xjoinpoints:arrayconstruction"/>
+        <run class="A">
+          <stderr>
+            <line text="new array: class [[B"/>
+          </stderr>
+        </run>
+    </ajc-test>    
 </suite>

@@ -35,6 +35,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testItdCallingGenericMethod_pr145391_2() { runTest("itd calling generic method - 2");}
 //  public void testAdviceNotWovenAspectPath_pr147841() { runTest("advice not woven on aspectpath");}
 //  public void testClassCastForInvalidAnnotationValue_pr148537() { runTest("classcast annotation value");}
+  public void testFreakyNewArrayJoinpoint_pr148786() { runTest("freaky new array joinpoint"); }
   public void testPrivilegeGeneric_pr148545() { runTest("nosuchmethoderror for privileged aspect");}
   public void testPrivilegeGeneric_pr148545_2() { runTest("nosuchmethoderror for privileged aspect - 2");}
   public void testUnknownAnnotationNPE() { runTest("NPE for unknown annotation");}
