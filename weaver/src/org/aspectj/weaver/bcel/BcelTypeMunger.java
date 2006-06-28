@@ -200,9 +200,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		    LazyMethodGen   subMethod = findMatchingMethod(newParentTarget, superMethod);
             if (subMethod!=null && !subMethod.isBridgeMethod()) { // FIXME asc is this safe for all bridge methods?
               if (!(subMethod.isSynthetic() && superMethod.isSynthetic())) {
-	              cont = enforceDecpRule3_visibilityChanges(weaver, newParent, superMethod, subMethod) && cont;
+            	if (!(subMethod.isStatic() && subMethod.getName().startsWith("access$"))) { // ignore generated accessors
+                  cont = enforceDecpRule3_visibilityChanges(weaver, newParent, superMethod, subMethod) && cont;
 	              cont = enforceDecpRule4_compatibleReturnTypes(weaver, superMethod, subMethod)        && cont;
 	              cont = enforceDecpRule5_cantChangeFromStaticToNonstatic(weaver,munger.getSourceLocation(),superMethod,subMethod) && cont;
+                }
               }
             }                
           }
@@ -331,6 +333,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         boolean cont = true;
         String superReturnTypeSig = superMethod.getReturnType().getSignature();
           String subReturnTypeSig   = subMethod.getReturnType().getSignature();
+          superReturnTypeSig = superReturnTypeSig.replace('.','/');
+          subReturnTypeSig = subReturnTypeSig.replace('.','/');
           if (!superReturnTypeSig.equals(subReturnTypeSig)) {
             // Allow for covariance - wish I could test this (need Java5...)
             ResolvedType subType   = weaver.getWorld().resolve(subMethod.getReturnType());
@@ -340,6 +344,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                 weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
                         "The return type is incompatible with "+superMethod.getDeclaringType()+"."+superMethod.getName()+superMethod.getParameterSignature(),
                         subMethod.getSourceLocation()));
+// this just might be a better error message...                      
+//                        "The return type '"+subReturnTypeSig+"' is incompatible with the overridden method "+superMethod.getDeclaringType()+"."+
+//                        superMethod.getName()+superMethod.getParameterSignature()+" which returns '"+superReturnTypeSig+"'",
                  cont=false;
             }
           }

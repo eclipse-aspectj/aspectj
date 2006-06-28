@@ -29,15 +29,24 @@ import org.aspectj.weaver.World;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+//	public void testCovarianceAndDecp_pr128443_1() { runTest("covariance and decp - 1"); }
+//  public void testSuperITDExplosion_pr134425() { runTest("super ITDs");}
+//  public void testMisbehavingDeclareAnnotation_pr135865() { runTest("misbehaving declare annotation");}
+//  public void testMisbehavingDeclareAnnotation_pr135865_2() { runTest("misbehaving declare annotation - 2");}
 //  public void testverifyErrNoTypeCflowField_pr145693() {runTest("verifyErrNoTypeCflowField");}
 //  public void testBrokenIfArgsCflowAtAj_pr145018() { runTest("ataj crashing with cflow, if and args");}
 //  public void testItdCallingGenericMethod_pr145391() { runTest("itd calling generic method");}
 //  public void testItdCallingGenericMethod_pr145391_2() { runTest("itd calling generic method - 2");}
 //  public void testAdviceNotWovenAspectPath_pr147841() { runTest("advice not woven on aspectpath");}
 //  public void testClassCastForInvalidAnnotationValue_pr148537() { runTest("classcast annotation value");}
+	
+	
+  // tests added post 152rc1 and before final
   public void testSeparateCallAspectOf_pr148727() { runTest("separate compilation calling aspectOf and hasAspect"); }
   public void testIntegratedCallAspectOf_pr148727() { runTest("integrated compilation calling aspectOf and hasAspect"); }
   public void testFreakyNewArrayJoinpoint_pr148786() { runTest("freaky new array joinpoint"); }
+
+  // tests adding during 152 development
   public void testPrivilegeGeneric_pr148545() { runTest("nosuchmethoderror for privileged aspect");}
   public void testPrivilegeGeneric_pr148545_2() { runTest("nosuchmethoderror for privileged aspect - 2");}
   public void testUnknownAnnotationNPE() { runTest("NPE for unknown annotation");}
@@ -69,12 +78,8 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testItdOnInnerTypeOfGenericType_pr132349() { runTest("ITD on inner type of generic type");}
   public void testItdOnInnerTypeOfGenericType_pr132349_2() { runTest("ITD on inner type of generic type - 2");}
   public void testItdOnInnerTypeOfGenericType_pr132349_3() { runTest("ITD on inner type of generic type - 3");}
-//  public void testCovarianceAndDecp_pr128443_1() { runTest("covariance and decp - 1"); }
   public void testLTWGeneratedAspectAbstractMethod_pr125480() { runTest("aop.xml aspect inheriting abstract method ");} 
   public void testLTWGeneratedAspectAbstractMethod_pr125480_2() { runTest("aop.xml aspect inheriting abstract method - code style");} 
-  //public void testSuperITDExplosion_pr134425() { runTest("super ITDs");}
-  //public void testMisbehavingDeclareAnnotation_pr135865() { runTest("misbehaving declare annotation");}
-  //public void testMisbehavingDeclareAnnotation_pr135865_2() { runTest("misbehaving declare annotation - 2");}
   public void testCompletelyBrokenAopConcretization_pr142165_1() { runTest("broken concretization");}
   public void testCompletelyBrokenAopConcretization_pr142165_2() { runTest("broken concretization - 2");}
   public void testCompletelyBrokenAopConcretization_pr142165_3() { runTest("broken concretization - 3");}
@@ -99,7 +104,6 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAspectLibrariesAndASM_pr135001() { runTest("aspect libraries and asm");}
   public void testStackOverflow_pr136258() { runTest("stack overflow");}
   public void testIncorrectOverridesEvaluation13() { runTest("incorrect overrides evaluation - 1.3"); }
-//  public void testIncorrectOverridesEvaluation14() { runTest("incorrect overrides evaluation - 1.4"); }
   public void testIncorrectOverridesEvaluation15() { runTest("incorrect overrides evaluation - 1.5"); }
   public void testAtWithinCodeBug_pr138798() { runTest("atWithinCodeBug"); }
   public void testReferencePCutInDeclareWarning_pr138215() { runTest("Reference pointcut fails inside @DeclareWarning");}
