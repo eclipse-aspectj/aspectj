@@ -305,7 +305,7 @@ public class AsmElementFormatter {
 				//String argType = "<UnknownType>"; // pr135052
 				if (acceptArgument(argName, argArray[i].type.toString())) {
 					TypeReference typeR = argArray[i].type;
-					if (typeR!=null) {
+					if (typeR!=null && md.scope!=null) {
 						TypeBinding typeB = typeR.resolvedType;
 						if (typeB==null) {
 							typeB = typeR.resolveType(md.scope);
