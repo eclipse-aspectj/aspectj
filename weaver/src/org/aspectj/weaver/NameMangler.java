@@ -71,11 +71,12 @@ public class NameMangler {
 		else if (methodName.indexOf("_aroundBody") != -1) {
 			return true;
 		}
-		else if (declaredInAspect) {
-			if (methodName.equals("aspectOf") || methodName.equals("hasAspect")) {
-				return true;
-			}
-		} 
+// these aren't the droids you're looking for...move along...... pr148727
+//		else if (declaredInAspect) {
+//			if (methodName.equals("aspectOf") || methodName.equals("hasAspect")) {
+//				return true;
+//			}
+//		} 
 		return false;
 	}
 	

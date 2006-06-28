@@ -381,6 +381,16 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs152/binaryDecp" title="incorrect overrides evaluation - 1.4">
+      <compile files="IsItSynthetic.java" options="-1.5"/>
+      <compile files="Top.java" options="-source 1.5 -target 1.5" outjar="a.jar"/>
+      <compile files="Bottom.java" classpath="$sandbox/a.jar" options="-source 1.4 -target 1.4" outjar="b.jar"/>
+      <compile files="Middle.java" classpath="$sandbox/a.jar" options="-source 1.4 -target 1.4" outjar="c.jar"/>
+      <compile files="X2.aj" classpath="$sandbox/a.jar;$sandbox/b.jar;$sandbox/c.jar" options="-Xlint:ignore" outjar="x.jar"/>
+      <run class="Bottom" classpath="a.jar;b.jar;c.jar;x.jar" ltw="aop.xml"/>
+        <!--message kind="weave" text="Setting superclass of type 'Bottom' (Bottom.java) to 'Middle' (X2.aj)"/-->
+    </ajc-test>
+    
     <ajc-test dir="bugs152/binaryDecp" title="incorrect overrides evaluation - 1.5">
       <compile files="SubClassLoader.java,SubSubClassLoader.java" options="-1.5" outjar="lib.jar"/>
       <compile files="X.aj" inpath="lib.jar" options="-showWeaveInfo">
@@ -792,4 +802,25 @@
           </stderr>
         </run>
     </ajc-test>    
+    
+    <ajc-test dir="bugs152/pr148727"  pr="148727"
+		title="integrated compilation calling aspectOf and hasAspect"  >
+	    <compile files="Asp.aj, Client.java" options="-source 1.4"/>
+        <run class="Client">
+          <stdout>
+            <line text="Can call aspectOf? Asp@"/>
+          </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr148727"  pr="148727"
+		title="separate compilation calling aspectOf and hasAspect"  >
+	    <compile files="Asp.aj" outjar="asp.jar"/>
+	    <compile files="Client.java" classpath="asp.jar" options="-source 1.4"/>
+        <run class="Client">
+          <stdout>
+            <line text="Can call aspectOf? Asp@"/>
+          </stdout>
+        </run>
+    </ajc-test>
 </suite>

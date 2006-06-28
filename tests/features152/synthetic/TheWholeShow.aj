@@ -58,6 +58,7 @@ public class TheWholeShow {
     for (Method m : ms) {
       if (!m.isSynthetic()) {
         String name = m.getName();
+        if (name.equals("aspectOf") || name.equals("hasAspect")) continue;
         if ( ! (name.startsWith("ajc$before") || name.startsWith("ajc$after") || name.startsWith("ajc$around")  ||
              name.startsWith("ajc$interMethod$"))) {
           System.err.println("Found non-synthetic method: " + m.getName() + " in " + c.getName());
