@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.3 Tests -->
+<suite>
+
+    <ajc-test dir="bugs153/pr148381" title="argNames and javac">
+      <!--compile files="C.java" options="-1.5"/>
+      <compile files="A.java" options="-1.5"/-->
+      <compile files="Main.java,Monitor.java" options="-1.5" outjar="foo.jar" classpath="code.jar"/>
+      <run class="test.Main" classpath="$sandbox/code.jar" ltw="aop.xml">
+        <stderr>
+          <line text="goo"/>
+ 	    </stderr>
+      </run>
+    </ajc-test>
+    
+</suite>
