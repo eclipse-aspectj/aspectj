@@ -48,6 +48,16 @@ public class CharOperation {
 	/**
 	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
 	 */	
+	public static final boolean contains(char character, char[] array) {
+		for (int i = array.length; --i >= 0;)
+			if (array[i] == character)
+				return true;
+		return false;
+	}
+
+	/**
+	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
+	 */	
 	public static final int indexOf(char toBeFound, char[] array) {
 		for (int i = 0; i < array.length; i++)
 			if (toBeFound == array[i])
