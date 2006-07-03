@@ -924,8 +924,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	private static Annotation createAnnotationFromBcelAnnotation(AnnotationX annX,int pos, EclipseFactory factory) {
 		String name = annX.getTypeName();
 		TypeBinding tb = factory.makeTypeBinding(annX.getSignature());
-		char[][] typeName = CharOperation.splitOn('.',name.toCharArray());
-		long[] positions = new long[] {pos};
+		String theName = annX.getSignature().getBaseName();
+		char[][] typeName = CharOperation.splitOn('.',name.replace('$','.').toCharArray()); //pr149293 - not bulletproof...
+		long[] positions = new long[typeName.length];
+		for (int i = 0; i < positions.length; i++) positions[i]=pos;
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
 		ann.resolvedType=tb; // yuck - is this OK in all cases?
