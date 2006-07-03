@@ -88,4 +88,14 @@ public class FullPathHandleProvider implements IElementHandleProvider {
 		ipe.setHandleIdentifier(handle);
 		return handle;
 	}
+
+	public boolean dependsOnLocation() {
+		// handles contain information from the source location therefore 
+		// return true;
+		return true;
+	}
+
+	public void initialize() {
+		// nothing to initialize...
+	}
 }
