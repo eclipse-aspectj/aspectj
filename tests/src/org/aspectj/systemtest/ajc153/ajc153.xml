@@ -14,4 +14,10 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr148737" title="illegalstateexception for non generic type">
+      <compile files="A.java" options="-source 5 -target 5">
+        <message kind="warning" line="18" text="advice defined in TestAspect has not been applied"/>
+      </compile>
+    </ajc-test>
+    
 </suite>

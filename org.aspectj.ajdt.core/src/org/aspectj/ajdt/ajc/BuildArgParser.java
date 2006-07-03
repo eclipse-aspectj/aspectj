@@ -665,7 +665,7 @@ public class BuildArgParser extends Main {
             } else if (arg.equals("-source")) {
             	if (args.size() > nextArgIndex) {
             		String level = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
-            		if (level.equals("1.5")){
+            		if (level.equals("1.5") || level.equals("5")) {
             			buildConfig.setBehaveInJava5Way(true);
             		}
             		unparsedArgs.add("-source");

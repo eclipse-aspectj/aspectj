@@ -20,6 +20,8 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   // public void testArgnamesAndJavac_pr148381() { runTest("argNames and javac");}
 
+  public void testIllegalStateException_pr148737() { runTest("illegalstateexception for non generic type");}
+
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);
