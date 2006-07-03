@@ -21,6 +21,10 @@ public class NameConvertor {
 	private static final char LONG		= 'J';
 	private static final char SHORT		= 'S';
 	private static final char ARRAY		= '[';
+	private static final char RESOLVED = 'L';
+	private static final char UNRESOLVED = 'Q';
+	
+	public static final char PARAMETERIZED = 'P';
 	
 	private static final char[] BOOLEAN_NAME = new char[]{'b','o','o','l','e','a','n'};
 	private static final char[] BYTE_NAME = new char[]{'b','y','t','e'};
@@ -35,6 +39,8 @@ public class NameConvertor {
 	private static final char[] GREATER_THAN = new char[]{'>'};
 	private static final char[] LESS_THAN = new char[]{'<'};
 	private static final char[] COMMA = new char[]{','};
+	private static final char[] BACKSLASH_LESSTHAN = new char[]{'\\','<'};
+	private static final char[] SEMICOLON = new char[]{';'};
 	
 	
 	/**
@@ -135,5 +141,73 @@ public class NameConvertor {
 		}
 	}
 	
+	/**
+	 * Given 'Ppkg/MyGenericClass<Ljava/lang/String;Ljava/lang/Integer;>;'
+	 * will return 'QMyGenericClass<QString;QInteger;>;'
+	 */
+	public static char[] createShortName(char[] c) {
+		int lt = CharOperation.indexOf('<',c);
+		int sc = CharOperation.indexOf(';',c);
+		int gt = CharOperation.indexOf('>',c);
+		
+		int smallest = 0;
+		if (lt == -1 && sc == -1 && gt == -1) {
+			// we have something like 'Ljava/lang/String' or 'I'
+			return getTypeName(c);
+		} else if (lt != -1 && (sc == -1 || lt <= sc) && (gt == -1 || lt <= gt)) {
+			// we have something like 'Ljava/lang/String<I'
+			smallest = lt;
+		} else if (sc != -1 && (lt == -1 || sc <= lt) && (gt == -1 || sc <= gt)) {
+			// we have something like 'Ljava/lang/String;I'
+			smallest = sc;
+		} else {
+			// we have something like '>;'
+			smallest = gt;
+		}
+		char[] first = CharOperation.subarray(c,0,smallest);
+		char[] second = CharOperation.subarray(c,smallest+1,c.length);
+		if (smallest == 0 && first.length == 0 && c[0] == '>') {
+			// c = {'>',';'} therefore we just want to return c to
+			// close the generic signature
+			return c;
+		} else if (first.length == 1 && second.length == 0) {
+			return first;
+		} else if (second.length == 0 || (second.length == 1 && second[0] == ';')){
+			// we've reached the end of the array, therefore only care about
+			// the first part
+			return createShortName(first);
+		} else if (smallest == lt) {
+			// if c = 'Ljava/lang/String;<I' then first = 'Ljava/Lang/String;' and
+			// second = 'I'. Want to end up with 'LString<I' and so add
+			// the '<' back.
+			char[] inclLT = CharOperation.concat(createShortName(first),BACKSLASH_LESSTHAN);
+			return CharOperation.concat(inclLT,createShortName(second));
+		} else if (smallest == gt) {
+			char[] inclLT = CharOperation.concat(createShortName(first),GREATER_THAN);
+			return CharOperation.concat(inclLT,createShortName(second));			
+		} else {
+			// if c = 'Ljava/lang/Sting;LMyClass;' then first = 'Ljava/lang/String'
+			// and second = 'LMyClass;'. Want to end up with 'QString;QMyClass;
+			// so add the ';' back
+			char[] firstTypeParam = CharOperation.concat(createShortName(first),SEMICOLON);
+			return CharOperation.concat(firstTypeParam,createShortName(second));
+		}
+	}
 
+	/**
+	 * Given 'Qjava/lang/String;' returns 'QString;'
+	 */
+	public static char[] getTypeName(char[] name) {
+		int i = CharOperation.lastIndexOf('/',name);
+		if (i != -1) {
+			if (name[0] == RESOLVED || name[0] == PARAMETERIZED) {
+				return CharOperation.concat(new char[]{UNRESOLVED},
+						CharOperation.subarray(name,i+1,name.length));
+			} else {
+				return CharOperation.concat(new char[]{name[0]},
+						CharOperation.subarray(name,i+1,name.length));
+			}
+		}
+		return name;
+	}
 }
