@@ -54,6 +54,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
+import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.CodeException;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
@@ -79,6 +80,7 @@ import org.aspectj.apache.bcel.classfile.LineNumber;
 import org.aspectj.apache.bcel.classfile.LineNumberTable;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTypeTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Node;
 import org.aspectj.apache.bcel.classfile.Signature;
@@ -87,6 +89,10 @@ import org.aspectj.apache.bcel.classfile.StackMap;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.Visitor;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
 import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
 
 /**
@@ -101,7 +107,7 @@ import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
  * Note that this class also serves as a placeholder for more sophisticated message
  * handling in future versions of JustIce.
  * 
- * @version $Id: StringRepresentation.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: StringRepresentation.java,v 1.4 2006/07/04 16:57:42 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class StringRepresentation extends org.aspectj.apache.bcel.classfile.EmptyVisitor implements Visitor{
@@ -243,13 +249,21 @@ public class StringRepresentation extends org.aspectj.apache.bcel.classfile.Empt
 	public void visitSourceFile(SourceFile obj){
 		tostring = toString(obj);
 	} 
-  public void visitStackMap(StackMap obj){
-    tostring = toString(obj);
-  }
+    public void visitStackMap(StackMap obj){
+      tostring = toString(obj);
+    }
 	public void visitSynthetic(Synthetic obj){
 		tostring = toString(obj);
 	} 
 	public void visitUnknown(Unknown obj){
 		tostring = toString(obj);
 	}
+
+	public void visitRuntimeVisibleAnnotations(RuntimeVisibleAnnotations obj) {tostring = toString(obj);}
+	public void visitRuntimeInvisibleAnnotations(RuntimeInvisibleAnnotations obj)  {tostring = toString(obj);}
+	public void visitRuntimeVisibleParameterAnnotations(RuntimeVisibleParameterAnnotations obj) {tostring = toString(obj);}
+	public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisibleParameterAnnotations obj) {tostring = toString(obj);}
+	public void visitAnnotationDefault(AnnotationDefault obj) {tostring = toString(obj);}
+	public void visitLocalVariableTypeTable(LocalVariableTypeTable obj)    {tostring = toString(obj);}
+	
 }
