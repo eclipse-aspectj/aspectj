@@ -1,0 +1,10 @@
+<aspectj>
+  <weaver>
+    <dump within="*"/>
+  </weaver>
+  <aspects>
+    <concrete-aspect name="TestTracing" extends="SimpleTracing">
+      <pointcut name="scope" expression="within(TestMain)"/>
+    </concrete-aspect>
+  </aspects>
+</aspectj>

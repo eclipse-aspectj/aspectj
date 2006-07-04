@@ -19,5 +19,28 @@
         <message kind="warning" line="18" text="advice defined in TestAspect has not been applied"/>
       </compile>
     </ajc-test>
+         
+    <ajc-test dir="bugs153/pr149096" title="cflow xml concrete aspect">
+		<compile files="SimpleTracing.aj" outjar="out.jar"/>
+		<compile files="TestMain.aj"/>
+		<run class="TestMain" ltw="aop-pr149096.xml"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr149305/case1" title="ataj inheritance - 1">
+		<compile files="AbstractOzonator.java,IdentityOzonator.java,User.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr149305/case2" title="ataj inheritance - 2">
+		<compile files="com/codesrc/ozonator/identity/IdentityOzonator.java,com/codesrc/ozonator/identity/User.java,com/codesrc/ozonator/AbstractOzonator.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr149305/case2" title="ataj inheritance - 3">
+		<compile files="com/codesrc/ozonator/AbstractOzonator.java,com/codesrc/ozonator/identity/IdentityOzonator.java,com/codesrc/ozonator/identity/User.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr148693" title="verification problem">
+		<compile files="MyAspect.java" options="-1.5 -XterminateAfterCompilation=true"/>
+    </ajc-test>
+    
     
 </suite>
