@@ -237,8 +237,11 @@ public class CrosscuttingMembers {
 			PointcutRewriter pr = new PointcutRewriter();
 			for (Iterator iter = otherShadowMungers.iterator(); iter.hasNext();) {
 				ShadowMunger munger = (ShadowMunger) iter.next();
-				Pointcut p = munger.getPointcut();
-				Pointcut newP = pr.rewrite(p);
+				Pointcut p          = munger.getPointcut();
+				Pointcut newP       = pr.rewrite(p);
+				if (p.m_ignoreUnboundBindingForNames.length!=0) {// *sigh* dirty fix for dirty hacky implementation pr149305
+					newP.m_ignoreUnboundBindingForNames = p.m_ignoreUnboundBindingForNames;
+				}
 				munger.setPointcut(newP);
 			}
 			if (!theseShadowMungers.equals(otherShadowMungers)) {
