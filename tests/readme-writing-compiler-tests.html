@@ -531,16 +531,16 @@ java -Djavarun.fork=true \
 
 <p>As a special case of forking, load-time weaving sets up
 	a Java 1.4 or later VM using our weaving class loader,
-	if you specify the <code>aspectpath</code> attribute to
+	if you specify the <code>ltw</code> attribute to
 	<code>run</code>.
 	In the following example, the main class and the aspect
 	are compiled separately.  The main class is then woven
-	and run using load-time weaving.</p>
+	and run using the aop.xml file specified in the <code>ltw</code> attribute.</p>
 <pre>
     &lt;ajc-test dir="new" title="show LTW">
         &lt;compile files="Aspect.java" outjar="out.jar"/>
         &lt;compile files="Main.java"/>
-        &lt;run class="Main" aspectpath="out.jar"/> 
+        &lt;run class="Main" ltw="aop-test.xml"/> 
     &lt;/ajc-test>
 </pre>
 	
@@ -669,7 +669,7 @@ For more information, see the API documentation for the harness
      </li>
 </ul>
 <hr/>
-<small>last updated March 8, 2004 </small> <!-- CVS variable -->
+<small>last updated June 30, 2006 </small> <!-- CVS variable -->
 
 </body>
 </html>
