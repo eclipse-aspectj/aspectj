@@ -180,10 +180,14 @@
               <!-- Do not weave types within the "bar" pakage -->
               <exclude within="bar.*"/>
 
-              <!-- Dump all types within the "somepack" package,
-                   both before are after they are woven,
+              <!-- Dump all types within the "com.foo.bar" package
                    to the "./_ajdump" folder on disk (for diagnostic purposes) -->
-              <dump within="somepack.*" />
+              <dump within="com.foo.bar.*"/>
+
+              <!-- Dump all types within the "com.foo.bar" package and sub-packages,
+                   both before are after they are woven,
+                   which can be used for byte-code generated at runtime
+              <dump within="com.foo.bar..*" beforeandafter="true"/> 
             </weaver>
 
           </aspectj>
@@ -191,9 +195,9 @@
 		  ]]></programlisting>
           
             <para>
-                An aop.xml file contains two key sections: "aspects" defines one
+                An aop.xml file contains two key sections: <literal>aspects</literal> defines one
                 or more aspects to the weaver and controls which aspects are to be
-                used in the weaving process; "weaver" defines weaver options and which
+                used in the weaving process; <literal>weaver</literal> defines weaver options and which
                 types should be woven.
             </para>
             
@@ -202,7 +206,7 @@
                 specify the fully-qualified name of the aspect type in an aspect element. 
                 You can also
                 declare (and define to the weaver) aspects inline in the aop.xml file.
-                This is done using the "concrete-aspect" element. A concrete-aspect
+                This is done using the <literal>concrete-aspect</literal> element. A concrete-aspect
                 declaration must provide a pointcut definition for every abstract 
                 pointcut in the abstract aspect it extends. This mechanism is a 
                 useful way of externalizing configuration for infrastructure and
@@ -231,9 +235,11 @@
             </para>
             
             <para>
-                The weaver element is used to pass options to the weaver and to specify
+                The <literal>weaver</literal> element is used to pass options to the weaver and to specify
                 the set of types that should be woven. If no include elements are specified
-                then all types visible to the weaver will be woven.
+                then all types visible to the weaver will be woven. In addition the <literal>dump</literal>
+                element can be used capture on disk byte-code of woven classes for diagnostic purposes both before,
+                in the case of those generated at runtime, and after the weaving process.
             </para>
           
           
