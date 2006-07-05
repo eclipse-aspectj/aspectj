@@ -434,7 +434,12 @@ public class AspectDeclaration extends TypeDeclaration {
 		gen.generate(codeStream);
 		// body ends here
 		if (codeStream.pcToSourceMapSize==0) codeStream.recordPositionsFrom(0,1);
+		boolean b = codeStream.generateLocalVariableTableAttributes; // pr148693
+		if (codeStream.maxLocals==0) 
+		  codeStream.generateLocalVariableTableAttributes=false;
 		classFile.completeCodeAttribute(codeAttributeOffset);
+		codeStream.generateLocalVariableTableAttributes=b;
+		
 		attributeNumber++;
 		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
 	}		
