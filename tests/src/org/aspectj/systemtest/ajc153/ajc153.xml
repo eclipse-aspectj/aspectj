@@ -43,7 +43,9 @@
     </ajc-test>
     
     <ajc-test dir="bugs153/pr148537" title="incorrect annotation value">
-		<compile files="MyClass.java" options="-1.5"/>
+		<compile files="MyClass.java" options="-1.5">
+		  <message kind="error" line="5" text="Type mismatch: cannot convert from RetentionPolicy[] to RetentionPolicy"/>
+		</compile>
     </ajc-test>
     
     

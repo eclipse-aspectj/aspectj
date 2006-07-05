@@ -29,7 +29,7 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	runTest("verification problem");   // build the code
 	Utils.verifyClass(ajc,"mypackage.MyAspect"); // verify it <<< BRAND NEW VERIFY UTILITY FOR EVERYONE TO TRY ;)
   }
- // public void testIncorrectAnnotationValue_pr148537() { runTest("incorrect annotation value");}
+  public void testIncorrectAnnotationValue_pr148537() { runTest("incorrect annotation value");}
 
   
   /////////////////////////////////////////
