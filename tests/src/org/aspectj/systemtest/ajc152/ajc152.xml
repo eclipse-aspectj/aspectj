@@ -91,12 +91,7 @@
       </run>
     </ajc-test>    
     
-    <ajc-test dir="bugs152/pr145693" title="verifyErrNoTypeCflowField">
-      <compile files="Event.java" outjar="cpath.jar"/>
-      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar"/>
-      <compile files="Sample.java" options="-Xlint:ignore" aspectpath="apath.jar" outjar="run.jar"/>
-      <run class="Sample" classpath="run.jar,apath.jar"/>
-    </ajc-test>    
+
 
 	<ajc-test dir="bugs152/pr145391" title="itd calling generic method">
      <compile files="GenericType.java" options="-1.5"/>

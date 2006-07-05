@@ -7,6 +7,7 @@ public aspect Monitor {
     before(Event event): 
     		set(* currentView) && 
     		inHandleEvent(event) {
+System.err.println("advice running");
 	}
     
 }

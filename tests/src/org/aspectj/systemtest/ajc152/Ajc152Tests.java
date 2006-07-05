@@ -33,7 +33,6 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testSuperITDExplosion_pr134425() { runTest("super ITDs");}
 //  public void testMisbehavingDeclareAnnotation_pr135865() { runTest("misbehaving declare annotation");}
 //  public void testMisbehavingDeclareAnnotation_pr135865_2() { runTest("misbehaving declare annotation - 2");}
-//  public void testverifyErrNoTypeCflowField_pr145693() {runTest("verifyErrNoTypeCflowField");}
 //  public void testBrokenIfArgsCflowAtAj_pr145018() { runTest("ataj crashing with cflow, if and args");}
 //  public void testItdCallingGenericMethod_pr145391() { runTest("itd calling generic method");}
 //  public void testItdCallingGenericMethod_pr145391_2() { runTest("itd calling generic method - 2");}
