@@ -42,5 +42,9 @@
 		<compile files="MyAspect.java" options="-1.5 -XterminateAfterCompilation=true"/>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr148537" title="incorrect annotation value">
+		<compile files="MyClass.java" options="-1.5"/>
+    </ajc-test>
+    
     
 </suite>
