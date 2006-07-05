@@ -29,7 +29,10 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	runTest("verification problem");   // build the code
 	Utils.verifyClass(ajc,"mypackage.MyAspect"); // verify it <<< BRAND NEW VERIFY UTILITY FOR EVERYONE TO TRY ;)
   }
-  public void testIncorrectAnnotationValue_pr148537() { runTest("incorrect annotation value");}
+  public void testIncorrectAnnotationValue_pr148537()    { runTest("incorrect annotation value");}
+  public void testVerifyErrNoTypeCflowField_pr145693_1() {	runTest("verifyErrNoTypeCflowField"); }
+//  public void testVerifyErrInpathNoTypeCflowField_pr145693_2() { runTest("verifyErrInpathNoTypeCflowField"); }
+//  public void testCpathNoTypeCflowField_pr145693_3()     { runTest("cpathNoTypeCflowField"); }
 
   
   /////////////////////////////////////////
@@ -40,5 +43,6 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return new File("../tests/src/org/aspectj/systemtest/ajc153/ajc153.xml");
   }
+
   
 }

@@ -48,5 +48,31 @@
 		</compile>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr145693" title="verifyErrNoTypeCflowField">
+      <compile files="Event.java" outjar="cpath.jar"/>
+      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar"/>
+      <compile files="Sample.java" options="-Xlint:ignore" aspectpath="apath.jar" outjar="run.jar">
+        <message kind="warning" line="8" text="Unable to determine match at this join point because the type 'Event' cannot be found"/>
+      </compile>
+      <run class="Sample" classpath="run.jar,apath.jar">
+        <stderr>
+          <line text="method running"/>
+        </stderr>
+      </run>
+    </ajc-test>    
+
+    <ajc-test dir="bugs153/pr145693" title="verifyErrInpathNoTypeCflowField">
+      <compile files="Event.java" outjar="cpath.jar"/>
+      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar"/>
+      <compile files="Sample.java" options="-Xlint:ignore" inpath="cpath.jar" aspectpath="apath.jar" outjar="run.jar"/>
+      <run class="Sample" classpath="run.jar,apath.jar"/>
+    </ajc-test>    
+
+    <ajc-test dir="bugs153/pr145693" title="cpathNoTypeCflowField">
+      <compile files="Event.java" outjar="cpath.jar"/>
+      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar"/>
+      <compile files="Sample.java" options="-Xlint:ignore" classpath="cpath.jar" aspectpath="apath.jar" outjar="run.jar"/>
+      <run class="Sample" classpath="run.jar,apath.jar"/>
+    </ajc-test>    
     
 </suite>

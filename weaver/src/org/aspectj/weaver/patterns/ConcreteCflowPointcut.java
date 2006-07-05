@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -27,6 +29,7 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.bcel.BcelCflowAccessVar;
@@ -55,6 +58,24 @@ public class ConcreteCflowPointcut extends Pointcut {
 	  
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		//??? this is not maximally efficient
+		// Check we'll be able to do the residue!
+		
+		// this bit is for pr145693 - we cannot match at all if one of the types is missing, we will be unable
+		// to create the residue
+		 if (slots != null) { 
+		    for (Iterator i = slots.iterator(); i.hasNext();) {
+		 	  Slot slot = (Slot) i.next();
+		 	  ResolvedType rt = slot.formalType;
+			  if (rt.isMissing()) {
+				  ISourceLocation[] locs = new ISourceLocation[]{getSourceLocation()};
+				  Message m = new Message(
+				    WeaverMessages.format(WeaverMessages.MISSING_TYPE_PREVENTS_MATCH,rt.getName()),
+						  "",Message.WARNING,shadow.getSourceLocation(),null,locs);
+				  rt.getWorld().getMessageHandler().handleMessage(m);
+				  return FuzzyBoolean.NO;
+			  }
+		    }
+		 }
 		return FuzzyBoolean.MAYBE;
 	}
 
