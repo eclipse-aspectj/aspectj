@@ -86,7 +86,16 @@ public class AjcTestCase extends TestCase {
 		// hmmm, this next one should perhaps point to an aj-build jar...
 		+ File.pathSeparator+".."+File.separator+"lib"     +File.separator+"test"+File.separator+"aspectjrt.jar"
         ;
+	
+	public static final String JAVA5_CLASSPATH_ENTRIES = 
+		File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator + "bin"
+        + File.pathSeparator+ ".."+File.separator+"loadtime5"+File.separator+"bin" 
+        + File.pathSeparator+ ".."+File.separator+"weaver5"+File.separator+"bin" 
 
+		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"aspectj5rt.jar"
+		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"loadtime5.jar"
+		+ File.pathSeparator+".."+File.separator+"aj-build"+File.separator+"jars"+File.separator+"weaver5.jar";
+        
 	/*
 	 * Save reference to real stderr and stdout before starting redirection
 	 */
@@ -567,21 +576,34 @@ public class AjcTestCase extends TestCase {
 		cp.append(ajc.getSandboxDirectory().getAbsolutePath());
 		getAnyJars(ajc.getSandboxDirectory(),cp);
 		
-		URLClassLoader cLoader;
-		ClassLoader parent = getClass().getClassLoader().getParent();
+		URLClassLoader sandboxLoader;
+		URLClassLoader testLoader = (URLClassLoader)getClass().getClassLoader();
+		ClassLoader parentLoader = testLoader.getParent();
 		
 		/* Sandbox -> AspectJ -> Extension -> Bootstrap */
 		if (useLTW) {
-			ClassLoader aspectjLoader = new URLClassLoader(getURLs(DEFAULT_CLASSPATH_ENTRIES),parent);
-			URL[] urls = getURLs(cp.toString());
-			cLoader = createWeavingClassLoader(urls,aspectjLoader);
-
+			
+			/*
+			 * Create a new AspectJ class loader using the existing test CLASSPATH 
+			 * and any missing Java 5 projects 
+			 */
+			URL[] testUrls = testLoader.getURLs();
+			URL[] java5Urls = getURLs(JAVA5_CLASSPATH_ENTRIES);
+			URL[] urls = new URL[testUrls.length + java5Urls.length];
+			System.arraycopy(testUrls,0,urls,0,testUrls.length);
+			System.arraycopy(java5Urls,0,urls,testUrls.length,java5Urls.length);
+//			ClassLoader aspectjLoader = new URLClassLoader(getURLs(DEFAULT_CLASSPATH_ENTRIES),parent);
+			ClassLoader aspectjLoader = new URLClassLoader(urls,parentLoader);
+			URL[] sandboxUrls = getURLs(cp.toString());
+			sandboxLoader = createWeavingClassLoader(sandboxUrls,aspectjLoader);
+//			sandboxLoader = createWeavingClassLoader(sandboxUrls,testLoader);
 		}
+
 		/* Sandbox + AspectJ -> Extension -> Bootstrap */
 		else {
 			cp.append(DEFAULT_CLASSPATH_ENTRIES);
 			URL[] urls = getURLs(cp.toString());
-			cLoader = new URLClassLoader(urls,parent);
+			sandboxLoader = new URLClassLoader(urls,parentLoader);
 		}
 
 		StringBuffer command = new StringBuffer("java -classpath ");
@@ -595,9 +617,10 @@ public class AjcTestCase extends TestCase {
 
 		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
+		ClassLoader contexClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
 			try {
-				Class testerClass = cLoader.loadClass("org.aspectj.testing.Tester");
+				Class testerClass = sandboxLoader.loadClass("org.aspectj.testing.Tester");
 				Method setBaseDir = testerClass.getDeclaredMethod("setBASEDIR",new Class[] {File.class});
 				setBaseDir.invoke(null,new Object[] {ajc.getSandboxDirectory()});
 			} catch (InvocationTargetException itEx) {
@@ -607,7 +630,10 @@ public class AjcTestCase extends TestCase {
 			}
 			startCapture(baosErr,baosOut);
 			
-			Class toRun = cLoader.loadClass(className);
+			/* Frameworks like XML use context class loader for dynamic loading */
+			Thread.currentThread().setContextClassLoader(sandboxLoader);
+			
+			Class toRun = sandboxLoader.loadClass(className);
 			Method mainMethod = toRun.getMethod("main",new Class[] {String[].class});
 			mainMethod.invoke(null,new Object[] {args});
 			lastRunResult = new RunResult(command.toString(),new String(baosOut.toByteArray()),new String(baosErr.toByteArray()));
@@ -621,6 +647,7 @@ public class AjcTestCase extends TestCase {
 			// the main method threw an exception...
             fail("Exception thrown by " + className + ".main(String[]) :" + invTgt.getTargetException());
 		} finally {
+			Thread.currentThread().setContextClassLoader(contexClassLoader);
 			stopCapture(baosErr,baosOut);
 		}
 		return lastRunResult;
