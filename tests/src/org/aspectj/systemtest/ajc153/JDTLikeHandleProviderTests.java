@@ -500,7 +500,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	protected File getSpecFile() {
 		return new File(
-				"../tests/src/org/aspectj/systemtest/ajc152/jdtlikehandleprovider.xml");
+				"../tests/src/org/aspectj/systemtest/ajc153/jdtlikehandleprovider.xml");
 	}
 
 }
