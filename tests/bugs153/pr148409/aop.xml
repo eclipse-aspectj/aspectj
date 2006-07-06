@@ -1,0 +1,5 @@
+<aspectj>
+    <aspects>
+         <aspect name="X"/> 
+    </aspects>
+</aspectj>

@@ -33,8 +33,9 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testVerifyErrNoTypeCflowField_pr145693_1()       { runTest("verifyErrNoTypeCflowField"); }
   public void testVerifyErrInpathNoTypeCflowField_pr145693_2() { runTest("verifyErrInpathNoTypeCflowField"); }
   public void testCpathNoTypeCflowField_pr145693_3()           { runTest("cpathNoTypeCflowField"); }
-  //public void testVisibilityProblem_pr149071()                 { runTest("visibility problem");}
-  //public void testAdviceNotWovenAspectPath_pr147841() { runTest("advice not woven on aspectpath");}
+  // public void testVisibilityProblem_pr149071()                 { runTest("visibility problem");}
+  // public void testAdviceNotWovenAspectPath_pr147841()          { runTest("advice not woven on aspectpath");}
+  public void testGenericSignatures_pr148409()                 { runTest("generic signature problem"); }
   
   /////////////////////////////////////////
   public static Test suite() {

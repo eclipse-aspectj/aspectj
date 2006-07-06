@@ -346,8 +346,17 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
     	ret.typeVariables = new TypeVariable[ftps.length];
     	for (int i = 0; i < ftps.length; i++) {
 			Signature.FormalTypeParameter parameter = ftps[i];
-			Signature.ClassTypeSignature cts = (Signature.ClassTypeSignature)parameter.classBound;
-			ret.typeVariables[i]=new TypeVariable(ftps[i].identifier,UnresolvedType.forSignature(cts.outerType.identifier+";"));
+			if (parameter.classBound instanceof Signature.ClassTypeSignature) {
+				Signature.ClassTypeSignature cts = (Signature.ClassTypeSignature)parameter.classBound;
+				ret.typeVariables[i]=new TypeVariable(ftps[i].identifier,UnresolvedType.forSignature(cts.outerType.identifier+";"));
+			} else if (parameter.classBound instanceof Signature.TypeVariableSignature) {
+				Signature.TypeVariableSignature tvs = (Signature.TypeVariableSignature)parameter.classBound;
+				UnresolvedTypeVariableReferenceType utvrt = new UnresolvedTypeVariableReferenceType(new TypeVariable(tvs.typeVariableName));
+				ret.typeVariables[i]=new TypeVariable(ftps[i].identifier,utvrt);
+			} else {
+			  throw new BCException("UnresolvedType.forGenericTypeSignature(): Do not know how to process type variable bound of type '"+
+					  parameter.classBound.getClass()+"'.  Full signature is '"+sig+"'");
+			}
 		}
     	ret.signatureErasure = sig;
     	ret.signature = ret.signatureErasure;
