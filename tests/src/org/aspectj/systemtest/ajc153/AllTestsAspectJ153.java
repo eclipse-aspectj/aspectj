@@ -19,6 +19,7 @@ public class AllTestsAspectJ153 {
 		TestSuite suite = new TestSuite("AspectJ 1.5.3 tests");
 		//$JUnit-BEGIN$
 		suite.addTest(Ajc153Tests.suite());
+		suite.addTest(JDTLikeHandleProviderTests.suite());
         //$JUnit-END$
 		return suite;
 	}

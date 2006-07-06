@@ -60,4 +60,18 @@ public interface IElementHandleProvider {
     
     public int getOffSetForHandle(String handle);
     
+    // See pr134471 
+    /**
+     * @return true if the handles produced by the provider 
+     * depend on ISourceLocations and false otherwise
+     */
+    public boolean dependsOnLocation();
+    
+    /**
+     * Initializes handle provider state.
+     * 
+     * The initializer is invoked when a new ASM is
+     * created on a full build.
+     */
+    public void initialize();
 }

@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.util.Collections;
 import java.util.List;
 
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.bcel.Utility;
@@ -391,7 +392,8 @@ public abstract class Advice extends ShadowMunger {
         return o.kind.equals(kind) 
         	&& ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut))
         	&& ((o.signature == null) ? (signature == null) : o.signature.equals(signature))
-        	&& (World.compareLocations?((o.getSourceLocation()==null) ? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true) // pr134471 - remove when handles are improved to be independent of location
+        	&& (AsmManager.getDefault().getHandleProvider().dependsOnLocation()
+        			?((o.getSourceLocation()==null) ? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true) // pr134471 - remove when handles are improved to be independent of location
         	;
 
     }

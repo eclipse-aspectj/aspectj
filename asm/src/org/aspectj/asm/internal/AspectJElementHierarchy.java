@@ -406,7 +406,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 		Set k = handleMap.keySet();
 		for (Iterator iter = k.iterator(); iter.hasNext();) {
 			String handle = (String) iter.next();
-			if (deletedFiles.contains(getFilename(handle))) forRemoval.add(handle);
+			IProgramElement ipe = (IProgramElement)handleMap.get(handle);
+			if (deletedFiles.contains(getCanonicalFilePath(ipe)))forRemoval.add(handle); 
 		}
 		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
 			String handle = (String) iter.next();
@@ -415,30 +416,36 @@ public class AspectJElementHierarchy implements IHierarchy {
 		forRemoval.clear();
 		k = typeMap.keySet();
 		for (Iterator iter = k.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
-			IProgramElement ipe = (IProgramElement)typeMap.get(element);
-			if (deletedFiles.contains(getFilename(ipe.getHandleIdentifier()))) forRemoval.add(element);
+			String typeName = (String) iter.next();
+			IProgramElement ipe = (IProgramElement)typeMap.get(typeName);
+			if (deletedFiles.contains(getCanonicalFilePath(ipe))) forRemoval.add(typeName);
 		}
 		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
-			String handle = (String) iter.next();
-			typeMap.remove(handle);
+			String typeName = (String) iter.next();
+			typeMap.remove(typeName);
 		}
 		forRemoval.clear();
 		k = fileMap.keySet();
 		for (Iterator iter = k.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
-			IProgramElement ipe = (IProgramElement)fileMap.get(element);
-			if (deletedFiles.contains(getFilename(ipe.getHandleIdentifier()))) forRemoval.add(element);
+			String filePath = (String) iter.next();
+			IProgramElement ipe = (IProgramElement)fileMap.get(filePath);
+			if (deletedFiles.contains(getCanonicalFilePath(ipe))) forRemoval.add(filePath);
 		}
 		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
-			String handle = (String) iter.next();
-			fileMap.remove(handle);
+			String filePath = (String) iter.next();
+			fileMap.remove(filePath);
 		}
-		
 	}
 	
 	private String getFilename(String hid) {
 		return AsmManager.getDefault().getHandleProvider().getFileForHandle(hid);
+	}
+	
+	private String getCanonicalFilePath(IProgramElement ipe) {
+		if (ipe.getSourceLocation() != null) {
+			return AsmManager.getDefault().getCanonicalFilePath(ipe.getSourceLocation().getSourceFile());			
+		}
+		return "";
 	}
 
 }

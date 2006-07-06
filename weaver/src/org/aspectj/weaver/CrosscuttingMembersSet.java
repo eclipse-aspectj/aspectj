@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.asm.AsmManager;
 import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.IVerificationRequired;
@@ -76,7 +77,8 @@ public class CrosscuttingMembersSet {
 				CflowPointcut.clearCaches(aspectType);
 				change = true;
 			} else {
-				if (!World.compareLocations && inWeavingPhase) {
+				if (!AsmManager.getDefault().getHandleProvider().dependsOnLocation()
+						&& inWeavingPhase) {
 					// bug 134541 - even though we haven't changed we may have updated the 
 					// sourcelocation for the shadowMunger which we need to pick up
 					shadowMungers = null;

@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -114,7 +115,8 @@ public class Checker extends ShadowMunger {
         return  
           o.isError == isError &&
         	 ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut)) &&
-          (World.compareLocations?((o.getSourceLocation()==null) ? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true) // pr134471 - remove when handles are improved to be independent of location
+          (AsmManager.getDefault().getHandleProvider().dependsOnLocation()
+        		  ?((o.getSourceLocation()==null) ? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true) // pr134471 - remove when handles are improved to be independent of location
         	;
     }
 

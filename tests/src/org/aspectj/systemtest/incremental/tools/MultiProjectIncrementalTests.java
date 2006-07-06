@@ -25,13 +25,15 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IElementHandleProvider;
+import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
+import org.aspectj.asm.internal.JDTLikeHandleProvider;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.Ajc;
-import org.aspectj.weaver.World;
 
 /**
  * The superclass knows all about talking through Ajde to the compiler.
@@ -1040,7 +1042,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				((IMessage)MyTaskListManager.getWarningMessages().get(0)).getSourceLocation().getLine());
 		alter("PR134541","inc1");
 		build("PR134541");
-		if (World.compareLocations)
+		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
 		  checkWasFullBuild(); // the line number has changed... but nothing structural about the code
 		else 
 		  checkWasntFullBuild(); // the line number has changed... but nothing structural about the code
@@ -1048,6 +1050,131 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				((IMessage)MyTaskListManager.getWarningMessages().get(0)).getSourceLocation().getLine());
 	}
 	
+	public void testJDTLikeHandleProviderWithLstFile_pr141730() {
+		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		configureBuildStructureModel(true);
+		try {
+			// The JDTLike-handles should start with the name
+			// of the buildconfig file
+			initialiseProject("JDTLikeHandleProvider");
+			build("JDTLikeHandleProvider");
+			IHierarchy top = AsmManager.getDefault().getHierarchy();
+		  	IProgramElement pe = top.findElementForType("pkg","A");
+		  	String expectedHandle = "build<pkg*A.aj}A";
+		  	assertEquals("expected handle to be " + expectedHandle + ", but found "
+		  			+ pe.getHandleIdentifier(),expectedHandle,pe.getHandleIdentifier());	
+		} finally {
+			AsmManager.getDefault().setHandleProvider(handleProvider);
+		  	configureBuildStructureModel(false);			
+		}
+	}
+	
+	public void testMovingAdviceDoesntChangeHandles_pr141730() {
+		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		configureBuildStructureModel(true);
+		try {
+			initialiseProject("JDTLikeHandleProvider");
+			build("JDTLikeHandleProvider");
+			checkWasFullBuild();
+			IHierarchy top = AsmManager.getDefault().getHierarchy();
+			IProgramElement pe = top.findElementForLabel(top.getRoot(),
+					IProgramElement.Kind.ADVICE,"before(): <anonymous pointcut>");
+		  	// add a line which shouldn't change the handle
+			alter("JDTLikeHandleProvider","inc1");
+			build("JDTLikeHandleProvider");
+			checkWasntFullBuild();
+			IHierarchy top2 = AsmManager.getDefault().getHierarchy();
+			IProgramElement pe2 = top.findElementForLabel(top2.getRoot(),
+					IProgramElement.Kind.ADVICE,"before(): <anonymous pointcut>");
+			assertEquals("expected advice to be on line " + pe.getSourceLocation().getLine() + 1 
+					+ " but was on " + pe2.getSourceLocation().getLine(),
+					pe.getSourceLocation().getLine()+1,pe2.getSourceLocation().getLine());
+			assertEquals("expected advice to have handle " + pe.getHandleIdentifier()
+					+ " but found handle " + pe2.getHandleIdentifier(),
+					pe.getHandleIdentifier(),pe2.getHandleIdentifier());		
+		} finally {
+			AsmManager.getDefault().setHandleProvider(handleProvider);
+		  	configureBuildStructureModel(false);			
+		}
+	}
+	
+	public void testSwappingAdviceAndHandles_pr141730() {
+		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		configureBuildStructureModel(true);
+		try {
+			initialiseProject("JDTLikeHandleProvider");
+			build("JDTLikeHandleProvider");
+			IHierarchy top = AsmManager.getDefault().getHierarchy();
+
+			IProgramElement call = top.findElementForLabel(top.getRoot(),
+					IProgramElement.Kind.ADVICE, "after(): callPCD..");
+			IProgramElement exec = top.findElementForLabel(top.getRoot(),
+					IProgramElement.Kind.ADVICE, "after(): execPCD..");
+		  	// swap the two after advice statements over. This forces
+			// a full build which means 'after(): callPCD..' will now
+			// be the second after advice in the file and have the same
+			// handle as 'after(): execPCD..' originally did.
+			alter("JDTLikeHandleProvider","inc2");
+			build("JDTLikeHandleProvider");
+			checkWasFullBuild();
+			
+			IHierarchy top2 = AsmManager.getDefault().getHierarchy();
+			IProgramElement newCall = top2.findElementForLabel(top2.getRoot(),
+					IProgramElement.Kind.ADVICE, "after(): callPCD..");
+			IProgramElement newExec = top2.findElementForLabel(top2.getRoot(),
+					IProgramElement.Kind.ADVICE, "after(): execPCD..");
+
+			assertEquals("after swapping places, expected 'after(): callPCD..' " +
+					"to be on line " + newExec.getSourceLocation().getLine() +
+					" but was on line " + call.getSourceLocation().getLine(),
+					newExec.getSourceLocation().getLine(),
+					call.getSourceLocation().getLine());
+			assertEquals("after swapping places, expected 'after(): callPCD..' " +
+					"to have handle " + exec.getHandleIdentifier() +
+					" (because was full build) but had " + newCall.getHandleIdentifier(),
+					exec.getHandleIdentifier(), newCall.getHandleIdentifier());
+		} finally {
+			AsmManager.getDefault().setHandleProvider(handleProvider);
+		  	configureBuildStructureModel(false);			
+		}
+	}
+	
+	public void testInitializerCountForJDTLikeHandleProvider_pr141730() {
+		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		configureBuildStructureModel(true);
+		try {
+			initialiseProject("JDTLikeHandleProvider");
+			build("JDTLikeHandleProvider");
+			String expected = "build<pkg*A.aj[C|1";
+
+			IHierarchy top = AsmManager.getDefault().getHierarchy();
+			IProgramElement init = top.findElementForLabel(top.getRoot(),
+					IProgramElement.Kind.INITIALIZER, "...");
+			assertEquals("expected initializers handle to be " + expected + "," +
+					" but found " + init.getHandleIdentifier(true),
+					expected,init.getHandleIdentifier(true));
+			
+			alter("JDTLikeHandleProvider","inc2");
+			build("JDTLikeHandleProvider");
+			checkWasFullBuild();
+			
+			IHierarchy top2 = AsmManager.getDefault().getHierarchy();
+			IProgramElement init2 = top2.findElementForLabel(top2.getRoot(),
+					IProgramElement.Kind.INITIALIZER, "...");
+			assertEquals("expected initializers handle to still be " + expected + "," +
+					" but found " + init2.getHandleIdentifier(true),
+					expected,init2.getHandleIdentifier(true));
+
+		
+		} finally {
+			AsmManager.getDefault().setHandleProvider(handleProvider);
+		  	configureBuildStructureModel(false);			
+		}
+	}
 	
 	// 134471 related tests perform incremental compilation and verify features of the structure model post compile
 	public void testPr134471_IncrementalCompilationAndModelUpdates() {
@@ -1105,7 +1232,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Step3. No structural change to the aspect but the advice has moved down a few lines... (change in source location)
 		alter("PR134471_2","inc1");
 		build("PR134471_2");
-		checkWasFullBuild(); // this is true whilst we consider sourcelocation in the type/shadow munger equals() method - have to until the handles are independent of location
+		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
+			  checkWasFullBuild(); // the line number has changed... but nothing structural about the code
+			else 
+			  checkWasntFullBuild(); // the line number has changed... but nothing structural about the code
+
+		//checkWasFullBuild(); // this is true whilst we consider sourcelocation in the type/shadow munger equals() method - have to until the handles are independent of location
 		
 		// Step4. Check we have correctly realised the advice moved to line 11
 		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
@@ -1134,38 +1266,38 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr134471_IncrementallyRecompilingTheAffectedClass() {
 		try {
 			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=false;
-		configureBuildStructureModel(true);
-		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
-		
-		// Step1. build the project
-		initialiseProject("PR134471");
-		build("PR134471");
-		
-		// Step2. confirm advice is from correct location
-		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
-		int line = programElement.getSourceLocation().getLine();
-		assertTrue("advice should be at line 7 - but is at line "+line,line==7);
-
-		// Step3. No change to the aspect at all
-		alter("PR134471","inc1");
-		build("PR134471");
-		
-		// Step4. Quick check that the advice points to something...
-		IProgramElement nodeForTypeA = checkForNode("pkg","A",true);
-		IProgramElement nodeForAdvice = findAdvice(nodeForTypeA);
-		List relatedElements = getRelatedElements(nodeForAdvice,1);
-		
-	    // Step5. No change to the file C but it should still be advised afterwards
-		alter("PR134471","inc2");
-		build("PR134471");
-		checkWasntFullBuild();
+			configureBuildStructureModel(true);
+			configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
+			
+			// Step1. build the project
+			initialiseProject("PR134471");
+			build("PR134471");
+			
+			// Step2. confirm advice is from correct location
+			IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
+			int line = programElement.getSourceLocation().getLine();
+			assertTrue("advice should be at line 7 - but is at line "+line,line==7);
 	
-		// Step6. confirm advice is from correct location
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
-		line = programElement.getSourceLocation().getLine();
-		assertTrue("advice should be at line 7 - but is at line "+line,line==7);		
-	} finally {
-		// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=true;
+			// Step3. No change to the aspect at all
+			alter("PR134471","inc1");
+			build("PR134471");
+			
+			// Step4. Quick check that the advice points to something...
+			IProgramElement nodeForTypeA = checkForNode("pkg","A",true);
+			IProgramElement nodeForAdvice = findAdvice(nodeForTypeA);
+			List relatedElements = getRelatedElements(nodeForAdvice,1);
+			
+		    // Step5. No change to the file C but it should still be advised afterwards
+			alter("PR134471","inc2");
+			build("PR134471");
+			checkWasntFullBuild();
+		
+			// Step6. confirm advice is from correct location
+			programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true)));
+			line = programElement.getSourceLocation().getLine();
+			assertTrue("advice should be at line 7 - but is at line "+line,line==7);		
+		} finally {
+			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=true;
 		}
 
 	}
@@ -1193,7 +1325,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Step4. Move declare warning in the aspect
 		alter("PR134471_3","inc1");
 		build("PR134471_3");
-		checkWasFullBuild();
+		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
+			  checkWasFullBuild(); // the line number has changed... but nothing structural about the code
+			else 
+			  checkWasntFullBuild(); // the line number has changed... but nothing structural about the code
+
+		//checkWasFullBuild();
 
 		// Step5. confirm declare warning is from correct location, decw (now at line 12) in pkg.A matches line 7 in pkg.C
 		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
@@ -1210,6 +1347,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
 
+		configureBuildStructureModel(false);
 	}
 	
 	// similar to previous test but with 'declare warning' as well as advice
@@ -1235,7 +1373,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Step4. Move declare warning in the aspect
 		alter("PR134471_3","inc1");
 		build("PR134471_3");
-		checkWasFullBuild();
+		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
+			  checkWasFullBuild(); // the line number has changed... but nothing structural about the code
+			else 
+			  checkWasntFullBuild(); // the line number has changed... but nothing structural about the code
+
+		//checkWasFullBuild();
 
 		// Step5. confirm declare warning is from correct location, decw (now at line 12) in pkg.A matches line 7 in pkg.C
 		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
@@ -1262,8 +1405,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
 
+		configureBuildStructureModel(false);
 	}
-
+	
 	// --- helper code ---
 	
 	/**

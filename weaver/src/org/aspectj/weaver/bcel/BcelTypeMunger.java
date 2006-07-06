@@ -31,6 +31,7 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -1679,7 +1680,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         BcelTypeMunger o = (BcelTypeMunger) other;
         return ((o.getMunger() == null) ? (getMunger() == null) : o.getMunger().equals(getMunger()))
                && ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()))
-               && (World.compareLocations?((o.getSourceLocation()==null)? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true); // pr134471 - remove when handles are improved to be independent of location
+               && (AsmManager.getDefault().getHandleProvider().dependsOnLocation()
+            		   ?((o.getSourceLocation()==null)? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true); // pr134471 - remove when handles are improved to be independent of location
                
     }
 	   

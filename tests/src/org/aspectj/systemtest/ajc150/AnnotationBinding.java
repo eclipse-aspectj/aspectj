@@ -330,7 +330,8 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 			Relationship rel = (Relationship)l.get(0);
 			assertTrue("Should have 1 target but has "+rel.getTargets().size(),rel.getTargets().size()==1);
 			String tgt = (String)rel.getTargets().get(0);
-			assertTrue("Should point to line 10 but doesnt: "+tgt,tgt.indexOf("|10|")!=-1);
+			int lineNumber = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(tgt);
+			assertTrue("Should point to line 10 but doesnt: "+lineNumber,lineNumber == 10);
 	  	}
   }  
  
@@ -360,7 +361,9 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 			Relationship rel = (Relationship)l.get(0);
 			assertTrue("Should have 1 target but has "+rel.getTargets().size(),rel.getTargets().size()==1);
 			String tgt = (String)rel.getTargets().get(0);
-			assertTrue("Should point to line 10 but doesnt: "+tgt,tgt.indexOf("|10|")!=-1);
+			int lineNumber = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(tgt);
+			assertTrue("Should point to line 10 but doesnt: "+lineNumber,lineNumber == 10);
+
 	  	}
   }  
   
@@ -390,7 +393,9 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 			Relationship rel = (Relationship)l.get(0);
 			assertTrue("Should have 1 target but has "+rel.getTargets().size(),rel.getTargets().size()==1);
 			String tgt = (String)rel.getTargets().get(0);
-			assertTrue("Should point to line 10 but doesnt: "+tgt,tgt.indexOf("|10|")!=-1);
+			int lineNumber = AsmManager.getDefault().getHandleProvider().getLineNumberForHandle(tgt);
+			assertTrue("Should point to line 10 but doesnt: "+lineNumber,lineNumber == 10);
+
 	  	}
   }  
   

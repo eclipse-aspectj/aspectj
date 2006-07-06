@@ -54,12 +54,7 @@ public abstract class World implements Dump.INode {
 	
 	/** The heart of the world, a map from type signatures to resolved types */
     protected TypeMap typeMap = new TypeMap(this); // Signature to ResolvedType
-    
-    // See pr134471 - we would like to set this false but need for handles in the structure model
-    // to be independent of location before we can do that.
-    /** Should we take into account source location when comparing mungers - which may trigger full builds */
-    public final static boolean compareLocations = true;
-  
+
     // see pr145963
     /** Should we create the hierarchy for binary classes and aspects*/
     public static boolean createInjarHierarchy = true;

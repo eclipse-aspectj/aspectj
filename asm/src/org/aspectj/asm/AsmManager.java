@@ -71,18 +71,17 @@ public class AsmManager {
 //	}
 	
     protected AsmManager() {
-    	hierarchy = new AspectJElementHierarchy();
-//    	List relationships = new ArrayList();
-		mapper = new RelationshipMap(hierarchy);
-        handleProvider = new OptimizedFullPathHandleProvider(); 
+ 		handleProvider = new OptimizedFullPathHandleProvider();
+    	createNewASM();
     }
 	
 	public void createNewASM() {
 		hierarchy = new AspectJElementHierarchy();
 		mapper = new RelationshipMap(hierarchy);
+		// call initialize on the handleProvider when we create a new ASM
+		// to give handleProviders the chance to reset any state
+		handleProvider.initialize();
 	}
-	
-	
 
     public IHierarchy getHierarchy() {
         return hierarchy;	
@@ -490,10 +489,6 @@ public class AsmManager {
 	
 	//===================== DELTA PROCESSING CODE ============== start ==========//
 	
-	private String getFilename(String hid) {
-		return getHandleProvider().getFileForHandle(hid);
-	}
-	
 	/**
 	 * Removes the hierarchy structure for the specified files from the structure model.
 	 * Returns true if it deleted anything
@@ -515,7 +510,7 @@ public class AsmManager {
 					fw.write("Deleting "+progElem+" node for file "+fileForCompilation+"\n");
 				}
 				removeNode(progElem);
-				deletedNodes.add(getFilename(progElem.getHandleIdentifier()));
+				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
 				if (!model.removeFromFileMap(correctedPath.toString())) 
 						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
 				modelModified = true;
@@ -557,7 +552,7 @@ public class AsmManager {
 					fw.write("Deleting "+progElem+" node for file "+fileForCompilation+"\n");
 				}
 				removeNode(progElem);
-				deletedNodes.add(getFilename(progElem.getHandleIdentifier()));
+				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
 				if (!model.removeFromFileMap(correctedPath.toString())) 
 						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
 				modelModified = true;
