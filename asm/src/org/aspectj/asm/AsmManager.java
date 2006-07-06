@@ -88,6 +88,7 @@ public class AsmManager {
 	}
 
 	public static AsmManager getDefault() {
+		new RuntimeException("fetching asm").printStackTrace();
 		return INSTANCE;
 	}
 	
