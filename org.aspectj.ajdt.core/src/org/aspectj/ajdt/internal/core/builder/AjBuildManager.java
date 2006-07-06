@@ -671,8 +671,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
     
     /** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
-		List cp = buildConfig.getBootclasspath();
-		cp.addAll(buildConfig.getClasspath());
+		List cp = 
+		buildConfig.getFullClasspath(); // pr145693
+		//buildConfig.getBootclasspath();
+		//cp.addAll(buildConfig.getClasspath());
 		BcelWorld bcelWorld = new BcelWorld(cp, handler, null);
 		bcelWorld.setBehaveInJava5Way(buildConfig.getBehaveInJava5Way());
 		bcelWorld.setAddSerialVerUID(buildConfig.isAddSerialVerUID());
