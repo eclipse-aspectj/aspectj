@@ -75,4 +75,21 @@
       <run class="Sample" classpath="run.jar,apath.jar"/>
     </ajc-test>    
     
+    <ajc-test dir="bugs153/pr149071" title="visiblity problem">
+      <compile files="AspectItd.java"/>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs153/pr147841" title="advice not woven on aspectpath">
+      <compile files="A.java" options="-Xlint:ignore" outjar="apath.jar"/>
+      <!--compile files="C.java" outjar="cpa.jar" classpath="cpath.jar"/-->
+      <compile files="C.java" options="-showWeaveInfo" aspectpath="apath.jar">
+        <message kind="weave" text="foo"/>
+      </compile>
+      <run class="C">
+        <stderr>
+          <line text="foo"/>
+        </stderr>
+      </run>
+    </ajc-test>    
+    
 </suite>
