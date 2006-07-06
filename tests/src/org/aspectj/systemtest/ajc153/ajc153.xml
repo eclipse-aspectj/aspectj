@@ -75,7 +75,7 @@
       <run class="Sample" classpath="run.jar,apath.jar"/>
     </ajc-test>    
     
-    <ajc-test dir="bugs153/pr149071" title="visiblity problem">
+    <ajc-test dir="bugs153/pr149071" title="visibility problem">
       <compile files="AspectItd.java"/>
     </ajc-test>    
     
