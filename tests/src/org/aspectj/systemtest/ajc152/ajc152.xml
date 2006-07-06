@@ -77,23 +77,8 @@
        </stderr>
      </run>
     </ajc-test>
-    
-    <ajc-test dir="bugs152/pr147841" title="advice not woven on aspectpath">
-      <compile files="A.java" options="-Xlint:ignore" outjar="apath.jar"/>
-      <!--compile files="C.java" outjar="cpa.jar" classpath="cpath.jar"/-->
-      <compile files="C.java" options="-showWeaveInfo" aspectpath="apath.jar">
-        <message kind="weave" text="foo"/>
-      </compile>
-      <run class="C">
-        <stderr>
-          <line text="foo"/>
-        </stderr>
-      </run>
-    </ajc-test>    
-    
-
-
-	<ajc-test dir="bugs152/pr145391" title="itd calling generic method">
+ 
+ 	<ajc-test dir="bugs152/pr145391" title="itd calling generic method">
      <compile files="GenericType.java" options="-1.5"/>
      <run class="GenericType"/>
     </ajc-test>
