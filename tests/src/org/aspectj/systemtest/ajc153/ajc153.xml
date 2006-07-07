@@ -98,4 +98,30 @@
       </run>
     </ajc-test>    
     
+	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call">
+		<compile files="Interface.java"/>
+        <compile
+			files="Missing.java"
+        	outjar="missing.jar"
+        />
+      	<compile files="TestFail.java" classpath="missing.jar"/>
+<!--
+      	<compile files="Aspect.aj" options="-showWeaveInfo -inpath ." classpath="missing.jar">
+	        <message kind="weave" text="void Interface.method()"/>
+	        <message kind="weave" text="void Missing.method()"/>
+		</compile>	        
+      	<compile files="Aspect.aj" options="-showWeaveInfo -inpath .">
+	        <message kind="weave" text="void Interface.method()"/>
+	        <message kind="weave" text="void Missing.method()"/>
+		</compile>	        
+-->      	
+      	<compile files="Aspect.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
+	        <message kind="weave" text="void Interface.method()"/>
+	        <message kind="warning" text="Missing"/>
+		</compile>	        
+<!--      	
+      	<run class="TestFail" ltw="aop.xml"/>
+-->      	
+    </ajc-test>    
+    
 </suite>
