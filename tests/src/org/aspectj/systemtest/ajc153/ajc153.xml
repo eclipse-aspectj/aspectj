@@ -107,6 +107,10 @@
      </run>
     </ajc-test> 
     
+	<ajc-test dir="bugs153/pr150095" title="generics, inheritance and decp">
+     <compile files="Foo.java" options="-1.5"/>
+    </ajc-test> 
+    
 	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call">
 		<compile files="Interface.java"/>
         <compile
