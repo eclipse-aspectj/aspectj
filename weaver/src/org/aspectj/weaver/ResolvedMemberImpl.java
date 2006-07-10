@@ -681,7 +681,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			} else {
 				return aType.getRawType();
 			}
-		} 
+		} else if (aType.isArray()) {
+			// The component type might be a type variable (pr150095)
+			int dims = 1;
+			String sig = aType.getSignature();
+			while (sig.charAt(dims)=='[') dims++;
+			UnresolvedType componentSig = UnresolvedType.forSignature(sig.substring(dims));
+			UnresolvedType arrayType = ResolvedType.makeArray(parameterize(componentSig,typeVariableMap,inParameterizedType),dims);
+			return arrayType;
+		}
 		return aType;		
 	}
 	
