@@ -128,15 +128,6 @@
        </stderr>
      </run>
     </ajc-test>
-        
-	<ajc-test dir="bugs152/pr145018" title="ataj crashing with cflow, if and args">
-     <compile files="Broken.aj" options="-1.5"/>
-     <run class="Broken">
-       <stderr>
-         <line text="ahhh"/>
-       </stderr>
-     </run>
-    </ajc-test>
 
     <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type">
      <compile files="TopLevelType.java" options="-1.5"/>
