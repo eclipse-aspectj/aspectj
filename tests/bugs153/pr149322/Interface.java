@@ -1,5 +1,5 @@
 
 public interface Interface {
 
-	public void method ();
+	public void interfaceMethod ();
 }

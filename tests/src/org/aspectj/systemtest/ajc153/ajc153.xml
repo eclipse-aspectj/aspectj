@@ -111,30 +111,88 @@
      <compile files="Foo.java" options="-1.5"/>
     </ajc-test> 
     
-	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call">
+	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call 1">
 		<compile files="Interface.java"/>
         <compile
 			files="Missing.java"
         	outjar="missing.jar"
         />
-      	<compile files="TestFail.java" classpath="missing.jar"/>
-<!--
-      	<compile files="Aspect.aj" options="-showWeaveInfo -inpath ." classpath="missing.jar">
-	        <message kind="weave" text="void Interface.method()"/>
-	        <message kind="weave" text="void Missing.method()"/>
+      	<compile files="TestWithMissing.java" classpath="missing.jar"/>
+      	<compile files="Aspect1.aj" options="-showWeaveInfo -inpath ." classpath="missing.jar">
+	        <message kind="weave" text="void Interface.interfaceMethod()"/>
+	        <message kind="weave" text="void Missing.interfaceMethod()"/>
 		</compile>	        
-      	<compile files="Aspect.aj" options="-showWeaveInfo -inpath .">
-	        <message kind="weave" text="void Interface.method()"/>
-	        <message kind="weave" text="void Missing.method()"/>
+      	<compile files="Aspect1.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
+	        <message kind="weave" text="void Interface.interfaceMethod()"/>
+	        <message kind="warning" text="can't determine superclass of missing type Missing"/>
 		</compile>	        
--->      	
-      	<compile files="Aspect.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
-	        <message kind="weave" text="void Interface.method()"/>
-	        <message kind="warning" text="Missing"/>
+      	<run class="TestWithMissing">
+			<stdout>
+	        	<line text="Aspect1.before() interfaceMethod"/>
+	        	<line text="Missing.interfaceMethod()"/>
+<!--	        	
+	        	<line text="Aspect1.before() interfaceMethod"/>
+-->
+	        	<line text="Missing.interfaceMethod()"/>
+	        	<line text="Missing.missingMethod()"/>
+    		</stdout>
+    	</run>
+    </ajc-test>    
+	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call 2">
+		<compile files="Interface.java"/>
+        <compile
+			files="Missing.java"
+        	outjar="missing.jar"
+        />
+      	<compile files="TestWithMissing.java" classpath="missing.jar"/>
+      	<compile files="Aspect2.aj" options="-showWeaveInfo -inpath ." classpath="missing.jar">
+	        <message kind="weave" text="void Interface.interfaceMethod()"/>
+	        <message kind="weave" text="void Missing.interfaceMethod()"/>
 		</compile>	        
-<!--      	
-      	<run class="TestFail" ltw="aop.xml"/>
--->      	
+      	<compile files="Aspect2.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
+	        <message kind="weave" text="void Interface.interfaceMethod()"/>
+	        <message kind="warning" text="can't determine whether missing type Missing is an instance of Interface"/>
+	        <message kind="warning" text="can't determine superclass of missing type Missing"/>
+		</compile>	        
+      	<run class="TestWithMissing">
+			<stdout>
+	        	<line text="Aspect2.before() interfaceMethod"/>
+	        	<line text="Missing.interfaceMethod()"/>
+<!--	        	
+	        	<line text="Aspect2.before() interfaceMethod"/>
+-->
+	        	<line text="Missing.interfaceMethod()"/>
+	        	<line text="Missing.missingMethod()"/>
+    		</stdout>
+    	</run>
+    </ajc-test>    
+	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call 3">
+		<compile files="Interface.java"/>
+        <compile
+			files="Missing.java"
+        	outjar="missing.jar"
+        />
+      	<compile files="TestWithMissing.java" classpath="missing.jar"/>
+      	<compile files="Aspect3.aj" options="-showWeaveInfo -inpath ." classpath="missing.jar">
+	        <message kind="weave" text="void Interface.interfaceMethod()"/>
+	        <message kind="weave" text="void Missing.interfaceMethod()"/>
+		</compile>	        
+      	<compile files="Aspect3.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
+	        <message kind="weave" text="void Interface.interfaceMethod()"/>
+	        <message kind="warning" text="can't determine whether missing type Missing is an instance of Interface"/>
+	        <message kind="warning" text="can't determine superclass of missing type Missing"/>
+		</compile>	        
+      	<run class="TestWithMissing">
+			<stdout>
+	        	<line text="Aspect3.before() interfaceMethod"/>
+	        	<line text="Missing.interfaceMethod()"/>
+<!--	        	
+	        	<line text="Aspect3.before() interfaceMethod"/>
+-->
+	        	<line text="Missing.interfaceMethod()"/>
+	        	<line text="Missing.missingMethod()"/>
+    		</stdout>
+    	</run>
     </ajc-test>    
     
 </suite>
