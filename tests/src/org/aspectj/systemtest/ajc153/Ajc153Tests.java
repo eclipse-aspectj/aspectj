@@ -36,11 +36,9 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testVisibilityProblem_pr149071()                 { runTest("visibility problem");}
   // public void testAdviceNotWovenAspectPath_pr147841()          { runTest("advice not woven on aspectpath");}
   public void testGenericSignatures_pr148409()                 { runTest("generic signature problem"); }
+//  public void testBrokenIfArgsCflowAtAj_pr145018() { runTest("ataj crashing with cflow, if and args");}
+  public void testCantFindType_pr149322_1() {runTest("can't find type on interface call");}
 
-  public void testCantFindType_pr149322_1() {
-	  runTest("can't find type on interface call");
-  }
-  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);
