@@ -115,9 +115,43 @@
      <compile files="Complex.java"/>
     </ajc-test> 
     
-	<ajc-test dir="bugs153/pr145442" title="missing line numbers in stacktrace">
-     <compile files="MissingLineNumbers.java"/>
-     <run class="MissingLineNumbers"/>
+	<ajc-test dir="bugs153/pr145442" title="missing line numbers in stacktrace before">
+     <compile files="hello/HelloWorld.java hello/ThrowExceptionBefore.aj"/>
+     <run class="hello.HelloWorld">
+		<stderr>
+<!--		
+	    	<line text="hello.HelloWorld.println(HelloWorld.java:13)"/>
+-->	    	
+	    	<line text="hello.HelloWorld.println(HelloWorld.java)"/>
+	    	<line text="hello.HelloWorld.testStackTrace(HelloWorld.java:19)"/>
+	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
+		</stderr>
+     </run>
+    </ajc-test> 
+    
+	<ajc-test dir="bugs153/pr145442" title="missing line numbers in stacktrace after">
+     <compile files="hello/HelloWorld.java hello/ThrowExceptionAfter.aj"/>
+     <run class="hello.HelloWorld">
+		<stderr>
+	    	<line text="hello.HelloWorld.println(HelloWorld.java:15)"/>
+	    	<line text="hello.HelloWorld.testStackTrace(HelloWorld.java:19)"/>
+	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
+		</stderr>
+     </run>
+    </ajc-test> 
+    
+	<ajc-test dir="bugs153/pr145442" title="missing line numbers in stacktrace around">
+     <compile files="hello/HelloWorld.java hello/ThrowExceptionAround.aj" options="-XnoInline"/>
+     <run class="hello.HelloWorld">
+		<stderr>
+<!--		
+	    	<line text="hello.HelloWorld.println(HelloWorld.java:13)"/>
+-->	    	
+	    	<line text="hello.HelloWorld.println(HelloWorld.java:1)"/>
+	    	<line text="hello.HelloWorld.testStackTrace(HelloWorld.java:19)"/>
+	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
+		</stderr>
+     </run>
     </ajc-test> 
     
 	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call 1">
