@@ -19,8 +19,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+  // public void testMissingLineNumbersInStacktrace_pr145442() { runTest("missing line numbers in stacktrace");}
   // public void testArgnamesAndJavac_pr148381() { runTest("argNames and javac");}
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
+  public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
   public void testGenericInheritanceDecp_pr150095() { runTest("generics, inheritance and decp");}
   public void testIllegalStateException_pr148737() { runTest("illegalstateexception for non generic type");}
   public void testAtajInheritance_pr149305_1()     { runTest("ataj inheritance - 1");}
