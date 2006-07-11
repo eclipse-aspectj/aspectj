@@ -120,7 +120,7 @@
      <run class="MissingLineNumbers"/>
     </ajc-test> 
     
-	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call">
+	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call 1">
 		<compile files="Interface.java"/>
         <compile
 			files="Missing.java"
