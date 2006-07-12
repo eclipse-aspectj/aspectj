@@ -79,7 +79,6 @@ public class WeavingAdaptor {
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 
 	protected WeavingAdaptor () {
-		createMessageHandler();
 	}
 	
 	
@@ -162,7 +161,7 @@ public class WeavingAdaptor {
 		registerAspectLibraries(aspectPath);
 	}
 
-	private void createMessageHandler() {
+	protected void createMessageHandler() {
 		messageHolder = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
 		messageHandler = messageHolder;
 		if (verbose) messageHandler.dontIgnore(IMessage.INFO);
@@ -360,6 +359,10 @@ public class WeavingAdaptor {
 	protected boolean error (String message) {
 		return MessageUtil.error(messageHandler,message);
 	}
+	
+	protected String getContextId () {
+		return "WeavingAdaptor";
+	}
 
 	/**
 	 * Dump the given bytcode in _dump/... (dev mode)
@@ -458,6 +461,10 @@ public class WeavingAdaptor {
 			accumulating = false;
 			messages.clear();
 		}
+
+	    protected String render(IMessage message) {
+	    	return "[" + getContextId() + "] " + super.render(message);
+	    }
 	}
 
 	private class WeavingClassFileProvider implements IClassFileProvider {
