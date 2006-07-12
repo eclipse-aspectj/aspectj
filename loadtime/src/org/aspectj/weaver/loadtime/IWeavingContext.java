@@ -39,12 +39,13 @@ public interface IWeavingContext {
 	 * In a non-OSGi environment, implementors should return <code>null<code>.
 	 * @param url
 	 * @return
+	 * @deprecated use getFile() or getClassLoaderName()
 	 */
 	public String getBundleIdFromURL(URL url);
 	
 	/**
 	 * In an environment with multiple class loaders allows each to be
-	 * identified using something safer and than toString
+	 * identified using something safer and possibly shorter than toString
 	 * @return name of the associated class loader
 	 */
 	public String getClassLoaderName ();
@@ -54,5 +55,12 @@ public interface IWeavingContext {
 	 * @return filename
 	 */
 	public String getFile(URL url);
+	
+	/**
+	 * In an environment with multiple class loaders allows messages
+	 * to identified according to the weaving context
+	 * @return short name 
+	 */
+	public String getId ();
 
 }

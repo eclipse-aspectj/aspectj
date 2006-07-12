@@ -23,6 +23,8 @@ import java.util.Enumeration;
 public class DefaultWeavingContext implements IWeavingContext {
 	
 	protected ClassLoader loader;
+	
+	private String shortName;
 
 	/**
 	 * Construct a new WeavingContext to use the specifed ClassLoader
@@ -59,5 +61,21 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 */
 	public String getFile(URL url) {
     	return url.getFile();
+	}
+
+	/**
+	 * @return unqualifiedclassname@hashcode 
+	 */
+	public String getId () {
+		if (shortName == null) {
+			shortName = getClassLoaderName();
+			int index = shortName.lastIndexOf(".");
+			shortName = shortName.substring(index + 1);
+		}
+		return shortName;
+	}
+	
+	public String getSuffix () {
+		return getClassLoaderName();
 	}
 }

@@ -55,6 +55,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
     private final static String AOP_XML = "META-INF/aop.xml";
 
+    private boolean initialized;
+    
     private List m_dumpTypePattern = new ArrayList();
     private boolean m_dumpBefore = false;
     private List m_includeTypePattern = new ArrayList();
@@ -67,14 +69,25 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private List m_aspectIncludeStartsWith = new ArrayList();
 
     private StringBuffer namespace;
+    private ClassLoader classLoader;
     private IWeavingContext weavingContext;
 
     public ClassLoaderWeavingAdaptor(final ClassLoader loader, IWeavingContext wContext) {
+    	super();
+    	this.classLoader = loader;
     	this.weavingContext = wContext;
     }
 
-    protected void initialize(final ClassLoader loader, IWeavingContext wContext) {
+    protected void initialize (final ClassLoader deprecatedLoader, IWeavingContext deprecatedContext) {
         //super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
+    	if (initialized) return;
+
+        if (weavingContext == null) {
+        	weavingContext = new DefaultWeavingContext(classLoader);
+        }
+
+        createMessageHandler();
+    	
         this.generatedClassHandler = new GeneratedClassHandler() {
             /**
              * Callback when we need to define a Closure in the JVM
@@ -91,23 +104,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     throwable.printStackTrace();
                 }
 
-                defineClass(loader, name, bytes);// could be done lazily using the hook
+                defineClass(classLoader, name, bytes);// could be done lazily using the hook
             }
         };
 
-        if(wContext==null){
-        	weavingContext = new DefaultWeavingContext(loader);
-        }else{
-        	weavingContext = wContext ;
-        }
-
-        List definitions = parseDefinitions(loader);
+        List definitions = parseDefinitions(classLoader);
         if (!enabled) {
         	return;
         }
         
         bcelWorld = new LTWWorld(
-                loader, getMessageHandler(), new ICrossReferenceHandler() {
+                classLoader, getMessageHandler(), new ICrossReferenceHandler() {
                     public void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind, boolean runtimeTest) {
                         ;// for tools only
                     }
@@ -122,7 +129,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         weaver = new BcelWeaver(bcelWorld);
 
         // register the definitions
-        registerDefinitions(weaver, loader, definitions);
+        registerDefinitions(weaver, classLoader, definitions);
         if (enabled) {
 
             //bcelWorld.setResolutionLoader(loader.getParent());//(ClassLoader)null);//
@@ -134,6 +141,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         	bcelWorld = null;
         	weaver = null;
         }
+        
+        initialized = true;
     }
 
     /**
@@ -312,6 +321,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     	Kind kind = lint.getLintKind(name);
     	kind.signal(infos,null,null);
     }
+	
+	protected String getContextId () {
+		return weavingContext.getId();
+	}
     
     /**
      * Register the aspect, following include / exclude rules
