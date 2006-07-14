@@ -78,6 +78,8 @@ public class WeavingAdaptor {
 	protected GeneratedClassHandler generatedClassHandler;
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingAdaptor.class);
+
 	protected WeavingAdaptor () {
 	}
 	
@@ -205,6 +207,7 @@ public class WeavingAdaptor {
 	 */
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
 		if (enabled) {
+	    	if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name,bytes});
 
 			if (shouldWeave(name, bytes)) {
 				info("weaving '" + name + "'");
@@ -217,6 +220,8 @@ public class WeavingAdaptor {
 			else {
 				info("not weaving '" + name + "'");
 			}
+
+			if (trace.isTraceEnabled()) trace.exit("weaveClass",bytes);
 		}
 
         return bytes;

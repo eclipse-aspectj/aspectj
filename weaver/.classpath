@@ -12,5 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/aspectj5rt"/>
 	<classpathentry kind="lib" path="/lib/asm/asm-aj.jar"/>
 	<classpathentry sourcepath="/lib/bcel/bcel-src.zip" kind="lib" path="/lib/bcel/bcel.jar"/>
+	<classpathentry sourcepath="/lib/commons/commons-src.zip" kind="lib" path="/lib/commons/commons.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

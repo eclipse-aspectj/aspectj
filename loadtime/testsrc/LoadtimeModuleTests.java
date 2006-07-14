@@ -15,7 +15,10 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
+import org.aspectj.weaver.loadtime.AjTest;
+import org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest;
 import org.aspectj.weaver.loadtime.JRockitAgentTest;
+import org.aspectj.weaver.loadtime.WeavingContextTest;
 import org.aspectj.weaver.loadtime.WeavingURLClassLoaderTest;
 import org.aspectj.weaver.loadtime.test.DocumentParserTest;
 
@@ -28,8 +31,11 @@ public class LoadtimeModuleTests extends TestCase {
         TestSuite suite = new TestSuite(LoadtimeModuleTests.class.getName());
 
         suite.addTestSuite(DocumentParserTest.class);
-        suite.addTestSuite(WeavingURLClassLoaderTest.class);
+        suite.addTestSuite(AjTest.class);
+        suite.addTestSuite(ClassLoaderWeavingAdaptorTest.class);
         suite.addTestSuite(JRockitAgentTest.class);
+        suite.addTestSuite(WeavingContextTest.class);
+        suite.addTestSuite(WeavingURLClassLoaderTest.class);
         return suite;
     }
 

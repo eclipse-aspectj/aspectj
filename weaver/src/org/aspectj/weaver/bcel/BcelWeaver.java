@@ -95,6 +95,8 @@ import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
 import org.aspectj.weaver.patterns.WithinPointcut;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 
 
 public class BcelWeaver implements IWeaver {
@@ -106,11 +108,15 @@ public class BcelWeaver implements IWeaver {
 
     private boolean inReweavableMode = false;
     
+    private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWeaver.class);
+
     public BcelWeaver(BcelWorld world) {
         super();
+        if (trace.isTraceEnabled()) trace.enter("<init>",this,world);
         WeaverMetrics.reset();
         this.world = world;
         this.xcutSet = world.getCrosscuttingMembersSet();
+        if (trace.isTraceEnabled()) trace.exit("<init>");
     }
         
     public BcelWeaver() {
@@ -149,7 +155,9 @@ public class BcelWeaver implements IWeaver {
      * @return aspect
      */
     public ResolvedType addLibraryAspect(String aspectName) {
-        // 1 - resolve as is
+    	if (trace.isTraceEnabled()) trace.enter("addLibraryAspect",this,aspectName);
+
+    	// 1 - resolve as is
     	UnresolvedType unresolvedT = UnresolvedType.forName(aspectName);
     	unresolvedT.setNeedsModifiableDelegate(true);
         ResolvedType type = world.resolve(unresolvedT, true);
@@ -185,10 +193,13 @@ public class BcelWeaver implements IWeaver {
             //TODO AV - happens to reach that a lot of time: for each type flagged reweavable X for each aspect in the weaverstate
             //=> mainly for nothing for LTW - pbly for something in incremental build...
 			xcutSet.addOrReplaceAspect(type);
+	    	if (trace.isTraceEnabled()) trace.exit("addLibraryAspect",type);
             return type;
         } else {
             // FIXME AV - better warning upon no such aspect from aop.xml
-			throw new RuntimeException("Cannot register non aspect: " + type.getName() + " , " + aspectName);
+			RuntimeException ex = new RuntimeException("Cannot register non aspect: " + type.getName() + " , " + aspectName);
+	    	if (trace.isTraceEnabled()) trace.exit("addLibraryAspect",ex);
+			throw ex;
 		}
     }
     
@@ -436,6 +447,7 @@ public class BcelWeaver implements IWeaver {
     }
     
     public void prepareForWeave() {
+    	if (trace.isTraceEnabled()) trace.enter("prepareForWeave",this);
     	needToReweaveWorld = xcutSet.hasChangedSinceLastReset();
 
     	CflowPointcut.clearCaches();
@@ -457,6 +469,7 @@ public class BcelWeaver implements IWeaver {
     	}
 
 		shadowMungerList = xcutSet.getShadowMungers();
+//		world.debug("shadow mungers=" + shadowMungerList);
 		rewritePointcuts(shadowMungerList);
 		// Sometimes an error occurs during rewriting pointcuts (for example, if ambiguous bindings
 		// are detected) - we ought to fail the prepare when this happens because continuing with
@@ -486,6 +499,8 @@ public class BcelWeaver implements IWeaver {
 					return (sm2.getSourceLocation().getOffset()-sm1.getSourceLocation().getOffset());
 				}
 			});
+ 
+		if (trace.isTraceEnabled()) trace.exit("prepareForWeave");
     }
     
     /*
@@ -991,6 +1006,7 @@ public class BcelWeaver implements IWeaver {
     
     // variation of "weave" that sources class files from an external source.
     public Collection weave(IClassFileProvider input) throws IOException {
+    	if (trace.isTraceEnabled()) trace.enter("weave",this,input);
     	ContextToken weaveToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING, "");
     	Collection wovenClassNames = new ArrayList();
     	IWeaveRequestor requestor = input.getRequestor();
@@ -1138,6 +1154,7 @@ public class BcelWeaver implements IWeaver {
 
         requestor.weaveCompleted();
         CompilationAndWeavingContext.leavingPhase(weaveToken);
+        if (trace.isTraceEnabled()) trace.exit("weave",wovenClassNames);
     	return wovenClassNames;
     }
 
@@ -1693,9 +1710,11 @@ public class BcelWeaver implements IWeaver {
 	}
 
 	public void setReweavableMode(boolean xNotReweavable) {
+    	if (trace.isTraceEnabled()) trace.enter("setReweavableMode",this,xNotReweavable);
 		inReweavableMode = !xNotReweavable;
 		WeaverStateInfo.setReweavableModeDefaults(!xNotReweavable,false,true);
 		BcelClassWeaver.setReweavableMode(!xNotReweavable);
+    	if (trace.isTraceEnabled()) trace.exit("setReweavableMode");
 	}
 
 	public boolean isReweavable() {
@@ -1707,9 +1726,11 @@ public class BcelWeaver implements IWeaver {
     }
 
 	public void tidyUp() {
+		if (trace.isTraceEnabled()) trace.enter("tidyUp",this);
 	    shadowMungerList = null; // setup by prepareForWeave
 		typeMungerList = null; // setup by prepareForWeave
 	    lateTypeMungerList = null; // setup by prepareForWeave
 		declareParentsList = null; // setup by prepareForWeave
+		if (trace.isTraceEnabled()) trace.exit("tidyUp");
 	}
 }

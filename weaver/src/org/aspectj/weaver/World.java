@@ -38,6 +38,8 @@ import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegate;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 
 /**
  * A World is a collection of known types and crosscutting members.
@@ -109,6 +111,7 @@ public abstract class World implements Dump.INode {
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 	
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.class);
     
     // Records whether ASM is around ... so we might use it for delegates
     protected static boolean isASMAround;
@@ -138,6 +141,7 @@ public abstract class World implements Dump.INode {
      */
     protected World() {
         super();
+        if (trace.isTraceEnabled()) trace.enter("<init>", this);
         Dump.registerNode(this.getClass(),this);
         typeMap.put("B", ResolvedType.BYTE);
         typeMap.put("S", ResolvedType.SHORT);
@@ -149,6 +153,7 @@ public abstract class World implements Dump.INode {
         typeMap.put("Z", ResolvedType.BOOLEAN);
         typeMap.put("V", ResolvedType.VOID);
         precedenceCalculator = new AspectPrecedenceCalculator(this);
+        if (trace.isTraceEnabled()) trace.exit("<init>");
     }
     
     /**
@@ -305,7 +310,10 @@ public abstract class World implements Dump.INode {
      * Convenience method for finding a type by name and resolving it in one step.
      */
     public ResolvedType resolve(String name) {
-    	return resolve(UnresolvedType.forName(name));
+//    	trace.enter("resolve", this, new Object[] {name});
+    	ResolvedType ret = resolve(UnresolvedType.forName(name));
+//    	trace.exit("resolve", ret);
+    	return ret;
     }
     
     public ResolvedType resolve(String name,boolean allowMissing) {
@@ -595,6 +603,9 @@ public abstract class World implements Dump.INode {
 			}
 		}
 
+	public boolean debug (String message) {
+		return MessageUtil.debug(messageHandler,message);
+	}
 
 	public void setCrossReferenceHandler(ICrossReferenceHandler xrefHandler) {
 		this.xrefHandler = xrefHandler;
@@ -819,9 +830,13 @@ public abstract class World implements Dump.INode {
 		private int collectedTypes = 0;
 		private ReferenceQueue rq = new ReferenceQueue();
 		
+		private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
+		
 		TypeMap(World w) {
+			if (trace.isTraceEnabled()) trace.enter("<init>",this,w);
 			this.w = w;
 			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.INFO);
+			if (trace.isTraceEnabled()) trace.exit("<init>");
 		}
 		
 		/** 

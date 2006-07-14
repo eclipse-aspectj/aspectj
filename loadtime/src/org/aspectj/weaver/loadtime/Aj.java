@@ -14,6 +14,8 @@ package org.aspectj.weaver.loadtime;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
@@ -26,13 +28,17 @@ public class Aj implements ClassPreProcessor {
 
 	private IWeavingContext weavingContext;
 	
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Aj.class);
+	
 	public Aj(){
 		this(null);
 	}
 	
 	
 	public Aj(IWeavingContext context){
-		weavingContext = context;
+		if (trace.isTraceEnabled()) trace.enter("<init>",this,new Object[] {context});
+		this.weavingContext = context;
+		if (trace.isTraceEnabled()) trace.exit("<init>");
 	}
 
     /**
@@ -51,22 +57,28 @@ public class Aj implements ClassPreProcessor {
      * @return weaved bytes
      */
     public byte[] preProcess(String className, byte[] bytes, ClassLoader loader) {
+		if (trace.isTraceEnabled()) trace.enter("preProcess",this,new Object[] {className,bytes,loader});
+    	
         //TODO AV needs to doc that
         if (loader == null || className == null) {
             // skip boot loader or null classes (hibernate)
+    		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
             return bytes;
         }
 
         try {
             WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
             if (weavingAdaptor == null) {
+        		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
             	return bytes;
             }
             return weavingAdaptor.weaveClass(className, bytes);
         } catch (Exception t) {
+    		trace.error("preProcess",t);
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
             // would make sense at least in test f.e. see TestHelper.handleMessage()
             t.printStackTrace();
+    		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
             return bytes;
         }
     }

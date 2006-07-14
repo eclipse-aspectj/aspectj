@@ -30,6 +30,8 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 
 
 public class ClassPathManager {
@@ -43,6 +45,8 @@ public class ClassPathManager {
 	private List openArchives                = new ArrayList();
 	private static int maxOpenArchives       = -1;
     private static final int MAXOPEN_DEFAULT = 1000;
+
+    private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
 	
 	static {
 		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openarchives",Integer.toString(MAXOPEN_DEFAULT));
@@ -53,11 +57,13 @@ public class ClassPathManager {
 	
 	
 	public ClassPathManager(List classpath, IMessageHandler handler) {
+		if (trace.isTraceEnabled()) trace.enter("<init>",this,new Object[] { classpath, handler });
 		entries = new ArrayList();
 		for (Iterator i = classpath.iterator(); i.hasNext();) {
 			String name = (String) i.next();
 			addPath(name, handler);
 		}
+		if (trace.isTraceEnabled()) trace.exit("<init>");
 	}
 
 	protected ClassPathManager() {};

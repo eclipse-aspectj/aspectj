@@ -28,6 +28,8 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 
 public class Lint {
 	/* private */ Map kinds = new HashMap();
@@ -123,14 +125,20 @@ public class Lint {
 		new Kind("cantFindType","{0}");
 	
 	public final Kind cantFindTypeAffectingJoinPointMatch = new Kind("cantFindTypeAffectingJPMatch","{0}");
+
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Lint.class);
 	
     public Lint(World world) {
+    	if (trace.isTraceEnabled()) trace.enter("<init>",this,world);
 		this.world = world;
+		if (trace.isTraceEnabled()) trace.exit("<init>");
 	}
 	
 	
 	public void setAll(String messageKind) {
+		if (trace.isTraceEnabled()) trace.enter("setAll",this,messageKind);
 		setAll(getMessageKind(messageKind));
+		if (trace.isTraceEnabled()) trace.exit("setAll");
 	}
 	
 	private void setAll(IMessage.Kind messageKind) {
@@ -141,6 +149,7 @@ public class Lint {
 	}
 	
 	public void setFromProperties(File file) {
+		if (trace.isTraceEnabled()) trace.enter("setFromProperties",this,file);
 		try {
 			InputStream s = new FileInputStream(file);
 			setFromProperties(s);
@@ -148,6 +157,7 @@ public class Lint {
 			MessageUtil.error(world.getMessageHandler(),
 					WeaverMessages.format(WeaverMessages.XLINT_LOAD_ERROR,file.getPath(),ioe.getMessage()));
 		}
+		if (trace.isTraceEnabled()) trace.exit("setFromProperties");
 	}
 
 	public void loadDefaultProperties() {

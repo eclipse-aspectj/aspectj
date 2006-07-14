@@ -46,6 +46,8 @@ import org.aspectj.weaver.ltw.LTWWorld;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.GeneratedClassHandler;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
@@ -72,10 +74,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private ClassLoader classLoader;
     private IWeavingContext weavingContext;
 
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassLoaderWeavingAdaptor.class);
+    
     public ClassLoaderWeavingAdaptor(final ClassLoader loader, IWeavingContext wContext) {
     	super();
+    	if (trace.isTraceEnabled()) trace.enter("<init>",this);
     	this.classLoader = loader;
     	this.weavingContext = wContext;
+    	if (trace.isTraceEnabled()) trace.exit("<init>");
     }
 
     protected void initialize (final ClassLoader deprecatedLoader, IWeavingContext deprecatedContext) {
@@ -334,6 +340,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @param definitions
      */
     private void registerAspects(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+    	if (trace.isTraceEnabled()) trace.enter("registerAspects",this, new Object[] { weaver, loader, definitions} );
         //TODO: the exclude aspect allow to exclude aspect defined upper in the CL hierarchy - is it what we want ??
         // if not, review the getResource so that we track which resource is defined by which CL
 
@@ -396,6 +403,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         	enabled = false;
     		info("no aspects registered. Disabling weaver for class loader " + getClassLoaderName(loader));
         }
+
+        if (trace.isTraceEnabled()) trace.exit("registerAspects",enabled);
     }
 
     /**
@@ -647,6 +656,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     }
 
 	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
+    	if (trace.isTraceEnabled()) trace.enter("defineClass",this,new Object[] {loader,name,bytes});
+    	Object clazz = null;
 		info("generating class '" + name + "'");
 		
 		try {
@@ -655,7 +666,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					"defineClass", new Class[] { String.class,
 							bytes.getClass(), int.class, int.class });
 			defineClass.setAccessible(true);
-			defineClass.invoke(loader, new Object[] { name, bytes,
+			clazz = defineClass.invoke(loader, new Object[] { name, bytes,
 					new Integer(0), new Integer(bytes.length) });
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof LinkageError) {
@@ -668,5 +679,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		} catch (Exception e) {
 			warn("define generated class failed",e);
 		}
+
+		if (trace.isTraceEnabled()) trace.exit("defineClass",clazz);
 	}
 }
