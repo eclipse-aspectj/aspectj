@@ -103,7 +103,7 @@ public class Aj implements ClassPreProcessor {
                 	} else {
 	                    // create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
 	                    // within the synchronized block
-	                    ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
+	                    ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor();
 	                    adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
 	                    weavingAdaptors.put(loader, adaptor);
                 	}

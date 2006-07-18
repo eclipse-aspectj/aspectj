@@ -71,23 +71,35 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     private List m_aspectIncludeStartsWith = new ArrayList();
 
     private StringBuffer namespace;
-    private ClassLoader classLoader;
     private IWeavingContext weavingContext;
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassLoaderWeavingAdaptor.class);
     
-    public ClassLoaderWeavingAdaptor(final ClassLoader loader, IWeavingContext wContext) {
+    public ClassLoaderWeavingAdaptor() {
     	super();
     	if (trace.isTraceEnabled()) trace.enter("<init>",this);
-    	this.classLoader = loader;
-    	this.weavingContext = wContext;
+    	if (trace.isTraceEnabled()) trace.exit("<init>");
+    }
+    
+    /**
+     * We don't need a reference to the class loader and using it during 
+     * construction can cause problems with recursion. It also makes sense
+     * to supply the weaving context during initialization to. 
+     * @deprecated
+     */
+    public ClassLoaderWeavingAdaptor(final ClassLoader deprecatedLoader, final IWeavingContext deprecatedContext) {
+    	super();
+    	if (trace.isTraceEnabled()) trace.enter("<init>",this,new Object[] { deprecatedLoader, deprecatedContext });
     	if (trace.isTraceEnabled()) trace.exit("<init>");
     }
 
-    protected void initialize (final ClassLoader deprecatedLoader, IWeavingContext deprecatedContext) {
+    protected void initialize (final ClassLoader classLoader, IWeavingContext context) {
         //super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
     	if (initialized) return;
 
+    	if (trace.isTraceEnabled()) trace.enter("initialize",this,new Object[] { classLoader, context });
+
+    	this.weavingContext = context;
         if (weavingContext == null) {
         	weavingContext = new DefaultWeavingContext(classLoader);
         }
@@ -116,6 +128,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
         List definitions = parseDefinitions(classLoader);
         if (!enabled) {
+        	if (trace.isTraceEnabled()) trace.exit("initialize",enabled);
         	return;
         }
         
@@ -149,6 +162,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         
         initialized = true;
+    	if (trace.isTraceEnabled()) trace.exit("initialize",enabled);
     }
 
     /**

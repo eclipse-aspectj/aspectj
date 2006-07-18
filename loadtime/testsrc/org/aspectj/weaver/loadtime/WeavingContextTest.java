@@ -25,7 +25,8 @@ public class WeavingContextTest extends TestCase {
 	public void testWeavingContext() {
 		URLClassLoader loader = new URLClassLoader(new URL[] {},null);
 		IWeavingContext context = new TestWeavingContext(loader);
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,context);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,context);
 	}
 
 	public void testGetResources() {
@@ -38,8 +39,8 @@ public class WeavingContextTest extends TestCase {
 			}
 			
 		};
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,context);
-		adaptor.initialize(null,null);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,context);
 		
 		assertTrue("IWeavingContext not called",called);
 	}
@@ -53,9 +54,9 @@ public class WeavingContextTest extends TestCase {
 			}
 			
 		};
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,context);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
 		try {
-			adaptor.initialize(null,null);
+			adaptor.initialize(loader,context);
 		}
 		catch (UnsupportedOperationException ex) {
 			fail("IWeavingContect.getBundleIdFromURL() is deprecated");
@@ -72,8 +73,8 @@ public class WeavingContextTest extends TestCase {
 			}
 			
 		};
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,context);
-		adaptor.initialize(null,null);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,context);
 		
 		assertTrue("IWeavingContext not called",called);
 	}
@@ -90,8 +91,8 @@ public class WeavingContextTest extends TestCase {
 			}
 			
 		};
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,context);
-		adaptor.initialize(null,null);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,context);
 		
 		assertTrue("IWeavingContext not called",called);
 	}
@@ -108,8 +109,8 @@ public class WeavingContextTest extends TestCase {
 			}
 			
 		};
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,context);
-		adaptor.initialize(null,null);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,context);
 		
 		assertTrue("IWeavingContext not called",called);
 	}

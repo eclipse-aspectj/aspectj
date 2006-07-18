@@ -115,7 +115,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 					
 				};
 				
-				ClassLoaderWeavingAdaptor clwAdaptor = new ClassLoaderWeavingAdaptor(this,weavingContext);
+				ClassLoaderWeavingAdaptor clwAdaptor = new ClassLoaderWeavingAdaptor();
 				initializingAdaptor = true;
 				clwAdaptor.initialize(this,weavingContext);
 				initializingAdaptor = false;

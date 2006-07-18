@@ -19,26 +19,30 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 
 	public void testClassLoaderWeavingAdaptor() {
 		ClassLoader loader = new URLClassLoader(new URL[] {}, null);
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,null);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,null);
 	}
 
 	public void testGetNamespace() {
 		ClassLoader loader = new URLClassLoader(new URL[] {}, null);
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,null);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,null);
 		String namespace = adaptor.getNamespace();
 		assertEquals("Namespace should be empty","",namespace);
 	}
 
 	public void testGeneratedClassesExistFor() {
 		ClassLoader loader = new URLClassLoader(new URL[] {}, null);
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,null);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,null);
 		boolean exist = adaptor.generatedClassesExistFor("Junk");
 		assertFalse("There should be no generated classes",exist);
 	}
 
 	public void testFlushGeneratedClasses() {
 		ClassLoader loader = new URLClassLoader(new URL[] {}, null);
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor(loader,null);
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,null);
 		adaptor.flushGeneratedClasses();
 		boolean exist = adaptor.generatedClassesExistFor("Junk");
 		assertFalse("There should be no generated classes",exist);
