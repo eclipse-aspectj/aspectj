@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 /**
  * Super class for the GET/PUTxxx family of instructions.
  *
- * @version $Id: FieldInstruction.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: FieldInstruction.java,v 1.5 2006/07/19 12:06:16 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldInstruction extends FieldOrMethod
@@ -88,7 +88,7 @@ public abstract class FieldInstruction extends FieldOrMethod
   /** @return size of field (1 or 2)
    */
   protected int getFieldSize(ConstantPoolGen cpg) {
-    return getType(cpg).getSize();
+    return Type.getTypeSize(getSignature(cpg));
   }
 
   /** @return return type of referenced field

@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.6 2005/09/21 15:02:04 acolyer Exp $
+ * @version $Id: Type.java,v 1.7 2006/07/19 12:06:17 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified:
@@ -247,6 +247,74 @@ public abstract class Type implements java.io.Serializable {
     types = new Type[vec.size()];
     vec.toArray(types);
     return types;
+  }
+  
+  /**
+   * Work out the type of each argument in the signature and return the cumulative sizes of
+   * all the types (size means number of stack slots it consumes, eg double=2, int=1).
+   * Unlike the call above, this does minimal unpacking
+   */
+  public static int getArgumentSizes(String signature) {
+	  int size = 0;
+      if (signature.charAt(0) != '(')
+	     throw new ClassFormatException("Invalid method signature: " + signature);
+
+      int index = 1; // current string position
+      try {
+	      while (signature.charAt(index) != ')') {
+	      	byte type = Utility.typeOfSignature(signature.charAt(index));
+	      	if (type<=Constants.T_VOID) {
+	      		size+=BasicType.getType(type).getSize();
+	      		index++;
+	      	} else if (type==Constants.T_ARRAY) {
+	      		int dim=0;
+	            do { dim++; } while(signature.charAt(dim+index) == '[');
+	            TypeHolder th = getTypeInternal(signature.substring(dim+index));
+	            size+=1;
+	            index+=dim+th.getConsumed();
+	        } else { // type == T_REFERENCE
+	          // Format is 'Lblahblah;'
+	          int index2 = signature.indexOf(';',index); // Look for closing ';'
+	    	  
+	    	  // generics awareness
+	          int nextAngly = signature.indexOf('<',index);
+	    	  if (nextAngly==-1 || nextAngly>index2) {
+	    	  } else {
+	    		boolean endOfSigReached = false;
+	    		int posn = nextAngly;
+	    		int genericDepth=0;
+	    		while (!endOfSigReached) {
+	    			switch (signature.charAt(posn++)) {
+	    			  case '<': genericDepth++;break;
+	    			  case '>': genericDepth--;break;
+	    			  case ';': if (genericDepth==0) endOfSigReached=true;break;
+	    			  default:
+	    			}
+	    		}
+	    		index2=posn-1;
+	    	  }
+	    	  size++;
+	    	  index=index2+1;
+	        }
+	      }
+    } catch(StringIndexOutOfBoundsException e) { // Should never occur
+      throw new ClassFormatException("Invalid method signature: " + signature);
+    }
+	return size;
+  }
+  
+  /**
+   * Return the size of the type expressed in the signature.  The signature should contain only one type.
+   */
+  public static int getTypeSize(String signature) {
+	byte type = Utility.typeOfSignature(signature.charAt(0));
+	if (type<=Constants.T_VOID) {
+	  return BasicType.getType(type).getSize();
+	} else if (type==Constants.T_ARRAY) {
+      return 1;
+    } else { // type == T_REFERENCE
+      return 1;
+    }
   }
 
   /** Convert runtime java.lang.Class to BCEL Type object.

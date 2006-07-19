@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Utility functions that do not really belong to any class in particular.
  *
- * @version $Id: Utility.java,v 1.4 2005/06/01 14:56:57 aclement Exp $
+ * @version $Id: Utility.java,v 1.5 2006/07/19 12:06:15 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified: Andy Clement  2-mar-05  Removed unnecessary static and optimized
@@ -1295,6 +1295,24 @@ public abstract class Utility {
     } catch(StringIndexOutOfBoundsException e) {
       throw new ClassFormatException("Invalid method signature: " + signature);
     }
+  }
+  
+  public static final byte typeOfSignature(char c) throws ClassFormatException {
+      switch(c) {
+          case 'B' : return Constants.T_BYTE;
+          case 'C' : return Constants.T_CHAR;
+          case 'D' : return Constants.T_DOUBLE;
+	      case 'F' : return Constants.T_FLOAT;
+	      case 'I' : return Constants.T_INT;
+	      case 'J' : return Constants.T_LONG;
+	      case 'L' : return Constants.T_REFERENCE;
+	      case '[' : return Constants.T_ARRAY;
+	      case 'V' : return Constants.T_VOID;
+	      case 'Z' : return Constants.T_BOOLEAN;
+	      case 'S' : return Constants.T_SHORT;
+          default:  
+	        throw new ClassFormatException("Invalid type of signature: " + c);
+      }
   }
   
   public static final String readClassTypeSignatureFrom(String signature) {

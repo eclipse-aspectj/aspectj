@@ -57,6 +57,7 @@ package org.aspectj.apache.bcel.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.WeakHashMap;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -78,7 +79,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: SyntheticRepository.java,v 1.5 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: SyntheticRepository.java,v 1.6 2006/07/19 12:06:16 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */
@@ -88,7 +89,7 @@ public class SyntheticRepository implements Repository {
   private static HashMap _instances = new HashMap(); // CLASSPATH X REPOSITORY
 
   private ClassPath _path = null;
-  private HashMap   _loadedClasses = new HashMap(); // CLASSNAME X JAVACLASS
+  private WeakHashMap   _loadedClasses = new WeakHashMap(); // CLASSNAME X JAVACLASS
 
   private SyntheticRepository(ClassPath path) {
     _path = path;

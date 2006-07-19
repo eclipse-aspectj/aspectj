@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 /**
  * Super class for the INVOKExxx family of instructions.
  *
- * @version $Id: InvokeInstruction.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: InvokeInstruction.java,v 1.4 2006/07/19 12:06:17 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class InvokeInstruction extends FieldOrMethod
@@ -98,18 +98,8 @@ public abstract class InvokeInstruction extends FieldOrMethod
    */
   public int consumeStack(ConstantPoolGen cpg) {
       String signature = getSignature(cpg);
-      Type[] args      = Type.getArgumentTypes(signature);
-      int    sum;
-
-      if(opcode == Constants.INVOKESTATIC)
-	sum = 0;
-      else
-	sum = 1;  // this reference
-
-      int n = args.length;
-      for (int i = 0; i < n; i++)
-	sum += args[i].getSize();
-
+      int sum = Type.getArgumentSizes(signature);
+      if (opcode!=Constants.INVOKESTATIC) sum+=1;
       return sum;
    }
 

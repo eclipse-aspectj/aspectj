@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 /** 
  * Denotes reference such as java.lang.String.
  *
- * @version $Id: ObjectType.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ObjectType.java,v 1.3 2006/07/19 12:06:16 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class ObjectType extends ReferenceType {
@@ -70,8 +70,15 @@ public final class ObjectType extends ReferenceType {
    * @param class_name fully qualified class name, e.g. java.lang.String
    */ 
   public ObjectType(String class_name) {
-    super(Constants.T_REFERENCE, "L" + class_name.replace('.', '/') + ";");
+    super(Constants.T_REFERENCE, toSignature(class_name));//"L" + class_name.replace('.', '/') + ";");
     this.class_name = class_name.replace('/', '.');
+  }
+  
+  private static String toSignature(String classname) {
+	  StringBuffer sig = new StringBuffer();
+	  sig.append("L").append(classname.replace('.','/'));
+	  sig.append(";");
+	  return sig.toString();
   }
 
   /** @return name of referenced class
