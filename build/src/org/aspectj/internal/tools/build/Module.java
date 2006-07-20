@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,6 +29,8 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.aspectj.internal.tools.build.Result.Kind;
+import org.aspectj.internal.tools.build.Util.OSGIBundle;
+import org.aspectj.internal.tools.build.Util.OSGIBundle.RequiredBundle;
 
 
 /**
@@ -48,13 +51,13 @@ public class Module {
     private static final String[] ATTS = new String[] { "exported", "kind",
             "path", "sourcepath" };
 
-    private static final int getATTSIndex(String key) {
-        for (int i = 0; i < ATTS.length; i++) {
-            if (ATTS[i].equals(key))
-                return i;
-        }
-        return -1;
-    }
+//    private static final int getATTSIndex(String key) {
+//        for (int i = 0; i < ATTS.length; i++) {
+//            if (ATTS[i].equals(key))
+//                return i;
+//        }
+//        return -1;
+//    }
 
     /**
      * @return true if file is null or cannot be read or was last modified after
@@ -121,30 +124,30 @@ public class Module {
         return (path.endsWith(".java") || path.endsWith(".aj")); // XXXFileLiteral
     }
 
-    /** @return List of File of any module or library jar ending with suffix */
-    private static ArrayList findJarsBySuffix(String suffix, Kind kind,
-            List libJars, List required) {
-        ArrayList result = new ArrayList();
-        if (null != suffix) {
-            // library jars
-            for (Iterator iter = libJars.iterator(); iter.hasNext();) {
-                File file = (File) iter.next();
-                if (file.getPath().endsWith(suffix)) {
-                    result.add(file);
-                }
-            }
-            // module jars
-            for (Iterator iter = required.iterator(); iter.hasNext();) {
-                Module module = (Module) iter.next();
-                Result moduleResult = module.getResult(kind);
-                File file = moduleResult.getOutputFile();
-                if (file.getPath().endsWith(suffix)) {
-                    result.add(file);
-                }
-            }
-        }
-        return result;
-    }
+//    /** @return List of File of any module or library jar ending with suffix */
+//    private static ArrayList findJarsBySuffix(String suffix, Kind kind,
+//            List libJars, List required) {
+//        ArrayList result = new ArrayList();
+//        if (null != suffix) {
+//            // library jars
+//            for (Iterator iter = libJars.iterator(); iter.hasNext();) {
+//                File file = (File) iter.next();
+//                if (file.getPath().endsWith(suffix)) {
+//                    result.add(file);
+//                }
+//            }
+//            // module jars
+//            for (Iterator iter = required.iterator(); iter.hasNext();) {
+//                Module module = (Module) iter.next();
+//                Result moduleResult = module.getResult(kind);
+//                File file = moduleResult.getOutputFile();
+//                if (file.getPath().endsWith(suffix)) {
+//                    result.add(file);
+//                }
+//            }
+//        }
+//        return result;
+//    }
     
     public final boolean valid;
 
@@ -165,9 +168,6 @@ public class Module {
 
     /** path to output jar - may not exist */
     private final File moduleJar;
-
-    /** path to fully-assembed jar - may not exist */
-    private final File assembledJar;
 
     /** File list of library jars */
     private final List libJars;
@@ -190,18 +190,8 @@ public class Module {
     /** Module list of required modules */
     private final List requiredModules;
 
-    /** List of File that are newer than moduleJar. Null until requested */
-    // private List newerFiles;
-    /** true if this has been found to be out of date */
-    private boolean outOfDate;
-
-    /** true if we have calculated whether this is out of date */
-    private boolean outOfDateSet;
-
     /** logger */
     private final Messager messager;
-
-    private final File jarDir;
 
     Module(File moduleDir, File jarDir, String name, Modules modules,
             Messager messager) {
@@ -210,7 +200,6 @@ public class Module {
         Util.iaxIfNull(name, "name");
         Util.iaxIfNull(modules, "modules");
         this.moduleDir = moduleDir;
-        this.jarDir = jarDir;
         this.libJars = new ArrayList();
         this.exportedLibJars = new ArrayList();
         this.requiredModules = new ArrayList();
@@ -221,7 +210,6 @@ public class Module {
         this.modules = modules;
         this.messager = messager;
         this.moduleJar = new File(jarDir, name + ".jar");
-        this.assembledJar = new File(jarDir, name + "-all.jar");
         this.release = new Result(Result.RELEASE, this, jarDir);
         this.releaseAll = new Result(Result.RELEASE_ALL, this, jarDir);
         this.test = new Result(Result.TEST, this, jarDir);
@@ -324,14 +312,55 @@ public class Module {
     }
 
     private boolean init() {
-        return initClasspath() && initProperties() && reviewInit()
-                && initResults();
+        boolean cp = initClasspath();
+        boolean mf = initManifest();
+        if (!cp && !mf) {
+            return false;
+        }
+        return initProperties() && reviewInit() && initResults();
     }
 
+    /** read OSGI manifest.mf file XXX hacked */
+    private boolean initManifest() {
+        File metaInf = new File(moduleDir, "META-INF"); 
+        if (!metaInf.canRead() || !metaInf.isDirectory()) {
+            return false;
+        }
+        File file = new File(metaInf, "MANIFEST.MF"); // XXXFileLiteral
+        if (!file.exists()) {
+            return false; // ok, not OSGI
+        }
+        InputStream fin = null;
+        OSGIBundle bundle = null;
+        try {
+            fin = new FileInputStream(file);
+            bundle = new OSGIBundle(fin);
+        } catch (IOException e) {
+            messager.logException("IOException reading " + file, e);
+            return false;
+        } finally {
+            Util.closeSilently(fin);
+        }
+        RequiredBundle[] bundles = bundle.getRequiredBundles();
+        for (int i = 0; i < bundles.length; i++) {
+            RequiredBundle required = bundles[i];
+            update("src", "/" + required.name, required.text, false);
+        }
+        String[] libs = bundle.getClasspath();
+        for (int i = 0; i < libs.length; i++) {
+            update("lib", libs[i], libs[i], false);
+        }
+
+        return true;        
+    }
+    
     /** read eclipse .classpath file XXX line-oriented hack */
     private boolean initClasspath() {
         // meaning testsrc directory, junit library, etc.
         File file = new File(moduleDir, ".classpath"); // XXXFileLiteral
+        if (!file.exists()) {
+            return false; // OSGI???
+        }
         FileReader fin = null;
         try {
             fin = new FileReader(file);
@@ -359,13 +388,13 @@ public class Module {
         return false;
     }
 
-    private boolean update(String toString, String[] attributes) {
-        String kind = attributes[getATTSIndex("kind")];
-        String path = attributes[getATTSIndex("path")];
-        String exp = attributes[getATTSIndex("exported")];
-        boolean exported = ("true".equals(exp));
-        return update(kind, path, toString, exported);
-    }
+//    private boolean update(String toString, String[] attributes) {
+//        String kind = attributes[getATTSIndex("kind")];
+//        String path = attributes[getATTSIndex("path")];
+//        String exp = attributes[getATTSIndex("exported")];
+//        boolean exported = ("true".equals(exp));
+//        return update(kind, path, toString, exported);
+//    }
 
     private boolean update(String kind, String path, String toString,
             boolean exported) {
