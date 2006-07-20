@@ -15,11 +15,13 @@
 package org.aspectj.internal.tools.build;
 
 import java.io.*;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes.Name;
 
 /** 
  * Build-only utilities.
@@ -237,5 +239,245 @@ public class Util {
         return ((null == list) || (0 == list.length));
     }
 
+    public static void closeSilently(InputStream in) {
+        if (null != in) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                // do nothing
+            }
+        }
+    }
+
+    public static void closeSilently(Reader in) {
+        if (null != in) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                // do nothing
+            }
+        }
+    }
+
+    /**
+     * Report whether actual has different members than expected
+     * @param expected the String[] of expected members (none null)
+     * @param actual the String[] of actual members
+     * @param sb StringBuffer sink for any differences in membership
+     * @return true if any diffs found and sink updated
+     */
+    public static final boolean reportMemberDiffs(String[] expected, String[] actual, StringBuffer sb) {
+        expected = copy(expected);
+        actual = copy(actual);
+        int hits = 0;
+        for (int i = 0; i < expected.length; i++) {
+            int curHit = hits;
+            for (int j = 0; (curHit == hits) && (j < actual.length); j++) {
+                if (null == expected[i]) {
+                    throw new IllegalArgumentException("null at " + i);
+                }
+                if (expected[i].equals(actual[j])) {
+                    expected[i] = null;
+                    actual[j] = null;
+                    hits++;
+                }
+            }
+        }
+        if ((hits != expected.length) || (hits != actual.length)) {
+            sb.append("unexpected [");
+            String prefix = "";
+            for (int i = 0; i < actual.length; i++) {
+                if (null != actual[i]) {
+                    sb.append(prefix);
+                    prefix = ", ";
+                    sb.append("\"");
+                    sb.append(actual[i]);
+                    sb.append("\"");
+                }
+            }
+            sb.append("] missing [");
+            prefix = "";
+            for (int i = 0; i < expected.length; i++) {
+                if (null != expected[i]) {
+                    sb.append(prefix);
+                    prefix = ", ";
+                    sb.append("\"");
+                    sb.append(expected[i]);
+                    sb.append("\"");
+                }
+            }
+            sb.append("]");
+            return true;
+        }
+        return false;
+    }
+
+    private static final String[] copy(String[] ra) {
+        if (null == ra) {
+            return new String[0];
+        }
+        String[] result = new String[ra.length];
+        System.arraycopy(ra, 0, result, 0, ra.length);
+        return result;
+    }
+
+    /**
+     * Support for OSGI bundles read from manifest files.
+     * Currently very limited, and will only support the subset of 
+     * features that we use.
+     * sources:
+     * http://www-128.ibm.com/developerworks/library/os-ecl-osgi/index.html
+     * http://help.eclipse.org/help30/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/osgi/org/osgi/framework/Constants.html
+     */    
+    public static class OSGIBundle {
+        public static final Name BUNDLE_NAME = new Name("Bundle-Name");
+
+        public static final Name BUNDLE_SYMBOLIC_NAME = new Name(
+                "Bundle-SymbolicName");
+
+        public static final Name BUNDLE_VERSION = new Name("Bundle-Version");
+
+        public static final Name BUNDLE_ACTIVATOR = new Name("Bundle-Activator");
+
+        public static final Name BUNDLE_VENDOR = new Name("Bundle-Vendor");
+
+        public static final Name REQUIRE_BUNDLE = new Name("Require-Bundle");
+
+        public static final Name IMPORT_PACKAGE = new Name("Import-Package");
+
+        public static final Name BUNDLE_CLASSPATH = new Name("Bundle-ClassPath");
+
+        /** unmodifiable list of all valid OSGIBundle Name's */
+        public static final List NAMES;
+        static {
+            ArrayList names = new ArrayList();
+            names.add(BUNDLE_NAME);
+            names.add(BUNDLE_SYMBOLIC_NAME);
+            names.add(BUNDLE_VERSION);
+            names.add(BUNDLE_ACTIVATOR);
+            names.add(BUNDLE_VENDOR);
+            names.add(REQUIRE_BUNDLE);
+            names.add(IMPORT_PACKAGE);
+            names.add(BUNDLE_CLASSPATH);
+            NAMES = Collections.unmodifiableList(names);
+        }
+
+        private final Manifest manifest;
+
+        private final Attributes attributes;
+
+        /**
+         * 
+         * @param manifestInputStream
+         *            the InputStream of the manifest.mf - will be closed.
+         * @throws IOException
+         *             if unable to read or close the manifest input stream.
+         */
+        public OSGIBundle(InputStream manifestInputStream) throws IOException {
+            manifest = new Manifest();
+            manifest.read(manifestInputStream);
+            manifestInputStream.close();
+            attributes = manifest.getMainAttributes();
+        }
+
+        public String getAttribute(Name attributeName) {
+            return attributes.getValue(attributeName);
+        }
+
+        public String[] getClasspath() {
+            String cp = getAttribute(OSGIBundle.BUNDLE_CLASSPATH);
+            if (null == cp) {
+                return new String[0];
+            }
+            StringTokenizer st = new StringTokenizer(cp, " ,");
+            String[] result = new String[st.countTokens()];
+            int i = 0;
+            while (st.hasMoreTokens()) {
+                result[i++] = st.nextToken();
+            }
+            return result;
+        }
+
+        /**
+         * XXX ugly/weak hack only handles a single version comma
+         * {name};bundle-version="[1.5.0,1.5.5]";resolution:=optional
+         * @return
+         */
+        public RequiredBundle[] getRequiredBundles() {
+            String value = getAttribute(OSGIBundle.REQUIRE_BUNDLE);
+            if (null == value) {
+                return new RequiredBundle[0];
+            }
+            StringTokenizer st = new StringTokenizer(value, " ,");
+            RequiredBundle[] result = new RequiredBundle[st.countTokens()];
+            int i = 0;
+            int skips = 0;
+            while (st.hasMoreTokens()) {
+                String token = st.nextToken();
+                int first = token.indexOf("\""); 
+                if (-1 != first) {
+                    if (!st.hasMoreTokens()) {
+                        throw new IllegalArgumentException(token);
+                    }
+                    // just assume only one quoted "," for version?
+                    token += "," + st.nextToken();
+                    skips++;
+                }
+                result[i++] = new RequiredBundle(token);
+            }
+            if (skips > 0) {
+                RequiredBundle[] patch = new RequiredBundle[result.length-skips];
+                System.arraycopy(result, 0, patch, 0, patch.length);
+                result = patch;
+            }
+            return result;
+        }
+
+        /**
+         * Wrap each dependency on another bundle 
+         */
+        public static class RequiredBundle {
+            
+            /** unparsed entry text, for debugging */
+            final String text;
+            
+            /** Symbolic name of the required bundle */
+            final String name;
+
+            /** if not null, then start/end versions of required bundle
+             * in the format of the corresponding manifest entry 
+             */
+            final String versions;
+
+            /** if true, then required bundle is optional */
+            final boolean optional;
+
+            private RequiredBundle(String entry) {
+                text = entry;
+                StringTokenizer st = new StringTokenizer(entry, ";");
+                name = st.nextToken();
+                String vers = null;
+                String opt = null;
+                // bundle-version="[1.5.0,1.5.5]";resolution:=optiona
+                final String RESOLUTION = "resolution:=";
+                final String VERSION = "bundle-version=\"";
+                while (st.hasMoreTokens()) {
+                    String token = st.nextToken();
+                    if (token.startsWith(VERSION)) {
+                        int start = VERSION.length();
+                        int end = token.lastIndexOf("\"");
+                        vers = token.substring(start, end);
+                        // e.g., [1.5.0,1.5.5)
+                    } else if (token.startsWith(RESOLUTION)) {
+                        int start = RESOLUTION.length();
+                        int end = token.length();
+                        opt = token.substring(start, end);
+                    } 
+                }
+                versions = vers;
+                optional = "optional".equals(opt);
+            }
+        }
+    }
 }
 
