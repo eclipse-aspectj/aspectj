@@ -527,7 +527,6 @@ public abstract class Builder {
     }
 
     protected final boolean buildProductModule(ProductModule module) {
-        boolean noRebuild = false;
         ArrayList errors = new ArrayList();
         try {
             Kind productKind = Result.kind(Result.NORMAL, Result.ASSEMBLE);
