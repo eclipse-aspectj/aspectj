@@ -301,7 +301,8 @@
 				<!-- see skipped libraries in Builder.properties -->
            	    <pathelement location="${jdk.tools.jar}"/>
             	<pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar"/> 
-				<!-- XML api's used by loadtime, also needed when running under 1.3 per Ant FAQ -->
+           		<fileset dir="${aspectj.modules.lib.dir}/commons" includes="commons.jar"/>
+           		<!-- XML api's used by loadtime, also needed when running under 1.3 per Ant FAQ -->
            	    <fileset dir="${aspectj.modules.lib.dir}/ant/lib" 
                 	includes="ant.jar,ant-junit.jar,xml-apis.jar,xercesImpl.jar"/>
            	</classpath>
