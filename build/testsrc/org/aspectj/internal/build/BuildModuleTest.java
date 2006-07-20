@@ -1,7 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC),
- *               2005 Contributors.
+ *               2005-2006 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -67,18 +67,13 @@ public class BuildModuleTest extends TestCase {
         "BuildModuleTest: Define \"run.build.tests\" as a system "
         + "property to run tests to build ";
     private static final String BUILD_CONFIG;
-    private static final boolean useEclipseCompiles;
     static {
-        boolean useEclipse = false;
         String config = null;
         try {
             config = System.getProperty("build.config");
-            useEclipse = ((null != config) 
-                    && (-1 != config.indexOf("useEclipseCompiles")));
         } catch (Throwable t) {
             // ignore
         }
-        useEclipseCompiles = useEclipse;
         BUILD_CONFIG = config;
         if (printInfoMessages) {
             System.out.println("BuildModuleTest build.config: " + config);
