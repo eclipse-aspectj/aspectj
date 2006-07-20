@@ -42,7 +42,6 @@ import org.aspectj.internal.tools.build.Messager;
 import org.aspectj.internal.tools.build.Module;
 import org.aspectj.internal.tools.build.Result;
 import org.aspectj.internal.tools.build.Util;
-import org.aspectj.internal.tools.build.Result.Kind;
 
 /**
  * Implement Builder in Ant.
@@ -322,7 +321,7 @@ public class AntBuilder extends Builder {
                 hasLibraries = true;
             }
         }
-        Kind kind = result.getKind();
+//      Westodo        Kind kind = result.getKind();
         Result[] reqs = result.getRequired();
         // required modules and their exported libraries
         for (int i = 0; i < reqs.length; i++) {
@@ -618,7 +617,7 @@ public class AntBuilder extends Builder {
                 ClassLoader loader = new URLClassLoader(cp, parent);
                 Class c = loader.loadClass(AJCTASK);
                 task = c.newInstance();
-                Project project = javac.getProject();
+//              Westodo                Project project = javac.getProject();
                 Method m = c.getMethod("setupAjc", new Class[] {Javac.class});
                 m.invoke(task, new Object[] {javac});
                 m = c.getMethod("setFork", new Class[] {boolean.class});
