@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Client Plug-in
+Bundle-SymbolicName: org.aspectj.testing.client
+Bundle-Version: 1.0.0
+Bundle-Localization: plugin
+Bundle-ClassPath: lib/commons/commons.jar, lib/ant/lib/ant.jar
+Require-Bundle: util, org.aspectj.runtime
+

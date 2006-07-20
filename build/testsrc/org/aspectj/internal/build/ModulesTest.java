@@ -1,7 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC),
- *               2005 Contributors.
+ *               2005-2006 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -145,10 +145,7 @@ public class ModulesTest extends TestCase {
         assertTrue(ajdt.valid);
         
         Project project = new Project();
-        project.setBaseDir(new File("."));
-        project.setName("testClasspathCreation");
-        File tempDir = new File(".");
-        AntBuilder builder = (AntBuilder) AntBuilder.getBuilder("", project, tempDir);
+        AntBuilder builder = getBuilder(project);
         Path classpath = new Path(project);
         Kind kind = Result.kind(Result.NORMAL, !Result.ASSEMBLE);
         Result result = ajdt.getResult(kind);
@@ -158,7 +155,44 @@ public class ModulesTest extends TestCase {
             assertTrue(classpath.toString(), false);
         }
     }
+    
+    /**
+     * This test requires two OSGI modules:
+     * org.aspectj.util, which optionally depends on tempaspectjrt.
+     * Currently, the Ant builder does not handle linked source folders,
+     * and the OSGI support does not work around optional plugins.
+     */
+    public void skip_testOSGIModuleCreation() {
+        final String MODULE = "org.aspectj.util";
+        final String USES_MODULE = "tempaspectjrt";
+        
+        Modules modules = getModules(null);
+        Module newutil = modules.getModule(MODULE);
+        assertTrue(newutil.valid);
+        
+        Project project = new Project();
+        AntBuilder builder = getBuilder(project);
+        Path classpath = new Path(project);
+        Kind kind = Result.kind(Result.NORMAL, !Result.ASSEMBLE);
+        Result result = newutil.getResult(kind);
+        builder.setupClasspath(result, classpath);
+        System.out.println(newutil + " classpath: " + classpath);
+        if ((null == classpath) || (1 != classpath.size())) {
+            assertTrue(classpath.toString(), false);
+        }
+        String cpEntry = classpath.list()[0];
+        if (!cpEntry.endsWith(USES_MODULE + ".jar")) {
+            fail("expected " + classpath + " to end with " + USES_MODULE + ".jar");
+        }
+    }
 
+    private AntBuilder getBuilder(Project project) {
+        project.setBaseDir(new File("."));
+        project.setName("testOSGIModuleCreation");
+        File tempDir = new File(".");
+        return (AntBuilder) AntBuilder.getBuilder("", project, tempDir);        
+    }
+    
     
     /*********************************************************************
      * The following tests/code enable you to run the entire build in JUnit
