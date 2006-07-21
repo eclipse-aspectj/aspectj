@@ -137,7 +137,8 @@ public class UtilsTest extends TestCase {
         }
     }
 
-    public void testOSGIManifests() throws Exception {
+    /** disabled pending research */
+    public void skip_testOSGIManifests() throws Exception {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < TESTS.length; i++) {
             TESTS[i].run(sb);
