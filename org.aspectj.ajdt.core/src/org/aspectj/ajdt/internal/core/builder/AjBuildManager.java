@@ -179,7 +179,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         boolean batch) throws IOException, AbortException {
         boolean ret = true;
     	batchCompile = batch;
-    	
+    	wasFullBuild = batch;
     	if (baseHandler instanceof ILifecycleAware) {
     		((ILifecycleAware)baseHandler).buildStarting(!batch);
     	}
@@ -319,7 +319,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             
             // have to tell state we succeeded or next is not incremental
             state.successfulCompile(buildConfig,batch);
-            wasFullBuild = batch;
+
             copyResourcesToDestination();
             
             if (buildConfig.getOutxmlName() != null) {
