@@ -38,7 +38,7 @@ public class NullIdeProgressMonitor implements BuildProgressMonitor {
 		return 0;
 	}
 
-	public void finish() {
+	public void finish(boolean b) {
 
 	}
 

@@ -320,7 +320,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 					return 0;
 				}
 
-				public void finish() {}
+				public void finish(boolean b) {}
 		
 	}
 	

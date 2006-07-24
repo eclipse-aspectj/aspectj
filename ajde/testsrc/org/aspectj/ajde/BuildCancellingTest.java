@@ -345,7 +345,7 @@ public class BuildCancellingTest extends AjdeTestCase {
 			return 100; // Causes setProgressBarVal() to be fed what are effectively percentages
 		}
 
-		public void finish() {
+		public void finish(boolean b) {
 		}
 
 	}

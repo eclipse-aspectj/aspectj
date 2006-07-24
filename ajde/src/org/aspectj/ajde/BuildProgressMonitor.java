@@ -61,5 +61,5 @@ public interface BuildProgressMonitor {
     /**
      * Jump the progress bar to the end and finish progress monitoring.
      */
-    public void finish();
+    public void finish(boolean wasFullBuild);
 }

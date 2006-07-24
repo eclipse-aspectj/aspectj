@@ -114,8 +114,8 @@ public class CompileCommand implements ICommand {
         TaskListManager taskListManager = myHandler;
         BuildProgressMonitor buildProgressMonitor =
             new DefaultBuildProgressMonitor(new Frame()) {
-            public void finish() {
-                super.finish();
+            public void finish(boolean b) {
+                super.finish(b);
                 setEndTime(System.currentTimeMillis());
             }
         };
@@ -280,6 +280,10 @@ class MyTaskListManager
             hasWarning = true;
         }
     }
+	public void buildSuccessful(boolean wasFullBuild) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class VoidInvocationHandler implements InvocationHandler {

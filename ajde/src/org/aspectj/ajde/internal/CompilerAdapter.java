@@ -646,4 +646,8 @@ public class CompilerAdapter {
 		buildManager.setState(buildState);	
 		buildManager.setStructureModel(buildState.getStructureModel());
 	}
+
+	public boolean wasFullBuild() {
+		return buildManager.wasFullBuild();
+	}
 } 

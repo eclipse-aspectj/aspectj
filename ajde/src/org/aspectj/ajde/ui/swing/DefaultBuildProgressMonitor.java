@@ -92,7 +92,7 @@ public class DefaultBuildProgressMonitor extends Thread implements BuildProgress
     /**
      * Jump the progress bar to the end and finish progress monitoring.
      */
-    public void finish() {
+    public void finish(boolean wasFullBuild) {
 		progressDialog.finish();
 		dialog.dispose();    	
     }

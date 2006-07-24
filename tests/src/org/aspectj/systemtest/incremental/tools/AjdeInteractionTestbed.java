@@ -272,6 +272,8 @@ public class AjdeInteractionTestbed extends TestCase {
 	
 	
 	public boolean wasFullBuild() {
+	// alternatives: statelistener is debug interface, progressmonitor is new proper interface (see pr145689)
+//		return MyBuildProgressMonitor.wasFullBuild();
 		return MyStateListener.wasFullBuild();
 	}
 	
@@ -543,6 +545,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		
 		public static void reset() {
 			_instance.finished = false;
+			_instance.wasFullBuild=true;
 			_instance.compiledFiles.clear();
 			_instance.wovenClasses.clear();
 		}
@@ -559,6 +562,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		private long starttime = 0;
 		private long totaltimetaken = 0;
 		private boolean finished = false;
+		private boolean wasFullBuild = true;
 
 		public void start(String configFile) {
 			starttime = System.currentTimeMillis();
@@ -593,9 +597,10 @@ public class AjdeInteractionTestbed extends TestCase {
 			return 100;
 		}
 
-		public void finish() {
+		public void finish(boolean b) {
 			log("BuildProgressMonitor.finish()");
 			_instance.finished=true;
+			_instance.wasFullBuild = b;
 			_instance.totaltimetaken=(System.currentTimeMillis()-starttime);
 		}
 		
@@ -605,6 +610,10 @@ public class AjdeInteractionTestbed extends TestCase {
 		
 		public static void log(String s) {
 			if (VERBOSE) System.out.println(s);
+		}
+		
+		public static boolean wasFullBuild() {
+			return _instance.wasFullBuild;
 		}
 		
 
