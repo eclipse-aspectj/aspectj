@@ -133,6 +133,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	private IHierarchy structureModel;
 	public AjBuildConfig buildConfig;
 	private boolean ignoreOutxml;
+	private boolean wasFullBuild = true; // true if last build was a full build rather than an incremental build
 	
 	AjState state = new AjState(this);
     
@@ -318,7 +319,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             
             // have to tell state we succeeded or next is not incremental
             state.successfulCompile(buildConfig,batch);
-
+            wasFullBuild = batch;
             copyResourcesToDestination();
             
             if (buildConfig.getOutxmlName() != null) {
@@ -1277,6 +1278,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			return sb.toString();
 		}
 		
+	}
+
+	public boolean wasFullBuild() {
+		return wasFullBuild;
 	}
 }
 
