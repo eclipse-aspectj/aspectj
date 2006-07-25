@@ -54,7 +54,17 @@ public class AnnotationAJ {
 	}
 	
 	public String stringify() {
-		return "xxxxxxxxxxx";
+		StringBuffer sb = new StringBuffer();
+		sb.append("@").append(UnresolvedType.forSignature(type).getClassName());
+		if (hasNameValuePairs()) {
+			sb.append("(");
+			for (Iterator iter = nvPairs.iterator(); iter.hasNext();) {
+				AnnotationNameValuePair element = (AnnotationNameValuePair) iter.next();
+				sb.append(element.stringify());
+			}
+			sb.append(")");
+		}
+		return sb.toString();
 	}
 
 	public String getStringValueOf(Object name) {

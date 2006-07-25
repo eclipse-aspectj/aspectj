@@ -35,4 +35,13 @@ public class AnnotationNameValuePair {
 		sb.append(name+"="+val.toString());
 		return sb.toString();
 	}
+
+	public String stringify() {
+		StringBuffer sb = new StringBuffer();
+		if (!name.equals("value")) {
+			sb.append(name+"=");
+		}
+		sb.append(val.stringify());
+		return sb.toString();
+	}
 }
