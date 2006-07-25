@@ -621,7 +621,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 * @see org.aspectj.weaver.Member#getAnnotations()
 	 */
 	public AnnotationX[] getAnnotations() {
-		throw new UnsupportedOperationException("You should resolve this member and call getAnnotations() on the result...");
+		throw new UnsupportedOperationException("You should resolve this member '"+this+"' and call getAnnotations() on the result...");
 	}
 
 	// ---- fields 'n' stuff
