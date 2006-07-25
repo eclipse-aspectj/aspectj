@@ -225,8 +225,8 @@ public class Tester {
         }
         int n = value.length;
         if (n != expectedValue.length) {
-            checkFailed(message+" expected array of length "+n
-                                +" got "+expectedValue.length);
+            checkFailed(message+" expected array of length "+expectedValue.length
+                                +" got "+ n);
             return;
         }
         for(int i=0; i<n; i++) {
