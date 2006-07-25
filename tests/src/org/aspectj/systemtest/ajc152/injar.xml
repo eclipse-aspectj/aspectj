@@ -9,5 +9,12 @@
 	  </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs152/pr145963" title="ensure advice label is correct">
+      <compile files="C.java" aspectpath="adviceLabels.jar" options="-emacssym"/>
+    </ajc-test>
     
+    <ajc-test dir="bugs152/pr145963" title="aspect in default package">
+      <compile files="C.java" aspectpath="aspectInDefaultPackage.jar" options="-emacssym"/>
+    </ajc-test>
+
 </suite>

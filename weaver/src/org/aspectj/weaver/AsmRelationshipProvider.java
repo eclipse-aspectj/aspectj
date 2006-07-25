@@ -176,6 +176,9 @@ public class AsmRelationshipProvider {
 				return;
 			}
 			
+			if (World.createInjarHierarchy) {
+				munger.createHierarchy();
+			}
 
 			IRelationshipMap mapper = AsmManager.getDefault().getRelationshipMap();
 			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);

@@ -98,9 +98,6 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		if (null == handle) {
 			ISourceLocation sl = getSourceLocation();
 			if (sl != null) {
-				if (World.createInjarHierarchy) {
-					createHierarchy();
-				} 
 				IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForSourceLine(sl);
 				handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(ipe);
 			}
@@ -155,6 +152,9 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
      */
     public abstract ResolvedType getResolvedDeclaringAspect();
     
+    /**
+     * Creates the hierarchy for binary aspects
+     */
     public void createHierarchy() {
     	IProgramElement sourceFileNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(getSourceLocation());
     	if (!sourceFileNode.getKind().equals(IProgramElement.Kind.FILE_JAVA)) {
@@ -162,6 +162,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		}
     	String name = sourceFileNode.getName();
     	sourceFileNode.setName(name + " (binary)");
+    	AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceFileNode);
     	
     	ResolvedType aspect = getResolvedDeclaringAspect();
     	
@@ -178,9 +179,29 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     	                IProgramElement.Kind.PACKAGE, 
     	                new ArrayList());
     			root.addChild(pkgNode);
+    			pkgNode.addChild(sourceFileNode);
+			} else {
+				for (Iterator iter = pkgNode.getChildren().iterator(); iter.hasNext();) {
+					IProgramElement element = (IProgramElement) iter.next();
+					if (element.getHandleIdentifier().equals(
+							sourceFileNode.getHandleIdentifier())) {
+						// already added the sourcefile so have already
+						// added the structure for this aspect
+						return;
+					}
+				}
+				pkgNode.addChild(sourceFileNode);
 			}
-    		pkgNode.addChild(sourceFileNode);
 		} else {
+			for (Iterator iter = root.getChildren().iterator(); iter.hasNext();) {
+				IProgramElement element = (IProgramElement) iter.next();
+				if (element.getHandleIdentifier().equals(
+						sourceFileNode.getHandleIdentifier())) {
+					// already added the sourcefile so have already
+					// added the structure for this aspect
+					return;
+				}				
+			}
 			root.addChild(sourceFileNode);
 		}
     	
@@ -240,26 +261,19 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		    			getSourceLocation(),
 		    			this.getDeclaringType().getModifiers(),
 		    			null,null); 
-		    	deowNode.setDetails("\"" + genDeclareMessage(decl.getMessage()) + "\"");
+		    	deowNode.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
 		    	parent.addChild(deowNode);
 			} else if (element instanceof BcelAdvice) {
 				BcelAdvice advice = (BcelAdvice)element;
-		    	parent.addChild(new ProgramElement(
-				advice.kind.getName(),
-				IProgramElement.Kind.ADVICE,
-				getSourceLocation(),
-				advice.signature.getModifiers(),null,Collections.EMPTY_LIST));
+				IProgramElement adviceNode = new ProgramElement(
+		    			advice.kind.getName(),
+		    			IProgramElement.Kind.ADVICE,
+		    			getSourceLocation(),
+		    			advice.signature.getModifiers(),null,Collections.EMPTY_LIST);
+		    	adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
+		    	parent.addChild(adviceNode);
 			}
 		}
     }
-    
-	// taken from AsmElementFormatter
-	private String genDeclareMessage(String message) {
-		int length = message.length();
-		if (length < 18) {
-			return message;
-		} else {
-			return message.substring(0, 17) + "..";
-		}
-	}
+
 }

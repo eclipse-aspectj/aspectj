@@ -34,16 +34,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.AsmRelationshipUtils;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.DeclareSoft;
-import org.aspectj.weaver.patterns.OrPointcut;
-import org.aspectj.weaver.patterns.ReferencePointcut;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.TypePatternList;
 
@@ -51,19 +49,6 @@ import org.aspectj.weaver.patterns.TypePatternList;
  * @author Mik Kersten
  */
 public class AsmElementFormatter {
-
-	public static final String UNDEFINED="<undefined>";
-	public static final String DECLARE_PRECEDENCE = "precedence";
-	public static final String DECLARE_SOFT = "soft";
-	public static final String DECLARE_PARENTS = "parents";
-	public static final String DECLARE_WARNING = "warning";
-	public static final String DECLARE_ERROR = "error";
-	public static final String DECLARE_UNKNONWN = "<unknown declare>";
-	public static final String POINTCUT_ABSTRACT = "<abstract pointcut>";
-	public static final String POINTCUT_ANONYMOUS = "<anonymous pointcut>";
-	public static final String DOUBLE_DOTS = "..";
-	public static final int MAX_MESSAGE_LENGTH = 18;
-	public static final String DEC_LABEL = "declare";
 
 	public void genLabelAndKind(MethodDeclaration methodDeclaration, IProgramElement node) {
 		
@@ -77,28 +62,9 @@ public class AsmElementFormatter {
 	
 			StringBuffer details = new StringBuffer();
 			if (ad.pointcutDesignator != null) {	
-				if (ad.pointcutDesignator.getPointcut() instanceof ReferencePointcut) {
-					ReferencePointcut rp = (ReferencePointcut)ad.pointcutDesignator.getPointcut();
-					details.append(rp.name).append("..");
-				} else if (ad.pointcutDesignator.getPointcut() instanceof AndPointcut) {
-					AndPointcut ap = (AndPointcut)ad.pointcutDesignator.getPointcut();
-					if (ap.getLeft() instanceof ReferencePointcut) {
-						details.append(ap.getLeft().toString()).append(DOUBLE_DOTS);	
-					} else {
-						details.append(POINTCUT_ANONYMOUS).append(DOUBLE_DOTS);
-					}
-				} else if (ad.pointcutDesignator.getPointcut() instanceof OrPointcut) {
-					OrPointcut op = (OrPointcut)ad.pointcutDesignator.getPointcut();
-					if (op.getLeft() instanceof ReferencePointcut) {
-						details.append(op.getLeft().toString()).append(DOUBLE_DOTS);	
-					} else {
-						details.append(POINTCUT_ANONYMOUS).append(DOUBLE_DOTS);
-					}
-				} else {
-					details.append(POINTCUT_ANONYMOUS);
-				}
+				details.append(AsmRelationshipUtils.genPointcutDetails(ad.pointcutDesignator.getPointcut()));
 			} else {
-				details.append(POINTCUT_ABSTRACT);
+				details.append(AsmRelationshipUtils.POINTCUT_ABSTRACT);
 			} 
 			node.setName(ad.kind.toString());
 			//if (details.length()!=0) 
@@ -113,25 +79,25 @@ public class AsmElementFormatter {
 			
 		} else if (methodDeclaration instanceof DeclareDeclaration) { 
 			DeclareDeclaration declare = (DeclareDeclaration)methodDeclaration;
-			String name = DEC_LABEL + " ";
+			String name = AsmRelationshipUtils.DEC_LABEL + " ";
 			if (declare.declareDecl instanceof DeclareErrorOrWarning) {
 				DeclareErrorOrWarning deow = (DeclareErrorOrWarning)declare.declareDecl;
 				
 				if (deow.isError()) {
 					node.setKind( IProgramElement.Kind.DECLARE_ERROR);
-					name += DECLARE_ERROR;
+					name += AsmRelationshipUtils.DECLARE_ERROR;
 				} else {
 					node.setKind( IProgramElement.Kind.DECLARE_WARNING);
-					name += DECLARE_WARNING;
+					name += AsmRelationshipUtils.DECLARE_WARNING;
 				}
 				node.setName(name) ;
-				node.setDetails("\"" + genDeclareMessage(deow.getMessage()) + "\"");
+				node.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(deow.getMessage()) + "\"");
 				
 			} else if (declare.declareDecl instanceof DeclareParents) {
 
 				node.setKind( IProgramElement.Kind.DECLARE_PARENTS);
 				DeclareParents dp = (DeclareParents)declare.declareDecl;
-				node.setName(name + DECLARE_PARENTS);
+				node.setName(name + AsmRelationshipUtils.DECLARE_PARENTS);
 				
 				String kindOfDP = null;
 				StringBuffer details = new StringBuffer("");
@@ -161,13 +127,13 @@ public class AsmElementFormatter {
 			} else if (declare.declareDecl instanceof DeclareSoft) {
 				node.setKind( IProgramElement.Kind.DECLARE_SOFT);
 				DeclareSoft ds = (DeclareSoft)declare.declareDecl;
-				node.setName(name + DECLARE_SOFT);
+				node.setName(name + AsmRelationshipUtils.DECLARE_SOFT);
 				node.setDetails(genTypePatternLabel(ds.getException()));
 				
 			} else if (declare.declareDecl instanceof DeclarePrecedence) {
 				node.setKind( IProgramElement.Kind.DECLARE_PRECEDENCE);
 				DeclarePrecedence ds = (DeclarePrecedence)declare.declareDecl;
-				node.setName(name + DECLARE_PRECEDENCE);
+				node.setName(name + AsmRelationshipUtils.DECLARE_PRECEDENCE);
 				node.setDetails(genPrecedenceListLabel(ds.getPatterns()));
 				
 			} else if (declare.declareDecl instanceof DeclareAnnotation) {
@@ -188,7 +154,7 @@ public class AsmElementFormatter {
 			    
 			} else {
 				node.setKind(IProgramElement.Kind.ERROR);
-				node.setName(DECLARE_UNKNONWN);
+				node.setName(AsmRelationshipUtils.DECLARE_UNKNONWN);
 			}
 			
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
@@ -247,7 +213,7 @@ public class AsmElementFormatter {
 	                                   || "Lorg/aspectj/lang/annotation/Around;".equals(annotationSig)) {
 	                            node.setKind(IProgramElement.Kind.ADVICE);
 	                            //TODO AV - all are considered anonymous - is that ok?
-	                            node.setDetails(POINTCUT_ANONYMOUS);
+	                            node.setDetails(AsmRelationshipUtils.POINTCUT_ANONYMOUS);
 	                            break;
 	                        }
                         }
@@ -348,15 +314,6 @@ public class AsmElementFormatter {
 		return label;
 		
 	}
-
-	public String genDeclareMessage(String message) {
-		int length = message.length();
-		if (length < MAX_MESSAGE_LENGTH) {
-			return message;
-		} else {
-			return message.substring(0, MAX_MESSAGE_LENGTH-1) + "..";
-		}
-	}
 	
 //	// TODO: 
 //	private String translateAdviceName(String label) {
@@ -387,7 +344,8 @@ public class AsmElementFormatter {
 //		}
 //	}
 
-	// !!! move or replace
+
+	//	 !!! move or replace
 	private String translatePointcutName(String name) {
 		int index = name.indexOf("$$")+2;
 		int endIndex = name.lastIndexOf('$');

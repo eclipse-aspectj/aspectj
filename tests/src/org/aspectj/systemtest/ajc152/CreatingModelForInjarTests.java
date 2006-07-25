@@ -84,7 +84,7 @@ public class CreatingModelForInjarTests extends org.aspectj.testing.XMLBasedAjcT
 	public void testAdviceInRelMap() {
 		runTest("advice and deow");
 		IHierarchy top = AsmManager.getDefault().getHierarchy();
-		IProgramElement adviceNode = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE,"before()");
+		IProgramElement adviceNode = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE,"before(): p..");
 		IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
 		List adviceRels = relMap.get(adviceNode);
 		assertFalse("expected before advice to have relationships but did not",adviceRels.isEmpty());
@@ -99,6 +99,47 @@ public class CreatingModelForInjarTests extends org.aspectj.testing.XMLBasedAjcT
 		IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
 		List dwRels = relMap.get(dwNode);
 		assertFalse("expected declare warning to have relationships but did not",dwRels.isEmpty());
+	}
+	
+	public void testAdviceLabelsCorrect() {
+		runTest("ensure advice label is correct");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		
+		IProgramElement node = top.findElementForLabel(top.getRoot(), 
+				IProgramElement.Kind.ADVICE, "before(): execM1()..");
+		assertNotNull("expected to find ipe with label 'before(): execM1()..'" +
+				" but didn't", node);
+		
+		node = top.findElementForLabel(top.getRoot(), 
+				IProgramElement.Kind.ADVICE, "before(): execM2()..");
+		assertNotNull("expected to find ipe with label 'before(): execM2()..'" +
+				" but didn't", node);
+		
+		node = top.findElementForLabel(top.getRoot(), 
+				IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>");
+		assertNotNull("expected to find ipe with label 'before(): <anonymous pointcut>'" +
+				" but didn't", node);
+	}
+	
+	// ensure that filled in hierarchy only has one entry for
+	// aspect
+	public void testOnlyOneAspectEntry() {
+		runTest("ensure advice label is correct");
+		
+		IProgramElement pkgNode = getPkgNode();
+		assertEquals("expected one child node but found " + 
+				pkgNode.getChildren().size(), 1, pkgNode.getChildren().size());
+		
+	}
+	
+	public void testOnlyOneAspectEntry_inDefaultPackage() {
+		runTest("aspect in default package");
+		// expect there to be two children - 'pack' and 
+		// 'AspectInDefaultPackage.aj (binary)'
+		IProgramElement defaultPkg = AsmManager.getDefault().getHierarchy().getRoot();
+		assertEquals("expected two child node but found " + 
+				defaultPkg.getChildren().size(), 2, defaultPkg.getChildren().size());
+		
 	}
 	
 	// --------------------- Helper methods ---------------------
