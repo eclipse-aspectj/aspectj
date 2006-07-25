@@ -34,7 +34,8 @@ public class TraceFactory {
 	    		instance = (TraceFactory)factoryClass.newInstance();
 			}
     	}
-    	catch (Exception ex) {
+    	catch (Throwable th) {
+//    		th.printStackTrace();
     	}
 //    	System.out.println("TraceFactory.<clinit>() instance=" + instance);
     }

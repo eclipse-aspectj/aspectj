@@ -668,7 +668,12 @@ public class AjcTestCase extends TestCase {
 			Constructor constructor = loaderClazz.getConstructor(parameterTypes);
 			loader = (URLClassLoader)constructor.newInstance(parameters);
 		}
+		catch (InvocationTargetException ex) {
+			ex.printStackTrace();
+			fail("Cannot create weaving class loader: " + ex.getCause());
+		}
 		catch (Exception ex) {
+			ex.printStackTrace();
 			fail("Cannot create weaving class loader: " + ex.toString());
 		}
 		
