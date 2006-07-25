@@ -445,7 +445,7 @@
             <pathelement path="${aspectjweaver.jar}"/> 
          </classpath>
 		 <jvmarg line="-showversion"/>
-		 <sysproperty key="java.system.class.loader" value="org.aspectj.weaver.WeavingURLClassLoader"/>
+		 <sysproperty key="java.system.class.loader" value="org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
          <sysproperty key="aj.weaving.verbose" value="True"/>
        	 <sysproperty key="org.aspectj.weaver.showWeaveInfo" value="True"/>
          <sysproperty key="aj.class.path" path="${jar.dir}/tracingLib.jar:${jar.dir}/tracingApp.jar"/>
