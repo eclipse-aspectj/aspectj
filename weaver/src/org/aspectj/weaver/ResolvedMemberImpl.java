@@ -321,7 +321,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 	    
     public boolean isBridgeMethod() {
-    	return (modifiers & Constants.ACC_BRIDGE)!=0;
+    	return (modifiers & Constants.ACC_BRIDGE)!=0 && getKind().equals(METHOD);
     }
     
     public boolean isVarargsMethod() {

@@ -237,5 +237,12 @@
     		</stdout>
     	</run>
     </ajc-test>    
+  
+    <ajc-test dir="bugs153" title="match volatile field">
+      <compile files="pr150671.aj" options="-Xset:activateLightweightDelegates=false">
+        <message kind="error" line="7" text="Changing state"/>
+        <message kind="error" line="8" text="test"/>
+      </compile>
+    </ajc-test>
     
 </suite>

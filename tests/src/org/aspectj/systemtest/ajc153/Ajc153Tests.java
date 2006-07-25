@@ -46,6 +46,8 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCantFindType_pr149322_02() {runTest("can't find type on interface call 2");}
   public void testCantFindType_pr149322_03() {runTest("can't find type on interface call 3");}
 
+  public void testMatchVolatileField_pr150671() {runTest("match volatile field");};
+  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);
