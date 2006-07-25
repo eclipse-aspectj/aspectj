@@ -11,5 +11,6 @@
 	<classpathentry kind="src" path="/taskdefs"/>
 	<classpathentry kind="src" path="/ajdoc"/>
 	<classpathentry kind="src" path="/loadtime"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/weaver5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
