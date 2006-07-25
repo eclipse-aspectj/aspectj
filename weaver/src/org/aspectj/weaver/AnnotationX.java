@@ -201,4 +201,9 @@ public class AnnotationX {
 	return theRealBcelAnnotation.isRuntimeVisible();
   }
 
+  public void print(StringBuffer sb) {
+	  if (mode==MODE_BCEL) sb.append(theRealBcelAnnotation.toString());
+	  else	               sb.append(theRealASMAnnotation.stringify());
+  }
+
 }
