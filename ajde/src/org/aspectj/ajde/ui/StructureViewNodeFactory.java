@@ -41,7 +41,9 @@ public abstract class StructureViewNodeFactory {
 		// Don't put relationships on fields as they can then appear twice when building the outline - 
 		// once under clinit field-set nodes and once under the field declaration.
 		if (nodeHandle != null && !node.getKind().equals(IProgramElement.Kind.FIELD)) {	
-			List relationships = AsmManager.getDefault().getRelationshipMap().get(nodeHandle);
+			AsmManager manager = AsmManager.getDefault();
+			IRelationshipMap relMap = (manager==null?null:manager.getRelationshipMap());
+			List relationships = (relMap==null?null:relMap.get(nodeHandle));
 			if (relationships != null) {
 				for (Iterator it = relationships.iterator(); it.hasNext(); ) {
 					IRelationship rel = (IRelationship)it.next();
