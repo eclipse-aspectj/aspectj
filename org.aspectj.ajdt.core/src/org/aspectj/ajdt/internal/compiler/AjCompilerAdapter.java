@@ -327,6 +327,10 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 			if (imh instanceof WeaverMessageHandler)
 			  ((WeaverMessageHandler)imh).resetCompiler(null);
 		}
+	}
+
+	public void afterDietParsing(CompilationUnitDeclaration[] units) {
+		// to be filled in...
 	}	
 
 }
