@@ -11,10 +11,14 @@
 package org.aspectj.weaver.tools;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public abstract class AbstractTrace implements Trace {
 
 	protected Class tracedClass;
+
+	private static SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss.SSS");
 	
 	protected AbstractTrace (Class clazz) {
 		this.tracedClass = clazz;
@@ -71,6 +75,10 @@ public abstract class AbstractTrace implements Trace {
 	/*
 	 * Convenience methods
 	 */
+	public void enter (String methodName) {
+		enter(methodName,null,null);
+	}
+
 	public void enter (String methodName, Object thiz, Object arg) {
 		enter(methodName,thiz,new Object[] { arg });
 	}
@@ -83,12 +91,12 @@ public abstract class AbstractTrace implements Trace {
 		exit(methodName,new Boolean(b));
 	}
 	
-	public boolean isTraceEnabled () {
-		return true;
-	}
-
-	protected String formatMessage(String className, String methodName, Object thiz, Object[] args) {
+	protected String formatMessage(String kind, String className, String methodName, Object thiz, Object[] args) {
 		StringBuffer message = new StringBuffer();
+		Date now = new Date();
+		message.append(time.format(now)).append(" ");
+		message.append(Thread.currentThread().getName()).append(" ");
+		message.append(kind).append(" ");
 		message.append(className);
 		message.append(".").append(methodName);
 		if (thiz != null) message.append(" ").append(formatObj(thiz));
@@ -150,5 +158,4 @@ public abstract class AbstractTrace implements Trace {
 		
 		return sb.toString();
 	}
-
 }
