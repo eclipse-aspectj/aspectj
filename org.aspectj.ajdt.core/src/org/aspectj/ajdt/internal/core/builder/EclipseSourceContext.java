@@ -79,15 +79,17 @@ public class EclipseSourceContext implements IEclipseSourceContext {
 	public void removeUnnecessaryProblems(Member member, int problemLineNumber) {
 		if (result == null) return; 
 		IProblem[] probs = result.getProblems();
-		for (int i = 0; i < probs.length; i++) {
-			IProblem problem = probs[i];
-			if (problem == null) continue;
-			if (problem.getID() == IProblem.UnusedMethodDeclaredThrownException 
-					|| problem.getID() == IProblem.UnusedConstructorDeclaredThrownException) {
-				if (problem.getSourceLineNumber() == problemLineNumber) {
-					UnusedDeclaredThrownExceptionFilter filter = 
-						new UnusedDeclaredThrownExceptionFilter(problem);
-					result.removeProblems(filter);	
+		if (probs!=null) {
+			for (int i = 0; i < probs.length; i++) {
+				IProblem problem = probs[i];
+				if (problem == null) continue;
+				if (problem.getID() == IProblem.UnusedMethodDeclaredThrownException 
+						|| problem.getID() == IProblem.UnusedConstructorDeclaredThrownException) {
+					if (problem.getSourceLineNumber() == problemLineNumber) {
+						UnusedDeclaredThrownExceptionFilter filter = 
+							new UnusedDeclaredThrownExceptionFilter(problem);
+						result.removeProblems(filter);	
+					}
 				}
 			}
 		}
