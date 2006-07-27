@@ -670,7 +670,7 @@ public class AjcTestCase extends TestCase {
 		}
 		catch (InvocationTargetException ex) {
 			ex.printStackTrace();
-			fail("Cannot create weaving class loader: " + ex.getCause());
+			fail("Cannot create weaving class loader: " + ex.getTargetException());
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
