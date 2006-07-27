@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- Tracing Tests -->
+<suite>
+
+	<ajc-test dir="tracing" title="Tracing" keywords="tracing">
+        <compile
+        	files="TracingTest.java"
+        />
+        <ant file="ant.xml" target="Tracing" verbose="true"/>
+    </ajc-test>
+
+	<ajc-test dir="tracing" title="Default tracing" keywords="tracing">
+        <compile
+        	files="DefaultTracingTest.java"
+        />
+        <ant file="ant.xml" target="Default tracing" verbose="true"/>
+    </ajc-test>
+
+</suite>

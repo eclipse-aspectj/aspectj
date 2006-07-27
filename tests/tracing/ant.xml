@@ -1,0 +1,27 @@
+<!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
+<project name="tracing">
+
+    <!-- using this we can debug the forked VM -->
+    <property
+        name="jdwp"
+        value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+
+    <target name="Tracing">
+        <java fork="yes" classname="TracingTest" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <!-- use META-INF/aop.xml style -->
+<!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
+    <target name="Default tracing">
+        <java fork="yes" classname="DefaultTracingTest" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <!-- use META-INF/aop.xml style -->
+<!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
+</project>

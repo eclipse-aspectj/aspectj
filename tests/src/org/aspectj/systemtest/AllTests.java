@@ -24,6 +24,7 @@ import org.aspectj.systemtest.inpath.InPathTests;
 import org.aspectj.systemtest.options.OptionsTests;
 import org.aspectj.systemtest.pre10x.AjcPre10xTests;
 import org.aspectj.systemtest.serialVerUID.SUIDTests;
+import org.aspectj.systemtest.tracing.TracingTests;
 import org.aspectj.systemtest.xlint.XLintTests;
 
 /**
@@ -52,6 +53,7 @@ public class AllTests {
 		//suite.addTest(PureJavaTests.class);
 		suite.addTest(SUIDTests.suite());
 		suite.addTest(XLintTests.suite());
+		suite.addTest(TracingTests.suite());
 		//$JUnit-END$
 
 		return suite;
