@@ -6,7 +6,6 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               NOP
     |               INVOKESTATIC Aspect.ajc_afterReturning_constructor_execution ()V
     |               RETURN
-    |               RETURN
     constructor-execution(void FancyHelloWorld.<init>())
   end public void <init>()
 
@@ -56,7 +55,6 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               RET 3   (line 10)
     |           L2: NOP   (line 17)
     |               INVOKESTATIC Aspect.ajc_afterReturning_method_execution ()V
-    |               RETURN
     |               RETURN
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
   end public static void main(String[])

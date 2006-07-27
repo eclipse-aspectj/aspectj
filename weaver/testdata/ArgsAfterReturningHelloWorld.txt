@@ -25,7 +25,6 @@ public class HelloWorld extends java.lang.Object:
     |               ALOAD_2
     |               INVOKESTATIC Aspect.ajc_afterReturning_method_execution (Ljava/lang/Object;)V
     |               RETURN
-    |               RETURN
     method-execution(void HelloWorld.main(java.lang.String[]))
   end public static void main(String[])
 

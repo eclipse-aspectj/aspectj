@@ -21,5 +21,4 @@
                     INVOKESTATIC Three.aspectOf ()LThree;
                     INVOKEVIRTUAL Three.ajc$afterReturning$Three$3$b48e4ae1 ()V
                     RETURN
-                    RETURN
   end public void m33()

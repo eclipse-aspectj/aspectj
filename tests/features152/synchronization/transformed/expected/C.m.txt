@@ -20,5 +20,4 @@
                 L0: INVOKESTATIC Four.aspectOf ()LFour;
                     INVOKEVIRTUAL Four.ajc$afterReturning$Four$1$c2776aed ()V
                     RETURN
-                    RETURN
   end public void m()

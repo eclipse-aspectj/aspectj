@@ -49,6 +49,7 @@ import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.NEW;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.PUSH;
+import org.aspectj.apache.bcel.generic.RETURN;
 import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.SWAP;
 import org.aspectj.apache.bcel.generic.StoreInstruction;
@@ -1792,6 +1793,12 @@ public class BcelShadow extends Shadow {
 	 * variable to hold the return value, and load the value from this var before
 	 * returning (see pr148007 for why we do this - it works around a JRockit bug,
 	 * and is also closer to what javac generates)
+	 * 
+	 * Sometimes the 'last return' isnt the right one - some rogue code can 
+	 * include the real return from the body of a subroutine that exists at the end
+	 * of the method. In this case the last return is RETURN but that may not be
+	 * correct for a method with a non-void return type... pr151673
+	 * 
 	 * @param returns list of all the return instructions in the shadow
 	 * @param returnInstructions instruction list into which the return instructions should
 	 * be generated
@@ -1799,15 +1806,26 @@ public class BcelShadow extends Shadow {
 	 */
 	private BcelVar generateReturnInstructions(List returns, InstructionList returnInstructions) {
 		BcelVar returnValueVar = null;
-    	InstructionHandle lastReturnHandle = (InstructionHandle)returns.get(returns.size() - 1);
-    	Instruction newReturnInstruction = Utility.copyInstruction(lastReturnHandle.getInstruction());
     	if (this.hasANonVoidReturnType()) {
+    		// Find the last *correct* return - this is a method with a non-void return type
+    		// so ignore RETURN
+    		Instruction  newReturnInstruction = null;
+    		int i=returns.size()-1;
+    		while (newReturnInstruction == null && i>=0) {
+    			InstructionHandle ih = (InstructionHandle)returns.get(i);
+    			if (!(ih.getInstruction() instanceof RETURN)) {
+    				newReturnInstruction = Utility.copyInstruction(ih.getInstruction());
+    			}
+    			i--;
+    		}
         	returnValueVar = genTempVar(this.getReturnType());
             returnValueVar.appendLoad(returnInstructions,getFactory());
+        	returnInstructions.append(newReturnInstruction);
     	} else {
+        	InstructionHandle lastReturnHandle = (InstructionHandle)returns.get(returns.size() - 1);
+        	Instruction newReturnInstruction = Utility.copyInstruction(lastReturnHandle.getInstruction());
     		returnInstructions.append(newReturnInstruction);
     	}
-    	returnInstructions.append(newReturnInstruction);
     	return returnValueVar;
 	}
     

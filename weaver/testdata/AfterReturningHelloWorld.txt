@@ -6,7 +6,6 @@ public class HelloWorld extends java.lang.Object:
     |               NOP
     |               INVOKESTATIC Aspect.ajc_afterReturning_constructor_execution ()V
     |               RETURN
-    |               RETURN
     constructor-execution(void HelloWorld.<init>())
   end public void <init>()
 
@@ -25,7 +24,6 @@ public class HelloWorld extends java.lang.Object:
     | method-call(void java.io.PrintStream.println(java.lang.String))
     |               NOP   (line 11)
     |               INVOKESTATIC Aspect.ajc_afterReturning_method_execution ()V
-    |               RETURN
     |               RETURN
     method-execution(void HelloWorld.main(java.lang.String[]))
   end public static void main(String[])

@@ -62,7 +62,6 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ALOAD 8
     |               INVOKESTATIC Aspect.ajc_afterReturning_method_execution (Ljava/lang/Object;)V
     |               RETURN
-    |               RETURN
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
   end public static void main(String[])
 

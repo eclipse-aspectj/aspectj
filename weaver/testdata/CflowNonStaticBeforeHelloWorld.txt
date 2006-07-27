@@ -30,7 +30,6 @@ public class HelloWorld extends java.lang.Object:
     |           L1: GETSTATIC Aspect.ajc$perCflowStack Lorg/aspectj/runtime/internal/CFlowStack;
     |               INVOKEVIRTUAL org.aspectj.runtime.internal.CFlowStack.pop ()V
     |               RETURN
-    |               RETURN
     method-execution(void HelloWorld.main(java.lang.String[]))
   end public static void main(String[])
 

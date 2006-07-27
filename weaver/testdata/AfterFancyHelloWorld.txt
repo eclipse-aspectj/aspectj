@@ -12,7 +12,6 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ATHROW
     |           L0: INVOKESTATIC Aspect.ajc_after_constructor_execution ()V
     |               RETURN
-    |               RETURN
     constructor-execution(void FancyHelloWorld.<init>())
   end public void <init>()
 
@@ -100,7 +99,6 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ALOAD 9
     |               ATHROW
     |           L7: INVOKESTATIC Aspect.ajc_after_method_execution ()V
-    |               RETURN
     |               RETURN
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
   end public static void main(String[])

@@ -53,7 +53,6 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |           L4: GETSTATIC Aspect.ajc$perCflowStack Lorg/aspectj/runtime/internal/CFlowStack;
     |               INVOKEVIRTUAL org.aspectj.runtime.internal.CFlowStack.pop ()V
     |               RETURN
-    |               RETURN
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
   end public static void main(String[])
 
