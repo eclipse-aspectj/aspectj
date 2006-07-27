@@ -67,12 +67,14 @@ public class Aj implements ClassPreProcessor {
         }
 
         try {
-            WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
-            if (weavingAdaptor == null) {
-        		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
-            	return bytes;
-            }
-            return weavingAdaptor.weaveClass(className, bytes);
+        	synchronized (loader) {
+                WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
+                if (weavingAdaptor == null) {
+            		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
+                	return bytes;
+                }
+                return weavingAdaptor.weaveClass(className, bytes);
+			}
         } catch (Exception t) {
     		trace.error("preProcess",t);
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
