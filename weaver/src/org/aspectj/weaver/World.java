@@ -108,6 +108,7 @@ public abstract class World implements Dump.INode {
     // Xset'table options
     private boolean fastDelegateSupportEnabled = isASMAround;
 	private boolean runMinimalMemory = false;
+	private boolean shouldPipelineCompilation = true;
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 	
@@ -764,6 +765,8 @@ public abstract class World implements Dump.INode {
 	public final static String xsetRUN_MINIMAL_MEMORY ="runMinimalMemory"; // default true
 	public final static String xsetDEBUG_STRUCTURAL_CHANGES_CODE = "debugStructuralChangesCode"; // default false
 	public final static String xsetDEBUG_BRIDGING = "debugBridging"; // default false
+	public final static String xsetPIPELINE_COMPILATION = "pipelineCompilation"; // default true
+	public final static String xsetPIPELINE_COMPILATION_DEFAULT = "true"; 
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1147,7 +1150,10 @@ public abstract class World implements Dump.INode {
 	        			getMessageHandler().handleMessage(MessageUtil.info("[activateLightweightDelegates=false] Disabling optimization to use lightweight delegates for non-woven types"));
 				}
 				
-				String s = p.getProperty(xsetRUN_MINIMAL_MEMORY,"false");
+				String s = p.getProperty(xsetPIPELINE_COMPILATION,xsetPIPELINE_COMPILATION_DEFAULT);
+				shouldPipelineCompilation = s.equalsIgnoreCase("true");
+				
+				s = p.getProperty(xsetRUN_MINIMAL_MEMORY,"false");
         		runMinimalMemory = s.equalsIgnoreCase("true");
 //	        	if (runMinimalMemory) 
 //	        		getMessageHandler().handleMessage(MessageUtil.info("[runMinimalMemory=true] Optimizing bcel processing (and cost of performance) to use less memory"));
@@ -1167,6 +1173,11 @@ public abstract class World implements Dump.INode {
 	    public boolean isRunMinimalMemory() {
 	      ensureAdvancedConfigurationProcessed();
 	    	  return runMinimalMemory;
+	    }
+	    
+	    public boolean shouldPipelineCompilation() {
+	    	ensureAdvancedConfigurationProcessed();
+	    	return shouldPipelineCompilation;
 	    }
 	    
 	    public void setFastDelegateSupport(boolean b) { 
