@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.aspectj.weaver.tools;
 
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,9 +56,26 @@ public class Jdk14Trace extends AbstractTrace {
 		}
 	}
 
-	@Override
 	public boolean isTraceEnabled() {
-		return logger.isLoggable(Level.FINE);
+		return logger.isLoggable(Level.FINER);
+	}
+
+	public void setTraceEnabled (boolean b) {
+		if (b) {
+			logger.setLevel(Level.FINER);
+			Handler[] handlers = logger.getHandlers();
+			if (handlers.length == 0) {
+				Logger parent = logger.getParent();
+				if (parent != null) handlers = parent.getHandlers();
+			}
+			for (int i = 0; i < handlers.length; i++) {
+				Handler handler = handlers[i];
+				handler.setLevel(Level.FINER);
+			}
+		}
+		else {
+			logger.setLevel(Level.INFO);
+		}
 	}
 	
 }

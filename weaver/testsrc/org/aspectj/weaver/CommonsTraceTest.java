@@ -1,0 +1,67 @@
+/*******************************************************************************
+ * Copyright (c) 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Webster - initial implementation
+ *******************************************************************************/
+package org.aspectj.weaver;
+
+import org.aspectj.weaver.tools.CommonsTrace;
+
+import junit.framework.TestCase;
+
+public class CommonsTraceTest extends TestCase {
+
+	private CommonsTrace trace; 
+	
+	protected void setUp() throws Exception {
+		super.setUp();
+		trace = new CommonsTrace(getClass());
+		trace.setTraceEnabled(true);
+	}
+
+	public void testCommonsTrace() {
+		CommonsTrace trace = new CommonsTrace(getClass());
+	}
+
+	public void testEnterWithThisAndArgs() {
+		trace.enter("testEnterWithThisAndArgs",this,new Object[] { "arg1", "arg2" });
+	}
+
+	public void testEnterWithThis() {
+		trace.enter("testEnterWithThis",this);
+	}
+
+	public void testEnter() {
+		trace.enter("testEnter");
+	}
+
+	public void testExitWithReturn() {
+		trace.exit("testExitWithReturn","ret");
+	}
+
+	public void testExitWithThrowable() {
+		trace.exit("testExitWithThrowable",new RuntimeException());
+	}
+
+	public void testExit() {
+		trace.exit("testExit");
+	}
+
+	public void testIsTraceEnabled() {
+		CommonsTrace trace = new CommonsTrace(getClass());
+		assertFalse(trace.isTraceEnabled());
+	}
+
+	public void testSetTraceEnabled() {
+		CommonsTrace trace = new CommonsTrace(getClass());
+		trace.setTraceEnabled(true);
+		/* XXX Need to find out how to turn tracing on */
+//		assertTrue(trace.isTraceEnabled());
+	}
+
+}

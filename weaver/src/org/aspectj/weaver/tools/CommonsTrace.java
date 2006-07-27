@@ -26,32 +26,39 @@ public class CommonsTrace extends AbstractTrace {
 	
 	public void enter(String methodName, Object thiz, Object[] args) {
 		if (log.isDebugEnabled()) {
-			log.debug("> " + formatMessage(className, methodName, thiz, args));
+			log.debug(formatMessage(">", className, methodName, thiz, args));
 		}
 	}
 
 	public void enter(String methodName, Object thiz) {
 		if (log.isDebugEnabled()) {
-			log.debug("> " + formatMessage(className, methodName, thiz, null));
+			log.debug(formatMessage(">", className, methodName, thiz, null));
 		}
 	}
 
 	public void exit(String methodName, Object ret) {
 		if (log.isDebugEnabled()) {
-			log.debug("< " + formatMessage(className, methodName, ret, null));
+			log.debug(formatMessage("<", className, methodName, ret, null));
 		}
 	}
 
 	public void exit(String methodName, Throwable th) {
 		if (log.isDebugEnabled()) {
-			log.debug("< " + formatMessage(className, methodName, th, null));
+			log.debug(formatMessage("<", className, methodName, th, null));
 		}
 	}
 
 	public void exit(String methodName) {
 		if (log.isDebugEnabled()) {
-			log.debug("< " + formatMessage(className, methodName, null, null));
+			log.debug(formatMessage("<", className, methodName, null, null));
 		}
+	}
+
+	public boolean isTraceEnabled () {
+		return log.isDebugEnabled();
+	}
+
+	public void setTraceEnabled (boolean b) {
 	}
 
 }

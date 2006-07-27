@@ -12,19 +12,33 @@ package org.aspectj.weaver.tools;
 
 import org.aspectj.util.LangUtil;
 
-public class TraceFactory {
+public abstract class TraceFactory {
     
-    public static TraceFactory instance = new TraceFactory(); 
+	public final static String DEBUG_PROPERTY = "org.aspectj.tracing.debug";
+	public final static String FACTORY_PROPERTY = "org.aspectj.tracing.factory";
+	
+    private static boolean debug = getBoolean(DEBUG_PROPERTY,false); 
+    private static TraceFactory instance = new DefaultTraceFactory();
     
     public Trace getTrace (Class clazz) {
-    	return new DefaultTrace(clazz);
+    	return instance.getTrace(clazz);
     }
+
+	public boolean isEnabled() {
+		return true;
+	}
     
     public static TraceFactory getTraceFactory () {
     	return instance;
     }
     
-    static {
+    protected static boolean getBoolean(String name, boolean def) {
+		String defaultValue = String.valueOf(def);
+		String value = System.getProperty(name,defaultValue);
+		return Boolean.valueOf(value).booleanValue();
+	}
+
+	static {
     	try {
 			if (LangUtil.is15VMOrGreater()) {
 	    		Class factoryClass = Class.forName("org.aspectj.weaver.tools.Jdk14TraceFactory");
@@ -35,9 +49,10 @@ public class TraceFactory {
 			}
     	}
     	catch (Throwable th) {
-//    		th.printStackTrace();
+    		if (debug) th.printStackTrace();
     	}
-//    	System.out.println("TraceFactory.<clinit>() instance=" + instance);
+    	
+    	if (debug) System.out.println("TraceFactory.instance=" + instance);
     }
 
 }

@@ -46,4 +46,6 @@ public interface Trace {
 	public void exit (String methodName, boolean b);
 	
 	public boolean isTraceEnabled ();
+
+	public void setTraceEnabled (boolean b);
 }

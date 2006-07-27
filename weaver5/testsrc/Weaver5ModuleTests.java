@@ -25,6 +25,7 @@ public class Weaver5ModuleTests extends TestCase {
         TestSuite suite = new TestSuite(Weaver5ModuleTests.class.getName());
         if (TestUtil.is15VMOrGreater()) {
 	            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.tools.Java15PointcutExpressionTest", false);
+	            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.AllTracing5Tests", false);
 	            suite.addTestSuite(PointcutExpressionTest.class);
         } else {
             suite.addTest(TestUtil.testNamed("all tests require 1.5"));

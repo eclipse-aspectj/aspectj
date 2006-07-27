@@ -1,3 +1,7 @@
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.aspectj.weaver.AllTracing5Tests;
 import org.aspectj.weaver.TestJava5ReflectionBasedReferenceTypeDelegate;
 import org.aspectj.weaver.patterns.ArgsTestCase;
 import org.aspectj.weaver.patterns.ThisOrTargetTestCase;
@@ -5,9 +9,6 @@ import org.aspectj.weaver.tools.Java15PointcutExpressionTest;
 import org.aspectj.weaver.tools.PointcutExpressionTest;
 import org.aspectj.weaver.tools.PointcutParserTest;
 import org.aspectj.weaver.tools.TypePatternMatcherTest;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class AllWeaver5Tests {
 
@@ -21,6 +22,7 @@ public class AllWeaver5Tests {
 		suite.addTestSuite(PointcutExpressionTest.class);
 		suite.addTestSuite(PointcutParserTest.class);
 		suite.addTestSuite(TypePatternMatcherTest.class);
+        suite.addTest(AllTracing5Tests.suite());
 		//$JUnit-END$
 		return suite;
 	}
