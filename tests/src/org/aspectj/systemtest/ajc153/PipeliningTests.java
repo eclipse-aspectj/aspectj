@@ -14,7 +14,7 @@ import java.io.File;
 
 import junit.framework.Test;
 
-import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
+//import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
