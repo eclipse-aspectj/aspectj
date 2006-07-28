@@ -23,10 +23,6 @@ public abstract class TraceFactory {
     public Trace getTrace (Class clazz) {
     	return instance.getTrace(clazz);
     }
-
-	public boolean isEnabled() {
-		return true;
-	}
     
     public static TraceFactory getTraceFactory () {
     	return instance;

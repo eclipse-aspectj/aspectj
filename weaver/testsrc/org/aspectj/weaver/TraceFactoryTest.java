@@ -28,9 +28,4 @@ public class TraceFactoryTest extends TestCase {
 		assertNotNull(trace);
 	}
 
-	public void testIsEnabled() {
-		TraceFactory traceFactory = TraceFactory.getTraceFactory();
-		assertTrue(traceFactory.isEnabled());
-	}
-
 }
