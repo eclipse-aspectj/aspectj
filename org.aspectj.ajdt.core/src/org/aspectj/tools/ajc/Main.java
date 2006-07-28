@@ -243,7 +243,14 @@ public class Main {
         // make sure we handle out of memory gracefully...
         try {
         	// byte[] b = new byte[100000000]; for testing OoME only!
-        	 run(args, holder);
+        	long stime = System.currentTimeMillis();
+        	// uncomment next line to pause before startup (attach jconsole)
+//        	try {Thread.sleep(5000); }catch(Exception e) {}
+        	run(args, holder);
+        	long etime = System.currentTimeMillis();
+        	holder.handleMessage(MessageUtil.info("Compiler took "+(etime-stime)+"ms"));
+        	// uncomment next line to pause at end (keeps jconsole alive!)
+//        	try { System.in.read(); } catch (Exception e) {}
         } 
         catch (OutOfMemoryError outOfMemory) {
         	IMessage outOfMemoryMessage = new Message(OUT_OF_MEMORY_MSG,null,true);
