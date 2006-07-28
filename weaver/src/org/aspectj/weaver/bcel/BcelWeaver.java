@@ -499,7 +499,12 @@ public class BcelWeaver implements IWeaver {
 					return (sm2.getSourceLocation().getOffset()-sm1.getSourceLocation().getOffset());
 				}
 			});
- 
+		
+		if (inReweavableMode)
+			world.showMessage(IMessage.INFO,
+					WeaverMessages.format(WeaverMessages.REWEAVABLE_MODE),
+					null, null);
+		
 		if (trace.isTraceEnabled()) trace.exit("prepareForWeave");
     }
     
@@ -1136,6 +1141,8 @@ public class BcelWeaver implements IWeaver {
 					
 					// bug 119882 - see above comment for bug 113531
 					ReferenceTypeDelegate theDelegate = ((ReferenceType)theType).getDelegate();
+					
+					// TODO urgh - put a method on the interface to check this, string compare is hideous
 					if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) continue;
 
 					throw new BCException("Can't find bcel delegate for "+className+" type="+theType.getClass());
@@ -1150,12 +1157,14 @@ public class BcelWeaver implements IWeaver {
 		deletedTypenames = new ArrayList();
 		
         
-		warnOnUnmatchedAdvice();
-
         requestor.weaveCompleted();
         CompilationAndWeavingContext.leavingPhase(weaveToken);
         if (trace.isTraceEnabled()) trace.exit("weave",wovenClassNames);
     	return wovenClassNames;
+    }
+    
+    public void allWeavingComplete() {
+    	warnOnUnmatchedAdvice();
     }
 
     /**
@@ -1213,7 +1222,8 @@ public class BcelWeaver implements IWeaver {
 	                	 
 					   if (!(ba.getSignature() instanceof BcelMethod)
 					       || !Utility.isSuppressing((AnnotationX[])ba.getSignature().getAnnotations(),"adviceDidNotMatch")) {
-					        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().toString(),element.getSourceLocation());
+					        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().toString(),
+					        		new SourceLocation(element.getSourceLocation().getSourceFile(),element.getSourceLocation().getLine()));//element.getSourceLocation());
 					   }							  
                      }
                   }
@@ -1257,10 +1267,6 @@ public class BcelWeaver implements IWeaver {
     }
     
     public void prepareToProcessReweavableState() {
-		if (inReweavableMode)
-			world.showMessage(IMessage.INFO,
-					WeaverMessages.format(WeaverMessages.REWEAVABLE_MODE),
-					null, null);
     }
     
     public void processReweavableStateIfPresent(String className, BcelObjectType classType) {
