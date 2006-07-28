@@ -37,6 +37,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
+import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.IBinarySourceProvider;
 import org.aspectj.ajdt.internal.compiler.ICompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.ICompilerAdapterFactory;
@@ -949,6 +950,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 						}
 
 					}
+					unitResult.compiledTypes.clear(); // free up references to AjClassFile instances
 				}
 				
 				if (unitResult.hasProblems() || unitResult.hasTasks()) {
@@ -1205,18 +1207,33 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			new Parser(
 				pr, 
 				forCompiler.options.parseLiteralExpressionsAsConstants);
-		
-		return new AjCompilerAdapter(forCompiler,batchCompile,getBcelWorld(),getWeaver(),
-						factory,
-						getInterimResultRequestor(),
-						progressListener,
-						this,  // IOutputFilenameProvider
-						this,  // IBinarySourceProvider
-						state.getBinarySourceMap(),
-						buildConfig.isTerminateAfterCompilation(),
-						buildConfig.getProceedOnError(),
-						buildConfig.isNoAtAspectJAnnotationProcessing(),
-						state);
+		if (getBcelWorld().shouldPipelineCompilation()) {
+			IMessage message = MessageUtil.info("Pipelining compilation");
+			handler.handleMessage(message);
+			return new AjPipeliningCompilerAdapter(forCompiler,batchCompile,getBcelWorld(),getWeaver(),
+					factory, 
+					getInterimResultRequestor(),
+					progressListener,
+					this,  // IOutputFilenameProvider
+					this,  // IBinarySourceProvider
+					state.getBinarySourceMap(),
+					buildConfig.isTerminateAfterCompilation(),
+					buildConfig.getProceedOnError(),
+					buildConfig.isNoAtAspectJAnnotationProcessing(),
+					state);
+		} else {
+			return new AjCompilerAdapter(forCompiler,batchCompile,getBcelWorld(),getWeaver(),
+							factory,
+							getInterimResultRequestor(),
+							progressListener,
+							this,  // IOutputFilenameProvider
+							this,  // IBinarySourceProvider
+							state.getBinarySourceMap(),
+							buildConfig.isTerminateAfterCompilation(),
+							buildConfig.getProceedOnError(),
+							buildConfig.isNoAtAspectJAnnotationProcessing(),
+							state);
+		}
 	}
 	
 	/**

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.bridge.IProgressListener;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
@@ -28,7 +29,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
  */
 public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Iterator {
 	
-	private AjCompilerAdapter compilerAdapter;
+	private AbstractCompilerAdapter compilerAdapter;
 	private Iterator resultIterator;
 	private int classFileIndex = 0;
 	private InterimCompilationResult nowProcessing;
@@ -46,7 +47,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	private int progressCompletionCount;
 
 	
-	public WeaverAdapter(AjCompilerAdapter forCompiler,
+	public WeaverAdapter(AbstractCompilerAdapter forCompiler,
 						 WeaverMessageHandler weaverMessageHandler,
 						 IProgressListener progressListener) { 
 		this.compilerAdapter = forCompiler;
@@ -62,7 +63,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		localIteratorCounter = 0;
 		nowProcessing = null;
 		lastReturnedResult = null;
-		resultIterator = compilerAdapter.resultsPendingWeave.iterator();
+		resultIterator = compilerAdapter.getResultsPendingWeave().iterator();
 		return this;
 	}
 	/* (non-Javadoc)
@@ -183,7 +184,8 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		AjClassFile ajcf = new AjClassFile(className.toCharArray(),
 										   result.getBytes());
 		lastReturnedResult.result().record(ajcf.fileName(),ajcf);
-		
+		//System.err.println(progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")");
+		weaverMessageHandler.handleMessage(MessageUtil.info(progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")"));
 		if (progressListener != null) {
 			progressCompletionCount++;
 			
