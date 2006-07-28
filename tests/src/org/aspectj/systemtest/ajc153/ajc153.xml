@@ -245,4 +245,9 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr151978" title="generics problem">
+      <compile files="IMessage.java" options="-1.5">
+      </compile>
+    </ajc-test>
+    
 </suite>
