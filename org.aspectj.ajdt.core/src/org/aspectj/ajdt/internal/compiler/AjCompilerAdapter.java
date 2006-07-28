@@ -41,7 +41,7 @@ import org.aspectj.weaver.patterns.CflowPointcut;
  *
  * Adapts standard JDT Compiler to add in AspectJ specific behaviours.
  */
-public class AjCompilerAdapter implements ICompilerAdapter {
+public class AjCompilerAdapter extends AbstractCompilerAdapter {
 
 	private Compiler compiler;
 	private BcelWeaver weaver;
@@ -322,6 +322,9 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 		} finally {
 			// ???: is this the right point for this? After weaving has finished clear the caches.
 			CflowPointcut.clearCaches();
+			if (weaverMessageHandler instanceof WeaverMessageHandler)
+				  ((WeaverMessageHandler)weaverMessageHandler).setCurrentResult(null);
+			weaver.allWeavingComplete();
 			weaver.tidyUp();
 			IMessageHandler imh = weaver.getWorld().getMessageHandler();
 			if (imh instanceof WeaverMessageHandler)
@@ -332,5 +335,7 @@ public class AjCompilerAdapter implements ICompilerAdapter {
 	public void afterDietParsing(CompilationUnitDeclaration[] units) {
 		// to be filled in...
 	}	
+
+	public List getResultsPendingWeave() { return resultsPendingWeave;}
 
 }

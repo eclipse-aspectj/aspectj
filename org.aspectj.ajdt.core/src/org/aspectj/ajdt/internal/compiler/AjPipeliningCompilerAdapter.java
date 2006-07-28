@@ -1,0 +1,582 @@
+/*******************************************************************************
+ * Copyright (c) 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Andy Clement    - initial implementation 26Jul06
+ *******************************************************************************/
+package org.aspectj.ajdt.internal.compiler;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.aspectj.ajdt.internal.compiler.ast.AddAtAspectJAnnotationsVisitor;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.ValidateAtAspectJAnnotationsVisitor;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.ajdt.internal.core.builder.AjState;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IProgressListener;
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.bridge.context.ContextToken;
+import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.aspectj.util.CharOperation;
+import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.patterns.CflowPointcut;
+
+/**
+ * Adapts standard JDT Compiler to add in AspectJ specific behaviours.
+ * This version implements pipelining - where files are compiled and then
+ * woven immediately, unlike AjCompilerAdapter which compiles everything
+ * then weaves everything.  (One small note: because all aspects have to
+ * be known before weaving can take place, the weaving pipeline is 'stalled'
+ * until all aspects have been compiled).
+ * 
+ * The basic strategy is this:
+ * 
+ * 1. diet parse all input source files
+ *    - this is enough for us to implement ITD matching
+ *    - this enables us to determine which are aspects
+ * 2. sort the input files, aspects first 
+ *    - keep a note of how many files contain aspects
+ * 3. if there are aspects, mark the pipeline as 'stalled'
+ * 3. repeat
+ *    3a. compile a file
+ *    3b. have we now compiled all aspects?
+ *        NO - put file in a weave pending queue
+ *        YES- unstall the 'pipeline'
+ *    3c. is the pipeline stalled?
+ *        NO - weave all pending files and this one
+ *        YES- do nothing
+ *   
+ * Complexities arise because of:
+ * - what does -XterminateAfterCompilation mean? since there is no stage
+ *   where everything is compiled and nothing is woven
+ *   
+ *   
+ * Here is the compiler loop difference when pipelining.
+ * 
+ * the old way:
+ * Finished diet parsing [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java]
+ * Finished diet parsing [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java]
+ * > AjLookupEnvironment.completeTypeBindings()
+ * < AjLookupEnvironment.completeTypeBindings()
+ * compiling C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java
+ * >Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
+ * <Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
+ * compiling C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java
+ * >Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
+ * <Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
+ * >AjCompilerAdapter.weave()
+ * >BcelWeaver.prepareForWeave
+ * <BcelWeaver.prepareForWeave
+ * woven class ClassOne (from C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
+ * woven class ClassTwo (from C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
+ * <AjCompilerAdapter.weave()
+ * 
+ * the new way (see the compiling/weaving mixed up):
+ * Finished diet parsing [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java]
+ * Finished diet parsing [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java]
+ * >AjLookupEnvironment.completeTypeBindings()
+ * <AjLookupEnvironment.completeTypeBindings()
+ * compiling C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java
+ * >Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
+ * <Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
+ * >AjCompilerAdapter.weave()
+ * >BcelWeaver.prepareForWeave
+ * <BcelWeaver.prepareForWeave
+ * woven class ClassOne (from C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
+ * <AjCompilerAdapter.weave()
+ * compiling C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java
+ * >Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
+ * <Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
+ * >AjCompilerAdapter.weave()
+ * woven class ClassTwo (from C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
+ * <AjCompilerAdapter.weave()
+ * 
+ * 
+ */
+public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
+
+	private Compiler compiler;
+	private BcelWeaver weaver;
+	private EclipseFactory eWorld;
+	private boolean isBatchCompile;
+	private boolean reportedErrors;
+	private boolean isXTerminateAfterCompilation;
+	private boolean proceedOnError;
+	private boolean inJava5Mode;
+	private boolean noAtAspectJAnnotationProcessing;
+	private IIntermediateResultsRequestor intermediateResultsRequestor;
+	private IProgressListener progressListener;
+	private IOutputClassFileNameProvider outputFileNameProvider;
+	private IBinarySourceProvider binarySourceProvider;
+	private WeaverMessageHandler weaverMessageHandler;
+	private Map /* fileName > List<UnwovenClassFile> */ binarySourceSetForFullWeave = new HashMap();
+	
+	private ContextToken processingToken = null;
+	private ContextToken resolvingToken = null;
+	private ContextToken analysingToken = null;
+	private ContextToken generatingToken = null;
+	
+	private AjState incrementalCompilationState;
+	
+	// Maintains a list of whats weaving - whilst the pipeline is stalled, this accumulates aspects.
+	List /*InterimResult*/ resultsPendingWeave = new ArrayList();
+	
+	// pipelining info
+	private boolean pipelineStalled   = true; 
+	private boolean weaverInitialized = false;
+	private int toWaitFor;
+
+	/**
+	 * Create an adapter, and tell it everything it needs to now to drive the AspectJ
+	 * parts of a compile cycle.
+	 * @param compiler	the JDT compiler that produces class files from source
+	 * @param isBatchCompile  true if this is a full build (non-incremental)
+	 * @param world  the bcelWorld used for type resolution during weaving
+	 * @param weaver the weaver
+	 * @param intRequestor  recipient of interim compilation results from compiler (pre-weave)
+	 * @param outputFileNameProvider implementor of a strategy providing output file names for results
+	 * @param binarySourceEntries binary source that we didn't compile, but that we need to weave
+	 * @param resultSetForFullWeave if we are doing an incremental build, and the weaver determines
+	 *                              that we need to weave the world, this is the set of intermediate
+	 *                              results that will be passed to the weaver.
+	 */
+	public AjPipeliningCompilerAdapter(Compiler compiler,
+							 boolean isBatchCompile,
+							 BcelWorld world,
+							 BcelWeaver weaver,
+							 EclipseFactory eFactory,
+							 IIntermediateResultsRequestor intRequestor,
+							 IProgressListener progressListener,
+							 IOutputClassFileNameProvider outputFileNameProvider,
+							 IBinarySourceProvider binarySourceProvider,
+							 Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
+							 boolean isXterminateAfterCompilation,
+							 boolean proceedOnError,
+							 boolean noAtAspectJProcessing,
+							 AjState incrementalCompilationState) {
+		this.compiler = compiler;
+		this.isBatchCompile = isBatchCompile;
+		this.weaver = weaver;
+		this.intermediateResultsRequestor = intRequestor;
+		this.progressListener = progressListener;
+		this.outputFileNameProvider = outputFileNameProvider;
+		this.binarySourceProvider = binarySourceProvider;
+		this.isXTerminateAfterCompilation = isXterminateAfterCompilation;
+		this.proceedOnError = proceedOnError;
+		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
+		this.eWorld = eFactory;
+		this.inJava5Mode = false;
+		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
+		this.incrementalCompilationState = incrementalCompilationState;
+		
+		if (compiler.options.complianceLevel == CompilerOptions.JDK1_5) inJava5Mode = true;
+		IMessageHandler msgHandler = world.getMessageHandler();
+		// Do we need to reset the message handler or create a new one? (This saves a ton of memory lost on incremental compiles...)
+		if (msgHandler instanceof WeaverMessageHandler) {
+			((WeaverMessageHandler)msgHandler).resetCompiler(compiler);
+			weaverMessageHandler = (WeaverMessageHandler)msgHandler;
+		} else {
+			weaverMessageHandler = new WeaverMessageHandler(msgHandler, compiler);
+			world.setMessageHandler(weaverMessageHandler);
+		}
+	}
+
+	
+	// the compilation lifecycle methods below are called in order as compilation progresses...
+
+	/**
+	 * In a pipelining compilation system, we need to ensure aspects are through the pipeline first.  Only
+	 * when they are all through (and therefore we know about all static/dynamic crosscutting) can be
+	 * proceed to weave anything.  Effectively the weaving part of the pipeline stalls until all the
+	 * aspects have been fully compiled.  This method sorts the compilation units such that any containing
+	 * aspects are fully compiled first and it keeps a note on how long it should stall the pipeline before
+	 * commencing weaving.
+	 */
+	public void afterDietParsing(CompilationUnitDeclaration[] units) {
+		if (debugPipeline) System.err.println("> afterDietParsing: there are "+(units==null?0:units.length)+" units to sort");
+		
+		if (!reportedErrors && units!=null) {
+			for (int i = 0; i < units.length; i++) {
+				if (units[i]!=null && units[i].compilationResult!=null && units[i].compilationResult.hasErrors()) {
+					reportedErrors = true;
+					break; // TODO break or exit here?
+				}
+			}
+		}
+		
+		// Break the units into two lists...
+		List aspects = new ArrayList();
+		List nonaspects = new ArrayList();
+		for (int i=0;i<units.length;i++) {
+			if (containsAnAspect(units[i])) aspects.add(units[i]); else nonaspects.add(units[i]);
+		}
+		
+		if (units == null) return; // what does this mean?
+		
+		// ...and put them back together, aspects first
+		int posn = 0;
+		for (Iterator iter = aspects.iterator(); iter.hasNext();) {
+			units[posn++] = (CompilationUnitDeclaration) iter.next();
+		}
+		for (Iterator iter = nonaspects.iterator(); iter.hasNext();) {
+			units[posn++] = (CompilationUnitDeclaration) iter.next();
+		}
+		
+		// Work out how long to stall the pipeline
+		toWaitFor = aspects.size();
+		if (debugPipeline) System.err.println("< afterDietParsing: stalling pipeline for "+toWaitFor+" source files");
+
+		// TESTING
+		if (pipelineTesting) {
+			if (pipelineOutput ==null) pipelineOutput = new Hashtable();
+			pipelineOutput.put("filesContainingAspects", new Integer(toWaitFor).toString());
+			StringBuffer order = new StringBuffer();
+			order.append("[");
+			for (int i = 0; i < units.length; i++) {
+				if (i!=0) order.append(",");
+				CompilationUnitDeclaration declaration = units[i];
+				String filename = new String(declaration.getFileName());
+				int idx = filename.lastIndexOf('/');
+				if (idx>0) filename=filename.substring(idx+1);
+				idx = filename.lastIndexOf('\\');
+				if (idx>0) filename=filename.substring(idx+1);
+				order.append(filename);
+			}
+			order.append("]");
+			pipelineOutput.put("weaveOrder", order.toString());
+		}
+	}
+	
+	public void beforeCompiling(ICompilationUnit[] sourceUnits) {
+		resultsPendingWeave = new ArrayList();
+		reportedErrors = false;		
+	}
+
+	
+	public void beforeProcessing(CompilationUnitDeclaration unit) {
+		if (debugPipeline) System.err.println("compiling " + new String(unit.getFileName()));
+		eWorld.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
+		processingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_COMPILATION_UNIT,unit.getFileName());
+		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
+			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ADDING_AT_ASPECTJ_ANNOTATIONS, unit.getFileName());
+			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit);
+			unit.traverse(atAspectJVisitor, unit.scope);
+			CompilationAndWeavingContext.leavingPhase(tok);
+		}		
+	}
+
+	public void beforeResolving(CompilationUnitDeclaration unit) {
+		resolvingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.RESOLVING_COMPILATION_UNIT, unit.getFileName());
+	}
+
+	public void afterResolving(CompilationUnitDeclaration unit) {
+		if (resolvingToken != null)
+			CompilationAndWeavingContext.leavingPhase(resolvingToken);
+	}
+
+	public void beforeAnalysing(CompilationUnitDeclaration unit) {
+		analysingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ANALYSING_COMPILATION_UNIT, unit.getFileName());
+		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
+			ValidateAtAspectJAnnotationsVisitor atAspectJVisitor = new ValidateAtAspectJAnnotationsVisitor(unit);
+			unit.traverse(atAspectJVisitor, unit.scope);
+		}		
+	}
+
+	public void afterAnalysing(CompilationUnitDeclaration unit) {
+		if (analysingToken != null)
+			CompilationAndWeavingContext.leavingPhase(analysingToken);
+	}
+
+	public void beforeGenerating(CompilationUnitDeclaration unit) {
+		generatingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.GENERATING_UNWOVEN_CODE_FOR_COMPILATION_UNIT, unit.getFileName());
+	}
+
+	public void afterGenerating(CompilationUnitDeclaration unit) {
+		if (generatingToken != null)
+			CompilationAndWeavingContext.leavingPhase(generatingToken);
+	}
+
+	public void afterCompiling(CompilationUnitDeclaration[] units) {
+		this.eWorld.cleanup();
+		if (!weaverInitialized) { // nothing got compiled, doesnt mean there is nothing to do... (binary weaving)
+			if (!(isXTerminateAfterCompilation || (reportedErrors && !proceedOnError))) {
+//				acceptResult(unit.compilationResult);
+//			} else {
+				try {
+					weaveQueuedEntries();
+				} catch (IOException ex) {
+					AbortCompilation ac = new AbortCompilation(null,ex);
+					throw ac;
+		    	}
+			}
+		}
+		postWeave();
+		try {
+			// not great ... but one more check before we continue, see pr132314
+			if (!reportedErrors && units!=null) {
+				for (int i = 0; i < units.length; i++) {
+					if (units[i]!=null && units[i].compilationResult!=null && units[i].compilationResult.hasErrors()) {
+						reportedErrors = true;
+						break;
+					}
+				}
+			}
+			if (isXTerminateAfterCompilation || (reportedErrors && !proceedOnError)) {
+				// no point weaving... just tell the requestor we're done
+				notifyRequestor();
+			} else {
+				// weave();  // notification happens as weave progresses...
+				weaver.getWorld().flush();
+			}
+//		} catch (IOException ex) {
+//			AbortCompilation ac = new AbortCompilation(null,ex);
+//			throw ac;
+		} catch (RuntimeException rEx) {
+			if (rEx instanceof AbortCompilation) throw rEx; // Don't wrap AbortCompilation exceptions!
+
+			// This will be unwrapped in Compiler.handleInternalException() and the nested
+			// RuntimeException thrown back to the original caller - which is AspectJ
+			// which will then then log it as a compiler problem.
+			throw new AbortCompilation(true,rEx);
+		}
+	}
+
+	public void afterProcessing(CompilationUnitDeclaration unit, int unitIndex) {
+		CompilationAndWeavingContext.leavingPhase(processingToken);
+		eWorld.finishedCompilationUnit(unit);
+		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult,outputFileNameProvider);
+		if (unit.compilationResult.hasErrors()) reportedErrors = true;
+		
+		if (intermediateResultsRequestor != null) {
+			intermediateResultsRequestor.acceptResult(intRes);
+		}
+		
+		if (isXTerminateAfterCompilation || (reportedErrors && !proceedOnError)) {
+			acceptResult(unit.compilationResult);
+		} else {
+			queueForWeaving(intRes);
+		}
+	}
+	
+	
+    private void queueForWeaving(InterimCompilationResult intRes) {
+    	resultsPendingWeave.add(intRes);
+    	if (pipelineStalled) {
+    		if (resultsPendingWeave.size()>=toWaitFor) pipelineStalled = false;
+    	}
+    	if (pipelineStalled) return;
+    	try {
+    		weaveQueuedEntries();
+    	} catch (IOException ex) {
+			AbortCompilation ac = new AbortCompilation(null,ex);
+			throw ac;
+    	}
+	}
+	
+	
+	/*
+	 * Called from the weaverAdapter once it has finished weaving the class files
+	 * associated with a given compilation result.
+	 */
+	public void acceptResult(CompilationResult result) {
+		compiler.requestor.acceptResult(result.tagAsAccepted());
+		if (compiler.unitsToProcess != null) {
+			for (int i = 0; i < compiler.unitsToProcess.length; i++) {
+				if (compiler.unitsToProcess[i] != null) {
+					if (compiler.unitsToProcess[i].compilationResult == result) {
+						compiler.unitsToProcess[i].cleanUp();
+						compiler.unitsToProcess[i] = null;
+					}
+				}
+			}
+		}
+	}
+
+	// helper methods...
+	// ==================================================================================
+	
+	private List getBinarySourcesFrom(Map binarySourceEntries) {
+		// Map is fileName |-> List<UnwovenClassFile>
+		List ret = new ArrayList();
+		for (Iterator binIter = binarySourceEntries.keySet().iterator(); binIter.hasNext();) {
+			String sourceFileName = (String) binIter.next();
+			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
+			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"
+			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(),0,0,Integer.MAX_VALUE);
+			result.noSourceAvailable();
+			InterimCompilationResult binarySource = 
+				new InterimCompilationResult(result,unwovenClassFiles);
+			ret.add(binarySource);
+		}
+		return ret;
+	}
+	
+	private void notifyRequestor() {
+		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
+			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
+			compiler.requestor.acceptResult(iresult.result().tagAsAccepted());
+		}
+	}
+	
+	private void weaveQueuedEntries() throws IOException {
+		if (debugPipeline)System.err.println(">.weaveQueuedEntries()");
+		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
+			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
+			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
+				weaver.addClassFile(iresult.unwovenClassFiles()[i]);
+			}			
+		}
+		ensureWeaverInitialized(); // by doing this only once, are we saying needToReweaveWorld can't change once the aspects have been stuffed into the weaver?
+		if (weaver.needToReweaveWorld() && !isBatchCompile) return;
+		weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
+		resultsPendingWeave.clear(); // dont need to do those again
+		this.eWorld.minicleanup();
+		if (debugPipeline)System.err.println("<.weaveQueuedEntries()");
+	}
+	
+	private void ensureWeaverInitialized() {
+		if (weaverInitialized) return;
+		weaverInitialized=true;
+		weaver.setIsBatchWeave(isBatchCompile);
+		weaver.prepareForWeave();
+		if (weaver.needToReweaveWorld()) {
+			if (!isBatchCompile) {
+				//force full recompilation from source
+				this.incrementalCompilationState.forceBatchBuildNextTimeAround();
+				return;
+			}
+			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
+		} else {
+			Map binarySourcesToAdd = binarySourceProvider.getBinarySourcesForThisWeave();
+			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourcesToAdd));
+		}
+	}
+		
+	private void weave() throws IOException {
+		if (debugPipeline)System.err.println("> weave()");
+		// ensure weaver state is set up correctly
+		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
+			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
+			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
+				weaver.addClassFile(iresult.unwovenClassFiles()[i]);
+			}			
+		}
+
+		weaver.setIsBatchWeave(isBatchCompile);    	
+		weaver.prepareForWeave();
+		if (weaver.needToReweaveWorld()) {
+			if (!isBatchCompile) {
+				//force full recompilation from source
+				this.incrementalCompilationState.forceBatchBuildNextTimeAround();
+				return;
+			}
+			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
+		} else {
+			Map binarySourcesToAdd = binarySourceProvider.getBinarySourcesForThisWeave();
+			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourcesToAdd));
+		}
+
+		try {
+		  weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
+		} finally {
+			CflowPointcut.clearCaches();
+			weaver.tidyUp();
+			IMessageHandler imh = weaver.getWorld().getMessageHandler();
+			if (imh instanceof WeaverMessageHandler)
+			  ((WeaverMessageHandler)imh).resetCompiler(null);
+		}
+		if (debugPipeline)System.err.println("< weave()");
+	}	
+	
+	private void postWeave() {
+		if (debugPipeline)System.err.println("> postWeave()");
+		IMessageHandler imh = weaver.getWorld().getMessageHandler();
+		CflowPointcut.clearCaches();
+		if (imh instanceof WeaverMessageHandler)
+			  ((WeaverMessageHandler)imh).setCurrentResult(null);
+		weaver.allWeavingComplete();
+		weaver.tidyUp();
+		if (imh instanceof WeaverMessageHandler)
+		  ((WeaverMessageHandler)imh).resetCompiler(null);
+		if (debugPipeline)System.err.println("< postWeave()");
+	}
+
+	
+	
+
+	
+	/**
+	 * Return true if the compilation unit declaration contains an aspect declaration (either code style
+	 * or annotation style).  It must inspect the multiple types that may be in a compilation
+	 * unit declaration and any inner types.
+	 */
+	private boolean containsAnAspect(CompilationUnitDeclaration cud) {
+		TypeDeclaration[] typeDecls = cud.types;
+		if (typeDecls!=null) {
+			for (int i = 0; i < typeDecls.length; i++) { // loop through top level types in the file
+				TypeDeclaration declaration = typeDecls[i];
+				if (isAspect(declaration)) return true;
+				if (declaration.memberTypes!=null) {
+					TypeDeclaration[] memberTypes = declaration.memberTypes;
+					for (int j = 0; j < memberTypes.length; j++) { // loop through inner types
+						if (isAspect(memberTypes[j])) return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private static final char[] aspectSig = "Lorg/aspectj/lang/annotation/Aspect;".toCharArray();
+	private boolean isAspect(TypeDeclaration declaration) {
+		if (declaration instanceof AspectDeclaration) return true; // code style
+		else if (declaration.annotations!=null) { // check for annotation style
+			for (int index = 0; index < declaration.annotations.length; index++) {
+				TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, declaration.binding); // force annotation resolution
+				Annotation a = declaration.annotations[index];
+				if (CharOperation.equals(a.resolvedType.signature(),aspectSig)) return true;
+			}
+		}
+		return false;
+	}
+
+	// ---
+    /**
+     * SECRET: FOR TESTING - this can be used to collect information that tests can verify. 
+     */
+	public static boolean pipelineTesting = false;
+	public static Hashtable pipelineOutput = null;
+	// Keys into pipelineOutput:
+	// compileOrder   "[XXX,YYY]"        a list of the order in which files will be woven (aspects should be first)
+	// filesContainingAspects   "NNN"    how many input source files have aspects inside
+	// 
+	
+	public static String getPipelineDebugOutput(String key) {
+		if (pipelineOutput==null) return "";
+		return (String)pipelineOutput.get(key);
+	}
+	
+	private final boolean debugPipeline = false;
+	public List getResultsPendingWeave() { return resultsPendingWeave;}
+
+}
