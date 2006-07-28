@@ -61,12 +61,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     public JavaClass javaClass;
 	private LazyClassGen lazyClassGen = null;  // set lazily if it's an aspect
 
-	// Java related stuff
 	private int modifiers;
 	private String className;
+	
+	private String superclassSignature;
 	private String superclassName;
-    private ResolvedType[] interfaces = null;
-    private ResolvedType superClass = null;
+	private String[] interfaceSignatures;
+	
     private ResolvedMember[] fields = null;
     private ResolvedMember[] methods = null;
     private ResolvedType[] annotationTypes = null;
@@ -186,10 +187,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     public ResolvedType getSuperclass() {
         if (isObject) return null;
     	ensureGenericSignatureUnpacked();
-        if (superClass == null) {
-            superClass = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(superclassName));
-        }
-        return superClass;
+    	if (superclassSignature == null) {
+    		if (superclassName==null) superclassName = javaClass.getSuperclassName();
+    		superclassSignature = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(superclassName)).getSignature();
+    	}
+        ResolvedType res = 	getResolvedTypeX().getWorld().resolve(UnresolvedType.forSignature(superclassSignature));
+    	return res;
     }
         
     /**
@@ -199,14 +202,23 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
      */
     public ResolvedType[] getDeclaredInterfaces() {
     	ensureGenericSignatureUnpacked();
-        if (interfaces == null) {
-            String[] ifaceNames = javaClass.getInterfaceNames();
-            interfaces = new ResolvedType[ifaceNames.length];
-            for (int i = 0, len = ifaceNames.length; i < len; i++) {
-                interfaces[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(ifaceNames[i]));
+    	ResolvedType[] interfaceTypes = null;
+    	if (interfaceSignatures == null) {
+    		String[] names = javaClass.getInterfaceNames();
+    		interfaceSignatures = new String[names.length];
+        	interfaceTypes = new ResolvedType[names.length];
+            for (int i = 0, len = names.length; i < len; i++) {
+                interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(names[i]));
+                interfaceSignatures[i] = interfaceTypes[i].getSignature();
             }
-        }
-        return interfaces;
+    	} else {
+    		interfaceTypes = new ResolvedType[interfaceSignatures.length];
+            for (int i = 0, len = interfaceSignatures.length; i < len; i++) {
+                interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forSignature(interfaceSignatures[i]));
+            }
+    	}
+
+        return interfaceTypes;
     }
     
     public ResolvedMember[] getDeclaredMethods() {
@@ -405,8 +417,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     	
     	this.annotationTypes = null;
     	this.annotations = null;
-		this.interfaces = null;
-    	this.superClass = null;
+    	this.interfaceSignatures=null;
+    	this.superclassSignature = null;
+    	this.superclassName = null;
     	this.fields = null;
     	this.methods = null;
     	this.pointcuts = null;
@@ -479,7 +492,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public void addParent(ResolvedType newParent) {
 		bitflag|=DAMAGED;
 		if (newParent.isClass()) {
-			superClass = newParent;
+			superclassSignature = newParent.getSignature();
+			superclassName = newParent.getName();
+//			superClass = newParent;
 		} else {
 			ResolvedType[] oldInterfaceNames = getDeclaredInterfaces();
 			int exists = -1;
@@ -488,12 +503,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				if (type.equals(newParent)) {exists = i;break; }
 			}
 			if (exists==-1) {
-				int len = oldInterfaceNames.length;
-				ResolvedType[] newInterfaceNames = new ResolvedType[len+1];
-				System.arraycopy(oldInterfaceNames, 0, newInterfaceNames, 0, len);
-				newInterfaceNames[len] = newParent;
 				
-				interfaces = newInterfaceNames;
+				int len = interfaceSignatures.length;
+				String[] newInterfaceSignatures = new String[len+1];
+				System.arraycopy(interfaceSignatures, 0, newInterfaceSignatures, 0, len);
+				newInterfaceSignatures[len]=newParent.getSignature();
+				interfaceSignatures = newInterfaceSignatures;
 			}
 		}
 		//System.err.println("javaClass: " + Arrays.asList(javaClass.getInterfaceNames()) + " super " + superclassName);
@@ -670,9 +685,16 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			}
 			Signature.ClassTypeSignature superSig = cSig.superclassSignature;
 			try {
-				this.superClass = 
-					BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-							superSig, formalsForResolution, getResolvedTypeX().getWorld());
+//				this.superClass = 
+//					BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+//							superSig, formalsForResolution, getResolvedTypeX().getWorld());
+				
+				ResolvedType rt = 
+				BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+						superSig, formalsForResolution, getResolvedTypeX().getWorld());
+				this.superclassSignature = rt.getSignature();
+				this.superclassName = rt.getName();
+			
 			} catch (GenericSignatureFormatException e) {
 				// development bug, fail fast with good info
 				throw new IllegalStateException(
@@ -680,14 +702,20 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 						+ " with generic signature " + getDeclaredGenericSignature()+ " the following error was detected: "
 						+ e.getMessage());
 			}
-			this.interfaces = new ResolvedType[cSig.superInterfaceSignatures.length];
+//			this.interfaces = new ResolvedType[cSig.superInterfaceSignatures.length];
+			this.interfaceSignatures = new String[cSig.superInterfaceSignatures.length];
 			for (int i = 0; i < cSig.superInterfaceSignatures.length; i++) {
 				try {
-					this.interfaces[i] = 
+//					this.interfaces[i] = 
+//						BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+//								cSig.superInterfaceSignatures[i],
+//								formalsForResolution, 
+//								getResolvedTypeX().getWorld());
+					this.interfaceSignatures[i] = 
 						BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 								cSig.superInterfaceSignatures[i],
 								formalsForResolution, 
-								getResolvedTypeX().getWorld());
+								getResolvedTypeX().getWorld()).getSignature();
 				} catch (GenericSignatureFormatException e) {
 					// development bug, fail fast with good info
 					throw new IllegalStateException(
@@ -778,17 +806,15 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public void evictWeavingState() {
 		// Can't chuck all this away 
 		if (getResolvedTypeX().getWorld().couldIncrementalCompileFollow()) return;
+		
 		if (javaClass != null) {
 			// Force retrieval of any lazy information		
 			ensureAnnotationsUnpacked();
 			ensureGenericInfoProcessed();
 
-		    interfaces=null; // force reinit - may get us the right instances!
-		    superClass=null;
 			getDeclaredInterfaces();
 			getDeclaredFields();
 			getDeclaredMethods();
-			
 			// The lazyClassGen is preserved for aspects - it exists to enable around advice
 			// inlining since the method will need 'injecting' into the affected class.  If
 			// XnoInline is on, we can chuck away the lazyClassGen since it won't be required
@@ -804,6 +830,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	        for (int i = fields.length - 1;  i >= 0; i--)  fields[i].evictWeavingState();
 			javaClass = null;
 //			setSourceContext(SourceContextImpl.UNKNOWN_SOURCE_CONTEXT); // bit naughty
+//		    interfaces=null; // force reinit - may get us the right instances!
+//		    superClass=null;
 		}
 	}
 	
