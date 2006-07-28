@@ -428,7 +428,7 @@ public class AjcTaskTest extends TestCase {
 		logFile.delete();
 		long initialLength = logFile.length();
 		task.setLog(logFile);
-		runTest(task,null,null);
+		runTest(task,null,MessageHolderChecker.INFOS);
 		long newLength = logFile.length();
 		assertTrue(newLength > initialLength);
 		logFile.delete();
