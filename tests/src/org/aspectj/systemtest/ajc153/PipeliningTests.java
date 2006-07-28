@@ -44,6 +44,7 @@ public class PipeliningTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testBuildOneAspectTwoClasses() { runTest("build one aspect and two classes");}
 	public void testBuildTwoClassesOneAspect() { runTest("build two classes and one aspect");}
 	public void testBuildTwoAspects() { runTest("build two aspects");}
+	public void testBuildClassAndNestedAspect() { runTest("build one class and deeply nested aspect");}
 	
 	public void testAspectExtendsClass() { runTest("aspect extends class"); }
 	

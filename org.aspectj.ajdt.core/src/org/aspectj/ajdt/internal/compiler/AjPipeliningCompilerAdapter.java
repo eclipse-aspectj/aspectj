@@ -539,9 +539,20 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 				if (declaration.memberTypes!=null) {
 					TypeDeclaration[] memberTypes = declaration.memberTypes;
 					for (int j = 0; j < memberTypes.length; j++) { // loop through inner types
-						if (isAspect(memberTypes[j])) return true;
+						if (containsAnAspect(memberTypes[j])) return true;
 					}
 				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean containsAnAspect(TypeDeclaration tDecl) {
+		if (isAspect(tDecl)) return true;
+		if (tDecl.memberTypes!=null) {
+			TypeDeclaration[] memberTypes = tDecl.memberTypes;
+			for (int j = 0; j < memberTypes.length; j++) { // loop through inner types
+				if (containsAnAspect(memberTypes[j])) return true;
 			}
 		}
 		return false;
