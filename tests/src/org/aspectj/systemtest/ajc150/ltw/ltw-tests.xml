@@ -288,7 +288,8 @@
                 <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
 	        	<line text="info weaving 'Main'"/>
-        		<line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/>
+	        	<!-- will never come out for LTW, due to pipelining change pr146781 -->
+        		<!--line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/-->
         	</stderr>
         </run>
     </ajc-test>
@@ -311,7 +312,8 @@
                 <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
 	        	<line text="info weaving 'Main'"/>
-        		<line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/>
+	        	<!-- will never come out for LTW, due to pipelining change pr146781 -->
+        		<!--line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/-->
         	</stderr>
         </run>
     </ajc-test>
@@ -334,7 +336,8 @@
                 <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
 	        	<line text="info weaving 'Main'"/>
-        		<line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/>
+	        	<!-- will never come out for LTW, due to pipelining change pr146781 -->
+        		<!--line text="advice defined in Aspect3 has not been applied [Xlint:adviceDidNotMatch]"/-->
         	</stderr>
         </run>
     </ajc-test>

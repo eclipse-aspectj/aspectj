@@ -15,6 +15,7 @@ import java.io.File;
 import junit.framework.Test;
 
 //import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
+import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -47,7 +48,7 @@ public class PipeliningTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testAspectExtendsClass() { runTest("aspect extends class"); }
 	
 	// verifying the type sorting
-	/*public void testRecognizingAnnotationStyleAspects1() { 
+	public void testRecognizingAnnotationStyleAspects1() { 
 		AjPipeliningCompilerAdapter.pipelineTesting=true;
 		runTest("recognizing annotation style aspects - 1");
 		
@@ -68,7 +69,7 @@ public class PipeliningTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		String weaveOrder = AjPipeliningCompilerAdapter.getPipelineDebugOutput("weaveOrder");
 		String expectedOrder="[AtInnerAJAspect.java,ClassOne.java]";
 		assertTrue("Expected weaving order to be "+expectedOrder+" but was "+weaveOrder,weaveOrder.equals(expectedOrder));
-	}*/
+	}
 	
 	// verifying the new code for transforming Eclipse Annotations into AspectJ ones
 	public void testAnnotationTransformation() { runTest("annotation transformation"); }

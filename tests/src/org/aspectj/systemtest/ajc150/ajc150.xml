@@ -895,7 +895,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs150/pr108425" pr="108245" title="wildcard annotation matching - pr108245">
-        <compile files="package1/Bean.java,package2/Bean.java,package2/propertyChanger.java,package3/pr108425.aj" options="-1.5">
+        <compile files="package1/Bean.java,package2/Bean.java,package2/propertyChanger.java,package3/pr108425.aj" options="-1.5 -Xlint:ignore">
         </compile>
     </ajc-test>
            
