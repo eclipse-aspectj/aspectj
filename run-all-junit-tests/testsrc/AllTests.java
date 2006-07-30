@@ -12,7 +12,24 @@
 
 // default package
 import org.aspectj.util.LangUtil;
+import org.aspectj.util.UtilModuleTests;
+import org.aspectj.weaver.BcweaverModuleTests;
+import org.aspectj.weaver.BcweaverModuleTests15;
+import org.aspectj.ajde.AjdeModuleTests;
+import org.aspectj.ajdt.EajcModuleTests;
+import org.aspectj.asm.AsmModuleTests;
+import org.aspectj.bridge.BridgeModuleTests;
+import org.aspectj.build.BuildModuleTests;
+import org.aspectj.loadtime.LoadtimeModuleTests;
+import org.aspectj.runtime.RuntimeModuleTests;
+import org.aspectj.testing.TestingClientModuleTests;
+import org.aspectj.testing.TestingDriversModuleTests;
+import org.aspectj.testing.TestingModuleTests;
 import org.aspectj.testing.util.TestUtil;
+import org.aspectj.testingutil.TestingUtilModuleTests;
+import org.aspectj.tools.ajbrowser.AjbrowserModuleTests;
+import org.aspectj.tools.ajdoc.AjdocModuleTests;
+import org.aspectj.tools.ant.TaskdefsModuleTests;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -45,11 +62,11 @@ public class AllTests extends TestCase {
             // these only require 1.3, but in Eclipse they are built 
             // with 1.5, i.e., wrong class version to load under 1.3
             // so the class name can only be used reflectively
-            TestUtil.loadTestsReflectively(suite, "Aspectj5rtModuleTests", false);
-            TestUtil.loadTestsReflectively(suite, "Loadtime5ModuleTests", false);
+            TestUtil.loadTestsReflectively(suite, "org.aspectj.runtime.Aspectj5rtModuleTests", false);
+            TestUtil.loadTestsReflectively(suite, "org.aspectj.loadtime.Loadtime5ModuleTests", false);
             // this next one is built normally, but needs 1.5 rt.jar to pass
             suite.addTest(BcweaverModuleTests15.suite());
-            TestUtil.loadTestsReflectively(suite, "Weaver5ModuleTests",false);
+            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.Weaver5ModuleTests",false);
         } else {
             suite.addTest(TestUtil.skipTest("for 1.5"));
         } 

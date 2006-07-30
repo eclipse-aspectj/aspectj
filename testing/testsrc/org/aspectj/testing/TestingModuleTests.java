@@ -1,3 +1,4 @@
+package org.aspectj.testing;
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
@@ -14,21 +15,22 @@
 
 // default package
 
-import org.aspectj.bridge.context.CompilationAndWeavingContextTest;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class BridgeModuleTests extends TestCase {
+public class TestingModuleTests extends TestCase {
 
     public static Test suite() { 
-        TestSuite suite = new TestSuite(BridgeModuleTests.class.getName());
-        suite.addTest(org.aspectj.bridge.BridgeTests.suite()); 
-        suite.addTestSuite(CompilationAndWeavingContextTest.class);
+        TestSuite suite = new TestSuite(TestingModuleTests.class.getName());
+        suite.addTest(org.aspectj.testing.harness.bridge.TestingBridgeTests.suite()); 
+        suite.addTest(org.aspectj.testing.taskdefs.TaskdefTests.suite()); 
+        suite.addTest(org.aspectj.testing.util.UtilTests.suite()); 
+        suite.addTest(org.aspectj.testing.util.options.OptionsTests.suite()); 
+        suite.addTest(org.aspectj.testing.xml.TestingXmlTests.suite()); 
         return suite;
     }
 
-    public BridgeModuleTests(String name) { super(name); }
+    public TestingModuleTests(String name) { super(name); }
 
 }  

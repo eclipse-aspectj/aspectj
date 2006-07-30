@@ -1,3 +1,4 @@
+package org.aspectj.tools.ant;
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
@@ -15,17 +16,14 @@
 // default package
 
 import junit.framework.*;
-import junit.framework.Test;
-import org.aspectj.testing.TestingTests;
 
-public class TestingClientModuleTests extends TestCase {
+public class TaskdefsModuleTests extends TestCase {
 
-    public static Test suite() { 
-        TestSuite suite = new TestSuite(TestingClientModuleTests.class.getName());
-        suite.addTest(TestingTests.suite()); 
+    public static TestSuite suite() { 
+        TestSuite suite = new TestSuite(TaskdefsModuleTests.class.getName());
+        suite.addTest(org.aspectj.tools.ant.taskdefs.TaskdefsTests.suite()); 
         return suite;
     }
 
-    public TestingClientModuleTests(String name) { super(name); }
-
+    public TaskdefsModuleTests(String name) { super(name); }
 }  

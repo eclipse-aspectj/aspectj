@@ -1,3 +1,4 @@
+package org.aspectj.tools.ajbrowser;
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
@@ -16,13 +17,14 @@
 
 import junit.framework.*;
 
-public class TaskdefsModuleTests extends TestCase {
+public class AjbrowserModuleTests extends TestCase {
 
     public static TestSuite suite() { 
-        TestSuite suite = new TestSuite(TaskdefsModuleTests.class.getName());
-        suite.addTest(org.aspectj.tools.ant.taskdefs.TaskdefsTests.suite()); 
+        TestSuite suite = new TestSuite(AjbrowserModuleTests.class.getName());
+        suite.addTest(org.aspectj.tools.ajbrowser.AjbrowserTests.suite()); 
         return suite;
     }
 
-    public TaskdefsModuleTests(String name) { super(name); }
+    public AjbrowserModuleTests(String name) { super(name); }
+
 }  

@@ -1,3 +1,4 @@
+package org.aspectj.bridge;
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
@@ -8,27 +9,27 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
 
 // default package
 
+import org.aspectj.bridge.context.CompilationAndWeavingContextTest;
 
-import junit.framework.*;
 import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-public class EajcModuleTests extends TestCase {
+public class BridgeModuleTests extends TestCase {
 
     public static Test suite() { 
-        TestSuite suite = new TestSuite(EajcModuleTests.class.getName());
-        suite.addTest(org.aspectj.ajdt.ajc.AjdtAjcTests.suite()); 
-        suite.addTest(org.aspectj.ajdt.internal.compiler.batch.AjdtBatchTests.suite()); 
-        suite.addTest(org.aspectj.ajdt.internal.core.builder.AjdtBuilderTests.suite()); 
-        suite.addTest(org.aspectj.tools.ajc.AjcTests.suite());
+        TestSuite suite = new TestSuite(BridgeModuleTests.class.getName());
+        suite.addTest(org.aspectj.bridge.BridgeTests.suite()); 
+        suite.addTestSuite(CompilationAndWeavingContextTest.class);
         return suite;
     }
 
-    public EajcModuleTests(String name) { super(name); }
+    public BridgeModuleTests(String name) { super(name); }
 
 }  

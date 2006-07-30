@@ -1,3 +1,4 @@
+package org.aspectj.weaver;
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved. 
@@ -16,7 +17,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.aspectj.weaver.LocaleTest;
 import org.aspectj.weaver.tools.ToolsTests;
 
 public class BcweaverModuleTests extends TestCase {

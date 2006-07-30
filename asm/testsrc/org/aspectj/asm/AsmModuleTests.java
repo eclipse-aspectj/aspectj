@@ -1,3 +1,4 @@
+package org.aspectj.asm;
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
@@ -15,16 +16,16 @@
 // default package
 
 import junit.framework.*;
-import junit.framework.Test;
 
-public class UtilModuleTests extends TestCase {
+public class AsmModuleTests extends TestCase {
 
-    public static Test suite() { 
-        TestSuite suite = new TestSuite(UtilModuleTests.class.getName());
-        suite.addTest(org.aspectj.util.UtilTests.suite()); 
+    public static TestSuite suite() { 
+        TestSuite suite = new TestSuite(AsmModuleTests.class.getName());
+        suite.addTestSuite(AsmModuleTests.class); 
         return suite;
     }
 
-    public UtilModuleTests(String name) { super(name); }
+    public AsmModuleTests(String name) { super(name); }
 
+    public void testNothing() {}
 }  

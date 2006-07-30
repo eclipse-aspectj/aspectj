@@ -1,3 +1,4 @@
+package org.aspectj.weaver;
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
  * All rights reserved. 
@@ -15,11 +16,6 @@ import junit.framework.TestSuite;
 
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.BoundedReferenceTypeTestCase;
-import org.aspectj.weaver.MemberTestCase15;
-import org.aspectj.weaver.ReferenceTypeTestCase;
-import org.aspectj.weaver.TypeVariableReferenceTypeTestCase;
-import org.aspectj.weaver.TypeVariableTestCase;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
 import org.aspectj.weaver.patterns.WildTypePatternResolutionTestCase;
 

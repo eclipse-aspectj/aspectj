@@ -1,3 +1,4 @@
+package org.aspectj.tools.ajdoc;
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
  * All rights reserved. 
@@ -13,7 +14,6 @@
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.aspectj.tools.ajdoc.AjdocTests;
 
 /**
  * @author Mik Kersten

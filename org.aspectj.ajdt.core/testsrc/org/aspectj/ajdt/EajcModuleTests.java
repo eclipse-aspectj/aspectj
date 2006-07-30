@@ -1,3 +1,4 @@
+package org.aspectj.ajdt;
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
@@ -8,24 +9,27 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     PARC     initial implementation 
  * ******************************************************************/
 
 
 // default package
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.aspectj.testingutil.UtilTests;
 
-public class TestingUtilModuleTests extends TestCase {
+import junit.framework.*;
+import junit.framework.Test;
+
+public class EajcModuleTests extends TestCase {
 
     public static Test suite() { 
-        TestSuite suite = new TestSuite(TestingUtilModuleTests.class.getName());
-        suite.addTest(UtilTests.suite());
+        TestSuite suite = new TestSuite(EajcModuleTests.class.getName());
+        suite.addTest(org.aspectj.ajdt.ajc.AjdtAjcTests.suite()); 
+        suite.addTest(org.aspectj.ajdt.internal.compiler.batch.AjdtBatchTests.suite()); 
+        suite.addTest(org.aspectj.ajdt.internal.core.builder.AjdtBuilderTests.suite()); 
+        suite.addTest(org.aspectj.tools.ajc.AjcTests.suite());
         return suite;
     }
 
-    public TestingUtilModuleTests(String name) { super(name); }
+    public EajcModuleTests(String name) { super(name); }
+
 }  

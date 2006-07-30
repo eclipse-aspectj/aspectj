@@ -10,6 +10,8 @@
  * 
  * ******************************************************************/
 
+import org.aspectj.tests.TestsModuleTests;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

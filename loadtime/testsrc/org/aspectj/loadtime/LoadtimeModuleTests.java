@@ -1,3 +1,4 @@
+package org.aspectj.loadtime;
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
  * All rights reserved.

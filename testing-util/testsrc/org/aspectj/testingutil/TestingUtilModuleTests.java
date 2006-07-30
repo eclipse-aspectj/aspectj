@@ -1,3 +1,4 @@
+package org.aspectj.testingutil;
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
@@ -14,16 +15,17 @@
 
 // default package
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-public class AjbrowserModuleTests extends TestCase {
+public class TestingUtilModuleTests extends TestCase {
 
-    public static TestSuite suite() { 
-        TestSuite suite = new TestSuite(AjbrowserModuleTests.class.getName());
-        suite.addTest(org.aspectj.tools.ajbrowser.AjbrowserTests.suite()); 
+    public static Test suite() { 
+        TestSuite suite = new TestSuite(TestingUtilModuleTests.class.getName());
+        suite.addTest(UtilTests.suite());
         return suite;
     }
 
-    public AjbrowserModuleTests(String name) { super(name); }
-
+    public TestingUtilModuleTests(String name) { super(name); }
 }  
