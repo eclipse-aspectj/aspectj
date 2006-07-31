@@ -346,7 +346,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 				notifyRequestor();
 			} else {
 				// weave();  // notification happens as weave progresses...
-				weaver.getWorld().flush();
+//		        weaver.getWorld().flush(); // pr152257
 			}
 //		} catch (IOException ex) {
 //			AbortCompilation ac = new AbortCompilation(null,ex);

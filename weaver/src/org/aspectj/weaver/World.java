@@ -1133,6 +1133,7 @@ public abstract class World implements Dump.INode {
     public void setAddSerialVerUID(boolean b) { addSerialVerUID=b;}
     public boolean isAddSerialVerUID() { return addSerialVerUID;}
     
+    /** be careful calling this - pr152257 */
 	public void flush() {
 		typeMap.expendableMap.clear();
 	}

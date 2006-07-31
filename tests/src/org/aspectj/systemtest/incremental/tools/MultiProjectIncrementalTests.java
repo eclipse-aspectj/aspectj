@@ -820,21 +820,20 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 	
     //Bugzilla Bug 152257 - Incremental compiler doesn't handle exception declaration correctly
-/*	public void testPr152257() {
+	public void testPr152257() {
 		configureNonStandardCompileOptions("-XnoInline");
-		super.VERBOSE=true;
 		initialiseProject("PR152257");
 		build("PR152257");
 		List errors = MyTaskListManager.getErrorMessages();
 		assertTrue("Should be no warnings, but there are #"+errors.size(),errors.size()==0);
-//		checkWasFullBuild();
+		checkWasFullBuild();
 		alter("PR152257","inc1");
 		build("PR152257");
 		errors = MyTaskListManager.getErrorMessages();
 		assertTrue("Should be no warnings, but there are #"+errors.size(),errors.size()==0);
-//		checkWasntFullBuild();
+		checkWasntFullBuild();
 	}
-*/	
+
 
 	public void testPr128655() {
 		configureNonStandardCompileOptions("-showWeaveInfo");
