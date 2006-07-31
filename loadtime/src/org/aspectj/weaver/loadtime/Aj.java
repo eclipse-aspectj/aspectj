@@ -70,9 +70,10 @@ public class Aj implements ClassPreProcessor {
         	synchronized (loader) {
                 WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
                 if (weavingAdaptor == null) {
-            		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
+            		if (trace.isTraceEnabled()) trace.exit("preProcess");
                 	return bytes;
                 }
+        		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
                 return weavingAdaptor.weaveClass(className, bytes);
 			}
         } catch (Exception t) {
