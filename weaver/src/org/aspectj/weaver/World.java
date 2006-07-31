@@ -1195,6 +1195,10 @@ public abstract class World implements Dump.INode {
 	    public void setIncrementalCompileCouldFollow(boolean b) {incrementalCompileCouldFollow = b;}
 	    public boolean couldIncrementalCompileFollow()           {return incrementalCompileCouldFollow;}
 	
-	    public void setSynchronizationPointcutsInUse() {synchronizationPointcutsInUse =true;}
+	    public void setSynchronizationPointcutsInUse() {
+	    	if (trace.isTraceEnabled()) trace.enter("setSynchronizationPointcutsInUse", this);
+	    	synchronizationPointcutsInUse =true;
+	    	if (trace.isTraceEnabled()) trace.exit("setSynchronizationPointcutsInUse");
+	    }
 	    public boolean areSynchronizationPointcutsInUse() {return synchronizationPointcutsInUse;}
 }

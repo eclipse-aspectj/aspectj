@@ -99,8 +99,12 @@ import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.ExactTypePattern;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 
 class BcelClassWeaver implements IClassWeaver {
+
+    private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelClassWeaver.class);
     
     /**
      * This is called from {@link BcelWeaver} to perform the per-class weaving process.
@@ -1453,6 +1457,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * tidying up - there is some duplication that can be removed.  
 	 */
 	public static void transformSynchronizedMethod(LazyMethodGen synchronizedMethod) {
+        if (trace.isTraceEnabled()) trace.enter("transformSynchronizedMethod",synchronizedMethod);
 //		System.err.println("DEBUG: Transforming synchronized method: "+synchronizedMethod.getName());
 		final InstructionFactory fact	= synchronizedMethod.getEnclosingClass().getFactory();
 		InstructionList body    = synchronizedMethod.getBody();
@@ -1862,6 +1867,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// gonna have to go through and change all aload_0s to load the var from a variable,
 		// going to add a new variable for the this var
 
+        if (trace.isTraceEnabled()) trace.exit("transformSynchronizedMethod");
 	}
 	
 	

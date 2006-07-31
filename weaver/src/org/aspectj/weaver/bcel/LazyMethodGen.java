@@ -70,6 +70,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
+import org.aspectj.weaver.tools.Traceable;
 
 
 /** 
@@ -86,7 +87,7 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
  * <p> We stay away from targeters for rangey things like Shadows and Exceptions.
  */
 
-public final class LazyMethodGen {
+public final class LazyMethodGen implements Traceable {
 	private static final int ACC_SYNTHETIC    = 0x1000;
 	
     private        int             accessFlags;
@@ -1557,5 +1558,9 @@ public final class LazyMethodGen {
         newAttributes[attributes.length] = attr;
         attributes = newAttributes;
     }
+
+	public String toTraceString() {
+		return toShortString();
+	}
 
 }
