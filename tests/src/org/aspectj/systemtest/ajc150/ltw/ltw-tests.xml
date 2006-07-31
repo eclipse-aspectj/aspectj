@@ -470,4 +470,11 @@ commented out: reported in another bugzilla bug...
         </run>
     </ajc-test>
 -->
+	<ajc-test dir="ltw" title="JDK14 LTW" keywords="ltw">
+        <compile
+        	files="HelloWorld.java"
+        	options="-outjar hello.jar"
+        />
+        <ant file="ant.xml" target="JDK14 LTW" verbose="true"/>
+    </ajc-test>
     

@@ -1,0 +1,26 @@
+<!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
+<project name="ltw">
+
+    <!-- using this we can debug the forked VM -->
+    <property
+        name="jdwp"
+        value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+
+    <target name="JDK14 LTW">
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <classpath>
+                <pathelement path="${aj.sandbox}/hello.jar"/>
+            </classpath>
+            <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+        	<!--        	
+-->            
+            <jvmarg value="-Daj.class.path=${aj.sandbox}/hello.jar"/>
+            <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
+            <!-- use META-INF/aop.xml style -->
+<!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
+</project>

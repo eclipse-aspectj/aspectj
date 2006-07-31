@@ -46,7 +46,11 @@ public class ClassPathManager {
 	private static int maxOpenArchives       = -1;
     private static final int MAXOPEN_DEFAULT = 1000;
 
-    private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
+    /*
+     * FIXME maw Tracing ClassPathManager can cause recursion for JDK 1.4 
+     * LTW i.e. -Djava.system.class.loader
+     */
+//    private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
 	
 	static {
 		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openarchives",Integer.toString(MAXOPEN_DEFAULT));
@@ -57,13 +61,13 @@ public class ClassPathManager {
 	
 	
 	public ClassPathManager(List classpath, IMessageHandler handler) {
-		if (trace.isTraceEnabled()) trace.enter("<init>",this,new Object[] { classpath, handler });
+//		if (trace.isTraceEnabled()) trace.enter("<init>",this,new Object[] { classpath, handler });
 		entries = new ArrayList();
 		for (Iterator i = classpath.iterator(); i.hasNext();) {
 			String name = (String) i.next();
 			addPath(name, handler);
 		}
-		if (trace.isTraceEnabled()) trace.exit("<init>");
+//		if (trace.isTraceEnabled()) trace.exit("<init>");
 	}
 
 	protected ClassPathManager() {};

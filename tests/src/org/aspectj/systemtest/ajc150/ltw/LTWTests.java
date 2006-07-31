@@ -97,6 +97,10 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("Odd zip on classpath");  		
   	}
   	
+  	public void testJDK14LTW() {  	
+		runTest("JDK14 LTW");  		
+  	}
+  	
   	// separate bugzilla patch has this one... commented out
 //  	public void testSeparateCompilationDeclareParentsCall() {
 //  		runTest("Separate compilation with ltw: declare parents and call");
