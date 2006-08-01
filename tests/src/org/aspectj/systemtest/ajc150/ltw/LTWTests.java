@@ -97,8 +97,12 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("Odd zip on classpath");  		
   	}
   	
-  	public void testJDK14LTW() {  	
-		runTest("JDK14 LTW");  		
+  	public void testJ14LTWWithXML() {  	
+		runTest("JDK14 LTW with XML");  		
+  	}
+  	
+  	public void testJ14LTWWithASPECTPATH() {  	
+		runTest("JDK14 LTW with ASPECTPATH");  		
   	}
   	
   	// separate bugzilla patch has this one... commented out

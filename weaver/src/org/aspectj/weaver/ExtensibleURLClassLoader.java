@@ -29,7 +29,13 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 		super(urls,parent);
 
 //		System.err.println("? ExtensibleURLClassLoader.<init>() path=" + WeavingAdaptor.makeClasspath(urls));
-		classPath = new ClassPathManager(FileUtil.makeClasspath(urls),null);
+		try {
+			classPath = new ClassPathManager(FileUtil.makeClasspath(urls),null);
+		}
+		catch (ExceptionInInitializerError ex) {
+			ex.printStackTrace(System.out);
+			throw ex;
+		}
 	}
 
 	protected void addURL(URL url) {

@@ -6,16 +6,38 @@
         name="jdwp"
         value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
 
-    <target name="JDK14 LTW">
+    <target name="JDK14 LTW with XML">
         <java fork="yes" classname="HelloWorld" failonerror="yes">
             <classpath refid="aj.path"/>
+<!--        	
             <classpath>
                 <pathelement path="${aj.sandbox}/hello.jar"/>
             </classpath>
-            <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
-        	<!--        	
 -->            
-            <jvmarg value="-Daj.class.path=${aj.sandbox}/hello.jar"/>
+            <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+            <jvmarg value="-Daj.class.path=${aj.sandbox}/hello.jar;${aj.sandbox}/handler.jar"/>
+            <jvmarg value="-Daj.weaving.verbose=true"/>
+            <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
+            <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
+            <!-- use META-INF/aop.xml style -->
+<!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
+    <target name="JDK14 LTW with ASPECTPATH">
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+        	<!--        	
+            <classpath>
+                <pathelement path="${aj.sandbox}/hello.jar"/>
+            </classpath>
+-->            
+            <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+            <jvmarg value="-Daj.class.path=${aj.sandbox}/hello.jar;${aj.sandbox}/handler.jar"/>
+            <jvmarg value="-Daj.aspect.path=${aj.sandbox}/handler.jar"/>
+            <jvmarg value="-Daj.weaving.verbose=true"/>
+            <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
             <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
             <!-- use META-INF/aop.xml style -->
 <!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->

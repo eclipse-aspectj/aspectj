@@ -18,7 +18,7 @@ public abstract class AbstractTrace implements Trace {
 
 	protected Class tracedClass;
 
-	private static SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss.SSS");
+	private static SimpleDateFormat timeFormat;
 	
 	protected AbstractTrace (Class clazz) {
 		this.tracedClass = clazz;
@@ -94,7 +94,7 @@ public abstract class AbstractTrace implements Trace {
 	protected String formatMessage(String kind, String className, String methodName, Object thiz, Object[] args) {
 		StringBuffer message = new StringBuffer();
 		Date now = new Date();
-		message.append(time.format(now)).append(" ");
+		message.append(formatDate(now)).append(" ");
 		message.append(Thread.currentThread().getName()).append(" ");
 		message.append(kind).append(" ");
 		message.append(className);
@@ -102,6 +102,14 @@ public abstract class AbstractTrace implements Trace {
 		if (thiz != null) message.append(" ").append(formatObj(thiz));
 		if (args != null) message.append(" ").append(formatArgs(args));
 		return message.toString();
+	}
+	
+	private static String formatDate (Date date) {
+		if (timeFormat == null) {
+			timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+		}
+		
+		return timeFormat.format(date);
 	}
 
 	/**

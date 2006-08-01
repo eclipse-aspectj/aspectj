@@ -43,7 +43,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	 */
 	public WeavingURLClassLoader (ClassLoader parent) {
 		this(getURLs(getClassPath()),getURLs(getAspectPath()),parent);
-//		System.err.println("? WeavingURLClassLoader.<init>(" + m_parent + ")");
+//		System.out.println("? WeavingURLClassLoader.WeavingURLClassLoader()");
 	}
 	
 	public WeavingURLClassLoader (URL[] urls, ClassLoader parent) {
@@ -53,15 +53,22 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	
 	public WeavingURLClassLoader (URL[] classURLs, URL[] aspectURLs, ClassLoader parent) {
 		super(classURLs,parent);
-//		System.err.println("? WeavingURLClassLoader.<init>() classURLs=" + classURLs.length + ", aspectURLs=" + aspectURLs.length);
+//		System.out.println("> WeavingURLClassLoader.WeavingURLClassLoader() classURLs=" + Arrays.asList(classURLs));
 		this.aspectURLs = aspectURLs;
 		
-		/* If either we nor our m_parent is using an ASPECT_PATH use a new-style
+		/* If either we nor our parent is using an ASPECT_PATH use a new-style
 		 * adaptor
 		 */ 
-		if (this.aspectURLs.length > 0 || parent instanceof WeavingClassLoader) {
-			adaptor = new WeavingAdaptor(this);
+		if (this.aspectURLs.length > 0 || getParent() instanceof WeavingClassLoader) {
+			try {
+				adaptor = new WeavingAdaptor(this);
+			}
+			catch (ExceptionInInitializerError ex) {
+				ex.printStackTrace(System.out);
+				throw ex;
+			}
 		}
+//		System.out.println("< WeavingURLClassLoader.WeavingURLClassLoader() adaptor=" + adaptor);
 	}
 	
 	private static String getAspectPath () {
@@ -106,25 +113,29 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 			
 			/* Need to defer creation because of possible recursion during constructor execution */
 			if (adaptor == null && !initializingAdaptor) {
-				DefaultWeavingContext weavingContext = new DefaultWeavingContext (this) {
-
-					/* Ensures consistent LTW messages for testing */
-					public String getClassLoaderName() {
-						return loader.getClass().getName();
-					}
-					
-				};
-				
-				ClassLoaderWeavingAdaptor clwAdaptor = new ClassLoaderWeavingAdaptor();
-				initializingAdaptor = true;
-				clwAdaptor.initialize(this,weavingContext);
-				initializingAdaptor = false;
-				adaptor = clwAdaptor;
+				createAdaptor();
 			}
 			
 			b = adaptor.weaveClass(name,b);
 		}
 		return super.defineClass(name, b, cs);
+	}
+	
+	private void createAdaptor () {
+		DefaultWeavingContext weavingContext = new DefaultWeavingContext (this) {
+
+			/* Ensures consistent LTW messages for testing */
+			public String getClassLoaderName() {
+				return loader.getClass().getName();
+			}
+			
+		};
+		
+		ClassLoaderWeavingAdaptor clwAdaptor = new ClassLoaderWeavingAdaptor();
+		initializingAdaptor = true;
+		clwAdaptor.initialize(this,weavingContext);
+		initializingAdaptor = false;
+		adaptor = clwAdaptor;
 	}
 
 	/**
