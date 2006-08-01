@@ -441,9 +441,14 @@ public class Module {
                 classpathVariables.add(path);
             }
         } else if ("con".equals(kind)) {
-            if (-1 == path.indexOf("JRE")) { // warn non-JRE containers
-                messager.log("cannot handle con yet: " + toString);
-            }
+        	// 'special' for container pointing at AspectJ runtime...
+        	if (path.equals("org.eclipse.ajdt.core.ASPECTJRT_CONTAINER")) {
+        		classpathVariables.add("ASPECTJRT_LIB");
+        	} else {
+	            if (-1 == path.indexOf("JRE")) { // warn non-JRE containers
+	                messager.log("cannot handle con yet: " + toString);
+	            }
+        	}
         } else if ("out".equals(kind) || "output".equals(kind)) {
             // ignore output entries
         } else {
