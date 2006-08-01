@@ -240,6 +240,14 @@
         <message kind="error" line="8" text="test"/>
       </compile>
     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="Duplicate JVMTI agents">
+        <compile files="HelloWorld.java"/>
+        <compile files="MessageHandler.java"/>
+<!--        <compile files="Aspect.aj" options="-outxml"/> -->
+        <compile files="Aspect.aj" options="-outxml -outjar aspects.jar"/>
+        <ant file="ajc-ant.xml" target="Duplicate JVMTI agents" verbose="true"/>
+    </ajc-test>
     
     <ajc-test dir="bugs153/pr151978" title="generics problem">
       <compile files="IMessage.java" options="-1.5">

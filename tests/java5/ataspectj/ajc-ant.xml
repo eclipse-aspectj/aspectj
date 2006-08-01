@@ -221,4 +221,23 @@
         </java>
     </target>
 
+    <target name="Duplicate JVMTI agents">
+        <copy file="${aj.root}/tests/java5/ataspectj/aop-messagehandler.xml"
+              tofile="${aj.sandbox}/META-INF/aop.xml"/>
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <!-- use META-INF/aop.xml style -->
+            <classpath>
+                <pathelement path="${aj.sandbox}/aspects.jar"/>
+            </classpath>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+<!--        	
+-->            
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj.weaving.verbose=true"/>
+            <jvmarg value="-Djava.util.logging.config.file=${aj.root}/weaver5/testdata/logging.properties"/>
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
 </project>

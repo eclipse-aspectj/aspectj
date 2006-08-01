@@ -1,0 +1,3 @@
+<aspectj>
+	<weaver options="-XmessageHandlerClass:MessageHandler"/>
+</aspectj>

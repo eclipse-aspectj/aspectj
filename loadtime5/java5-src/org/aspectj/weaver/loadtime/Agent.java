@@ -39,6 +39,10 @@ public class Agent {
      * @param instrumentation
      */
     public static void premain(String options, Instrumentation instrumentation) {
+    	/* Handle duplicate agents */
+    	if (s_instrumentation != null) {
+    		return;
+    	}
         s_instrumentation = instrumentation;
         s_instrumentation.addTransformer(s_transformer);
     }
