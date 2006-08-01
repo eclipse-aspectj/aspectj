@@ -581,5 +581,13 @@
         </stderr>
       </run>
     </ajc-test>
+    
+    
+    <ajc-test dir="features152/synchronization/transformed" title="joinpoints enabled but no lock">
+      <compile files="Fourteen.java" options="-Xjoinpoints:synchronization">
+         <!--message kind="warning" line="8" text="advice matching the synchronized "/-->
+      </compile>
+      <run class="Fourteen"/>
+    </ajc-test>
 
 </suite>

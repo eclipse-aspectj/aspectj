@@ -170,6 +170,10 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
     public void testUnlockPcdOnTransformedStaticMethodPreJ5() {
   	  runTest("unlock pcd on transformed static method - preJ5");
     }
+    
+    public void testJoinpointsEnabledButNoLock() {
+    	runTest("joinpoints enabled but no lock");
+    }
 
     // more complex code sequences...
     public void testOtherTargeters() {

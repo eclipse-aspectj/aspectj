@@ -926,7 +926,8 @@ public final class LazyMethodGen implements Traceable {
     	
     	//killNops();
     	int flags = getAccessFlags();
-    	if (enclosingClass.getWorld().isJoinpointSynchronizationEnabled()) {
+    	if (enclosingClass.getWorld().isJoinpointSynchronizationEnabled() && 
+    		enclosingClass.getWorld().areSynchronizationPointcutsInUse()) {
     	    flags = getAccessFlagsWithoutSynchronized();
     	}
         MethodGen gen =
