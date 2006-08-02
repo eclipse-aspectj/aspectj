@@ -1,0 +1,12 @@
+<aspectj>
+  <aspects>
+    <concrete-aspect name="G8"
+              extends="CaptureLock">
+                         
+       <pointcut name="lockPC" expression="(within(*) AND (lock() || unlock()))" />                         
+                        
+    </concrete-aspect>
+  </aspects>
+
+  <weaver options="-verbose -showWeaveInfo -Xjoinpoints:synchronization"/>
+</aspectj>
