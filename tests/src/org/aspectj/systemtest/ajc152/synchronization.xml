@@ -164,6 +164,27 @@
         </run>
     </ajc-test>
     
+    <ajc-test dir="features152/synchronization/transformed" title="transform with LTW">
+        <compile files="CaptureLock.aj" options="-1.5"/>
+        <compile files="Program.java" options="-1.5"/>
+        <run class="Program" ltw="aop1.xml">
+        	<stdout>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="hello from b()"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="bang in c()"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="hello from d()"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="hello from block in d()"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="Before a lock or unlock"/>
+            </stdout>
+        </run>
+    </ajc-test>
+    
     <ajc-test dir="features152/synchronization" title="using lock with LTW">
         <compile files="LockAspect1.java" options="-1.5 -Xjoinpoints:synchronization"/>
         <compile files="BasicProgram1.java" options="-1.5 -Xjoinpoints:synchronization"/>

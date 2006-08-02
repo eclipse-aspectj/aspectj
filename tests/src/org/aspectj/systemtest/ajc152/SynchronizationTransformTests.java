@@ -174,6 +174,10 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
     public void testJoinpointsEnabledButNoLock() {
     	runTest("joinpoints enabled but no lock");
     }
+    
+    public void testTransformWithLTW() {
+    	runTest("transform with LTW");
+    }
 
     // more complex code sequences...
     public void testOtherTargeters() {

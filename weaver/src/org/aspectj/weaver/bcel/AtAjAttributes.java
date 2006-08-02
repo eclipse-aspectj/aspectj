@@ -1726,6 +1726,7 @@ public class AtAjAttributes {
         	PatternParser parser = new PatternParser(pointcutString, struct.context);
             Pointcut pointcut = parser.parsePointcut();
             parser.checkEof();
+            pointcut.check(null,struct.enclosingType.getWorld());
             if (!allowIf && pointcutString.indexOf("if()") >= 0 && hasIf(pointcut)) {
                 reportError("if() pointcut is not allowed at this pointcut location '" + pointcutString +"'", struct);
                 return null;
