@@ -76,31 +76,10 @@ public class CflowBelowStackTest extends TestCase {
 
         @Before("inTestClass(testCase)")
         public void beforeExecutingTestMethod(TestCase testCase) {
-            try {
-                File file = new File("results.ser");
-                if (file.exists()) {
-                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-                    coverage = (Map<String, Map<String, Integer>>) ois.readObject();
-                    ois.close();
-                    file.delete();
-                } else {
-                    coverage = new HashMap<String, Map<String, Integer>>();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         @After("inTestClass(testCase)")
         public void afterExecutingTestMethod(TestCase testCase) {
-            try {
-                File file = new File("results.ser");
-                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-                oos.writeObject(coverage);
-                oos.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 }
