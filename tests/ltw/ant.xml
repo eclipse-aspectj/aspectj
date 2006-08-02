@@ -15,7 +15,7 @@
             </classpath>
 -->            
             <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
-            <jvmarg value="-Daj.class.path=${aj.sandbox}/hello.jar;${aj.sandbox}/handler.jar"/>
+        	<sysproperty key="aj.class.path" path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar"/>
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
             <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
@@ -34,8 +34,8 @@
             </classpath>
 -->            
             <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
-            <jvmarg value="-Daj.class.path=${aj.sandbox}/hello.jar;${aj.sandbox}/handler.jar"/>
-            <jvmarg value="-Daj.aspect.path=${aj.sandbox}/handler.jar"/>
+        	<sysproperty key="aj.class.path" path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar"/>
+        	<sysproperty key="aj.aspect.path" path="${aj.sandbox}/handler.jar"/>
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
             <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
