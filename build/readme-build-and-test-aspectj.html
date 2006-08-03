@@ -449,6 +449,39 @@ the web with the release files and documentation,
 	by following the build invariants below.	
 </p>
 <p>
+<p>What to do when adding a new module (i.e., eclipse project):
+</p>
+<ol>
+	<li>Setup like the other modules, following the invariants below, esp.
+    <ol>
+        <li>same directory level</li>
+        <li>same naming conventions for source folders</li>
+        <li>same use of known classpath variables/entries</li>
+    </ol>
+	</li>
+	<li>Add module to those checked for copyright/license in 
+        <a href="testsrc/org/aspectj/build/BuildModuleTests.java">
+            testsrc/org/aspectj/build/BuildModuleTests.java
+        </a>
+	</li>
+    <li>Add module to module dependency tree as usual in Eclipse project properties</li>
+    <li>If the module is to produce a jar visible in {AspectJ}/lib,
+        then add a zero-length file of the correct name to 
+        <a href="products/tools/dist/lib">products/tools/dist/lib</a>
+        and an alias to that file from the module name in 
+		<a href="src/org/aspectj/internal/tools/build/Builder.properties">
+			Builder.properties</a>
+    </li>
+    <li>To make the JUnit tests visible to the Ant builder, include a
+        top-level Ant suite titled {Module}ModuleTests.java
+    </li>
+    <li>Test the build in Eclipse/JUnit using
+        <a href="testsrc/org/aspectj/internal/build/BuildModuleTest.java">
+            testsrc/org/aspectj/internal/build/BuildModuleTest.java
+        </a>
+    </li>
+</ol>
+<p>
 	How the build system introspects, and the build invariants that
 	are enforced by the Ant build:
 </p>
