@@ -1610,7 +1610,6 @@ class BcelClassWeaver implements IClassWeaver {
 			parttwo.append(InstructionFactory.MONITORENTER);
 		
 			String fieldname = synchronizedMethod.getEnclosingClass().allocateField("class$");
-			System.err.println("Going to use field name "+fieldname);
 			Field f = new FieldGen(Modifier.STATIC | Modifier.PRIVATE,
 				    Type.getType(Class.class),fieldname,synchronizedMethod.getEnclosingClass().getConstantPoolGen()).getField();
 			synchronizedMethod.getEnclosingClass().addField(f, null);
@@ -1625,12 +1624,14 @@ class BcelClassWeaver implements IClassWeaver {
 //			25:  invokevirtual   #52; //Method java/lang/Throwable.getMessage:()Ljava/lang/String;
 //			28:  invokespecial   #54; //Method java/lang/NoClassDefFoundError."<init>":(Ljava/lang/String;)V
 //			31:  athrow
-			prepend.append(fact.createGetStatic("C", fieldname, Type.getType(Class.class)));
+			String name = synchronizedMethod.getEnclosingClass().getName();
+			
+			prepend.append(fact.createGetStatic(name, fieldname, Type.getType(Class.class)));
 			prepend.append(InstructionFactory.createDup(1));
 			prepend.append(InstructionFactory.createBranchInstruction(Constants.IFNONNULL, parttwo.getStart()));
 			prepend.append(InstructionFactory.POP);
 			
-			prepend.append(fact.createConstant("C"));
+			prepend.append(fact.createConstant(name));
 			InstructionHandle tryInstruction = prepend.getEnd();
 			prepend.append(fact.createInvoke("java.lang.Class", "forName", clazzType,new Type[]{ Type.getType(String.class)}, Constants.INVOKESTATIC));
 			InstructionHandle catchInstruction = prepend.getEnd();

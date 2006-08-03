@@ -576,6 +576,32 @@
       </run>
     </ajc-test>
     
+    
+    <ajc-test dir="features152/synchronization/transformed" title="transform static method - preJ5">
+      <compile files="Fifteen.java" options="-Xjoinpoints:synchronization -1.4">
+      </compile>
+      <run class="Fifteen">
+        <stderr>
+          <line text="Locking occurring at lock(lock(Object))"/>
+          <line text="Fifteen.java"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    
+    <ajc-test dir="features152/synchronization/transformed" title="transform static method - packages - preJ5">
+      <compile files="Sixteen.java" options="-Xjoinpoints:synchronization -1.4">
+      </compile>
+      <run class="a.b.c.d.Sixteen">
+        <stderr>
+          <line text="Locking occurring at lock(lock(Object))"/>
+          <line text="Sixteen.java"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="features152/synchronization" title="obtaining locked object through getArgs">
       <compile files="LockingWithTJP.java" options="-Xjoinpoints:synchronization">
       </compile>

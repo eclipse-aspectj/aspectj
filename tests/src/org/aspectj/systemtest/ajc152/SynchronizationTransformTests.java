@@ -178,6 +178,15 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
     public void testTransformWithLTW() {
     	runTest("transform with LTW");
     }
+    
+
+    public void testTransformStaticMethodPreJava5() {
+    	runTest("transform static method - preJ5");
+    }
+
+    public void testTransformStaticMethodPreJava5_2() {
+    	runTest("transform static method - packages - preJ5");
+    }
 
     // more complex code sequences...
     public void testOtherTargeters() {
