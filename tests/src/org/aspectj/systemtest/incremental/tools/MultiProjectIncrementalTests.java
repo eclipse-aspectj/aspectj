@@ -1423,6 +1423,20 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureBuildStructureModel(false);
 	}
 	
+	public void testAdviceDidNotMatch_pr152589() {
+		initialiseProject("PR152589");
+		build("PR152589");
+		List warnings = MyTaskListManager.getWarningMessages();
+		assertTrue("There should be no warnings:\n"+warnings,
+				warnings.isEmpty());
+		alter("PR152589","inc1");
+		build("PR152589");
+		checkWasFullBuild();
+		warnings = MyTaskListManager.getWarningMessages();
+		assertTrue("There should be no warnings after adding a whitespace:\n"
+				+warnings,warnings.isEmpty());	
+	}
+	
 	// --- helper code ---
 	
 	/**

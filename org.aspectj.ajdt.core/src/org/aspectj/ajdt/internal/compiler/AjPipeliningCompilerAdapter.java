@@ -145,7 +145,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private boolean pipelineStalled   = true; 
 	private boolean weaverInitialized = false;
 	private int toWaitFor;
-
+	//	 If we determine we are going to drop back to a full build - don't need to tell the weaver to report adviceDidNotMatch
+	private boolean droppingBackToFullBuild; 
+	
 	/**
 	 * Create an adapter, and tell it everything it needs to now to drive the AspectJ
 	 * parts of a compile cycle.
@@ -270,6 +272,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	public void beforeCompiling(ICompilationUnit[] sourceUnits) {
 		resultsPendingWeave = new ArrayList();
 		reportedErrors = false;		
+		droppingBackToFullBuild=false;
 	}
 
 	
@@ -323,7 +326,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 //				acceptResult(unit.compilationResult);
 //			} else {
 				try {
-					weaveQueuedEntries();
+					if (weaveQueuedEntries()) droppingBackToFullBuild=true;
 				} catch (IOException ex) {
 					AbortCompilation ac = new AbortCompilation(null,ex);
 					throw ac;
@@ -386,7 +389,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
     	}
     	if (pipelineStalled) return;
     	try {
-    		weaveQueuedEntries();
+    		if (weaveQueuedEntries()) droppingBackToFullBuild=true;
     	} catch (IOException ex) {
 			AbortCompilation ac = new AbortCompilation(null,ex);
 			throw ac;
@@ -438,7 +441,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		}
 	}
 	
-	private void weaveQueuedEntries() throws IOException {
+	/** Return true if we've decided to drop back to a full build (too much has changed) */
+	private boolean weaveQueuedEntries() throws IOException {
 		if (debugPipeline)System.err.println(">.weaveQueuedEntries()");
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
@@ -447,11 +451,12 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			}			
 		}
 		ensureWeaverInitialized(); // by doing this only once, are we saying needToReweaveWorld can't change once the aspects have been stuffed into the weaver?
-		if (weaver.needToReweaveWorld() && !isBatchCompile) return;
+		if (weaver.needToReweaveWorld() && !isBatchCompile) return true;
 		weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
 		resultsPendingWeave.clear(); // dont need to do those again
 		this.eWorld.minicleanup();
 		if (debugPipeline)System.err.println("<.weaveQueuedEntries()");
+		return false;
 	}
 	
 	private void ensureWeaverInitialized() {
@@ -514,7 +519,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		CflowPointcut.clearCaches();
 		if (imh instanceof WeaverMessageHandler)
 			  ((WeaverMessageHandler)imh).setCurrentResult(null);
-		weaver.allWeavingComplete();
+		if (!droppingBackToFullBuild) weaver.allWeavingComplete();
 		weaver.tidyUp();
 		if (imh instanceof WeaverMessageHandler)
 		  ((WeaverMessageHandler)imh).resetCompiler(null);
