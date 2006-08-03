@@ -283,7 +283,8 @@ public class Lint {
 			
 			String text = MessageFormat.format(message, new Object[] {info} );
 			text += " [Xlint:" + name + "]";
-			world.getMessageHandler().handleMessage(new Message(text, kind, null, location));
+			world.getMessageHandler().handleMessage(
+					new LintMessage(text, kind, location,null,getLintKind(name)));
 		}
 
 		public void signal(String[] infos, ISourceLocation location, ISourceLocation[] extraLocations) {
@@ -292,7 +293,38 @@ public class Lint {
             String text = MessageFormat.format(message, infos );
             text += " [Xlint:" + name + "]";
             world.getMessageHandler().handleMessage(
-                new Message(text, "", kind, location, null, extraLocations));
+                    new LintMessage(text, kind, location,extraLocations,getLintKind(name)));
 		}
 	}
+	
+	public class LintMessage extends Message {
+		
+		private Lint.Kind lintKind;
+		
+		public LintMessage(
+				String message, 
+				IMessage.Kind messageKind, 
+				ISourceLocation location, 
+				ISourceLocation[] extraLocations,
+				Lint.Kind lintKind) {  
+			super(message,"",messageKind,location,null,extraLocations);
+			this.lintKind = lintKind;
+		}
+		
+		/**
+		 * @return Returns the Lint kind of this message
+		 */
+		public Lint.Kind getLintKind() {
+			return lintKind;
+		}
+		
+		/**
+		 * @return true if this message is a noGuardForLazyTjp xlint
+		 * message and false otherwise
+		 */
+		public boolean isNoGuardForLazyTjp() {
+			return lintKind.equals(noGuardForLazyTjp);
+		}
+	}
+	
 }

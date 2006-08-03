@@ -257,6 +257,10 @@ public class AspectJBuildManager implements BuildManager {
 	public void setBuildModelMode(boolean b) {
 		buildModelMode = b;
 	}
+	
+	public CompilerAdapter getCompilerAdapter() {
+		return compilerAdapter;
+	}
 
 }
 

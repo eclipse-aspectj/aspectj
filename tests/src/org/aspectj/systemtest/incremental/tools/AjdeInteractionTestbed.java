@@ -28,11 +28,13 @@ import org.aspectj.ajde.ErrorHandler;
 import org.aspectj.ajde.OutputLocationManager;
 import org.aspectj.ajde.ProjectPropertiesAdapter;
 import org.aspectj.ajde.TaskListManager;
+import org.aspectj.ajde.internal.AspectJBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AbstractStateListener;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.tools.ajc.Ajc;
@@ -222,6 +224,14 @@ public class AjdeInteractionTestbed extends TestCase {
 			} catch (InterruptedException ie) {}
 		}
 		
+		public static void setMessageHandler(IMessageHandler handler) {
+			Ajde.getDefault().setMessageHandler(handler);
+		}
+		
+		public static IMessageHandler getMessageHandler() {
+			AspectJBuildManager buildManager = (AspectJBuildManager) Ajde.getDefault().getBuildManager();
+			return buildManager.getCompilerAdapter().getMessageHandler();
+		}
 //		public static boolean lastCompileDefaultedToBatch() {
 //			return MyTaskListManager.defaultedToBatch();
 //		}

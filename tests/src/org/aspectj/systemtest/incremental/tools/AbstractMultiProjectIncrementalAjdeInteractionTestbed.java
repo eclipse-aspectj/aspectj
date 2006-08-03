@@ -27,6 +27,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 		super.tearDown();
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
 		configureBuildStructureModel(false);
+		MyBuildOptionsAdapter.reset();
 	}
 
 	public void build(String projectName) {

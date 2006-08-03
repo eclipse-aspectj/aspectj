@@ -33,7 +33,10 @@ import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.JDTLikeHandleProvider;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.weaver.Lint.LintMessage;
 
 /**
  * The superclass knows all about talking through Ajde to the compiler.
@@ -1421,6 +1424,52 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
 
 		configureBuildStructureModel(false);
+	}
+	
+//	public void testDontLoseXlintWarnings_pr141556() {
+//		configureNonStandardCompileOptions("-Xlint:warning");
+//		initialiseProject("PR141556");
+//		build("PR141556");
+//		checkWasFullBuild();
+//		String warningMessage = "can not build thisJoinPoint " +
+//				"lazily for this advice since it has no suitable guard " +
+//				"[Xlint:noGuardForLazyTjp]";
+//		assertEquals("warning message should be '" + warningMessage + "'",
+//				warningMessage,
+//				((IMessage)MyTaskListManager.getWarningMessages().get(0))
+//					.getMessage());
+//
+//		// add a space to the Aspect but dont do a build
+//		alter("PR141556","inc1");
+//		// remove the space so that the Aspect is exactly as it was
+//		alter("PR141556","inc2");
+//		// build the project and we should not have lost the xlint warning
+//		build("PR141556");
+//		checkWasntFullBuild();
+//		assertTrue("there should still be a warning message ",
+//				!MyTaskListManager.getWarningMessages().isEmpty());
+//		assertEquals("warning message should be '" + warningMessage + "'",
+//				warningMessage,
+//				((IMessage)MyTaskListManager.getWarningMessages().get(0))
+//					.getMessage());
+//	}
+
+	public void testLintMessage_pr141564() {
+		configureNonStandardCompileOptions("-Xlint:warning");
+		initialiseProject("PR141556");
+		build("PR141556");
+		IMessageHandler handler = AjdeManager.getMessageHandler();
+		assertTrue("expected the handler to be an IMessageHolder but wasn't ",
+				handler instanceof IMessageHolder);
+		IMessage[] msgs = ((IMessageHolder)AjdeManager.getMessageHandler()).getMessages(null,true);
+		IMessage msg = msgs[msgs.length-1];
+		assertTrue("expected message to be a LintMessage but wasn't", 
+				msg instanceof LintMessage);
+		assertTrue("expected message to be noGuardForLazyTjp xlint message but" +
+				" instead was " + ((LintMessage)msg).getKind().toString(),
+				((LintMessage)msg).isNoGuardForLazyTjp());
+		assertTrue("expected message to be against file in project 'PR141556' but wasn't",
+				msg.getSourceLocation().getSourceFile().getAbsolutePath().indexOf("PR141556") != -1);
 	}
 	
 	public void testAdviceDidNotMatch_pr152589() {

@@ -646,6 +646,10 @@ public class CompilerAdapter {
 		buildManager.setState(buildState);	
 		buildManager.setStructureModel(buildState.getStructureModel());
 	}
+	
+	public IMessageHandler getMessageHandler() {
+		return messageHandler;
+	}
 
 	public boolean wasFullBuild() {
 		return buildManager.wasFullBuild();
