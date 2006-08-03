@@ -63,7 +63,7 @@ public class BuildModuleTests extends TestCase {
     }
 
     final static List SOURCE_NAMES = Collections.unmodifiableList(
-            Arrays.asList(new String[]{"src", "testsrc", "java5-src", "aspectj-src"}));
+            Arrays.asList(new String[]{"src", "testsrc", "java5-src", "java5-testsrc", "aspectj-src"}));
 
     /**
      * @param moduleDir
@@ -144,10 +144,27 @@ public class BuildModuleTests extends TestCase {
     }
     public void testLicense_weaver() {
         String module = "weaver";
+        // skip (testdata) packages fluffy, reflect
         checkSourceDirectory(new File(Util.path(new String[] {"..", module, "src"})), module);
         checkSourceDirectory(new File(Util.path(new String[] {"..", module, "testsrc", "org"})), module);
     }
     
+    public void testLicense_ajdoc() {
+        checkLicense("ajdoc");
+    }
+    
+    public void testLicense_loadtime() {
+        checkLicense("loadtime");
+    }
+    
+    public void testLicense_loadtime5() {
+        checkLicense("loadtime5");
+    }
+    
+    public void testLicense_weaver5() {
+        checkLicense("weaver5");
+    }
+
     void checkLicense(String module) {
         File moduleDir = new File(Util.path("..", module));
         File[] srcDirs = findSourceRoots(moduleDir);
