@@ -951,10 +951,12 @@
 	This CompilerAdapter can be used in javac task calls by setting the 
 	<literal>build.compiler</literal> property. 
 	This enables users to to easily switch between the Javac and AspectJ 
-	compilers. 
-	However, the Javac task's pruning of source files prevents the 
-	adapter from doing a correct compile in some cases, 
-	so use AjcTask where possible.
+	compilers. However, because there are differences in source file 
+    handling between the Javac task and the ajc compiler, not all
+    Javac task invocations can be turned over to iajc.  However, ajc can
+    compile anything that Javac can, so it should be possible for any
+    given compile job to restate the Javac task in a way that can be
+    handled by iajc/ajc.
     </para>
   	<sect2 id="antTasks-adapter-sample" xreflabel="Sample of compiler adapter">
 	    <title>Sample of compiler adapter</title>
@@ -1007,6 +1009,21 @@
   <javac/>
 ]]>
 		</programlisting>
+        <para>The Javac task does special handling of source files that 
+        can interfere with ajc.  It removes any files that are not out-of-date
+        with respect to the corresponding .class files.  But ajc requires all 
+        source files, since an aspect may affect a source file that is not out
+        of date.  (For a solution to this, see the <literal>build.compiler.clean</literal>
+        property described below.)  Conversely, developers sometimes specify a source directory 
+        to javac, and let it search for files for types it cannot find.
+        AspectJ will not do this kind of searching under the source directory
+        (since the programmer needs to control which sources are affected).
+        (Don't confuse the source directory used by Javac with the source root
+        used by ajc; if you specify a source root to ajc, it will compile
+        any source file under that source root (without exception or filtering).)
+        To replace source dir searching in Javac, use an Ant filter to specify
+        the source files.
+        </para>
 	</sect2>
 	
   	<sect2 id="antTasks-adapter-options" xreflabel="Compiler adapter compilerarg options">
