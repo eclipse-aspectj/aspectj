@@ -22,7 +22,7 @@
        2003-2006 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated March 28, 2006
+  <para>Last updated July 20, 2006
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -3059,6 +3059,30 @@ java.lang.Integer
           </para>
         </answer>
       </qandaentry>
+      <qandaentry>
+        <question id="q:synchronizedAdvice"
+            xreflabel="Q:How do I write synchronized advice?">
+          <para>How do I write synchronized advice?</para>
+        </question>
+        <answer>
+          <para>The only modifier advice can take is <literal>strictfp</literal>.
+          However, you can enclose the body of the advice in a synchronized
+          clause:
+          <programlisting>
+before() : pc() {
+  synchronized (this) {
+    // advice code here
+  }
+}
+          </programlisting>
+          </para>
+          <para>It should not be necessary to synchronize a percflow aspect,
+          but you might do this for perthis, pertarget, or issingleton (default)
+          aspects.  To serialize advice in multiple aspects, synchronize on a
+          lock object available (only) to the aspects.
+          </para>
+        </answer>
+      </qandaentry>
     </qandadiv>
     <qandadiv id="problems" xreflabel="Common Problems">
       <title>Common Problems</title>
@@ -5088,6 +5112,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           <para>
           Entries changed recently:
             <itemizedlist>
+        <listitem><para><xref linkend="q:synchronizedAdvice"/></para></listitem>
         <listitem><para><xref linkend="q:runtimeMemory"/></para></listitem>
         <listitem><para><xref linkend="q:ajcoom"/></para></listitem>
         <listitem><para><xref linkend="q:howIncrementalWorks"/></para></listitem>
