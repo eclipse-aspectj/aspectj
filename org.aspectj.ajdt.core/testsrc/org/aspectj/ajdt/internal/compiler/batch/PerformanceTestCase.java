@@ -14,8 +14,6 @@ package org.aspectj.ajdt.internal.compiler.batch;
 
 import java.io.IOException;
 
-import org.aspectj.testing.util.TestUtil;
-
 
 public class PerformanceTestCase extends CommandTestCase {
 
@@ -28,7 +26,7 @@ public class PerformanceTestCase extends CommandTestCase {
 	public void xxx_testLazyTjpOff() throws IOException {
 		checkCompile("src1/LazyTjp.aj", NO_ERRORS);
 		try {
-			TestUtil.runMain("out", "LazyTjp");
+			runMain("LazyTjp");
 			fail("expected an exception when running without -XlazyTjp");
 		} catch (IllegalStateException e) {
 			// expected exception thrown when no -XlazyTjp
@@ -40,8 +38,9 @@ public class PerformanceTestCase extends CommandTestCase {
 		//   joinpoint method-execution(int LazyTjp.doit3(int)) because around advice is used [Xlint:canNotImplementLazyTjp]'
 		// into an error so that we can use checkCompiles() ability to check errors occur.
 		// Pass -proceedOnError to ensure even though we get that message, we still get the class file on disk
-		checkCompile("src1/LazyTjp.aj", new String[] {"-Xlint:error","-proceedOnError"}, new int[] {96});
-		TestUtil.runMain("out", "LazyTjp");
+		String sandboxName = getSandboxName();
+		checkCompile("src1/LazyTjp.aj", new String[] {"-Xlint:error","-proceedOnError"}, new int[] {96}, sandboxName);
+		runMain("LazyTjp");
 	}
 	
 }

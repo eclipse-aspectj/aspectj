@@ -14,8 +14,6 @@ package org.aspectj.ajdt.internal.compiler.batch;
 
 import java.io.IOException;
 
-import org.aspectj.testing.util.TestUtil;
-
 
 public class CompileAndRunTestCase extends CommandTestCase {
 
@@ -25,66 +23,66 @@ public class CompileAndRunTestCase extends CommandTestCase {
 
 	public void testAround() throws IOException {
 		checkCompile("src1/AroundA.java", NO_ERRORS);
-		TestUtil.runMain("out", "AroundAMain");
+		runMain("AroundAMain");
 	}
 	
 	public void testInterType() throws IOException {
 		checkCompile("src1/InterType.java", NO_ERRORS);
-		TestUtil.runMain("out", "InterType");
+		runMain("InterType");
 	}
 	
 	public void testInterTypeMethods() throws IOException {
 		checkCompile("src1/InterTypeMethods.java", NO_ERRORS);
-		TestUtil.runMain("out", "InterTypeMethods");
+		runMain("InterTypeMethods");
 	}
 	
 	public void testIf() throws IOException {
-		CommandTestCase.checkCompile("src1/IfPcd.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "IfPcd");
+		checkCompile("src1/IfPcd.java", CommandTestCase.NO_ERRORS);
+		runMain("IfPcd");
 	}
 	
 	public void testDeclareParentsFail() throws IOException {
-		CommandTestCase.checkCompile("src1/ParentsFail.java", new int[] {3, 11, 19});
+		checkCompile("src1/ParentsFail.java", new int[] {3, 11, 19});
 	}
 	
 	public void testDeclareParents() throws IOException {
-		CommandTestCase.checkCompile("src1/Parents.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "Parents");
+		checkCompile("src1/Parents.java", CommandTestCase.NO_ERRORS);
+		runMain("Parents");
 	}
 	
 	public void testPerCflow() throws IOException {
-		CommandTestCase.checkCompile("src1/PerCflow.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "PerCflow");
+		checkCompile("src1/PerCflow.java", CommandTestCase.NO_ERRORS);
+		runMain("PerCflow");
 	}
 		
 	public void testPerObject() throws IOException {
-		CommandTestCase.checkCompile("src1/PerObject.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "PerObject");
+		checkCompile("src1/PerObject.java", CommandTestCase.NO_ERRORS);
+		runMain("PerObject");
 	}
 		
 	public void testDeclareSoft() throws IOException {
-		CommandTestCase.checkCompile("src1/DeclareSoft.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "DeclareSoft");
+		checkCompile("src1/DeclareSoft.java", CommandTestCase.NO_ERRORS);
+		runMain("DeclareSoft");
 	}
 		
 	public void testPrivileged() throws IOException {
-		CommandTestCase.checkCompile("src1/Privileged.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "Privileged");
+		checkCompile("src1/Privileged.java", CommandTestCase.NO_ERRORS);
+		runMain("Privileged");
 	}
 		
 	public void testHandler() throws IOException {
-		CommandTestCase.checkCompile("src1/Handler.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "Handler");
+		checkCompile("src1/Handler.java", CommandTestCase.NO_ERRORS);
+		runMain("Handler");
 	}
 		
 	public void testInterConstructors() throws IOException {
-		CommandTestCase.checkCompile("src1/InterTypeConstructors.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "InterTypeConstructors");
+		checkCompile("src1/InterTypeConstructors.java", CommandTestCase.NO_ERRORS);
+		runMain("InterTypeConstructors");
 	}
 		
 	public void testAroundA1() throws IOException {
-		CommandTestCase.checkCompile("src1/AroundA1.java", CommandTestCase.NO_ERRORS);
-		TestUtil.runMain("out", "AroundA1");
+		checkCompile("src1/AroundA1.java", CommandTestCase.NO_ERRORS);
+		runMain("AroundA1");
 	}
 		
 }

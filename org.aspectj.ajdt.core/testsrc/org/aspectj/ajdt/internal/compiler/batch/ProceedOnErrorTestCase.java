@@ -30,11 +30,11 @@ public class ProceedOnErrorTestCase extends CommandTestCase {
 	 */
 	public void testNoProceedOnError() throws IOException {
 		checkCompile("src1/C1.java", NO_ERRORS);
-	    File f =new File("out"+File.separator+"C.class");
+	    File f =new File(getSandboxName(),"C.class");
 	    long oldmodtime = f.lastModified();
 	    pause(2);
 		checkCompile("src1/C2.java", new int[]{1});
-	    f =new File("out"+File.separator+"C.class");
+	    f =new File(getSandboxName(),"C.class");
 	    long newmodtime = f.lastModified();
         // Without -proceedOnError supplied, we should *not* change the time stamp on the .class file
 	    assertTrue("The .class file should not have been modified as '-proceedOnError' was not supplied (old="+
@@ -44,11 +44,12 @@ public class ProceedOnErrorTestCase extends CommandTestCase {
 
 	public void testProceedOnError() throws IOException {
 		checkCompile("src1/C1.java", NO_ERRORS);
-	    File f =new File("out"+File.separator+"C.class");
+	    File f =new File(getSandboxName(),"C.class");
 	    long oldmodtime = f.lastModified();
 	    pause(2);
-		checkCompile("src1/C2.java",new String[]{"-proceedOnError"}, new int[]{1});
-	    f =new File("out"+File.separator+"C.class");
+	    String sandboxName = getSandboxName();
+		checkCompile("src1/C2.java",new String[]{"-proceedOnError"}, new int[]{1}, sandboxName);
+	    f =new File(sandboxName,"C.class");
 	    long newmodtime = f.lastModified();
         // Without -proceedOnError supplied, we should *not* change the time stamp on the .class file
 	    assertTrue("The .class file should have been modified as '-proceedOnError' *was* supplied (old="+

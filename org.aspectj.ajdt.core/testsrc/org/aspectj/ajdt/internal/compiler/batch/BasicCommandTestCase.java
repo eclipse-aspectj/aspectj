@@ -95,7 +95,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		List args = new ArrayList();
 
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		
 		args.add("-classpath");
 		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin");
@@ -108,7 +108,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		List args = new ArrayList();
 
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		
 		args.add("-classpath");
 		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
@@ -128,7 +128,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		List args = new ArrayList();
 
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		
 		args.add("-classpath");
 		args.add("../lib/junit/junit.jar;../testing-client/bin");
@@ -174,12 +174,12 @@ public class BasicCommandTestCase extends CommandTestCase {
 	}
 	
 	public void testSizeChanges() {
-		File f1 = new File("out/SizeIssues.class");
+		File f1 = new File(getSandboxName(),"SizeIssues.class");
 		
 		List args = new ArrayList();
 
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		
 		args.add("-classpath");
 		args.add(getRuntimeClasspath() + File.pathSeparator +

@@ -30,15 +30,17 @@ public class BinaryFormsTestCase extends CommandTestCase {
 	
 
 	public void testJar1() throws IOException {
+		String library = getSandboxName() + "/lib.jar";
+		
 		List args = new ArrayList();
 		args.add("-outjar");
-		args.add("out/lib.jar");
+		args.add(library);
 
 		args.add("-classpath");
         args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		args.add("-XnotReweavable");
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/lib/ConcreteA.aj");
@@ -48,13 +50,13 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args = new ArrayList();
 		args.add("-aspectpath");
-		args.add("out/lib.jar");
+		args.add(library);
 
 		args.add("-classpath");
         args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		args.add("-XnotReweavable");
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client.java");
@@ -62,36 +64,36 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		TestUtil.runMain("out" + File.pathSeparator + "out/lib.jar", "client.Client");
-		TestUtil.runMain("out" + File.pathSeparator + "out/lib.jar", "client.Client1");
+		TestUtil.runMain(getSandboxName() + File.pathSeparator + library, "client.Client");
+		TestUtil.runMain(getSandboxName() + File.pathSeparator + library, "client.Client1");
 		
 		args = new ArrayList();
 		args.add("-aspectpath");
-		args.add("out/lib.jar");
+		args.add(library);
 
 		args.add("-classpath");
         args.add(AjcTests.aspectjrtClasspath());
 		args.add("-XnotReweavable");
 		
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/MyAspect.aj");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		TestUtil.runMain("out" + File.pathSeparator + "out/lib.jar", "client.Client1");
+		TestUtil.runMain(getSandboxName() + File.pathSeparator + library, "client.Client1");
 
 		args = new ArrayList();
 		args.add("-aspectpath");
-		args.add("out/lib.jar");
+		args.add(library);
 
 		args.add("-classpath");
         args.add(AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		args.add("-XnotReweavable");
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/MyAspect1.aj");
@@ -101,10 +103,10 @@ public class BinaryFormsTestCase extends CommandTestCase {
 
 		args = new ArrayList();
 		args.add("-classpath");
-        args.add("out/lib.jar" + File.pathSeparator + AjcTests.aspectjrtClasspath());
+        args.add(library + File.pathSeparator + AjcTests.aspectjrtClasspath());
 		
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		args.add("-XnotReweavable");
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");
@@ -113,11 +115,11 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		args = new ArrayList();
 		args.add("-classpath");
-        args.add(AjcTests.aspectjrtClasspath() + File.pathSeparator + "out/lib.jar");
+        args.add(AjcTests.aspectjrtClasspath() + File.pathSeparator + library);
 		args.add("-Xlint:error");
 		
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/MyAspect.aj");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/binary/client/Client1.java");

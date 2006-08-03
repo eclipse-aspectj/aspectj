@@ -12,16 +12,6 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
-import org.aspectj.ajdt.ajc.*;
-import org.aspectj.ajdt.ajc.AjdtCommand;
-import org.aspectj.bridge.ICommand;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.IMessageHolder;
-import org.aspectj.bridge.MessageHandler;
-import org.aspectj.tools.ajc.AjcTests;
-import org.aspectj.weaver.bcel.LazyClassGen;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +20,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
+
+import org.aspectj.ajdt.ajc.AjdtAjcTests;
+import org.aspectj.ajdt.ajc.AjdtCommand;
+import org.aspectj.bridge.ICommand;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.testing.util.TestUtil;
+import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.tools.ajc.AjcTests;
+import org.aspectj.weaver.bcel.LazyClassGen;
 
 public abstract class CommandTestCase extends TestCase {
 
@@ -44,17 +46,22 @@ public abstract class CommandTestCase extends TestCase {
 	public static final int[] NO_ERRORS = new int[0];
 	public static final int[] TOP_ERROR = new int[0];
 
+	private File sandbox;
 
-	public static void checkCompile(String source, int[] expectedErrors) {
-		checkCompile(source, new String[0], expectedErrors);
+	public void checkCompile(String source, int[] expectedErrors) {
+		checkCompile(source, new String[0], expectedErrors, getSandboxName());
 	}
 	
-	public static void checkCompile(String source, String[] extraArgs, int[] expectedErrors) {
+    protected void runMain(String className) {
+		TestUtil.runMain(getSandboxName(), className);
+    }
+	
+	public static void checkCompile(String source, String[] extraArgs, int[] expectedErrors, String sandboxName) {
 		List args = new ArrayList();
 		args.add("-verbose");
 		
 		args.add("-d");
-		args.add("out");
+		args.add(sandboxName);
 		
 		args.add("-classpath");		
 
@@ -77,7 +84,7 @@ public abstract class CommandTestCase extends TestCase {
 		args.add("-verbose");
 		
 		args.add("-d");
-		args.add("out");
+		args.add(getSandboxName());
 		
 		args.add("-classpath");
 		args.add(getRuntimeClasspath());
@@ -168,6 +175,16 @@ public abstract class CommandTestCase extends TestCase {
 	/** get the location of the org.aspectj.lang & runtime classes */
 	protected static String getRuntimeClasspath() {
         return AjcTests.aspectjrtClasspath();		
+	}
+
+	protected String getSandboxName () {
+		return sandbox.getAbsolutePath();
+	}
+	
+	protected void setUp() throws Exception {
+		super.setUp();
+
+		sandbox = Ajc.createEmptySandbox();
 	}
 
 }

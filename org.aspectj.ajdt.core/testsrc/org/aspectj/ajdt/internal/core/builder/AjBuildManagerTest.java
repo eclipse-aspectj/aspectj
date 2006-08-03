@@ -20,11 +20,11 @@ import java.io.PrintWriter;
 import junit.framework.TestCase;
 
 import org.aspectj.ajdt.ajc.*;
-import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
+import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.StreamPrintWriter;
 //import org.eclipse.core.runtime.CoreException;
 
@@ -64,9 +64,10 @@ public class AjBuildManagerTest extends TestCase {
 		AjBuildManager manager = new AjBuildManager(messageWriter);
 		BuildArgParser parser = new BuildArgParser(messageWriter);
 		String javaClassPath = System.getProperty("java.class.path");
+		String sandboxName = Ajc.createEmptySandbox().getAbsolutePath();
         AjBuildConfig buildConfig = 
 			parser.genBuildConfig(new String[] { 
-				"-d", "out", 
+				"-d", sandboxName, 
 				"-classpath",
 				javaClassPath,
 				AjdtAjcTests.TESTDATA_PATH 
