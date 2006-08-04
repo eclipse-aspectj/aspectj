@@ -247,7 +247,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                         boolean satisfiedByITD = false;
                         for (Iterator ii = newParentTarget.getType().getInterTypeMungersIncludingSupers().iterator(); ii.hasNext(); ) {
                             ConcreteTypeMunger m = (ConcreteTypeMunger)ii.next();
-                            if (m.getMunger().getKind() == ResolvedTypeMunger.Method) {
+                            if (m.getMunger()!=null && m.getMunger().getKind() == ResolvedTypeMunger.Method) {
                                 ResolvedMember sig = m.getSignature();
                                 if (!Modifier.isAbstract(sig.getModifiers())) {
                                 	
@@ -265,7 +265,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                                         satisfiedByITD = true;
                                     }
                                 }
-                            } else if (m.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate) {
+                            } else if (m.getMunger()!=null && m.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate) {
                                 satisfiedByITD = true;//AV - that should be enough, no need to check more
                             }
                         }

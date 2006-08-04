@@ -254,4 +254,8 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr152631" title="decp and cflowadder munger clash">
+      <compile files="EMA.java" options="-1.5"/>
+    </ajc-test>
+    
 </suite>
