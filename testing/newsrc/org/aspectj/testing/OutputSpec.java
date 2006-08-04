@@ -41,19 +41,23 @@ public class OutputSpec {
 					break;
 				}
 			}
-		}
+		} else { lineNo = -1; }
 		if (!matches) {
 			StringBuffer failMessage = new StringBuffer();
-			failMessage.append("Expecting output:\n");
+			failMessage.append("\n  expecting output:\n");
+			int l = 0;
 			for (Iterator iter = expectedOutputLines.iterator(); iter.hasNext();) {
 				String line = (String) iter.next();
 				failMessage.append(line);
 				failMessage.append("\n");
 			}
-			failMessage.append("But found output:\n");
+			failMessage.append("  but found output:\n");
 			failMessage.append(output);
 			failMessage.append("\n");
-			failMessage.append("First difference is on line " + lineNo);
+			if (lineNo==-1) 
+				failMessage.append("Expected "+expectedOutputLines.size()+" lines of output but there are "+strTok.countTokens());
+			else
+				failMessage.append("First difference is on line " + lineNo);
 			failMessage.append("\n");
 			AjcTestCase.fail(failMessage.toString());
 		}
