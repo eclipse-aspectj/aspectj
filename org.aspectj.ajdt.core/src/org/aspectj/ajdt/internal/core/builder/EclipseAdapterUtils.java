@@ -56,6 +56,8 @@ public class EclipseAdapterUtils {
 
         //compute the how-much-char we are displaying around the inaccurate token
         int begin = startPosition >= source.length ? source.length - 1 : startPosition;
+        if (begin==-1)
+        	return "(no source information available)"; // Dont like this - why does it occur? pr152835
         int relativeStart = 0;
         int end = endPosition >= source.length ? source.length - 1 : endPosition;
         int relativeEnd = 0;
