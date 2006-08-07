@@ -3,6 +3,19 @@
 <!-- AspectJ v1.5.3 Tests -->
 <suite>
 
+    <ajc-test dir="bugs153/pr152871" title="parsing bytecode less">
+      <compile files="MyClass.java" options="-1.5"/>
+      <compile files="MyAspect.java" options="-1.5 -Xlint:ignore"/>
+      <run class="a.MyClass" ltw="aop.xml">
+        <stdout>
+          <line text="advice running"/>
+          <line text="hello"/>
+          <line text="advice running"/>
+          <line text="world"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr148381" title="argNames and javac">
       <!--compile files="C.java" options="-1.5"/>
       <compile files="A.java" options="-1.5"/-->

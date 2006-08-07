@@ -521,9 +521,13 @@ public class Utility {
 		}
 		return inst;
 	}
+	
+	/** For testing purposes: bit clunky but does work */
+	public static int testingParseCounter=0;
 
 	public static JavaClass makeJavaClass(String filename, byte[] bytes) {
 		try {
+			testingParseCounter++;
 		    ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes), filename);
             return parser.parse();
 		} catch (IOException e) {

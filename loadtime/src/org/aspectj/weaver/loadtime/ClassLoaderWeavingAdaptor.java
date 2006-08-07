@@ -36,10 +36,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.Lint.Kind;
-import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.Utility;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.ltw.LTWWorld;
@@ -542,8 +539,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         // does returns null or some other info for getResourceAsStream (f.e. WLS 9 CR248491)
         // Instead I parse the given bytecode. But this also means it will be parsed again in
         // new WeavingClassFileProvider() from WeavingAdaptor.getWovenBytes()...
-        BcelObjectType bct = ((BcelWorld)weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(null, bytes));
-        ResolvedType classInfo = bct.getResolvedTypeX();//BAD: weaver.getWorld().resolve(UnresolvedType.forName(className), true);
+        
+        ensureDelegateInitialized(className,bytes);
+        ResolvedType classInfo = delegateForCurrentClass.getResolvedTypeX();//BAD: weaver.getWorld().resolve(UnresolvedType.forName(className), true);
 
         //exclude are "AND"ed
         for (Iterator iterator = m_excludeTypePattern.iterator(); iterator.hasNext();) {
@@ -566,7 +564,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         return accept;
     }
 
-    //FIXME we don't use include/exclude of others aop.xml
+
+	//FIXME we don't use include/exclude of others aop.xml
     //this can be nice but very dangerous as well to change that
     private boolean acceptAspect(String aspectClassName) {
         // avoid ResolvedType if not needed

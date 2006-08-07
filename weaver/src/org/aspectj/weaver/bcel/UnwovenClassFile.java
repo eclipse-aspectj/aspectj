@@ -37,6 +37,13 @@ public class UnwovenClassFile {
 		this.filename = filename;
 		this.bytes = bytes;
 	}
+
+    /** Use if the classname is known, saves a bytecode parse */
+	public UnwovenClassFile(String filename, String classname,byte[] bytes) {
+		this.filename = filename;
+		this.className = classname;
+		this.bytes = bytes;
+	}
 	
 	public String getFilename() {
 		return filename;

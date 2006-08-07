@@ -16,6 +16,7 @@ import junit.framework.Test;
 
 import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.bcel.Utility;
 
 public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -47,9 +48,16 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCantFindType_pr149322_01() {runTest("can't find type on interface call 1");}
   public void testCantFindType_pr149322_02() {runTest("can't find type on interface call 2");}
   public void testCantFindType_pr149322_03() {runTest("can't find type on interface call 3");}
-
+  public void testParsingBytecodeLess_pr152871() { 
+	  Utility.testingParseCounter=0;
+	  runTest("parsing bytecode less"); 
+	  assertTrue("Should have called parse 5 times, not "+Utility.testingParseCounter+" times",Utility.testingParseCounter==5);
+	  // 5 means:   
+	  // (1)=registerAspect   
+	  // (2,3)=checkingIfShouldWeave,AcceptingResult for class
+	  // (4,5)=checkingIfShouldWeave,AcceptingResult for aspect
+  }
   public void testMatchVolatileField_pr150671() {runTest("match volatile field");};
-
   public void testDuplicateJVMTIAgents_pr151938() {runTest("Duplicate JVMTI agents");};
 
   /////////////////////////////////////////

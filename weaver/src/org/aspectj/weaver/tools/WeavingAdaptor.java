@@ -46,6 +46,7 @@ import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.weaver.bcel.Utility;
 
 /**
  * This adaptor allows the AspectJ compiler to be embedded in an existing
@@ -77,6 +78,7 @@ public class WeavingAdaptor {
 	private WeavingAdaptorMessageHandler messageHolder;
 	protected GeneratedClassHandler generatedClassHandler;
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
+	protected BcelObjectType delegateForCurrentClass; // lazily initialized, should be used to prevent parsing bytecode multiple times
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingAdaptor.class);
 
@@ -207,21 +209,25 @@ public class WeavingAdaptor {
 	 */
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
 		if (enabled) {
-	    	if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name,bytes});
-
-			if (shouldWeave(name, bytes)) {
-				info("weaving '" + name + "'");
-				bytes = getWovenBytes(name, bytes);
-			} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
-	            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
-	            info("weaving '" + name + "'");
-	            bytes = getAtAspectJAspectBytes(name, bytes);
-	        }
-			else {
-				info("not weaving '" + name + "'");
+			try {
+				delegateForCurrentClass=null; // TODO will need stack if going recursive...
+		    	if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name,bytes});
+				if (shouldWeave(name, bytes)) {
+					info("weaving '" + name + "'");
+					bytes = getWovenBytes(name, bytes);
+				} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
+		            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
+		            info("weaving '" + name + "'");
+		            bytes = getAtAspectJAspectBytes(name, bytes);
+		        }
+				else {
+					info("not weaving '" + name + "'");
+				}
+	
+				if (trace.isTraceEnabled()) trace.exit("weaveClass",bytes);
+			} finally {
+				delegateForCurrentClass=null;
 			}
-
-			if (trace.isTraceEnabled()) trace.exit("weaveClass",bytes);
 		}
 
         return bytes;
@@ -253,8 +259,7 @@ public class WeavingAdaptor {
 
 	private boolean shouldWeaveName (String name) {
 		boolean should =
-		       !((/*(name.startsWith("org.apache.bcel.")//FIXME AV why ? bcel is wrapped in org.aspectj.
-                ||*/ name.startsWith("org.aspectj.")
+		       !((name.startsWith("org.aspectj.")
                 || name.startsWith("java.")
                 || name.startsWith("javax."))
                 //|| name.startsWith("$Proxy")//JDK proxies//FIXME AV is that 1.3 proxy ? fe. ataspect.$Proxy0 is a java5 proxy...
@@ -273,7 +278,13 @@ public class WeavingAdaptor {
 	private boolean shouldWeaveAnnotationStyleAspect(String name, byte[] bytes) {
 		// AV: instead of doing resolve that would lookup stuff on disk thru BCEL ClassLoaderRepository
         // we reuse bytes[] here to do a fast lookup for @Aspect annotation
-        return bcelWorld.isAnnotationStyleAspect(name, bytes);
+		ensureDelegateInitialized(name,bytes);
+		return (delegateForCurrentClass.isAnnotationStyleAspect());
+	}
+
+    protected void ensureDelegateInitialized(String name,byte[] bytes) {
+    	if (delegateForCurrentClass==null)
+    	  delegateForCurrentClass =  ((BcelWorld)weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(name, bytes));
 	}
 
 	/**
@@ -478,17 +489,16 @@ public class WeavingAdaptor {
 		private List unwovenClasses = new ArrayList(); /* List<UnovenClassFile> */
 		private UnwovenClassFile wovenClass;
         private boolean isApplyAtAspectJMungersOnly = false;
-        private BcelObjectType delegate;
 
         public WeavingClassFileProvider (String name, byte[] bytes) {
-			this.unwovenClass = new UnwovenClassFile(name,bytes);
+        	ensureDelegateInitialized(name, bytes);
+			this.unwovenClass = new UnwovenClassFile(name,delegateForCurrentClass.getResolvedTypeX().getName(),bytes);
 			this.unwovenClasses.add(unwovenClass);
 			
 			if (shouldDump(name.replace('/', '.'),true)) {
 				dump(name, bytes, true);
 			}
-
-			delegate = bcelWorld.addSourceObjectType(unwovenClass.getJavaClass());
+			
 		}
 
         public void setApplyAtAspectJMungersOnly() {
@@ -539,8 +549,10 @@ public class WeavingAdaptor {
 				public void weavingClasses() {}
 
 				public void weaveCompleted() {
-					if (delegate!=null) delegate.weavingCompleted();
 					ResolvedType.resetPrimitives();
+					if (delegateForCurrentClass!=null) delegateForCurrentClass.weavingCompleted();
+					ResolvedType.resetPrimitives();
+					//bcelWorld.discardType(typeBeingProcessed.getResolvedTypeX()); // work in progress
 				}
 			};				
 		}
