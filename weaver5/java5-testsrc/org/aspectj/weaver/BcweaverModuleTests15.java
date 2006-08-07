@@ -14,25 +14,22 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.aspectj.testing.util.TestUtil;
-import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
 import org.aspectj.weaver.patterns.WildTypePatternResolutionTestCase;
+import org.aspectj.weaver.tools.Java15PointcutExpressionTest;
 
 public class BcweaverModuleTests15 extends TestCase {
 	   public static Test suite() { 
 	        TestSuite suite = new TestSuite(BcweaverModuleTests15.class.getName());
-	        suite.addTestSuite(TypeVariableTestCase.class);
-	        suite.addTestSuite(ReferenceTypeTestCase.class);
-	        suite.addTestSuite(BoundedReferenceTypeTestCase.class);
-	        suite.addTestSuite(TypeVariableReferenceTypeTestCase.class);
-	        suite.addTestSuite(MemberTestCase15.class);
 	        suite.addTestSuite(BcelGenericSignatureToTypeXTestCase.class);
+	        suite.addTestSuite(BoundedReferenceTypeTestCase.class);
+	        suite.addTest(Java15PointcutExpressionTest.suite());
+	        suite.addTestSuite(MemberTestCase15.class);
+	        suite.addTestSuite(ReferenceTypeTestCase.class);
+	        suite.addTest(TestJava5ReflectionBasedReferenceTypeDelegate.suite());
+   	        suite.addTestSuite(TypeVariableTestCase.class);
+	        suite.addTestSuite(TypeVariableReferenceTypeTestCase.class);
 	        suite.addTestSuite(WildTypePatternResolutionTestCase.class);
-	        if (LangUtil.is15VMOrGreater()) {
-	            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.tools.Java15PointcutExpressionTest", false);
-	            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.TestJava5ReflectionBasedReferenceTypeDelegate", false);
-	        }
 	        return suite;
 	    }
 

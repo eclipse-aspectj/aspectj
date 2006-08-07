@@ -16,7 +16,7 @@ import junit.framework.TestSuite;
 public class AllTracing5Tests {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for org.aspectj.weaver");
+		TestSuite suite = new TestSuite(AllTracing5Tests.class.getName());
 		//$JUnit-BEGIN$
 		suite.addTestSuite(Jdk14TraceFactoryTest.class);
 		suite.addTestSuite(Jdk14TraceTest.class);

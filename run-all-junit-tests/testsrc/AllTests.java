@@ -11,10 +11,9 @@
  * ******************************************************************/
 
 // default package
-import org.aspectj.util.LangUtil;
-import org.aspectj.util.UtilModuleTests;
-import org.aspectj.weaver.BcweaverModuleTests;
-import org.aspectj.weaver.BcweaverModuleTests15;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 import org.aspectj.ajde.AjdeModuleTests;
 import org.aspectj.ajdt.EajcModuleTests;
 import org.aspectj.asm.AsmModuleTests;
@@ -30,9 +29,10 @@ import org.aspectj.testingutil.TestingUtilModuleTests;
 import org.aspectj.tools.ajbrowser.AjbrowserModuleTests;
 import org.aspectj.tools.ajdoc.AjdocModuleTests;
 import org.aspectj.tools.ant.TaskdefsModuleTests;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.aspectj.util.LangUtil;
+import org.aspectj.util.UtilModuleTests;
+import org.aspectj.weaver.BcweaverModuleTests;
+import org.aspectj.weaver.Weaver5ModuleTests;
 
 public class AllTests extends TestCase {
     public static final boolean skipSupportModules = false;
@@ -65,8 +65,7 @@ public class AllTests extends TestCase {
             TestUtil.loadTestsReflectively(suite, "org.aspectj.runtime.Aspectj5rtModuleTests", false);
             TestUtil.loadTestsReflectively(suite, "org.aspectj.loadtime.Loadtime5ModuleTests", false);
             // this next one is built normally, but needs 1.5 rt.jar to pass
-            suite.addTest(BcweaverModuleTests15.suite());
-            TestUtil.loadTestsReflectively(suite, "org.aspectj.weaver.Weaver5ModuleTests",false);
+            suite.addTest(Weaver5ModuleTests.suite());
         } else {
             suite.addTest(TestUtil.skipTest("for 1.5"));
         } 

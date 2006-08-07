@@ -12,10 +12,12 @@
 
 package org.aspectj.weaver;
 
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegateTest;
+
 
 public class TestJava5ReflectionBasedReferenceTypeDelegate extends ReflectionBasedReferenceTypeDelegateTest {
 	
