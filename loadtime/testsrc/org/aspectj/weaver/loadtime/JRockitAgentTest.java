@@ -52,16 +52,24 @@ public class JRockitAgentTest extends TestCase {
 
 	public void testJrockitRecursionProtection () {
 		URLClassLoader thisLoader = (URLClassLoader)getClass().getClassLoader();
+		ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+
 		try {
+			/* Needed by Commons Logging */
+			Thread.currentThread().setContextClassLoader(thisLoader.getParent());
+
 			ClassLoader loader = new JRockitClassLoader(thisLoader);
+
 			Class clazz;
-			
 			clazz = Class.forName("java.lang.Object",false,loader);
 			clazz = Class.forName("junit.framework.TestCase",false,loader);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 			fail(ex.toString());
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(contextLoader);
 		}
 	}
 
