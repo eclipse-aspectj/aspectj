@@ -978,7 +978,7 @@ public class WildTypePattern extends TypePattern {
 						continueCheck = false;
 					}
 					
-					System.err.println("Verifying "+ut.getName()+" meets bounds for "+tvs[i]);
+					//System.err.println("Verifying "+ut.getName()+" meets bounds for "+tvs[i]);
 					if (continueCheck &&	
 							!tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
 						// issue message that type parameter does not meet specification
