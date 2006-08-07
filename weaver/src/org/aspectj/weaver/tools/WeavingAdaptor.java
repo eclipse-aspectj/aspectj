@@ -210,7 +210,7 @@ public class WeavingAdaptor {
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
 		if (enabled) {
 			try {
-				delegateForCurrentClass=null; // TODO will need stack if going recursive...
+				delegateForCurrentClass=null; 
 		    	if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name,bytes});
 				if (shouldWeave(name, bytes)) {
 					info("weaving '" + name + "'");
