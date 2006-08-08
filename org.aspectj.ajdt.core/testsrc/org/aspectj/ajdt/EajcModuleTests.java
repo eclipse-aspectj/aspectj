@@ -16,8 +16,9 @@ package org.aspectj.ajdt;
 // default package
 
 
+import org.aspectj.testing.util.TestUtil;
+
 import junit.framework.*;
-import junit.framework.Test;
 
 public class EajcModuleTests extends TestCase {
 
@@ -27,6 +28,13 @@ public class EajcModuleTests extends TestCase {
         suite.addTest(org.aspectj.ajdt.internal.compiler.batch.AjdtBatchTests.suite()); 
         suite.addTest(org.aspectj.ajdt.internal.core.builder.AjdtBuilderTests.suite()); 
         suite.addTest(org.aspectj.tools.ajc.AjcTests.suite());
+
+        /* FIXME maw move these Java 5 dependent tests to a separate project */
+        if (TestUtil.is15VMOrGreater()) {
+            TestUtil.loadTestsReflectively(suite, "Eajc515ModuleTests", true);
+        } else {
+            suite.addTest(TestUtil.testNamed("Eajc515ModuleTests require 1.5"));
+        }
         return suite;
     }
 

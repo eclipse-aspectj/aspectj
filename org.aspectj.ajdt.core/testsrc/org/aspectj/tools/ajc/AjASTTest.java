@@ -10,15 +10,11 @@
  *******************************************************************/
 package org.aspectj.tools.ajc;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
-import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterReturningAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterThrowingAdviceDeclaration;
@@ -33,7 +29,6 @@ import org.aspectj.org.eclipse.jdt.core.dom.Block;
 import org.aspectj.org.eclipse.jdt.core.dom.CflowPointcut;
 import org.aspectj.org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
 import org.aspectj.org.eclipse.jdt.core.dom.ChildPropertyDescriptor;
-import org.aspectj.org.eclipse.jdt.core.dom.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtConstructorDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtFieldDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtMethodDeclaration;
@@ -82,7 +77,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.TypePattern;
  *  implementation of the accept0() method which is tested
  *  in ASTVisitorTest.     
  */
-public class AjASTTest extends TestCase {
+public class AjASTTest extends AjASTTestCase {
 	
 	// -------------- DefaultPointcut tests ---------------
 	
@@ -573,50 +568,6 @@ public class AjASTTest extends TestCase {
 				copy.isPrivileged());
 	}
 	
-	public void testInternalAspectDeclaration() {
-		AjAST ajast = createAjAST();
-		AspectDeclaration d = ajast.newAspectDeclaration();
-		List props = AspectDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
-			if (o instanceof ChildPropertyDescriptor) {
-				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
-				if (element.getId().equals("perClause")) {
-					assertNull("AspectDeclaration's " + element.getId() + " property" +
-							"should be null since we haven't set it yet",
-							d.getStructuralProperty(element));					
-				}
-			} else if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
-				assertNotNull("AspectDeclaration's " + element.getId() + " property" +
-						"should not be null since it is a boolean",
-						d.getStructuralProperty(element));
-			}
-		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
-			if (o instanceof ChildPropertyDescriptor) {
-				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
-				if (element.getId().equals("perClause")) {
-					PerTypeWithin ptw = ajast.newPerTypeWithin();
-					d.setStructuralProperty(element,ptw);
-					assertEquals("AspectDeclaration's perClause property should" +
-							" now be a perTypeWithin",ptw,d.getStructuralProperty(element));
-				} else if (element.getId().equals("javadoc")) {
-					// do nothing since makes no sense to have javadoc
-				}				
-			} else if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
-			    if (element.getId().equals("privileged")) {
-					Boolean b = new Boolean(true);
-					d.setStructuralProperty(element,b);
-					assertEquals("AspectDeclaration's isPrivileged property should" +
-							" now be a boolean",b,d.getStructuralProperty(element));
-			    }
-			}
-		}
-	}
-
 	
 	/**
 	 * AsepctDeclarations's have a perClause property - test the getting
@@ -849,35 +800,6 @@ public class AjASTTest extends TestCase {
 		AjTypeDeclaration copy = (AjTypeDeclaration)ASTNode.copySubtree(ajast,d);
 		assertTrue("the AjTypeDeclaration clone should be an aspect",
 				copy.isAspect());
-	}
-	
-	public void testInternalAjTypeDeclaration() {
-		AjAST ajast = createAjAST();
-		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
-		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
-			if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
-				if (element.getId().equals("aspect")) {
-					assertNotNull("AjTypeDeclaration's " + element.getId() + " property" +
-							" should not be null since it is a boolean",
-							d.getStructuralProperty(element));				
-				} 				
-			}
-		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
-			if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
-				if (element.getId().equals("aspect")) {
-					Boolean b = new Boolean(true);
-					d.setStructuralProperty(element,b);
-					assertEquals("AjTypeDeclaration's aspect property should" +
-						" now be a SignaturePattern",b,d.getStructuralProperty(element));
-				}
-			}
-		}
 	}
 
 	// test for bug 125809 - make sure the property descriptors 
@@ -1532,59 +1454,6 @@ public class AjASTTest extends TestCase {
 				copy.isExtends());
 	}
 	
-	public void testInternalDeclareParentsDeclaration() {
-		AjAST ajast = createAjAST();
-		DeclareParentsDeclaration d = ajast.newDeclareParentsDeclaration();
-		List props = DeclareParentsDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
-			if (o instanceof ChildPropertyDescriptor) {
-				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
-				assertNull("DeclareParentsDeclaration's " + element.getId() + " property" +
-						"should be null since we haven't set it yet",
-						d.getStructuralProperty(element));					
-			} else if (o instanceof ChildListPropertyDescriptor) {
-				ChildListPropertyDescriptor element = (ChildListPropertyDescriptor)o;
-				assertNotNull("DeclareParentsDeclaration's " + element.getId() + " property" +
-						"should not be null since it is a list",
-						d.getStructuralProperty(element));
-				assertEquals("should only be able to put TypePattern's into the list",
-						TypePattern.class,element.getElementType());
-			} else if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
-				assertNotNull("DeclareParentsDeclaration's " + element.getId() + " property" +
-						"should not be null since it is a boolean",
-						d.getStructuralProperty(element));									
-			} else {
-				fail("unknown PropertyDescriptor associated with DeclareParentsDeclaration: " + o);
-			}
-		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
-			if (o instanceof ChildPropertyDescriptor) {
-				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
-				if (element.getId().equals("childTypePattern")) {
-					DefaultTypePattern dtp = ajast.newDefaultTypePattern();
-					d.setStructuralProperty(element,dtp);
-					assertEquals("DeclareParentsDeclaration's typePattern property should" +
-							" now be a DefaultTypePattern",dtp,d.getStructuralProperty(element));
-				} else if (element.getId().equals("javadoc")) {
-					// do nothing since makes no sense to have javadoc
-				} else {
-					fail("unknown property for DeclareParentsDeclaration");
-				}				
-			} else if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
-			    if (element.getId().equals("isExtends")) {
-					Boolean b = new Boolean(true);
-					d.setStructuralProperty(element,b);
-					assertEquals("DeclareParentsDeclaration's isExtends property should" +
-							" now be a boolean",b,d.getStructuralProperty(element));
-			    }
-			}
-		}
-	}
-	
 	// -------------- DeclarePrecedenceDeclaration tests ---------------
 
 	public void testNewDeclarePrecedenceDeclaration() {
@@ -1896,43 +1765,6 @@ public class AjASTTest extends TestCase {
 	public void testDeclarePrecedence(){
 		checkJLS3("aspect A{}aspect B{declare precedence: B,A;}",
 				19,23);
-	}
-
-	
-	
-	// --------- Helper methods ----------
-	
-	private AjAST createAjAST() {
-		return createAjAST(AST.JLS3);
-	}
-	
-	private AjAST createAjAST(int astlevel) {
-		if (astlevel != AST.JLS2 && astlevel != AST.JLS3) {
-			fail("need to pass AST.JLS2 or AST.JLS3 as an argument");
-		}
-		String source = "";
-		ASTParser parser = ASTParser.newParser(astlevel);
-		parser.setSource(source.toCharArray());
-		parser.setCompilerOptions(new HashMap());
-		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-		AST ast = cu.getAST();
-		assertTrue("the ast should be an instance of AjAST",ast instanceof AjAST);
-		return (AjAST)ast;
-	}
-	
-	private void checkJLS3(String source, int start, int length) {
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setCompilerOptions(new HashMap());
-		parser.setSource(source.toCharArray());
-		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);
-		SourceRangeVisitor visitor = new SourceRangeVisitor();
-		cu2.accept(visitor);
-		int s = visitor.getStart();
-		int l = visitor.getLength();
-		assertTrue("Expected start position: "+ start + ", Actual:" + s,
-				start == s);
-		assertTrue("Expected length: "+ length + ", Actual:" + l,
-				length == l);
 	}
 }
 
