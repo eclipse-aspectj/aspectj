@@ -1,0 +1,8 @@
+<aspectj>
+    <weaver options="-1.5 -verbose">
+        <exclude within="ataspectj..*"/>
+    </weaver>
+    <aspects>
+        <aspect name="ataspectj.bugs.NotAspect"/>
+    </aspects>
+</aspectj>

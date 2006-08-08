@@ -1202,4 +1202,8 @@ public abstract class World implements Dump.INode {
 	    	if (trace.isTraceEnabled()) trace.exit("setSynchronizationPointcutsInUse");
 	    }
 	    public boolean areSynchronizationPointcutsInUse() {return synchronizationPointcutsInUse;}
+	    
+	    public boolean isASMAround() { 
+	    	return isASMAround;
+	    }
 }

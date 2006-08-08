@@ -37,6 +37,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.Version;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.org.objectweb.asm.ClassReader;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
@@ -212,16 +213,25 @@ public class WeavingAdaptor {
 			try {
 				delegateForCurrentClass=null; 
 		    	if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name,bytes});
-				if (shouldWeave(name, bytes)) {
-					info("weaving '" + name + "'");
-					bytes = getWovenBytes(name, bytes);
-				} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
-		            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
-		            info("weaving '" + name + "'");
-		            bytes = getAtAspectJAspectBytes(name, bytes);
-		        }
-				else {
-					info("not weaving '" + name + "'");
+				name = name.replace('/','.');
+				if (couldWeave(name, bytes)) {
+			        if (accept(name, bytes)) {
+			            // TODO @AspectJ problem
+			            // Annotation style aspects need to be included regardless in order to get
+			            // a valid aspectOf()/hasAspect() generated in them.  However - if they are excluded
+			            // (via include/exclude in aop.xml) they really should only get aspectOf()/hasAspect()
+			            // and not be included in the full set of aspects being applied by 'this' weaver
+						info("weaving '" + name + "'");
+						bytes = getWovenBytes(name, bytes);
+					} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
+			            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
+			            info("weaving '" + name + "'");
+			            bytes = getAtAspectJAspectBytes(name, bytes);
+					} else {
+						info("not weaving '" + name + "'");
+					}
+		        } else {
+					info("cannot weave '" + name + "'");
 				}
 	
 				if (trace.isTraceEnabled()) trace.exit("weaveClass",bytes);
@@ -235,17 +245,10 @@ public class WeavingAdaptor {
 
     /**
      * @param name
-     * @return true if should weave (but maybe we still need to munge it for @AspectJ aspectof support)
+     * @return true if even valid to weave: either with an accept check or to munge it for @AspectJ aspectof support
      */
-    private boolean shouldWeave (String name, byte[] bytes) {
-		name = name.replace('/','.');
-		boolean b = !generatedClasses.containsKey(name) && shouldWeaveName(name);
-        return b && accept(name, bytes);
-//        && shouldWeaveAnnotationStyleAspect(name);
-//        // we recall shouldWeaveAnnotationStyleAspect as we need to add aspectOf methods for @Aspect anyway
-//        //FIXME AV - this is half ok as the aspect will be weaved by others. In theory if the aspect
-//        // is excluded from include/exclude config we should only weave late type mungers for aspectof
-//        return b && (accept(name) || shouldWeaveAnnotationStyleAspect(name));
+    private boolean couldWeave (String name, byte[] bytes) {
+		return !generatedClasses.containsKey(name) && shouldWeaveName(name);
 	}
 
     //ATAJ
@@ -276,12 +279,29 @@ public class WeavingAdaptor {
      * @return true if @Aspect
      */
 	private boolean shouldWeaveAnnotationStyleAspect(String name, byte[] bytes) {
-		// AV: instead of doing resolve that would lookup stuff on disk thru BCEL ClassLoaderRepository
-        // we reuse bytes[] here to do a fast lookup for @Aspect annotation
-		ensureDelegateInitialized(name,bytes);
+    	if (delegateForCurrentClass==null) {
+    		if (weaver.getWorld().isASMAround()) return asmCheckAnnotationStyleAspect(bytes);
+    		else ensureDelegateInitialized(name, bytes);
+    	}
 		return (delegateForCurrentClass.isAnnotationStyleAspect());
 	}
 
+	private boolean asmCheckAnnotationStyleAspect(byte[] bytes) {
+		IsAtAspectAnnotationVisitor detector = new IsAtAspectAnnotationVisitor();
+
+		ClassReader cr = new ClassReader(bytes);
+	    try {
+	    	cr.accept(detector, true);//, ClassReader.SKIP_DEBUG | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
+	    } catch (Exception spe) {
+	    	// if anything goes wrong, e.g., an NPE, then assume it's NOT an @AspectJ aspect...
+	    	System.err.println("Unexpected problem parsing bytes to discover @Aspect annotation");
+	    	spe.printStackTrace();
+	    	return false;
+	    }
+	    
+	    return detector.isAspect();
+	}
+	
     protected void ensureDelegateInitialized(String name,byte[] bytes) {
     	if (delegateForCurrentClass==null)
     	  delegateForCurrentClass =  ((BcelWorld)weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(name, bytes));

@@ -298,6 +298,20 @@
         <run class="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest" ltw="ataspectj/bugs/aop-aspectofwhenaspectnotinincludetest.xml"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="AspectOfWhenAspectExcluded">
+        <compile
+            files="ataspectj/bugs/AspectOfWhenAspectNotInIncludeTest.java,ataspectj/TestHelper.java"
+            options="-1.5 -XterminateAfterCompilation"/>
+        <run class="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest" ltw="ataspectj/bugs/aop-aspectofwhenaspectexcludedtest.xml"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AspectOfWhenNonAspectExcluded">
+        <compile
+            files="ataspectj/bugs/NotAspect.java"
+            options="-1.5 -XterminateAfterCompilation"/>
+        <run class="ataspectj.bugs.NotAspect" ltw="ataspectj/bugs/aop-aspectofwhennonaspectexcludedtest.xml"/>
+    </ajc-test>
+
     <ajc-test dir="java5/ataspectj" title="AppContainer">
         <compile
             files="ataspectj/hierarchy/AppContainerTest.java,ataspectj/hierarchy/app/SubApp.java,ataspectj/TestHelper.java"

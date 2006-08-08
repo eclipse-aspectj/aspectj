@@ -201,6 +201,13 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         runTest("AspectOfWhenAspectNotInInclude");
     }
 
+    public void testAspectOfWhenAspectExcluded_pr152873() {
+        runTest("AspectOfWhenAspectExcluded");
+    }
+    public void testAspectOfWhenNonAspectExcluded_pr152873() {
+    	runTest("AspectOfWhenNonAspectExcluded");
+    }
+
     public void testAppContainer() {
         runTest("AppContainer");
     }

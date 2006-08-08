@@ -50,7 +50,8 @@ public class AntSpec implements ITestStep {
             + File.pathSeparator + ".." + File.separator + "loadtime/bin"
             + File.pathSeparator + ".." + File.separator + "loadtime5/bin"
             + File.pathSeparator + ".." + File.separator + "weaver/bin"
-            + File.pathSeparator + ".." + File.separator + "lib/bcel/bcel.jar";
+            + File.pathSeparator + ".." + File.separator + "lib/bcel/bcel.jar"
+    		+ File.pathSeparator + ".." + File.separator + "lib/asm/asm-aj.jar";
 
 
     private boolean m_verbose = false;
