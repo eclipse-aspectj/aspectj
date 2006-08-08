@@ -34,6 +34,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
@@ -463,6 +464,15 @@ public class AjProblemReporter extends ProblemReporter {
     	// don't warn if this is an aj synthetic arg
     	String argType = new String(localDecl.type.resolvedType.signature());
     	if (argType.startsWith("Lorg/aspectj/runtime/internal")) return;
+    	
+    	// If the unused argument is in a pointcut, don't report the problem (for now... pr148219)
+    	if (localDecl!=null && localDecl instanceof Argument) {
+    		Argument arg = (Argument)localDecl;
+    		if (arg.binding!=null && arg.binding.declaringScope!=null) {
+    			ReferenceContext context = arg.binding.declaringScope.referenceContext();
+    			if (context!=null && context instanceof PointcutDeclaration) return;
+    		}
+    	}
     	super.unusedArgument(localDecl);
     }
 
