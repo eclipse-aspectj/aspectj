@@ -803,9 +803,11 @@ public class MessageUtil {
 		writer.println(baseMessage);
 		for (Iterator iter = message.getExtraSourceLocations().iterator(); iter.hasNext();) {
 		    ISourceLocation element = (ISourceLocation) iter.next();
-		    writer.print("\tsee also: " + element.toString());
-		    if (iter.hasNext()) {
-		        writer.println();
+		    if (element!=null) {
+		    	writer.print("\tsee also: " + element.toString());
+			    if (iter.hasNext()) {
+			        writer.println();
+			    }
 		    }
 		}
 		try { buf.close(); } 
