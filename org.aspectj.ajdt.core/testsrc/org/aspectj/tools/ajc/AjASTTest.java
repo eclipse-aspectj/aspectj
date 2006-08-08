@@ -10,11 +10,13 @@
  *******************************************************************/
 package org.aspectj.tools.ajc;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
+import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterReturningAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterThrowingAdviceDeclaration;
@@ -29,6 +31,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.Block;
 import org.aspectj.org.eclipse.jdt.core.dom.CflowPointcut;
 import org.aspectj.org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
 import org.aspectj.org.eclipse.jdt.core.dom.ChildPropertyDescriptor;
+import org.aspectj.org.eclipse.jdt.core.dom.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtConstructorDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtFieldDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtMethodDeclaration;
@@ -43,6 +46,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.DefaultTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.aspectj.org.eclipse.jdt.core.dom.InterTypeFieldDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.Javadoc;
 import org.aspectj.org.eclipse.jdt.core.dom.NotPointcut;
 import org.aspectj.org.eclipse.jdt.core.dom.OrPointcut;
 import org.aspectj.org.eclipse.jdt.core.dom.PerCflow;
@@ -1766,6 +1770,22 @@ public class AjASTTest extends AjASTTestCase {
 		checkJLS3("aspect A{}aspect B{declare precedence: B,A;}",
 				19,23);
 	}
+
+	// --------- tests for bugs ----------
+	
+	public void testJavadocCommentForDeclareExists_pr150467() {
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+	    parser.setSource("aspect X {/** I have a doc comment */declare parents : Y implements Z;}".toCharArray());
+	    parser.setCompilerOptions(Collections.EMPTY_MAP);
+	    parser.setKind(ASTParser.K_COMPILATION_UNIT);
+	    CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+	    Javadoc javadoc = ((DeclareParentsDeclaration) ((TypeDeclaration)
+	    		cu.types().get(0)).bodyDeclarations().get(0)).getJavadoc();
+	    assertNull("expected the doc comment node to be null but it wasn't",javadoc);
+	    assertEquals("expected there to be one comment but found " +
+	    		cu.getCommentList().size(),1,cu.getCommentList().size());
+	}
+		
 }
 
 class SourceRangeVisitor extends AjASTVisitor {
