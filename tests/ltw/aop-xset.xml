@@ -1,0 +1,4 @@
+<aspectj>
+	<weaver options="-Xset:runMinimalMemory=true,pipelineCompilation=true,captureAllContext=false,activateLightweightDelegates=true,debugStructuralChangesCode=false,debugBridging=false -Xlintfile:Xlint-empty.properties"/>
+</aspectj>
+

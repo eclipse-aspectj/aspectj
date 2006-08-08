@@ -1,0 +1,5 @@
+<aspectj>
+	<weaver options="-Xset:pipelineCompilation=false -verbose -showWeaveInfo -Xlintfile:Xlint-empty.properties"/>
+	<aspect name="Aspect1"/>
+</aspectj>
+

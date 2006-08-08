@@ -251,6 +251,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         world.setOptionalJoinpoints(weaverOption.optionalJoinpoints);
         world.setPinpointMode(weaverOption.pinpoint);
         weaver.setReweavableMode(weaverOption.notReWeavable);
+        world.performExtraConfiguration(weaverOption.xSet);
         world.setXnoInline(weaverOption.noInline);
         // AMC - autodetect as per line below, needed for AtAjLTWTests.testLTWUnweavable
         world.setBehaveInJava5Way(LangUtil.is15VMOrGreater());

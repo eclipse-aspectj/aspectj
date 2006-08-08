@@ -235,6 +235,28 @@
     </ajc-test>
     
 	<ajc-test dir="ltw"
+      title="Set Xset properties enabled"
+      keywords="xSet, ltw">
+        <compile
+        	files="Main.java,Aspect1.aj"
+        >
+        </compile>	
+        <run class="Main" ltw="aop-xset-verbose.xml" xlintfile="Xlint-empty.properties">
+        </run>
+    </ajc-test>
+
+	<ajc-test dir="ltw"
+      title="Set Xset properties disabled"
+      keywords="xSet, ltw">
+        <compile
+        	files="Main.java,Aspect1.aj"
+        >
+        </compile>	
+        <run class="Main" ltw="aop-xset-verbose.xml" xlintfile="Xlint-empty.properties">
+        </run>
+    </ajc-test>
+    
+	<ajc-test dir="ltw"
       title="Warning with missing Xlint.properties file"
       keywords="xlint, ltw">
         <compile

@@ -45,7 +45,7 @@ public class Options {
     private static final String OPTIONVALUED_Xlintfile = "-Xlintfile:";
     private static final String OPTIONVALUED_Xlint = "-Xlint:";
     private static final String OPTIONVALUED_joinpoints = "-Xjoinpoints:";
-
+    private static final String OPTIONVALUED_Xset = "-Xset:";
 
     public static WeaverOption parse(String options, ClassLoader laoder, IMessageHandler imh) {
         WeaverOption weaverOption = new WeaverOption(imh);
@@ -118,6 +118,10 @@ public class Options {
                 if (arg.length() > OPTIONVALUED_Xlint.length()) {
                     weaverOption.lint = arg.substring(OPTIONVALUED_Xlint.length()).trim();
                 }
+            } else if (arg.startsWith(OPTIONVALUED_Xset)) {
+                if (arg.length() > OPTIONVALUED_Xlint.length()) {
+                    weaverOption.xSet = arg.substring(OPTIONVALUED_Xset.length()).trim();
+                }            	
             } else {
                 weaverOption.messageHandler.handleMessage(
                         new Message(
@@ -145,7 +149,7 @@ public class Options {
     }
 
     public static class WeaverOption {
-        boolean java5;
+		boolean java5;
         boolean lazyTjp;
         boolean hasMember;
         String optionalJoinpoints;
@@ -160,6 +164,7 @@ public class Options {
         IMessageHandler messageHandler;
         String lint;
         String lintFile;
+        String xSet;
 
         public WeaverOption(IMessageHandler imh) {
 //            messageHandler = new DefaultMessageHandler();//default

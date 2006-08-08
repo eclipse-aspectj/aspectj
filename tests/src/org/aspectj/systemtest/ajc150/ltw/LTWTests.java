@@ -65,6 +65,13 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   		runTest("Ensure weaver lint warning issued when an aspect is not used for weaving");
   	}
 
+  	public void testXsetEnabled () {
+  		runTest("Set Xset properties enabled");
+  	}
+  	public void testXsetDisabled () {
+  		runTest("Set Xset properties disabled");
+  	}
+  	
   	public void testXlintfileEmpty () {
   		runTest("Empty Xlint.properties file");
   	}
