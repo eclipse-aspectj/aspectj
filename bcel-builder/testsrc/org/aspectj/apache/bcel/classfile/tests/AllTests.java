@@ -38,6 +38,7 @@ public class AllTests {
 		suite.addTestSuite(EnclosingMethodAttributeTest.class);
 		suite.addTestSuite(MethodAnnotationsTest.class);
 		suite.addTestSuite(RuntimeVisibleAnnotationAttributeTest.class);
+		suite.addTestSuite(ClassloaderRepositoryTest.class);
 		suite.addTestSuite(EnumAccessFlagTest.class);
 		suite.addTestSuite(LocalVariableTypeTableTest.class);
 		suite.addTestSuite(VarargsTest.class);
