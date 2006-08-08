@@ -19,7 +19,9 @@ import org.aspectj.ajdt.EajcModuleTests;
 import org.aspectj.asm.AsmModuleTests;
 import org.aspectj.bridge.BridgeModuleTests;
 import org.aspectj.build.BuildModuleTests;
+import org.aspectj.loadtime.Loadtime5ModuleTests;
 import org.aspectj.loadtime.LoadtimeModuleTests;
+import org.aspectj.runtime.Aspectj5rtModuleTests;
 import org.aspectj.runtime.RuntimeModuleTests;
 import org.aspectj.testing.TestingClientModuleTests;
 import org.aspectj.testing.TestingDriversModuleTests;
@@ -59,12 +61,8 @@ public class AllTests extends TestCase {
         suite.addTest(UtilModuleTests.suite());
         suite.addTest(BcweaverModuleTests.suite());
         if (LangUtil.is15VMOrGreater()) {
-            // these only require 1.3, but in Eclipse they are built 
-            // with 1.5, i.e., wrong class version to load under 1.3
-            // so the class name can only be used reflectively
-            TestUtil.loadTestsReflectively(suite, "org.aspectj.runtime.Aspectj5rtModuleTests", false);
-            TestUtil.loadTestsReflectively(suite, "org.aspectj.loadtime.Loadtime5ModuleTests", false);
-            // this next one is built normally, but needs 1.5 rt.jar to pass
+            suite.addTest(Aspectj5rtModuleTests.suite());
+            suite.addTest(Loadtime5ModuleTests.suite());
             suite.addTest(Weaver5ModuleTests.suite());
         } else {
             suite.addTest(TestUtil.skipTest("for 1.5"));
