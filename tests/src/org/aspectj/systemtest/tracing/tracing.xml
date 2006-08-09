@@ -17,4 +17,25 @@
         <ant file="ant.xml" target="Default tracing" verbose="true"/>
     </ajc-test>
 
+	<ajc-test dir="tracing" title="Default TraceMessageHandler" keywords="tracing">
+        <compile
+        	files="HelloWorld.java, MyDefaultTraceMessageHandler.java"
+        />
+        <compile
+        	files="IncludedAspect.aj, ExcludedAspect.aj"
+        />
+        <run class="HelloWorld" ltw="aop-defaulttracemessagehandler.xml">
+        	<stdout>
+                <line text="Hello World!"/>
+            </stdout>
+        	<stderr>
+	  	    	<line text="info register aspect IncludedAspect"/>
+	  	    	<line text="warning aspect ExcludedAspect exluded"/>
+	  	    	<line text="error Cannot find m_parent aspect"/>
+	  	    	<line text="error Concrete-aspect 'IncludedMissingAspect' could not be registered"/>
+	  	    	<line text="info weaving 'HelloWorld'"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
 </suite>

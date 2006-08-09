@@ -33,5 +33,9 @@ public class TracingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testDefaultTracing () {
   		runTest("Default tracing");
 	}
+	
+	public void testDefaultTracingMessageHandler () {
+  		runTest("Default TraceMessageHandler");
+	}
 
 }
