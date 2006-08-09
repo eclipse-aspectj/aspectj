@@ -68,7 +68,7 @@
 			<length file="${local.properties}" 
 				when="equal" length="0"/>
 		</condition>
-		<antcall target="do-write-local-properties">
+		<antcall target="do-write-local-properties"/>
     </target>
     
 	<target name="do-write-local-properties" depends="init"
