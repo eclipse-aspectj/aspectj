@@ -11,6 +11,8 @@ import org.aspectj.systemtest.ajc150.ataspectj.AtAjAnnotationGenTests;
 import org.aspectj.systemtest.ajc151.AllTestsAspectJ151;
 import org.aspectj.systemtest.ajc152.AllTestsAspectJ152;
 import org.aspectj.systemtest.ajc153.AllTestsAspectJ153;
+import org.aspectj.systemtest.incremental.tools.MultiProjectIncrementalTests;
+import org.aspectj.systemtest.xlint.XLint5Tests;
 
 public class AllTests15 {
 
@@ -23,6 +25,13 @@ public class AllTests15 {
 		suite.addTest(AllTestsAspectJ152.suite());
 		suite.addTest(AllTestsAspectJ153.suite());
 		suite.addTest(AtAjAnnotationGenTests.suite());
+		/* FIXME maw Many of these tests do not depend on Java 5 but they
+		 * cannot be executed in Eclipse with 1.3 because of XML issues and
+		 * are excluded on the build machine so moving them here loses nothing
+		 * for the moment.
+		 */
+		suite.addTestSuite(MultiProjectIncrementalTests.class);
+		suite.addTest(XLint5Tests.suite());
 		//$JUnit-END$
 		return suite;
 	}
