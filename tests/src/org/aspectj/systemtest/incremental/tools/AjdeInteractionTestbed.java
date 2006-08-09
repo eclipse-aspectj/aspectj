@@ -364,6 +364,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		public static void reset() {
 			_instance.aspectPath=null;
 			_instance.sourcePathResources=null;
+			_instance.outputLocationManager=null;
 		}
 		
 		private String projectName = null;
