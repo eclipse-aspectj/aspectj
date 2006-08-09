@@ -32,44 +32,12 @@ public abstract class AbstractTrace implements Trace {
 
 	public abstract void exit(String methodName, Throwable th);
 
-	public void error(String message) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void error(String message, Throwable th) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void event(String methodName) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("event");
 	}
 
 	public void event(String methodName, Object thiz, Object[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void exit(String methodName) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void info(String message) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void warn(String message) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void warn(String message, Throwable th) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("event");
 	}
 	
 	/*
@@ -90,7 +58,22 @@ public abstract class AbstractTrace implements Trace {
 	public void exit (String methodName, boolean b) {
 		exit(methodName,new Boolean(b));
 	}
+
+	public void warn(String message) {
+		warn(message,null);
+	}
+
+	public void error(String message) {
+		error(message,null);
+	}
+
+	public void fatal (String message) {
+		fatal(message,null);
+	}
 	
+	/*
+	 * Formatting
+	 */
 	protected String formatMessage(String kind, String className, String methodName, Object thiz, Object[] args) {
 		StringBuffer message = new StringBuffer();
 		Date now = new Date();
@@ -101,6 +84,17 @@ public abstract class AbstractTrace implements Trace {
 		message.append(".").append(methodName);
 		if (thiz != null) message.append(" ").append(formatObj(thiz));
 		if (args != null) message.append(" ").append(formatArgs(args));
+		return message.toString();
+	}
+	
+	protected String formatMessage(String kind, String text, Throwable th) {
+		StringBuffer message = new StringBuffer();
+		Date now = new Date();
+		message.append(formatDate(now)).append(" ");
+		message.append(Thread.currentThread().getName()).append(" ");
+		message.append(kind).append(" ");
+		message.append(text);
+		if (th != null) message.append(" ").append(formatObj(th));
 		return message.toString();
 	}
 	

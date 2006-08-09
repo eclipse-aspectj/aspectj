@@ -13,12 +13,8 @@ package org.aspectj.weaver;
 import org.aspectj.weaver.tools.DefaultTrace;
 import org.aspectj.weaver.tools.Jdk14Trace;
 
-import junit.framework.TestCase;
+public class Jdk14TraceTest extends AbstractTraceTest {
 
-public class Jdk14TraceTest extends TestCase {
-
-	private Jdk14Trace trace; 
-	
 	protected void setUp() throws Exception {
 		super.setUp();
 		trace = new Jdk14Trace(getClass());
@@ -27,35 +23,6 @@ public class Jdk14TraceTest extends TestCase {
 
 	public void testJdk14Trace() {
 		Jdk14Trace trace = new Jdk14Trace(getClass());
-	}
-
-	public void testEnterWithThisAndArgs() {
-		trace.enter("testEnterWithThisAndArgs",this,new Object[] { "arg1", "arg2" });
-	}
-
-	public void testEnterWithThis() {
-		trace.enter("testEnterWithThis",this);
-	}
-
-	public void testEnter() {
-		trace.enter("testEnter");
-	}
-
-	public void testExitWithReturn() {
-		trace.exit("testExitWithReturn","ret");
-	}
-
-	public void testExitWithThrowable() {
-		trace.exit("testExitWithThrowable",new RuntimeException());
-	}
-
-	public void testExit() {
-		trace.exit("testExit");
-	}
-
-	public void testIsTraceEnabled() {
-		DefaultTrace trace = new DefaultTrace(getClass());
-		assertFalse(trace.isTraceEnabled());
 	}
 
 	public void testSetTraceEnabled() {

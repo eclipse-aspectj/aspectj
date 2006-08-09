@@ -12,49 +12,16 @@ package org.aspectj.weaver;
 
 import org.aspectj.weaver.tools.CommonsTrace;
 
-import junit.framework.TestCase;
-
-public class CommonsTraceTest extends TestCase {
-
-	private CommonsTrace trace; 
+public class CommonsTraceTest extends AbstractTraceTest {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
 		trace = new CommonsTrace(getClass());
 		trace.setTraceEnabled(true);
 	}
-
+	
 	public void testCommonsTrace() {
 		CommonsTrace trace = new CommonsTrace(getClass());
-	}
-
-	public void testEnterWithThisAndArgs() {
-		trace.enter("testEnterWithThisAndArgs",this,new Object[] { "arg1", "arg2" });
-	}
-
-	public void testEnterWithThis() {
-		trace.enter("testEnterWithThis",this);
-	}
-
-	public void testEnter() {
-		trace.enter("testEnter");
-	}
-
-	public void testExitWithReturn() {
-		trace.exit("testExitWithReturn","ret");
-	}
-
-	public void testExitWithThrowable() {
-		trace.exit("testExitWithThrowable",new RuntimeException());
-	}
-
-	public void testExit() {
-		trace.exit("testExit");
-	}
-
-	public void testIsTraceEnabled() {
-		CommonsTrace trace = new CommonsTrace(getClass());
-		assertFalse(trace.isTraceEnabled());
 	}
 
 	public void testSetTraceEnabled() {

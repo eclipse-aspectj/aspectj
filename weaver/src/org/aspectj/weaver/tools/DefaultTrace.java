@@ -55,6 +55,40 @@ public class DefaultTrace extends AbstractTrace {
 			println(formatMessage("<",tracedClass.getName(),methodName,th, null));
 		}
 	}
+	public void debug (String message) {
+		if (traceEnabled) {
+			println(formatMessage("?",message,null));
+		}
+	}
+
+	public void info(String message) {
+		if (traceEnabled) {
+			println(formatMessage("I",message,null));
+		}
+	}
+
+	public void warn (String message, Throwable th) {
+		if (traceEnabled) {
+			println(formatMessage("W",message,th));
+			if (th != null) th.printStackTrace();
+		}
+	}
+
+
+	public void error (String message, Throwable th) {
+		if (traceEnabled) {
+			println(formatMessage("E",message,th));
+			if (th != null) th.printStackTrace();
+		}
+		
+	}
+
+	public void fatal (String message, Throwable th) {
+		if (traceEnabled) {
+			println(formatMessage("X",message,th));
+			if (th != null) th.printStackTrace();
+		}
+	}
 
 	/**
 	 * Template method that allows choice of destination for output

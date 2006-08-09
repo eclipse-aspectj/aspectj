@@ -77,5 +77,35 @@ public class Jdk14Trace extends AbstractTrace {
 			logger.setLevel(Level.INFO);
 		}
 	}
+
+	public void debug (String message) {
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine(message);
+		}
+	}
+
+	public void info(String message) {
+		if (logger.isLoggable(Level.INFO)) {
+			logger.info(message);
+		}
+	}
+
+	public void warn (String message, Throwable th) {
+		if (logger.isLoggable(Level.WARNING)) {
+			logger.log(Level.WARNING,message,th);
+		}
+	}
+
+	public void error (String message, Throwable th) {
+		if (logger.isLoggable(Level.SEVERE)) {
+			logger.log(Level.SEVERE,message,th);
+		}
+	}
+
+	public void fatal (String message, Throwable th) {
+		if (logger.isLoggable(Level.SEVERE)) {
+			logger.log(Level.SEVERE,message,th);
+		}
+	}
 	
 }

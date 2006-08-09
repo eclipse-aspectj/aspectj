@@ -26,6 +26,8 @@ public interface Trace {
 
 	public void event (String methodName, Object thiz, Object[] args);
 	
+	public void debug (String message);
+	
 	public void info (String message);
 
 	public void warn (String message);
@@ -35,6 +37,11 @@ public interface Trace {
 	public void error (String message);
 
 	public void error (String message, Throwable th);
+
+	public void fatal (String message);
+
+	public void fatal (String message, Throwable th);
+	
 	
 	/*
 	 * Convenience methods

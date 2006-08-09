@@ -10,14 +10,10 @@
  *******************************************************************************/
 package org.aspectj.weaver;
 
-import junit.framework.TestCase;
-
 import org.aspectj.weaver.tools.DefaultTrace;
 
-public class DefaultTraceTest extends TestCase {
+public class DefaultTraceTest extends AbstractTraceTest {
 
-	private DefaultTrace trace; 
-	
 	protected void setUp() throws Exception {
 		super.setUp();
 		trace = new DefaultTrace(getClass());
@@ -28,39 +24,9 @@ public class DefaultTraceTest extends TestCase {
 		DefaultTrace trace = new DefaultTrace(getClass());
 	}
 
-	public void testEnterWithThisAndArgs() {
-		trace.enter("testEnterWithThisAndArgs",this,new Object[] { "arg1", "arg2" });
-	}
-
-	public void testEnterWithThis() {
-		trace.enter("testEnterWithThis",this);
-	}
-
-	public void testEnter() {
-		trace.enter("testEnter");
-	}
-
-	public void testExitWithReturn() {
-		trace.exit("testExitWithReturn","ret");
-	}
-
-	public void testExitWithThrowable() {
-		trace.exit("testExitWithThrowable",new RuntimeException());
-	}
-
-	public void testExit() {
-		trace.exit("testExit");
-	}
-
-	public void testIsTraceEnabled() {
-		DefaultTrace trace = new DefaultTrace(getClass());
-		assertFalse(trace.isTraceEnabled());
-	}
-
 	public void testSetTraceEnabled() {
 		DefaultTrace trace = new DefaultTrace(getClass());
 		trace.setTraceEnabled(true);
 		assertTrue(trace.isTraceEnabled());
 	}
-
 }

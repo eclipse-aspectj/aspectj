@@ -61,4 +61,34 @@ public class CommonsTrace extends AbstractTrace {
 	public void setTraceEnabled (boolean b) {
 	}
 
+	public void debug (String message) {
+		if (log.isDebugEnabled()) {
+			log.debug(message);
+		}
+	}
+
+	public void info(String message) {
+		if (log.isInfoEnabled()) {
+			log.info(message);
+		}
+	}
+
+	public void warn (String message, Throwable th) {
+		if (log.isWarnEnabled()) {
+			log.warn(message,th);
+		}
+	}
+
+	public void error (String message, Throwable th) {
+		if (log.isErrorEnabled()) {
+			log.error(message,th);
+		}
+	}
+
+	public void fatal (String message, Throwable th) {
+		if (log.isFatalEnabled()) {
+			log.fatal(message,th);
+		}
+	}
+
 }
