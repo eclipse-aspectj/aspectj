@@ -108,7 +108,8 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
             }
 		} 
 		ajc.setShouldEmptySandbox(true);
-		currentTest.runTest(this);
+		boolean run = currentTest.runTest(this);
+		assertTrue("Test not run",run);
         if (clearTest) {
             testMap.remove(title);
         }

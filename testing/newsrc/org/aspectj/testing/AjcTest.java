@@ -57,8 +57,8 @@ public class AjcTest {
 		step.setTest(this);
 	}
 	
-	public void runTest(AjcTestCase testCase) {
-		if (!canRunOnThisVM()) return;
+	public boolean runTest(AjcTestCase testCase) {
+		if (!canRunOnThisVM()) return false;
 		try {
 			System.out.print("TEST: " + getTitle() + "\t");			
 			for (Iterator iter = testSteps.iterator(); iter.hasNext();) {
@@ -70,6 +70,7 @@ public class AjcTest {
 		} finally {
 			System.out.println("DONE");
 		}
+		return true;
 	}
 	
 	public boolean canRunOnThisVM() {		
