@@ -162,13 +162,6 @@ public class XLintTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //	 if (is15VMOrGreater)
 //       runTest("7 lint warnings");
 //  }
-  
-  public void testBug99136(){
-	  runTest("Two Xlint warnings wth cflow?");
-	  if(ajc.getLastCompilationResult().getWarningMessages().size() != 1){
-		  fail();
-	  }
-  }
 
 }
 
