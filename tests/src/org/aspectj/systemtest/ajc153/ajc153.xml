@@ -16,6 +16,13 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr153380/case1" title="pipelining decps">
+      <compile files="Ann.java,Base.java,BaseImpl.java,I1.java,Mixin.java,Runner.java,X.aj" options="-1.5">
+        <message kind="error" line="1" text="The import java.lang.retention cannot be resolved"/>
+        <message kind="error" line="3" text="Retention cannot be resolved to a type"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr148381" title="argNames and javac">
       <!--compile files="C.java" options="-1.5"/>
       <compile files="A.java" options="-1.5"/-->

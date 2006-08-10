@@ -1,0 +1,2 @@
+@Ann
+public interface Base {}
