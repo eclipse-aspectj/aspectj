@@ -803,7 +803,6 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testXlintMessageForImproperAnnotationType_pr115252_MoreThanOne() {runTest("xlint message for more than one improper annotated parameter type");}  
   
   public void testDeclareAtTypeInStructureModel_pr115607() {
-      AsmManager.setReporting("c:/debug.txt",true,true,true,true);
 	  runTest("declare at type appears correctly in structure model");  
   	  IHierarchy top = AsmManager.getDefault().getHierarchy();
   	  IProgramElement pe = top.findElementForLabel(top.getRoot(),

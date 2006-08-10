@@ -34,7 +34,7 @@
       </run>
     </ajc-test>
     
-    <ajc-test dir="bugs153/pr148219" title="unwanted warning for pointcut">
+    <ajc-test dir="bugs153/PR148219" title="unwanted warning for pointcut">
       <compile files="MyMessages.java" options="-1.5 -Xlint:ignore -warn:+unusedArgument"/>
     </ajc-test>
     
