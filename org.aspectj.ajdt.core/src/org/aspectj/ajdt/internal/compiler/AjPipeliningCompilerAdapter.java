@@ -570,6 +570,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			for (int index = 0; index < declaration.annotations.length; index++) {
 				TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, declaration.binding); // force annotation resolution
 				Annotation a = declaration.annotations[index];
+				if (a.resolvedType == null) continue; // another problem is being reported, so don't crash here
 				if (CharOperation.equals(a.resolvedType.signature(),aspectSig)) return true;
 			}
 		}
