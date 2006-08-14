@@ -1,0 +1,13 @@
+<aspectj>
+	<aspects>
+		<aspect name="IncludedAspect"/>
+		<aspect name="ExcludedAspect"/>
+		
+        <concrete-aspect name="IncludedMissingAspect" extends="MissingAbstractAspect">
+        	<pointcut name="pointcut" expression="within(*)"/>
+        </concrete-aspect>
+		
+		<include within="Included*"/>
+	</aspects>
+    <weaver options="-Xlint:warning"/>
+</aspectj>

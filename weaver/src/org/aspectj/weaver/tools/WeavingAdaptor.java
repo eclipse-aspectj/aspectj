@@ -31,11 +31,13 @@ import java.util.StringTokenizer;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageContext;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.Version;
+import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.org.objectweb.asm.ClassReader;
 import org.aspectj.util.FileUtil;
@@ -63,15 +65,16 @@ import org.aspectj.weaver.bcel.Utility;
  * weaving messages to be written to the console.
  *
  */
-public class WeavingAdaptor {
+public class WeavingAdaptor implements IMessageContext {
 
 	/**
 	 * System property used to turn on verbose weaving messages 
 	 */
 	public static final String WEAVING_ADAPTOR_VERBOSE = "aj.weaving.verbose"; 
 	public static final String SHOW_WEAVE_INFO_PROPERTY = "org.aspectj.weaver.showWeaveInfo"; 
+	public static final String TRACE_MESSAGES_PROPERTY = "org.aspectj.tracing.messages";
 
-	protected boolean enabled = true;
+	private boolean enabled = true;
 	protected boolean verbose = getVerbose();
 	protected BcelWorld bcelWorld;
 	protected BcelWeaver weaver;
@@ -179,12 +182,21 @@ public class WeavingAdaptor {
 	}
 	
 	protected void setMessageHandler (IMessageHandler mh) {
-		if (messageHolder != null) {
-			messageHolder.flushMessages();
-			messageHolder = null;
+		if (mh instanceof ISupportsMessageContext) {
+			ISupportsMessageContext smc = (ISupportsMessageContext)mh;
+			smc.setMessageContext(this);
 		}
-		messageHandler = mh;
-		bcelWorld.setMessageHandler(mh);
+		if (mh != messageHolder) messageHolder.setDelegate(mh);
+		messageHolder.flushMessages();
+	}
+	
+	protected void disable () {
+		enabled = false;
+		messageHolder.flushMessages();
+	}
+	
+	protected boolean isEnabled () {
+		return enabled;
 	}
 	
 	/**
@@ -396,7 +408,7 @@ public class WeavingAdaptor {
 		return MessageUtil.error(messageHandler,message);
 	}
 	
-	protected String getContextId () {
+	public String getContextId () {
 		return "WeavingAdaptor";
 	}
 
@@ -436,14 +448,97 @@ public class WeavingAdaptor {
 	 * Processes messages arising from weaver operations. 
 	 * Tell weaver to abort on any message more severe than warning.
 	 */
-	protected class WeavingAdaptorMessageHandler extends MessageWriter {
+	protected class WeavingAdaptorMessageHandler implements IMessageHandler {
 
-		private Set ignoring = new HashSet();
-		private IMessage.Kind failKind;
+		private IMessageHandler delegate;
 		private boolean accumulating = true;
 	    private List messages = new ArrayList();
 
+		protected boolean traceMessages = Boolean.getBoolean(TRACE_MESSAGES_PROPERTY);
+	    
 		public WeavingAdaptorMessageHandler (PrintWriter writer) {
+			
+			this.delegate = new WeavingAdaptorMessageWriter(writer);
+		}
+
+		public boolean handleMessage(IMessage message) throws AbortException {
+			if (traceMessages) traceMessage(message);
+			if (accumulating) {
+				boolean result = addMessage(message);
+				if (0 <= message.getKind().compareTo(IMessage.ERROR)) {
+					throw new AbortException(message);
+				}
+				return result;
+			}
+			else return delegate.handleMessage(message);
+		}
+		
+		private void traceMessage (IMessage message) {
+			if (message instanceof WeaveMessage) {
+				trace.debug(render(message));
+			}
+			else if (message.isDebug()) {
+				trace.debug(render(message));
+			}
+			else if (message.isInfo()) {
+				trace.info(render(message));
+			}
+			else if (message.isWarning()) {
+				trace.warn(render(message),message.getThrown());
+			}
+			else if (message.isError()) {
+				trace.error(render(message),message.getThrown());
+			}
+			else if (message.isFailed()) {
+				trace.fatal(render(message),message.getThrown());
+			}
+			else if (message.isAbort()) {
+				trace.fatal(render(message),message.getThrown());
+			}
+			else {
+				trace.error(render(message),message.getThrown());
+			}
+		}
+
+	    protected String render(IMessage message) {
+	    	return "[" + getContextId() + "] " + message.toString();    
+	    }
+
+		public boolean isIgnoring (Kind kind) {
+			return delegate.isIgnoring(kind);
+		}
+
+		public void dontIgnore (IMessage.Kind kind) {
+			if (null != kind) {
+				delegate.dontIgnore(kind);
+			}
+		}
+		
+		private boolean addMessage (IMessage message) {
+			messages.add(message);
+			return true;
+		}
+		
+		public void flushMessages () {
+            for (Iterator iter = messages.iterator(); iter.hasNext();) {
+                IMessage message = (IMessage)iter.next();
+                delegate.handleMessage(message);
+            }
+			accumulating = false;
+			messages.clear();
+		}
+		
+		public void setDelegate (IMessageHandler messageHandler) {
+			delegate = messageHandler;
+		}
+	}
+
+	protected class WeavingAdaptorMessageWriter extends MessageWriter {
+
+		private Set ignoring = new HashSet();
+		private IMessage.Kind failKind;
+
+		public WeavingAdaptorMessageWriter (PrintWriter writer) {
 			super(writer,true);
 			
 			ignore(IMessage.WEAVEINFO);
@@ -452,7 +547,6 @@ public class WeavingAdaptor {
 		}
 
 		public boolean handleMessage(IMessage message) throws AbortException {
-			addMessage(message);
 			boolean result = super.handleMessage(message);
 			if (0 <= message.getKind().compareTo(failKind)) {
 				throw new AbortException(message);
@@ -479,23 +573,7 @@ public class WeavingAdaptor {
 		public void dontIgnore (IMessage.Kind kind) {
 			if (null != kind) {
 				ignoring.remove(kind);
-				if (kind.equals(IMessage.INFO)) accumulating = false;
 			}
-		}
-		
-		private void addMessage (IMessage message) {
-			if (accumulating && isIgnoring(message.getKind())) {
-				messages.add(message);
-			}
-		}
-		
-		public void flushMessages () {
-            for (Iterator iter = messages.iterator(); iter.hasNext();) {
-                IMessage message = (IMessage)iter.next();
-                super.handleMessage(message);
-            }
-			accumulating = false;
-			messages.clear();
 		}
 
 	    protected String render(IMessage message) {

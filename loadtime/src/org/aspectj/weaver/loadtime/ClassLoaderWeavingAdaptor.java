@@ -124,8 +124,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         };
 
         List definitions = parseDefinitions(classLoader);
-        if (!enabled) {
-        	if (trace.isTraceEnabled()) trace.exit("initialize",enabled);
+        if (!isEnabled()) {
+        	if (trace.isTraceEnabled()) trace.exit("initialize",false);
         	return;
         }
         
@@ -147,7 +147,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
         // register the definitions
         registerDefinitions(weaver, classLoader, definitions);
-        if (enabled) {
+        if (isEnabled()) {
 
             //bcelWorld.setResolutionLoader(loader.getParent());//(ClassLoader)null);//
             
@@ -160,7 +160,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         
         initialized = true;
-    	if (trace.isTraceEnabled()) trace.exit("initialize",enabled);
+    	if (trace.isTraceEnabled()) trace.exit("initialize",isEnabled());
     }
 
     /**
@@ -198,11 +198,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     			}
     		}
     		if (definitions.isEmpty()) {
-                enabled = false;// will allow very fast skip in shouldWeave()
+                disable();// will allow very fast skip in shouldWeave()
         		info("no configuration found. Disabling weaver for class loader " + getClassLoaderName(loader));
     		}
         } catch (Exception e) {
-            enabled = false;// will allow very fast skip in shouldWeave()
+            disable();// will allow very fast skip in shouldWeave()
             warn("parse definitions failed",e);
         }
 		return definitions;
@@ -217,7 +217,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             registerIncludeExclude(weaver, loader, definitions);
             registerDump(weaver, loader, definitions);
         } catch (Exception e) {
-            enabled = false;// will allow very fast skip in shouldWeave()
+            disable();// will allow very fast skip in shouldWeave()
             warn("register definition failed",(e instanceof AbortException)?null:e);
         }
     }
@@ -341,7 +341,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     	kind.signal(infos,null,null);
     }
 	
-	protected String getContextId () {
+	public String getContextId () {
 		return weavingContext.getId();
 	}
     
@@ -413,11 +413,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         
         /* We didn't register any aspects so disable the adaptor */
         if (namespace == null) {
-        	enabled = false;
+        	disable();
     		info("no aspects registered. Disabling weaver for class loader " + getClassLoaderName(loader));
         }
 
-        if (trace.isTraceEnabled()) trace.exit("registerAspects",enabled);
+        if (trace.isTraceEnabled()) trace.exit("registerAspects",isEnabled());
     }
 
     /**

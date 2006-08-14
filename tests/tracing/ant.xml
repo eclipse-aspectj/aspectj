@@ -24,4 +24,17 @@
         </java>
     </target>
 
+    <target name="Trace messages">
+        <copy file="${aj.root}/tests/tracing/aop-tracemessages.xml"
+              tofile="${aj.sandbox}/META-INF/aop.xml"/>
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
+            <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
+            <!-- use META-INF/aop.xml style -->
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
 </project>
