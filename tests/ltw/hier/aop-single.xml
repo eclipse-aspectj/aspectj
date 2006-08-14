@@ -1,0 +1,7 @@
+<aspectj>
+  <weaver options="-showWeaveInfo"/>
+  <aspects>
+    <aspect name="child.Advisor"/>
+  </aspects>
+</aspectj>
+

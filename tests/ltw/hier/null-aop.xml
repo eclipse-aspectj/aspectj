@@ -1,0 +1,2 @@
+<!-- empty aop.xml file. Used to turn on load-time weaving with no aspects defined at top-level -->
+<aspectj/>

@@ -1,0 +1,1 @@
+declare parents, but this time there is an extra layer in the hierarchy, A calls S but S extends T and T is decp targeted

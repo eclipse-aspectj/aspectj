@@ -1,0 +1,7 @@
+<aspectj>
+<weaver options="-showWeaveInfo -verbose"/>
+<aspects>
+<aspect name="X"/>
+</aspects>
+</aspectj>
+
