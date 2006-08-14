@@ -1,0 +1,7 @@
+<aspectj>
+<weaver options="-showWeaveInfo -verbose -Xset:completeBinaryTypes=false"/>
+<aspects>
+<aspect name="X"/>
+</aspects>
+</aspectj>
+
