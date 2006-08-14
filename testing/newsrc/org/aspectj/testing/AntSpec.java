@@ -17,6 +17,8 @@ import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildEvent;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
 import java.io.File;
@@ -109,13 +111,17 @@ public class AntSpec implements ITestStep {
                     }
                 }
                 public void messageLogged(BuildEvent event) {
-                    super.messageLogged(event);
-                    if (event.getTarget() != null && event.getPriority() >= Project.MSG_INFO && m_antTarget.equals(event.getTarget().getName())) {
-                        if (event.getException() == null) {
-                            stdout.append(event.getMessage()).append('\n');
-                        } else {
-                            stderr.append(event.getMessage());
-                        }
+                	super.messageLogged(event);
+                    
+                	Target target = event.getTarget();
+                    if (target != null && m_antTarget.equals(target.getName()) && event.getSource() instanceof Java)
+                    	switch(event.getPriority()) {
+                    	case Project.MSG_INFO:
+                    		stdout.append(event.getMessage()).append('\n');
+                        	break;
+                    	case Project.MSG_WARN:
+                    		stderr.append(event.getMessage()).append('\n');
+                        	break;
                     }
                 }
             };
@@ -136,14 +142,13 @@ public class AntSpec implements ITestStep {
             AjcTestCase.fail(failMessage + "error when invoking target :" + t.toString());
         }
 
-        // match lines
-        //TODO AV experimental: requires full match so rather useless.
-        // if someone needs it, we ll have to impl a "include / exclude" stuff
-        if (m_stdOutSpec != null)
+        /* See if stdout/stderr matches test specification */
+        if (m_stdOutSpec != null) {
             m_stdOutSpec.matchAgainst(stdout.toString());
-        // match lines
-        if (m_stdErrSpec != null)
-            m_stdErrSpec.matchAgainst(stdout.toString());
+        }
+        if (m_stdErrSpec != null) {
+            m_stdErrSpec.matchAgainst(stderr.toString());
+        }
     }
 
     public void addStdErrSpec(OutputSpec spec) {
