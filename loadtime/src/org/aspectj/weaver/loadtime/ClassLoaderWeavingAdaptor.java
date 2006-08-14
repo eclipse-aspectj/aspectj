@@ -130,7 +130,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
         
         bcelWorld = new LTWWorld(
-                classLoader, getMessageHandler(), new ICrossReferenceHandler() {
+        		classLoader, weavingContext, // TODO when the world works in terms of the context, we can remove the loader...
+        		getMessageHandler(), new ICrossReferenceHandler() {
                     public void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind, boolean runtimeTest) {
                         ;// for tools only
                     }

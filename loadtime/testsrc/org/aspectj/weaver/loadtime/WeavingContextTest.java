@@ -142,7 +142,21 @@ public class WeavingContextTest extends TestCase {
 		public Enumeration getResources(String name) throws IOException {
 			return loader.getResources(name);
 		}
-		
+
+		public boolean isLocallyDefined(String classname) {
+	        String asResource = classname.replace('.', '/').concat(".class");
+
+	        URL localURL = loader.getResource(asResource);
+	        if (localURL == null) return false;
+
+			boolean isLocallyDefined = true;
+	        ClassLoader parent = loader.getParent();
+	        if (parent != null) {
+	            URL parentURL = parent.getResource(asResource);
+	            if (localURL.equals(parentURL)) isLocallyDefined =  false;
+	        } 
+	        return isLocallyDefined;
+		}
 	}
 
 	protected void setUp() throws Exception {

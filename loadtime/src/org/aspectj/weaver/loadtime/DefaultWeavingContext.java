@@ -78,4 +78,19 @@ public class DefaultWeavingContext implements IWeavingContext {
 	public String getSuffix () {
 		return getClassLoaderName();
 	}
+
+	public boolean isLocallyDefined(String classname) {
+        String asResource = classname.replace('.', '/').concat(".class");
+
+        URL localURL = loader.getResource(asResource);
+        if (localURL == null) return false;
+
+		boolean isLocallyDefined = true;
+        ClassLoader parent = loader.getParent();
+        if (parent != null) {
+            URL parentURL = parent.getResource(asResource);
+            if (localURL.equals(parentURL)) isLocallyDefined =  false;
+        } 
+        return isLocallyDefined;
+	}
 }
