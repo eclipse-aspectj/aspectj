@@ -109,7 +109,84 @@
             </stderr>
         </run>
     </ajc-test>
+    
+    <!-- type discarding tests, investigating call munging -->
+    
+    <ajc-test dir="ltw/callMunging" title="discarding woven types - 1">
+      <compile files="A.java,B.java,T.java,Main.java" outjar="classes.jar"/>
+      <compile files="X.java" outjar="aspects.jar" classpath="classes.jar" options="-Xlint:ignore"/>
+      <run class="Main" ltw="aop.xml">
+        <stdout>
+          <line text="into:main"/>
+          <line text="A.method() running"/>
+          <line text="advice running"/>
+          <line text="T.m1() running"/>
+          <line text="B.method() running"/>
+          <line text="advice running"/>
+          <line text="T.m2() running"/>
+          <line text="leave:main"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="ltw/callMunging/case1" title="aggressive ltw - decp">
+      <compile files="A.java,T.java,Main.java" outjar="classes.jar"/>
+      <compile files="X.java" outjar="aspects.jar" classpath="classes.jar" options="-Xlint:ignore"/>
+      <run class="Main" ltw="aop.xml">
+        <stdout>
+          <line text="into:main"/>
+          <line text="A.method() running"/>
+          <line text="advice running"/>
+          <line text="T.m1() running"/>
+          <line text="leave:main"/>
+        </stdout>
+      </run>
+    </ajc-test>  
+    
+    <ajc-test dir="ltw/callMunging/case1" title="aggressive ltw - decp - deactivate">
+      <compile files="A.java,T.java,Main.java" outjar="classes.jar"/>
+      <compile files="X.java" outjar="aspects.jar" classpath="classes.jar" options="-Xlint:ignore"/>
+      <run class="Main" ltw="aop2.xml">
+        <stdout>
+          <line text="into:main"/>
+          <line text="A.method() running"/>
+          <line text="T.m1() running"/>
+          <line text="leave:main"/>
+        </stdout>
+      </run>
+    </ajc-test>  
+      
+    <ajc-test dir="ltw/callMunging/case3" title="aggressive ltw - decp - 2">
+      <compile files="A.java,T.java,S.java,Main.java" outjar="classes.jar"/>
+      <compile files="X.java" outjar="aspects.jar" classpath="classes.jar" options="-Xlint:ignore"/>
+      <run class="Main" ltw="aop.xml">
+        <stdout>
+          <line text="into:main"/>
+          <line text="A.method() running"/>
+          <line text="advice running"/>
+          <line text="T.m1() running"/>
+          <line text="leave:main"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="ltw/callMunging/case2" title="aggressive ltw - deca">
+      <compile files="A.java,T.java,Main.java,MarkerAnnotation.java" outjar="classes.jar" options="-1.5"/>
+      <compile files="X.java" outjar="aspects.jar" classpath="classes.jar" options="-1.5 -Xlint:ignore"/>
+      <run class="Main" ltw="aop.xml">
+        <stdout>
+          <line text="into:main"/>
+          <line text="A.method() running"/>
+          <line text="advice running"/>
+          <line text="T.m1() running"/>
+          <line text="leave:main"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    
 
+    <!-- end of discarding type tests -->
 
 	<ajc-test dir="ltw"
       title="Define concrete sub-aspect using aop.xml"
@@ -266,6 +343,23 @@
         <run class="Main" ltw="aop-xlintfile.xml">
         	<stderr>
         		<line text="warning Cannot access resource for -Xlintfile:Xlint-empty.properties"/>
+        	</stderr>
+        </run>
+    </ajc-test>
+    
+	<ajc-test dir="ltw/hier" title="separate compilation with ltw: declare parents and call" keywords="ltw">
+        <compile files="util/A.aj,util/T.aj"/>
+        <compile files="child/Executor.aj,child/Advisor.aj,top/SimpleMain.aj">
+        	<message kind="warning" text="this affected type is not exposed to the weaver: util.A"/>
+		</compile>        
+        <run class="top.SimpleMain" ltw="aop-single.xml">
+        	<stdout>
+                <line text="T call"/>
+        	</stdout>
+        	<stderr>
+				<line text="weaveinfo Join point 'method-call(void util.A.foo())' in Type 'child.Executor' (Executor.aj:18) advised by before advice from 'child.Advisor' (Advisor.aj:20)"/>
+        	    <line text="weaveinfo Extending interface set for type 'util.A' (A.aj) to include 'util.T' (Advisor.aj)"/>
+        	    <line text="weaveinfo Extending interface set for type 'child.Advisor' (Advisor.aj) to include 'util.T' (Advisor.aj)"/>
         	</stderr>
         </run>
     </ajc-test>
@@ -427,71 +521,6 @@
         </run>
     </ajc-test>
 
-<!--    
-commented out: reported in another bugzilla bug...
-
-	<ajc-test dir="ltw/hier"
-      title="Separate compilation with ltw: declare parents and call"
-      keywords="ltw">
-        <compile
-        	files="util/A.aj,util/T.aj"
-        />
-        <compile
-        	files="child/Executor.aj,child/Advisor.aj,top/SimpleMain.aj"
-        >
-        	<message kind="warning" text="this affected type is not exposed to the weaver: util.A"/>
-		</compile>        
-        <run class="top.SimpleMain" ltw="aop-single.xml">
-        	<stdout>
-                <line text="T call"/>
-        	</stdout>
-        	<stderr>
-        	    <line text="weaveinfo Extending interface set for type 'util.A' (A.aj) to include 'util.T' (Advisor.aj)"/>
-	        	< - - TODO: fix up any errors in the expected output when the join point actually matches - - >
-				<line text="weaveinfo Join point 'method-call(void A.foo())' in Type 'child.Executor' (Executor.aj:19) advised by before advice from 'child.Advisor' (Advisor.aj:20)"/>
-        	</stderr>
-        </run>
-    </ajc-test>
-
-	<ajc-test dir="ltw/hier"
-      title="Child loader aspect won't weave parent loader: declare parents and call"
-      keywords="ltw">
-        <compile
-        	files="top/HierMain.aj"
-        />
-        <compile
-        	files="util/A.aj,util/T.aj"
-			outjar="util.jar"
-        />
-        <compile
-        	files="child/Executor.aj,child/Advisor.aj"
-        	classpath="util.jar"
-            options="-outxml"
-            outjar="child.zip"
-        >
-        	<message kind="warning" text="this affected type is not exposed to the weaver: util.A"/>
-		</compile>        
-		< - - limitation: to turn on load-time weaving we HAVE to have a top-level aop.xml file
-		   since we don't want any top-level aspects, we deploy an empty one! 
-		   the important aop.xml file in this test was created with -outxml and lives in child.jar - - >
-        <run class="top.HierMain" ltw="null-aop.xml">
-        	<stdout/>
-        	<stderr>
-                <line text="info AspectJ Weaver Version"/>
-                <line text="info register classloader"/>
-                <line text="info using"/>
-	        	<line text="info weaving 'top.HierMain'"/>
-                <line text="info AspectJ Weaver Version"/>
-                <line text="info register classloader"/>
-                <line text="info using"/>
-                <line text="info using file:"/>
-                <line text="info register aspect child.Advisor"/>
-                <line text="info weaving 'child.Executor'"/>
-                <line text="info weaving 'util.A'"/>
-        	</stderr>
-        </run>
-    </ajc-test>
--->
 	<ajc-test dir="ltw" title="JDK14 LTW with XML" keywords="ltw">
         <compile files="HelloWorld.java" options="-outjar hello.jar"/>
         <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>

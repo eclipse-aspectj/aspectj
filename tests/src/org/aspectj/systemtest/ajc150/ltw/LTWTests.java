@@ -29,6 +29,7 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ltw/ltw.xml");
   }
+  
 
 
   	public void test001(){
@@ -112,17 +113,31 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("JDK14 LTW with ASPECTPATH");  		
   	}
   	
-  	// separate bugzilla patch has this one... commented out
-//  	public void testSeparateCompilationDeclareParentsCall() {
-//  		runTest("Separate compilation with ltw: declare parents and call");
-//  	}
-//  	
-//  	public void testChildAspectDoesntWeaveParentDeclareParentsCall() {
-//		setSystemProperty(WeavingAdaptor.WEAVING_ADAPTOR_VERBOSE,"true");
-//		setSystemProperty(WeavingAdaptor.SHOW_WEAVE_INFO_PROPERTY,"true");
-//  		runTest("Child loader aspect won't weave parent loader: declare parents and call");
-//  	}
-  	
+
+    //public void testDiscardingWovenTypes() { 
+    //  runTest("discarding woven types - 1");
+    //}
+      
+    public void testWeavingTargetOfCallAggressivelyInLTW_DeclareParents_pr133770() {
+	  runTest("aggressive ltw - decp");
+    }
+
+    public void testWeavingTargetOfCallAggressivelyInLTW_DeclareParents_pr133770_Deactivate() {
+	  runTest("aggressive ltw - decp - deactivate");
+    }
+
+    public void testWeavingTargetOfCallAggressivelyInLTW_DeclareParents_Nested_pr133770() {
+  	  runTest("aggressive ltw - decp - 2");
+    }
+    
+    public void testWeavingTargetOfCallAggressivelyInLTW_DeclareAnnotation_pr133770() {
+  	  runTest("aggressive ltw - deca");
+    }
+    
+  	public void testSeparateCompilationDeclareParentsCall_pr133770() {
+  		runTest("separate compilation with ltw: declare parents and call");
+  	}
+  	  	
   	/*
   	 * Allow system properties to be set and restored
   	 * TODO maw move to XMLBasedAjcTestCase or RunSpec
@@ -160,4 +175,3 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		}
 	}
 }
-
