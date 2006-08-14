@@ -24,6 +24,7 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.loadtime.IWeavingContext;
 import org.aspectj.weaver.reflect.AnnotationFinder;
 import org.aspectj.weaver.reflect.IReflectionWorld;
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegateFactory;
@@ -47,6 +48,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	
     private AnnotationFinder annotationFinder;
     private ClassLoader loader; // weavingContext?
+    private IWeavingContext weavingContext;
     
     protected final static Class concurrentMapClass = makeConcurrentMapClass();
     protected static Map/*<String, WeakReference<ReflectionBasedReferenceTypeDelegate>>*/ bootstrapTypes = makeConcurrentMap();
@@ -54,9 +56,10 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
     /**
      * Build a World from a ClassLoader, for LTW support
      */
-    public LTWWorld(ClassLoader loader, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
+    public LTWWorld(ClassLoader loader, IWeavingContext weavingContext, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
         super(loader, handler, xrefHandler);
         this.loader = loader;
+        this.weavingContext = weavingContext;
         
         setBehaveInJava5Way(LangUtil.is15VMOrGreater());
         annotationFinder = ReflectionWorld.makeAnnotationFinderIfAny(loader, this);
@@ -183,5 +186,19 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
     public boolean isRunMinimalMemory() {
 	     return true;
     }
+    
+	protected void completeType(ResolvedType ret) {
+    	getLint().typeNotExposedToWeaver.setSuppressed(true);
+    	weaveInterTypeDeclarations(ret);
+    	getLint().typeNotExposedToWeaver.setSuppressed(false);
+	}
+
+	protected boolean needsCompletion() {
+		return true;
+	}
+
+	public boolean isLocallyDefined(String classname) {
+		return weavingContext.isLocallyDefined(classname);
+	}
     
 }

@@ -53,11 +53,14 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AnnotationOnTypeMunger;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
@@ -68,6 +71,8 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.Aspect;
 import org.aspectj.weaver.asm.AsmDelegate;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
+import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -718,5 +723,128 @@ public class BcelWorld extends World implements Repository {
             // assume it is one as a best effort
             return true;
         }
+    }
+
+    /**
+	 * Apply a single declare parents - return true if we change the type
+	 */
+	private boolean applyDeclareParents(DeclareParents p, ResolvedType onType) {
+		boolean didSomething = false;
+		List newParents = p.findMatchingNewParents(onType,true);
+		if (!newParents.isEmpty()) {
+			didSomething=true;
+			BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
+			//System.err.println("need to do declare parents for: " + onType);
+			for (Iterator j = newParents.iterator(); j.hasNext(); ) {
+				ResolvedType newParent = (ResolvedType)j.next();
+				                                        
+				// We set it here so that the imminent matching for ITDs can succeed - we 
+		        // still haven't done the necessary changes to the class file itself 
+		        // (like transform super calls) - that is done in BcelTypeMunger.mungeNewParent()
+				classType.addParent(newParent);
+				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
+		        newParentMunger.setSourceLocation(p.getSourceLocation());
+				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, getCrosscuttingMembersSet().findAspectDeclaringParents(p)));
+			}
+		}
+		return didSomething;
+	}
+    
+	/**
+	 * Apply a declare @type - return true if we change the type
+	 */
+	private boolean applyDeclareAtType(DeclareAnnotation decA, ResolvedType onType,boolean reportProblems) {
+		boolean didSomething = false;
+		if (decA.matches(onType)) {
+			
+		    if (onType.hasAnnotation(decA.getAnnotationX().getSignature())) {
+		      // already has it
+		      return false;
+		    }
+			
+			AnnotationX annoX = decA.getAnnotationX();
+			
+			// check the annotation is suitable for the target
+			boolean isOK = checkTargetOK(decA,onType,annoX);
+
+			if (isOK) {
+				didSomething = true;
+				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(annoX);
+				newAnnotationTM.setSourceLocation(decA.getSourceLocation());
+				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM,decA.getAspect().resolve(this)));
+				decA.copyAnnotationTo(onType);
+			}
+		}
+		return didSomething;
+	}
+
+	/**
+	 * Checks for an @target() on the annotation and if found ensures it allows the annotation
+	 * to be attached to the target type that matched.
+	 */
+	private boolean checkTargetOK(DeclareAnnotation decA, ResolvedType onType, AnnotationX annoX) {
+		if (annoX.specifiesTarget()) {
+		  if (  (onType.isAnnotation() && !annoX.allowedOnAnnotationType()) ||
+		  		(!annoX.allowedOnRegularType())) {
+			  return false;
+		  }
+		}
+		return true;
+	}
+	
+	// Hmmm - very similar to the code in BcelWeaver.weaveParentTypeMungers - this code
+	// doesn't need to produce errors/warnings though as it won't really be weaving.
+	protected void weaveInterTypeDeclarations(ResolvedType onType) {
+		
+		List declareParentsList = getCrosscuttingMembersSet().getDeclareParents();
+		if (onType.isRawType()) onType = onType.getGenericType();
+		onType.clearInterTypeMungers(); 
+		
+		List decpToRepeat = new ArrayList();
+
+		boolean aParentChangeOccurred      = false;
+		boolean anAnnotationChangeOccurred = false;
+		// First pass - apply all decp mungers
+		for (Iterator i = declareParentsList.iterator(); i.hasNext(); ) {
+			DeclareParents decp = (DeclareParents)i.next();
+			boolean typeChanged = applyDeclareParents(decp,onType);
+			if (typeChanged) {
+				aParentChangeOccurred = true;
+			} else { // Perhaps it would have matched if a 'dec @type' had modified the type
+				if (!decp.getChild().isStarAnnotation()) decpToRepeat.add(decp);
+			}
+		}
+
+		// Still first pass - apply all dec @type mungers
+		for (Iterator i = getCrosscuttingMembersSet().getDeclareAnnotationOnTypes().iterator();i.hasNext();) {
+			DeclareAnnotation decA = (DeclareAnnotation)i.next();
+			boolean typeChanged = applyDeclareAtType(decA,onType,true);
+			if (typeChanged) {
+				anAnnotationChangeOccurred = true;
+			}
+		}
+		
+		while ((aParentChangeOccurred || anAnnotationChangeOccurred) && !decpToRepeat.isEmpty()) {
+			anAnnotationChangeOccurred = aParentChangeOccurred = false;
+			List decpToRepeatNextTime = new ArrayList();
+			for (Iterator iter = decpToRepeat.iterator(); iter.hasNext();) {
+				DeclareParents decp = (DeclareParents) iter.next();
+				boolean typeChanged = applyDeclareParents(decp,onType);
+				if (typeChanged) {
+					aParentChangeOccurred = true;
+				} else {
+					decpToRepeatNextTime.add(decp);
+				}
+			}
+			
+			for (Iterator iter = getCrosscuttingMembersSet().getDeclareAnnotationOnTypes().iterator(); iter.hasNext();) {
+				DeclareAnnotation decA = (DeclareAnnotation) iter.next();
+				boolean typeChanged = applyDeclareAtType(decA,onType,false);
+				if (typeChanged) {
+					anAnnotationChangeOccurred = true;
+				}
+			}
+			decpToRepeat = decpToRepeatNextTime;
+		}
     }
 }

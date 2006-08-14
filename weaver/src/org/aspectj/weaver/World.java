@@ -109,6 +109,7 @@ public abstract class World implements Dump.INode {
     private boolean fastDelegateSupportEnabled = isASMAround;
 	private boolean runMinimalMemory = false;
 	private boolean shouldPipelineCompilation = true;
+	private boolean completeBinaryTypes = true;
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 	
@@ -267,6 +268,24 @@ public abstract class World implements Dump.INode {
             if (!allowMissing && ret.isMissing()) {
                 ret = handleRequiredMissingTypeDuringResolution(ty);
             }
+            
+            if (completeBinaryTypes && needsCompletion() && isLocallyDefined(ret.getName())) {
+            	if (typeCompletionInProgress) {
+            		typesForCompletion.add(ret);
+            	} else {                	
+            		try {
+            			typeCompletionInProgress=true;
+                		completeType(ret);
+            		} finally {
+            			typeCompletionInProgress=false;
+            		}
+	            	while (typesForCompletion.size()!=0) {
+	            		ResolvedType rt = (ResolvedType)typesForCompletion.get(0);
+	            		completeType(rt);
+	            		typesForCompletion.remove(0);
+	            	}
+            	}
+            }
         }        
   
 		// Pulling in the type may have already put the right entry in the map
@@ -275,7 +294,42 @@ public abstract class World implements Dump.INode {
 		}
         return ret;
     }
+    
+    // --- these methods are for supporting loadtime weaving with inter type declarations
+    // the idea is that when types are resolved, we give the world a chance to say whether
+    // it needs to 'finish them off' - ie. attach type mungers for ITDs.  These types won't
+    // actually get woven at this time, they will merely have type mungers attached to them
+    // for the purposes of answering questions like 'what is your supertype?' correctly.
 
+    /**
+     * return true if types need completing when getting resolved - overridden by subtypes.
+     */
+    protected boolean needsCompletion() {
+		return false;
+	}
+    
+	/**
+     * Called when a type is resolved - enables its type hierarchy to be finished off before we
+     * proceed
+     */
+    protected void completeType(ResolvedType ret) {}
+    
+    
+    /**
+     * Return true if the classloader relating to this world is definetly the one that will
+     * define the specified class.  Return false otherwise or we don't know for certain.
+     */
+    public boolean isLocallyDefined(String classname) {
+    	return false;
+    }
+
+    // One type is completed at a time, if multiple need doing then they
+    // are queued up
+	private boolean typeCompletionInProgress = false;
+    private List/*ResolvedType*/typesForCompletion = new ArrayList();
+    
+    // ---
+    
     /**
      * We tried to resolve a type and couldn't find it...
      */
@@ -765,8 +819,10 @@ public abstract class World implements Dump.INode {
 	public final static String xsetRUN_MINIMAL_MEMORY ="runMinimalMemory"; // default true
 	public final static String xsetDEBUG_STRUCTURAL_CHANGES_CODE = "debugStructuralChangesCode"; // default false
 	public final static String xsetDEBUG_BRIDGING = "debugBridging"; // default false
-	public final static String xsetPIPELINE_COMPILATION = "pipelineCompilation"; // default true
+	public final static String xsetPIPELINE_COMPILATION = "pipelineCompilation";
 	public final static String xsetPIPELINE_COMPILATION_DEFAULT = "true"; 
+	public final static String xsetCOMPLETE_BINARY_TYPES = "completeBinaryTypes";
+	public final static String xsetCOMPLETE_BINARY_TYPES_DEFAULT = "true"; 
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1153,6 +1209,12 @@ public abstract class World implements Dump.INode {
 				
 				String s = p.getProperty(xsetPIPELINE_COMPILATION,xsetPIPELINE_COMPILATION_DEFAULT);
 				shouldPipelineCompilation = s.equalsIgnoreCase("true");
+
+				s = p.getProperty(xsetCOMPLETE_BINARY_TYPES,xsetCOMPLETE_BINARY_TYPES_DEFAULT);
+				completeBinaryTypes = s.equalsIgnoreCase("true");
+				if (!completeBinaryTypes) {
+					getMessageHandler().handleMessage(MessageUtil.info("[completeBinaryTypes=false] Completion of binary types deactivated"));
+				}
 				
 				s = p.getProperty(xsetRUN_MINIMAL_MEMORY,"false");
         		runMinimalMemory = s.equalsIgnoreCase("true");
