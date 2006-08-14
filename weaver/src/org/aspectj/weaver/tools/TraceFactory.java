@@ -16,9 +16,10 @@ public abstract class TraceFactory {
     
 	public final static String DEBUG_PROPERTY = "org.aspectj.tracing.debug";
 	public final static String FACTORY_PROPERTY = "org.aspectj.tracing.factory";
+	public final static String DEFAULT_FACTORY_NAME = "default";
 	
     private static boolean debug = getBoolean(DEBUG_PROPERTY,false); 
-    private static TraceFactory instance = new DefaultTraceFactory();
+    private static TraceFactory instance;
     
     public Trace getTrace (Class clazz) {
     	return instance.getTrace(clazz);
@@ -35,7 +36,28 @@ public abstract class TraceFactory {
 	}
 
 	static {
-    	try {
+		
+		/*
+		 * Allow user to override default behaviour or specify their own factory 
+		 */
+		String factoryName = System.getProperty(FACTORY_PROPERTY);
+		if (factoryName != null) try {
+			if (factoryName.equals(DEFAULT_FACTORY_NAME)) {
+				instance = new DefaultTraceFactory();
+			}
+			else {
+	    		Class factoryClass = Class.forName(factoryName);
+	    		instance = (TraceFactory)factoryClass.newInstance();
+			}
+		}
+    	catch (Throwable th) {
+    		if (debug) th.printStackTrace();
+    	}
+    	
+		/*
+		 * Try to load external trace infrastructure using supplied factories
+		 */
+    	if (instance == null) try {
 			if (LangUtil.is15VMOrGreater()) {
 	    		Class factoryClass = Class.forName("org.aspectj.weaver.tools.Jdk14TraceFactory");
 	    		instance = (TraceFactory)factoryClass.newInstance();
@@ -46,6 +68,13 @@ public abstract class TraceFactory {
     	}
     	catch (Throwable th) {
     		if (debug) th.printStackTrace();
+    	}
+
+    	/*
+		 * Use default trace 
+		 */
+    	if (instance == null) {
+    	    instance = new DefaultTraceFactory();
     	}
     	
     	if (debug) System.out.println("TraceFactory.instance=" + instance);

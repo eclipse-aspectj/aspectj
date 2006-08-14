@@ -56,38 +56,27 @@ public class DefaultTrace extends AbstractTrace {
 		}
 	}
 	public void debug (String message) {
-		if (traceEnabled) {
-			println(formatMessage("?",message,null));
-		}
+		println(formatMessage("?",message,null));
 	}
 
 	public void info(String message) {
-		if (traceEnabled) {
-			println(formatMessage("I",message,null));
-		}
+		println(formatMessage("I",message,null));
 	}
 
 	public void warn (String message, Throwable th) {
-		if (traceEnabled) {
-			println(formatMessage("W",message,th));
-			if (th != null) th.printStackTrace();
-		}
+		println(formatMessage("W",message,th));
+		if (th != null) th.printStackTrace();
 	}
 
 
 	public void error (String message, Throwable th) {
-		if (traceEnabled) {
-			println(formatMessage("E",message,th));
-			if (th != null) th.printStackTrace();
-		}
-		
+		println(formatMessage("E",message,th));
+		if (th != null) th.printStackTrace();
 	}
 
 	public void fatal (String message, Throwable th) {
-		if (traceEnabled) {
-			println(formatMessage("X",message,th));
-			if (th != null) th.printStackTrace();
-		}
+		println(formatMessage("X",message,th));
+		if (th != null) th.printStackTrace();
 	}
 
 	/**
