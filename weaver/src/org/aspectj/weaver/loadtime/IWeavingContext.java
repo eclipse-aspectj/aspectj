@@ -62,5 +62,15 @@ public interface IWeavingContext {
 	 * @return short name 
 	 */
 	public String getId ();
+	
+	/**
+	 * Return true if the classloader associated with this weaving context
+	 * is the one that will define the class with the specified name.
+	 * In a delegating classloader hierarchy this might check the parent won't
+	 * define it and the child will - in OSGi it will do something else.
+	 * @param classname name of the class, eg. "java.lang.String"
+	 * @return true if the associated classloader will define the class
+	 */
+	public boolean isLocallyDefined(String classname);
 
 }
