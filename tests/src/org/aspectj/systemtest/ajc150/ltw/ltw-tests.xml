@@ -524,13 +524,23 @@
 	<ajc-test dir="ltw" title="JDK14 LTW with XML" keywords="ltw">
         <compile files="HelloWorld.java" options="-outjar hello.jar"/>
         <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
-        <ant file="ant.xml" target="JDK14 LTW with XML" verbose="true"/>
+		<ant file="ant.xml" target="JDK14 LTW with XML" verbose="true">
+        	<stdout>
+            	<line text="TraceFactory.instance="/>
+            	<line text="Hello World!"/>
+        	</stdout>
+        </ant>
     </ajc-test>
     
 	<ajc-test dir="ltw" title="JDK14 LTW with ASPECTPATH" keywords="ltw">
         <compile files="HelloWorld.java" options="-outjar hello.jar"/>
         <compile files="ExceptionHandler.aj" options="-outjar handler.jar"/>
-        <ant file="ant.xml" target="JDK14 LTW with ASPECTPATH" verbose="true"/>
+        <ant file="ant.xml" target="JDK14 LTW with ASPECTPATH" verbose="true">
+        	<stdout>
+            	<line text="TraceFactory.instance="/>
+            	<line text="Hello World!"/>
+        	</stdout>
+        </ant>
     </ajc-test>
     
     
