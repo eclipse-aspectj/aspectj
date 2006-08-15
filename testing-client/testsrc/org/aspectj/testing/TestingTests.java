@@ -14,6 +14,8 @@
 
 package org.aspectj.testing;
 
+import org.aspectj.testing.server.TestServerTest;
+
 import junit.framework.*;
 
 public class TestingTests extends TestCase {
@@ -23,6 +25,7 @@ public class TestingTests extends TestCase {
         // for now, do not include SuiteTest because it would take 15 minutes
         //$JUnit-BEGIN$
         suite.addTestSuite(TesterTest.class); 
+        suite.addTestSuite(TestServerTest.class); 
         //$JUnit-END$
         return suite;
     }

@@ -1,0 +1,185 @@
+/*******************************************************************************
+ * Copyright (c) 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Webster - initial implementation
+ *******************************************************************************/
+package org.aspectj.testing.server;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+public class TestServer implements Runnable {
+
+	private static final boolean debug = false;
+
+	private boolean exitOnError = true;
+	private File workingDirectory;
+	private ClassLoader rootLoader;
+	private Map loaders = new HashMap();
+
+	private String mainClass = "UnknowClass";
+	private String mainLoader = "UnknowLoader";
+	
+	public void initialize () throws IOException {
+		createRootLoader();
+		loadConfiguration();
+	}
+	
+	private void loadConfiguration () throws IOException {
+		File file = new File(workingDirectory,"server.properties");
+		Properties props = new Properties();
+		FileInputStream in = new FileInputStream(file);
+		props.load(in);
+		in.close();
+		
+		Enumeration enu = props.propertyNames();
+		while (enu.hasMoreElements()) {
+			String key = (String)enu.nextElement();
+			if (key.startsWith("loader.")) {
+				createLoader(props.getProperty(key));
+			}
+			else if (key.equals("main")) {
+				StringTokenizer st = new StringTokenizer(props.getProperty(key),",");
+				mainClass = st.nextToken();
+				mainLoader = st.nextToken();
+			}
+		}
+	}
+	
+	private void createLoader (String property) throws IOException {
+		ClassLoader parent = rootLoader;
+
+		StringTokenizer st = new StringTokenizer(property,",");
+		String name = st.nextToken();
+		String classpath = st.nextToken();
+		if (st.hasMoreTokens()) {
+			String parentName = st.nextToken();
+			parent = (ClassLoader)loaders.get(parentName);
+			if (parent == null) error("No such loader: " + parentName);
+		}
+
+		List urlList = new ArrayList();
+		st = new StringTokenizer(classpath,";");
+		while (st.hasMoreTokens()) {
+			String fileName = st.nextToken();
+			File file = new File(workingDirectory,fileName).getCanonicalFile();
+			if (!file.exists()) error("Missing or invalid file: " + file.getPath());
+			URL url = file.toURL();
+			urlList.add(url);
+		}
+		URL[] urls = new URL[urlList.size()];
+		urlList.toArray(urls);
+		ClassLoader loader = new URLClassLoader(urls, parent);
+
+		loaders.put(name,loader);
+	}
+	
+	private void createRootLoader () throws IOException {
+		List urlList = new ArrayList();
+		
+		/* Sandbox */
+		URL url = workingDirectory.getCanonicalFile().toURL();
+		urlList.add(url);
+
+		/* AspectJ runtime */
+		URL[] urls = ((URLClassLoader)getClass().getClassLoader()).getURLs();
+		for (int i = 0; i < urls.length; i++) {
+			url = urls[i];
+			if (debug) System.err.println("? TestServer.initialize() " + url);
+			String file = url.getFile();
+			if (file.indexOf("runtime") != -1 || file.indexOf("aspectj5rt") != -1) {
+				urlList.add(url);
+			}
+		}
+		if (debug) System.err.println("? TestServer.initialize() urlList=" + urlList);
+		
+		urls = new URL[urlList.size()];
+		urlList.toArray(urls);
+		ClassLoader parent = getClass().getClassLoader().getParent();
+		rootLoader = new URLClassLoader(urls,parent);
+		
+	}
+	
+	public void setExitOntError (boolean b) {
+		exitOnError = b;
+	}
+	
+	public void setWorkingDirectory (String name) {
+		workingDirectory = new File(name);
+		if (!workingDirectory.exists()) error("Missing or invalid working directory: " + workingDirectory.getPath());
+	}
+	
+	public static void main(String[] args) throws Exception {
+		System.out.println("Starting ...");
+		
+		TestServer server = new TestServer();
+		server.setWorkingDirectory(args[0]);
+		server.initialize();
+		
+		Thread thread = new Thread(server,"application");
+		thread.start();
+		thread.join();
+		
+		System.out.println("Stopping ...");
+	}
+
+	public void run() {
+		System.out.println("Running " + mainClass);
+		runClass(mainClass,(ClassLoader)loaders.get(mainLoader));
+	}
+
+	private void runClass (String className, ClassLoader classLoader) {
+		try {
+			Class clazz = Class.forName(className,false,classLoader);
+			invokeMain(clazz,new String[] {});
+		}
+		catch (ClassNotFoundException ex) {
+			ex.printStackTrace();
+			error(ex.toString());
+		}
+	}
+	
+	public void invokeMain (Class clazz, String[] args)
+	{
+		Class[] paramTypes = new Class[1];
+		paramTypes[0] = args.getClass();
+	
+		try {
+			Method method = clazz.getDeclaredMethod("main",paramTypes);
+			Object[] params = new Object[1];
+			params[0] = args;
+			method.invoke(null,params);
+		}
+		catch (InvocationTargetException ex) {
+			Throwable th = ex.getTargetException();
+			th.printStackTrace();
+			error(th.toString());
+		}
+		catch (Throwable th) {
+			th.printStackTrace();
+			error(th.toString());
+		}
+	}
+	
+	private void error (String message) {
+		System.out.println(message);
+		if (exitOnError) System.exit(0);
+	}
+}

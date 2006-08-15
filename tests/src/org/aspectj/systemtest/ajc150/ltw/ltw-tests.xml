@@ -558,4 +558,31 @@
         </ant>
     </ajc-test>
     
+	<ajc-test dir="ltw" title="TestServer with HelloWorld" keywords="ltw,server">
+        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
+        <ant file="ant-server.xml" target="TestServer with HelloWorld" verbose="true">
+        	<stdout>
+            	<line text="Starting ..."/>
+            	<line text="Running HelloWorld"/>
+            	<line text="Hello World!"/>
+            	<line text="Stopping ..."/>
+        	</stdout>
+        </ant>
+    </ajc-test>
+    
+	<ajc-test dir="ltw" title="TestServer with Parent and Child" keywords="ltw,server">
+        <compile files="Parent.java" options="-outjar parent.jar"/>
+        <compile files="Child.java" options="-classpath parent.jar -outjar child.jar"/>
+        <ant file="ant-server.xml" target="TestServer with Parent and Child" verbose="true">
+        	<stdout>
+            	<line text="Starting ..."/>
+            	<line text="Running Child"/>
+            	<line text="Parent"/>
+            	<line text="Child"/>
+            	<line text="Stopping ..."/>
+        	</stdout>
+        </ant>
+    </ajc-test>
+    
     

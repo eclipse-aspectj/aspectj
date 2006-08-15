@@ -1,0 +1,33 @@
+<!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
+<project name="ltw">
+
+    <!-- using this we can debug the forked VM -->
+    <property
+        name="jdwp"
+        value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+
+    <target name="TestServer with HelloWorld">
+        <copy file="${aj.root}/tests/ltw/server-helloworld.properties"
+              tofile="${aj.sandbox}/server.properties"/>
+        <java fork="yes" classname="org.aspectj.testing.server.TestServer" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj.weaving.verbose=true"/>
+            <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
+        	<arg path="${aj.sandbox}"/>
+        </java>
+    </target>
+
+    <target name="TestServer with Parent and Child">
+        <copy file="${aj.root}/tests/ltw/server-parentandchild.properties"
+              tofile="${aj.sandbox}/server.properties"/>
+        <java fork="yes" classname="org.aspectj.testing.server.TestServer" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Daj.weaving.verbose=true"/>
+            <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
+        	<arg path="${aj.sandbox}"/>
+        </java>
+    </target>
+
+</project>
