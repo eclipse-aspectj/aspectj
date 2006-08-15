@@ -13,8 +13,10 @@ package org.aspectj.weaver.ltw;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.aspectj.bridge.IMessageHandler;
@@ -46,7 +48,8 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
  */
 public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	
-    private AnnotationFinder annotationFinder;
+
+	private AnnotationFinder annotationFinder;
     private ClassLoader loader; // weavingContext?
     private IWeavingContext weavingContext;
     
@@ -186,8 +189,38 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
     public boolean isRunMinimalMemory() {
 	     return true;
     }
+
+
+    // One type is completed at a time, if multiple need doing then they
+    // are queued up
+	private boolean typeCompletionInProgress = false;
+    private List/*ResolvedType*/typesForCompletion = new ArrayList();
     
-	protected void completeType(ResolvedType ret) {
+	protected void completeBinaryType(ResolvedType ret) {
+		if (isLocallyDefined(ret.getName())) {
+        	if (typeCompletionInProgress) {
+        		typesForCompletion.add(ret);
+        	} else {                	
+        		try {
+        			typeCompletionInProgress=true;
+            		completeHierarchyForType(ret);
+        		} finally {
+        			typeCompletionInProgress=false;
+        		}
+            	while (typesForCompletion.size()!=0) {
+            		ResolvedType rt = (ResolvedType)typesForCompletion.get(0);
+            		completeHierarchyForType(rt);
+            		typesForCompletion.remove(0);
+            	}
+        	}
+    	} else {
+    		if (!ret.needsModifiableDelegate()) {
+    			ret = completeNonLocalType(ret);
+    		}
+    	}
+	}
+	
+	private void completeHierarchyForType(ResolvedType ret) {
     	getLint().typeNotExposedToWeaver.setSuppressed(true);
     	weaveInterTypeDeclarations(ret);
     	getLint().typeNotExposedToWeaver.setSuppressed(false);
@@ -199,6 +232,17 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 
 	public boolean isLocallyDefined(String classname) {
 		return weavingContext.isLocallyDefined(classname);
+	}
+
+	protected ResolvedType completeNonLocalType(ResolvedType ret) {
+		if (ret.isMissing()) return ret; // who knows ?!?
+		ResolvedType toResolve = ret;
+		if (ret.isParameterizedType() || ret.isGenericType()) {
+			toResolve = toResolve.getGenericType();
+		}
+		ReferenceTypeDelegate rtd = resolveReflectionTypeDelegate((ReferenceType)toResolve,loader);
+		((ReferenceType)ret).setDelegate(rtd);
+		return ret;
 	}
     
 }
