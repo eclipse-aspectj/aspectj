@@ -156,6 +156,21 @@
       </run>
     </ajc-test>  
       
+    <ajc-test dir="ltw/callMunging/case1" title="aggressive ltw - hierarchy">
+      <compile files="T.java,HierMain.java" outjar="classes.jar"/>
+      <compile files="A.java" outjar="sub.hiddenjar" classpath="classes.jar"/>
+      <compile files="X.java" outjar="aspects.jar" classpath="classes.jar" options="-Xlint:ignore"/>
+      <run class="HierMain" ltw="aop.xml">
+        <stdout>
+          <line text="into:main"/>
+          <line text="A.method() running"/>
+          <line text="advice running"/>
+          <line text="T.m1() running"/>
+          <line text="leave:main"/>
+        </stdout>
+      </run>
+    </ajc-test>  
+    
     <ajc-test dir="ltw/callMunging/case3" title="aggressive ltw - decp - 2">
       <compile files="A.java,T.java,S.java,Main.java" outjar="classes.jar"/>
       <compile files="X.java" outjar="aspects.jar" classpath="classes.jar" options="-Xlint:ignore"/>

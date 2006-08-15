@@ -130,8 +130,8 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	  runTest("aggressive ltw - decp - 2");
     }
     
-    public void testWeavingTargetOfCallAggressivelyInLTW_DeclareAnnotation_pr133770() {
-  	  runTest("aggressive ltw - deca");
+    public void testWeavingTargetOfCallAggressivelyInLTW_DeclareParents_Hierarchy_pr133770() {
+      runTest("aggressive ltw - hierarchy");
     }
     
   	public void testSeparateCompilationDeclareParentsCall_pr133770() {
