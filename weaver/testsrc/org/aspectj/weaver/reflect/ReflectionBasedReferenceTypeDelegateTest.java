@@ -12,6 +12,7 @@
 package org.aspectj.weaver.reflect;
 
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,6 +100,12 @@ public class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 		assertEquals(world.resolve("reflect.tests.C"),d.getSuperclass());
 	}
 	
+    public void testArrayArgsSig() throws Exception {
+    	Method invokeMethod = Method.class.getMethod("invoke", new Class[] { Object.class, Object[].class});
+    	ResolvedMember reflectionMethod = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMethod(invokeMethod, world);
+    	String exp = "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;";
+    	assertTrue("Expected: \n"+exp+"\n but got:\n"+reflectionMethod.getSignature(), reflectionMethod.getSignature().equals(exp));
+    }
 
 	protected int findMethod(String name, ResolvedMember[] methods) {
 		for (int i=0; i<methods.length; i++) {

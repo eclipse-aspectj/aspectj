@@ -12,6 +12,7 @@
 package org.aspectj.weaver.reflect;
 
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -295,6 +296,13 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
         	}
         	assertTrue("Should be one extra (clinit) in BCEL case, but bcel="+rms1.length+" reflect="+rms2.length,rms1.length==rms2.length+1);
         }
+    }
+
+    public void testArrayArgsSig() throws Exception {
+    	Method invokeMethod = Method.class.getMethod("invoke", new Class[] { Object.class, Object[].class});
+    	ResolvedMember reflectionMethod = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMethod(invokeMethod, world);
+    	String exp = "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;";
+    	assertTrue("Expected: \n"+exp+"\n but got:\n"+reflectionMethod.getSignature(), reflectionMethod.getSignature().equals(exp));
     }
     	    
 	// todo: array of int	

@@ -96,7 +96,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		// classes that represent arrays return a class name that is the signature of the array type, ho-hum...
 		String className = aClass.getName();
 		if (aClass.isArray()) {
-			return world.resolve(UnresolvedType.forSignature(className));
+			return world.resolve(UnresolvedType.forSignature(className.replace('.','/')));
 		}
 		else{
 			return world.resolve(className);
