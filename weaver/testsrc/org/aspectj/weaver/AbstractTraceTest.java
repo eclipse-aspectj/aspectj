@@ -10,12 +10,15 @@
  *******************************************************************************/
 package org.aspectj.weaver;
 
+import java.util.ArrayList;
+
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.tools.AbstractTrace;
 import org.aspectj.weaver.tools.DefaultTrace;
+import org.aspectj.weaver.tools.Traceable;
 
-public class AbstractTraceTest extends TestCase {
+public abstract class AbstractTraceTest extends TestCase {
 
 	protected AbstractTrace trace;
 
@@ -26,6 +29,28 @@ public class AbstractTraceTest extends TestCase {
 
 	public void testEnterWithThisAndArgs() {
 		trace.enter("testEnterWithThisAndArgs",this,new Object[] { "arg1", "arg2" });
+	}
+
+	public void testEnterWithThisAndArray() {
+		Object arg1 = new String[] { "s1", "s2" };
+		Object arg2 = new char[] { 'a', 'b', 'c' };
+		trace.enter("testEnterWithThisAndArgs",this,new Object[] { arg1, arg2 });
+	}
+
+	public void testEnterWithThisAndCollection() {
+		Object arg1 = new ArrayList();
+		trace.enter("testEnterWithThisAndArgs",this,new Object[] { arg1 });
+	}
+
+	public void testEnterWithThisAndTraceable () {
+		Object arg1 = new Traceable() {
+
+			public String toTraceString() {
+				return "Traceable";
+			}
+			
+		};
+		trace.enter("testEnterWithThisAndArgs",this,new Object[] { arg1 });
 	}
 
 	public void testEnterWithThis() {

@@ -11,7 +11,9 @@
 package org.aspectj.weaver.tools;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 public abstract class AbstractTrace implements Trace {
@@ -126,6 +128,12 @@ public abstract class AbstractTrace implements Trace {
 			    || obj instanceof File
 			    || obj instanceof StringBuffer
 		    ) return obj;
+		else if (obj.getClass().isArray()) {
+			return formatArray(obj);
+		}
+		else if (obj instanceof Collection) {
+			return formatCollection((Collection)obj);
+		}
 		else try {
 			
 			/* Classes can provide an alternative implementation of toString() */
@@ -141,6 +149,14 @@ public abstract class AbstractTrace implements Trace {
 		} catch (Exception ex) {
 			return obj.getClass().getName();
 		}
+	}
+	
+	protected String formatArray (Object obj) {
+		return obj.getClass().getComponentType().getName() + "[" + Array.getLength(obj) + "]"; 
+	}
+	
+	protected String formatCollection (Collection c) {
+		return c.getClass().getName() + "(" + c.size() + ")"; 
 	}
 
 	/** 
