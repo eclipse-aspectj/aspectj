@@ -34,8 +34,8 @@ public class TestServer implements Runnable {
 	private ClassLoader rootLoader;
 	private Map loaders = new HashMap();
 
-	private String mainClass = "UnknowClass";
-	private String mainLoader = "UnknowLoader";
+	private String mainClass = "UnknownClass";
+	private String mainLoader = "UnknownLoader";
 	
 	public void initialize () throws IOException {
 		createRootLoader();

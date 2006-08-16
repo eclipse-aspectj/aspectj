@@ -73,6 +73,7 @@ public class AntSpec implements ITestStep {
         Project p = new Project();
         final StringBuffer stdout = new StringBuffer();
         final StringBuffer stderr = new StringBuffer();
+        final StringBuffer verboseLog = new StringBuffer();
         try {
             // read the Ant file
             p.init();
@@ -101,7 +102,13 @@ public class AntSpec implements ITestStep {
                 public void buildFinished(BuildEvent event) {
                     super.buildFinished(event);
                     if (event.getException() != null) {
-                        AjcTestCase.fail(failMessage + "failure " + event.getException());
+                    	StringBuffer message = new StringBuffer();
+                    	message.append(event.getException().toString()).append("\n");
+                    	message.append(verboseLog);
+                    	message.append(stdout);
+                    	message.append(stderr);
+//                        AjcTestCase.fail(failMessage + "failure " + event.getException());
+                        AjcTestCase.fail(message.toString());
                     }
                 }
                 public void targetFinished(BuildEvent event) {
@@ -121,6 +128,9 @@ public class AntSpec implements ITestStep {
                         	break;
                     	case Project.MSG_WARN:
                     		stderr.append(event.getMessage()).append('\n');
+                        	break;
+                    	case Project.MSG_VERBOSE:
+                    		verboseLog.append(event.getMessage()).append('\n');
                         	break;
                     }
                 }

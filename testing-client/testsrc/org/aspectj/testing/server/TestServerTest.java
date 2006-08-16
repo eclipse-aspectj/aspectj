@@ -26,7 +26,7 @@ public class TestServerTest extends TestCase {
 
 	public void testInitialize() {
 		try {
-			server.setWorkingDirectory("./testdata");
+			server.setWorkingDirectory("../testing-client/testdata");
 			server.initialize();
 		}
 		catch (IOException ex) {
@@ -35,6 +35,6 @@ public class TestServerTest extends TestCase {
 	}
 
 	public void testSetWorkingDirectory() {
-		server.setWorkingDirectory("./testdata");
+		server.setWorkingDirectory("../testing-client/testdata");
 	}
 }
