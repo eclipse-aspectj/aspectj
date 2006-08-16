@@ -1324,6 +1324,8 @@ public class BcelWeaver implements IWeaver {
 
     private void weaveAndNotify(UnwovenClassFile classFile, BcelObjectType classType,
     		                    IWeaveRequestor requestor) throws IOException {
+    	trace.enter("weaveAndNotify",this,new Object[] {classFile,classType,requestor});
+    	
     	ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_TYPE, classType.getResolvedTypeX().getName());
     	LazyClassGen clazz = weaveWithoutDump(classFile,classType);
     	classType.finishedWith();
@@ -1338,6 +1340,8 @@ public class BcelWeaver implements IWeaver {
 		}
 		classType.weavingCompleted();
 		CompilationAndWeavingContext.leavingPhase(tok);
+		
+		trace.exit("weaveAndNotify");
     }
     
 	/** helper method - will return NULL if the underlying delegate is an EclipseSourceType and not a BcelObjectType */

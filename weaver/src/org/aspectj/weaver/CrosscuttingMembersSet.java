@@ -25,6 +25,8 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.IVerificationRequired;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 
 /**
  * This holds on to all CrosscuttingMembers for a world.  It handles 
@@ -50,8 +52,14 @@ public class CrosscuttingMembersSet {
 
 	private List /*IVerificationRequired*/ verificationList = null; // List of things to be verified once the type system is 'complete'
 	
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(CrosscuttingMembersSet.class);
+	
 	public CrosscuttingMembersSet(World world) {
+		trace.enter("<init>",this,world);
+
 		this.world = world;
+
+		trace.exit("<init>");
 	}
 
 	public boolean addOrReplaceAspect(ResolvedType aspectType) {
@@ -63,6 +71,8 @@ public class CrosscuttingMembersSet {
 	 * 			XXX for efficiency we will need a richer representation than this
 	 */
 	public boolean addOrReplaceAspect(ResolvedType aspectType, boolean inWeavingPhase) {
+		trace.enter("addOrReplaceAspect",this,new Object[] {aspectType,new Boolean(inWeavingPhase)});
+		
 		boolean change = false;
 		CrosscuttingMembers xcut = (CrosscuttingMembers)members.get(aspectType);
 		if (xcut == null) {
@@ -92,6 +102,8 @@ public class CrosscuttingMembersSet {
 			change = change || ancestorChange;
 		}
 		changedSinceLastReset = changedSinceLastReset || change;
+
+		trace.exit("addOrReplaceAspect",change);
 		return change;
 	}
     

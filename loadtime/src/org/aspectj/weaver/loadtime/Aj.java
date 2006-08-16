@@ -36,7 +36,7 @@ public class Aj implements ClassPreProcessor {
 	
 	
 	public Aj(IWeavingContext context){
-		if (trace.isTraceEnabled()) trace.enter("<init>",this,new Object[] {context});
+		if (trace.isTraceEnabled()) trace.enter("<init>",this,new Object[] {context, getClass().getClassLoader()});
 		this.weavingContext = context;
 		if (trace.isTraceEnabled()) trace.exit("<init>");
 	}
@@ -57,14 +57,14 @@ public class Aj implements ClassPreProcessor {
      * @return weaved bytes
      */
     public byte[] preProcess(String className, byte[] bytes, ClassLoader loader) {
-		if (trace.isTraceEnabled()) trace.enter("preProcess",this,new Object[] {className,bytes,loader});
     	
         //TODO AV needs to doc that
         if (loader == null || className == null) {
             // skip boot loader or null classes (hibernate)
-    		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
             return bytes;
         }
+
+        if (trace.isTraceEnabled()) trace.enter("preProcess",this,new Object[] {className, bytes, loader, Thread.currentThread().getContextClassLoader()});
 
         try {
         	synchronized (loader) {
@@ -73,15 +73,16 @@ public class Aj implements ClassPreProcessor {
             		if (trace.isTraceEnabled()) trace.exit("preProcess");
                 	return bytes;
                 }
-        		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
-                return weavingAdaptor.weaveClass(className, bytes);
+                byte[] newBytes = weavingAdaptor.weaveClass(className, bytes);
+        		if (trace.isTraceEnabled()) trace.exit("preProcess",newBytes);
+                return newBytes;
 			}
-        } catch (Exception t) {
-    		trace.error("preProcess",t);
+        } catch (Exception ex) {
+    		trace.error("preProcess",ex);
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
             // would make sense at least in test f.e. see TestHelper.handleMessage()
-            t.printStackTrace();
-    		if (trace.isTraceEnabled()) trace.exit("preProcess",bytes);
+            ex.printStackTrace();
+    		if (trace.isTraceEnabled()) trace.exit("preProcess",ex);
             return bytes;
         }
     }

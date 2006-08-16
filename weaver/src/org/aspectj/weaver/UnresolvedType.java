@@ -22,6 +22,7 @@ import java.util.Map;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
+import org.aspectj.weaver.tools.Traceable;
 
 /**
  * A UnresolvedType represents a type to the weaver. It has a basic signature that knows 
@@ -93,7 +94,7 @@ import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
  * The wildcard ? extends Foo has signature +LFoo;
  * The wildcard ? super Foo has signature -LFoo;
  */
-public class UnresolvedType implements TypeVariableDeclaringElement {
+public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	// common types referred to by the weaver
     public static final UnresolvedType[] NONE         = new UnresolvedType[0];
@@ -916,6 +917,10 @@ public class UnresolvedType implements TypeVariableDeclaringElement {
 			if (aVar.getName().equals(name)) return aVar;
 		}
 		return null;
+	}
+
+	public String toTraceString() {
+		return getClass().getName() + "[" + getName() + "]";
 	}
 	
 }
