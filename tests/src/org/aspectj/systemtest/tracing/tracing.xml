@@ -57,4 +57,16 @@
             </stderr>
         </ant>
     </ajc-test>
+
+	<ajc-test dir="tracing" title="Trace everything" keywords="tracing">
+        <compile
+        	files="HelloWorld.java"
+        />
+        <compile files="Aspect.aj" options="-outxml"/>
+		<ant file="ant.xml" target="Trace everything" verbose="true">
+        	<stdout>
+                <line text="Hello World!"/>
+            </stdout>
+        </ant>
+    </ajc-test>
 </suite>
