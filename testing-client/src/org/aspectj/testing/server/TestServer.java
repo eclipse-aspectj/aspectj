@@ -87,6 +87,7 @@ public class TestServer implements Runnable {
 		URL[] urls = new URL[urlList.size()];
 		urlList.toArray(urls);
 		ClassLoader loader = new URLClassLoader(urls, parent);
+		if (debug) System.err.println("TestServer.createLoader() loader=" + loader + ", name='" + name + "', urls=" + urlList);
 
 		loaders.put(name,loader);
 	}
@@ -102,13 +103,13 @@ public class TestServer implements Runnable {
 		URL[] urls = ((URLClassLoader)getClass().getClassLoader()).getURLs();
 		for (int i = 0; i < urls.length; i++) {
 			url = urls[i];
-			if (debug) System.err.println("? TestServer.initialize() " + url);
+			if (debug) System.err.println("? TestServer.createRootLoader() " + url);
 			String file = url.getFile();
-			if (file.indexOf("runtime") != -1 || file.indexOf("aspectj5rt") != -1) {
+			if (file.indexOf("runtime") != -1 || file.indexOf("aspectjrt") != -1 || file.indexOf("aspectj5rt") != -1) {
 				urlList.add(url);
 			}
 		}
-		if (debug) System.err.println("? TestServer.initialize() urlList=" + urlList);
+		if (debug) System.err.println("? TestServer.createRootLoader() urlList=" + urlList);
 		
 		urls = new URL[urlList.size()];
 		urlList.toArray(urls);
