@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 
 public class TestServer implements Runnable {
 
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 
 	private boolean exitOnError = true;
 	private File workingDirectory;
@@ -87,7 +87,7 @@ public class TestServer implements Runnable {
 		URL[] urls = new URL[urlList.size()];
 		urlList.toArray(urls);
 		ClassLoader loader = new URLClassLoader(urls, parent);
-		if (debug) System.err.println("TestServer.createLoader() loader=" + loader + ", name='" + name + "', urls=" + urlList);
+		if (debug) System.err.println("? TestServer.createLoader() loader=" + loader + ", name='" + name + "', urls=" + urlList + ", parent=" + parent);
 
 		loaders.put(name,loader);
 	}
@@ -103,19 +103,18 @@ public class TestServer implements Runnable {
 		URL[] urls = ((URLClassLoader)getClass().getClassLoader()).getURLs();
 		for (int i = 0; i < urls.length; i++) {
 			url = urls[i];
-			if (debug) System.err.println("? TestServer.createRootLoader() " + url);
 			String file = url.getFile();
+			if (debug) System.err.println("? TestServer.createRootLoader() " + file);
 			if (file.indexOf("runtime") != -1 || file.indexOf("aspectjrt") != -1 || file.indexOf("aspectj5rt") != -1) {
 				urlList.add(url);
 			}
 		}
-		if (debug) System.err.println("? TestServer.createRootLoader() urlList=" + urlList);
 		
 		urls = new URL[urlList.size()];
 		urlList.toArray(urls);
 		ClassLoader parent = getClass().getClassLoader().getParent();
 		rootLoader = new URLClassLoader(urls,parent);
-		
+		if (debug) System.err.println("? TestServer.createRootLoader() loader=" + rootLoader + ", urlList=" + urlList + ", parent=" + parent);
 	}
 	
 	public void setExitOntError (boolean b) {
