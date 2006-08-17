@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 
 public class TestServer implements Runnable {
 
-	private static final boolean debug = true;
+	private static final boolean debug = Boolean.getBoolean("org.aspectj.testing.server.debug");
 
 	private boolean exitOnError = true;
 	private File workingDirectory;
