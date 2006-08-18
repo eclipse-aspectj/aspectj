@@ -291,4 +291,18 @@
       <compile files="EMA.java" options="-1.5"/>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr153572" title="LTWWorld with annotation matching">
+    	<compile 
+    		files="Configurable.java, AnnotationMatcher.aj" 
+    		options="-1.5"
+    		outjar="aspectlib.jar"
+    		outxmlfile="META-INF/aop.xml"/>
+    	<compile files="Configurable.java,Annotated.java,Main.java" options="-1.5" outjar="myapp.jar"/>
+    	<run class="Main" ltw="">
+    		<stdout>
+    			<line text="annotated type initialized"/>
+    		</stdout>
+    	</run>
+    </ajc-test>
+    
 </suite>

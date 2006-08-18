@@ -62,7 +62,8 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
   public void testMatchVolatileField_pr150671() {runTest("match volatile field");};
   public void testDuplicateJVMTIAgents_pr151938() {runTest("Duplicate JVMTI agents");};
-
+  public void testLTWWorldWithAnnotationMatching_pr153572() { runTest("LTWWorld with annotation matching");}
+  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);

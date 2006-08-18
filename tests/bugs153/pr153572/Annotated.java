@@ -1,0 +1,4 @@
+@Configurable
+public class Annotated {
+	
+}
