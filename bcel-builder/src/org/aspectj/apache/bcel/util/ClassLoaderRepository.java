@@ -56,12 +56,8 @@ package org.aspectj.apache.bcel.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
@@ -76,203 +72,95 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: ClassLoaderRepository.java,v 1.7 2006/08/18 14:51:00 acolyer Exp $
+ * @version $Id: ClassLoaderRepository.java,v 1.5.2.1 2006/08/18 18:23:03 acolyer Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */
-public class ClassLoaderRepository implements Repository {
+public class ClassLoaderRepository
+  implements Repository
+{  
   private static java.lang.ClassLoader bootClassLoader = null;
-  private java.lang.ClassLoader loader;
-  private WeakHashMap /*<String classname,JavaClass>*/loadedClassesLocalCache = new WeakHashMap(); 
-  private static Map /*<URL,JavaClass>*/loadedUrlsSharedCache = new HashMap(); 
-  public static boolean useSharedCache = true;
-  
-  private static long timeManipulatingURLs = 0L; 
-  private static long timeSpentLoading     = 0L;
-  private static int  classesLoadedCount = 0;
-  private static int  cacheHitsShared    = 0;
-  private static int  missSharedEvicted  = 0; // Misses in shared cache access due to reference GC
-  private static int  misses             = 0;
-  private int  cacheHitsLocal     = 0;
-  private int  missLocalEvicted   = 0; // Misses in local cache access due to reference GC
 
-  static {
-    useSharedCache = System.getProperty("org.aspectj.apache.bcel.useSharedCache","true").equalsIgnoreCase("true");
-  }
-  
+  private java.lang.ClassLoader loader;
+  private WeakHashMap loadedClasses =
+    new WeakHashMap(); // CLASSNAME X JAVACLASS
+
   public ClassLoaderRepository( java.lang.ClassLoader loader ) {
-    this.loader = (loader != null) ? loader : getBootClassLoader();
+	    this.loader = (loader != null) ? loader : getBootClassLoader();
   }
-  
+
   private static synchronized java.lang.ClassLoader getBootClassLoader() {
 	  if (bootClassLoader == null) {
 		  bootClassLoader = new URLClassLoader(new URL[0]);
 	  }
 	  return bootClassLoader;
   }
-
-  /**
-   * Store a new JavaClass into this repository as a soft reference and return the reference
-   */
-  private Reference storeClassAsReference( JavaClass clazz ) {
-	Reference ref = new SoftReference(clazz);
-    loadedClassesLocalCache.put( clazz.getClassName(), ref);		       
-    clazz.setRepository( this );
-    return ref;
-  }
   
-  /**
-   * Store a reference in the shared cache
-   */
-  private void storeReferenceShared(URL url, Reference ref) {
-	  if (useSharedCache) loadedUrlsSharedCache.put(url, ref);
-  }
-
   /**
    * Store a new JavaClass into this Repository.
    */
   public void storeClass( JavaClass clazz ) {
-	  storeClassAsReference(clazz);
+    loadedClasses.put( clazz.getClassName(),
+		       clazz );
+    clazz.setRepository( this );
   }
 
   /**
    * Remove class from repository
    */
   public void removeClass(JavaClass clazz) {
-    loadedClassesLocalCache.remove(clazz.getClassName());
+    loadedClasses.remove(clazz.getClassName());
   }
 
   /**
-   * Find an already defined JavaClass in the local cache.
+   * Find an already defined JavaClass.
    */
   public JavaClass findClass( String className ) {
-    Object o = loadedClassesLocalCache.get( className );
-    if (o != null) {
-    	o = ((Reference)o).get();
-    	if (o != null) {
-    		return (JavaClass)o;
-    	} else {
-    		missLocalEvicted++;
-    	}
+    if ( loadedClasses.containsKey( className )) {
+      return (JavaClass) loadedClasses.get( className );
+    } else {
+      return null;
     }
-    return null;
-  }
-  
-  /**
-   * Find an already defined JavaClass in the shared cache.
-   */
-  private JavaClass findClassShared(URL url) {
-	  if (!useSharedCache) return null;
-	  Object o = (Reference)loadedUrlsSharedCache.get(url);
-	  if (o != null) {
-		o = ((Reference)o).get();
-		if (o != null) {
-			return (JavaClass)o; 
-		} else { 
-			missSharedEvicted++; 
-		}
-	  }
-	  return null;
   }
 
-  
   /**
    * Lookup a JavaClass object from the Class Name provided.
    */
-  public JavaClass loadClass( String className ) throws ClassNotFoundException {
+  public JavaClass loadClass( String className ) 
+    throws ClassNotFoundException
+  {
     String classFile = className.replace('.', '/');
 
-    // Check the local cache
-    JavaClass clazz = findClass(className);
-    if (clazz != null) { cacheHitsLocal++; return clazz; }
+    JavaClass RC = findClass( className );
+    if (RC != null) { return RC; }
 
     try {
-    	// Work out the URL
-    	long time = System.currentTimeMillis();
-    	java.net.URL url = (useSharedCache?loader.getResource( classFile + ".class" ):null);
-    	if (useSharedCache && url==null) throw new ClassNotFoundException(className + " not found.");
-		InputStream is = (useSharedCache?url.openStream():loader.getResourceAsStream( classFile + ".class" ));
-		timeManipulatingURLs += (System.currentTimeMillis() - time);
-		
-		// Check the shared cache
-		clazz = findClassShared(url);
-		if (clazz != null) { cacheHitsShared++; timeSpentLoading+=(System.currentTimeMillis() - time); return clazz; } 
-
-		// Didn't find it in either cache
-		misses++;
+      InputStream is = 
+	loader.getResourceAsStream( classFile + ".class" );
 	    
-        if (is == null) { // TODO move this up?
-    	  throw new ClassNotFoundException(className + " not found.");
-        }
+      if(is == null) {
+	throw new ClassNotFoundException(className + " not found.");
+      }
 
-        ClassParser parser = new ClassParser( is, className );
-        clazz = parser.parse();
+      ClassParser parser = new ClassParser( is, className );
+      RC = parser.parse();
 	    
-        // Store it in both caches
-        Reference ref = storeClassAsReference( clazz );
-        storeReferenceShared(url,ref);
+      storeClass( RC );
 
-        timeSpentLoading += (System.currentTimeMillis() - time);
-	    classesLoadedCount++;
-        return clazz;
+      return RC;
     } catch (IOException e) {
       throw new ClassNotFoundException( e.toString() );
     }
   }
-  
 
-/**
-   * Produce a report on cache usage.
-   */
-  public String reportAllStatistics() {
-	  StringBuffer sb = new StringBuffer();
-	  sb.append("BCEL repository report.");
-	  if (!useSharedCache) sb.append(" (Shared cache deactivated)");
-	  sb.append(" Total time spent loading: "+timeSpentLoading+"ms.");
-	  sb.append(" Time manipulating URLs: "+timeManipulatingURLs+"ms.");
-	  sb.append(" Classes loaded: "+classesLoadedCount+".");
-	  if (useSharedCache) sb.append(" URL cache (hits/missDueToEviction): ("+cacheHitsShared+"/"+missSharedEvicted+").");
-	  sb.append(" Local cache (hits/missDueToEviction): ("+cacheHitsLocal+"/"+missLocalEvicted+").");
-	  return sb.toString();
-  }
-  
-  public int reportLocalCacheHits() {
-	  return cacheHitsLocal;
-  }
-
-  public static int reportSharedCacheHits() {
-	  return cacheHitsShared;
-  }
-  
-  /**
-   * Reset statistics and clear all caches
-   */
-  public void reset() {
-	  timeManipulatingURLs = 0L; 
-	  timeSpentLoading = 0L;
-	  classesLoadedCount = 0;
-	  cacheHitsLocal    = 0;
-	  cacheHitsShared   = 0;
-	  missSharedEvicted = 0; 
-	  missLocalEvicted  = 0; 
-	  misses = 0;
-	  clear();
-	  clearShared();
-  }
-  
-  
   public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
     return loadClass(clazz.getName());
   }
 
-  /** Clear all entries from the local cache */
+  /** Clear all entries from cache.
+   */
   public void clear() {
-      loadedClassesLocalCache.clear();
-  }
-
-  /** Clear all entries from the shared cache */
-  public static void clearShared() {
-	  loadedUrlsSharedCache.clear();
+    loadedClasses.clear();
   }
 }
 

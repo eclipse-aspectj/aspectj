@@ -41,7 +41,7 @@ import org.aspectj.weaver.patterns.PerClause;
  * In a Java 1.5 environment use the Java5ReflectionBasedReferenceTypeDelegate subtype.
  */
 public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelegate {
-
+	
 	private static final ClassLoader BootClassLoader = new URLClassLoader(new URL[0]);
 	
 	protected Class myClass = null;
