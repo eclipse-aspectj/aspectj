@@ -259,6 +259,13 @@ public class AspectJElementHierarchy implements IHierarchy {
 		if (lastSlash == -1) {
 			lastSlash = sourceFilePath.lastIndexOf('/');
 		}
+		// '!' is used like in URLs  "c:/blahblah/X.jar!a/b.class"
+		int i = sourceFilePath.lastIndexOf('!');
+		int j = sourceFilePath.indexOf(".class");
+		if (i > lastSlash && i != -1 && j != -1) {
+			// we are a binary aspect in the default package
+			lastSlash = i;
+		}
 		String fileName = sourceFilePath.substring(lastSlash+1);
 		IProgramElement fileNode = new ProgramElement(fileName, IProgramElement.Kind.FILE_JAVA, new SourceLocation(new File(sourceFilePath), 1, 1),0,null,null);
 		//fileNode.setSourceLocation();

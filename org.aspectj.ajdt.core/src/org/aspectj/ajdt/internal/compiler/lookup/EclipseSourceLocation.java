@@ -158,4 +158,8 @@ public class EclipseSourceLocation implements ISourceLocation {
           getOffset()==o.getOffset() &&
           ((filename==null)?(o.filename==null):o.filename.equals(filename));
     }
+
+	public String getSourceFileName() {
+		return null;
+	}
 }

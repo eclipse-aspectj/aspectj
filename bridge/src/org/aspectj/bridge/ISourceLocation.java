@@ -64,4 +64,13 @@ public interface ISourceLocation  {
     /** @return String application-specific context for source */
     String getContext();
     
+    /**
+     * In the cases where getSourceFile().getName() returns a class file
+     * (for example when we have a binary aspect) this should return the 
+     * name of the source file (for example BinaryAspect.aj)
+     * 
+     * @return the name of the source file 
+     */
+    String getSourceFileName();
+    
 }

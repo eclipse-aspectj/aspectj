@@ -243,12 +243,35 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		aspectpath.add(openFile("AspectDeclareSoft.jar"));
 		ideManager.getProjectProperties().setAspectPath(aspectpath);
 		assertTrue("Build failed", doSynchronousBuild("Empty.lst"));
-		verifyWeavingMessages("declare.soft",false);	
+		verifyWeavingMessages("declare.soft.binary",true);	
 	}
 
+	public void testWeaveMessagesBinaryAdviceInPackageFromJar() {
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryAdviceInPackageFromJar: Simple.jar + AspectInPackage.jar");
+		Set inpath = new HashSet();
+		inpath.add(openFile("Simple.jar"));
+		ideManager.getProjectProperties().setInpath(inpath);
+		Set aspectpath = new HashSet();
+		aspectpath.add(openFile("AspectInPackage.jar"));
+		ideManager.getProjectProperties().setAspectPath(aspectpath);
+		assertTrue("Build failed", doSynchronousBuild("Empty.lst"));
+        /*List l = */ideManager.getCompilationSourceLineTasks();
+        verifyWeavingMessages("advice.binary.package.jar",true);
+	}
 
-
-
+	public void testWeaveMessagesBinaryAdviceInPackage() {
+		if (debugTests) System.out.println("\ntestWeaveMessagesBinaryAdviceInPackage: Simple.jar + AspectInPackage.jar");
+		Set inpath = new HashSet();
+		inpath.add(openFile("Simple.jar"));
+		ideManager.getProjectProperties().setInpath(inpath);
+		Set aspectpath = new HashSet();
+		aspectpath.add(openFile("pkg"));
+		ideManager.getProjectProperties().setAspectPath(aspectpath);
+		assertTrue("Build failed", doSynchronousBuild("Empty.lst"));
+        /*List l = */ideManager.getCompilationSourceLineTasks();
+        verifyWeavingMessages("advice.binary.package",true);
+	}
+	
 	// BINARY WEAVING WHEN WE'VE LOST THE SOURCE POINTERS
 
 	public void testWeaveMessagesBinaryAdviceNoDebugInfo() {
@@ -301,7 +324,7 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		aspectpath.add(openFile("AspectDeclareSoft_nodebug.jar"));
 		ideManager.getProjectProperties().setAspectPath(aspectpath);
 		assertTrue("Build failed", doSynchronousBuild("Empty.lst"));
-		verifyWeavingMessages("declare.soft.nodebug",true);	
+		verifyWeavingMessages("declare.soft.binary.nodebug",true);	
 	}
 
 

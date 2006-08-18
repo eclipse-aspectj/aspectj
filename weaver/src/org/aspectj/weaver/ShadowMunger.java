@@ -13,6 +13,7 @@
 
 package org.aspectj.weaver;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.bcel.BcelAdvice;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -48,6 +50,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	protected int start, end;
 	protected ISourceContext sourceContext;
 	private ISourceLocation sourceLocation;
+	private ISourceLocation binarySourceLocation;
+	private File binaryFile;
 	private String handle = null;
 	private ResolvedType declaringType;  // the type that declared this munger.
 
@@ -91,6 +95,12 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				sourceLocation = sourceContext.makeSourceLocation(this);
 	    	}
     	}
+    	if (isBinary()) {
+			if (binarySourceLocation == null) {
+				binarySourceLocation = getBinarySourceLocation(sourceLocation);
+			}
+			return binarySourceLocation;
+		}
     	return sourceLocation;
     }
 
@@ -156,15 +166,25 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
      * Creates the hierarchy for binary aspects
      */
     public void createHierarchy() {
+    	if (!isBinary()) return;
+    	
     	IProgramElement sourceFileNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(getSourceLocation());
+    	// the call to findElementForSourceLine(ISourceLocation) returns a file node
+    	// if it can't find a node in the hierarchy for the given sourcelocation. 
+    	// Therefore, if this is returned, we know we can't find one and have to
+    	// continue to fault in the model.
     	if (!sourceFileNode.getKind().equals(IProgramElement.Kind.FILE_JAVA)) {
 			return;
 		}
-    	String name = sourceFileNode.getName();
-    	sourceFileNode.setName(name + " (binary)");
-    	AsmManager.getDefault().getHandleProvider().createHandleIdentifier(sourceFileNode);
     	
     	ResolvedType aspect = getResolvedDeclaringAspect();
+    	
+    	// create the class file node
+    	IProgramElement classFileNode = new ProgramElement(
+    			sourceFileNode.getName() + " (binary)",
+    			IProgramElement.Kind.CLASS,
+    			getBinarySourceLocation(aspect.getSourceLocation()),
+    			0,null,null);
     	
     	// create package ipe if one exists....
     	IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
@@ -179,42 +199,44 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     	                IProgramElement.Kind.PACKAGE, 
     	                new ArrayList());
     			root.addChild(pkgNode);
-    			pkgNode.addChild(sourceFileNode);
+    			pkgNode.addChild(classFileNode);
 			} else {
+				// need to add it first otherwise the handle for classFileNode
+				// may not be generated correctly if it uses information from 
+				// it's parent node
+				pkgNode.addChild(classFileNode);
 				for (Iterator iter = pkgNode.getChildren().iterator(); iter.hasNext();) {
 					IProgramElement element = (IProgramElement) iter.next();
-					if (element.getHandleIdentifier().equals(
-							sourceFileNode.getHandleIdentifier())) {
-						// already added the sourcefile so have already
+					if (!element.equals(classFileNode) && 
+							element.getHandleIdentifier().equals(
+							classFileNode.getHandleIdentifier())) {
+						// already added the classfile so have already
 						// added the structure for this aspect
+						pkgNode.removeChild(classFileNode);
 						return;
 					}
 				}
-				pkgNode.addChild(sourceFileNode);
 			}
 		} else {
+			// need to add it first otherwise the handle for classFileNode
+			// may not be generated correctly if it uses information from 
+			// it's parent node
+			root.addChild(classFileNode);
 			for (Iterator iter = root.getChildren().iterator(); iter.hasNext();) {
 				IProgramElement element = (IProgramElement) iter.next();
-				if (element.getHandleIdentifier().equals(
-						sourceFileNode.getHandleIdentifier())) {
+				if (!element.equals(classFileNode) &&
+						element.getHandleIdentifier().equals(
+						classFileNode.getHandleIdentifier())) {
 					// already added the sourcefile so have already
 					// added the structure for this aspect
+					root.removeChild(classFileNode);
 					return;
 				}				
-			}
-			root.addChild(sourceFileNode);
-		}
-    	
-       	// remove the error child from the 'A.aj' node
-    	if (sourceFileNode instanceof ProgramElement) {
-			IProgramElement errorNode = (IProgramElement) sourceFileNode.getChildren().get(0);
-			if (errorNode.getKind().equals(IProgramElement.Kind.ERROR)) {
-				((ProgramElement)sourceFileNode).removeChild(errorNode);
 			}
 		}
     	
     	// add and create empty import declaration ipe
-    	sourceFileNode.addChild(new ProgramElement(
+    	classFileNode.addChild(new ProgramElement(
     			"import declarations",
     			IProgramElement.Kind.IMPORT_REFERENCE,
     			null,0,null,null)); 
@@ -223,10 +245,10 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     	IProgramElement aspectNode = new ProgramElement(
     			aspect.getSimpleName(),
     			IProgramElement.Kind.ASPECT,
-    			aspect.getSourceLocation(),
+    			getBinarySourceLocation(aspect.getSourceLocation()),
     			aspect.getModifiers(),
     			null,null); 
-    	sourceFileNode.addChild(aspectNode);
+    	classFileNode.addChild(aspectNode);
     	
     	addChildNodes(aspectNode,aspect.getDeclaredPointcuts());
 
@@ -242,7 +264,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				parent.addChild(new ProgramElement(
 						pcd.getName(),
 						IProgramElement.Kind.POINTCUT,
-					    rpcd.getPointcut().getSourceLocation(),
+					    getBinarySourceLocation(rpcd.getPointcut().getSourceLocation()),
 						pcd.getModifiers(),
 						null,
 						Collections.EMPTY_LIST));
@@ -258,8 +280,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 			   	IProgramElement deowNode = new ProgramElement(
 		    			decl.isError() ? "declare error" : "declare warning",
 		    			decl.isError() ? IProgramElement.Kind.DECLARE_ERROR : IProgramElement.Kind.DECLARE_WARNING,
-		    			getSourceLocation(),
-		    			this.getDeclaringType().getModifiers(),
+		    			getBinarySourceLocation(decl.getSourceLocation()),
+		    			decl.getDeclaringType().getModifiers(),
 		    			null,null); 
 		    	deowNode.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
 		    	parent.addChild(deowNode);
@@ -268,12 +290,78 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				IProgramElement adviceNode = new ProgramElement(
 		    			advice.kind.getName(),
 		    			IProgramElement.Kind.ADVICE,
-		    			getSourceLocation(),
+		    			getBinarySourceLocation(advice.getSourceLocation()),
 		    			advice.signature.getModifiers(),null,Collections.EMPTY_LIST);
 		    	adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
 		    	parent.addChild(adviceNode);
 			}
 		}
     }
-
+    
+    /**
+     * Returns the binarySourceLocation for the given sourcelocation. This
+     * isn't cached because it's used when faulting in the binary nodes
+     * and is called with ISourceLocations for all advice, pointcuts and deows
+     * contained within the resolvedDeclaringAspect.
+     */
+    private ISourceLocation getBinarySourceLocation(ISourceLocation sl) {
+    	if (sl == null) return null;
+    	String sourceFileName = null;
+    	if (getResolvedDeclaringAspect() instanceof ReferenceType) {
+			String s = ((ReferenceType)getResolvedDeclaringAspect()).getDelegate().getSourcefilename();
+			int i = s.lastIndexOf('/');
+			if (i != -1) {
+				sourceFileName = s.substring(i+1);
+			} else {
+				sourceFileName = s;
+			}
+		}
+		ISourceLocation sLoc = new SourceLocation(
+				getBinaryFile(),
+				sl.getLine(),
+				sl.getEndLine(),
+				((sl.getColumn() == 0) ? ISourceLocation.NO_COLUMN : sl.getColumn()),
+				sl.getContext(),
+				sourceFileName);
+		return sLoc;
+    }
+    
+    /**
+     * Returns the File with pathname to the class file, for example either
+     * C:\temp\ajcSandbox\workspace\ajcTest16957.tmp\simple.jar!pkg\BinaryAspect.class
+     * if the class file is in a jar file, or 
+     * C:\temp\ajcSandbox\workspace\ajcTest16957.tmp!pkg\BinaryAspect.class
+     * if the class file is in a directory
+     */
+    private File getBinaryFile() {
+    	if (binaryFile == null) {
+    		String s = getResolvedDeclaringAspect().getBinaryPath();
+    		File f = getResolvedDeclaringAspect().getSourceLocation().getSourceFile();
+    		int i = f.getPath().lastIndexOf('.');
+    		String path = f.getPath().substring(0,i) + ".class";
+    		binaryFile =  new File(s + "!" + path);
+		}
+    	return binaryFile;
+    }
+    
+    /**
+     * Returns whether or not this shadow munger came from
+     * a binary aspect - keep a record of whether or not we've
+     * checked if we're binary otherwise we keep caluclating the 
+     * same thing many times
+     */
+    protected boolean isBinary() {
+    	if (!checkedIsBinary) {
+        	ResolvedType rt = getResolvedDeclaringAspect();
+        	if (rt != null) {
+    			isBinary = ((rt.getBinaryPath() == null) ? false : true);
+        	}
+			checkedIsBinary = true;
+		}
+    	return isBinary;
+    }
+    
+    private boolean isBinary;
+    private boolean checkedIsBinary;
+    
 }

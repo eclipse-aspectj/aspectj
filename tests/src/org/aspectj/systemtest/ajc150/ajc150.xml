@@ -1880,9 +1880,9 @@
         <weave classesFiles="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java"
                aspectsFiles="AnnotationAspect02.aj"
                options="-1.5,-showWeaveInfo">
-               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:3) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:4)"/>
-               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:3) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:2)"/>
-               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:4) advised by before advice from 'AnnotationAspect02' (AnnotationAspect02.aj:4)"/>
+               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:3) advised by before advice from 'AnnotationAspect02' (aspects.jar!AnnotationAspect02.class:4(from AnnotationAspect02.aj))"/>
+               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:3) advised by before advice from 'AnnotationAspect02' (aspects.jar!AnnotationAspect02.class:2(from AnnotationAspect02.aj))"/>
+               <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:4) advised by before advice from 'AnnotationAspect02' (aspects.jar!AnnotationAspect02.class:4(from AnnotationAspect02.aj))"/>
         </weave>
     </ajc-test>
     

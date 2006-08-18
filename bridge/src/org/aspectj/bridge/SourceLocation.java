@@ -60,6 +60,7 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
     private int offset;
     private final String context;
     private boolean noColumn;
+    private String sourceFileName;
 
     /** 
      * Same as SourceLocation(file, line, line, 0),
@@ -101,6 +102,11 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
         this.column = column;
         this.endLine = endLine;
         this.context = context;
+    }
+    
+    public SourceLocation(File file, int line, int endLine, int column, String context, String sourceFileName) {
+    	this(file,line,endLine,column,context);
+    	this.sourceFileName = sourceFileName;
     }
     
     public File getSourceFile() {
@@ -155,6 +161,10 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
     // ctors at the moment! It needs sorting out.
     public int getOffset() { return offset;}
     public void setOffset(int i) { offset=i;}
+
+	public String getSourceFileName() {
+		return sourceFileName;
+	}
 
 
 

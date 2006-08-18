@@ -565,9 +565,24 @@ public abstract class Shadow {
 	    	int takeFrom = isl.getSourceFile().getPath().lastIndexOf('/');
 	    	if (takeFrom == -1) {
 	    		takeFrom = isl.getSourceFile().getPath().lastIndexOf('\\');
-	    	}    			
+	    	} 
+	    	int binary = isl.getSourceFile().getPath().lastIndexOf('!');
+	    	if (binary != -1 && binary < takeFrom) {
+				// we have been woven by a binary aspect
+	    		String pathToBinaryLoc = isl.getSourceFile().getPath().substring(0,binary + 1);
+	    		if (pathToBinaryLoc.indexOf(".jar") != -1) {
+	    			// only want to add the extra info if we're from a jar file
+		    		int lastSlash = pathToBinaryLoc.lastIndexOf('/');
+		    		if (lastSlash == -1) {
+						lastSlash = pathToBinaryLoc.lastIndexOf('\\');
+					}
+		    		nice.append(pathToBinaryLoc.substring(lastSlash + 1));					
+				}
+			}
 	    	nice.append(isl.getSourceFile().getPath().substring(takeFrom +1));
 	    	if (isl.getLine()!=0) nice.append(":").append(isl.getLine());
+	    	// if it's a binary file then also want to give the file name
+	    	if (isl.getSourceFileName() != null ) nice.append("(from " + isl.getSourceFileName() + ")");
 		}
 		return nice.toString();
 	}

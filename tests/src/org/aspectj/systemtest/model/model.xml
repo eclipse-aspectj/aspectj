@@ -1,0 +1,31 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- Model and Hierarchy Tests -->
+<suite>
+
+    <ajc-test dir="model/pr145963_1" title="sourcelocation and jar file">
+      <compile files="C.java, SourceAspect.aj" aspectpath="simple.jar" options="-emacssym">
+		<message kind="warning" line="6" text="There should be no printlns"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="model/pr145963_2" title="sourcelocation and class file">
+      <compile files="C.java, SourceAspect.aj" aspectpath="pkg" options="-emacssym">
+		<message kind="warning" line="6" text="There should be no printlns"/>
+	  </compile>
+    </ajc-test>
+
+   <ajc-test dir="model/pr145963_3" title="aspect in default package">
+      <compile files="C.java" aspectpath="simple.jar" options="-emacssym">
+		<message kind="warning" line="6" text="There should be no printlns"/>
+	</compile>
+    </ajc-test>
+
+   <ajc-test dir="model/pr145963_4" title="aspect in java file">
+      <compile files="C.java" aspectpath="simple.jar" options="-emacssym">
+		<message kind="warning" line="6" text="There should be no printlns"/>
+	</compile>
+    </ajc-test>
+
+
+</suite>

@@ -28,6 +28,7 @@ public interface IProgramElement extends Serializable {
 
 	public void setChildren(List children);	
 	public void addChild(IProgramElement child);
+	public boolean removeChild(IProgramElement child);
 	
 	// Extra stuff
 	// Could be just a string but may prove more useful as an object in the long run ...

@@ -241,6 +241,7 @@ public class BcelWeaver implements IWeaver {
 			inStream.closeEntry();
 			
 			ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
+			type.setBinaryPath(inFile.getAbsolutePath());
     		if (type.isAspect()) {
     			addedAspects.add(type);
     		}
@@ -272,6 +273,10 @@ public class BcelWeaver implements IWeaver {
 		ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes),name);
 		JavaClass jc = parser.parse();
 		ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
+		String typeName = type.getName().replace('.', File.separatorChar);
+		int end = name.indexOf(typeName);
+		String binaryPath = name.substring(0,end-1);
+		type.setBinaryPath(binaryPath);
 		if (type.isAspect()) {
 			toList.add(type);
 		}		

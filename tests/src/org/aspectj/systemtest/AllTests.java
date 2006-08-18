@@ -20,6 +20,7 @@ import org.aspectj.systemtest.incremental.IncrementalTests;
 import org.aspectj.systemtest.incremental.model.IncrementalModelTests;
 import org.aspectj.systemtest.incremental.tools.OutputLocationManagerTests;
 import org.aspectj.systemtest.inpath.InPathTests;
+import org.aspectj.systemtest.model.ModelTests;
 import org.aspectj.systemtest.options.OptionsTests;
 import org.aspectj.systemtest.pre10x.AjcPre10xTests;
 import org.aspectj.systemtest.serialVerUID.SUIDTests;
@@ -52,6 +53,7 @@ public class AllTests {
 		suite.addTest(SUIDTests.suite());
 		suite.addTest(XLintTests.suite());
 		suite.addTest(TracingTests.suite());
+		suite.addTest(ModelTests.suite());
 		//$JUnit-END$
 
 		return suite;

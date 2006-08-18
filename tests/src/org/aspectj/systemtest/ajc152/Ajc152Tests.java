@@ -219,11 +219,11 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		  // expecting:
 		  // 	sourceOfRelationship main in MyFoo.java
           //		relationship advised by
-          //			target MyBar.aj
+          //			target MyBar.class
 		  // 
 		  // and
 		  //
-		  // 	sourceOfRelationship MyBar.aj
+		  // 	sourceOfRelationship MyBar.class
           //		relationship advises
           //			target main in MyFoo.java
 
@@ -236,8 +236,8 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			  String sourceOfRelationship = (String) iter.next();
 			  IProgramElement ipe = top.findElementForHandle(sourceOfRelationship);
 			  List relationships = asmRelMap.get(ipe);
-			  if (ipe.getName().equals("MyBar.aj")) {
-				  assertEquals("expected MyBar.aj to have one relationships but found "
+			  if (ipe.getName().equals("MyBar.class")) {
+				  assertEquals("expected MyBar.class to have one relationships but found "
 						  + relationships.size(),1,relationships.size());	
 				  Relationship rel = (Relationship)relationships.get(0);
 				  assertEquals("expected relationship to be 'advises' but was " 
@@ -264,8 +264,8 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 				  List targets = rel.getTargets();
 				  assertEquals("expected one target but found " + targets.size(),1,targets.size());
 				  IProgramElement link = top.findElementForHandle((String)targets.get(0));
-				  assertEquals("expected target 'MyBar.aj' but target " + link.getName(),
-						  "MyBar.aj",link.getName());
+				  assertEquals("expected target 'MyBar.class' but target " + link.getName(),
+						  "MyBar.class",link.getName());
 				  
 			  } else {
 				  fail("unexpected element " + ipe.getName() + " in the relationship map");

@@ -107,7 +107,6 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
                 fail("No test '" + title + "' in suite.");
             }
 		} 
-		ajc.setShouldEmptySandbox(true);
 		boolean run = currentTest.runTest(this);
 		assertTrue("Test not run",run);
         if (clearTest) {

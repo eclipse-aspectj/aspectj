@@ -126,4 +126,8 @@ public class SoftSourceLocation implements ISourceLocation  {
             + getSourceFile().getPath() 
             + ":" + getLine() ;
     }
+
+	public String getSourceFileName() {
+		return null;
+	}
 }

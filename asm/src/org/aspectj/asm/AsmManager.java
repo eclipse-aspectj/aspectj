@@ -61,6 +61,7 @@ public class AsmManager {
 	private static boolean dumpModel = false;
 	private static boolean dumpRelationships = false;
 	private static boolean dumpDeltaProcessing = false;
+	private static IModelFilter modelFilter = null;
 	private static String  dumpFilename = "";
 	private static boolean reporting = false;
 
@@ -88,7 +89,6 @@ public class AsmManager {
 	}
 
 	public static AsmManager getDefault() {
-		new RuntimeException("fetching asm").printStackTrace();
 		return INSTANCE;
 	}
 	
@@ -380,8 +380,19 @@ public class AsmManager {
 		dumpFilename      = filename;
 	}
 	
+	public static void setReporting(String filename,boolean dModel,boolean dRels,boolean dDeltaProcessing,
+            boolean deletefile,IModelFilter aFilter) {
+		setReporting(filename,dModel,dRels,dDeltaProcessing,deletefile);
+		modelFilter = aFilter;
+	}
+	
 	public static boolean isReporting() {
 		return reporting;
+	}
+	
+	public static void setDontReport() {
+		reporting = false;
+		dumpDeltaProcessing=false;
 	}
 	
 
@@ -422,8 +433,10 @@ public class AsmManager {
 		for (int i =0 ;i<indent;i++) w.write(" ");
 		String loc = "";
 		if (node!=null) { 
-			if (node.getSourceLocation()!=null) 
+			if (node.getSourceLocation()!=null) {
 				loc = node.getSourceLocation().toString();
+				if (modelFilter!=null) loc = modelFilter.processFilelocation(loc);
+			}
 		}
 		w.write(node+"  ["+(node==null?"null":node.getKind().toString())+"] "+loc+"\n");
 		if (node!=null) 
@@ -458,9 +471,12 @@ public class AsmManager {
 				List targets = ir.getTargets();
 				for (Iterator iterator2 = targets.iterator();
 					iterator2.hasNext();
-					) {
+					) { 
 					String thid = (String) iterator2.next();
-					w.write("Hid:"+(ctr++)+":(targets="+targets.size()+") "+hid+" ("+ir.getName()+") "+thid+"\n");
+					StringBuffer sb = new StringBuffer();
+					if (modelFilter==null || modelFilter.wantsHandleIds()) sb.append("Hid:"+(ctr++)+":");
+					sb.append("(targets="+targets.size()+") "+hid+" ("+ir.getName()+") "+thid+"\n");
+					w.write(sb.toString());
 				}
 			}
 		}

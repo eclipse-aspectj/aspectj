@@ -40,6 +40,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public static final String PARAMETERIZED_TYPE_IDENTIFIER = "P";
 	
 	private ResolvedType[] resolvedTypeParams;
+	private String binaryPath;
 	
     protected World world;
 	    
@@ -2094,6 +2095,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			if (getSuperclass() != null) return getSuperclass().getAjMemberParameterizationMap();
 		}
 		return myMap;
+	}
+	
+	public void setBinaryPath(String binaryPath) {
+		this.binaryPath = binaryPath;
+	}
+
+	/**
+	 * Returns the path to the jar or class file from which this
+	 * binary aspect came or null if not a binary aspect 
+	 */
+	public String getBinaryPath() {
+		return binaryPath;
 	}
 	    
 }

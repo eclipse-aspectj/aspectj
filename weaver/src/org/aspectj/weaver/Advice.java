@@ -434,7 +434,6 @@ public abstract class Advice extends ShadowMunger {
 	public ResolvedType getResolvedDeclaringAspect() {
 		// The aspect which declares this piece of advice 
 		// is 'concreteAspect' since 'declaringType' is null
-		return concreteAspect;
+		return ((concreteAspect != null) ? concreteAspect : getDeclaringType());
 	}
-
 }

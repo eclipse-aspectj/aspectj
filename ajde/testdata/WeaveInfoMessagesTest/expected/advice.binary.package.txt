@@ -1,0 +1,4 @@
+Join point 'method-execution(void Simple.m1())' in Type 'Simple' (Simple.java:5) advised by before advice from 'pkg.AspectInPackage' (AspectInPackage.class:7(from AspectInPackage.aj))
+Join point 'method-execution(java.lang.String Simple.m2())' in Type 'Simple' (Simple.java:9) advised by before advice from 'pkg.AspectInPackage' (AspectInPackage.class:7(from AspectInPackage.aj))
+Join point 'method-execution(void Simple.main(java.lang.String[]))' in Type 'Simple' (Simple.java:13) advised by before advice from 'pkg.AspectInPackage' (AspectInPackage.class:7(from AspectInPackage.aj))
+Join point 'method-execution(void Simple.mSecret())' in Type 'Simple' (Simple.java:17) advised by before advice from 'pkg.AspectInPackage' (AspectInPackage.class:7(from AspectInPackage.aj))
