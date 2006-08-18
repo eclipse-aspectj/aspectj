@@ -1,0 +1,45 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pkg  [package] 
+    SourceAspect.aj  [java source file] TEST_SANDBOX\SourceAspect.aj:1::0
+      import declarations  [import reference] 
+      SourceAspect  [aspect] TEST_SANDBOX\SourceAspect.aj:3::30
+        declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\SourceAspect.aj:5::49
+        p()  [pointcut] TEST_SANDBOX\SourceAspect.aj:7::154
+        before(): p..  [advice] TEST_SANDBOX\SourceAspect.aj:9::187
+    BinaryAspect.class (binary)  [class] TEST_SANDBOX!pkg\BinaryAspect.class:1::0
+      import declarations  [import reference] 
+      BinaryAspect  [aspect] TEST_SANDBOX!pkg\BinaryAspect.class:1::0
+        p()  [pointcut] TEST_SANDBOX!pkg\BinaryAspect.class:7::0
+        before(): p..  [advice] TEST_SANDBOX!pkg\BinaryAspect.class:9::0
+        declare warning: "There should be n.."  [declare warning] TEST_SANDBOX!pkg\BinaryAspect.class:5::0
+  pack  [package] 
+    C.java  [java source file] TEST_SANDBOX\C.java:1::0
+      import declarations  [import reference] 
+      C  [class] TEST_SANDBOX\C.java:3::30
+        method1()  [method] TEST_SANDBOX\C.java:5::50
+          field-get(java.io.PrintStream java.lang.System.out)  [code] TEST_SANDBOX\C.java:6::93
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) <pkg[BinaryAspect.class (binary)}BinaryAspect&before (advises) <pack{C.java[C~method1
+(targets=2) <pack{C.java[C~method1 (advised by) <pkg*SourceAspect.aj}SourceAspect&before
+(targets=2) <pack{C.java[C~method1 (advised by) <pkg[BinaryAspect.class (binary)}BinaryAspect&before
+(targets=1) <pkg*SourceAspect.aj}SourceAspect`declare warning (matched by) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out)
+(targets=1) <pkg[BinaryAspect.class (binary)}BinaryAspect`declare warning (matched by) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out)
+(targets=1) <pkg*SourceAspect.aj}SourceAspect&before (advises) <pack{C.java[C~method1
+(targets=2) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) <pkg*SourceAspect.aj}SourceAspect`declare warning
+(targets=2) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) <pkg[BinaryAspect.class (binary)}BinaryAspect`declare warning
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+method=1
+import reference=3
+aspect=2
+code=1
+declare warning=2
+class=2
+advice=2
+pointcut=2
+RelationshipMapSize=6
+FileMapSize=2
+package=2
+java source file=3
