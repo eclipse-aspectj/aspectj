@@ -23,6 +23,15 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr154332" title="incorrect deprecated annotation processing">
+      <compile files="Annot.java" options="-1.5">
+        <message kind="warning" line="5" text="marker"/>
+        <message kind="warning" line="31" text="marker"/>
+        <message kind="warning" line="5" text="deprecated"/>
+        <message kind="warning" line="31" text="deprecated"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr148381" title="argNames and javac">
       <!--compile files="C.java" options="-1.5"/>
       <compile files="A.java" options="-1.5"/-->

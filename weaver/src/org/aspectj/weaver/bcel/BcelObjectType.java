@@ -641,7 +641,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	    		annotations     = new AnnotationX[annos.length];
 	    		for (int i = 0; i < annos.length; i++) {
 					Annotation annotation = annos[i];
-					annotationTypes[i] = w.resolve(UnresolvedType.forName(annotation.getTypeName()));
+					annotationTypes[i] = w.resolve(UnresolvedType.forSignature(annotation.getTypeSignature()));
 					annotations[i]     = new AnnotationX(annotation,w);
 				}
     		}
