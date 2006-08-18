@@ -26,6 +26,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
+import org.aspectj.weaver.LintMessage;
 
 /**
  * @author colyer
@@ -126,6 +127,10 @@ public class WeaverMessageHandler implements IMessageHandler {
 		// Remember if this message was due to a deow
 		if (message.getDeclared()) {
 			details.append("[deow=true]");
+		}
+		if (message instanceof LintMessage) {
+			String lintMessageName = ((LintMessage)message).getLintKind();
+			details.append("[Xlint:").append(lintMessageName).append("]");
 		}
 		if (details.length()!=0) { 
 			problem.setSupplementaryMessageInfo(details.toString());

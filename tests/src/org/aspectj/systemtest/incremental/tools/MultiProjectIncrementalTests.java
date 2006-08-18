@@ -36,7 +36,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.tools.ajc.Ajc;
-import org.aspectj.weaver.Lint.LintMessage;
+import org.aspectj.weaver.LintMessage;
 
 /**
  * The superclass knows all about talking through Ajde to the compiler.
@@ -953,6 +953,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	
 
 	public void testPr133117() {
+//		System.gc();
+//		System.exit();
 		configureNonStandardCompileOptions("-Xlint:warning");
 		initialiseProject("PR133117");
 		build("PR133117");
@@ -1426,33 +1428,33 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureBuildStructureModel(false);
 	}
 	
-//	public void testDontLoseXlintWarnings_pr141556() {
-//		configureNonStandardCompileOptions("-Xlint:warning");
-//		initialiseProject("PR141556");
-//		build("PR141556");
-//		checkWasFullBuild();
-//		String warningMessage = "can not build thisJoinPoint " +
-//				"lazily for this advice since it has no suitable guard " +
-//				"[Xlint:noGuardForLazyTjp]";
-//		assertEquals("warning message should be '" + warningMessage + "'",
-//				warningMessage,
-//				((IMessage)MyTaskListManager.getWarningMessages().get(0))
-//					.getMessage());
-//
-//		// add a space to the Aspect but dont do a build
-//		alter("PR141556","inc1");
-//		// remove the space so that the Aspect is exactly as it was
-//		alter("PR141556","inc2");
-//		// build the project and we should not have lost the xlint warning
-//		build("PR141556");
-//		checkWasntFullBuild();
-//		assertTrue("there should still be a warning message ",
-//				!MyTaskListManager.getWarningMessages().isEmpty());
-//		assertEquals("warning message should be '" + warningMessage + "'",
-//				warningMessage,
-//				((IMessage)MyTaskListManager.getWarningMessages().get(0))
-//					.getMessage());
-//	}
+	public void testDontLoseXlintWarnings_pr141556() {
+		configureNonStandardCompileOptions("-Xlint:warning");
+		initialiseProject("PR141556");
+		build("PR141556");
+		checkWasFullBuild();
+		String warningMessage = "can not build thisJoinPoint " +
+				"lazily for this advice since it has no suitable guard " +
+				"[Xlint:noGuardForLazyTjp]";
+		assertEquals("warning message should be '" + warningMessage + "'",
+				warningMessage,
+				((IMessage)MyTaskListManager.getWarningMessages().get(0))
+					.getMessage());
+
+		// add a space to the Aspect but dont do a build
+		alter("PR141556","inc1");
+		// remove the space so that the Aspect is exactly as it was
+		alter("PR141556","inc2");
+		// build the project and we should not have lost the xlint warning
+		build("PR141556");
+		checkWasntFullBuild();
+		assertTrue("there should still be a warning message ",
+				!MyTaskListManager.getWarningMessages().isEmpty());
+		assertEquals("warning message should be '" + warningMessage + "'",
+				warningMessage,
+				((IMessage)MyTaskListManager.getWarningMessages().get(0))
+					.getMessage());
+	}
 
 	public void testLintMessage_pr141564() {
 		configureNonStandardCompileOptions("-Xlint:warning");
@@ -1472,7 +1474,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				msg instanceof LintMessage);
 		assertTrue("expected message to be noGuardForLazyTjp xlint message but" +
 				" instead was " + ((LintMessage)msg).getKind().toString(),
-				((LintMessage)msg).isNoGuardForLazyTjp());
+				((LintMessage)msg).getLintKind().equals("noGuardForLazyTjp"));
+				
 		assertTrue("expected message to be against file in project 'PR141556' but wasn't",
 				msg.getSourceLocation().getSourceFile().getAbsolutePath().indexOf("PR141556") != -1);
 	}

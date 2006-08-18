@@ -693,6 +693,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		state.setWeaver(bcelWeaver);
 		state.clearBinarySourceFiles();
 		
+		if (buildConfig.getLintMode().equals(AjBuildConfig.AJLINT_DEFAULT)) {
+			bcelWorld.getLint().loadDefaultProperties();
+		} else {
+			bcelWorld.getLint().setAll(buildConfig.getLintMode());
+		}
+		if (buildConfig.getLintSpecFile() != null) {
+			bcelWorld.getLint().setFromProperties(buildConfig.getLintSpecFile());
+		}
+		
 		for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext();) {
 			File f = (File) i.next();
 			if (!f.exists()) {
@@ -705,15 +714,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		
 //		String lintMode = buildConfig.getLintMode();
 		
-		if (buildConfig.getLintMode().equals(AjBuildConfig.AJLINT_DEFAULT)) {
-			bcelWorld.getLint().loadDefaultProperties();
-		} else {
-			bcelWorld.getLint().setAll(buildConfig.getLintMode());
-		}
 		
-		if (buildConfig.getLintSpecFile() != null) {
-			bcelWorld.getLint().setFromProperties(buildConfig.getLintSpecFile());
-		}
 		
 		//??? incremental issues
 		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext(); ) {
@@ -957,7 +958,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 					IProblem[] problems = unitResult.getAllProblems();
 					for (int i=0; i < problems.length; i++) {
 						IMessage message =
-							EclipseAdapterUtils.makeMessage(unitResult.compilationUnit, problems[i]);
+							EclipseAdapterUtils.makeMessage(unitResult.compilationUnit, problems[i],getBcelWorld());
 						handler.handleMessage(message);
 					}
 				}

@@ -393,6 +393,8 @@ public class AsmManager {
 	public static void setDontReport() {
 		reporting = false;
 		dumpDeltaProcessing=false;
+		dumpModel=false;
+		dumpRelationships=false;
 	}
 	
 

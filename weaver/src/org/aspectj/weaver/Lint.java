@@ -26,7 +26,6 @@ import java.util.Properties;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
@@ -239,8 +238,10 @@ public class Lint {
 				WeaverMessages.format(WeaverMessages.XLINT_VALUE_ERROR,v));
 		return null;
 	}
-	
-	
+
+	public Kind fromKey(String lintkey) {
+		return (Lint.Kind)kinds.get(lintkey);
+	}
 	
 	public class Kind {
 		private String name;
@@ -290,41 +291,12 @@ public class Lint {
 		public void signal(String[] infos, ISourceLocation location, ISourceLocation[] extraLocations) {
             if (kind == null) return;
             
-            String text = MessageFormat.format(message, infos );
+            String text = MessageFormat.format(message, (Object[])infos );
             text += " [Xlint:" + name + "]";
             world.getMessageHandler().handleMessage(
                     new LintMessage(text, kind, location,extraLocations,getLintKind(name)));
 		}
-	}
-	
-	public class LintMessage extends Message {
-		
-		private Lint.Kind lintKind;
-		
-		public LintMessage(
-				String message, 
-				IMessage.Kind messageKind, 
-				ISourceLocation location, 
-				ISourceLocation[] extraLocations,
-				Lint.Kind lintKind) {  
-			super(message,"",messageKind,location,null,extraLocations);
-			this.lintKind = lintKind;
-		}
-		
-		/**
-		 * @return Returns the Lint kind of this message
-		 */
-		public Lint.Kind getLintKind() {
-			return lintKind;
-		}
-		
-		/**
-		 * @return true if this message is a noGuardForLazyTjp xlint
-		 * message and false otherwise
-		 */
-		public boolean isNoGuardForLazyTjp() {
-			return lintKind.equals(noGuardForLazyTjp);
-		}
+
 	}
 	
 }

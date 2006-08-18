@@ -58,7 +58,6 @@ public class BcelAdvice extends Advice {
 	private ExposedState exposedState;
     
     private boolean hasMatchedAtLeastOnce = false;
-    private boolean hasReportedNoGuardForLazyTJP = false;
 
 	public BcelAdvice(
 		AjAttribute.AdviceAttribute attribute,
@@ -86,6 +85,17 @@ public class BcelAdvice extends Advice {
 		suppressLintWarnings(world);
 		ShadowMunger ret = super.concretize(fromType, world, clause);
 		clearLintSuppressions(world,this.suppressedLintKinds);
+		IfFinder ifinder = new IfFinder();
+		ret.getPointcut().accept(ifinder,null);
+		boolean hasGuardTest = ifinder.hasIf && getKind() != AdviceKind.Around;
+		boolean isAround = getKind() == AdviceKind.Around;
+		if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
+		  if (!isAround && !hasGuardTest && world.getLint().noGuardForLazyTjp.isEnabled()) {
+			// can't build tjp lazily, no suitable test...
+			// ... only want to record it once against the advice(bug 133117)
+			world.getLint().noGuardForLazyTjp.signal("",getSourceLocation());	
+		  }
+		}
 		return ret;
 	}
 	
@@ -158,15 +168,6 @@ public class BcelAdvice extends Advice {
 			if (!hasGuardTest && world.getLint().multipleAdviceStoppingLazyTjp.isEnabled()) {
 				// collect up the problematic advice
 				((BcelShadow)shadow).addAdvicePreventingLazyTjp(this);
-			}
-			if (!hasReportedNoGuardForLazyTJP && !isAround && !hasGuardTest && world.getLint().noGuardForLazyTjp.isEnabled()) {
-				// can't build tjp lazily, no suitable test...
-				// ... only want to record it once against the advice(bug 133117)
-				world.getLint().noGuardForLazyTjp.signal(
-						"",
-					    getSourceLocation()
-				);	
-				hasReportedNoGuardForLazyTJP = true;
 			}
         }
         

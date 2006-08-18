@@ -21,10 +21,9 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.aspectj.weaver.LintMessage;
+import org.aspectj.weaver.World;
 
-/**
- * 
- */
 public class EclipseAdapterUtils {
 
     //XXX some cut-and-paste from eclipse sources
@@ -127,8 +126,9 @@ public class EclipseAdapterUtils {
 
     /** 
      * Extract message text and source location, including context. 
+     * @param world 
      */
-    public static IMessage makeMessage(ICompilationUnit unit, IProblem problem) { 
+    public static IMessage makeMessage(ICompilationUnit unit, IProblem problem, World world) { 
         ISourceLocation sourceLocation = makeSourceLocation(unit, problem);
         IProblem[] seeAlso = problem.seeAlso();
         ISourceLocation[] seeAlsoLocations = new ISourceLocation[seeAlso.length];
@@ -143,9 +143,17 @@ public class EclipseAdapterUtils {
 		// in the extraDetails.
 		String extraDetails = problem.getSupplementaryMessageInfo();
 		boolean declared = false;
+		boolean isLintMessage = false;
+		String lintkey = null;
 		if (extraDetails!=null && extraDetails.endsWith("[deow=true]")) {
 			declared = true;
 			extraDetails = extraDetails.substring(0,extraDetails.length()-"[deow=true]".length());
+		}
+		if (extraDetails!=null && extraDetails.indexOf("[Xlint:")!=-1) {
+			isLintMessage = true;
+			lintkey = extraDetails.substring(extraDetails.indexOf("[Xlint:"));
+			lintkey = lintkey.substring("[Xlint:".length());
+			lintkey = lintkey.substring(0,lintkey.indexOf("]"));
 		}
 		
 		// If the 'problem' represents a TO DO kind of thing then use the message kind that
@@ -157,7 +165,21 @@ public class EclipseAdapterUtils {
 		  if (problem.isError()) { kind = IMessage.ERROR; }
 		  else                   { kind = IMessage.WARNING; }
 		}
-        IMessage msg = new Message(problem.getMessage(), 
+		IMessage msg = null;
+		if (isLintMessage) {
+		  msg = new LintMessage(
+				   problem.getMessage(), 
+				   extraDetails,
+				   world.getLint().fromKey(lintkey),
+				   kind,
+				   sourceLocation, 
+				   null,
+				   seeAlsoLocations,
+				   declared,
+				   problem.getID(),
+				   problem.getSourceStart(),problem.getSourceEnd());
+		} else {
+          msg = new Message(problem.getMessage(), 
         						   extraDetails,
 								   kind,
 								   sourceLocation, 
@@ -166,7 +188,8 @@ public class EclipseAdapterUtils {
 								   declared,
 								   problem.getID(),
 								   problem.getSourceStart(),problem.getSourceEnd());
-        return msg;
+		}
+		return msg;
     }               
 
     public static IMessage makeErrorMessage(ICompilationUnit unit, String text, Exception ex) {
