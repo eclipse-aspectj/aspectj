@@ -55,17 +55,12 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.Bindings;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.IScope;
-import org.aspectj.weaver.patterns.IdentityPointcutVisitor;
-import org.aspectj.weaver.patterns.IfPointcut;
-import org.aspectj.weaver.patterns.NotPointcut;
-import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.PerCflow;
@@ -1762,38 +1757,6 @@ public class AtAjAttributes {
         } catch (ParserException e) {
             reportError("Invalid type pattern'" + patternString + "' : " + e.getLocation(), location);
             return null;
-        }
-    }
-
-    /**
-     * Look for an if() pointcut
-     */
-    private static class IfFinder extends IdentityPointcutVisitor {
-        boolean hasIf = false;
-        public Object visit(IfPointcut node, Object data) {
-            if (node.alwaysFalse() || node.alwaysTrue()) {
-                ;//IfFalse / IfTrue
-            } else {
-                hasIf = true;
-            }
-            return node;
-        }
-
-        public Object visit(AndPointcut node, Object data) {
-            if (!hasIf) node.getLeft().accept(this, data);
-            if (!hasIf) node.getRight().accept(this, data);
-            return node;
-        }
-
-        public Object visit(NotPointcut node, Object data) {
-            if (!hasIf) node.getNegatedPointcut().accept(this, data);
-            return node;
-        }
-
-        public Object visit(OrPointcut node, Object data) {
-            if (!hasIf) node.getLeft().accept(this, data);
-            if (!hasIf) node.getRight().accept(this, data);
-            return node;
         }
     }
 
