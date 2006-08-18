@@ -1462,7 +1462,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertTrue("expected the handler to be an IMessageHolder but wasn't ",
 				handler instanceof IMessageHolder);
 		IMessage[] msgs = ((IMessageHolder)AjdeManager.getMessageHandler()).getMessages(null,true);
-		IMessage msg = msgs[msgs.length-1];
+		assertTrue("There should be no messages but I found: "+msgs.length,msgs.length==0);
+		
+		List tasklistMessages = MyTaskListManager.getWarningMessages();
+		assertTrue("Should be one message but found "+tasklistMessages.size(),tasklistMessages.size()==1);
+		
+		IMessage msg = (IMessage)tasklistMessages.get(0);
 		assertTrue("expected message to be a LintMessage but wasn't", 
 				msg instanceof LintMessage);
 		assertTrue("expected message to be noGuardForLazyTjp xlint message but" +

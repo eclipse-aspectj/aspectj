@@ -634,7 +634,7 @@ public class CompilerAdapter {
                 }
 			
 			taskListManager.addSourcelineTask(message);
-			return super.handleMessage(message); // also store...	
+			return true;
 		}
 		
 		private boolean handleAbort(IMessage abortMessage) {
