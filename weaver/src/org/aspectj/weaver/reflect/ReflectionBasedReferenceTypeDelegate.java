@@ -15,6 +15,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -40,6 +42,8 @@ import org.aspectj.weaver.patterns.PerClause;
  */
 public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelegate {
 
+	private static final ClassLoader BootClassLoader = new URLClassLoader(new URL[0]);
+	
 	protected Class myClass = null;
 	protected ClassLoader classLoader = null;
 	private World world;
@@ -59,7 +63,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		this.myClass = aClass;
 		this.resolvedType = aType;
 		this.world = aWorld;
-		this.classLoader = aClassLoader;
+		this.classLoader = (aClassLoader != null) ? aClassLoader : BootClassLoader;
 	}
 	
 	protected Class getBaseClass() { 

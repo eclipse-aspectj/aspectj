@@ -63,7 +63,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		myType = AjTypeSystem.getAjType(aClass);
 		annotationFinder = new Java15AnnotationFinder();
 		argNameFinder = annotationFinder;
-		annotationFinder.setClassLoader(classLoader);
+		annotationFinder.setClassLoader(this.classLoader);
 		this.typeConverter = new JavaLangTypeToResolvedTypeConverter(aWorld);
 	}
 	

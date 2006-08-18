@@ -59,6 +59,7 @@ import java.io.InputStream;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -75,11 +76,12 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: ClassLoaderRepository.java,v 1.6 2006/08/08 11:26:28 aclement Exp $
+ * @version $Id: ClassLoaderRepository.java,v 1.7 2006/08/18 14:51:00 acolyer Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */
 public class ClassLoaderRepository implements Repository {
+  private static java.lang.ClassLoader bootClassLoader = null;
   private java.lang.ClassLoader loader;
   private WeakHashMap /*<String classname,JavaClass>*/loadedClassesLocalCache = new WeakHashMap(); 
   private static Map /*<URL,JavaClass>*/loadedUrlsSharedCache = new HashMap(); 
@@ -99,7 +101,14 @@ public class ClassLoaderRepository implements Repository {
   }
   
   public ClassLoaderRepository( java.lang.ClassLoader loader ) {
-    this.loader = loader;
+    this.loader = (loader != null) ? loader : getBootClassLoader();
+  }
+  
+  private static synchronized java.lang.ClassLoader getBootClassLoader() {
+	  if (bootClassLoader == null) {
+		  bootClassLoader = new URLClassLoader(new URL[0]);
+	  }
+	  return bootClassLoader;
   }
 
   /**
