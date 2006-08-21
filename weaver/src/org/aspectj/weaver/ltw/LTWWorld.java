@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.ICrossReferenceHandler;
@@ -48,7 +49,6 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
  */
 public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	
-
 	private AnnotationFinder annotationFinder;
     private ClassLoader loader; // weavingContext?
     private IWeavingContext weavingContext;
@@ -244,5 +244,10 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		((ReferenceType)ret).setDelegate(rtd);
 		return ret;
 	}
+
+	public void storeClass(JavaClass clazz) {
+		delegate.storeClass(clazz);
+	}
+
     
 }

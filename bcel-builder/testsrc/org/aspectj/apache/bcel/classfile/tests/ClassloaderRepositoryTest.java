@@ -26,20 +26,33 @@ public class ClassloaderRepositoryTest extends TestCase {
 
 	// Retrieve string 5 times from same repository, 4 hits should be from local cache
 	public void testLocalCacheWorks() throws ClassNotFoundException {		
+		ClassLoaderRepository.useSharedCache=false;
 		JavaClass jc = rep1.loadClass("java.lang.String");
 		jc = rep1.loadClass("java.lang.String");
 		jc = rep1.loadClass("java.lang.String");
 		jc = rep1.loadClass("java.lang.String");
 		jc = rep1.loadClass("java.lang.String");
-		assertTrue("Should have used local cache 4 times: "+rep1.reportLocalCacheHits(),rep1.reportLocalCacheHits()==4);
+		assertTrue("Should have used local cache 4 times: "+reportLocalCacheHits(rep1),reportLocalCacheHits(rep1)==4);
+	}
+
+	// Retrieve string 5 times from same repository, 4 hits should be from local cache
+	public void testSharedCacheWorksOnOne() throws ClassNotFoundException {		
+		ClassLoaderRepository.useSharedCache=true;
+		JavaClass jc = rep1.loadClass("java.lang.String");
+		jc = rep1.loadClass("java.lang.String");
+		jc = rep1.loadClass("java.lang.String");
+		jc = rep1.loadClass("java.lang.String");
+		jc = rep1.loadClass("java.lang.String");
+		assertTrue("Should have used local cache 4 times: "+reportSharedCacheHits(rep1),reportSharedCacheHits(rep1)==4);
 	}
 
 	// Retrieve String through one repository then load again through another, should be shared cache hit
 	public void testSharedCacheWorks() throws ClassNotFoundException {		
+		ClassLoaderRepository.useSharedCache=true;
 		JavaClass jc = rep1.loadClass("java.lang.String");
 		jc = rep2.loadClass("java.lang.String");
-		assertTrue("Should have retrieved String from shared cache: "+ClassLoaderRepository.reportSharedCacheHits(),
-				ClassLoaderRepository.reportSharedCacheHits()==1);
+		assertTrue("Should have retrieved String from shared cache: "+reportSharedCacheHits(rep1),
+				reportSharedCacheHits(rep1)==1);
 	}
 	
 	// Shared cache OFF, shouldn't get a shared cache hit
@@ -49,8 +62,8 @@ public class ClassloaderRepositoryTest extends TestCase {
 			JavaClass jc = rep1.loadClass("java.lang.String");
 			jc = rep2.loadClass("java.lang.String");
 			assertTrue("Should not have retrieved String from shared cache: "+
-					ClassLoaderRepository.reportSharedCacheHits(),
-				    ClassLoaderRepository.reportSharedCacheHits()==0);
+					reportSharedCacheHits(rep1),
+				    reportSharedCacheHits(rep1)==0);
 		} finally {
 			ClassLoaderRepository.useSharedCache=true;
 		}
@@ -58,10 +71,19 @@ public class ClassloaderRepositoryTest extends TestCase {
 	
 	public void tearDown() throws Exception {
 		super.tearDown();
-		System.err.println("Rep1: "+rep1.reportAllStatistics());
-		System.err.println("Rep2: "+rep2.reportAllStatistics());
+		System.err.println("Rep1: "+rep1.reportStats());
+		System.err.println("Rep2: "+rep2.reportStats());
 		rep1.reset();
 		rep2.reset();
 	}
-	
+
+	private long reportLocalCacheHits(ClassLoaderRepository rep) {
+		return rep.reportStats()[5];
+	}
+
+	private long reportSharedCacheHits(ClassLoaderRepository rep) {
+		return rep.reportStats()[3];
+	}
+
 }
+

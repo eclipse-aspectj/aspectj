@@ -187,7 +187,12 @@ public class BcelWeaver implements IWeaver {
 			WeaverStateInfo wsi = type.getWeaverState();		
 			if (wsi != null && wsi.isReweavable()) {
 			    BcelObjectType classType = getClassType(type.getName());
-				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
+				JavaClass wovenJavaClass = classType.getJavaClass();
+				JavaClass unwovenJavaClass = Utility.makeJavaClass(wovenJavaClass.getFileName(),
+				  wsi.getUnwovenClassFileData(wovenJavaClass.getBytes()));
+				world.storeClass(unwovenJavaClass);
+				classType.setJavaClass(unwovenJavaClass);
+//				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
 			}
 			
             //TODO AV - happens to reach that a lot of time: for each type flagged reweavable X for each aspect in the weaverstate

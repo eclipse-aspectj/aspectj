@@ -81,7 +81,7 @@ import org.aspectj.weaver.patterns.SimpleScope;
 public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
 
-    private Repository delegate;
+    protected Repository delegate;
     
     
 	//private ClassPathManager aspectPath = null;
@@ -644,7 +644,7 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	public void storeClass(JavaClass clazz) {
-		throw new RuntimeException("Not implemented");
+		// doesn't need to do anything
 	}
 
 	public void removeClass(JavaClass clazz) {
