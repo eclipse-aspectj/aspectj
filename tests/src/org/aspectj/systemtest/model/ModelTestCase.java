@@ -76,7 +76,21 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 		}
 
 		public String processFilelocation(String loc) {
-			if (loc.startsWith(sandboxDirectory)) return "TEST_SANDBOX"+loc.substring(sandboxDirectory.length());
+			if (loc.toLowerCase().startsWith(sandboxDirectory.toLowerCase())) {
+				String sub = loc.substring(sandboxDirectory.length());
+				int forwardSlash = sub.indexOf("/");
+				// replace all "/" with "\" - to ensure platform independence
+				if (forwardSlash != -1) {
+					sub = sub.replace('/','\\');
+				}
+				// don't report the column number since this is sometimes
+				// different on windows and linux
+				int column = sub.lastIndexOf(':');
+				if (column != -1) {
+					return "TEST_SANDBOX" + sub.substring(0,column);
+				}
+				return "TEST_SANDBOX"+sub;
+			}
 			return loc;
 		}
 

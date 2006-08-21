@@ -1,15 +1,15 @@
 === MODEL STATUS REPORT ========= After a batch build
 <root>  [java source file] 
   pack  [package] 
-    C.java  [java source file] TEST_SANDBOX\C.java:1::0
+    C.java  [java source file] TEST_SANDBOX\C.java:1:
       import declarations  [import reference] 
-      C  [class] TEST_SANDBOX\C.java:3::30
-        method1()  [method] TEST_SANDBOX\C.java:5::50
-          field-get(java.io.PrintStream java.lang.System.out)  [code] TEST_SANDBOX\C.java:6::93
-  A.class (binary)  [class] TEST_SANDBOX\simple.jar!A.class:1::0
+      C  [class] TEST_SANDBOX\C.java:3:
+        method1()  [method] TEST_SANDBOX\C.java:5:
+          field-get(java.io.PrintStream java.lang.System.out)  [code] TEST_SANDBOX\C.java:6:
+  A.class (binary)  [class] TEST_SANDBOX\simple.jar!A.class:1:
     import declarations  [import reference] 
-    A  [aspect] TEST_SANDBOX\simple.jar!A.class:1::0
-      declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\simple.jar!A.class:4::0
+    A  [aspect] TEST_SANDBOX\simple.jar!A.class:1:
+      declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\simple.jar!A.class:4:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
 (targets=1) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) [A.class (binary)}A`declare warning
