@@ -343,13 +343,6 @@
         <compile files="Pr126316.aj" options="-1.5"/>
     </ajc-test> 
 
-    <ajc-test dir="bugs151/pr120356" title="@AJ no NPE with deow when structure model isn't generated">
-        <compile files="C.java, A.java" options="-1.5">
-         <message kind="error" line="8" text="error"/>
-          <message kind="warning" line="5" text="warning"/>
-        </compile>
-    </ajc-test>
-
     <ajc-test dir="bugs151" title="@AJ without JoinPoint import">
         <compile files="pr121616.java" options="-1.5">
           <message kind="error" line="13" text="JoinPoint cannot be resolved to a type"/>

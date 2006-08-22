@@ -143,10 +143,6 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAtAspectInheritsAbstractPointcut_pr125810 () {
 	  runTest("warning when inherited pointcut not made concrete"); 
   }
-    
-  public void testAtAspectNoNPEWithDEOWWithoutStructureModel_pr120356() {
-	  runTest("@AJ no NPE with deow when structure model isn't generated"); 
-  }
   
   public void testAtAspectWithoutJoinPointImport_pr121616() {
 	  runTest("@AJ without JoinPoint import");
