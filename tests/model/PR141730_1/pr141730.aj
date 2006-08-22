@@ -1,14 +1,11 @@
-import java.util.List;
-
 aspect A {
-
-	pointcut p() : execution(* *.*(..));
 	
-	before() : p() {}
+	pointcut p() : execution(* *.*(..)) || execution(*.new(..));
 	
-	public void MyClass.method() {}
+	before() : p() {
+		
+	}
 	
-	public MyClass.new() {super();}
 }
 
 class C {
@@ -23,11 +20,7 @@ class C {
 	
 	public void myClassMethod(MyClass s) {}
 	
-	public void genericMethod(List<String> l) {}
-	
 	public void twoArgsMethod(int i, String s) {}
-	
-	public void genericMethod2(MyGenericClass<String,MyClass> m) {}
 	
 	public static void main(String[] args) {}
 	
@@ -37,10 +30,4 @@ class C {
 	
 }
 
-class MyClass {
-	
-	public MyClass(String s) {}
-	
-}
-
-class MyGenericClass<X,Y> {}
+class MyClass {}

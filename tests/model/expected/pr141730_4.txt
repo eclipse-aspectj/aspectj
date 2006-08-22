@@ -1,0 +1,43 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  bar  [package] 
+    MyBar.aj  [java source file] TEST_SANDBOX\MyBar.aj:1:
+      import declarations  [import reference] 
+        foo.*  [import reference] TEST_SANDBOX\MyBar.aj:3:
+      MyBar  [aspect] TEST_SANDBOX\MyBar.aj:5:
+        before(): <anonymous pointcut>  [advice] TEST_SANDBOX\MyBar.aj:7:
+        declare warning: "System.out should.."  [declare warning] TEST_SANDBOX\MyBar.aj:9:
+        declare parents: extends NewClass  [declare parents] TEST_SANDBOX\MyBar.aj:11:
+        declare @type: *Foo* : @MyAnnotation  [declare @type] TEST_SANDBOX\MyBar.aj:13:
+        declare @method: public * *Foo.anotMethod(..) : @MyAnnotation  [declare @method] TEST_SANDBOX\MyBar.aj:14:
+        declare @constructor: *Foo.new(java.lang.String) : @MyAnnotation  [declare @constructor] TEST_SANDBOX\MyBar.aj:15:
+        declare @field: int *Foo.* : @MyAnnotation  [declare @field] TEST_SANDBOX\MyBar.aj:16:
+    MyAnnotation.java  [java source file] TEST_SANDBOX\MyAnnotation.java:1:
+      import declarations  [import reference] 
+      MyAnnotation  [annotation] TEST_SANDBOX\MyAnnotation.java:3:
+    NewClass.java  [java source file] TEST_SANDBOX\NewClass.java:1:
+      import declarations  [import reference] 
+      NewClass  [class] TEST_SANDBOX\NewClass.java:3:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) <bar*MyBar.aj}MyBar`declare parents!2 (declared on) {MyFoo.java
+(targets=1) {MyFoo.java (annotated by) <bar*MyBar.aj}MyBar`declare @type!3
+(targets=1) {MyFoo.java (aspect declarations) <bar*MyBar.aj}MyBar`declare parents!2
+(targets=1) <bar*MyBar.aj}MyBar`declare @type!3 (annotates) {MyFoo.java
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+import reference=4
+aspect=1
+declare @method=1
+declare warning=1
+declare parents=1
+declare @type=1
+declare @constructor=1
+advice=1
+annotation=1
+class=1
+RelationshipMapSize=3
+FileMapSize=3
+package=1
+declare @field=1
+java source file=4

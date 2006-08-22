@@ -1,0 +1,37 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pkg  [package] 
+    A.aj  [java source file] TEST_SANDBOX\A.aj:1:
+      import declarations  [import reference] 
+      A  [aspect] TEST_SANDBOX\A.aj:3:
+        before(): pointcutInClass..  [advice] TEST_SANDBOX\A.aj:5:
+        pointcutInAspect()  [pointcut] TEST_SANDBOX\A.aj:8:
+        before(): pointcutInAspect..  [advice] TEST_SANDBOX\A.aj:10:
+        aMethod()  [method] TEST_SANDBOX\A.aj:13:
+    C.aj  [java source file] TEST_SANDBOX\C.aj:1:
+      import declarations  [import reference] 
+      C  [class] TEST_SANDBOX\C.aj:3:
+        pointcutInClass()  [pointcut] TEST_SANDBOX\C.aj:5:
+        cMethod()  [method] TEST_SANDBOX\C.aj:7:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) <pkg*A.aj}A+pointcutInAspect (pointcut used by) <pkg*A.aj}A&before!2
+(targets=1) <pkg*A.aj}A&before!2 (uses pointcut) <pkg*A.aj}A+pointcutInAspect
+(targets=1) <pkg*A.aj}A&before!2 (advises) <pkg*A.aj}A~aMethod
+(targets=1) <pkg*C.aj[C~cMethod (advised by) <pkg*A.aj}A&before
+(targets=1) *C.aj (pointcut used by) <pkg*A.aj}A&before
+(targets=1) <pkg*A.aj}A~aMethod (advised by) <pkg*A.aj}A&before!2
+(targets=1) <pkg*A.aj}A&before (uses pointcut) *C.aj
+(targets=1) <pkg*A.aj}A&before (advises) <pkg*C.aj[C~cMethod
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+method=2
+import reference=2
+aspect=1
+class=1
+advice=2
+pointcut=2
+RelationshipMapSize=6
+FileMapSize=2
+package=1
+java source file=3

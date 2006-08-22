@@ -1,0 +1,28 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pr77269b.aj  [java source file] TEST_SANDBOX\pr77269b.aj:1:
+    import declarations  [import reference] 
+    Test  [class] TEST_SANDBOX\pr77269b.aj:1:
+      testMethod()  [method] TEST_SANDBOX\pr77269b.aj:3:
+        new Runnable() {..}  [class] TEST_SANDBOX\pr77269b.aj:4:
+          run()  [method] TEST_SANDBOX\pr77269b.aj:5:
+        1$C  [class] TEST_SANDBOX\pr77269b.aj:8:
+          m()  [method] TEST_SANDBOX\pr77269b.aj:9:
+    A  [aspect] TEST_SANDBOX\pr77269b.aj:16:
+      p()  [pointcut] TEST_SANDBOX\pr77269b.aj:18:
+      before(): p..  [advice] TEST_SANDBOX\pr77269b.aj:20:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) *pr77269b.aj[Test~testMethod[1$C~m (advised by) *pr77269b.aj}A&before
+(targets=1) *pr77269b.aj}A&before (advises) *pr77269b.aj[Test~testMethod[1$C~m
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+method=3
+import reference=1
+aspect=1
+class=3
+advice=1
+pointcut=1
+RelationshipMapSize=2
+FileMapSize=1
+java source file=2

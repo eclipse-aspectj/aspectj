@@ -247,6 +247,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 state.clearBinarySourceFiles(); // we don't want these hanging around...
                 if (handler.hasErrors()) {
                    	CompilationAndWeavingContext.leavingPhase(ct);
+                   	if (AsmManager.isReporting())
+    				    AsmManager.getDefault().reportModelInfo("After a failed batch build");
                     return false;
                 }
 

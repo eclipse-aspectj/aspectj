@@ -14,8 +14,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.Test;
 
@@ -25,10 +23,6 @@ import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IHierarchy;
-import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.IRelationship;
-import org.aspectj.asm.internal.Relationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.LangUtil;
 
@@ -589,104 +583,6 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("ClassCastException with generic wildcard");
   }
   
-  public void testAdviceInStructureModelWithAnonymousInnerClass_pr77269() {
-	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
-	  runTest("advice in structure model with anonymous inner class");  
-  	  IHierarchy top = AsmManager.getDefault().getHierarchy();
-  	    	  
-  	  // checking that the run() method inside anonymous inner class is in 
-  	  // the structure model
-  	  IProgramElement anonRunMethodIPE = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.METHOD,"run()");  	 
-  	 
-  	  assertNotNull("Couldn't find 'run()' element in the tree",anonRunMethodIPE);
-  	  List l = AsmManager.getDefault().getRelationshipMap().get(anonRunMethodIPE);	
-  	  assertNotNull("Should have some relationships but does not",l);
-  	  assertTrue("Should have one relationship but has " + l.size(),l.size()==1);
-  	  Relationship rel = (Relationship)l.get(0);
-  	  List targets = rel.getTargets();
-  	  assertTrue("Should have one target but has" + targets.size(),
-  			  targets.size()==1);
-  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)targets.get(0));
-  	  assertEquals("target of relationship should be 'before(): p..' but is "
-  			  + target.toLabelString(),"before(): p..",target.toLabelString());
-  	  
-
-  	  IProgramElement adviceIPE = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.ADVICE,"before(): p..");  	  
-  	  assertNotNull("Couldn't find 'before(): p..' element in the tree",adviceIPE);
-  	  l = AsmManager.getDefault().getRelationshipMap().get(adviceIPE);
-  	  assertNotNull("Should have some relationships but does not",l);
-  	  assertTrue("Should have a relationship but does not ",l.size()>0);
-  	  for (Iterator iter = l.iterator(); iter.hasNext();) {
-		IRelationship element = (IRelationship) iter.next();
-		if (element.getName().equals("advises")) {
-			rel = (Relationship) element;
-			break;
-		}
-	  }
-  	  targets = rel.getTargets();
-  	  assertTrue("Should have one target but has" + targets.size(),
-  			  targets.size()==1);
-  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)targets.get(0));
-  	  assertEquals("target of relationship should be 'run()' but is "
-  			  + target.toLabelString(),"run()",target.toLabelString());
-  	  
-  }
- 
-  public void testAdviceInStructureModelWithNamedInnerClass_pr77269() {
-	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
-	  runTest("advice in structure model with named inner class");  
-  	  IHierarchy top = AsmManager.getDefault().getHierarchy();
-  	    	  
-  	  // checking that the m() method inside named inner class is in 
-  	  // the structure model
-  	  IProgramElement namedMethodIPE = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.METHOD,"m()");  	  
-  	  assertNotNull("Couldn't find 'm()' element in the tree",namedMethodIPE);
-  	  List l = AsmManager.getDefault().getRelationshipMap().get(namedMethodIPE);	
-  	  assertNotNull("Should have some relationships but does not",l);
-  	  assertTrue("Should have one relationship but has " + l.size(),l.size()==1);
-  	  Relationship rel = (Relationship)l.get(0);
-  	  List targets = rel.getTargets();
-  	  assertTrue("Should have one target but has" + targets.size(),
-  			  targets.size()==1);
-  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)targets.get(0));
-  	  assertEquals("target of relationship should be 'before(): p..' but is "
-  			  + target.toLabelString(),"before(): p..",target.toLabelString());
-  	  
-
-  	  IProgramElement adviceIPE = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.ADVICE,"before(): p..");  	  
-  	  assertNotNull("Couldn't find 'before(): p..' element in the tree",adviceIPE);
-  	  l = AsmManager.getDefault().getRelationshipMap().get(adviceIPE);
-  	  assertNotNull("Should have some relationships but does not",l);
-  	  assertTrue("Should have a relationship but does not ",l.size()>0);
-  	  for (Iterator iter = l.iterator(); iter.hasNext();) {
-		IRelationship element = (IRelationship) iter.next();
-		if (element.getName().equals("advises")) {
-			rel = (Relationship) element;
-			break;
-		}
-	  }
-  	  targets = rel.getTargets();
-  	  assertTrue("Should have one target but has" + targets.size(),
-  			  targets.size()==1);
-  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)targets.get(0));
-  	  assertEquals("target of relationship should be 'm()' but is "
-  			  + target.toLabelString(),"m()",target.toLabelString());
-  	  
-  }
-  
-  public void testDWInStructureModelWithAnonymousInnerClass_pr77269() {
-      // AsmManager.setReporting("c:/debug.txt",true,true,true,true);
-	  runTest("declare warning in structure model with anonymous inner class");  
-  	  IHierarchy top = AsmManager.getDefault().getHierarchy();
-  	  IProgramElement pe = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.CODE,"method-call(void pack.Test.someMethod())");  	 	 
-  	  assertNotNull("Couldn't find 'method-call(void pack.Test.someMethod())' element in the tree",pe);
-  }
-  
   public void testVarArgsIITDInConstructor() {
 	  runTest("ITD varargs in constructor");
   }
@@ -801,16 +697,6 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testXlintMessageForImproperAnnotationType_pr115252_Parameter() {runTest("xlint message for improper annotated parameter type");}  
   public void testXlintMessageForImproperAnnotationType_pr115252_Throws() {runTest("xlint message for improper annotated throws pattern");}  
   public void testXlintMessageForImproperAnnotationType_pr115252_MoreThanOne() {runTest("xlint message for more than one improper annotated parameter type");}  
-  
-  public void testDeclareAtTypeInStructureModel_pr115607() {
-	  runTest("declare at type appears correctly in structure model");  
-  	  IHierarchy top = AsmManager.getDefault().getHierarchy();
-  	  IProgramElement pe = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_TYPE,"declare @type: Simple : @I");  	 	 
-  	  assertNotNull("Couldn't find 'declare @type: Simple : @I' element in the tree",pe);
-  	  List l = AsmManager.getDefault().getRelationshipMap().get(pe);	
-	  assertNotNull("Should have some relationships but does not",l);
-  }
   
   public void testNoNPEWhenInaccessibleMethodIsCalledWithinITD_pr119019() {
 	  runTest("no NPE when inaccessible method is called within itd");

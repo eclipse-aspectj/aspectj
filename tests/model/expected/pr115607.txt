@@ -1,0 +1,24 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pr115607.java  [java source file] TEST_SANDBOX\pr115607.java:1:
+    import declarations  [import reference] 
+    I  [annotation] TEST_SANDBOX\pr115607.java:1:
+    Simple  [class] TEST_SANDBOX\pr115607.java:3:
+    pr115607  [aspect] TEST_SANDBOX\pr115607.java:5:
+      declare @type: Simple : @I  [declare @type] TEST_SANDBOX\pr115607.java:6:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) {pr115607.java}pr115607`declare @type (annotates) {pr115607.java[Simple
+(targets=1) {pr115607.java[Simple (annotated by) {pr115607.java}pr115607`declare @type
+(targets=1) {pr115607.java (annotates) {pr115607.java
+(targets=1) {pr115607.java (annotated by) {pr115607.java
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+annotation=1
+FileMapSize=1
+aspect=1
+RelationshipMapSize=3
+java source file=2
+declare @type=1
+import reference=1
+class=1

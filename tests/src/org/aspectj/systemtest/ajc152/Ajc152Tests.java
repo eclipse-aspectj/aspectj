@@ -11,21 +11,15 @@
 package org.aspectj.systemtest.ajc152;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Test;
 
-import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.IRelationshipMap;
-import org.aspectj.asm.internal.Relationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.CharOperation;
-import org.aspectj.weaver.World;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -114,41 +108,6 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testJRockitBooleanReturn2_pr148007() { runTest("jrockit boolean fun (no aspects)");}
   public void testSyntheticAjcMembers_pr147711() { runTest("synthetic ajc$ members"); }
   
-  public void testDeclareAtMethodRelationship_pr143924() {
-	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
-	  runTest("declare @method relationship");
-	  IHierarchy top = AsmManager.getDefault().getHierarchy();
-	  
-  	  // get the IProgramElements corresponding to the different code entries
-  	  IProgramElement decam = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
-  			  "declare @method: * debit(..) : @Secured(role = \"supervisor\")");  	   	 
-  	  assertNotNull("Couldn't find 'declare @method' element in the tree",decam);
-  	  IProgramElement method = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.METHOD,"debit(java.lang.String,long)");
-  	  assertNotNull("Couldn't find the 'debit(String,long)' method element in the tree",method);
-
-  	  List matches = AsmManager.getDefault().getRelationshipMap().get(decam);	
-  	  assertNotNull("'declare @method' should have some relationships but does not",matches);
-  	  assertTrue("'declare @method' should have one relationships but has " + matches.size(),matches.size()==1);
-  	  List matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("'declare @method' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
-  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the 'debit(java.lang.String,long)' method but is IPE with label "
-  			  + target.toLabelString(),method,target);
-  	  
-  	  // check that the debit method has an annotated by relationship with the declare @method
-  	  matches = AsmManager.getDefault().getRelationshipMap().get(method);	
-  	  assertNotNull("'debit(java.lang.String,long)' should have some relationships but does not",matches);
-  	  assertTrue("'debit(java.lang.String,long)' should have one relationships but has " + matches.size(),matches.size()==1);
-  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("'debit(java.lang.String,long)' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
-  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the 'declare @method' ipe but is IPE with label "
-  			  + target.toLabelString(),decam,target);
-  	  
-  }
-  
 // this next one reported as a bug by Rob Harrop, but I can't reproduce the failure yet...
 //public void testAtAspectWithReferencePCPerClause_pr138220() { runTest("@Aspect with reference pointcut in perclause");}  
 
@@ -156,178 +115,19 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testJarChecking_pr137235_2() { runTest("directory with .jar extension"); }
   public void testMakePreMethodNPE_pr136393() { runTest("NPE in makePreMethod");}
 
-  public void testGetParameterHandles_pr141730() {
-	  runTest("new IProgramElement handle methods");  
+  public void testGetParameterSignatures_pr141730() {
+	  runTest("new iprogramelement method getParameterSignatures");  
 	  
-	  checkParametersForIPE("intMethod(int)",IProgramElement.Kind.METHOD,"I",true);
-	  checkParametersForIPE("stringMethod(java.lang.String)",IProgramElement.Kind.METHOD,"Ljava/lang/String;",true);
-	  checkParametersForIPE("myClassMethod(MyClass)",IProgramElement.Kind.METHOD,"LMyClass;",true);
-	  checkParametersForIPE("genericMethod(java.util.List<java.lang.String>)",IProgramElement.Kind.METHOD,"Pjava/util/List<Ljava/lang/String;>;",true);
-	  checkParametersForIPE("genericMethod2(MyGenericClass<java.lang.String,MyClass>)",IProgramElement.Kind.METHOD,"PMyGenericClass<Ljava/lang/String;LMyClass;>;",true);
-	  checkParametersForIPE("main(java.lang.String[])",IProgramElement.Kind.METHOD,"[Ljava/lang/String;",true);
-	  checkParametersForIPE("multiMethod(java.lang.String[][])",IProgramElement.Kind.METHOD,"[[Ljava/lang/String;",true);
-	  checkParametersForIPE("intArray(int[])",IProgramElement.Kind.METHOD,"[I",true);
-	  
-  	  IHierarchy top = AsmManager.getDefault().getHierarchy();      
-  	  IProgramElement twoArgsMethod = top.findElementForLabel(
-  			  top.getRoot(),IProgramElement.Kind.METHOD,"twoArgsMethod(int,java.lang.String)");
-      assertNotNull("Couldn't find 'twoArgsMethod(int,java.lang.String)' element in the tree",twoArgsMethod);
-      List l = twoArgsMethod.getParameterSignatures();
-      assertEquals("",((char[])l.get(0))[0],'I');
-      boolean eq = CharOperation.equals(((char[])l.get(1)),"Ljava/lang/String;".toCharArray());
-      assertTrue("expected parameter to be 'Ljava/lang/String;' but found '" +
-        		new String(((char[])l.get(1))) + "'",eq);
+	  checkGetParamSigOfMethod("stringMethod(java.lang.String)","Ljava/lang/String;");
+	  checkGetParamSigOfMethod("main(java.lang.String[])","[Ljava/lang/String;");
+	  checkGetParamSigOfMethod("multiMethod(java.lang.String[][])","[[Ljava/lang/String;");
   }
   
-  public void testGetParameterTypes_pr141730() {
-	  runTest("new IProgramElement handle methods"); 
+  public void testGetParameterSignaturesWithGenerics_pr141730() {
+	  runTest("new iprogramelement method getParameterSignatures with generics");  
 	  
-	  checkParametersForIPE("intMethod(int)",IProgramElement.Kind.METHOD,"int",false);
-	  checkParametersForIPE("stringMethod(java.lang.String)",IProgramElement.Kind.METHOD,"java.lang.String",false);
-	  checkParametersForIPE("myClassMethod(MyClass)",IProgramElement.Kind.METHOD,"MyClass",false);
-	  checkParametersForIPE("genericMethod(java.util.List<java.lang.String>)",IProgramElement.Kind.METHOD,"java.util.List<java.lang.String>",false);
-	  checkParametersForIPE("genericMethod2(MyGenericClass<java.lang.String,MyClass>)",IProgramElement.Kind.METHOD,"MyGenericClass<java.lang.String,MyClass>",false);
-	  checkParametersForIPE("main(java.lang.String[])",IProgramElement.Kind.METHOD,"java.lang.String[]",false);
-	  checkParametersForIPE("multiMethod(java.lang.String[][])",IProgramElement.Kind.METHOD,"java.lang.String[][]",false);
-	  checkParametersForIPE("intArray(int[])",IProgramElement.Kind.METHOD,"int[]",false);
-  }
-  
-  public void testToSignatureString_pr141730() {
-	  runTest("new IProgramElement handle methods"); 
-	  
-	  checkSignatureOfIPE("main(java.lang.String[])",IProgramElement.Kind.METHOD);
-	  checkSignatureOfIPE("C",IProgramElement.Kind.CLASS);
-	  checkSignatureOfIPE("C()",IProgramElement.Kind.CONSTRUCTOR);
-	  checkSignatureOfIPE("method()",IProgramElement.Kind.METHOD);
-	  checkSignatureOfIPE("p()",IProgramElement.Kind.POINTCUT);
-	  checkSignatureOfIPE("before(): p..",IProgramElement.Kind.ADVICE,"before()");
-	  checkSignatureOfIPE("MyClass.method()",IProgramElement.Kind.INTER_TYPE_METHOD);
-	  checkSignatureOfIPE("multiMethod(java.lang.String[][])",IProgramElement.Kind.METHOD);
-	  checkSignatureOfIPE("intArray(int[])",IProgramElement.Kind.METHOD);
-	  checkSignatureOfIPE("MyClass.MyClass()",IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
-  }
-
-  // if not filling in the model for aspects contained in jar files then
-  // want to ensure that the relationship map is correct and has nodes
-  // which can be used in AJDT - ensure no NPE occurs for the end of
-  // the relationship with aspectpath
-  public void testAspectPathRelWhenNotFillingInModel_pr141730() {
-	  World.createInjarHierarchy = false;
-	  try {
-		  runTest("ensure aspectpath injar relationships are correct when not filling in model");
-		  
-		  // expecting:
-		  // 	sourceOfRelationship main in MyFoo.java
-          //		relationship advised by
-          //			target MyBar.class
-		  // 
-		  // and
-		  //
-		  // 	sourceOfRelationship MyBar.class
-          //		relationship advises
-          //			target main in MyFoo.java
-
-		  
-		  IHierarchy top = AsmManager.getDefault().getHierarchy();
-		  IRelationshipMap asmRelMap = AsmManager.getDefault().getRelationshipMap();
-		  assertEquals("expected two sources of relationships but only found " 
-				  + asmRelMap.getEntries().size(),2,asmRelMap.getEntries().size());
-		  for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
-			  String sourceOfRelationship = (String) iter.next();
-			  IProgramElement ipe = top.findElementForHandle(sourceOfRelationship);
-			  List relationships = asmRelMap.get(ipe);
-			  if (ipe.getName().equals("MyBar.class")) {
-				  assertEquals("expected MyBar.class to have one relationships but found "
-						  + relationships.size(),1,relationships.size());	
-				  Relationship rel = (Relationship)relationships.get(0);
-				  assertEquals("expected relationship to be 'advises' but was " 
-						  + rel.getName(), "advises", rel.getName());
-				  List targets = rel.getTargets();
-				  assertEquals("expected one target but found " + targets.size(),1,targets.size());
-				  IProgramElement link = top.findElementForHandle((String)targets.get(0));
-				  assertEquals("expected target 'method-call(void foo.MyFoo.main())' but target " + link.getName(),
-						  "method-call(void foo.MyFoo.main())",link.getName());
-				  String fileName = link.getSourceLocation().getSourceFile().toString();
-				  assertTrue("expected 'main' to be in class MyFoo.java but found it " +
-				  		"in " + fileName,fileName.indexOf("MyFoo.java") != -1);
-			  } else if (ipe.getName().equals("method-call(void foo.MyFoo.main())")) {
-				  String fileName = ipe.getSourceLocation().getSourceFile().toString();
-				  assertTrue("expected 'method-call(void foo.MyFoo.main())' to be in " +
-				  		"class MyFoo.java but found it in"
-				  		+ fileName,fileName.indexOf("MyFoo.java") != -1);
-				  assertEquals("expected 'method-call(void foo.MyFoo.main())' " +
-				  		"to have one relationships but found "
-						  + relationships.size(),1,relationships.size());	
-				  Relationship rel = (Relationship)relationships.get(0);
-				  assertEquals("expected relationship to be 'advised by' but was " 
-						  + rel.getName(), "advised by", rel.getName());
-				  List targets = rel.getTargets();
-				  assertEquals("expected one target but found " + targets.size(),1,targets.size());
-				  IProgramElement link = top.findElementForHandle((String)targets.get(0));
-				  assertEquals("expected target 'MyBar.class' but target " + link.getName(),
-						  "MyBar.class",link.getName());
-				  
-			  } else {
-				  fail("unexpected element " + ipe.getName() + " in the relationship map");
-			  }
-		  }
-	  } finally {
-		  World.createInjarHierarchy = true;
-	  }
-  }
-
-  // if not filling in the model for classes contained in jar files then
-  // want to ensure that the relationship map is correct and has nodes
-  // which can be used in AJDT - ensure no NPE occurs for the end of
-  // the relationship with inpath
-  public void testNoNPEWithInpathWhenNotFillingInModel_pr141730() {
-	  World.createInjarHierarchy = false;
-	  try {
-		  runTest("ensure inpath injar relationships are correct when not filling in model");
-		  // the aspect used for this test has advice, declare parents, deow,
-		  // and declare @type, @constructor, @field and @method. We only expect
-		  // there to be relationships in the map for declare parents and declare @type
-		  // (provided the model isn't being filled in) because the logic in the other
-		  // addXXXRelationship methods use AspectJElementHierarchy.findElementForType().
-		  // This method which returns null because there is no such ipe. The relationship is
-		  // therefore not added to the model. Adding declare @type and declare parents
-		  // uses AspectJElementHierarchy.findElementForHandle() which returns the file
-		  // node ipe if it can't find one for the given handle. Therefore the relationships
-		  // are added against the file node. Before change to using ipe's to create handles
-		  // we also had the deow relationship, however, now we don't because this also
-		  // uses findElementForType to find the targetNode which in the inpath case is null.
-		  
-		  // just check that the number of entries is what we expect:
-		  // We expect 3 (the declare @type and declare parents statements plus the filenode)
-		  IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
-		  assertEquals("expected 3 entries in the relationship map but found " 
-				  + relMap.getEntries().size(), 3, relMap.getEntries().size());
-	  } finally {
-		  World.createInjarHierarchy = true;
-	  }
-  }
-  
-  public void testPCDInClassAppearsInModel_pr148027() {
-	  // only want to test that its there if we're creating the uses pointcut
-	  // relationship. This should be addressed by pr148027
-	  if (!AsmHierarchyBuilder.shouldAddUsesPointcut) return;
-	  World.createInjarHierarchy = false;
-	  try {
-		  runTest("ensure pcd declare in class appears in model");
-		  IHierarchy top = AsmManager.getDefault().getHierarchy();
-		  IProgramElement pcd = top.findElementForLabel(top.getRoot(),IProgramElement.Kind.POINTCUT,"pointcutInClass()");
-		  IRelationshipMap relMap = AsmManager.getDefault().getRelationshipMap();
-		  List relationships = relMap.get(pcd);
-		  assertNotNull("expected relationships for pointcut " + pcd.toLinkLabelString()
-				  + " but didn't", relationships);
-		  
-		  pcd = top.findElementForLabel(top.getRoot(),IProgramElement.Kind.POINTCUT,"pointcutInAspect()");
-		  relationships = relMap.get(pcd);
-		  assertNotNull("expected relationships for pointcut " + pcd.toLinkLabelString()
-				  + " but didn't", relationships);
-	  } finally {
-		  World.createInjarHierarchy = true;
-	  }
+	  checkGetParamSigOfMethod("genericMethod(java.util.List<java.lang.String>)","Pjava/util/List<Ljava/lang/String;>;");
+	  checkGetParamSigOfMethod("genericMethod2(MyGenericClass<java.lang.String,MyClass>)","PMyGenericClass<Ljava/lang/String;LMyClass;>;");
   }
   
 //  public void testFunkyGenericErrorWithITDs_pr126355_2() { 
@@ -352,33 +152,14 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   // ---------------- helper methods ---------------
   
-	private void checkParametersForIPE(String ipeLabel, IProgramElement.Kind kind, String expectedParm, boolean getHandles) {
+	private void checkGetParamSigOfMethod(String ipeLabel, String expectedParm) {
 		IHierarchy top = AsmManager.getDefault().getHierarchy();
-		IProgramElement ipe = top.findElementForLabel(top.getRoot(),kind,ipeLabel);
+		IProgramElement ipe = top.findElementForLabel(top.getRoot(),IProgramElement.Kind.METHOD,ipeLabel);
 	    assertNotNull("Couldn't find '" + ipeLabel + "' element in the tree",ipe);
-	    List l = new ArrayList();
-	    if (getHandles) {
-	    	l = ipe.getParameterSignatures();
-	    } else {
-	    	l = ipe.getParameterTypes();
-	    }
+	    List l = ipe.getParameterSignatures();
 	    boolean eq = CharOperation.equals(((char[])l.get(0)),expectedParm.toCharArray());
 	    assertTrue("expected parameter to be '" + expectedParm + "' but found '" +
 	      		new String(((char[])l.get(0))) + "'",eq);
-	}
-  
-	private void checkSignatureOfIPE(String ipeLabel, IProgramElement.Kind kind) {
-		checkSignatureOfIPE(ipeLabel,kind,ipeLabel);
-	}
-	
-	private void checkSignatureOfIPE(String ipeLabel, IProgramElement.Kind kind, String expectedSig) {
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
-		IProgramElement ipe = top.findElementForLabel(
-				  top.getRoot(),kind,ipeLabel);
-	    assertNotNull("Couldn't find '" + ipeLabel + "' element in the tree",ipe);
-      	assertEquals("expected signature to be '"+ expectedSig + "' but was " +
-				  ipe.toSignatureString(true),expectedSig,ipe.toSignatureString(true));
-		
 	}
 	
   /////////////////////////////////////////

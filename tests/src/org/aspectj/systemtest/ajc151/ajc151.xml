@@ -341,13 +341,6 @@
 
     <ajc-test dir="bugs151" title="E extends Enum(E) again">
         <compile files="Pr126316.aj" options="-1.5"/>
-    </ajc-test>
-    
-    <ajc-test dir="bugs151/pr120356" title="@AJ deow appear correctly when structure model is generated">
-        <compile files="C.java, A.java" options="-1.5, -emacssym">
-         <message kind="error" line="8" text="error"/>
-          <message kind="warning" line="5" text="warning"/>
-        </compile>
     </ajc-test> 
 
     <ajc-test dir="bugs151/pr120356" title="@AJ no NPE with deow when structure model isn't generated">
@@ -401,14 +394,6 @@
           <message kind="error" line="5" text="can't bind type name 'MyList'"/>
         </compile>
     </ajc-test> 
-
-    <ajc-test dir="bugs151" title="structure model for generic itd">
-        <compile files="pr131932.aj" options="-1.5 -emacssym"/>
-    </ajc-test>
-
-    <ajc-test dir="bugs151" title="declare annotation appears in structure model when in same file">
-        <compile files="pr132130.aj" options="-1.5 -emacssym"/>
-    </ajc-test>
 
     <!-- New features down here... when they arent big enough to have their own test file -->
     

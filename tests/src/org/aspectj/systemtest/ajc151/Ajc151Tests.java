@@ -11,15 +11,12 @@
 package org.aspectj.systemtest.ajc151;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.Test;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.internal.Relationship;
 import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
@@ -136,149 +133,6 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("no ClassCastException with generic aspect and unknown type");
   }
   
-  public void testStructureModelForGenericITD_pr131932() {
- 	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
-	  runTest("structure model for generic itd");
-	  IHierarchy top = AsmManager.getDefault().getHierarchy();
- 	   
-  	  // get the IProgramElements corresponding to the ITDs and classes
-  	  IProgramElement foo = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.CLASS,"Foo");
-  	  assertNotNull("Couldn't find Foo element in the tree",foo);
-  	  IProgramElement bar = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.CLASS,"Bar");
-  	  assertNotNull("Couldn't find Bar element in the tree",bar);
-
-  	  IProgramElement method = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.INTER_TYPE_METHOD,"Bar.getFirst()");  	   	 
-  	  assertNotNull("Couldn't find 'Bar.getFirst()' element in the tree",method);
-  	  IProgramElement field = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.INTER_TYPE_FIELD,"Bar.children");  	   	 
-  	  assertNotNull("Couldn't find 'Bar.children' element in the tree",field);
-  	  IProgramElement constructor = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR,"Foo.Foo(java.util.List<T>)");  	   	 
-  	  assertNotNull("Couldn't find 'Foo.Foo(java.util.List<T>)' element in the tree",constructor);
-  	  
-  	  // check that the relationship map has 'itd method declared on bar'
-  	  List matches = AsmManager.getDefault().getRelationshipMap().get(method);
-  	  assertNotNull("itd Bar.getFirst() should have some relationships but does not",matches);
-  	  assertTrue("method itd should have one relationship but has " + matches.size(), matches.size() == 1);
-  	  List matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("itd Bar.getFirst() should have one target but has " + matchesTargets.size(),matchesTargets.size() == 1);
-  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the Bar class but is IPE with label "
-  			  + target.toLabelString(),bar,target);
-
-  	  // check that the relationship map has 'itd field declared on bar'
-  	  matches = AsmManager.getDefault().getRelationshipMap().get(field);
-  	  assertNotNull("itd Bar.children should have some relationships but does not",matches);
-  	  assertTrue("field itd should have one relationship but has " + matches.size(), matches.size() == 1);
-  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("itd Bar.children should have one target but has " + matchesTargets.size(),matchesTargets.size() == 1);
-  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the Bar class but is IPE with label "
-  			  + target.toLabelString(),bar,target);
-
-  	  // check that the relationship map has 'itd constructor declared on foo'
-  	  matches = AsmManager.getDefault().getRelationshipMap().get(constructor);
-  	  assertNotNull("itd Foo.Foo(List<T>) should have some relationships but does not",matches);
-  	  assertTrue("constructor itd should have one relationship but has " + matches.size(), matches.size() == 1);
-  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("itd Foo.Foo(List<T>) should have one target but has " + matchesTargets.size(),matchesTargets.size() == 1);
-  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the Foo class but is IPE with label "
-  			  + target.toLabelString(),foo,target);
-  	  
-  	  // check that the relationship map has 'bar aspect declarations method and field itd'
-  	  matches = AsmManager.getDefault().getRelationshipMap().get(bar);
-  	  assertNotNull("Bar should have some relationships but does not",matches);
-  	  assertTrue("Bar should have one relationship but has " + matches.size(), matches.size() == 1);
-  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("Bar should have two targets but has " + matchesTargets.size(),matchesTargets.size() == 2);
-  	  for (Iterator iter = matchesTargets.iterator(); iter.hasNext();) {
-		  String element = (String) iter.next();
-		  target = AsmManager.getDefault().getHierarchy().findElementForHandle(element);
-		  if (!target.equals(method) && !target.equals(field)) {
-			  fail("Expected rel target to be " + method.toLabelString() + " or " + field.toLabelString() 
-					+ ", found " + target.toLabelString());
-		  }
-	  }
-
-  	  // check that the relationship map has 'foo aspect declarations constructor itd'
- 	  matches = AsmManager.getDefault().getRelationshipMap().get(foo);
-  	  assertNotNull("Foo should have some relationships but does not",matches);
-  	  assertTrue("Foo should have one relationship but has " + matches.size(), matches.size() == 1);
-  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("Foo should have one target but has " + matchesTargets.size(),matchesTargets.size() == 1);
- 	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the Foo.Foo(List<T>) itd but is IPE with label "
-  			  + target.toLabelString(),constructor,target);
-  }
-  
-  
-  public void testDeclareAnnotationAppearsInStructureModel_pr132130() {
-	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
-	  runTest("declare annotation appears in structure model when in same file");
-	  IHierarchy top = AsmManager.getDefault().getHierarchy();
-	  
-  	  // get the IProgramElements corresponding to the different code entries
-  	  IProgramElement decam = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,"declare @method: * debit(..) : @Secured(role = \"supervisor\")");  	   	 
-  	  assertNotNull("Couldn't find 'declare @method' element in the tree",decam);
-  	  IProgramElement method = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.METHOD,"debit(long,long)");
-  	  assertNotNull("Couldn't find the 'debit(long,long)' method element in the tree",method);
-  	  IProgramElement decac = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR,"declare @constructor: BankAccount+.new(..) : @Secured(role = \"supervisor\")");  	   	 
-  	  assertNotNull("Couldn't find 'declare @constructor' element in the tree",decac);
-  	  IProgramElement ctr = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.CONSTRUCTOR,"BankAccount(java.lang.String,int)");
-  	  assertNotNull("Couldn't find the 'BankAccount(String,int)' constructor element in the tree",ctr);
-
-  	  
-  	  // check that decam has a annotates relationship with the debit method
-  	  List matches = AsmManager.getDefault().getRelationshipMap().get(decam);	
-  	  assertNotNull("'declare @method' should have some relationships but does not",matches);
-  	  assertTrue("'declare @method' should have one relationships but has " + matches.size(),matches.size()==1);
-  	  List matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("'declare @method' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
-  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the 'debit(long,long)' method but is IPE with label "
-  			  + target.toLabelString(),method,target);
-  	  
-  	  // check that the debit method has an annotated by relationship with the declare @method
-  	  matches = AsmManager.getDefault().getRelationshipMap().get(method);	
-  	  assertNotNull("'debit(long,long)' should have some relationships but does not",matches);
-  	  assertTrue("'debit(long,long)' should have one relationships but has " + matches.size(),matches.size()==1);
-  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("'debit(long,long)' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
-  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the 'declare @method' ipe but is IPE with label "
-  			  + target.toLabelString(),decam,target);
-
-  	  // check that decac has a annotates relationship with the constructor
-  	  matches = AsmManager.getDefault().getRelationshipMap().get(decac);	
-  	  assertNotNull("'declare @method' should have some relationships but does not",matches);
-  	  assertTrue("'declare @method' should have one relationships but has " + matches.size(),matches.size()==1);
-  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("'declare @method' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
-  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the 'debit(long, long)' method but is IPE with label "
-  			  + target.toLabelString(),ctr,target);
-  	  
-  	  // check that the constructor has an annotated by relationship with the declare @constructor
-  	  matches = AsmManager.getDefault().getRelationshipMap().get(ctr);	
-  	  assertNotNull("'debit(long, long)' should have some relationships but does not",matches);
-  	  assertTrue("'debit(long, long)' should have one relationships but has " + matches.size(),matches.size()==1);
-  	  matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("'debit(long, long)' should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
-  	  target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the 'declare @method' ipe but is IPE with label "
-  			  + target.toLabelString(),decac,target);
-
-
-  }
-  
   /*
    * @AspectJ bugs and enhancements
    */
@@ -289,64 +143,7 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAtAspectInheritsAbstractPointcut_pr125810 () {
 	  runTest("warning when inherited pointcut not made concrete"); 
   }
-  
-  public void testAtAspectDEOWInStructureModel_pr120356() {
-	  //AsmManager.setReporting("c:/debug.txt",true,true,true,true);
-	  runTest("@AJ deow appear correctly when structure model is generated");  
-  	  IHierarchy top = AsmManager.getDefault().getHierarchy();
-  	   
-  	  // get the IProgramElements corresponding to the @DeclareWarning statement
-  	  // and the method it matches.
-  	  IProgramElement warningMethodIPE = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.METHOD,"warningMethod()");  	   	 
-  	  assertNotNull("Couldn't find 'warningMethod()' element in the tree",warningMethodIPE);
-  	  IProgramElement atDeclareWarningIPE = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.FIELD,"warning");
-  	  assertNotNull("Couldn't find @DeclareWarning element in the tree",atDeclareWarningIPE);
-
-  	  // check that the method has a matches declare relationship with @DeclareWarning
-  	  List matches = AsmManager.getDefault().getRelationshipMap().get(warningMethodIPE);	
-  	  assertNotNull("warningMethod should have some relationships but does not",matches);
-  	  assertTrue("warningMethod should have one relationships but has " + matches.size(),matches.size()==1);
-  	  List matchesTargets = ((Relationship)matches.get(0)).getTargets();
-  	  assertTrue("warningMethod should have one targets but has" + matchesTargets.size(),matchesTargets.size()==1);
-  	  IProgramElement target = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchesTargets.get(0));
-  	  assertEquals("target of relationship should be the @DeclareWarning 'warning' but is IPE with label "
-  			  + target.toLabelString(),atDeclareWarningIPE,target);
-  	  
-  	  // check that the @DeclareWarning has a matches relationship with the warningMethod
-  	  List matchedBy = AsmManager.getDefault().getRelationshipMap().get(atDeclareWarningIPE);
-  	  assertNotNull("@DeclareWarning should have some relationships but does not",matchedBy);
-  	  assertTrue("@DeclareWarning should have one relationship but has " + matchedBy.size(), matchedBy.size() == 1);
-  	  List matchedByTargets = ((Relationship)matchedBy.get(0)).getTargets();
-  	  assertTrue("@DeclareWarning 'matched by' relationship should have one target " +
-  	  		"but has " + matchedByTargets.size(), matchedByTargets.size() == 1);
-  	  IProgramElement matchedByTarget = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchedByTargets.get(0));
-  	  assertEquals("target of relationship should be the warningMethod but is IPE with label "
-  			  + matchedByTarget.toLabelString(),warningMethodIPE,matchedByTarget);
-  	  
-  	  // get the IProgramElements corresponding to the @DeclareError statement
-  	  // and the method it matches.
-  	  IProgramElement errorMethodIPE = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.METHOD,"badMethod()");  	   	 
-  	  assertNotNull("Couldn't find 'badMethod()' element in the tree",errorMethodIPE);
-  	  IProgramElement atDeclarErrorIPE = top.findElementForLabel(top.getRoot(),
-  			  IProgramElement.Kind.FIELD,"error");
-  	  assertNotNull("Couldn't find @DeclareError element in the tree",atDeclarErrorIPE);
-
-  	  // check that the @DeclareError has a matches relationship with the badMethod
-  	  List matchedByE = AsmManager.getDefault().getRelationshipMap().get(atDeclarErrorIPE);
-  	  assertNotNull("@DeclareError should have some relationships but does not",matchedByE);
-  	  assertTrue("@DeclareError should have one relationship but has " + matchedByE.size(), matchedByE.size() == 1);
-  	  List matchedByTargetsE = ((Relationship)matchedByE.get(0)).getTargets();
-  	  assertTrue("@DeclareError 'matched by' relationship should have one target " +
-  	  		"but has " + matchedByTargetsE.size(), matchedByTargetsE.size() == 1);
-  	  IProgramElement matchedByTargetE = AsmManager.getDefault().getHierarchy().findElementForHandle((String)matchedByTargetsE.get(0));
-  	  assertEquals("target of relationship should be the badMethod but is IPE with label "
-  			  + matchedByTargetE.toLabelString(),errorMethodIPE,matchedByTargetE);
-
-  }
-  
+    
   public void testAtAspectNoNPEWithDEOWWithoutStructureModel_pr120356() {
 	  runTest("@AJ no NPE with deow when structure model isn't generated"); 
   }

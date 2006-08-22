@@ -1,0 +1,32 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pr131932.aj  [java source file] TEST_SANDBOX\pr131932.aj:1:
+    import declarations  [import reference] 
+      java.util.List  [import reference] TEST_SANDBOX\pr131932.aj:1:
+    Slide74  [aspect] TEST_SANDBOX\pr131932.aj:3:
+      Bar  [class] TEST_SANDBOX\pr131932.aj:13:
+        lts  [field] TEST_SANDBOX\pr131932.aj:14:
+      Bar.getFirst()  [inter-type method] TEST_SANDBOX\pr131932.aj:5:
+      Foo.Foo(java.util.List<T>)  [inter-type constructor] TEST_SANDBOX\pr131932.aj:9:
+      Bar.children  [inter-type field] TEST_SANDBOX\pr131932.aj:11:
+    Foo  [class] TEST_SANDBOX\pr131932.aj:19:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) *pr131932.aj}Slide74)Foo.Foo)QList\<TT;>; (declared on) *pr131932.aj[Foo
+(targets=2) *pr131932.aj}Slide74[Bar (aspect declarations) *pr131932.aj}Slide74)Bar.getFirst
+(targets=2) *pr131932.aj}Slide74[Bar (aspect declarations) *pr131932.aj}Slide74)Bar.children
+(targets=1) *pr131932.aj}Slide74)Bar.children (declared on) *pr131932.aj}Slide74[Bar
+(targets=1) *pr131932.aj[Foo (aspect declarations) *pr131932.aj}Slide74)Foo.Foo)QList\<TT;>;
+(targets=1) *pr131932.aj}Slide74)Bar.getFirst (declared on) *pr131932.aj}Slide74[Bar
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+import reference=2
+aspect=1
+inter-type field=1
+class=2
+inter-type constructor=1
+RelationshipMapSize=5
+FileMapSize=1
+field=1
+inter-type method=1
+java source file=2

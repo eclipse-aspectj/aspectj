@@ -1,0 +1,54 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pr141730.aj  [java source file] TEST_SANDBOX\pr141730.aj:1:
+    import declarations  [import reference] 
+    A  [aspect] TEST_SANDBOX\pr141730.aj:1:
+      p()  [pointcut] TEST_SANDBOX\pr141730.aj:3:
+      before(): p..  [advice] TEST_SANDBOX\pr141730.aj:5:
+    C  [class] TEST_SANDBOX\pr141730.aj:11:
+      C()  [constructor] TEST_SANDBOX\pr141730.aj:13:
+      method()  [method] TEST_SANDBOX\pr141730.aj:15:
+      intMethod(int)  [method] TEST_SANDBOX\pr141730.aj:17:
+      stringMethod(java.lang.String)  [method] TEST_SANDBOX\pr141730.aj:19:
+      myClassMethod(MyClass)  [method] TEST_SANDBOX\pr141730.aj:21:
+      twoArgsMethod(int,java.lang.String)  [method] TEST_SANDBOX\pr141730.aj:23:
+      main(java.lang.String[])  [method] TEST_SANDBOX\pr141730.aj:25:
+      multiMethod(java.lang.String[][])  [method] TEST_SANDBOX\pr141730.aj:27:
+      intArray(int[])  [method] TEST_SANDBOX\pr141730.aj:29:
+    MyClass  [class] TEST_SANDBOX\pr141730.aj:33:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) *pr141730.aj[C~intMethod~I (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~main~\[QString; (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~intArray~\[I (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~twoArgsMethod~I~QString; (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~stringMethod~QString; (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~myClassMethod~LMyClass; (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj}A (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~C (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~multiMethod~\[[String; (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[MyClass (advised by) *pr141730.aj}A&before
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj}A
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[MyClass
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~C
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~method
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~intMethod~I
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~stringMethod~QString;
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~myClassMethod~LMyClass;
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~twoArgsMethod~I~QString;
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~main~\[QString;
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~multiMethod~\[[String;
+(targets=11) *pr141730.aj}A&before (advises) *pr141730.aj[C~intArray~\[I
+(targets=1) *pr141730.aj[C~method (advised by) *pr141730.aj}A&before
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+method=8
+import reference=1
+aspect=1
+constructor=1
+class=2
+advice=1
+pointcut=1
+RelationshipMapSize=12
+FileMapSize=1
+java source file=2

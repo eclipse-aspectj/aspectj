@@ -1,0 +1,31 @@
+=== MODEL STATUS REPORT ========= After a failed batch build
+<root>  [java source file] 
+  A.java  [java source file] TEST_SANDBOX\A.java:1:
+    import declarations  [import reference] 
+      org.aspectj.lang.annotation.DeclareError  [import reference] TEST_SANDBOX\A.java:4:
+      org.aspectj.lang.annotation.DeclareWarning  [import reference] TEST_SANDBOX\A.java:3:
+      org.aspectj.lang.annotation.Aspect  [import reference] TEST_SANDBOX\A.java:2:
+    A  [aspect] TEST_SANDBOX\A.java:7:
+      warning  [field] TEST_SANDBOX\A.java:10:
+      error  [field] TEST_SANDBOX\A.java:13:
+  C.java  [java source file] TEST_SANDBOX\C.java:1:
+    import declarations  [import reference] 
+    C  [class] TEST_SANDBOX\C.java:3:
+      warningMethod()  [method] TEST_SANDBOX\C.java:5:
+      badMethod()  [method] TEST_SANDBOX\C.java:8:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a failed batch build
+(targets=1) {A.java}A^warning (matched by) {C.java[C~warningMethod
+(targets=1) {C.java[C~badMethod (matches declare) {A.java}A^error
+(targets=1) {C.java[C~warningMethod (matches declare) {A.java}A^warning
+(targets=1) {A.java}A^error (matched by) {C.java[C~badMethod
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+FileMapSize=2
+aspect=1
+RelationshipMapSize=4
+java source file=3
+import reference=5
+class=1
+field=2
+method=2

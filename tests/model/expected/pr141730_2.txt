@@ -1,0 +1,38 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pr141730.aj  [java source file] TEST_SANDBOX\pr141730.aj:1:
+    import declarations  [import reference] 
+      java.util.List  [import reference] TEST_SANDBOX\pr141730.aj:1:
+    A  [aspect] TEST_SANDBOX\pr141730.aj:3:
+      p()  [pointcut] TEST_SANDBOX\pr141730.aj:5:
+      before(): p..  [advice] TEST_SANDBOX\pr141730.aj:7:
+    C  [class] TEST_SANDBOX\pr141730.aj:13:
+      genericMethod(java.util.List<java.lang.String>)  [method] TEST_SANDBOX\pr141730.aj:15:
+      genericMethod2(MyGenericClass<java.lang.String,MyClass>)  [method] TEST_SANDBOX\pr141730.aj:16:
+    MyClass  [class] TEST_SANDBOX\pr141730.aj:20:
+    MyGenericClass  [class] TEST_SANDBOX\pr141730.aj:22:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) *pr141730.aj[MyGenericClass (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[MyClass (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~genericMethod2~PMyGenericClass\<QString;LMyClass;>; (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj[C~genericMethod~QList\<QString;>; (advised by) *pr141730.aj}A&before
+(targets=1) *pr141730.aj}A (advised by) *pr141730.aj}A&before
+(targets=6) *pr141730.aj}A&before (advises) *pr141730.aj}A
+(targets=6) *pr141730.aj}A&before (advises) *pr141730.aj[MyClass
+(targets=6) *pr141730.aj}A&before (advises) *pr141730.aj[MyGenericClass
+(targets=6) *pr141730.aj}A&before (advises) *pr141730.aj[C
+(targets=6) *pr141730.aj}A&before (advises) *pr141730.aj[C~genericMethod~QList\<QString;>;
+(targets=6) *pr141730.aj}A&before (advises) *pr141730.aj[C~genericMethod2~PMyGenericClass\<QString;LMyClass;>;
+(targets=1) *pr141730.aj[C (advised by) *pr141730.aj}A&before
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+method=2
+import reference=2
+aspect=1
+class=3
+advice=1
+pointcut=1
+RelationshipMapSize=7
+FileMapSize=1
+java source file=2

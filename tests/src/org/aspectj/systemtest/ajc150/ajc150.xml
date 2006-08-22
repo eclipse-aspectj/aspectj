@@ -1380,22 +1380,6 @@
         <run class="pr100195"/>
     </ajc-test> 
 
-    <ajc-test dir="bugs150/pr77269" title="advice in structure model with anonymous inner class">
-        <compile files="pack/pr77269.aj" options="-emacssym">
-        </compile>
-    </ajc-test> 
-
-    <ajc-test dir="bugs150" title="advice in structure model with named inner class">
-        <compile files="pr77269b.aj" options="-emacssym">
-        </compile>
-    </ajc-test> 
-
-    <ajc-test dir="bugs150/pr77269" title="declare warning in structure model with anonymous inner class">
-        <compile files="pack/pr77269c.aj" options="-emacssym">
-        	<message kind="warning" line="8" text="blah blah blah"/>
-        </compile>
-    </ajc-test> 
-
     <ajc-test dir="bugs150" title="weaveinfo message for declare at method on an ITDd method">
         <compile files="pr113073.java" options="-1.5 -showWeaveInfo">
 			<message kind="weave" text="Type 'C' (pr113073.java) has intertyped method from 'D' (pr113073.java:'void C.anotherMethod()')"/>
@@ -1526,11 +1510,6 @@
             <!-- xlint warning that was put in as part of fix for pr115252 -->
         	<message kind="warning" line="28" text="does not match because annotation @MethodAndFieldAnnotation has @Target{ElementType.FIELD,ElementType.METHOD} [Xlint:unmatchedTargetKind]"/>
         	<message kind="warning" line="38" text="does not match because annotation @TypeAndMethodAnnotation has @Target{ElementType.METHOD,ElementType.TYPE} [Xlint:unmatchedTargetKind]"/>
-        </compile>
-    </ajc-test>
-
-	<ajc-test dir="bugs150" title="declare at type appears correctly in structure model">
-        <compile files="pr115607.java" options="-1.5,-emacssym">
         </compile>
     </ajc-test>
 

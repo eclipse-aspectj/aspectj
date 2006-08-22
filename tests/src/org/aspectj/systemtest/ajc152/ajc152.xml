@@ -643,10 +643,6 @@
       <compile files="Covariance.java" options="-1.5"/>
     </ajc-test>
     
-    <ajc-test dir="bugs152" title="new IProgramElement handle methods">
-      <compile files="pr141730.aj" options="-emacssym -1.5"/>
-    </ajc-test>
-    
     <ajc-test dir="bugs152/pr147701" title="package for exception ignored">
       <compile files="TestBean.java" options="-1.5"/>
       <run class="a.b.c.TestBean"/>
@@ -661,12 +657,6 @@
       <compile files="TestBean3.java" options="-1.5">
         <message kind="error" text="@DeclareParents: defaultImpl=&quot;a.b.c.Impl&quot; does not implement the interface 'a.b.c.I'"/>
       </compile>
-    </ajc-test>
-
-    <ajc-test dir="bugs152" title="declare @method relationship">
-     <compile files="pr143924.aj" options="-1.5 -showWeaveInfo -emacssym">
-        <message kind="weave" text="'public void BankAccount.debit(String,long)' (pr143924.aj:7) is annotated with @Secured"/>
-     </compile>
     </ajc-test>
 
     <!-- wont work whilst the compiler BuildArgParser.setDebugOptions is always switching debug on -->
@@ -698,16 +688,6 @@
 				<line text="info no aspects registered. Disabling weaver for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
             </stderr>
         </run>
-    </ajc-test>
-
-	<ajc-test dir="bugs152/pr141730/aspectpath" title="ensure aspectpath injar relationships are correct when not filling in model">
-      <compile files="MyFoo.java" aspectpath="aspectpath.jar" options="-emacssym"/>
-    </ajc-test>
-
-	<ajc-test dir="bugs152/pr141730/inpath" title="ensure inpath injar relationships are correct when not filling in model">
-      <compile files="MyBar.aj, MyAnnotation.java, NewClass.java" inpath="inpath.jar" options="-1.5 -emacssym">
-			<message kind="warning" line="20" text="System.out should not be called"/>
-	  </compile>
     </ajc-test>
     
    <ajc-test dir="ltw" title="weaveinfo messages with include and exclude">
@@ -746,10 +726,6 @@
       </run>
     </ajc-test>
     
-	<ajc-test dir="bugs152/pr148027" title="ensure pcd declare in class appears in model">
-      <compile files="A.aj, C.aj" options="-emacssym"/>
-    </ajc-test>
-
 	<ajc-test dir="bugs152/pr148007" title="jrockit boolean fun">
 		<compile files="test/BooleanUnitTest.java, test/LoggingAspect.aj"/>
 		<run class="test.BooleanUnitTest"/>
@@ -793,5 +769,14 @@
             <line text="Can call aspectOf? Asp@"/>
           </stdout>
         </run>
+    </ajc-test>
+
+
+   <ajc-test dir="bugs152" title="new iprogramelement method getParameterSignatures">
+      <compile files="pr141730a.java" options="-emacssym"/>
+    </ajc-test>
+
+   <ajc-test dir="bugs152" title="new iprogramelement method getParameterSignatures with generics">
+      <compile files="pr141730b.java" options="-1.5 -emacssym"/>
     </ajc-test>
 </suite>

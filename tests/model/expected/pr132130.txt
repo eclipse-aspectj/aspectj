@@ -1,0 +1,30 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pr132130.aj  [java source file] TEST_SANDBOX\pr132130.aj:1:
+    import declarations  [import reference] 
+    basic  [aspect] TEST_SANDBOX\pr132130.aj:1:
+      declare @method: * debit(..) : @Secured(role = "supervisor")  [declare @method] TEST_SANDBOX\pr132130.aj:3:
+      declare @constructor: BankAccount+.new(..) : @Secured(role = "supervisor")  [declare @constructor] TEST_SANDBOX\pr132130.aj:4:
+    BankAccount  [class] TEST_SANDBOX\pr132130.aj:7:
+      BankAccount(java.lang.String,int)  [constructor] TEST_SANDBOX\pr132130.aj:9:
+      debit(long,long)  [method] TEST_SANDBOX\pr132130.aj:11:
+    Secured  [annotation] TEST_SANDBOX\pr132130.aj:15:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) *pr132130.aj[BankAccount~BankAccount~QString;~I (annotated by) *pr132130.aj}basic`declare @constructor!2
+(targets=1) *pr132130.aj}basic`declare @constructor!2 (annotates) *pr132130.aj[BankAccount~BankAccount~QString;~I
+(targets=1) *pr132130.aj[BankAccount~debit~J~J (annotated by) *pr132130.aj}basic`declare @method
+(targets=1) *pr132130.aj}basic`declare @method (annotates) *pr132130.aj[BankAccount~debit~J~J
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+method=1
+import reference=1
+aspect=1
+declare @method=1
+constructor=1
+declare @constructor=1
+class=1
+annotation=1
+RelationshipMapSize=4
+FileMapSize=1
+java source file=2
