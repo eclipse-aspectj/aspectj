@@ -264,7 +264,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         clinit.getBody().append(il);
 
         clinit.addExceptionHandler(
-            tryStart, handler, handler, new ObjectType("java.lang.Throwable"), false
+            tryStart, handler.getPrev(), handler, new ObjectType("java.lang.Throwable"), false
         );
     }
 

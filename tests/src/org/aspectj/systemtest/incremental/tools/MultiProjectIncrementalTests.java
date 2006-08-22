@@ -658,16 +658,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertTrue("Should be zero but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==0);
 		alter("PR141956","inc1");
 		build("PR141956");
-		assertTrue("Should be only one but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==1);
+		assertTrue("Should be two but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==2);
 		alter("PR141956","inc1");
 		build("PR141956");
-		assertTrue("Should be only one but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==1);
+		assertTrue("Should be two but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==2);
 		alter("PR141956","inc1");
 		build("PR141956");
-		assertTrue("Should be only one but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==1);
+		assertTrue("Should be two but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==2);
 		alter("PR141956","inc1");
 		build("PR141956");
-		assertTrue("Should be only one but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==1);
+		assertTrue("Should be two but reports "+EclipseFactory.debug_mungerCount,EclipseFactory.debug_mungerCount==2);
 	}
 	
 
