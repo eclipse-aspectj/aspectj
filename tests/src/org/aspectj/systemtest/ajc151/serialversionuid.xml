@@ -34,4 +34,18 @@
         </run>
     </ajc-test>
     
+	<ajc-test dir="features151/serialveruid" title="abstract class">
+	  <compile files="TwoTypes.java,Test.java,ATest.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+          <message kind="warning" text="calculated SerialVersionUID for type TwoTypes"/>
+          <message kind="warning" text="calculated SerialVersionUID for type com.testware.ejb.common.Test to be -1674849842374764518L"/>
+          <message kind="warning" text="calculated SerialVersionUID for type com.testware.ejb.common.ATest to be -7300724421810308152L"/>
+	  </compile>
+	  <run class="TwoTypes">
+	    <stderr>
+	      <line text="Test SerialVersionUID is -1674849842374764518"/>
+		  <line text="ATest SerialVersionUID is -7300724421810308152"/>
+	    </stderr>
+	  </run>
+	</ajc-test>
+    
 </suite>

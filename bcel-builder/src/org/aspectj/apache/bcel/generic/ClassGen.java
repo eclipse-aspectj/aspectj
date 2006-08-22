@@ -84,7 +84,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * existing java class (file).
  *
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.7 2006/03/16 11:01:53 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.8 2006/08/22 07:34:50 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  *
  * Upgraded, Andy Clement 9th Mar 06 - calculates SUID
@@ -567,9 +567,16 @@ public class ClassGen extends AccessFlags implements Cloneable {
     	classmods|=(isPublic()?Constants.ACC_PUBLIC:0); 
     	classmods|=(isFinal()?Constants.ACC_FINAL:0);
     	classmods|=(isInterface()?Constants.ACC_INTERFACE:0);
-    	if (isInterface() && isAbstract()) { // remove abstract if we have it but have no methods 
-    		if (methods.length>0) classmods|=Constants.ACC_ABSTRACT;
+    	
+    	if (isAbstract()) {
+    		// if an interface then abstract is only set if it has methods
+    		if (isInterface()) {
+    			if (methods.length>0) classmods|=Constants.ACC_ABSTRACT;
+    		} else {
+    			classmods|=Constants.ACC_ABSTRACT;
+    		}
     	}
+    	
     	dos.writeInt(classmods);
     	
     	// 3. ordered list of interfaces

@@ -23,6 +23,8 @@ public class SerialVersionUIDTests extends XMLBasedAjcTestCase {
   public void testTheBasicsWithLint() { runTest("basic - lint"); }
   public void testHorrible() { runTest("horrible"); }
   
+  public void testAbstractClass() { runTest("abstract class");}
+  
   //
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(SerialVersionUIDTests.class);
