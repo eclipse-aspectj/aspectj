@@ -3,7 +3,7 @@
 	<aspects>
 		<aspect name="ataspectj.EmptyAspect"/>
 	</aspects>
-    <weaver options="-XlazyTjp -verbose">
+    <weaver options="-XlazyTjp -verbose -debug">
         <dump within="com.foo.bar..*" beforeandafter="true"/> 
         <include within="com.foo..*"/>
         <exclude within="com.foo.bar..*CGLIB*"/>

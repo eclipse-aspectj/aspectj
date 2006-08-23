@@ -21,6 +21,7 @@ import org.aspectj.bridge.AbortException;
 public class DefaultMessageHandler implements IMessageHandler {
 
     boolean isVerbose = false;
+    boolean isDebug = false;
     boolean showWeaveInfo = false;
     boolean showWarn = true;
 
@@ -42,6 +43,9 @@ public class DefaultMessageHandler implements IMessageHandler {
         }
         if (kind.isSameOrLessThan(IMessage.INFO)) {
             return !isVerbose;
+        }
+        if (kind.isSameOrLessThan(IMessage.DEBUG)) {
+            return !isDebug;
         }
         return !showWarn;
     }

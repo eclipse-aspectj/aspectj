@@ -1,5 +1,5 @@
 <aspectj>
-    <weaver options="-showWeaveInfo -verbose"/>
+    <weaver options="-showWeaveInfo -verbose -debug"/>
     <aspects>
         <aspect name="ataspectj.ltwlog.Aspect1"/>
     </aspects>

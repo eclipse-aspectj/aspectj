@@ -1,10 +1,12 @@
 <!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
-<project name="ltw" default="javac.ltw">
+<project name="ltw" default="RunThemAllWithJavacCompiledAndLTW">
 
     <!-- using this we can debug the forked VM -->
     <property
         name="jdwp"
         value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+
+    <target name="RunThemAllWithJavacCompiledAndLTW" depends="compile:javac, ltw"/>
 
     <target name="compile:javac">
         <!-- compile only javac compilable stuff, exclude the one that needs other dependencies -->
@@ -67,8 +69,6 @@
             <jvmarg value="-Daj5.def=ataspectj/aop-dumpproxy.xml"/>
         </java>
     </target>
-
-    <target name="javac.ltw" depends="compile:javac, ltw"/>
 
     <target name="ltw.Aspect2MainTest">
         <!-- javac Aspect2 -->
@@ -168,7 +168,7 @@
         </java>
     </target>
 
-    <target name="ltw.oldAspectsDeclared">
+    <target name="Compile time aspects declared to ltw weaver">
         <!--Aspects woven at compile time must be declared in an aop.xml file.
         If they are not declared, then they will be lost during reweaving-->
 

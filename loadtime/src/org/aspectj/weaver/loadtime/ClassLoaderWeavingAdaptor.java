@@ -673,7 +673,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
     	if (trace.isTraceEnabled()) trace.enter("defineClass",this,new Object[] {loader,name,bytes});
     	Object clazz = null;
-		info("generating class '" + name + "'");
+		debug("generating class '" + name + "'");
 		
 		try {
 			//TODO av protection domain, and optimize

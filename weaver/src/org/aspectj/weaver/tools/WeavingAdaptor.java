@@ -233,17 +233,17 @@ public class WeavingAdaptor implements IMessageContext {
 			            // a valid aspectOf()/hasAspect() generated in them.  However - if they are excluded
 			            // (via include/exclude in aop.xml) they really should only get aspectOf()/hasAspect()
 			            // and not be included in the full set of aspects being applied by 'this' weaver
-						info("weaving '" + name + "'");
+						debug("weaving '" + name + "'");
 						bytes = getWovenBytes(name, bytes);
 					} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
 			            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
-			            info("weaving '" + name + "'");
+			            debug("weaving '" + name + "'");
 			            bytes = getAtAspectJAspectBytes(name, bytes);
 					} else {
-						info("not weaving '" + name + "'");
+						debug("not weaving '" + name + "'");
 					}
 		        } else {
-					info("cannot weave '" + name + "'");
+					debug("cannot weave '" + name + "'");
 				}
 	
 				if (trace.isTraceEnabled()) trace.exit("weaveClass",bytes);
@@ -390,6 +390,10 @@ public class WeavingAdaptor implements IMessageContext {
 			}
 		}
 		return ret;
+	}
+	
+	protected boolean debug (String message) {
+		return MessageUtil.debug(messageHandler,message);
 	}
 	
 	protected boolean info (String message) {
@@ -542,6 +546,7 @@ public class WeavingAdaptor implements IMessageContext {
 			super(writer,true);
 			
 			ignore(IMessage.WEAVEINFO);
+            ignore(IMessage.DEBUG);
             ignore(IMessage.INFO);
 			this.failKind = IMessage.ERROR;
 		}

@@ -35,6 +35,7 @@ public class Options {
     private final static String OPTION_noWarnNone = "-warn:none";
     private final static String OPTION_proceedOnError = "-proceedOnError";
     private final static String OPTION_verbose = "-verbose";
+    private final static String OPTION_debug = "-debug";
     private final static String OPTION_reweavable = "-Xreweavable";//notReweavable is default for LTW
     private final static String OPTION_noinline = "-Xnoinline";
     private final static String OPTION_addSerialVersionUID = "-XaddSerialVersionUID";
@@ -106,6 +107,8 @@ public class Options {
             	weaverOption.optionalJoinpoints = arg.substring(OPTIONVALUED_joinpoints.length()).trim();
             }  else if (arg.equalsIgnoreCase(OPTION_verbose)) {
                 weaverOption.verbose = true;
+            }  else if (arg.equalsIgnoreCase(OPTION_debug)) {
+                weaverOption.debug = true;
             } else if (arg.equalsIgnoreCase(OPTION_pinpoint)) {
                 weaverOption.pinpoint = true;
             } else if (arg.startsWith(OPTIONVALUED_messageHandler)) {
@@ -141,6 +144,9 @@ public class Options {
         if (weaverOption.verbose) {
             weaverOption.messageHandler.dontIgnore(IMessage.INFO);
         }
+        if (weaverOption.debug) {
+            weaverOption.messageHandler.dontIgnore(IMessage.DEBUG);
+        }
         if (weaverOption.showWeaveInfo) {
             weaverOption.messageHandler.dontIgnore(IMessage.WEAVEINFO);
         }
@@ -156,6 +162,7 @@ public class Options {
         boolean noWarn;
         boolean proceedOnError;
         boolean verbose;
+        boolean debug;
         boolean notReWeavable = true;//default to notReweavable for LTW (faster)
         boolean noInline;
         boolean addSerialVersionUID;

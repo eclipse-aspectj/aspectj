@@ -3,5 +3,5 @@
 	    <aspect name="Aspect3"/>
 	</aspects>
     
-    <weaver options="-verbose -showWeaveInfo -Xlint:warning"/>
+    <weaver options="-verbose -debug -showWeaveInfo -Xlint:warning"/>
 </aspectj>

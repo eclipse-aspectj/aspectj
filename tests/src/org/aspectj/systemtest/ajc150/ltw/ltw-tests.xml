@@ -6,7 +6,7 @@
         <compile
         	files="Main.java, Aspect1.aj"
 			outjar="main1.jar"
-            options="-showWeaveInfo"
+            options="-showWeaveInfo -verbose"
         >
         	<message kind="weave" text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)"/>
         </compile>	
@@ -14,7 +14,7 @@
         	classpath="main1.jar"
         	files="Aspect2.aj"
         	outjar="aspect2.jar"
-            options="-showWeaveInfo"
+            options="-showWeaveInfo -verbose"
         >
         </compile>	
         <run class="Main" ltw="aop-ltwreweavable.xml">
@@ -227,8 +227,8 @@
                 <line text="info AspectJ Weaver Version"/>
                 <line text="info register classloader"/>
                 <line text="info using"/>
-                <line text="info generating class 'ConcreteAspect'"/>
-                <line text="info weaving 'Main'"/>
+                <line text="debug generating class 'ConcreteAspect'"/>
+                <line text="debug weaving 'Main'"/>
                 <line text="AbstractSuperAspect.before_test1"/>
             </stderr>
         </run>
@@ -396,7 +396,7 @@
                 <line text="info register classloader"/>
                 <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
-	        	<line text="info weaving 'Main'"/>
+	        	<line text="debug weaving 'Main'"/>
         	</stderr>
         </run>
     </ajc-test>
@@ -419,7 +419,7 @@
                 <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
         		<line text="can not build thisJoinPoint lazily for this advice"/>
-	        	<line text="info weaving 'Main'"/>
+	        	<line text="debug weaving 'Main'"/>
         	</stderr>
         </run>
     </ajc-test>
@@ -442,7 +442,7 @@
                 <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
         		<line text="can not build thisJoinPoint lazily for this advice"/>
-	        	<line text="info weaving 'Main'"/>
+	        	<line text="debug weaving 'Main'"/>
         	</stderr>
         </run>
     </ajc-test>
@@ -465,7 +465,7 @@
                 <line text="info using"/>
 	        	<line text="info register aspect Aspect3"/>
         		<line text="can not build thisJoinPoint lazily for this advice"/>
-	        	<line text="info weaving 'Main'"/>
+	        	<line text="debug weaving 'Main'"/>
         	</stderr>
         </run>
     </ajc-test>

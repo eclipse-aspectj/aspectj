@@ -57,9 +57,9 @@ public class TestHelper extends DefaultMessageHandler {
 
     public boolean handleMessage(IMessage message) throws AbortException {
         boolean ret = super.handleMessage(message);
-        if (message.getKind().isSameOrLessThan(IMessage.INFO)) {
-            ;
-        } else {
+        if (message.getKind().isSameOrLessThan(IMessage.INFO));
+        if (message.getKind().isSameOrLessThan(IMessage.DEBUG));
+        else {
             // we do exit here since Assert.fail will only trigger a runtime exception that might
             // be catched by the weaver anyway
             System.err.println("*** Exiting - got a warning/fail/error/abort IMessage");

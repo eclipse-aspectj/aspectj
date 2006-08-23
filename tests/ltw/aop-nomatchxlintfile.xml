@@ -3,5 +3,5 @@
 	    <aspect name="Aspect3"/>
 	</aspects>
     
-    <weaver options="-verbose -showWeaveInfo -Xlintfile:Xlint-nomatch.properties"/>
+    <weaver options="-verbose -debug -showWeaveInfo -Xlintfile:Xlint-nomatch.properties"/>
 </aspectj>

@@ -2,7 +2,7 @@
 	<aspects>
 		<aspect name="EmptyAspect"/>
 	</aspects>
-	<weaver options="-verbose">
+	<weaver options="-verbose -debug">
 		<include within="*1"/>
 	</weaver>
 </aspectj>

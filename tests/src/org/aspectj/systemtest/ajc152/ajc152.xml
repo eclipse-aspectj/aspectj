@@ -703,8 +703,8 @@
 			<line text="info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
 			<line text="info using configuration"/>
 			<line text="info register aspect EmptyAspect"/>
-          <line text="info weaving"/>
-          <line text="info not weaving"/>
+			<line text="debug weaving"/>
+            <line text="debug not weaving"/>
         </stderr>
       </run>
     </ajc-test>

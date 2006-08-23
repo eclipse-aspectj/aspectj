@@ -2,7 +2,7 @@
 <suite>
 
     <ajc-test dir="java5/ataspectj" title="RunThemAllWithJavacCompiledAndLTW">
-        <ant file="ajc-ant.xml" target="javac.ltw" verbose="true"/>
+        <ant file="ajc-ant.xml" target="RunThemAllWithJavacCompiledAndLTW" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AjcLTW PerClauseTest -XterminateAfterCompilation">
@@ -113,8 +113,8 @@
                 <line text="info register classloader"/>
                 <line text="info using"/>
 				<line text="info register aspect ataspectj.EmptyAspect"/>
-        		<line text="info not weaving 'com.foo.bar.Test$$EnhancerByCGLIB$$12345'"/>
-        		<line text="info weaving 'com.foo.bar.Test'"/>
+        		<line text="debug not weaving 'com.foo.bar.Test$$EnhancerByCGLIB$$12345'"/>
+        		<line text="debug weaving 'com.foo.bar.Test'"/>
             </stderr>
         </run>
     </ajc-test>
@@ -182,8 +182,8 @@
                 <line text="info register classloader"/>
                 <line text="info using"/>
 				<line text="info register aspect ataspectj.ltwlog.Aspect1"/>
-				<line text="info weaving 'ataspectj.ltwlog.Main'"/>
-				<line text="info weaving 'ataspectj.ltwlog.Aspect1'"/>
+				<line text="debug weaving 'ataspectj.ltwlog.Main'"/>
+				<line text="debug weaving 'ataspectj.ltwlog.Aspect1'"/>
             </stderr>
         </run>
     </ajc-test>
@@ -207,9 +207,9 @@
                 <line text="info register classloader"/>
                 <line text="info using"/>
 				<line text="info register aspect ataspectj.ltwlog.Aspect1"/>
-				<line text="info weaving 'ataspectj.ltwlog.Main'"/>
+				<line text="debug weaving 'ataspectj.ltwlog.Main'"/>
 				<line text="weaveinfo Join point 'method-execution(void ataspectj.ltwlog.Main.target())' in Type 'ataspectj.ltwlog.Main' (Main.java:22) advised by before advice from 'ataspectj.ltwlog.Aspect1' (Aspect1.java)"/>
-				<line text="info weaving 'ataspectj.ltwlog.Aspect1'"/>
+				<line text="debug weaving 'ataspectj.ltwlog.Aspect1'"/>
             </stderr>
         </run>
     </ajc-test>
@@ -264,7 +264,7 @@
                 files="ataspectj/ltwlog/MessageHolder.java,ataspectj/ltwreweavable/MainReweavableLogging.java,ataspectj/ltwreweavable/AspectReweavableLogging.java,ataspectj/ltwreweavable/Advisable.java,ataspectj/ltwreweavable/EmptyAtAspect.java"
                 options="-1.5"
                 outjar="main1.jar"/>
-        <ant file="ajc-ant.xml" target="ltw.oldAspectsDeclared" verbose="true"/>
+        <ant file="ajc-ant.xml" target="Compile time aspects declared to ltw weaver" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="Concrete@Aspect">
