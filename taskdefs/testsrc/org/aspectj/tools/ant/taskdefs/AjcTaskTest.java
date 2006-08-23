@@ -786,8 +786,8 @@ public class AjcTaskTest extends TestCase {
 		AjcTask task = getTask("showweaveinfo.lst",destDir);
 		task.setOutxml(true);
 		checkRun(task,null);
-		File outxmlFile = new File(destDir,"META-INF/aop.xml");
-		assertTrue("META-INF/aop.xml missing",outxmlFile.exists());
+		File outxmlFile = new File(destDir,"META-INF/aop-ajc.xml");
+		assertTrue("META-INF/aop-ajc.xml missing",outxmlFile.exists());
 	}
 	
 	public void testOutxmlFile () {

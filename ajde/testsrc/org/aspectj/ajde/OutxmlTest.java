@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.aspectj.bridge.Constants;
 import org.aspectj.util.FileUtil;
 
 public class OutxmlTest extends AjdeTestCase {
@@ -26,7 +27,7 @@ public class OutxmlTest extends AjdeTestCase {
 	public static final String PROJECT_DIR = "OutxmlTest";
 	public static final String BIN_DIR = "bin";
 	public static final String OUTJAR_NAME = "/bin/test.jar"; 
-	public static final String DEFAULT_AOPXML_NAME = "META-INF/aop.xml"; 
+	public static final String DEFAULT_AOPXML_NAME = Constants.AOP_AJC_XML; 
 	public static final String CUSTOM_AOPXML_NAME = "custom/aop.xml"; 
 
 	/*

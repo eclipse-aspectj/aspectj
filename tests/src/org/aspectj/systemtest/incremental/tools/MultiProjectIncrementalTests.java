@@ -1656,7 +1656,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		int aspectCount = 0;
 		File aopXML = new File(getWorkingDir().getAbsolutePath() 
 				+ File.separatorChar + projectName + File.separatorChar 
-				+ "bin" + File.separatorChar + "META-INF" + File.separatorChar + "aop.xml");
+				+ "bin" + File.separatorChar + "META-INF" + File.separatorChar + "aop-ajc.xml");
 
 		if (!aopXML.exists()) {
 			fail("Expected file " + aopXML.getAbsolutePath() + " to exist but it doesn't");

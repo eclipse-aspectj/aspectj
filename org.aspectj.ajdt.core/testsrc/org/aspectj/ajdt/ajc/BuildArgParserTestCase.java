@@ -497,7 +497,7 @@ public class BuildArgParserTestCase extends TestCase {
 		IMessageHolder messageHolder = new MessageHandler();
 		AjBuildConfig config = genBuildConfig(new String[] { "-outxml", "-showWeaveInfo" }, messageHolder);
         assertTrue("Warnings: " + messageHolder,!messageHolder.hasAnyMessage(IMessage.WARNING, true));
-		assertEquals("Wrong outxml","META-INF/aop.xml",config.getOutxmlName());
+		assertEquals("Wrong outxml","META-INF/aop-ajc.xml",config.getOutxmlName());
 		assertTrue("Following option currupted",config.getShowWeavingInformation());
 	}
 	

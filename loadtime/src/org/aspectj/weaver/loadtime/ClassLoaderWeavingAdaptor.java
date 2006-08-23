@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 
 import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.Constants;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.ICrossReferenceHandler;
@@ -52,7 +53,7 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
  */
 public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
-    private final static String AOP_XML = "META-INF/aop.xml";
+    private final static String AOP_XML = Constants.AOP_USER_XML + ";" + Constants.AOP_AJC_XML;
 
     private boolean initialized;
     

@@ -493,7 +493,7 @@ public class BuildArgParser extends Main {
 					showError("-outjar requires jar path argument");
 				}
 			} else if (arg.equals("-outxml")) { 
-                buildConfig.setOutxmlName("META-INF/aop.xml");  
+                buildConfig.setOutxmlName(org.aspectj.bridge.Constants.AOP_AJC_XML);  
 			} else if (arg.equals("-outxmlfile")) { 
 				if (args.size() > nextArgIndex) {
 					String name = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
