@@ -470,7 +470,7 @@ public class SignaturePattern extends PatternNode {
 	  // fake members represent ITD'd fields - for their annotations we should go and look up the
 	  // relevant member in the original aspect
 	  if (member.isAnnotatedElsewhere() && member.getKind()==Member.FIELD) {
-	    // FIXME asc duplicate of code in AnnotationPattern.matchInternal()?  same fixmes apply here.
+	    // FIXME asc duplicate of code in AnnotationPointcut.matchInternal()?  same fixmes apply here.
 	    ResolvedMember [] mems = member.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
 	    List mungers = member.getDeclaringType().resolve(world).getInterTypeMungers(); 
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
