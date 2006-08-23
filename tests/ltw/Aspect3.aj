@@ -16,4 +16,9 @@ public aspect Aspect3 {
 	before () : execution(void Main.test999()) {
 		System.err.println("Aspect1.before_" + thisJoinPoint.getSignature().getName());
 	}
+
+    // triggers noGuardForLazyTjp warning if that warning is enabled
+	before(): call(* someNonExistentMethod(..)) {
+		System.out.println(thisJoinPoint);
+	}
 }
