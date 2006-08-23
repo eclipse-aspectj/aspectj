@@ -102,13 +102,6 @@ public class CompilerAdapter {
 			currNotifier = new BuildNotifierAdapter(progressMonitor, buildManager);		
 			buildManager.setProgressListener(currNotifier);
 			
-			String rtInfo = buildManager.checkRtJar(buildConfig); // !!! will get called twice
-			if (rtInfo != null) {
-				Ajde.getDefault().getErrorHandler().handleWarning(
-                	  "AspectJ Runtime error: " + rtInfo
-		            + "  Please place a valid aspectjrt.jar on the classpath.");
-	            return false;
-			}
 			boolean incrementalEnabled = 
                 buildConfig.isIncrementalMode()
                 || buildConfig.isIncrementalFileMode();

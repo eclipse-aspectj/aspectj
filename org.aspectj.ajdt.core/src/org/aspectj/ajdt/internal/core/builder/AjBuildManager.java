@@ -29,8 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -61,7 +59,6 @@ import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.bridge.Version;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextFormatter;
 import org.aspectj.bridge.context.ContextToken;
@@ -89,7 +86,6 @@ import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.core.runtime.OperationCanceledException;
-//import org.aspectj.org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
 
 public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourceProvider,ICompilerAdapterFactory {
 	private static final String CROSSREFS_FILE_NAME = "build.lst";
@@ -202,17 +198,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             }
             this.handler = 
                 CountingMessageHandler.makeCountingMessageHandler(baseHandler);
-            // XXX duplicate, no? remove?
-            String check = checkRtJar(buildConfig);
-            if (check != null) {
-                if (FAIL_IF_RUNTIME_NOT_FOUND) {
-                    MessageUtil.error(handler, check);
-                   	CompilationAndWeavingContext.leavingPhase(ct);
-                    return false;
-                } else {
-                    MessageUtil.warn(handler, check);
-                }
-            }
+
             // if (batch) {
                 setBuildConfig(buildConfig);
             //}
@@ -1079,66 +1065,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		return buf.toString();
 	}
 	
-	
-	/**
-	 * This will return null if aspectjrt.jar is present and has the correct version.
-	 * Otherwise it will return a string message indicating the problem.
-	 */
-	public String checkRtJar(AjBuildConfig buildConfig) {
-        // omitting dev info
-		if (Version.text.equals(Version.DEVELOPMENT)) {
-			// in the development version we can't do this test usefully
-//			MessageUtil.info(holder, "running development version of aspectj compiler");
-			return null;
-		}
-		
-		if (buildConfig == null || buildConfig.getFullClasspath() == null) return "no classpath specified";
-		
-		String ret = null;
-		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext(); ) {
-			File p = new File( (String)it.next() );
-			// pr112830, allow variations on aspectjrt.jar of the form aspectjrtXXXXXX.jar
-			if (p.isFile() && p.getName().startsWith("aspectjrt") && p.getName().endsWith(".jar")) {
-
-				try {
-                    String version = null;
-                    Manifest manifest = new JarFile(p).getManifest();
-                    if (manifest == null) {
-                    	ret = "no manifest found in " + p.getAbsolutePath() + 
-								", expected " + Version.text;
-                    	continue;
-                    }
-                    Attributes attr = manifest.getAttributes("org/aspectj/lang/");
-                    if (null != attr) {
-                        version = attr.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-                        if (null != version) {
-                            version = version.trim();
-                        }
-                    }
-					// assume that users of development aspectjrt.jar know what they're doing
-					if (Version.DEVELOPMENT.equals(version)) {
-//						MessageUtil.info(holder,
-//							"running with development version of aspectjrt.jar in " + 
-//							p.getAbsolutePath());
-                        return null;
-					} else if (!Version.text.equals(version)) {
-						ret =  "bad version number found in " + p.getAbsolutePath() + 
-								" expected " + Version.text + " found " + version;
-						continue;
-					}
-				} catch (IOException ioe) {
-					ret = "bad jar file found in " + p.getAbsolutePath() + " error: " + ioe;
-				}
-				return null; // this is the "OK" return value!
-			} else {
-				// might want to catch other classpath errors
-			}
-		}
-		
-		if (ret != null) return ret; // last error found in potentially matching jars...
-		
-		return "couldn't find aspectjrt.jar on classpath, checked: " + makeClasspathString(buildConfig);
-	}
 	
 
 	public String toString() {
