@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.aspectj.bridge.AbortException;
 import org.aspectj.weaver.ExtensibleURLClassLoader;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 import org.aspectj.weaver.tools.WeavingClassLoader;
 
@@ -37,6 +40,8 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	private WeavingAdaptor adaptor;
 	private boolean initializingAdaptor;
 	private Map generatedClasses = new HashMap(); /* String -> byte[] */ 
+	
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingURLClassLoader.class);
 
 	/*
 	 * This constructor is needed when using "-Djava.system.class.loader". 
@@ -48,7 +53,9 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	
 	public WeavingURLClassLoader (URL[] urls, ClassLoader parent) {
 		super(urls,parent);
+		if (trace.isTraceEnabled()) trace.enter("<init>",this,new Object[] { urls, parent });
 //		System.out.println("WeavingURLClassLoader.WeavingURLClassLoader()");
+		if (trace.isTraceEnabled()) trace.exit("<init>");
 	}
 	
 	public WeavingURLClassLoader (URL[] classURLs, URL[] aspectURLs, ClassLoader parent) {
@@ -106,6 +113,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	 * Override to weave class using WeavingAdaptor 
 	 */
 	protected Class defineClass(String name, byte[] b, CodeSource cs) throws IOException {
+		if (trace.isTraceEnabled()) trace.enter("defineClass",this,new Object[] { name, b, cs });
 //		System.err.println("? WeavingURLClassLoader.defineClass(" + name + ", [" + b.length + "])");
 
 		/* Avoid recursion during adaptor initialization */
@@ -116,9 +124,20 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 				createAdaptor();
 			}
 			
-			b = adaptor.weaveClass(name,b);
+			try {
+				b = adaptor.weaveClass(name,b);
+			}
+			catch (AbortException ex) {
+	    		trace.error("defineClass",ex);
+	    		throw ex;
+			}
+			catch (Throwable th) {
+	    		trace.error("defineClass",th);
+			}
 		}
-		return super.defineClass(name, b, cs);
+		Class clazz = super.defineClass(name, b, cs);
+		if (trace.isTraceEnabled()) trace.exit("defineClass",clazz);
+		return clazz;
 	}
 	
 	private void createAdaptor () {

@@ -52,8 +52,10 @@
 	  	    	<line text="warning aspect ExcludedAspect exluded"/>
 	  	    	<line text="error Cannot find m_parent aspect"/>
 	  	    	<line text="error Cannot find m_parent aspect"/>
-	  	    	<line text="warning register definition failed"/>
-	  	    	<line text="warning register definition failed"/>
+	  	    	<line text="error Concrete-aspect 'IncludedMissingAspect' could not be registered"/>
+	  	    	<line text="error Concrete-aspect 'IncludedMissingAspect' could not be registered"/>
+	  	    	<line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
+	  	    	<line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
             </stderr>
         </ant>
     </ajc-test>

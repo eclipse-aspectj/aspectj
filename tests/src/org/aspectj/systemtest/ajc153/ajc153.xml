@@ -333,4 +333,20 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="ltw" title="reweavableAspectNotRegistered error">
+      <compile files="HelloWorld.java, ExceptionHandler.aj" options="-showWeaveInfo">
+        <message kind="weave" text="Join point 'method-execution(void HelloWorld.main(java.lang.String[]))' in Type 'HelloWorld' (HelloWorld.java:3) advised by around advice from 'ExceptionHandler' (ExceptionHandler.aj:2)"/>
+      </compile>
+      <compile files="EmptyAspect.aj">
+      </compile>
+      <run class="HelloWorld" ltw="aop-missingaspect.xml">
+        <stdout>
+          <line text="Hello World!"/>
+        </stdout>
+        <stderr>
+        	<line text="error aspect 'ExceptionHandler' woven into 'HelloWorld' must be defined to the weaver (placed on the aspectpath, or defined in an aop.xml file if using LTW)."/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
 </suite>

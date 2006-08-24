@@ -66,6 +66,10 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testDuplicateJVMTIAgents_pr151938() {runTest("Duplicate JVMTI agents");};
   public void testLTWWorldWithAnnotationMatching_pr153572() { runTest("LTWWorld with annotation matching");}
   
+  public void testReweavableAspectNotRegistered_pr129525 () {
+	  runTest("reweavableAspectNotRegistered error");
+  }
+  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);

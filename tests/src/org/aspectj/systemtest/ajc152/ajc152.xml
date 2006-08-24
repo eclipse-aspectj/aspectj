@@ -483,7 +483,8 @@
         <run class="HelloWorld" ltw="aop-tracing.xml">
           <stderr>
             <line text="error Abstract method 'void ConcreteMethods.foo(int)' cannot be concretized in XML:"/>
-            <line text="warning register definition failed"/>
+            <line text="error Concrete-aspect 'TraceHelloWorld' could not be registered"/>
+            <line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
           </stderr>
           <stdout>
             <line text="Hello World!"/>
@@ -497,7 +498,8 @@
         <run class="HelloWorld" ltw="aop-tracing.xml">
           <stderr>
             <line text="error Abstract method 'void AbstractMethods.test()' cannot be concretized in XML"/>
-            <line text="warning register definition failed"/>
+            <line text="error Concrete-aspect 'TraceHelloWorld' could not be registered"/>
+            <line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
           </stderr>
           <stdout>
             <line text="Hello World!"/>

@@ -80,6 +80,7 @@ public class WeavingAdaptor implements IMessageContext {
 	protected BcelWeaver weaver;
 	private IMessageHandler messageHandler;
 	private WeavingAdaptorMessageHandler messageHolder;
+	private boolean abortOnError = false;
 	protected GeneratedClassHandler generatedClassHandler;
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 	protected BcelObjectType delegateForCurrentClass; // lazily initialized, should be used to prevent parsing bytecode multiple times
@@ -153,6 +154,7 @@ public class WeavingAdaptor implements IMessageContext {
 	}
 	
 	private void init(List classPath, List aspectPath) {
+		abortOnError = true;
 		createMessageHandler();
 		
 		info("using classpath: " + classPath); 
@@ -191,8 +193,12 @@ public class WeavingAdaptor implements IMessageContext {
 	}
 	
 	protected void disable () {
+		if (trace.isTraceEnabled()) trace.enter("disable",this);
+
 		enabled = false;
 		messageHolder.flushMessages();
+		
+		if (trace.isTraceEnabled()) trace.exit("disable");
 	}
 	
 	protected boolean isEnabled () {
@@ -469,7 +475,7 @@ public class WeavingAdaptor implements IMessageContext {
 			if (traceMessages) traceMessage(message);
 			if (accumulating) {
 				boolean result = addMessage(message);
-				if (0 <= message.getKind().compareTo(IMessage.ERROR)) {
+				if (abortOnError && 0 <= message.getKind().compareTo(IMessage.ERROR)) {
 					throw new AbortException(message);
 				}
 				return result;
@@ -553,7 +559,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 		public boolean handleMessage(IMessage message) throws AbortException {
 			boolean result = super.handleMessage(message);
-			if (0 <= message.getKind().compareTo(failKind)) {
+			if (abortOnError && 0 <= message.getKind().compareTo(failKind)) {
 				throw new AbortException(message);
 			}
 			return true;	

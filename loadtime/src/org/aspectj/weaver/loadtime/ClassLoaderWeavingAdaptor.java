@@ -355,6 +355,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      */
     private void registerAspects(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
     	if (trace.isTraceEnabled()) trace.enter("registerAspects",this, new Object[] { weaver, loader, definitions} );
+    	boolean success = true;
+    	
         //TODO: the exclude aspect allow to exclude aspect defined upper in the CL hierarchy - is it what we want ??
         // if not, review the getResource so that we track which resource is defined by which CL
 
@@ -393,6 +395,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     ConcreteAspectCodeGen gen = new ConcreteAspectCodeGen(concreteAspect, weaver.getWorld());
                     if (!gen.validate()) {
                         error("Concrete-aspect '"+concreteAspect.name+"' could not be registered");
+                        success = false;
                         break;
                     }
                     this.generatedClassHandler.acceptClass(
@@ -412,8 +415,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         }
 //        System.out.println("ClassLoaderWeavingAdaptor.registerAspects() classloader=" + weavingContext.getClassLoaderName() + ", namespace=" + namespace);
         
+        /* We couldn't register one or more aspects so disable the adaptor */
+        if (!success) {
+        	disable();
+    		warn("failure(s) registering aspects. Disabling weaver for class loader " + getClassLoaderName(loader));
+        }
+        
         /* We didn't register any aspects so disable the adaptor */
-        if (namespace == null) {
+        else if (namespace == null) {
         	disable();
     		info("no aspects registered. Disabling weaver for class loader " + getClassLoaderName(loader));
         }
