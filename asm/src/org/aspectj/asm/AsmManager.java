@@ -398,7 +398,11 @@ public class AsmManager {
 	}
 	
 
-
+	// NB. If the format of this report changes then the model tests
+	// (@see org.aspectj.systemtest.model.ModelTestCase) will fail in 
+	// their comparison. The tests are assuming that both the model 
+	// and relationship map are reported and as a consequence single
+	// testcases test that both the model and relationship map are correct.
 	public void reportModelInfo(String reasonForReport) {
 		if (!dumpModel && !dumpRelationships) return;
 		try {
