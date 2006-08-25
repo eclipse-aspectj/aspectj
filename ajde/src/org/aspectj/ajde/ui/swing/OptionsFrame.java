@@ -111,7 +111,7 @@ public class OptionsFrame extends JFrame {
             this.setLocation(200, 100);
 
 			version_label.setText("Version: " + Version.text);
-			built_label.setText("Built: " + new Date(Version.time).toString());
+			built_label.setText("Built: " + new Date(Version.getTime()).toString());
 
             addOptionsPanel(new BuildOptionsPanel());
             loadOptions();

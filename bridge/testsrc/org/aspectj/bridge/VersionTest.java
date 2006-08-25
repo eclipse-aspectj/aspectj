@@ -44,7 +44,7 @@ public class VersionTest extends TestCase {
         
     public void testVersion() {
     	if (Version.time_text.equals("")) return;  // dev build, we can only test this on the build server.
-        Date date = new Date(Version.time);
+        Date date = new Date(Version.getTime());
         SimpleDateFormat format = new SimpleDateFormat(Version.SIMPLE_DATE_FORMAT, Locale.getDefault());
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         String timeString = format.format(date);

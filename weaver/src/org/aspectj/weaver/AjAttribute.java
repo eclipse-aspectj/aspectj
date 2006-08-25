@@ -247,7 +247,7 @@ public abstract class AjAttribute {
 		public void write(DataOutputStream s) throws IOException {
 			s.writeShort(CURRENT_VERSION_MAJOR);
 			s.writeShort(CURRENT_VERSION_MINOR);
-			s.writeLong(Version.time); // build used to construct the class...
+			s.writeLong(Version.getTime()); // build used to construct the class...
 		}
 		
 		public static WeaverVersionInfo read(VersionedDataInputStream s) throws IOException {
