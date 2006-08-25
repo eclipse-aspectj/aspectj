@@ -89,4 +89,11 @@ public class TestMessageHolder implements IMessageHolder {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
+	 */
+	public void ignore(Kind kind) {
+		// TODO Auto-generated method stub
+	}
+
 }

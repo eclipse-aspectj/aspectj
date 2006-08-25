@@ -67,6 +67,14 @@ public class PinpointingMessageHandler implements IMessageHandler {
 	public void dontIgnore(Kind kind) {
 		delegate.dontIgnore(kind);
 	}
+
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
+	 */
+	public void ignore(Kind kind) {
+		delegate.ignore(kind);
+	}
 	
 	private static class PinpointedMessage implements IMessage {
 

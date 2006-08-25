@@ -33,6 +33,7 @@ import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.ReflectionFactory;
 import org.aspectj.bridge.Version;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
@@ -657,6 +658,14 @@ public class Main {
                 return null;
             }
         }
+
+        /**
+         * No-op
+         * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
+         * @param kind
+         */
+		public void ignore(Kind kind) {
+		}
     }
     
 	public static class LogModeMessagePrinter extends MessagePrinter {

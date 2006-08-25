@@ -2112,6 +2112,12 @@ private static class AntMessageHandler implements IMessageHandler {
 	 */
 	public void dontIgnore(Kind kind) {
 	}
+
+	/* (non-Javadoc)
+	 * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
+	 */
+	public void ignore(Kind kind) {
+	}
 	
 }
 }

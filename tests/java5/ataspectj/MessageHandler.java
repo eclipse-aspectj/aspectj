@@ -24,4 +24,7 @@ public class MessageHandler implements IMessageHandler {
     	
     }
 	
+    public void ignore(IMessage.Kind kind) {
+    	
+    }
 }

@@ -75,6 +75,15 @@ public class CountingMessageHandler implements IMessageHandler {
         delegate.dontIgnore(kind);
     }
 
+    /**
+     * Delegate
+     * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
+     * @param kind
+     */
+	public void ignore(IMessage.Kind kind) {
+		delegate.ignore(kind);
+	}
+    
     /** @return delegate.toString() */
     public String toString() {
         return delegate.toString();
@@ -149,4 +158,5 @@ public class CountingMessageHandler implements IMessageHandler {
     	if (proxy != null) proxy.reset();
     	counters.clear();
     }
+
 }

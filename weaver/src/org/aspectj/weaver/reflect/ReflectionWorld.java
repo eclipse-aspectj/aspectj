@@ -174,6 +174,10 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		public void dontIgnore(org.aspectj.bridge.IMessage.Kind kind) {
 			// empty
 		}
+
+		public void ignore(org.aspectj.bridge.IMessage.Kind kind) {
+			// empty
+		}
 		
 	}
 

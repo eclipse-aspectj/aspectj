@@ -152,6 +152,14 @@ public class WeaverMessageHandler implements IMessageHandler {
         ;
     }
 
+    /**
+     * No-op
+     * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
+     * @param kind
+     */
+	public void ignore(Kind kind) {
+	}
+    
 	private int getStartPos(ISourceLocation sLoc,CompilationResult result) {
 		int pos = 0;
 		if (sLoc == null) return 0;
@@ -234,5 +242,6 @@ public class WeaverMessageHandler implements IMessageHandler {
 		IProblem[] retValue = (IProblem[])ret.toArray(new IProblem[]{});
 		return retValue;
 	}
+
 }
 

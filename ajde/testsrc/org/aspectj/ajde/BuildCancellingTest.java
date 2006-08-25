@@ -74,7 +74,6 @@ public class BuildCancellingTest extends AjdeTestCase {
 	public void testCancelFirstCompile() {
 		if (debugTests) System.out.println("\n\n\ntestCancelFirstCompile: Building with LoadsaCode.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
 
 		programmableBPM.cancelOn("compiled:",1); // Force a cancel after the first compile occurs
@@ -105,7 +104,6 @@ public class BuildCancellingTest extends AjdeTestCase {
 	public void testCancelThirdCompile() {
 		if (debugTests) System.out.println("\n\n\ntestCancelThirdCompile: Building with LoadsaCode.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
 
 		programmableBPM.cancelOn("compiled:",3); // Force a cancel after the third compile occurs
@@ -135,7 +133,6 @@ public class BuildCancellingTest extends AjdeTestCase {
 	public void testCancelFirstAspectWeave() {
 		if (debugTests) System.out.println("\n\n\ntestCancelFirstAspectWeave: Building with LoadsaCode.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
 
 		programmableBPM.cancelOn("woven aspect ",1); // Force a cancel after the first weave aspect occurs
@@ -163,7 +160,6 @@ public class BuildCancellingTest extends AjdeTestCase {
 	public void testCancelThirdAspectWeave() {
 		if (debugTests) System.out.println("\n\n\ntestCancelThirdAspectWeave: Building with LoadsaCode.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(false);
 		
 		BuildProgMon programmableBPM = new BuildProgMon();
 		// Force a cancel after the third weave occurs.
@@ -207,7 +203,6 @@ public class BuildCancellingTest extends AjdeTestCase {
 	public void testCancelFirstClassWeave() {
 		if (debugTests) System.out.println("testCancelFirstClassWeave: Building with EvenMoreCode.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
 
 		programmableBPM.cancelOn("woven class",1); 
@@ -248,7 +243,6 @@ public class BuildCancellingTest extends AjdeTestCase {
 	public void testCancelSecondClassWeave() {
 		if (debugTests) System.out.println("testCancelSecondClassWeave: Building with EvenMoreCode.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(false);
 		BuildProgMon programmableBPM = new BuildProgMon();
 
 		programmableBPM.cancelOn("woven class",2); 

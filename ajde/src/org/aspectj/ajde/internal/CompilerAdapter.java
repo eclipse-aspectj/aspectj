@@ -50,7 +50,6 @@ public class CompilerAdapter {
     private BuildNotifierAdapter currNotifier = null;
 	private boolean initialized = false;
 	private boolean structureDirty = true;
-    private boolean showInfoMessages = false;
     // set to false in incremental mode to re-do initial build
 	private boolean nextBuild = false; 
 	
@@ -58,14 +57,7 @@ public class CompilerAdapter {
 		super();
 	}
 
-    public void showInfoMessages(boolean show) { // XXX surface in GUI
-        showInfoMessages = show;
-    }
-    public boolean getShowInfoMessages() {
-        return showInfoMessages;
-    }
-
-    public void nextBuildFresh() {
+	public void nextBuildFresh() {
         if (nextBuild) {
             nextBuild = false;
         }
@@ -616,15 +608,15 @@ public class CompilerAdapter {
 
 		public MessageHandlerAdapter() {
 			this.taskListManager = Ajde.getDefault().getTaskListManager();
+			ignore(IMessage.INFO);
 		}	
 
 		public boolean handleMessage(IMessage message) throws AbortException {
             IMessage.Kind kind = message.getKind(); 
             if (kind == IMessage.ABORT) return handleAbort(message);
-            if (isIgnoring(kind) 
-                || (!showInfoMessages && IMessage.INFO.equals(kind))) {
+            if (isIgnoring(kind)) {
                     return true;
-                }
+            }
 			
 			taskListManager.addSourcelineTask(message);
 			return true;// return super.handleMessage(message); // also store...	
@@ -641,6 +633,9 @@ public class CompilerAdapter {
 	}
 	
 	public IMessageHandler getMessageHandler() {
+		if (messageHandler == null) {
+			init();
+		}
 		return messageHandler;
 	}
 

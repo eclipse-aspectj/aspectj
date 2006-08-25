@@ -369,6 +369,8 @@ public class MessageUtil {
             public void dontIgnore(IMessage.Kind kind) {
                 ;
             }
+			public void ignore(Kind kind) {
+			}
         };
         return visitMessages(holder, selector, true, false);
     }
@@ -599,6 +601,9 @@ public class MessageUtil {
             String text = message.getMessage();
             return ((null != message) && (-1 != text.indexOf(infix)));
         }
+
+		public void ignore(Kind kind) {
+		}
     }
 
     // ------------------ components to render  messages

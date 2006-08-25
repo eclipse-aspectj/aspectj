@@ -523,6 +523,12 @@ public class WeavingAdaptor implements IMessageContext {
 				delegate.dontIgnore(kind);
 			}
 		}
+
+		public void ignore(Kind kind) {
+			if (null != kind) {
+				delegate.ignore(kind);
+			}
+		}
 		
 		private boolean addMessage (IMessage message) {
 			messages.add(message);
@@ -541,6 +547,7 @@ public class WeavingAdaptor implements IMessageContext {
 		public void setDelegate (IMessageHandler messageHandler) {
 			delegate = messageHandler;
 		}
+
 	}
 
 	protected class WeavingAdaptorMessageWriter extends MessageWriter {

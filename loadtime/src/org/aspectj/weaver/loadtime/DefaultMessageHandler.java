@@ -60,4 +60,14 @@ public class DefaultMessageHandler implements IMessageHandler {
         }
     }
 
+	public void ignore(IMessage.Kind kind) {
+        if (kind.equals(IMessage.WEAVEINFO)) {
+            showWeaveInfo = false;
+        } else if (kind.equals(IMessage.DEBUG)) {
+            isVerbose = false;
+        } else if (kind.equals(IMessage.WARNING)) {
+            showWarn = true;
+        }
+	}
+
 }

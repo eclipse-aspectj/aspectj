@@ -106,7 +106,6 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	public void testWeaveMessagesAdvice() {
 		if (debugTests) System.out.println("testWeaveMessagesAdvice: Building with One.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("One.lst").getAbsolutePath(),new BPM(),false);
 		verifyWeavingMessages("advice",true);
 	}
@@ -120,7 +119,6 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	public void testWeaveMessagesITD() {
 		if (debugTests) System.out.println("\ntestWeaveMessagesITD: Building with Two.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Two.lst").getAbsolutePath(),new BPM(),false);
 		verifyWeavingMessages("itd",true);
 	}
@@ -132,7 +130,6 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	public void testWeaveMessagesDeclare() {
 		if (debugTests) System.out.println("\ntestWeaveMessagesDeclare: Building with Three.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Three.lst").getAbsolutePath(),new BPM(),false);
 		verifyWeavingMessages("declare1",true);		
 	}
@@ -144,7 +141,6 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	public void testWeaveMessagesDeclareExtends() {
 		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareExtends: Building with Four.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Four.lst").getAbsolutePath(),new BPM(),false);
 		verifyWeavingMessages("declare.extends",true);		
 	}
@@ -155,7 +151,6 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	public void testWeaveMessagesDeclareSoft() {
 		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareSoft: Building with Five.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Five.lst").getAbsolutePath(),new BPM(),false);
 		verifyWeavingMessages("declare.soft",true);		
 	}
@@ -167,7 +162,6 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 		if (!LangUtil.is15VMOrGreater()) return; // annotation classes won't be about pre 15
 		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareAnnotation: Building with Six.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Six.lst").getAbsolutePath(),new BPM(),false);
 		verifyWeavingMessages("declare.annotation",true);		
 	}
@@ -178,7 +172,6 @@ public class ShowWeaveMessagesTestCase extends AjdeTestCase {
 	public void testWeaveMessagesDeclareAnnotationWeaveInfoOff() {
 		if (debugTests) System.out.println("\ntestWeaveMessagesDeclareAnnotation: Building with Seven.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
 		compilerAdapter.compile((String) openFile("Seven.lst").getAbsolutePath(),new BPM(),false);
 		verifyWeavingMessages("declare.annotationNoWeaveInfo",true);		
 	}

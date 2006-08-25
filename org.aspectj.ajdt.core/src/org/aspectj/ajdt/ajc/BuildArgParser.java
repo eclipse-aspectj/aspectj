@@ -122,15 +122,11 @@ public class BuildArgParser extends Main {
 			// Now jump through firey hoops to turn them on/off
 			if (handler instanceof CountingMessageHandler) {
 				IMessageHandler delegate = ((CountingMessageHandler)handler).delegate;
-				// Without dontIgnore() on the IMessageHandler interface, we have to do this *blurgh*
-				if (delegate instanceof MessageHandler) {
-					if (swi) 
-					  ((MessageHandler)delegate).dontIgnore(IMessage.WEAVEINFO);
-					else 
-					  ((MessageHandler)delegate).ignore(IMessage.WEAVEINFO);
-				}
+				if (swi) 
+				  delegate.dontIgnore(IMessage.WEAVEINFO);
+				else 
+				  delegate.ignore(IMessage.WEAVEINFO);
 			}
-			
             
             boolean incrementalMode = buildConfig.isIncrementalMode()
             	|| buildConfig.isIncrementalFileMode();

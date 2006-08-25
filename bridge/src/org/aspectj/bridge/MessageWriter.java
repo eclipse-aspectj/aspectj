@@ -68,6 +68,14 @@ public class MessageWriter implements IMessageHandler {
         ;
     }
 
+    /**
+     * No-op
+     * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
+     * @param kind
+     */
+	public void ignore(IMessage.Kind kind) {
+	}
+
     /** @return null to not print, or message rendering (including newlines) */
     protected String render(IMessage message) {
         return message.toString();    

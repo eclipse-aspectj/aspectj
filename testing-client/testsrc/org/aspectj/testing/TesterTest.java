@@ -207,11 +207,13 @@ public class TesterTest extends TestCase {
             ;
         }
 
+        public void ignore(IMessage.Kind kind) {
+		}
+
         public boolean handleMessage(IMessage message) {
             (message.isFailed() ? failures : passes).add(message);
             return true;
         }
-
     }
 }                
 //        /**

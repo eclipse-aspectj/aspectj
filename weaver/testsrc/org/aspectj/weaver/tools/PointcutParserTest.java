@@ -311,6 +311,9 @@ public class PointcutParserTest extends TestCase {
 
 		public void dontIgnore(Kind kind) {
 		}
+
+		public void ignore(Kind kind) {
+		}
 		
 	}
 }

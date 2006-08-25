@@ -529,4 +529,7 @@ class AbortInterceptor implements IMessageHandler {
 
 	public void dontIgnore(Kind kind) {
 	}
+
+	public void ignore(Kind kind) {
+	}
 }

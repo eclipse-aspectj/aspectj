@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.ajde.internal.CompilerAdapter;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
 
 public class ReweavableTestCase extends AjdeTestCase {
@@ -77,7 +78,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public void testNonReweavableCompile() {
 		if (debugTests) System.out.println("testNonReweavableCompile: Building with NonReweavable1.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
+		compilerAdapter.getMessageHandler().dontIgnore(IMessage.INFO);
 		compilerAdapter.compile((String) openFile("NonReweavable1.lst").getAbsolutePath(),new BPM(),false);
 	
 		assertFalse("Did not expect to find a message about the weaver operating in reweavable mode",
@@ -115,7 +116,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public void testReweavableCompile() {
 		if (debugTests) System.out.println("testReweavableCompile: Building with Reweavable1.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
+		compilerAdapter.getMessageHandler().dontIgnore(IMessage.INFO);
 		compilerAdapter.compile((String) openFile("Reweavable1.lst").getAbsolutePath(),new BPM(),false);
 	
 		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
@@ -162,7 +163,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public void testReweavableCompressCompile() {
 		if (debugTests) System.out.println("testReweavableCompressCompile: Building with ReweavableCompress1.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
+		compilerAdapter.getMessageHandler().dontIgnore(IMessage.INFO);
 		compilerAdapter.compile((String) openFile("ReweavableCompress1.lst").getAbsolutePath(),new BPM(),false);
 	
 		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
@@ -222,7 +223,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public void testReweavableSimpleCompile() {
 		if (debugTests) System.out.println("testReweavableSimpleCompile: Building with Reweavable1.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
+		compilerAdapter.getMessageHandler().dontIgnore(IMessage.INFO);
 		compilerAdapter.compile((String) openFile("Reweavable1.lst").getAbsolutePath(),new BPM(),false);
 	
 		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
@@ -276,7 +277,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public void testForReweavableSimpleErrorCompile() {
 		if (debugTests) System.out.println("testForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
+		compilerAdapter.getMessageHandler().dontIgnore(IMessage.INFO);
 		compilerAdapter.compile((String) openFile("Reweavable1.lst").getAbsolutePath(),new BPM(),false);
 	
 		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
@@ -332,7 +333,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public void testErrorScenario2Compile() {
 		if (debugTests) System.out.println("testErrorScenario2: Building with TJP1.lst");
 		compilerAdapter = new CompilerAdapter();
-		compilerAdapter.showInfoMessages(true);
+		compilerAdapter.getMessageHandler().dontIgnore(IMessage.INFO);
 		compilerAdapter.compile((String) openFile("TJP1.lst").getAbsolutePath(),new BPM(),false);
 	
 		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
@@ -364,7 +365,7 @@ public class ReweavableTestCase extends AjdeTestCase {
 	public void testWorkingScenario2Compile() {
 		if (debugTests) System.out.println("testWorkingScenario2: Building with TJP1.lst");
 			compilerAdapter = new CompilerAdapter();
-			compilerAdapter.showInfoMessages(true);
+			compilerAdapter.getMessageHandler().dontIgnore(IMessage.INFO);
 			compilerAdapter.compile((String) openFile("TJP1.lst").getAbsolutePath(),new BPM(),false);
 	
 			assertTrue("Expected a message about operating in reweavable mode, but didn't get one",

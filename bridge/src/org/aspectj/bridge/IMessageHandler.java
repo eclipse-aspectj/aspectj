@@ -52,6 +52,8 @@ public interface IMessageHandler {
             public void dontIgnore(IMessage.Kind kind) {
                 ;
             }
+			public void ignore(IMessage.Kind kind) {
+			}
 		};
 
 	/** 
@@ -77,4 +79,11 @@ public interface IMessageHandler {
      * @param kind
      */
     void dontIgnore(IMessage.Kind kind);
+    
+    /**
+     * Allow fine grained configuration after initialization. 
+     *  
+     * @param kind
+     */
+    void ignore(IMessage.Kind kind);
 }

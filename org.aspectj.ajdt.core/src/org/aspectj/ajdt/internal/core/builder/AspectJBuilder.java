@@ -240,7 +240,10 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
          */
         public void dontIgnore(IMessage.Kind kind) {
             ;
-	}
+        }
+
+		public void ignore(Kind kind) {
+		}
 	
 	}
 	
