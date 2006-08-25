@@ -1,0 +1,1 @@
+class Pair<A,B> {}
