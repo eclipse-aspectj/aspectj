@@ -139,11 +139,11 @@ public abstract class AbstractTrace implements Trace {
 			}
 			
 			/* Use classname@hashcode */
-			else return obj.getClass().getName() + "@" + Integer.toString(obj.hashCode(),16);
+			else return obj.getClass().getName() + "@" + Integer.toHexString(obj.hashCode());
 		
 		/* Object.hashCode() can be override and may thow an exception */	
 		} catch (Exception ex) {
-			return obj.getClass().getName();
+			return obj.getClass().getName() + "@FFFFFFFF";
 		}
 	}
 	
@@ -171,5 +171,13 @@ public abstract class AbstractTrace implements Trace {
 		}
 		
 		return sb.toString();
+	}
+	
+	protected Object[] formatObjects(Object[] args) {
+		for (int i = 0; i < args.length; i++) {
+			args[i] = formatObj(args[i]);
+		}
+		
+		return args;
 	}
 }

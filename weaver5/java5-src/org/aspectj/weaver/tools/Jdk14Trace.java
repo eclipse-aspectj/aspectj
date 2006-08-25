@@ -29,7 +29,7 @@ public class Jdk14Trace extends AbstractTrace {
 		if (logger.isLoggable(Level.FINE)) {
 			logger.entering(name,methodName,formatObj(thiz));
 			if (args != null && logger.isLoggable(Level.FINER)) {
-				logger.entering(name,methodName,args);
+				logger.entering(name,methodName,formatObjects(args));
 			}			
 		}
 	}
@@ -40,7 +40,7 @@ public class Jdk14Trace extends AbstractTrace {
 
 	public void exit(String methodName, Object ret) {
 		if (logger.isLoggable(Level.FINE)) {
-			logger.exiting(name,methodName,ret);
+			logger.exiting(name,methodName,formatObj(ret));
 		}
 	}
 
@@ -60,7 +60,7 @@ public class Jdk14Trace extends AbstractTrace {
 		if (logger.isLoggable(Level.FINE)) {
 			logger.logp(Level.FINER,name,methodName,"EVENT",formatObj(thiz));
 			if (args != null && logger.isLoggable(Level.FINER)) {
-				logger.logp(Level.FINER,name,methodName,"EVENT",args);
+				logger.logp(Level.FINER,name,methodName,"EVENT",formatObjects(args));
 			}			
 		}
 	}

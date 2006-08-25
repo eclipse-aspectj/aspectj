@@ -34,23 +34,56 @@ public abstract class AbstractTraceTest extends TestCase {
 	public void testEnterWithThisAndArray() {
 		Object arg1 = new String[] { "s1", "s2" };
 		Object arg2 = new char[] { 'a', 'b', 'c' };
-		trace.enter("testEnterWithThisAndArgs",this,new Object[] { arg1, arg2 });
+		trace.enter(getName(),this,new Object[] { arg1, arg2 });
 	}
 
 	public void testEnterWithThisAndCollection() {
 		Object arg1 = new ArrayList();
-		trace.enter("testEnterWithThisAndArgs",this,new Object[] { arg1 });
+		trace.enter(getName(),this,new Object[] { arg1 });
 	}
 
 	public void testEnterWithThisAndTraceable () {
 		Object arg1 = new Traceable() {
 
 			public String toTraceString() {
-				return "Traceable";
+				return getClass().getName() + "[Traceable]";
 			}
 			
 		};
-		trace.enter("testEnterWithThisAndArgs",this,new Object[] { arg1 });
+		trace.enter(getName(),this,new Object[] { arg1 });
+	}
+
+	public void testEnterWithThisAndToStringException () {
+		Object arg1 = new Object() {
+
+			public String toString() {
+				throw new RuntimeException("toString() can throw an Exception");
+			}
+			
+		};
+		trace.enter(getName(),this,new Object[] { arg1 });
+	}
+
+	public void testEnterWithThisAndHashCodeException () {
+		Object arg1 = new Object() {
+
+			public int hashCode() {
+				throw new RuntimeException("hashCode can throw an Exception");
+			}
+			
+		};
+		trace.enter(getName(),this,new Object[] { arg1 });
+	}
+
+	public void testEnterWithThisAndClassLoader () {
+		Object arg1 = new ClassLoader() {
+
+			public String toString() {
+				throw new Error("Don't call ClassLoader.toString()");
+			}
+			
+		};
+		trace.enter(getName(),this,new Object[] { arg1 });
 	}
 
 	public void testEnterWithThis() {
