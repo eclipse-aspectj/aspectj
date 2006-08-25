@@ -186,6 +186,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             }
 
             String resourcePath = System.getProperty("org.aspectj.weaver.loadtime.configuration",AOP_XML);
+            trace.event("parseDefinitions",this,resourcePath);
     		StringTokenizer st = new StringTokenizer(resourcePath,";");
 
     		while(st.hasMoreTokens()){

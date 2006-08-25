@@ -34,14 +34,6 @@ public abstract class AbstractTrace implements Trace {
 
 	public abstract void exit(String methodName, Throwable th);
 
-	public void event(String methodName) {
-		throw new UnsupportedOperationException("event");
-	}
-
-	public void event(String methodName, Object thiz, Object[] args) {
-		throw new UnsupportedOperationException("event");
-	}
-	
 	/*
 	 * Convenience methods
 	 */
@@ -59,6 +51,10 @@ public abstract class AbstractTrace implements Trace {
 
 	public void exit (String methodName, boolean b) {
 		exit(methodName,new Boolean(b));
+	}
+
+	public void event (String methodName, Object thiz, Object arg) {
+		event(methodName,thiz,new Object[] { arg });
 	}
 
 	public void warn(String message) {

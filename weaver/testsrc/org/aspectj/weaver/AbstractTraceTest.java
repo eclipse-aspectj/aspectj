@@ -73,6 +73,18 @@ public abstract class AbstractTraceTest extends TestCase {
 		trace.exit("testExit");
 	}
 
+	public void testEvent() {
+		trace.event("testEvent");
+	}
+
+	public void testEventWithThisAndArgs() {
+		trace.event("testEventWithThisAndArgs",this,new Object[] { "arg1", "arg2" });
+	}
+
+	public void testEventWithThisAndArg() {
+		trace.event("testEventWithThisAndArg",this,"arg1");
+	}
+
 	public void testDebug() {
 		trace.debug("debug");
 	}

@@ -55,6 +55,19 @@ public class DefaultTrace extends AbstractTrace {
 			println(formatMessage("<",tracedClass.getName(),methodName,th, null));
 		}
 	}
+	
+	public void event(String methodName, Object thiz, Object[] args) {
+		if (traceEnabled) {
+			println(formatMessage("-",tracedClass.getName(),methodName,thiz, args));
+		}
+	}
+
+	public void event(String methodName) {
+		if (traceEnabled) {
+			println(formatMessage("-",tracedClass.getName(),methodName,null,null));
+		}
+	}
+
 	public void debug (String message) {
 		println(formatMessage("?",message,null));
 	}

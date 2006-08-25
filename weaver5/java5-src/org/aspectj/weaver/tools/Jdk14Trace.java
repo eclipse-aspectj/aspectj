@@ -56,6 +56,21 @@ public class Jdk14Trace extends AbstractTrace {
 		}
 	}
 
+	public void event(String methodName, Object thiz, Object[] args) {
+		if (logger.isLoggable(Level.FINE)) {
+			logger.logp(Level.FINER,name,methodName,"EVENT",formatObj(thiz));
+			if (args != null && logger.isLoggable(Level.FINER)) {
+				logger.logp(Level.FINER,name,methodName,"EVENT",args);
+			}			
+		}
+	}
+
+	public void event(String methodName) {
+		if (logger.isLoggable(Level.FINE)) {
+			logger.logp(Level.FINER,name,methodName,"EVENT");
+		}
+	}
+
 	public boolean isTraceEnabled() {
 		return logger.isLoggable(Level.FINER);
 	}

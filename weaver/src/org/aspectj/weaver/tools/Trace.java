@@ -51,6 +51,8 @@ public interface Trace {
 	public void enter (String methodName, Object thiz, boolean z);
 
 	public void exit (String methodName, boolean b);
+
+	public void event (String methodName, Object thiz, Object arg);
 	
 	public boolean isTraceEnabled ();
 

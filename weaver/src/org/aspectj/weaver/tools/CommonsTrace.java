@@ -54,6 +54,18 @@ public class CommonsTrace extends AbstractTrace {
 		}
 	}
 
+	public void event(String methodName, Object thiz, Object[] args) {
+		if (log.isDebugEnabled()) {
+			log.debug(formatMessage("-", className, methodName, thiz, args));
+		}
+	}
+
+	public void event(String methodName) {
+		if (log.isDebugEnabled()) {
+			log.debug(formatMessage("-", className, methodName, null, null));
+		}
+	}
+
 	public boolean isTraceEnabled () {
 		return log.isDebugEnabled();
 	}
