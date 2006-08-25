@@ -27,6 +27,7 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testArgnamesAndJavac_pr148381() { runTest("argNames and javac");}
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
+  public void testMixingGenerics_pr152848()  { runTest("mixing generics"); }
   public void testIncorrectStaticinitializationWeaving_pr149560_1() { runTest("incorrect staticinitialization weaving - codestyle");}
   public void testIncorrectStaticinitializationWeaving_pr149560_2() { runTest("incorrect staticinitialization weaving - annstyle");}
   public void testIncorrectDeprecatedAnnotationProcessing_pr154332() { runTest("incorrect deprecated annotation processing");}
