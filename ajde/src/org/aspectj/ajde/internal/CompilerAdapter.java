@@ -594,7 +594,7 @@ public class CompilerAdapter {
 			if (Ajde.getDefault().getMessageHandler() != null) {
 				this.messageHandler = Ajde.getDefault().getMessageHandler();
 			} else {
-				this.messageHandler = new MessageHandlerAdapter();
+				this.messageHandler = new AjdeMessageHandler();
 			}
 			buildManager = new AjBuildManager(messageHandler);
 			buildManager.environmentSupportsIncrementalCompilation(true);
@@ -603,30 +603,6 @@ public class CompilerAdapter {
 		}
 	}
 	
-	class MessageHandlerAdapter extends MessageHandler {
-		private TaskListManager taskListManager;
-
-		public MessageHandlerAdapter() {
-			this.taskListManager = Ajde.getDefault().getTaskListManager();
-			ignore(IMessage.INFO);
-		}	
-
-		public boolean handleMessage(IMessage message) throws AbortException {
-            IMessage.Kind kind = message.getKind(); 
-            if (kind == IMessage.ABORT) return handleAbort(message);
-            if (isIgnoring(kind)) {
-                    return true;
-            }
-			
-			taskListManager.addSourcelineTask(message);
-			return true;// return super.handleMessage(message); // also store...	
-		}
-		
-		private boolean handleAbort(IMessage abortMessage) {
-			throw new AbortException(abortMessage);
-		}
-	}
-
 	public void setState(AjState buildState) {
 		buildManager.setState(buildState);	
 		buildManager.setStructureModel(buildState.getStructureModel());

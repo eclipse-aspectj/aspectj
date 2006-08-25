@@ -1461,10 +1461,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("PR141556");
 		build("PR141556");
 		IMessageHandler handler = AjdeManager.getMessageHandler();
-		assertTrue("expected the handler to be an IMessageHolder but wasn't ",
+		// the handler used to be an IMessageHolder (extended MessageHandler)
+		// which stored the messages, consequently we checked that none
+		// were being stored. Since we no longer stored any messages (fix
+		// for bug 141564) it was unnecessary to be an IMessageHolder as all the
+		// IMessageHolder methods in MessageHander used the list of stored
+		// messages. Therefore, rather than checking that the list of messages
+		// is empty we can check that we're an IMessageHandler but not an
+		// IMessageHolder.
+		assertFalse("expected the handler not to be an IMessageHolder but was ",
 				handler instanceof IMessageHolder);
-		IMessage[] msgs = ((IMessageHolder)AjdeManager.getMessageHandler()).getMessages(null,true);
-		assertTrue("There should be no messages but I found: "+msgs.length,msgs.length==0);
 		
 		List tasklistMessages = MyTaskListManager.getWarningMessages();
 		assertTrue("Should be one message but found "+tasklistMessages.size(),tasklistMessages.size()==1);
