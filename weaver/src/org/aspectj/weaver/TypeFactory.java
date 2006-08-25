@@ -39,7 +39,7 @@ public class TypeFactory {
 		if (!aBaseType.isGenericType()) {
 			// try and find the generic type...
 			if (someTypeParameters != null && someTypeParameters.length>0) {
-				if (!aBaseType.isRawType()) throw new IllegalStateException("Expecting raw type");
+				if (!aBaseType.isRawType()) throw new IllegalStateException("Expecting raw type, not: "+aBaseType);
 				baseType = baseType.getGenericType();
 				if (baseType == null) throw new IllegalStateException("Raw type does not have generic type set");
 			} // else if someTypeParameters is null, then the base type is allowed to be non-generic, it's an inner

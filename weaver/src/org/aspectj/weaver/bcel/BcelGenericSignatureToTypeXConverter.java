@@ -24,6 +24,8 @@ import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 
 /**
  * A utility class that assists in unpacking constituent parts of 
@@ -32,6 +34,8 @@ import org.aspectj.weaver.World;
  */
 public class BcelGenericSignatureToTypeXConverter {
 
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelGenericSignatureToTypeXConverter.class);
+	
 	public static ResolvedType classTypeSignature2TypeX(
 			Signature.ClassTypeSignature aClassTypeSignature,
 			Signature.FormalTypeParameter[] typeParams,
@@ -75,6 +79,16 @@ public class BcelGenericSignatureToTypeXConverter {
 			// we have to create a parameterized type
 			// type arguments may be array types, class types, or typevariable types
 			ResolvedType theBaseType = UnresolvedType.forSignature(sig.toString()).resolve(world);
+			
+			// Sometimes we may find that when the code is being load-time woven that the types have changed.
+			// Perhaps an old form of a library jar is being used - this can mean we discover right here
+			// that a type is not parameterizable (is that a word?).  I think in these cases it is ok to
+			// just return with what we know (the base type). (see pr152848)
+			if (!(theBaseType.isGenericType() || theBaseType.isRawType())) {
+				if (trace.isTraceEnabled()) trace.event("classTypeSignature2TypeX: this type is not a generic type:",null,new Object[]{theBaseType});
+				return theBaseType;
+			}
+			
 			ResolvedType[] typeArgumentTypes = new ResolvedType[innerType.typeArguments.length];
 			for (int i = 0; i < typeArgumentTypes.length; i++) {
 				typeArgumentTypes[i] = typeArgument2TypeX(innerType.typeArguments[i],typeParams,world,inProgressTypeVariableResolutions);
@@ -84,7 +98,6 @@ public class BcelGenericSignatureToTypeXConverter {
 									theBaseType,
 									typeArgumentTypes,
 									world);
-				
 			
 //				world.resolve(UnresolvedType.forParameterizedTypes(
 //						UnresolvedType.forSignature(sig.toString()).resolve(world), 
