@@ -208,4 +208,24 @@
       <compile files="Java5Class.java" options="-emacssym -1.5"/>
     </ajc-test>
 
+    <ajc-test dir="features153/jdtlikehandleprovider" title="ipes with same name have unique handles - method-call">
+      <compile files="TwoMethodCalls.aj" options="-emacssym"/>
+    </ajc-test>
+
+    <ajc-test dir="features153/jdtlikehandleprovider" title="ipes with different names do not have counter - method-call">
+      <compile files="TwoDiffMethodCalls.aj" options="-emacssym"/>
+    </ajc-test>
+
+    <ajc-test dir="features153/jdtlikehandleprovider" title="ipes with same name have unique handles - handler">
+      <compile files="Handler.aj" options="-emacssym"/>
+    </ajc-test>
+
+    <ajc-test dir="features153/jdtlikehandleprovider" title="ipes with same name have unique handles - get">
+      <compile files="Get.aj" options="-emacssym"/>
+    </ajc-test>
+
+    <ajc-test dir="features153/jdtlikehandleprovider" title="ipes with same name have unique handles - set">
+      <compile files="Set.aj" options="-emacssym"/>
+    </ajc-test>
+
 </suite>

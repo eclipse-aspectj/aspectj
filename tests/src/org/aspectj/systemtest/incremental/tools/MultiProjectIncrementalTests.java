@@ -1494,7 +1494,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				warnings.isEmpty());
 		alter("PR152589","inc1");
 		build("PR152589");
-		checkWasFullBuild();
+		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
+			  checkWasFullBuild(); // the line number has changed... but nothing structural about the code
+			else 
+			  checkWasntFullBuild(); // the line number has changed... but nothing structural about the code
+
+//		checkWasFullBuild();
 		warnings = MyTaskListManager.getWarningMessages();
 		assertTrue("There should be no warnings after adding a whitespace:\n"
 				+warnings,warnings.isEmpty());	

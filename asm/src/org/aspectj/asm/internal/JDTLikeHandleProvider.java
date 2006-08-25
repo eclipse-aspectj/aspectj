@@ -131,6 +131,12 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			}		
 		} else if (ipe.getKind().equals(IProgramElement.Kind.INITIALIZER)) {	
 			return String.valueOf(++initializerCounter).toCharArray();
+		} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
+			int index = CharOperation.lastIndexOf('!',byteCodeName);
+			if (index != -1) {
+				return convertCount(CharOperation.subarray(byteCodeName,
+						index+1,byteCodeName.length));
+			}
 		}
 		return empty;
 	}

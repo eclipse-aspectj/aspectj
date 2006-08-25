@@ -240,6 +240,81 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 				"*DeclareWarnings.aj}DeclareWarnings`declare warning!10");
 
 	}
+
+	// these two handles are the same unless we have added a counter
+	// on the end
+	public void testIPEsWithSameNameHaveUniqueHandles_methodCall() {
+		runTest("ipes with same name have unique handles - method-call");	
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String handle1 = "*TwoMethodCalls.aj[Main~main~\\[QString;?method-call(" +
+				"void java.io.PrintStream.println(java.lang.String))";
+		assertNotNull("expected to find node with handle " + handle1 
+				+ ", but did not",top.getElement(handle1));
+
+		String handle2 = "*TwoMethodCalls.aj[Main~main~\\[QString;?method-call(" +
+				"void java.io.PrintStream.println(java.lang.String))!2";
+		assertNotNull("expected to find node with handle " + handle2 
+				+ ", but did not",top.getElement(handle2));
+		
+		String handle3 = "*TwoMethodCalls.aj[Main~main~\\[QString;?method-call(" +
+				"void java.io.PrintStream.println(java.lang.String))!3";
+		assertNull("expected not to find node with handle " + handle3 
+				+ ", but found one",top.getElement(handle3));
+	}
+	
+	// these two handles should be different anyway so second one
+	// shouldn't have the "2"
+	public void testIPEsWithDiffNamesDontHaveCounter_methodCall() {
+		runTest("ipes with different names do not have counter - method-call");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String handle1 = "*TwoDiffMethodCalls.aj[Main~main~\\[QString;?method-call(" +
+				"void java.io.PrintStream.println(java.lang.String))";
+		assertNotNull("expected to find node with handle " + handle1 
+				+ ", but did not",top.getElement(handle1));
+
+		String handle2 = "*TwoDiffMethodCalls.aj[Main~method~\\[QString;?method-call(" +
+				"void java.io.PrintStream.println(java.lang.String))";
+		assertNotNull("expected to find node with handle " + handle2 
+				+ ", but did not",top.getElement(handle2));
+	}
+	
+	public void testIPEsWithSameNameHaveUniqueHandles_handler() {
+		runTest("ipes with same name have unique handles - handler");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String handle1 = "*Handler.aj[C~method?exception-handler(void C." +
+				"<catch>(java.io.FileNotFoundException))";
+		assertNotNull("expected to find node with handle " + handle1 
+				+ ", but did not",top.getElement(handle1));
+
+		String handle2 = "*Handler.aj[C~method?exception-handler(void C." +
+				"<catch>(java.io.FileNotFoundException))!2";
+		assertNotNull("expected to find node with handle " + handle2 
+				+ ", but did not",top.getElement(handle2));
+	}
+	
+	public void testIPEsWithSameNameHaveUniqueHandles_get() {
+		runTest("ipes with same name have unique handles - get");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String handle1 = "*Get.aj[C1~method1?field-get(int C1.x)";
+		assertNotNull("expected to find node with handle " + handle1 
+				+ ", but did not",top.getElement(handle1));
+
+		String handle2 = "*Get.aj[C1~method1?field-get(int C1.x)!2";
+		assertNotNull("expected to find node with handle " + handle2 
+				+ ", but did not",top.getElement(handle2));
+	}
+	
+	public void testIPEsWithSameNameHaveUniqueHandles_set() {
+		runTest("ipes with same name have unique handles - set");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String handle1 = "*Set.aj[C1~method?field-set(int C1.x)";
+		assertNotNull("expected to find node with handle " + handle1 
+				+ ", but did not",top.getElement(handle1));
+
+		String handle2 = "*Set.aj[C1~method?field-set(int C1.x)!2";
+		assertNotNull("expected to find node with handle " + handle2 
+				+ ", but did not",top.getElement(handle2));
+	}
 	
 	//---------- following tests ensure we produce the same handles as jdt -----//
 	//---------- (apart from the prefix)

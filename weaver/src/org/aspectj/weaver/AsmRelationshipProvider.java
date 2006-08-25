@@ -243,15 +243,33 @@ public class AsmRelationshipProvider {
 		return true;
 	}
 	
-	
+	/**
+	 * Finds or creates a code IProgramElement for the given shadow. 
+	 * 
+	 * The byteCodeName of the created node is set to 'shadowSig.getName() + "!" + counter',
+	 * eg "println!3". The counter is the occurence count of children within
+	 * the enclosingNode which have the same name. So, for example, if a method 
+	 * contains two System.out.println statements, the first one will have 
+	 * byteCodeName 'println!1' and the second will have byteCodeName 'println!2'.
+	 * This is to ensure the two nodes have unique handles when the handles 
+	 * do not depend on sourcelocations. 
+	 * 
+	 * Currently the shadows are examined in the sequence they appear in the 
+	 * source file. This means that the counters are consistent over incremental 
+	 * builds. All aspects are compiled up front and any new aspect created will force
+	 * a full build. Moreover, if the body of the enclosingShadow is changed, then
+	 * the model for this is rebuilt from scratch. 
+	 */
 	private IProgramElement findOrCreateCodeNode(IProgramElement enclosingNode, Member shadowSig, Shadow shadow)
 	{
 		for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement node = (IProgramElement)it.next();
-			if (shadowSig.getName().equals(node.getBytecodeName()) &&
-				shadowSig.getSignature().equals(node.getBytecodeSignature()) &&
-				sourceLinesMatch(node.getSourceLocation(),shadow.getSourceLocation()))
-			{
+			int excl = node.getBytecodeName().lastIndexOf('!');
+			if (((excl != -1 
+					&& shadowSig.getName().equals(node.getBytecodeName().substring(0,excl)))
+					|| shadowSig.getName().equals(node.getBytecodeName()))
+					&& shadowSig.getSignature().equals(node.getBytecodeSignature()) 
+					&& sourceLinesMatch(node.getSourceLocation(),shadow.getSourceLocation())){
 				return node;
 			}
 		}
@@ -265,8 +283,18 @@ public class AsmRelationshipProvider {
 			shadow.toString(),
 			IProgramElement.Kind.CODE,
 			peLoc,0,null,null);
-				
-		peNode.setBytecodeName(shadowSig.getName());
+		
+		// check to see if the enclosing shadow already has children with the 
+		// same name. If so we want to add a counter to the byteCodeName otherwise
+		// we wont get unique handles
+		int numberOfChildrenWithThisName = 0;
+    	for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext(); ) {
+    		IProgramElement child = (IProgramElement)it.next();
+			if (child.getName().equals(shadow.toString())) {
+				numberOfChildrenWithThisName++;
+			}
+    	}
+		peNode.setBytecodeName(shadowSig.getName() + "!" + String.valueOf(numberOfChildrenWithThisName+1));
 		peNode.setBytecodeSignature(shadowSig.getSignature());
 		enclosingNode.addChild(peNode);
 		return peNode;
