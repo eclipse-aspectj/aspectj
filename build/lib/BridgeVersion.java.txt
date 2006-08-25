@@ -43,22 +43,25 @@ public class Version {
       * time in seconds-since-... format, used by programmatic clients.
       * (if DEVELOPMENT version, NOTIME)
       */
-    public static final long time;
+    private static long time = -1; // -1 == uninitialized
     
 	/** format used by build script to set time_text */
     public static final String SIMPLE_DATE_FORMAT = "@build.time.format@";
     
-    // if not DEVELOPMENT version, read time text using format used to set time 
-    static {
-        long foundTime = NOTIME;
-	    try {
-	        SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
-	        ParsePosition pos = new ParsePosition(0);
-	        Date date = format.parse(time_text, pos);
-	        foundTime = date.getTime();
-	    } catch (Throwable t) {            
-	    }
-        time = foundTime;
+    public static long getTime() {
+    	if (time==-1) {
+    		long foundTime = NOTIME;
+    	    // if not DEVELOPMENT version, read time text using format used to set time 
+            try {
+                SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
+                ParsePosition pos = new ParsePosition(0);
+                Date date = format.parse(time_text, pos);
+                if (date!=null) foundTime = date.getTime();
+            } catch (Throwable t) {            
+            }
+            time = foundTime;
+    	}
+    	return time;
     }
 
     /**
