@@ -139,7 +139,7 @@ public abstract class AbstractTrace implements Trace {
 			}
 			
 			/* Use classname@hashcode */
-			else return obj.getClass().getName() + "@" + Integer.toHexString(obj.hashCode());
+			else return obj.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(obj));
 		
 		/* Object.hashCode() can be override and may thow an exception */	
 		} catch (Exception ex) {

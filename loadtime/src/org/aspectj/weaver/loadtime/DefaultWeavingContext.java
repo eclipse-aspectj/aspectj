@@ -53,7 +53,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 * @return classname@hashcode
 	 */
 	public String getClassLoaderName() {
-    	return ((loader!=null)?loader.getClass().getName()+"@"+Integer.toHexString(loader.hashCode()):"null");
+    	return ((loader!=null)?loader.getClass().getName()+"@"+Integer.toHexString(System.identityHashCode(loader)):"null");
 	}
 
 	/**
