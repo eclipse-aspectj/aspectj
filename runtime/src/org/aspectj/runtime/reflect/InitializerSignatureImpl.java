@@ -50,7 +50,7 @@ class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerS
 	public Constructor getInitializer() {
 		if (constructor == null) {
 			try {
-				constructor = declaringType.getDeclaredConstructor(getParameterTypes());
+				constructor = getDeclaringType().getDeclaredConstructor(getParameterTypes());
 			} catch (Exception ex) {
 				; // nothing we can do, caller will see null
 			}

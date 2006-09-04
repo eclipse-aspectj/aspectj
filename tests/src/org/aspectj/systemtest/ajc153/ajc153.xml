@@ -356,4 +356,31 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr155972" title="NPE in ConstructorSignatureImpl">
+      <compile files="ConstructorTest.java, SignatureImplAspect.aj" options="-Xlint:ignore"/>
+      <run class="ConstructorTest">
+        <stdout>
+          <line text="ConstructorTest"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr155972" title="NPE in FieldSignatureImpl">
+      <compile files="FieldTest.java, SignatureImplAspect.aj" options="-Xlint:ignore"/>
+      <run class="FieldTest">
+        <stdout>
+          <line text="intField"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr155972" title="NPE in InitializerSignatureImpl">
+      <compile files="InitializerTest.java, SignatureImplAspect.aj" options="-Xlint:ignore"/>
+      <run class="InitializerTest">
+        <stdout>
+          <line text="InitializerTest"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
 </suite>

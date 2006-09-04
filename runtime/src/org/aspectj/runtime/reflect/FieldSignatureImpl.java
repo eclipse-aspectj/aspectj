@@ -55,7 +55,7 @@ public class FieldSignatureImpl extends MemberSignatureImpl implements FieldSign
 	public Field getField() {
 		if (field == null) {
 			try {
-				field = declaringType.getDeclaredField(getName());
+				field = getDeclaringType().getDeclaredField(getName());
 			} catch (Exception ex) {
 				; // nothing we can do, caller will see null
 			}

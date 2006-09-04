@@ -71,6 +71,18 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("reweavableAspectNotRegistered error");
   }
   
+  public void testNPEinConstructorSignatureImpl_pr155972 () {
+	  runTest("NPE in ConstructorSignatureImpl");
+  }
+  
+  public void testNPEinFieldSignatureImpl_pr155972 () {
+	  runTest("NPE in FieldSignatureImpl");
+  }
+  
+  public void testNPEinInitializerSignatureImpl_pr155972 () {
+	  runTest("NPE in InitializerSignatureImpl");
+  }
+  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);
