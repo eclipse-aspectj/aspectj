@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Date;
 
+import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -226,6 +227,8 @@ public class Main {
      * and signal result (0 no exceptions/error, <0 exceptions, >0 compiler errors).
      */
     public void runMain(String[] args, boolean useSystemExit) {
+        // Urk - default no check for AJDT, enabled here for Ant, command-line
+        AjBuildManager.enableRuntimeVersionCheck(this);
         final boolean verbose = flagInArgs("-verbose", args);
         if (null == this.clientHolder) {
         	this.clientHolder = checkForCustomMessageHolder(args);
