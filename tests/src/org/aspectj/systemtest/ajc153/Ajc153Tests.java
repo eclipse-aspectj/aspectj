@@ -83,6 +83,10 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("NPE in InitializerSignatureImpl");
   }
   
+  public void testLineNumberTableCorrectWithGenericsForEachAndContinue_pr155763() {
+	  runTest("ensure LineNumberTable correct with generics, for each and continue");
+  }
+  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);

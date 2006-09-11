@@ -383,4 +383,10 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr155763" title="ensure LineNumberTable correct with generics, for each and continue">
+      <compile files="Test.java" options="-1.5">
+		<message kind="warning" line="27" text="adviceDidNotMatch"/>
+	  </compile>	
+    </ajc-test>
+
 </suite>
