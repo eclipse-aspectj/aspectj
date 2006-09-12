@@ -109,7 +109,7 @@ public class ConcreteAspectCodeGen {
         // name must be undefined so far
         ResolvedType current = m_world.resolve(m_concreteAspect.name, true);
         if (!current.isMissing()) {
-            reportError("Attempt to concretize but choosen aspect name already defined: " + stringify());
+            reportError("Attempt to concretize but chosen aspect name already defined: " + stringify());
             return false;
         }
 
