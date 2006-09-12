@@ -3,6 +3,18 @@
 <!-- AspectJ v1.5.3 Tests -->
 <suite>
 
+    <ajc-test dir="bugs153/pr156962" title="Test Annot Method">
+      <compile files="Sample.java, WarnDeprecatedMethod.aj" options="-1.5">
+        <message kind="warning" line="2" text="deprecated method"/>      
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr156962" title="Test Annot Method Has Member">
+      <compile files="Sample.java, LiftDeprecation.aj" options="-1.5 -XhasMember -showWeaveInfo -Xlint:ignore">
+        <message kind="weave" text="'Sample' (Sample.java:1) is annotated with @Deprecated type annotation from 'LiftDeprecation' (LiftDeprecation.aj:2)"/>
+      </compile>
+    </ajc-test>
+
     <ajc-test dir="bugs153/pr152848" title="mixing generics">
       <compile files="PairGeneric.java" options="-1.5" outjar="pair.jar"/>
       <compile files="BaseType.java" options="-1.5" outjar="basetype.jar" classpath="pair.jar"/>

@@ -131,8 +131,7 @@ final class BcelField extends ResolvedMemberImpl {
 	    		annotations = new AnnotationX[annos.length];
 	    		for (int i = 0; i < annos.length; i++) {
 					Annotation annotation = annos[i];
-					ResolvedType rtx = world.resolve(UnresolvedType.forName(annotation.getTypeName()));
-					annotationTypes.add(rtx);
+					annotationTypes.add(world.resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
 					annotations[i] = new AnnotationX(annotation,world);
 				}
     		}

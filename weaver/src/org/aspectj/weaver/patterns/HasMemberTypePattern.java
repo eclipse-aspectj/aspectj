@@ -49,12 +49,15 @@ public class HasMemberTypePattern extends TypePattern {
 			return hasMethod(type);
 		}
 	}
+	
+	private final static String declareAtPrefix = "ajc$declare_at";
 
 	private boolean hasField(ResolvedType type) {
 		// TODO what about ITDs
 		World world = type.getWorld();
 		for (Iterator iter = type.getFields(); iter.hasNext();) {
 			Member field = (Member) iter.next();
+			if (field.getName().startsWith(declareAtPrefix)) continue;
 			if (signaturePattern.matches(field, type.getWorld(), false)) {
 				if (field.getDeclaringType().resolve(world) != type) {
 					if (Modifier.isPrivate(field.getModifiers())) continue;
@@ -70,6 +73,7 @@ public class HasMemberTypePattern extends TypePattern {
 		World world = type.getWorld();
 		for (Iterator iter = type.getMethods(); iter.hasNext();) {
 			Member method = (Member) iter.next();
+			if (method.getName().startsWith(declareAtPrefix)) continue;
 			if (signaturePattern.matches(method, type.getWorld(), false)) {
 				if (method.getDeclaringType().resolve(world) != type) {
 					if (Modifier.isPrivate(method.getModifiers())) continue;
