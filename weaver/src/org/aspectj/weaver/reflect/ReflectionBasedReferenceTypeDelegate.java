@@ -170,6 +170,12 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 //		boolean member = this.myClass.isMemberClass();
 //		return member;
 	}
+	
+	public ResolvedType getOuterClass() {
+		// FIXME getEnclosingClass() is Java5 ... dammit
+//		return ReflectionBasedReferenceTypeDelegateFactory.resolveTypeInWorld(myClass.getEnclosingClass(),world);
+		return null;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isExposedToWeaver()

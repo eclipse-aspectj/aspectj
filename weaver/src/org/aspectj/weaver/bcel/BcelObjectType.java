@@ -26,7 +26,6 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
-import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
@@ -39,7 +38,6 @@ import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ReferenceType;
-import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
@@ -86,7 +84,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private List declares = Collections.EMPTY_LIST;
 
 	private Signature.FormalTypeParameter[] formalsForResolution = null;
-	private ClassSignature cachedGenericClassTypeSignature;
 	private String declaredSignature = null;
 	
 
@@ -162,7 +159,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		modifiers           = javaClass.getAccessFlags();
 		superclassName      = javaClass.getSuperclassName();
 		className           = javaClass.getClassName();
-		cachedGenericClassTypeSignature = javaClass.getGenericClassTypeSignature();
+		cachedGenericClassTypeSignature = null;
     }
 
 
@@ -250,7 +247,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     	if (!isGeneric()) return TypeVariable.NONE;
     	
     	if (typeVars == null) {
-	    	Signature.ClassSignature classSig = cachedGenericClassTypeSignature;//javaClass.getGenericClassTypeSignature();
+	    	Signature.ClassSignature classSig = getGenericClassTypeSignature();//cachedGenericClassTypeSignature;//javaClass.getGenericClassTypeSignature();
 	    	typeVars = new TypeVariable[classSig.formalTypeParameters.length];
 	    	for (int i = 0; i < typeVars.length; i++) {
 				Signature.FormalTypeParameter ftp = classSig.formalTypeParameters[i];
@@ -656,10 +653,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return declaredSignature;
 	}
 	
-	Signature.ClassSignature getGenericClassTypeSignature() {
-		return cachedGenericClassTypeSignature;
-	}
-	
 		
 	private void ensureGenericSignatureUnpacked() {
 		if ((bitflag&UNPACKED_GENERIC_SIGNATURE)!=0) return;
@@ -668,7 +661,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		Signature.ClassSignature cSig = getGenericClassTypeSignature();
 		if (cSig != null) {
 			formalsForResolution = cSig.formalTypeParameters;
-			if (isNestedClass()) {
+			if (isNested()) {
 				// we have to find any type variables from the outer type before proceeding with resolution.
 				Signature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
 				if (extraFormals.length > 0) {
@@ -743,43 +736,15 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		}
 	}
 	
-	private boolean isNestedClass() {
-		return className.indexOf('$') != -1;
-	}
 	
-	private ReferenceType getOuterClass() {
-		if (!isNestedClass()) throw new IllegalStateException("Can't get the outer class of a non-nested type");
+	public ResolvedType getOuterClass() {
+		if (!isNested()) throw new IllegalStateException("Can't get the outer class of a non-nested type");
 		int lastDollar = className.lastIndexOf('$');
 		String superClassName = className.substring(0,lastDollar);
 		UnresolvedType outer = UnresolvedType.forName(superClassName);
 		return (ReferenceType) outer.resolve(getResolvedTypeX().getWorld());
 	}
 	
-	private Signature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
-		List typeParameters = new ArrayList();
-		ReferenceType outer = getOuterClass();
-		ReferenceTypeDelegate outerDelegate = outer.getDelegate();
-		if (!(outerDelegate instanceof BcelObjectType)) {
-			throw new IllegalStateException("How come we're in BcelObjectType resolving an inner type of something that is NOT a BcelObjectType??");
-		}
-		BcelObjectType outerObjectType = (BcelObjectType) outerDelegate;
-		if (outerObjectType.isNestedClass()) {
-			Signature.FormalTypeParameter[] parentParams = outerObjectType.getFormalTypeParametersFromOuterClass();
-			for (int i = 0; i < parentParams.length; i++) {
-				typeParameters.add(parentParams[i]);
-			}
-		}
-		Signature.ClassSignature outerSig = outerObjectType.getGenericClassTypeSignature();
-		if (outerSig != null) {
-			for (int i = 0; i < outerSig.formalTypeParameters .length; i++) {
-				typeParameters.add(outerSig.formalTypeParameters[i]);
-			}
-		} 
-		
-		Signature.FormalTypeParameter[] ret = new Signature.FormalTypeParameter[typeParameters.size()];
-		typeParameters.toArray(ret);
-		return ret;
-	}
 	
 	private void ensureGenericInfoProcessed() { 
 		if ((bitflag & DISCOVERED_DECLARED_SIGNATURE)!=0) return;

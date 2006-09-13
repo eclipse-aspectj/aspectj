@@ -66,5 +66,6 @@ public interface ReferenceTypeDelegate {
 	public String getSourcefilename();
 	
 	public String getDeclaredGenericSignature();
+	public ResolvedType getOuterClass();
 	
 }

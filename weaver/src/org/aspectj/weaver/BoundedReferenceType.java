@@ -185,6 +185,10 @@ public class BoundedReferenceType extends ReferenceType {
 			return resolvedTypeX.isNested();
 		}
 		
+		public ResolvedType getOuterClass() {
+			return resolvedTypeX.getOuterClass();
+		}
+		
 		public String getRetentionPolicy() {
 			return resolvedTypeX.getRetentionPolicy();
 		}

@@ -19,6 +19,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
+import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.Declare;
 
@@ -30,6 +33,7 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	protected boolean exposedToWeaver;
 	protected ReferenceType resolvedTypeX;
 	private ISourceContext sourceContext = SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
+	protected ClassSignature cachedGenericClassTypeSignature;
 
     public AbstractReferenceTypeDelegate(ReferenceType resolvedTypeX, boolean exposedToWeaver) {
         this.resolvedTypeX = resolvedTypeX;
@@ -266,6 +270,40 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	
 	public void setSourceContext(ISourceContext isc) {
 		this.sourceContext = isc;
+	}
+
+	public Signature.ClassSignature getGenericClassTypeSignature() {
+		if (cachedGenericClassTypeSignature==null) {
+			String sig = getDeclaredGenericSignature();
+			if (sig!=null) {
+				GenericSignatureParser parser = new GenericSignatureParser();
+				cachedGenericClassTypeSignature = parser.parseAsClassSignature(sig);
+			}
+		}
+		return cachedGenericClassTypeSignature;
+	}
+	
+	protected Signature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
+		List typeParameters = new ArrayList();
+		ReferenceType outer = (ReferenceType)getOuterClass();
+		ReferenceTypeDelegate outerDelegate = outer.getDelegate();
+		AbstractReferenceTypeDelegate outerObjectType = (AbstractReferenceTypeDelegate) outerDelegate;
+		if (outerObjectType.isNested()) {
+			Signature.FormalTypeParameter[] parentParams = outerObjectType.getFormalTypeParametersFromOuterClass();
+			for (int i = 0; i < parentParams.length; i++) {
+				typeParameters.add(parentParams[i]);
+			}
+		}
+		Signature.ClassSignature outerSig = outerObjectType.getGenericClassTypeSignature();
+		if (outerSig != null) {
+			for (int i = 0; i < outerSig.formalTypeParameters .length; i++) {
+				typeParameters.add(outerSig.formalTypeParameters[i]);
+			}
+		} 
+		
+		Signature.FormalTypeParameter[] ret = new Signature.FormalTypeParameter[typeParameters.size()];
+		typeParameters.toArray(ret);
+		return ret;
 	}
 
 

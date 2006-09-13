@@ -132,6 +132,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	public boolean isNested() {
 		return ((declaration.modifiers & ASTNode.IsMemberTypeMASK) != 0);
 	}
+	
+	public ResolvedType getOuterClass() {
+		if (declaration.enclosingType==null) return null;
+		return eclipseWorld().fromEclipse(declaration.enclosingType.binding);
+	}
 
     public boolean isAnnotationStyleAspect() {
         if (declaration.annotations == null) {

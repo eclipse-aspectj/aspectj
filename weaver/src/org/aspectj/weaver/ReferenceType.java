@@ -172,11 +172,15 @@ public class ReferenceType extends ResolvedType {
     }
     
     public boolean isAnonymous() {
-    		return delegate.isAnonymous();
+    	return delegate.isAnonymous();
     }
     
     public boolean isNested() {
-    		return delegate.isNested();
+    	return delegate.isNested();
+    }
+    
+    public ResolvedType getOuterClass() {
+    	return delegate.getOuterClass();
     }
     
     public String getRetentionPolicy() {

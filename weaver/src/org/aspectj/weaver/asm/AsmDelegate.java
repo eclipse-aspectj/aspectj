@@ -21,6 +21,9 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.org.objectweb.asm.Attribute;
+import org.aspectj.org.objectweb.asm.ClassReader;
+import org.aspectj.org.objectweb.asm.Opcodes;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
@@ -28,7 +31,6 @@ import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
-import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
@@ -48,9 +50,6 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.org.objectweb.asm.Attribute;
-import org.aspectj.org.objectweb.asm.ClassReader;
-import org.aspectj.org.objectweb.asm.Opcodes;
 
 /**
  * A lightweight fast delegate that is an alternative to a BCEL delegate.
@@ -315,6 +314,7 @@ public class AsmDelegate extends AbstractReferenceTypeDelegate {
 	public String getDeclaredGenericSignature() {
 		return declaredSignature;
 	}
+
 	
 	public Collection getTypeMungers() {
 		if ((bitflag&DISCOVERED_TYPEMUNGERS)==0) {
@@ -449,7 +449,7 @@ public class AsmDelegate extends AbstractReferenceTypeDelegate {
 	}
 
 
-	private ReferenceType getOuterClass() {
+	public ResolvedType getOuterClass() {
 		if (!isNested()) throw new IllegalStateException("Can't get the outer class of a non-nested type");
 		int lastDollar = getResolvedTypeX().getName().lastIndexOf('$');
 		String superClassName = getResolvedTypeX().getName().substring(0,lastDollar);
@@ -457,36 +457,7 @@ public class AsmDelegate extends AbstractReferenceTypeDelegate {
 		return (ReferenceType) outer.resolve(getResolvedTypeX().getWorld());
 	}
 	
-	private Signature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
-		List typeParameters = new ArrayList();
-		ReferenceType outer = getOuterClass();
-		ReferenceTypeDelegate outerDelegate = outer.getDelegate();
-		if (!(outerDelegate instanceof AsmDelegate)) {
-			throw new IllegalStateException("How come we're in AsmObjectType resolving an inner type of something that is NOT a AsmObjectType??");
-		}
-		AsmDelegate outerObjectType = (AsmDelegate) outerDelegate;
-		if (outerObjectType.isNested()) {
-			Signature.FormalTypeParameter[] parentParams = outerObjectType.getFormalTypeParametersFromOuterClass();
-			for (int i = 0; i < parentParams.length; i++) {
-				typeParameters.add(parentParams[i]);
-			}
-		}
-		  GenericSignatureParser parser = new GenericSignatureParser();
-		  String sig = outerObjectType.getDeclaredGenericSignature();
-		  if (sig!=null) {
-		  Signature.ClassSignature outerSig = parser.parseAsClassSignature(sig);
-		if (outerSig != null) {
-			for (int i = 0; i < outerSig.formalTypeParameters .length; i++) {
-				typeParameters.add(outerSig.formalTypeParameters[i]);
-			}
-		} 
-	  }
-		
-		Signature.FormalTypeParameter[] ret = new Signature.FormalTypeParameter[typeParameters.size()];
-		typeParameters.toArray(ret);
-		return ret;
-	}
-	// ---
+
 
 	public boolean isInterface() {
 		return (classModifiers & Opcodes.ACC_INTERFACE)!=0;
