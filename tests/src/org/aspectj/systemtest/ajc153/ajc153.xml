@@ -3,6 +3,12 @@
 <!-- AspectJ v1.5.3 Tests -->
 <suite>
 
+    <ajc-test dir="bugs153/pr156058" title="no IllegalStateException with generic inner aspect">
+      <compile files="Bug.java" options="-1.5">
+        <message kind="warning" line="2" text="advice defined in MyAspect has not been applied [Xlint:adviceDidNotMatch]"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr153490" title="no illegal state exception from AsmDelegate - 1">
       <compile files="Foo.java" options="-1.5" classpath="jarForFoo.jar" />
     </ajc-test>
