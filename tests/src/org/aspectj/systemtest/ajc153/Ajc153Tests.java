@@ -27,6 +27,10 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testArgnamesAndJavac_pr148381() { runTest("argNames and javac");}
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
+	 
+  public void testNoIllegalStateExceptionFromAsmDelegate_pr153490_1() { runTest("no illegal state exception from AsmDelegate - 1");}
+  public void testNoIllegalStateExceptionFromAsmDelegate_pr153490_2() { runTest("no illegal state exception from AsmDelegate - 2");}
+  public void testNoIllegalStateExceptionFromAsmDelegate_pr153490_3() { runTest("no illegal state exception from AsmDelegate - 3");}
   public void testAnnotMethod_pr156962() { runTest("Test Annot Method");}
   public void testAnnotMethodHasMember_pr156962() { runTest("Test Annot Method Has Member"); }
   public void testMixingGenerics_pr152848()  { runTest("mixing generics"); }

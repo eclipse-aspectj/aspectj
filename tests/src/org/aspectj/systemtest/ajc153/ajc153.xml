@@ -3,6 +3,18 @@
 <!-- AspectJ v1.5.3 Tests -->
 <suite>
 
+    <ajc-test dir="bugs153/pr153490" title="no illegal state exception from AsmDelegate - 1">
+      <compile files="Foo.java" options="-1.5" classpath="jarForFoo.jar" />
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr153490" title="no illegal state exception from AsmDelegate - 2">
+      <compile files="Bar.java" options="-1.5" classpath="jarForBar.jar" />
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr153490" title="no illegal state exception from AsmDelegate - 3">
+      <compile files="Goo.java" options="-1.5" classpath="jarForGoo.jar" />
+    </ajc-test>
+
     <ajc-test dir="bugs153/pr156962" title="Test Annot Method">
       <compile files="Sample.java, WarnDeprecatedMethod.aj" options="-1.5">
         <message kind="warning" line="2" text="deprecated method"/>      
