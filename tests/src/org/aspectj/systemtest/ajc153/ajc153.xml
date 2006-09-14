@@ -3,6 +3,11 @@
 <!-- AspectJ v1.5.3 Tests -->
 <suite>
 
+    <ajc-test dir="bugs153/pr153845" title="IllegalStateException at GenericSignatureParser.java">
+      <compile files="GenericType.java,Aspect.java,Aspect2.java,Interface.java" options="-1.5" outjar="blob.jar"/>
+      <compile files="Nothing.java" aspectpath="blob.jar" options="-1.5" outjar="bang.jar"/>
+    </ajc-test>
+
     <ajc-test dir="bugs153/pr156058" title="no IllegalStateException with generic inner aspect">
       <compile files="Bug.java" options="-1.5">
         <message kind="warning" line="2" text="advice defined in MyAspect has not been applied [Xlint:adviceDidNotMatch]"/>

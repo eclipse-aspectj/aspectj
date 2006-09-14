@@ -714,7 +714,7 @@ public class ReferenceType extends ResolvedType {
 		ret.append(rawSig.substring(0,rawSig.length()-1));
 		ret.append("<");
 		for (int i = 0; i < someParameters.length; i++) {
-			ret.append(someParameters[i].getSignature());			
+			ret.append(((ReferenceType)someParameters[i]).getSignatureForAttribute());			
 		}
 		ret.append(">;");
 		return ret.toString();
