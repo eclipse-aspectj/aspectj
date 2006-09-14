@@ -645,6 +645,25 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR115251");
 		checkWasFullBuild();  // back to the source
 	}
+
+	public void testPr157054() {
+		configureBuildStructureModel(true);
+		MyBuildOptionsAdapter.setNonStandardOptions("-showWeaveInfo");
+		initialiseProject("PR157054");
+		build("PR157054");
+		checkWasFullBuild();
+		List weaveMessages = MyTaskListManager.getWeavingMessages();
+		assertTrue("Should be two weaving messages but there are "+weaveMessages.size(),weaveMessages.size()==2);
+		alter("PR157054","inc1");
+		build("PR157054");
+		weaveMessages = MyTaskListManager.getWeavingMessages();
+		assertTrue("Should be three weaving messages but there are "+weaveMessages.size(),weaveMessages.size()==3);
+		checkWasntFullBuild();
+		fullBuild("PR157054");
+		weaveMessages = MyTaskListManager.getWeavingMessages();
+		assertTrue("Should be three weaving messages but there are "+weaveMessages.size(),weaveMessages.size()==3);
+	}
+	
 	
 
 	/**

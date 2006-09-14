@@ -36,7 +36,7 @@ import org.aspectj.weaver.patterns.PerClause;
 
 public abstract class ResolvedType extends UnresolvedType implements AnnotatedElement {
 
-	private static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY  = new ResolvedType[0];
+	public static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY  = new ResolvedType[0];
 	public static final String PARAMETERIZED_TYPE_IDENTIFIER = "P";
 	
 	private ResolvedType[] resolvedTypeParams;
