@@ -565,6 +565,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
 	private static final char[] aspectSig = "Lorg/aspectj/lang/annotation/Aspect;".toCharArray();
 	private boolean isAspect(TypeDeclaration declaration) {
+		// avoid an NPE when something else is wrong in this system ... the real problem will be reported elsewhere
+		if (declaration.staticInitializerScope==null) return false;
 		if (declaration instanceof AspectDeclaration) return true; // code style
 		else if (declaration.annotations!=null) { // check for annotation style
 			for (int index = 0; index < declaration.annotations.length; index++) {
