@@ -551,13 +551,14 @@ public class EclipseFactory {
 		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
 		ResolvedType realDeclaringType = world.resolve(fromBinding(receiverType));
 		if (realDeclaringType.isRawType()) realDeclaringType = realDeclaringType.getGenericType();
-		return new ResolvedMemberImpl(
-			Member.FIELD,
-			realDeclaringType,
-			binding.modifiers,
-			world.resolve(fromBinding(binding.type)),
-			new String(binding.name),
-			UnresolvedType.NONE);
+		ResolvedMemberImpl ret =  new EclipseResolvedMember(binding,
+				Member.FIELD,
+				realDeclaringType,
+				binding.modifiers,
+				world.resolve(fromBinding(binding.type)),
+				new String(binding.name),
+				UnresolvedType.NONE);
+		return ret;
 	}
 	
 	public TypeBinding makeTypeBinding(UnresolvedType typeX) {
