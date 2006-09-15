@@ -21,9 +21,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.aspectj.asm.IRelationship;
@@ -193,10 +195,18 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     			Enumeration xmls = weavingContext.getResources(st.nextToken());
 //    			System.out.println("? registerDefinitions: found-aop.xml=" + xmls.hasMoreElements() + ", loader=" + loader);
 
+    			Set seenBefore = new HashSet();
     			while (xmls.hasMoreElements()) {
     			    URL xml = (URL) xmls.nextElement();
-    			    info("using configuration " + weavingContext.getFile(xml));
-    			    definitions.add(DocumentParser.parse(xml));
+    	            trace.event("parseDefinitions",this,xml);
+    			    if (!seenBefore.contains(xml)) {
+    			    	info("using configuration " + weavingContext.getFile(xml));
+    			    	definitions.add(DocumentParser.parse(xml));
+        			    seenBefore.add(xml);
+    			    }
+    			    else {
+    			    	warn("ignoring duplicate definition: " + xml);
+    			    }
     			}
     		}
     		if (definitions.isEmpty()) {
