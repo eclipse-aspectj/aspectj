@@ -227,6 +227,7 @@
                 <line text="info AspectJ Weaver Version"/>
                 <line text="info register classloader"/>
                 <line text="info using"/>
+                <line text="info define aspect ConcreteAspect"/>
                 <line text="debug generating class 'ConcreteAspect'"/>
                 <line text="debug weaving 'Main'"/>
                 <line text="AbstractSuperAspect.before_test1"/>
@@ -578,6 +579,17 @@
             	<line text="Parent"/>
             	<line text="Child"/>
             	<line text="Stopping ..."/>
+        	</stdout>
+        </ant>
+    </ajc-test>
+
+	<ajc-test dir="ltw" title="override default path using -Dorg.aspectj.weaver.loadtime.configuration" keywords="ltw">
+        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
+        <compile files="Tracing.aj" options="-outxml -outjar tracing.jar"/>
+		<ant file="ant.xml" target="override default path using -Dorg.aspectj.weaver.loadtime.configuration" verbose="true">
+        	<stdout>
+            	<line text="Hello World!"/>
         	</stdout>
         </ant>
     </ajc-test>

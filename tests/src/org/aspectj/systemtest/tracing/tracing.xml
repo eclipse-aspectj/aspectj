@@ -50,6 +50,7 @@
 	  	    	<line text="info register aspect IncludedAspect"/>
 	  	    	<line text="warning aspect ExcludedAspect exluded"/>
 	  	    	<line text="warning aspect ExcludedAspect exluded"/>
+	  	    	<line text="info define aspect IncludedMissingAspect"/>
 	  	    	<line text="error Cannot find m_parent aspect"/>
 	  	    	<line text="error Cannot find m_parent aspect"/>
 	  	    	<line text="error Concrete-aspect 'IncludedMissingAspect' could not be registered"/>

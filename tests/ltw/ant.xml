@@ -45,4 +45,26 @@
         </java>
     </target>
 
+	<!-- We have three JARs files, two containing aspects (ExceptionHandler and Tracing)
+	     for which aop-ajc.xml files have been generate. However we supply our own
+	     aop.xml which declares only ExceptionHandler. We then override the 
+	     configuration search path -->
+    <target name="override default path using -Dorg.aspectj.weaver.loadtime.configuration">
+        <copy file="${aj.root}/tests/ltw/aop-orgaspectjweaverloadtimeconfiguration.xml"
+              tofile="${aj.sandbox}/META-INF/aop-random.xml"/>
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <classpath>
+                <pathelement path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar:${aj.sandbox}/tracing.jar"/>
+            </classpath>
+            <jvmarg value="-Dorg.aspectj.weaver.loadtime.configuration=META-INF/aop-random.xml"/>
+            <jvmarg value="-Dorg.aspectj.tracing.enabled=true"/>
+            <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
+            <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
+            <!-- use META-INF/aop.xml style -->
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
 </project>

@@ -21,6 +21,7 @@ public class AllTestsAspectJ153 {
 		suite.addTest(Ajc153Tests.suite());
 		suite.addTest(JDTLikeHandleProviderTests.suite());
 		suite.addTest(PipeliningTests.suite());
+		suite.addTest(LTWServer153Tests.suite());
         //$JUnit-END$
 		return suite;
 	}

@@ -1,0 +1,9 @@
+<aspectj>
+	<aspects>
+        <concrete-aspect name="HelloWorldTracing" extends="AbstractTracing">
+        	<pointcut name="scope" expression="within(HelloWorld)"/>
+        </concrete-aspect>
+    </aspects>
+    
+    <weaver options="-debug"/>
+</aspectj>

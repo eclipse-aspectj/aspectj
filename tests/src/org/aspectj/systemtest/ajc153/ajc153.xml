@@ -423,5 +423,19 @@
 		<message kind="warning" line="27" text="adviceDidNotMatch"/>
 	  </compile>	
     </ajc-test>
+    
+	<ajc-test dir="bugs153/pr157474" title="TestServer with duplicate configuration" keywords="ltw,server">
+        <compile files="AbstractTracing.aj" options="-outjar library.jar -outxml"/>
+        <compile files="HelloWorld.java" options="-outjar application.jar"/>
+        <ant file="ant-server.xml" target="TestServer with duplicate configuration" verbose="true">
+        	<stdout>
+            	<line text="Starting ..."/>
+            	<line text="Running HelloWorld"/>
+            	<line text="? main"/>
+            	<line text="Hello World!"/>
+            	<line text="Stopping ..."/>
+        	</stdout>
+        </ant>
+    </ajc-test>
 
 </suite>

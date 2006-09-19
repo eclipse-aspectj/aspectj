@@ -137,6 +137,11 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	public void testSeparateCompilationDeclareParentsCall_pr133770() {
   		runTest("separate compilation with ltw: declare parents and call");
   	}
+  	
+  	public void testConfigutationSystemProperty_pr149289 () {
+  		runTest("override default path using -Dorg.aspectj.weaver.loadtime.configuration");
+  		  		
+  	}
   	  	
   	/*
   	 * Allow system properties to be set and restored
