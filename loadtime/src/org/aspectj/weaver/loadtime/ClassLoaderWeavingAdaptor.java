@@ -403,6 +403,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             for (Iterator aspects = definition.getConcreteAspects().iterator(); aspects.hasNext();) {
                 Definition.ConcreteAspect concreteAspect = (Definition.ConcreteAspect) aspects.next();
                 if (acceptAspect(concreteAspect.name)) {
+                	info("define aspect " + concreteAspect.name);
                     ConcreteAspectCodeGen gen = new ConcreteAspectCodeGen(concreteAspect, weaver.getWorld());
                     if (!gen.validate()) {
                         error("Concrete-aspect '"+concreteAspect.name+"' could not be registered");
