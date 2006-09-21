@@ -51,6 +51,9 @@ public final class Pointcuts {
     public pointcut anyPublicMethodExecution() : 
         execution(public * *(..));
 
+    public pointcut anyPackageProtectedMethodExecution() : 
+        execution(!private !public !protected * *(..));
+
     public pointcut anyNonPrivateMethodExecution() : 
         execution(!private * *(..));
 
