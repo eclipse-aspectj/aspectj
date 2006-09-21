@@ -8,6 +8,15 @@
       <compile files="Nothing.java" aspectpath="blob.jar" options="-1.5" outjar="bang.jar"/>
     </ajc-test>
 
+    <ajc-test dir="bugs153/pr158126" title="annotations, call and constructors problem">
+      <compile files="A.java,B.java,MyAnnotation.java,MyAspect.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'constructor-call(void B.&lt;init&gt;())' in Type 'A' (A.java:5) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>
+        <message kind="weave" text="Join point 'constructor-call(void B.&lt;init&gt;(int))' in Type 'A' (A.java:10) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>
+        <message kind="weave" text="Join point 'constructor-call(void A.&lt;init&gt;())' in Type 'A' (A.java:14) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>
+        <message kind="weave" text="Join point 'constructor-call(void A.&lt;init&gt;(int))' in Type 'A' (A.java:15) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>      
+      </compile>
+    </ajc-test>
+
     <ajc-test dir="bugs153/pr156058" title="no IllegalStateException with generic inner aspect">
       <compile files="Bug.java" options="-1.5">
         <message kind="warning" line="2" text="advice defined in MyAspect has not been applied [Xlint:adviceDidNotMatch]"/>
