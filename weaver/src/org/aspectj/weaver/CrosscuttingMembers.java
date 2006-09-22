@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.weaver.bcel.BcelMethod;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -230,23 +231,51 @@ public class CrosscuttingMembers {
   	    if (careAboutShadowMungers) {
 		    // bug 129163: use set equality rather than list equality 
 			Set theseShadowMungers = new HashSet();
-			theseShadowMungers.addAll(shadowMungers);
-			Set otherShadowMungers = new HashSet();
-			otherShadowMungers.addAll(other.shadowMungers);
-			
-			PointcutRewriter pr = new PointcutRewriter();
-			for (Iterator iter = otherShadowMungers.iterator(); iter.hasNext();) {
+			Set theseInlinedAroundMungers = new HashSet();
+			for (Iterator iter = shadowMungers.iterator(); iter
+					.hasNext();) {
 				ShadowMunger munger = (ShadowMunger) iter.next();
-				Pointcut p          = munger.getPointcut();
-				Pointcut newP       = pr.rewrite(p);
-				if (p.m_ignoreUnboundBindingForNames.length!=0) {// *sigh* dirty fix for dirty hacky implementation pr149305
-					newP.m_ignoreUnboundBindingForNames = p.m_ignoreUnboundBindingForNames;
+				if (munger instanceof Advice) {
+					Advice adviceMunger = (Advice)munger;
+					// bug 154054: if we're around advice that has been inlined
+					// then we need to do more checking than existing equals
+					// methods allow
+					if (!world.isXnoInline() && adviceMunger.getKind().equals(AdviceKind.Around)) {
+						theseInlinedAroundMungers.add(adviceMunger);
+					} else {
+						theseShadowMungers.add(adviceMunger);
+					}
+				} else {
+					theseShadowMungers.add(munger);
 				}
-				munger.setPointcut(newP);
+			}
+			Set tempSet = new HashSet();
+			tempSet.addAll(other.shadowMungers);
+			Set otherShadowMungers = new HashSet();
+			Set otherInlinedAroundMungers = new HashSet();
+			for (Iterator iter = tempSet.iterator(); iter.hasNext();) {
+				ShadowMunger munger = (ShadowMunger) iter.next();
+				if (munger instanceof Advice) {
+					Advice adviceMunger = (Advice)munger;
+					// bug 154054: if we're around advice that has been inlined
+					// then we need to do more checking than existing equals
+					// methods allow
+					if (!world.isXnoInline() && adviceMunger.getKind().equals(AdviceKind.Around)) {
+						otherInlinedAroundMungers.add(rewritePointcutInMunger(adviceMunger));
+					} else {
+						otherShadowMungers.add(rewritePointcutInMunger(adviceMunger));
+					}
+				} else {
+					otherShadowMungers.add(rewritePointcutInMunger(munger));
+				}
 			}
 			if (!theseShadowMungers.equals(otherShadowMungers)) {
 				changed = true;
 			}
+			if (!equivalent(theseInlinedAroundMungers,otherInlinedAroundMungers)) {
+				changed = true;
+			}
+			
 			// replace the existing list of shadowmungers with the 
 			// new ones in case anything like the sourcelocation has
 			// changed, however, don't want this flagged as a change
@@ -365,6 +394,44 @@ public class CrosscuttingMembers {
 		return changed;
 	}
 
+	private boolean equivalent(Set theseInlinedAroundMungers, Set otherInlinedAroundMungers) {
+		if (theseInlinedAroundMungers.size() != otherInlinedAroundMungers.size()) {
+			return false;
+		}
+		for (Iterator iter = theseInlinedAroundMungers.iterator(); iter.hasNext();) {
+			Advice thisAdvice = (Advice) iter.next();
+			boolean foundIt = false;
+			for (Iterator iterator = otherInlinedAroundMungers.iterator(); iterator.hasNext();) {
+				Advice otherAdvice = (Advice) iterator.next();				
+				if (thisAdvice.equals(otherAdvice)) {
+					if(thisAdvice.getSignature() instanceof BcelMethod) {
+						if (((BcelMethod)thisAdvice.getSignature())
+								.isEquivalentTo(otherAdvice.getSignature()) ) {
+							foundIt = true;
+							continue;
+						}						
+					}
+					return false;
+				}
+			}
+			if (!foundIt) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private ShadowMunger rewritePointcutInMunger(ShadowMunger munger) {
+		PointcutRewriter pr = new PointcutRewriter();
+		Pointcut p          = munger.getPointcut();
+		Pointcut newP       = pr.rewrite(p);
+		if (p.m_ignoreUnboundBindingForNames.length!=0) {// *sigh* dirty fix for dirty hacky implementation pr149305
+			newP.m_ignoreUnboundBindingForNames = p.m_ignoreUnboundBindingForNames;
+		}
+		munger.setPointcut(newP);
+		return munger;
+	}
+	
 	public void setPerClause(PerClause perClause) {
 		if (this.shouldConcretizeIfNeeded) {
 			this.perClause = perClause.concretize(inAspect);

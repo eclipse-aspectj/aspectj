@@ -388,4 +388,22 @@
         <!--inc-compile tag="20"/-->
         <!--run class="pack.Main"/-->
     </ajc-test>
+
+   <ajc-test dir="bugs153/pr154054" pr="154054"
+   	 title="incremental update of body in around advice">
+        <compile staging="true" 
+        	options="-incremental,-verbose"
+        	sourceroots="src"/>
+        <!--inc-compile tag="20"/-->
+        <!--run class="MyClass"/-->
+    </ajc-test>
+
+   <ajc-test dir="bugs153/pr154054_2" pr="154054"
+   	 title="incremental update of body in around advice with string">
+        <compile staging="true" 
+        	options="-incremental,-verbose"
+        	sourceroots="src"/>
+        <!--inc-compile tag="30"/-->
+        <!--run class="MyClass"/-->
+    </ajc-test>
 	

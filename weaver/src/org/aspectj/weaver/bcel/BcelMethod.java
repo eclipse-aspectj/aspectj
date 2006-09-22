@@ -44,7 +44,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 
-final class BcelMethod extends ResolvedMemberImpl {
+public final class BcelMethod extends ResolvedMemberImpl {
 
 	private Method method;
 	private boolean isAjSynthetic;
@@ -421,6 +421,23 @@ final class BcelMethod extends ResolvedMemberImpl {
 			// synthetic is a modifier (4096)
 			isSynthetic = (modifiers&4096)!=0;
 		}
+	}
+
+	/**
+	 * Returns whether or not the given object is equivalent to the
+	 * current one. Returns true if getMethod().getCode().getCodeString()
+	 * are equal. Allows for different line number tables.
+	 */
+	// bug 154054: is similar to equals(Object) however
+	// doesn't require implementing equals in Method and Code
+	// which proved expensive. Currently used within 
+	// CrosscuttingMembers.replaceWith() to decide if we need
+	// to do a full build
+	public boolean isEquivalentTo(Object other) {	
+		if(! (other instanceof BcelMethod)) return false;
+		BcelMethod o = (BcelMethod)other;
+		return getMethod().getCode().getCodeString().equals(
+				o.getMethod().getCode().getCodeString());
 	}
 
 }

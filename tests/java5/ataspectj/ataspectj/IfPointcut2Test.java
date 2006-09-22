@@ -33,20 +33,24 @@ public class IfPointcut2Test extends TestCase {
         f.doo();
         f.doo(1);
         f.dooMulti();
-        assertEquals(
-                "test aop test2-doo-doo aop2 doo test3-1-doo-doo-doo aop3 doo-1 testTWO-dooMulti testONE-dooMulti aop doMulti ",
-                s_log.toString()
-        );
+        // we don't want to rely on the order the if pcds are evaluated
+        String exp1 = "test aop test2-doo-doo aop2 doo test3-1-doo-doo-doo aop3 doo-1 testTWO-dooMulti testONE-dooMulti aop doMulti ";
+        String exp2 = "test aop test2-doo-doo aop2 doo test3-1-doo-doo-doo aop3 doo-1 testONE-dooMulti testTWO-dooMulti aop doMulti ";
+        boolean equ = (exp1.equals(s_log.toString()) || exp2.equals(s_log.toString()));
+        assertTrue("expected log to contain \n" + exp1 +"\n or \n" + exp2 + "\n but found \n" + s_log.toString(), equ);
 
         s_log = new StringBuffer();
         IfAspect.ISON = false;
         f.doo();
         f.doo(1);
         f.dooMulti();
-        assertEquals(
-                "test test2-doo-doo doo test3-1-doo-doo-doo doo-1 testTWO-dooMulti doMulti ",                
-                s_log.toString()
-        );
+        
+        // we don't want to rely on the order the if pcds are evaluated
+        String exp3 = "test test2-doo-doo doo test3-1-doo-doo-doo doo-1 testTWO-dooMulti doMulti ";
+        String exp4 = "test test2-doo-doo doo test3-1-doo-doo-doo doo-1 testONE-dooMulti doMulti ";
+
+        equ = (exp3.equals(s_log.toString()) || exp4.equals(s_log.toString()));
+        assertTrue("expected log to contain \n" + exp3 +"\n or \n" + exp4 + "\n but found \n" + s_log.toString(), equ);
     }
 
     public static void main(String[] args) {

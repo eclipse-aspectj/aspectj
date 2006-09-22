@@ -1524,6 +1524,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				+warnings,warnings.isEmpty());	
 	}
 	
+	// see comment #11 of bug 154054
+	public void testNoFullBuildOnChangeInSysOutInAdviceBody_pr154054() {
+		initialiseProject("PR154054");
+		build("PR154054");
+		alter("PR154054","inc1");
+		build("PR154054");
+		checkWasntFullBuild();
+	}
+
+	// change exception type in around advice, does it notice?
+	public void testShouldFullBuildOnExceptionChange_pr154054() {
+		initialiseProject("PR154054_2");
+		build("PR154054_2");
+		alter("PR154054_2","inc1");
+		build("PR154054_2");
+		checkWasFullBuild();
+	}
+	
 	// --- helper code ---
 	
 	/**

@@ -280,5 +280,30 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  RunResult before = run("pack.Main");
   }
   
+  public void testIncrementalUpdateOfBodyInAroundAdvice_pr154054() throws Exception {
+	  runTest("incremental update of body in around advice");
+	  nextIncrement(true);
+	  RunResult before = run("MyClass");
+	  assertTrue("value should be 13 but was " + before.getStdOut(),
+			  before.getStdOut().startsWith("13"));
+	  // update value added to proceed
+	  copyFileAndDoIncrementalBuild("changes/MyAspect.20.aj","src/MyAspect.aj");
+	  RunResult after = run("MyClass");
+	  assertTrue("value should be 14 but was " + after.getStdOut(),
+			  after.getStdOut().startsWith("14"));
+  }
+  
+  public void testIncrementalUpdateOfBodyInAroundAdviceWithString_pr154054() throws Exception {
+	  runTest("incremental update of body in around advice with string");
+	  nextIncrement(true);
+	  RunResult before = run("MyClass");
+	  assertTrue("expected 'Fred and George' in output but found " + before.getStdOut(),
+			  before.getStdOut().startsWith("Fred and George"));
+	  // update value added to proceed
+	  copyFileAndDoIncrementalBuild("changes/MyAspect.30.aj","src/MyAspect.aj");
+	  RunResult after = run("MyClass");
+	  assertTrue("expected 'Fred and Harry' in output but found " + after.getStdOut(),
+			  after.getStdOut().startsWith("Fred and Harry"));
+  }
 }
 
