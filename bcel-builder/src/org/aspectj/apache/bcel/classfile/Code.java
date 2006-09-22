@@ -69,7 +69,7 @@ import  java.io.*;
  * is used for debugging purposes and <em>LocalVariableTable</em> which 
  * contains information about the local variables.
  *
- * @version $Id: Code.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Code.java,v 1.3 2006/09/22 10:50:17 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  * @see     CodeException
@@ -369,5 +369,30 @@ public final class Code extends Attribute {
       c.attributes[i] = attributes[i].copy(constant_pool);
 
     return c;
+  }
+  
+  /**
+   * Returns the same as toString(true) except that the attribute information
+   * isn't included (line numbers).
+   * Can be used to check whether two pieces of code are equivalent.
+   */
+  public String getCodeString() {
+	  StringBuffer codeString = new StringBuffer();
+	  codeString.append("Code(max_stack = ").append(max_stack);
+	  codeString.append(", max_locals = ").append(max_locals);
+	  codeString.append(", code_length = ").append(code_length).append(")\n");
+	  codeString.append(Utility.codeToString(code, constant_pool, 0, -1,true));
+	  if (exception_table_length>0) {
+		  codeString.append("\n").append("Exception entries =  ").append(exception_table_length).append("\n");
+		  for (int i = 0; i < exception_table_length; i++) {
+			CodeException exc = exception_table[i];
+			int type = exc.getCatchType();
+			String name = "finally";
+			if (type!=0) name = this.constant_pool.getConstantString(type,Constants.CONSTANT_Class);
+			codeString.append(name).append("[");
+			codeString.append(exc.getStartPC()).append(">").append(exc.getEndPC()).append("]\n");
+		  }
+	  }
+	  return codeString.toString();
   }
 }
