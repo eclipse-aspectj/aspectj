@@ -95,6 +95,18 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("ensure LineNumberTable correct with generics, for each and continue");
   }
   
+  public void testDeclareSoftDoesntAllowUndeclaredExInAnonInnerClass_pr151772() {
+	  runTest("ensure declare soft doesn't allow undeclared exception in anonymous inner class");
+  }
+
+  public void testDeclareSoftDoesntAllowUndeclaredExInAnonInnerClass_pr151772_2() {
+	  runTest("ensure declare soft doesn't allow undeclared exception in anonymous inner class - 2");
+  }
+
+  public void testDeclareSoftAndInnerClasses_pr125981() {
+	  runTest("declare soft and inner classes");
+  }
+  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);

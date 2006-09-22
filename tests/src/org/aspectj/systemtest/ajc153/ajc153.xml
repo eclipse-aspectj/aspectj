@@ -447,4 +447,18 @@
         </ant>
     </ajc-test>
 
+    <ajc-test dir="bugs153/pr151772" title="ensure declare soft doesn't allow undeclared exception in anonymous inner class">
+      <compile files="Softener.aj"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr151772" title="ensure declare soft doesn't allow undeclared exception in anonymous inner class - 2">
+      <compile files="Softener2.aj">
+		<message kind="error" line="18" text="Unhandled exception type SQLException"/>
+	  </compile>	
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr125981" title="declare soft and inner classes">
+      <compile files="SampleTest.java"/>
+    </ajc-test>
+
 </suite>
