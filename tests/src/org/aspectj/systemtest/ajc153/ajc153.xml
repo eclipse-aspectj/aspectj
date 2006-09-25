@@ -11,6 +11,12 @@
     <ajc-test dir="bugs153/pr158412" title="annotation style pointcut npe">
       <compile files="layering/Layering.aj,layering/SystemArchitektur.java" options="-1.5"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs153/pr153464" title="negated annotation matching problem">
+      <compile files="Bug.java" options="-1.5">
+        <message kind="warning" line="99"/>
+      </compile>
+    </ajc-test>
 
     <ajc-test dir="bugs153/pr158412" title="annotation style pointcut npe - 2">
       <compile files="layering/Layering.aj,layering/SystemArchitektur.java,dao/Foo.java" options="-1.5">
