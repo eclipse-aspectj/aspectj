@@ -8,6 +8,16 @@
       <compile files="Nothing.java" aspectpath="blob.jar" options="-1.5" outjar="bang.jar"/>
     </ajc-test>
 
+    <ajc-test dir="bugs153/pr158412" title="annotation style pointcut npe">
+      <compile files="layering/Layering.aj,layering/SystemArchitektur.java" options="-1.5"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr158412" title="annotation style pointcut npe - 2">
+      <compile files="layering/Layering.aj,layering/SystemArchitektur.java,dao/Foo.java" options="-1.5">
+        <message kind="warning" line="3" text="Whatever"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr158126" title="annotations, call and constructors problem">
       <compile files="A.java,B.java,MyAnnotation.java,MyAspect.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'constructor-call(void B.&lt;init&gt;())' in Type 'A' (A.java:5) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>

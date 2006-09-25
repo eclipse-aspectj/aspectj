@@ -67,9 +67,12 @@ import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.patterns.ParserException;
+import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.weaver.patterns.PerSingleton;
+import org.aspectj.weaver.patterns.Pointcut;
 
 /**
  * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedType
@@ -149,6 +152,24 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
             }
         }
         return false;
+    }
+    
+    /** Returns "" if there is a problem */
+    private String getPointcutStringFromAnnotationStylePointcut(AbstractMethodDeclaration amd) {
+    	Annotation[] ans = amd.annotations;
+	    if (ans == null) return "";
+		for (int i = 0; i < ans.length; i++) {
+			if (ans[i].resolvedType == null) continue; // XXX happens if we do this very early from buildInterTypeandPerClause
+			                                           // may prevent us from resolving references made in @Pointcuts to
+			                                           // an @Pointcut in a code-style aspect
+			char[] sig = ans[i].resolvedType.signature();
+			if (CharOperation.equals(pointcutSig,sig)) {
+				if (ans[i].memberValuePairs().length==0) return ""; // empty pointcut expression
+				StringLiteral sLit = ((StringLiteral)(ans[i].memberValuePairs()[0].value));
+				return new String(sLit.source());
+			}
+		}
+		return "";
     }
 
 	private boolean isAnnotationStylePointcut(Annotation[] annotations) {
@@ -237,15 +258,28 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	private ResolvedPointcutDefinition makeResolvedPointcutDefinition(AbstractMethodDeclaration md) {
 		if (md.binding==null) return null; // there is another error that has caused this... pr138143
+
+		EclipseSourceContext eSourceContext = new EclipseSourceContext(md.compilationResult);
+		Pointcut pc = null;
+		if (!md.isAbstract()) {
+			String expression = getPointcutStringFromAnnotationStylePointcut(md);
+			try { 
+				pc = new PatternParser(expression,eSourceContext).parsePointcut();
+			} catch (ParserException pe) { // error will be reported by other means...
+				pc = Pointcut.makeMatchesNothing(Pointcut.SYMBOLIC);
+			}
+		}
+		
+		
 		ResolvedPointcutDefinition resolvedPointcutDeclaration = new ResolvedPointcutDefinition(
             factory.fromBinding(md.binding.declaringClass), 
             md.modifiers, 
             new String(md.selector),
 			factory.fromBindings(md.binding.parameters),
-			null); //??? might want to use null 
+			pc); 
 			
 		resolvedPointcutDeclaration.setPosition(md.sourceStart, md.sourceEnd);
-		resolvedPointcutDeclaration.setSourceContext(new EclipseSourceContext(md.compilationResult));
+		resolvedPointcutDeclaration.setSourceContext(eSourceContext);
 		return resolvedPointcutDeclaration;
 	}
 

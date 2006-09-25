@@ -28,6 +28,8 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
 //  public void testNoIllegalStateExceptionWithGenericInnerAspect_pr156058() { runTest("no IllegalStateException with generic inner aspect"); }
+  public void testAnnotationStylePointcutNPE_pr158412() { runTest("annotation style pointcut npe"); }
+  public void testAnnotationStylePointcutNPE_pr158412_2() { runTest("annotation style pointcut npe - 2"); }
   public void testAnnotationsCallConstructors_pr158126() { runTest("annotations, call and constructors problem");}
   public void testIllegalStateExceptionGenerics_pr153845() { runTest("IllegalStateException at GenericSignatureParser.java"); }
   public void testNoIllegalStateExceptionFromAsmDelegate_pr153490_1() { runTest("no illegal state exception from AsmDelegate - 1");}
