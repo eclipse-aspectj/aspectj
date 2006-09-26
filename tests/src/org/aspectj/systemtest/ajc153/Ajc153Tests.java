@@ -14,6 +14,9 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.bcel.Utility;
@@ -110,7 +113,22 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("declare soft and inner classes");
   }
   
-  /////////////////////////////////////////
+  public void testGetSourceSignature_pr148908() {
+	runTest("ensure getSourceSignature correct with static field");
+	IHierarchy top = AsmManager.getDefault().getHierarchy();
+	IProgramElement ipe = top.findElementForLabel(top.getRoot(),
+	IProgramElement.Kind.FIELD,"MY_COMPARATOR");
+	String expected = "static final Comparator MY_COMPARATOR = new Comparator() {\n" +
+					"  public int compare(Object o1, Object o2) {\n" +
+					"    return 0;\n" +
+					"  }\n" +
+					"};";
+			assertEquals("expected source signature to be " + expected + 
+					" but found " + ipe.getSourceSignature(), 
+					expected, ipe.getSourceSignature());
+  }
+  
+    /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);
   }

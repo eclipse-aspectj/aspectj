@@ -2,6 +2,9 @@
 
 <!-- AspectJ v1.5.3 Tests -->
 <suite>
+	<ajc-test dir="bugs153/pr148908" title="ensure getSourceSignature correct with static field">
+      <compile files="BadInterface.java" options="-emacssym"/>
+    </ajc-test> 
 
     <ajc-test dir="bugs153/pr153845" title="IllegalStateException at GenericSignatureParser.java">
       <compile files="GenericType.java,Aspect.java,Aspect2.java,Interface.java" options="-1.5" outjar="blob.jar"/>

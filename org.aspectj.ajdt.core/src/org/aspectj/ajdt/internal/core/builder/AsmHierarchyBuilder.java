@@ -663,7 +663,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 	
 	/**
-	 * Doesn't print qualified allocation expressions.
+	 * 
 	 */
 	protected String genSourceSignature(FieldDeclaration fieldDeclaration) {	
 		StringBuffer output = new StringBuffer();
@@ -683,6 +683,27 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			} else {
 				fieldDeclaration.initialization.printExpression(0, output);
 			}
+		} else if (fieldDeclaration.initialization instanceof QualifiedAllocationExpression) {
+			output.append(" = "); //$NON-NLS-1$
+			QualifiedAllocationExpression qae = (QualifiedAllocationExpression)fieldDeclaration.initialization;
+			StringBuffer sb = new StringBuffer();
+			qae.printExpression(0,sb);
+			// if the source is of the form 'static I MY_I = new I() {};' calling 
+			// printExpression on the qae returns
+			//
+			// new I() {
+			//	   x() {
+			//	     super();
+			//	   }
+			// }
+			//
+			// We want to remove the x() {super();} call. Assuming that this
+			// is the first entry in the expression we can do this by finding
+			// the position of the "{" and "}" - bug 148908
+			int i = sb.toString().indexOf("{");
+			output.append(sb.substring(0,i+1));
+			int j = sb.toString().indexOf("}");
+			output.append(sb.substring(j+1));
 		}
 		
 		output.append(';');
