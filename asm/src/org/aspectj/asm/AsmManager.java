@@ -72,7 +72,7 @@ public class AsmManager {
 //	}
 	
     protected AsmManager() {
- 		handleProvider = new OptimizedFullPathHandleProvider();
+ 		handleProvider = new JDTLikeHandleProvider();
     	createNewASM();
     }
 	
