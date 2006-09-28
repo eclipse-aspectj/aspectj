@@ -42,7 +42,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
                     ALOAD_2
                     ASTORE 4
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
-    |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
+    |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;   (line 21)
     |               ALOAD_0
     |               INVOKEVIRTUAL Trace.ajc$before$Trace$1$26352be2 (Ljava/lang/Object;)V
     |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;

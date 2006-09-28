@@ -25,7 +25,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
                     ALOAD_0
                     ASTORE 19
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
-    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 9)
     |               BIPUSH 1
     |               ANEWARRAY java.lang.Object
     |               ASTORE 21
@@ -45,7 +45,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
 
   public static String getName():
     method-execution(java.lang.String FancyHelloWorld.getName())
-    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 20)
     |               BIPUSH 0
     |               ANEWARRAY java.lang.Object
     |               ASTORE 15
@@ -292,7 +292,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
   end static final void main_aroundBody20(String[])
 
   static final void main_aroundBody22(String[]):
-                    INVOKESTATIC Aspect.ajc_before_method_execution ()V
+                    INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 9)
                     BIPUSH 1
                     ANEWARRAY java.lang.Object
                     ASTORE_1
@@ -500,7 +500,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
   end static final String getName_aroundBody40()
 
   static final String getName_aroundBody42():
-                    INVOKESTATIC Aspect.ajc_before_method_execution ()V
+                    INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 20)
                     BIPUSH 0
                     ANEWARRAY java.lang.Object
                     ASTORE_0

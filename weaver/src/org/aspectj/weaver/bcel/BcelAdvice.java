@@ -24,6 +24,7 @@ import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
@@ -424,7 +425,24 @@ public class BcelAdvice extends Advice {
 	    il.append(getNonTestAdviceInstructions(shadow));
 	    
         InstructionHandle ifYesAdvice = il.getStart();
-        il.insert(getTestInstructions(shadow, ifYesAdvice, ifNoAdvice, ifYesAdvice));	
+        il.insert(getTestInstructions(shadow, ifYesAdvice, ifNoAdvice, ifYesAdvice));
+        
+        // If inserting instructions at the start of a method, we need a nice line number for this entry
+        // in the stack trace
+        if (shadow.getKind()==Shadow.MethodExecution && getKind()==AdviceKind.Before) {
+        	int lineNumber=0;
+        	// Uncomment this code if you think we should use the method decl line number when it exists...
+//        	// If the advised join point is in a class built by AspectJ, we can use the declaration line number
+//        	boolean b = shadow.getEnclosingMethod().getMemberView().hasDeclarationLineNumberInfo();
+//        	if (b) {
+//        		lineNumber = shadow.getEnclosingMethod().getMemberView().getDeclarationLineNumber();
+//        	} else { // If it wasn't, the best we can do is the line number of the first instruction in the method
+        		lineNumber = shadow.getEnclosingMethod().getMemberView().getLineNumberOfFirstInstruction();
+//        	}
+        	if (lineNumber>0) il.getStart().addTargeter(new LineNumberTag(lineNumber));
+        }
+        
+        
         return il;
 	}
 

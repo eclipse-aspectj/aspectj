@@ -19,10 +19,10 @@ public class FieldyHelloWorld extends java.lang.Object:
 
   public static void main(String[]):
     method-execution(void FieldyHelloWorld.main(java.lang.String[]))
-    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 6)
     | field-get(java.lang.String FieldyHelloWorld.str)
     | |             INVOKESTATIC Aspect.ajc_before_field_get ()V
-    | |             GETSTATIC FieldyHelloWorld.str Ljava/lang/String;   (line 6)
+    | |             GETSTATIC FieldyHelloWorld.str Ljava/lang/String;
     | field-get(java.lang.String FieldyHelloWorld.str)
     | method-call(java.lang.String java.lang.String.valueOf(java.lang.Object))
     | |             INVOKESTATIC Aspect.ajc_before_method_call ()V

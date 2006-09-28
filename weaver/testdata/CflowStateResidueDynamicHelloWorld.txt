@@ -9,7 +9,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
 
   public static void main(String[]):
     method-execution(void DynamicHelloWorld.main(java.lang.String[]))
-    |               GETSTATIC Aspect.ajc$cflowStack$0 Lorg/aspectj/runtime/internal/CFlowStack;
+    |               GETSTATIC Aspect.ajc$cflowStack$0 Lorg/aspectj/runtime/internal/CFlowStack;   (line 12)
     |               INVOKEVIRTUAL org.aspectj.runtime.internal.CFlowStack.isValid ()Z
     |               IFEQ L0
     |               GETSTATIC Aspect.ajc$cflowStack$0 Lorg/aspectj/runtime/internal/CFlowStack;
@@ -18,7 +18,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               CHECKCAST java.util.ArrayList
     |               INVOKESTATIC Aspect.ajc_before_0 (Ljava/util/ArrayList;)V
     | catch java.lang.UnsupportedOperationException -> E0
-    | |         L0: NEW DynamicHelloWorld   (line 12)
+    | |         L0: NEW DynamicHelloWorld
     | |             DUP
     | |             INVOKESPECIAL DynamicHelloWorld.<init> ()V
     | |             LDC "hello"

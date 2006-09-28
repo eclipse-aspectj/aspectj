@@ -25,7 +25,7 @@ public class HelloWorld extends java.lang.Object:
                     ALOAD_0
                     ASTORE 7
     method-execution(void HelloWorld.main(java.lang.String[]))
-    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 8)
     |               BIPUSH 1
     |               ANEWARRAY java.lang.Object
     |               ASTORE 9
@@ -153,7 +153,7 @@ public class HelloWorld extends java.lang.Object:
   end static final void main_aroundBody12(String[])
 
   static final void main_aroundBody14(String[]):
-                    INVOKESTATIC Aspect.ajc_before_method_execution ()V
+                    INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 8)
                     BIPUSH 1
                     ANEWARRAY java.lang.Object
                     ASTORE_1

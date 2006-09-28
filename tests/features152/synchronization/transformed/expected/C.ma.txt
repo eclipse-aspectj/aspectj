@@ -1,13 +1,13 @@
   public void ma()    org.aspectj.weaver.MethodDeclarationLineNumber: 14:307
 :
-                    INVOKESTATIC Two.aspectOf ()LTwo;
+                    INVOKESTATIC Two.aspectOf ()LTwo;   (line 15)
                     INVOKEVIRTUAL Two.ajc$before$Two$1$8d8821ee ()V
                     ALOAD_0
                     DUP
                     ASTORE_1
                     MONITORENTER
     finally -> E1
-    |               GETSTATIC java.lang.System.err Ljava/io/PrintStream;   (line 15)
+    |               GETSTATIC java.lang.System.err Ljava/io/PrintStream;
     |               LDC "hello"
     |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V
     |               ALOAD_1

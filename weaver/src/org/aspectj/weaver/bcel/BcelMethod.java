@@ -23,6 +23,8 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.LineNumber;
+import org.aspectj.apache.bcel.classfile.LineNumberTable;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
@@ -102,6 +104,13 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		return super.getParameterNames();
 	}
 
+    public int getLineNumberOfFirstInstruction() {
+    	LineNumberTable lnt = method.getLineNumberTable();
+    	if (lnt==null) return -1;
+    	LineNumber[] lns = lnt.getLineNumberTable();
+    	if (lns==null || lns.length==0) return -1;
+    	return lns[0].getLineNumber();
+    }
 	
 	public void determineParameterNames() {
 		if (parameterNamesInitialized) return;

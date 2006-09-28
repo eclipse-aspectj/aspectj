@@ -10,10 +10,10 @@ public abstract class FancyHelloWorld extends java.lang.Object:
 
   public static void main(String[]):
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
-    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 9)
     | field-get(java.io.PrintStream java.lang.System.out)
     | |             INVOKESTATIC Aspect.ajc_before_field_get ()V
-    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 9)
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;
     | field-get(java.io.PrintStream java.lang.System.out)
     |               ASTORE_1
     | finally -> E1
@@ -55,8 +55,8 @@ public abstract class FancyHelloWorld extends java.lang.Object:
 
   public static String getName():
     method-execution(java.lang.String FancyHelloWorld.getName())
-    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V
-    |               ICONST_0   (line 20)
+    |               INVOKESTATIC Aspect.ajc_before_method_execution ()V   (line 20)
+    |               ICONST_0
     |               ISTORE_0
     |               ILOAD_0     // int x   (line 21)
     |               LDC "name"

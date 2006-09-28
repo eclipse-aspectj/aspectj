@@ -28,7 +28,7 @@ public class HelloWorld extends java.lang.Object:
                     INVOKESTATIC org.aspectj.runtime.reflect.Factory.makeJP (Lorg/aspectj/lang/JoinPoint$StaticPart;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Lorg/aspectj/lang/JoinPoint;
                     ASTORE 5
     method-execution(void HelloWorld.main(java.lang.String[]))
-    |               ALOAD 5
+    |               ALOAD 5   (line 8)
     |               INVOKESTATIC Aspect.ajc_before (Lorg/aspectj/lang/JoinPoint;)V
     |               GETSTATIC HelloWorld.ajc$tjp_1 Lorg/aspectj/lang/JoinPoint$StaticPart;
     |               ACONST_NULL
@@ -38,7 +38,7 @@ public class HelloWorld extends java.lang.Object:
     | field-get(java.io.PrintStream java.lang.System.out)
     | |             ALOAD_1
     | |             INVOKESTATIC Aspect.ajc_before (Lorg/aspectj/lang/JoinPoint;)V
-    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 8)
+    | |             GETSTATIC java.lang.System.out Ljava/io/PrintStream;
     | field-get(java.io.PrintStream java.lang.System.out)
     |               LDC "hello world"   (line 9)
     |               ASTORE_3
