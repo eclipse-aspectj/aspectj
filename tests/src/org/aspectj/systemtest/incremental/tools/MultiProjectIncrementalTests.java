@@ -1542,6 +1542,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasFullBuild();
 	}
 	
+	public void testPR158573() {
+		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		initialiseProject("PR158573");
+		build("PR158573");
+		List warnings = MyTaskListManager.getWarningMessages();
+		assertTrue("There should be no warnings:\n"+warnings,warnings.isEmpty());
+		alter("PR158573","inc1");
+		build("PR158573");
+
+		checkWasntFullBuild();
+		warnings = MyTaskListManager.getWarningMessages();
+		assertTrue("There should be no warnings after changing the value of a " +
+				"variable:\n"+warnings,warnings.isEmpty());	
+		AsmManager.getDefault().setHandleProvider(handleProvider);
+	}
+	
+	
 	// --- helper code ---
 	
 	/**

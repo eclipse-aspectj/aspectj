@@ -689,6 +689,10 @@ public class BcelAdvice extends Advice {
 		return hasMatchedAtLeastOnce;
 	}
 
+	public void setHasMatchedSomething(boolean hasMatchedSomething) {
+		hasMatchedAtLeastOnce = hasMatchedSomething;
+	}
+	
 	protected void suppressLintWarnings(World inWorld) {
 		if (suppressedLintKinds == null) {
     		if (signature instanceof BcelMethod) {

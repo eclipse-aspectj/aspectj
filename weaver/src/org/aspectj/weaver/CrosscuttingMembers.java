@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.weaver.bcel.BcelAdvice;
 import org.aspectj.weaver.bcel.BcelMethod;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.patterns.Declare;
@@ -276,11 +277,24 @@ public class CrosscuttingMembers {
 				changed = true;
 			}
 			
+			// bug 158573 - if there are no changes then preserve whether
+			// or not a particular shadowMunger has matched something.
+			if (!changed) {
+				for (Iterator iter = shadowMungers.iterator(); iter
+						.hasNext();) {
+					ShadowMunger munger = (ShadowMunger) iter.next();
+					int i = other.shadowMungers.indexOf(munger);
+					ShadowMunger otherMunger = (ShadowMunger) other.shadowMungers.get(i);
+					if (munger instanceof BcelAdvice) {
+						((BcelAdvice)otherMunger).setHasMatchedSomething(((BcelAdvice)munger).hasMatchedSomething());
+					}
+				}
+			} 
 			// replace the existing list of shadowmungers with the 
 			// new ones in case anything like the sourcelocation has
 			// changed, however, don't want this flagged as a change
 			// which will force a full build - bug 134541
-			shadowMungers = other.shadowMungers;
+			shadowMungers = other.shadowMungers;				
   	    }
   	    
 		// bug 129163: use set equality rather than list equality and
