@@ -638,10 +638,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		}
 		
 		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(),typeMap,isParameterized);
-		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
+		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];		
+		UnresolvedType[] genericParameterTypes = getGenericParameterTypes(); 
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
 			parameterizedParameterTypes[i] = 
-				parameterize(getGenericParameterTypes()[i], typeMap,isParameterized);
+				parameterize(genericParameterTypes[i], typeMap,isParameterized);
 		}
 		ResolvedMemberImpl ret = new ResolvedMemberImpl(
 					getKind(),
@@ -677,6 +678,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			return (UnresolvedType) typeVariableMap.get(variableName);
 		} else if (aType.isParameterizedType()) {
 			if (inParameterizedType) {
+				if (aType instanceof UnresolvedType) aType= aType.resolve(((ResolvedType)getDeclaringType()).getWorld());
 				return aType.parameterize(typeVariableMap);
 			} else {
 				return aType.getRawType();

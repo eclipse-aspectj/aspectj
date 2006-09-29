@@ -5,6 +5,10 @@
 	<ajc-test dir="bugs153/pr148908" title="ensure getSourceSignature correct with static field">
       <compile files="BadInterface.java" options="-emacssym"/>
     </ajc-test> 
+    
+	<ajc-test dir="bugs153/pr158624" title="generics and arrays">
+      <compile files="ValueChange.java" options="-1.5"/>
+    </ajc-test> 
 
     <ajc-test dir="bugs153/pr153845" title="IllegalStateException at GenericSignatureParser.java">
       <compile files="GenericType.java,Aspect.java,Aspect2.java,Interface.java" options="-1.5" outjar="blob.jar"/>
