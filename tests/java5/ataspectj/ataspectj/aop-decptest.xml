@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <aspectj>
-    <weaver options="-XmessageHandlerClass:ataspectj.TestHelper -1.5 -Xlint:ignore"/>
+    <weaver options="-XmessageHandlerClass:ataspectj.TestHelper -1.5 -Xlint:ignore -showWeaveInfo"/>
     <aspects>
         <aspect name="ataspectj.DeclareParentsImplementsTest.TestAspect"/>
         <aspect name="ataspectj.DeclareParentsInterfaceTest.TestAspect"/>

@@ -245,7 +245,15 @@
                 options="-1.5"
                 />
         <!--<run class="ataspectj.DeclareParentsInterfaceTest" ltw="ataspectj/aop-decptest.xml"/>-->
-        <ant file="ajc-ant.xml" target="ltw.Decp" verbose="true"/>
+        <ant file="ajc-ant.xml" target="ltw.Decp" verbose="true">
+        	<stderr>
+                <line text="weaveinfo Extending interface set for type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java) to include 'ataspectj.DeclareParentsInterfaceTest$Marker' (DeclareParentsInterfaceTest.java)"/>
+                <line text="weaveinfo Join point 'method-execution(void ataspectj.DeclareParentsInterfaceTest$Target.target())' in Type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java:27) advised by before advice from 'ataspectj.DeclareParentsInterfaceTest$TestAspect' (DeclareParentsInterfaceTest.java)"/>
+                <line text="weaveinfo Extending interface set for type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) to include 'ataspectj.DeclareParentsImplementsTest$Introduced' (DeclareParentsImplementsTest.java)"/>
+                <line text="weaveinfo Type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) has intertyped method from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java:'void ataspectj.DeclareParentsImplementsTest$Introduced.intro()')"/>
+                <line text="weaveinfo Join point 'method-execution(void ataspectj.DeclareParentsImplementsTest$Implementation.intro())' in Type 'ataspectj.DeclareParentsImplementsTest$Implementation' (DeclareParentsImplementsTest.java:47) advised by before advice from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java)"/>
+            </stderr>
+        </ant>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW Decp2">

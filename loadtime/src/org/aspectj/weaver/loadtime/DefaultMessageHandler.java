@@ -29,11 +29,19 @@ public class DefaultMessageHandler implements IMessageHandler {
         if (isIgnoring(message.getKind())) {
     		return false;
     	} else {
-            if (message.getKind().isSameOrLessThan(IMessage.INFO)) {
-                return SYSTEM_OUT.handleMessage(message);
-            } else {
-                return SYSTEM_ERR.handleMessage(message);
-            }
+    		/*
+    		 * TODO maw We ship this class but don't use or document it. Changed
+    		 * to use stderr instead of stdout to allow improvements to LTW tests.
+    		 * Currently many pass whether or not LTW occurs because they are
+    		 * already woven. Some changed to check for appropriate weaving messages
+    		 * as well as absence of warnings or errors. 
+    		 */
+    		return SYSTEM_ERR.handleMessage(message);
+//            if (message.getKind().isSameOrLessThan(IMessage.INFO)) {
+//                return SYSTEM_OUT.handleMessage(message);
+//            } else {
+//                return SYSTEM_ERR.handleMessage(message);
+//            }
         }
     }
 
