@@ -5,6 +5,7 @@
     <property
         name="jdwp"
         value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+	<property name="aj.bootpath" refid="aj.path"/>
 
     <target name="JDK14 LTW with XML">
         <java fork="yes" classname="HelloWorld" failonerror="yes">
@@ -64,6 +65,38 @@
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
 <!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
+	<!-- Beware, this is complicated! We need to intercept class loading on 
+	     the System class loader before any classes are loaded. We do this
+	     by replacing the URLClassLoader. We then define a custom
+	     SecurityManager that will be loaded _before_ the class loader
+	     hierarch is fully initialized. -->
+    <target name="NPE with custom agent">
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+        	
+        	<!-- Prepend custom URLClassLoader and append AspectJ
+        	     to bootclasspath -->
+        	<jvmarg value="-Xbootclasspath/p:${aj.sandbox}"/>
+            <jvmarg value="-Xbootclasspath/a:${aj.bootpath}"/>
+
+        	<classpath>
+                <pathelement path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar:${aj.sandbox}/security.jar"/>
+            </classpath>
+
+        	<!-- Specify custom SecurityManager that will be loaded
+        	     and woven very early -->
+        	<jvmarg value="-Djava.security.manager=NullSecurityManager"/>
+        	
+            <jvmarg value="-Daj.weaving.verbose=true"/>
+            <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
+        	
+<!--        	
+            <jvmarg value="-Dorg.aspectj.tracing.enabled=true"/>
+            <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
+            <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
+-->            
         </java>
     </target>
 

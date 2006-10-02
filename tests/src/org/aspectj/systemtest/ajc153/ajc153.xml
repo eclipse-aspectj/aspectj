@@ -493,4 +493,16 @@
       <compile files="SampleTest.java"/>
     </ajc-test>
 
+	<ajc-test dir="ltw" title="NPE with custom agent" keywords="ltw">
+        <compile files="java/net/URLClassLoader.java"/>
+        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
+        <compile files="NullSecurityManager.java" options="-outjar security.jar"/>
+		<ant file="ant.xml" target="NPE with custom agent" verbose="true">
+        	<stdout>
+            	<line text="Hello World!"/>
+        	</stdout>
+        </ant>
+    </ajc-test>
+
 </suite>

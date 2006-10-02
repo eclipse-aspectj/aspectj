@@ -129,6 +129,10 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 					" but found " + ipe.getSourceSignature(), 
 					expected, ipe.getSourceSignature());
   }
+
+  public void testNPEWithCustomAgent_pr158005() {
+	  runTest("NPE with custom agent");
+  }
   
     /////////////////////////////////////////
   public static Test suite() {
