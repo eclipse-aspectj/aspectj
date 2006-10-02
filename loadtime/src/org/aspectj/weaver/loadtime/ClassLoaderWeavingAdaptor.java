@@ -179,7 +179,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             //TODO av underoptimized: we will parse each XML once per CL that see it
 
             //TODO av dev mode needed ? TBD -Daj5.def=...
-            if (ClassLoader.getSystemClassLoader().equals(loader)) {
+            if (loader.equals(ClassLoader.getSystemClassLoader())) {
                 String file = System.getProperty("aj5.def", null);
                 if (file != null) {
                     info("using (-Daj5.def) " + file);
