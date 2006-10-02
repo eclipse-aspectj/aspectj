@@ -6207,9 +6207,6 @@
            <line text="around end!"/>
        </stdout>
      </run>
-<!--     
-     <ant file="ant.xml" target="ConcreteAsepectTest" verbose="true"/>
--->
    </ajc-test>
 
 </suite>
