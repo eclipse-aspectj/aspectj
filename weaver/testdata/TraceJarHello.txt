@@ -91,7 +91,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
   end static final String doit_aroundBody0(DynamicHelloWorld, String, java.util.List)
 
   static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List):
-                    INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
+                    INVOKESTATIC MyTrace.aspectOf ()LMyTrace;   (line 21)
                     ALOAD_0
                     BIPUSH 3
                     ANEWARRAY java.lang.Object

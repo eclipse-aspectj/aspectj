@@ -44,7 +44,7 @@ public class HelloWorld extends java.lang.Object:
                     INVOKESTATIC org.aspectj.runtime.reflect.Factory.makeJP (Lorg/aspectj/lang/JoinPoint$StaticPart;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Lorg/aspectj/lang/JoinPoint;
                     ASTORE 10
     method-execution(void HelloWorld.main(java.lang.String[]))
-    |               BIPUSH 2
+    |               BIPUSH 2   (line 8)
     |               ANEWARRAY java.lang.Object
     |               ASTORE 12
     |               ALOAD 12
@@ -271,7 +271,7 @@ public class HelloWorld extends java.lang.Object:
   end static final void main_aroundBody12(String[], org.aspectj.lang.JoinPoint)
 
   static final void main_aroundBody14(String[], org.aspectj.lang.JoinPoint):
-                    BIPUSH 2
+                    BIPUSH 2   (line 8)
                     ANEWARRAY java.lang.Object
                     ASTORE_2
                     ALOAD_2

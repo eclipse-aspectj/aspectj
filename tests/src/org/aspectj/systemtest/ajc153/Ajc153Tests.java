@@ -24,13 +24,13 @@ import org.aspectj.weaver.bcel.Utility;
 public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   //public void testGenericsProblem_pr151978() { runTest("generics problem");}
-//  public void testMissingLineNumbersInStacktraceAfter_pr145442() { runTest("missing line numbers in stacktrace after");}
-//  public void testMissingLineNumbersInStacktraceAround_pr145442() { runTest("missing line numbers in stacktrace around");}
   // public void testArgnamesAndJavac_pr148381() { runTest("argNames and javac");}
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
 //  public void testNoIllegalStateExceptionWithGenericInnerAspect_pr156058() { runTest("no IllegalStateException with generic inner aspect"); }
 //  public void testNegatedAnnotationMatchingProblem_pr153464() { runTest("negated annotation matching problem");}
+  public void testMissingLineNumbersInStacktraceAfter_pr145442() { runTest("missing line numbers in stacktrace after");}
+  public void testMissingLineNumbersInStacktraceAround_pr145442() { runTest("missing line numbers in stacktrace around");}
   public void testGenericArrays_pr158624() { runTest("generics and arrays"); }
   public void testMissingLineNumbersInStacktraceBefore_pr145442() { runTest("missing line numbers in stacktrace before");}
   public void testMissingLineNumbersInStacktraceBefore_pr145442_Binary() { runTest("missing line numbers in stacktrace before - binary");}

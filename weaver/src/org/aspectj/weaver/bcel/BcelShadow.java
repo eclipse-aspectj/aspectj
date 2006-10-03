@@ -3058,7 +3058,7 @@ public class BcelShadow extends Shadow {
         // invoke the advice
         advice.append(munger.getNonTestAdviceInstructions(this));
         advice.append(returnConversionCode);
-		if (getKind()==Shadow.MethodExecution) {
+		if (getKind()==Shadow.MethodExecution && linenumber>0) {
 			advice.getStart().addTargeter(new LineNumberTag(linenumber));
 		}
         

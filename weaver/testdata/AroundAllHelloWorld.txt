@@ -1,6 +1,6 @@
 public class HelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // HelloWorld this   (line 5)
+                    ALOAD_0     // LHelloWorld; this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void HelloWorld.<init>())
     |               BIPUSH 1
@@ -24,7 +24,7 @@ public class HelloWorld extends java.lang.Object:
                     ALOAD_0
                     ASTORE 5
     method-execution(void HelloWorld.main(java.lang.String[]))
-    |               BIPUSH 1
+    |               BIPUSH 1   (line 8)
     |               ANEWARRAY java.lang.Object
     |               ASTORE 6
     |               ALOAD 6

@@ -1,6 +1,6 @@
 public abstract class FancyHelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // FancyHelloWorld this   (line 7)
+                    ALOAD_0     // LFancyHelloWorld; this   (line 7)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void FancyHelloWorld.<init>())
     |               BIPUSH 1
@@ -24,7 +24,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
                     ALOAD_0
                     ASTORE 15
     method-execution(void FancyHelloWorld.main(java.lang.String[]))
-    |               BIPUSH 1
+    |               BIPUSH 1   (line 9)
     |               ANEWARRAY java.lang.Object
     |               ASTORE 16
     |               ALOAD 16
@@ -43,7 +43,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
 
   public static String getName():
     method-execution(java.lang.String FancyHelloWorld.getName())
-    |               BIPUSH 0
+    |               BIPUSH 0   (line 20)
     |               ANEWARRAY java.lang.Object
     |               ASTORE 10
     |               NEW FancyHelloWorld$AjcClosure21
@@ -101,7 +101,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
                     ASTORE_3   (line 9)
     finally -> E1
     | catch java.lang.Exception -> E0
-    | |             ALOAD_3     // java.io.PrintStream out   (line 11)
+    | |             ALOAD_3     // Ljava/io/PrintStream; out   (line 11)
     | |             LDC "bye"
     | |             ASTORE 5
     | |             ASTORE 7
@@ -127,8 +127,8 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | |             GOTO L0
     | catch java.lang.Exception -> E0
     |           E0: ASTORE 11   (line 12)
-    |               ALOAD_3     // java.io.PrintStream out   (line 13)
-    |               ALOAD 11     // java.lang.Exception e
+    |               ALOAD_3     // Ljava/io/PrintStream; out   (line 13)
+    |               ALOAD 11     // Ljava/lang/Exception; e
     |               ASTORE 13
     |               ASTORE 15
     | method-call(void java.io.PrintStream.println(java.lang.Object))
@@ -159,7 +159,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
                 L0: JSR L1
                     GOTO L2
                 L1: ASTORE 21
-                    ALOAD_3     // java.io.PrintStream out   (line 15)
+                    ALOAD_3     // Ljava/io/PrintStream; out   (line 15)
                     LDC "finally"
                     ASTORE 23
                     ASTORE 25
@@ -216,7 +216,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
   static final String getName_aroundBody20():
                     ICONST_0   (line 20)
                     ISTORE_0
-                    ILOAD_0     // int x   (line 21)
+                    ILOAD_0     // I x   (line 21)
                     LDC "name"
                     ASTORE_2
     method-call(int java.lang.String.hashCode())
@@ -235,7 +235,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               INVOKESTATIC org.aspectj.runtime.internal.Conversions.intValue (Ljava/lang/Object;)I
     method-call(int java.lang.String.hashCode())
                     IADD
-                    ISTORE_0     // int x
+                    ISTORE_0     // I x
                     LDC "name"   (line 22)
                     ASTORE 6
     constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
@@ -253,7 +253,7 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
     |               CHECKCAST java.lang.StringBuffer
     constructor-call(void java.lang.StringBuffer.<init>(java.lang.String))
-                    ILOAD_0     // int x
+                    ILOAD_0     // I x
                     ISTORE 10
                     ASTORE 12
     method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))

@@ -248,7 +248,7 @@
      <compile files="hello/HelloWorld.java hello/ThrowExceptionAfter.aj"/>
      <run class="hello.HelloWorld">
 		<stderr>
-	    	<line text="hello.HelloWorld.println(HelloWorld.java:14)"/>
+	    	<line text="hello.HelloWorld.println(HelloWorld.java:15)"/>
 	    	<line text="hello.HelloWorld.testStackTrace(HelloWorld.java:19)"/>
 	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
 		</stderr>
@@ -259,7 +259,7 @@
      <compile files="hello/HelloWorld.java hello/ThrowExceptionAround.aj" options="-XnoInline"/>
      <run class="hello.HelloWorld">
 		<stderr>
-	    	<line text="hello.HelloWorld.println(HelloWorld.java:14)"/>
+	    	<line text="hello.HelloWorld.println(HelloWorld.java:13)"/>
 	    	<line text="hello.HelloWorld.testStackTrace(HelloWorld.java:19)"/>
 	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
 		</stderr>

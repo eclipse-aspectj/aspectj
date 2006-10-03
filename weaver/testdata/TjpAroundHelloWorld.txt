@@ -44,7 +44,7 @@ public class HelloWorld extends java.lang.Object:
                     INVOKESTATIC org.aspectj.runtime.reflect.Factory.makeJP (Lorg/aspectj/lang/JoinPoint$StaticPart;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Lorg/aspectj/lang/JoinPoint;
                     ASTORE 8
     method-execution(void HelloWorld.main(java.lang.String[]))
-    |               BIPUSH 2
+    |               BIPUSH 2   (line 8)
     |               ANEWARRAY java.lang.Object
     |               ASTORE 9
     |               ALOAD 9
