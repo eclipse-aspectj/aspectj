@@ -109,7 +109,7 @@ public abstract class World implements Dump.INode {
     private boolean fastDelegateSupportEnabled = isASMAround;
 	private boolean runMinimalMemory = false;
 	private boolean shouldPipelineCompilation = true;
-	private boolean completeBinaryTypes = true;
+	private boolean completeBinaryTypes = false;
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 	
@@ -787,7 +787,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetPIPELINE_COMPILATION = "pipelineCompilation";
 	public final static String xsetPIPELINE_COMPILATION_DEFAULT = "true"; 
 	public final static String xsetCOMPLETE_BINARY_TYPES = "completeBinaryTypes";
-	public final static String xsetCOMPLETE_BINARY_TYPES_DEFAULT = "true"; 
+	public final static String xsetCOMPLETE_BINARY_TYPES_DEFAULT = "false"; 
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1177,8 +1177,8 @@ public abstract class World implements Dump.INode {
 
 				s = p.getProperty(xsetCOMPLETE_BINARY_TYPES,xsetCOMPLETE_BINARY_TYPES_DEFAULT);
 				completeBinaryTypes = s.equalsIgnoreCase("true");
-				if (!completeBinaryTypes) {
-					getMessageHandler().handleMessage(MessageUtil.info("[completeBinaryTypes=false] Completion of binary types deactivated"));
+				if (completeBinaryTypes) {
+					getMessageHandler().handleMessage(MessageUtil.info("[completeBinaryTypes=true] Completion of binary types activated"));
 				}
 				
 				s = p.getProperty(xsetRUN_MINIMAL_MEMORY,"false");

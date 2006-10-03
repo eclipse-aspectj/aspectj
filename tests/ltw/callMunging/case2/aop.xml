@@ -1,5 +1,5 @@
 <aspectj>
-<weaver options="-showWeaveInfo -verbose"/>
+<weaver options="-showWeaveInfo -verbose  -Xset:completeBinaryTypes=true"/>
 <aspects>
 <aspect name="X"/>
 </aspects>
