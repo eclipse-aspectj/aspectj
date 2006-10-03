@@ -43,6 +43,7 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
+import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.LoadInstruction;
 import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
@@ -412,10 +413,13 @@ public class BcelShadow extends Shadow {
 		this.range = range;
 	}
 	
+	private int sourceline = -1;
+	
     public int getSourceLine() {
     	// if the kind of join point for which we are a shadow represents
     	// a method or constructor execution, then the best source line is
     	// the one from the enclosingMethod declarationLineNumber if available.
+    	if (sourceline!=-1) return sourceline;
     	Kind kind = getKind();
     	if ( (kind == MethodExecution)  ||
     		 (kind == ConstructorExecution) ||
@@ -424,20 +428,23 @@ public class BcelShadow extends Shadow {
 			 (kind == PreInitialization) ||
 			 (kind == Initialization)) {
     		if (getEnclosingMethod().hasDeclaredLineNumberInfo()) {
-    			return getEnclosingMethod().getDeclarationLineNumber();
+    			sourceline= getEnclosingMethod().getDeclarationLineNumber();
+    			return sourceline;
     		}
     	}
     	
     	if (range == null) {
     		if (getEnclosingMethod().hasBody()) {
-    			return Utility.getSourceLine(getEnclosingMethod().getBody().getStart());
+    			sourceline= Utility.getSourceLine(getEnclosingMethod().getBody().getStart());
+    			return sourceline;
     		} else {
-    			return 0;
+    			sourceline= 0;
+    			return sourceline;
     		}
     	}
-    	int ret = Utility.getSourceLine(range.getStart());
-    	if (ret < 0) return 0;
-    	return ret;
+    	sourceline = Utility.getSourceLine(range.getStart());
+    	if (sourceline < 0) sourceline = 0;
+    	return sourceline;
     }
     
     // overrides
@@ -2930,6 +2937,7 @@ public class BcelShadow extends Shadow {
 
 		enclosingMethod.setCanInline(false);
 
+		int linenumber = getSourceLine();
         // MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
         LazyMethodGen callbackMethod = 
         	extractMethod(
@@ -3050,6 +3058,9 @@ public class BcelShadow extends Shadow {
         // invoke the advice
         advice.append(munger.getNonTestAdviceInstructions(this));
         advice.append(returnConversionCode);
+		if (getKind()==Shadow.MethodExecution) {
+			advice.getStart().addTargeter(new LineNumberTag(linenumber));
+		}
         
 		if (!hasDynamicTest) {
 			range.append(advice);
