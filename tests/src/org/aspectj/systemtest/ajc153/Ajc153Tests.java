@@ -134,7 +134,13 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  runTest("NPE with custom agent");
   }
   
-    /////////////////////////////////////////
+  public void testNoInvalidAbsoluteTypeNameWarning_pr156904_1() {runTest("ensure no invalidAbsoluteTypeName when do match - 1");}
+  public void testNoInvalidAbsoluteTypeNameWarning_pr156904_2() {runTest("ensure no invalidAbsoluteTypeName when do match - 2");}
+  public void testNoInvalidAbsoluteTypeNameWarning_pr156904_3() {runTest("ensure no invalidAbsoluteTypeName when do match - 3");}
+  public void testNoInvalidAbsoluteTypeNameWarning_pr156904_4() {runTest("ensure no invalidAbsoluteTypeName when do match - 4");}
+
+  
+  /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);
   }

@@ -494,6 +494,24 @@
       <compile files="SampleTest.java"/>
     </ajc-test>
 
+    <ajc-test dir="bugs153/pr156904/inSameFile" title="ensure no invalidAbsoluteTypeName when do match - 1">
+      <compile files="A.aj"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr156904/inDiffPkgAndImport" title="ensure no invalidAbsoluteTypeName when do match - 2">
+      <compile files="A.aj,Outer.java"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr156904/inSamePkg" title="ensure no invalidAbsoluteTypeName when do match - 3">
+      <compile files="A.aj,Outer.java"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr156904/inDiffPkgWithoutImport" title="ensure no invalidAbsoluteTypeName when do match - 4">
+      <compile files="A.aj,Outer.java">
+		<message kind="warning" line="5" text="no match for this type name: Outer [Xlint:invalidAbsoluteTypeName]"/>
+	  </compile>
+    </ajc-test>
+
 	<ajc-test dir="ltw" title="NPE with custom agent" keywords="ltw">
         <compile files="java/net/URLClassLoader.java"/>
         <compile files="HelloWorld.java" options="-outjar hello.jar"/>

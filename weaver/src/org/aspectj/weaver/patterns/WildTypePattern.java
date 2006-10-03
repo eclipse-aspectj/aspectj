@@ -687,7 +687,8 @@ public class WildTypePattern extends TypePattern {
 		
 		//System.out.println("resolve: " + cleanName);
 		//??? this loop has too many inefficiencies to count
-		resolvedTypeInTheWorld = lookupTypeInWorld(scope.getWorld(), fullyQualifiedName);
+		resolvedTypeInTheWorld = lookupTypeInWorldIncludingPrefixes(scope.getWorld(), fullyQualifiedName, scope.getImportedPrefixes());
+
 		if (resolvedTypeInTheWorld.isGenericWildcard()) {
 			type = resolvedTypeInTheWorld;
 		} else {
@@ -710,6 +711,27 @@ public class WildTypePattern extends TypePattern {
 			typeName = typeName.substring(0, lastDot) + '$' + typeName.substring(lastDot+1);
 		}
 		return type;
+	}
+	
+	/**
+	 * Searches the world for the ResolvedType with the given typeName. If one 
+	 * isn't found then for each of the supplied prefixes, it prepends the typeName
+	 * with the prefix and searches the world for the ResolvedType with this new name.
+	 * If one still isn't found then a MissingResolvedTypeWithKnownSignature is 
+	 * returned with the originally requested typeName (this ensures the typeName
+	 * makes sense).
+	 */
+	private ResolvedType lookupTypeInWorldIncludingPrefixes(World world, String typeName, String[] prefixes) {
+		ResolvedType ret = lookupTypeInWorld(world, typeName);
+		if (!ret.isMissing()) return ret; 
+		ResolvedType retWithPrefix = ret;
+		int counter = 0;
+		while (retWithPrefix.isMissing() && (counter < prefixes.length)) {
+			retWithPrefix = lookupTypeInWorld(world,prefixes[counter] + typeName);
+			counter++;
+		}
+		if (!retWithPrefix.isMissing()) return retWithPrefix;
+		return ret;
 	}
 	
 	private ResolvedType lookupTypeInWorld(World world, String typeName) {
