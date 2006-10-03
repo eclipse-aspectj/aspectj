@@ -29,6 +29,7 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
 //  public void testNoIllegalStateExceptionWithGenericInnerAspect_pr156058() { runTest("no IllegalStateException with generic inner aspect"); }
 //  public void testNegatedAnnotationMatchingProblem_pr153464() { runTest("negated annotation matching problem");}
+  public void testVisibilityProblem_pr149071()                 { runTest("visibility problem");}
   public void testMissingLineNumbersInStacktraceAfter_pr145442() { runTest("missing line numbers in stacktrace after");}
   public void testMissingLineNumbersInStacktraceAround_pr145442() { runTest("missing line numbers in stacktrace around");}
   public void testGenericArrays_pr158624() { runTest("generics and arrays"); }
@@ -63,7 +64,6 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testVerifyErrNoTypeCflowField_pr145693_1()       { runTest("verifyErrNoTypeCflowField"); }
   public void testVerifyErrInpathNoTypeCflowField_pr145693_2() { runTest("verifyErrInpathNoTypeCflowField"); }
   public void testCpathNoTypeCflowField_pr145693_3()           { runTest("cpathNoTypeCflowField"); }
-  // public void testVisibilityProblem_pr149071()                 { runTest("visibility problem");}
   // public void testAdviceNotWovenAspectPath_pr147841()          { runTest("advice not woven on aspectpath");}
   public void testGenericSignatures_pr148409()                 { runTest("generic signature problem"); }
 //  public void testBrokenIfArgsCflowAtAj_pr145018() { runTest("ataj crashing with cflow, if and args");}

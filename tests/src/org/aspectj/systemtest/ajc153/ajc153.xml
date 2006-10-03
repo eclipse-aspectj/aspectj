@@ -190,6 +190,7 @@
     
     <ajc-test dir="bugs153/pr149071" title="visibility problem">
       <compile files="AspectItd.java"/>
+      <run class="AspectItd"/>
     </ajc-test>    
     
     <ajc-test dir="bugs153/pr147841" title="advice not woven on aspectpath">

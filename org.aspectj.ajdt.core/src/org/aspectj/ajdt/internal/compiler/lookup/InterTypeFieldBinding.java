@@ -83,13 +83,19 @@ public class InterTypeFieldBinding extends FieldBinding {
 			// answer true if the receiverType is the declaringClass
 			// AND the invocationType and the declaringClass have a common enclosingType
 			
+			// see pr149071 - it has caused me to comment out this block below - what
+			// is it trying to achieve?  Possibly it should be using the scope.parentScope (the class scope of
+			// where the reference is being made) rather than the receiver type
+			
 			// Is the receiverType an innertype of the declaring type?
-			boolean receiverTypeIsSameOrInsideDeclaringType = receiverType == declaringType;
-			ReferenceBinding typeToCheckNext = receiverType.enclosingType();
-			while (!receiverTypeIsSameOrInsideDeclaringType && typeToCheckNext!=null) {
-				if (typeToCheckNext==declaringType) receiverTypeIsSameOrInsideDeclaringType=true;
-			}
-			if (!receiverTypeIsSameOrInsideDeclaringType) return false;
+//			boolean receiverTypeIsSameOrInsideDeclaringType = receiverType == declaringType;
+//			ReferenceBinding typeToCheckNext = receiverType.enclosingType();
+//			while (!receiverTypeIsSameOrInsideDeclaringType && typeToCheckNext!=null) {
+//				if (typeToCheckNext==declaringType) receiverTypeIsSameOrInsideDeclaringType=true;
+//			}
+//			if (!receiverTypeIsSameOrInsideDeclaringType) return false;
+			
+			
 			// the code above replaces this line: (pr118698)
 //			if (receiverType != declaringType) return false;
 	
