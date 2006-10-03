@@ -30,8 +30,18 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return new File("../tests/src/org/aspectj/systemtest/ajc150/ltw/ltw.xml");
   }
   
-
-
+  public void testInclusionAndPattern() {
+    runTest("Inclusion and patterns");  		
+  }
+	
+  public void testExclusionAndPattern() {
+	runTest("Exclusion and patterns");  		
+  }
+	  	
+  public void testAndPatternsAspects() {
+	runTest("And patterns aspects");  		
+  }
+	  	  	
   	public void test001(){
   		runTest("Ensure 1st aspect is rewoven when weaving 2nd aspect");
   	}

@@ -193,17 +193,17 @@ public class DocumentParser extends DefaultHandler {
         } else if (ASPECTS_ELEMENT.equals(qName)) {
             m_inAspects = true;
         } else if (INCLUDE_ELEMENT.equals(qName) && m_inWeaver) {
-            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            String typePattern = getWithinAttribute(attributes);
             if (!isNull(typePattern)) {
                 m_definition.getIncludePatterns().add(typePattern);
             }
         } else if (EXCLUDE_ELEMENT.equals(qName) && m_inWeaver) {
-            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            String typePattern = getWithinAttribute(attributes);
             if (!isNull(typePattern)) {
                 m_definition.getExcludePatterns().add(typePattern);
             }
         } else if (DUMP_ELEMENT.equals(qName) && m_inWeaver) {
-            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            String typePattern = getWithinAttribute(attributes);
             if (!isNull(typePattern)) {
                 m_definition.getDumpPatterns().add(typePattern);
             }
@@ -212,12 +212,12 @@ public class DocumentParser extends DefaultHandler {
             	m_definition.setDumpBefore(true);
             }
         } else if (EXCLUDE_ELEMENT.equals(qName) && m_inAspects) {
-            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            String typePattern = getWithinAttribute(attributes);
             if (!isNull(typePattern)) {
                 m_definition.getAspectExcludePatterns().add(typePattern);
             }
         } else if (INCLUDE_ELEMENT.equals(qName) && m_inAspects) {
-            String typePattern = attributes.getValue(WITHIN_ATTRIBUTE);
+            String typePattern = getWithinAttribute(attributes);
             if (!isNull(typePattern)) {
                 m_definition.getAspectIncludePatterns().add(typePattern);
             }
@@ -226,6 +226,10 @@ public class DocumentParser extends DefaultHandler {
         }
         super.startElement(uri, localName, qName, attributes);
     }
+
+	private String getWithinAttribute(Attributes attributes) {
+		return replaceXmlAnd(attributes.getValue(WITHIN_ATTRIBUTE));
+	}
 
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (CONCRETE_ASPECT_ELEMENT.equals(qName)) {

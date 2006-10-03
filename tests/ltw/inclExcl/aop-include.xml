@@ -1,0 +1,10 @@
+<aspectj>
+<weaver>
+<include within="pkg..* AND !pkg.sub..*"/>
+<dump within="pkg..* AND !pkg.sub..*"/>
+</weaver>
+<aspects>
+<aspect name="tracing.Tracer"/>
+</aspects>
+</aspectj>
+

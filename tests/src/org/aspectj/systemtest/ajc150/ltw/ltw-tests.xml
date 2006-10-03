@@ -593,5 +593,50 @@
         	</stdout>
         </ant>
     </ajc-test>
+      
+	<ajc-test dir="ltw/inclExcl" title="Inclusion and patterns" keywords="ltw">
+        <compile
+        	files="pkg\sub\Foo.aj, pkg\Main.aj"
+        	options="-outjar base.jar"
+        />
+        <compile
+        	files="tracing/Tracer.aj"
+        />
+        <run class="pkg.Main" ltw="aop-include.xml">
+            <stderr>
+                <line text="execution(void pkg.Main.foo())"/>
+                <line text="Main.class"/>
+            </stderr>
+        </run>
+    </ajc-test>
+	<ajc-test dir="ltw/inclExcl" title="Exclusion and patterns" keywords="ltw">
+        <compile
+        	files="pkg\sub\Foo.aj, pkg\Main.aj"
+        	options="-outjar base.jar"
+        />
+        <compile
+        	files="tracing/Tracer.aj"
+        />
+        <run class="pkg.Main" ltw="aop-exclude.xml">
+            <stderr>
+                <line text="execution(void pkg.sub.Foo.foo())"/>
+            </stderr>
+        </run>
+    </ajc-test>    
+	<ajc-test dir="ltw/inclExcl" title="And patterns aspects" keywords="ltw">
+        <compile
+        	files="pkg\sub\Foo.aj, pkg\Main.aj"
+        	options="-outjar base.jar"
+        />
+        <compile
+        	files="tracing/Tracer.aj, tracing/staticinit/Tracer.aj, tracing/staticinit/sub/Tracer.aj"
+        />
+        <run class="pkg.Main" ltw="aop-aspectinclexcl.xml">
+            <stderr>
+                <line text="staticinitialization(pkg.Main.&lt;clinit&gt;)"/>
+                <line text="staticinitialization(pkg.sub.Foo.&lt;clinit&gt;)"/>
+            </stderr>
+        </run>
+    </ajc-test>       
     
     

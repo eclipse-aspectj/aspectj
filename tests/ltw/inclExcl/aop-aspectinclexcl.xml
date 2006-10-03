@@ -1,0 +1,10 @@
+<aspectj>
+<aspects>
+<aspect name="tracing.Tracer"/>
+<aspect name="tracing.staticinit.Tracer"/>
+<aspect name="tracing.staticinit.sub.Tracer"/>
+<include within="tracing..* AND !tracing.staticinit.sub..*"/>
+<exclude within="tracing..* AND !tracing.staticinit..*"/>
+</aspects>
+</aspectj>
+

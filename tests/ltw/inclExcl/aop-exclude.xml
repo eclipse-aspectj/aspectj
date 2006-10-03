@@ -1,0 +1,9 @@
+<aspectj>
+<weaver>
+<exclude within="pkg..* AND !pkg.sub..*"/>
+</weaver>
+<aspects>
+<aspect name="tracing.Tracer"/>
+</aspects>
+</aspectj>
+
