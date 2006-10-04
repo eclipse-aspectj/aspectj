@@ -2,6 +2,26 @@
 
 <!-- AspectJ v1.5.3 Tests -->
 <suite>
+     <ajc-test dir="bugs153/pr159143" title="declare method annotations">
+        <compile files="DeclareMethodAnnotation.java" options="-1.5">
+            <message line="16" kind="warning" text="all"/>
+            <message line="17" kind="warning" text="all"/>
+            <message line="18" kind="warning" text="all"/>
+            <message line="22" kind="warning" text="all"/>
+            <message line="23" kind="warning" text="all"/>
+            <message line="24" kind="warning" text="all"/>
+            <message line="27" kind="warning" text="all"/>
+            <message line="28" kind="warning" text="all"/>
+            <message line="29" kind="warning" text="all"/>
+            <message line="33" kind="warning" text="all"/>
+            <message line="34" kind="warning" text="all"/>
+            <message line="35" kind="warning" text="all"/>
+            <message line="39" kind="warning" text="all"/>
+            <message line="40" kind="warning" text="all"/>
+            <message line="41" kind="warning" text="all"/>
+        </compile>
+    </ajc-test>
+    
 	<ajc-test dir="bugs153/pr148908" title="ensure getSourceSignature correct with static field">
       <compile files="BadInterface.java" options="-emacssym"/>
     </ajc-test> 

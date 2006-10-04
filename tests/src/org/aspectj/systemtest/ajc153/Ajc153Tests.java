@@ -29,6 +29,7 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
 //  public void testNoIllegalStateExceptionWithGenericInnerAspect_pr156058() { runTest("no IllegalStateException with generic inner aspect"); }
 //  public void testNegatedAnnotationMatchingProblem_pr153464() { runTest("negated annotation matching problem");}
+  public void testDeclareMethodAnnotations_pr159143() { runTest("declare method annotations");}
   public void testVisibilityProblem_pr149071()                 { runTest("visibility problem");}
   public void testMissingLineNumbersInStacktraceAfter_pr145442() { runTest("missing line numbers in stacktrace after");}
   public void testMissingLineNumbersInStacktraceAround_pr145442() { runTest("missing line numbers in stacktrace around");}
