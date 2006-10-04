@@ -228,6 +228,7 @@
                 <line text="info register classloader"/>
                 <line text="info using"/>
                 <line text="info define aspect ConcreteAspect"/>
+                <line text="debug weaving 'ConcreteAspect'"/>
                 <line text="debug generating class 'ConcreteAspect'"/>
                 <line text="debug weaving 'Main'"/>
                 <line text="AbstractSuperAspect.before_test1"/>
