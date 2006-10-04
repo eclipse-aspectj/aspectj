@@ -64,7 +64,8 @@ public class Aj implements ClassPreProcessor {
             return bytes;
         }
 
-        if (trace.isTraceEnabled()) trace.enter("preProcess",this,new Object[] {className, bytes, loader, Thread.currentThread().getContextClassLoader()});
+        if (trace.isTraceEnabled()) trace.enter("preProcess",this,new Object[] {className, bytes, loader});
+        if (trace.isTraceEnabled()) trace.event("preProcess",this,new Object[] {loader.getParent(), Thread.currentThread().getContextClassLoader()});
 
         try {
         	synchronized (loader) {

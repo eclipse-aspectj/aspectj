@@ -77,6 +77,8 @@ import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
 
 public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
@@ -86,6 +88,8 @@ public class BcelWorld extends World implements Repository {
     
 	//private ClassPathManager aspectPath = null;
 	// private List aspectPathEntries;
+
+    private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWorld.class);
 	
     // ---- constructors
 
@@ -347,7 +351,9 @@ public class BcelWorld extends World implements Repository {
 	private JavaClass lookupJavaClass(ClassPathManager classPath, String name) {
         if (classPath == null) {
             try {
-                return delegate.loadClass(name);
+                JavaClass jc = delegate.loadClass(name);
+            	if (trace.isTraceEnabled()) trace.event("lookupJavaClass",this,new Object[] { name, jc });
+                return jc;
             } catch (ClassNotFoundException e) {
                 return null;
             }
