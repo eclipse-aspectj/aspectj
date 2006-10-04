@@ -1,0 +1,14 @@
+<aspectj>
+	<aspects>
+		<aspect name="TestITD"/>
+	
+		<concrete-aspect name="ConcreteAspectWithITD" extends="AbstractSuperAspectWithInterface">
+			<pointcut name="scope" expression="!within(AbstractSuperAspectWithInterface+)"/>
+        </concrete-aspect>
+	</aspects>
+	
+	<weaver options="-verbose -debug -showWeaveInfo">
+		<!--<dump within="*"/>-->
+	</weaver>
+</aspectj>
+	

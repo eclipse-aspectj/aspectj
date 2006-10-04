@@ -40,6 +40,8 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.bcel.BcelWeaver;
+import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.Utility;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.ltw.LTWWorld;
@@ -72,6 +74,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
     private StringBuffer namespace;
     private IWeavingContext weavingContext;
+
+    private List concreteAspects = new ArrayList();
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassLoaderWeavingAdaptor.class);
     
@@ -156,6 +160,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             
             // after adding aspects
             weaver.prepareForWeave();
+            boolean success = weaveAndDefineConceteAspects();
+            if (!success) disable();
         }
         else {
         	bcelWorld = null;
@@ -410,11 +416,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                         success = false;
                         break;
                     }
-                    this.generatedClassHandler.acceptClass(
-                            concreteAspect.name,
-                            gen.getBytes()
-                    );
-                    /*ResolvedType aspect = */weaver.addLibraryAspect(concreteAspect.name);
+                    
+              	  	((BcelWorld)weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(concreteAspect.name, gen.getBytes()));
+
+              	  	concreteAspects.add(gen);
+              	  	
+                    weaver.addLibraryAspect(concreteAspect.name);
 
                     //generate key for SC
                     if(namespace==null){
@@ -425,7 +432,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 }
             }
         }
-//        System.out.println("ClassLoaderWeavingAdaptor.registerAspects() classloader=" + weavingContext.getClassLoaderName() + ", namespace=" + namespace);
         
         /* We couldn't register one or more aspects so disable the adaptor */
         if (!success) {
@@ -442,6 +448,29 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         if (trace.isTraceEnabled()) trace.exit("registerAspects",isEnabled());
     }
 
+    private boolean weaveAndDefineConceteAspects () {
+    	if (trace.isTraceEnabled()) trace.enter("weaveAndDefineConceteAspects",this,concreteAspects);
+    	boolean success = true;
+
+    	for (Iterator iterator = concreteAspects.iterator(); iterator.hasNext();) {
+    		ConcreteAspectCodeGen gen = (ConcreteAspectCodeGen)iterator.next();
+        	String name = gen.getClassName();
+        	byte[] bytes = gen.getBytes();
+
+        	try {
+        		byte[] newBytes = weaveClass(name, bytes);
+                this.generatedClassHandler.acceptClass(name,newBytes);
+        	}
+        	catch (IOException ex) {
+        		trace.error("weaveAndDefineConceteAspects",ex);
+				error("exception weaving aspect '" + name + "'",ex);
+        	}
+        }
+        
+        if (trace.isTraceEnabled()) trace.exit("weaveAndDefineConceteAspects",success);
+        return success;
+    }
+    
     /**
      * Register the include / exclude filters
      * We duplicate simple patterns in startWith filters that will allow faster matching without ResolvedType

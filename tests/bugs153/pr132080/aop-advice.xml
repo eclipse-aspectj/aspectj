@@ -1,0 +1,11 @@
+<aspectj>
+	<aspects>
+		<aspect name="TestAdvice"/>
+	
+		<concrete-aspect name="ConcreteAspectWithAdvice" extends="AbstractSuperAspect">
+			<pointcut name="scope" expression="!within(AbstractSuperAspect+)"/>
+        </concrete-aspect>
+	</aspects>
+	<weaver options="-verbose -debug -showWeaveInfo"/>
+</aspectj>
+	

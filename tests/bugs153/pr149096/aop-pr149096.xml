@@ -1,6 +1,6 @@
 <aspectj>
   <weaver>
-    <dump within="*"/>
+    <!--<dump within="*"/>-->
   </weaver>
   <aspects>
     <concrete-aspect name="TestTracing" extends="SimpleTracing">

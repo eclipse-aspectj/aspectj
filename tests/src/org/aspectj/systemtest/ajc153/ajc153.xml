@@ -544,4 +544,79 @@
         </ant>
     </ajc-test>
 
+	<ajc-test dir="bugs153/pr132080"
+      title="Weave concrete sub-aspect with advice"
+      keywords="aop.xml">
+        <compile
+        	files="HelloWorld.java"
+        >
+        </compile>	
+        <compile files="AbstractSuperAspect.aj"/>
+        <compile files="TestAdvice.aj"/>
+        <run class="HelloWorld" ltw="aop-advice.xml">
+        	<stdout>
+                <line text="? ConcreteAspectWithAdvice()"/>
+                <line text="? void HelloWorld.main(String[])"/>
+                <line text="? HelloWorld()"/>
+                <line text="Hello World!"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs153/pr132080"
+      title="Weave concrete sub-aspect with ITD"
+      keywords="aop.xml">
+<!--      
+        <compile files="AbstractSuperAspectWithInterface.aj, TestInterface.java" options="-verbose"/>
+        <compile files="HelloWorld.java, TestITD.aj, ConcreteAspectWithITD.aj" options="-verbose">
+            <message line="3" kind="warning" text="this affected type is not exposed to the weaver: AbstractSuperAspectWithInterface"/>
+        </compile>
+        <run class="HelloWorld">
+        	<stdout>
+                <line text="? void TestITD.interfaceMethod()"/>
+                <line text="? void HelloWorld.main(String[])"/>
+                <line text="Hello World!"/>
+            </stdout>
+        </run>
+-->        
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractSuperAspectWithInterface.aj, TestInterface.java"/>
+        <compile files="TestITD.aj">
+            <message line="3" kind="warning" text="this affected type is not exposed to the weaver: AbstractSuperAspectWithInterface"/>
+        </compile>
+        <run class="HelloWorld" ltw="aop-itd.xml">
+        	<stdout>
+                <line text="? void TestITD.interfaceMethod()"/>
+                <line text="? void HelloWorld.main(String[])"/>
+                <line text="Hello World!"/>
+            </stdout>
+        </run>
+
+    </ajc-test>
+
+	<ajc-test dir="bugs153/pr132080" title="Weave concrete sub-aspect with around closure" 
+		keywords="aop.xml">
+
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractSuperAspect.aj"/>
+        <compile files="TestAroundClosure.aj"/>
+        <run class="HelloWorld" ltw="aop-aroundclosure.xml">
+        	<stdout>
+                <line text="&rt; ConcreteAspectWithAroundClosure()"/>
+                <line text="&lt; ConcreteAspectWithAroundClosure()"/>
+                <line text="? void HelloWorld.main(String[])"/>
+                <line text="&rt; HelloWorld()"/>
+                <line text="&lt; HelloWorld()"/>
+                <line text="Hello World!"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr149096" title="Weave concrete sub-aspect with cflow">
+		<compile files="SimpleTracing.aj" outjar="out.jar"/>
+		<compile files="TestMain.aj"/>
+		<run class="TestMain" ltw="aop-pr149096.xml"/>
+    </ajc-test>
+    
+
 </suite>

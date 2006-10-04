@@ -1,0 +1,11 @@
+<aspectj>
+	<aspects>
+		<aspect name="TestAroundClosure"/>
+	
+		<concrete-aspect name="ConcreteAspectWithAroundClosure" extends="AbstractSuperAspect">
+			<pointcut name="scope" expression="!within(AbstractSuperAspect+)"/>
+        </concrete-aspect>
+	</aspects>
+	<weaver options="-verbose -debug -showWeaveInfo -XnoInline"/>
+</aspectj>
+	

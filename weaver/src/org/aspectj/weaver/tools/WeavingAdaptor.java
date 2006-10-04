@@ -418,6 +418,10 @@ public class WeavingAdaptor implements IMessageContext {
 		return MessageUtil.error(messageHandler,message);
 	}
 	
+	protected boolean error (String message, Throwable th) {
+        return messageHandler.handleMessage(new Message(message, IMessage.ERROR, th, null));
+	}
+	
 	public String getContextId () {
 		return "WeavingAdaptor";
 	}

@@ -265,6 +265,10 @@ public class ConcreteAspectCodeGen {
     	  return false;
     }
 
+    public String getClassName () {
+    	return m_concreteAspect.name;
+    }
+    
     /**
      * Build the bytecode for the concrete aspect
      *

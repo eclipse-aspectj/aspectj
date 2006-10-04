@@ -134,6 +134,22 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testNPEWithCustomAgent_pr158005() {
 	  runTest("NPE with custom agent");
   }
+
+  public void testWeaveConcreteSubaspectWithAdvice_pr132080() {
+	  runTest("Weave concrete sub-aspect with advice");
+  }
+
+  public void testWeaveConcreteSubaspectWithITD_pr132080() {
+	  runTest("Weave concrete sub-aspect with ITD");
+  }
+
+  public void testWeaveConcreteSubaspectWithAroundClosure_pr132080() {
+	  runTest("Weave concrete sub-aspect with around closure");
+  }
+
+  public void testWeaveConcreteSubaspectWithCflow_pr132080() {
+	  runTest("Weave concrete sub-aspect with cflow");
+  }
   
   public void testNoInvalidAbsoluteTypeNameWarning_pr156904_1() {runTest("ensure no invalidAbsoluteTypeName when do match - 1");}
   public void testNoInvalidAbsoluteTypeNameWarning_pr156904_2() {runTest("ensure no invalidAbsoluteTypeName when do match - 2");}
