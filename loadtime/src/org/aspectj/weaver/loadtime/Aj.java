@@ -78,12 +78,13 @@ public class Aj implements ClassPreProcessor {
         		if (trace.isTraceEnabled()) trace.exit("preProcess",newBytes);
                 return newBytes;
 			}
-        } catch (Exception ex) {
-    		trace.error("preProcess",ex);
+        
+        /* Don't like to do this but JVMTI swallows all exceptions */
+        } catch (Throwable th) {
+    		trace.error("preProcess",th);
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
             // would make sense at least in test f.e. see TestHelper.handleMessage()
-            ex.printStackTrace();
-    		if (trace.isTraceEnabled()) trace.exit("preProcess",ex);
+    		if (trace.isTraceEnabled()) trace.exit("preProcess",th);
             return bytes;
         }
     }

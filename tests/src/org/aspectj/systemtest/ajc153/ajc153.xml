@@ -544,6 +544,27 @@
         </ant>
     </ajc-test>
 
+	<ajc-test dir="bugs153/pr158957" title="NPE with LTW, pointcut library and missing aspect dependency" keywords="ltw">
+        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="Missing.java" options="-outjar missing.jar"/>
+        <compile files="Tracing.aj, PointcutLibrary.aj" options="-Xlint:ignore -1.5 -outxml -outjar tracing.jar" classpath="hello.jar,missing.jar"/>
+<!--        
+		<run class="HelloWorld" ltw="aop.xml">
+	        <stdout>
+    	      <line text="? main"/>
+    	      <line text="Hello World!"/>
+        	</stdout>
+        </run>
+-->        
+		<ant file="ant.xml" target="NPE with LTW, pointcut library and missing aspect dependency" verbose="true">
+	        <stdout>
+    	      <line text="? main"/>
+    	      <line text="Hello World!"/>
+        	</stdout>
+        </ant>
+
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr132080"
       title="Weave concrete sub-aspect with advice"
       keywords="aop.xml">
@@ -618,5 +639,25 @@
 		<run class="TestMain" ltw="aop-pr149096.xml"/>
     </ajc-test>
     
+	<ajc-test dir="bugs153/pr158957" title="NPE with LTW, pointcut library and missing aspect dependency" keywords="ltw">
+        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="Missing.java" options="-outjar missing.jar"/>
+        <compile files="Tracing.aj, PointcutLibrary.aj" options="-Xlint:ignore -1.5 -outxml -outjar tracing.jar" classpath="hello.jar,missing.jar"/>
+<!--        
+		<run class="HelloWorld" ltw="aop.xml">
+	        <stdout>
+    	      <line text="? main"/>
+    	      <line text="Hello World!"/>
+        	</stdout>
+        </run>
+-->        
+		<ant file="ant.xml" target="NPE with LTW, pointcut library and missing aspect dependency" verbose="true">
+	        <stdout>
+    	      <line text="? println"/>
+    	      <line text="Hello World!"/>
+        	</stdout>
+        </ant>
+
+    </ajc-test>
 
 </suite>

@@ -98,9 +98,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     }
 
     protected void initialize (final ClassLoader classLoader, IWeavingContext context) {
-        //super(null);// at this stage we don't have yet a generatedClassHandler to define to the VM the closures
     	if (initialized) return;
 
+    	boolean success = true;
     	if (trace.isTraceEnabled()) trace.enter("initialize",this,new Object[] { classLoader, context });
 
     	this.weavingContext = context;
@@ -131,8 +131,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         };
 
         List definitions = parseDefinitions(classLoader);
-        if (!isEnabled()) {
-        	if (trace.isTraceEnabled()) trace.exit("initialize",false);
+        if (definitions.isEmpty()) {
+        	disable(); // TODO maw Needed to ensure messages are flushed
+        	if (trace.isTraceEnabled()) trace.exit("initialize",definitions);
         	return;
         }
         
@@ -144,26 +145,25 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     }
                 }
         );
-//            //TODO this AJ code will call
-//            //org.aspectj.apache.bcel.Repository.setRepository(this);
-//            //ie set some static things
-//            //==> bogus as Bcel is expected to be
-//            org.aspectj.apache.bcel.Repository.setRepository(new ClassLoaderRepository(loader));
 
         weaver = new BcelWeaver(bcelWorld);
 
         // register the definitions
-        registerDefinitions(weaver, classLoader, definitions);
-        if (isEnabled()) {
-
-            //bcelWorld.setResolutionLoader(loader.getParent());//(ClassLoader)null);//
+        success = registerDefinitions(weaver, classLoader, definitions);
+        if (success) {
             
             // after adding aspects
             weaver.prepareForWeave();
-            boolean success = weaveAndDefineConceteAspects();
-            if (!success) disable();
+            
+            enable(); // TODO maw Needed to ensure messages are flushed
+            success = weaveAndDefineConceteAspects();
+        }
+
+        if (success) {
+            enable();
         }
         else {
+        	disable();
         	bcelWorld = null;
         	weaver = null;
         }
@@ -179,6 +179,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @param loader
      */
     private List parseDefinitions(final ClassLoader loader) {
+        if (trace.isTraceEnabled()) trace.enter("parseDefinitions",this,loader);
+
         List definitions = new ArrayList();
     	try {
             info("register classloader " + getClassLoaderName(loader));
@@ -194,7 +196,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             }
 
             String resourcePath = System.getProperty("org.aspectj.weaver.loadtime.configuration",AOP_XML);
-            trace.event("parseDefinitions",this,resourcePath);
+            if (trace.isTraceEnabled()) trace.event("parseDefinitions",this,resourcePath);
     		StringTokenizer st = new StringTokenizer(resourcePath,";");
 
     		while(st.hasMoreTokens()){
@@ -204,7 +206,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     			Set seenBefore = new HashSet();
     			while (xmls.hasMoreElements()) {
     			    URL xml = (URL) xmls.nextElement();
-    	            trace.event("parseDefinitions",this,xml);
+    			    if (trace.isTraceEnabled()) trace.event("parseDefinitions",this,xml);
     			    if (!seenBefore.contains(xml)) {
     			    	info("using configuration " + weavingContext.getFile(xml));
     			    	definitions.add(DocumentParser.parse(xml));
@@ -216,28 +218,36 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     			}
     		}
     		if (definitions.isEmpty()) {
-                disable();// will allow very fast skip in shouldWeave()
         		info("no configuration found. Disabling weaver for class loader " + getClassLoaderName(loader));
     		}
         } catch (Exception e) {
-            disable();// will allow very fast skip in shouldWeave()
+        	definitions.clear();
             warn("parse definitions failed",e);
         }
+        
+        if (trace.isTraceEnabled()) trace.exit("parseDefinitions",definitions);
 		return definitions;
     }
         
-    private void registerDefinitions(final BcelWeaver weaver, final ClassLoader loader, List definitions) {
-    	try {
+    private boolean registerDefinitions(final BcelWeaver weaver, final ClassLoader loader, List definitions) {
+        if (trace.isTraceEnabled()) trace.enter("registerDefinitions",this,definitions);
+        boolean success = true;
+
+        try {
             registerOptions(weaver, loader, definitions);
             registerAspectExclude(weaver, loader, definitions);
             registerAspectInclude(weaver, loader, definitions);
-            registerAspects(weaver, loader, definitions);
+            success = registerAspects(weaver, loader, definitions);
             registerIncludeExclude(weaver, loader, definitions);
             registerDump(weaver, loader, definitions);
-        } catch (Exception e) {
-            disable();// will allow very fast skip in shouldWeave()
-            warn("register definition failed",(e instanceof AbortException)?null:e);
+        } catch (Exception ex) {
+            trace.error("register definition failed",ex);
+            success = false;
+            warn("register definition failed",(ex instanceof AbortException)?null:ex);
         }
+        
+        if (trace.isTraceEnabled()) trace.exit("registerDefinitions",success);
+        return success;
     }
 
     private String getClassLoaderName (ClassLoader loader) {
@@ -370,7 +380,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @param loader
      * @param definitions
      */
-    private void registerAspects(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+    private boolean registerAspects(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
     	if (trace.isTraceEnabled()) trace.enter("registerAspects",this, new Object[] { weaver, loader, definitions} );
     	boolean success = true;
     	
@@ -435,17 +445,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         
         /* We couldn't register one or more aspects so disable the adaptor */
         if (!success) {
-        	disable();
     		warn("failure(s) registering aspects. Disabling weaver for class loader " + getClassLoaderName(loader));
         }
         
         /* We didn't register any aspects so disable the adaptor */
         else if (namespace == null) {
-        	disable();
+        	success = false;
     		info("no aspects registered. Disabling weaver for class loader " + getClassLoaderName(loader));
         }
 
-        if (trace.isTraceEnabled()) trace.exit("registerAspects",isEnabled());
+        if (trace.isTraceEnabled()) trace.exit("registerAspects",success);
+        return success;
     }
 
     private boolean weaveAndDefineConceteAspects () {

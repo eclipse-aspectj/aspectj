@@ -74,7 +74,7 @@ public class WeavingAdaptor implements IMessageContext {
 	public static final String SHOW_WEAVE_INFO_PROPERTY = "org.aspectj.weaver.showWeaveInfo"; 
 	public static final String TRACE_MESSAGES_PROPERTY = "org.aspectj.tracing.messages";
 
-	private boolean enabled = true;
+	private boolean enabled = false;
 	protected boolean verbose = getVerbose();
 	protected BcelWorld bcelWorld;
 	protected BcelWeaver weaver;
@@ -169,6 +169,8 @@ public class WeavingAdaptor implements IMessageContext {
 
 		weaver = new BcelWeaver(bcelWorld);
 		registerAspectLibraries(aspectPath);
+		
+		enabled = true;
 	}
 
 	protected void createMessageHandler() {
@@ -201,6 +203,11 @@ public class WeavingAdaptor implements IMessageContext {
 		if (trace.isTraceEnabled()) trace.exit("disable");
 	}
 	
+	protected void enable () {
+		enabled = true;
+		messageHolder.flushMessages();
+	}
+	
 	protected boolean isEnabled () {
 		return enabled;
 	}
@@ -227,6 +234,8 @@ public class WeavingAdaptor implements IMessageContext {
      * @exception IOException weave failed
 	 */
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
+		if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name, bytes});
+
 		if (enabled) {
 			try {
 				delegateForCurrentClass=null; 
@@ -258,6 +267,7 @@ public class WeavingAdaptor implements IMessageContext {
 			}
 		}
 
+		if (trace.isTraceEnabled()) trace.exit("weaveClass",bytes);
         return bytes;
 	}
 

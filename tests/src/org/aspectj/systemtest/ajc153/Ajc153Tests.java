@@ -150,6 +150,10 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testWeaveConcreteSubaspectWithCflow_pr132080() {
 	  runTest("Weave concrete sub-aspect with cflow");
   }
+
+  public void testNPEWithLTWPointcutLibraryAndMissingAspectDependency_pr158957 () {
+	  runTest("NPE with LTW, pointcut library and missing aspect dependency");
+  }
   
   public void testNoInvalidAbsoluteTypeNameWarning_pr156904_1() {runTest("ensure no invalidAbsoluteTypeName when do match - 1");}
   public void testNoInvalidAbsoluteTypeNameWarning_pr156904_2() {runTest("ensure no invalidAbsoluteTypeName when do match - 2");}

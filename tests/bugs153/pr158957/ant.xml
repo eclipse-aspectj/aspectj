@@ -1,0 +1,27 @@
+<!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
+<project name="ltw">
+
+    <!-- using this we can debug the forked VM -->
+    <property
+        name="jdwp"
+        value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+	<property name="aj.bootpath" refid="aj.path"/>
+
+    <target name="NPE with LTW, pointcut library and missing aspect dependency">
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <classpath>
+            	<!--<pathelement path="${aj.sandbox}/hello.jar:${aj.sandbox}/tracing.jar:${aj.sandbox}/missing.jar"/>-->
+            	<pathelement path="${aj.sandbox}/hello.jar:${aj.sandbox}/tracing.jar"/>
+            </classpath>
+            <jvmarg value="-Daj.weaving.verbose=true"/>
+            <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="-Dorg.aspectj.tracing.enabled=true"/>
+            <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
+            <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
+</project>
