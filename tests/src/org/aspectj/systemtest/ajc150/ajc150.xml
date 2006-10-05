@@ -311,7 +311,12 @@
     </ajc-test>
     
     <ajc-test dir="bugs150/pr120474" pr="120474" title="Dollar classes">
-     <compile files="$Proxy4.java,X.aj"/>
+     <compile files="$Proxy4.java"/>
+     <compile files="X.aj" options="-outxml"/>
+     <run class="$Proxy4" ltw="aop.xml">
+        <stdout>
+        </stdout>
+     </run>
     </ajc-test>
         
     <ajc-test dir="bugs150/pr111667" pr="111667" title="lint for advice sorting">

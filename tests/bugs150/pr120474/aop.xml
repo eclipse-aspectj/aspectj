@@ -1,0 +1,5 @@
+<aspectj>
+	<weaver options="-verbose -debug">
+		<exclude within="$Proxy*"/>
+	</weaver>
+</aspectj>
