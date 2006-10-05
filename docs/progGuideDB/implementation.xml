@@ -298,6 +298,16 @@
 </sect1>
 
 <sect1>
+  <title>Annotation-style Notes</title>
+  <para>Writing aspects in annotation-style is subject to the same
+      bytecode limitations since the binary aspects take the same
+      form and are woven in the same way.  However, the implementation
+      differences (e.g., the mechanism for implementing around advice) 
+      may be apparent at runtime.  See the documentation on annotation-style 
+      for more information.
+  </para>
+</sect1>
+<sect1>
   <title>Summary of implementation requirements</title>
   <para>
 	This summarizes the requirements of our implementation of AspectJ.
@@ -350,6 +360,12 @@
 			</listitem>
 			<listitem>
 			  <para>cflow and cflowbelow pointcuts work within a single thread.</para>
+			</listitem>
+			<listitem>
+			  <para>
+                  Runtime <literal>ClassCastException</literal> may result 
+                  from supplying a supertype of the actual type as an argument
+                  to proceed(..) in around advice.</para>
 			</listitem>
 		</itemizedlist>
    </listitem>

@@ -1938,11 +1938,11 @@ ModifiersPattern =
       }
   }
 </programlisting>
-
-	<para>
-		Any occurence of <literal>proceed(..)</literal> within the body of
-		around advice is treated as the special proceed form (even if the
-		aspect defines a method named <literal>proceed</literal>) unless a 
+    
+    <para>
+		Any occurence of <literal>proceed(..)</literal> within the body of around 
+        advice is treated as the special proceed form (even if the
+		aspect defines a method named <literal>proceed</literal>), unless a 
 		target other than the aspect instance is specified as the recipient of
 		the call.
 		For example, in the following program the first 
@@ -1985,6 +1985,71 @@ ModifiersPattern =
       Rather, it will double the local parameter.  Changing the values of
       parameters or return values of join points can be done by using around
       advice.
+    </para>
+    <para>
+        With <literal>proceed(..)</literal> it is possible to change the values
+        used by less-precedent advice and the underlying join point by supplying
+        different values for the variables.  For example, this aspect replaces
+        the string bound to <literal>s</literal> in the named pointcut 
+        <literal>privateData</literal>:
+    </para>
+
+<programlisting>
+  aspect A {
+    Object around(String s): MyPointcuts.privateData(s) {
+      return proceed("private data");
+    }
+  }
+</programlisting>
+    <para>
+        If you replace an argument to <literal>proceed(..)</literal>, you can cause 
+        a <literal>ClassCastException</literal> at runtime when the argument
+        refers to a supertype of the actual type and you do not supply a 
+        reference of the actual type.  In the following aspect, the
+        around advice replaces the declared target <literal>List</literal> 
+        with an <literal>ArrayList</literal>.  This is valid code at
+        compile-time since the types match.  
+    </para>
+<programlisting>
+  import java.util.*;
+
+  aspect A {
+    Object around(List list): call(* List+.*()) <![CDATA[&&]]> target(list) {
+      return proceed(new ArrayList());
+    }
+  }
+</programlisting>
+    <para>
+        But imagine a simple program where the actual target is
+        <literal>LinkedList</literal>.  In this case, the advice would cause a
+        <literal>ClassCastException</literal> at runtime, and 
+        <literal>peek()</literal> is not declared in <literal>ArrayList</literal>.
+    </para>
+<programlisting>
+  public class Test {
+    public static void main(String[] args) {
+      new LinkedList().peek();
+    }
+  }
+</programlisting>
+    <para>
+        The <literal>ClassCastException</literal> can occur even in situations
+        where it appears to be unnecessary, e.g., if the program is changed to
+        call <literal>size()</literal>, declared in <literal>List</literal>:
+    </para>
+<programlisting>
+  public class Test {
+    public static void main(String[] args) {
+      new LinkedList().size();
+    }
+  }
+</programlisting>
+    <para>
+        There will still be a <literal>ClassCastException</literal> because
+        it is impossible to prove that there won't be a runtime binary-compatible
+        change in the hierarchy of <literal>LinkedList</literal> or some
+        other advice on the join point that requires a 
+        <literal>LinkedList</literal>.
     </para>
 
     <sect2 id="advice-modifiers" xreflabel="advice-modifiers">
