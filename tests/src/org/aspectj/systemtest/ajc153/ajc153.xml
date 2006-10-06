@@ -66,6 +66,13 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr156058" title="no IllegalStateException with generic inner aspect - 2">
+      <compile files="Bug2.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(MyClass Bug2.callit())' in Type 'Bug2' (Bug2.java:15) advised by before advice from 'MyAspect' (Bug2.java:2)"/>
+        <message kind="warning" line="24" text="advice defined in MyAspect2 has not been applied [Xlint:adviceDidNotMatch]"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr153490" title="no illegal state exception from AsmDelegate - 1">
       <compile files="Foo.java" options="-1.5" classpath="jarForFoo.jar" />
     </ajc-test>
