@@ -273,29 +273,63 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     }
     
     private void addChildNodes(IProgramElement parent, Collection children) {
+    	int afterCtr = 1;
+    	int aroundCtr = 1;
+    	int beforeCtr = 1;
+    	int deCtr = 1;
+    	int dwCtr = 1;
     	for (Iterator iter = children.iterator(); iter.hasNext();) {
 			Object element = (Object) iter.next();
 			if (element instanceof DeclareErrorOrWarning) {
 				DeclareErrorOrWarning decl = (DeclareErrorOrWarning)element;
-			   	IProgramElement deowNode = new ProgramElement(
-		    			decl.isError() ? "declare error" : "declare warning",
-		    			decl.isError() ? IProgramElement.Kind.DECLARE_ERROR : IProgramElement.Kind.DECLARE_WARNING,
-		    			getBinarySourceLocation(decl.getSourceLocation()),
-		    			decl.getDeclaringType().getModifiers(),
-		    			null,null); 
-		    	deowNode.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
-		    	parent.addChild(deowNode);
+				int counter = 0;
+				if (decl.isError()) {
+					counter = deCtr++;
+				} else {
+					counter = dwCtr++;
+				}
+		    	parent.addChild(createDeclareErrorOrWarningChild(decl,counter));
 			} else if (element instanceof BcelAdvice) {
 				BcelAdvice advice = (BcelAdvice)element;
-				IProgramElement adviceNode = new ProgramElement(
-		    			advice.kind.getName(),
-		    			IProgramElement.Kind.ADVICE,
-		    			getBinarySourceLocation(advice.getSourceLocation()),
-		    			advice.signature.getModifiers(),null,Collections.EMPTY_LIST);
-		    	adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
-		    	parent.addChild(adviceNode);
+				int counter = 0;
+				if (advice.getKind().equals(AdviceKind.Before)) {
+					counter = beforeCtr++;
+				} else if (advice.getKind().equals(AdviceKind.Around)){
+					counter = aroundCtr++;
+				} else {
+					counter = afterCtr++;
+				}
+		    	parent.addChild(createAdviceChild(advice,counter));
 			}
 		}
+    }
+    
+    private IProgramElement createDeclareErrorOrWarningChild(
+    		DeclareErrorOrWarning decl, int count) {
+	   	IProgramElement deowNode = new ProgramElement(
+    			decl.getName(),
+    			decl.isError() ? IProgramElement.Kind.DECLARE_ERROR : IProgramElement.Kind.DECLARE_WARNING,
+    			getBinarySourceLocation(decl.getSourceLocation()),
+    			decl.getDeclaringType().getModifiers(),
+    			null,null); 
+    	deowNode.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
+    	if (count != -1) {
+    		deowNode.setBytecodeName(decl.getName() + "_" + count);
+    	}
+    	return deowNode;
+    }
+    
+    private IProgramElement createAdviceChild(BcelAdvice advice, int counter ) {
+		IProgramElement adviceNode = new ProgramElement(
+    			advice.kind.getName(),
+    			IProgramElement.Kind.ADVICE,
+    			getBinarySourceLocation(advice.getSourceLocation()),
+    			advice.signature.getModifiers(),null,Collections.EMPTY_LIST);
+    	adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
+    	if (counter != 1) {
+			adviceNode.setBytecodeName(advice.getKind().getName() + "$" + counter + "$");
+		}
+    	return adviceNode;
     }
     
     /**

@@ -316,6 +316,67 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 				+ ", but did not",top.getElement(handle2));
 	}
 	
+	public void testTwoPiecesOfBeforeAdviceInInjarAspectHaveUniqueHandles_pr159896() {
+		runTest("advice with same name in injar aspect should have unique handles");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String handle1 = top.findElementForLabel(top.getRoot(),
+				IProgramElement.Kind.ADVICE,"before(): p..").getHandleIdentifier();
+		String handle2 = top.findElementForLabel(top.getRoot(),
+				IProgramElement.Kind.ADVICE,"before(): exec..").getHandleIdentifier();
+		assertFalse("expected the two advice nodes to have unique handles but" +
+				" did not", handle1.equals(handle2));
+	}
+
+	public void testTwoDeclareWarningsInInjarAspectHaveUniqueHandles_pr159896() {
+		runTest("declare warnings in injar aspect should have unique handles");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String handle1 = top.findElementForLabel(top.getRoot(),
+				IProgramElement.Kind.DECLARE_WARNING,"declare warning: \"blah\"").getHandleIdentifier();
+		String handle2 = top.findElementForLabel(top.getRoot(),
+				IProgramElement.Kind.DECLARE_WARNING,"declare warning: \"blah2\"").getHandleIdentifier();
+		assertFalse("expected the two declare warning nodes to have unique handles but" +
+				" did not", handle1.equals(handle2));
+	}
+	
+	// if have one declare warning and one declare error statement within an injar
+	// aspect, neither of them should have a counter (i.e. "!2") at the end of 
+	// their handle
+	public void testOnlyIncrementSameDeclareTypeFromInjar_pr159896() {
+		runTest("dont increment counter for different declares");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String warning = top.findElementForLabel(top.getRoot(), 
+				IProgramElement.Kind.DECLARE_WARNING,"declare warning: \"warning\"").getHandleIdentifier();
+		assertTrue("shouldn't have incremented counter for declare warning handle " +
+				"because only one declare warning statement", 
+				warning.indexOf("!0") == -1 && warning.indexOf("!2") == -1);
+		String error = top.findElementForLabel(top.getRoot(), 
+				IProgramElement.Kind.DECLARE_ERROR,"declare error: \"error\"").getHandleIdentifier();
+		assertTrue("shouldn't have incremented counter for declare error handle " +
+				"because only one declare error statement", 
+				error.indexOf("!0") == -1 && error.indexOf("!2") == -1);
+	}
+	
+	public void testOnlyIncrementSameAdviceKindFromInjar_pr159896() {
+		runTest("dont increment counter for different advice kinds");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		String before = top.findElementForLabel(top.getRoot(), 
+				IProgramElement.Kind.ADVICE,"before(): p..").getHandleIdentifier();
+		assertTrue("shouldn't have incremented counter for before handle " +
+				"because only one before advice", 
+				before.indexOf("!0") == -1 && before.indexOf("!2") == -1 && before.indexOf("!3") == -1 );
+		String after = top.findElementForLabel(top.getRoot(), 
+				IProgramElement.Kind.ADVICE,"after(): p..").getHandleIdentifier();
+		assertTrue("shouldn't have incremented counter for after handle " +
+				"because only one after advice", 
+				after.indexOf("!0") == -1 && after.indexOf("!2") == -1 && after.indexOf("!3") == -1 );
+		String around = top.findElementForLabel(top.getRoot(), 
+				IProgramElement.Kind.ADVICE,"around(): p1..").getHandleIdentifier();
+		assertTrue("shouldn't have incremented counter for around handle " +
+				"because only one around advice", 
+				around.indexOf("!0") == -1 && around.indexOf("!2") == -1 && around.indexOf("!3") == -1 );
+		
+	}
+	
 	//---------- following tests ensure we produce the same handles as jdt -----//
 	//---------- (apart from the prefix)
 	

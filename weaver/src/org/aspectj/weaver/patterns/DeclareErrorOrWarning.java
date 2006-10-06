@@ -31,6 +31,9 @@ public class DeclareErrorOrWarning extends Declare {
 		this.message = message;
 	}
 	
+	/**
+	 * returns "declare warning: <message>" or "declare error: <message>"
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare ");
@@ -110,5 +113,16 @@ public class DeclareErrorOrWarning extends Declare {
 
 	public String getNameSuffix() {
 		return "eow";
+	}
+	
+	/**
+	 * returns "declare warning" or "declare error"
+	 */
+	public String getName() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("declare ");
+		if (isError) buf.append("error");
+		else buf.append("warning");	
+		return buf.toString();
 	}
 }

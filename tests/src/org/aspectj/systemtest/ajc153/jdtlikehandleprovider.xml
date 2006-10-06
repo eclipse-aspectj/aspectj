@@ -228,4 +228,29 @@
       <compile files="Set.aj" options="-emacssym"/>
     </ajc-test>
 
+    <ajc-test dir="features153/jdtlikehandleprovider" title="advice with same name in injar aspect should have unique handles">
+      <compile files="ClassForAspectpath.java" options="-emacssym" aspectpath="jarForAspectPath.jar">
+        <message kind="warning" text="blah"/>
+        <message kind="warning" text="blah2"/>
+      </compile>
+    </ajc-test>
+
+    <ajc-test dir="features153/jdtlikehandleprovider" title="declare warnings in injar aspect should have unique handles">
+      <compile files="ClassForAspectpath.java" options="-emacssym" aspectpath="jarForAspectPath.jar">
+        <message kind="warning" text="blah"/>
+        <message kind="warning" text="blah2"/>
+      </compile>
+    </ajc-test>
+
+    <ajc-test dir="features153/jdtlikehandleprovider" title="dont increment counter for different declares">
+      <compile files="ClassForAspectpath.java" options="-emacssym" aspectpath="declare.jar">
+        <message kind="warning" text="warning"/>
+        <message kind="error" text="error"/>
+      </compile>
+    </ajc-test>
+
+    <ajc-test dir="features153/jdtlikehandleprovider" title="dont increment counter for different advice kinds">
+      <compile files="ClassForAspectpath.java" options="-emacssym" aspectpath="advice.jar"/>
+    </ajc-test>
+
 </suite>
