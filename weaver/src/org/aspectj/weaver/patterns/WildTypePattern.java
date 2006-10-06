@@ -735,7 +735,8 @@ public class WildTypePattern extends TypePattern {
 	}
 	
 	private ResolvedType lookupTypeInWorld(World world, String typeName) {
-		ResolvedType ret = world.resolve(UnresolvedType.forName(typeName),true);
+		UnresolvedType ut = UnresolvedType.forName(typeName);
+		ResolvedType ret = world.resolve(ut,true);
 		while (ret.isMissing()) {
 			int lastDot = typeName.lastIndexOf('.');
 			if (lastDot == -1) break;
@@ -800,7 +801,8 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	private TypePattern resolveParameterizedType(IScope scope, UnresolvedType aType, boolean requireExactType) {
-		if (!verifyTypeParameters(aType.resolve(scope.getWorld()),scope,requireExactType)) return TypePattern.NO; // messages already isued
+		ResolvedType rt = aType.resolve(scope.getWorld());
+		if (!verifyTypeParameters(rt,scope,requireExactType)) return TypePattern.NO; // messages already isued
 		// Only if the type is exact *and* the type parameters are exact should we create an 
 		// ExactTypePattern for this WildTypePattern					
 		if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
@@ -809,7 +811,11 @@ public class WildTypePattern extends TypePattern {
 			for (int i = 0; i < typeParameterTypes.length; i++) {
 				typeParameterTypes[i] = ((ExactTypePattern)typePats[i]).getExactType();
 			}
-			ResolvedType type = TypeFactory.createParameterizedType(aType.resolve(scope.getWorld()), typeParameterTypes, scope.getWorld());
+			// rt could be a parameterized type 156058
+			if (rt.isParameterizedType()) {
+				rt = rt.getGenericType();
+			}
+			ResolvedType type = TypeFactory.createParameterizedType(rt, typeParameterTypes, scope.getWorld());
 			if (isGeneric) type = type.getGenericType();
 //				UnresolvedType tx = UnresolvedType.forParameterizedTypes(aType,typeParameterTypes);
 //				UnresolvedType type = scope.getWorld().resolve(tx,true); 

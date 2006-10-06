@@ -104,15 +104,35 @@ public class TypeFactory {
 			// of its parent.  In this case it is parameterized but theres no < in the signature.
 			
 			int startOfParams = signature.indexOf('<');
-			int endOfParams = signature.lastIndexOf('>');
 			if (startOfParams==-1) {
 				// Should be an inner type of a parameterized type - could assert there is a '$' in the signature....
 				String signatureErasure = "L" + signature.substring(1);
 				UnresolvedType[] typeParams = new UnresolvedType[0];
 				return new UnresolvedType(signature,signatureErasure,typeParams);
 			} else {
-				String signatureErasure = "L" + signature.substring(1,startOfParams) + ";";
-				UnresolvedType[] typeParams = createTypeParams(signature.substring(startOfParams +1, endOfParams));
+				int endOfParams = locateMatchingEndBracket(signature,startOfParams);//signature.lastIndexOf('>');
+				StringBuffer erasureSig = new StringBuffer(signature);
+				while (startOfParams!=-1) {
+					erasureSig.delete(startOfParams,endOfParams+1);
+					startOfParams = erasureSig.indexOf("<");
+					if (startOfParams!=-1) endOfParams = locateMatchingEndBracket(erasureSig,startOfParams);
+				}
+				
+				String signatureErasure = "L" + erasureSig.toString().substring(1);
+				
+				// the type parameters of interest are only those that apply to the 'last type' in the signature
+				// if the signature is 'PMyInterface<String>$MyOtherType;' then there are none...
+				String lastType = null;
+				int nestedTypePosition = signature.indexOf("$");
+				if (nestedTypePosition!=-1) lastType = signature.substring(nestedTypePosition+1);
+				else                        lastType = new String(signature);
+				startOfParams = lastType.indexOf("<");
+				endOfParams = locateMatchingEndBracket(lastType,startOfParams);
+				UnresolvedType[] typeParams = UnresolvedType.NONE;
+				if (startOfParams!=-1) {
+				  typeParams = createTypeParams(lastType.substring(startOfParams +1, endOfParams));
+				}
+				
 				return new UnresolvedType(signature,signatureErasure,typeParams);
 			}
 			// can't replace above with convertSigToType - leads to stackoverflow
@@ -165,6 +185,30 @@ public class TypeFactory {
 		return new UnresolvedType(signature);
 	}
 	
+	private static int locateMatchingEndBracket(String signature, int startOfParams) {
+		if (startOfParams==-1) return -1;
+		int count =1;
+		int idx = startOfParams;
+		while (count>0 && idx<signature.length()) {
+			idx++;
+			if (signature.charAt(idx)=='<') count++;
+			if (signature.charAt(idx)=='>') count--;
+		}
+		return idx;
+	}
+
+	private static int locateMatchingEndBracket(StringBuffer signature, int startOfParams) {
+		if (startOfParams==-1) return -1;
+		int count =1;
+		int idx = startOfParams;
+		while (count>0 && idx<signature.length()) {
+			idx++;
+			if (signature.charAt(idx)=='<') count++;
+			if (signature.charAt(idx)=='>') count--;
+		}
+		return idx;
+	}
+
 	private static UnresolvedType[] createTypeParams(String typeParameterSpecification) {
 		String remainingToProcess = typeParameterSpecification;
 		List types = new ArrayList();

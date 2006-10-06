@@ -264,7 +264,7 @@ public abstract class World implements Dump.INode {
             		                     this, 
             		                     componentType);
         } else {
-            ret = resolveToReferenceType(ty);
+            ret = resolveToReferenceType(ty,allowMissing);
             if (!allowMissing && ret.isMissing()) {
                 ret = handleRequiredMissingTypeDuringResolution(ty);
             }
@@ -346,12 +346,14 @@ public abstract class World implements Dump.INode {
 	 * Resolve to a ReferenceType - simple, raw, parameterized, or generic.
      * Raw, parameterized, and generic versions of a type share a delegate.
      */
-    private final ResolvedType resolveToReferenceType(UnresolvedType ty) {
+    private final ResolvedType resolveToReferenceType(UnresolvedType ty,boolean allowMissing) {
 		if (ty.isParameterizedType()) {
 			// ======= parameterized types ================
-			ReferenceType genericType = (ReferenceType)resolveGenericTypeFor(ty,false);
+			ResolvedType rt = resolveGenericTypeFor(ty,allowMissing);
+			if (rt.isMissing()) return rt;
+			ReferenceType genericType = (ReferenceType)rt;
 			currentlyResolvingBaseType = genericType;
-			ReferenceType parameterizedType = 
+						ReferenceType parameterizedType = 
 				TypeFactory.createParameterizedType(genericType, ty.typeParameters, this);
 			currentlyResolvingBaseType = null;
 			return parameterizedType;
@@ -400,9 +402,10 @@ public abstract class World implements Dump.INode {
     	String rawSignature = anUnresolvedType.getRawType().getSignature();
     	ResolvedType rawType = (ResolvedType) typeMap.get(rawSignature);
     	if (rawType==null) {
-    		rawType = resolve(UnresolvedType.forSignature(rawSignature),false);
+    		rawType = resolve(UnresolvedType.forSignature(rawSignature),allowMissing);
         	typeMap.put(rawSignature,rawType);
     	}
+    	if (rawType.isMissing()) return rawType;
     	
     	// Does the raw type know its generic form? (It will if we created the
     	// raw type from a source type, it won't if its been created just through
