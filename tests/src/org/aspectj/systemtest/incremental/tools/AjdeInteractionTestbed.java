@@ -700,8 +700,8 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public boolean hasWarning() {
-			log("TaskListManager.hasWarning() [returning "+(warningMessages.size()==0)+"]");
-			return warningMessages.size()==0;
+			log("TaskListManager.hasWarning() [returning "+(!warningMessages.isEmpty())+"]");
+			return !warningMessages.isEmpty();
 		}
 
 		public void addProjectTask(String message, Kind kind) {
