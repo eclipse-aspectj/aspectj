@@ -328,10 +328,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             
             // for bug 113554: support ajsym file generation for command line builds
             if (buildConfig.isGenerateCrossRefsMode()) {
-                String configFileProxy = buildConfig.getOutputDir().getAbsolutePath() 
-            		+ File.separator 
-            		+ CROSSREFS_FILE_NAME; 
-            	AsmManager.getDefault().writeStructureModel(configFileProxy);
+	           File configFileProxy = new File(buildConfig.getOutputDir(),CROSSREFS_FILE_NAME);
+	           AsmManager.getDefault().writeStructureModel(configFileProxy.getAbsolutePath());
             }
             
             // have to tell state we succeeded or next is not incremental
