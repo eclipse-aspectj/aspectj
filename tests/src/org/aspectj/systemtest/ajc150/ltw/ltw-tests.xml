@@ -597,7 +597,7 @@
       
 	<ajc-test dir="ltw/inclExcl" title="Inclusion and patterns" keywords="ltw">
         <compile
-        	files="pkg\sub\Foo.aj, pkg\Main.aj"
+        	files="pkg/sub/Foo.aj, pkg/Main.aj"
         	options="-outjar base.jar"
         />
         <compile
@@ -612,7 +612,7 @@
     </ajc-test>
 	<ajc-test dir="ltw/inclExcl" title="Exclusion and patterns" keywords="ltw">
         <compile
-        	files="pkg\sub\Foo.aj, pkg\Main.aj"
+        	files="pkg/sub/Foo.aj, pkg/Main.aj"
         	options="-outjar base.jar"
         />
         <compile
@@ -626,7 +626,7 @@
     </ajc-test>    
 	<ajc-test dir="ltw/inclExcl" title="And patterns aspects" keywords="ltw">
         <compile
-        	files="pkg\sub\Foo.aj, pkg\Main.aj"
+        	files="pkg/sub/Foo.aj, pkg/Main.aj"
         	options="-outjar base.jar"
         />
         <compile
