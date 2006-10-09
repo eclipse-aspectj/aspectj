@@ -114,7 +114,7 @@ public class TypeFactory {
 				StringBuffer erasureSig = new StringBuffer(signature);
 				while (startOfParams!=-1) {
 					erasureSig.delete(startOfParams,endOfParams+1);
-					startOfParams = erasureSig.indexOf("<");
+					startOfParams = locateFirstBracket(erasureSig);
 					if (startOfParams!=-1) endOfParams = locateMatchingEndBracket(erasureSig,startOfParams);
 				}
 				
@@ -207,6 +207,15 @@ public class TypeFactory {
 			if (signature.charAt(idx)=='>') count--;
 		}
 		return idx;
+	}
+	
+	private static int locateFirstBracket(StringBuffer signature) {
+		int idx = 0;
+		while (idx<signature.length()) {
+			if (signature.charAt(idx)=='<') return idx;
+			idx++;
+		}
+		return -1;
 	}
 
 	private static UnresolvedType[] createTypeParams(String typeParameterSpecification) {
