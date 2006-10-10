@@ -2881,9 +2881,14 @@
     </ajc-test>
 
     <ajc-test dir="java5/pertypewithin/ajdk" title="ajdk: ptw">
-        <compile files="AJDKExamples.aj" options="-1.5"/>
+        <compile files="AJDKExamples.aj" options="-1.5 -showWeaveInfo">
+          <message kind="weave" text="Join point 'constructor-execution(void org.xyz.foo.B.&lt;init&gt;())' in Type 'org.xyz.foo.B' (AJDKExamples.aj:38) advised by afterReturning advice from 'org.xyz.foo.AJDKExamples' (AJDKExamples.aj:11)"/>
+          <message kind="weave" text="Join point 'constructor-execution(void org.xyz.foo.A.&lt;init&gt;())' in Type 'org.xyz.foo.A' (AJDKExamples.aj:36) advised by afterReturning advice from 'org.xyz.foo.AJDKExamples' (AJDKExamples.aj:11)"/>
+        </compile>
         <run class="org.xyz.foo.AJDKExamples">
             <stdout>
+            	<line text="Aspect instance constructed"/>
+            	<line text="Aspect instance constructed"/>
                 <line text="true"/>
                 <line text="true"/>
                 <line text="There are 2 As"/>
