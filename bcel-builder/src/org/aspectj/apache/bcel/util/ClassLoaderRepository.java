@@ -80,7 +80,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: ClassLoaderRepository.java,v 1.8 2006/08/21 15:23:58 aclement Exp $
+ * @version $Id: ClassLoaderRepository.java,v 1.9 2006/10/12 19:58:18 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */
@@ -261,7 +261,7 @@ public class ClassLoaderRepository implements Repository {
 	long time = System.currentTimeMillis();
     java.net.URL url = toURL(className);
 	timeManipulatingURLs += (System.currentTimeMillis() - time);
-	if (url==null) throw new ClassNotFoundException(className + " not found.");
+	if (url==null) throw new ClassNotFoundException(className + " not found - unable to determine URL");
     
 	JavaClass clazz = null;
 
@@ -282,7 +282,7 @@ public class ClassLoaderRepository implements Repository {
 	    String classFile = className.replace('.', '/');
 		InputStream is = (useSharedCache?url.openStream():loader.getResourceAsStream( classFile + ".class" ));
 	    if (is == null) { 
-		  throw new ClassNotFoundException(className + " not found.");
+		  throw new ClassNotFoundException(className + " not found "+(url==null?"":"- using url "+url));
 	    }
 		ClassParser parser = new ClassParser( is, className );
         clazz = parser.parse();

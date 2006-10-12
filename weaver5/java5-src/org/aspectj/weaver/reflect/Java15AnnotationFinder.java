@@ -24,8 +24,8 @@ import java.util.Set;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
-import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
@@ -45,7 +45,9 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 	}
 	
 	public void setClassLoader(ClassLoader aLoader) {
-		this.bcelRepository = new ClassLoaderRepository(aLoader);
+		// TODO: No easy way to ask the world factory for the right kind of repository so
+		// default to the safe one! (pr160674)
+		this.bcelRepository = new NonCachingClassLoaderRepository(aLoader);
 		this.classLoader = aLoader;		
 	}
 

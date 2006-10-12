@@ -48,6 +48,7 @@ import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
+import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.Advice;
@@ -155,9 +156,17 @@ public class BcelWorld extends World implements Repository {
         setMessageHandler(handler);
         setCrossReferenceHandler(xrefHandler);
         // Tell BCEL to use us for resolving any classes
-        delegate = new ClassLoaderRepository(loader);
+        delegate = getClassLoaderRepositoryFor(loader);
         // TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
         // if so, how can that be safe in J2EE ?? (static stuff in Bcel)
+    }
+    
+    public Repository getClassLoaderRepositoryFor(ClassLoader loader) {
+    	if (bcelRepositoryCaching) {
+    		return new ClassLoaderRepository(loader);
+    	} else {
+    		return new NonCachingClassLoaderRepository(loader);
+    	}
     }
 
 	public void addPath (String name) {
@@ -355,6 +364,7 @@ public class BcelWorld extends World implements Repository {
             	if (trace.isTraceEnabled()) trace.event("lookupJavaClass",this,new Object[] { name, jc });
                 return jc;
             } catch (ClassNotFoundException e) {
+            	if (trace.isTraceEnabled()) trace.error("Unable to find class '"+name+"' in repository",e);
                 return null;
             }
         }

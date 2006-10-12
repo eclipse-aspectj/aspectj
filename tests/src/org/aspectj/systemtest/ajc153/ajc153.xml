@@ -117,6 +117,28 @@
       </run>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr160674" title="turning off bcel caching">
+      <compile files="MyClass.java" options="-1.5"/>
+      <compile files="MyAspect.java" options="-1.5 -Xlint:ignore"/>
+      <run class="a.MyClass" ltw="aop.xml">
+        <stdout>
+          <line text="advice running"/>
+          <line text="hello"/>
+          <line text="advice running"/>
+          <line text="world"/>
+ 	    </stdout>
+ 	    <stderr>
+            <line text="info AspectJ Weaver Version"/>
+            <line text="info register classloader"/>
+            <line text="info using"/>
+            <line text="info register aspect"/>
+            <line text="info [bcelRepositoryCaching=false] AspectJ will not"/>
+            <line text="info processing"/>
+            <line text="info successfully"/>
+ 	    </stderr>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr153380/case1" title="pipelining decps">
       <compile files="Ann.java,Base.java,BaseImpl.java,I1.java,Mixin.java,Runner.java,X.aj" options="-1.5">
         <message kind="error" line="1" text="The import java.lang.retention cannot be resolved"/>
