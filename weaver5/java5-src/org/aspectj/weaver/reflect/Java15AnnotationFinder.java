@@ -26,6 +26,7 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
+import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
