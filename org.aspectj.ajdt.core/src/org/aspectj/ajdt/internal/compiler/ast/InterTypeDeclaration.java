@@ -29,6 +29,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -184,7 +185,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		
 		// If they did supply a parameterized single type reference, we need to do
 		// some extra checks...
-		if (onType instanceof ParameterizedSingleTypeReference) {
+		if (onType instanceof ParameterizedSingleTypeReference  || onType instanceof ParameterizedQualifiedTypeReference) {
 			resolveTypeParametersForITDOnGenericType(classScope);
 		} else {
 			onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);
@@ -214,9 +215,16 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	private void resolveTypeParametersForITDOnGenericType(ClassScope classScope) {
 
 		// Collapse the parameterized reference to its generic type
+		if (onType instanceof ParameterizedSingleTypeReference) {
 		ParameterizedSingleTypeReference pref = (ParameterizedSingleTypeReference) onType;
 		long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
 		onType = new SingleTypeReference(pref.token,pos);
+		} else {
+			ParameterizedQualifiedTypeReference pref = (ParameterizedQualifiedTypeReference) onType;
+			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
+			onType = new QualifiedTypeReference(pref.tokens,new long[]{pos});
+			
+		}
 		
 		onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);		
 		if (!onTypeBinding.isValidBinding()) {
@@ -357,16 +365,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		MethodScope scope = this.scope;
 		
 		TypeReference ot = onType;
-		
-		// Work out the real base type
-		if (ot instanceof ParameterizedSingleTypeReference) {
-			ParameterizedSingleTypeReference pref = (ParameterizedSingleTypeReference) ot;
-			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
-			ot = new SingleTypeReference(pref.token,pos);
-		}
-		
-		// resolve it
-		ReferenceBinding rb = (ReferenceBinding)ot.getTypeBindingPublic(scope.parent);
+		ReferenceBinding rb = null;
 		
 		if (ot instanceof ParameterizedQualifiedTypeReference) { // pr132349
 			ParameterizedQualifiedTypeReference pref = (ParameterizedQualifiedTypeReference) ot;
@@ -383,8 +382,22 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 				onType=null;
 			}
 		}
-		
 
+		// Work out the real base type
+		if (ot instanceof ParameterizedSingleTypeReference) {
+			ParameterizedSingleTypeReference pref = (ParameterizedSingleTypeReference) ot;
+			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
+			ot = new SingleTypeReference(pref.token,pos);
+		} else if (ot instanceof ParameterizedQualifiedTypeReference) {
+			ParameterizedQualifiedTypeReference pref = (ParameterizedQualifiedTypeReference) ot;
+			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
+			ot = new QualifiedTypeReference(pref.tokens,new long[]{pos});//SingleTypeReference(pref.Quatoken,pos);
+		}
+		
+		// resolve it
+		if (rb==null) {
+		  rb = (ReferenceBinding)ot.getTypeBindingPublic(scope.parent);
+		}
 		if (rb instanceof TypeVariableBinding) {
 			scope.problemReporter().signalError(sourceStart,sourceEnd,
 					  "Cannot make inter-type declarations on type variables, use an interface and declare parents");
