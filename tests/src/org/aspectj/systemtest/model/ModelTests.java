@@ -67,6 +67,8 @@ public class ModelTests extends ModelTestCase {
 	public void testAspectInDefaultPackage_pr145963() {runModelTest("aspect in default package", "pr145963_3");}
 	public void testAspectInJavaFile_pr145963() {runModelTest("aspect in java file", "pr145963_4");}
 
+	public void testAbstractAspectsAndAdvice_pr160469() {runModelTest("ensure advice from abstract aspects appear correctly in the model","pr160469_1");}
+	public void testAbstractAspectsAndDeow_pr160469() {runModelTest("ensure deow from abstract aspects appear correctly in the model","pr160469_2");}
 	
 	/////////////////////////////////////////
 	public static Test suite() {

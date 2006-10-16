@@ -54,6 +54,15 @@
       <compile files="A.aj, C.aj" options="-emacssym"/>
     </ajc-test>
 
+	<ajc-test dir="model/pr160469_1" title="ensure advice from abstract aspects appear correctly in the model">
+      <compile files="Simple.java" options="-emacssym" aspectpath="aspects.jar"/>
+    </ajc-test>
+
+	<ajc-test dir="model/pr160469_2" title="ensure deow from abstract aspects appear correctly in the model">
+      <compile files="Simple.java" options="-emacssym" aspectpath="aspects.jar">
+		<message kind="warning" line="5" text="warning"/>
+      </compile>
+    </ajc-test>
 
 <!-- AspectJ 5 specific tests -->
 

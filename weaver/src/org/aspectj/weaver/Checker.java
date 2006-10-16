@@ -135,8 +135,4 @@ public class Checker extends ShadowMunger {
 		return isError;
 	}
 
-	public ResolvedType getResolvedDeclaringAspect() {
-		// The aspect which declares this deow is the declaring type
-		return getDeclaringType();
-	}
 }

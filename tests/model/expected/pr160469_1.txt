@@ -1,0 +1,32 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  test  [package] 
+    Simple.java  [java source file] TEST_SANDBOX\Simple.java:1:
+      import declarations  [import reference] 
+      Simple  [class] TEST_SANDBOX\Simple.java:3:
+        Simple()  [constructor] TEST_SANDBOX\Simple.java:5:
+  pkg  [package] 
+    AbstractBeanConfigurerAspect.class (binary)  [class] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
+      import declarations  [import reference] 
+      AbstractBeanConfigurerAspect  [aspect] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
+        beanCreation()  [pointcut] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
+        afterReturning(): beanCreation..  [advice] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:6:
+        before(): beanCreation..  [advice] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:11:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&afterReturning (advises) <test{Simple.java[Simple~Simple
+(targets=1) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&before (advises) <test{Simple.java[Simple~Simple
+(targets=2) <test{Simple.java[Simple~Simple (advised by) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&afterReturning
+(targets=2) <test{Simple.java[Simple~Simple (advised by) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&before
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+import reference=2
+aspect=1
+constructor=1
+class=2
+advice=2
+pointcut=1
+RelationshipMapSize=3
+FileMapSize=1
+package=2
+java source file=2

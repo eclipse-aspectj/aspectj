@@ -157,12 +157,6 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     public abstract boolean mustCheckExceptions();
     
     /**
-     * Returns the ResolvedType corresponding to the aspect in which this
-     * shadowMunger is declared. This is different for deow's and advice.
-     */
-    public abstract ResolvedType getResolvedDeclaringAspect();
-    
-    /**
      * Creates the hierarchy for binary aspects
      */
     public void createHierarchy() {
@@ -177,7 +171,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 			return;
 		}
     	
-    	ResolvedType aspect = getResolvedDeclaringAspect();
+    	ResolvedType aspect = getDeclaringType();
     	
     	// create the class file node
     	IProgramElement classFileNode = new ProgramElement(
@@ -261,10 +255,14 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 			ResolvedMember pcd = children[i];
 			if (pcd instanceof ResolvedPointcutDefinition) {
 				ResolvedPointcutDefinition rpcd = (ResolvedPointcutDefinition)pcd;
+				ISourceLocation sLoc = rpcd.getPointcut().getSourceLocation();
+				if (sLoc == null) {
+					sLoc = rpcd.getSourceLocation();
+				}
 				parent.addChild(new ProgramElement(
 						pcd.getName(),
 						IProgramElement.Kind.POINTCUT,
-					    getBinarySourceLocation(rpcd.getPointcut().getSourceLocation()),
+					    getBinarySourceLocation(sLoc),
 						pcd.getModifiers(),
 						null,
 						Collections.EMPTY_LIST));
@@ -341,8 +339,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     private ISourceLocation getBinarySourceLocation(ISourceLocation sl) {
     	if (sl == null) return null;
     	String sourceFileName = null;
-    	if (getResolvedDeclaringAspect() instanceof ReferenceType) {
-			String s = ((ReferenceType)getResolvedDeclaringAspect()).getDelegate().getSourcefilename();
+    	if (getDeclaringType() instanceof ReferenceType) {
+			String s = ((ReferenceType)getDeclaringType()).getDelegate().getSourcefilename();
 			int i = s.lastIndexOf('/');
 			if (i != -1) {
 				sourceFileName = s.substring(i+1);
@@ -369,8 +367,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
      */
     private File getBinaryFile() {
     	if (binaryFile == null) {
-    		String s = getResolvedDeclaringAspect().getBinaryPath();
-    		File f = getResolvedDeclaringAspect().getSourceLocation().getSourceFile();
+    		String s = getDeclaringType().getBinaryPath();
+    		File f = getDeclaringType().getSourceLocation().getSourceFile();
     		int i = f.getPath().lastIndexOf('.');
     		String path = f.getPath().substring(0,i) + ".class";
     		binaryFile =  new File(s + "!" + path);
@@ -386,7 +384,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
      */
     protected boolean isBinary() {
     	if (!checkedIsBinary) {
-        	ResolvedType rt = getResolvedDeclaringAspect();
+        	ResolvedType rt = getDeclaringType();
         	if (rt != null) {
     			isBinary = ((rt.getBinaryPath() == null) ? false : true);
         	}

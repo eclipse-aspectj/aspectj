@@ -364,6 +364,7 @@ public abstract class Advice extends ShadowMunger {
 		Advice munger = world.createAdviceMunger(attribute, p, signature);
 		munger.concreteAspect = fromType;
 		munger.bindingParameterTypes = this.bindingParameterTypes;
+		munger.setDeclaringType(getDeclaringType());
     	//System.err.println("concretizing here " + p + " with clause " + clause);
         return munger;
     }
@@ -431,9 +432,4 @@ public abstract class Advice extends ShadowMunger {
 		return concreteAspect;
 	}
 	
-	public ResolvedType getResolvedDeclaringAspect() {
-		// The aspect which declares this piece of advice 
-		// is 'concreteAspect' since 'declaringType' is null
-		return ((concreteAspect != null) ? concreteAspect : getDeclaringType());
-	}
 }
