@@ -40,15 +40,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryField;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IWeaver;
-import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
@@ -162,6 +161,9 @@ public class AjState {
 	private List/*String*/ resources = new ArrayList();
 	private List/*String*/ aspectNames;
 	
+	// these are references created on a particular compile run - when looping round in 
+	// addAffectedSourceFiles(), if some have been created then we look at which source files
+	// touch upon those and get them recompiled.
 	private ArrayList/*<String>*/ qualifiedStrings;
 	private ArrayList/*<String>*/ simpleStrings;
 	
@@ -278,6 +280,13 @@ public class AjState {
 				if (stateListener!=null) stateListener.detectedAspectDeleted(aDeletedFile);
 				return false;				
 			}
+			List/*ClassFile*/ classes = (List)fullyQualifiedTypeNamesResultingFromCompilationUnit.get(aDeletedFile);
+			if (classes!=null) {
+				for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
+					ClassFile element = (ClassFile) iterator.next();
+					resolvedTypeStructuresFromLastBuild.remove(element.fullyQualifiedTypeName);
+				}
+			}			
 		}
 		return true;
     }
@@ -617,6 +626,7 @@ public class AjState {
 		return ucf;
 	}
 	
+	
 	public void noteResult(InterimCompilationResult result) {
 		if (!maybeIncremental()) {
 			return;
@@ -770,7 +780,7 @@ public class AjState {
 			if (!rType.isMissing()) {
 				try {
 					ClassFileReader reader = new ClassFileReader(thisTime.getBytes(), null);
-					this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactStructureRepresentation(reader));
+					this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactTypeStructureRepresentation(reader));
 				} catch (ClassFormatException cfe) {
 					throw new BCException("Unexpected problem processing class",cfe);
 				}
@@ -778,12 +788,12 @@ public class AjState {
 			return;
 		}
 
-		CompactStructureRepresentation existingStructure = (CompactStructureRepresentation) this.resolvedTypeStructuresFromLastBuild.get(thisTime.getClassName());
+		CompactTypeStructureRepresentation existingStructure = (CompactTypeStructureRepresentation) this.resolvedTypeStructuresFromLastBuild.get(thisTime.getClassName());
 		ResolvedType newResolvedType = world.resolve(thisTime.getClassName());
 		if (!newResolvedType.isMissing()) {
 			try {
 				ClassFileReader reader = new ClassFileReader(thisTime.getBytes(), null);
-				this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactStructureRepresentation(reader));
+				this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),new CompactTypeStructureRepresentation(reader));
 			} catch (ClassFormatException cfe) {
 				throw new BCException("Unexpected problem processing class",cfe);
 			}
@@ -833,7 +843,7 @@ public class AjState {
 	 * @param existingType
 	 * @return
 	 */
-	private boolean hasStructuralChanges(ClassFileReader reader, CompactStructureRepresentation existingType) {
+	private boolean hasStructuralChanges(ClassFileReader reader, CompactTypeStructureRepresentation existingType) {
 		if (existingType == null) {
 			return true;
 		}
@@ -869,9 +879,9 @@ public class AjState {
 		}
 		
 		// fields
-		MemberStructure[] existingFields = existingType.fields;
+//		CompactMemberStructureRepresentation[] existingFields = existingType.fields;
 		IBinaryField[] newFields = reader.getFields();
-		if (newFields == null) { newFields = new IBinaryField[0]; }
+		if (newFields == null) { newFields = CompactTypeStructureRepresentation.NoField; }
 
 		// all redundant for now ... could be an optimization at some point...
 		// remove any ajc$XXX fields from those we compare with
@@ -884,17 +894,18 @@ public class AjState {
 //			nonGenFields.add(field);
 //			//}
 //		}
-		if (newFields.length != existingFields.length) return true;
+		IBinaryField[] existingFs = existingType.binFields;
+		if (newFields.length != existingFs.length) return true;
 		new_field_loop: 
 			for (int i = 0; i < newFields.length; i++) {
 				IBinaryField field = newFields[i];
 				char[] fieldName = field.getName();
-				for (int j = 0; j < existingFields.length; j++) {
-					if (CharOperation.equals(existingFields[j].name,fieldName)) {
-						if (!modifiersEqual(field.getModifiers(),existingFields[j].modifiers)) {
+				for (int j = 0; j < existingFs.length; j++) {
+					if (CharOperation.equals(existingFs[j].getName(),fieldName)) {
+						if (!modifiersEqual(field.getModifiers(),existingFs[j].getModifiers())) {
 							return true;
 						}
-						if (!CharOperation.equals(existingFields[j].signature,field.getTypeName())) {
+						if (!CharOperation.equals(existingFs[j].getTypeName(),field.getTypeName())) {
 							return true;
 						}
 						continue new_field_loop;
@@ -904,9 +915,9 @@ public class AjState {
 			}
 		
 		// methods
-		MemberStructure[] existingMethods = existingType.methods;
+//		CompactMemberStructureRepresentation[] existingMethods = existingType.methods;
 		IBinaryMethod[] newMethods = reader.getMethods();
-		if (newMethods == null) { newMethods = new IBinaryMethod[0]; }
+		if (newMethods == null) { newMethods = CompactTypeStructureRepresentation.NoMethod; }
 		
 		// all redundant for now ... could be an optimization at some point...
 		
@@ -944,15 +955,16 @@ public class AjState {
 //				  nonGenMethods.add(method);
 ////			}
 //		}
-		if (newMethods.length != existingMethods.length) return true;
+		IBinaryMethod[] existingMs = existingType.binMethods;
+		if (newMethods.length != existingMs.length) return true;
 		new_method_loop: 
 			for (int i = 0; i < newMethods.length; i++) {
 				IBinaryMethod method = newMethods[i];
 				char[] methodName = method.getSelector();
-				for (int j = 0; j < existingMethods.length; j++) {
-					if (CharOperation.equals(existingMethods[j].name,methodName)) {
+				for (int j = 0; j < existingMs.length; j++) {
+					if (CharOperation.equals(existingMs[j].getSelector(),methodName)) {
 						// candidate match
-						if (!CharOperation.equals(method.getMethodDescriptor(),existingMethods[j].signature)) {
+						if (!CharOperation.equals(method.getMethodDescriptor(),existingMs[j].getMethodDescriptor())) {
 						// ok, the descriptors don't match, but is this a funky ctor on a non-static inner
 						// type?
 //						boolean mightBeOK = 
@@ -973,7 +985,7 @@ public class AjState {
 							continue; // might be overloading
 						} else {
 							// matching sigs
-							if (!modifiersEqual(method.getModifiers(),existingMethods[j].modifiers)) {
+							if (!modifiersEqual(method.getModifiers(),existingMs[j].getModifiers())) {
 								return true;
 							}
 							continue new_method_loop;
@@ -1230,105 +1242,6 @@ public class AjState {
 		}
 	}
 
-	private static class CompactStructureRepresentation {
-		
-		char[] className;
-		int modifiers;
-		char[] genericSignature;
-		char[] superclassName;
-		char[][] interfaces;
-		MemberStructure[] fields;
-		MemberStructure[] methods;
-		
-		public CompactStructureRepresentation(ClassFileReader cfr) {
-			this.className = cfr.getName();  // slashes...
-			this.modifiers = cfr.getModifiers();
-			this.genericSignature = cfr.getGenericSignature();
-//			if (this.genericSignature.length == 0) {
-//				this.genericSignature = null;
-//			}
-			this.superclassName = cfr.getSuperclassName(); // slashes...
-			interfaces = cfr.getInterfaceNames();
-			
-			
-
-			IBinaryField[] rFields = cfr.getFields();
-			this.fields = new MemberStructure[rFields==null?0:rFields.length];
-			if (rFields!=null) {
-				for (int i = 0; i < rFields.length; i++) {
-					this.fields[i] = new MemberStructure();
-					this.fields[i].name = rFields[i].getName();
-					this.fields[i].modifiers = rFields[i].getModifiers();
-					this.fields[i].signature = rFields[i].getTypeName();
-				}
-			}
-			
-			IBinaryMethod[] rMethods = cfr.getMethods();
-			this.methods = new MemberStructure[rMethods==null?0:rMethods.length];
-			if (rMethods!=null) {
-				for (int i = 0; i < rMethods.length; i++) {
-					this.methods[i] = new MemberStructure();
-					this.methods[i].name = rMethods[i].getSelector();
-					this.methods[i].modifiers = rMethods[i].getModifiers();
-	//				StringBuffer sig = new StringBuffer();
-	//				sig.append("(");
-	//				UnresolvedType[] pTypes = rMethods[i].getMethodDescriptor();
-	//				for (int j = 0; j < pTypes.length; j++) {
-	//					sig.append(pTypes[j].getSignature());
-	//				}
-	//				sig.append(")");
-	//				sig.append(rMethods[i].getReturnType().getSignature());
-					this.methods[i].signature =rMethods[i].getMethodDescriptor();// sig.toString().toCharArray();
-				}
-			}
-		}
-		
-		public CompactStructureRepresentation(ResolvedType forType) {
-			this.className = forType.getName().replace('.','/').toCharArray();
-			this.modifiers = forType.getModifiers();
-			this.genericSignature = forType.getGenericSignature().toCharArray();
-			if (this.genericSignature.length == 0) {
-				this.genericSignature = null;
-			}
-			this.superclassName = forType.getSuperclass().getName().replace('.','/').toCharArray();
-			ResolvedType[] rTypes = forType.getDeclaredInterfaces();
-			this.interfaces = new char[rTypes.length][];
-			for (int i = 0; i < rTypes.length; i++) {
-				this.interfaces[i] = rTypes[i].getName().replace('.','/').toCharArray();
-			}
-			ResolvedMember[] rFields = forType.getDeclaredFields();
-			this.fields = new MemberStructure[rFields.length];
-			for (int i = 0; i < rFields.length; i++) {
-				this.fields[i] = new MemberStructure();
-				this.fields[i].name = rFields[i].getName().toCharArray();
-				this.fields[i].modifiers = rFields[i].getModifiers();
-				this.fields[i].signature = rFields[i].getReturnType().getSignature().toCharArray();
-			}
-			ResolvedMember[] rMethods = forType.getDeclaredMethods();
-			this.methods = new MemberStructure[rMethods.length];
-			for (int i = 0; i < rMethods.length; i++) {
-				this.methods[i] = new MemberStructure();
-				this.methods[i].name = rMethods[i].getName().toCharArray();
-				this.methods[i].modifiers = rMethods[i].getModifiers();
-				StringBuffer sig = new StringBuffer();
-				sig.append("(");
-				UnresolvedType[] pTypes = rMethods[i].getParameterTypes();
-				for (int j = 0; j < pTypes.length; j++) {
-					sig.append(pTypes[j].getSignature());
-				}
-				sig.append(")");
-				sig.append(rMethods[i].getReturnType().getSignature());
-				this.methods[i].signature = sig.toString().toCharArray();
-			}
-		}
-	}
-	
-	private static class MemberStructure {
-		char[] name;
-		int modifiers;
-		char[] signature;
-	}
-	
 	public void wipeAllKnowledge() {
 		buildManager.state = null;
 		buildManager.setStructureModel(null);
@@ -1349,5 +1262,9 @@ public class AjState {
 	
 	public IStateListener getListener() {
 		return stateListener;
+	}
+
+	public IBinaryType checkPreviousBuild(String name) {
+		return (IBinaryType)resolvedTypeStructuresFromLastBuild.get(name);
 	}
 }
