@@ -886,9 +886,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		//System.out.println("compiling");
 		environment = getLibraryAccess(classpaths, filenames);
 		
-		if (!state.getClassNameToFileMap().isEmpty()) {
-			environment = new StatefulNameEnvironment(environment, state.getClassNameToFileMap());
-		}
+		//if (!state.getClassNameToFileMap().isEmpty()) { // see pr133532 (disabled to state can be used to answer questions)
+		environment = new StatefulNameEnvironment(environment, state.getClassNameToFileMap(),state);
+		//}
 		
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);
 		org.aspectj.org.eclipse.jdt.internal.compiler.Compiler compiler = 
