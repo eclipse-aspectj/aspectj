@@ -1074,6 +1074,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				  decisions.indexOf(expect)!=-1);
 	}
 	
+	public void testPr133532_3() {
+		initialiseProject("PR133532_3");
+		build("PR133532_3");
+		alter("PR133532_3","inc1");
+		build("PR133532_3");
+		assertTrue("There should be no errors reported:\n"+MyTaskListManager.getErrorMessages(),
+				MyTaskListManager.getErrorMessages().isEmpty());			
+	}
+	
 	public void testPr134541() {
 		initialiseProject("PR134541");
 		build("PR134541");
