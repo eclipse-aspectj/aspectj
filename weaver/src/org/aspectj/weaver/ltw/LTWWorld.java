@@ -246,6 +246,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	}
 
 	public void storeClass(JavaClass clazz) {
+		ensureRepositorySetup();
 		delegate.storeClass(clazz);
 	}
 

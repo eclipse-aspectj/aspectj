@@ -775,6 +775,7 @@ public abstract class World implements Dump.INode {
 				extraConfiguration.setProperty(n,v);
 			}
 		}
+		ensureAdvancedConfigurationProcessed();
 	}
 	
 	/**

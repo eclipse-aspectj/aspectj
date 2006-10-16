@@ -85,6 +85,7 @@ public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
 
     protected Repository delegate;
+    private ClassLoader loader;
     
     
 	//private ClassPathManager aspectPath = null;
@@ -153,15 +154,20 @@ public class BcelWorld extends World implements Repository {
      */
     public BcelWorld(ClassLoader loader, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
         this.classPath = null;
+        this.loader = loader;
         setMessageHandler(handler);
         setCrossReferenceHandler(xrefHandler);
         // Tell BCEL to use us for resolving any classes
-        delegate = getClassLoaderRepositoryFor(loader);
-        // TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
-        // if so, how can that be safe in J2EE ?? (static stuff in Bcel)
+       //  delegate = getClassLoaderRepositoryFor(loader);
     }
     
-    public Repository getClassLoaderRepositoryFor(ClassLoader loader) {
+    public void ensureRepositorySetup() {
+    	if (delegate==null) {
+    		delegate = getClassLoaderRepositoryFor(loader);
+    	}
+    }
+    
+	public Repository getClassLoaderRepositoryFor(ClassLoader loader) {
     	if (bcelRepositoryCaching) {
     		return new ClassLoaderRepository(loader);
     	} else {
@@ -360,6 +366,7 @@ public class BcelWorld extends World implements Repository {
 	private JavaClass lookupJavaClass(ClassPathManager classPath, String name) {
         if (classPath == null) {
             try {
+            	ensureRepositorySetup();
                 JavaClass jc = delegate.loadClass(name);
             	if (trace.isTraceEnabled()) trace.event("lookupJavaClass",this,new Object[] { name, jc });
                 return jc;
@@ -863,4 +870,5 @@ public class BcelWorld extends World implements Repository {
 			decpToRepeat = decpToRepeatNextTime;
 		}
     }
+
 }

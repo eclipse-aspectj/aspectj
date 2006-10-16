@@ -131,8 +131,8 @@
             <line text="info AspectJ Weaver Version"/>
             <line text="info register classloader"/>
             <line text="info using"/>
-            <line text="info register aspect"/>
             <line text="info [bcelRepositoryCaching=false] AspectJ will not"/>
+            <line text="info register aspect"/>
             <line text="info processing"/>
             <line text="info successfully"/>
  	    </stderr>
