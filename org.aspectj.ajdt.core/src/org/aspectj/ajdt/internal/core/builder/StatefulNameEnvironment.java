@@ -26,6 +26,7 @@ import java.util.Set;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.aspectj.util.FileUtil;
@@ -35,12 +36,14 @@ public class StatefulNameEnvironment implements INameEnvironment {
 	private Map classesFromName;
 	private Map inflatedClassFilesCache;
 	private Set packageNames;
+	private AjState state;
 	private INameEnvironment baseEnvironment;
 	
-	public StatefulNameEnvironment(INameEnvironment baseEnvironment, Map classesFromName) {
+	public StatefulNameEnvironment(INameEnvironment baseEnvironment, Map classesFromName, AjState state) {
 		this.classesFromName = classesFromName;
 		this.inflatedClassFilesCache = new HashMap();
 		this.baseEnvironment = baseEnvironment;
+		this.state= state;
 		
 		packageNames = new HashSet();
 		for (Iterator i = classesFromName.keySet().iterator(); i.hasNext(); ) {
@@ -65,6 +68,11 @@ public class StatefulNameEnvironment implements INameEnvironment {
 	}
 
 	private NameEnvironmentAnswer findType(String name) {
+	    // pr133532 - ask the state for the type first
+		IBinaryType seenOnPreviousBuild = state.checkPreviousBuild(name);
+		if (seenOnPreviousBuild!=null) {
+			return new NameEnvironmentAnswer(seenOnPreviousBuild,null);
+		}
 		if (this.inflatedClassFilesCache.containsKey(name)) {
 			return (NameEnvironmentAnswer) this.inflatedClassFilesCache.get(name);
 		}
