@@ -1,6 +1,6 @@
-public class $Proxy4 {
+public class $ProxyPr120474 {
   public void foo() {}
   public static void main (String[] args) {
-	  new $Proxy4().foo();
+	  new $ProxyPr120474().foo();
   }
 }
