@@ -66,6 +66,7 @@ public class ConfigParser {
                 if (line.length() == 0) continue;
                 args.add(new Arg(line, new SourceLocation(configFile, lineNum)));
             }
+            stream.close();
         } catch (IOException e) {
             location = new SourceLocation(configFile, lineNum);
             showError("error reading config file: " + e.toString());

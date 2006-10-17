@@ -270,6 +270,7 @@ public class BcelWeaver implements IWeaver {
 			FileInputStream fis = new FileInputStream(classFiles[i]);
 			byte[] bytes = FileUtil.readAsByteArray(fis);
 			addIfAspect(bytes,classFiles[i].getAbsolutePath(),addedAspects);
+			fis.close();
 		}
 		return addedAspects;
 	}
