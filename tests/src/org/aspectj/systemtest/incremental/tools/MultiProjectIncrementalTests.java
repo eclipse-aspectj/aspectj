@@ -249,6 +249,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 	}
 	
+//	public void testDeclareAtType_pr149293() {
+//		configureBuildStructureModel(true);
+//		initialiseProject("PR149293_1");
+//		build("PR149293_1");
+//		checkCompileWeaveCount(4,5);
+//		assertNoErrors();
+//		alter("PR149293_1","inc1");
+//		build("PR149293_1");
+//		assertNoErrors();
+//	}
+	
 /*
 	public void testRefactoring_pr148285() {
 		configureBuildStructureModel(true);
@@ -1765,6 +1776,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	private File getProjectOutputRelativePath(String p,String filename) {
 		File projDir = new File(getWorkingDir(),p);
 		return new File(projDir,"bin"+File.separator+filename);
+	}
+
+	private void assertNoErrors() {
+		assertTrue("Should be no errors, but got "+MyTaskListManager.getErrorMessages(),MyTaskListManager.getErrorMessages().size()==0);				
 	}
 	
 }
