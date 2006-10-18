@@ -51,6 +51,59 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName">
+      <compile files="CaseOne.java"/>
+      <run class="CaseOne">
+        <stdout>
+          <line text="AClass has an aspect instance"/>
+          <line text="The aspect instance thinks it is for type name AClass"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName - annotation style">
+      <compile files="CaseFive.java" options="-1.5"/>
+      <run class="CaseFive">
+        <stdout>
+          <line text="AClass has an aspect instance"/>
+          <line text="The aspect instance thinks it is for type name AClass"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName - multiple types">
+      <compile files="CaseTwo.java"/>
+      <run class="CaseTwo">
+        <stdout>
+          <line text="BClass aspect instance gives a within type name of BClass"/>
+          <line text="CClass aspect instance gives a within type name of CClass"/>
+          <line text="AClass aspect instance gives a within type name of AClass"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName - non matching types">
+      <compile files="CaseThree.java"/>
+      <run class="CaseThree">
+        <stdout>
+          <line text="BClass aspect instance gives a within type name of &lt;null&gt;"/>
+          <line text="CClass aspect instance gives a within type name of CClass"/>
+          <line text="AClass aspect instance gives a within type name of AClass"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName - types in packages">
+      <compile files="CaseFour.java"/>
+      <run class="a.b.CaseFour">
+        <stdout>
+          <line text="BClass aspect instance gives a within type name of a.b.BClass"/>
+          <line text="CClass aspect instance gives a within type name of a.b.CClass"/>
+          <line text="AClass aspect instance gives a within type name of a.b.AClass"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr158126" title="annotations, call and constructors problem">
       <compile files="A.java,B.java,MyAnnotation.java,MyAspect.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'constructor-call(void B.&lt;init&gt;())' in Type 'A' (A.java:5) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>

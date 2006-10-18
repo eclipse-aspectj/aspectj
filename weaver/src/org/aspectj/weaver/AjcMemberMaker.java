@@ -189,6 +189,20 @@ public class AjcMemberMaker {
 			);	
 		return rm;
 	}
+	
+	// PTWIMPL ResolvedMember for getWithinTypeName() method
+	public static ResolvedMember perTypeWithinGetWithinTypeNameMethod(UnresolvedType declaringType, boolean inJava5Mode) {
+		// public String getWithinTypeName()
+		ResolvedMemberImpl rm = new ResolvedMemberImpl(
+			Member.METHOD, 
+			declaringType,
+			Modifier.PUBLIC,
+			UnresolvedType.JAVA_LANG_STRING, // return value
+			NameMangler.PERTYPEWITHIN_GETWITHINTYPENAME_METHOD,
+			UnresolvedType.NONE
+			);	
+		return rm;
+	}
 
 	public static ResolvedMember perTypeWithinCreateAspectInstance(UnresolvedType declaringType) {
 		// public static a.X ajc$createAspectInstance(java.lang.String)

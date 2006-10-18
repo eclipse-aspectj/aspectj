@@ -44,6 +44,21 @@
    </para>
    
    <para>
+      In addition, <literal>pertypewithin</literal> aspects have a 
+      <literal>getWithinTypeName</literal> method that can be called
+      to return the package qualified name of the type for which the
+      aspect instance has been created.
+   </para>
+   
+   <programlisting><![CDATA[
+    /**
+     * return the package qualified name (eg. com.foo.MyClass) of the type
+     * for which the aspect instance has been instantiated.
+     */
+     public String getWithinTypeName()
+    ]]></programlisting>
+   
+   <para>
        In common with the other per-clause instantiation models, the execution
        of any advice declared within a <literal>pertypewithin</literal> aspect
        is conditional upon an implicit pointcut condition. In this case, that

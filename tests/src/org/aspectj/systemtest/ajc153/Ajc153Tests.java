@@ -28,6 +28,11 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
 //  public void testNegatedAnnotationMatchingProblem_pr153464() { runTest("negated annotation matching problem");}
+  public void testPTWgetWithinTypeName_pr123423_1() { runTest("basic usage of getWithinTypeName");}
+  public void testPTWgetWithinTypeName_pr123423_2() { runTest("basic usage of getWithinTypeName - multiple types");}
+  public void testPTWgetWithinTypeName_pr123423_3() { runTest("basic usage of getWithinTypeName - non matching types");}
+  public void testPTWgetWithinTypeName_pr123423_4() { runTest("basic usage of getWithinTypeName - types in packages");}
+  public void testPTWgetWithinTypeName_pr123423_5() { runTest("basic usage of getWithinTypeName - annotation style");}
   public void testTurningOffBcelCaching_pr160674() { runTest("turning off bcel caching");}
   public void testNoIllegalStateExceptionWithGenericInnerAspect_pr156058() { runTest("no IllegalStateException with generic inner aspect"); }
   public void testNoIllegalStateExceptionWithGenericInnerAspect_pr156058_2() { runTest("no IllegalStateException with generic inner aspect - 2"); }

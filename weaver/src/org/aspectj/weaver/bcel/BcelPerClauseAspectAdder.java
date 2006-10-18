@@ -124,6 +124,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
             generatePerTWHasAspectMethod(gen);
             generatePerTWGetInstanceMethod(gen);
             generatePerTWCreateAspectInstanceMethod(gen);
+            generatePerTWGetWithinTypeNameMethod(gen);
         } else {
             throw new Error("should not happen - not such kind " + kind.getName());
         }
@@ -177,7 +178,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 // pr144602 - don't need to do this, PerObjectInterface munger will do it
 //        } else if (kind == PerClause.PEROBJECT) {
 //           ResolvedMember perObjectFieldInfo = AjcMemberMaker.perObjectField(aspectType, aspectType);
-//            classGen.addField(makeFieldGen(classGen, perObjectFieldInfo).getField(), null);
+//            classGen.addField(makeFieldGen(classGen, perObjectFieldInfo).(), null);
 //            // if lazy generation of the inner interface MayHaveAspect works on LTW (see previous note)
 //            // it should be done here.
         } else if (kind == PerClause.PERCFLOW) {
@@ -469,6 +470,21 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         method.addExceptionHandler(
             tryStart, handler.getPrev(), handler, new ObjectType("java.lang.Exception"), false
         );
+    }
+
+    // Create 'public String getWithinTypeName() { return ajc$withinType;}'
+    private void generatePerTWGetWithinTypeNameMethod(LazyClassGen classGen) {
+        InstructionFactory factory = classGen.getFactory();
+        LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.perTypeWithinGetWithinTypeNameMethod(aspectType,classGen.getWorld().isInJava5Mode()));
+        flagAsSynthetic(method, false);
+        classGen.addMethodGen(method);
+		//        	   0:   aload_0
+		//        	   1:   getfield        #14; //Field ajc$withinType:Ljava/lang/String;
+		//        	   4:   areturn
+        InstructionList il = method.getBody();
+        il.append(InstructionConstants.ALOAD_0);
+        il.append(Utility.createGet(factory, AjcMemberMaker.perTypeWithinWithinTypeField(aspectType, aspectType)));
+        il.append(InstructionConstants.ARETURN);
     }
 
     private void generatePerTWHasAspectMethod(LazyClassGen classGen) {

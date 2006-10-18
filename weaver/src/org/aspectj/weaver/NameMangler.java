@@ -47,6 +47,7 @@ public class NameMangler {
 	public static final String PERTYPEWITHIN_GETINSTANCE_METHOD          = PREFIX + "getInstance";
 	public static final String PERTYPEWITHIN_CREATEASPECTINSTANCE_METHOD = PREFIX + "createAspectInstance";
 	public static final String PERTYPEWITHIN_WITHINTYPEFIELD             = PREFIX + "withinType";
+	public static final String PERTYPEWITHIN_GETWITHINTYPENAME_METHOD    = "getWithinTypeName";
 	
 	public static final String AJC_PRE_CLINIT_NAME = PREFIX + "preClinit";
 

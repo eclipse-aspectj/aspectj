@@ -75,7 +75,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	private AjAttribute.Aspect aspectAttribute;
 	public PerClause perClause;
 	public ResolvedMember aspectOfMethod;
-	//public ResolvedMember ptwGetWithinTypeMethod;
+	public ResolvedMember ptwGetWithinTypeNameMethod;
 	public ResolvedMember hasAspectMethod;
 
 
@@ -368,8 +368,7 @@ public class AspectDeclaration extends TypeDeclaration {
 			generatePerTypeWithinGetInstanceMethod(classFile); // private static <aspecttype> ajc$getInstance(Class c) throws Exception
 			generatePerTypeWithinHasAspectMethod(classFile);
 			generatePerTypeWithinCreateAspectInstanceMethod(classFile); // generate public static X ajc$createAspectInstance(Class forClass) {
-			// PTWIMPL getWithinType() would need this...
-			//generatePerTypeWithinGetWithinTypeMethod(classFile); // generate public Class getWithinType() {
+			generatePerTypeWithinGetWithinTypeNameMethod(classFile);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -728,6 +727,26 @@ public class AspectDeclaration extends TypeDeclaration {
 			}});
 	}
 	
+	private void generatePerTypeWithinGetWithinTypeNameMethod(ClassFile classFile) {
+		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
+		// Code:
+		/*
+		  Code:
+		   Stack=1, Locals=1, Args_size=1
+		   0:   aload_0
+		   1:   getfield        #14; //Field ajc$withinType:Ljava/lang/String;
+		   4:   areturn
+		 */
+		generateMethod(classFile, AjcMemberMaker.perTypeWithinGetWithinTypeNameMethod(world.fromBinding(binding),world.getWorld().isInJava5Mode()), 
+		new BodyGenerator() {
+			public void generate(CodeStream codeStream) {
+				ExceptionLabel exc = new ExceptionLabel(codeStream,world.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
+				exc.placeStart();
+				codeStream.aload_0();
+				codeStream.getfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX,typeX)));
+				codeStream.areturn();
+			}});
+	}
 	// PTWIMPL Generate getInstance method 
 	private void generatePerTypeWithinGetInstanceMethod(ClassFile classFile) {
 			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
@@ -1044,8 +1063,8 @@ public class AspectDeclaration extends TypeDeclaration {
 			    // PTWIMPL Use these variants of aspectOf()/hasAspect()
 				aspectOfMethod  = AjcMemberMaker.perTypeWithinAspectOfMethod(typeX,world.getWorld().isInJava5Mode());
 				hasAspectMethod = AjcMemberMaker.perTypeWithinHasAspectMethod(typeX,world.getWorld().isInJava5Mode());
-				//ptwGetWithinTypeMethod = AjcMemberMaker.perTypeWithinGetWithinTypeMethod(typeX,world.getWorld().isInJava5Mode());
-				//binding.addMethod(world.makeMethodBinding(ptwGetWithinTypeMethod));
+				ptwGetWithinTypeNameMethod = AjcMemberMaker.perTypeWithinGetWithinTypeNameMethod(typeX,world.getWorld().isInJava5Mode());
+				binding.addMethod(world.makeMethodBinding(ptwGetWithinTypeNameMethod));
 			} else {
 				throw new RuntimeException("bad per clause: " + perClause);	
 			}
