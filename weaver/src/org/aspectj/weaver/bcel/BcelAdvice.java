@@ -197,7 +197,7 @@ public class BcelAdvice extends Advice {
         // (bug 129282). This may be expanded to include other compiler warnings
         // at the moment it only deals with 'declared exception is not thrown'
         if (!shadow.getWorld().isIgnoringUnusedDeclaredThrownException() 
-        		&& !thrownExceptions.isEmpty()) {
+        		&& !getThrownExceptions().isEmpty()) {
         	Member member = shadow.getSignature();
         	if (member instanceof BcelMethod) {
         		removeUnnecessaryProblems((BcelMethod)member, 

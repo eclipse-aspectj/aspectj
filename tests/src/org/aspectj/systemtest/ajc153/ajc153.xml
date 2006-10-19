@@ -742,4 +742,8 @@
 
     </ajc-test>
 
+    <ajc-test dir="bugs153/pr161217" title="NPE with thrown exception warning and at aspectj">
+      <compile files="AtAspectJAspect.java, C.java" options="-warn:+unusedThrown -1.5"/>
+    </ajc-test>
+
 </suite>

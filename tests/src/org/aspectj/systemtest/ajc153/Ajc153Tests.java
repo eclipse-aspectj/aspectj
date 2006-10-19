@@ -167,6 +167,7 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testNoInvalidAbsoluteTypeNameWarning_pr156904_3() {runTest("ensure no invalidAbsoluteTypeName when do match - 3");}
   public void testNoInvalidAbsoluteTypeNameWarning_pr156904_4() {runTest("ensure no invalidAbsoluteTypeName when do match - 4");}
 
+  public void testNoNPEWithThrownExceptionWarningAndAtAspectj_pr161217() {runTest("NPE with thrown exception warning and at aspectj");}
   
   /////////////////////////////////////////
   public static Test suite() {
