@@ -31,6 +31,9 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     protected UnresolvedType[] parameterTypes;
     private final String signature;
     private String paramSignature;
+    private boolean reportedCantFindDeclaringType = false;
+    private boolean reportedUnresolvableMember = false;
+
     
     /**
      * All the signatures that a join point with this member as its signature has.
@@ -523,14 +526,24 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 * @see org.aspectj.weaver.Member#getModifiers(org.aspectj.weaver.World)
 	 */
     public int getModifiers(World world) {
-        return resolve(world).getModifiers();
+    	ResolvedMember resolved = resolve(world);
+    	if (resolved == null) {
+       		reportDidntFindMember(world);
+    		return 0;
+		}
+		return resolved.getModifiers();
     }
     
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#getExceptions(org.aspectj.weaver.World)
 	 */
     public UnresolvedType[] getExceptions(World world) {
-        return resolve(world).getExceptions();
+    	ResolvedMember resolved = resolve(world);
+    	if (resolved == null) {
+       		reportDidntFindMember(world);
+    		return UnresolvedType.NONE;
+		}
+		return resolved.getExceptions();
     }
     
     /* (non-Javadoc)
@@ -932,7 +945,12 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 * @see org.aspectj.weaver.Member#getParameterNames(org.aspectj.weaver.World)
 	 */
 	public String[] getParameterNames(World world) {
-    	return resolve(world).getParameterNames();
+    	ResolvedMember resolved = resolve(world);
+    	if (resolved == null) {
+       		reportDidntFindMember(world);
+    		return null;
+		}
+		return resolved.getParameterNames();
     }
 	
     /**
@@ -946,5 +964,22 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 		return joinPointSignatures;
 	}
     
+	/**
+	 * Raises an [Xlint:cantFindType] message if the declaring type
+	 * cannot be found or an [Xlint:unresolvableMember] message if the
+	 * type can be found (bug 149908)
+	 */
+	private void reportDidntFindMember(World world) {
+       	if (reportedCantFindDeclaringType || reportedUnresolvableMember) return;
+		ResolvedType rType = getDeclaringType().resolve(world);
+		if (rType.isMissing()) {
+			world.getLint().cantFindType.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,rType.getName()),null);
+			reportedCantFindDeclaringType = true;
+		} else {
+	       	world.getLint().unresolvableMember.signal(getName(),null);
+	       	reportedUnresolvableMember = true;						
+		}
+    }
+
 }
    

@@ -28,6 +28,8 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
 //  public void testNegatedAnnotationMatchingProblem_pr153464() { runTest("negated annotation matching problem");}
+  public void testNoNPEDueToMissingType_pr149908() { runTest("ensure no npe due to missing type");}
+  public void testNoNPEDueToMember_pr149908() { runTest("ensure no npe due to missing member");}
   public void testPTWgetWithinTypeName_pr123423_1() { runTest("basic usage of getWithinTypeName");}
   public void testPTWgetWithinTypeName_pr123423_2() { runTest("basic usage of getWithinTypeName - multiple types");}
   public void testPTWgetWithinTypeName_pr123423_3() { runTest("basic usage of getWithinTypeName - non matching types");}

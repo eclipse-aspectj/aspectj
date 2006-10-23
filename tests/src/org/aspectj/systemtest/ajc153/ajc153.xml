@@ -2,6 +2,19 @@
 
 <!-- AspectJ v1.5.3 Tests -->
 <suite>
+    <ajc-test dir="bugs153/pr149908" title="ensure no npe due to missing type">
+      <compile files="A.aj,C1.java,Tracing.aj" inpath="simple.jar">
+		<message kind="error" text="can't find type MyStringBuilder"/>
+		<message kind="error" text="can't determine superclass of missing type MyStringBuilder"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr149908" title="ensure no npe due to missing member">
+      <compile files="A.aj,C1.java,Tracing.aj" inpath="simple.jar;stringBuilder.jar">
+		<message kind="warning" text="can not resolve this member: append [Xlint:unresolvableMember]"/>
+	  </compile>
+    </ajc-test>
+    
      <ajc-test dir="bugs153/pr159143" title="declare method annotations">
         <compile files="DeclareMethodAnnotation.java" options="-1.5">
             <message line="16" kind="warning" text="all"/>
