@@ -19,6 +19,7 @@ import java.util.*;
 
 import java.io.FileFilter;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.FileUtil;
 
@@ -64,6 +65,8 @@ public class Main implements Config {
     private static boolean deleteTempFilesOnExit = true;
     
 	private static boolean aborted = false;
+	private static IMessage[] errors;
+	private static boolean shownAjdocUsageMessage = false;
 	
 	// creating a local variable to enable us to create the ajdocworkingdir
 	// in a local sandbox during testing
@@ -117,6 +120,7 @@ public class Main implements Config {
             if (CompilerWrapper.hasErrors()) {
             	System.out.println(FAIL_MESSAGE);
             	aborted = true;
+            	errors = CompilerWrapper.getErrors();
             	return;
             }    
 
@@ -454,11 +458,7 @@ public class Main implements Config {
         for (int i = 0; i < vargs.size() ; i++) {
             String arg = (String)vargs.get(i);  
             ignoreArg = false;
-            if ( addNextToAJCOptions ) {
-                ajcOptions.addElement( arg );
-                addNextToAJCOptions = false;
-            }
-            if ( addNextAsDocDir ) {
+            if (addNextAsDocDir) {
                 docDir = arg;
                 addNextAsDocDir = false;
             }
@@ -521,7 +521,7 @@ public class Main implements Config {
             	System.out.println("> Ignoring unsupported option: -use");
             } else if (arg.equals("-splitindex")) {
             	// passed to javadoc
-            } else if (arg.startsWith("-") || addNextAsOption) {
+            } else if (arg.startsWith("-") || addNextAsOption || addNextToAJCOptions) {
                 if ( arg.equals( "-private" ) ) {
                     docModifier = "private";
                 } else if ( arg.equals( "-package" ) ) {
@@ -553,8 +553,25 @@ public class Main implements Config {
                 	|| arg.equals("-noindex")) {
                 	// pass through 
                 	//System.err.println("> ignoring unsupported option: " + arg);
-                } else if ( addNextAsOption ) {
-                    //  pass through
+                } else if (addNextToAJCOptions || addNextAsOption) {
+                	// deal with these two options together even though effectively
+                	// just falling through if addNextAsOption is true. Otherwise
+                	// will have to ensure check "addNextToAJCOptions" before
+                	// "addNextAsOption" so as the options are added to the 
+                	// correct lists.
+                	if (addNextToAJCOptions) {
+                    	ajcOptions.addElement(arg);
+                    	if (!arg.startsWith("-")) {
+                    		addNextToAJCOptions = false;
+    					}
+                    	if (!addNextAsOption) {
+    						continue;
+    					}						
+					}
+                } else if (arg.startsWith("-")) {
+                	ajcOptions.addElement(arg);
+					addNextToAJCOptions = true;
+					continue;
                 } else {
                 	System.err.println("> unrecognized argument: " + arg);
                     displayHelpAndExit( null );
@@ -672,6 +689,7 @@ public class Main implements Config {
 
 
     static void displayHelpAndExit(String message) {
+    	shownAjdocUsageMessage = true;
         if (message != null) {
 			System.err.println(message);
 			System.err.println();
@@ -710,6 +728,14 @@ public class Main implements Config {
     
 	public static boolean hasAborted() {
 		return aborted;
+	}
+	
+	public static IMessage[] getErrors() {
+		return errors;
+	}
+	
+	public static boolean hasShownAjdocUsageMessage() {
+		return shownAjdocUsageMessage;
 	}
 	
 	/**

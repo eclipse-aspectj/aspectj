@@ -431,12 +431,24 @@ class HtmlDecorator {
     }
 
     private static boolean isAboveVisibility(IProgramElement element) {
-        return 
-            (docVisibilityModifier.equals("private")) || // everything
-            (docVisibilityModifier.equals("package") && element.getAccessibility().equals(IProgramElement.Accessibility.PACKAGE)) || // package
-            (docVisibilityModifier.equals("protected") && (element.getAccessibility().equals(IProgramElement.Accessibility.PROTECTED) ||
-                    element.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC))) ||
-            (docVisibilityModifier.equals("public") && element.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC));
+    	IProgramElement.Accessibility acc = element.getAccessibility();
+    	if (docVisibilityModifier.equals("private")) {
+    		// show all classes and members
+			return true;
+		} else if (docVisibilityModifier.equals("package")) {
+			// show package, protected and public classes and members
+			return acc.equals(IProgramElement.Accessibility.PACKAGE) 
+					|| acc.equals(IProgramElement.Accessibility.PROTECTED)
+					|| acc.equals(IProgramElement.Accessibility.PUBLIC);	
+		} else if (docVisibilityModifier.equals("protected")) {
+			// show protected and public classes and members
+			return acc.equals(IProgramElement.Accessibility.PROTECTED)
+					|| acc.equals(IProgramElement.Accessibility.PUBLIC);	
+		} else if (docVisibilityModifier.equals("public")){
+			// show public classes and members
+			return acc.equals(IProgramElement.Accessibility.PUBLIC);
+		}
+    	return false;
     }
 
     private static String genAccessibility(IProgramElement decl) {

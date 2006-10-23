@@ -36,9 +36,11 @@ interface Config {
                                "  -argfile <file>           Build config file (wildcards not supported)\n" +
                                "  -verbose                  Output messages about what Javadoc is doing\n" +
                                "  -v                        Print out the version of ajdoc\n" +
-							   "  -source <version>         set source level (1.3, 1.4 or 1.5)" +
+							   "  -source <version>         set source level (1.3, 1.4 or 1.5)\n" +
+							   "\n" +
+                               "as well as the AspectJ Compiler options.\n" +
                                "\n"+
                                "If an argument is of the form @<filename>, the file will be interpreted as\n"+
-                               "a line delimited set of arguments to insert into the argument list.";
+                               "a line delimited set of arguments to insert into the argument list.\n";
 
 }

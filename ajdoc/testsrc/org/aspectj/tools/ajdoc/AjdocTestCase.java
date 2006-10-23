@@ -12,6 +12,8 @@ package org.aspectj.tools.ajdoc;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -156,6 +158,36 @@ public class AjdocTestCase extends TestCase{
 	}
 	
 	/**
+	 * Run the ajdoc command with the default visibility
+	 * and source level, the given input files and the given
+	 * aspectj options
+	 */
+	public void runAjdoc(File[] inputFiles, String sourceLevel, String[] ajOptions) {
+		if (inputFiles.length == 0) {
+			fail("need to pass some files into ajdoc");
+		} 
+		if (!sourceLevel.equals("1.3")
+				&& !sourceLevel.equals("1.4")
+				&& !sourceLevel.equals("1.5")) {
+			fail("need to pass ajdoc '1.3', '1.4', or '1.5' as the source level");
+		}
+ 		String[] args = new String[6 + inputFiles.length + ajOptions.length];
+ 		args[0] = "-source";
+		args[1] = sourceLevel;
+		args[2] = "-classpath";
+		args[3] = AjdocTests.ASPECTJRT_PATH.getPath();
+		args[4] = "-d";
+		args[5] = getAbsolutePathOutdir();
+		for (int i = 0; i < ajOptions.length; i++) {
+			args[6 + i] = ajOptions[i];
+		}
+		for (int i = 0; i < inputFiles.length; i++) {
+			args[6 + i +ajOptions.length] = inputFiles[i].getAbsolutePath();
+		}
+        org.aspectj.tools.ajdoc.Main.main(args);		
+	}
+	
+	/**
 	 * Run the ajdoc command with the given visibility argument,
 	 * the given source level argument and the given input files. 
 	 */
@@ -262,5 +294,19 @@ public class AjdocTestCase extends TestCase{
 		args[6] = getAbsoluteProjectDir();
 		args[7] = "@" + getAbsoluteProjectDir() + File.separatorChar + lstFile;
         org.aspectj.tools.ajdoc.Main.main(args);
+	}
+	
+	/**
+	 * Run the ajdoc command with the given options
+	 */
+	public void runAjdoc(List options) {
+		String[] args = new String[options.size()];
+		int i = 0;                
+		for (Iterator iter = options.iterator(); iter.hasNext();) {
+			String element = (String) iter.next();
+			args[i] = element;
+			i++;
+		}
+		org.aspectj.tools.ajdoc.Main.main(args);
 	}
 }

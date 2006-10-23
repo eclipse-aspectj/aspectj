@@ -11,6 +11,8 @@
  * ******************************************************************/
  package org.aspectj.tools.ajdoc;
 
+import org.aspectj.bridge.IMessage;
+
 /**
  * Wrapper for ajdoc's use of the AspectJ compiler.
  * 
@@ -28,5 +30,9 @@ public class CompilerWrapper extends org.aspectj.tools.ajc.Main {
     
 	public static boolean hasErrors() {
 		return INSTANCE.ourHandler.getErrors().length > 0;
+	}
+	
+	public static IMessage[] getErrors() {
+		return INSTANCE.ourHandler.getErrors();
 	}
 }
