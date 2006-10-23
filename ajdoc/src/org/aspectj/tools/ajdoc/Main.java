@@ -110,43 +110,16 @@ public class Main implements Config {
 
             for (int i = 0; i < filenames.size(); i++) {
                 inputFiles[i]     = new File((String)filenames.elementAt(i));
-                //signatureFiles[i] = createSignatureFile(inputFiles[i]);
             }
 
             // PHASE 0: call ajc
-            ajcOptions.addElement("-noExit");
-			ajcOptions.addElement("-XjavadocsInModel");  	// TODO: wrong option to force model gen
-            ajcOptions.addElement("-d"); 
-            ajcOptions.addElement(rootDir.getAbsolutePath());
-			String[] argsToCompiler = new String[ajcOptions.size() + inputFiles.length];
-            int i = 0;
-            for ( ; i < ajcOptions.size(); i++ ) {
-                argsToCompiler[i] = (String)ajcOptions.elementAt(i);
-            }
-            for ( int j = 0; j < inputFiles.length; j++) {
-                argsToCompiler[i] = inputFiles[j].getAbsolutePath();
-                //System.out.println(">> file to ajc: " + inputFiles[j].getAbsolutePath());
-                i++;
-            }
-
-//            System.out.println(Arrays.asList(argsToCompiler));
-            System.out.println( "> Calling ajc..." );
-            CompilerWrapper.main(argsToCompiler);
+            callAjc(inputFiles);
             if (CompilerWrapper.hasErrors()) {
             	System.out.println(FAIL_MESSAGE);
             	aborted = true;
             	return;
-            }
-/*
-            for (int ii = 0; ii < inputFiles.length; ii++) {
-                String tempFP = inputFiles[ii].getAbsolutePath();
-                tempFP = tempFP.substring(0, tempFP.length()-4);
-                tempFP += "ajsym";
-                System.out.println( ">> checking: " + tempFP);
-                File tempF = new File(tempFP);
-                if ( !tempF.exists() ) System.out.println( ">>> doesn't exist!" );
-            }
-*/
+            }    
+
             for (int ii = 0; ii < filenames.size(); ii++) {
                 signatureFiles[ii] = createSignatureFile(inputFiles[ii]);
             }
@@ -154,99 +127,123 @@ public class Main implements Config {
             // PHASE 1: generate Signature files (Java with DeclIDs and no bodies).
             System.out.println( "> Building signature files..." );
 			try{
-            StubFileGenerator.doFiles(declIDTable, inputFiles, signatureFiles);
+				StubFileGenerator.doFiles(declIDTable, inputFiles, signatureFiles);
 			} catch (DocException d){
 				System.err.println(d.getMessage());
-	           // d.printStackTrace();
 				return;
 			}
 
             // PHASE 2: let Javadoc generate HTML (with DeclIDs)
-            System.out.println( "> Calling javadoc..." );
-            String[] javadocargs = null;
-            if ( packageMode ) {
-                int numExtraArgs = 2;
-                if (authorStandardDocletSwitch) numExtraArgs++;
-                if (versionStandardDocletSwitch) numExtraArgs++;
-                javadocargs = new String[numExtraArgs + options.size() + packageList.size() +
-                                         fileList.size() ];
-                javadocargs[0] = "-sourcepath";
-                javadocargs[1] = outputWorkingDir;
-                int argIndex = 2;
-                if (authorStandardDocletSwitch) {
-                    javadocargs[argIndex] = "-author";
-                    argIndex++;
-                }
-                if (versionStandardDocletSwitch) {
-                    javadocargs[argIndex] = "-version";
-                }
-                //javadocargs[1] = getSourcepathAsString();
-                for (int k = 0; k < options.size(); k++) {
-                    javadocargs[numExtraArgs+k] = (String)options.elementAt(k);
-                }
-                for (int k = 0; k < packageList.size(); k++) {
-                    javadocargs[numExtraArgs+options.size() + k] = (String)packageList.elementAt(k);
-                }
-                for (int k = 0; k < fileList.size(); k++) {
-                    javadocargs[numExtraArgs+options.size() + packageList.size() + k] = (String)fileList.elementAt(k);
-                }
-            }
-            else {
-                javadocargs = new String[options.size() + signatureFiles.length];
-                for (int k = 0; k < options.size(); k++) {
-                    javadocargs[k] = (String)options.elementAt(k);
-                }
-                for (int k = 0; k < signatureFiles.length; k++) {
-                    javadocargs[options.size() + k] = StructureUtil.translateAjPathName(signatureFiles[k].getCanonicalPath());
-                }
-            }
-         
-            JavadocRunner.callJavadoc(javadocargs);
-            //for ( int o = 0; o < inputFiles.length; o++ ) {
-            //    System.out.println( "file: " + inputFiles[o] );
-            //}
+			callJavadoc(signatureFiles);
 
             // PHASE 3: add AspectDoc specific stuff to the HTML (and remove the DeclIDS).
-            /** We start with the known HTML files (the ones that correspond directly to the
-            * input files.)  As we go along, we may learn that Javadoc split one .java file
-            * into multiple .html files to handle inner classes or local classes.  The html
-            * file decorator picks that up.
-            */
-            System.out.println( "> Decorating html files..." );
-            HtmlDecorator.decorateHTMLFromInputFiles(declIDTable,
-                                              rootDir,
-                                              inputFiles,
-                                              docModifier); 
-            
-            System.out.println( "> Removing generated tags (this may take a while)..." );
-            removeDeclIDsFromFile("index-all.html", true);
-            removeDeclIDsFromFile("serialized-form.html", true);
-            if (packageList.size() > 0) {
-	            for (int p = 0; p < packageList.size(); p++) {
-	                removeDeclIDsFromFile(((String)packageList.elementAt(p)).replace('.','/') +
-	                                       Config.DIR_SEP_CHAR +
-	                                       "package-summary.html", true);
-	            }
-            } else {
-				File[] files = rootDir.listFiles();
-				if (files == null){
-					System.err.println("Destination directory is not a directory: " + rootDir.toString());
-					return;
-				}
-            	files = FileUtil.listFiles(rootDir, new FileFilter() {
-            		public boolean accept(File f) {
-						return f.getName().equals("package-summary.html");
-					}
-            	});
-            	for (int j = 0; j < files.length; j++) {
-            		removeDeclIDsFromFile(files[j].getAbsolutePath(), false);
-            	}
-            }
+			decorateHtmlFiles(inputFiles);
             System.out.println( "> Finished." );
         } catch (Throwable e) {
             handleInternalError(e);
             exit(-2);
         }
+    }
+    
+    private static void callAjc(File[] inputFiles) {
+        ajcOptions.addElement("-noExit");
+		ajcOptions.addElement("-XjavadocsInModel");  	// TODO: wrong option to force model gen
+        ajcOptions.addElement("-d"); 
+        ajcOptions.addElement(rootDir.getAbsolutePath());
+		String[] argsToCompiler = new String[ajcOptions.size() + inputFiles.length];
+        int i = 0;
+        for ( ; i < ajcOptions.size(); i++ ) {
+            argsToCompiler[i] = (String)ajcOptions.elementAt(i);
+        }
+        for ( int j = 0; j < inputFiles.length; j++) {
+            argsToCompiler[i] = inputFiles[j].getAbsolutePath();
+            //System.out.println(">> file to ajc: " + inputFiles[j].getAbsolutePath());
+            i++;
+        }
+        System.out.println( "> Calling ajc..." );
+        CompilerWrapper.main(argsToCompiler);
+    }
+    
+    private static void callJavadoc(File[] signatureFiles) throws IOException {
+        System.out.println( "> Calling javadoc..." );
+        String[] javadocargs = null;
+        if ( packageMode ) {
+            int numExtraArgs = 2;
+            if (authorStandardDocletSwitch) numExtraArgs++;
+            if (versionStandardDocletSwitch) numExtraArgs++;
+            javadocargs = new String[numExtraArgs + options.size() + packageList.size() +
+                                     fileList.size() ];
+            javadocargs[0] = "-sourcepath";
+            javadocargs[1] = outputWorkingDir;
+            int argIndex = 2;
+            if (authorStandardDocletSwitch) {
+                javadocargs[argIndex] = "-author";
+                argIndex++;
+            }
+            if (versionStandardDocletSwitch) {
+                javadocargs[argIndex] = "-version";
+            }
+            //javadocargs[1] = getSourcepathAsString();
+            for (int k = 0; k < options.size(); k++) {
+                javadocargs[numExtraArgs+k] = (String)options.elementAt(k);
+            }
+            for (int k = 0; k < packageList.size(); k++) {
+                javadocargs[numExtraArgs+options.size() + k] = (String)packageList.elementAt(k);
+            }
+            for (int k = 0; k < fileList.size(); k++) {
+                javadocargs[numExtraArgs+options.size() + packageList.size() + k] = (String)fileList.elementAt(k);
+            }
+        }
+        else {
+            javadocargs = new String[options.size() + signatureFiles.length];
+            for (int k = 0; k < options.size(); k++) {
+                javadocargs[k] = (String)options.elementAt(k);
+            }
+            for (int k = 0; k < signatureFiles.length; k++) {
+                javadocargs[options.size() + k] = StructureUtil.translateAjPathName(signatureFiles[k].getCanonicalPath());
+            }
+        }
+     
+        JavadocRunner.callJavadoc(javadocargs);    	
+    }
+    
+    /** 
+     * We start with the known HTML files (the ones that correspond directly to the
+     * input files.)  As we go along, we may learn that Javadoc split one .java file
+     * into multiple .html files to handle inner classes or local classes.  The html
+     * file decorator picks that up.
+     */
+    private static void decorateHtmlFiles(File[] inputFiles) throws IOException {
+        System.out.println( "> Decorating html files..." );
+        HtmlDecorator.decorateHTMLFromInputFiles(declIDTable,
+                                          rootDir,
+                                          inputFiles,
+                                          docModifier); 
+        
+        System.out.println( "> Removing generated tags (this may take a while)..." );
+        removeDeclIDsFromFile("index-all.html", true);
+        removeDeclIDsFromFile("serialized-form.html", true);
+        if (packageList.size() > 0) {
+            for (int p = 0; p < packageList.size(); p++) {
+                removeDeclIDsFromFile(((String)packageList.elementAt(p)).replace('.','/') +
+                                       Config.DIR_SEP_CHAR +
+                                       "package-summary.html", true);
+            }
+        } else {
+			File[] files = rootDir.listFiles();
+			if (files == null){
+				System.err.println("Destination directory is not a directory: " + rootDir.toString());
+				return;
+			}
+        	files = FileUtil.listFiles(rootDir, new FileFilter() {
+        		public boolean accept(File f) {
+					return f.getName().equals("package-summary.html");
+				}
+        	});
+        	for (int j = 0; j < files.length; j++) {
+        		removeDeclIDsFromFile(files[j].getAbsolutePath(), false);
+        	}
+        }    	
     }
     
     private static void removeDeclIDsFromFile(String filename, boolean relativePath) {
@@ -465,82 +462,69 @@ public class Main implements Config {
                 docDir = arg;
                 addNextAsDocDir = false;
             }
-            if ( addNextAsClasspath ) {
+            if (addNextAsClasspath) {
                 addNextAsClasspath = false;
             }
-            if ( addNextAsSourcePath ) {
+            if (addNextAsSourcePath) {
                 setSourcepath( arg );
                 addNextAsSourcePath = false;
                 ignoreArg = true;
             }
+            
             if ( arg.startsWith("@") ) {
                 expandAtSignFile(arg.substring(1), currentWorkingDir);
-            }
-            else if ( arg.equals( "-argfile" ) ) {
+            } else if ( arg.equals( "-argfile" ) ) {
                 addNextAsArgFile = true;
-            }
-            else if ( addNextAsArgFile ) {
+            } else if ( addNextAsArgFile ) {
                 expandAtSignFile(arg, currentWorkingDir);
                 addNextAsArgFile = false;
-            }
-            else if (arg.equals("-d") ) {
+            } else if (arg.equals("-d") ) {
                 addNextAsOption = true;
                 options.addElement(arg);
                 addNextAsDocDir = true;
-            }
-            else if ( arg.equals( "-bootclasspath" ) ) {
+            } else if ( arg.equals( "-bootclasspath" ) ) {
                 addNextAsOption = true;
                 addNextToAJCOptions = true;
                 options.addElement( arg );
                 ajcOptions.addElement( arg );
-            } 
-            else if ( arg.equals( "-source" ) ) {
+            } else if ( arg.equals( "-source" ) ) {
                 addNextAsOption = true;
                 addNextToAJCOptions = true; 
                 addNextAsClasspath = true;  
                 options.addElement(arg); 
                 ajcOptions.addElement(arg);  
-            }
-            else if ( arg.equals( "-classpath" ) ) {
+            } else if ( arg.equals( "-classpath" ) ) {
                 addNextAsOption = true;
                 addNextToAJCOptions = true;
                 addNextAsClasspath = true;
                 options.addElement( arg );
                 ajcOptions.addElement( arg );
-            }
-            else if ( arg.equals( "-encoding" ) ) {
+            } else if ( arg.equals( "-encoding" ) ) {
                 addNextAsOption = true;
                 addNextToAJCOptions = false;
                 options.addElement( arg );
-            }
-            else if ( arg.equals( "-docencoding" ) ) {
+            } else if ( arg.equals( "-docencoding" ) ) {
                 addNextAsOption = true;
                 addNextToAJCOptions = false;
                 options.addElement( arg );
-            }
-            else if ( arg.equals( "-charset" ) ) {
+            } else if ( arg.equals( "-charset" ) ) {
                 addNextAsOption = true;
                 addNextToAJCOptions = false;
                 options.addElement( arg );
-            }
-            else if ( arg.equals( "-sourcepath" ) ) {
+            } else if ( arg.equals( "-sourcepath" ) ) {
                 addNextAsSourcePath = true;
                 //options.addElement( arg );
                 //ajcOptions.addElement( arg );
-            }
-            else if (arg.equals("-XajdocDebug")) {
+            } else if (arg.equals("-XajdocDebug")) {
             	deleteTempFilesOnExit = false;
-            } 
-            else if (arg.equals("-use")) {
+            } else if (arg.equals("-use")) {
             	System.out.println("> Ignoring unsupported option: -use");
-            } 
-            else if (arg.equals("-splitindex")) {
+            } else if (arg.equals("-splitindex")) {
             	// passed to javadoc
-            } 
-            else if (arg.startsWith("-") || addNextAsOption) {
+            } else if (arg.startsWith("-") || addNextAsOption) {
                 if ( arg.equals( "-private" ) ) {
                     docModifier = "private";
-                }else if ( arg.equals( "-package" ) ) {
+                } else if ( arg.equals( "-package" ) ) {
                     docModifier = "package";
                 } else if ( arg.equals( "-protected" ) ) {
                     docModifier = "protected";
@@ -577,20 +561,17 @@ public class Main implements Config {
                 }  
                 options.addElement(arg);
                 addNextAsOption = false;
-            } 
-            else { 
+            } else { 
                 // check if this is a file or a package
 //            	System.err.println(">>>>>>>> " + );
 //            	String entryName = arg.substring(arg.lastIndexOf(File.separator)+1);
-                if (FileUtil.hasSourceSuffix(arg)
-                	|| arg.endsWith(".lst") 
-					&& arg != null ) {
+                if (FileUtil.hasSourceSuffix(arg) || arg.endsWith(".lst") && arg != null ) {
                     File f = new File(arg);
                     if (f.isAbsolute()) {
-                         filenames.addElement(arg);
+                    	filenames.addElement(arg);
                     }
                     else {
-                         filenames.addElement( currentWorkingDir + Config.DIR_SEP_CHAR + arg );
+                        filenames.addElement( currentWorkingDir + Config.DIR_SEP_CHAR + arg );
                     }
                     fileList.addElement( arg );
                 }
