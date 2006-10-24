@@ -58,8 +58,8 @@ public class ArgsPointcut extends NameBindingPointcut {
         return arguments;
     }
 
-    public Pointcut parameterizeWith(Map typeVariableMap) {
-    	ArgsPointcut ret = new ArgsPointcut(this.arguments.parameterizeWith(typeVariableMap));
+    public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+    	ArgsPointcut ret = new ArgsPointcut(this.arguments.parameterizeWith(typeVariableMap,w));
     	ret.copyLocationFrom(this);
     	return ret;
     }

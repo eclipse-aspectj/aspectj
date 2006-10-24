@@ -261,16 +261,16 @@ public class SignaturePattern extends PatternNode {
 	 * return a copy of this signature pattern in which every type variable reference
 	 * is replaced by the corresponding entry in the map.
 	 */
-	public SignaturePattern parameterizeWith(Map typeVariableMap) {
+	public SignaturePattern parameterizeWith(Map typeVariableMap,World w) {
 		SignaturePattern ret = new SignaturePattern(
 						kind,
 						modifiers,
-						returnType.parameterizeWith(typeVariableMap),
-						declaringType.parameterizeWith(typeVariableMap),
+						returnType.parameterizeWith(typeVariableMap,w),
+						declaringType.parameterizeWith(typeVariableMap,w),
 						name,
-						parameterTypes.parameterizeWith(typeVariableMap),
-						throwsPattern.parameterizeWith(typeVariableMap),
-						annotationPattern.parameterizeWith(typeVariableMap));
+						parameterTypes.parameterizeWith(typeVariableMap,w),
+						throwsPattern.parameterizeWith(typeVariableMap,w),
+						annotationPattern.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

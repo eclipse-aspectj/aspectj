@@ -23,6 +23,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 
 public class DeclareSoft extends Declare {
 	private TypePattern exception;
@@ -37,11 +38,11 @@ public class DeclareSoft extends Declare {
 		return visitor.visit(this,data);
 	}
 	
-	public Declare parameterizeWith(Map typeVariableBindingMap) {
+	public Declare parameterizeWith(Map typeVariableBindingMap,World w) {
 		DeclareSoft ret = 
 			new DeclareSoft(
-					exception.parameterizeWith(typeVariableBindingMap),
-					pointcut.parameterizeWith(typeVariableBindingMap));
+					exception.parameterizeWith(typeVariableBindingMap,w),
+					pointcut.parameterizeWith(typeVariableBindingMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

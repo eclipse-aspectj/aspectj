@@ -108,8 +108,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
     	}
     }
     
-    public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
-    	WildAnnotationTypePattern ret = new WildAnnotationTypePattern(typePattern.parameterizeWith(typeVariableMap));
+    public AnnotationTypePattern parameterizeWith(Map typeVariableMap,World w) {
+    	WildAnnotationTypePattern ret = new WildAnnotationTypePattern(typePattern.parameterizeWith(typeVariableMap,w));
     	ret.copyLocationFrom(this);
     	ret.resolved = resolved;
     	return ret;

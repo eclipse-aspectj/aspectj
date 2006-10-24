@@ -229,7 +229,7 @@ public abstract class TypePattern extends PatternNode {
      * return a version of this type pattern in which all type variable references have been
      * replaced by their corresponding entry in the map.
      */
-    public abstract TypePattern parameterizeWith(Map typeVariableMap);
+    public abstract TypePattern parameterizeWith(Map typeVariableMap,World w);
     
 	public void postRead(ResolvedType enclosingType) {
 	}
@@ -360,7 +360,7 @@ class EllipsisTypePattern extends TypePattern {
         return visitor.visit(this, data);
     }
     
-    public TypePattern parameterizeWith(Map typeVariableMap) {
+    public TypePattern parameterizeWith(Map typeVariableMap,World w) {
     	return this;
     }
 
@@ -441,7 +441,7 @@ class AnyTypePattern extends TypePattern {
         return visitor.visit(this, data);
     }
     
-    public TypePattern parameterizeWith(Map arg0) {
+    public TypePattern parameterizeWith(Map arg0,World w) {
     	return this;
     }
 }
@@ -482,8 +482,8 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		return FuzzyBoolean.MAYBE;
 	}
 
-	public TypePattern parameterizeWith(Map typeVariableMap) {
-		AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(this.annotationPattern.parameterizeWith(typeVariableMap));
+	public TypePattern parameterizeWith(Map typeVariableMap,World w) {
+		AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(this.annotationPattern.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
@@ -603,7 +603,7 @@ class NoTypePattern extends TypePattern {
         return visitor.visit(this, data);
     }
     
-    public TypePattern parameterizeWith(Map arg0) {
+    public TypePattern parameterizeWith(Map arg0,World w) {
     	return this;
     }
 }

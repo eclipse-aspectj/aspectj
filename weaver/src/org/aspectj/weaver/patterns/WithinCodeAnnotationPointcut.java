@@ -31,6 +31,7 @@ import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
@@ -78,8 +79,8 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 		return matchedShadowKinds;
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		WithinCodeAnnotationPointcut ret = new WithinCodeAnnotationPointcut((ExactAnnotationTypePattern)this.annotationTypePattern.parameterizeWith(typeVariableMap));
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+		WithinCodeAnnotationPointcut ret = new WithinCodeAnnotationPointcut((ExactAnnotationTypePattern)this.annotationTypePattern.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

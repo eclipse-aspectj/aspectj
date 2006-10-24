@@ -52,8 +52,8 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 	}
 
 	
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
-		AnnotationTypePattern newNegatedPattern = negatedPattern.parameterizeWith(typeVariableMap);
+	public AnnotationTypePattern parameterizeWith(Map typeVariableMap,World w) {
+		AnnotationTypePattern newNegatedPattern = negatedPattern.parameterizeWith(typeVariableMap,w);
 		NotAnnotationTypePattern ret = new NotAnnotationTypePattern(newNegatedPattern);
 		ret.copyLocationFrom(this);
 		return ret;

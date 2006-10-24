@@ -73,11 +73,11 @@ public class DeclareParents extends Declare {
 		return visitor.visit(this,data);
 	}
 	
-	public Declare parameterizeWith(Map typeVariableBindingMap) {
+	public Declare parameterizeWith(Map typeVariableBindingMap,World w) {
 		DeclareParents ret = 
 			new DeclareParents(
-					child.parameterizeWith(typeVariableBindingMap),
-					parents.parameterizeWith(typeVariableBindingMap),
+					child.parameterizeWith(typeVariableBindingMap,w),
+					parents.parameterizeWith(typeVariableBindingMap,w),
 					isExtends);
 		ret.copyLocationFrom(this);
 		return ret;

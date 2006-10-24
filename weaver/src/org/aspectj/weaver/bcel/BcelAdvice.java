@@ -101,7 +101,7 @@ public class BcelAdvice extends Advice {
 	}
 	
 	public ShadowMunger parameterizeWith(ResolvedType declaringType,Map typeVariableMap) {
-		Pointcut pc = getPointcut().parameterizeWith(typeVariableMap);
+		Pointcut pc = getPointcut().parameterizeWith(typeVariableMap,declaringType.getWorld());
 		
 		BcelAdvice ret = null;
 		Member adviceSignature = signature;		

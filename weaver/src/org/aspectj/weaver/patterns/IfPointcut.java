@@ -35,6 +35,7 @@ import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -368,7 +369,7 @@ public class IfPointcut extends Pointcut {
 	}
 
 	// we can't touch "if" methods
-	public Pointcut parameterizeWith(Map typeVariableMap) {
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
 		return this;
 	}
 	

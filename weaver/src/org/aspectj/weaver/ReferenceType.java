@@ -564,7 +564,7 @@ public class ReferenceType extends ResolvedType {
 		PerClause pclause = delegate.getPerClause();
 		if (isParameterizedType()) { // could cache the result here...
 			Map parameterizationMap = getAjMemberParameterizationMap();
-			pclause = (PerClause)pclause.parameterizeWith(parameterizationMap);
+			pclause = (PerClause)pclause.parameterizeWith(parameterizationMap,world);
 		}
 		return pclause;
 	}
@@ -579,7 +579,7 @@ public class ReferenceType extends ResolvedType {
 			Map parameterizationMap = getAjMemberParameterizationMap();
 			for (Iterator iter = genericDeclares.iterator(); iter.hasNext();) {
 				Declare declareStatement = (Declare) iter.next();
-				parameterizedDeclares.add(declareStatement.parameterizeWith(parameterizationMap));
+				parameterizedDeclares.add(declareStatement.parameterizeWith(parameterizationMap,world));
 			}
 			declares = parameterizedDeclares;
 		} else {

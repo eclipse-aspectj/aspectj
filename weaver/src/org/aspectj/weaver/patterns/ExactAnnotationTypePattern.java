@@ -168,7 +168,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 	
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
+	public AnnotationTypePattern parameterizeWith(Map typeVariableMap,World w) {
 		UnresolvedType newAnnotationType = annotationType;
 		if (annotationType.isTypeVariableReference()) {
 			TypeVariableReference t = (TypeVariableReference) annotationType;

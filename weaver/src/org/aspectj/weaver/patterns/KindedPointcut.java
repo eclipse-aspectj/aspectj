@@ -377,8 +377,8 @@ public class KindedPointcut extends Pointcut {
         return ret;
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		Pointcut ret = new KindedPointcut(kind, signature.parameterizeWith(typeVariableMap), munger );
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+		Pointcut ret = new KindedPointcut(kind, signature.parameterizeWith(typeVariableMap,w), munger );
         ret.copyLocationFrom(this);
         return ret;
 	}

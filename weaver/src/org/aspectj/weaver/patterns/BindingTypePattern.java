@@ -22,6 +22,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 
 public class BindingTypePattern extends ExactTypePattern implements BindingPattern {
 	private int formalIndex;
@@ -82,8 +83,8 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 		}
 	}
 	
-	public TypePattern parameterizeWith(Map typeVariableMap) {
-		ExactTypePattern superParameterized = (ExactTypePattern) super.parameterizeWith(typeVariableMap);
+	public TypePattern parameterizeWith(Map typeVariableMap,World w) {
+		ExactTypePattern superParameterized = (ExactTypePattern) super.parameterizeWith(typeVariableMap,w);
 		BindingTypePattern ret = new BindingTypePattern(superParameterized.getExactType(),this.formalIndex,this.isVarArgs);
 		ret.copyLocationFrom(this);
 		return ret;

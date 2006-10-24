@@ -371,7 +371,7 @@ public abstract class Pointcut extends PatternNode {
             return visitor.visit(this, data);
         }
         
-        public Pointcut parameterizeWith(Map typeVariableMap) {
+        public Pointcut parameterizeWith(Map typeVariableMap,World w) {
         	return this;
         }
 	}
@@ -391,6 +391,6 @@ public abstract class Pointcut extends PatternNode {
 		}
 	}
 	
-	public abstract Pointcut parameterizeWith(Map typeVariableMap);
+	public abstract Pointcut parameterizeWith(Map typeVariableMap,World w);
 
 }

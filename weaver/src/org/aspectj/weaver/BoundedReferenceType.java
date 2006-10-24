@@ -13,6 +13,7 @@ package org.aspectj.weaver;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.aspectj.weaver.patterns.PerClause;
 
@@ -33,7 +34,7 @@ public class BoundedReferenceType extends ReferenceType {
 	protected boolean isSuper   = false;
 	
 	public BoundedReferenceType(ReferenceType aBound, boolean isExtends, World world) {
-		super((isExtends ? "+" : "-") + aBound.signature,world);
+		super((isExtends ? "+" : "-") + aBound.signature,aBound.signatureErasure,world);
 		this.isExtends = isExtends; 
 		this.isSuper   = !isExtends;
 		if (isExtends) { 
@@ -52,6 +53,18 @@ public class BoundedReferenceType extends ReferenceType {
 	
 	public ReferenceType[] getAdditionalBounds() {
 		return additionalInterfaceBounds;
+	}
+	
+	public UnresolvedType parameterize(Map typeBindings) {
+		ReferenceType[] parameterizedAdditionalInterfaces = new ReferenceType[additionalInterfaceBounds==null?0:additionalInterfaceBounds.length];
+		for (int i=0; i<parameterizedAdditionalInterfaces.length;i++) {
+			parameterizedAdditionalInterfaces[i] = (ReferenceType)additionalInterfaceBounds[i].parameterize(typeBindings);
+		}
+		if (isExtends) {
+			return new BoundedReferenceType((ReferenceType)getUpperBound().parameterize(typeBindings),isExtends,world,parameterizedAdditionalInterfaces);
+		} else {
+			return new BoundedReferenceType((ReferenceType)getLowerBound().parameterize(typeBindings),isExtends,world,parameterizedAdditionalInterfaces);
+		}
 	}
 	
 	/**

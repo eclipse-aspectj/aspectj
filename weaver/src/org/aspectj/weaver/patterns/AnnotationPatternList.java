@@ -58,10 +58,10 @@ public class AnnotationPatternList extends PatternNode {
 		return typePatterns;
 	}
 	
-	public AnnotationPatternList parameterizeWith(Map typeVariableMap) {
+	public AnnotationPatternList parameterizeWith(Map typeVariableMap,World w) {
 		AnnotationTypePattern[] parameterizedPatterns = new AnnotationTypePattern[this.typePatterns.length];
 		for (int i = 0; i < parameterizedPatterns.length; i++) {
-			parameterizedPatterns[i] = this.typePatterns[i].parameterizeWith(typeVariableMap);
+			parameterizedPatterns[i] = this.typePatterns[i].parameterizeWith(typeVariableMap,w);
 		}
 		AnnotationPatternList ret = new AnnotationPatternList(parameterizedPatterns);
 		ret.copyLocationFrom(this);

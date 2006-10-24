@@ -70,8 +70,8 @@ public class PerCflow extends PerClause {
     	entry.resolve(scope);  
     }
     
-    public Pointcut parameterizeWith(Map typeVariableMap) {
-    	PerCflow ret = new PerCflow(entry.parameterizeWith(typeVariableMap),isBelow);
+    public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+    	PerCflow ret = new PerCflow(entry.parameterizeWith(typeVariableMap,w),isBelow);
     	ret.copyLocationFrom(this);
     	return ret;
     }

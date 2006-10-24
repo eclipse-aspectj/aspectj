@@ -33,6 +33,7 @@ import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
 
 /**
@@ -219,7 +220,7 @@ public class ReferencePointcut extends Pointcut {
 			TypePattern p = arguments.get(i);
 			//we are allowed to bind to pointcuts which use subtypes as this is type safe
 			if (typeVariableMap != null) {
-				p = p.parameterizeWith(typeVariableMap);
+				p = p.parameterizeWith(typeVariableMap,scope.getWorld());
 			}
 			if (p == TypePattern.NO) {
 				scope.message(IMessage.ERROR, this,
@@ -355,7 +356,7 @@ public class ReferencePointcut extends Pointcut {
 			try {
 				Pointcut ret = pointcutDec.getPointcut();
 				if (typeVariableMap != null && !hasBeenParameterized) {					
-					ret = ret.parameterizeWith(typeVariableMap);
+					ret = ret.parameterizeWith(typeVariableMap,searchStart.getWorld());
 					ret.hasBeenParameterized=true;
 				}
 				return ret.concretize(searchStart, declaringType, newBindings);
@@ -373,7 +374,7 @@ public class ReferencePointcut extends Pointcut {
 	 * Tricky thing is, we can't do this at the point in time this method will be called, so we make a
 	 * version that will parameterize the pointcut it ultimately resolves to.
 	 */
-	public Pointcut parameterizeWith(Map typeVariableMap) {
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
 		ReferencePointcut ret = new ReferencePointcut(onType,name,arguments);
 		ret.onTypeSymbolic = onTypeSymbolic;
 		ret.typeVariableMap = typeVariableMap;

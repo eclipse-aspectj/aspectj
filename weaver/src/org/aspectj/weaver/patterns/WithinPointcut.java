@@ -26,6 +26,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 
@@ -55,8 +56,8 @@ public class WithinPointcut extends Pointcut {
 		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		WithinPointcut ret = new WithinPointcut(this.typePattern.parameterizeWith(typeVariableMap));
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+		WithinPointcut ret = new WithinPointcut(this.typePattern.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

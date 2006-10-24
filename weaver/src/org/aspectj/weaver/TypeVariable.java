@@ -376,4 +376,11 @@ public class TypeVariable {
 		TypeVariable newVariable = new TypeVariable(name,ubound,ibounds);
 		return newVariable;		
     }
+
+	public String getGenericSignature() {
+		return "T"+name+";";
+	}
+	public String getErasureSignature() {
+		return getFirstBound().getErasureSignature();
+	}
 }

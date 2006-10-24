@@ -26,6 +26,7 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 
 public class TypePatternList extends PatternNode {
 	private TypePattern[] typePatterns;
@@ -189,10 +190,10 @@ public class TypePatternList extends PatternNode {
      * @param typeVariableMap
      * @return
      */
-    public TypePatternList parameterizeWith(Map typeVariableMap) {
+    public TypePatternList parameterizeWith(Map typeVariableMap,World w) {
     	TypePattern[] parameterizedPatterns = new TypePattern[typePatterns.length];
     	for (int i = 0; i < parameterizedPatterns.length; i++) {
-			parameterizedPatterns[i] = typePatterns[i].parameterizeWith(typeVariableMap);
+			parameterizedPatterns[i] = typePatterns[i].parameterizeWith(typeVariableMap,w);
 		}
     	return new TypePatternList(parameterizedPatterns);
     }

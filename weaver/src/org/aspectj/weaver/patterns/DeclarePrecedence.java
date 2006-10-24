@@ -23,6 +23,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 
 public class DeclarePrecedence extends Declare {
 	private TypePatternList patterns;
@@ -40,8 +41,8 @@ public class DeclarePrecedence extends Declare {
 		return visitor.visit(this,data);
 	}
 	
-	public Declare parameterizeWith(Map typeVariableBindingMap) {
-		DeclarePrecedence ret = new DeclarePrecedence(this.patterns.parameterizeWith(typeVariableBindingMap));
+	public Declare parameterizeWith(Map typeVariableBindingMap,World w) {
+		DeclarePrecedence ret = new DeclarePrecedence(this.patterns.parameterizeWith(typeVariableBindingMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

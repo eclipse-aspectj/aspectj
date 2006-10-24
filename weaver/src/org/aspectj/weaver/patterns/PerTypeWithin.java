@@ -60,8 +60,8 @@ public class PerTypeWithin extends PerClause {
 		return kindSet;
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		PerTypeWithin ret = new PerTypeWithin(typePattern.parameterizeWith(typeVariableMap));
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+		PerTypeWithin ret = new PerTypeWithin(typePattern.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

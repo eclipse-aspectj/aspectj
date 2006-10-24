@@ -57,7 +57,7 @@ public class Checker extends ShadowMunger {
 	
 	public ShadowMunger parameterizeWith(ResolvedType declaringType,Map typeVariableMap) {
 		Checker ret = new Checker(
-							getPointcut().parameterizeWith(typeVariableMap),
+							getPointcut().parameterizeWith(typeVariableMap,declaringType.getWorld()),
 							getStart(),
 							getEnd(),
 							this.sourceContext);

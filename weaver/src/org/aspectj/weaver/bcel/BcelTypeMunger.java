@@ -153,8 +153,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             } else if (munger.getKind().equals(ResolvedTypeMunger.FieldHost)) {
                 ;//hidden
             } else {
-        		ResolvedMember declaredSig = munger.getDeclaredSignature();
-        		if (declaredSig==null) declaredSig= munger.getSignature();
+        		ResolvedMember declaredSig = munger.getSignature();
+//        		if (declaredSig==null) declaredSig= munger.getSignature();
         		weaver.getWorld().getMessageHandler().handleMessage(WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ITD,
         		new String[]{weaver.getLazyClassGen().getType().getName(),
         			         tName,munger.getKind().toString().toLowerCase(),

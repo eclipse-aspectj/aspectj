@@ -22,6 +22,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 
 /**
  * !TypePattern
@@ -103,8 +104,8 @@ public class NotTypePattern extends TypePattern {
 		return this;
 	}
 	
-	public TypePattern parameterizeWith(Map typeVariableMap) {
-		TypePattern newNegatedPattern = negatedPattern.parameterizeWith(typeVariableMap);
+	public TypePattern parameterizeWith(Map typeVariableMap,World w) {
+		TypePattern newNegatedPattern = negatedPattern.parameterizeWith(typeVariableMap,w);
 		NotTypePattern ret = new NotTypePattern(newNegatedPattern);
 		ret.copyLocationFrom(this);
 		return ret;

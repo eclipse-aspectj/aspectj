@@ -49,9 +49,9 @@ public class OrAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
-		AnnotationTypePattern newLeft = left.parameterizeWith(typeVariableMap);
-		AnnotationTypePattern newRight = right.parameterizeWith(typeVariableMap);
+	public AnnotationTypePattern parameterizeWith(Map typeVariableMap,World w) {
+		AnnotationTypePattern newLeft = left.parameterizeWith(typeVariableMap,w);
+		AnnotationTypePattern newRight = right.parameterizeWith(typeVariableMap,w);
 		OrAnnotationTypePattern ret = new OrAnnotationTypePattern(newLeft,newRight);
 		ret.copyLocationFrom(this);
 		return ret;

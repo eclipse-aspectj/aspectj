@@ -536,7 +536,7 @@ public class WildTypePattern extends TypePattern {
 		return buf.toString();
 	}		
 
-	public TypePattern parameterizeWith(Map typeVariableMap) {
+	public TypePattern parameterizeWith(Map typeVariableMap,World w) {
 		NamePattern[] newNamePatterns = new NamePattern[namePatterns.length];
 		for(int i=0; i<namePatterns.length;i++) { newNamePatterns[i] = namePatterns[i]; }
 		if (newNamePatterns.length == 1) {
@@ -558,19 +558,19 @@ public class WildTypePattern extends TypePattern {
 				includeSubtypes,
 				dim,
 				isVarArgs,
-				typeParameters.parameterizeWith(typeVariableMap)
+				typeParameters.parameterizeWith(typeVariableMap,w)
 			);
-		ret.annotationPattern = this.annotationPattern.parameterizeWith(typeVariableMap);
+		ret.annotationPattern = this.annotationPattern.parameterizeWith(typeVariableMap,w);
 		if (additionalInterfaceBounds == null) {
 			ret.additionalInterfaceBounds = null;
 		} else {
 			ret.additionalInterfaceBounds = new TypePattern[additionalInterfaceBounds.length];
 			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-				ret.additionalInterfaceBounds[i] = additionalInterfaceBounds[i].parameterizeWith(typeVariableMap);
+				ret.additionalInterfaceBounds[i] = additionalInterfaceBounds[i].parameterizeWith(typeVariableMap,w);
 			}
 		}
-		ret.upperBound = upperBound != null ? upperBound.parameterizeWith(typeVariableMap) : null;
-		ret.lowerBound = lowerBound != null ? lowerBound.parameterizeWith(typeVariableMap) : null;
+		ret.upperBound = upperBound != null ? upperBound.parameterizeWith(typeVariableMap,w) : null;
+		ret.lowerBound = lowerBound != null ? lowerBound.parameterizeWith(typeVariableMap,w) : null;
 		ret.isGeneric = isGeneric;
 		ret.knownMatches = knownMatches;
 		ret.importedPrefixes = importedPrefixes;

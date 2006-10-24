@@ -19,6 +19,7 @@ import java.util.Map;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 
 public abstract class Declare extends PatternNode {
 	public static final byte ERROR_OR_WARNING = 1;
@@ -57,7 +58,7 @@ public abstract class Declare extends PatternNode {
      * Returns a version of this declare element in which all references to type variables
      * are replaced with their bindings given in the map.
      */
-    public abstract Declare parameterizeWith(Map typeVariableBindingMap);
+    public abstract Declare parameterizeWith(Map typeVariableBindingMap,World w);
     
     /**
      * Indicates if this declare should be treated like advice.  If true, the

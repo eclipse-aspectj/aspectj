@@ -39,6 +39,20 @@
       <compile files="BadInterface.java" options="-emacssym"/>
     </ajc-test> 
     
+	<ajc-test dir="bugs153/pr161502" title="generics in pointcuts">
+      <compile files="Main.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(java.util.List Main.getElements())' in Type 'Main' (Main.java:31) advised by around advice from 'Main$Concrete' (Main.java:18)"/>
+      </compile>
+      <run class="Main"/>
+    </ajc-test> 
+        
+	<ajc-test dir="bugs153/pr161502" title="generics in pointcuts - 2">
+      <compile files="Main2.java" options="-1.5 -showWeaveInfo">
+        <message kind="warning" text="advice defined in Main2$Base has not been applied"/>
+      </compile>
+      <run class="Main2"/>
+    </ajc-test> 
+    
 	<ajc-test dir="bugs153/pr158624" title="generics and arrays">
       <compile files="ValueChange.java" options="-1.5"/>
     </ajc-test> 

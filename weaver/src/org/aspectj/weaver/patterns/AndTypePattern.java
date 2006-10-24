@@ -21,6 +21,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 
 /**
  * left && right
@@ -107,9 +108,9 @@ public class AndTypePattern extends TypePattern {
 		return this;
 	}
 	
-	public TypePattern parameterizeWith(Map typeVariableMap) {
-		TypePattern newLeft = left.parameterizeWith(typeVariableMap);
-		TypePattern newRight = right.parameterizeWith(typeVariableMap);
+	public TypePattern parameterizeWith(Map typeVariableMap,World w) {
+		TypePattern newLeft = left.parameterizeWith(typeVariableMap,w);
+		TypePattern newRight = right.parameterizeWith(typeVariableMap,w);
 		AndTypePattern ret = new AndTypePattern(newLeft,newRight);
 		ret.copyLocationFrom(this);
 		return ret;

@@ -102,8 +102,8 @@ public class HasMemberTypePattern extends TypePattern {
 		throw new UnsupportedOperationException("hasmethod/field do not support instanceof matching");
 	}
 
-	public TypePattern parameterizeWith(Map typeVariableMap) {
-		HasMemberTypePattern ret = new HasMemberTypePattern(signaturePattern.parameterizeWith(typeVariableMap));
+	public TypePattern parameterizeWith(Map typeVariableMap,World w) {
+		HasMemberTypePattern ret = new HasMemberTypePattern(signaturePattern.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

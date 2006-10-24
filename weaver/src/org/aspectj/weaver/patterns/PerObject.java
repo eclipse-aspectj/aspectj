@@ -81,8 +81,8 @@ public class PerObject extends PerClause {
     	entry.resolve(scope);  
     }
     
-    public Pointcut parameterizeWith(Map typeVariableMap) {
-    	PerObject ret = new PerObject(entry.parameterizeWith(typeVariableMap),isThis);
+    public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+    	PerObject ret = new PerObject(entry.parameterizeWith(typeVariableMap,w),isThis);
     	ret.copyLocationFrom(this);
     	return ret;
     }

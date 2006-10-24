@@ -46,7 +46,7 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	
 	public abstract void resolve(World world);
 	
-	public abstract AnnotationTypePattern parameterizeWith(Map/*name -> ResolvedType*/ typeVariableMap);
+	public abstract AnnotationTypePattern parameterizeWith(Map/*name -> ResolvedType*/ typeVariableMap,World w);
 	
 	public boolean isAny() { return false; }
 	
@@ -111,7 +111,7 @@ class AnyAnnotationTypePattern extends AnnotationTypePattern {
     
     public boolean isAny() { return true; }
     
-    public AnnotationTypePattern parameterizeWith(Map arg0) {
+    public AnnotationTypePattern parameterizeWith(Map arg0,World w) {
     	return this;
     }
 }
@@ -135,7 +135,7 @@ class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
         return visitor.visit(this, data);
     }
     
-    public AnnotationTypePattern parameterizeWith(Map arg0) {
+    public AnnotationTypePattern parameterizeWith(Map arg0,World w) {
     	return this;
     }
     

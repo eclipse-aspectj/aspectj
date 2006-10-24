@@ -141,7 +141,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 					getName(),
 					parameterizedParameterTypes,
 					parameterizedReturnType,
-					pointcut.parameterizeWith(typeMap)
+					pointcut.parameterizeWith(typeMap,newDeclaringType.getWorld())
 				);
 		ret.setTypeVariables(getTypeVariables());
 		ret.setSourceContext(getSourceContext());

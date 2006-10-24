@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 
 public class DeclareErrorOrWarning extends Declare {
 	private boolean isError;
@@ -101,8 +102,8 @@ public class DeclareErrorOrWarning extends Declare {
     	pointcut = pointcut.resolve(scope);  	
     }
     
-    public Declare parameterizeWith(Map typeVariableBindingMap) {
-    	Declare ret = new DeclareErrorOrWarning(isError,pointcut.parameterizeWith(typeVariableBindingMap),message);
+    public Declare parameterizeWith(Map typeVariableBindingMap,World w) {
+    	Declare ret = new DeclareErrorOrWarning(isError,pointcut.parameterizeWith(typeVariableBindingMap,w),message);
     	ret.copyLocationFrom(this);
     	return ret;
     }

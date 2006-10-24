@@ -1855,10 +1855,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * with the passed bindings.
 	 */
 	public UnresolvedType parameterize(Map typeBindings) {
-	  	if (!isParameterizedType()) throw new IllegalStateException("Can't parameterize a type that is not a parameterized type");
+	  	if (!isParameterizedType()) return this;//throw new IllegalStateException("Can't parameterize a type that is not a parameterized type");
     	boolean workToDo = false;
     	for (int i = 0; i < typeParameters.length; i++) {
-			if (typeParameters[i].isTypeVariableReference()) {
+			if (typeParameters[i].isTypeVariableReference() || 
+					(typeParameters[i] instanceof BoundedReferenceType)) {
 				workToDo = true;
 			}
 		}
@@ -1872,6 +1873,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					TypeVariableReferenceType tvrt = (TypeVariableReferenceType) newTypeParams[i];
 					UnresolvedType binding = (UnresolvedType) typeBindings.get(tvrt.getTypeVariable().getName());
 					if (binding != null) newTypeParams[i] = binding;
+				} else if (newTypeParams[i] instanceof BoundedReferenceType) {
+					BoundedReferenceType brType = (BoundedReferenceType)newTypeParams[i];
+					newTypeParams[i] = brType.parameterize(typeBindings);
+//					brType.parameterize(typeBindings)
 				}
 			}
     		return TypeFactory.createParameterizedType(getGenericType(), newTypeParams, getWorld());

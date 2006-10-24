@@ -19,6 +19,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.Bindings;
@@ -133,7 +134,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut{
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.Pointcut#parameterizeWith(java.util.Map)
 	 */
-	public Pointcut parameterizeWith(Map typeVariableMap) {
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
 		return this;
 	}
 

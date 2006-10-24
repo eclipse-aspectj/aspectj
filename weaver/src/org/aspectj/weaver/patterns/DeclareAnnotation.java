@@ -127,12 +127,12 @@ public class DeclareAnnotation extends Declare {
 		this.containingAspect = scope.getEnclosingType();
 	}
 
-	public Declare parameterizeWith(Map typeVariableBindingMap) {
+	public Declare parameterizeWith(Map typeVariableBindingMap,World w) {
 		DeclareAnnotation ret;
 		if (this.kind == AT_TYPE) {
-			ret = new DeclareAnnotation(kind,this.typePattern.parameterizeWith(typeVariableBindingMap));
+			ret = new DeclareAnnotation(kind,this.typePattern.parameterizeWith(typeVariableBindingMap,w));
 		} else {
-			ret = new DeclareAnnotation(kind, this.sigPattern.parameterizeWith(typeVariableBindingMap));
+			ret = new DeclareAnnotation(kind, this.sigPattern.parameterizeWith(typeVariableBindingMap,w));
 		}
 		ret.annotationMethod = this.annotationMethod;
 		ret.annotationString = this.annotationString;

@@ -13,6 +13,7 @@ package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Represents a type variable in a type or generic method declaration
@@ -31,8 +32,9 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	public TypeVariableReferenceType(
 			TypeVariable aTypeVariable,
 			World aWorld) {
-		super(aTypeVariable.getFirstBound().getSignature(),
-			  aTypeVariable.getFirstBound().getErasureSignature(),
+		super(
+				aTypeVariable.getGenericSignature(),
+				aTypeVariable.getErasureSignature(),
 			  aWorld);
 		this.typeVariable = aTypeVariable;
 		this.isExtends    = false;
@@ -64,6 +66,12 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 				additionalInterfaceBounds[i] = (ReferenceType) ifBounds[i].resolve(getWorld()); 
 			}
 		}
+	}
+
+	public UnresolvedType parameterize(Map typeBindings) {
+		UnresolvedType ut = (UnresolvedType) typeBindings.get(getName());
+		if (ut!=null) return ut;
+		return this;
 	}
 	
 	public ReferenceType[] getAdditionalBounds() {

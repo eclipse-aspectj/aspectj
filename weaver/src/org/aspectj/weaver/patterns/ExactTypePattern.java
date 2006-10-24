@@ -28,6 +28,7 @@ import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 
 public class ExactTypePattern extends TypePattern {
 	protected UnresolvedType type;
@@ -232,7 +233,7 @@ public class ExactTypePattern extends TypePattern {
 	 * return a version of this type pattern with all type variables references replaced
 	 * by the corresponding entry in the map.
 	 */
-	public TypePattern parameterizeWith(Map typeVariableMap) {
+	public TypePattern parameterizeWith(Map typeVariableMap,World w) {
 		UnresolvedType newType = type;
 		if (type.isTypeVariableReference()) {
 			TypeVariableReference t = (TypeVariableReference) type;
@@ -241,10 +242,10 @@ public class ExactTypePattern extends TypePattern {
 				newType = (UnresolvedType) typeVariableMap.get(key);
 			}
 		} else if (type.isParameterizedType()) {
-			newType = type.parameterize(typeVariableMap);
+			newType = w.resolve(type).parameterize(typeVariableMap);
 		}
 		ExactTypePattern ret = new ExactTypePattern(newType,includeSubtypes,isVarArgs);
-		ret.annotationPattern = annotationPattern.parameterizeWith(typeVariableMap);
+		ret.annotationPattern = annotationPattern.parameterizeWith(typeVariableMap,w);
 		ret.copyLocationFrom(this);
 		return ret;
 	}

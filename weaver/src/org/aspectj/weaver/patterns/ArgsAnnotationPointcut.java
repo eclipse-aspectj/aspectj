@@ -27,6 +27,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
@@ -60,8 +61,8 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 		return Shadow.ALL_SHADOW_KINDS_BITS;  // empty args() matches jps with no args
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		ArgsAnnotationPointcut ret = new ArgsAnnotationPointcut(arguments.parameterizeWith(typeVariableMap));
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+		ArgsAnnotationPointcut ret = new ArgsAnnotationPointcut(arguments.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

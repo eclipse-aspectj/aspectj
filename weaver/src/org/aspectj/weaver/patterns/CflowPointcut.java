@@ -110,8 +110,8 @@ public class CflowPointcut extends Pointcut {
 		return ret;
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		CflowPointcut ret = new CflowPointcut(entry.parameterizeWith(typeVariableMap),isBelow,freeVars);
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+		CflowPointcut ret = new CflowPointcut(entry.parameterizeWith(typeVariableMap,w),isBelow,freeVars);
 		ret.copyLocationFrom(this);
 		return ret;
 	}

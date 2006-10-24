@@ -30,6 +30,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
@@ -86,8 +87,8 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 
 	public boolean isThis() { return isThis; }
 
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis,type.parameterizeWith(typeVariableMap));
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis,type.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

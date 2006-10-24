@@ -23,6 +23,7 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
 
 public class AndPointcut extends Pointcut {
@@ -100,9 +101,9 @@ public class AndPointcut extends Pointcut {
 		return ret;
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
-		AndPointcut ret =  new AndPointcut(left.parameterizeWith(typeVariableMap),
-				   						    right.parameterizeWith(typeVariableMap));
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+		AndPointcut ret =  new AndPointcut(left.parameterizeWith(typeVariableMap,w),
+				   						    right.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}

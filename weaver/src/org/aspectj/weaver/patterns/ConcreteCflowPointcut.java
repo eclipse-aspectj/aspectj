@@ -30,6 +30,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.bcel.BcelCflowAccessVar;
@@ -98,7 +99,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		throw new RuntimeException("unimplemented");
 	}
 	
-	public Pointcut parameterizeWith(Map typeVariableMap) {
+	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
 		throw new RuntimeException("unimplemented");
 	}
 	

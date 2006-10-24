@@ -69,7 +69,7 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		}
 	}
 	
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap) {
+	public AnnotationTypePattern parameterizeWith(Map typeVariableMap,World w) {
 		UnresolvedType newAnnotationType = annotationType;
 		if (annotationType.isTypeVariableReference()) {
 			TypeVariableReference t = (TypeVariableReference) annotationType;
