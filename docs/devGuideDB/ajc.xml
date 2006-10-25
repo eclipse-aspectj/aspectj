@@ -55,7 +55,7 @@
         on the inpath and rebuild.)
     </para>
 
-    <refsect2>
+    <refsect2 id="ajc_options" xreflabel="ajc_options">
     <title>Options</title>
 
      <variablelist>
