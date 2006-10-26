@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1//EN"
+                      "../../lib/docbook/docbook-dtd/docbookx.dtd"
+[
+<!ENTITY messages               SYSTEM "messages.xml">
+<!ENTITY trace                  SYSTEM "trace.xml">
+<!ENTITY ajcore                 SYSTEM "ajcore.xml">
+<!ENTITY ltwdump                SYSTEM "ltwdump.xml">
+]>
+
+<book>
+  <bookinfo>
+    <title>The AspectJ<superscript>tm</superscript> Problem Diagnosis Guide</title>
+
+    <authorgroup>
+      <author>
+        <othername>the AspectJ Team</othername>
+      </author>
+    </authorgroup>
+
+      <legalnotice>
+        <para>Copyright (c) 2006 IBM Corporation and others.
+         2006 Contributors.  
+         All rights reserved.
+        </para>
+      </legalnotice>
+
+    <abstract>
+      <para>
+        This guide describes how to gather and interpret information from the AspectJ compiler
+        to when diagnsoing problems in AspectJ programs, configuring the load-time weaving
+        framework or reporting bugs on Bugzilla.
+      </para>
+    </abstract>
+  </bookinfo>
+  
+  &messages;
+  &ajcore;
+  &trace;
+  &ltwdump;
+
+</book>
+

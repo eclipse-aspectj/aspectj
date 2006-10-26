@@ -1,0 +1,15 @@
+<chapter id="ajcore" xreflabel="AspectJ Core">
+    <title>AspectJ Core Files</title>
+    
+    <sect1 id="ajcore-introduction">
+        <title>Introduction</title>
+        
+        <para> When the compiler terminates abnormally, either because an abort message was
+        issued or an exception was thrown, a AspectJ core file will be produced. You will
+        find it the working directory of the compiler and will have a name that contains
+        the date and time that the file was produced 
+        e.g. <literal>ajcore.20060810.173655.626.txt</literal>. </para>
+        
+        <para> </para>
+    </sect1>
+</chapter>

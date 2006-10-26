@@ -1,0 +1,10 @@
+<chapter id="messages" xreflabel="Messages">
+    <title>Messages</title>
+    
+    <sect1 id="messages-introduction">
+        <title>Introduction</title>
+        
+        <para> By default only warning and error messages are issued by the compiler whether it is
+        being used for source code compilation, weaving, binary weaving or load-time weaving. </para>
+    </sect1>
+</chapter>

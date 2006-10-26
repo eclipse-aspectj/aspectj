@@ -1,0 +1,11 @@
+<chapter id="ltwdump" xreflabel="LTW Dump">
+    <title>LTW Dump</title>
+    
+    <sect1 id="ltwdump-introduction">
+        <title>Introduction</title>
+        
+        <para> Occasionally problems may be encountered with classes that have been load-time woven. Symptoms will
+        include incorrect program function or a Java exception such as 
+        <literal>java.lang.VerifyError</literal>.</para>
+    </sect1>
+</chapter>

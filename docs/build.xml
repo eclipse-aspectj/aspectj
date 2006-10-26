@@ -203,7 +203,7 @@
     </target>
 
     <target name="do-local-dist"
-            depends="init,init-filters,api,faq,devguide,progguide, adk15guide"
+            depends="init,init-filters,api,faq,devguide,progguide, adk15guide, pdguide"
             description="finish products by copying dist files and library sources"
     >
 
@@ -317,6 +317,28 @@
         <delete quiet="on">
             <fileset dir="${docs.src.dir}/devGuideDB"
                      includes="${include.devguide.icons}"
+            />
+        </delete>
+    </target>
+
+    <target name="pdguide" depends="init">
+
+        <copy todir="${docs.src.dir}/pdGuideDB" filtering="off">
+            <fileset dir="${devguide.icons.dir}"
+                     includes="${include.pdguide.icons}"
+            />
+        </copy>
+
+        <antcall target="build-guide">
+            <param name="xml-html-copy"
+                   value="dd_arrow.gif,aspectj-docs.css,ajbrowser-building.gif,ajbrowser-options.gif,${include.pdguide.icons}"
+            />
+            <param name="guide.dir" value="pdGuideDB" />
+            <param name="guide.name" value="pdguide" />
+        </antcall>
+        <delete quiet="on">
+            <fileset dir="${docs.src.dir}/pdGuideDB"
+                     includes="${include.pdguide.icons}"
             />
         </delete>
     </target>

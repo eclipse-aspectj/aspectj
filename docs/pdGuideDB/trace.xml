@@ -1,0 +1,15 @@
+<chapter id="trace" xreflabel="Trace">
+    <title>Trace</title>
+    
+    <sect1 id="trace-introduction">
+        <title>Introduction</title>
+        
+        <para> The usual approach to opening a report on Bugzilla is to describe the symptoms of the 
+        problem and attach a simple testcase. This allows the AspectJ team to try and reproduce the problem in
+        an attempt to fix it as well as improve the test suite. Unfortunately it may not be possible
+        to produce such a testcase either because your program is too large or is comercially sensitive. Alternatively 
+        the problem may relate to your specific environment where AspectJ is being used and will not be
+        reproducible by the AspectJ team. In one of these situations you may be asked to produce a
+        trace of the compiler when the problem occurs instead. This can then be attached to the bug report. </para>
+    </sect1>
+</chapter>
