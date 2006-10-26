@@ -236,7 +236,6 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 	    	    world = new BcelWorld(
 	    			  getSandboxDirectory()+File.pathSeparator+
 				  System.getProperty("java.class.path"));
-	    	    world.setFastDelegateSupport(false);
         }
 	}	
 	

@@ -40,7 +40,7 @@ public abstract class WeaveTestCase extends TestCase {
         // we are using ASM delegates we don't know the names of parameters (they are irrelevant...)
         // and are missing from the dumping of asm delegates.  This switch ensures we
         // continue to use BCEL for these tests.
-        world.setFastDelegateSupport(false); 
+//        world.setFastDelegateSupport(false); 
     }
 
     public WeaveTestCase(String name) {

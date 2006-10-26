@@ -117,19 +117,20 @@ public abstract class World implements Dump.INode {
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.class);
     
     // Records whether ASM is around ... so we might use it for delegates
-    protected static boolean isASMAround;
+    protected static boolean isASMAround = false;
     
 	private long errorThreshold;
 	private long warningThreshold;
     
-    static {
-    	try {
-    		Class c = Class.forName("org.aspectj.org.objectweb.asm.ClassVisitor");
-    		isASMAround = true;
-    	} catch (ClassNotFoundException cnfe) {
-    		isASMAround = false;
-    	}
-    }
+	
+//    static {
+//    	try {
+//    		Class c = Class.forName("org.aspectj.org.objectweb.asm.ClassVisitor");
+//    		isASMAround = true;
+//    	} catch (ClassNotFoundException cnfe) {
+//    		isASMAround = false;
+//    	}
+//    }
     
     /** 
      * A list of RuntimeExceptions containing full stack information for every
@@ -1229,8 +1230,9 @@ public abstract class World implements Dump.INode {
 	    }
 	    
 	    public boolean isFastDelegateSupportEnabled() {
-	    	  ensureAdvancedConfigurationProcessed();
-	    	  return fastDelegateSupportEnabled;
+	    	  return false; // ASM not currently being used
+//	    	  ensureAdvancedConfigurationProcessed();
+//	    	  return fastDelegateSupportEnabled;
 	    }
 	        
 	    public void setIncrementalCompileCouldFollow(boolean b) {incrementalCompileCouldFollow = b;}

@@ -15,7 +15,6 @@ package org.aspectj.weaver;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.aspectj.weaver.bcel.AsmDelegateTests5;
 import org.aspectj.weaver.reflect.ReflectionWorldTest;
 import org.aspectj.weaver.tools.PointcutExpressionTest;
 
@@ -25,7 +24,6 @@ public class AllWeaver5Tests {
 		TestSuite suite = new TestSuite(AllWeaver5Tests.class.getName());
 		//$JUnit-BEGIN$
         suite.addTest(AllTracing5Tests.suite());
-        suite.addTest(AsmDelegateTests5.suite());
         suite.addTest(BcweaverModuleTests15.suite());
 		suite.addTestSuite(PointcutExpressionTest.class);
 		suite.addTestSuite(ReflectionWorldTest.class);

@@ -71,7 +71,6 @@ import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.Aspect;
-import org.aspectj.weaver.asm.AsmDelegate;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.FormalBinding;
@@ -312,29 +311,29 @@ public class BcelWorld extends World implements Repository {
     	    ensureAdvancedConfigurationProcessed();
         //UnwovenClassFile classFile = (UnwovenClassFile)sourceJavaClasses.get(name);
         //if (classFile != null) jc = classFile.getJavaClass();
-        if (isFastDelegateSupportEnabled() && classPath!=null && !ty.needsModifiableDelegate() && isNotOnPackageRestrictedList(name)) {
-	        ClassPathManager.ClassFile cf = classPath.find(ty);
-	        if (cf==null) {
-	        	return null;
-	        } else {
-	        	ReferenceTypeDelegate delegate =  buildAsmDelegate(ty,cf);
-	        	if (fallbackToLoadingBcelDelegatesForAspects && delegate.isAspect()) {
-	        		// bugger - pr135001 - we can't inline around advice from an aspect because we don't load the instructions.
-	        		// fixing this quick to get AJDT upgraded with a good 1.5.2dev build.
-	        		// other fixes would be:
-	        		// 1. record that we are loading the superclass for an aspect, so we know to make it a BCEL delegate
-	        		//
-	        		// the 'fix' here is only reasonable because there are many less aspects than classes!
-	        		
-	        		// Create a BCEL delegate
-	        		if (jc == null) jc = lookupJavaClass(classPath, name);
-	    	        if (jc == null) return delegate; // worrying situation ?!?
-	    	        else            return buildBcelDelegate(ty, jc, false);
-	        	} else {
-	        		return delegate;
-	        	}
-	        }
-        } else {
+//        if (isFastDelegateSupportEnabled() && classPath!=null && !ty.needsModifiableDelegate() && isNotOnPackageRestrictedList(name)) {
+//	        ClassPathManager.ClassFile cf = classPath.find(ty);
+//	        if (cf==null) {
+//	        	return null;
+//	        } else {
+//	        	ReferenceTypeDelegate delegate =  buildAsmDelegate(ty,cf);
+//	        	if (fallbackToLoadingBcelDelegatesForAspects && delegate.isAspect()) {
+//	        		// bugger - pr135001 - we can't inline around advice from an aspect because we don't load the instructions.
+//	        		// fixing this quick to get AJDT upgraded with a good 1.5.2dev build.
+//	        		// other fixes would be:
+//	        		// 1. record that we are loading the superclass for an aspect, so we know to make it a BCEL delegate
+//	        		//
+//	        		// the 'fix' here is only reasonable because there are many less aspects than classes!
+//	        		
+//	        		// Create a BCEL delegate
+//	        		if (jc == null) jc = lookupJavaClass(classPath, name);
+//	    	        if (jc == null) return delegate; // worrying situation ?!?
+//	    	        else            return buildBcelDelegate(ty, jc, false);
+//	        	} else {
+//	        		return delegate;
+//	        	}
+//	        }
+//        } else {
 	        if (jc == null) {
 	        	jc = lookupJavaClass(classPath, name);
 	        }       
@@ -343,19 +342,19 @@ public class BcelWorld extends World implements Repository {
 	        } else {
 	        	return buildBcelDelegate(ty, jc, false);
 	        }
-	    }
+//	    }
 	}
 	
-    private ReferenceTypeDelegate buildAsmDelegate(ReferenceType type,ClassPathManager.ClassFile t) {
-    	AsmDelegate asmDelegate;
-		try {
-			asmDelegate = new AsmDelegate(type,t.getInputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return asmDelegate;
-	}
+//    private ReferenceTypeDelegate buildAsmDelegate(ReferenceType type,ClassPathManager.ClassFile t) {
+//    	AsmDelegate asmDelegate;
+//		try {
+//			asmDelegate = new AsmDelegate(type,t.getInputStream());
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//		return asmDelegate;
+//	}
     
 	public BcelObjectType buildBcelDelegate(ReferenceType resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
 		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc, exposedToWeaver);

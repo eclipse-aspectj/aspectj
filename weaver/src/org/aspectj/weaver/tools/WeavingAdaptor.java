@@ -39,7 +39,6 @@ import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.Version;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.bridge.IMessage.Kind;
-import org.aspectj.org.objectweb.asm.ClassReader;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
@@ -308,27 +307,28 @@ public class WeavingAdaptor implements IMessageContext {
      */
 	private boolean shouldWeaveAnnotationStyleAspect(String name, byte[] bytes) {
     	if (delegateForCurrentClass==null) {
-    		if (weaver.getWorld().isASMAround()) return asmCheckAnnotationStyleAspect(bytes);
-    		else ensureDelegateInitialized(name, bytes);
+//    		if (weaver.getWorld().isASMAround()) return asmCheckAnnotationStyleAspect(bytes);
+//    		else 
+    			ensureDelegateInitialized(name, bytes);
     	}
 		return (delegateForCurrentClass.isAnnotationStyleAspect());
 	}
 
-	private boolean asmCheckAnnotationStyleAspect(byte[] bytes) {
-		IsAtAspectAnnotationVisitor detector = new IsAtAspectAnnotationVisitor();
-
-		ClassReader cr = new ClassReader(bytes);
-	    try {
-	    	cr.accept(detector, true);//, ClassReader.SKIP_DEBUG | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
-	    } catch (Exception spe) {
-	    	// if anything goes wrong, e.g., an NPE, then assume it's NOT an @AspectJ aspect...
-	    	System.err.println("Unexpected problem parsing bytes to discover @Aspect annotation");
-	    	spe.printStackTrace();
-	    	return false;
-	    }
-	    
-	    return detector.isAspect();
-	}
+//	private boolean asmCheckAnnotationStyleAspect(byte[] bytes) {
+//		IsAtAspectAnnotationVisitor detector = new IsAtAspectAnnotationVisitor();
+//
+//		ClassReader cr = new ClassReader(bytes);
+//	    try {
+//	    	cr.accept(detector, true);//, ClassReader.SKIP_DEBUG | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
+//	    } catch (Exception spe) {
+//	    	// if anything goes wrong, e.g., an NPE, then assume it's NOT an @AspectJ aspect...
+//	    	System.err.println("Unexpected problem parsing bytes to discover @Aspect annotation");
+//	    	spe.printStackTrace();
+//	    	return false;
+//	    }
+//	    
+//	    return detector.isAspect();
+//	}
 	
     protected void ensureDelegateInitialized(String name,byte[] bytes) {
     	if (delegateForCurrentClass==null)
