@@ -1,0 +1,89 @@
+body { 
+  font-family: "Lucida Grande", "Trebuchet MS", sans-serif;
+  line-height: 1.1em;
+ }
+
+h1 {
+  margin-bottom: 3px;
+  padding-bottom: 0px;
+  line-height: 1.1em;
+}
+
+h2 { 
+     font-size: 130%; 
+     font-weight: bold ; 
+     line-height: 16px;
+     color: #FFFFFF;
+     background-color: #0080C0;
+     padding: 5px;
+}
+
+h3 { 
+     font-size: 110%; 
+     font-weight: bold ; 
+     line-height: 14px;
+     color: #FFFFFF;
+     background-color: orange;
+     padding: 5px;
+}
+
+tt { 
+  font-size: 120%;
+  color: #00AAF0;
+ }
+
+tt tt { 
+  font-size: 100%;
+ }
+
+.programlisting {
+  padding-top: 5px; 
+  border: 2px solid #ccc;
+  background: #eee;
+  font-size: 120%;
+  color: #111199;
+
+ }
+
+.term { 
+  color: #111199;
+ }
+
+.variablelist dd { 
+  margin-left: 18px;
+  padding-left: 20px;
+  background: url(dd_arrow.gif) no-repeat 0 2px;
+ }
+
+.toc dt { 
+  font-size: 110%;
+  padding-bottom: 0px;
+  margin-bottom: 5px;
+ }
+
+.toc dl dd dt { 
+  font-size: 100%;
+ }
+
+.toc dt { 
+  font-size: 100%
+  margin-bottom: 0;
+ }
+
+.informaltable table { 
+  margin-left: 5%;
+ }
+
+.informaltable th { 
+  background-color: orange;
+  padding: 1px;
+ }
+
+ul li { 
+  line-height: 1.2em; 
+ }
+
+.keyword { 
+  font-weight: bold;
+  color: purple;
+ }

@@ -5,6 +5,19 @@
         <title>Introduction</title>
         
         <para> By default only warning and error messages are issued by the compiler whether it is
-        being used for source code compilation, weaving, binary weaving or load-time weaving. </para>
+        being used for source code compilation, weaving, binary weaving or load-time weaving. Informational,
+        debug and weaving messages can also be obtained using compiler options or System properties. </para>
+
+        <sect2 id="configuration" xreflabel="configuration">
+            <title>Configuration</title>
+        
+            <para>  </para>
+        </sect2>
+
+        <sect2 id="examples" xreflabel="examples">
+            <title>Examples</title>
+        
+            <para>  </para>
+        </sect2>
     </sect1>
 </chapter>

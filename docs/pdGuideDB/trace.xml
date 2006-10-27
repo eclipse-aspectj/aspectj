@@ -1,5 +1,5 @@
 <chapter id="trace" xreflabel="Trace">
-    <title>Trace</title>
+    <title>Tracing</title>
     
     <sect1 id="trace-introduction">
         <title>Introduction</title>
@@ -11,5 +11,85 @@
         the problem may relate to your specific environment where AspectJ is being used and will not be
         reproducible by the AspectJ team. In one of these situations you may be asked to produce a
         trace of the compiler when the problem occurs instead. This can then be attached to the bug report. </para>
+
+        <sect2 id="configuration" xreflabel="configuration">
+            <title>Configuration</title>
+        
+            <para> When available (Java 5 or later) AspectJ will use the 
+            <literal>java.util.logging</literal>
+            <ulink url="http://java.sun.com/j2se/1.5.0/docs/guide/logging/index.html">infrastructure</ulink> 
+            that is configured using a logging.properties file. By default only error
+            and fatal events will be logged but less severe warnings as well as fine grained
+            method entry and exit events can be obtained using the appropriate configuration. All
+            compiler messages can also be logged through the infrastructure by setting the
+            <literal>org.aspectj.weaving.messages</literal> System property. </para>
+            
+            <para> If you are using a JDK 1.4 or earlier AspectJ will use a simple built-in trace
+            infrastructure that logs to stderr. This is enabled by setting the 
+            <literal>org.aspectj.weaving.tracing.enabled</literal> System property. You may also override
+            the default behaviour or provide your own trace implementation using the
+            <literal>org.aspectj.weaving.tracing.factory</literal> System property. </para>
+            
+            <para> The table below lists the System properties that can be used to configure tracing. </para>
+            <informaltable>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <literal>org.aspectj.tracing.debug</literal>
+                            </entry>
+                            <entry>
+                            	Enable simple debugging of the trace infrastructure itself.
+                            	<para> Default: <literal>false</literal>. </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>org.aspectj.tracing.enabled</literal>
+                            </entry>
+                            <entry>
+                            	Enable the built-in AspectJ trace infrastructure.
+                            	<para> Default: <literal>false</literal>. </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>org.aspectj.tracing.factory</literal>
+                            </entry>
+                            <entry>
+                            	Select trace infrastructure. Specify the fully qualified class name
+                            	of the <literal>org.aspectj.weaver.tools.TraceFactory</literal> 
+                            	interface to use a custom infrastructure. Specify a value of
+                            	<literal>default</literal> to force AspectJ to use it's
+                            	built-in infrastructure. 
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>org.aspectj.tracing.messages</literal>
+                            </entry>
+                            <entry>
+                            	Enable tracing of compiler messages. The kind of messages logged
+                            	is determined by the selected trace infrastructure not the message
+                            	configuration.
+                            	<para> Default: <literal>false</literal>. </para>
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </informaltable>
+        </sect2>
+
+        <sect2 id="examples" xreflabel="examples">
+            <title>Examples</title>
+        
+            <para>  </para>
+        </sect2>
     </sect1>
 </chapter>
