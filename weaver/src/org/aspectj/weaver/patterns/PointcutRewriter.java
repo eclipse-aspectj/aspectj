@@ -35,25 +35,51 @@ public class PointcutRewriter {
 	 * See pr113257
 	 */
 	public Pointcut rewrite(Pointcut pc,boolean forceRewrite) {
-		Pointcut result = pc;
+		Pointcut result = pc;//checkPC(result);
 		if (forceRewrite || !isDNF(pc)) {
 			if (WATCH_PROGRESS) System.out.println("Initial pointcut is        ==> " + format(pc));
-			result = distributeNot(result);
+			result = distributeNot(result);//checkPC(result);
 			if (WATCH_PROGRESS) System.out.println("Distributing NOT gives     ==> " + format(result));
-			result = pullUpDisjunctions(result);
+			result = pullUpDisjunctions(result);//checkPC(result);
 			if (WATCH_PROGRESS) System.out.println("Pull up disjunctions gives ==> " + format(result));		
 	    } else {
 			if (WATCH_PROGRESS) System.out.println("Not distributing NOTs or pulling up disjunctions, already DNF ==> "+format(pc));
 	    }
-		result = simplifyAnds(result);
+		result = simplifyAnds(result); // checkPC(result);
 		if (WATCH_PROGRESS) System.out.println("Simplifying ANDs gives     ==> " + format(result));
-		result = sortOrs(result);
+		result = removeNothings(result);// checkPC(result);
+	    if (WATCH_PROGRESS) System.out.println("Removing nothings gives    ==> " + format(result));
+		result = sortOrs(result);// checkPC(result);
 		if (WATCH_PROGRESS) System.out.println("Sorting ORs gives          ==> " + format(result));
-		//result = removeNothings(result);
-	    //if (WATCH_PROGRESS) System.out.println("Removing nothings gives    ==> " + format(result));
 		return result;
 	}
 	
+	/**
+	 * Checks pointcuts - used for debugging.
+	 * - this variant checks if the context has been lost, since
+	 *   that can indicate an NPE will happen later reporting a message (pr162657).
+	 *   Not finished, but helped locate the problem ;)
+	 */
+	private void checkPC(Pointcut pc) {
+		if (isNot(pc)) {
+			NotPointcut npc = (NotPointcut)pc;
+			checkPC(npc.getNegatedPointcut());
+			if (npc.getSourceContext()==null) throw new RuntimeException("Lost context");
+		} else if (isOr(pc)) {
+			OrPointcut opc = (OrPointcut)pc;
+			checkPC(opc.getLeft());
+			checkPC(opc.getRight());
+			if (opc.getSourceContext()==null) throw new RuntimeException("Lost context");
+		} else if (isAnd(pc)) {
+			AndPointcut apc = (AndPointcut)pc;
+			checkPC(apc.getLeft());
+			checkPC(apc.getRight());
+			if (apc.getSourceContext()==null) throw new RuntimeException("Lost context");
+		} else {
+			if (pc.getSourceContext()==null) throw new RuntimeException("Lost context");		
+		}
+	}
+				
 	public Pointcut rewrite(Pointcut pc) {
 		return rewrite(pc,false);
 	}
@@ -147,7 +173,7 @@ public class PointcutRewriter {
 	private Pointcut pullUpDisjunctions(Pointcut pc) {
 		if (isNot(pc)) {
 			NotPointcut npc = (NotPointcut)pc;
-			return new NotPointcut(pullUpDisjunctions(npc.getNegatedPointcut()));
+						return new NotPointcut(pullUpDisjunctions(npc.getNegatedPointcut()));
 		} else if (isAnd(pc)) {
 			AndPointcut apc = (AndPointcut) pc;
 			// dive into left and right here...
@@ -281,7 +307,7 @@ public class PointcutRewriter {
 				// !!X => X
 				return simplifyAnds(((NotPointcut)notBody).getNegatedPointcut());
 			} else {
-				return new NotPointcut(simplifyAnds(npc.getNegatedPointcut()));
+							return new NotPointcut(simplifyAnds(npc.getNegatedPointcut()));
 			}
 		} else if (isOr(pc)) {
 			OrPointcut opc = (OrPointcut) pc;
