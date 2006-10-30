@@ -14,6 +14,35 @@
 		<message kind="warning" text="can not resolve this member: append [Xlint:unresolvableMember]"/>
 	  </compile>
     </ajc-test>
+
+    <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice">
+      <compile files="Foo.java" options="-1.5"/>
+      <run class="Foo"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr162657" title="complex pointcut">
+      <compile files="TestAspect.aj"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 2">
+      <compile files="Foo2.java" options="-1.5"/>
+      <run class="Foo2"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 3">
+      <compile files="Foo3.java" options="-1.5"/>
+      <run class="Foo3"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 4">
+      <compile files="Foo4.java" options="-1.5"/>
+      <run class="Foo4"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 5">
+      <compile files="Foo5.java" options="-1.5"/>
+      <run class="Foo5"/>
+    </ajc-test>
     
      <ajc-test dir="bugs153/pr159143" title="declare method annotations">
         <compile files="DeclareMethodAnnotation.java" options="-1.5">

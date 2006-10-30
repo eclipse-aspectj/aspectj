@@ -28,6 +28,12 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
   // public void testAmbiguousBinding_pr121805() { runTest("ambiguous binding");}
 //  public void testNegatedAnnotationMatchingProblem_pr153464() { runTest("negated annotation matching problem");}
+//  public void testAnnotationStyleBcException_pr162135() { runTest("bcexception in annotation style around advice");}
+//  public void testAnnotationStyleBcException_pr162135_2() { runTest("bcexception in annotation style around advice - 2");}
+//  public void testAnnotationStyleBcException_pr162135_3() { runTest("bcexception in annotation style around advice - 3");}
+//  public void testAnnotationStyleBcException_pr162135_4() { runTest("bcexception in annotation style around advice - 4");}
+//  public void testAnnotationStyleBcException_pr162135_5() { runTest("bcexception in annotation style around advice - 5");}
+  public void testComplexPointcut_pr162657() { runTest("complex pointcut");}
   public void testGenericsInPointcuts_pr161502() { runTest("generics in pointcuts");}
   public void testGenericsInPointcuts_pr161502_2() { runTest("generics in pointcuts - 2");}
   public void testNoNPEDueToMissingType_pr149908() { runTest("ensure no npe due to missing type");}
