@@ -457,6 +457,29 @@
                                    immediately you can use the option <literal>-Daj.weaving.verbose=true</literal> on the JVM startup command line.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                <literal>-debug</literal>
+                            </entry>
+                            <entry>
+                            	Issue a messages for each class passed to the weaver 
+                            	indicating whether it was woven, excluded or ignored. 
+                            	Also issue messages for classes
+                            	defined during the weaving process such as around advice
+                            	closures and concrete aspects defined in 
+                            	<literal>META-INF/aop.xml</literal>.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>-showWeaveInfo</literal>
+                            </entry>
+                            <entry>
+                            	Issue informational messages whenever the weaver touches a class file.
+                            	This option may also be enabled using the System property
+                            	<literal>-Dorg.aspectj.weaver.showWeaveInfo=true</literal>.
+                            </entry>
+                        </row>
         				<!-- TODO option parsed but not used -->
         				<!--
                         <row>
@@ -506,12 +529,6 @@
                                 <literal>-XnoInline</literal>
                             </entry>
                             <entry>Don't inline around advice.</entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <literal>-showWeaveInfo</literal>
-                            </entry>
-                            <entry>Issue informational messages whenever the weaver touches a class file</entry>
                         </row>
                         <row>
                             <entry>

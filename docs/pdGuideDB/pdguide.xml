@@ -30,7 +30,9 @@
       <para>
         This guide describes how to gather and interpret information from the AspectJ compiler
         to when diagnsoing problems in AspectJ programs, configuring the load-time weaving
-        framework or reporting bugs on Bugzilla.
+        framework or reporting bugs on Bugzilla. Some information e.g. messages is intended to
+        help you solve coding or configuration problems. Other information is intended to be
+        be used by the AspectJ team when trying to fix bugs.
       </para>
     </abstract>
   </bookinfo>

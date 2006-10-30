@@ -6,10 +6,124 @@
         
         <para> By default only warning and error messages are issued by the compiler whether it is
         being used for source code compilation, weaving, binary weaving or load-time weaving. Informational,
-        debug and weaving messages can also be obtained using compiler options or System properties. </para>
+        debug and weaving messages can also be obtained using compiler options 
+        or System properties. Also as well as being able to soften or ignore 
+        certain error messages the various <literal>-Xlint</literal> 
+        <ulink url="../devguide/ajc-ref.html">options</ulink> can be used to 
+        notify you of conditions that would otherwise be ignored. </para>
+
+		<para> It is often difficult to determine, especially when using load-time weaving (LTW),
+		why advice has not been woven. Here is a quick guide to the messages to
+		look for. Firstly if you use the <literal>-verbose</literal> option you 
+		should see the following message when your aspect is registered: </para>
+
+        <programlisting><![CDATA[
+	info register aspect MyAspect
+        ]]></programlisting>
+
+		<para> Secondly if you use the <literal>-debug</literal> option you should 
+		see a message indicating that you class is being woven: </para>
+
+        <programlisting><![CDATA[
+	debug weaving 'HelloWorld'
+        ]]></programlisting>
+
+		<para> However this does not mean that advice has actually been woven into
+		your class merely that the class has been passed to the weaver. So thirdly to determine
+		whether your pointcuts match you can use the <literal>-showWeaveInfo</literal>
+		option which will cause a message to be issued each time a piece of advice is woven: </para>
+
+        <programlisting><![CDATA[
+	weaveinfo Join point 'method-execution(void HelloWorld.main(java.lang.String[]))' ...
+		]]></programlisting>
 
         <sect2 id="configuration" xreflabel="configuration">
             <title>Configuration</title>
+            
+            <para> The table below lists the options used to control AspectJ messages. The method
+            of configuration depends on your environment so refer to the relevant 
+            documentation for 
+            <ulink url="../devguide/ajc-ref.html">ajc</ulink>, 
+            <ulink url="../devguide/antTasks-iajc.html#antTasks-iajc-options">Ant</ulink> or 
+            <ulink url="../devguide/ltw-configuration.html#weaver-options">LTW</ulink>. </para>
+            <informaltable>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Option</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <literal>-verbose</literal>
+                            </entry>
+                            <entry>
+                            	Show informational messages including AspectJ version
+                            	and build date.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>-debug</literal>
+                            </entry>
+                            <entry>
+                            	(Load-time weaving only). Show debugging messages such as
+                            	which classes are being woven or those that are excluded.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>-showWeaveInfo</literal>
+                            </entry>
+                            <entry>
+                            	Show weaving messages.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>-Xlint</literal>
+                            </entry>
+                            <entry>
+                            	Control level of lint messages.
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </informaltable>
+            
+            <para> The table below lists some useful <literal>-Xlint</literal> messages. </para>
+            <informaltable>
+                <tgroup cols="3">
+                    <thead>
+                        <row>
+                            <entry>Message</entry>
+                            <entry>Default</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <literal>aspectExcludedByConfiguration</literal>
+                            </entry>
+                            <entry>
+                                <literal>ignore</literal>
+                            </entry>
+                            <entry>
+                            	If an aspect is not being woven, despite being
+                            	registered, it could be that it has been excluded
+                            	by either an <literal>include</literal> or <literal>exclude</literal> 
+                            	element in the 
+                            	<literal>aspects</literal> section of <literal>META-INF/aop.xml</literal>.
+                            	Enable this message to determine whether an aspect has
+                            	been excluded.
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </informaltable>
         
             <para>  </para>
         </sect2>
@@ -17,7 +131,32 @@
         <sect2 id="examples" xreflabel="examples">
             <title>Examples</title>
         
-            <para>  </para>
+            <para> You can use <literal>META-INF/aop.xml</literal> to control which
+            messages are produced during LTW. The following example will produce
+            basic informational messages about the lifecyle of the weaver in
+            addition to any warning or error messages. </para>
+
+	        <programlisting><![CDATA[
+	<aspectj>
+		<weaver options="-verbose">
+		</weaver>
+	</aspectj>
+			]]></programlisting>
+        
+            <para> Notice that you are told exactly which <literal>META-INF/aop.xml</literal> 
+            configurations file(s) are being used. Each message is also preceeded by the 
+            name of the defining class loader associated with weaver. You can use this
+            information in a large system to distinguish between different applications each
+            of which will typically have its own class loader. </para>
+
+	        <programlisting><![CDATA[
+[AppClassLoader@92e78c] info AspectJ Weaver Version 1.5.3 built on Thursday Oct 26, 2006 at 17:22:31 GMT
+[AppClassLoader@92e78c] info register classloader sun.misc.Launcher$AppClassLoader@92e78c
+[AppClassLoader@92e78c] info using configuration /C:/temp/META-INF/aop.xml
+[AppClassLoader@92e78c] info using configuration /C:/temp/META-INF/aop-ajc.xml
+[AppClassLoader@92e78c] info register aspect ExceptionHandler
+[AppClassLoader@92e78c] info processing reweavable type ExceptionHandler: ExceptionHandler.aj
+			]]></programlisting>
         </sect2>
     </sect1>
 </chapter>
