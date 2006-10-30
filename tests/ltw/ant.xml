@@ -10,15 +10,12 @@
     <target name="JDK14 LTW with XML">
         <java fork="yes" classname="HelloWorld" failonerror="yes">
             <classpath refid="aj.path"/>
-<!--        	
-            <classpath>
-                <pathelement path="${aj.sandbox}/hello.jar"/>
-            </classpath>
--->            
             <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
         	<sysproperty key="aj.class.path" path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar"/>
+<!--        	
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
+-->            
             <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
             <!-- use META-INF/aop.xml style -->
 <!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
@@ -29,16 +26,13 @@
     <target name="JDK14 LTW with ASPECTPATH">
         <java fork="yes" classname="HelloWorld" failonerror="yes">
             <classpath refid="aj.path"/>
-        	<!--        	
-            <classpath>
-                <pathelement path="${aj.sandbox}/hello.jar"/>
-            </classpath>
--->            
             <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
         	<sysproperty key="aj.class.path" path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar"/>
         	<sysproperty key="aj.aspect.path" path="${aj.sandbox}/handler.jar"/>
+<!--        	
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
+-->            
             <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
             <!-- use META-INF/aop.xml style -->
 <!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
@@ -97,6 +91,17 @@
             <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
             <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
 -->            
+        </java>
+    </target>
+
+    <target name="simple LTW">
+        <copy file="${aj.root}/tests/ltw/aop-simple.xml"
+              tofile="${aj.sandbox}/META-INF/aop.xml"/>
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <!-- use META-INF/aop.xml style -->
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+<!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
 

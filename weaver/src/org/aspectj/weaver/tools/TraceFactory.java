@@ -77,7 +77,7 @@ public abstract class TraceFactory {
     	    instance = new DefaultTraceFactory();
     	}
     	
-    	if (debug) System.out.println("TraceFactory.instance=" + instance);
+    	if (debug) System.err.println("TraceFactory.instance=" + instance);
     }
 
 }

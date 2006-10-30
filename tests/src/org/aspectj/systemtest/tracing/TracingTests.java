@@ -41,5 +41,9 @@ public class TracingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testTraceEverything () {
   		runTest("Trace everything");
 	}
+	
+	public void testJDK14Tracing_pr159854 () {
+  		runTest("JDK 1.4 tracing");
+	}
 
 }

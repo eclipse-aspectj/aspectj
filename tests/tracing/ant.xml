@@ -50,4 +50,17 @@
         </java>
     </target>
 
+    <target name="JDK 1.4 tracing">
+        <copy file="${aj.root}/tests/tracing//logging.properties"
+              tofile="${aj.sandbox}/META-INF/logging.properties"/>
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
+            <jvmarg value="-Djava.util.logging.config.file=logging.properties"/>
+            <!-- use META-INF/aop.xml style -->
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
 </project>

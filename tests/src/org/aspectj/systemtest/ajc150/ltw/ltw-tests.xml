@@ -540,9 +540,11 @@
         <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
 		<ant file="ant.xml" target="JDK14 LTW with XML" verbose="true">
         	<stdout>
-            	<line text="TraceFactory.instance="/>
             	<line text="Hello World!"/>
         	</stdout>
+        	<stderr>
+            	<line text="TraceFactory.instance="/>
+        	</stderr>
         </ant>
     </ajc-test>
     
@@ -551,9 +553,11 @@
         <compile files="ExceptionHandler.aj" options="-outjar handler.jar"/>
         <ant file="ant.xml" target="JDK14 LTW with ASPECTPATH" verbose="true">
         	<stdout>
-            	<line text="TraceFactory.instance="/>
             	<line text="Hello World!"/>
         	</stdout>
+        	<stderr>
+            	<line text="TraceFactory.instance="/>
+        	</stderr>
         </ant>
     </ajc-test>
     
@@ -639,5 +643,15 @@
             </stderr>
         </run>
     </ajc-test>       
+
+	<ajc-test dir="ltw" title="simple LTW" keywords="ltw">
+        <compile files="HelloWorld.java"/>
+        <compile files="ExceptionHandler.aj" options="-outxml"/>
+		<ant file="ant.xml" target="simple LTW" verbose="true">
+        	<stdout>
+            	<line text="Hello World!"/>
+        	</stdout>
+        </ant>
+    </ajc-test>
     
     

@@ -72,4 +72,16 @@
             </stdout>
         </ant>
     </ajc-test>
+
+	<ajc-test dir="tracing" title="JDK 1.4 tracing" keywords="tracing">
+        <compile
+        	files="HelloWorld.java"
+        />
+        <compile files="Aspect.aj" options="-outxml"/>
+		<ant file="ant.xml" target="JDK 1.4 tracing" verbose="true">
+        	<stdout>
+                <line text="Hello World!"/>
+            </stdout>
+        </ant>
+    </ajc-test>
 </suite>

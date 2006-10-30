@@ -152,6 +152,11 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   		runTest("override default path using -Dorg.aspectj.weaver.loadtime.configuration");
   		  		
   	}
+  	
+  	public void testSimpleLTW_pr159854 () {
+  		runTest("simple LTW");
+  		  		
+  	}
   	  	
   	/*
   	 * Allow system properties to be set and restored
