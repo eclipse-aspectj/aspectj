@@ -20,7 +20,7 @@
             <para> By default AspectJ will only create an <literal>ajcore</literal> file 
             when an unexpected exception is thrown by the weaver or an 
             <literal>abort</literal> message is
-            issued. However it is possible to disble this feature or enable files to
+            issued. However it is possible to disable this feature or enable files to
             be produced under different circumstances. The table below lists the System 
             properties that can be used to configure <literal>ajcore</literal> files. </para>
             <informaltable>

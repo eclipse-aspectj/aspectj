@@ -29,7 +29,7 @@
         ]]></programlisting>
 
 		<para> However this does not mean that advice has actually been woven into
-		your class merely that the class has been passed to the weaver. So thirdly to determine
+		your class merely that the class has been passed to the weaver. To determine
 		whether your pointcuts match you can use the <literal>-showWeaveInfo</literal>
 		option which will cause a message to be issued each time a piece of advice is woven: </para>
 
