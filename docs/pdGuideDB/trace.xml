@@ -1,30 +1,39 @@
-<chapter id="trace" xreflabel="Trace">
+<chapter id="trace" xreflabel="Tracing">
     <title>Tracing</title>
     
     <sect1 id="trace-introduction">
         <title>Introduction</title>
         
-        <para> The usual approach to opening a report on Bugzilla is to describe the symptoms of the 
+        <para> 
+            The AspectJ developers have instrumented the compiler/weaver with
+            many "trace" messages for their own debugging use.  These remain in
+            the production releases because tracing helps when it is hard to 
+            isolate the problem in a test case.  This sections describes how
+            to enable tracing so you can provide trace information on bug reports.
+        </para> 
+        <para> 
+            The usual approach to opening a report on Bugzilla is to describe the symptoms of the 
         problem and attach a simple testcase. This allows the AspectJ team to try and reproduce the problem in
         an attempt to fix it as well as improve the test suite. Unfortunately it may not be possible
         to produce such a testcase either because your program is too large or is commercially sensitive. Alternatively 
         the problem may relate to your specific environment where AspectJ is being used and will not be
-        reproducible by the AspectJ team. In each of these situations you may be asked to produce a
+        reproducible by the AspectJ team. In each of these situations you can produce a
         trace of the compiler when the problem occurs instead. This can then be attached to the bug report. </para>
 
-        <sect2 id="configuration" xreflabel="configuration">
-            <title>Configuration</title>
+        <sect2 id="trace-configuration" xreflabel="Configuring Tracing">
+            <title>Configuring Tracing</title>
         
             <para> When available (Java 5 or later) AspectJ will use the 
-            <literal>java.util.logging</literal>
-            <ulink url="http://java.sun.com/j2se/1.5.0/docs/guide/logging/index.html">infrastructure</ulink> 
-            that is configured using a logging.properties file. By default only error
-            and fatal events will be logged but less severe warnings as well as fine grained
+            <ulink url="http://java.sun.com/j2se/1.5.0/docs/guide/logging/index.html">
+            java.util.logging</ulink> infrastructure
+            configured using a <literal>logging.properties</literal> file. By default only error
+            and fatal events will be logged but less severe warnings as well as fine-grained
             method entry and exit events can be obtained using the appropriate configuration. All
             regular compiler messages can also be logged through the infrastructure by setting the
             <literal>org.aspectj.weaving.messages</literal> System property. </para>
             
-            <para> If you are using a JDK 1.4 or earlier AspectJ will use a simple built-in trace
+            <para> If you are running the AspectJ compiler/weaver under JDK 1.4 or earlier, 
+                AspectJ will use a simple built-in trace
             infrastructure that logs to stderr. This is enabled by setting the 
             <literal>org.aspectj.weaving.tracing.enabled</literal> System property. You may also override
             the default behaviour or provide your own trace implementation using the
@@ -86,7 +95,7 @@
             </informaltable>
         </sect2>
 
-        <sect2 id="examples" xreflabel="examples">
+        <sect2 id="trace-examples" xreflabel="trace-examples">
             <title>Examples</title>
         
             <para> Using <literal>-Dorg.aspectj.tracing.factory=default</literal>

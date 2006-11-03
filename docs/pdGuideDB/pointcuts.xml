@@ -1,0 +1,162 @@
+<chapter id="pointcuts" xreflabel="Debugging Pointcuts">
+    <title>Debugging Pointcuts</title>
+    <sect1 id="pointcuts-introduction">
+    <title>Introduction</title>
+    
+    <para> 
+        This section describes how to write and debug pointcuts
+        using the usual approach of iteration and decomposition.
+        New users are often stumped when their advice does not match.
+        That means the pointcut doesn't match; they rewrite the
+        pointcut and it still doesn't match, with no new information.
+        This can be frustrating if each iteration involves building,
+        deploying, and testing a complex application.  Learning to
+        break it down, particularly into parts that can be checked
+        at compile-time, can save a lot of time.
+    </para>
+    </sect1>    
+    
+    <sect1 id="pointcuts-debugging">
+    <title>Debugging pointcuts</title>
+    <para>
+Go at it top-down and then bottom-up.  Top-down, draft significant
+aspects by first writing the comments to specify responsibilities.
+Advice responsibility usually takes the form, "When X, do Y."
+Pointcut responsibility for "When X" often takes the form,
+"When [join points] [in locations] [are ...]".  These []'s often
+translate to named pointcuts (like `libraryCalls() &amp;&amp; within(Client)
+&amp;&amp; args(Context)`) which form a semantic bridge to the plain-text
+meaning in a comment (e.g., `// when the client passes only context into
+the library`).        
+This gets you to a point where you can debug the parts of the
+pointcut independently.
+    </para>
+    <para>
+Bottom up (to build each part), consider each primitive pointcut
+designator (PCD), then the composition, and then any implicit
+constraints:
+    <orderedlist>
+    <listitem><para>
+What kinds of join points should it match? (constructor-call?
+field-get?)?  This translates to using the kinded pointcuts
+(`call(..)`, `get(..)`, etc.).
+    </para></listitem>
+    <listitem><para>
+Are these restricted to being lexically within something?  This
+translates to using `within{code}(..)`.  If this is true, it should
+always be used, to speed up weaving.
+    </para></listitem>
+    <listitem><para>
+What runtime constraints and context should be true and available at
+each join point?  This translates to `this()`, `target()`, `args()`,
+`cflow{below}()` and `if(..)`.
+    </para></listitem>
+    <listitem><para>
+Are there any advice or implementation limitations at issue?  This
+involves knowing the few constraints on AspectJ imposed by Java bytecode 
+as listed in the AspectJ Programming Guide section on 
+        <ulink url="../progguide/implementation.html">Implementation Notes</ulink>.
+    </para></listitem>
+    </orderedlist>
+    </para>
+    <para>
+       It's much faster to iterate a pointcut at compile-time
+        using declare warning (even better, some errors are identified
+        at parse-time in the latest versions of AJDT).
+        Start with the parts of the pointcut
+        that are staticly-determinable (i.e., they do not involve
+        the runtime PCD's listed above).  If compiles themselves
+        take too long because of all the AspectJ weaving, then
+        try to only include the debugging aspect with the prototype
+        pointcut, and limit the scope using <literal>within(..)</literal>.
+    </para>
+    <para>
+        Some mistakes in primitive pointcuts:
+        <itemizedlist>
+<listitem><para>
+`this(Foo) &amp;&amp; execution(static * *(..))`: There is no `this` in a static
+context, so `this()` or `target()` should not be used in a static
+context or when targetting a static context (respectively).  This
+happens most often when you want to say things like "all calls to Foo from Bar"
+and you only pick out calls to instance methods of Foo
+or you try to pick out calls from static methods of Bar.
+</para></listitem>
+<listitem><para>
+`target(Foo) &amp;&amp;  call(new(..)`: This will never match.  In
+constructor-call join points, there is no target because the object
+has not been created yet. 
+</para></listitem>
+<listitem><para>
+`call(* Foo.*(..))`: `Foo` refers to the compile-time type of the
+invoking reference, not the implementing class.  In Java before 1.4,
+the compile-time type was rendered as the defining type, not the
+reference type; this was corrected in 1.4 (as shown when using ajc
+with the -1.4 flag)  Most people should use `target(Foo) &amp;&amp;  call(...)`.
+</para></listitem>
+<listitem><para>
+`execution(* Foo.bar(..))`: An execution join point for Foo is
+always within Foo, so this won't pick out any overrides of bar(..).
+Use `target(Foo) &amp;&amp;  execution(* bar(..))` for instance methods.
+</para></listitem>
+<listitem><para>
+`within(Foo)`: anonymous types are not known at weave-time to be
+within the lexically-enclosing type (a limitation of Java bytecode).
+</para></listitem>
+        </itemizedlist>
+    </para>
+    <para>
+        Some mistakes in composition:
+        <itemizedlist>
+<listitem><para>
+`call(* foo(Bar, Foo)) &amp;&amp; args(Foo)`: This will never match.
+The parameters in `args(..)` are position-dependent, so `args(Foo)` only picks
+ out join points where there is only one argument possible, of type Foo.
+Use the indeterminate-arguments operator '..' as needed, e.g., `args(Foo, ..)`.
+</para></listitem>
+<listitem><para>
+`call(* foo()) &amp;&amp; execution(* foo())`: This will never match.  Each
+pointcut must be true at each join point matched.  For a union of different
+kinds of join points (here, call or execution), use '||'.
+E.g., to match both method-call and field-get join points, use 
+    `call(* ...) || get(...)`.
+</para></listitem>
+</itemizedlist>
+    </para>
+    <para>
+        Some mistakes in implicit advice constraints:
+        <itemizedlist>
+<listitem><para>
+`after () returning (Foo foo) : ...`: after advice can bind the
+returned object or exception thrown.  That effectively acts like
+`target()`, `this()`, or `args()` in restricting when the advice
+runs based on the runtime type of the bound object, even though it is
+not explicitly part of the pointcut.
+</para></listitem>
+</itemizedlist>
+    </para>
+    <para>
+        Some mistakes in implementation requirements:
+        <itemizedlist>
+<listitem><para>
+`ajc` has to control the code for a join point in order to implement
+the join point.  This translates to an implicit `within({code under
+the control of the compiler})` for all join points, with additional
+caveat for some join points.  Take exception handlers, for example:
+there is no way to be sure from the bytecode where the original handler
+ends, so `ajc` can't implement after advice on handler join points.
+(Since these are on a per-join-point basis, they should be considered
+for each corresponding primitive pointcut designator.)  Unlike the
+mistakes with the primitive PCDs above, the compiler will emit an
+error for these caveats.
+</para></listitem>
+<listitem><para>
+`call(@SuperAnnotation Subclass.meth()`: Annotations are not inherited
+by default, so e.g., if the pointcut specifies an annotation, then 
+subclass implementations of that method will not be matched.
+</para></listitem>
+</itemizedlist>
+    </para>
+
+
+    </sect1>
+</chapter>

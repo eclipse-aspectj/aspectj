@@ -1,4 +1,4 @@
-<chapter id="ajcore" xreflabel="AspectJ Core">
+<chapter id="ajcore" xreflabel="AspectJ Core Files">
     <title>AspectJ Core Files</title>
     
     <sect1 id="ajcore-introduction">
@@ -10,12 +10,11 @@
         the date and time that the file was produced 
         e.g. <literal>ajcore.20060810.173655.626.txt</literal>. The file contains details
         of the problem such as the exception thrown as well as information about the
-        environement such as operating system and Java version. </para>
-        
-        <para> </para>
-    
+        environment such as operating system and Java version. When submitting a bug,
+        include this file whenever it is available.</para>
+            
         <sect2 id="configuration" xreflabel="configuration">
-            <title>Configuration</title>
+            <title>Configuring dump files</title>
             
             <para> By default AspectJ will only create an <literal>ajcore</literal> file 
             when an unexpected exception is thrown by the weaver or an 
@@ -61,8 +60,8 @@
             </informaltable>
   		</sect2>
 
-        <sect2 id="examples" xreflabel="examples">
-            <title>Examples</title>
+        <sect2 id="ajcore-examples" xreflabel="AJCore File Examples">
+            <title>AJCore File Examples</title>
         
             <para> Below is an extract from an <literal>ajcore</literal> file. You will see
             details of the dump configuration as well as the exception (with stack trace) that
