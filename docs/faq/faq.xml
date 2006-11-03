@@ -22,7 +22,7 @@
        2003-2006 Contributors. All rights reserved.
   </para>
   <!-- todo Update me! -->
-  <para>Last updated July 20, 2006
+  <para>Last updated November 3, 2006
   </para>
   <para>
    For a list of recently-updated FAQ entries, see <xref linkend="q:faqchanges"/>
@@ -164,7 +164,7 @@
           <para>How is AspectJ licensed?</para>
         </question>
         <answer>
-          <para>AspectJ 1.5.2 source code and documentation is available under the
+          <para>Since AspectJ 1.5.2, source code and documentation is available under the
             <ulink url="http://eclipse.org/legal/epl-v10.html">Eclipse Public License 1.0</ulink>.
           </para>
           <para>AspectJ 1.1 through 1.5.1 source code and documentation is available under the
@@ -1039,6 +1039,15 @@ aspect.
                 <para>Removing AspectJ from your program is not
                   difficult, although you will lose the flexibility and
                   economy that AspectJ provided.
+                </para>
+              </listitem>
+              <listitem>
+                <para>A number of significant open-source projects and industry 
+                    products use AspectJ successfully.  One list is kept on
+                    <ulink url="http://www.aosd.net/wiki/index.php?title=FAQ">
+                        the AOSD FAQ</ulink>, and more appear on the mailing
+                    lists (search for, e.g., "AspectJ in real world", as
+                    described in <xref linkend="q:searchingsite"/>).
                 </para>
               </listitem>
             </itemizedlist>
@@ -4230,7 +4239,7 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
 			Note: This explanation ignores the implementations of inter-type 
 			declarations completely.  
 			It also ignores performance optimizations such as fast-match 
-			that speed up the weaving process.
+			or pipelining that speed up the process.
 		</para>
         </answer>
       </qandaentry>
@@ -4874,6 +4883,9 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
             to reproduce the problem.
             For more information on writing compiler test cases, see
             <xref linkend="q:ajcbugs"/>.
+            If you are unable to submit a test case, consider submitting traces,
+            ajcore files, and/or .class dump files, as described in the
+            <ulink url="pdguide/index.html">AspectJ Problem Diagnosis Guide</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -5112,21 +5124,10 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           <para>
           Entries changed recently:
             <itemizedlist>
-        <listitem><para><xref linkend="q:synchronizedAdvice"/></para></listitem>
-        <listitem><para><xref linkend="q:runtimeMemory"/></para></listitem>
-        <listitem><para><xref linkend="q:ajcoom"/></para></listitem>
-        <listitem><para><xref linkend="q:howIncrementalWorks"/></para></listitem>
-        <listitem><para><xref linkend="q:compilerRequired"/></para></listitem>
-        <listitem><para><xref linkend="q:aspectj5features"/></para></listitem>
-        <listitem><para><xref linkend="q:codeversusannotationstyles"/></para></listitem>
-        <listitem><para><xref linkend="q:aspectj5ltw"/></para></listitem>
-        <listitem><para><xref linkend="q:versionCompatibility"/></para></listitem>
-        <listitem><para><xref linkend="q:bcel"/></para></listitem>
-		<listitem><para><xref linkend="q:reflectiveCalls"/></para></listitem>
-        <listitem><para><xref linkend="q:java5"/></para></listitem>
-	    <listitem><para><xref linkend="q:dynamicaop"/></para></listitem>
-        <listitem><para><xref linkend="q:buildingsource"/></para></listitem>
-        <listitem><para><xref linkend="q:buildingAspectJAndAJDT"/></para></listitem>
+        <listitem><para><xref linkend="q:license"/></para></listitem>
+        <listitem><para><xref linkend="q:productplans"/></para></listitem>
+        <listitem><para><xref linkend="q:whitepapers"/></para></listitem>
+        <listitem><para><xref linkend="q:bugreports"/></para></listitem>
             </itemizedlist>
           </para>
         </answer>
