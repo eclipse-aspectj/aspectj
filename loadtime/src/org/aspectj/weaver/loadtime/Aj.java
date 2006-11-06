@@ -14,6 +14,7 @@ package org.aspectj.weaver.loadtime;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
@@ -75,13 +76,15 @@ public class Aj implements ClassPreProcessor {
                 	return bytes;
                 }
                 byte[] newBytes = weavingAdaptor.weaveClass(className, bytes);
+                Dump.dumpOnExit(weavingAdaptor.getMessageHolder(), true);
         		if (trace.isTraceEnabled()) trace.exit("preProcess",newBytes);
                 return newBytes;
 			}
         
         /* Don't like to do this but JVMTI swallows all exceptions */
         } catch (Throwable th) {
-    		trace.error("preProcess",th);
+    		trace.error(className,th);
+    		Dump.dumpWithException(th);
             //FIXME AV wondering if we should have the option to fail (throw runtime exception) here
             // would make sense at least in test f.e. see TestHelper.handleMessage()
     		if (trace.isTraceEnabled()) trace.exit("preProcess",th);
