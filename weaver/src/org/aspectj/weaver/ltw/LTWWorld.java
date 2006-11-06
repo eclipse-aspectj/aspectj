@@ -26,6 +26,7 @@ import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.Dump.IVisitor;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.loadtime.IWeavingContext;
 import org.aspectj.weaver.reflect.AnnotationFinder;
@@ -248,6 +249,14 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	public void storeClass(JavaClass clazz) {
 		ensureRepositorySetup();
 		delegate.storeClass(clazz);
+	}
+
+	public void accept(IVisitor visitor) {
+		visitor.visitObject("Class loader:");
+		visitor.visitObject(loader);
+		visitor.visitObject("Class loader parent:");
+		visitor.visitObject(loader.getParent());
+		super.accept(visitor);
 	}
 
     
