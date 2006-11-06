@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
+import org.aspectj.bridge.IMessage.Kind;
+
 public abstract class AbstractTrace implements Trace {
 
 	protected Class tracedClass;
@@ -52,6 +54,10 @@ public abstract class AbstractTrace implements Trace {
 
 	public void exit (String methodName, boolean b) {
 		exit(methodName,new Boolean(b));
+	}
+
+	public void exit (String methodName, int i) {
+		exit(methodName,new Integer(i));
 	}
 
 	public void event (String methodName, Object thiz, Object arg) {
@@ -125,6 +131,7 @@ public abstract class AbstractTrace implements Trace {
 			    || obj instanceof File
 			    || obj instanceof StringBuffer
 			    || obj instanceof URL
+			    || obj instanceof Kind
 		    ) return obj;
 		else if (obj.getClass().isArray()) {
 			return formatArray(obj);
