@@ -1,0 +1,4 @@
+<aspectj>
+    <!--<weaver options="-XmessageHandlerClass:AbortingMessageHandler -debug -XnoInline -Xlint:error"/>-->
+    <weaver options="-1.5 -Xlint:error"/>
+</aspectj>

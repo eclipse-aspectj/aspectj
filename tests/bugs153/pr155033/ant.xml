@@ -1,0 +1,27 @@
+<!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
+<project name="ltw">
+
+    <!-- using this we can debug the forked VM -->
+    <property
+        name="jdwp"
+        value="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+	<property name="aj.bootpath" refid="aj.path"/>
+
+    <target name="multiple dump on error">
+        <copy file="aop-multipledumponerror.xml"
+              tofile="${aj.sandbox}/META-INF/aop.xml"/>
+        <java fork="yes" classname="MultipleDumpTest" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-Dorg.aspectj.weaver.Dump.condition=error"/>
+        	<sysproperty key="org.aspectj.dump.directory" path="${aj.sandbox}"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+<!--            <jvmarg line="${jdwp}"/>-->
+<!--        	
+            <jvmarg value="-Dorg.aspectj.tracing.enabled=true"/>
+            <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
+            <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
+-->            
+        </java>
+    </target>
+
+</project>

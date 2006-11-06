@@ -150,13 +150,29 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   	
   	public void testConfigutationSystemProperty_pr149289 () {
   		runTest("override default path using -Dorg.aspectj.weaver.loadtime.configuration");
-  		  		
   	}
   	
   	public void testSimpleLTW_pr159854 () {
   		runTest("simple LTW");
-  		  		
   	}
+  	
+  	public void testDumpOnError_pr155033 () {
+  		runTest("dump on error");
+
+  		File dir = getSandboxDirectory();
+        CountingFilenameFilter cff = new CountingFilenameFilter(".txt");
+        dir.listFiles(cff);
+        assertEquals("Missing ajcore file in " + dir.getAbsolutePath(),1,cff.getCount());
+	}
+  	
+  	public void testMultipleDumpOnError_pr155033 () {
+  		runTest("multiple dump on error");
+
+  		File dir = getSandboxDirectory();
+        CountingFilenameFilter cff = new CountingFilenameFilter(".txt");
+        dir.listFiles(cff);
+        assertEquals("Missing ajcore file in " + dir.getAbsolutePath(),2,cff.getCount());
+	}
   	  	
   	/*
   	 * Allow system properties to be set and restored

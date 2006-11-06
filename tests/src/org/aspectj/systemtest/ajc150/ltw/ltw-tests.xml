@@ -536,7 +536,7 @@
     </ajc-test>
 
 	<ajc-test dir="ltw" title="JDK14 LTW with XML" keywords="ltw">
-        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="HelloWorldWithException.java" options="-outjar hello.jar"/>
         <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
 		<ant file="ant.xml" target="JDK14 LTW with XML" verbose="true">
         	<stdout>
@@ -549,7 +549,7 @@
     </ajc-test>
     
 	<ajc-test dir="ltw" title="JDK14 LTW with ASPECTPATH" keywords="ltw">
-        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="HelloWorldWithException.java" options="-outjar hello.jar"/>
         <compile files="ExceptionHandler.aj" options="-outjar handler.jar"/>
         <ant file="ant.xml" target="JDK14 LTW with ASPECTPATH" verbose="true">
         	<stdout>
@@ -562,7 +562,7 @@
     </ajc-test>
     
 	<ajc-test dir="ltw" title="TestServer with HelloWorld" keywords="ltw,server">
-        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="HelloWorldWithException.java" options="-outjar hello.jar"/>
         <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
         <ant file="ant-server.xml" target="TestServer with HelloWorld" verbose="true">
         	<stdout>
@@ -573,7 +573,7 @@
         	</stdout>
         </ant>
     </ajc-test>
-    
+<!--    
 	<ajc-test dir="ltw" title="TestServer with Parent and Child" keywords="ltw,server">
         <compile files="Parent.java" options="-outjar parent.jar"/>
         <compile files="Child.java" options="-classpath parent.jar -outjar child.jar"/>
@@ -587,9 +587,22 @@
         	</stdout>
         </ant>
     </ajc-test>
+-->    
+	<ajc-test dir="ltw" title="TestServer with Parent and Child" keywords="ltw,server">
+        <compile files="HelloWorldWithException.java" options="-outjar child.jar"/>
+        <compile files="ExceptionHandler.aj" options="-outxml -outjar parent.jar"/>
+        <ant file="ant-server.xml" target="TestServer with Parent and Child" verbose="true">
+        	<stdout>
+            	<line text="Starting ..."/>
+            	<line text="Running HelloWorld"/>
+            	<line text="Hello World!"/>
+            	<line text="Stopping ..."/>
+        	</stdout>
+        </ant>
+    </ajc-test>
 
 	<ajc-test dir="ltw" title="override default path using -Dorg.aspectj.weaver.loadtime.configuration" keywords="ltw">
-        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="HelloWorldWithException.java" options="-outjar hello.jar"/>
         <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
         <compile files="Tracing.aj" options="-outxml -outjar tracing.jar"/>
 		<ant file="ant.xml" target="override default path using -Dorg.aspectj.weaver.loadtime.configuration" verbose="true">
@@ -645,11 +658,45 @@
     </ajc-test>       
 
 	<ajc-test dir="ltw" title="simple LTW" keywords="ltw">
-        <compile files="HelloWorld.java"/>
+        <compile files="HelloWorldWithException.java"/>
         <compile files="ExceptionHandler.aj" options="-outxml"/>
 		<ant file="ant.xml" target="simple LTW" verbose="true">
         	<stdout>
             	<line text="Hello World!"/>
+        	</stdout>
+        </ant>
+    </ajc-test>
+
+	<ajc-test dir="ltw" title="dump on error" keywords="ltw">
+        <compile files="HelloWorldWithException.java"/>
+        <compile files="ExceptionHandler.aj" options="-outxml"/>
+		<ant file="ant.xml" target="dump on error" verbose="true">
+        	<stdout>
+            	<line text="Hello World!"/>
+        	</stdout>
+        </ant>
+    </ajc-test>
+
+	<ajc-test dir="bugs153/pr155033" title="multiple dump on error" keywords="ltw">
+        <compile files="Annotation.java" options="-1.5"/>
+        <compile files="MultipleDumpTest.java, Class1.java, Class2.java, Class3.java" options="-1.5"/>
+        <compile files="Aspect.aj" options="-1.5 -outxml -Xlint:ignore"/>
+<!--        
+        <run class="MultipleDumpTest" ltw="aop-multipledumponerror.xml">
+        	<stdout>
+            	<line text="? AbortingMessageHandler.AbortingMessageHandler()"/>
+        	</stdout>
+        </run>
+-->        
+		<ant file="ant.xml" target="multiple dump on error" verbose="true">
+        	<stdout>
+            	<line text="? MultipleDumpTest.main()"/>
+            	<line text="? Class1.main()"/>
+            	<line text="? Aspect.before()"/>
+            	<line text="? Class2.main()"/>
+            	<line text="? Aspect.before()"/>
+            	<line text="? Class3.main()"/>
+            	<line text="? Aspect.before()"/>
         	</stdout>
         </ant>
     </ajc-test>
