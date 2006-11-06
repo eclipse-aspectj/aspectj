@@ -33,7 +33,9 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageContext;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.Version;
@@ -78,7 +80,7 @@ public class WeavingAdaptor implements IMessageContext {
 	protected BcelWorld bcelWorld;
 	protected BcelWeaver weaver;
 	private IMessageHandler messageHandler;
-	private WeavingAdaptorMessageHandler messageHolder;
+	private WeavingAdaptorMessageHolder messageHolder;
 	private boolean abortOnError = false;
 	protected GeneratedClassHandler generatedClassHandler;
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
@@ -173,7 +175,7 @@ public class WeavingAdaptor implements IMessageContext {
 	}
 
 	protected void createMessageHandler() {
-		messageHolder = new WeavingAdaptorMessageHandler(new PrintWriter(System.err));
+		messageHolder = new WeavingAdaptorMessageHolder(new PrintWriter(System.err));
 		messageHandler = messageHolder;
 		if (verbose) messageHandler.dontIgnore(IMessage.INFO);
 		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) messageHandler.dontIgnore(IMessage.WEAVEINFO);
@@ -182,6 +184,10 @@ public class WeavingAdaptor implements IMessageContext {
 	
 	protected IMessageHandler getMessageHandler () {
 		return messageHandler;
+	}
+	
+	public IMessageHolder getMessageHolder () {
+		return messageHolder;
 	}
 	
 	protected void setMessageHandler (IMessageHandler mh) {
@@ -235,35 +241,35 @@ public class WeavingAdaptor implements IMessageContext {
 	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
 		if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name, bytes});
 
-		if (enabled) {
-			try {
-				delegateForCurrentClass=null; 
-		    	if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name,bytes});
-				name = name.replace('/','.');
-				if (couldWeave(name, bytes)) {
-			        if (accept(name, bytes)) {
-			            // TODO @AspectJ problem
-			            // Annotation style aspects need to be included regardless in order to get
-			            // a valid aspectOf()/hasAspect() generated in them.  However - if they are excluded
-			            // (via include/exclude in aop.xml) they really should only get aspectOf()/hasAspect()
-			            // and not be included in the full set of aspects being applied by 'this' weaver
-						debug("weaving '" + name + "'");
-						bytes = getWovenBytes(name, bytes);
-					} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
-			            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
-			            debug("weaving '" + name + "'");
-			            bytes = getAtAspectJAspectBytes(name, bytes);
-					} else {
-						debug("not weaving '" + name + "'");
-					}
-		        } else {
-					debug("cannot weave '" + name + "'");
+		if (!enabled) {
+			if (trace.isTraceEnabled()) trace.exit("weaveClass",false);
+	        return bytes;
+		}
+		
+		try {
+			delegateForCurrentClass=null; 
+			name = name.replace('/','.');
+			if (couldWeave(name, bytes)) {
+		        if (accept(name, bytes)) {
+		            // TODO @AspectJ problem
+		            // Annotation style aspects need to be included regardless in order to get
+		            // a valid aspectOf()/hasAspect() generated in them.  However - if they are excluded
+		            // (via include/exclude in aop.xml) they really should only get aspectOf()/hasAspect()
+		            // and not be included in the full set of aspects being applied by 'this' weaver
+					debug("weaving '" + name + "'");
+					bytes = getWovenBytes(name, bytes);
+				} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
+		            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
+		            debug("weaving '" + name + "'");
+		            bytes = getAtAspectJAspectBytes(name, bytes);
+				} else {
+					debug("not weaving '" + name + "'");
 				}
-	
-				if (trace.isTraceEnabled()) trace.exit("weaveClass",bytes);
-			} finally {
-				delegateForCurrentClass=null;
+	        } else {
+				debug("cannot weave '" + name + "'");
 			}
+		} finally {
+			delegateForCurrentClass=null;
 		}
 
 		if (trace.isTraceEnabled()) trace.exit("weaveClass",bytes);
@@ -472,29 +478,18 @@ public class WeavingAdaptor implements IMessageContext {
 	 * Processes messages arising from weaver operations. 
 	 * Tell weaver to abort on any message more severe than warning.
 	 */
-	protected class WeavingAdaptorMessageHandler implements IMessageHandler {
+	protected class WeavingAdaptorMessageHolder extends MessageHandler {
+
 
 		private IMessageHandler delegate;
-		private boolean accumulating = true;
-	    private List messages = new ArrayList();
+	    private List savedMessages;
 
 		protected boolean traceMessages = Boolean.getBoolean(TRACE_MESSAGES_PROPERTY);
 	    
-		public WeavingAdaptorMessageHandler (PrintWriter writer) {
+		public WeavingAdaptorMessageHolder (PrintWriter writer) {
 			
 			this.delegate = new WeavingAdaptorMessageWriter(writer);
-		}
-
-		public boolean handleMessage(IMessage message) throws AbortException {
-			if (traceMessages) traceMessage(message);
-			if (accumulating) {
-				boolean result = addMessage(message);
-				if (abortOnError && 0 <= message.getKind().compareTo(IMessage.ERROR)) {
-					throw new AbortException(message);
-				}
-				return result;
-			}
-			else return delegate.handleMessage(message);
+			super.dontIgnore(IMessage.WEAVEINFO);
 		}
 		
 		private void traceMessage (IMessage message) {
@@ -527,41 +522,79 @@ public class WeavingAdaptor implements IMessageContext {
 	    protected String render(IMessage message) {
 	    	return "[" + getContextId() + "] " + message.toString();    
 	    }
-
-		public boolean isIgnoring (Kind kind) {
-			return delegate.isIgnoring(kind);
-		}
-
-		public void dontIgnore (IMessage.Kind kind) {
-			if (null != kind) {
-				delegate.dontIgnore(kind);
-			}
-		}
-
-		public void ignore(Kind kind) {
-			if (null != kind) {
-				delegate.ignore(kind);
-			}
-		}
-		
-		private boolean addMessage (IMessage message) {
-			messages.add(message);
-			return true;
-		}
 		
 		public void flushMessages () {
-            for (Iterator iter = messages.iterator(); iter.hasNext();) {
-                IMessage message = (IMessage)iter.next();
-                delegate.handleMessage(message);
-            }
-			accumulating = false;
-			messages.clear();
+			if (savedMessages == null) {
+				savedMessages = new ArrayList();
+				savedMessages.addAll(super.getUnmodifiableListView());
+				clearMessages();
+	            for (Iterator iter = savedMessages.iterator(); iter.hasNext();) {
+	                IMessage message = (IMessage)iter.next();
+	                delegate.handleMessage(message);
+	            }
+			}
+//			accumulating = false;
+//			messages.clear();
 		}
 		
 		public void setDelegate (IMessageHandler messageHandler) {
 			delegate = messageHandler;
 		}
 
+		
+		/*
+		 * IMessageHandler
+		 */
+
+		public boolean handleMessage(IMessage message) throws AbortException {
+			if (traceMessages) traceMessage(message);
+
+			super.handleMessage(message);
+			
+			if (abortOnError && 0 <= message.getKind().compareTo(IMessage.ERROR)) {
+				throw new AbortException(message);
+			}
+//			if (accumulating) {
+//				boolean result = addMessage(message);
+//				if (abortOnError && 0 <= message.getKind().compareTo(IMessage.ERROR)) {
+//					throw new AbortException(message);
+//				}
+//				return result;
+//			}
+//			else return delegate.handleMessage(message);
+
+			if (savedMessages != null) delegate.handleMessage(message);
+			return true;
+		}
+
+		public boolean isIgnoring (Kind kind) {
+			return delegate.isIgnoring(kind);
+		}
+
+		public void dontIgnore (IMessage.Kind kind) {
+			if (null != kind && delegate != null) {
+				delegate.dontIgnore(kind);
+			}
+		}
+
+		public void ignore(Kind kind) {
+			if (null != kind && delegate != null) {
+				delegate.ignore(kind);
+			}
+		}
+
+		
+		/*
+		 * IMessageHolder
+		 */
+
+		public List getUnmodifiableListView() {
+//			System.err.println("? WeavingAdaptorMessageHolder.getUnmodifiableListView() savedMessages=" + savedMessages);
+			List allMessages = new ArrayList();
+			allMessages.addAll(savedMessages);
+			allMessages.addAll(super.getUnmodifiableListView());
+			return allMessages;
+		}
 	}
 
 	protected class WeavingAdaptorMessageWriter extends MessageWriter {
