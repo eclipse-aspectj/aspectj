@@ -576,17 +576,17 @@
     </ajc-test>
     
     <ajc-test dir="ltw" title="reweavableAspectNotRegistered error">
-      <compile files="HelloWorld.java, ExceptionHandler.aj" options="-showWeaveInfo">
-        <message kind="weave" text="Join point 'method-execution(void HelloWorld.main(java.lang.String[]))' in Type 'HelloWorld' (HelloWorld.java:3) advised by around advice from 'ExceptionHandler' (ExceptionHandler.aj:2)"/>
+      <compile files="HelloWorldWithException.java, ExceptionHandler.aj" options="-showWeaveInfo">
+        <message kind="weave" text="Join point 'method-execution(void HelloWorldWithException.main(java.lang.String[]))' in Type 'HelloWorldWithException' (HelloWorldWithException.java:3) advised by around advice from 'ExceptionHandler' (ExceptionHandler.aj:2)"/>
       </compile>
       <compile files="EmptyAspect.aj">
       </compile>
-      <run class="HelloWorld" ltw="aop-missingaspect.xml">
+      <run class="HelloWorldWithException" ltw="aop-missingaspect.xml">
         <stdout>
           <line text="Hello World!"/>
         </stdout>
         <stderr>
-        	<line text="error aspect 'ExceptionHandler' woven into 'HelloWorld' must be defined to the weaver (placed on the aspectpath, or defined in an aop.xml file if using LTW)."/>
+        	<line text="error aspect 'ExceptionHandler' woven into 'HelloWorldWithException' must be defined to the weaver (placed on the aspectpath, or defined in an aop.xml file if using LTW)."/>
         </stderr>
       </run>
     </ajc-test>
@@ -672,7 +672,7 @@
 
 	<ajc-test dir="ltw" title="NPE with custom agent" keywords="ltw">
         <compile files="java/net/URLClassLoader.java"/>
-        <compile files="HelloWorld.java" options="-outjar hello.jar"/>
+        <compile files="HelloWorldWithException.java" options="-outjar hello.jar"/>
         <compile files="ExceptionHandler.aj" options="-outxml -outjar handler.jar"/>
         <compile files="NullSecurityManager.java" options="-outjar security.jar"/>
 		<ant file="ant.xml" target="NPE with custom agent" verbose="true">

@@ -12,7 +12,6 @@
 package org.aspectj.systemtest.ajc150.ataspectj;
 
 import java.io.File;
-import java.io.FilenameFilter;
 
 import junit.framework.Test;
 
@@ -100,13 +99,13 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         
         // before
         File f = new File("_ajdump/_before/com/foo/bar");
-        CountingFilenameFilter cff = new CountingFilenameFilter();
+        CountingFilenameFilter cff = new CountingFilenameFilter(".class");
         f.listFiles(cff);
         assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
 
         // after
         f = new File("_ajdump/com/foo/bar");
-        cff = new CountingFilenameFilter();
+        cff = new CountingFilenameFilter(".class");
         f.listFiles(cff);
         assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
         
@@ -134,11 +133,11 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         // The working directory is different because this test must be forked
         File dir = new File("../tests/java5/ataspectj");
         File f = new File(dir,"_ajdump/_before");
-        CountingFilenameFilter cff = new CountingFilenameFilter();
+        CountingFilenameFilter cff = new CountingFilenameFilter(".class");
         f.listFiles(cff);
         assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
         f = new File(dir,"_ajdump");
-        cff = new CountingFilenameFilter();
+        cff = new CountingFilenameFilter(".class");
         f.listFiles(cff);
         assertEquals(1,cff.getCount());
         
@@ -214,19 +213,5 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 
     public void testCflowBelowStack() {
         runTest("CflowBelowStack");
-    }
-
-    private static class CountingFilenameFilter implements FilenameFilter {
-    	
-    	private int count;
-    	
-    	public boolean accept(File dir, String name) {
-    		if (name.endsWith(".class")) count++;
-    		return false;
-    	}
-
-		public int getCount() {
-			return count;
-		}
     }
 }
