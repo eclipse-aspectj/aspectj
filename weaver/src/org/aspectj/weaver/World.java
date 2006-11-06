@@ -164,14 +164,16 @@ public abstract class World implements Dump.INode {
      * Dump processing when a fatal error occurs
      */
     public void accept (Dump.IVisitor visitor) {
-		visitor.visitString("Shadow mungers:");
+//		visitor.visitObject("Extra configuration:");
+//		visitor.visitList(extraConfiguration.);
+		visitor.visitObject("Shadow mungers:");
 		visitor.visitList(crosscuttingMembersSet.getShadowMungers());
-		visitor.visitString("Type mungers:");
+		visitor.visitObject("Type mungers:");
 		visitor.visitList(crosscuttingMembersSet.getTypeMungers());
-        visitor.visitString("Late Type mungers:");
+        visitor.visitObject("Late Type mungers:");
         visitor.visitList(crosscuttingMembersSet.getLateTypeMungers());
         if (dumpState_cantFindTypeExceptions!=null) {
-          visitor.visitString("Cant find type problems:");
+          visitor.visitObject("Cant find type problems:");
           visitor.visitList(dumpState_cantFindTypeExceptions);
           dumpState_cantFindTypeExceptions = null;
         }
