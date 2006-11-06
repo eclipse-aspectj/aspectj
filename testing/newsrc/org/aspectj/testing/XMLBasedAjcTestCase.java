@@ -13,6 +13,7 @@ package org.aspectj.testing;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -274,6 +275,25 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	  protected void assertUpdated(String file, long sinceTime) {
 	  	File f = new File(ajc.getSandboxDirectory(),file);
 	  	assertTrue("File " + file + " should have been updated",f.lastModified() > sinceTime);
+	  }
+
+	  public static class CountingFilenameFilter implements FilenameFilter {
+	    	
+		  private String suffix;
+		  private int count;
+		  
+		  public CountingFilenameFilter (String s) {
+			  this.suffix = s;
+		  }
+	    	
+		  public boolean accept(File dir, String name) {
+			  if (name.endsWith(suffix)) count++;
+			  return false;
+		  }
+	
+		  public int getCount() {
+			  return count;
+		  }
 	  }
 }
 
