@@ -14,6 +14,7 @@ package org.aspectj.weaver;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -243,7 +244,7 @@ public class Dump {
 	public static void registerNode (Class module, INode newNode) {
 		if (trace.isTraceEnabled()) trace.enter("registerNode",null,new Object[] { module, newNode} );
 
-		nodes.put(newNode,newNode);
+		nodes.put(newNode,new WeakReference(newNode));
 
 		if (trace.isTraceEnabled()) trace.exit("registerNode",nodes.size());
 	}
@@ -298,7 +299,8 @@ public class Dump {
 		Set keys = nodes.keySet();
 		for (Iterator i = keys.iterator(); i.hasNext();) {
 			Object module = i.next();
-			INode dumpNode = (INode)nodes.get(module);
+//			INode dumpNode = (INode)nodes.get(module);
+			INode dumpNode = (INode)module;
 			println("---- " + formatObj(dumpNode) + " ----");
 			try {
 				dumpNode.accept(dumpVisitor); 
