@@ -2,7 +2,7 @@
 
   <title>Other Changes in AspectJ 5</title>
   
-  <sect1>
+  <sect1 id="pointcuts">
       <title>Pointcuts</title>
       
           <para>
