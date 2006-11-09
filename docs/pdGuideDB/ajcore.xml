@@ -55,6 +55,17 @@
                             	e.g. <literal>error</literal>. 
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                <literal>org.aspectj.dump.directory</literal>
+                            </entry>
+                            <entry>
+                                <literal>none</literal>
+                            </entry>
+                            <entry>
+                            	The directory used for ajcore files. 
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </informaltable>

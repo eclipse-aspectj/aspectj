@@ -6,10 +6,10 @@
         <para>
             Messages point out potential problems in the input program; some
             are clearly problems (errors), but many more may depend on what
-            the programmer intends.  To keep the noise down, the latter are treated
-            as warnings that can be ignored by the programmer or information
-            hidden from the programmer.  However, when investigating
-            unexpected behavior, it's helpful to show them.  This describes how
+            the programmer intends.  To keep the noise down the latter are treated
+            as warnings which can be ignored by the programmer or information
+            which are hidden. However, when investigating
+            unexpected behavior it's helpful to show them.  This section describes how
             to configure messages, presents some problem scenarios when
             compiling or doing load-time weaving, and summarizes some of the 
             more relevant messages.
@@ -43,13 +43,16 @@
                 at build time is to emit both compiler and weaver messages.
             </para>
             
-            <para> The table below lists some options used to control AspectJ messages. The method
-            of configuration depends on your environment so refer to the relevant 
+            <para> The tables below list some options, System Properties (for LTW only) and Java 5 annotations 
+            used to control AspectJ messages. The method
+            of configuration depends on your environment so please refer to the relevant 
             documentation for 
             <ulink url="../devguide/ajc-ref.html">ajc</ulink>, 
-            <ulink url="../devguide/.html#antTasks-iajc-options">Ant</ulink> or 
+            <ulink url="../devguide/antTasks.html">Ant</ulink> or 
             <ulink url="../devguide/ltw-configuration.html#weaver-options">LTW</ulink>. 
             </para>
+            
+            <para>
             <informaltable>
                 <tgroup cols="2">
                     <thead>
@@ -97,22 +100,61 @@
                         </row>
                         <row>
                             <entry>
-                                <literal>messageHolderClass</literal>
+                                <literal>messageHolderClass</literal>/
+                                <literal>-XmessageHolderClass:</literal>
                             </entry>
                             <entry>
-                            	In Ant tasks, specify the class to receive all messages.
+                            	In Ant tasks and LTW respectively specify the class to receive all messages.
                                 See 
                                 <ulink url="../devguide/antTasks-iajc.html#antTasks-iajc-options">
-                                iajc task options</ulink>.
+                                iajc task options</ulink> or
+                                <ulink url="../devguide/ltw-configuration.html#weaver-options">
+                                Weaver Options</ulink>.
                             </entry>
                         </row>
+                        
+<!-- We need full javadoc for this API                       
                         <row>
                             <entry>
-                                <literal>rg.aspectj.tools.Main.setMessageHolder(..)</literal>
+                                <literal>org.aspectj.tools.Main.setMessageHolder(..)</literal>
                             </entry>
                             <entry>
                             	Programmatic access for setting the message holder
                                 outside of Ant.
+                            </entry>
+                        </row>
+-->                        
+                    </tbody>
+                </tgroup>
+            </informaltable>
+			</para>
+
+			<para>
+            <informaltable>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>System Property</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <literal>aj.weaving.verbose</literal>
+                            </entry>
+                            <entry>
+                            	 Show informational messages including AspectJ version and build date 
+                            	 (same as <literal>-verbose</literal> option).
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>org.aspectj.weaver.showWeaveInfo</literal>
+                            </entry>
+                            <entry>
+                            	Show weaving messages
+                            	(same as <literal>-showWeaveInfo</literal> option).
                             </entry>
                         </row>
                         <row>
@@ -120,11 +162,25 @@
                                 <literal>org.aspectj.weaving.messages</literal>
                             </entry>
                             <entry>
-                            	Set this system property to redirect compiler/weaver
-                                messages to logging facilities, as described in
-                                <xref linkend="trace-configuration"/>.
+                            	Set this system property to enable tracing of all compiler 
+                            	messages. See <xref linkend="trace-configuration"/>.
                             </entry>
                         </row>
+                    </tbody>
+                </tgroup>
+            </informaltable>
+            </para>
+            
+            <para>
+            <informaltable>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Annotation</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
                         <row>
                             <entry>
                                 <literal>@SuppressAjWarnings</literal>
@@ -137,6 +193,8 @@
                     </tbody>
                 </tgroup>
             </informaltable>
+            </para>
+            
         </sect2>        
     </sect1>        
     <sect1 id="messages-scenarios">
@@ -209,7 +267,7 @@
 	weaveinfo Join point 'method-execution(void HelloWorld.main(java.lang.String[]))' ...
 		]]></programlisting>
         
-        <para>If advice should be woven at this join point, you should get a 
+        <para>If advice is woven at this join point you should get the 
             corresponding message.</para>
             </sect3>
         </sect2>

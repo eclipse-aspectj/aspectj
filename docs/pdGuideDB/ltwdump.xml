@@ -5,16 +5,18 @@
         <title>Introduction</title>
         
         <para> 
-            Very rarely, problems present not at build-time but at run-time,
-            with <literal>java.lang.VerifyError</literal> or incorrect behavior.
-            In these situations, it's most helpful to include the offending class 
-            in the bug report.  But with load-time weaving, the woven classes are 
-            in memory only; to save classes woven at load-time, configure
+        	Very rarely problems may be encountered with classes that have been 
+        	load-time woven.
+        	Symptoms will include incorrect program function or a Java exception such as 
+        	<literal>java.lang.VerifyError</literal>.
+            In these situations it's most helpful to include the offending class 
+            in the bug report. When using load-time weaving the woven classes are 
+            in memory only so to save them to disk configure
             <literal>META-INF/aop.xml</literal> to dump the classes (by default 
             to an <literal>_ajdump</literal> subdirectory of the current working 
-            directory).  Also, if the input class file is not available (e.g., if
-            the AspectJ weaver is after another bytecode weaver), you can
-            also configure the weaver to dump the input classes.
+            directory).  Also if the input class file is not available 
+            (e.g. it is a generated proxy or has already been instrumented by another agent)
+            you can configure the weaver to dump the input classes as well.
         </para>
         <sect2 id="ltw-examples" xreflabel="ltwdump-configuration">
             <title>Configuring bytecode dumping in load-time weaving</title>
