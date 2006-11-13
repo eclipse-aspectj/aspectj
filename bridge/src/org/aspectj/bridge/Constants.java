@@ -15,5 +15,8 @@ public class Constants {
 	/* Default resource names for user and generate aop.xml file */
 	public final static String AOP_USER_XML = "META-INF/aop.xml";
     public final static String AOP_AJC_XML = "META-INF/aop-ajc.xml";
+    
+    /* Resource name for OSGi */
+    public final static String AOP_OSGI_XML = "org/aspectj/aop.xml";
 
 }
