@@ -57,7 +57,7 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
  */
 public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
-    private final static String AOP_XML = Constants.AOP_USER_XML + ";" + Constants.AOP_AJC_XML;
+    private final static String AOP_XML = Constants.AOP_USER_XML + ";" + Constants.AOP_AJC_XML + ";" + Constants.AOP_OSGI_XML;
 
     private boolean initialized;
     
