@@ -179,6 +179,12 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void testNoNPEWithThrownExceptionWarningAndAtAspectj_pr161217() {runTest("NPE with thrown exception warning and at aspectj");}
   
+  public void testBinaryWeavingIntoJava6Library_pr164384() {runTest("binary weaving into java 6 library");}
+  public void testCompilanceJava6ThrowsUsageError_pr164384() {runTest("compliance java 6 throws usage error");}
+  public void testSourceLevelJava6ThrowsUsageError_pr164384() {runTest("source level java 6 throws usage error");}
+  public void testTargetLevelJava6ThrowsUsageError_pr164384() {runTest("target level java 6 throws usage error");}
+  
+  
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc153Tests.class);

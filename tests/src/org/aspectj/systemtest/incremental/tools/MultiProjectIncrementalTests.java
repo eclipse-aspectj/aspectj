@@ -17,10 +17,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.ajde.Ajde;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
@@ -1579,6 +1581,97 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		AsmManager.getDefault().setHandleProvider(handleProvider);
 	}
 	
+	/**
+	 * If the user has specified that they want Java 6 compliance
+	 * and kept the default classfile and source file level settings
+	 * (also 6.0) then expect an error saying that we don't support 
+	 * java 6.
+	 */
+	public void testPR164384_1() {
+		Hashtable javaOptions = new Hashtable();
+		javaOptions.put("org.eclipse.jdt.core.compiler.compliance","1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.source","1.6");
+		MyBuildOptionsAdapter.setJavaOptionsMap(javaOptions);
+		
+		initialiseProject("PR164384");
+		build("PR164384");
+		List errors = MyTaskListManager.getErrorMessages();
+		
+		if (Ajde.getDefault().compilerIsJava6Compatible()) {
+			assertTrue("There should be no errros:\n"+errors,errors.isEmpty());	
+		} else {
+			String expectedError = "Java 6.0 compliance level is unsupported";
+			String found = ((IMessage)errors.get(0)).getMessage();
+			assertEquals("Expected 'Java 6.0 compliance level is unsupported'" +
+					" error message but found " + found,expectedError,found);
+			// This is because the 'Java 6.0 compliance' error is an 'error'
+			// rather than an 'abort'. Aborts are really for compiler exceptions.
+			assertTrue("expected there to be more than the one compliance level" +
+					" error but only found that one",errors.size() > 1);
+		}
+		
+	}
+
+	/**
+	 * If the user has specified that they want Java 6 compliance
+	 * and selected classfile and source file level settings to be
+	 * 5.0 then expect an error saying that we don't support java 6.
+	 */
+	public void testPR164384_2() {
+		Hashtable javaOptions = new Hashtable();
+		javaOptions.put("org.eclipse.jdt.core.compiler.compliance","1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.5");
+		javaOptions.put("org.eclipse.jdt.core.compiler.source","1.5");
+		MyBuildOptionsAdapter.setJavaOptionsMap(javaOptions);
+		
+		initialiseProject("PR164384");
+		build("PR164384");
+		List errors = MyTaskListManager.getErrorMessages();
+		if (Ajde.getDefault().compilerIsJava6Compatible()) {
+			assertTrue("There should be no errros:\n"+errors,errors.isEmpty());	
+		} else {
+			String expectedError = "Java 6.0 compliance level is unsupported";
+			String found = ((IMessage)errors.get(0)).getMessage();
+			assertEquals("Expected 'Java 6.0 compliance level is unsupported'" +
+					" error message but found " + found,expectedError,found);			
+			// This is because the 'Java 6.0 compliance' error is an 'error'
+			// rather than an 'abort'. Aborts are really for compiler exceptions.
+			assertTrue("expected there to be more than the one compliance level" +
+					" error but only found that one",errors.size() > 1);
+		}
+	}
+	
+	/**
+	 * If the user has specified that they want Java 6 compliance
+	 * and set the classfile level to be 6.0 and source file level 
+	 * to be 5.0 then expect an error saying that we don't support 
+	 * java 6.
+	 */
+	public void testPR164384_3() {
+		Hashtable javaOptions = new Hashtable();
+		javaOptions.put("org.eclipse.jdt.core.compiler.compliance","1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.source","1.5");
+		MyBuildOptionsAdapter.setJavaOptionsMap(javaOptions);
+		
+		initialiseProject("PR164384");
+		build("PR164384");
+		List errors = MyTaskListManager.getErrorMessages();
+		
+		if (Ajde.getDefault().compilerIsJava6Compatible()) {
+			assertTrue("There should be no errros:\n"+errors,errors.isEmpty());	
+		} else {
+			String expectedError = "Java 6.0 compliance level is unsupported";
+			String found = ((IMessage)errors.get(0)).getMessage();
+			assertEquals("Expected 'Java 6.0 compliance level is unsupported'" +
+					" error message but found " + found,expectedError,found);			
+			// This is because the 'Java 6.0 compliance' error is an 'error'
+			// rather than an 'abort'. Aborts are really for compiler exceptions.
+			assertTrue("expected there to be more than the one compliance level" +
+					" error but only found that one",errors.size() > 1);
+		}
+	}
 	
 	// --- helper code ---
 	

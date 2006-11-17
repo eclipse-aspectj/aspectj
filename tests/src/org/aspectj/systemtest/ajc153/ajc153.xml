@@ -802,4 +802,34 @@
       <compile files="AtAspectJAspect.java, C.java" options="-warn:+unusedThrown -1.5"/>
     </ajc-test>
 
+	<ajc-test dir="bugs153/pr164384" title="binary weaving into java 6 library">
+     <compile files="MainClass.java, WorldAspect.aj" inpath="library.jar" options="-1.5 -showWeaveInfo">
+		<message kind="weave" text="Join point 'method-execution(void pkg.Hello.sayHello())' in Type 'pkg.Hello' (Hello.java:7) advised by afterReturning advice from 'pack.WorldAspect' (WorldAspect.aj:9)"/>
+	 </compile>
+    </ajc-test> 
+
+   <ajc-test dir="bugs153/pr164384" title="compliance java 6 throws usage error">
+      <compile files="MainClass.java" options="-1.6">
+		<message kind="error" text="-1.6"/>
+		<message kind="error" text="no sources specified"/>
+		<message kind="abort" text="AspectJ Compiler"/>
+	  </compile>
+    </ajc-test>
+
+   <ajc-test dir="bugs153/pr164384" title="source level java 6 throws usage error">
+      <compile files="MainClass.java" options="-1.6">
+		<message kind="error" text="-1.6"/>
+		<message kind="error" text="no sources specified"/>
+		<message kind="abort" text="AspectJ Compiler"/>
+	  </compile>
+    </ajc-test>
+
+   <ajc-test dir="bugs153/pr164384" title="target level java 6 throws usage error">
+      <compile files="MainClass.java" options="-1.6">
+		<message kind="error" text="-1.6"/>
+		<message kind="error" text="no sources specified"/>
+		<message kind="abort" text="AspectJ Compiler"/>
+	  </compile>
+    </ajc-test>
+
 </suite>

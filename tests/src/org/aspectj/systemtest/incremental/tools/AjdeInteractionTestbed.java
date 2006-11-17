@@ -723,6 +723,12 @@ public class AjdeInteractionTestbed extends TestCase {
 		static MyBuildOptionsAdapter _instance = new MyBuildOptionsAdapter();
 		private MyBuildOptionsAdapter() {}
 		
+		private Map javaOptionsMap;
+		
+		public static void setJavaOptionsMap(Map options) {
+			_instance.javaOptionsMap = options;
+		}
+		
 		public static void setNonStandardOptions(String options) {
 			_instance.nonstandardoptions = options;
 		}
@@ -731,6 +737,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		
 		public static void reset() {
 			_instance.nonstandardoptions=null;
+			_instance.javaOptionsMap = null;
 		}
 		
 		public static BuildOptionsAdapter getInstance() { 
@@ -738,10 +745,13 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public Map getJavaOptionsMap() {
+			if (javaOptionsMap != null && !javaOptionsMap.isEmpty() ) return javaOptionsMap;
+			
 			Hashtable ht = new Hashtable();
 			ht.put("org.eclipse.jdt.core.compiler.compliance","1.5");
 			ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.5");
-			return ht;
+			ht.put("org.eclipse.jdt.core.compiler.source","1.5");
+			return ht;				
 		}
 
 		public boolean getUseJavacMode() {
@@ -786,11 +796,15 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public String getComplianceLevel() {
+			// AJDT doesn't set the compliance level directly
+			// instead it relies on the javaOptionsMap
 			return null;
 		}
 
 		public String getSourceCompatibilityLevel() {
-			return "1.5";
+			// AJDT doesn't set the source compatibility level
+			// instead it relies on the javaOptionsMap
+			return null;
 		}
 
 		public Set getWarnings() {
