@@ -27,6 +27,8 @@ public interface BuildOptionsAdapter {
 	// Version constants
 	public static final String VERSION_13 = "1.3";
 	public static final String VERSION_14 = "1.4";
+	public static final String VERSION_15 = "1.5";
+	public static final String VERSION_16 = "1.6";
 		
 	// Warning constants
 	public static final String WARN_CONSTRUCTOR_NAME   	 = "constructorName";

@@ -18,15 +18,14 @@ import java.util.Set;
 
 import junit.framework.TestSuite;
 
+import org.aspectj.ajde.NullIdeTaskListManager.SourceLineTask;
 import org.aspectj.ajde.internal.CompilerAdapter;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
 import org.aspectj.ajde.ui.internal.AjcBuildOptions;
 import org.aspectj.ajde.ui.internal.UserPreferencesStore;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.aspectj.bridge.*;
-import org.aspectj.bridge.MessageHandler;
-import org.aspectj.util.LangUtil;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.util.LangUtil;
 
 /**
  * Tests that a correctly populated AjBuildConfig object is created
@@ -40,7 +39,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
 	private AjcBuildOptions buildOptions = null;
 	private UserPreferencesAdapter preferencesAdapter = null;
 	private NullIdeProperties projectProperties = null;
-    private MessageHandler messageHandler;
+    private NullIdeTaskListManager taskListManager;
 	private static final String configFile = 
 		AjdeTests.testDataPath("examples/figures-coverage/all.lst");
 	
@@ -79,6 +78,48 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
 		assertEquals( "compliance level", CompilerOptions.VERSION_1_4, compliance);
 		assertEquals( "source level", CompilerOptions.VERSION_1_4, sourceLevel );
+	}
+
+	public void testCompilanceLevelJava6() {
+		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_16 );
+		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
+		Map options = buildConfig.getOptions().getMap();
+		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
+		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);
+		
+		if (Ajde.getDefault().compilerIsJava6Compatible()) {
+			assertEquals("expected compliance level to be 1.6 but found " + compliance, "1.6", compliance);
+			assertEquals("expected source level to be 1.6 but found " + sourceLevel, "1.6", sourceLevel );
+			assertTrue("expected to 'behaveInJava5Way' but aren't",buildConfig.getBehaveInJava5Way());			
+		} else {
+			List l = taskListManager.getSourceLineTasks();
+			String expectedError = "Java 6.0 compliance level is unsupported";
+			String found = ((SourceLineTask)l.get(0)).getContainedMessage().getMessage();
+			assertEquals("Expected 'Java 6.0 compliance level is unsupported'" +
+					" error message but found " + found ,expectedError,found);
+		}
+	}
+
+	public void testSourceCompatibilityLevelJava6() {
+		buildOptions.setSourceCompatibilityLevel(BuildOptionsAdapter.VERSION_16 );
+		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
+		Map options = buildConfig.getOptions().getMap();
+		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
+		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);
+		
+		if (Ajde.getDefault().compilerIsJava6Compatible()) {
+			assertEquals("expected compliance level to be 1.6 but found " + compliance, "1.6", compliance);
+			assertEquals("expected source level to be 1.6 but found " + sourceLevel, "1.6", sourceLevel );
+			assertTrue("expected to 'behaveInJava5Way' but aren't",buildConfig.getBehaveInJava5Way());			
+		} else {
+			List l = taskListManager.getSourceLineTasks();
+			String expectedError = "Java 6.0 source level is unsupported";
+			String found = ((SourceLineTask)l.get(0)).getContainedMessage().getMessage();
+			assertEquals("Expected 'Java 6.0 compliance level is unsupported'" +
+					" error message but found " + found ,expectedError,found);
+		}
 	}
 	
 	public void testSourceCompatibilityLevel() {
@@ -500,25 +541,12 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		buildOptions = new AjcBuildOptions(preferencesAdapter);
 		compilerAdapter = new CompilerAdapter();
 		projectProperties = new NullIdeProperties( "" );
-        messageHandler = new MessageHandler(true);
-        ErrorHandler handler = new ErrorHandler() {
-            public void handleWarning(String message) {
-                MessageUtil.warn(messageHandler, message);
-            }
-            public void handleError(String message) {
-                MessageUtil.error(messageHandler, message);
-            }
-            public void handleError(String message, Throwable t) {
-                IMessage m = new Message(message, IMessage.ERROR, t, null);
-                messageHandler.handleMessage(m);
-            }
-        };
-        
+        taskListManager = new NullIdeTaskListManager();
+        ErrorHandler handler = new NullIdeErrorHandler();
         try {
-//            String s = null;
             Ajde.init(            
                 null,
-                null,
+                taskListManager,
                 null,
                 projectProperties,  
                 buildOptions,
@@ -538,7 +566,7 @@ public class BuildConfigurationTests extends AjdeTestCase {
         buildOptions = null;
         compilerAdapter = null;
         projectProperties = null;
-        messageHandler = null;
+        taskListManager = null;
 	}
 
 	private void assertOptionEquals( String reason, Map options, String optionName, String value) {

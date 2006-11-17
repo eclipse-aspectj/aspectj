@@ -23,6 +23,7 @@ import org.aspectj.ajde.ui.StructureViewNodeFactory;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Version;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.util.LangUtil;
 import org.aspectj.util.Reflection;
 
@@ -381,6 +382,15 @@ public class Ajde {
         }
     }
 
+    /** 
+     * Returns true if the compiler is compatible with Java 6
+     * (which it will do when the compiler is upgraded to the
+     * jdt 3.2 compiler) and false otherwise
+	 */
+    public boolean compilerIsJava6Compatible() {
+        // If it doesn't understand the jdklevel, versionToJdkLevel returns 0
+    	return CompilerOptions.versionToJdkLevel(BuildOptionsAdapter.VERSION_16) != 0;
+    }
 
 
 }

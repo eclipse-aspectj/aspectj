@@ -235,11 +235,13 @@ public class CompilerAdapter {
 	 * Populate options in a build configuration, using the Ajde BuildOptionsAdapter.
 	 * Added by AMC 01.20.2003, bugzilla #29769
 	 */
-	private static boolean configureBuildOptions( AjBuildConfig config, BuildOptionsAdapter options, IMessageHandler handler) {
+	private boolean configureBuildOptions( AjBuildConfig config, BuildOptionsAdapter options, IMessageHandler handler) {
         LangUtil.throwIaxIfNull(options, "options");
         LangUtil.throwIaxIfNull(config, "config");
 		Map optionsToSet = new HashMap();
         LangUtil.throwIaxIfNull(optionsToSet, "javaOptions");
+        
+        checkNotAskedForJava6Compliance(options);
 
         if (options.getSourceCompatibilityLevel() != null && options.getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_5)) {
 		    optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_5);
@@ -356,6 +358,54 @@ public class CompilerAdapter {
         // ignored: lenient, porting, preprocess, strict, usejavac, workingdir
 	}
 	
+	/**
+	 * Check that the user hasn't specified Java 6 for the compliance, source and
+	 * target levels. If they have then an error is thrown. 
+	 */
+	private void checkNotAskedForJava6Compliance(BuildOptionsAdapter options) {
+		// bug 164384 - Throwing an IMessage.ERRROR rather than an IMessage.ABORT 
+		// means that we'll continue to try to compile the code. This means that
+		// the user may see other errors (for example, if they're using annotations
+		// then they'll get errors saying that they require 5.0 compliance).
+		// Throwing IMessage.ABORT would prevent this, however, 'abort' is really
+		// for compiler exceptions.
+		String compliance = options.getComplianceLevel();
+		if (!LangUtil.isEmpty(compliance) 
+				&& compliance.equals(BuildOptionsAdapter.VERSION_16)){
+			String msg = "Java 6.0 compliance level is unsupported";
+			IMessage m = new Message(msg, IMessage.ERROR, null, null);            
+			messageHandler.handleMessage(m);
+			return;
+		}
+		String source = options.getSourceCompatibilityLevel();
+		if (!LangUtil.isEmpty(source) 
+				&& source.equals(BuildOptionsAdapter.VERSION_16)){
+			String msg = "Java 6.0 source level is unsupported";
+			IMessage m = new Message(msg, IMessage.ERROR, null, null);            
+			messageHandler.handleMessage(m);
+			return;
+		}
+		Map javaOptions = options.getJavaOptionsMap();
+		if (javaOptions != null){
+			String version = (String)javaOptions.get(CompilerOptions.OPTION_Compliance);
+			String sourceVersion = (String)javaOptions.get(CompilerOptions.OPTION_Source);
+			String targetVersion = (String)javaOptions.get(CompilerOptions.OPTION_TargetPlatform);
+			if (version!=null && version.equals(BuildOptionsAdapter.VERSION_16)) {
+				String msg = "Java 6.0 compliance level is unsupported";
+				IMessage m = new Message(msg, IMessage.ERROR, null, null);            
+				messageHandler.handleMessage(m);
+			} else if (sourceVersion!=null && sourceVersion.equals(BuildOptionsAdapter.VERSION_16)) {
+				String msg = "Java 6.0 source level is unsupported";
+				IMessage m = new Message(msg, IMessage.ERROR, null, null);            
+				messageHandler.handleMessage(m);				
+			} else if (targetVersion!=null && targetVersion.equals(BuildOptionsAdapter.VERSION_16)) {
+				String msg = "Java 6.0 target level is unsupported";
+				IMessage m = new Message(msg, IMessage.ERROR, null, null);            
+				messageHandler.handleMessage(m);	
+			}
+		}
+	}
+
 	/**
 	 * Helper method for configureBuildOptions
 	 */
