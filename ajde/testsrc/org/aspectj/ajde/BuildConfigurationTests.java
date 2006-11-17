@@ -68,8 +68,19 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		String encoding = (String) options.get( CompilerOptions.OPTION_Encoding );
 		assertEquals( "character encoding", "UTF-8", encoding );
 	}
+
+	public void testComplianceLevelJava13() {
+		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_13 );
+		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
+		Map options = buildConfig.getOptions().getMap();
+		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
+		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
+		assertEquals( "compliance level", CompilerOptions.VERSION_1_3, compliance);
+		assertEquals( "source level", CompilerOptions.VERSION_1_3, sourceLevel );
+	}
 	
-	public void testComplianceLevel() {
+	public void testComplianceLevelJava14() {
 		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_14 );
 		buildConfig = compilerAdapter.genBuildConfig( configFile );			
         assertTrue(configFile + " failed", null != buildConfig);            
@@ -122,6 +133,18 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		}
 	}
 	
+	public void testCompilanceLevelJava5() {
+		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_15 );
+		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
+		Map options = buildConfig.getOptions().getMap();
+		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
+		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
+		assertEquals("expected compliance level to be 1.5 but found " + compliance, CompilerOptions.VERSION_1_5, compliance);
+		assertEquals("expected source level to be 1.5 but found " + sourceLevel, CompilerOptions.VERSION_1_5, sourceLevel );
+		assertTrue("expected to 'behaveInJava5Way' but aren't",buildConfig.getBehaveInJava5Way());
+	}
+	
 	public void testSourceCompatibilityLevel() {
 		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_13);
 		buildOptions.setSourceCompatibilityLevel( BuildOptionsAdapter.VERSION_14);
@@ -146,7 +169,33 @@ public class BuildConfigurationTests extends AjdeTestCase {
 		assertEquals( "compliance level", CompilerOptions.VERSION_1_4, compliance);
 		assertEquals( "source level", CompilerOptions.VERSION_1_4, sourceLevel );		
 	}
+
+	public void testSourceCompatibilityLevelJava5() {
+		buildOptions.setSourceCompatibilityLevel( BuildOptionsAdapter.VERSION_15);
+		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
+		Map options = buildConfig.getOptions().getMap();
+		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
+		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
+		assertEquals("expected compliance level to be 1.5 but found " + compliance, CompilerOptions.VERSION_1_5, compliance);
+		assertEquals("expected source level to be 1.5 but found " + sourceLevel, CompilerOptions.VERSION_1_5, sourceLevel );
+		assertTrue("expected to 'behaveInJava5Way' but aren't",buildConfig.getBehaveInJava5Way());
+	}
 	
+	public void testSourceIncompatibilityLevelJava5() {
+		// because compliance is set to be 1.5 then source compatibility
+		// will be set to 1.5
+		buildOptions.setComplianceLevel( BuildOptionsAdapter.VERSION_15);
+		buildOptions.setSourceCompatibilityLevel( BuildOptionsAdapter.VERSION_14);
+		buildConfig = compilerAdapter.genBuildConfig( configFile );			
+        assertTrue(configFile + " failed", null != buildConfig);            
+		Map options = buildConfig.getOptions().getMap();
+		String compliance = (String) options.get(CompilerOptions.OPTION_Compliance);
+		String sourceLevel = (String) options.get(CompilerOptions.OPTION_Source);		
+		assertEquals("expected compliance level to be 1.5 but found " + compliance, CompilerOptions.VERSION_1_5, compliance);
+		assertEquals("expected source level to be 1.5 but found " + sourceLevel, CompilerOptions.VERSION_1_5, sourceLevel );
+		assertTrue("expected to 'behaveInJava5Way' but aren't",buildConfig.getBehaveInJava5Way());
+	}
 	
 	public void testNullWarnings() {
 		buildOptions.setWarnings( null );	

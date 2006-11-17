@@ -246,6 +246,7 @@ public class CompilerAdapter {
         if (options.getSourceCompatibilityLevel() != null && options.getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_5)) {
 		    optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_5);
 		    optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5); 
+		    config.setBehaveInJava5Way(true);
 		} else if (options.getSourceCompatibilityLevel() != null && options.getSourceCompatibilityLevel().equals(CompilerOptions.VERSION_1_4)) {
 		    optionsToSet.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);	 
 			optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_4);
@@ -261,6 +262,9 @@ public class CompilerAdapter {
 			String version = CompilerOptions.VERSION_1_4;
 			if ( compliance.equals( BuildOptionsAdapter.VERSION_13 ) ) {
 				version = CompilerOptions.VERSION_1_3;
+			} else if (compliance.equals(BuildOptionsAdapter.VERSION_15)) {
+				version = CompilerOptions.VERSION_1_5;
+				config.setBehaveInJava5Way(true);
 			}
 			optionsToSet.put(CompilerOptions.OPTION_Compliance, version );	
 			optionsToSet.put(CompilerOptions.OPTION_Source, version );
@@ -275,12 +279,16 @@ public class CompilerAdapter {
 			// never set a lower source level than compliance level
 			// Mik: prepended with 1.5 check
 			if (sourceLevel.equals(CompilerOptions.VERSION_1_5)) {
-			    optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5);	
+			    optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5);
+			    config.setBehaveInJava5Way(true);
 			} else {
 				if (optionsToSet.containsKey(CompilerOptions.OPTION_Compliance)) {
 					String setCompliance = (String) optionsToSet.get(CompilerOptions.OPTION_Compliance);
-					if ( ! (setCompliance.equals(CompilerOptions.VERSION_1_4 )
-				         && slVersion.equals(CompilerOptions.VERSION_1_3)) ) {
+					if (setCompliance.equals(CompilerOptions.VERSION_1_5)) {
+						optionsToSet.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_5);
+						config.setBehaveInJava5Way(true);
+					} else if ( ! (setCompliance.equals(CompilerOptions.VERSION_1_4) 
+							&& slVersion.equals(CompilerOptions.VERSION_1_3)) ) {
 					    optionsToSet.put(CompilerOptions.OPTION_Source, slVersion);		
 					} 
 				}

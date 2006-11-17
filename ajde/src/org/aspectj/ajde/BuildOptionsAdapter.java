@@ -135,13 +135,14 @@ public interface BuildOptionsAdapter {
 	
 	/**
 	 * JDK Compliance level to be used by the compiler, either 
-	 * VERSION_13 or VERSION_14.
-	 * From -1.3 / -1.4
+	 * VERSION_13, VERSION_14 or VERSION_15.
+	 * From -1.3 / -1.4 / -1.5
 	 */
 	public String getComplianceLevel();
 	
 	/**
-	 * Source compatibility level, either VERSION_13 or VERSION_14.
+	 * Source compatibility level, either VERSION_13, VERSION_14
+	 * or VERSION_15
 	 * From -source (eclipse option)
 	 */
 	public String getSourceCompatibilityLevel();
