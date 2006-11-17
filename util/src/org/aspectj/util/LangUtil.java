@@ -97,7 +97,7 @@ public class LangUtil {
 		if (vm==null) vm = System.getProperty("java.vm.version");
 		if (vm.startsWith("1.3")) {
 			is14VMOrGreater = false;
-		} else if (vm.startsWith("1.5")) {
+		} else if (vm.startsWith("1.5") || vm.startsWith("1.6")) {	
 			is15VMOrGreater = true;
 		}
 	}
