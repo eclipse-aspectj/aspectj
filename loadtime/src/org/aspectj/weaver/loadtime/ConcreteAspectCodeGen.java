@@ -24,6 +24,7 @@ import org.aspectj.apache.bcel.generic.annotation.SimpleElementValueGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -107,8 +108,10 @@ public class ConcreteAspectCodeGen {
         }
 
         // name must be undefined so far
-        ResolvedType current = m_world.resolve(m_concreteAspect.name, true);
-        if (!current.isMissing()) {
+        // TODO only convert the name to signature once, probably earlier than this
+        ResolvedType current = m_world.lookupBySignature(UnresolvedType.forName(m_concreteAspect.name).getSignature());
+        
+        if (current!=null && !current.isMissing()) {
             reportError("Attempt to concretize but chosen aspect name already defined: " + stringify());
             return false;
         }
@@ -375,10 +378,8 @@ public class ConcreteAspectCodeGen {
         }
 
         // handle the perClause
-        BcelPerClauseAspectAdder perClauseMunger = new BcelPerClauseAspectAdder(
-                ResolvedType.forName(m_concreteAspect.name).resolve(m_world),
-                m_perClause.getKind()
-        );
+        ReferenceType rt = new ReferenceType(ResolvedType.forName(m_concreteAspect.name).getSignature(),m_world);
+        BcelPerClauseAspectAdder perClauseMunger = new BcelPerClauseAspectAdder(rt,m_perClause.getKind());
         perClauseMunger.forceMunge(cg, false);
 
         //TODO AV - unsafe cast
