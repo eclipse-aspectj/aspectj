@@ -101,9 +101,13 @@ signed) are used by default to configure LTW.</p>
 <h3>Weaving Concrete Aspects Defined in aop.xml - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=132080">132080</a></h3>
 <p>Concrete aspects defined using aop.xml are now exposed for weaving.</p>
  
+<h2>Pertypewithin enhancement - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=123423">123423</a></h2>
+<p>It is now possible to ask an instance of a ptw aspect which type it is 'attached' to.  The method:</p>
+ <code><pre>String getWithinTypeName()</pre></code>
+ <p>can be called on an aspect and will return the full qualified name of the type (eg. "com.foo.MyClass")
+</p>
 
-
-
+<hr>
 <p>For information on bug fixes in AspectJ 5 v1.5.3, see the <a href="changes.html"> changes</a> document.</p>
 
 </body> 
