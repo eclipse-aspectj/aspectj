@@ -92,11 +92,17 @@ for an AspectJ trace on a future bug report!
 
 <h2>LTW enhancements</h2>
 
-<p><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=132080">132080</a> describes how the 
-concrete aspects that can be defined in aop.xml are now exposed for weaving.</p>
-<p><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=149289">149289</a> 
+<h3>User and System Configuration Files - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=149289">149289</a></h3>
+<p>The <code>-outxml</code> option now generates a file named <code>META-INF/aop-ajc.xml</code>.
+This no longer clashes with a user defined <code>META-INF/aop.xml</code> configuration file.
+Both file names along with an OSGi-friendly <code>org/aspectj/aop.xml</code> (which can also be
+signed) are used by default to configure LTW.</p>
 
-</p>
+<h3>Weaving Concrete Aspects Defined in aop.xml - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=132080">132080</a></h3>
+<p>Concrete aspects defined using aop.xml are now exposed for weaving.</p>
+ 
+
+
 
 <p>For information on bug fixes in AspectJ 5 v1.5.3, see the <a href="changes.html"> changes</a> document.</p>
 
