@@ -33,6 +33,7 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testAnnotationStyleBcException_pr162135_3() { runTest("bcexception in annotation style around advice - 3");}
 //  public void testAnnotationStyleBcException_pr162135_4() { runTest("bcexception in annotation style around advice - 4");}
 //  public void testAnnotationStyleBcException_pr162135_5() { runTest("bcexception in annotation style around advice - 5");}
+  public void testIncompatibleClassChangeWithITD_pr164633() { runTest("incompatibleclasschange");}
   public void testComplexPointcut_pr162657() { runTest("complex pointcut");}
   public void testGenericsInPointcuts_pr161502() { runTest("generics in pointcuts");}
   public void testGenericsInPointcuts_pr161502_2() { runTest("generics in pointcuts - 2");}

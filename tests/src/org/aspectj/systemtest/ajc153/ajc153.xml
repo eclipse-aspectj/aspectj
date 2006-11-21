@@ -24,6 +24,11 @@
       <compile files="TestAspect.aj"/>
     </ajc-test>
     
+    <ajc-test dir="bugs153/pr164633" title="incompatibleclasschange">
+      <compile files="Model.java"/>
+      <run class="test.Model"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 2">
       <compile files="Foo2.java" options="-1.5"/>
       <run class="Foo2"/>
