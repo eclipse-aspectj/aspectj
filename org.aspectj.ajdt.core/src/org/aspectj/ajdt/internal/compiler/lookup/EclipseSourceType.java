@@ -133,6 +133,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public boolean isNested() {
+		if (declaration.binding!=null) return (declaration.binding.isMemberType());
 		return ((declaration.modifiers & ASTNode.IsMemberTypeMASK) != 0);
 	}
 	
