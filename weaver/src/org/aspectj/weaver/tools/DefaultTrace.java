@@ -10,9 +10,13 @@
  *******************************************************************************/
 package org.aspectj.weaver.tools;
 
+import java.io.PrintStream;
+
+
 public class DefaultTrace extends AbstractTrace {
 	
-	private boolean traceEnabled = false; 
+	private boolean traceEnabled = false;
+	private PrintStream print = System.err;
 	
 	public DefaultTrace (Class clazz) {
 		super(clazz);
@@ -98,7 +102,11 @@ public class DefaultTrace extends AbstractTrace {
 	 * @param s message to be traced
 	 */
 	protected void println (String s) {
-		System.err.println(s);
+		print.println(s);
+	}
+
+	public void setPrintStream (PrintStream printStream) {
+		this.print = printStream;
 	}
 
 //	private static boolean isTracingEnabled = getBoolean("org.aspectj.weaver.tools.tracing",false);

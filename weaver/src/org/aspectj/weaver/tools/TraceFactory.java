@@ -18,7 +18,7 @@ public abstract class TraceFactory {
 	public final static String FACTORY_PROPERTY = "org.aspectj.tracing.factory";
 	public final static String DEFAULT_FACTORY_NAME = "default";
 	
-    private static boolean debug = getBoolean(DEBUG_PROPERTY,false); 
+    protected static boolean debug = getBoolean(DEBUG_PROPERTY,false); 
     private static TraceFactory instance;
     
     public Trace getTrace (Class clazz) {

@@ -29,4 +29,9 @@ public class DefaultTraceTest extends AbstractTraceTest {
 		trace.setTraceEnabled(true);
 		assertTrue(trace.isTraceEnabled());
 	}
+	
+	public void testSetPrintStream () {
+		DefaultTrace trace = new DefaultTrace(getClass());
+		trace.setPrintStream(System.out);
+	}
 }
