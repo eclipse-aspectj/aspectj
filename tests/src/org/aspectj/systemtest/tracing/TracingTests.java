@@ -45,5 +45,13 @@ public class TracingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testJDK14Tracing_pr159854 () {
   		runTest("JDK 1.4 tracing");
 	}
+	
+	public void testTracingFileSystemProperty () {
+  		runTest("Tracing file System Property");
+
+  		File dir = getSandboxDirectory();
+  		File file = new File(dir,"tracing.txt");
+        assertTrue("Missing tracing file: " + file,file.exists());
+	}
 
 }

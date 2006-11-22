@@ -63,4 +63,18 @@
         </java>
     </target>
 
+    <target name="Tracing file System Property">
+        <java fork="yes" classname="HelloWorld" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-Dorg.aspectj.tracing.enabled=true"/>
+            <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
+            <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
+        	<sysproperty key="org.aspectj.tracing.file" path="${aj.sandbox}/tracing.txt"/>
+<!--            <jvmarg value="-verbose:class"/>-->
+            <!-- use META-INF/aop.xml style -->
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+<!--            <jvmarg line="${jdwp}"/>-->
+        </java>
+    </target>
+
 </project>
