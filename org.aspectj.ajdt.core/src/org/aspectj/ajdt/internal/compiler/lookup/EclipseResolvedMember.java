@@ -94,15 +94,19 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	
 	public String[] getParameterNames() {
 		if (argumentNames!=null) return argumentNames;
-		TypeDeclaration typeDecl = getTypeDeclaration();
-		AbstractMethodDeclaration methodDecl = typeDecl.declarationOf((MethodBinding)realBinding);
-		Argument[] args = (methodDecl==null?null:methodDecl.arguments); // dont like this - why isnt the method found sometimes? is it because other errors are being reported?
-		if (args==null) {
+		if (realBinding instanceof FieldBinding) {
 			argumentNames=NO_ARGS;
 		} else {
-			argumentNames = new String[args.length];
-			for (int i = 0; i < argumentNames.length; i++) {
-				argumentNames[i] = new String(methodDecl.arguments[i].name);
+			TypeDeclaration typeDecl = getTypeDeclaration();
+			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf((MethodBinding)realBinding);
+			Argument[] args = (methodDecl==null?null:methodDecl.arguments); // dont like this - why isnt the method found sometimes? is it because other errors are being reported?
+			if (args==null) {
+				argumentNames=NO_ARGS;
+			} else {
+				argumentNames = new String[args.length];
+				for (int i = 0; i < argumentNames.length; i++) {
+					argumentNames[i] = new String(methodDecl.arguments[i].name);
+				}
 			}
 		}
 		return argumentNames;
