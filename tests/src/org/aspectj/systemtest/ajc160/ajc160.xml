@@ -14,6 +14,16 @@
       <compile files="X.java" inpath="simple.jar"/>
 	  <run class="Simple"/>
     </ajc-test>
+       
+    <ajc-test dir="bugs160/pr165631" title="dual parameterizations not allowed">
+      <!-- two variations of the same situation, should fail in the same way -->
+      <compile files="Bug.java" options="-1.5">
+        <message kind="error" line="12" text="Cannot declare parent B"/>
+      </compile>
+      <compile files="Bug2.java" options="-1.5">
+        <message kind="error" line="13" text="Cannot declare parent B"/>
+      </compile>
+    </ajc-test>
     
     
  <!-- second section - need a 1.6 vm -->
