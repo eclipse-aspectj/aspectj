@@ -326,7 +326,9 @@ public class DeclareParents extends Declare {
 					return false;
 				}
 			}
-			return verifyNoInheritedAlternateParameterization(supertype,newParent,world);
+			if (!verifyNoInheritedAlternateParameterization(supertype,newParent,world)) {
+				return false;
+			}
 		}
 		return true;
 	}
