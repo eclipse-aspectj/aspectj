@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Abstract super class for instructions dealing with local variables.
  *
- * @version $Id: LocalVariableInstruction.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: LocalVariableInstruction.java,v 1.5 2006/11/29 13:43:01 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class LocalVariableInstruction extends Instruction
@@ -151,21 +151,29 @@ public abstract class LocalVariableInstruction extends Instruction
   {
     if(wide) {
       n         = bytes.readUnsignedShort();
-      length    = 4;
     } else if(((opcode >= Constants.ILOAD) &&
 	       (opcode <= Constants.ALOAD)) ||
 	      ((opcode >= Constants.ISTORE) &&
 	       (opcode <= Constants.ASTORE))) {
       n      = bytes.readUnsignedByte();
-      length = 2;
     } else if(opcode <= Constants.ALOAD_3) { // compact load instruction such as ILOAD_2
       n      = (opcode - Constants.ILOAD_0) % 4;
-      length = 1;
     } else { // Assert ISTORE_0 <= tag <= ASTORE_3
       n      = (opcode - Constants.ISTORE_0) % 4;
-      length = 1;
     }
+    workOutLength();
  }
+  
+  private void workOutLength() {
+	  if(n >= 0 && n <= 3) { // Use more compact instruction xLOAD_n
+        opcode = (short)(c_tag + n);
+        length = 1;
+      } else {
+        opcode = canon_tag;   
+        if(wide()) length = 4;
+        else       length = 2;
+      }
+  }
 
   /**
    * @return local variable index  referred by this instruction.
@@ -180,18 +188,7 @@ public abstract class LocalVariableInstruction extends Instruction
       throw new ClassGenException("Illegal value: " + n);
 
     this.n = n;
-
-    if(n >= 0 && n <= 3) { // Use more compact instruction xLOAD_n
-      opcode = (short)(c_tag + n);
-      length = 1;
-    } else {
-      opcode = canon_tag;
-      
-      if(wide()) // Need WIDE prefix ?
-	length = 4;
-      else
-	length = 2;
-    }
+    workOutLength();
   }
 
   /** @return canonical tag for instruction, e.g., ALOAD for ALOAD_0
