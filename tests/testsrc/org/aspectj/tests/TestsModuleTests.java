@@ -17,7 +17,7 @@ import junit.framework.TestSuite;
 
 import org.aspectj.systemtest.AllTests;
 import org.aspectj.systemtest.AllTests14;
-import org.aspectj.systemtest.AllTests15;
+import org.aspectj.systemtest.AllTests16;
 import org.aspectj.util.LangUtil;
 
 public class TestsModuleTests extends TestCase {
@@ -27,7 +27,8 @@ public class TestsModuleTests extends TestCase {
         TestSuite suite = new TestSuite(name);
         // compiler tests, wrapped for JUnit
         if (LangUtil.is15VMOrGreater()) {
-            suite.addTest(AllTests15.suite());
+//            suite.addTest(AllTests15.suite());
+            suite.addTest(AllTests16.suite()); // there are currently (28/11/06) no tests specific to a 1.6 vm - so we can do this
         } else if (LangUtil.is14VMOrGreater()) {
             System.err.println("Skipping tests for 1.5");
             //suite.addTest(TestUtil.skipTest("for 1.5"));
