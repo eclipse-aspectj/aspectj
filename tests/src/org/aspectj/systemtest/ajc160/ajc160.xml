@@ -10,6 +10,11 @@
 	  </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs160/pr166084" title="incorrect optimization of istore">
+      <compile files="X.java" inpath="simple.jar"/>
+	  <run class="Simple"/>
+    </ajc-test>
+    
     
  <!-- second section - need a 1.6 vm -->
 

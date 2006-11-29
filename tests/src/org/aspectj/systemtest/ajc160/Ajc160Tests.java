@@ -22,7 +22,7 @@ import junit.framework.Test;
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
   public void testGenericFieldNPE_pr165885() { runTest("generic field npe");}
-
+  public void testIncorrectOptimizationOfIstore_pr166084() { runTest("incorrect optimization of istore"); }
  
   /////////////////////////////////////////
   public static Test suite() {
