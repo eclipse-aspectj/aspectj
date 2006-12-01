@@ -32,6 +32,7 @@ import org.aspectj.apache.bcel.generic.BranchInstruction;
 import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.DUP;
 import org.aspectj.apache.bcel.generic.DUP_X1;
+import org.aspectj.apache.bcel.generic.DUP_X2;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
 import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
@@ -198,6 +199,7 @@ public class BcelShadow extends Shadow {
 		int depth = 1;
 		InstructionHandle ih = range.getStart();
 
+		// Go back from where we are looking for 'NEW' that takes us to a stack depth of 0.   INVOKESPECIAL <init> 
 		while (true) {
 			Instruction inst = ih.getInstruction();
 			if (inst instanceof INVOKESPECIAL
@@ -206,7 +208,42 @@ public class BcelShadow extends Shadow {
 			} else if (inst instanceof NEW) {
 				depth--;
 				if (depth == 0) break;
+			} else if (inst instanceof DUP_X2) {
+				// This code seen in the wild (by Brad):
+//				40:  new     #12; //class java/lang/StringBuffer
+//				STACK: STRINGBUFFER
+//				 43:  dup
+//				STACK: STRINGBUFFER/STRINGBUFFER
+//				 44:  aload_0
+//				STACK: STRINGBUFFER/STRINGBUFFER/THIS
+//				 45:  dup_x2
+//				STACK: THIS/STRINGBUFFER/STRINGBUFFER/THIS
+//				 46:  getfield        #36; //Field value:Ljava/lang/String;
+//				STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING<value>
+//				 49:  invokestatic    #37; //Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+//				STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING
+//				 52:  invokespecial   #19; //Method java/lang/StringBuffer."<init>":(Ljava/lang/String;)V
+//				STACK: THIS/STRINGBUFFER
+//				 55:  aload_1
+//				STACK: THIS/STRINGBUFFER/LOCAL1
+//				 56:  invokevirtual   #22; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+//				STACK: THIS/STRINGBUFFER
+//				 59:  invokevirtual   #34; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+//				STACK: THIS/STRING
+//				 62:  putfield        #36; //Field value:Ljava/lang/String;
+//				STACK: <empty>
+//				 65:  return
+				
+				// if we attempt to match on the ctor call to StringBuffer.<init> then we get into trouble.
+				// if we simply delete the new/dup pair without fixing up the dup_x2 then the dup_x2 will fail due to there
+				// not being 3 elements on the stack for it to work with.  The fix *in this situation* is to change it to
+				// a simple 'dup'
+				
+				// this fix is *not* very clean - but a general purpose decent solution will take much longer and this
+				// bytecode sequence has only been seen once in the wild.
+				ih.setInstruction(InstructionConstants.DUP);
 			}
+			
 			ih = ih.getPrev();
 		}
 		// now IH points to the NEW.  We're followed by the DUP, and that is followed
@@ -214,6 +251,8 @@ public class BcelShadow extends Shadow {
 		InstructionHandle newHandle = ih;
 		InstructionHandle endHandle = newHandle.getNext();
 		InstructionHandle nextHandle;
+		//
+		
 		if (endHandle.getInstruction() instanceof DUP) {
 			nextHandle = endHandle.getNext();			
 			retargetFrom(newHandle, nextHandle);
