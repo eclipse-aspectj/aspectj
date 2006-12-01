@@ -24,6 +24,14 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testGenericFieldNPE_pr165885() { runTest("generic field npe");}
   public void testIncorrectOptimizationOfIstore_pr166084() { runTest("incorrect optimization of istore"); }
   public void testDualParameterizationsNotAllowed_pr165631() { runTest("dual parameterizations not allowed"); }
+  	
+	public void testSuppressWarnings1_pr166238() {
+		runTest("Suppress warnings1");
+	}
+
+	public void testSuppressWarnings2_pr166238() {
+		runTest("Suppress warnings2");
+	}
  
   /////////////////////////////////////////
   public static Test suite() {

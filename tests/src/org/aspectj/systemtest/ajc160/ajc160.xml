@@ -24,6 +24,30 @@
         <message kind="error" line="13" text="Cannot declare parent B"/>
       </compile>
     </ajc-test>
+
+    <ajc-test dir="ltw"
+      title="Suppress warnings1"
+      keywords="xlint, ltw, nowarn, pr166238">
+        <compile
+            files="Main.java"
+        >
+        </compile>    
+        <run class="Main" ltw="aop-noxlintfile-nowarn.xml">
+            <stderr/> <!-- no warnings from missing xlint file: they are suppressed -->
+        </run>        
+    </ajc-test>
+
+    <ajc-test dir="ltw"
+      title="Suppress warnings2"
+      keywords="xlint, ltw, nowarn, pr166238">
+        <compile
+            files="Main.java"
+        >
+        </compile>    
+        <run class="Main" ltw="aop-noxlintfile-warnnone.xml">
+            <stderr/> <!-- no warnings from missing xlint file: they are suppressed -->
+        </run>
+    </ajc-test>
     
     
  <!-- second section - need a 1.6 vm -->
