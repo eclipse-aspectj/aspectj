@@ -139,7 +139,7 @@ public class Options {
 
         // refine message handler configuration
         if (weaverOption.noWarn) {
-            weaverOption.messageHandler.dontIgnore(IMessage.WARNING);
+            weaverOption.messageHandler.ignore(IMessage.WARNING);
         }
         if (weaverOption.verbose) {
             weaverOption.messageHandler.dontIgnore(IMessage.INFO);
