@@ -61,6 +61,31 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 		check("public aspect A { pointcut y(int a, double b, Y c): call(* *.*(..));}",
 				"public aspect A {\n   pointcut y(int a, double b, Y c):call(* *.*(..));\n}\n");
 	}
+	
+	public void testDeclareParentsDeclaration() throws Exception {
+		check("public aspect A { declare parents: X extends Y; }",
+				"public aspect A {\n  declare parents: X extends Y;\n}\n");
+	}
+	
+	public void testDeclareWarning() throws Exception {
+		check("public aspect A { declare warning: call(* *.*(..)) : \"warning!\"; }",
+				"public aspect A {\n  declare warning: call(* *.*(..)) : \"warning!\" ;\n}\n");
+	}
+	
+	public void testDeclareErrorDeclaration() throws Exception {
+		check("public aspect A { declare error: call(* *.*(..)) : \"error!\"; }",
+		"public aspect A {\n  declare error: call(* *.*(..)) : \"error!\" ;\n}\n");
+	}
+	
+	public void testDeclareSoftDeclaration() throws Exception {
+		check("public aspect A { declare soft: X : call(* *.*(..)); }",
+		"public aspect A {\n  declare soft: X : call(* *.*(..)) ;\n}\n");
+	}
+	
+	public void testDeclarePrecedenceDeclaration() throws Exception {
+		check("public aspect A { declare precedence: X, Y, Z; }",
+				"public aspect A {\n  declare precedence: X, Y, Z;\n}\n");
+	}
 
 	private void check(String source, String expectedOutput) {
 		ASTParser parser = ASTParser.newParser(AST.JLS2);

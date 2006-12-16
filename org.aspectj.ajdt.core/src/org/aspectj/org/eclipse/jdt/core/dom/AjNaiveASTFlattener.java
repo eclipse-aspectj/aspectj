@@ -41,7 +41,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	 * The string buffer into which the serialized representation of the AST is
 	 * written.
 	 */
-	private StringBuffer buffer;
+	protected StringBuffer buffer;
 	
 	private int indent = 0;
 	
@@ -523,7 +523,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 				buffer.append(", ");
 		}
 		buffer.append("):");
-		buffer.append(((DefaultPointcut)node.getDesignator()).getDetail());
+		node.getDesignator().accept(this);
 		buffer.append(";\n");
 		return false;
 	}
@@ -1646,4 +1646,87 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		return false;
 	}
 
+	public boolean visit(DeclareParentsDeclaration node) {
+		printIndent();
+		this.buffer.append("declare parents: ");
+		node.getChildTypePattern().accept(this);
+		
+		if(node.isExtends()){
+			this.buffer.append(" extends ");
+		} else {
+			this.buffer.append(" implements ");
+		}
+		
+		for (Iterator it = node.parentTypePatterns().iterator(); it.hasNext();) {
+			TypePattern typePat = (TypePattern) it.next();
+			typePat.accept(this);
+			if(it.hasNext()){
+				this.buffer.append(", ");
+			}
+		}
+		
+		this.buffer.append(";\n");
+		
+		return false;
+	}
+	
+	public boolean visit(DeclareWarningDeclaration node) {
+		printIndent();
+		
+		this.buffer.append("declare warning: ");
+		node.getPointcut().accept(this);
+		this.buffer.append(" : ");
+		node.getMessage().accept(this);
+		this.buffer.append(" ;\n");
+		return false;
+	}
+	
+	public boolean visit(DeclareErrorDeclaration node) {
+		printIndent();
+		
+		this.buffer.append("declare error: ");
+		node.getPointcut().accept(this);
+		this.buffer.append(" : ");
+		node.getMessage().accept(this);
+		this.buffer.append(" ;\n");
+		return false;
+	}
+	
+	public boolean visit(DeclareSoftDeclaration node) {
+		printIndent();
+		
+		this.buffer.append("declare soft: ");
+		node.getTypePattern().accept(this);
+		this.buffer.append(" : ");
+		node.getPointcut().accept(this);
+		this.buffer.append(" ;\n");
+		return false;
+	}
+	
+	public boolean visit(DeclarePrecedenceDeclaration node) {
+		printIndent();
+		
+		this.buffer.append("declare precedence: ");
+		for (Iterator it = node.typePatterns().iterator(); it.hasNext();) {
+			TypePattern typePat = (TypePattern) it.next();
+			typePat.accept(this);
+			if(it.hasNext()){
+				this.buffer.append(", ");
+			}
+		}
+		
+		this.buffer.append(";\n");
+		
+		return false;
+	}
+	
+	public boolean visit(DefaultTypePattern node) {
+		this.buffer.append(node.getDetail());
+		return false;
+	}
+	
+	public boolean visit(DefaultPointcut node) {
+		this.buffer.append(node.getDetail());
+		return false;
+	}
 }
