@@ -630,6 +630,9 @@ public class CompilerAdapter {
         join(config.getSourceRoots(), properties.getSourceRoots());
         join(config.getInJars(), properties.getInJars());
         join(config.getInpath(),properties.getInpath());
+        // bug 168840 - calling 'setInPath(..)' creates BinarySourceFiles which
+        // are used to see if there have been changes in classes on the inpath
+        if (config.getInpath() != null) config.setInPath(config.getInpath());
 		config.setSourcePathResources(properties.getSourcePathResources());
         join(config.getAspectpath(), properties.getAspectPath());
 	}
