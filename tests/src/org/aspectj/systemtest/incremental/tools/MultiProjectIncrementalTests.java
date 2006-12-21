@@ -38,6 +38,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.LintMessage;
 
 /**
@@ -1671,6 +1672,39 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			assertTrue("expected there to be more than the one compliance level" +
 					" error but only found that one",errors.size() > 1);
 		}
+	}
+		
+	public void testPr168840() throws Exception {
+		initialiseProject("inpathTesting");
+		
+		String inpathTestingDir = getWorkingDir() + File.separator + "inpathTesting";
+		String inpathDir  = inpathTestingDir + File.separator + "injarBin" + File.separator + "pkg";
+		String expectedOutputDir = inpathTestingDir + File.separator + "bin";
+		
+		// set up the inpath to have the directory on it's path
+		File f = new File(inpathDir);
+		Set s = new HashSet();
+		s.add(f);
+		configureInPath(s);
+		build("inpathTesting");
+		// the declare warning matches one place so expect one warning message
+		assertTrue("Expected there to be one warning message but found "
+				+ MyTaskListManager.getWarningMessages().size() + ": " + MyTaskListManager.getWarningMessages(),
+				MyTaskListManager.getWarningMessages().size() == 1);
+		
+		// copy over the updated version of the inpath class file
+		File from = new File(testdataSrcDir+File.separatorChar+"inpathTesting"
+				+File.separatorChar+"newInpathClass" + File.separatorChar + "InpathClass.class");
+		File destination = new File(inpathDir + File.separatorChar + "InpathClass.class");
+		FileUtil.copyFile(from,destination);
+		
+		build("inpathTesting");
+		checkWasntFullBuild();
+		// the newly copied inpath class means the declare warning now matches two
+		// places, therefore expect two warning messages
+		assertTrue("Expected there to be two warning message but found "
+				+ MyTaskListManager.getWarningMessages().size() + ": " + MyTaskListManager.getWarningMessages(),
+				MyTaskListManager.getWarningMessages().size() == 2);
 	}
 	
 	// --- helper code ---

@@ -75,6 +75,10 @@ public class AjdeInteractionTestbed extends TestCase {
 		MyProjectPropertiesAdapter.setAspectpath(aspectpath);
 	} 
 	
+	public static void configureInPath(Set inpath) {
+		MyProjectPropertiesAdapter.setInpath(inpath);
+	}
+	
 	public static void configureOutputLocationManager(OutputLocationManager mgr) {
 		MyProjectPropertiesAdapter.setOutputLocationManager(mgr);
 	}
@@ -357,12 +361,14 @@ public class AjdeInteractionTestbed extends TestCase {
 		static MyProjectPropertiesAdapter _instance = new MyProjectPropertiesAdapter();
 		private MyProjectPropertiesAdapter() {}
 		
+
 		public static MyProjectPropertiesAdapter getInstance() { 
 			return _instance;
 		}
 		
 		public static void reset() {
 			_instance.aspectPath=null;
+			_instance.inpath = null;
 			_instance.sourcePathResources=null;
 			_instance.outputLocationManager=null;
 		}
@@ -370,6 +376,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		private String projectName = null;
 		private String classPath = "";
 		private Set aspectPath = null;
+		private Set inpath = null;
 		private Map sourcePathResources = null;
 		private OutputLocationManager outputLocationManager = null;
 		
@@ -401,6 +408,11 @@ public class AjdeInteractionTestbed extends TestCase {
 		public static void setAspectpath(Set path) {
 			_instance.aspectPath = path;
 		}
+		
+		public static void setInpath(Set inpath) {
+			_instance.inpath = inpath;
+		}
+
 		
 		// interface impl below
 		
@@ -509,8 +521,8 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public Set getInpath() {
-			log("MyProjectProperties.getInPath()");
-			return null;
+			log("MyProjectProperties.getInPath(" + inpath +")");
+			return inpath;
 		}
 
 		public Map getSourcePathResources() {
