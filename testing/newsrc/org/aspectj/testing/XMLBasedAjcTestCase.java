@@ -169,6 +169,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		digester.addSetProperties("suite/ajc-test/run","class","classToRun");
 		digester.addSetProperties("suite/ajc-test/run","ltw","ltwFile");
 		digester.addSetProperties("suite/ajc-test/run","xlintfile","xlintFile");
+		digester.addSetProperties("suite/ajc-test/run/stderr","ordered","orderedStderr");
 		digester.addSetNext("suite/ajc-test/run","addTestStep","org.aspectj.testing.ITestStep");
 		digester.addObjectCreate("*/message",ExpectedMessageSpec.class);
 		digester.addSetProperties("*/message");
