@@ -307,7 +307,7 @@
                 <line text="Main.test1"/>
                 <line text="Main.test2"/>
             </stdout>
-        	<stderr>
+        	<stderr ordered="no">
 				<line text="warning aspect Aspect1 exluded for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader [Xlint:aspectExcludedByConfiguration]"/>
 				<line text="warning aspect Aspect2 exluded for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader [Xlint:aspectExcludedByConfiguration]"/>
                 <line text="pakkage.Aspect3.before_test2"/>
