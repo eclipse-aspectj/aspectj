@@ -1054,8 +1054,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (ret != null) return ret;
 		
 		ResolvedType supert = getSuperclass();
-		if (supert != null) {
+		while (ret==null && supert!=null) {
 			ret = supert.lookupMemberNoSupers(member);
+			if (ret==null) supert = supert.getSuperclass();
 		}
 		
 		return ret;
