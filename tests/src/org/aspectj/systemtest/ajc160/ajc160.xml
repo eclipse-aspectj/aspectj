@@ -4,6 +4,12 @@
 <suite>
 
  <!-- first section - dont need a 1.6 vm but fixed in the 1.6 branch of AspectJ -->
+    <ajc-test dir="bugs160/pr169706" title="inherited annotations">
+      <compile files="A.java,B.java,C.java,MyAspect.java,MyAnnotation.java,Test.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void C.foo())' in Type 'Test' (Test.java:5) advised by before advice from 'MyAspect' (MyAspect.java:4)"/>
+	  </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs160/pr165885" title="generic field npe">
       <compile files="Concrete.java,Abstract.java,Aspect.java" options="-1.5">
         <message kind="warning" line="8" text="foo"/>
