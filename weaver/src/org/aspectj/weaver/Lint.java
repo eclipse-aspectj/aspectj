@@ -124,6 +124,9 @@ public class Lint {
 		new Kind("cantFindType","{0}");
 	
 	public final Kind cantFindTypeAffectingJoinPointMatch = new Kind("cantFindTypeAffectingJPMatch","{0}");
+	
+	public final Kind advisingSynchronizedMethods = new Kind("advisingSynchronizedMethods",
+			"advice matching the synchronized method shadow ''{0}'' will be executed outside the lock rather than inside (compiler limitation)");
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Lint.class);
 	

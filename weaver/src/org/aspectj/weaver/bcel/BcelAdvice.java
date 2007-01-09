@@ -223,9 +223,7 @@ public class BcelAdvice extends Advice {
         if (shadow.getIWorld().isJoinpointSynchronizationEnabled() &&
         		shadow.getKind()==Shadow.MethodExecution &&
         		(s.getSignature().getModifiers() & Modifier.SYNCHRONIZED)!=0) {
-			Message m = new Message("advice matching the synchronized method shadow '"+shadow.toString()+
-    				"' will be executed outside the lock rather than inside (compiler limitation)",shadow.getSourceLocation(),false,new ISourceLocation[]{getSourceLocation()});
-        	  shadow.getIWorld().getMessageHandler().handleMessage(m);
+        	shadow.getIWorld().getLint().advisingSynchronizedMethods.signal(new String[]{shadow.toString()},shadow.getSourceLocation(),new ISourceLocation[]{getSourceLocation()});
         }
         
         //FIXME AV - see #75442, this logic is not enough so for now comment it out until we fix the bug
