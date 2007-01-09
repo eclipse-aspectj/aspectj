@@ -12,6 +12,7 @@
 package org.aspectj.ajde.internal;
 
 import java.io.File;
+import java.util.List;
 
 import org.aspectj.ajde.OutputLocationManager;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
@@ -30,6 +31,14 @@ public class OutputLocationAdapter implements CompilationResultDestinationManage
 
 	public File getOutputLocationForResource(File resource) {
 		return this.locationManager.getOutputLocationForResource(resource);
+	}
+
+	public List getAllOutputLocations() {
+		return this.locationManager.getAllOutputLocations();
+	}
+
+	public File getDefaultOutputLocation() {
+		return this.locationManager.getDefaultOutputLocation();
 	}
 
 }

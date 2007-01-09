@@ -12,6 +12,7 @@
 package org.aspectj.ajde;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Interface to be implemented by clients that wish to control the output
@@ -43,5 +44,16 @@ public interface OutputLocationManager {
 	 * should be copied
 	 */
 	File getOutputLocationForResource(File resource);
+
+	/**
+	 * Return a list of all output locations handled by this OutputLocationManager
+	 */
+	List /*File*/ getAllOutputLocations();
+	
+	/**
+	 * Return the default output location (for example, <my_project>/bin). This is
+	 * where classes which are on the inpath will be placed.
+	 */
+	File getDefaultOutputLocation();
 	
 }
