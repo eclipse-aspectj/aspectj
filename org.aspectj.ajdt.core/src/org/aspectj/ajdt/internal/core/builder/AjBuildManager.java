@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -95,8 +96,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	private static final String CROSSREFS_FILE_NAME = "build.lst";
 	private static final String CANT_WRITE_RESULT = "unable to write compilation result";
 	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
-	static final boolean COPY_INPATH_DIR_RESOURCES = false;
-    // AJDT doesn't want this check, so Main enables it.
+	public static boolean COPY_INPATH_DIR_RESOURCES = false;
+	// AJDT doesn't want this check, so Main enables it.
     private static boolean DO_RUNTIME_VERSION_CHECK = false;
     // If runtime version check fails, warn or fail? (unset?)
     static final boolean FAIL_IF_RUNTIME_NOT_FOUND = false;
@@ -554,9 +555,16 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	private void writeManifest () throws IOException {
 		Manifest manifest = getWeaver().getManifest(false);
 		if (manifest != null && zos == null) {
-			OutputStream fos = 
-				FileUtil.makeOutputStream(new File(buildConfig.getOutputDir(),MANIFEST_NAME));
-			manifest.write(fos);	
+			File outputDir = buildConfig.getOutputDir();
+			if (buildConfig.getCompilationResultDestinationManager() != null) {
+				// Manifests are only written if we have a jar on the inpath. Therefore,
+				// we write the manifest to the defaultOutputLocation because this is
+				// where we sent the classes that were on the inpath
+				outputDir = buildConfig.getCompilationResultDestinationManager().getDefaultOutputLocation();
+			}
+			if (outputDir == null) return;
+			OutputStream fos = FileUtil.makeOutputStream(new File(outputDir,MANIFEST_NAME));
+			manifest.write(fos);
 			fos.close();
 		}
 	}
@@ -583,36 +591,91 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		if (ignoreOutxml) return;
 		
 		String filename = buildConfig.getOutxmlName();
-//		System.err.println("? AjBuildManager.writeOutxmlFile() outxml=" + filename);
-//		System.err.println("? AjBuildManager.writeOutxmlFile() outputDir=" + buildConfig.getOutputDir());
-		
+		// System.err.println("? AjBuildManager.writeOutxmlFile() outxml=" + filename);
+
+		Map outputDirsAndAspects = findOutputDirsForAspects();
+		Set outputDirs = outputDirsAndAspects.entrySet();
+		for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			File outputDir = (File) entry.getKey();
+			List aspects = (List) entry.getValue();
+			ByteArrayOutputStream baos = getOutxmlContents(aspects);
+			if (zos != null) {
+				ZipEntry newEntry = new ZipEntry(filename);
+
+				zos.putNextEntry(newEntry);
+				zos.write(baos.toByteArray());
+				zos.closeEntry();
+			} else {
+				OutputStream fos = FileUtil.makeOutputStream(new File(outputDir, filename));
+				fos.write(baos.toByteArray());
+				fos.close();
+			}
+		}
+	}
+
+	private ByteArrayOutputStream getOutxmlContents(List aspectNames) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(baos);
 		ps.println("<aspectj>");
 		ps.println("<aspects>");
-		if (state.getAspectNames() != null) {
-			for (Iterator i = state.getAspectNames().iterator(); i.hasNext();) {
-				String name = (String)i.next();
+		if (aspectNames != null) {
+			for (Iterator i = aspectNames.iterator(); i.hasNext();) {
+				String name = (String) i.next();
 				ps.println("<aspect name=\"" + name + "\"/>");
-			}			
+			}
 		}
 		ps.println("</aspects>");
 		ps.println("</aspectj>");
 		ps.println();
 		ps.close();
+		return baos;
+	}
 
-		if (zos != null) {
-			ZipEntry newEntry = new ZipEntry(filename);
-			
-			zos.putNextEntry(newEntry);
-			zos.write(baos.toByteArray());
-			zos.closeEntry();
+	/**
+	 * Returns a map where the keys are File objects corresponding to
+	 * all the output directories and the values are a list of aspects
+	 * which are sent to that ouptut directory
+	 */
+	private Map /* File --> List (String) */findOutputDirsForAspects() {
+		Map outputDirsToAspects = new HashMap();
+		Map aspectNamesToFileNames = state.getAspectNamesToFileNameMap();
+		if (buildConfig.getCompilationResultDestinationManager() == null
+				|| buildConfig.getCompilationResultDestinationManager().getAllOutputLocations().size() == 1) {
+			// we only have one output directory...which simplifies things
+			File outputDir = buildConfig.getOutputDir();
+			if (buildConfig.getCompilationResultDestinationManager() != null) {
+				outputDir = buildConfig.getCompilationResultDestinationManager().getDefaultOutputLocation();
+			}
+			List aspectNames = new ArrayList();
+			if (aspectNamesToFileNames != null) {
+				Set keys = aspectNamesToFileNames.keySet();
+				for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+					String name = (String) iterator.next();
+					aspectNames.add(name);
+				}				
+			}
+			outputDirsToAspects.put(outputDir, aspectNames);
 		} else {
-			OutputStream fos = 
-				FileUtil.makeOutputStream(new File(buildConfig.getOutputDir(),filename));
-			fos.write(baos.toByteArray());
-			fos.close();
+			List outputDirs = buildConfig.getCompilationResultDestinationManager().getAllOutputLocations();
+			for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
+				File outputDir = (File) iterator.next();
+				outputDirsToAspects.put(outputDir,new ArrayList());
+			}
+			Set entrySet = aspectNamesToFileNames.entrySet();
+			for (Iterator iterator = entrySet.iterator(); iterator.hasNext();) {
+				Map.Entry entry = (Map.Entry) iterator.next();
+				String aspectName = (String) entry.getKey();
+				char[] fileName = (char[]) entry.getValue();
+				File outputDir = buildConfig.getCompilationResultDestinationManager()
+						.getOutputLocationForClass(new File(new String(fileName)));
+				if(!outputDirsToAspects.containsKey(outputDir)) {
+					outputDirsToAspects.put(outputDir,new ArrayList());
+				}
+				((List)outputDirsToAspects.get(outputDir)).add(aspectName);
+			}
 		}
+		return outputDirsToAspects;
 	}
 	
 //	public static void dumprels() {
@@ -725,15 +788,20 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				bcelWeaver.addLibraryJarFile(f);
 			}
 		}
-		
-//		String lintMode = buildConfig.getLintMode();
-		
-		
-		
-		//??? incremental issues
-		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext(); ) {
-			File inJar = (File)i.next();
-			List unwovenClasses = bcelWeaver.addJarFile(inJar, buildConfig.getOutputDir(),false);
+
+		// String lintMode = buildConfig.getLintMode();
+
+		File outputDir = buildConfig.getOutputDir();
+		if (outputDir == null
+				&& buildConfig.getCompilationResultDestinationManager() != null) {
+			// send all output from injars and inpath to the default output location
+			// (will also later send the manifest there too)
+			outputDir = buildConfig.getCompilationResultDestinationManager().getDefaultOutputLocation();
+		}
+		// ??? incremental issues
+		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext();) {
+			File inJar = (File) i.next();
+			List unwovenClasses = bcelWeaver.addJarFile(inJar, outputDir, false);
 			state.recordBinarySource(inJar.getPath(), unwovenClasses);
 		}
 		
@@ -742,7 +810,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			if (!inPathElement.isDirectory()) {
 				// its a jar file on the inpath
 				// the weaver method can actually handle dirs, but we don't call it, see next block
-				List unwovenClasses = bcelWeaver.addJarFile(inPathElement,buildConfig.getOutputDir(),true);
+				List unwovenClasses = bcelWeaver.addJarFile(inPathElement,outputDir,true);
 				state.recordBinarySource(inPathElement.getPath(),unwovenClasses);
 			} else {
 				// add each class file in an in-dir individually, this gives us the best error reporting
@@ -750,8 +818,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				// class file changes in indirs.
 				File[] binSrcs = FileUtil.listFiles(inPathElement, binarySourceFilter);
 				for (int j = 0; j < binSrcs.length; j++) {
-					UnwovenClassFile ucf = 
-						bcelWeaver.addClassFile(binSrcs[j], inPathElement, buildConfig.getOutputDir());
+					UnwovenClassFile ucf = bcelWeaver.addClassFile(binSrcs[j], inPathElement, outputDir);
 					List ucfl = new ArrayList();
 					ucfl.add(ucf);
 					state.recordBinarySource(binSrcs[j].getPath(),ucfl);
@@ -955,7 +1022,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 							} else {
 								writeZipEntry(classFile,filename);
 							}
-							if (shouldAddAspectName) addAspectName(classname);
+							if (shouldAddAspectName) addAspectName(classname, unitResult.getFileName());
 						} catch (IOException ex) {
 							IMessage message = EclipseAdapterUtils.makeErrorMessage(
 									new String(unitResult.fileName),
@@ -1012,16 +1079,17 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				zos.closeEntry();
 			}
 			
-			private void addAspectName (String name) {
+			private void addAspectName (String name, char[] fileContainingAspect) {
 				BcelWorld world = getBcelWorld();
 				ResolvedType type = world.resolve(name);
 //				System.err.println("? writeAspectName() type=" + type);
 				if (type.isAspect()) {
-					if (state.getAspectNames() == null) {
-						state.initializeAspectNamesList();
+					if (state.getAspectNamesToFileNameMap() == null) {
+						state.initializeAspectNamesToFileNameMap();
 					}
-					if (!state.getAspectNames().contains(name)) {
-						state.getAspectNames().add(name);
+					if (!state.getAspectNamesToFileNameMap().containsKey(name)) {
+						state.getAspectNamesToFileNameMap().put(name,
+								fileContainingAspect);
 					}
 				}
 			}
@@ -1188,6 +1256,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		String filename = new String(eclipseClassFileName);
 		filename = filename.replace('/', File.separatorChar) + ".class";
 		File destinationPath = buildConfig.getOutputDir();
+		if (buildConfig.getCompilationResultDestinationManager() != null) {
+			File f = new File(new String(result.getFileName()));
+			destinationPath = buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(f);
+		}
 		String outFile;
 		if (destinationPath == null) {
 			outFile = new File(filename).getName();

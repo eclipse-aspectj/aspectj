@@ -156,10 +156,17 @@ public class AjState {
 	 */
 	private Map/*<String, File>*/ classesFromName = new HashMap();
 	
+	/**
+	 * Populated by AjBuildManager to record the aspects with the file name in which they're
+	 * contained. This is later used when writing the outxml file in AjBuildManager. Need
+	 * to record the file name because want to write an outxml file for each of the output
+	 * directories and in order to ask the OutputLocationManager for the output location
+	 * for a given aspect we need the file in which it is contained.
+	 */
+	private Map /*<String, char[]>*/ aspectsFromFileNames;
 	
 	private List/*File*/ compiledSourceFiles = new ArrayList();
 	private List/*String*/ resources = new ArrayList();
-	private List/*String*/ aspectNames;
 	
 	// these are references created on a particular compile run - when looping round in 
 	// addAffectedSourceFiles(), if some have been created then we look at which source files
@@ -193,7 +200,7 @@ public class AjState {
 	/**
 	 * Returns false if a batch build is needed.
 	 */
-	boolean prepareForNextBuild(AjBuildConfig newBuildConfig) {
+	public boolean prepareForNextBuild(AjBuildConfig newBuildConfig) {
 		currentBuildTime = System.currentTimeMillis();
 
 		if (!maybeIncremental()) {
@@ -384,30 +391,50 @@ public class AjState {
 
 	private boolean pathChange(AjBuildConfig oldConfig, AjBuildConfig newConfig) {
 		boolean changed = false;
+		
+		List oldOutputLocs = getOutputLocations(oldConfig);
+		
 		List oldClasspath = oldConfig.getClasspath();
 		List newClasspath = newConfig.getClasspath();
 		if (stateListener!=null) stateListener.aboutToCompareClasspaths(oldClasspath,newClasspath);
-		if (changed(oldClasspath,newClasspath,true,oldConfig.getOutputDir())) return true;
+		if (changed(oldClasspath,newClasspath,true,oldOutputLocs)) return true;
 		List oldAspectpath = oldConfig.getAspectpath();
 		List newAspectpath = newConfig.getAspectpath();
-		if (changed(oldAspectpath,newAspectpath,true,oldConfig.getOutputDir())) return true;
+		if (changed(oldAspectpath,newAspectpath,true,oldOutputLocs)) return true;
 		List oldInJars = oldConfig.getInJars();
 		List newInJars = newConfig.getInJars();
-		if (changed(oldInJars,newInJars,false,oldConfig.getOutputDir())) return true;
+		if (changed(oldInJars,newInJars,false,oldOutputLocs)) return true;
 		List oldInPath = oldConfig.getInpath();
 		List newInPath = newConfig.getInpath();
-		if (changed(oldInPath, newInPath,false,oldConfig.getOutputDir())) return true;
+		if (changed(oldInPath, newInPath,false,oldOutputLocs)) return true;
 		return changed;
 	}
 	
-	private boolean changed(List oldPath, List newPath, boolean checkClassFiles, File oldOutputLocation) {
+	private List /*File*/ getOutputLocations(AjBuildConfig config) {
+		List outputLocs = new ArrayList();
+		if (config.getOutputDir() != null) {
+			try {
+				outputLocs.add(config.getOutputDir().getCanonicalFile());
+			} catch (IOException e) {}
+		}
+		if (config.getCompilationResultDestinationManager() != null) {
+			List dirs = config.getCompilationResultDestinationManager().getAllOutputLocations();
+			for (Iterator iterator = dirs.iterator(); iterator.hasNext();) {
+				File f = (File) iterator.next();
+				try {
+					if (!outputLocs.contains(f.getCanonicalFile())) {
+						outputLocs.add(f.getCanonicalFile());
+					}
+					
+				} catch (IOException e) {}
+			}
+		}
+		return outputLocs;
+	}
+	
+	private boolean changed(List oldPath, List newPath, boolean checkClassFiles, List outputLocs) {	
 		if (oldPath == null) oldPath = new ArrayList();
 		if (newPath == null) newPath = new ArrayList();
-		try {
-			if (oldOutputLocation != null) {
-				oldOutputLocation = oldOutputLocation.getCanonicalFile();
-			}
-		} catch(IOException ex) { /* we did our best...*/ }
 		if (oldPath.size() != newPath.size()) {
 			return true;
 		}
@@ -425,10 +452,20 @@ public class AjState {
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
 			}
-			if (f.exists() && f.isDirectory() && checkClassFiles && !(f.equals(oldOutputLocation))) {
-				boolean b= classFileChangedInDirSinceLastBuild(f);
-				if (b && stateListener!=null) stateListener.detectedClassChangeInThisDir(f);
-				if (b) return true;
+			if (f.exists() && f.isDirectory() && checkClassFiles) {
+				boolean foundMatch = false;
+				for (Iterator iterator = outputLocs.iterator(); iterator
+						.hasNext();) {
+					File dir = (File) iterator.next();
+					if (f.equals(dir)) {
+						foundMatch = true;
+					}
+				}
+				if (!foundMatch) {
+					boolean b= classFileChangedInDirSinceLastBuild(f);
+					if (b && stateListener!=null) stateListener.detectedClassChangeInThisDir(f);
+					if (b) return true;					
+				}
 			}
 		}
 		return false;
@@ -447,7 +484,9 @@ public class AjState {
 	//			addDependentsOf(file);
 	//		}
 			
-			thisTime.addAll(addedFiles);	
+			if(addedFiles != null) {
+				thisTime.addAll(addedFiles);					
+			}
 			
 			deleteClassFiles();
 			deleteResources();
@@ -514,11 +553,19 @@ public class AjState {
         }
 	    for (Iterator iter = resources.iterator(); iter.hasNext();) {
             String resource = (String) iter.next();
-            new File(buildConfig.getOutputDir(),resource).delete();            
+			List outputDirs = getOutputLocations(buildConfig);
+			for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
+				File dir = (File) iterator.next();
+				File f = new File(dir,resource);
+				if (f.exists()) {
+					f.delete();
+				}				
+			}
         }
 	}
 	
 	private void deleteClassFiles() {
+		if (deletedFiles == null) return;
 		for (Iterator i = deletedFiles.iterator(); i.hasNext(); ) {
 			File deletedFile = (File)i.next();
 			addDependentsOf(deletedFile);
@@ -571,21 +618,29 @@ public class AjState {
 		// oldResources need to be deleted...
 		for (Iterator iter = oldResources.iterator(); iter.hasNext();) {
 			String victim = (String) iter.next();
-			File f = new File(buildConfig.getOutputDir(),victim);
-			if (f.exists()) {
-				f.delete();
-			}			
-			resources.remove(victim);
+			List outputDirs = getOutputLocations(buildConfig);
+			for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
+				File dir = (File) iterator.next();
+				File f = new File(dir,victim);
+				if (f.exists()) {
+					f.delete();
+				}			
+				resources.remove(victim);				
+			}
 		}
 	}
 	
 	private void maybeDeleteResource(String resName, List oldResources) {
 		if (resources.contains(resName)) {
 			oldResources.remove(resName);
-			File source = new File(buildConfig.getOutputDir(),resName);
-			if ((source != null) && (source.exists()) &&
-			    (source.lastModified() >= lastSuccessfulBuildTime)) {
-				resources.remove(resName); // will ensure it is re-copied
+			List outputDirs = getOutputLocations(buildConfig);
+			for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
+				File dir = (File) iterator.next();
+				File source = new File(dir,resName);
+				if ((source != null) && (source.exists()) &&
+						(source.lastModified() >= lastSuccessfulBuildTime)) {
+					resources.remove(resName); // will ensure it is re-copied
+				}
 			}
 		}		
 	}
@@ -617,7 +672,14 @@ public class AjState {
 	private UnwovenClassFile createUnwovenClassFile(AjBuildConfig.BinarySourceFile bsf) {
 		UnwovenClassFile ucf = null;
 		try {
-			ucf = weaver.addClassFile(bsf.binSrc, bsf.fromInPathDirectory, buildConfig.getOutputDir());
+			File outputDir = buildConfig.getOutputDir();
+			if (buildConfig.getCompilationResultDestinationManager() != null) {
+				// createUnwovenClassFile is called only for classes that are on the inpath,
+				// all inpath classes are put in the defaultOutputLocation, therefore,
+				// this is the output dir
+				outputDir = buildConfig.getCompilationResultDestinationManager().getDefaultOutputLocation();
+			}
+			ucf = weaver.addClassFile(bsf.binSrc, bsf.fromInPathDirectory, outputDir);
 		} catch(IOException ex) {
 			IMessage msg = new Message("can't read class file " + bsf.binSrc.getPath(),
 									   new SourceLocation(bsf.binSrc,0),false);
@@ -1031,7 +1093,8 @@ public class AjState {
     }
 	
 	protected void addAffectedSourceFiles(List addTo, List lastTimeSources) {
-		if (qualifiedStrings.isEmpty() && simpleStrings.isEmpty()) return;
+		if (qualifiedStrings == null || simpleStrings == null ||
+				(qualifiedStrings.isEmpty() && simpleStrings.isEmpty())) return;
 		if (listenerDefined()) getListener().recordDecision("Examining whether any other files now need compilation based just compiling: '"+stringifyList(lastTimeSources)+"'");
 		// the qualifiedStrings are of the form 'p1/p2' & the simpleStrings are just 'X'
 		char[][][] qualifiedNames = ReferenceCollection.internQualifiedNames(makeStringSet(qualifiedStrings));
@@ -1247,12 +1310,12 @@ public class AjState {
 		buildManager.setStructureModel(null);
 	}
 	
-	public List getAspectNames() {
-		return aspectNames;
+	public Map getAspectNamesToFileNameMap() {
+		return aspectsFromFileNames;
 	}
-	
-	public void initializeAspectNamesList() {
-		this.aspectNames = new LinkedList();
+
+	public void initializeAspectNamesToFileNameMap() {
+		this.aspectsFromFileNames = new HashMap();
 	}
 	
 	// Will allow us to record decisions made during incremental processing, hopefully aid in debugging
@@ -1266,5 +1329,9 @@ public class AjState {
 
 	public IBinaryType checkPreviousBuild(String name) {
 		return (IBinaryType)resolvedTypeStructuresFromLastBuild.get(name);
+	}
+	
+	public AjBuildManager getAjBuildManager() {
+		return buildManager;
 	}
 }

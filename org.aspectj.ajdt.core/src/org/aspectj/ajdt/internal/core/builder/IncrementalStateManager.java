@@ -15,8 +15,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.asm.AsmManager;
 
 
@@ -77,15 +79,28 @@ public class IncrementalStateManager {
 				continue;
 			}
 			File outputDir = ajbc.getOutputDir();
-			if (outputDir == null) {
+			if (outputDir != null && outputDir.equals(location)) {
+				if (debugIncrementalStates) System.err.println("< findStateManagingOutputLocation("+location+") returning "+element);
+				return element;				
+			} 
+			CompilationResultDestinationManager outputManager = ajbc.getCompilationResultDestinationManager();
+			if (outputManager != null) {
+				List outputDirs = outputManager.getAllOutputLocations();
+				for (Iterator iterator = outputDirs.iterator(); iterator
+						.hasNext();) {
+					File dir = (File) iterator.next();
+					if (dir.equals(location)) {
+						if (debugIncrementalStates) System.err.println("< findStateManagingOutputLocation("+location+") returning "+element);
+						return element;				
+					}
+				}
+			}
+			if (outputDir == null && outputManager == null) {
 				// FIXME why can it ever be null? due to using outjar?
-				if (debugIncrementalStates) System.err.println("  output directory for "+ajbc+" is null");
+				if (debugIncrementalStates) System.err.println("  output directory and output location manager for "+ajbc+" are null");
 				continue;
 			}
-			if (outputDir.equals(location)) {
-				if (debugIncrementalStates) System.err.println("< findStateManagingOutputLocation("+location+") returning "+element);
-				return element;
-			}
+
 		}
 		if (debugIncrementalStates) System.err.println("< findStateManagingOutputLocation("+location+") returning null");
 		return null;

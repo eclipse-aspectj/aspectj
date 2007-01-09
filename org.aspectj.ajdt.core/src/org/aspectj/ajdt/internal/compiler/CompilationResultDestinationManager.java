@@ -12,6 +12,7 @@
 package org.aspectj.ajdt.internal.compiler;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * acts as a bridge from ajde's OutputLocationManager interface to the compiler internals
@@ -42,5 +43,16 @@ public interface CompilationResultDestinationManager {
 	 * should be copied
 	 */
 	File getOutputLocationForResource(File resource);
+	
+	/**
+	 * Return a list of all output locations handled by this OutputLocationManager
+	 */
+	List /*File*/ getAllOutputLocations();
+	
+	/**
+	 * Return the default output location (for example, <my_project>/bin). This is
+	 * where classes which are on the inpath will be placed.
+	 */
+	File getDefaultOutputLocation();
 	
 }
