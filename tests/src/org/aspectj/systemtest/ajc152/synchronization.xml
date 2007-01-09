@@ -430,8 +430,18 @@
     
     <ajc-test dir="features152/synchronization/transformed" title="Two">
       <compile files="Two.java -Xjoinpoints:synchronization">
-        <message kind="warning" line="14" text="advice matching the synchronized method shadow 'method-execution(void C.ma())' will be executed outside the lock rather than inside (compiler limitation)"/>        
+        <message kind="warning" line="14" text="advice matching the synchronized method shadow 'method-execution(void C.ma())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
       </compile>
+      <run class="Two">
+        <stderr>
+          <line text="execution advice running"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="Two - xlintoff">
+      <compile files="Two.java -Xjoinpoints:synchronization -Xlint:ignore"/>
       <run class="Two">
         <stderr>
           <line text="execution advice running"/>
@@ -442,8 +452,8 @@
     
     <ajc-test dir="features152/synchronization/transformed" title="Three">
       <compile files="Three.java -Xjoinpoints:synchronization">
-        <message kind="warning" line="20" text="advice matching the synchronized method shadow 'method-execution(void C.m3())' will be executed outside the lock rather than inside (compiler limitation)"/>        
-        <message kind="warning" line="24" text="advice matching the synchronized method shadow 'method-execution(void C.m32())' will be executed outside the lock rather than inside (compiler limitation)"/>        
+        <message kind="warning" line="20" text="advice matching the synchronized method shadow 'method-execution(void C.m3())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
+        <message kind="warning" line="24" text="advice matching the synchronized method shadow 'method-execution(void C.m32())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
       </compile>
       <run class="Three">
         <stderr>
@@ -461,8 +471,8 @@
     
     <ajc-test dir="features152/synchronization/transformed" title="Four">
       <compile files="Four.java -Xjoinpoints:synchronization">
-         <message kind="warning" line="16" text="advice matching the synchronized method shadow 'method-execution(void C.m())' will be executed outside the lock rather than inside (compiler limitation)"/>
-         <message kind="warning" line="20" text="advice matching the synchronized method shadow 'method-execution(void C.m2())' will be executed outside the lock rather than inside (compiler limitation)"/>
+         <message kind="warning" line="16" text="advice matching the synchronized method shadow 'method-execution(void C.m())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>
+         <message kind="warning" line="20" text="advice matching the synchronized method shadow 'method-execution(void C.m2())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>
       </compile>
       <run class="Four">
         <stderr>

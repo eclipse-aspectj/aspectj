@@ -113,6 +113,11 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
     	  runTest("Two");
     	  checkMethod("C","ma");
     }
+
+    public void testTransform2XlintOff() {
+    	  runTest("Two - xlintoff");
+    	  checkMethod("C","ma");
+    }
     
     // after() returning/after() throwing on execution jp
     // after() returning -> make all returns go through the same exit point and make
