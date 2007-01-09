@@ -11,8 +11,10 @@ import org.aspectj.systemtest.ajc150.ataspectj.AtAjAnnotationGenTests;
 import org.aspectj.systemtest.ajc151.AllTestsAspectJ151;
 import org.aspectj.systemtest.ajc152.AllTestsAspectJ152;
 import org.aspectj.systemtest.ajc153.AllTestsAspectJ153;
-import org.aspectj.systemtest.model.Model5Tests;
+import org.aspectj.systemtest.incremental.tools.IncrementalOutputLocationManagerTests;
+import org.aspectj.systemtest.incremental.tools.MoreOutputLocationManagerTests;
 import org.aspectj.systemtest.incremental.tools.MultiProjectIncrementalTests;
+import org.aspectj.systemtest.model.Model5Tests;
 import org.aspectj.systemtest.xlint.XLint5Tests;
 
 public class AllTests15 {
@@ -33,6 +35,8 @@ public class AllTests15 {
 		 * for the moment.
 		 */
 		suite.addTestSuite(MultiProjectIncrementalTests.class);
+		suite.addTestSuite(MoreOutputLocationManagerTests.class);
+		suite.addTestSuite(IncrementalOutputLocationManagerTests.class);
 		suite.addTest(XLint5Tests.suite());
 		//$JUnit-END$
 		return suite;

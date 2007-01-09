@@ -11,9 +11,7 @@
 * ******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -1013,46 +1011,48 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("PR131505");
 		build("PR131505");
 		checkWasFullBuild();
+		String outputDir = getWorkingDir().getAbsolutePath() + File.separatorChar 
+			+ "PR131505" + File.separatorChar + "bin";
 		// aop.xml file shouldn't contain any aspects
-		checkXMLAspectCount("PR131505","",0);
+		checkXMLAspectCount("PR131505","",0, outputDir);
 		// add a new aspect A which should be included in the aop.xml file
 		alter("PR131505","inc1");
 		build("PR131505");
 		checkWasFullBuild();
-		checkXMLAspectCount("PR131505","",1);
-		checkXMLAspectCount("PR131505","A",1);
+		checkXMLAspectCount("PR131505","",1, outputDir);
+		checkXMLAspectCount("PR131505","A",1, outputDir);
 		// make changes to the class file which shouldn't affect the contents
 		// of the aop.xml file
 		alter("PR131505","inc2");
 		build("PR131505");
 		checkWasntFullBuild();
-		checkXMLAspectCount("PR131505","",1);
-		checkXMLAspectCount("PR131505","A",1);		
+		checkXMLAspectCount("PR131505","",1, outputDir);
+		checkXMLAspectCount("PR131505","A",1, outputDir);		
 		// add another new aspect A1 which should also be included in the aop.xml file
 		// ...there should be no duplicate entries in the file
 		alter("PR131505","inc3");
 		build("PR131505");
 		checkWasFullBuild();
-		checkXMLAspectCount("PR131505","",2);
-		checkXMLAspectCount("PR131505","A1",1);
-		checkXMLAspectCount("PR131505","A",1);
+		checkXMLAspectCount("PR131505","",2, outputDir);
+		checkXMLAspectCount("PR131505","A1",1, outputDir);
+		checkXMLAspectCount("PR131505","A",1, outputDir);
 		// delete aspect A1 which meanss that aop.xml file should only contain A
 		File a1 = new File(getWorkingDir().getAbsolutePath() 
 				+ File.separatorChar + "PR131505" + File.separatorChar + "A1.aj");
 		a1.delete();
 		build("PR131505");
 		checkWasFullBuild();
-		checkXMLAspectCount("PR131505","",1);
-		checkXMLAspectCount("PR131505","A1",0);
-		checkXMLAspectCount("PR131505","A",1);	
+		checkXMLAspectCount("PR131505","",1, outputDir);
+		checkXMLAspectCount("PR131505","A1",0, outputDir);
+		checkXMLAspectCount("PR131505","A",1, outputDir);	
 		// add another aspect called A which is in a different package, both A
 		// and pkg.A should be included in the aop.xml file
 		alter("PR131505","inc4");
 		build("PR131505");
 		checkWasFullBuild();
-		checkXMLAspectCount("PR131505","",2);
-		checkXMLAspectCount("PR131505","A",1);
-		checkXMLAspectCount("PR131505","pkg.A",1);
+		checkXMLAspectCount("PR131505","",2, outputDir);
+		checkXMLAspectCount("PR131505","A",1, outputDir);
+		checkXMLAspectCount("PR131505","pkg.A",1, outputDir);
 	}
 
 	public void testPr136585() {
@@ -1673,7 +1673,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 					" error but only found that one",errors.size() > 1);
 		}
 	}
-		
+	
 	public void testPr168840() throws Exception {
 		initialiseProject("inpathTesting");
 		
@@ -1800,26 +1800,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	// ---------------------------------------------------------------------------------------------------
 
-	/**
-	 * Check we compiled/wove the right number of files, passing '-1' indicates you don't care about
-	 * that number.
-	 */
-	private void checkCompileWeaveCount(int expCompile,int expWoven) {
-		if (expCompile!=-1 && getCompiledFiles().size()!=expCompile)
-			fail("Expected compilation of "+expCompile+" files but compiled "+getCompiledFiles().size()+
-					"\n"+printCompiledAndWovenFiles());
-		if (expWoven!=-1 && getWovenClasses().size()!=expWoven)
-			fail("Expected weaving of "+expWoven+" files but wove "+getWovenClasses().size()+
-					"\n"+printCompiledAndWovenFiles());
-	}
-	
-	private void checkWasntFullBuild() {
-		assertTrue("Shouldn't have been a full (batch) build",!wasFullBuild());
-	}
-	
-	private void checkWasFullBuild() {
-		assertTrue("Should have been a full (batch) build",wasFullBuild());
-	}
 	
 	private IProgramElement checkForNode(String packageName,String typeName,boolean shouldBeFound) {
 		IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForType(packageName,typeName);
@@ -1842,59 +1822,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 	}
 	
-
-	/*
-	 * Applies an overlay onto the project being tested - copying
-	 * the contents of the specified overlay directory.
-	 */
-	private void alter(String projectName,String overlayDirectory) {
-		File projectSrc =new File(testdataSrcDir+File.separatorChar+projectName+
-				                  File.separatorChar+overlayDirectory);
-		File destination=new File(getWorkingDir(),projectName);
-		copy(projectSrc,destination);
-	}
-	
 	private static void log(String msg) {
 		if (VERBOSE) System.out.println(msg);
 	}
 	
-	/**
-	 * Count the number of times a specified aspectName appears in the default
-	 * aop.xml file and compare with the expected number of occurrences. If just 
-	 * want to count the number of aspects mentioned within the file then 
-	 * pass "" for the aspectName, otherwise, specify the name of the 
-	 * aspect interested in.
-	 */
-	private void checkXMLAspectCount(String projectName, String aspectName, int expectedOccurrences) {
-		int aspectCount = 0;
-		File aopXML = new File(getWorkingDir().getAbsolutePath() 
-				+ File.separatorChar + projectName + File.separatorChar 
-				+ "bin" + File.separatorChar + "META-INF" + File.separatorChar + "aop-ajc.xml");
-
-		if (!aopXML.exists()) {
-			fail("Expected file " + aopXML.getAbsolutePath() + " to exist but it doesn't");
-		}
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(aopXML));
-			String line = reader.readLine();
-			while (line != null) {
-				if (aspectName.equals("") && line.indexOf("aspect name=\"") != -1) {
-					aspectCount++;
-				} else if (line.indexOf("aspect name=\""+aspectName+"\"") != -1) {
-					aspectCount++;
-				}
-				line = reader.readLine();
-			}
-			reader.close();
-		} catch (IOException ie) {
-			ie.printStackTrace();
-		}
-		if (aspectCount != expectedOccurrences) {
-			fail("Expected aspect " + aspectName + " to appear " + expectedOccurrences + " times" +
-					" in the aop.xml file but found " + aspectCount + " occurrences");
-		}
-	}
-
 	private File getProjectRelativePath(String p,String filename) {
 		File projDir = new File(getWorkingDir(),p);
 		return new File(projDir,filename);

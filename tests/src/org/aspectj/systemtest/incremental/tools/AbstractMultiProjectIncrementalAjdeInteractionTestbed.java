@@ -1,8 +1,10 @@
 package org.aspectj.systemtest.incremental.tools;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -103,6 +105,17 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 		copy(projectSrc,destination);//,false);
 	}
 
+	/*
+	 * Applies an overlay onto the project being tested - copying
+	 * the contents of the specified overlay directory.
+	 */
+	public void alter(String projectName,String overlayDirectory) {
+		File projectSrc =new File(testdataSrcDir+File.separatorChar+projectName+
+				                  File.separatorChar+overlayDirectory);
+		File destination=new File(getWorkingDir(),projectName);
+		copy(projectSrc,destination);
+	}
+	
 	/**
 	 * Copy the contents of some directory to another location - the
 	 * copy is recursive.
@@ -126,5 +139,41 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 			} 
 		}
 	}
+
+	/**
+	 * Count the number of times a specified aspectName appears in the default
+	 * aop.xml file and compare with the expected number of occurrences. If just 
+	 * want to count the number of aspects mentioned within the file then 
+	 * pass "" for the aspectName, otherwise, specify the name of the 
+	 * aspect interested in.
+	 */
+	protected void checkXMLAspectCount(String projectName, String aspectName,
+			int expectedOccurrences, String outputDir) {
+				int aspectCount = 0;
+				File aopXML = new File(outputDir + File.separatorChar + "META-INF" + File.separatorChar + "aop-ajc.xml");
+			
+				if (!aopXML.exists()) {
+					fail("Expected file " + aopXML.getAbsolutePath() + " to exist but it doesn't");
+				}
+				try {
+					BufferedReader reader = new BufferedReader(new FileReader(aopXML));
+					String line = reader.readLine();
+					while (line != null) {
+						if (aspectName.equals("") && line.indexOf("aspect name=\"") != -1) {
+							aspectCount++;
+						} else if (line.indexOf("aspect name=\""+aspectName+"\"") != -1) {
+							aspectCount++;
+						}
+						line = reader.readLine();
+					}
+					reader.close();
+				} catch (IOException ie) {
+					ie.printStackTrace();
+				}
+				if (aspectCount != expectedOccurrences) {
+					fail("Expected aspect " + aspectName + " to appear " + expectedOccurrences + " times" +
+							" in the aop.xml file but found " + aspectCount + " occurrences");
+				}
+			}
 
 }

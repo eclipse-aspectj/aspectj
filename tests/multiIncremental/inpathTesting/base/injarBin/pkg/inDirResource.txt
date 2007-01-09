@@ -1,0 +1,1 @@
+resource in directory on inpath

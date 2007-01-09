@@ -83,6 +83,10 @@ public class AjdeInteractionTestbed extends TestCase {
 		MyProjectPropertiesAdapter.setOutputLocationManager(mgr);
 	}
 	
+	public static void configureOutputLocationManager(OutputLocationManager mgr, boolean hasOutputPath) {
+		MyProjectPropertiesAdapter.setOutputLocationManager(mgr,hasOutputPath);
+	}
+	
 	public static void configureResourceMap(Map resourcesMap) {
 		MyProjectPropertiesAdapter.setSourcePathResources(resourcesMap);
 	}
@@ -101,11 +105,14 @@ public class AjdeInteractionTestbed extends TestCase {
 		
 		// Create a sandbox in which to work
 		sandboxDir = Ajc.createEmptySandbox();
+		
+		IncrementalStateManager.debugIncrementalStates = true;
 	}
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		AjState.stateListener=null;
+		IncrementalStateManager.clearIncrementalStates();
 	}
 	
 	/** Drives a build */
@@ -284,6 +291,26 @@ public class AjdeInteractionTestbed extends TestCase {
 		System.out.println("=============================================");
 	}
 	
+	/**
+	 * Check we compiled/wove the right number of files, passing '-1' indicates you don't care about
+	 * that number.
+	 */
+	public void checkCompileWeaveCount(int expCompile,int expWoven) {
+		if (expCompile!=-1 && getCompiledFiles().size()!=expCompile)
+			fail("Expected compilation of "+expCompile+" files but compiled "+getCompiledFiles().size()+
+					"\n"+printCompiledAndWovenFiles());
+		if (expWoven!=-1 && getWovenClasses().size()!=expWoven)
+			fail("Expected weaving of "+expWoven+" files but wove "+getWovenClasses().size()+
+					"\n"+printCompiledAndWovenFiles());
+	}
+	
+	public void checkWasntFullBuild() {
+		assertTrue("Shouldn't have been a full (batch) build",!wasFullBuild());
+	}
+	
+	public void checkWasFullBuild() {
+		assertTrue("Should have been a full (batch) build",wasFullBuild());
+	}
 	
 	public boolean wasFullBuild() {
 	// alternatives: statelistener is debug interface, progressmonitor is new proper interface (see pr145689)
@@ -361,7 +388,6 @@ public class AjdeInteractionTestbed extends TestCase {
 		static MyProjectPropertiesAdapter _instance = new MyProjectPropertiesAdapter();
 		private MyProjectPropertiesAdapter() {}
 		
-
 		public static MyProjectPropertiesAdapter getInstance() { 
 			return _instance;
 		}
@@ -371,14 +397,18 @@ public class AjdeInteractionTestbed extends TestCase {
 			_instance.inpath = null;
 			_instance.sourcePathResources=null;
 			_instance.outputLocationManager=null;
+			_instance.hasOutputPath = true;
+			_instance.outputPath = null;
 		}
 		
 		private String projectName = null;
+		private String outputPath = null;
 		private String classPath = "";
 		private Set aspectPath = null;
 		private Set inpath = null;
 		private Map sourcePathResources = null;
 		private OutputLocationManager outputLocationManager = null;
+		private boolean hasOutputPath = true;
 		
 		public static void setActiveProject(String n) {
 			_instance.projectName = n;
@@ -409,10 +439,9 @@ public class AjdeInteractionTestbed extends TestCase {
 			_instance.aspectPath = path;
 		}
 		
-		public static void setInpath(Set inpath) {
-			_instance.inpath = inpath;
+		public static void setInpath(Set path) {
+			_instance.inpath = path;
 		}
-
 		
 		// interface impl below
 		
@@ -457,7 +486,22 @@ public class AjdeInteractionTestbed extends TestCase {
 		// DOESSOMETHING
 		public String getClasspath() {
 			log("MyProjectProperties.getClasspath()");
+			// AJDT has all the output directories on it's classpath
+			StringBuffer sb = new StringBuffer();
+			String outputPath = getOutputPath();
+			sb.append(outputPath);
+			if (outputLocationManager != null) {
+				List allOutputPaths = outputLocationManager.getAllOutputLocations();
+				for (Iterator iterator = allOutputPaths.iterator(); iterator
+						.hasNext();) {
+					File dir = (File) iterator.next();
+					if (!dir.getAbsolutePath().equals(getOutputPath())) {
+						sb.append(File.pathSeparator + dir.getAbsolutePath());
+					}
+				}
+			}
 			String cp =  
+			  sb.toString() + File.pathSeparator + 
 			  new File(testdataSrcDir) + File.pathSeparator +
     		  System.getProperty("sun.boot.class.path") + 
     		  File.pathSeparator + "../runtime/bin" +
@@ -482,9 +526,17 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 		
 		public String getOutputPath() {
+			if (!hasOutputPath) return null; 
+				
 			String dir = getFile(projectName,"bin");
 			log("MyProjectProperties.getOutputPath() [returning "+dir+"]");
 			return dir;
+			//return null;
+		}
+		
+		public static void setOutputLocationManager(OutputLocationManager mgr,boolean hasOutputPath ) {
+			_instance.hasOutputPath = hasOutputPath;
+			_instance.outputLocationManager = mgr;
 		}
 		
 		public static void setOutputLocationManager(OutputLocationManager mgr) {
@@ -492,7 +544,11 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 		
 	    public OutputLocationManager getOutputLocationManager() {
-	    	return this.outputLocationManager;
+	    	return outputLocationManager;
+//	    	if (testHasSetOutputLocationManager) {
+//	    		return outputLocationManager;
+//			}
+//	    	return new MyOutputLocationManager(sandboxDir + File.separator + projectName);
 	    }
 
 		public String getBootClasspath() {
@@ -521,7 +577,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public Set getInpath() {
-			log("MyProjectProperties.getInPath(" + inpath +")");
+			log("MyProjectProperties.getInPath(" + inpath + ")");
 			return inpath;
 		}
 
@@ -835,6 +891,44 @@ public class AjdeInteractionTestbed extends TestCase {
 			return false;
 		}
 	}
+
+	// ----
+
+	static class MyOutputLocationManager implements OutputLocationManager {
+
+		private File classOutputLoc;
+		private File resourceOutputLoc;
+		private String testProjectOutputPath;
+		private List allOutputLocations;
+		private File outputLoc;
+		
+		public MyOutputLocationManager(String testProjectPath) {
+			this.testProjectOutputPath = testProjectPath + File.separator + "bin";
+			outputLoc = new File(testProjectOutputPath);
+			
+			allOutputLocations = new ArrayList();
+			allOutputLocations.add(outputLoc);
+		}
+		
+		public File getOutputLocationForClass(File compilationUnit) {
+			return outputLoc;
+		}
+
+		public File getOutputLocationForResource(File resource) {
+			return outputLoc;
+		}
+
+		public List /*File*/ getAllOutputLocations() {
+			return allOutputLocations;
+		}
+
+		public File getDefaultOutputLocation() {
+			return outputLoc;
+		}
+		
+	}
+	
+	// ----
 	
 	static class MyStateListener extends AbstractStateListener {
 		

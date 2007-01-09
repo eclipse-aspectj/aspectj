@@ -12,7 +12,9 @@
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.aspectj.ajde.OutputLocationManager;
@@ -64,6 +66,27 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		assertFileExists(PROJECT_NAME,"target/main/classes/a/A$AjcClosure1.class");		
 	}
 	
+	/**
+	 * Tests the case when we have two aspects, each of which are
+	 * sent to a different output location. There should be an 
+	 * aop.xml file in each of the two output directories.
+	 */
+	public void testOutXmlForAspectsWithDifferentOutputDirs() {
+		configureNonStandardCompileOptions("-outxml");
+		build(PROJECT_NAME);
+		assertFileExists(PROJECT_NAME,"target/main/classes/META-INF/aop-ajc.xml");
+		assertFileExists(PROJECT_NAME,"target/test/classes/META-INF/aop-ajc.xml");
+		// aop.xml file should exist even if there aren't any aspects (mirrors
+		// what happens when there's one output dir)
+		checkXMLAspectCount(PROJECT_NAME,"",0,getFile(PROJECT_NAME,"target/anotherTest/classes"));
+		// add aspects to the srcRootThree src dir and they should appear in the 
+		// corresponding aop.xml file
+		alter(PROJECT_NAME,"inc1");
+		build(PROJECT_NAME);
+		checkXMLAspectCount(PROJECT_NAME,"c.C$AnAspect",1,getFile(PROJECT_NAME,"target/anotherTest/classes"));
+	}
+	
+	
 	protected void assertFileExists(String project, String relativePath) {
 		assertTrue("file " + relativePath + " should have been created as a result of building " + project,
 				    new File(getFile(project, relativePath)).exists());
@@ -72,9 +95,11 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 	private static class MyOutputLocationManager implements OutputLocationManager {
 		
 		private File projectHome;
+		private List allOutputDirs;
 		
 		public MyOutputLocationManager(File projectHome) {
 			this.projectHome = projectHome;
+			
 		}
 
 		public File getOutputLocationForClass(File compilationUnit) {
@@ -84,6 +109,8 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 				relativePath = "target/main/classes";
 			} else if (compilationUnitName.indexOf("srcRootTwo") != -1) {
 				relativePath = "target/test/classes";
+			} else if (compilationUnitName.indexOf("srcRootThree") != -1) {
+				relativePath = "target/anotherTest/classes";
 			}
 			File ret =  new File(projectHome,relativePath);
 			if (!ret.exists()) {
@@ -95,6 +122,19 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		public File getOutputLocationForResource(File resource) {
 			return getOutputLocationForClass(resource);
 		}
-		
+
+		public List getAllOutputLocations() {
+			if (allOutputDirs == null) {
+				allOutputDirs = new ArrayList();
+				allOutputDirs.add(new File(projectHome,"target/main/classes"));
+				allOutputDirs.add(new File(projectHome,"target/test/classes"));
+				allOutputDirs.add(new File(projectHome,"target/anotherTest/classes"));
+			}
+			return allOutputDirs;
+		}
+
+		public File getDefaultOutputLocation() {
+			return new File(projectHome,"target/main/classes");
+		}
 	}
 }
