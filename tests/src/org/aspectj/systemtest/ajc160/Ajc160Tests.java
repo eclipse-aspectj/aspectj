@@ -21,6 +21,7 @@ import junit.framework.Test;
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+  public void testIncorrectlyMarkingFieldTransient_pr168063() { runTest("incorrectly marking field transient");}
   public void testInheritedAnnotations_pr169706() { runTest("inherited annotations");}
   public void testGenericFieldNPE_pr165885() { runTest("generic field npe");}
   public void testIncorrectOptimizationOfIstore_pr166084() { runTest("incorrect optimization of istore"); }

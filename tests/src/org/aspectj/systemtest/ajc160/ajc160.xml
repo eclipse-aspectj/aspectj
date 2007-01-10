@@ -16,6 +16,15 @@
 	  </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs160/pr168063" title="incorrectly marking field transient">
+      <compile files="A.java"/>
+      <run class="A">
+        <stdout>
+          <line text="It worked, data preserved!"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs160/pr166084" title="incorrect optimization of istore">
       <compile files="X.java" inpath="simple.jar"/>
 	  <run class="Simple"/>
