@@ -29,6 +29,7 @@ public class UtilTests extends TestCase {
         suite.addTestSuite(LangUtilTest.class); 
         suite.addTestSuite(MessageUtilTest.class); 
         suite.addTestSuite(StreamGrabberTest.class); 
+        suite.addTestSuite(StructureModelUtilTest.class);
         //$JUnit-END$
         return suite;
     }
