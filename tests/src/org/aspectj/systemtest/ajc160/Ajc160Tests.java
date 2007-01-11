@@ -21,6 +21,7 @@ import junit.framework.Test;
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+  public void testComplexGenerics_pr168044() { runTest("complex generics - 1");}
   public void testIncorrectlyMarkingFieldTransient_pr168063() { runTest("incorrectly marking field transient");}
   public void testInheritedAnnotations_pr169706() { runTest("inherited annotations");}
   public void testGenericFieldNPE_pr165885() { runTest("generic field npe");}

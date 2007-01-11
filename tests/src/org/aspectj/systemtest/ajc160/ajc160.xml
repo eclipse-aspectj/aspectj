@@ -16,6 +16,11 @@
 	  </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs160/pr168044" title="complex generics - 1">
+      <compile files="AbstractNode.java" options="-1.5">
+	  </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs160/pr168063" title="incorrectly marking field transient">
       <compile files="A.java"/>
       <run class="A">
