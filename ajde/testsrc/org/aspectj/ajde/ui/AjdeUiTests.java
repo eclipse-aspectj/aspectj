@@ -14,14 +14,15 @@
 
 package org.aspectj.ajde.ui;
  
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class AjdeUiTests extends TestCase {
 
     public static Test suite() { 
         TestSuite suite = new TestSuite(AjdeUiTests.class.getName());
         //$JUnit-BEGIN$
-        suite.addTestSuite(StructureModelUtilTest.class); 
         suite.addTestSuite(StructureSearchManagerTest.class); 
         suite.addTestSuite(StructureViewManagerTest.class); 
         //$JUnit-END$
