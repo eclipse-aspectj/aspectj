@@ -1,0 +1,13 @@
+Join point 'method-execution(void Simple.m1())' in Type 'Simple' (Simple.java:5) advised by before advice from 'AspectAdvice' (AspectAdvice.aj:8)
+Join point 'method-execution(void Simple.m1())' in Type 'Simple' (Simple.java:5) advised by after advice from 'AspectAdvice' (AspectAdvice.aj:12)
+Join point 'method-execution(void Simple.m1())' in Type 'Simple' (Simple.java:5) advised by afterReturning advice from 'AspectAdvice' (AspectAdvice.aj:16)
+Join point 'method-execution(void Simple.m1())' in Type 'Simple' (Simple.java:5) advised by afterThrowing advice from 'AspectAdvice' (AspectAdvice.aj:20)
+Join point 'method-execution(java.lang.String Simple.m2())' in Type 'Simple' (Simple.java:9) advised by before advice from 'AspectAdvice' (AspectAdvice.aj:8)
+Join point 'method-execution(java.lang.String Simple.m2())' in Type 'Simple' (Simple.java:9) advised by after advice from 'AspectAdvice' (AspectAdvice.aj:12)
+Join point 'method-execution(java.lang.String Simple.m2())' in Type 'Simple' (Simple.java:9) advised by afterReturning advice from 'AspectAdvice' (AspectAdvice.aj:16)
+Join point 'method-execution(java.lang.String Simple.m2())' in Type 'Simple' (Simple.java:9) advised by afterThrowing advice from 'AspectAdvice' (AspectAdvice.aj:20)
+Join point 'method-execution(void Simple.main(java.lang.String[]))' in Type 'Simple' (Simple.java:13) advised by around advice from 'AspectAdvice' (AspectAdvice.aj:24) [with runtime test]
+Join point 'method-execution(void Simple.mSecret())' in Type 'Simple' (Simple.java:17) advised by before advice from 'AspectAdvice' (AspectAdvice.aj:8)
+Join point 'method-execution(void Simple.mSecret())' in Type 'Simple' (Simple.java:17) advised by after advice from 'AspectAdvice' (AspectAdvice.aj:12)
+Join point 'method-execution(void Simple.mSecret())' in Type 'Simple' (Simple.java:17) advised by afterReturning advice from 'AspectAdvice' (AspectAdvice.aj:16)
+Join point 'method-execution(void Simple.mSecret())' in Type 'Simple' (Simple.java:17) advised by afterThrowing advice from 'AspectAdvice' (AspectAdvice.aj:20)

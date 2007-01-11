@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="org/aspectj/ajde/Enforcement.aj|org/aspectj/newInterface/glue/DummyBuildOptionsAdapter.java|org/aspectj/newInterface/glue/DummyBuildProgressMonitor.java|org/aspectj/newInterface/glue/DummyErrorHandler.java|org/aspectj/newInterface/glue/DummyProjectPropertiesAdapter.java|org/aspectj/newInterface/glue/DummyTaskListManager.java|org/aspectj/newInterface/glue/GlueBuildManager.java|org/aspectj/ajde/newInterface/IMessageHandler.java" kind="src" path="src"/>
+	<classpathentry excluding="org/aspectj/ajde/core/tests/BuildConfigurationTests.java" kind="src" path="testsrc"/>
+	<classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
+	<classpathentry exported="true" kind="src" path="/util"/>
+	<classpathentry exported="true" kind="src" path="/bridge"/>
+	<classpathentry exported="true" kind="src" path="/asm"/>
+	<classpathentry exported="true" kind="src" path="/org.aspectj.ajdt.core"/>
+	<classpathentry exported="true" kind="src" path="/org.eclipse.jdt.core"/>
+	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

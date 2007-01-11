@@ -1,0 +1,5 @@
+CalculatePI.java
+Logger.aj
+-Xreweavable:compress
+-verbose
+-noExit

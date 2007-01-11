@@ -1,0 +1,2 @@
+Softening exceptions in type 'Simple' (no debug info available) as defined by aspect 'AspectDeclareSoft' (AspectDeclareSoft.aj:4)
+Softening exceptions in type 'Simple' (no debug info available) as defined by aspect 'AspectDeclareSoft' (AspectDeclareSoft.aj:6)

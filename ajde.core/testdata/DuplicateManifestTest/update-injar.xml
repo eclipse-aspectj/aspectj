@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<project name="DuplicateManifestTest" default="all" basedir=".">
+
+	<property name="injar" value="${basedir}/injar.jar"/>
+	<property name="tempdir" value="${basedir}/temp"/>
+
+	<target name="update">
+
+		<delete dir="${tempdir}"/>
+
+		<unzip
+			dest="${tempdir}"
+			src="${injar}"
+		/>
+
+		<copy todir="${tempdir}" overwrite="true">
+			<fileset dir="${basedir}">			
+				<include name="META-INF/*"/>
+			</fileset>
+		</copy>
+
+		<zip
+			destfile="${injar}"
+		>
+			<fileset dir="${basedir}/temp"/>
+		
+		</zip>	
+
+		<delete dir="${tempdir}"/>
+	</target>
+	
+	<target name="all" depends="update"/>
+</project>

@@ -1,0 +1,2 @@
+Softening exceptions in type 'Simple' (Simple.java:13) as defined by aspect 'AspectDeclareSoft' (AspectDeclareSoft.aj:6)
+Softening exceptions in type 'Simple' (Simple.java:13) as defined by aspect 'AspectDeclareSoft' (AspectDeclareSoft.aj:4)

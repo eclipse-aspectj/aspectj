@@ -1,0 +1,3 @@
+SecondAspect.aj
+-verbose
+-noExit

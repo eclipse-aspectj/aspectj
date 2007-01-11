@@ -1,0 +1,4 @@
+Type 'Simple' (Simple.java) has intertyped field from 'AspectITD' (AspectITD.aj:'int Simple.fieldint')
+Type 'Simple' (Simple.java) has intertyped field from 'AspectITD' (AspectITD.aj:'java.lang.String Simple.fieldstring')
+Type 'Simple' (Simple.java) has intertyped method from 'AspectITD' (AspectITD.aj:'int Simple.returnint()')
+Type 'Simple' (Simple.java) has intertyped method from 'AspectITD' (AspectITD.aj:'java.lang.String Simple.returnstring()')
