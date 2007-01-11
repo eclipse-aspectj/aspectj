@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Inteface that contains all the configuration required for the 
+ * Interface that contains all the configuration required for the 
  * compiler to be able to perform a build
  */
 public interface ICompilerConfiguration {
