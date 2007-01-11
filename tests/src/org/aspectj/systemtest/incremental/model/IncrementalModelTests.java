@@ -13,10 +13,10 @@ import java.io.File;
 
 import junit.framework.Test;
 
-import org.aspectj.ajde.ui.StructureModelUtil;
 import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.testing.util.StructureModelUtil;
 
 public class IncrementalModelTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
