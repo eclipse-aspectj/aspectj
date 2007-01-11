@@ -82,6 +82,7 @@
         >
             <fileset dir="${aspectj.modules.dir}/ajbrowser/src" />
             <fileset dir="${aspectj.modules.dir}/ajde/src" />
+            <fileset dir="${aspectj.modules.dir}/ajde.core/src" />
             <fileset dir="${aspectj.modules.dir}/ajdoc/src" />
             <fileset dir="${aspectj.modules.dir}/asm/src" />
             <fileset dir="${aspectj.modules.dir}/aspectj5rt/java5-src"
