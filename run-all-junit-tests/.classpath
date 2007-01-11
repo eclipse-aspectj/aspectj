@@ -24,5 +24,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/loadtime"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadtime5"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver5"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ajde.core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

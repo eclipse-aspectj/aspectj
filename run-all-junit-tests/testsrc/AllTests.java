@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.aspectj.ajde.AjdeModuleTests;
+import org.aspectj.ajde.core.AjdeCoreModuleTests;
 import org.aspectj.ajdt.EajcModuleTests;
 import org.aspectj.asm.AsmModuleTests;
 import org.aspectj.bridge.BridgeModuleTests;
@@ -43,6 +44,7 @@ public class AllTests extends TestCase {
         TestSuite suite = new TestSuite(AllTests.class.getName());
         suite.addTest(AjbrowserModuleTests.suite());
         suite.addTest(AjdeModuleTests.suite());
+        suite.addTest(AjdeCoreModuleTests.suite());
         suite.addTest(AjdocModuleTests.suite());
         suite.addTest(AsmModuleTests.suite());
         suite.addTest(BridgeModuleTests.suite());
