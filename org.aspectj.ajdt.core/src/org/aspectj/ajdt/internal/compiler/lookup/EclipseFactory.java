@@ -260,7 +260,8 @@ public class EclipseFactory {
 			ResolvedType baseType = getWorld().resolve(UnresolvedType.forName(getName(binding)),true);
 			if (!baseType.isMissing()) {
 				// can legitimately be missing if a bound refers to a type we haven't added to the world yet...
-				if (!baseType.isGenericType() && arguments!=null) baseType = baseType.getGenericType();
+				// pr168044 - sometimes (whilst resolving types) we are working with 'half finished' types and so (for example) the underlying generic type for a raw type hasnt been set yet				
+				//if (!baseType.isGenericType() && arguments!=null) baseType = baseType.getGenericType(); 
 				baseTypeSignature = baseType.getErasureSignature();
 			} else {
 				baseTypeSignature = UnresolvedType.forName(getName(binding)).getSignature();
