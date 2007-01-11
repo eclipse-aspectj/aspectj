@@ -59,9 +59,13 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			String configFile = AsmManager.getDefault().getHierarchy().getConfigFile();
 			int start = configFile.lastIndexOf(File.separator);
 			int end = configFile.lastIndexOf(".lst");
-			String fileName = configFile.substring(start + 1,end);
-			ipe.setHandleIdentifier(fileName);
-			return fileName;
+			if (end != -1) {
+				configFile = configFile.substring(start+1,end);
+			} else {
+				configFile = configFile.substring(start+1);
+			}
+			ipe.setHandleIdentifier(configFile);
+			return configFile;
 		}
 		IProgramElement parent = ipe.getParent();
 		if (parent != null &&

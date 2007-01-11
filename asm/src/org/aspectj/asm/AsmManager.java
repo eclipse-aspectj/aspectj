@@ -244,7 +244,11 @@ public class AsmManager {
     }
 
     private String genExternFilePath(String configFilePath) {
-        return configFilePath.substring(0, configFilePath.lastIndexOf(".lst")) + ".ajsym";
+    	// sometimes don't have ".lst"
+    	if (configFilePath.lastIndexOf(".lst") != -1) {
+			configFilePath = configFilePath.substring(0,configFilePath.lastIndexOf(".lst"));
+		}
+        return configFilePath + ".ajsym";
     }
     
 //	public void setShouldSaveModel(boolean shouldSaveModel) {
