@@ -665,6 +665,7 @@ public class CompilerAdapter {
 	}
 	
 	public void setState(AjState buildState) {
+		init();
 		buildManager.setState(buildState);	
 		buildManager.setStructureModel(buildState.getStructureModel());
 	}
