@@ -1,0 +1,8 @@
+figures/Debug.java
+figures/Figure.java
+figures/FigureElement.java
+figures/Main.java
+figures/composites/Line.java
+figures/composites/Square.java
+figures/primitives/planar/Point.java
+figures/primitives/solid/SolidPoint.java

@@ -21,5 +21,6 @@
 	<classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadtime"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ajde.core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

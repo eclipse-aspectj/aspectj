@@ -7,23 +7,37 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Wes Isberg     initial implementation 
+ *     Wes Isberg     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)   
  * ******************************************************************/
 
 package org.aspectj.testing.ajde;
 
-import java.awt.Frame;
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.aspectj.ajde.core.AjCompiler;
+import org.aspectj.ajde.core.IBuildMessageHandler;
+import org.aspectj.ajde.core.IBuildProgressMonitor;
+import org.aspectj.ajde.core.ICompilerConfiguration;
+import org.aspectj.ajde.core.IOutputLocationManager;
+import org.aspectj.ajde.core.JavaOptions;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.ICommand;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.testing.harness.bridge.Globals;
-import org.aspectj.ajde.*;
-import org.aspectj.ajde.ui.*;
-import org.aspectj.ajde.ui.internal.*;
-import org.aspectj.ajde.ui.swing.*;
-import org.aspectj.asm.*;
-import org.aspectj.bridge.*;
 import org.aspectj.util.FileUtil;
 
 /**
@@ -37,10 +51,12 @@ public class CompileCommand implements ICommand {
     // this proxy ignores calls
     InvocationHandler proxy = new VoidInvocationHandler();
     InvocationHandler loggingProxy = new LoggingInvocationHandler();
-    MyTaskListManager myHandler = new MyTaskListManager();
+    MyMessageHandler myHandler = new MyMessageHandler();
     long endTime;
     boolean buildNextFresh;
     File tempDir;
+    
+    private AjCompiler compiler;
 
     /**
      * Clients call this before repeatCommand as a one-shot
@@ -57,11 +73,8 @@ public class CompileCommand implements ICommand {
         myHandler.start();
         long startTime = System.currentTimeMillis();
         try {
-            Ajde.getDefault().getBuildManager().buildFresh();
-            // System.err.println("compiling " + Arrays.asList(args));
-            waitForCompletion(startTime);
+        	compiler.buildFresh();
         } finally {
-            myHandler.finish(handler);
             runCommandCleanup();
         }
         return !myHandler.hasError();
@@ -73,12 +86,10 @@ public class CompileCommand implements ICommand {
         // System.err.println("recompiling...");
         if (buildNextFresh) {
             buildNextFresh = false;
-            Ajde.getDefault().getBuildManager().buildFresh();
+            compiler.buildFresh();
         } else {
-            Ajde.getDefault().getBuildManager().build();
+        	compiler.build();
         }
-        waitForCompletion(startTime);
-        myHandler.finish(handler);
         return !myHandler.hasError();
     }
     void runCommandCleanup() {
@@ -92,33 +103,13 @@ public class CompileCommand implements ICommand {
     void setEndTime(long endTime) {
         this.endTime = endTime;
     }
-
-    private void waitForCompletion(long startTime) {
-        long maxTime = startTime + MAX_TIME;
-        while ((startTime > endTime)
-            && (maxTime > System.currentTimeMillis())) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-            }
-        }
-    }
-
+    
     private void setup(String[] args) {
         File config = writeConfig(args);
         if (null == config) {
             throw new Error("unable to write config file");
         }
-        EditorAdapter editorAdapter =
-            (EditorAdapter) makeProxy(EditorAdapter.class);
-        TaskListManager taskListManager = myHandler;
-        BuildProgressMonitor buildProgressMonitor =
-            new DefaultBuildProgressMonitor(new Frame()) {
-            public void finish(boolean b) {
-                super.finish(b);
-                setEndTime(System.currentTimeMillis());
-            }
-        };
+        IBuildProgressMonitor buildProgressMonitor = new MyBuildProgressMonitor();
         String classesDir = "../testing/bin/classes";
         for (int i = 0; i < args.length; i++) {
             if ("-d".equals(args[i]) && ((1 +i) < args.length)) {
@@ -126,56 +117,8 @@ public class CompileCommand implements ICommand {
                 break;
             }
         }
-
-        ProjectPropertiesAdapter projectPropertiesAdapter =
-            new ProjectProperties(classesDir);
-            // neither of these are in the true classpath
-        //            new NullIdeProperties("");  // in testsrc
-        //            = new BrowserProperties();  // in ajbrowser
-        BuildOptionsAdapter buildOptionsAdapter =
-            new AjcBuildOptions(new UserPreferencesStore(false));
-        IdeUIAdapter ideUIAdapter =
-            (IdeUIAdapter) makeProxy(IdeUIAdapter.class);
-        ErrorHandler errorHandler =
-            (ErrorHandler) makeProxy(ErrorHandler.class);
-
-        AbstractIconRegistry iconRegistry = new AbstractIconRegistry() {
-            protected AbstractIcon createIcon(String path) {
-                return new AbstractIcon(new Object());
-            }
-        };
-        StructureViewNodeFactory structureViewNodeFactory =
-            new StructureViewNodeFactory(iconRegistry) {
-	            protected IStructureViewNode createDeclaration(
-	                IProgramElement node,
-	                AbstractIcon icon,
-	                List children) {
-	                return new SwingTreeViewNode(node, icon, children);
-	            }
-				protected IStructureViewNode createRelationship(
-					IRelationship node,
-					AbstractIcon icon) {
-					return new SwingTreeViewNode(node, icon);
-				}	            
-				protected IStructureViewNode createLink(
-					IProgramElement node,
-					AbstractIcon icon) {
-					return new SwingTreeViewNode(node, icon);
-				}	 
-        };
-
-        Ajde.init(
-            editorAdapter,
-            taskListManager,
-            buildProgressMonitor,
-            projectPropertiesAdapter,
-            buildOptionsAdapter,
-            structureViewNodeFactory,
-            ideUIAdapter,
-            errorHandler);
-
-        Ajde.getDefault().getConfigurationManager().setActiveConfigFile(
-            config.getAbsolutePath());
+        MyCompilerConfig compilerConfig = new MyCompilerConfig();
+        compiler = new AjCompiler("blah",compilerConfig,buildProgressMonitor,myHandler);
     }
 
     private File writeConfig(String[] args) {
@@ -214,61 +157,18 @@ public class CompileCommand implements ICommand {
     }
 }
 
-class MyTaskListManager
-    extends MessageHandler
-    implements TaskListManager {
+class MyMessageHandler implements IBuildMessageHandler {
+
     boolean hasError;
     boolean hasWarning;
-    MyTaskListManager() {
-        super(true);
-    }
-    public void addProjectTask(String message, IMessage.Kind kind) {
-        maintainHasWarning(kind);
-    }
+    
+    private MessageHandler messageHandler = new MessageHandler(false);
 
-    public void addSourcelineTask(IMessage message) {
-        maintainHasWarning(message.getKind());
-        handleMessage(message);
-    }
-
-    public void addSourcelineTask(
-        String message,
-        ISourceLocation sourceLocation,
-        IMessage.Kind kind) {
-        addSourcelineTask(
-            new Message(message, kind, null, sourceLocation));
-    }
-
-    public void clearTasks() {
-        if (hasWarning) {
-            hasWarning = false;
-        }
-        if (hasError) {
-            hasError = false;
-        }
-        init(true);
-    }
-
-    public boolean hasWarning() {
-        return hasWarning;
-    }
-
-    boolean hasError() {
-        return hasError;
-    }
-
-    void start() {
-        clearTasks();
-    }
-    void finish(IMessageHandler copyTo) {
-        if (copyTo == this) {
-            return;
-        }
-        IMessage[] messages = getMessages(null, true);
-        for (int i = 0; i < messages.length; i++) {
-            copyTo.handleMessage(messages[i]);
-        }
-    }
+	public boolean handleMessage(IMessage message) throws AbortException {
+		maintainHasWarning(message.getKind());
+        return messageHandler.handleMessage(message);
+	}
+	
     private void maintainHasWarning(IMessage.Kind kind) {
         if (!hasError) {
             if (IMessage.ERROR.isSameOrLessThan(kind)) {
@@ -280,10 +180,53 @@ class MyTaskListManager
             hasWarning = true;
         }
     }
-	public void buildSuccessful(boolean wasFullBuild) {
-		// TODO Auto-generated method stub
-		
+    
+    public boolean hasWarning() {
+        return hasWarning;
+    }
+
+    public boolean hasError() {
+        return hasError;
+    }
+    
+    public void start() {
+    	hasWarning = false;
+    	hasError = false;
+    	messageHandler.init(true);
+    }
+
+	public void dontIgnore(Kind kind) {
+		messageHandler.dontIgnore(kind);
 	}
+
+	public void ignore(Kind kind) {
+		messageHandler.ignore(kind);
+	}
+
+	public boolean isIgnoring(Kind kind) {
+		return messageHandler.isIgnoring(kind);
+	}
+	
+}
+
+class MyBuildProgressMonitor implements IBuildProgressMonitor {
+
+	public void begin() {
+	}
+
+	public void finish(boolean wasFullBuild) {
+	}
+
+	public boolean isCancelRequested() {
+		return false;
+	}
+
+	public void setProgress(double percentDone) {
+	}
+
+	public void setProgressText(String text) {
+	}
+	
 }
 
 class VoidInvocationHandler implements InvocationHandler {
@@ -349,63 +292,49 @@ class LoggingInvocationHandler implements InvocationHandler {
     }
 }
 
+class MyCompilerConfig implements ICompilerConfiguration {
 
-class ProjectProperties implements ProjectPropertiesAdapter {
-    final private static String PREFIX 
-        = ProjectProperties.class.getName() + ": ";
-    final private String outputDir;
-    private Set inJars;
     private Set inpath;
-    private Set sourceRoots;
     private Set aspectPath;
     private String outJar;
-
-    public ProjectProperties(String outputDir) {
-        this.outputDir = outputDir;
-    }
-
-    // known used, per logging proxy
-    public String getDefaultBuildConfigFile() { return null; }
-    public void setInJars(Set input) { inJars = input; }
-    public void setInpath(Set input) { inpath = input; }
-    public Set getInJars( ) { return inJars; }
-    public Set getInpath() { return inpath; }
-    public void setSourceRoots(Set input) { sourceRoots = input; }
-    public Set getSourceRoots() { return sourceRoots; }
-    public void setAspectPath(Set path) { aspectPath = path; }        
-    public Set getAspectPath() { return aspectPath; }
-    public String getClasspath() { return Globals.S_aspectjrt_jar;  }
-    public String getBootClasspath() { return null; }
-    public void setOutJar(String input){ outJar = input; }
-    public String getOutJar() { return outJar; }
-    public String getOutputPath() { return outputDir; }
+    private IOutputLocationManager locationMgr;
     
-    public OutputLocationManager getOutputLocationManager() {
-    	return null;
-    }
+	public Set getAspectPath() { return aspectPath;}
+	public void setAspectPath(Set path) {aspectPath = path;}
+	
+	public String getClasspath() { return Globals.S_aspectjrt_jar;  }
 
-    // not known if used - log any calls to it
-    public List getBuildConfigFiles() { return logs("buildConfigFiles"); }
-    public String getLastActiveBuildConfigFile() { return log("lastActiveBuildConfigFile"); }
-    public String getProjectName() { return log("projectName"); } 
-    public String getRootProjectDir() { return log("rootProjectDir"); }
-    public List getProjectSourceFiles() { return logs("projectSourceFiles"); }
-    public String getProjectSourcePath() { return log("projectSourcePath"); }
-    public String getAjcWorkingDir() { return log("ajcWorkingDir"); }
-    public String getClassToExecute() { return log("classToExecute"); }
-    public String getExecutionArgs() { return log("executionArgs"); }
-    public String getVmArgs() { return log("vmArgs"); }
-    private String log(String s) {
-        System.out.println(PREFIX + s);
-        return null;
-    }
-    private List logs(String s) {
-        log(s);
-        return null;
-    }
+	public Set getInpath() { return inpath; }
+    public void setInpath(Set input) { inpath = input; }
+    
+	public Map getJavaOptionsMap() {return JavaOptions.getDefaultJavaOptions();}
 
-	public Map getSourcePathResources() {
-		return null;
+	public String getOutJar() { return outJar; }
+    public void setOutJar(String input){ outJar = input; }
+
+	public IOutputLocationManager getOutputLocationManager() {
+		if (locationMgr == null) {
+			locationMgr = new MyOutputLocationManager();
+		}
+		return locationMgr;
 	}
 
+	public String getNonStandardOptions() {return null;}
+	public List getProjectSourceFiles() {return null;}
+	public Map getSourcePathResources() {return null;}
+	
+}
+
+class MyOutputLocationManager implements IOutputLocationManager {
+
+	public List getAllOutputLocations() {return null;}
+
+	public File getDefaultOutputLocation() {return null;}
+
+	public File getOutputLocationForClass(File compilationUnit) {return null;}
+
+	public File getOutputLocationForResource(File resource) {return null;}
+
+	public String getUniqueIdentifier() {return null;}
+	
 }

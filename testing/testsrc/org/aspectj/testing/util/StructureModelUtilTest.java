@@ -7,30 +7,37 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC       initial implementation
+ *     Helen Hawkins    Converted to new interface (bug 148190) 
  * ******************************************************************/
 
 
 package org.aspectj.testing.util;
 
-import java.util.*;
+import java.io.File;
+import java.util.List;
 
 import junit.framework.TestSuite;
 
-import org.aspectj.ajde.AjdeTestCase;
+import org.aspectj.ajde.core.AjdeCoreTestCase;
+import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
  */
-public class StructureModelUtilTest extends AjdeTestCase {
+public class StructureModelUtilTest extends AjdeCoreTestCase{
 	
-    // TODO-path
-	private final String CONFIG_FILE_PATH = "../examples/figures-coverage/all.lst";
-
-	public StructureModelUtilTest(String name) {
-		super(name);
-	}
+	private String[] files = new String[]{
+			"figures" + File.separator + "Debug.java",
+			"figures" + File.separator + "Figure.java",
+			"figures" + File.separator + "FigureElement.java",
+			"figures" + File.separator + "Main.java",
+			"figures" + File.separator + "composites" + File.separator + "Line.java",
+			"figures" + File.separator + "composites" + File.separator + "Square.java",
+			"figures" + File.separator + "primitives" + File.separator + "planar" + File.separator + "Point.java",
+			"figures" + File.separator + "primitives" + File.separator + "solid" + File.separator + "SolidPoint.java"
+	};
 
 	public static void main(String[] args) {
 		junit.swingui.TestRunner.run(StructureModelUtilTest.class);
@@ -66,8 +73,11 @@ public class StructureModelUtilTest extends AjdeTestCase {
 
   
 	protected void setUp() throws Exception {
-		super.setUp("StructureModelUtilTest");
-		doSynchronousBuild(CONFIG_FILE_PATH);		
+		initialiseProject("figures-coverage");
+		TestCompilerConfiguration compilerConfig = (TestCompilerConfiguration) getCompiler()
+				.getCompilerConfiguration();
+		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
+		doBuild();
 	}
 
 	protected void tearDown() throws Exception {
