@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.ajde.OutputLocationManager;
+import org.aspectj.ajde.core.IOutputLocationManager;
 
 
 /**
@@ -24,7 +24,7 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 
 	public void testPr166580() {
 		initialiseProject("PR166580");
-		configureOutputLocationManager(new MyOutputLocationManager("PR166580",2));
+		configureOutputLocationManager("PR166580",new MyOutputLocationManager("PR166580",2));
 		build("PR166580");
 		checkWasFullBuild();
 		alter("PR166580","inc1");
@@ -36,7 +36,7 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 	/**
 	 * Will send output from src dir 'srcX' to directory 'binX'
 	 */
-	private class MyOutputLocationManager implements OutputLocationManager {
+	private class MyOutputLocationManager implements IOutputLocationManager {
 
 		private String projectDir;
 		private int numberOfSrcDirs;

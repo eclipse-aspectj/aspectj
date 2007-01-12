@@ -1,3 +1,14 @@
+/********************************************************************
+ * Copyright (c) 2006 Contributors. All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Eclipse Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://eclipse.org/legal/epl-v10.html 
+ *  
+ * Contributors: 
+ *    Adrian Colyer      initial implementation
+ *    Helen Hawkins      Converted to new interface (bug 148190)
+ *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.BufferedReader;
@@ -11,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.ajdt.internal.core.builder.AjState;
-import org.aspectj.bridge.IMessage;
 import org.aspectj.testing.util.FileUtil;
 
 public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
@@ -28,20 +38,18 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
-		configureBuildStructureModel(false);
-		MyBuildOptionsAdapter.reset();
 	}
 
 	public void build(String projectName) {
 		constructUpToDateLstFile(projectName,"build.lst");
-		build(projectName,"build.lst");
-		if (AjdeInteractionTestbed.VERBOSE) printBuildReport();
+		doBuild(projectName);
+		if (AjdeInteractionTestbed.VERBOSE) printBuildReport(projectName);
 	}
 
 	public void fullBuild(String projectName) {
 		constructUpToDateLstFile(projectName,"build.lst");
-		fullBuild(projectName,"build.lst");
-		if (AjdeInteractionTestbed.VERBOSE) printBuildReport();
+		doFullBuild(projectName);
+		if (AjdeInteractionTestbed.VERBOSE) printBuildReport(projectName);
 	}
 
 	private void constructUpToDateLstFile(String pname, String configname) {
@@ -61,15 +69,6 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-	}
-
-	public void checkForError(String anError) {
-		List messages = MyTaskListManager.getErrorMessages();
-		for (Iterator iter = messages.iterator(); iter.hasNext();) {
-			IMessage element = (IMessage) iter.next();
-			if (element.getMessage().indexOf(anError)!=-1) return;
-		}
-		fail("Didn't find the error message:\n'"+anError+"'.\nErrors that occurred:\n"+MyTaskListManager.getErrorMessages());
 	}
 
 	private void collectUpFiles(File location, File base, List collectionPoint) {
@@ -103,9 +102,12 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 		File destination=new File(getWorkingDir(),p);
 		if (!destination.exists()) {destination.mkdir();}
 		copy(projectSrc,destination);//,false);
+		// create the AjCompiler instance associated with this project
+		// (has id of the form c:\temp\ajcSandbox\<workspace_name>\<project_name>)
+		CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + p);
 	}
 
-	/*
+	/**
 	 * Applies an overlay onto the project being tested - copying
 	 * the contents of the specified overlay directory.
 	 */
@@ -175,5 +177,4 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 							" in the aop.xml file but found " + aspectCount + " occurrences");
 				}
 			}
-
 }

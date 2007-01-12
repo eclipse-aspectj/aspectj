@@ -1,14 +1,14 @@
-/* *******************************************************************
- * Copyright (c) 2005 Contributors.
- * All rights reserved. 
+/********************************************************************
+ * Copyright (c) 2005 Contributors. All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- * Andy Clement          initial implementation
-* ******************************************************************/
+ *     Andy Clement          initial implementation
+ *     Helen Hawkins         Converted to new interface (bug 148190)
+ *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.aspectj.ajde.Ajde;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
@@ -33,11 +32,8 @@ import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.JDTLikeHandleProvider;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.LintMessage;
 
 /**
  * The superclass knows all about talking through Ajde to the compiler.
@@ -82,7 +78,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testDontLoseAdviceMarkers_pr134471() {
 		try {
 			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=false;
-			configureBuildStructureModel(true);
 			initialiseProject("P4");
 			build("P4");
 			Ajc.dumpAJDEStructureModel("after full build where advice is applying");
@@ -150,7 +145,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			
 		} finally {
 			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=true;
-			configureBuildStructureModel(false);
+			//configureBuildStructureModel(false);
 		}
 	}
 	
@@ -161,7 +156,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("P1"); // This first build will be batch
 		build("P1");
 		checkWasntFullBuild();
-		checkCompileWeaveCount(0,0);
+		checkCompileWeaveCount("P1",0,0);
 	}
 
 	// source code doesnt matter, we are checking invalid path handling
@@ -170,9 +165,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		File f = new File("foo.jar");
 		Set s = new HashSet();
 		s.add(f);
-		configureAspectPath(s);
+		configureAspectPath("P1",s);
 		build("P1"); // This first build will be batch
-		checkForError("invalid aspectpath entry");
+		checkForError("P1","invalid aspectpath entry");
 	}
 	
 	
@@ -209,9 +204,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("P1"); // This first build will be batch
 		alter("P1","inc1"); // adds a single class
 		build("P1");
-		checkCompileWeaveCount(1,-1);
+		checkCompileWeaveCount("P1",1,-1);
 		build("P1"); 
-		checkCompileWeaveCount(0,-1);
+		checkCompileWeaveCount("P1",0,-1);
 	}
 	
 	
@@ -222,14 +217,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter("P1","inc1"); // adds a class
 		alter("P1","inc2"); // adds an aspect
 		build("P1");                            // build 1,
-		long timeTakenForFullBuildAndWeave = getTimeTakenForBuild();
+		long timeTakenForFullBuildAndWeave = getTimeTakenForBuild("P1");
 		checkWasFullBuild();  // it *will* be a full build under the new 
 		                      // "back-to-the-source strategy
-		checkCompileWeaveCount(5,3); // we compile X and A (the delta) find out that
+		checkCompileWeaveCount("P1",5,3); // we compile X and A (the delta) find out that
 		                             // an aspect has changed, go back to the source
 									 // and compile X,A,C, then weave them all.
 		build("P1");
-		long timeTakenForSimpleIncBuild = getTimeTakenForBuild();
+		long timeTakenForSimpleIncBuild = getTimeTakenForBuild("P1");
 		// I don't think this test will have timing issues as the times should be *RADICALLY* different
 		// On my config, first build time is 2093ms  and the second is 30ms
 		assertTrue("Should not take longer for the trivial incremental build!  first="+timeTakenForFullBuildAndWeave+
@@ -239,7 +234,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	
 	
 	public void testBuildingTwoProjectsInTurns() {
-		configureBuildStructureModel(true);
 		initialiseProject("P1");
 		initialiseProject("P2");
 		build("P1");
@@ -281,8 +275,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 */
 	public void testBuildingTwoProjectsMakingSmallChanges() {
 		
-		configureBuildStructureModel(true);
-		
 		initialiseProject("P1");
 		initialiseProject("P2");
 
@@ -305,8 +297,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR134371");
 		alter("PR134371","inc1");
 		build("PR134371");
-		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
-				MyErrorHandler.getErrorMessages().isEmpty());		
+		assertTrue("There should be no exceptions handled:\n"
+				+getErrorMessages("PR134371"),getErrorMessages("PR134371").isEmpty());		
 
 	}
 	
@@ -315,9 +307,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * structure model is right after each build 
 	 */
 	public void testBuildingTwoProjectsAndVerifyingModel() {
-		
-		configureBuildStructureModel(true);
-		
 		initialiseProject("P1");
 		initialiseProject("P2");
 
@@ -338,8 +327,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// Setup up two simple projects and build them in turn - check the
 	// structure model is right after each build
 	public void testBuildingTwoProjectsAndVerifyingStuff() {
-		configureBuildStructureModel(true);
-		
 		initialiseProject("P1");
 		initialiseProject("P2");
 
@@ -545,15 +532,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr125405() {
 		initialiseProject("PR125405");
 		build("PR125405");
-		checkCompileWeaveCount(1,1);
+		checkCompileWeaveCount("PR125405",1,1);
 		alter("PR125405","inc1");
 		build("PR125405");
 		// "only abstract aspects can have type parameters"
-		checkForError("only abstract aspects can have type parameters");
+		checkForError("PR125405","only abstract aspects can have type parameters");
 		alter("PR125405","inc2");
 		build("PR125405");
-		checkCompileWeaveCount(1,1);
-		assertTrue("Should be no errors, but got "+MyTaskListManager.getErrorMessages(),MyTaskListManager.getErrorMessages().size()==0);		
+		checkCompileWeaveCount("PR125405",1,1);
+		assertTrue("Should be no errors, but got "+getErrorMessages("PR125405"),
+				getErrorMessages("PR125405").size()==0);		
 	}
 	
 	public void testPr128618() {
@@ -561,17 +549,26 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("PR128618_2");
 		configureNewProjectDependency("PR128618_2","PR128618_1");
 		assertTrue("there should be no warning messages before we start",
-				MyTaskListManager.getWarningMessages().isEmpty());
+				getWarningMessages("PR128618_1").isEmpty());
+		assertTrue("there should be no warning messages before we start",
+				getWarningMessages("PR128618_2").isEmpty());
+		
 		build("PR128618_1");
 		build("PR128618_2");
-		List warnings = MyTaskListManager.getWarningMessages();
+		List l = getWarningMessages("PR128618_2");
+		
+		// there should be one warning against "PR128618_2"
+		List warnings = getWarningMessages("PR128618_2");
 		assertTrue("Should be one warning, but there are #"+warnings.size(),warnings.size()==1);
-		IMessage msg = (IMessage)(MyTaskListManager.getWarningMessages().get(0));
+		IMessage msg = (IMessage)(getWarningMessages("PR128618_2").get(0));
 		assertEquals("warning should be against the FFDC.aj resource","FFDC.aj",msg.getSourceLocation().getSourceFile().getName());
+
+		
 		alter("PR128618_2","inc1");
 		build("PR128618_2");
+		
 		checkWasntFullBuild();
-		IMessage msg2 = (IMessage)(MyTaskListManager.getWarningMessages().get(0));
+		IMessage msg2 = (IMessage)(getWarningMessages("PR128618_2").get(0));
 		assertEquals("warning should be against the FFDC.aj resource","FFDC.aj",msg2.getSourceLocation().getSourceFile().getName());
 		assertFalse("a new warning message should have been generated", msg.equals(msg2));
 	}
@@ -586,13 +583,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr119570() {
 		initialiseProject("PR119570");
 		build("PR119570");
-		assertTrue("Should be no errors, but got "+MyTaskListManager.getErrorMessages(),MyTaskListManager.getErrorMessages().size()==0);		
+		assertNoErrors("PR119570");
 	}
 	
 	public void testPr119570_2() {
 		initialiseProject("PR119570_2");
 		build("PR119570_2");
-		List l = MyTaskListManager.getWarningMessages();
+		List l = getWarningMessages("PR119570_2");
 		assertTrue("Should be no warnings, but got "+l,l.size()==0);
 	}
 	
@@ -600,11 +597,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr117209() {
 		try {
 			initialiseProject("pr117209");
-			configureNonStandardCompileOptions("-proceedOnError");
+			configureNonStandardCompileOptions("pr117209","-proceedOnError");
 			build("pr117209");
-			checkCompileWeaveCount(6,6);
+			checkCompileWeaveCount("pr117209",6,6);
 		} finally {
-			MyBuildOptionsAdapter.reset();
+			//MyBuildOptionsAdapter.reset();
 		}
 	}
 	
@@ -659,20 +656,20 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	public void testPr157054() {
-		configureBuildStructureModel(true);
-		MyBuildOptionsAdapter.setNonStandardOptions("-showWeaveInfo");
 		initialiseProject("PR157054");
+		configureNonStandardCompileOptions("PR157054","-showWeaveInfo");
+		configureShowWeaveInfoMessages("PR157054",true);
 		build("PR157054");
 		checkWasFullBuild();
-		List weaveMessages = MyTaskListManager.getWeavingMessages();
+		List weaveMessages = getWeavingMessages("PR157054");
 		assertTrue("Should be two weaving messages but there are "+weaveMessages.size(),weaveMessages.size()==2);
 		alter("PR157054","inc1");
 		build("PR157054");
-		weaveMessages = MyTaskListManager.getWeavingMessages();
+		weaveMessages = getWeavingMessages("PR157054");
 		assertTrue("Should be three weaving messages but there are "+weaveMessages.size(),weaveMessages.size()==3);
 		checkWasntFullBuild();
 		fullBuild("PR157054");
-		weaveMessages = MyTaskListManager.getWeavingMessages();
+		weaveMessages = getWeavingMessages("PR157054");
 		assertTrue("Should be three weaving messages but there are "+weaveMessages.size(),weaveMessages.size()==3);
 	}
 	
@@ -716,9 +713,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr121384() {
 //		AjdeInteractionTestbed.VERBOSE=true;
 //		AsmManager.setReporting("c:/foo.txt",true,true,true,false);
-		MyBuildOptionsAdapter.setNonStandardOptions("-showWeaveInfo");
-		configureBuildStructureModel(true);
 		initialiseProject("pr121384");
+		configureNonStandardCompileOptions("pr121384","-showWeaveInfo");
 		build("pr121384"); 
 		checkWasFullBuild();
 		alter("pr121384","inc1");
@@ -772,21 +768,22 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr113531() {
 		initialiseProject("PR113531");
 		build("PR113531");
-		assertFalse("build should have compiled ok",
-				MyTaskListManager.hasErrorMessages());
+		assertTrue("build should have compiled ok",
+				getErrorMessages("PR113531").isEmpty());
 		alter("PR113531","inc1");
 		build("PR113531");
 		assertEquals("error message should be 'foo cannot be resolved' ",
 				"foo cannot be resolved",
-				((IMessage)MyTaskListManager.getErrorMessages().get(0))
+				((IMessage)getErrorMessages("PR113531").get(0))
 					.getMessage());
 		alter("PR113531","inc2");
 		build("PR113531");
-		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
-				MyErrorHandler.getErrorMessages().isEmpty());		
+		assertTrue("There should be no exceptions handled:\n"
+				+getCompilerErrorMessages("PR113531"),
+				getCompilerErrorMessages("PR113531").isEmpty());		
 		assertEquals("error message should be 'foo cannot be resolved' ",
 				"foo cannot be resolved",
-				((IMessage)MyTaskListManager.getErrorMessages().get(0))
+				((IMessage)getErrorMessages("PR113531").get(0))
 					.getMessage());
 	}
 
@@ -800,11 +797,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr119882() {
 		initialiseProject("PR119882");
 		build("PR119882");
-		assertFalse("build should have compiled ok",MyTaskListManager.hasErrorMessages());
+		assertTrue("build should have compiled ok",getErrorMessages("PR119882").isEmpty());
 		alter("PR119882","inc1");
 		build("PR119882");
 		//fullBuild("PR119882");
-		List errors = MyTaskListManager.getErrorMessages();
+		List errors = getErrorMessages("PR119882");
 		assertTrue("Should be at least one error, but got none",errors.size()==1);
 		assertEquals("error message should be 'i cannot be resolved' ",
 				"i cannot be resolved",
@@ -812,8 +809,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 					.getMessage());
 		alter("PR119882","inc2");
 		build("PR119882");
-		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
-				MyErrorHandler.getErrorMessages().isEmpty());	
+		assertTrue("There should be no exceptions handled:\n"
+				+getCompilerErrorMessages("PR119882"),
+				getCompilerErrorMessages("PR119882").isEmpty());	
 		assertEquals("error message should be 'i cannot be resolved' ",
 				"i cannot be resolved",
 				((IMessage)errors.get(0))
@@ -855,30 +853,31 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	
     //Bugzilla Bug 152257 - Incremental compiler doesn't handle exception declaration correctly
 	public void testPr152257() {
-		configureNonStandardCompileOptions("-XnoInline");
 		initialiseProject("PR152257");
+		configureNonStandardCompileOptions("PR152257","-XnoInline");
 		build("PR152257");
-		List errors = MyTaskListManager.getErrorMessages();
+		List errors = getErrorMessages("PR152257");
 		assertTrue("Should be no warnings, but there are #"+errors.size(),errors.size()==0);
 		checkWasFullBuild();
 		alter("PR152257","inc1");
 		build("PR152257");
-		errors = MyTaskListManager.getErrorMessages();
+		errors = getErrorMessages("PR152257");
 		assertTrue("Should be no warnings, but there are #"+errors.size(),errors.size()==0);
 		checkWasntFullBuild();
 	}
 
 
 	public void testPr128655() {
-		configureNonStandardCompileOptions("-showWeaveInfo");
 		initialiseProject("pr128655");
+		configureNonStandardCompileOptions("pr128655","-showWeaveInfo");
+		configureShowWeaveInfoMessages("pr128655",true);
 		build("pr128655");
-		List firstBuildMessages = MyTaskListManager.getWeavingMessages();
+		List firstBuildMessages = getWeavingMessages("pr128655");
 		assertTrue("Should be at least one message about the dec @type, but there were none",firstBuildMessages.size()>0);
 		alter("pr128655","inc1");
 		build("pr128655");
 		checkWasntFullBuild(); // back to the source
-		List secondBuildMessages = MyTaskListManager.getWeavingMessages();
+		List secondBuildMessages = getWeavingMessages("pr128655");
 		// check they are the same
 		for (int i = 0; i < firstBuildMessages.size(); i++) {
 			IMessage m1 = (IMessage)firstBuildMessages.get(i);
@@ -893,15 +892,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	
 	// Similar to above, but now the annotation is in the default package
 	public void testPr128655_2() {
-		configureNonStandardCompileOptions("-showWeaveInfo");
 		initialiseProject("pr128655_2");
+		configureNonStandardCompileOptions("pr128655_2","-showWeaveInfo");
+		configureShowWeaveInfoMessages("pr128655_2", true);
 		build("pr128655_2");
-		List firstBuildMessages = MyTaskListManager.getWeavingMessages();
+		List firstBuildMessages = getWeavingMessages("pr128655_2");
 		assertTrue("Should be at least one message about the dec @type, but there were none",firstBuildMessages.size()>0);
 		alter("pr128655_2","inc1");
 		build("pr128655_2");
 		checkWasntFullBuild(); // back to the source
-		List secondBuildMessages = MyTaskListManager.getWeavingMessages();
+		List secondBuildMessages = getWeavingMessages("pr128655_2");
 		// check they are the same
 		for (int i = 0; i < firstBuildMessages.size(); i++) {
 			IMessage m1 = (IMessage)firstBuildMessages.get(i);
@@ -916,18 +916,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	
 	// test for comment #31 - NPE
 	public void testPr129163() {
-		configureBuildStructureModel(true);
 		initialiseProject("PR129613");
 		build("PR129613");
 		alter("PR129613","inc1");
 		build("PR129613");
-		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
-				MyErrorHandler.getErrorMessages().isEmpty());
+		assertTrue("There should be no exceptions handled:\n"+getCompilerErrorMessages("PR129613"),
+				getCompilerErrorMessages("PR129613").isEmpty());
 		assertEquals("warning message should be 'no match for this type name: File [Xlint:invalidAbsoluteTypeName]' ",
 				"no match for this type name: File [Xlint:invalidAbsoluteTypeName]",
-				((IMessage)MyTaskListManager.getWarningMessages().get(0))
+				((IMessage)getWarningMessages("PR129613").get(0))
 					.getMessage());
-		configureBuildStructureModel(false);
 	}
 	
 	// test for comment #0 - adding a comment to a class file shouldn't
@@ -939,7 +937,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// we shouldn't go back to source.
 	public void testPr129163_2() {
 		// want to behave like AJDT
-		configureBuildStructureModel(true);
 		initialiseProject("pr129163_2");
 		build("pr129163_2");
 		checkWasFullBuild();
@@ -947,7 +944,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("pr129163_2");
 		checkWasntFullBuild(); // shouldn't be a full build because the 
 		                       // aspect hasn't changed
-		configureBuildStructureModel(false);
 	}
 	
 	// test for comment #6 - simulates AJDT core builder test testBug99133a -
@@ -961,7 +957,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// logic within CrosscuttingMembers and various equals methods to decide
 	// correctly that we don't have to go back to source.
 	public void testPr129163_3() {
-		configureBuildStructureModel(true);
 		initialiseProject("PR129163_4");
 		build("PR129163_4");
 		checkWasFullBuild(); // should be a full build because initializing project
@@ -979,22 +974,21 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild(); // should be an incremental build because nothing has
 			                   // changed within the class and no aspects have changed
 		                       // within the running of the test
-		configureBuildStructureModel(false);
 	}
 	
 
 	public void testPr133117() {
 //		System.gc();
 //		System.exit();
-		configureNonStandardCompileOptions("-Xlint:warning");
 		initialiseProject("PR133117");
+		configureNonStandardCompileOptions("PR133117","-Xlint:warning");
 		build("PR133117");
 		assertTrue("There should only be one xlint warning message reported:\n"
-				+MyTaskListManager.getWarningMessages(),
-				MyTaskListManager.getWarningMessages().size()==1);	
+				+getWarningMessages("PR133117"),
+				getWarningMessages("PR133117").size()==1);	
 		alter("PR133117","inc1");
 		build("PR133117");
-		List warnings = MyTaskListManager.getWarningMessages();
+		List warnings = getWarningMessages("PR133117");
 		List noGuardWarnings = new ArrayList();
 		for (Iterator iter = warnings.iterator(); iter.hasNext();) {
 			IMessage element = (IMessage) iter.next();
@@ -1007,8 +1001,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 	
 	public void testPr131505() {
-		configureNonStandardCompileOptions("-outxml");
 		initialiseProject("PR131505");
+		configureNonStandardCompileOptions("PR131505","-outxml");
 		build("PR131505");
 		checkWasFullBuild();
 		String outputDir = getWorkingDir().getAbsolutePath() + File.separatorChar 
@@ -1060,8 +1054,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR136585");
 		alter("PR136585","inc1");
 		build("PR136585");
-		assertTrue("There should be no errors reported:\n"+MyTaskListManager.getErrorMessages(),
-				MyTaskListManager.getErrorMessages().isEmpty());	
+		assertTrue("There should be no errors reported:\n"+getErrorMessages("PR136585"),
+				getErrorMessages("PR136585").isEmpty());	
 	}
 	
 	public void testPr133532() {
@@ -1071,8 +1065,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR133532");
 		alter("PR133532","inc2");
 		build("PR133532");
-		assertTrue("There should be no errors reported:\n"+MyTaskListManager.getErrorMessages(),
-				MyTaskListManager.getErrorMessages().isEmpty());	
+		assertTrue("There should be no errors reported:\n"+getErrorMessages("PR133532"),
+				getErrorMessages("PR133532").isEmpty());	
 	}
 	
 	public void testPr133532_2() {
@@ -1080,8 +1074,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("pr133532_2");
 		alter("pr133532_2","inc2");
 		build("pr133532_2");
-		assertTrue("There should be no errors reported:\n"+MyTaskListManager.getErrorMessages(),
-				MyTaskListManager.getErrorMessages().isEmpty());	
+		assertTrue("There should be no errors reported:\n"+getErrorMessages("pr133532_2"),
+				getErrorMessages("pr133532_2").isEmpty());	
 		String decisions = AjdeInteractionTestbed.MyStateListener.getDecisions();
 		String expect="Need to recompile 'A.aj'";
 		assertTrue("Couldn't find build decision: '"+expect+"' in the list of decisions made:\n"+decisions,
@@ -1093,15 +1087,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR133532_3");
 		alter("PR133532_3","inc1");
 		build("PR133532_3");
-		assertTrue("There should be no errors reported:\n"+MyTaskListManager.getErrorMessages(),
-				MyTaskListManager.getErrorMessages().isEmpty());			
+		assertTrue("There should be no errors reported:\n"+getErrorMessages("PR133532_3"),
+				getErrorMessages("PR133532_3").isEmpty());			
 	}
 	
 	public void testPr134541() {
 		initialiseProject("PR134541");
 		build("PR134541");
 		assertEquals("[Xlint:adviceDidNotMatch] should be associated with line 5",5,
-				((IMessage)MyTaskListManager.getWarningMessages().get(0)).getSourceLocation().getLine());
+				((IMessage)getWarningMessages("PR134541").get(0)).getSourceLocation().getLine());
 		alter("PR134541","inc1");
 		build("PR134541");
 		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
@@ -1109,13 +1103,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		else 
 		  checkWasntFullBuild(); // the line number has changed... but nothing structural about the code
 		assertEquals("[Xlint:adviceDidNotMatch] should now be associated with line 7",7,
-				((IMessage)MyTaskListManager.getWarningMessages().get(0)).getSourceLocation().getLine());
+				((IMessage)getWarningMessages("PR134541").get(0)).getSourceLocation().getLine());
 	}
 	
 	public void testJDTLikeHandleProviderWithLstFile_pr141730() {
 		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
 		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
-		configureBuildStructureModel(true);
 		try {
 			// The JDTLike-handles should start with the name
 			// of the buildconfig file
@@ -1123,19 +1116,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			build("JDTLikeHandleProvider");
 			IHierarchy top = AsmManager.getDefault().getHierarchy();
 		  	IProgramElement pe = top.findElementForType("pkg","A");
-		  	String expectedHandle = "build<pkg*A.aj}A";
+		  	String expectedHandle = "JDTLikeHandleProvider<pkg*A.aj}A";
 		  	assertEquals("expected handle to be " + expectedHandle + ", but found "
 		  			+ pe.getHandleIdentifier(),expectedHandle,pe.getHandleIdentifier());	
 		} finally {
 			AsmManager.getDefault().setHandleProvider(handleProvider);
-		  	configureBuildStructureModel(false);			
 		}
 	}
 	
 	public void testMovingAdviceDoesntChangeHandles_pr141730() {
 		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
 		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
-		configureBuildStructureModel(true);
 		try {
 			initialiseProject("JDTLikeHandleProvider");
 			build("JDTLikeHandleProvider");
@@ -1158,14 +1149,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 					pe.getHandleIdentifier(),pe2.getHandleIdentifier());		
 		} finally {
 			AsmManager.getDefault().setHandleProvider(handleProvider);
-		  	configureBuildStructureModel(false);			
 		}
 	}
 	
 	public void testSwappingAdviceAndHandles_pr141730() {
 		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
 		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
-		configureBuildStructureModel(true);
 		try {
 			initialiseProject("JDTLikeHandleProvider");
 			build("JDTLikeHandleProvider");
@@ -1200,18 +1189,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 					exec.getHandleIdentifier(), newCall.getHandleIdentifier());
 		} finally {
 			AsmManager.getDefault().setHandleProvider(handleProvider);
-		  	configureBuildStructureModel(false);			
 		}
 	}
 	
 	public void testInitializerCountForJDTLikeHandleProvider_pr141730() {
 		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
 		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
-		configureBuildStructureModel(true);
 		try {
 			initialiseProject("JDTLikeHandleProvider");
 			build("JDTLikeHandleProvider");
-			String expected = "build<pkg*A.aj[C|1";
+			String expected = "JDTLikeHandleProvider<pkg*A.aj[C|1";
 
 			IHierarchy top = AsmManager.getDefault().getHierarchy();
 			IProgramElement init = top.findElementForLabel(top.getRoot(),
@@ -1234,7 +1221,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		
 		} finally {
 			AsmManager.getDefault().setHandleProvider(handleProvider);
-		  	configureBuildStructureModel(false);			
 		}
 	}
 	
@@ -1242,11 +1228,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr134471_IncrementalCompilationAndModelUpdates() {
 		try {
 			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=false;
-		configureBuildStructureModel(true);
-		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
 		
 		// Step1.  Build the code, simple advice from aspect A onto class C
 		initialiseProject("PR134471");
+		configureNonStandardCompileOptions("PR134471","-showWeaveInfo -emacssym");
+		configureShowWeaveInfoMessages("PR134471",true);
 		build("PR134471");
 		
 		// Step2. Quick check that the advice points to something...
@@ -1279,11 +1265,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	
 	// now the advice moves down a few lines - hopefully the model will notice... see discussion in 134471
 	public void testPr134471_MovingAdvice() {
-		configureBuildStructureModel(true);
-		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
 		
 		// Step1. build the project
 		initialiseProject("PR134471_2");
+		configureNonStandardCompileOptions("PR134471_2","-showWeaveInfo -emacssym");
+		configureShowWeaveInfoMessages("PR134471_2",true);
 		build("PR134471_2");
 		
 		// Step2. confirm advice is from correct location
@@ -1309,18 +1295,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	
 
 	public void testAddingAndRemovingDecwWithStructureModel() {
-		configureBuildStructureModel(true);
 		initialiseProject("P3");
 		build("P3");
 		alter("P3","inc1");
 		build("P3");
-		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
-				MyErrorHandler.getErrorMessages().isEmpty());		
+		assertTrue("There should be no exceptions handled:\n"+getCompilerErrorMessages("P3"),
+				getCompilerErrorMessages("P3").isEmpty());		
 		alter("P3","inc2");
 		build("P3");
-		assertTrue("There should be no exceptions handled:\n"+MyErrorHandler.getErrorMessages(),
-				MyErrorHandler.getErrorMessages().isEmpty());		
-		configureBuildStructureModel(false);
+		assertTrue("There should be no exceptions handled:\n"+getCompilerErrorMessages("P3"),
+				getCompilerErrorMessages("P3").isEmpty());		
 	}
 		
 	
@@ -1328,11 +1312,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPr134471_IncrementallyRecompilingTheAffectedClass() {
 		try {
 			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=false;
-			configureBuildStructureModel(true);
-			configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
-			
 			// Step1. build the project
 			initialiseProject("PR134471");
+			configureNonStandardCompileOptions("PR134471","-showWeaveInfo -emacssym");	
+			configureShowWeaveInfoMessages("PR134471",true);
 			build("PR134471");
 			
 			// Step2. confirm advice is from correct location
@@ -1366,11 +1349,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	// similar to previous test but with 'declare warning' as well as advice
 	public void testPr134471_IncrementallyRecompilingAspectContainingDeclare() {
-		configureBuildStructureModel(true);
-		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
 		
 		// Step1. build the project
 		initialiseProject("PR134471_3");
+		configureNonStandardCompileOptions("PR134471_3","-showWeaveInfo -emacssym");
+		configureShowWeaveInfoMessages("PR134471_3",true);
 		build("PR134471_3");
 		checkWasFullBuild();
 		
@@ -1408,17 +1391,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
-
-		configureBuildStructureModel(false);
 	}
 	
 	// similar to previous test but with 'declare warning' as well as advice
 	public void testPr134471_IncrementallyRecompilingTheClassAffectedByDeclare() {
-		configureBuildStructureModel(true);
-		configureNonStandardCompileOptions("-showWeaveInfo -emacssym");
 		
 		// Step1. build the project
 		initialiseProject("PR134471_3");
+		configureNonStandardCompileOptions("PR134471_3","-showWeaveInfo -emacssym");
+		configureShowWeaveInfoMessages("PR134471_3",true);
 		build("PR134471_3");
 		checkWasFullBuild();
 		
@@ -1466,13 +1447,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		programElement = getFirstRelatedElement(findCode(checkForNode("pkg","C",true),7));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line "+line,line==12);
-
-		configureBuildStructureModel(false);
 	}
 	
 	public void testDontLoseXlintWarnings_pr141556() {
-		configureNonStandardCompileOptions("-Xlint:warning");
 		initialiseProject("PR141556");
+		configureNonStandardCompileOptions("PR141556","-Xlint:warning");
 		build("PR141556");
 		checkWasFullBuild();
 		String warningMessage = "can not build thisJoinPoint " +
@@ -1480,7 +1459,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				"[Xlint:noGuardForLazyTjp]";
 		assertEquals("warning message should be '" + warningMessage + "'",
 				warningMessage,
-				((IMessage)MyTaskListManager.getWarningMessages().get(0))
+				((IMessage)getWarningMessages("PR141556").get(0))
 					.getMessage());
 
 		// add a space to the Aspect but dont do a build
@@ -1491,47 +1470,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR141556");
 		checkWasntFullBuild();
 		assertTrue("there should still be a warning message ",
-				!MyTaskListManager.getWarningMessages().isEmpty());
+				!getWarningMessages("PR141556").isEmpty());
 		assertEquals("warning message should be '" + warningMessage + "'",
 				warningMessage,
-				((IMessage)MyTaskListManager.getWarningMessages().get(0))
+				((IMessage)getWarningMessages("PR141556").get(0))
 					.getMessage());
-	}
-
-	public void testLintMessage_pr141564() {
-		configureNonStandardCompileOptions("-Xlint:warning");
-		initialiseProject("PR141556");
-		build("PR141556");
-		IMessageHandler handler = AjdeManager.getMessageHandler();
-		// the handler used to be an IMessageHolder (extended MessageHandler)
-		// which stored the messages, consequently we checked that none
-		// were being stored. Since we no longer stored any messages (fix
-		// for bug 141564) it was unnecessary to be an IMessageHolder as all the
-		// IMessageHolder methods in MessageHander used the list of stored
-		// messages. Therefore, rather than checking that the list of messages
-		// is empty we can check that we're an IMessageHandler but not an
-		// IMessageHolder.
-		assertFalse("expected the handler not to be an IMessageHolder but was ",
-				handler instanceof IMessageHolder);
-		
-		List tasklistMessages = MyTaskListManager.getWarningMessages();
-		assertTrue("Should be one message but found "+tasklistMessages.size(),tasklistMessages.size()==1);
-		
-		IMessage msg = (IMessage)tasklistMessages.get(0);
-		assertTrue("expected message to be a LintMessage but wasn't", 
-				msg instanceof LintMessage);
-		assertTrue("expected message to be noGuardForLazyTjp xlint message but" +
-				" instead was " + ((LintMessage)msg).getKind().toString(),
-				((LintMessage)msg).getLintKind().equals("noGuardForLazyTjp"));
-				
-		assertTrue("expected message to be against file in project 'PR141556' but wasn't",
-				msg.getSourceLocation().getSourceFile().getAbsolutePath().indexOf("PR141556") != -1);
 	}
 	
 	public void testAdviceDidNotMatch_pr152589() {
 		initialiseProject("PR152589");
 		build("PR152589");
-		List warnings = MyTaskListManager.getWarningMessages();
+		List warnings = getWarningMessages("PR152589");
 		assertTrue("There should be no warnings:\n"+warnings,
 				warnings.isEmpty());
 		alter("PR152589","inc1");
@@ -1542,7 +1491,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			  checkWasntFullBuild(); // the line number has changed... but nothing structural about the code
 
 //		checkWasFullBuild();
-		warnings = MyTaskListManager.getWarningMessages();
+		warnings = getWarningMessages("PR152589");
 		assertTrue("There should be no warnings after adding a whitespace:\n"
 				+warnings,warnings.isEmpty());	
 	}
@@ -1570,13 +1519,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
 		initialiseProject("PR158573");
 		build("PR158573");
-		List warnings = MyTaskListManager.getWarningMessages();
+		List warnings = getWarningMessages("PR158573");
 		assertTrue("There should be no warnings:\n"+warnings,warnings.isEmpty());
 		alter("PR158573","inc1");
 		build("PR158573");
 
 		checkWasntFullBuild();
-		warnings = MyTaskListManager.getWarningMessages();
+		warnings = getWarningMessages("PR158573");
 		assertTrue("There should be no warnings after changing the value of a " +
 				"variable:\n"+warnings,warnings.isEmpty());	
 		AsmManager.getDefault().setHandleProvider(handleProvider);
@@ -1589,17 +1538,18 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * java 6.
 	 */
 	public void testPR164384_1() {
+		initialiseProject("PR164384");
+
 		Hashtable javaOptions = new Hashtable();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance","1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source","1.6");
-		MyBuildOptionsAdapter.setJavaOptionsMap(javaOptions);
+		configureJavaOptionsMap("PR164384",javaOptions);
 		
-		initialiseProject("PR164384");
 		build("PR164384");
-		List errors = MyTaskListManager.getErrorMessages();
+		List errors = getErrorMessages("PR164384");
 		
-		if (Ajde.getDefault().compilerIsJava6Compatible()) {
+		if (getCompilerForProjectWithName("PR164384").isJava6Compatible()) {
 			assertTrue("There should be no errros:\n"+errors,errors.isEmpty());	
 		} else {
 			String expectedError = "Java 6.0 compliance level is unsupported";
@@ -1620,16 +1570,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * 5.0 then expect an error saying that we don't support java 6.
 	 */
 	public void testPR164384_2() {
+		initialiseProject("PR164384");
+
 		Hashtable javaOptions = new Hashtable();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance","1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.5");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source","1.5");
-		MyBuildOptionsAdapter.setJavaOptionsMap(javaOptions);
+		configureJavaOptionsMap("PR164384",javaOptions);
 		
-		initialiseProject("PR164384");
 		build("PR164384");
-		List errors = MyTaskListManager.getErrorMessages();
-		if (Ajde.getDefault().compilerIsJava6Compatible()) {
+		List errors = getErrorMessages("PR164384");
+		if (getCompilerForProjectWithName("PR164384").isJava6Compatible()) {
 			assertTrue("There should be no errros:\n"+errors,errors.isEmpty());	
 		} else {
 			String expectedError = "Java 6.0 compliance level is unsupported";
@@ -1650,17 +1601,18 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * java 6.
 	 */
 	public void testPR164384_3() {
+		initialiseProject("PR164384");
+
 		Hashtable javaOptions = new Hashtable();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance","1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source","1.5");
-		MyBuildOptionsAdapter.setJavaOptionsMap(javaOptions);
+		configureJavaOptionsMap("PR164384",javaOptions);
 		
-		initialiseProject("PR164384");
 		build("PR164384");
-		List errors = MyTaskListManager.getErrorMessages();
+		List errors = getErrorMessages("PR164384");
 		
-		if (Ajde.getDefault().compilerIsJava6Compatible()) {
+		if (getCompilerForProjectWithName("PR164384").isJava6Compatible()) {
 			assertTrue("There should be no errros:\n"+errors,errors.isEmpty());	
 		} else {
 			String expectedError = "Java 6.0 compliance level is unsupported";
@@ -1673,7 +1625,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 					" error but only found that one",errors.size() > 1);
 		}
 	}
-	
+		
 	public void testPr168840() throws Exception {
 		initialiseProject("inpathTesting");
 		
@@ -1685,12 +1637,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		File f = new File(inpathDir);
 		Set s = new HashSet();
 		s.add(f);
-		configureInPath(s);
+		configureInPath("inpathTesting",s);
 		build("inpathTesting");
 		// the declare warning matches one place so expect one warning message
+		List warnings = getWarningMessages("inpathTesting");
 		assertTrue("Expected there to be one warning message but found "
-				+ MyTaskListManager.getWarningMessages().size() + ": " + MyTaskListManager.getWarningMessages(),
-				MyTaskListManager.getWarningMessages().size() == 1);
+				+ warnings.size() + ": " + warnings, warnings.size() == 1);
 		
 		// copy over the updated version of the inpath class file
 		File from = new File(testdataSrcDir+File.separatorChar+"inpathTesting"
@@ -1702,9 +1654,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 		// the newly copied inpath class means the declare warning now matches two
 		// places, therefore expect two warning messages
+		warnings = getWarningMessages("inpathTesting");
 		assertTrue("Expected there to be two warning message but found "
-				+ MyTaskListManager.getWarningMessages().size() + ": " + MyTaskListManager.getWarningMessages(),
-				MyTaskListManager.getWarningMessages().size() == 2);
+				+ warnings.size() + ": " + warnings, warnings.size() == 2);
 	}
 	
 	// --- helper code ---
@@ -1800,7 +1752,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	// ---------------------------------------------------------------------------------------------------
 
-	
 	private IProgramElement checkForNode(String packageName,String typeName,boolean shouldBeFound) {
 		IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForType(packageName,typeName);
 		if (shouldBeFound) {
@@ -1825,7 +1776,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	private static void log(String msg) {
 		if (VERBOSE) System.out.println(msg);
 	}
-	
+
 	private File getProjectRelativePath(String p,String filename) {
 		File projDir = new File(getWorkingDir(),p);
 		return new File(projDir,filename);
@@ -1836,8 +1787,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		return new File(projDir,"bin"+File.separator+filename);
 	}
 
-	private void assertNoErrors() {
-		assertTrue("Should be no errors, but got "+MyTaskListManager.getErrorMessages(),MyTaskListManager.getErrorMessages().size()==0);				
+	private void assertNoErrors(String projectName) {
+		assertTrue("Should be no errors, but got "+getErrorMessages(projectName),getErrorMessages(projectName).size()==0);				
 	}
 	
 }

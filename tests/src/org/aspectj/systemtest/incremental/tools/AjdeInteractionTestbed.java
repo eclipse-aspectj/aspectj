@@ -1,19 +1,19 @@
-/* *******************************************************************
- * Copyright (c) 2005 Contributors.
- * All rights reserved. 
+/********************************************************************
+ * Copyright (c) 2005 Contributors.All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- * Andy Clement          initial implementation
- * ******************************************************************/
+ *     Andy Clement      initial implementation
+ *     Helen Hawkins     Converted to new interface (bug 148190)
+ *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,233 +21,231 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.BuildOptionsAdapter;
-import org.aspectj.ajde.BuildProgressMonitor;
-import org.aspectj.ajde.ErrorHandler;
-import org.aspectj.ajde.OutputLocationManager;
-import org.aspectj.ajde.ProjectPropertiesAdapter;
-import org.aspectj.ajde.TaskListManager;
-import org.aspectj.ajde.internal.AspectJBuildManager;
+import org.aspectj.ajde.core.AjCompiler;
+import org.aspectj.ajde.core.IBuildMessageHandler;
+import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajdt.internal.core.builder.AbstractStateListener;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.tools.ajc.Ajc;
 
 /**
  * This class uses Ajde in the same way that an IDE (e.g. AJDT) does.
  * 
- * The build is driven through 'build(projectName,configFile)' but the
+ * The build is driven through 'doBuild(projectName)' but the
  * build can be configured by the methods beginning 'configure***'.
  * Information about what happened during a build is accessible
  * through the get*, was*, print* public methods...
  * 
- * There are many methods across the multiple listeners that communicate
- * info with Ajde - not all are implemented.  Those that are are
- * task tagged DOESSOMETHING :)
  */
 public class AjdeInteractionTestbed extends TestCase {
 
-	public  static boolean VERBOSE         = false; // do you want the gory details?
+	public static boolean VERBOSE = false; // do you want the gory details?
 	
-	public    static String   testdataSrcDir = "../tests/multiIncremental";
-	protected static    File       sandboxDir;
+	public static String testdataSrcDir = "../tests/multiIncremental";
+	protected static File sandboxDir;
 	
 	private static boolean buildModel;
-	
+
 	// Methods for configuring the build
-	public static void configureBuildStructureModel(boolean b) { buildModel = b;}
-	
-	public static void configureNewProjectDependency(String fromProject, String projectItDependsOn) {
-		MyProjectPropertiesAdapter.addDependancy(fromProject,projectItDependsOn);
+	public void configureNewProjectDependency(String fromProjectName, String projectItDependsOn) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + fromProjectName);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).addDependancy(projectItDependsOn);
 	}
 	
-	public static void configureNonStandardCompileOptions(String options) {
-		MyBuildOptionsAdapter.setNonStandardOptions(options);
+	public void configureNonStandardCompileOptions(String projectName, String options) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setNonStandardOptions(options);
 	}
 	
-	public static void configureAspectPath(Set aspectpath) {
-		MyProjectPropertiesAdapter.setAspectpath(aspectpath);
+	public void configureAspectPath(String projectName, Set aspectpath) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setAspectPath(aspectpath);
 	} 
 	
-	public static void configureInPath(Set inpath) {
-		MyProjectPropertiesAdapter.setInpath(inpath);
+	public void configureResourceMap(String projectName, Map resourcesMap) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setSourcePathResources(resourcesMap);
 	}
 	
-	public static void configureOutputLocationManager(OutputLocationManager mgr) {
-		MyProjectPropertiesAdapter.setOutputLocationManager(mgr);
+	public void configureJavaOptionsMap(String projectName, Map options) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setJavaOptions(options);		
 	}
 	
-	public static void configureOutputLocationManager(OutputLocationManager mgr, boolean hasOutputPath) {
-		MyProjectPropertiesAdapter.setOutputLocationManager(mgr,hasOutputPath);
+	public static void configureInPath(String projectName, Set inpath) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setInpath(inpath);		
 	}
 	
-	public static void configureResourceMap(Map resourcesMap) {
-		MyProjectPropertiesAdapter.setSourcePathResources(resourcesMap);
+	public static void configureOutputLocationManager(String projectName, IOutputLocationManager mgr) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setOutputLocationManager(mgr);
 	}
+	
+	public void configureShowWeaveInfoMessages(String projectName, boolean showWeaveInfo) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		IBuildMessageHandler handler = compiler.getMessageHandler();
+		if (showWeaveInfo) {
+			handler.dontIgnore(IMessage.WEAVEINFO);
+		} else {
+			handler.ignore(IMessage.WEAVEINFO);
+		}
+	}
+	
 	// End of methods for configuring the build
 	
+	public AjCompiler getCompilerForProjectWithName(String projectName) {
+		return CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+	}
 	
 	protected File getWorkingDir() { return sandboxDir; }
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		if (AjState.stateListener==null) AjState.stateListener=MyStateListener.getInstance();
-		MyStateListener.reset();
-		MyBuildProgressMonitor.reset();
-		MyTaskListManager.reset();
-		MyProjectPropertiesAdapter.reset();
+		// need this line because otherwise reset in previous tests
+		AsmManager.attemptIncrementalModelRepairs = true;
+		if (AjState.stateListener==null) {
+			AjState.stateListener=MyStateListener.getInstance();
 		
+		}
+		MyStateListener.reset();
 		// Create a sandbox in which to work
 		sandboxDir = Ajc.createEmptySandbox();
-		
-		IncrementalStateManager.debugIncrementalStates = true;
 	}
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		AjState.stateListener=null;
+		CompilerFactory.clearCompilerMap();
 		IncrementalStateManager.clearIncrementalStates();
 	}
 	
 	/** Drives a build */
-	public boolean build(String projectName,String configFile) {
-		return AjdeManager.build(projectName,configFile);
+	public boolean doBuild(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		resetCompilerRecords(compiler);
+		addSourceFilesToBuild(projectName, compiler);
+		pause(1000); // delay to allow previous runs build stamps to be OK
+		lognoln("Building project '"+projectName+"'");
+		compiler.build();
+		log("");
+		checkForErrors(compiler);
+		log("Build finished, time taken = " +((MultiProjTestBuildProgressMonitor)
+				compiler.getBuildProgressMonitor()).getTimeTaken()+"ms");
+		return true;	
 	}
 
-	public boolean fullBuild(String projectName,String configFile) {
-		return AjdeManager.fullBuild(projectName,configFile);
-	}
-	
-	/** Looks after communicating with the singleton Ajde instance */
-	public static class AjdeManager {
-		
-		static {
-			Ajde.init(null,
-					  MyTaskListManager.getInstance(),
-					  MyBuildProgressMonitor.getInstance(),
-					  MyProjectPropertiesAdapter.getInstance(),
-					  MyBuildOptionsAdapter.getInstance(),
-					  null,null,
-					  MyErrorHandler.getInstance());
-
-			  MyStateListener sl = MyStateListener.getInstance();
-			  AjState.stateListener = sl;
-		}
-
-		/**
-		 * Builds a specified project using a specified config file.  Subsequent 
-		 * calls to build the same project should result in incremental builds.
-		 */
-		private static boolean build(String projectName,String configFile) {
-			pause(1000); // delay to allow previous runs build stamps to be OK
-			lognoln("Building project '"+projectName+"'");
-			
-			// Ajde.getDefault().enableLogging(System.out);
-			
-			//Ajde.getDefault().getBuildManager().setReportInfoMessages(true); 
-			
-			// Configure the necessary providers and listeners for this compile
-			MyBuildProgressMonitor.reset();
-			MyTaskListManager.reset();
-			MyStateListener.reset();
-			// MyBuildOptionsAdapter.reset(); needs manually resetting in a test
-			
-			MyProjectPropertiesAdapter.setActiveProject(projectName);
-			AsmManager.attemptIncrementalModelRepairs=true;
-			IncrementalStateManager.recordIncrementalStates=true;
-			
-			Ajde.getDefault().getBuildManager().setBuildModelMode(buildModel);
-			
-			// Do the compile
-			Ajde.getDefault().getBuildManager().build(getFile(projectName,configFile));
-			
-			// Wait for it to complete
-			while (!MyBuildProgressMonitor.hasFinished()) {
-				lognoln(".");
-				pause(100);
-			} 
-			log("");
-		    
-			// What happened?
-			if (MyTaskListManager.hasErrorMessages()) {
-				System.err.println("Build errors:");
-				for (Iterator iter = MyTaskListManager.getErrorMessages().iterator(); iter.hasNext();) {
-					IMessage element = (IMessage) iter.next();
-					System.err.println(element);
-				}
-				System.err.println("---------");
-			}
-			log("Build finished, time taken = "+MyBuildProgressMonitor.getTimeTaken()+"ms");
-			return true;
-		}
-		
-		private static boolean fullBuild(String projectName,String configFile) {
-			pause(1000); // delay to allow previous runs build stamps to be OK
-			lognoln("Building project '"+projectName+"'");
-			
-			// Ajde.getDefault().enableLogging(System.out);
-			
-			//Ajde.getDefault().getBuildManager().setReportInfoMessages(true); 
-			
-			// Configure the necessary providers and listeners for this compile
-			MyBuildProgressMonitor.reset();
-			MyTaskListManager.reset();
-			MyStateListener.reset();
-			
-			MyProjectPropertiesAdapter.setActiveProject(projectName);
-			//AsmManager.attemptIncrementalModelRepairs=true;
-			//IncrementalStateManager.recordIncrementalStates=true;
-			
-			Ajde.getDefault().getBuildManager().setBuildModelMode(buildModel);
-			
-			// Do the compile
-			Ajde.getDefault().getBuildManager().buildFresh(getFile(projectName,configFile));
-			
-			// Wait for it to complete
-			while (!MyBuildProgressMonitor.hasFinished()) {
-				lognoln(".");
-				pause(100);
-			} 
-			log("");
-		    
-			// What happened?
-			if (MyTaskListManager.hasErrorMessages()) {
-				System.err.println("Build errors:");
-				for (Iterator iter = MyTaskListManager.getErrorMessages().iterator(); iter.hasNext();) {
-					IMessage element = (IMessage) iter.next();
-					System.err.println(element);
-				}
-				System.err.println("---------");
-			}
-			log("Build finished, time taken = "+MyBuildProgressMonitor.getTimeTaken()+"ms");
-			return true;
-		}
-		
-		private static void pause(int millis) {
-			try {
-				Thread.sleep(millis);
-			} catch (InterruptedException ie) {}
-		}
-		
-		public static void setMessageHandler(IMessageHandler handler) {
-			Ajde.getDefault().setMessageHandler(handler);
-		}
-		
-		public static IMessageHandler getMessageHandler() {
-			AspectJBuildManager buildManager = (AspectJBuildManager) Ajde.getDefault().getBuildManager();
-			return buildManager.getCompilerAdapter().getMessageHandler();
-		}
-//		public static boolean lastCompileDefaultedToBatch() {
-//			return MyTaskListManager.defaultedToBatch();
-//		}
+	/** Drives a full build **/
+	public boolean doFullBuild(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		resetCompilerRecords(compiler);
+		addSourceFilesToBuild(projectName, compiler);
+		pause(1000); // delay to allow previous runs build stamps to be OK
+		lognoln("Building project '"+projectName+"'");
+		compiler.buildFresh();
+		log("");
+		checkForErrors(compiler);
+		log("Build finished, time taken = " +((MultiProjTestBuildProgressMonitor)
+				compiler.getBuildProgressMonitor()).getTimeTaken()+"ms");
+		return true;	
 	}
 	
+	/**
+	 * Clears any maps associated with the compiler
+	 */
+	private void resetCompilerRecords(AjCompiler compiler) {
+		((MultiProjTestBuildProgressMonitor)compiler.getBuildProgressMonitor()).reset();
+		((MultiProjTestMessageHandler)compiler.getMessageHandler()).reset();
+	}
+	
+	/**
+	 * Find the source files associated with the given project and add them to the 
+	 * list of projectSourceFiles in the MultiProjTestCompilerConfiguration to be 
+	 * used in the subsequent build
+	 */
+	private void addSourceFilesToBuild(String pname, AjCompiler compiler) {
+		File projectBase = new File(sandboxDir,pname);
+		List filesForCompilation = new ArrayList();
+		collectUpFiles(projectBase,projectBase,filesForCompilation);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setProjectSourceFiles(filesForCompilation);
+	}
+	
+	private void collectUpFiles(File location, File base, List collectionPoint) {
+		String contents[] = location.list();
+		if (contents==null) return;
+		for (int i = 0; i < contents.length; i++) {
+			String string = contents[i];
+			File f = new File(location,string);
+			if (f.isDirectory()) {
+				collectUpFiles(f,base,collectionPoint);
+			} else if (f.isFile() && (f.getName().endsWith(".aj") || f.getName().endsWith(".java"))) {
+				String fileFound;
+				try {
+					fileFound = f.getCanonicalPath();
+					collectionPoint.add(fileFound);
+//					String toRemove  = base.getCanonicalPath();
+//					if (!fileFound.startsWith(toRemove)) throw new RuntimeException("eh? "+fileFound+"   "+toRemove);
+//					collectionPoint.add(fileFound.substring(toRemove.length()+1));//+1 captures extra separator
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Make sure no errors have been recorded
+	 */
+	private void checkForErrors(AjCompiler compiler) {
+		MultiProjTestMessageHandler handler = (MultiProjTestMessageHandler) compiler.getMessageHandler();
+		if (handler.hasErrorMessages()) {
+			System.err.println("Build errors:");
+			for (Iterator iter = handler.getErrorMessages().iterator(); iter.hasNext();) {
+				IMessage element = (IMessage) iter.next();
+				System.err.println(element);
+			}
+			System.err.println("---------");			
+		}
+	}
+	
+	public List getErrorMessages(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getErrorMessages();
+	}
+	
+	public List getWarningMessages(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getWarningMessages();
+	}
+	
+	public List getWeavingMessages(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getWeavingMessages();
+	}
+	
+	public List getCompilerErrorMessages(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getCompilerErrors();
+	}
+	
+	public void checkForError(String projectName, String anError) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		List messages = ((MultiProjTestMessageHandler)compiler.getMessageHandler()).getErrorMessages();
+		for (Iterator iter = messages.iterator(); iter.hasNext();) {
+			IMessage element = (IMessage) iter.next();
+			if (element.getMessage().indexOf(anError)!=-1) return;
+		}
+		fail("Didn't find the error message:\n'"+anError+"'.\nErrors that occurred:\n"+messages);
+	}
+	
+	private void pause(int millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException ie) {}
+	}
 
 	// Methods for querying what happened during a build and accessing information
 	// about the build:
@@ -256,15 +254,15 @@ public class AjdeInteractionTestbed extends TestCase {
 	 * Helper method for dumping info about which files were compiled and
 	 * woven during the last build.
 	 */
-	public String printCompiledAndWovenFiles() {
+	public String printCompiledAndWovenFiles(String projectName) {
 		StringBuffer sb = new StringBuffer();
-		if (getCompiledFiles().size()==0 && getWovenClasses().size()==0)
+		if (getCompiledFiles(projectName).size()==0 && getWovenClasses(projectName).size()==0)
 			sb.append("No files were compiled or woven\n");
-		for (Iterator iter = getCompiledFiles().iterator(); iter.hasNext();) {
+		for (Iterator iter = getCompiledFiles(projectName).iterator(); iter.hasNext();) {
 			Object element = (Object) iter.next();
 			sb.append("compiled: "+element+"\n");
 		}
-		for (Iterator iter = getWovenClasses().iterator(); iter.hasNext();) {
+		for (Iterator iter = getWovenClasses(projectName).iterator(); iter.hasNext();) {
 			Object element = (Object) iter.next();
 			sb.append("woven: "+element+"\n");
 		}
@@ -274,15 +272,15 @@ public class AjdeInteractionTestbed extends TestCase {
 	/**
 	 * Summary report on what happened in the most recent build
 	 */
-	public void printBuildReport() {
+	public void printBuildReport(String projectName) {
 		System.out.println("\n============== BUILD REPORT =================");
-		System.out.println("Build took: "+getTimeTakenForBuild()+"ms");
-		List compiled=getCompiledFiles();
+		System.out.println("Build took: "+getTimeTakenForBuild(projectName)+"ms");
+		List compiled=getCompiledFiles(projectName);
 		System.out.println("Compiled: "+compiled.size()+" files");
 		for (Iterator iter = compiled.iterator(); iter.hasNext();) {
 			System.out.println("        :"+iter.next());			
 		}
-		List woven=getWovenClasses();
+		List woven=getWovenClasses(projectName);
 		System.out.println("Wove: "+woven.size()+" files");
 		for (Iterator iter = woven.iterator(); iter.hasNext();) {
 			System.out.println("    :"+iter.next());			
@@ -290,18 +288,18 @@ public class AjdeInteractionTestbed extends TestCase {
 		if (wasFullBuild()) System.out.println("It was a batch (full) build");
 		System.out.println("=============================================");
 	}
-	
+
 	/**
 	 * Check we compiled/wove the right number of files, passing '-1' indicates you don't care about
 	 * that number.
 	 */
-	public void checkCompileWeaveCount(int expCompile,int expWoven) {
-		if (expCompile!=-1 && getCompiledFiles().size()!=expCompile)
-			fail("Expected compilation of "+expCompile+" files but compiled "+getCompiledFiles().size()+
-					"\n"+printCompiledAndWovenFiles());
-		if (expWoven!=-1 && getWovenClasses().size()!=expWoven)
-			fail("Expected weaving of "+expWoven+" files but wove "+getWovenClasses().size()+
-					"\n"+printCompiledAndWovenFiles());
+	public void checkCompileWeaveCount(String projectName,int expCompile,int expWoven) {
+		if (expCompile!=-1 && getCompiledFiles(projectName).size()!=expCompile)
+			fail("Expected compilation of "+expCompile+" files but compiled "+getCompiledFiles(projectName).size()+
+					"\n"+printCompiledAndWovenFiles(projectName));
+		if (expWoven!=-1 && getWovenClasses(projectName).size()!=expWoven)
+			fail("Expected weaving of "+expWoven+" files but wove "+getWovenClasses(projectName).size()+
+					"\n"+printCompiledAndWovenFiles(projectName));
 	}
 	
 	public void checkWasntFullBuild() {
@@ -319,16 +317,19 @@ public class AjdeInteractionTestbed extends TestCase {
 	}
 	
 
-	public long getTimeTakenForBuild() {
-		return MyBuildProgressMonitor.getTimeTaken();
+	public long getTimeTakenForBuild(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		return ((MultiProjTestBuildProgressMonitor)compiler.getBuildProgressMonitor()).getTimeTaken();
 	}
 	
-	public List getCompiledFiles() {
-		return MyBuildProgressMonitor.getCompiledFiles();
+	public List getCompiledFiles(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		return ((MultiProjTestBuildProgressMonitor)compiler.getBuildProgressMonitor()).getCompiledFiles();
 	}
 
-	public List getWovenClasses() {
-		return MyBuildProgressMonitor.getWovenClasses();
+	public List getWovenClasses(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		return ((MultiProjTestBuildProgressMonitor)compiler.getBuildProgressMonitor()).getWovenClasses();
 	}
 	
 	// Infrastructure below here
@@ -345,590 +346,6 @@ public class AjdeInteractionTestbed extends TestCase {
 	protected static String getFile(String projectName, String path) {
 		return new File(sandboxDir,projectName+File.separatorChar + path).getAbsolutePath();
 	}
-
-    // Helper classes that communicate with Ajde
-	
-	static class MyErrorHandler implements ErrorHandler {
-		static MyErrorHandler _instance = new MyErrorHandler();
-		private List errorMessages = new ArrayList();
-		
-		private MyErrorHandler() {}
-		
-		public static ErrorHandler getInstance() { 
-			return _instance;
-		}
-
-		public void handleWarning(String message) {
-			log("ErrorHandler.handleWarning("+message+")");
-		}
-
-		public void handleError(String message) {
-			log("ErrorHandler.handleWarning("+message+")");
-			errorMessages.add(message);
-		}
-
-		public void handleError(String message, Throwable t) {
-			log("ErrorHandler.handleError("+message+","+t+")");
-			if (VERBOSE) t.printStackTrace();
-			errorMessages.add(message+","+t+")");
-		}
-		
-		public static List/*String*/ getErrorMessages() {
-			return _instance.errorMessages;
-		}
-		
-	}
-	
-	// -----------------
-	
-	static class MyProjectPropertiesAdapter implements ProjectPropertiesAdapter {
-		
-		private final static boolean VERBOSE = false;
-
-		static MyProjectPropertiesAdapter _instance = new MyProjectPropertiesAdapter();
-		private MyProjectPropertiesAdapter() {}
-		
-		public static MyProjectPropertiesAdapter getInstance() { 
-			return _instance;
-		}
-		
-		public static void reset() {
-			_instance.aspectPath=null;
-			_instance.inpath = null;
-			_instance.sourcePathResources=null;
-			_instance.outputLocationManager=null;
-			_instance.hasOutputPath = true;
-			_instance.outputPath = null;
-		}
-		
-		private String projectName = null;
-		private String outputPath = null;
-		private String classPath = "";
-		private Set aspectPath = null;
-		private Set inpath = null;
-		private Map sourcePathResources = null;
-		private OutputLocationManager outputLocationManager = null;
-		private boolean hasOutputPath = true;
-		
-		public static void setActiveProject(String n) {
-			_instance.projectName = n;
-		}
-
-		private static Hashtable dependants = new Hashtable();
-		
-		public static void addDependancy(String project, String projectItDependsOn) {
-			List l = (List)dependants.get(project);
-			if (l == null) {
-				List ps = new ArrayList();
-				ps.add(projectItDependsOn);
-				dependants.put(project,ps);
-			} else {
-				l.add(projectItDependsOn);
-			}
-		}
-		
-		public static void setSourcePathResources(Map m) {
-			_instance.sourcePathResources = m;
-		}
-
-		public void setClasspath(String path) {
-			this.classPath = path;
-		}
-		
-		public static void setAspectpath(Set path) {
-			_instance.aspectPath = path;
-		}
-		
-		public static void setInpath(Set path) {
-			_instance.inpath = path;
-		}
-		
-		// interface impl below
-		
-		// DOESSOMETHING
-		public String getProjectName() {
-			log("MyProjectProperties.getProjectName() [returning "+projectName+"]");
-			return projectName;
-		}
-
-		// DOESSOMETHING
-		public String getRootProjectDir() {
-			String dir = testdataSrcDir+File.separatorChar+projectName;
-			log("MyProjectProperties.getRootProjectDir() [returning "+dir+"]");
-			return dir;
-		}
-
-		public List getBuildConfigFiles() {
-			log("MyProjectProperties.getBuildConfigFiles()");
-			return null;
-		}
-
-		public String getDefaultBuildConfigFile() {
-			log("MyProjectProperties.getDefaultBuildConfigFile()");
-			return null;
-		}
-
-		public String getLastActiveBuildConfigFile() {
-			log("MyProjectProperties.getLastActiveBuildConfigFile()");
-			return null;
-		}
-
-		public List getProjectSourceFiles() {
-			log("MyProjectProperties.getProjectSourceFiles()");
-			return null;
-		}
-
-		public String getProjectSourcePath() {
-			log("MyProjectProperties.getProjectSourcePath()");
-			return null;
-		}
-
-		// DOESSOMETHING
-		public String getClasspath() {
-			log("MyProjectProperties.getClasspath()");
-			// AJDT has all the output directories on it's classpath
-			StringBuffer sb = new StringBuffer();
-			String outputPath = getOutputPath();
-			sb.append(outputPath);
-			if (outputLocationManager != null) {
-				List allOutputPaths = outputLocationManager.getAllOutputLocations();
-				for (Iterator iterator = allOutputPaths.iterator(); iterator
-						.hasNext();) {
-					File dir = (File) iterator.next();
-					if (!dir.getAbsolutePath().equals(getOutputPath())) {
-						sb.append(File.pathSeparator + dir.getAbsolutePath());
-					}
-				}
-			}
-			String cp =  
-			  sb.toString() + File.pathSeparator + 
-			  new File(testdataSrcDir) + File.pathSeparator +
-    		  System.getProperty("sun.boot.class.path") + 
-    		  File.pathSeparator + "../runtime/bin" +
-    		  File.pathSeparator + this.classPath + 
-    		  File.pathSeparator +  System.getProperty("aspectjrt.path") +
-    		  File.pathSeparator +  "../lib/junit/junit.jar" +
-    		  "c:/batik/batik-1.6/lib/batik-util.jar;"+
-    		  "c:/batik/batik-1.6/lib/batik-awt-util.jar;"+
-    		  "c:/batik/batik-1.6/lib/batik-dom.jar;"+
-    		  "c:/batik/batik-1.6/lib/batik-svggen.jar;"+
-    		  File.pathSeparator+".."+File.separator+"lib" + File.separator+"test"+File.separator+"aspectjrt.jar";
-			
-			// look at dependant projects
-			List projects = (List)dependants.get(projectName);
-			if (projects!=null) {
-				for (Iterator iter = projects.iterator(); iter.hasNext();) {
-					cp = getFile((String)iter.next(),"bin")+File.pathSeparator+cp;
-				}
-			}
-			//System.err.println("For project "+projectName+" getClasspath() returning "+cp);
-			return cp;
-		}
-		
-		public String getOutputPath() {
-			if (!hasOutputPath) return null; 
-				
-			String dir = getFile(projectName,"bin");
-			log("MyProjectProperties.getOutputPath() [returning "+dir+"]");
-			return dir;
-			//return null;
-		}
-		
-		public static void setOutputLocationManager(OutputLocationManager mgr,boolean hasOutputPath ) {
-			_instance.hasOutputPath = hasOutputPath;
-			_instance.outputLocationManager = mgr;
-		}
-		
-		public static void setOutputLocationManager(OutputLocationManager mgr) {
-			_instance.outputLocationManager = mgr;
-		}
-		
-	    public OutputLocationManager getOutputLocationManager() {
-	    	return outputLocationManager;
-//	    	if (testHasSetOutputLocationManager) {
-//	    		return outputLocationManager;
-//			}
-//	    	return new MyOutputLocationManager(sandboxDir + File.separator + projectName);
-	    }
-
-		public String getBootClasspath() {
-			log("MyProjectProperties.getBootClasspath()");
-			return null;
-		}
-
-		public String getClassToExecute() {
-			log("MyProjectProperties.getClassToExecute()");
-			return null;
-		}
-
-		public String getExecutionArgs() {
-			log("MyProjectProperties.getExecutionArgs()");
-			return null;
-		}
-
-		public String getVmArgs() {
-			log("MyProjectProperties.getVmArgs()");
-			return null;
-		}
-
-		public Set getInJars() {
-			log("MyProjectProperties.getInJars()");
-			return null;
-		}
-
-		public Set getInpath() {
-			log("MyProjectProperties.getInPath(" + inpath + ")");
-			return inpath;
-		}
-
-		public Map getSourcePathResources() {
-			log("MyProjectProperties.getSourcePathResources()");
-			return sourcePathResources;
-		}
-
-		public String getOutJar() {
-			log("MyProjectProperties.getOutJar()");
-			return null;
-		}
-
-		public Set getSourceRoots() {
-			log("MyProjectProperties.getSourceRoots()");
-			return null;
-		}
-
-		public Set getAspectPath() {
-			log("MyProjectProperties.getAspectPath("+aspectPath+")");
-			return aspectPath;
-		}
-		
-		public static void log(String s) {
-			if (VERBOSE) System.out.println(s);
-		}
-		
-	}
-	
-	// -----------------------
-	static class MyBuildProgressMonitor implements BuildProgressMonitor {
-
-		public static boolean VERBOSE = false;
-		private static MyBuildProgressMonitor _instance = new MyBuildProgressMonitor();
-		private MyBuildProgressMonitor() {}
-		
-		private List compiledFiles=new ArrayList();
-		private List wovenClasses=new ArrayList();
-		
-
-		public static BuildProgressMonitor getInstance() { 
-			return _instance;
-		}
-		
-		public static void reset() {
-			_instance.finished = false;
-			_instance.wasFullBuild=true;
-			_instance.compiledFiles.clear();
-			_instance.wovenClasses.clear();
-		}
-		
-		public static boolean hasFinished() {
-			return _instance.finished;
-		}
-		
-		public static List getCompiledFiles() { return _instance.compiledFiles;}
-		public static List getWovenClasses()  { return _instance.wovenClasses; }
-		
-		//---
-		
-		private long starttime = 0;
-		private long totaltimetaken = 0;
-		private boolean finished = false;
-		private boolean wasFullBuild = true;
-
-		public void start(String configFile) {
-			starttime = System.currentTimeMillis();
-			log("BuildProgressMonitor.start("+configFile+")");
-		}
-
-		public void setProgressText(String text) {
-			log("BuildProgressMonitor.setProgressText("+text+")");
-			if (text.startsWith("compiled: ")) {
-				compiledFiles.add(text.substring(10));
-			} else if (text.startsWith("woven class ")) {
-				wovenClasses.add(text.substring(12));	
-			} else if (text.startsWith("woven aspect ")) {
-				wovenClasses.add(text.substring(13));
-			}
-		}
-
-		public void setProgressBarVal(int newVal) {
-			log("BuildProgressMonitor.setProgressBarVal("+newVal+")");
-		}
-
-		public void incrementProgressBarVal() {
-			log("BuildProgressMonitor.incrementProgressBarVal()");
-		}
-
-		public void setProgressBarMax(int maxVal) {
-			log("BuildProgressMonitor.setProgressBarMax("+maxVal+")");
-		}
-
-		public int getProgressBarMax() {
-			log("BuildProgressMonitor.getProgressBarMax() [returns 100]");
-			return 100;
-		}
-
-		public void finish(boolean b) {
-			log("BuildProgressMonitor.finish()");
-			_instance.finished=true;
-			_instance.wasFullBuild = b;
-			_instance.totaltimetaken=(System.currentTimeMillis()-starttime);
-		}
-		
-		public static long getTimeTaken() {
-			return _instance.totaltimetaken;
-		}
-		
-		public static void log(String s) {
-			if (VERBOSE) System.out.println(s);
-		}
-		
-		public static boolean wasFullBuild() {
-			return _instance.wasFullBuild;
-		}
-		
-
-	}
-	
-	// ----
-	
-	static class MyTaskListManager implements TaskListManager {
-
-		private static final String CANT_BUILD_INCREMENTAL_INDICATION = "Unable to perform incremental build";
-		private static final String DOING_BATCH_BUILD_INDICATION = "Performing batch build for config";
-		
-		private final static boolean VERBOSE = false;
-		static MyTaskListManager _instance = new MyTaskListManager();
-		private MyTaskListManager() {}
-		
-		private boolean receivedNonIncrementalBuildMessage = false;
-		private boolean receivedBatchBuildMessage = false;
-		private List errorMessages = new ArrayList();
-		private List warningMessages = new ArrayList();
-		private List weavingMessages = new ArrayList();
-		
-		public static void reset() {
-			_instance.receivedNonIncrementalBuildMessage=false;
-			_instance.receivedBatchBuildMessage=false;
-			_instance.errorMessages.clear();
-			_instance.warningMessages.clear();
-			_instance.weavingMessages.clear();
-		}
-		
-//		public static boolean defaultedToBatch() {
-//			return _instance.receivedNonIncrementalBuildMessage;
-//		}
-//		
-//		public static boolean didBatchBuild() {
-//			return _instance.receivedBatchBuildMessage;
-//		}
-		
-		public static boolean hasErrorMessages() {
-			return !_instance.errorMessages.isEmpty();
-		}
-		
-		public static List/*IMessage*/ getErrorMessages() {
-			return _instance.errorMessages;
-		}
-		
-		public static List/*IMessage*/ getWarningMessages() {
-			return _instance.warningMessages;
-		}
-		
-		public static List/*IMessage*/ getWeavingMessages() {
-			return _instance.weavingMessages;
-		}
-		
-		public static TaskListManager getInstance() { 
-			return _instance;
-		}
-
-		public void addSourcelineTask(String message, ISourceLocation sourceLocation, Kind kind) {
-			log("TaskListManager.addSourcelineTask("+message+","+sourceLocation+","+kind+")");
-		}
-
-		// DOESSOMETHING
-		public void addSourcelineTask(IMessage message) {
-//			if (message.getKind()==IMessage.INFO) {
-//				if (message.getMessage().startsWith(CANT_BUILD_INCREMENTAL_INDICATION)) _instance.receivedNonIncrementalBuildMessage=true;
-//				if (message.getMessage().startsWith(DOING_BATCH_BUILD_INDICATION)) _instance.receivedBatchBuildMessage=true;
-//			}
-			if (message.getKind()==IMessage.ERROR) errorMessages.add(message);
-			if (message.getKind()==IMessage.WARNING) warningMessages.add(message);
-			if (message.getKind()==IMessage.WEAVEINFO) weavingMessages.add(message);
-			log("TaskListManager.addSourcelineTask("+message+")");
-		}
-
-		public boolean hasWarning() {
-			log("TaskListManager.hasWarning() [returning "+(!warningMessages.isEmpty())+"]");
-			return !warningMessages.isEmpty();
-		}
-
-		public void addProjectTask(String message, Kind kind) {
-			log("TaskListManager.addProjectTask("+message+","+kind+")");
-		}
-
-		public void clearTasks() {
-			log("TaskListManager.clearTasks()");
-		}
-		
-		public static void log(String s) {
-			if (VERBOSE) System.out.println(s);
-		}
-	}
-
-	// ----
-	
-	static class MyBuildOptionsAdapter implements BuildOptionsAdapter {
-		static MyBuildOptionsAdapter _instance = new MyBuildOptionsAdapter();
-		private MyBuildOptionsAdapter() {}
-		
-		private Map javaOptionsMap;
-		
-		public static void setJavaOptionsMap(Map options) {
-			_instance.javaOptionsMap = options;
-		}
-		
-		public static void setNonStandardOptions(String options) {
-			_instance.nonstandardoptions = options;
-		}
-
-		private String nonstandardoptions=null;
-		
-		public static void reset() {
-			_instance.nonstandardoptions=null;
-			_instance.javaOptionsMap = null;
-		}
-		
-		public static BuildOptionsAdapter getInstance() { 
-			return _instance;
-		}
-
-		public Map getJavaOptionsMap() {
-			if (javaOptionsMap != null && !javaOptionsMap.isEmpty() ) return javaOptionsMap;
-			
-			Hashtable ht = new Hashtable();
-			ht.put("org.eclipse.jdt.core.compiler.compliance","1.5");
-			ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.5");
-			ht.put("org.eclipse.jdt.core.compiler.source","1.5");
-			return ht;				
-		}
-
-		public boolean getUseJavacMode() {
-			return false;
-		}
-
-		public String getWorkingOutputPath() {
-			return null;
-		}
-
-		public boolean getPreprocessMode() {
-			return false;
-		}
-
-		public String getCharacterEncoding() {
-			return null;
-		}
-
-		public boolean getSourceOnePointFourMode() {
-			return false;
-		}
-
-		// DOESSOMETHING
-		public boolean getIncrementalMode() {
-			return true;
-		}
-
-		public boolean getLenientSpecMode() {
-			return false;
-		}
-
-		public boolean getStrictSpecMode() {
-			return false;
-		}
-
-		public boolean getPortingMode() {
-			return false;
-		}
-
-		public String getNonStandardOptions() {
-			return nonstandardoptions;
-		}
-
-		public String getComplianceLevel() {
-			// AJDT doesn't set the compliance level directly
-			// instead it relies on the javaOptionsMap
-			return null;
-		}
-
-		public String getSourceCompatibilityLevel() {
-			// AJDT doesn't set the source compatibility level
-			// instead it relies on the javaOptionsMap
-			return null;
-		}
-
-		public Set getWarnings() {
-			return null;
-		}
-
-		public Set getDebugLevel() {
-			return null;
-		}
-
-		public boolean getNoImportError() {
-			return false;
-		}
-
-		public boolean getPreserveAllLocals() {
-			return false;
-		}
-	}
-
-	// ----
-
-	static class MyOutputLocationManager implements OutputLocationManager {
-
-		private File classOutputLoc;
-		private File resourceOutputLoc;
-		private String testProjectOutputPath;
-		private List allOutputLocations;
-		private File outputLoc;
-		
-		public MyOutputLocationManager(String testProjectPath) {
-			this.testProjectOutputPath = testProjectPath + File.separator + "bin";
-			outputLoc = new File(testProjectOutputPath);
-			
-			allOutputLocations = new ArrayList();
-			allOutputLocations.add(outputLoc);
-		}
-		
-		public File getOutputLocationForClass(File compilationUnit) {
-			return outputLoc;
-		}
-
-		public File getOutputLocationForResource(File resource) {
-			return outputLoc;
-		}
-
-		public List /*File*/ getAllOutputLocations() {
-			return allOutputLocations;
-		}
-
-		public File getDefaultOutputLocation() {
-			return outputLoc;
-		}
-		
-	}
-	
-	// ----
 	
 	static class MyStateListener extends AbstractStateListener {
 		

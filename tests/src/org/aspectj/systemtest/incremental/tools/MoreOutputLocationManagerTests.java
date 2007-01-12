@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.ajde.OutputLocationManager;
+import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AjState;
@@ -61,7 +61,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		initialiseProject("inpathTesting");
 		inpathTestingDir = getWorkingDir() + File.separator + "inpathTesting";
 		expectedOutputDir = inpathTestingDir + File.separator + "bin";
-		configureOutputLocationManager(new MyOutputLocationManager(inpathTestingDir), false);
+		configureOutputLocationManager("inpathTesting",new SingleDirOutputLocMgr(inpathTestingDir));
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 
 		// expect to compile the aspect in 'inpathTesting' project and weave
 		// both the aspect and the class on the inpath.
-		checkCompileWeaveCount(1,2);
+		checkCompileWeaveCount("inpathTesting",1,2);
 		
 		// get hold of the state for this project - expect to find one
 		AjState state = getState();
@@ -190,7 +190,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		build("inpathTesting");
 		// expect to compile the aspect in 'inpathTesting' project and weave
 		// both the aspect and the class in the jar on the inpath.
-		checkCompileWeaveCount(1,2);
+		checkCompileWeaveCount("inpathTesting",1,2);
 		
 		AjState state = getState();
 
@@ -299,7 +299,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	}	
 	
 	public void testOutxml() {
-		configureNonStandardCompileOptions("-outxml");
+		configureNonStandardCompileOptions("inpathTesting","-outxml");
 		build("inpathTesting");
 		String resource = expectedOutputDir + File.separator + "META-INF" + File.separator + "aop-ajc.xml";
 		File f = new File(resource);
@@ -307,7 +307,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	}
 	
 	public void testAspectsRecordedOnlyOnceInState() {
-		configureNonStandardCompileOptions("-outxml");
+		configureNonStandardCompileOptions("inpathTesting","-outxml");
 		build("inpathTesting");
 		AjState state = getState();
 		Map m = state.getAspectNamesToFileNameMap();
@@ -319,27 +319,27 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	
 	private AjState getState() {
 		// get hold of the state for this project - expect to find one
-		AjState state = IncrementalStateManager.retrieveStateFor(inpathTestingDir + File.separator + "build.lst" );
+		AjState state = IncrementalStateManager.retrieveStateFor(inpathTestingDir);
 		assertNotNull("expected to find AjState for build config " + inpathTestingDir 
-				+ File.separator + "build.lst but didn't", state);
+				+ " but didn't", state);
 		return state;
 	}
 	
 	private void addInpathEntry(String entry) {
 		if (entry == null) {
-			configureInPath(null);
+			configureInPath("inpathTesting",null);
 			return;
 		}
 		File f = new File(entry);
 		Set s = new HashSet();
 		s.add(f);
-		configureInPath(s);
+		configureInPath("inpathTesting",s);
 	}
 	
 	/**
 	 * Sends all output to the same directory
 	 */
-	private static class SingleDirOutputLocMgr implements OutputLocationManager {
+	private static class SingleDirOutputLocMgr implements IOutputLocationManager {
 
 		private File classOutputLoc;
 		private File resourceOutputLoc;

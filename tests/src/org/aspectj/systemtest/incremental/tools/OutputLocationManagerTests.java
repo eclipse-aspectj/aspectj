@@ -1,14 +1,14 @@
-/* *******************************************************************
- * Copyright (c) 2006 Contributors.
- * All rights reserved. 
+/********************************************************************
+ * Copyright (c) 2006 Contributors. All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- * Adrian Colyer          initial implementation
-* ******************************************************************/
+ *    Adrian Colyer      initial implementation
+ *    Helen Hawkins      Converted to new interface (bug 148190)
+ *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.ajde.OutputLocationManager;
+import org.aspectj.ajde.core.IOutputLocationManager;
 
 /**
  * Test the OutputLocationManager support used to enable multiple output folders.
@@ -33,11 +33,11 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		super.setUp();
 		initialiseProject(PROJECT_NAME);
 		this.outputLocationManager = new MyOutputLocationManager(new File(getFile(PROJECT_NAME, "")));
-		configureOutputLocationManager(this.outputLocationManager);
+		configureOutputLocationManager(PROJECT_NAME,this.outputLocationManager);
 	}
 	
 	public void testDefaultOutputLocationUsedWhenNoOutputLocationManager() {
-		configureOutputLocationManager(null);
+		configureOutputLocationManager(PROJECT_NAME,null);
 		build(PROJECT_NAME);
 		assertFileExists(PROJECT_NAME,"bin/a/A.class");
 		assertFileExists(PROJECT_NAME,"bin/b/B.class");
@@ -53,26 +53,26 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		Map resourceMap = new HashMap();
 		resourceMap.put("resourceOne.txt", new File(getFile(PROJECT_NAME,"srcRootOne/resourceOne.txt")));
 		resourceMap.put("resourceTwo.txt", new File(getFile(PROJECT_NAME,"srcRootTwo/resourceTwo.txt")));
-		configureResourceMap(resourceMap);
+		configureResourceMap(PROJECT_NAME,resourceMap);
 		build(PROJECT_NAME);
 		assertFileExists(PROJECT_NAME,"target/main/classes/resourceOne.txt");
 		assertFileExists(PROJECT_NAME,"target/test/classes/resourceTwo.txt");		
 	}
 	
 	public void testGeneratedClassesPlacedInAppropriateOutputFolder() {
-		configureNonStandardCompileOptions("-XnoInline");
+		configureNonStandardCompileOptions(PROJECT_NAME,"-XnoInline");
 		build(PROJECT_NAME);
 		assertFileExists(PROJECT_NAME,"target/main/classes/a/A.class");
 		assertFileExists(PROJECT_NAME,"target/main/classes/a/A$AjcClosure1.class");		
 	}
-	
+
 	/**
 	 * Tests the case when we have two aspects, each of which are
 	 * sent to a different output location. There should be an 
 	 * aop.xml file in each of the two output directories.
 	 */
 	public void testOutXmlForAspectsWithDifferentOutputDirs() {
-		configureNonStandardCompileOptions("-outxml");
+		configureNonStandardCompileOptions(PROJECT_NAME,"-outxml");
 		build(PROJECT_NAME);
 		assertFileExists(PROJECT_NAME,"target/main/classes/META-INF/aop-ajc.xml");
 		assertFileExists(PROJECT_NAME,"target/test/classes/META-INF/aop-ajc.xml");
@@ -86,13 +86,12 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		checkXMLAspectCount(PROJECT_NAME,"c.C$AnAspect",1,getFile(PROJECT_NAME,"target/anotherTest/classes"));
 	}
 	
-	
 	protected void assertFileExists(String project, String relativePath) {
 		assertTrue("file " + relativePath + " should have been created as a result of building " + project,
 				    new File(getFile(project, relativePath)).exists());
 	}
 	
-	private static class MyOutputLocationManager implements OutputLocationManager {
+	private static class MyOutputLocationManager implements IOutputLocationManager {
 		
 		private File projectHome;
 		private List allOutputDirs;

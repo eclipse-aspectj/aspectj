@@ -8,7 +8,7 @@
 	<classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
 	<classpathentry kind="src" path="/util"/>
 	<classpathentry kind="src" path="/bridge"/>
-	<classpathentry kind="src" path="/ajde"/>
+	<classpathentry kind="src" path="/ajde.core"/>
 	<classpathentry kind="src" path="/asm"/>
 	<classpathentry sourcepath="/lib/bcel/bcel-src.zip" kind="lib" path="/lib/bcel/bcel.jar"/>
 	<classpathentry kind="lib" path="/lib/ant/lib/ant-launcher.jar"/>
