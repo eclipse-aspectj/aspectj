@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -37,7 +38,10 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.IconRegistry;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 /**
  * @author Mik Kersten
@@ -73,7 +77,7 @@ class BrowserView extends JPanel {
  //           this.masterView = masterView;
             this.slaveView = slaveView;
             this.icons = icons;
-            configs_comboBox = new JComboBox(Ajde.getDefault().getProjectProperties().getBuildConfigFiles().toArray());
+            configs_comboBox = new JComboBox(Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles().toArray());
             configs_comboBox.setRenderer(new ConfigsCellRenderer());
 //            configs_comboBox.addItemListener(new ItemListener() {
 //            	public void itemStateChanged(ItemEvent e) {
@@ -81,8 +85,8 @@ class BrowserView extends JPanel {
 //            	}
 //            });
             
-            if (Ajde.getDefault().getProjectProperties().getBuildConfigFiles().size() > 0) {
-	            Ajde.getDefault().getConfigurationManager().setActiveConfigFile((String)Ajde.getDefault().getProjectProperties().getBuildConfigFiles().get(0));	
+            if (Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles().size() > 0) {
+            	Ajde.getDefault().getBuildConfigManager().setActiveConfigFile((String)Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles().get(0));	
             }
             
             jbInit();
@@ -93,7 +97,9 @@ class BrowserView extends JPanel {
 
             nav_toolBar.remove(joinpointProbe_button);
         } catch(Exception e) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+        	Message msg = new Message("Could not initialize GUI.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
+
         }
     }
 
@@ -318,7 +324,7 @@ class BrowserView extends JPanel {
             if (!configs_comboBox.getSelectedItem().toString().equals(lastSelectedConfig)) {
                 //TopManager.INSTANCE.VIEW_MANAGER.readStructureView();
                 lastSelectedConfig = configs_comboBox.getSelectedItem().toString();
-                Ajde.getDefault().getConfigurationManager().setActiveConfigFile(lastSelectedConfig);
+                Ajde.getDefault().getBuildConfigManager().setActiveConfigFile(lastSelectedConfig);
             }
         }
     }

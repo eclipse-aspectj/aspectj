@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -23,14 +24,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import org.aspectj.ajde.Ajde;
-
 /**
  * @author  Mik Kersten
  */
-class BuildProgressPanel extends JPanel {
+public class BuildProgressPanel extends JPanel {
 
-	private static final long serialVersionUID = -8045879840621749183L;
+	//private static final long serialVersionUID = -8045879840621749183L;
 	private static final int MAX_VAL = 100;
 	//private JDialog dialog = null;
 
@@ -44,6 +43,8 @@ class BuildProgressPanel extends JPanel {
     JPanel jPanel1 = new JPanel();
     JProgressBar compile_progressBar = new JProgressBar();
 
+    private boolean buildIsCancelled = false;
+	
 	/**
 	 * @param   maxVal          the value to which value to which the progress bar will
 	 *                          count up to (in seconds)
@@ -131,6 +132,10 @@ class BuildProgressPanel extends JPanel {
 	}
 
 	void cancel_button_actionPerformed(ActionEvent e) {
-		Ajde.getDefault().getBuildManager().abortBuild();
+		buildIsCancelled = true;
+	}
+	
+	public boolean isCancelRequested() {
+		return buildIsCancelled;
 	}
 }

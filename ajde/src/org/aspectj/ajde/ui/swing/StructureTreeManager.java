@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
      
@@ -19,11 +20,22 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.AbstractIcon;
+import org.aspectj.ajde.ui.GlobalStructureView;
+import org.aspectj.ajde.ui.IStructureViewNode;
+import org.aspectj.ajde.ui.StructureView;
+import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 /**
  * @author  Mik Kersten
@@ -122,7 +134,8 @@ class StructureTreeManager {
             try {
                 SwingUtilities.invokeAndWait(update);
             } catch (Exception e) {
-                Ajde.getDefault().getErrorHandler().handleError("Could not update tree.", e);
+            	Message msg = new Message("Could not update tree.",IMessage.ERROR,e,null);
+            	Ajde.getDefault().getMessageHandler().handleMessage(msg);
             }
         }
 	}

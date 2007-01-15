@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -17,6 +18,7 @@ package org.aspectj.ajde.ui.swing;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -26,12 +28,17 @@ import javax.swing.JPopupMenu;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.asm.IProgramElement;
 
+/**
+ * Creates a popup menu that displays all the available .lst files. When one
+ * is selected it runs a full build of files within the selected .lst file
+ * in a separate thread.  
+ */
 public class BuildConfigPopupMenu extends JPopupMenu {
 
 	private static final long serialVersionUID = -6730132748667530482L;
 
 	public BuildConfigPopupMenu(final AbstractAction action) {
-		java.util.List configFiles = Ajde.getDefault().getProjectProperties().getBuildConfigFiles();
+		List configFiles = Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles();
 		for (Iterator it = configFiles.iterator(); it.hasNext(); ) {
 	    	final String buildConfig = (String)it.next();
 	    	JMenuItem buildItem = new JMenuItem(buildConfig);
@@ -39,17 +46,15 @@ public class BuildConfigPopupMenu extends JPopupMenu {
 	    	buildItem.addActionListener(
 	    		new ActionListener() {
 		    		public void actionPerformed(ActionEvent e) {
-		    			Ajde.getDefault().getConfigurationManager().setActiveConfigFile(buildConfig);
-							// ??? should we be able to do a build refresh if shift is down?
-//                        if (EditorManager.isShiftDown(e.getModifiers())) {
-//                            Ajde.getDefault().getBuildManager().buildFresh();
-//                        } else {
-                            Ajde.getDefault().getBuildManager().build();
-//                        }
+		    			Ajde.getDefault().getBuildConfigManager().setActiveConfigFile(buildConfig);
+		    			// A separate thread is required here because the buildProgresssMonitor
+		    			// that monitors the build needs to be in a different thread
+		    			// to that which is doing the build (swing threading issues)
+		    			Ajde.getDefault().runBuildInDifferentThread(buildConfig, true);
 				        action.actionPerformed(e);
 					}
 	    		});
-	    	buildItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.FILE_LST).getIconResource());
+	    	buildItem.setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.FILE_LST).getIconResource());
 	    	this.add(buildItem);
 		}
 	}

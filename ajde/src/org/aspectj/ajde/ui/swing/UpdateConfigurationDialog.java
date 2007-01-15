@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -41,6 +42,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.TitledBorder;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 /**
  * Used for automatically updating build configuration files (".lst") when a
@@ -106,7 +109,8 @@ public class UpdateConfigurationDialog extends JFrame {
             this.setLocation(posX, posY);
         }
         catch(Exception e) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not open configuration dialog", e);
+        	Message msg = new Message("Could not open configuration dialog",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         }
     }
 

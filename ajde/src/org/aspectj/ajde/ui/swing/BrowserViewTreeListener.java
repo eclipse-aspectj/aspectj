@@ -8,19 +8,27 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
      
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.*;
-import javax.swing.event.*;
-//import javax.swing.tree.TreePath;
+import javax.swing.AbstractAction;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
+import org.aspectj.ajde.Ajde;
 import org.aspectj.asm.IProgramElement;
 
 /**
@@ -107,7 +115,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
 //            }
 
             JPopupMenu popup = new JPopupMenu();
-            JMenuItem showSourcesItem = new JMenuItem("Display sources", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.CODE));
+            JMenuItem showSourcesItem = new JMenuItem("Display sources", Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.CODE));
             showSourcesItem.setFont(new java.awt.Font("Dialog", 0, 11));
             showSourcesItem.addActionListener(new AbstractAction() {
                 
@@ -139,14 +147,14 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             popup.add(showSourcesItem);
 
             popup.addSeparator();
-            JMenuItem generatePCD = new JMenuItem("Pointcut Wizard (alpha)...", AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.POINTCUT));
+            JMenuItem generatePCD = new JMenuItem("Pointcut Wizard (alpha)...", Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.POINTCUT));
             generatePCD.setFont(new java.awt.Font("Dialog", 0, 11));
             generatePCD.addActionListener(new AbstractAction() {
                 
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-                    AjdeUIManager.getDefault().getViewManager().extractAndInsertSignatures(signatures, true);
+					Ajde.getDefault().getViewManager().extractAndInsertSignatures(signatures, true);
                 }
             });
             popup.add(generatePCD);

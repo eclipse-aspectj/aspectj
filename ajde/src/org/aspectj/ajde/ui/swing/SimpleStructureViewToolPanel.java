@@ -8,23 +8,37 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.StructureView;
+import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IHierarchyListener;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 public class SimpleStructureViewToolPanel extends JPanel {
 
@@ -53,7 +67,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
 
     public final IHierarchyListener MODEL_LISTENER = new IHierarchyListener() {
         public void elementsUpdated(IHierarchy model) {
-			String path = Ajde.getDefault().getConfigurationManager().getActiveConfigFile();
+			String path = Ajde.getDefault().getBuildConfigManager().getActiveConfigFile();
 			String fileName = "<no active config>"; 
 			if (path != null) fileName = new File(path).getName();
 			updateCurrConfigLabel(fileName);
@@ -68,11 +82,12 @@ public class SimpleStructureViewToolPanel extends JPanel {
 
 	public SimpleStructureViewToolPanel(StructureView currentView) {
 		this.currentView = currentView;
-		Ajde.getDefault().getStructureModelManager().addListener(MODEL_LISTENER);
+		AsmManager.getDefault().addListener(MODEL_LISTENER);
 		try {
 			jbInit();
 		} catch (Exception e) {
-			Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+        	Message msg = new Message("Could not initialize GUI.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
 		}
 		updateCurrConfigLabel("<no active config>");
 	}
@@ -99,7 +114,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
                 structureView_button_actionPerformed(e);
             }
         });
-        structureView_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureViewIcon());
+        structureView_button.setIcon(Ajde.getDefault().getIconRegistry().getStructureViewIcon());
         structureView_button.setBorder(border2);
         structureView_button.setToolTipText("Navigate back");
         structureView_button.setPreferredSize(new Dimension(20, 20));
@@ -116,7 +131,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
                 forward_button_actionPerformed(e);
             }
         });
-        forward_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getForwardIcon());
+        forward_button.setIcon(Ajde.getDefault().getIconRegistry().getForwardIcon());
         forward_button.setToolTipText("Navigate forward");
         forward_button.setPreferredSize(new Dimension(20, 20));
         forward_button.setMinimumSize(new Dimension(20, 20));
@@ -127,7 +142,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
         back_button.setMinimumSize(new Dimension(20, 20));
         back_button.setPreferredSize(new Dimension(20, 20));
         back_button.setToolTipText("Navigate back");
-        back_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getBackIcon());
+        back_button.setIcon(Ajde.getDefault().getIconRegistry().getBackIcon());
         back_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 back_button_actionPerformed(e);
@@ -142,7 +157,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
         hideNonAJ_button.setMinimumSize(new Dimension(20, 20));
         hideNonAJ_button.setPreferredSize(new Dimension(20, 20));
         hideNonAJ_button.setToolTipText("Hide non-AspectJ members");
-        hideNonAJ_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getHideNonAJIcon());
+        hideNonAJ_button.setIcon(Ajde.getDefault().getIconRegistry().getHideNonAJIcon());
         hideNonAJ_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 hideNonAJ_button_actionPerformed(e);
@@ -153,7 +168,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
         hideAssociations_button.setMinimumSize(new Dimension(20, 20));
         hideAssociations_button.setPreferredSize(new Dimension(20, 20));
         hideAssociations_button.setToolTipText("Hide associations");
-        hideAssociations_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getHideAssociationsIcon());
+        hideAssociations_button.setIcon(Ajde.getDefault().getIconRegistry().getHideAssociationsIcon());
         hideAssociations_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 hideAssociations_button_actionPerformed(e);
@@ -166,7 +181,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
                 sort_button_actionPerformed(e);
             }
         });
-        sort_button.setIcon(AjdeUIManager.getDefault().getIconRegistry().getOrderIcon());
+        sort_button.setIcon(Ajde.getDefault().getIconRegistry().getOrderIcon());
         sort_button.setToolTipText("Sort member");
         sort_button.setPreferredSize(new Dimension(20, 20));
         sort_button.setMinimumSize(new Dimension(20, 20));
@@ -189,11 +204,11 @@ public class SimpleStructureViewToolPanel extends JPanel {
 	}
 
     private void forward_button_actionPerformed(ActionEvent e) {
-		Ajde.getDefault().getStructureViewManager().fireNavigateForwardAction(currentView);
+    	Ajde.getDefault().getStructureViewManager().fireNavigateForwardAction(currentView);
     }
 
     private void back_button_actionPerformed(ActionEvent e) {
-		Ajde.getDefault().getStructureViewManager().fireNavigateBackAction(currentView);
+    	Ajde.getDefault().getStructureViewManager().fireNavigateBackAction(currentView);
     }
 
     void structureView_button_actionPerformed(ActionEvent e) {

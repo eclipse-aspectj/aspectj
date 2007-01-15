@@ -8,17 +8,19 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
 package org.aspectj.ajde.ui.swing;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
-//import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.GlobalStructureView;
+import org.aspectj.ajde.ui.GlobalViewProperties;
+import org.aspectj.ajde.ui.StructureViewProperties;
 
 /**
  * Responsible for displaying and controlling the configuration and output of a
@@ -60,7 +62,7 @@ public class BrowserViewManager {
     public void extractAndInsertSignatures(java.util.List signatures, boolean calls) {
         PointcutWizard pointcutWizard = new PointcutWizard(signatures);
         pointcutWizard.setVisible(true);
-        pointcutWizard.setLocation(AjdeUIManager.getDefault().getRootFrame().getX()+100, AjdeUIManager.getDefault().getRootFrame().getY()+100);
+        pointcutWizard.setLocation(Ajde.getDefault().getRootFrame().getX()+100, Ajde.getDefault().getRootFrame().getY()+100);
     }
     
     {   

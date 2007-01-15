@@ -9,6 +9,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
 
@@ -16,9 +17,9 @@ package org.aspectj.ajde.ui.swing;
 
 import java.util.List;
 
+import org.aspectj.ajde.IconRegistry;
 import org.aspectj.ajde.ui.*;
 import org.aspectj.asm.*;
-import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten

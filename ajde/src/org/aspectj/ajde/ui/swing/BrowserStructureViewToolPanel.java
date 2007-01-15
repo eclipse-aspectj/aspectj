@@ -9,21 +9,37 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
 
-import javax.swing.*;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
 import javax.swing.border.Border;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.GlobalStructureView;
+import org.aspectj.ajde.ui.StructureView;
+import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 public class BrowserStructureViewToolPanel extends JPanel {
 
@@ -63,7 +79,8 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		try {
 			jbInit();
 		} catch (Exception e) {
-			Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+        	Message msg = new Message("Could not initialize GUI.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
 		}
 		initToolBar();
 	}
@@ -73,21 +90,21 @@ public class BrowserStructureViewToolPanel extends JPanel {
 			granularityCombo = new AJButtonMenuCombo(
 				"Visible granularity",
 				"Visible granularity",
-				AjdeUIManager.getDefault().getIconRegistry().getGranularityIcon(),
+				Ajde.getDefault().getIconRegistry().getGranularityIcon(),
 				createGranularityMenu(),
 				false);
 
 			filterCombo = new AJButtonMenuCombo(
 				"Filter members",
 				"Filter members",
-				AjdeUIManager.getDefault().getIconRegistry().getFilterIcon(),
+				Ajde.getDefault().getIconRegistry().getFilterIcon(),
 				createFilterMenu(),
 				false);
 
 			relationsCombo = new AJButtonMenuCombo(
 				"Filter associations",
 				"Filter associations",
-				AjdeUIManager.getDefault().getIconRegistry().getRelationsIcon(),
+				Ajde.getDefault().getIconRegistry().getRelationsIcon(),
 				createRelationsMenu(),
 				false);
 
@@ -95,7 +112,8 @@ public class BrowserStructureViewToolPanel extends JPanel {
             buttons_panel.add(filterCombo,  BorderLayout.CENTER);
             buttons_panel.add(relationsCombo,  BorderLayout.EAST);
         } catch(Exception e) {
-        	Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+        	Message msg = new Message("Could not initialize GUI.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         }
 	}
 
@@ -104,7 +122,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		IProgramElement.Accessibility[] accessibility = IProgramElement.Accessibility.ALL;
 		for (int i = 0; i < accessibility.length; i++) {
 			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(accessibility[i]);
-			menuItem.setIcon(AjdeUIManager.getDefault().getIconRegistry().getAccessibilitySwingIcon(accessibility[i]));
+			menuItem.setIcon(Ajde.getDefault().getIconRegistry().getAccessibilitySwingIcon(accessibility[i]));
 			filterMenu.add(menuItem);
 		}
 		filterMenu.add(new JSeparator());
@@ -113,7 +131,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		for (int i = 0; i < kinds.length; i++) {
 			if (kinds[i].isMember()) {
 				CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(kinds[i]);
-				menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(kinds[i]).getIconResource());
+				menuItem.setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(kinds[i]).getIconResource());
 				filterMenu.add(menuItem);
 			}
 		}
@@ -134,7 +152,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		for (Iterator it = relations.iterator(); it.hasNext(); ) {
 			IRelationship.Kind relation = (IRelationship.Kind)it.next();
 			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(relation);
-			menuItem.setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(relation).getIconResource());
+			menuItem.setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(relation).getIconResource());
 			relationsMenu.add(menuItem);
 		}
 
@@ -282,9 +300,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 					currentView.getViewProperties().addRelation(relation);
 				}
 			}
-			Ajde.getDefault().getStructureViewManager().refreshView(
-				currentView
-			);
+			Ajde.getDefault().getStructureViewManager().refreshView(currentView);
 		}
 	}
 

@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
  
@@ -19,6 +20,8 @@ import javax.swing.SwingUtilities;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.EditorAdapter;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 /**
  * Used to ensure that a source line has been seeked to.  Will repeatedly attempt
@@ -60,7 +63,8 @@ public class GoToLineThread extends Thread {
                         }
                     });
                     } catch (Exception e) { 
-                    	Ajde.getDefault().getErrorHandler().handleError("Could not seek to line.", e);
+                    	Message msg = new Message("Could not seek to line.",IMessage.ERROR,e,null);
+                    	Ajde.getDefault().getMessageHandler().handleMessage(msg);
                     }
                     finished = true;
                     break;

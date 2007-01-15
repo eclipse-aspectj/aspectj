@@ -8,21 +8,31 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.Iterator;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.ui.FileStructureView;
+import org.aspectj.ajde.ui.IStructureViewNode;
+import org.aspectj.ajde.ui.StructureView;
+import org.aspectj.ajde.ui.StructureViewRenderer;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 /**
  * Represents the configuration of a structure view of the system, rendered
@@ -65,7 +75,8 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 		try {
 			jbInit();
 		} catch (Exception e) {
-			Ajde.getDefault().getErrorHandler().handleError("Could not initialize view panel.", e);
+        	Message msg = new Message("Could not initialize view panel.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
 		}
 		updateView(currentView);
 	}
@@ -95,7 +106,7 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 		IProgramElement pNode = (IProgramElement)node.getStructureNode();
  		treeManager.highlightNode(pNode);
  		if (pNode.getSourceLocation() != null) {
-	 		Ajde.getDefault().getEditorAdapter().showSourceLine(
+ 			Ajde.getDefault().getEditorAdapter().showSourceLine(
 	 			pNode.getSourceLocation().getSourceFile().getAbsolutePath(),
 	 			pNode.getSourceLocation().getLine() + lineOffset,
 	 			true

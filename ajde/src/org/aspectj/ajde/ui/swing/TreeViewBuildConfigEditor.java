@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -46,6 +47,8 @@ import org.aspectj.ajde.ui.BuildConfigModel;
 import org.aspectj.ajde.ui.BuildConfigNode;
 import org.aspectj.ajde.ui.InvalidResourceException;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 /**
  * UI for editing build configuration (".lst") files via a graphical tree-based
  * representation.
@@ -77,7 +80,8 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
     public void openFile(String configFile) throws IOException, InvalidResourceException {
         try {
             if (configFile == null) {
-                Ajde.getDefault().getErrorHandler().handleError("No structure is selected for editing.");
+            	Message msg = new Message("No structure is selected for editing.",IMessage.ERROR,null,null);
+            	Ajde.getDefault().getMessageHandler().handleMessage(msg);
                 return;
             }
  //           this.configFile = configFile;
@@ -85,7 +89,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
             jbInit();
             jLabel1.setText(" Build configuration: " + configFile);
 
-            model = Ajde.getDefault().getConfigurationManager().buildModel(configFile);            
+            model = Ajde.getDefault().getBuildConfigManager().buildModel(configFile);            
 			root = buildTree((BuildConfigNode)model.getRoot());
 
             buildConfig_tree.setModel(new DefaultTreeModel(root));
@@ -96,7 +100,8 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
                 buildConfig_tree.expandPath(buildConfig_tree.getPathForRow(j));
             }
         } catch(Exception e) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not open file.", e);
+        	Message msg = new Message("Could not open file.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         }
     }
     
@@ -110,7 +115,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
     }	
     
     private void saveModel() {
-    	Ajde.getDefault().getConfigurationManager().writeModel(model);
+    	Ajde.getDefault().getBuildConfigManager().writeModel(model);
     }
 
     private void jbInit() throws Exception {
@@ -250,15 +255,15 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
             //}
             BuildConfigNode.Kind kind = ctn.getModelNode().getBuildConfigNodeKind();
             if (kind.equals(BuildConfigNode.Kind.FILE_ASPECTJ)) {
-            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_ASPECTJ));	
+            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_ASPECTJ));	
             } else if (kind.equals(BuildConfigNode.Kind.FILE_JAVA)) {
-            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_JAVA));	
+            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_JAVA));	
             } else if (kind.equals(BuildConfigNode.Kind.FILE_LST)) {
-            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_LST));	
+            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_LST));	
             } else if (kind.equals(BuildConfigNode.Kind.DIRECTORY)) {
-            	setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.PACKAGE));	
+            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.PACKAGE));	
             } else {
-            	setIcon((Icon)AjdeUIManager.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.ERROR).getIconResource());	
+            	setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.ERROR).getIconResource());	
             	p.remove(cbox);
             }
            

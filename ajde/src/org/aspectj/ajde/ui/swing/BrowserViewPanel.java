@@ -9,6 +9,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
 
@@ -26,11 +27,14 @@ import javax.swing.JSlider;
 import javax.swing.JToolBar;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.IconRegistry;
 import org.aspectj.ajde.ui.GlobalStructureView;
-import org.aspectj.ajde.ui.StructureView;
 import org.aspectj.ajde.ui.IStructureViewNode;
+import org.aspectj.ajde.ui.StructureView;
 import org.aspectj.ajde.ui.StructureViewProperties;
 import org.aspectj.ajde.ui.StructureViewRenderer;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 /**
  * Represents the configuration of a structure view of the system, rendered
@@ -78,7 +82,8 @@ public class BrowserViewPanel extends JPanel implements StructureViewRenderer {
             //Ajde.getDefault().getViewManager().getFileStructureView().addListener(VIEW_LISTENER);
         }
         catch(Exception e) {
-        	Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+        	Message msg = new Message("Could not initialize GUI.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         }
     }
 

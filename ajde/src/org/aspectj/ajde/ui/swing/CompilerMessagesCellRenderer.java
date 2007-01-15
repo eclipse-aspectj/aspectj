@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -20,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import org.aspectj.ajde.Ajde;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.LangUtil;
 
@@ -55,11 +57,11 @@ public class CompilerMessagesCellRenderer extends JLabel implements ListCellRend
             }
 			setText(label);
 			if (kind.equals(IMessage.WARNING)) {
-				setIcon(AjdeUIManager.getDefault().getIconRegistry().getWarningIcon());
+				setIcon(Ajde.getDefault().getIconRegistry().getWarningIcon());
 			} else if (IMessage.ERROR.isSameOrLessThan(kind)) {
-                setIcon(AjdeUIManager.getDefault().getIconRegistry().getErrorIcon());
+                setIcon(Ajde.getDefault().getIconRegistry().getErrorIcon());
 			} else {
-                setIcon(AjdeUIManager.getDefault().getIconRegistry().getInfoIcon());
+                setIcon(Ajde.getDefault().getIconRegistry().getInfoIcon());
 			}
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());

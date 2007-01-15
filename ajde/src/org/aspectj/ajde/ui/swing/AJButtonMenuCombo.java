@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -26,6 +27,8 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+
+import org.aspectj.ajde.Ajde;
 
 public class AJButtonMenuCombo extends JPanel {
 	
@@ -54,7 +57,7 @@ public class AJButtonMenuCombo extends JPanel {
         mainButton.setMaximumSize(new Dimension(22, 20));   
         
         popupButton = new JButton();
-        popupButton.setIcon(AjdeUIManager.getDefault().getIconRegistry().getPopupIcon());
+        popupButton.setIcon(Ajde.getDefault().getIconRegistry().getPopupIcon());
         popupButton.setBorder(BorderFactory.createEmptyBorder());
         popupButton.setToolTipText(toolTipText);
         popupButton.setPreferredSize(new Dimension(13, 20));

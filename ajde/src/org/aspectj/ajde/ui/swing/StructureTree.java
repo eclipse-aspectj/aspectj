@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -19,6 +20,8 @@ import java.awt.Font;
 import javax.swing.JTree;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 
 /**
  * @author Mik Kersten
@@ -36,7 +39,8 @@ class StructureTree extends JTree {
             jbInit();
         }
         catch(Exception e) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+        	Message msg = new Message("Could not initialize GUI.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         }
     }
 

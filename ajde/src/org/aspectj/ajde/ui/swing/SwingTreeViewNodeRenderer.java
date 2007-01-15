@@ -8,20 +8,26 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.IStructureViewNode;
-import org.aspectj.asm.*;
-import org.aspectj.bridge.*;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 
 /**
  * @author Mik Kersten
@@ -68,15 +74,15 @@ class SwingTreeViewNodeRenderer extends DefaultTreeCellRenderer {
          
         if (node != null) {
         	if (node.isRunnable()) {
-        		setIcon(AjdeUIManager.getDefault().getIconRegistry().getExecuteIcon());
+        		setIcon(Ajde.getDefault().getIconRegistry().getExecuteIcon());
         	}	 
 			if (node.getMessage() != null) {
 				if (node.getMessage().getKind().equals(IMessage.WARNING)) {
-					setIcon(AjdeUIManager.getDefault().getIconRegistry().getWarningIcon());
+					setIcon(Ajde.getDefault().getIconRegistry().getWarningIcon());
 				} else if (node.getMessage().getKind().equals(IMessage.ERROR)) {
-					setIcon(AjdeUIManager.getDefault().getIconRegistry().getErrorIcon());
+					setIcon(Ajde.getDefault().getIconRegistry().getErrorIcon());
 				} else {
-					setIcon(AjdeUIManager.getDefault().getIconRegistry().getInfoIcon());
+					setIcon(Ajde.getDefault().getIconRegistry().getInfoIcon());
 				}
 			}
 

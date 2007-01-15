@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)  
  * ******************************************************************/
 
 
@@ -23,8 +24,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
-//import javax.swing.Box;
-//import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -37,6 +36,9 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.IconRegistry;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 import org.aspectj.bridge.Version;
 
 /**
@@ -112,12 +114,10 @@ public class OptionsFrame extends JFrame {
 
 			version_label.setText("Version: " + Version.text);
 			built_label.setText("Built: " + new Date(Version.getTime()).toString());
-
-            addOptionsPanel(new BuildOptionsPanel());
-            loadOptions();
        }
         catch(Exception e) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not open OptionsFrame", e);
+        	Message msg = new Message("Could not open OptionsFrame.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         }
     }
 
@@ -126,7 +126,12 @@ public class OptionsFrame extends JFrame {
 	 */
 	public void addOptionsPanel(OptionsPanel panel) {
 		main_tabbedPane.add(panel, main_tabbedPane.getComponentCount()-1);
-		loadOptions();
+		try {
+			panel.loadOptions();
+		} catch (IOException e) {
+        	Message msg = new Message("Could not load options.",IMessage.ERROR,e,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
+		}
 	}
 
 	public void removeOptionsPanel(OptionsPanel panel) {
@@ -141,14 +146,14 @@ public class OptionsFrame extends JFrame {
 	private void loadOptions() {
 		try {
 			Component[] components = main_tabbedPane.getComponents();
-			for
-(int i = 0; i < components.length; i++) {
+			for (int i = 0; i < components.length; i++) {
 				if (components[i] instanceof OptionsPanel) {
 					((OptionsPanel)components[i]).loadOptions();
 				}
 			}
 		} catch (IOException ioe) {
-			Ajde.getDefault().getErrorHandler().handleError("Could not load options.", ioe);
+        	Message msg = new Message("Could not load options.",IMessage.ERROR,ioe,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
 		}
 	}
 
@@ -161,7 +166,8 @@ public class OptionsFrame extends JFrame {
 				}
 			}
 		} catch (IOException ioe) {
-			Ajde.getDefault().getErrorHandler().handleError("Could not load options.", ioe);
+        	Message msg = new Message("Could not load options.",IMessage.ERROR,ioe,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
 		}
 	}
 
@@ -247,7 +253,7 @@ public class OptionsFrame extends JFrame {
         titledBorder3.setTitleFont(new java.awt.Font("Dialog", 0, 11));
         titledBorder6.setTitleFont(new java.awt.Font("Dialog", 0, 11));
         titledBorder5.setTitleFont(new java.awt.Font("Dialog", 0, 11));
-        titledBorder4.setTitle("Compiler Flags");
+        titledBorder4.setTitle("AjCompiler Flags");
         titledBorder4.setTitleFont(new java.awt.Font("Dialog", 0, 11));
         titledBorder7.setTitleFont(new java.awt.Font("Dialog", 0, 11));
         titledBorder8.setTitle("Access Modifiers");
