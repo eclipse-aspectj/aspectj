@@ -62,9 +62,16 @@ public class AjdeTestCase extends TestCase {
 	 */
 	public void initialiseProject(String projectName) {
 		
+		
+		File projectSrc=new File(testdataSrcDir + File.separatorChar + projectName);
+		File destination=new File(getWorkingDir(),projectName);
+		if (!destination.exists()) {destination.mkdir();}
+		copy(projectSrc,destination);
+		projectDir = destination.getAbsolutePath();
+
 		// need to initialize via AjdeUIManager
 		Ajde.getDefault().init(
-				new TestCompilerConfiguration(projectName), 
+				new TestCompilerConfiguration(projectDir), 
 				new TestMessageHandler(), 
 				new TestBuildProgressMonitor(), 
 				new TestEditorAdapter(), 
@@ -73,18 +80,6 @@ public class AjdeTestCase extends TestCase {
 				new JFrame(), 
 				new TestRuntimeProperties(), 
 				true);
-		
-		File projectSrc=new File(testdataSrcDir + File.separatorChar + projectName);
-		File destination=new File(getWorkingDir(),projectName);
-		if (!destination.exists()) {destination.mkdir();}
-		copy(projectSrc,destination);
-		projectDir = destination.getAbsolutePath();
-		
-//		compiler = new AjCompiler(
-//				projectDir,
-//				new TestCompilerConfiguration(projectDir),
-//				new TestBuildProgressMonitor(),
-//				new TestMessageHandler()); 
 	}
 	
 	/**
