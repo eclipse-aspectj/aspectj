@@ -8,7 +8,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
  
@@ -27,6 +28,8 @@ import java.util.StringTokenizer;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 import org.aspectj.util.LangUtil;
 
 public class UserPreferencesStore implements UserPreferencesAdapter {
@@ -113,7 +116,8 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
             in = new FileInputStream(file);
             properties.load(in);
         } catch (IOException ioe) {
-            Ajde.getDefault().getErrorHandler().handleError("Error reading properties from " + path, ioe);
+        	Message msg = new Message("Error reading properties from " + path,IMessage.ERROR,ioe,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         } finally {
             if (null != in) {
                 try {
@@ -134,7 +138,8 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
             out = new FileOutputStream(path);
             properties.store(out, "AJDE Settings");
         } catch (IOException ioe) {
-            Ajde.getDefault().getErrorHandler().handleError("Error writing properties to " + path, ioe);
+        	Message msg = new Message("Error writing properties to " + path,IMessage.ERROR,ioe,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         } finally {
             if (null != out) {
                 try {
