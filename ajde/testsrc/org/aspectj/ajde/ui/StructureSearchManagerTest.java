@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -26,13 +27,6 @@ import org.aspectj.asm.IProgramElement;
  */
 public class StructureSearchManagerTest extends AjdeTestCase {
 	
-    // TODO-path
-	private final String CONFIG_FILE_PATH = "../examples/figures-coverage/all.lst";
-
-	public StructureSearchManagerTest(String name) {
-		super(name);
-	}
-
 	public static void main(String[] args) {
 		junit.swingui.TestRunner.run(StructureSearchManagerTest.class);
 	}
@@ -68,8 +62,9 @@ public class StructureSearchManagerTest extends AjdeTestCase {
 	}
   
 	protected void setUp() throws Exception {
-		super.setUp("StructureSearchManagerTest");
-		doSynchronousBuild(CONFIG_FILE_PATH);		
+		super.setUp();
+		initialiseProject("StructureSearchManagerTest");
+		doBuild("all.lst");		
 	}
 
 	protected void tearDown() throws Exception {

@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
 
@@ -20,7 +21,9 @@ import junit.framework.TestSuite;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.AjdeTestCase;
-import org.aspectj.asm.*;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
@@ -28,17 +31,13 @@ import org.aspectj.asm.*;
 public class StructureViewManagerTest extends AjdeTestCase {
 	
     // TODO-path
-	private final String CONFIG_FILE_PATH = "../examples/figures-coverage/all.lst";
-	private final String CONFIG_FILE_PATH_2 = "../examples/inheritance/inheritance.lst";
+	private final String CONFIG_FILE_PATH = "all.lst";
+	private final String CONFIG_FILE_PATH_2 = "inheritance.lst";
 	
 	private FileStructureView currentView;
 	private NullIdeStructureViewRenderer renderer = new NullIdeStructureViewRenderer();
 	private File testFile;
 	private StructureViewProperties properties;
-	
-	public StructureViewManagerTest(String name) {
-		super(name);
-	}
 
 	public static void main(String[] args) {
 		junit.swingui.TestRunner.run(StructureViewManagerTest.class);
@@ -51,17 +50,18 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	}
 
 	public void testModelExists() {
-		assertTrue(Ajde.getDefault().getStructureModelManager().getHierarchy() != null);
+		assertTrue(AsmManager.getDefault().getHierarchy() != null);
 	}
 
 	public void testNotificationAfterConfigFileChange() {
-		doSynchronousBuild(CONFIG_FILE_PATH_2);
+		initialiseProject("inheritance");
+		doBuild(CONFIG_FILE_PATH_2);
 		renderer.setHasBeenNotified(false);
 		assertTrue("not yet notified", !renderer.getHasBeenNotified());
-		Ajde.getDefault().getConfigurationManager().setActiveConfigFile(CONFIG_FILE_PATH_2);			
+		Ajde.getDefault().getBuildConfigManager().setActiveConfigFile(CONFIG_FILE_PATH_2);			
 		assertTrue("notified", renderer.getHasBeenNotified());
 		renderer.setHasBeenNotified(false);
-		Ajde.getDefault().getConfigurationManager().setActiveConfigFile("MumbleDoesNotExist.lst");			
+		Ajde.getDefault().getBuildConfigManager().setActiveConfigFile("MumbleDoesNotExist.lst");			
 		assertTrue("notified", renderer.getHasBeenNotified());		
 		
 		assertTrue(
@@ -79,12 +79,12 @@ public class StructureViewManagerTest extends AjdeTestCase {
 		String modelPath = genStructureModelExternFilePath(CONFIG_FILE_PATH);
 		openFile(modelPath).delete();
 		
-		Ajde.getDefault().getStructureModelManager().readStructureModel(CONFIG_FILE_PATH);
+		AsmManager.getDefault().readStructureModel(CONFIG_FILE_PATH);
 		
 		assertTrue("notified", renderer.getHasBeenNotified());	
 		// AMC should this be currentView, or should we recreate the root... do the latter	
 		//IProgramElement n = currentView.getRootNode().getIProgramElement();
-		IProgramElement n = Ajde.getDefault().getStructureModelManager().getHierarchy().getRoot();
+		IProgramElement n = AsmManager.getDefault().getHierarchy().getRoot();
 		assertTrue(
 			"no structure", 
 			//currentView.getRootNode().getIProgramElement().getChildren().get(0) 
@@ -93,8 +93,8 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	}
 
 	public void testModelIntegrity() {
-		doSynchronousBuild(CONFIG_FILE_PATH);
-		IProgramElement modelRoot = Ajde.getDefault().getStructureModelManager().getHierarchy().getRoot();
+		doBuild(CONFIG_FILE_PATH);
+		IProgramElement modelRoot = AsmManager.getDefault().getHierarchy().getRoot();
 		assertTrue("root exists", modelRoot != null);	
 		
 		try {
@@ -117,7 +117,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 
 	public void testNotificationAfterBuild() {
 		renderer.setHasBeenNotified(false);
-		doSynchronousBuild(CONFIG_FILE_PATH);
+		doBuild(CONFIG_FILE_PATH);
 		assertTrue("notified", renderer.getHasBeenNotified());
 	}
 
@@ -131,8 +131,9 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	}
   
 	protected void setUp() throws Exception {
-		super.setUp("StructureViewManagerTest");
-		doSynchronousBuild(CONFIG_FILE_PATH);		
+		super.setUp();
+		initialiseProject("figures-coverage");
+		doBuild(CONFIG_FILE_PATH);		
 		
 		properties = Ajde.getDefault().getStructureViewManager().getDefaultViewProperties();
         // TODO-path
@@ -144,24 +145,5 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
-//	public void testViewListenerRegistrations() {
-//		Ajde.getDefault().getBuildManager().build("C:/Dev/aspectj/tests/ajde/examples/coverage-figures/src/AllFiles.lst");
-//		while(!testerBuildListener.getBuildFinished()) {
-//			try {
-//				Thread.sleep(300);
-//			} catch (InterruptedException ie) { } 
-//		}
-//		List renderers = Ajde.getDefault().getStructureViewManager().getDefaultFileStructureView().getRenderers();
-//		
-//		testerBuildListener.reset();
-//		Ajde.getDefault().getBuildManager().build("C:/Dev/aspectj/tests/ajde/examples/coverage-figures/src/AllFiles.lst");
-//		while(!testerBuildListener.getBuildFinished()) {
-//			try {
-//				Thread.sleep(300);
-//			} catch (InterruptedException ie) { } 
-//		}  
-//		assertTrue("checking renderers", true);
-//	} 
 }
 
