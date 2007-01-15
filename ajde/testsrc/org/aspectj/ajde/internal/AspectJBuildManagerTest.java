@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
 
@@ -24,10 +25,6 @@ import java.io.*;
  */
 public class AspectJBuildManagerTest extends AjdeTestCase {
 
-	public AspectJBuildManagerTest(String name) {
-		super(name);
-	}
-
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite();
 		result.addTestSuite(AspectJBuildManagerTest.class);	
@@ -37,15 +34,17 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
 	public void testSequence() {
 		AsmManager.dumpModelPostBuild=true; // or you wont get a .ajsym file
 		try {
-		assertTrue("initialization", ideManager != null);
-        assertTrue("compile of non-existing build config success", !testerBuildListener.getBuildSucceeded());   
         // XXX should fail? empty configs fail b/c no sources specified
-        doSynchronousBuild("empty.lst");
-        assertTrue("compile of empty build config", testerBuildListener.getBuildSucceeded());   
+		initialiseProject("AspectJBuildManagerTest");
+        doBuild("empty.lst");
+		assertTrue("Expected there to be no error messages from the build but found that" +
+				" there were some " + getErrorMessages("empty.lst"),getErrorMessages("empty.lst").isEmpty());
         // TODO-path
-        doSynchronousBuild("../examples/figures-coverage/all.lst");
-        assertTrue("compile success", testerBuildListener.getBuildSucceeded());
-		File file = new File(Ajde.getDefault().getProjectProperties().getOutputPath() + "/figures/Main.class");
+		initialiseProject("figures-coverage");
+		doBuild("all.lst");
+		assertTrue("Expected there to be no error messages from the build but found that" +
+				" there were some " + getErrorMessages("empty.lst"),getErrorMessages("empty.lst").isEmpty());
+		File file = new File(getCompilerForConfigFileWithName("all.lst").getCompilerConfiguration().getOutputLocationManager().getDefaultOutputLocation() + "/figures/Main.class");
         if (file.exists()) {
             file.delete();
         } else {
@@ -53,22 +52,14 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
 		}			
         
         // TODO-path
-		file = openFile("../examples/figures-coverage/all.ajsym");
+		file = openFile("all.ajsym");
         if (file.exists()) {
             file.delete();
         } else {
-            assertTrue("expected .ajsym" + file, false);
+            assertTrue("expected .ajsym: " + file, false);
         }    
 		} finally {
 			AsmManager.dumpModelPostBuild=false;
 		}
-	}
-
-	protected void setUp() throws Exception {
-		super.setUp("AspectJBuildManagerTest"); 
-	}
-
-	protected void tearDown() throws Exception {
-		super.tearDown();
 	}
 }
