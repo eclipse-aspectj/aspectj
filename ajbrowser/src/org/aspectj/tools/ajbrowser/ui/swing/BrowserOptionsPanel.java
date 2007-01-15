@@ -8,19 +8,24 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
 
-package org.aspectj.tools.ajbrowser;
+package org.aspectj.tools.ajbrowser.ui.swing;
 
 import java.io.*;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.border.*;
 import org.aspectj.ajde.ui.swing.*;
+import org.aspectj.tools.ajbrowser.BrowserManager;
+import org.aspectj.tools.ajbrowser.core.PreferenceStoreConstants;
 
 /**
+ * Panel the displays both ajc and runtime options
+ * 
  * @author Mik Kersten
  */
 public class BrowserOptionsPanel extends OptionsPanel {
@@ -36,8 +41,10 @@ public class BrowserOptionsPanel extends OptionsPanel {
 	private Box compileOptions_box2 = Box.createVerticalBox();
 	private JTextField classpath_field = new JTextField();
 	private JTextField outputPath_field = new JTextField();
+	private JTextField nonStandardOptions_field = new JTextField();
 	private JLabel jLabel16 = new JLabel();
 	private JLabel jLabel15 = new JLabel();
+	private JLabel nonStandardOptions_label = new JLabel();
 	private Box compileOptions_box3 = Box.createVerticalBox();
 	private BorderLayout borderLayout1 = new BorderLayout();
 	private Border border1;
@@ -58,32 +65,38 @@ public class BrowserOptionsPanel extends OptionsPanel {
 
 	public void loadOptions() throws IOException {
 		outputPath_field.setText(
-			BrowserManager.getDefault().getBrowserProjectProperties().getOutputPath()
+			BrowserManager.getDefault().getPreferencesAdapter().
+				getProjectPreference(PreferenceStoreConstants.BUILD_OUTPUTPATH)
+		);
+		nonStandardOptions_field.setText(
+			BrowserManager.getDefault().getPreferencesAdapter().
+				getProjectPreference(PreferenceStoreConstants.NONSTANDARD_OPTIONS)
 		);
 		classpath_field.setText(
-			BrowserManager.getDefault().getBrowserProjectProperties().getClasspath()
+			BrowserManager.getDefault().getPreferencesAdapter().
+				getProjectPreference(PreferenceStoreConstants.BUILD_CLASSPATH)
 		);
 		classToRun_field.setText(
-			BrowserManager.getDefault().getBrowserProjectProperties().getClassToExecute()
+			BrowserManager.getDefault().getPreferencesAdapter().
+				getProjectPreference(PreferenceStoreConstants.RUNTIME_MAINCLASS)
 		);
 	}
 	
 	public void saveOptions() throws IOException {		
-		BrowserManager.getDefault().getBrowserProjectProperties().setOutputPath(
-			outputPath_field.getText()
-		);		
-		BrowserManager.getDefault().getBrowserProjectProperties().setClasspath(
-			classpath_field.getText()
-		);
-		BrowserManager.getDefault().getBrowserProjectProperties().setClassToExecute(
-			classToRun_field.getText()
-		);	
+		BrowserManager.getDefault().getPreferencesAdapter().setProjectPreference(
+				PreferenceStoreConstants.BUILD_OUTPUTPATH, outputPath_field.getText());
+		BrowserManager.getDefault().getPreferencesAdapter().setProjectPreference(
+				PreferenceStoreConstants.NONSTANDARD_OPTIONS, nonStandardOptions_field.getText());
+		BrowserManager.getDefault().getPreferencesAdapter().setProjectPreference(
+				PreferenceStoreConstants.BUILD_CLASSPATH, classpath_field.getText());
+		BrowserManager.getDefault().getPreferencesAdapter().setProjectPreference(
+				PreferenceStoreConstants.RUNTIME_MAINCLASS, classToRun_field.getText());
 	}	
 
 	private void jbInit() throws Exception {
 		border1 =
 			BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158));
-		titledBorder1 = new TitledBorder(border1, "ajc Build Paths");
+		titledBorder1 = new TitledBorder(border1, "Ajc Options");
 		border2 =
 			BorderFactory.createCompoundBorder(
 				titledBorder1,
@@ -111,6 +124,9 @@ public class BrowserOptionsPanel extends OptionsPanel {
 		outputPath_field.setPreferredSize(new Dimension(225, 21));
 		outputPath_field.setMinimumSize(new Dimension(100, 21));
 		outputPath_field.setFont(new java.awt.Font("SansSerif", 0, 11));
+		nonStandardOptions_field.setPreferredSize(new Dimension(225, 21));
+		nonStandardOptions_field.setMinimumSize(new Dimension(100, 21));
+		nonStandardOptions_field.setFont(new java.awt.Font("SansSerif", 0, 11));
 		jLabel16.setText("Classpath (defaults to current directory): ");
 		jLabel16.setPreferredSize(new Dimension(200, 25));
 		jLabel16.setMaximumSize(new Dimension(400, 25));
@@ -119,6 +135,10 @@ public class BrowserOptionsPanel extends OptionsPanel {
 		jLabel15.setFont(new java.awt.Font("Dialog", 0, 11));
 		jLabel15.setPreferredSize(new Dimension(230, 25));
 		jLabel15.setText("Output path (defaults to current directory): ");
+		nonStandardOptions_label.setMaximumSize(new Dimension(400, 25));
+		nonStandardOptions_label.setFont(new java.awt.Font("Dialog", 0, 11));
+		nonStandardOptions_label.setPreferredSize(new Dimension(230, 25));
+		nonStandardOptions_label.setText("Non-standard compiler options: ");
 		titledBorder1.setTitleFont(new java.awt.Font("Dialog", 0, 11));
 		titledBorder2.setTitleFont(new java.awt.Font("Dialog", 0, 11));
 		runOptions_panel.add(jLabel4, null);
@@ -126,8 +146,10 @@ public class BrowserOptionsPanel extends OptionsPanel {
 		build_panel.add(buildPaths_panel, BorderLayout.CENTER);
 		build_panel.add(runOptions_panel, BorderLayout.SOUTH);
 		compileOptions_box2.add(outputPath_field, null);
+		compileOptions_box2.add(nonStandardOptions_field, null);
 		compileOptions_box2.add(classpath_field, null);
 		compileOptions_box3.add(jLabel15, null);
+		compileOptions_box3.add(nonStandardOptions_label, null);
 		compileOptions_box3.add(jLabel16, null);
 		buildPaths_panel.add(compileOptions_box3, null);
 		buildPaths_panel.add(compileOptions_box2, null);

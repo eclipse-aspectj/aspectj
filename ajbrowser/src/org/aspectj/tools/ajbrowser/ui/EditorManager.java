@@ -12,7 +12,7 @@
  * ******************************************************************/
 
 
-package org.aspectj.tools.ajbrowser;
+package org.aspectj.tools.ajbrowser.ui;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -23,6 +23,7 @@ import javax.swing.*;
 
 import org.aspectj.ajde.*;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.tools.ajbrowser.core.BrowserErrorHandler;
 
 /**
  * Responsible for controlling the editor.
@@ -91,7 +92,7 @@ public class EditorManager {
             try {
                 SwingUtilities.invokeAndWait(update);
             } catch (Exception e) {
-                Ajde.getDefault().getErrorHandler().handleError("Could not add view for source line.", e);
+            	BrowserErrorHandler.handleError("Could not add view for source line.", e);
             }
         }
     }
@@ -151,7 +152,7 @@ public class EditorManager {
                 ((EditorAdapter)it.next()).saveContents();
             }
         } catch (IOException ioe) {
-            Ajde.getDefault().getErrorHandler().handleError("Editor could not save the current file.", ioe);
+        	BrowserErrorHandler.handleError("Editor could not save the current file.", ioe);
         }
     }
 

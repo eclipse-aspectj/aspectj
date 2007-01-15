@@ -12,10 +12,15 @@
  * ******************************************************************/
 
  
-package org.aspectj.tools.ajbrowser;
+package org.aspectj.tools.ajbrowser.ui;
 
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.IdeUIAdapter;
+import org.aspectj.tools.ajbrowser.BrowserManager;
 
+/**
+ * AjBrowser implementation if IdeUIAdapter which displays the provided
+ * information in the status bar at the bottom of the AjBrowser GUI.
+ */
 public class BrowserUIAdapter implements IdeUIAdapter {
 	
 	public void displayStatusInformation(String message) {

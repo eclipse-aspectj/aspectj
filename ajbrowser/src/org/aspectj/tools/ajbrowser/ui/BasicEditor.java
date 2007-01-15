@@ -8,11 +8,12 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
 
-package org.aspectj.tools.ajbrowser;
+package org.aspectj.tools.ajbrowser.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -22,7 +23,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-//import java.net.URL;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
@@ -33,6 +33,8 @@ import javax.swing.text.DefaultHighlighter;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.EditorAdapter;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.tools.ajbrowser.BrowserManager;
+import org.aspectj.tools.ajbrowser.core.BrowserErrorHandler;
 
 /**
  * Bare-bones editor implementation used when the framework is being used
@@ -63,7 +65,7 @@ public class BasicEditor implements EditorAdapter {
             jbInit();
         }
         catch(Exception e) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not initialize GUI.", e);
+            BrowserErrorHandler.handleError("Could not initialize GUI.", e);
         }
     }
 
@@ -108,7 +110,7 @@ public class BasicEditor implements EditorAdapter {
             editorPane.getHighlighter().addHighlight(currHighlightStart, currHighlightEnd, DefaultHighlighter.DefaultPainter);
             editorPane.setCaretPosition(currHighlightStart);
         } catch (BadLocationException ble) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not highlight location.", ble);
+        	BrowserErrorHandler.handleError("Could not highlight location.", ble);
         }
         BrowserManager.getDefault().getEditorManager().notifyCurrentFileChanged(filePath);
     }

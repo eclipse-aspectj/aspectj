@@ -8,45 +8,66 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
-
-
 package org.aspectj.tools.ajbrowser;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
-import org.aspectj.ajde.*;
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.IconRegistry;
+import org.aspectj.ajde.internal.BuildConfigManager;
+import org.aspectj.ajde.ui.FileStructureView;
+import org.aspectj.ajde.ui.InvalidResourceException;
+import org.aspectj.ajde.ui.UserPreferencesAdapter;
 import org.aspectj.ajde.ui.internal.UserPreferencesStore;
-import org.aspectj.ajde.ui.swing.*;
-import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.javaoptions.JavaBuildOptions;
+import org.aspectj.ajde.ui.javaoptions.JavaCompilerWarningsOptionsPanel;
+import org.aspectj.ajde.ui.javaoptions.JavaComplianceOptionsPanel;
+import org.aspectj.ajde.ui.javaoptions.JavaDebugOptionsPanel;
+import org.aspectj.ajde.ui.javaoptions.JavaOtherOptionsPanel;
+import org.aspectj.ajde.ui.swing.MultiStructureViewPanel;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IHierarchyListener;
+import org.aspectj.tools.ajbrowser.core.BrowserBuildProgressMonitor;
+import org.aspectj.tools.ajbrowser.core.BrowserCompilerConfiguration;
+import org.aspectj.tools.ajbrowser.core.BrowserErrorHandler;
+import org.aspectj.tools.ajbrowser.ui.BasicEditor;
+import org.aspectj.tools.ajbrowser.ui.BrowserMessageHandler;
+import org.aspectj.tools.ajbrowser.ui.BrowserRuntimeProperties;
+import org.aspectj.tools.ajbrowser.ui.BrowserUIAdapter;
+import org.aspectj.tools.ajbrowser.ui.EditorManager;
+import org.aspectj.tools.ajbrowser.ui.swing.BrowserOptionsPanel;
+import org.aspectj.tools.ajbrowser.ui.swing.MessageHandlerPanel;
+import org.aspectj.tools.ajbrowser.ui.swing.TopFrame;
 import org.aspectj.util.FileUtil;
-//import org.aspectj.asm.internal.*;
 
 /**
  * IDE manager for standalone AJDE application.
- *
- * @author  Mik Kersten
+ * 
+ * @author Mik Kersten
  */
 public class BrowserManager {
-	
+
+	public static final String TITLE = "AspectJ Browser";
+
 	private static final BrowserManager INSTANCE = new BrowserManager();
-	private BrowserProperties browserProjectProperties;
 	private EditorManager editorManager;
+	private UserPreferencesAdapter preferencesAdapter;
+    private static TopFrame topFrame = null;
+
+    private List configFiles = new ArrayList();
+	private JavaBuildOptions javaBuildOptions;
 	
 	public static BrowserManager getDefault() {
 		return INSTANCE;
 	}
-    	
-	private List configFiles = new ArrayList();
-	
-	public static final String TITLE = "AspectJ Browser";
-    
-    private static TopFrame topFrame = null;
     
 	public final IHierarchyListener VIEW_LISTENER = new IHierarchyListener() {
 		public void elementsUpdated(IHierarchy model) {        	
@@ -55,71 +76,73 @@ public class BrowserManager {
 				fsv.setSourceFile(BrowserManager.getDefault().getEditorManager().getCurrFile());
 			}
 		}
-	}; 
-    
+	};
+
 	public void init(String[] configFilesArgs, boolean visible) {
 		try {
-			UserPreferencesAdapter preferencesAdapter = new UserPreferencesStore(true);
-			browserProjectProperties = new BrowserProperties(preferencesAdapter);
-			TaskListManager taskListManager = new CompilerMessagesPanel();
-			BasicEditor ajdeEditor = new BasicEditor();
-			BrowserUIAdapter browserUIAdapter = new BrowserUIAdapter();
-			topFrame = new TopFrame(); 
-			configFiles = getConfigFilesList(configFilesArgs);	
+			javaBuildOptions = new JavaBuildOptions();
+			preferencesAdapter = new UserPreferencesStore(true);
+			topFrame = new TopFrame();
 
-			AjdeUIManager.getDefault().init(
-				ajdeEditor,
-				taskListManager,
-				browserProjectProperties,
-				preferencesAdapter,
-				browserUIAdapter,
-				new IconRegistry(),
-				topFrame,
-				true);	
-			
+			BasicEditor ajdeEditor = new BasicEditor();
 			editorManager = new EditorManager(ajdeEditor);
 			
-			Ajde.getDefault().getBuildManager().addListener(BUILD_MESSAGES_LISTENER);
+			BrowserMessageHandler messageHandler = new BrowserMessageHandler();
 			
-			MultiStructureViewPanel multiViewPanel = new MultiStructureViewPanel(
-				AjdeUIManager.getDefault().getViewManager().getBrowserPanel(),
-				AjdeUIManager.getDefault().getFileStructurePanel()
-			);
-			
-			topFrame.init(
-				multiViewPanel,
-				(CompilerMessagesPanel)taskListManager,
-				editorManager.getEditorPanel()
-			);
-				
-			if (visible) topFrame.setVisible(true);
-			  
-			if (configFiles.size() == 0) {
-				Ajde.getDefault().getErrorHandler().handleWarning(
-					"No build configuration selected. "
-						+ "Select a \".lst\" build configuration file in order to compile and navigate structure.");
-			} else {
-				//UiManager.getDefault().getViewManager().updateConfigsList();
-			}
-		
-			AjdeUIManager.getDefault().getOptionsFrame().addOptionsPanel(new BrowserOptionsPanel());
-		
-			AsmManager.getDefault().addListener(VIEW_LISTENER);	
-		
-			//String lastOpenFilePath = browserProjectProperties.getLastOpenSourceFilePath();
-			//editorManager.showSourceLine(lastOpenFilePath, 1, false);	
-			//Ajde.getDefault().getStructureViewManager().fireNavigationAction(lastOpenFilePath, 6);
-			//Ajde.getDefault().enableLogging(System.out); 
-		
-			if (configFilesArgs.length > 0 && configFilesArgs[0] != null) {
-				Ajde.getDefault().getConfigurationManager().setActiveConfigFile(configFilesArgs[0]);	
-			}
+			Ajde.getDefault().init(
+					new BrowserCompilerConfiguration(preferencesAdapter),
+					messageHandler,
+					new BrowserBuildProgressMonitor(messageHandler),
+					ajdeEditor, 
+					new BrowserUIAdapter(), 
+					new IconRegistry(), 
+					topFrame,
+					new BrowserRuntimeProperties(preferencesAdapter),
+					true);
+
+			setUpTopFrame(visible);
+			addOptionsPanels();
+
+			setUpConfigFiles(configFilesArgs);
+
+			AsmManager.getDefault().addListener(VIEW_LISTENER);
+
 		} catch (Throwable t) {
 			t.printStackTrace();
-			Ajde.getDefault().getErrorHandler().handleError(
-				"AJDE failed to initialize.",
-				t);
+			BrowserErrorHandler.handleError("AJDE failed to initialize.", t);
 		}
+	}
+
+	/**
+	 * Find and create the set of build configuration files
+	 * @param configFilesArgs
+	 */
+	private void setUpConfigFiles(String[] configFilesArgs) {
+		configFiles = getConfigFilesList(configFilesArgs);
+		if (configFiles.size() == 0) {
+			BrowserErrorHandler
+					.handleWarning("No build configuration selected. "
+							+ "Select a \".lst\" build configuration file in order to compile and navigate structure.");
+		} else {
+			Ajde.getDefault().getBuildConfigManager().setActiveConfigFile(
+					(String)configFiles.get(0));
+		}	
+	}
+
+	/**
+	 * Create the top frame of the browser
+	 */
+	private void setUpTopFrame(boolean visible) {
+		MultiStructureViewPanel multiViewPanel = new MultiStructureViewPanel(
+				Ajde.getDefault().getViewManager()
+						.getBrowserPanel(), Ajde.getDefault()
+						.getFileStructurePanel());
+
+		topFrame.init(multiViewPanel, new MessageHandlerPanel(), 
+				editorManager.getEditorPanel());
+
+		if (visible)
+			topFrame.setVisible(true);
 	}
 
     public void resetEditorFrame() {
@@ -144,36 +167,29 @@ public class BrowserManager {
         editorManager.saveContents();
     }
 
-    public void showMessages() {
-        topFrame.showMessagesPanel();
-    }
-
-    public void hideMessages() {
-        topFrame.hideMessagesPanel();
-    }
-
-    public JFrame getRootFrame() {
-        return topFrame;
-    }
+	public JFrame getRootFrame() {
+		return topFrame;
+	}
 
 	public void openFile(String filePath) {
 		try {
 			if (filePath.endsWith(".lst")) {
-				AjdeUIManager.getDefault().getBuildConfigEditor().openFile(filePath);
-				topFrame.setEditorPanel(AjdeUIManager.getDefault().getBuildConfigEditor());
+				Ajde.getDefault().getBuildConfigEditor().openFile(filePath);
+				topFrame.setEditorPanel(Ajde.getDefault().getBuildConfigEditor());
 			} else if (FileUtil.hasSourceSuffix(filePath)){
 				editorManager.showSourceLine(filePath, 0, false);		
 			} else {
-				Ajde.getDefault().getErrorHandler().handleError("File: " + filePath 
-					+ " could not be opened because the extension was not recoginzed.");	
+				BrowserErrorHandler
+						.handleError("File: "
+								+ filePath
+								+ " could not be opened because the extension was not recoginzed.");
 			}
 		} catch (IOException ioe) {
-			Ajde.getDefault().getErrorHandler().handleError("Could not open file: " + filePath, ioe);
+			BrowserErrorHandler.handleError("Could not open file: "
+					+ filePath, ioe);
 		} catch (InvalidResourceException ire) {
-			Ajde.getDefault().getErrorHandler().handleError("Invalid file: " + filePath, ire);
-		} 
-		
-		browserProjectProperties.setLastOpenSourceFilePath(filePath);
+			BrowserErrorHandler.handleError("Invalid file: " + filePath, ire);
+		}
 	}
 
 	private List getConfigFilesList(String[] configFiles) {
@@ -185,60 +201,45 @@ public class BrowserManager {
         }
         return configs;
 	}
-
-//    private static class Runner {
-//  
-//        public static void invoke(String className) {
-//            try {
-//                if (className == null || className.length() == 0) {
-//                    Ajde.getDefault().getErrorHandler().handleWarning("No main class specified, please select a class to run.");
-//
-//                } else {
-//                    Class[] argTypes = { String[].class };
-//                    java.lang.reflect.Method method = Class.forName(className).getDeclaredMethod("main", argTypes);
-//                    Object[] args = { new String[0] };
-//                    method.invoke(null, args);
-//                }
-//            } catch(ClassNotFoundException cnfe) {
-//                Ajde.getDefault().getErrorHandler().handleWarning("Main class not found: " + className +
-//                "\nMake sure that you have \".\" on your classpath.");
-//            } catch(NoSuchMethodException nsme) {
-//                Ajde.getDefault().getErrorHandler().handleWarning("Class: " + className + " does not declare public static void main(String[])");
-//            } catch(java.lang.reflect.InvocationTargetException ite) {
-//                Ajde.getDefault().getErrorHandler().handleWarning("Could not execute: " + className);
-//            } catch(IllegalAccessException iae) {
-//                Ajde.getDefault().getErrorHandler().handleWarning("Class: " + className + " does not declare public main method");
-//            }
-//        }
-//    }
-    
-	private final BuildListener BUILD_MESSAGES_LISTENER = new BuildListener() {
-		
-		public void compileStarted(String buildConfigFile) { }
-		
-        public void compileFinished(String buildConfigFile, int buildTime, boolean succeeded, boolean warnings) {
-            if (succeeded && !warnings) {
-                hideMessages();
-            } else {
-                showMessages();
-            }
-        }
-        
-        public void compileAborted(String buildConfigFile, String message) { }
-    };
-    
-	public List getConfigFiles() {
-		return configFiles;
-	}
-
-	public BrowserProperties getBrowserProjectProperties() {
-		return browserProjectProperties;
-	}
+	
 	/**
-	 * @return
+	 * Add the different options panels to the main options frame
+	 * (adds panels for java compliance, compiler warnings, debug
+	 * warnings, other java options and options specific to 
+	 * ajbrowser)
+	 */
+	private void addOptionsPanels() {
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
+				new JavaComplianceOptionsPanel(javaBuildOptions));
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
+				new JavaCompilerWarningsOptionsPanel(javaBuildOptions));
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
+				new JavaOtherOptionsPanel(javaBuildOptions));
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
+				new JavaDebugOptionsPanel(javaBuildOptions));
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
+				new BrowserOptionsPanel());		
+	}
+
+	/**
+	 * @return the EditorManager
 	 */
 	public EditorManager getEditorManager() {
 		return editorManager;
+	}
+	
+	/**
+	 * @return the UserPreferencesAdapter 
+	 */
+	public UserPreferencesAdapter getPreferencesAdapter() {
+		return preferencesAdapter;
+	}
+
+	/**
+	 * @return the JavaBuildOptions instance being used
+	 */
+	public JavaBuildOptions getJavaBuildOptions() {
+		return javaBuildOptions;
 	}
 
 }
