@@ -9,58 +9,31 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Helen Hawkins  updated for bug 148190
  * ******************************************************************/
-
-
 package org.aspectj.ajde;
 
-import java.io.File;
+import org.aspectj.ajde.internal.AspectJBuildManagerTest;
+import org.aspectj.ajde.internal.LstBuildConfigManagerTest;
+import org.aspectj.ajde.ui.StructureSearchManagerTest;
+import org.aspectj.ajde.ui.StructureViewManagerTest;
 
-import org.aspectj.util.FileUtil;
-
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
  
 public class AjdeTests extends TestCase {
-
-    // TODO-path
-    private static final File TESTDATA_PATH;
-    static {
-        String[] paths = { "../ajde/testdata" };
-        TESTDATA_PATH  = FileUtil.getBestFile(paths);
-    }
-    public static String testDataPath(String file) {
-        if (null == file) {
-            return TESTDATA_PATH.getPath();
-        }
-        File f = new File(TESTDATA_PATH, file);
-        f = FileUtil.getBestFile(f);
-        return (null == f ? "" : f.getPath());
-    }
 
     public static Test suite() { 
         TestSuite suite = new TestSuite(AjdeTests.class.getName());
         //$JUnit-BEGIN$
         suite.addTestSuite(SymbolFileGenerationTest.class);
-        suite.addTestSuite(ShowWeaveMessagesTestCase.class);
-		suite.addTestSuite(DuplicateManifestTest.class);
-		suite.addTestSuite(BuildOptionsTest.class); 
-        suite.addTestSuite(BuildConfigurationTests.class);
-        suite.addTestSuite(StructureModelRegressionTest.class); 
-        suite.addTestSuite(StructureModelTest.class); 
-        suite.addTestSuite(VersionTest.class); 
-		suite.addTestSuite(CompilerMessagesTest.class);
-		suite.addTestSuite(AsmDeclarationsTest.class);
-		suite.addTestSuite(AsmRelationshipsTest.class);
-		suite.addTestSuite(InpathTestcase.class);
-		suite.addTestSuite(ReweavableTestCase.class);
-		suite.addTestSuite(ResourceCopyTestCase.class);
-		suite.addTestSuite(ModelPerformanceTest.class);
-		suite.addTestSuite(SavedModelConsistencyTest. class);
-		suite.addTestSuite(BuildCancellingTest.class);
-		suite.addTestSuite(JarManifestTest.class);
 		suite.addTestSuite(ExtensionTests.class);
-		suite.addTestSuite(GenericsTest.class); 
-		suite.addTestSuite(OutxmlTest.class);
+		suite.addTestSuite(AspectJBuildManagerTest.class); 
+        suite.addTestSuite(LstBuildConfigManagerTest.class);
+        suite.addTestSuite(StructureSearchManagerTest.class); 
+        suite.addTestSuite(StructureViewManagerTest.class); 
+        suite.addTestSuite(AjdeCompilerTests.class);
 		
         //$JUnit-END$
         return suite;
