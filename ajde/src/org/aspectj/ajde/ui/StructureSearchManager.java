@@ -8,17 +8,20 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
  
 package org.aspectj.ajde.ui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.aspectj.ajde.Ajde;
-import org.aspectj.asm.*;
-//import org.aspectj.asm.internal.*;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author	Mik Kersten
@@ -35,7 +38,7 @@ public class StructureSearchManager {
 		IProgramElement.Kind kind) {
 		
 		List matches = new ArrayList();
-		IHierarchy model = Ajde.getDefault().getStructureModelManager().getHierarchy();
+		IHierarchy model = AsmManager.getDefault().getHierarchy();
 		if (model.equals(IHierarchy.NO_STRUCTURE)) {
 			return null;
 		} else {

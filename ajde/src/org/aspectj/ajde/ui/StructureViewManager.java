@@ -8,18 +8,26 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *     Xerox/PARC     initial implementation
+ *     Helen Hawkins  Converted to new interface (bug 148190) 
  * ******************************************************************/
 
  
 package org.aspectj.ajde.ui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.ajde.Ajde;
-import org.aspectj.ajde.ui.internal.*;
-import org.aspectj.asm.*;
-import org.aspectj.asm.internal.*;
+import org.aspectj.ajde.ui.internal.NavigationHistoryModel;
+import org.aspectj.ajde.ui.internal.TreeStructureViewBuilder;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IHierarchyListener;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.internal.AspectJElementHierarchy;
 
 /**
  * @author	Mik Kersten
@@ -81,7 +89,7 @@ public class StructureViewManager {
      * @param newFilePath the canonicalized path to the new file
 	 */
 	public void fireNavigationAction(String newFilePath, int lineNumber) {				
-		IProgramElement currNode = Ajde.getDefault().getStructureModelManager().getHierarchy().findElementForSourceLine(
+		IProgramElement currNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(
 			newFilePath,
 			lineNumber);
 		
@@ -135,7 +143,7 @@ public class StructureViewManager {
 	
 	public void refreshView(StructureView view) {
 		IStructureViewNode activeNode = view.getActiveNode();
-		treeViewBuilder.buildView(view, Ajde.getDefault().getStructureModelManager().getHierarchy());
+		treeViewBuilder.buildView(view, AsmManager.getDefault().getHierarchy());
 		view.setActiveNode(activeNode);
 	}		
 
