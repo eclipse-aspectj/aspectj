@@ -9,6 +9,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -28,6 +29,8 @@ import java.util.TreeSet;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.BuildConfigNode;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 import org.aspectj.util.ConfigParser;
 
 /**
@@ -95,8 +98,9 @@ class LstBuildConfigFileUpdater {
         try {
             File configFile = new File(filePath);
             if (!configFile.exists()) {
-                Ajde.getDefault().getErrorHandler().handleWarning("Config file: " + filePath +
-                    " does not exist.  Update failed.");
+            	Message msg = new Message("Config file: " + filePath +
+                        " does not exist.  Update failed.",IMessage.WARNING,null,null);
+            	Ajde.getDefault().getMessageHandler().handleMessage(msg);
             }
             List fileContents = new ArrayList();
             BufferedReader reader = new BufferedReader(new FileReader(configFile));
@@ -108,7 +112,8 @@ class LstBuildConfigFileUpdater {
             reader.close();
             return fileContents;
         } catch (IOException ioe) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not update build config file.", ioe);
+        	Message msg = new Message("Could not update build config file.",IMessage.ERROR,ioe,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         }
         return null;
     }
@@ -200,7 +205,8 @@ class LstBuildConfigFileUpdater {
             fos = new FileOutputStream(filePath, false);
             fos.write(contents.getBytes());
         } catch (IOException ioe) {
-            Ajde.getDefault().getErrorHandler().handleError("Could not update build config file: " + filePath, ioe);
+        	Message msg = new Message("Could not update build config file: " + filePath,IMessage.ERROR,ioe,null);
+        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         } finally {
         	if (fos!=null) try {fos.close();} catch (IOException ioe) {}
         }

@@ -9,17 +9,27 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
  
 package org.aspectj.ajde.internal;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
-import org.aspectj.ajde.*;
-import org.aspectj.ajde.ui.*;
-import org.aspectj.bridge.*;
+import org.aspectj.ajde.Ajde;
+import org.aspectj.ajde.ui.BuildConfigModel;
+import org.aspectj.ajde.ui.BuildConfigNode;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.ConfigParser;
 import org.aspectj.util.FileUtil;
 
@@ -28,7 +38,7 @@ import org.aspectj.util.FileUtil;
  */
 public class LstBuildConfigManager implements BuildConfigManager {
 	
-//	private List configFiles = new ArrayList();	
+	private List allBuildConfigFiles;
 	private List listeners = new ArrayList();
 	private LstBuildConfigFileUpdater fileUpdater = new LstBuildConfigFileUpdater();
 	protected String currConfigFilePath = null;
@@ -67,7 +77,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
                 IMessage.ERROR,
                 pe,
                 new SourceLocation(pe.getFile(), pe.getLine(), 1));
-            Ajde.getDefault().getTaskListManager().addSourcelineTask(message);
+            Ajde.getDefault().getMessageHandler().handleMessage(message);
     	} 
     	
   		List relativePaths = relativizeFilePaths(configFiles, rootPath);
@@ -245,20 +255,12 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	}
 	
 	public String getActiveConfigFile() {
-		if (currConfigFilePath == null) return null;
-		if (currConfigFilePath.equals(DEFAULT_CONFIG_LABEL)) {
-			return Ajde.getDefault().getProjectProperties().getDefaultBuildConfigFile();// getDefaultConfigFile();
-		} else {
-			return currConfigFilePath;	
-		}
+		return currConfigFilePath;	
 	}
 	
 	public void setActiveConfigFile(String currConfigFilePath) {
-		if (currConfigFilePath.equals(DEFAULT_CONFIG_LABEL)) {
-			this.currConfigFilePath = Ajde.getDefault().getProjectProperties().getDefaultBuildConfigFile();//getDefaultConfigFile();
-		} else {
-			this.currConfigFilePath = currConfigFilePath;
-		}
+		if (currConfigFilePath == null) return;
+		this.currConfigFilePath = currConfigFilePath;
 		notifyConfigChanged();
 	}
 	
@@ -298,6 +300,18 @@ public class LstBuildConfigManager implements BuildConfigManager {
 			return n1.getName().compareTo(n2.getName());
         }
     };
+
+	public List getAllBuildConfigFiles() {
+		if (allBuildConfigFiles == null) {
+			allBuildConfigFiles = new ArrayList();
+			if (getActiveConfigFile() != null) {
+				allBuildConfigFiles.add(getActiveConfigFile());
+			}	
+		}
+		return allBuildConfigFiles;
+	}
+	
+	
 }
 
 
