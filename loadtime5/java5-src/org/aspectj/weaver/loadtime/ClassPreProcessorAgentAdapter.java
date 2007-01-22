@@ -31,7 +31,6 @@ public class ClassPreProcessorAgentAdapter implements ClassFileTransformer {
 
     static {
         try {
-        	CompilationAndWeavingContext.setMultiThreaded(true);
             s_preProcessor = new Aj();
             s_preProcessor.initialize();
         } catch (Exception e) {
