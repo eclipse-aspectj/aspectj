@@ -136,6 +136,16 @@
         <ant file="ajc-ant.xml" target="ltw.DumpProxyTest" verbose="true"/>
     </ajc-test>
 
+    <ajc-test dir="java5/ataspectj" title="LTW DumpTest JSP">
+        <compile
+                files="ataspectj/EmptyAspect.aj"
+                options="-1.5 -Xlint:ignore"/>
+        <compile
+                files="com/ibm/_jsp/_abc123_xyz890.java"
+                options="-1.5"/>
+        <run class="com.ibm._jsp._abc123_xyz890" ltw="ataspectj/aop-dumpjsp.xml"/>
+    </ajc-test>
+
     <ajc-test dir="java5/ataspectj" title="Ajc Aspect1 LTW Aspect2 -Xreweavable">
         <compile
                 files="ataspectj/ltwreweavable/Main.java,ataspectj/ltwreweavable/Aspect1.java,ataspectj/ltwreweavable/Advisable.java"

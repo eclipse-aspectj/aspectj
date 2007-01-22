@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<aspectj>
+	<aspects>
+		<aspect name="ataspectj.EmptyAspect"/>
+	</aspects>
+    <weaver options="-verbose -debug">
+        <dump within="com.ibm._jsp..*" beforeandafter="true"/> 
+    </weaver>
+</aspectj>

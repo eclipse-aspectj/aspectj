@@ -147,6 +147,25 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
         f.delete();
     }
 
+    public void testLTWDumpJSP () {
+        runTest("LTW DumpTest JSP");
+
+        // The working directory is different because this test must be forked
+        File f = new File("_ajdump/_before/com/ibm/_jsp");
+        CountingFilenameFilter cff = new CountingFilenameFilter(".class");
+        f.listFiles(cff);
+        assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
+        f = new File("_ajdump/com/ibm/_jsp");
+        cff = new CountingFilenameFilter(".class");
+        f.listFiles(cff);
+        assertEquals(1,cff.getCount());
+        
+        // tidy up...
+        f = new File("_ajdump");
+        FileUtil.deleteContents(f);
+        f.delete();
+    }
+    
     public void testAjcAspect1LTWAspect2_Xreweavable() {
         runTest("Ajc Aspect1 LTW Aspect2 -Xreweavable");
     }
