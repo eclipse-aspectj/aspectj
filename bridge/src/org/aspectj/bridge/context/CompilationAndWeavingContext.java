@@ -128,7 +128,7 @@ public class CompilationAndWeavingContext {
 	
 	private static ContextFormatter defaultFormatter = new DefaultFormatter();
 	
-	private static boolean multiThreaded = false;
+	private static boolean multiThreaded = true;
 	
 	/**
 	 * this is a static service
