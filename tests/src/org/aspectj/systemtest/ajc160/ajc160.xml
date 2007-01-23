@@ -4,6 +4,13 @@
 <suite>
 
  <!-- first section - dont need a 1.6 vm but fixed in the 1.6 branch of AspectJ -->
+ 
+    <ajc-test dir="bugs160/pr170467" title="itds and parameterized parameters">
+      <compile files="Bug.aj" options="-1.5"/>
+      <compile files="Bug2.aj" options="-1.5"/>
+    </ajc-test>
+    
+    
     <ajc-test dir="bugs160/pr169706" title="inherited annotations">
       <compile files="A.java,B.java,C.java,MyAspect.java,MyAnnotation.java,Test.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'method-call(void C.foo())' in Type 'Test' (Test.java:5) advised by before advice from 'MyAspect' (MyAspect.java:4)"/>
