@@ -429,8 +429,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     		return true;
     	}
     	
-    	UnresolvedType[] p1 = m1.getParameterTypes();
-    	UnresolvedType[] p2 = m2.getParameterTypes();
+    	
+    	UnresolvedType[] p1 = m1.getGenericParameterTypes();
+    	UnresolvedType[] p2 = m2.getGenericParameterTypes();
+    	if (p1==null) p1 = m1.getParameterTypes();
+    	if (p2==null) p2 = m2.getParameterTypes();
     	int n = p1.length;
     	if (n != p2.length) return false;
     	

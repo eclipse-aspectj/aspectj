@@ -67,6 +67,7 @@ public interface Member {
 	public UnresolvedType getReturnType();
 	
 	public UnresolvedType getGenericReturnType();
+	public UnresolvedType[] getGenericParameterTypes();
 
 	public UnresolvedType getType();
 

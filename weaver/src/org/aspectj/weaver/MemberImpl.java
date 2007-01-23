@@ -466,6 +466,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     public UnresolvedType getReturnType() { return returnType; }
     
     public UnresolvedType getGenericReturnType() { return getReturnType(); }
+    public UnresolvedType[] getGenericParameterTypes() { return getParameterTypes(); }
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#getType()
 	 */
