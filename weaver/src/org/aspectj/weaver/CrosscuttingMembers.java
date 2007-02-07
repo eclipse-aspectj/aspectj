@@ -9,8 +9,6 @@
  * Contributors: 
  *     PARC     initial implementation 
  * ******************************************************************/
-
-
 package org.aspectj.weaver;
 
 import java.util.ArrayList;
@@ -168,10 +166,21 @@ public class CrosscuttingMembers {
 				typeToExpose = UnresolvedType.forSignature(typeToExpose.getErasureSignature());
 			}
 		}
-		ResolvedMember member = new ResolvedMemberImpl(
-			Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "", UnresolvedType.NONE);
-		addTypeMunger(world.concreteTypeMunger(
-			new PrivilegedAccessMunger(member), inAspect));
+		// Check we haven't already got a munger for this:
+		String signatureToLookFor = typeToExpose.getSignature();
+		for (Iterator iterator = typeMungers.iterator(); iterator.hasNext();) {
+			ConcreteTypeMunger cTM = (ConcreteTypeMunger) iterator.next();
+			ResolvedTypeMunger rTM = cTM.getMunger();
+			if (rTM!=null && rTM instanceof ExposeTypeMunger) {
+				String exposedType = ((ExposeTypeMunger)rTM).getExposedTypeSignature();
+				if (exposedType.equals(signatureToLookFor)) return; // dont need to bother
+			}
+		}
+		addTypeMunger(world.concreteTypeMunger(new ExposeTypeMunger(typeToExpose), inAspect));
+//		ResolvedMember member = new ResolvedMemberImpl(
+//			Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "<clinit>", UnresolvedType.NONE);
+//		addTypeMunger(world.concreteTypeMunger(
+//			new PrivilegedAccessMunger(member), inAspect));
 	}
 	
 	public void addPrivilegedAccesses(Collection accessedMembers) {
