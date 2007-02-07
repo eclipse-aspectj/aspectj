@@ -21,6 +21,8 @@ import junit.framework.Test;
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+  public void testGenericMethodsAndItds_pr171952() { runTest("generic methods and ITDs");}
+  //public void testUsingDecpAnnotationWithoutAspectAnnotation_pr169428() { runTest("using decp annotation without aspect annotation");}
   public void testItdsParameterizedParameters_pr170467() { runTest("itds and parameterized parameters");}
   public void testComplexGenerics_pr168044() { runTest("complex generics - 1");}
   public void testIncorrectlyMarkingFieldTransient_pr168063() { runTest("incorrectly marking field transient");}

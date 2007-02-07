@@ -5,11 +5,20 @@
 
  <!-- first section - dont need a 1.6 vm but fixed in the 1.6 branch of AspectJ -->
  
+    <ajc-test dir="bugs160/pr171952" title="generic methods and ITDs">
+      <compile files="Foo.java,FooAspect.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs160/pr169428" title="using decp annotation without aspect annotation">
+      <compile files="AnAspect.java" options="-1.5">
+        <message kind="error" text="Found @AspectJ annotations in a non @Aspect type 'AnAspect'"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs160/pr170467" title="itds and parameterized parameters">
       <compile files="Bug.aj" options="-1.5"/>
       <compile files="Bug2.aj" options="-1.5"/>
     </ajc-test>
-    
     
     <ajc-test dir="bugs160/pr169706" title="inherited annotations">
       <compile files="A.java,B.java,C.java,MyAspect.java,MyAnnotation.java,Test.java" options="-1.5 -showWeaveInfo">
