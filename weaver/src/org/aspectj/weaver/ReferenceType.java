@@ -314,6 +314,9 @@ public class ReferenceType extends ResolvedType {
        			if (myParameters.length == theirParameters.length) {
        				for (int i = 0; i < myParameters.length; i++) {
 						if (myParameters[i] == theirParameters[i]) continue;
+						if (myParameters[i].isAssignableFrom(theirParameters[i],allowMissing)) {
+							continue;
+						}
 						if (!myParameters[i].isGenericWildcard()) {
 							parametersAssignable = false;
 							break;
@@ -340,7 +343,8 @@ public class ReferenceType extends ResolvedType {
        	if (other.isTypeVariableReference()) {
        		TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
        		if (this instanceof TypeVariableReference) {
-       			return ((TypeVariableReference)this).getTypeVariable()==otherType.getTypeVariable();
+       			return ((TypeVariableReference)this).getTypeVariable().canBeBoundTo(otherType.getTypeVariable().getFirstBound().resolve(world));// pr171952
+//       			return ((TypeVariableReference)this).getTypeVariable()==otherType.getTypeVariable();
        		} else {
        		    // FIXME asc should this say canBeBoundTo??
        			return this.isAssignableFrom(otherType.getTypeVariable().getFirstBound().resolve(world));
