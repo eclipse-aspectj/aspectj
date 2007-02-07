@@ -409,7 +409,7 @@ public final class TestUtil {
                     lines.add(l1);
                 } else {
                     showContext(lines);
-                    Assert.assertEquals(message + "(line " + index + ")", l1,
+                    Assert.assertEquals(message + "(line " + index + "):\n"+l1+"\n"+l2, l1,
                             l2);
                 }
                 index++;
