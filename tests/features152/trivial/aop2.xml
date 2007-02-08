@@ -1,0 +1,9 @@
+<aspectj>
+  <aspects>
+    <concrete-aspect name="Blah" extends="LTWAbstractAspect">
+      <pointcut name="p" expression="execution(!trivial * *.*(..))"/>
+    </concrete-aspect>
+  </aspects>
+
+  <weaver options="-Xjoinpoints:trivial"/>
+</aspectj>

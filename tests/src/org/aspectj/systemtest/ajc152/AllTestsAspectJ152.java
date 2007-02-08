@@ -21,6 +21,7 @@ public class AllTestsAspectJ152 {
 		suite.addTest(Ajc152Tests.suite());
 		suite.addTest(SynchronizationTests.suite());
 		suite.addTest(SynchronizationTransformTests.suite());
+		suite.addTest(TrivialTests.suite());
         //$JUnit-END$
 		return suite;
 	}

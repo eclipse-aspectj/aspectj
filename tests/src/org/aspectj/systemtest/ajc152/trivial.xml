@@ -1,0 +1,70 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.2 trivial modifier tests -->
+<suite>
+    
+    <ajc-test dir="features152/trivial" title="basic">
+        <compile files="Basic.aj" options="-showWeaveInfo -Xjoinpoints:trivial">
+          <message kind="weave" text="Join point 'method-execution(void Basic.tm())' in Type 'Basic' (Basic.aj:10) advised by before advice from 'X' (Basic.aj:25)"/>	
+        </compile>
+        <run class="Basic">
+          <stderr>
+          <line text="Trivial method executing:void Basic.tm()"/>
+          <line text="Trivial method executing:void Basic.tm()"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/trivial" title="basic2">
+        <compile files="Basic2.aj" options="-showWeaveInfo -Xjoinpoints:trivial">
+          <message kind="weave" text="Join point 'method-execution(void Basic2.ntm())' in Type 'Basic2' (Basic2.aj:14) advised by before advice from 'X' (Basic2.aj:25)"/>	
+        </compile>
+        <run class="Basic2">
+          <stderr>
+          <line text="Non trivial method executing:void Basic2.ntm()"/>
+          </stderr>
+        </run>
+    </ajc-test>
+        
+    <ajc-test dir="features152/trivial" title="errors">
+        <compile files="Errors3.aj">
+          <message kind="error" line="8" text="Syntax error on token &quot;trivial&quot;, &quot;any modifier except 'trivial'&quot; expected"/>
+          <message kind="error" line="9" text="Syntax error on token &quot;trivial&quot;, &quot;any modifier except 'trivial'&quot; expected"/>
+          <message kind="error" line="11" text="Syntax error on token &quot;trivial&quot;, &quot;any modifier except 'trivial'&quot; expected"/>
+          <message kind="error" line="12" text="Syntax error on token &quot;trivial&quot;, &quot;any modifier except 'trivial'&quot; expected"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features152/trivial" title="pointcuts - 1">
+        <compile files="ProgramOne.java" options="-Xjoinpoints:trivial"/>
+        <run class="ProgramOne">
+          <stderr>
+            <line text="Non trivial method executing:void ProgramOne.main(String[])"/>
+            <line text="Non trivial method executing:void ProgramOne.ntm()"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/trivial" title="trivial and ltw">
+        <compile files="LTWAbstractAspect.java" options="-1.5"/>
+        <compile files="LTWProgram.java" options="-1.5"/>
+        <run class="LTWProgram" ltw="aop1.xml">
+          <stderr>
+		    <line text="Non trivial method executing:void LTWProgram.main(String[])"/>
+			<line text="Non trivial method executing:void LTWProgram.ntm()"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/trivial" title="trivial and ltw - 2">
+        <compile files="LTWAbstractAspect.java" options="-1.5"/>
+        <compile files="LTWProgram.java" options="-1.5"/>
+        <run class="LTWProgram" ltw="aop2.xml">
+          <stderr>
+		    <line text="Non trivial method executing:void LTWProgram.main(String[])"/>
+			<line text="Non trivial method executing:void LTWProgram.ntm()"/>
+          </stderr>
+        </run>
+    </ajc-test>
+   
+</suite>
