@@ -58,6 +58,14 @@ public class PoliceExtensionUse extends IdentityPointcutVisitor {
 				world.getMessageHandler().handleMessage(m);
 			}
 		}
+		if (node.getKind()==Shadow.MethodExecution) {
+			if (!world.isJoinpointTrivialEnabled() && 
+			    node.getSignature().getModifiers().concernedWithTriviality()) {
+				IMessage m = MessageUtil.warn("Use of 'trivial' modifier in the execution() pointcut is not allowed without the option -Xjoinpoints:trivial", 
+						p.getSourceLocation());
+				world.getMessageHandler().handleMessage(m);
+			}
+		}
 		return super.visit(node, data);
 	}
 		

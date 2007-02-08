@@ -449,4 +449,14 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				o.getMethod().getCode().getCodeString());
 	}
 
+	 private boolean calculatedTriviality = false;
+	 private boolean isTrivial = false;
+	 public boolean isTrivial() {
+       if (calculatedTriviality) return isTrivial; // dont do it more than once for a method!
+		isTrivial = Utility.isSimple(method);
+		calculatedTriviality=true;
+		return isTrivial;
+     }
+     
+
 }
