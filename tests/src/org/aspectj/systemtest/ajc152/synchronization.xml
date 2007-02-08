@@ -429,7 +429,7 @@
     </ajc-test>
     
     <ajc-test dir="features152/synchronization/transformed" title="Two">
-      <compile files="Two.java -Xjoinpoints:synchronization">
+      <compile files="Two.java -Xjoinpoints:synchronization -Xlint:warning">
         <message kind="warning" line="14" text="advice matching the synchronized method shadow 'method-execution(void C.ma())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
       </compile>
       <run class="Two">
@@ -451,7 +451,7 @@
     </ajc-test>
     
     <ajc-test dir="features152/synchronization/transformed" title="Three">
-      <compile files="Three.java -Xjoinpoints:synchronization">
+      <compile files="Three.java -Xjoinpoints:synchronization -Xlint:warning">
         <message kind="warning" line="20" text="advice matching the synchronized method shadow 'method-execution(void C.m3())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
         <message kind="warning" line="24" text="advice matching the synchronized method shadow 'method-execution(void C.m32())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
       </compile>
@@ -470,7 +470,7 @@
     </ajc-test>
     
     <ajc-test dir="features152/synchronization/transformed" title="Four">
-      <compile files="Four.java -Xjoinpoints:synchronization">
+      <compile files="Four.java -Xjoinpoints:synchronization -Xlint:warning">
          <message kind="warning" line="16" text="advice matching the synchronized method shadow 'method-execution(void C.m())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>
          <message kind="warning" line="20" text="advice matching the synchronized method shadow 'method-execution(void C.m2())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>
       </compile>
@@ -628,7 +628,7 @@
     </ajc-test>
     
     <ajc-test dir="features152/synchronization/transformed" title="other targeters">
-      <compile files="OtherTargeters.java" options="-Xjoinpoints:synchronization">
+      <compile files="OtherTargeters.java" options="-Xjoinpoints:synchronization -Xlint:warning">
          <message kind="warning" line="8" text="advice matching the synchronized "/>
       </compile>
       <run class="OtherTargeters">
