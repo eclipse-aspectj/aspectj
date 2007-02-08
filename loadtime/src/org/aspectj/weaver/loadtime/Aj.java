@@ -12,6 +12,7 @@
 package org.aspectj.weaver.loadtime;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.aspectj.weaver.Dump;
@@ -100,6 +101,22 @@ public class Aj implements ClassPreProcessor {
 
         private static Map weavingAdaptors = new WeakHashMap();
 
+        static boolean discardWeaverFor(ClassLoader loader) {
+        	Object weaver = null;
+        	synchronized(weavingAdaptors) {
+        		weaver = weavingAdaptors.remove(loader);
+        	}
+        	return weaver!=null;
+        }
+        
+        static Set getActiveLoaderList() {
+        	Set existingLoaders = null;
+        	synchronized(weavingAdaptors) {
+        		existingLoaders = weavingAdaptors.keySet();
+        	}
+        	return existingLoaders;
+        }
+        
         static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
             ExplicitlyInitializedClassLoaderWeavingAdaptor adaptor = null;
             synchronized(weavingAdaptors) {
@@ -178,6 +195,14 @@ public class Aj implements ClassPreProcessor {
     
     public void flushGeneratedClasses(ClassLoader loader){
     	((ClassLoaderWeavingAdaptor)WeaverContainer.getWeaver(loader, weavingContext)).flushGeneratedClasses();
+    }
+    
+    public static boolean discardWeaverFor(ClassLoader loader) {
+    	return WeaverContainer.discardWeaverFor(loader);
+    }
+    
+    public static Set getActiveLoaderList() {
+    	return WeaverContainer.getActiveLoaderList();
     }
 
 }
