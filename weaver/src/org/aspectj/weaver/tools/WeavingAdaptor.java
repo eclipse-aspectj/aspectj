@@ -351,6 +351,7 @@ public class WeavingAdaptor implements IMessageContext {
 	private byte[] getWovenBytes(String name, byte[] bytes) throws IOException {
 		WeavingClassFileProvider wcp = new WeavingClassFileProvider(name,bytes);
 		weaver.weave(wcp);
+		weaver.getWorld().demote();
 		return wcp.getBytes();		
 	}
 
