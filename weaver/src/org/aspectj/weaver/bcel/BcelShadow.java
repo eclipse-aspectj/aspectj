@@ -57,7 +57,9 @@ import org.aspectj.apache.bcel.generic.SWAP;
 import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -150,6 +152,7 @@ public class BcelShadow extends Shadow {
     // from the signature (pr109728) (1.4 declaring type issue)
 	private String actualInstructionTargetType; 
 
+//    private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelShadow.class);
 	// ---- initialization
 	
 	/**
@@ -1787,36 +1790,49 @@ public class BcelShadow extends Shadow {
 	 * advice specified one.
 	 */
     public void weaveAfterReturning(BcelAdvice munger) {
-        List returns = findReturnInstructions();
-        boolean hasReturnInstructions = !returns.isEmpty();
-        
-        // list of instructions that handle the actual return from the join point
-        InstructionList retList = new InstructionList();
-                
-        // variable that holds the return value
-        BcelVar returnValueVar = null;
-        
-        if (hasReturnInstructions) {
-        	returnValueVar = generateReturnInstructions(returns,retList);
-        } else  {
-        	// we need at least one instruction, as the target for jumps
-            retList.append(InstructionConstants.NOP);            
-        }
-
-        // list of instructions for dispatching to the advice itself
-        InstructionList advice = getAfterReturningAdviceDispatchInstructions(
-        		munger, retList.getStart());            
-        
-        if (hasReturnInstructions) {
-            InstructionHandle gotoTarget = advice.getStart();           
-			for (Iterator i = returns.iterator(); i.hasNext();) {
-				InstructionHandle ih = (InstructionHandle) i.next();
-				retargetReturnInstruction(munger.hasExtraParameter(), returnValueVar, gotoTarget, ih);
-			}
-        }            
-         
-        range.append(advice);
-        range.append(retList);
+    	try {
+	        List returns = findReturnInstructions();
+	        boolean hasReturnInstructions = !returns.isEmpty();
+	        
+	        // list of instructions that handle the actual return from the join point
+	        InstructionList retList = new InstructionList();
+	                
+	        // variable that holds the return value
+	        BcelVar returnValueVar = null;
+	        
+	        if (hasReturnInstructions) {
+	        	returnValueVar = generateReturnInstructions(returns,retList);
+	        } else  {
+	        	// we need at least one instruction, as the target for jumps
+	            retList.append(InstructionConstants.NOP);            
+	        }
+	
+	        // list of instructions for dispatching to the advice itself
+	        InstructionList advice = getAfterReturningAdviceDispatchInstructions(
+	        		munger, retList.getStart());            
+	        
+	        if (hasReturnInstructions) {
+	            InstructionHandle gotoTarget = advice.getStart();           
+				for (Iterator i = returns.iterator(); i.hasNext();) {
+					InstructionHandle ih = (InstructionHandle) i.next();
+					retargetReturnInstruction(munger.hasExtraParameter(), returnValueVar, gotoTarget, ih);
+				}
+	        }            
+	         
+	        range.append(advice);
+	        range.append(retList);
+    	} catch (RuntimeException e) {
+    		StringBuffer sb = new StringBuffer();
+    		sb.append("Unexpected runtime exception occurred in BcelShadow.weaveAfterReturning()\n");
+    		sb.append("shadow is '"+toString()+"'\n");
+    		sb.append("method is '"+enclosingMethod+"'\n");
+    		sb.append("enclosing shadow is '"+enclosingShadow+"'\n");
+    		sb.append("range is '"+range+"'\n");
+    		sb.append("munger is '"+munger+"'\n");
+    		IMessage m = MessageUtil.abort(sb.toString(), e);
+    		world.getMessageHandler().handleMessage(m);
+    		throw e;
+    	}
     }
 
 	/**
