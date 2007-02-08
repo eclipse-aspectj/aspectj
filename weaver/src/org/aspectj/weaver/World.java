@@ -17,13 +17,14 @@ package org.aspectj.weaver;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.WeakHashMap;
+import java.util.Set;
 
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.bridge.IMessageHandler;
@@ -98,6 +99,7 @@ public abstract class World implements Dump.INode {
     /** Flags for the new joinpoints that are 'optional' */
     private boolean optionalJoinpoint_ArrayConstruction = false;  // Command line flag: "-Xjoinpoints:arrayconstruction"
     private boolean optionalJoinpoint_Synchronization   = false;  // Command line flag: "-Xjoinpoints:synchronization"
+    private boolean optionalJoinpoint_Trivial = false;            // Command line flag: "-Xjoinpoints:trivial"
     
     private boolean addSerialVerUID = false;
     
@@ -810,11 +812,15 @@ public abstract class World implements Dump.INode {
 	public void setOptionalJoinpoints(String jps) {
 		if (jps==null) return;
 		if (jps.indexOf("arrayconstruction")!=-1) optionalJoinpoint_ArrayConstruction = true;
+		if (jps.indexOf("trivial")!=-1)           optionalJoinpoint_Trivial = true;
 		if (jps.indexOf("synchronization")!=-1)   optionalJoinpoint_Synchronization = true;
 	}
 	
 	public boolean isJoinpointArrayConstructionEnabled() {
 		return optionalJoinpoint_ArrayConstruction;
+	}
+	public boolean isJoinpointTrivialEnabled() {
+		return optionalJoinpoint_Trivial;
 	}
 	public boolean isJoinpointSynchronizationEnabled() {
 		return optionalJoinpoint_Synchronization;
@@ -832,6 +838,69 @@ public abstract class World implements Dump.INode {
 		return b;
 	}
 	
+	static class SoftHM extends AbstractMap {
+		  private Map map;
+		  private ReferenceQueue rq = new ReferenceQueue(); 
+
+		  public SoftHM() { this.map = new HashMap();}
+		
+		  // An object that knows its key - so when the reference is collected we know what was pointing to it
+		  class KeyedValue extends SoftReference {
+			  private final Object key;
+			  KeyedValue(Object k,Object v) {
+			    super(v,rq);
+			    this.key = k;
+			  }
+		  }  
+
+		  private void processQueue() {
+			KeyedValue sv = null;
+			while ((sv = (KeyedValue)rq.poll())!=null) {
+				map.remove(sv.key);
+			}
+		  }
+		
+		  public Object get(Object key) {
+			KeyedValue value = (KeyedValue)map.get(key);
+			if (value==null) return null;
+			if (value.get()==null) {
+				// it got GC'd
+				map.remove(value.key);
+				return null;
+			} else {
+				return value.get();
+			}
+		  }
+
+		  public Object put(Object k, Object v) {
+			processQueue();
+			return map.put(k, new KeyedValue(k,v));
+		  }
+
+		  public Set entrySet() {
+			return map.entrySet();
+		  }
+		
+		  public void clear() {
+			processQueue();
+			map.clear();
+		  }
+		
+		  public int size() {
+			processQueue();
+			return map.size();
+		  }
+		
+		  public Object remove(Object k) {
+			processQueue();
+			KeyedValue value = (KeyedValue)map.remove(k);
+			if (value==null) return null;
+			if (value.get()!=null) {
+				return value.get();
+			}
+			return null;
+		  }
+	  }
 	/*
 	 *  Map of types in the world, can have 'references' to expendable ones which 
 	 *  can be garbage collected to recover memory.
@@ -848,13 +917,13 @@ public abstract class World implements Dump.INode {
 		public static int USE_SOFT_REFS = 2; // Collected when short on memory
 		
 		// SECRETAPI - Can switch to a policy of choice ;)
-		public static int policy  = USE_SOFT_REFS; 
+		public static int policy  = DONT_USE_REFS; 
 
 		// Map of types that never get thrown away
 		private Map /* String -> ResolvedType */ tMap = new HashMap();
 		
 		// Map of types that may be ejected from the cache if we need space
-		private Map expendableMap = new WeakHashMap();
+		private Map expendableMap = new SoftHM();
 		
 		private World w;
 
@@ -934,10 +1003,42 @@ public abstract class World implements Dump.INode {
 				}
 			    return type;
 			} else {
+				newkeys.add(key);
 				return (ResolvedType) tMap.put(key,type);
 			}
 		}
 		
+		List /*<String> keys*/ newkeys = new ArrayList();
+		
+		public void demote() {
+			// If unaffected by ITDs, get rid of it
+			int count =0;
+			for (Iterator iter = newkeys.iterator(); iter.hasNext();) {
+				String key = (String) iter.next();
+				ResolvedType type = (ResolvedType)tMap.get(key);
+				if (type==null) continue;//throw new RuntimeException("Unexpected!! "+key);
+				if (type.isAspect() ) continue;
+				if (type.equals(UnresolvedType.OBJECT)) continue;
+				if (type.isPrimitiveType()) continue;
+				List typeMungers = type.getInterTypeMungers();
+				if (typeMungers==null || typeMungers.size()==0) {
+					// demote - we can recover this
+					tMap.remove(key);
+					if (policy==USE_WEAK_REFS) {
+					    if (memoryProfiling) expendableMap.put(key,new WeakReference(type,rq));
+					    else                 expendableMap.put(key,new WeakReference(type));
+					} else if (policy==USE_SOFT_REFS) {
+						if (memoryProfiling) expendableMap.put(key,new SoftReference(type,rq));
+						else                 expendableMap.put(key,new SoftReference(type));
+					} else {
+					  expendableMap.put(key,type);
+					}
+					count++;
+				}
+			}
+//			System.out.print(count+" ");
+			newkeys.clear();
+		}
 		public void report() {
 			if (!memoryProfiling) return;
 			checkq();
@@ -1043,6 +1144,10 @@ public abstract class World implements Dump.INode {
 	    	return tMap.size();
 	    }
 	}	
+	
+	public void demote() {
+		typeMap.demote();
+	}
 	
 	/** Reference types we don't intend to weave may be ejected from
 	 * the cache if we need the space.
