@@ -791,8 +791,28 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				weaverState.setReweavable(false);
 				weaverState.setUnwovenClassFileData(null);
 			}
-	        for (int i = methods.length - 1; i >= 0; i--) methods[i].evictWeavingState();
-	        for (int i = fields.length - 1;  i >= 0; i--)  fields[i].evictWeavingState();
+			
+			ResolvedMember currentMember = null;
+			try {
+		        for (int i = methods.length - 1; i >= 0; i--) {
+		        	currentMember = methods[i];
+		        	methods[i].evictWeavingState();
+		        }
+		        for (int i = fields.length - 1;  i >= 0; i--)  {
+		        	currentMember = fields[i];
+		        	fields[i].evictWeavingState();
+		        }
+			} catch (IllegalStateException ise) {
+			    // once we've found our problem, let's promote this to trace?
+				ise.printStackTrace(); // temporary...
+				// add more diagnostics !!!
+				StringBuffer newMessage = new StringBuffer();
+				newMessage.append("Unexpected problem evicting state for members.");
+				newMessage.append("Problematic type is "+className+".");
+				newMessage.append("Problematic member is "+currentMember+".");
+				newMessage.append(ise.getMessage());
+				throw new IllegalStateException(newMessage.toString());
+			}
 			javaClass = null;
 //			setSourceContext(SourceContextImpl.UNKNOWN_SOURCE_CONTEXT); // bit naughty
 //		    interfaces=null; // force reinit - may get us the right instances!
