@@ -113,6 +113,9 @@ public interface Member {
 	public boolean isInterface();
 
 	public boolean isPrivate();
+	
+	public boolean isTrivial(World world);
+	public boolean isTrivial();
 
 	/**
 	 * Returns true iff the member is generic (NOT parameterized)

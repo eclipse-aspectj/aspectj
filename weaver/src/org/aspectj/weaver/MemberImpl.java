@@ -621,6 +621,14 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
 	
+	public boolean isTrivial() {
+		throw new UnsupportedOperationException("Cannot work this out for an unresolved member");
+	}
+	
+	public boolean isTrivial(World world) {
+		throw new UnsupportedOperationException("Cannot work this out for an unresolved member");
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
 	 */

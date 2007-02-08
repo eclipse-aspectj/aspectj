@@ -939,5 +939,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public void evictWeavingState() { }
+	
+	public boolean isTrivial() {
+		return false;
+	}
+		
+	public boolean isTrivial(World w) {
+		return false;
+	}
 }
    

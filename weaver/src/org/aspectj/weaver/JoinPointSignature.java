@@ -286,6 +286,14 @@ public class JoinPointSignature implements ResolvedMember {
 	public boolean isStatic(World world) {
 		return realMember.isStatic(world);
 	}
+	
+	public boolean isTrivial(World world) {
+		return realMember.isTrivial(world);
+	}
+	
+	public boolean isTrivial() {
+		return realMember.isTrivial();
+	}
 
 	public boolean isStrict(World world) {
 		return realMember.isStrict(world);
