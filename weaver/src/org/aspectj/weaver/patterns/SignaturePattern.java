@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -327,6 +328,19 @@ public class SignaturePattern extends PatternNode {
 			matchesIgnoringAnnotations = matchesExactlyConstructor(aMember, inAWorld);
 		}
 		if (matchesIgnoringAnnotations.alwaysFalse()) return FuzzyBoolean.NO;
+		
+
+		
+		// last thing to try
+		if (subjectMatch && modifiers.concernedWithTriviality()) {
+			if (!inAWorld.isJoinpointTrivialEnabled()) {
+				inAWorld.getMessageHandler().handleMessage(MessageUtil.warn("pointcuts can not use trivial modifier unless -Xjoinpoints:trivial specified"));
+			} else {
+				ResolvedMember rm = aMember.resolve(inAWorld);
+				boolean isTrivial = rm.isTrivial();
+			    if (!modifiers.matchesTriviality(isTrivial)) return FuzzyBoolean.NO;
+			}
+		}
 		
 		// annotations match on the *subject* 
 		if (subjectMatch && !matchesAnnotations(aMember,inAWorld).alwaysTrue()) {

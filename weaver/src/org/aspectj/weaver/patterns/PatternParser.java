@@ -596,7 +596,7 @@ public class PatternParser {
 
 		Shadow.Kind shadowKind = null;
 		if (kind.equals("execution")) {
-			sig = parseMethodOrConstructorSignaturePattern();
+			sig = parseMethodOrConstructorSignaturePattern(true);
 			if (sig.getKind() == Member.METHOD) {
 				shadowKind = Shadow.MethodExecution;
 			} else if (sig.getKind() == Member.CONSTRUCTOR) {
@@ -1074,8 +1074,11 @@ public class PatternParser {
 		return first.getEnd() == second.getStart()-1;
 	}
 
-	
 	public ModifiersPattern parseModifiersPattern() {
+		return parseModifiersPattern(false);
+	}
+	
+	public ModifiersPattern parseModifiersPattern(boolean allowTrivial) {
 		int requiredFlags = 0;
 		int forbiddenFlags = 0;
 		int start;
@@ -1084,7 +1087,11 @@ public class PatternParser {
 		    boolean isForbidden = false;
 		    isForbidden = maybeEat("!");
 		    IToken t = tokenSource.next();
-		    int flag = ModifiersPattern.getModifierFlag(t.getString());
+		    int flag = ModifiersPattern.getModifierFlag(t.getString(),allowTrivial);
+		    // working out the flag...
+		    if (flag==-2) {
+		    	  throw new ParserException("any modifier except 'trivial'",t);//tokenSource.peek(-1));
+		    }
 		    if (flag == -1) break;
 		    if (isForbidden) forbiddenFlags |= flag;
 		    else requiredFlags |= flag;
@@ -1157,11 +1164,14 @@ public class PatternParser {
 		return ThrowsPattern.ANY;
 	}
 	
-	
 	public SignaturePattern parseMethodOrConstructorSignaturePattern() {
+		return parseMethodOrConstructorSignaturePattern(false);
+	}
+	
+	public SignaturePattern parseMethodOrConstructorSignaturePattern(boolean allowTrivial) {
 		int startPos = tokenSource.peek().getStart();
 		AnnotationTypePattern annotationPattern = maybeParseAnnotationPattern();
-		ModifiersPattern modifiers = parseModifiersPattern();
+		ModifiersPattern modifiers = parseModifiersPattern(allowTrivial);
 		TypePattern returnType = parseTypePattern(false);
 		
 		TypePattern declaringType;

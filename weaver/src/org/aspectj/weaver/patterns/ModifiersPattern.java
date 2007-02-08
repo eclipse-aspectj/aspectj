@@ -25,6 +25,8 @@ public class ModifiersPattern extends PatternNode {
 	private int requiredModifiers;
 	private int forbiddenModifiers;
 	
+	public static final int TRIVIAL = 0x4000;
+	
 	public static final ModifiersPattern ANY = new ModifiersPattern(0, 0);
 	
 	public ModifiersPattern(int requiredModifiers, int forbiddenModifiers) {
@@ -54,8 +56,9 @@ public class ModifiersPattern extends PatternNode {
     }	
     
 	public boolean matches(int modifiers) {
-		return ((modifiers & requiredModifiers) == requiredModifiers) &&
-		        ((modifiers & forbiddenModifiers) == 0);
+		// Comparison here is based on 'real' Java modifiers
+		return (((modifiers & requiredModifiers)&0xfff) == (requiredModifiers&0xfff)) &&
+		        (((modifiers & forbiddenModifiers)&0xfff) == 0);
 	}
 	
 
@@ -77,8 +80,12 @@ public class ModifiersPattern extends PatternNode {
 	
 	
 	private static Map modifierFlags = null;
-
+	
 	public static int getModifierFlag(String name) {
+		return getModifierFlag(name,false);
+	}
+
+	public static int getModifierFlag(String name,boolean allowTrivial) {
 		if (modifierFlags == null) {
 			modifierFlags = new HashMap();
 			int flag = 1;
@@ -87,10 +94,26 @@ public class ModifiersPattern extends PatternNode {
 				modifierFlags.put(flagName, new Integer(flag));
 				flag = flag << 1;
 			}
+			modifierFlags.put("trivial",new Integer(TRIVIAL));
 		}
 		Integer flag = (Integer)modifierFlags.get(name);
 		if (flag == null) return -1;
+		if (flag.intValue()==TRIVIAL && !allowTrivial) return -2;
 		return flag.intValue();
+	}
+	
+	public boolean concernedWithTriviality() {
+		return ((requiredModifiers|forbiddenModifiers)&TRIVIAL)!=0;
+	}
+	
+	public boolean matchesTriviality(boolean isTrivial) {
+		int matchMods = (isTrivial?TRIVIAL:0x0000);
+		return ((matchMods & requiredModifiers) == requiredModifiers) &&
+		        ((matchMods & forbiddenModifiers) == 0);
+	}
+	
+	public boolean requires(int flag) {
+		return ((requiredModifiers&flag)!=0);
 	}
 
     public Object accept(PatternNodeVisitor visitor, Object data) {
