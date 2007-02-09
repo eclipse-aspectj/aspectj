@@ -71,7 +71,7 @@ import java.util.HashMap;
  * <em>Synthetic</em> attributes are supported. The
  * <em>Unknown</em> attribute stands for non-standard-attributes.
  *
- * @version $Id: Attribute.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Attribute.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     ConstantValue
  * @see     SourceFile
@@ -168,15 +168,14 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
     c          = (ConstantUtf8)constant_pool.getConstant(name_index, 
 							 Constants.CONSTANT_Utf8);
     name       = c.getBytes();
-
     // Length of data in bytes
     length = file.readInt();
 
     // Compare strings to find known attribute
-    for(byte i=0; i < Constants.KNOWN_ATTRIBUTES; i++) {
+    for (byte i=0; i < Constants.KNOWN_ATTRIBUTES; i++) {
       if(name.equals(Constants.ATTRIBUTE_NAMES[i])) {
-	tag = i; // found!
-	break;
+    	  	tag = i; // found!
+    	  	break;
       }
     }
 
@@ -186,7 +185,7 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
       AttributeReader r = (AttributeReader)readers.get(name);
 
       if(r != null)
-	return r.createAttribute(name_index, length, file, constant_pool);
+    	  	return r.createAttribute(name_index, length, file, constant_pool);
       else
 	return new Unknown(name_index, length, file, constant_pool);
 
@@ -223,8 +222,8 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
     case Constants.ATTR_SIGNATURE:
       return new Signature(name_index, length, file, constant_pool);
 
-    case Constants.ATTR_STACK_MAP:
-      return new StackMap(name_index, length, file, constant_pool);
+    case Constants.ATTR_STACK_MAP_TABLE:
+      return new StackMapTable(name_index, length, file, constant_pool);
 
     // J5SUPPORT:
     case Constants.ATTR_RUNTIME_VISIBLE_ANNOTATIONS:

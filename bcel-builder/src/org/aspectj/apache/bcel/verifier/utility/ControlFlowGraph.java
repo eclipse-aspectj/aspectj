@@ -1,4 +1,4 @@
-package org.aspectj.apache.bcel.verifier.statics;
+package org.aspectj.apache.bcel.verifier.utility;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -54,26 +54,87 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.Type;
+import java.util.Hashtable;
+
+import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.MethodGen;
+import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
 
 /**
- * This class represents the upper half of a DOUBLE variable.
- * @version $Id: DOUBLE_Upper.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
+ * This class represents a control flow graph of a method.
+ *
+ * @version $Id$
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
-public final class DOUBLE_Upper extends Type{
+public class ControlFlowGraph {
 
-	/** The one and only instance of this class. */
-	private static DOUBLE_Upper singleInstance = new DOUBLE_Upper();
+	// The MethodGen object we're working on
+	private final MethodGen method;
 
-	/** The constructor; this class must not be instantiated from the outside. */
-	private DOUBLE_Upper(){
-		super(Constants.T_TOP, "Long_Upper");
+	// The Subroutines for the method
+	final Subroutines subroutines;
+
+	// The ExceptionHandlers object for the method
+	final ExceptionHandlers exceptionhandlers;
+
+	// All InstructionContext instances of this ControlFlowGraph
+	private Hashtable /*InstructionHandle > InstructionContextImpl*/ instructionContexts = new Hashtable(); 
+
+	// ---
+	public Subroutines getSubroutines() {
+		return subroutines;
+	}
+	
+	public ControlFlowGraph(MethodGen method){
+		subroutines       = new Subroutines(method);
+		exceptionhandlers = new ExceptionHandlers(method);
+
+		InstructionHandle[] instructionhandles = method.getInstructionList().getInstructionHandles();
+		for (int i=0; i<instructionhandles.length; i++) {
+			instructionContexts.put(instructionhandles[i], new InstructionContextImpl(this, instructionhandles[i]));
+		}
+		
+		this.method = method;
 	}
 
-	/** Use this method to get the single instance of this class. */
-	public static DOUBLE_Upper theInstance(){
-		return singleInstance;
+	/**
+	 * Returns the InstructionContext of a given instruction.
+	 */
+	public InstructionContext contextOf(InstructionHandle inst){
+		InstructionContext ic = (InstructionContext) instructionContexts.get(inst);
+		if (ic == null){
+			throw new AssertionViolatedException("InstructionContext requested for an InstructionHandle that's not known!");
+		}
+		return ic;
 	}
+
+	/**
+	 * Returns the InstructionContext[] of a given InstructionHandle[],
+	 * in a naturally ordered manner.
+	 */
+	public InstructionContext[] contextsOf(InstructionHandle[] insts){
+		InstructionContext[] ret = new InstructionContext[insts.length];
+		for (int i=0; i<insts.length; i++){
+			ret[i] = contextOf(insts[i]);
+		}
+		return ret;
+	}
+
+	/**
+	 * Returns an InstructionContext[] with all the InstructionContext instances
+	 * for the method whose control flow is represented by this ControlFlowGraph
+	 * <B>(NOT ORDERED!)</B>.
+	 */
+	public InstructionContext[] getInstructionContexts(){
+		InstructionContext[] ret = new InstructionContext[instructionContexts.values().size()];
+		return (InstructionContext[]) instructionContexts.values().toArray(ret);
+	}
+
+	/**
+	 * Returns true, if and only if the said instruction is not reachable; that means,
+	 * if it not part of this ControlFlowGraph.
+	 */
+	public boolean isDead(InstructionHandle i){
+		return instructionContexts.containsKey(i);
+	}	 
 }

@@ -1,4 +1,4 @@
-package org.aspectj.apache.bcel.verifier.statics;
+package org.aspectj.apache.bcel.verifier.utility;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -54,26 +54,51 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.*;
+import org.aspectj.apache.bcel.generic.*;
 
 /**
- * This class represents the upper half of a DOUBLE variable.
- * @version $Id: DOUBLE_Upper.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
+ * This class represents an uninitialized object type; see The Java
+ * Virtual Machine Specification, Second Edition, page 147: 4.9.4 for
+ * more details.
+ *
+ * @version $Id$
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
-public final class DOUBLE_Upper extends Type{
+public class UninitializedObjectType extends ReferenceType implements Constants{
 
-	/** The one and only instance of this class. */
-	private static DOUBLE_Upper singleInstance = new DOUBLE_Upper();
-
-	/** The constructor; this class must not be instantiated from the outside. */
-	private DOUBLE_Upper(){
-		super(Constants.T_TOP, "Long_Upper");
+	/** The "initialized" version. */
+	private ObjectType initialized;
+	private int loc;
+	
+	/** Creates a new instance. */
+	public UninitializedObjectType(ObjectType t,boolean isThis,int loc){
+		super(T_UNKNOWN, "<UNINITIALIZED OBJECT OF TYPE '"+t.getClassName()+"'>");
+		initialized = t;
+		this.loc = loc;
+		this.isthis = isThis;
 	}
 
-	/** Use this method to get the single instance of this class. */
-	public static DOUBLE_Upper theInstance(){
-		return singleInstance;
+	private boolean isthis;
+	/**
+	 * Returns the ObjectType of the same class as the one of the uninitialized object
+	 * represented by this UninitializedObjectType instance.
+	 */
+	public ObjectType getInitialized(){
+		return initialized;
+	}
+	
+	public boolean isThis() { return isthis; }
+	public int getLoc() { return loc; }
+
+	/**
+	 * Returns true on equality of this and o.
+	 * Equality means the ObjectType instances of "initialized"
+	 * equal one another in this and the o instance.
+	 *
+	 */
+	public boolean equals(Object o){
+		if (! (o instanceof UninitializedObjectType)) return false;
+		return initialized.equals(((UninitializedObjectType)o).initialized);
 	}
 }

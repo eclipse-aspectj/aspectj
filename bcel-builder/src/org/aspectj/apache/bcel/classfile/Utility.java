@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Utility functions that do not really belong to any class in particular.
  *
- * @version $Id: Utility.java,v 1.5 2006/07/19 12:06:15 aclement Exp $
+ * @version $Id: Utility.java,v 1.5.2.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified: Andy Clement  2-mar-05  Removed unnecessary static and optimized
@@ -458,11 +458,10 @@ public abstract class Utility {
 
 	    if(vars != null) {
 	      LocalVariable l = vars.getLocalVariable(var_index);
-
-	      if(l != null)
-	        buf.append(" " + l.getName());
-	    } else
+	      if(l != null) buf.append(" " + l.getName());
+	    } else {	    	
 	      buf.append(" arg" + var_index);
+	    }
 
 	      if("double".equals(param_type) || "long".equals(param_type))
 	      var_index += 2;
@@ -778,7 +777,7 @@ public abstract class Utility {
 
     if(left_justify)
       return str + new String(buf);    
-    else
+    
       return new String(buf) + str;
   }
 

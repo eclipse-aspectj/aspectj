@@ -1,4 +1,4 @@
-package org.aspectj.apache.bcel.verifier.structurals;
+package org.aspectj.apache.bcel.verifier.utility;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -79,7 +79,7 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * TODO: Currently, the JVM's behaviour concerning monitors (MONITORENTER,
  * MONITOREXIT) is not modeled in JustIce.
  *
- * @version $Id: InstConstraintVisitor.java,v 1.4.6.1 2007/02/09 10:45:08 aclement Exp $
+ * @version $Id$
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException
  * @see org.aspectj.apache.bcel.verifier.exc.LinkingConstraintException
@@ -92,6 +92,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	 * The constructor. Constructs a new instance of this class.
 	 */
 	public InstConstraintVisitor(){}
+	public InstConstraintVisitor(ConstantPoolGen cpg ){this.cpg=cpg;}
 
 	/**
 	 * The Execution Frame we're working on.
@@ -234,12 +235,12 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	private void _visitStackAccessor(Instruction o){
 		int consume = o.consumeStack(cpg); // Stack values are always consumed first; then produced.
 		if (consume > stack().slotsUsed()){
-			constraintViolated(o, "Cannot consume "+consume+" stack slots: only "+stack().slotsUsed()+" slot(s) left on stack!\nStack:\n"+stack());
+			constraintViolated( o, "Cannot consume "+consume+" stack slots: only "+stack().slotsUsed()+" slot(s) left on stack!\nStack:\n"+stack());
 		}
 
-		int produce = o.produceStack(cpg) - (o).consumeStack(cpg); // Stack values are always consumed first; then produced.
+		int produce = o.produceStack(cpg) - o.consumeStack(cpg); // Stack values are always consumed first; then produced.
 		if ( produce + stack().slotsUsed() > stack().maxStack() ){
-			constraintViolated(o, "Cannot produce "+produce+" stack slots: only "+(stack().maxStack()-stack().slotsUsed())+" free stack slot(s) left.\nStack:\n"+stack());
+			constraintViolated( o, "Cannot produce "+produce+" stack slots: only "+(stack().maxStack()-stack().slotsUsed())+" free stack slot(s) left.\nStack:\n"+stack());
 		}
 	}
 
@@ -255,13 +256,14 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	 */
 	public void visitLoadClass(LoadClass o){
 		ObjectType t = o.getLoadClassType(cpg);
-		if (t != null){// null means "no class is loaded"
-			Verifier v = VerifierFactory.getVerifier(t.getClassName());
-			VerificationResult vr = v.doPass2();
-			if (vr.getStatus() != VerificationResult.VERIFIED_OK){
-				constraintViolated((Instruction) o, "Class '"+o.getLoadClassType(cpg).getClassName()+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
-			}
-		}
+// this really means we can't verify a class by itself...
+//		if (t != null){// null means "no class is loaded"
+//			Verifier v = VerifierFactory.getVerifier(t.getClassName());
+//			VerificationResult vr = v.doPass2();
+//			if (vr.getStatus() != VerificationResult.VERIFIED_OK){
+//				constraintViolated((Instruction) o, "Class '"+o.getLoadClassType(cpg).getClassName()+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
+//			}
+//		}
 	}
 
 	/**
@@ -1166,6 +1168,19 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
+	
+	private Field findField(String field_name,String classname) {
+		JavaClass jc = Repository.lookupClass(classname);
+		Field[] fields = jc.getFields();
+		Field f = null;
+		for (int i=0; i<fields.length; i++){
+			if (fields[i].getName().equals(field_name)){
+				return fields[i];
+			}
+		}
+		if (jc.getSuperClass()!=null) return findField(field_name,jc.getSuperClass().getClassName());
+		return null;
+	}
 	public void visitGETFIELD(GETFIELD o){
 		Type objectref = stack().peek();
 		if (! ( (objectref instanceof ObjectType) || (objectref == Type.NULL) ) ){
@@ -1173,16 +1188,17 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 		
 		String field_name = o.getFieldName(cpg);
+		Field f = findField(field_name,o.getClassType(cpg).getClassName());
 		
-		JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
-		Field[] fields = jc.getFields();
-		Field f = null;
-		for (int i=0; i<fields.length; i++){
-			if (fields[i].getName().equals(field_name)){
-				f = fields[i];
-				break;
-			}
-		}
+//		JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
+//		Field[] fields = jc.getFields();
+//		Field f = null;
+//		for (int i=0; i<fields.length; i++){
+//			if (fields[i].getName().equals(field_name)){
+//				f = fields[i];
+//				break;
+//			}
+//		}
 		if (f == null){
 			throw new AssertionViolatedException("Field not found?!?");
 		}
@@ -1645,7 +1661,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 			Verifier v = VerifierFactory.getVerifier( name );
 			VerificationResult vr = v.doPass2();
 			if (vr.getStatus() != VerificationResult.VERIFIED_OK){
-				constraintViolated(o, "Class '"+name+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
+				constraintViolated((Instruction) o, "Class '"+name+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
 			}
 		}
 
@@ -1729,7 +1745,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 			Verifier v = VerifierFactory.getVerifier( name );
 			VerificationResult vr = v.doPass2();
 			if (vr.getStatus() != VerificationResult.VERIFIED_OK){
-				constraintViolated( o, "Class '"+name+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
+				constraintViolated((Instruction) o, "Class '"+name+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
 			}
 		}
 
@@ -1810,7 +1826,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 			Verifier v = VerifierFactory.getVerifier( name );
 			VerificationResult vr = v.doPass2();
 			if (vr.getStatus() != VerificationResult.VERIFIED_OK){
-				constraintViolated(o, "Class '"+name+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
+				constraintViolated((Instruction) o, "Class '"+name+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
 			}
 		}
 
@@ -1855,7 +1871,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 			Verifier v = VerifierFactory.getVerifier( name );
 			VerificationResult vr = v.doPass2();
 			if (vr.getStatus() != VerificationResult.VERIFIED_OK){
-				constraintViolated( o, "Class '"+name+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
+				constraintViolated((Instruction) o, "Class '"+name+"' is referenced, but cannot be loaded and resolved: '"+vr+"'.");
 			}
 		}
 
@@ -2434,16 +2450,17 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 		
 		String field_name = o.getFieldName(cpg);
+		Field f = findField(field_name, o.getClassType(cpg).getClassName());
 		
-		JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
-		Field[] fields = jc.getFields();
-		Field f = null;
-		for (int i=0; i<fields.length; i++){
-			if (fields[i].getName().equals(field_name)){
-				f = fields[i];
-				break;
-			}
-		}
+//		JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
+//		Field[] fields = jc.getFields();
+//		Field f = null;
+//		for (int i=0; i<fields.length; i++){
+//			if (fields[i].getName().equals(field_name)){
+//				f = fields[i];
+//				break;
+//			}
+//		}
 		if (f == null){
 			throw new AssertionViolatedException("Field not found?!?");
 		}

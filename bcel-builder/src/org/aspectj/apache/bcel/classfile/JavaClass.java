@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.9 2005/12/02 06:56:14 acolyer Exp $
+ * @version $Id: JavaClass.java,v 1.9.6.1 2007/02/09 10:45:09 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -971,9 +971,8 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 	  loadGenericSignatureInfoIfNecessary();
 	  if (signatureAttribute != null) {
 		  return signatureAttribute.asClassSignature();
-	  } else {
-		  return null;
 	  }
+	  return null;
   }
 
 }

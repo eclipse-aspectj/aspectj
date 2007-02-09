@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.7 2006/07/19 12:06:17 aclement Exp $
+ * @version $Id: Type.java,v 1.7.2.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified:
@@ -89,9 +89,11 @@ public abstract class Type implements java.io.Serializable {
   public static final ObjectType    STRING       = new ObjectType("java.lang.String");
   public static final ObjectType    STRINGBUFFER = new ObjectType("java.lang.StringBuffer");
   public static final ObjectType    THROWABLE    = new ObjectType("java.lang.Throwable");
+  public static final ObjectType    CLASS		   = new ObjectType("java.lang.Class");
   public static final Type[]        NO_ARGS      = new Type[0];
   public static final ReferenceType NULL         = new ReferenceType(){};
   public static final Type          UNKNOWN      = new Type(Constants.T_UNKNOWN,"<unknown object>"){};
+  public static final Type          TOP          = new Type(Constants.T_TOP,"<top>"){};
 
   protected Type(byte t, String s) {
     type      = t;

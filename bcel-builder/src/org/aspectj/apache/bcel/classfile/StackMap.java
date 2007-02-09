@@ -54,8 +54,9 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * This class represents a stack map attribute used for
@@ -66,7 +67,7 @@ import  java.io.*;
  * within the Code attribute of a method. See CLDC specification
  * §5.3.1.2
  *
- * @version $Id: StackMap.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: StackMap.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  * @see     StackMapEntry
@@ -85,7 +86,7 @@ public final class StackMap extends Attribute implements Node {
   public StackMap(int name_index, int length,  StackMapEntry[] map,
 		  ConstantPool constant_pool)
   {
-    super(Constants.ATTR_STACK_MAP, name_index, length, constant_pool);
+    super(/*dunno - do we want to support the 'old style' ? */(byte)12/*Constants.ATTR_STACK_MAP*/, name_index, length, constant_pool);
 
     setStackMap(map);
   }
@@ -178,7 +179,7 @@ public final class StackMap extends Attribute implements Node {
    * @param v Visitor object
    */
    public void accept(Visitor v) {
-     v.visitStackMap(this);
+     //v.visitStackMap(this);
    }
 
   public final int getMapLength() { return map_length; }

@@ -66,7 +66,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * class supplies the traversal strategy, other classes can make use
  * of it.
  *
- * @version $Id: DescendingVisitor.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: DescendingVisitor.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public class DescendingVisitor implements Visitor {
@@ -89,7 +89,7 @@ public class DescendingVisitor implements Visitor {
 
     if((size < 2) || (level < 0))
       return null;
-    else
+    
       return stack.elementAt(size - (level + 2)); // size - 1 == current
   }
 
@@ -212,18 +212,18 @@ public class DescendingVisitor implements Visitor {
     stack.pop();
   }
 
-  public void visitStackMap(StackMap table) {
+  public void visitStackMap(StackMapTable table) {
     stack.push(table);
     table.accept(visitor);
 
-    StackMapEntry[] vars = table.getStackMap();
+    StackMapFrame[] vars = table.getStackMap();
 
     for(int i=0; i < vars.length; i++)
       vars[i].accept(this);
     stack.pop();
   }
 
-  public void visitStackMapEntry(StackMapEntry var) {
+  public void visitStackMapEntry(StackMapFrame var) {
     stack.push(var);
     var.accept(visitor);
     stack.pop();

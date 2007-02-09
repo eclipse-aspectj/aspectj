@@ -1,4 +1,4 @@
-package org.aspectj.apache.bcel.verifier.statics;
+package org.aspectj.apache.bcel.verifier.utility;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -54,26 +54,59 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.*;
+import java.util.HashSet;
+import java.util.Hashtable;
 
 /**
- * This class represents the upper half of a DOUBLE variable.
- * @version $Id: DOUBLE_Upper.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
+ * This class allows easy access to ExceptionHandler objects.
+ *
+ * @version $Id$
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
-public final class DOUBLE_Upper extends Type{
-
-	/** The one and only instance of this class. */
-	private static DOUBLE_Upper singleInstance = new DOUBLE_Upper();
-
-	/** The constructor; this class must not be instantiated from the outside. */
-	private DOUBLE_Upper(){
-		super(Constants.T_TOP, "Long_Upper");
+public class ExceptionHandlers{
+	/**
+	 * The ExceptionHandler instances.
+	 * Key: InstructionHandle objects, Values: HashSet<ExceptionHandler> instances.
+	 */
+	private Hashtable exceptionhandlers;
+	 
+	/**
+	 * Constructor. Creates a new ExceptionHandlers instance.
+	 */
+	public ExceptionHandlers(MethodGen mg){
+		exceptionhandlers = new Hashtable();
+		CodeExceptionGen[] cegs = mg.getExceptionHandlers();
+		for (int i=0; i<cegs.length; i++){
+			ExceptionHandler eh = new ExceptionHandler(cegs[i].getCatchType(), cegs[i].getHandlerPC());
+			for (InstructionHandle ih=cegs[i].getStartPC(); ih != cegs[i].getEndPC().getNext(); ih=ih.getNext()) {
+				if (ih==cegs[i].getStartPC() || 
+					ih.getInstruction() instanceof ExceptionThrower ||
+					ih.getInstruction() instanceof ASTORE) {
+					HashSet hs;
+					hs = (HashSet) exceptionhandlers.get(ih);
+					if (hs == null){
+						hs = new HashSet();
+						exceptionhandlers.put(ih, hs);
+					}
+					hs.add(eh);
+				}
+			}
+		}
+//		System.out.println("ExceptionHandler size is "+exceptionhandlers.keySet().size());
+	}
+	
+	/**
+	 * Returns all the ExceptionHandler instances representing exception
+	 * handlers that protect the instruction ih.
+	 */
+	public ExceptionHandler[] getExceptionHandlers(InstructionHandle ih){
+		HashSet hs = (HashSet) exceptionhandlers.get(ih);
+		if (hs == null) return new ExceptionHandler[0];
+		else{
+			ExceptionHandler[] ret = new ExceptionHandler[hs.size()];
+			return (ExceptionHandler[]) (hs.toArray(ret));
+		}
 	}
 
-	/** Use this method to get the single instance of this class. */
-	public static DOUBLE_Upper theInstance(){
-		return singleInstance;
-	}
 }

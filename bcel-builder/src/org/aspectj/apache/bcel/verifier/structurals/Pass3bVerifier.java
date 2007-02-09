@@ -57,7 +57,6 @@ package org.aspectj.apache.bcel.verifier.structurals;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Vector;
 
 import org.aspectj.apache.bcel.Constants;
@@ -86,7 +85,7 @@ import org.aspectj.apache.bcel.verifier.exc.VerifierConstraintViolatedException;
  * More detailed information is to be found at the do_verify() method's
  * documentation. 
  *
- * @version $Id: Pass3bVerifier.java,v 1.5 2005/02/02 09:11:39 aclement Exp $
+ * @version $Id: Pass3bVerifier.java,v 1.5.6.1 2007/02/09 10:45:08 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
@@ -155,44 +154,34 @@ public final class Pass3bVerifier extends PassVerifier{
 		myOwner = owner;
 		this.method_no = method_no;
 	}
+	
+	public Pass3bVerifier() {}
 
 	/**
-	 * Whenever the outgoing frame
-	 * situation of an InstructionContext changes, all its successors are
-	 * put [back] into the queue [as if they were unvisited].
-   * The proof of termination is about the existence of a
-   * fix point of frame merging.
+	 * Whenever the outgoing frame situation of an InstructionContext changes, 
+	 * all its successors are put [back] into the queue [as if they were unvisited].
+	 * The proof of termination is about the existence of a fix point of frame merging.
 	 */
-	private void circulationPump(ControlFlowGraph cfg, InstructionContext start, Frame vanillaFrame, InstConstraintVisitor icv, ExecutionVisitor ev){
-		final Random random = new Random();
-		InstructionContextQueue icq = new InstructionContextQueue();
+	private void circulationPump(ControlFlowGraph cfg, InstructionContext start, 
+			                      Frame vanillaFrame, InstConstraintVisitor icv, ExecutionVisitor ev){
+		
+		InstructionContextQueue contextQueue = new InstructionContextQueue();
 		
 		start.execute(vanillaFrame, new ArrayList(), icv, ev);	// new ArrayList() <=>	no Instruction was executed before
-																									//									=> Top-Level routine (no jsr call before)
-		icq.add(start, new ArrayList());
+															// => Top-Level routine (no jsr call before)
+		contextQueue.add(start, new ArrayList());
 
-		// LOOP!
-		while (!icq.isEmpty()){
-			InstructionContext u;
-			ArrayList ec;
-			if (!DEBUG){
-				int r = random.nextInt(icq.size());
-				u = icq.getIC(r);
-				ec = icq.getEC(r);
-				icq.remove(r);
-			}
-			else{
-				u  = icq.getIC(0);
-				ec = icq.getEC(0);
-				icq.remove(0);
-			}
+		while (!contextQueue.isEmpty()){
+			InstructionContext u = contextQueue.getIC(0);
+			ArrayList         ec = contextQueue.getEC(0);
+			contextQueue.remove(0);
 			
 			ArrayList oldchain = (ArrayList) (ec.clone());
 			ArrayList newchain = (ArrayList) (ec.clone());
 			newchain.add(u);
 
 			if ((u.getInstruction().getInstruction()) instanceof RET){
-//System.err.println(u);
+				//System.err.println(u);
 				// We can only follow _one_ successor, the one after the
 				// JSR that was recently executed.
 				RET ret = (RET) (u.getInstruction().getInstruction());
@@ -206,7 +195,7 @@ public final class Pass3bVerifier extends PassVerifier{
 					if (skip_jsr < 0){
 						throw new AssertionViolatedException("More RET than JSR in execution chain?!");
 					}
-//System.err.println("+"+oldchain.get(ss));
+					//System.err.println("+"+oldchain.get(ss));
 					if (((InstructionContext) oldchain.get(ss)).getInstruction().getInstruction() instanceof JsrInstruction){
 						if (skip_jsr == 0){
 							lastJSR = (InstructionContext) oldchain.get(ss);
@@ -229,7 +218,7 @@ public final class Pass3bVerifier extends PassVerifier{
 				}
 				
 				if (theSuccessor.execute(u.getOutFrame(oldchain), newchain, icv, ev)){
-					icq.add(theSuccessor, (ArrayList) newchain.clone());
+					contextQueue.add(theSuccessor, (ArrayList) newchain.clone());
 				}
 			}
 			else{// "not a ret"
@@ -239,7 +228,7 @@ public final class Pass3bVerifier extends PassVerifier{
 				for (int s=0; s<succs.length; s++){
 					InstructionContext v = succs[s];
 					if (v.execute(u.getOutFrame(oldchain), newchain, icv, ev)){
-						icq.add(v, (ArrayList) newchain.clone());
+						contextQueue.add(v, (ArrayList) newchain.clone());
 					}
 				}
 			}// end "not a ret"
@@ -260,7 +249,7 @@ public final class Pass3bVerifier extends PassVerifier{
 				//if (v.execute(new Frame(u.getOutFrame(oldchain).getLocals(), new OperandStack (u.getOutFrame().getStack().maxStack(), (exc_hds[s].getExceptionType()==null? Type.THROWABLE : exc_hds[s].getExceptionType())) ), newchain), icv, ev){
 					//icq.add(v, (ArrayList) newchain.clone());
 				if (v.execute(new Frame(u.getOutFrame(oldchain).getLocals(), new OperandStack (u.getOutFrame(oldchain).getStack().maxStack(), (exc_hds[s].getExceptionType()==null? Type.THROWABLE : exc_hds[s].getExceptionType())) ), new ArrayList(), icv, ev)){
-					icq.add(v, new ArrayList());
+					contextQueue.add(v, new ArrayList());
 				}
 			}
 
@@ -370,6 +359,8 @@ public final class Pass3bVerifier extends PassVerifier{
 		}
 		return VerificationResult.VR_OK;
 	}
+	
+	
 
 	/** Returns the method number as supplied when instantiating. */
 	public int getMethodNo(){

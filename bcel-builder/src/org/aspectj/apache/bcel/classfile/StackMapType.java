@@ -61,11 +61,12 @@ import  java.io.*;
  * This class represents the type of a local variable or item on stack
  * used in the StackMap entries.
  *
- * @version $Id: StackMapType.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: StackMapType.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     StackMapEntry
- * @see     StackMap
+ * @see     StackMapFrame
+ * @see     StackMapTable
  * @see     Constants
+ * 
  */
 public final class StackMapType implements Cloneable {
   private byte         type;
@@ -77,13 +78,9 @@ public final class StackMapType implements Cloneable {
    * @param file Input stream
    * @throws IOException
    */
-  StackMapType(DataInputStream file, ConstantPool constant_pool) throws IOException
-  {
+  StackMapType(DataInputStream file, ConstantPool constant_pool) throws IOException {
     this(file.readByte(), -1, constant_pool);
-
-    if(hasIndex())
-      setIndex(file.readShort());
-
+    if(hasIndex()) setIndex(file.readShort());
     setConstantPool(constant_pool);
   }
 
@@ -98,7 +95,7 @@ public final class StackMapType implements Cloneable {
   }
 
   public void setType(byte t) {
-    if((t < Constants.ITEM_Bogus) || (t > Constants.ITEM_NewObject))
+    if ((t < Constants.ITEM_Top) || (t > Constants.ITEM_Uninitialized))
       throw new RuntimeException("Illegal type for StackMapType: " + t);
     type = t;
   }
@@ -128,13 +125,13 @@ public final class StackMapType implements Cloneable {
    */
   public final boolean hasIndex() {
     return ((type == Constants.ITEM_Object) ||
-	    (type == Constants.ITEM_NewObject));
+	    (type == Constants.ITEM_Uninitialized));
   }
 
   private String printIndex() {
     if(type == Constants.ITEM_Object)
       return ", class=" + constant_pool.constantToString(index, Constants.CONSTANT_Class);
-    else if(type == Constants.ITEM_NewObject)
+    else if(type == Constants.ITEM_Uninitialized)
       return ", offset=" + index;
     else
       return "";

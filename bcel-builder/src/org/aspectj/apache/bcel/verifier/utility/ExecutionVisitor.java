@@ -1,4 +1,4 @@
-package org.aspectj.apache.bcel.verifier.structurals;
+package org.aspectj.apache.bcel.verifier.utility;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -56,6 +56,7 @@ package org.aspectj.apache.bcel.verifier.structurals;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Constant;
+import org.aspectj.apache.bcel.classfile.ConstantClass;
 import org.aspectj.apache.bcel.classfile.ConstantDouble;
 import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantInteger;
@@ -86,7 +87,7 @@ import org.aspectj.apache.bcel.generic.*;
  * If a two-slot type is stored into a local variable, the next variable
  * is given the type Type.UNKNOWN.
  *
- * @version $Id: ExecutionVisitor.java,v 1.5.6.1 2007/02/09 10:45:08 aclement Exp $
+ * @version $Id$
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #visitDSTORE(DSTORE o)
  * @see InstConstraintVisitor
@@ -108,7 +109,11 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	 * Constructor. Constructs a new instance of this class.
 	 */
 	public ExecutionVisitor(){}
+	public ExecutionVisitor(ConstantPoolGen cpg) {this.cpg=cpg;}
 
+	boolean isJava5OrLater = true;
+
+	private int pos;
 	/**
 	 * The OperandStack from the current Frame we're operating on.
 	 * @see #setFrame(Frame)
@@ -191,13 +196,13 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitARRAYLENGTH(ARRAYLENGTH o){
 		stack().pop();
-		stack().push(Type.INT);
+		stack().push(Type.INT);	
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitASTORE(ASTORE o){
 		locals().set(o.getIndex(), stack().pop());
-		//System.err.println("TODO-DEBUG:	set LV '"+o.getIndex()+"' to '"+locals().get(o.getIndex())+"'.");
+//		System.err.println("TODO-DEBUG:	set LV '"+o.getIndex()+"' to '"+locals().get(o.getIndex())+"'.");
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
@@ -335,7 +340,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitDSTORE(DSTORE o){
 		locals().set(o.getIndex(), stack().pop());
-		locals().set(o.getIndex()+1, Type.TOP);
+		locals().set(o.getIndex()+1, Type.TOP);//UNKNOWN);//fubar
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitDSUB(DSUB o){
@@ -630,6 +635,9 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitIF_ACMPEQ(IF_ACMPEQ o){
+		if (stack().size()<2) {
+			int stop = 1;
+		}
 		stack().pop();
 		stack().pop();
 	}
@@ -727,9 +735,13 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitINVOKEINTERFACE(INVOKEINTERFACE o){
 		stack().pop();	//objectref
-		for (int i=0; i<o.getArgumentTypes(cpg).length; i++){
-			stack().pop();
-		}
+//		for (int i=0; i<o.getArgumentTypes(cpg).length; i++){
+//			stack().pop();
+//		}
+		Type[] args = o.getArgumentTypes(cpg);
+		int size=0;
+		for (int i = 0; i < args.length; i++) { size+=args[i].getSize();}
+		for (int i=0;i<size;i++) stack().pop();
 		// We are sure the invoked method will xRETURN eventually
 		// We simulate xRETURNs functionality here because we
 		// don't really "jump into" and simulate the invoked
@@ -747,7 +759,10 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitINVOKESPECIAL(INVOKESPECIAL o){
 		if (o.getMethodName(cpg).equals(Constants.CONSTRUCTOR_NAME)){
-			UninitializedObjectType t = (UninitializedObjectType) stack().peek(o.getArgumentTypes(cpg).length);
+			Type[] args = o.getArgumentTypes(cpg);
+			int size=0;
+			for (int i = 0; i < args.length; i++) { size+=args[i].getSize();}
+			UninitializedObjectType t = (UninitializedObjectType) stack().peek(size);
 			if (t == Frame._this){	
 				Frame._this = null;
 			}
@@ -927,12 +942,15 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		Constant c = cpg.getConstant(o.getIndex());
 		if (c instanceof ConstantInteger){
 			stack().push(Type.INT);
-		}
-		if (c instanceof ConstantFloat){
+		} else if (c instanceof ConstantFloat){
 			stack().push(Type.FLOAT);
-		}
-		if (c instanceof ConstantString){
+			return;
+		} else if (c instanceof ConstantString){
 			stack().push(Type.STRING);
+		} else if (c instanceof ConstantClass && isJava5OrLater) {
+			stack().push(Type.CLASS);
+		} else {
+			throw new RuntimeException("Incorrect constant type for LDC: "+c);
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
@@ -940,12 +958,14 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		Constant c = cpg.getConstant(o.getIndex());
 		if (c instanceof ConstantInteger){
 			stack().push(Type.INT);
-		}
-		if (c instanceof ConstantFloat){
+		} else if (c instanceof ConstantFloat){
 			stack().push(Type.FLOAT);
-		}
-		if (c instanceof ConstantString){
+		} else if (c instanceof ConstantString){
 			stack().push(Type.STRING);
+		} else if (c instanceof ConstantClass && isJava5OrLater) {
+			stack().push(Type.CLASS);
+		} else {
+			throw new RuntimeException("Incorrect constant type for LDC_W");
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
@@ -1014,7 +1034,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitLSTORE(LSTORE o){
 		locals().set(o.getIndex(), stack().pop());
-		locals().set(o.getIndex()+1, Type.TOP);		
+		locals().set(o.getIndex()+1, Type.TOP);//UNKNOWN);		//fubar
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitLSUB(LSUB o){
@@ -1051,7 +1071,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitNEW(NEW o){
-		stack().push(new UninitializedObjectType((ObjectType) (o.getType(cpg))));
+		stack().push(new UninitializedObjectType((ObjectType) (o.getType(cpg)),false,pos));
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitNEWARRAY(NEWARRAY o){
@@ -1116,5 +1136,8 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
 	public void visitTABLESWITCH(TABLESWITCH o){
 		stack().pop();
+	}
+	public void setPosition(int position) {
+		this.pos = position;
 	}
 }

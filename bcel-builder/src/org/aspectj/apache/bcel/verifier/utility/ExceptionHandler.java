@@ -1,4 +1,4 @@
-package org.aspectj.apache.bcel.verifier.statics;
+package org.aspectj.apache.bcel.verifier.utility;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -54,26 +54,40 @@ package org.aspectj.apache.bcel.verifier.statics;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.*;
 
 /**
- * This class represents the upper half of a DOUBLE variable.
- * @version $Id: DOUBLE_Upper.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
+ * This class represents an exception handler; that is, an ObjectType
+ * representing a subclass of java.lang.Throwable and the instruction
+ * the handler starts off (represented by an InstructionContext).
+ * 
+ * @version $Id$
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
-public final class DOUBLE_Upper extends Type{
+public class ExceptionHandler{
+	/** The type of the exception to catch. NULL means ANY. */
+	private ObjectType catchtype;
+	
+	/** The InstructionHandle where the handling begins. */
+	private InstructionHandle handlerpc;
 
-	/** The one and only instance of this class. */
-	private static DOUBLE_Upper singleInstance = new DOUBLE_Upper();
-
-	/** The constructor; this class must not be instantiated from the outside. */
-	private DOUBLE_Upper(){
-		super(Constants.T_TOP, "Long_Upper");
+	/** Leave instance creation to JustIce. */
+	ExceptionHandler(ObjectType catch_type, InstructionHandle handler_pc){
+		catchtype = catch_type;
+		handlerpc = handler_pc;
 	}
 
-	/** Use this method to get the single instance of this class. */
-	public static DOUBLE_Upper theInstance(){
-		return singleInstance;
+	/**
+	 * Returns the type of the exception that's handled. <B>'null' means 'ANY'.</B>
+	 */
+	public ObjectType getExceptionType(){
+		return catchtype;
+	}
+
+	/**
+	 * Returns the InstructionHandle where the handler starts off.
+	 */
+	public InstructionHandle getHandlerStart(){
+		return handlerpc;
 	}
 }

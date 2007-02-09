@@ -71,6 +71,7 @@ import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.ConstantValue;
 import org.aspectj.apache.bcel.classfile.Deprecated;
+import org.aspectj.apache.bcel.classfile.EnclosingMethod;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.InnerClass;
@@ -85,7 +86,8 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Node;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.SourceFile;
-import org.aspectj.apache.bcel.classfile.StackMap;
+import org.aspectj.apache.bcel.classfile.StackMapFrame;
+import org.aspectj.apache.bcel.classfile.StackMapTable;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.Visitor;
@@ -107,7 +109,7 @@ import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
  * Note that this class also serves as a placeholder for more sophisticated message
  * handling in future versions of JustIce.
  * 
- * @version $Id: StringRepresentation.java,v 1.4 2006/07/04 16:57:42 aclement Exp $
+ * @version $Id: StringRepresentation.java,v 1.4.2.1 2007/02/09 10:45:09 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class StringRepresentation extends org.aspectj.apache.bcel.classfile.EmptyVisitor implements Visitor{
@@ -249,9 +251,9 @@ public class StringRepresentation extends org.aspectj.apache.bcel.classfile.Empt
 	public void visitSourceFile(SourceFile obj){
 		tostring = toString(obj);
 	} 
-    public void visitStackMap(StackMap obj){
-      tostring = toString(obj);
-    }
+  public void visitStackMap(StackMapTable obj){
+    tostring = toString(obj);
+  }
 	public void visitSynthetic(Synthetic obj){
 		tostring = toString(obj);
 	} 

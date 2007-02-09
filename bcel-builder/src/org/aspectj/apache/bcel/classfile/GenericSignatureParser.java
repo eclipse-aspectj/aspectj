@@ -170,10 +170,9 @@ public class GenericSignatureParser {
 		  FieldTypeSignature fieldType = parseFieldTypeSignature(true);
 		  if (fieldType != null) {
 			  return new ArrayTypeSignature(fieldType);
-		  } else {
-			  // must be BaseType array
-			  return new ArrayTypeSignature(new BaseTypeSignature(eatIdentifier()));
 		  }
+		  // must be BaseType array
+		  return new ArrayTypeSignature(new BaseTypeSignature(eatIdentifier()));
 	  }
 
 	  // L PackageSpecifier* SimpleClassTypeSignature ClassTypeSignature* ;
@@ -264,9 +263,8 @@ public class GenericSignatureParser {
 			  TypeArgument[] tArgs = new TypeArgument[typeArgs.size()];
 			  typeArgs.toArray(tArgs);
 			  return tArgs;
-		  } else {
-			  return null;
 		  }
+		  return null;
 	  }
 	  
 	  private TypeVariableSignature parseTypeVariableSignature() {

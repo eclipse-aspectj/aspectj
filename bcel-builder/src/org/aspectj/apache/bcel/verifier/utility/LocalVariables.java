@@ -1,4 +1,4 @@
-package org.aspectj.apache.bcel.verifier.structurals;
+package org.aspectj.apache.bcel.verifier.utility;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -59,43 +59,24 @@ import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.verifier.exc.*;
 
 /**
- * This class implements an array of local variables used for symbolic JVM
- * simulation.
+ * This class implements an array of local variables used for symbolic JVM simulation.
  *
- * @version $Id: LocalVariables.java,v 1.2.8.1 2007/02/09 10:45:08 aclement Exp $
+ * @version $Id$
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
-public class LocalVariables{
-	/** The Type[] containing the local variable slots. */
+public class LocalVariables {
+	
+	// The Type[] containing the local variable slots
 	private Type[] locals;
 
-	/**
-	 * Creates a new LocalVariables object.
-	 */
+	// Creates a new LocalVariables object
 	public LocalVariables(int maxLocals){
 		locals = new Type[maxLocals];
-		for (int i=0; i<maxLocals; i++){
-			locals[i] = Type.TOP;
-		}
+		for (int i=0; i<maxLocals; i++) locals[i] = Type.TOP;
 	}
 
-	/**
-	 * Returns a deep copy of this object; i.e. the clone
-	 * operates on a new local variable array.
-	 * However, the Type objects in the array are shared.
-	 */
-	protected Object clone(){
-		LocalVariables lvs = new LocalVariables(locals.length);
-		for (int i=0; i<locals.length; i++){
-			lvs.locals[i] = this.locals[i];
-		}
-		return lvs;
-	}
-
-	/**
-	 * Returns the type of the local variable slot i.
-	 */
-	public Type get(int i){
+	/** Returns the type of the local variable slot i */
+	public Type get(int i) {
 		return locals[i];
 	}
 
@@ -122,10 +103,8 @@ public class LocalVariables{
 		if (type == Type.BYTE || type == Type.SHORT || type == Type.BOOLEAN || type == Type.CHAR){
 			throw new AssertionViolatedException("LocalVariables do not know about '"+type+"'. Use Type.INT instead.");
 		}
-		if (type==Type.TOP) {
-			int stop =1;
-		}
 		locals[i] = type;
+//		if (type!=Type.UNKNOWN) numberThatHaveBeenSet=i;
 	}
 
 	/*
@@ -202,7 +181,7 @@ public class LocalVariables{
 					throw new AssertionViolatedException("Merging different ReturnAddresses: '"+locals[i]+"' and '"+lv.locals[i]+"'.");
 				}
 */
-				locals[i] = Type.UNKNOWN;
+				locals[i] = Type.TOP;
 			}
 		}
 	}
@@ -219,6 +198,25 @@ public class LocalVariables{
 	}
 
 	/**
+	 * Return a more compact string than toString()
+	 */
+	public String toCompactString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("[").append(maxLocals()).append(":");
+		for (int i=0;i<locals.length;i++) sb.append(i).append("=").append(compactName(locals[i])).append(" ");
+		sb.append("]");
+		return sb.toString();
+	}
+	
+	public String compactName(Type type) {
+		if (type==Type.UNKNOWN) return "<Unknown>";
+		String s = type.toString();
+		int pos = s.lastIndexOf(".");
+		if (pos==-1) return s;
+		return s.substring(pos+1);
+	}
+
+	/**
 	 * Replaces all occurences of u in this local variables set
 	 * with an "initialized" ObjectType.
 	 */
@@ -229,4 +227,42 @@ public class LocalVariables{
 			}
 		}
 	}
+
+	/**
+	 * Returns a deep copy of this object; i.e. the clone
+	 * operates on a new local variable array.
+	 * However, the Type objects in the array are shared.
+	 */
+	protected Object clone(){
+		LocalVariables lvs = new LocalVariables(locals.length);
+		for (int i=0; i<locals.length; i++){
+			lvs.locals[i] = this.locals[i];
+		}
+		return lvs;
+	}
+
+	public void flush() {
+		// reset them all back to unknown!
+		for (int i=0; i<locals.length; i++) locals[i] = Type.TOP;
+	}
+	
+	public int getNextUnset() {
+		return numberThatHaveBeenSet;
+	}
+
+	public void haveSet(int i) {
+		// Called so we can remember where the end is
+		numberThatHaveBeenSet=i;
+	}
+	
+	private int numberThatHaveBeenSet;
+	
+//	public int getFirstUnknown() {
+//		for (int i = 0; i < locals.length; i++) {
+//			if (locals[i].equals(Type.UNKNOWN)) return i;
+//		}
+//		return -1;
+//	}
+
+
 }

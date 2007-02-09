@@ -57,7 +57,7 @@ package org.aspectj.apache.bcel;
 /**
  * Constants for the project, mostly defined in the JVM specification.
  *
- * @version $Id: Constants.java,v 1.3 2006/05/04 11:28:26 aclement Exp $
+ * @version $Id: Constants.java,v 1.3.4.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Constants {
@@ -431,6 +431,7 @@ public interface Constants {
   public static final byte T_REFERENCE = 14; // Deprecated
   public static final byte T_UNKNOWN   = 15;
   public static final byte T_ADDRESS   = 16;
+  public static final byte T_TOP       = 17;
 
   /** The primitive type names corresponding to the T_XX constants,
    * e.g., TYPE_NAMES[T_INT] = "int"
@@ -439,6 +440,7 @@ public interface Constants {
     ILLEGAL_TYPE, ILLEGAL_TYPE,  ILLEGAL_TYPE, ILLEGAL_TYPE,
     "boolean", "char", "float", "double", "byte", "short", "int", "long",
     "void", "array", "object", "unknown" // Non-standard
+    ,"address","top"
   };
 
   /** The primitive class names corresponding to the T_XX constants,
@@ -766,8 +768,8 @@ public interface Constants {
   public static final byte ATTR_SYNTHETIC            = 7;
   public static final byte ATTR_DEPRECATED           = 8;
   public static final byte ATTR_PMG                  = 9;
-  public static final byte ATTR_SIGNATURE            = 10; //J5TODO: Is this the same as a Java5 signature attribute?
-  public static final byte ATTR_STACK_MAP            = 11;
+  public static final byte ATTR_SIGNATURE            = 10;
+  public static final byte ATTR_STACK_MAP_TABLE      = 11;
   
   // J5SUPPORT:
   public static final byte ATTR_RUNTIME_VISIBLE_ANNOTATIONS             = 12;
@@ -784,27 +786,28 @@ public interface Constants {
     "SourceFile", "ConstantValue", "Code", "Exceptions",
     "LineNumberTable", "LocalVariableTable",
     "InnerClasses", "Synthetic", "Deprecated",
-    "PMGClass", "Signature", "StackMap",
+    "PMGClass", "Signature", "StackMapTable",
 	// J5SUPPORT:
 	"RuntimeVisibleAnnotations","RuntimeInvisibleAnnotations",
 	"RuntimeVisibleParameterAnnotations","RuntimeInvisibleParameterAnnotations",
 	"LocalVariableTypeTable","EnclosingMethod","AnnotationDefault"
   };
 
-  /** Constants used in the StackMap attribute.
+  /** 
+   * Constants used in the StackMap attribute.
    */
-  public static final byte ITEM_Bogus      = 0;
+  public static final byte ITEM_Top        = 0;
   public static final byte ITEM_Integer    = 1;
   public static final byte ITEM_Float      = 2;
   public static final byte ITEM_Double     = 3;
   public static final byte ITEM_Long       = 4;
-  public static final byte ITEM_Null       = 5;
-  public static final byte ITEM_InitObject = 6;
-  public static final byte ITEM_Object     = 7;
-  public static final byte ITEM_NewObject  = 8;
+  public static final byte ITEM_Null              = 5;
+  public static final byte ITEM_UninitializedThis = 6;
+  public static final byte ITEM_Object            = 7;
+  public static final byte ITEM_Uninitialized     = 8;
 
   public static final String[] ITEM_NAMES = {
-    "Bogus", "Integer", "Float", "Double", "Long",
-    "Null", "InitObject", "Object", "NewObject" 
+    "Top", "Integer", "Float", "Double", "Long",
+    "Null", "UninitializedThis", "Object", "Uninitalized" 
   };
 }

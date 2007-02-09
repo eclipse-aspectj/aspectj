@@ -69,7 +69,7 @@ import org.aspectj.apache.bcel.generic.Type;
  * for a method in the class. See JVM specification for details.
  * A method has access flags, a name, a signature and a number of attributes.
  *
- * @version $Id: Method.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Method.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {
@@ -169,7 +169,6 @@ public final class Method extends FieldOrMethod {
 
     if(code != null)
       return code.getLocalVariableTable();
-    else
       return null;
   }
 
@@ -181,8 +180,8 @@ public final class Method extends FieldOrMethod {
 
     if(code != null)
       return code.getLineNumberTable();
-    else
-      return null;
+    
+    return null;
   }
 
   /**
@@ -252,7 +251,7 @@ public final class Method extends FieldOrMethod {
   	if (parameterAnnotationsOutOfDate) { 
   		// Find attributes that contain annotation data
   		Attribute[] attrs = getAttributes();
-  		List accumulatedAnnotations = new ArrayList();
+//  		List accumulatedAnnotations = new ArrayList();
   		
   		for (int i = 0; i < attrs.length; i++) {
 			Attribute attribute = attrs[i];

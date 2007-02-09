@@ -58,6 +58,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Instances of this class give users a handle to the instructions contained in
@@ -71,7 +72,7 @@ import java.util.HashMap;
  * can traverse the list via an Enumeration returned by
  * InstructionList.elements().
  *
- * @version $Id: InstructionHandle.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: InstructionHandle.java,v 1.2.8.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
@@ -83,6 +84,10 @@ public class InstructionHandle implements java.io.Serializable {
   protected int     i_position = -1; // byte code offset of instruction
   private HashSet   targeters;
   private HashMap   attributes;
+  private int flags = 0;
+  
+  private static int IS_JUMP_DESTINATION_CALCULATED = 0x0001;
+  private static int IS_JUMP_DESTINATION            = 0x0002;
 
   public final InstructionHandle getNext()        { return next; }
   public final InstructionHandle getPrev()        { return prev; }
@@ -136,6 +141,34 @@ public class InstructionHandle implements java.io.Serializable {
       return ih;
     }
   }
+  
+	/**
+	 * Return true if the instruction referenced is a jump destination, meaning it is targeted by a branch instruction or 
+	 */
+	public boolean isJumpDestination() {
+		if ((flags&IS_JUMP_DESTINATION_CALCULATED)!=0) return ((flags&IS_JUMP_DESTINATION)!=0);
+		if (targeters!=null) {
+			for (Iterator iter = targeters.iterator(); iter.hasNext();) {
+				InstructionTargeter targeter = (InstructionTargeter) iter.next();
+				if (targeter instanceof BranchInstruction ||
+					targeter instanceof CodeExceptionGen) {
+					boolean catchBlockEntry =false;
+					// Skip it if targeted just because exception handler catch block entry
+					if (targeter instanceof CodeExceptionGen) {
+						CodeExceptionGen ceg = (CodeExceptionGen)targeter;
+						if (ceg.getHandlerPC().getPosition()!=getPosition()) catchBlockEntry=true;
+					}
+					if (!catchBlockEntry) {
+						flags|=(IS_JUMP_DESTINATION_CALCULATED|IS_JUMP_DESTINATION);
+						return true;
+					}
+				}
+			}
+		}
+		flags|=IS_JUMP_DESTINATION_CALCULATED;
+		return false;
+	}
+
 
   /**
    * Called by InstructionList.setPositions when setting the position for every

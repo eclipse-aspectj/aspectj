@@ -82,7 +82,7 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
  * Constants.MAX_SHORT entries. Note that the first (0) is used by the
  * JVM and that Double and Long constants need two slots.
  *
- * @version $Id: ConstantPoolGen.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: ConstantPoolGen.java,v 1.3.8.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constant
  */
@@ -160,8 +160,9 @@ public class ConstantPoolGen implements java.io.Serializable {
 	  delim = IMETHODREF_DELIM;
 	else if(c instanceof ConstantFieldref)
 	  delim = FIELDREF_DELIM;
-
-	cp_table.put(class_name + delim + method_name + delim + signature, new Index(i));
+	StringBuffer key = new StringBuffer(class_name);
+	key.append(delim).append(method_name).append(delim).append(signature);
+	cp_table.put(key.toString(), new Index(i));
       }
     }
   }

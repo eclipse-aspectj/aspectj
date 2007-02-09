@@ -70,11 +70,13 @@ import org.aspectj.apache.bcel.classfile.LineNumberTable;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.StackMapTable;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.verifier.utility.StackMapHelper;
 
 /** 
  * Template class for building up a method. This is done by defining exception
@@ -86,7 +88,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.7 2006/02/21 10:49:15 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.7.4.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -703,6 +705,7 @@ public class MethodGen extends FieldGenOrMethodGen {
     if(il != null)
       byte_code = il.getByteCode();
 
+//    calculateStackMapTable();
     LineNumberTable    lnt = null;
     LocalVariableTable lvt = null;
     //J5TODO: LocalVariableTypeTable support!
@@ -1144,5 +1147,41 @@ public class MethodGen extends FieldGenOrMethodGen {
   		l.add(annotation);
   		param_annotations[parameterIndex] = l;
   	}
+  }
+
+  private Attribute findAttribute(String name, Attribute[] all) {
+		for (int i = 0; i < all.length; i++) {
+			if (all[i].getName().equals(name)) return all[i];
+		}
+		return null;
+  }
+  
+  private boolean debug = true;
+  public void calculateStackMapTable() {
+		if (il==null) return; // native method?
+//	if (debug) System.out.println("> MethodGen.calculateStackMapTable() for "+getName());
+	
+	// jsr check
+	InstructionHandle iHandle = il.getStart();
+	boolean hasJsr = false;
+	while (iHandle!=null && !hasJsr) {
+		Instruction ins = iHandle.getInstruction();
+		if (ins instanceof JsrInstruction || ins instanceof JSR_W) {
+			hasJsr = true;
+		}
+		iHandle = iHandle.getNext();
+	}
+    if (hasJsr) {
+    	System.out.println("SKIPPING METHOD - CONTAINS JSR");
+    	return;
+    }
+	
+	StackMapTable stackmap = (StackMapTable)findAttribute("StackMapTable", getCodeAttributes());
+	
+	
+	//StackMapFrame[] smfs = stackmap.getStackMap(); // causes unpacking
+	if (stackmap!=null) removeCodeAttribute(stackmap);
+	StackMapTable smt = new StackMapHelper().produceStackMapTableAttribute(this);
+	addCodeAttribute(smt);
   }          
 }

@@ -74,7 +74,7 @@ import org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException;
 /**
  * This class represents a control flow graph of a method.
  *
- * @version $Id: ControlFlowGraph.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: ControlFlowGraph.java,v 1.4.8.1 2007/02/09 10:45:08 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class ControlFlowGraph{
@@ -213,7 +213,8 @@ public class ControlFlowGraph{
 				// instruction, but does not modify the workingFrame object.
 //InstConstraintVisitor icv = InstConstraintVisitor.getInstance(VerifierFactory.getVerifier(method_gen.getClassName()));
 				icv.setFrame(workingFrame);
-				getInstruction().accept(icv);
+				// will go bang...
+//				getInstruction().accept(icv);
 			}
 			catch(StructuralCodeConstraintException ce){
 				ce.extendMessage("","\nInstructionHandle: "+getInstruction()+"\n");

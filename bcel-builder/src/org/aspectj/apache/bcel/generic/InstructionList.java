@@ -75,7 +75,7 @@ import java.util.ArrayList;
  * A list is finally dumped to a byte code array with <a
  * href="#getByteCode()">getByteCode</a>.
  *
- * @version $Id: InstructionList.java,v 1.4 2006/05/12 08:17:43 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.4.4.1 2007/02/09 10:45:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Instruction
  * @see     InstructionHandle
@@ -956,6 +956,7 @@ public class InstructionList implements Serializable {
       Instruction i = ih.instruction;
 
       ih.setPosition(index);
+      
       pos[count++] = index;
       index += i.getLength();
     }
