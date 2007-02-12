@@ -64,6 +64,7 @@ import org.aspectj.apache.bcel.classfile.ConstantFieldref;
 import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantString;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.generic.*;
@@ -79,7 +80,7 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * TODO: Currently, the JVM's behaviour concerning monitors (MONITORENTER,
  * MONITOREXIT) is not modeled in JustIce.
  *
- * @version $Id: InstConstraintVisitor.java,v 1.4 2005/02/02 09:11:39 aclement Exp $
+ * @version $Id: InstConstraintVisitor.java,v 1.4.8.1 2007/02/12 09:34:12 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException
  * @see org.aspectj.apache.bcel.verifier.exc.LinkingConstraintException
@@ -102,12 +103,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	 */
 	private Frame frame = null;
 
-	/**
-	 * The ConstantPoolGen we're working on.
-	 * 
-	 * @see #setConstantPoolGen(ConstantPoolGen cpg)
-	 */
-	private ConstantPoolGen cpg = null;
+	private ConstantPool cpg = null;
 
 	/**
 	 * The MethodGen we're working on.
@@ -163,7 +159,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	 * Sets the ConstantPoolGen instance needed for constraint
 	 * checking prior to execution.
 	 */	
-	public void setConstantPoolGen(ConstantPoolGen cpg){
+	public void setConstantPoolGen(ConstantPool cpg){
 		this.cpg = cpg;
 	}
 
@@ -253,7 +249,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	 * Assures the generic preconditions of a LoadClass instance.
 	 * The referenced class is loaded and pass2-verified.
 	 */
-	public void visitLoadClass(LoadClass o){
+	public void visitLoadClass(Instruction o){
 		ObjectType t = o.getLoadClassType(cpg);
 		if (t != null){// null means "no class is loaded"
 			Verifier v = VerifierFactory.getVerifier(t.getClassName());
@@ -267,15 +263,15 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the general preconditions of a StackConsumer instance.
 	 */
-	public void visitStackConsumer(StackConsumer o){
-		_visitStackAccessor((Instruction) o);
+	public void visitStackConsumer(Instruction o){
+		_visitStackAccessor(o);
 	}
 	
 	/**
 	 * Ensures the general preconditions of a StackProducer instance.
 	 */
-	public void visitStackProducer(StackProducer o){
-		_visitStackAccessor((Instruction) o);
+	public void visitStackProducer(Instruction o){
+		_visitStackAccessor(o);
 	}
 
 
@@ -284,20 +280,14 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/* therefore, we know the order of visiting; we know           */
 	/* these methods are called after the visitXXXX methods above. */
 	/***************************************************************/
-	/**
-	 * Ensures the general preconditions of a CPInstruction instance.
-	 */
-	public void visitCPInstruction(CPInstruction o){
+	public void visitCPInstruction(Instruction o){
 		int idx = o.getIndex();
 		if ((idx < 0) || (idx >= cpg.getSize())){
 			throw new AssertionViolatedException("Huh?! Constant pool index of instruction '"+o+"' illegal? Pass 3a should have checked this!");
 		}
 	}
 
-	/**
-	 * Ensures the general preconditions of a FieldInstruction instance.
-	 */
-	 public void visitFieldInstruction(FieldInstruction o){
+	 public void visitFieldInstruction(Instruction o){
 	 	// visitLoadClass(o) has been called before: Every FieldOrMethod
 	 	// implements LoadClass.
 	 	// visitCPInstruction(o) has been called before.
@@ -318,9 +308,6 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 			}
 	 }
 	 
-	/**
-	 * Ensures the general preconditions of an InvokeInstruction instance.
-	 */
 	 public void visitInvokeInstruction(InvokeInstruction o){
 	 	// visitLoadClass(o) has been called before: Every FieldOrMethod
 	 	// implements LoadClass.
@@ -328,10 +315,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
         //TODO
 	 }
 	 
-	/**
-	 * Ensures the general preconditions of a StackInstruction instance.
-	 */
-	public void visitStackInstruction(StackInstruction o){
+	public void visitStackInstruction(Instruction o){
 		_visitStackAccessor(o);
 	}
 
@@ -339,16 +323,13 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	 * Assures the generic preconditions of a LocalVariableInstruction instance.
 	 * That is, the index of the local variable must be valid.
 	 */
-	public void visitLocalVariableInstruction(LocalVariableInstruction o){
+	public void visitLocalVariableInstruction(InstructionLV o){
 		if (locals().maxLocals() <= (o.getType(cpg).getSize()==1? o.getIndex() : o.getIndex()+1) ){
 			constraintViolated(o, "The 'index' is not a valid index into the local variable array.");
 		}
 	}
 	
-	/**
-	 * Assures the generic preconditions of a LoadInstruction instance.
-	 */
-	public void visitLoadInstruction(LoadInstruction o){
+	public void visitLoadInstruction(Instruction o){
 		//visitLocalVariableInstruction(o) is called before, because it is more generic.
 
 		// LOAD instructions must not read Type.UNKNOWN
@@ -366,7 +347,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 
 		// LOAD instructions must read the correct type.
-		if (!(o instanceof ALOAD)){
+		if (!o.isALOAD()){
 			if (locals().get(o.getIndex()) != o.getType(cpg) ){
 				constraintViolated(o, "Local Variable type and LOADing Instruction type mismatch: Local Variable: '"+locals().get(o.getIndex())+"'; Instruction type: '"+o.getType(cpg)+"'.");
 			}
@@ -385,17 +366,14 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 	}
 
-	/**
-	 * Assures the generic preconditions of a StoreInstruction instance.
-	 */
-	public void visitStoreInstruction(StoreInstruction o){
+	public void visitStoreInstruction(Instruction o){
 		//visitLocalVariableInstruction(o) is called before, because it is more generic.
 
 		if (stack().isEmpty()){ // Don't bother about 1 or 2 stack slots used. This check is implicitely done below while type checking.
 			constraintViolated(o, "Cannot STORE: Stack to read from is empty.");
 		}
 
-		if ( (!(o instanceof ASTORE)) ){
+		if (!o.isASTORE() ){
 			if (! (stack().peek() == o.getType(cpg)) ){// the other xSTORE types are singletons in BCEL.
 				constraintViolated(o, "Stack top type and STOREing Instruction type mismatch: Stack top: '"+stack().peek()+"'; Instruction type: '"+o.getType(cpg)+"'.");
 			}
@@ -411,14 +389,11 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 	}
 
-	/**
-	 * Assures the generic preconditions of a ReturnInstruction instance.
-	 */
-	public void visitReturnInstruction(ReturnInstruction o){
-		if (o instanceof RETURN){
+	public void visitReturnInstruction(Instruction o){
+		if (o.getOpcode()==Constants.RETURN){
 			return;
 		}
-		if (o instanceof ARETURN){
+		if (o.getOpcode()==Constants.ARETURN){
 			if (stack().peek() == Type.NULL){
 				return;
 			}
@@ -453,10 +428,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/* "special"visitXXXX methods for one type of instruction each */
 	/***************************************************************/
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitAALOAD(AALOAD o){
+	public void visitAALOAD(Instruction o){
 		Type arrayref = stack().peek(1);
 		Type index    = stack().peek(0);
 		
@@ -472,7 +444,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitAASTORE(AASTORE o){
+	public void visitAASTORE(Instruction o){
 		Type arrayref = stack().peek(2);
 		Type index    = stack().peek(1);
 		Type value    = stack().peek(0);
@@ -495,26 +467,16 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitACONST_NULL(ACONST_NULL o){
+	public void visitACONST_NULL(Instruction o){
 		// Nothing needs to be done here.
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitALOAD(ALOAD o){
+	public void visitALOAD(Instruction o){
 		//visitLoadInstruction(LoadInstruction) is called before.
-		
 		// Nothing else needs to be done here.
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitANEWARRAY(ANEWARRAY o){
+	public void visitANEWARRAY(Instruction o){
 		if (!stack().peek().equals(Type.INT))
 			constraintViolated(o, "The 'count' at the stack top is not of type '"+Type.INT+"' but of type '"+stack().peek()+"'.");
 		// The runtime constant pool item at that index must be a symbolic reference to a class,
@@ -524,7 +486,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitARETURN(ARETURN o){
+	public void visitARETURN(Instruction o){
 		if (! (stack().peek() instanceof ReferenceType) ){
 			constraintViolated(o, "The 'objectref' at the stack top is not of a ReferenceType but of type '"+stack().peek()+"'.");
 		}
@@ -542,7 +504,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitARRAYLENGTH(ARRAYLENGTH o){
+	public void visitARRAYLENGTH(Instruction o){
 		Type arrayref = stack().peek(0);
 		arrayrefOfArrayType(o, arrayref);
 	}
@@ -550,7 +512,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitASTORE(ASTORE o){
+	public void visitASTORE(Instruction o){
 		if (! ( (stack().peek() instanceof ReferenceType) || (stack().peek() instanceof ReturnaddressType) ) ){
 			constraintViolated(o, "The 'objectref' is not of a ReferenceType or of ReturnaddressType but of "+stack().peek()+".");
 		}
@@ -562,7 +524,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitATHROW(ATHROW o){
+	public void visitATHROW(Instruction o){
 		// It's stated that 'objectref' must be of a ReferenceType --- but since Throwable is
 		// not derived from an ArrayType, it follows that 'objectref' must be of an ObjectType or Type.NULL.
 		if (! ((stack().peek() instanceof ObjectType) || (stack().peek().equals(Type.NULL))) ){
@@ -582,7 +544,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitBALOAD(BALOAD o){
+	public void visitBALOAD(Instruction o){
 		Type arrayref = stack().peek(1);
 		Type index    = stack().peek(0);
 		indexOfInt(o, index);
@@ -597,7 +559,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitBASTORE(BASTORE o){
+	public void visitBASTORE(Instruction o){
 		Type arrayref = stack().peek(2);
 		Type index    = stack().peek(1);
 		Type value    = stack().peek(0);
@@ -614,21 +576,21 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitBIPUSH(BIPUSH o){
+	public void visitBIPUSH(Instruction o){
 		// Nothing to do...
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitBREAKPOINT(BREAKPOINT o){
+	public void visitBREAKPOINT(Instruction o){
 		throw new AssertionViolatedException("In this JustIce verification pass there should not occur an illegal instruction such as BREAKPOINT.");
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitCALOAD(CALOAD o){
+	public void visitCALOAD(Instruction o){
 		Type arrayref = stack().peek(1);
 		Type index = stack().peek(0);
 		
@@ -639,7 +601,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitCASTORE(CASTORE o){
+	public void visitCASTORE(Instruction o){
 		Type arrayref = stack().peek(2);
 		Type index = stack().peek(1);
 		Type value = stack().peek(0);
@@ -656,7 +618,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitCHECKCAST(CHECKCAST o){
+	public void visitCHECKCAST(Instruction o){
 		// The objectref must be of type reference.
 		Type objectref = stack().peek(0);
 		if (!(objectref instanceof ReferenceType)){
@@ -674,49 +636,18 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitD2F(D2F o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
-	}
+	public void visitD2F(Instruction o) { checkTop(o,Type.DOUBLE); }
+	public void visitD2I(Instruction o) { checkTop(o,Type.DOUBLE); }
+	public void visitD2L(Instruction o) { checkTop(o,Type.DOUBLE); }
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitD2I(D2I o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitD2L(D2L o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDADD(DADD o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
+	public void visitDADD(Instruction o){
+		checkTop(o,Type.DOUBLE);
 		if (stack().peek(1) != Type.DOUBLE){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'double', but of type '"+stack().peek(1)+"'.");
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDALOAD(DALOAD o){
+	public void visitDALOAD(Instruction o){
 		indexOfInt(o, stack().peek());
 		if (stack().peek(1) == Type.NULL){
 			return;
@@ -730,10 +661,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDASTORE(DASTORE o){
+	public void visitDASTORE(Instruction o){
 		if (stack().peek() != Type.DOUBLE){
 			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
 		}
@@ -750,104 +678,71 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDCMPG(DCMPG o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
+	public void visitDCMPG(Instruction o){
+		checkTop(o,Type.DOUBLE);
 		if (stack().peek(1) != Type.DOUBLE){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'double', but of type '"+stack().peek(1)+"'.");
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDCMPL(DCMPL o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
+	public void visitDCMPL(Instruction o){
+		checkTop(o,Type.DOUBLE);
 		if (stack().peek(1) != Type.DOUBLE){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'double', but of type '"+stack().peek(1)+"'.");
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDCONST(DCONST o){
+	public void visitDCONST(Instruction o){
 		// There's nothing to be done here.
 	}
 	
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDDIV(DDIV o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
+	public void visitDDIV(Instruction o){
+		checkTop(o,Type.DOUBLE);
 		if (stack().peek(1) != Type.DOUBLE){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'double', but of type '"+stack().peek(1)+"'.");
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDLOAD(DLOAD o){
+	public void visitDLOAD(Instruction o){
 		//visitLoadInstruction(LoadInstruction) is called before.
 		
 		// Nothing else needs to be done here.
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDMUL(DMUL o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
+	public void visitDMUL(Instruction o){
+		checkTop(o,Type.DOUBLE);
 		if (stack().peek(1) != Type.DOUBLE){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'double', but of type '"+stack().peek(1)+"'.");
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDNEG(DNEG o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
+	public void visitDNEG(Instruction o){
+		checkTop(o,Type.DOUBLE);
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDREM(DREM o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
+	public void visitDREM(Instruction o){
+		checkTop(o,Type.DOUBLE);
 		if (stack().peek(1) != Type.DOUBLE){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'double', but of type '"+stack().peek(1)+"'.");
 		}
 	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitDRETURN(DRETURN o){
-		if (stack().peek() != Type.DOUBLE){
-			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
-		}
+	
+	private void checkTop(Instruction o,Type t) {
+		if (stack().peek()!=t) 
+			constraintViolated(o, "The value at the stack top is not of type '"+t+"', but of type '"+stack().peek()+"'.");
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitDSTORE(DSTORE o){
+	public void visitDRETURN(Instruction o){
+		checkTop(o,Type.DOUBLE);
+	}
+
+	/**
+	 * Ensures the specific preconditions of the said instruction.
+	 */
+	public void visitDSTORE(Instruction o){
 		//visitStoreInstruction(StoreInstruction) is called before.
 		
 		// Nothing else needs to be done here.
@@ -856,7 +751,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitDSUB(DSUB o){
+	public void visitDSUB(Instruction o){
 		if (stack().peek() != Type.DOUBLE){
 			constraintViolated(o, "The value at the stack top is not of type 'double', but of type '"+stack().peek()+"'.");
 		}
@@ -868,7 +763,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitDUP(DUP o){
+	public void visitDUP(Instruction o){
 		if (stack().peek().getSize() != 1){
 			constraintViolated(o, "Won't DUP type on stack top '"+stack().peek()+"' because it must occupy exactly one slot, not '"+stack().peek().getSize()+"'.");
 		}
@@ -877,7 +772,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitDUP_X1(DUP_X1 o){
+	public void visitDUP_X1(Instruction o){
 		if (stack().peek().getSize() != 1){
 			constraintViolated(o, "Type on stack top '"+stack().peek()+"' should occupy exactly one slot, not '"+stack().peek().getSize()+"'.");
 		}
@@ -889,7 +784,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitDUP_X2(DUP_X2 o){
+	public void visitDUP_X2(Instruction o){
 		if (stack().peek().getSize() != 1){
 			constraintViolated(o, "Stack top type must be of size 1, but is '"+stack().peek()+"' of size '"+stack().peek().getSize()+"'.");
 		}
@@ -906,7 +801,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitDUP2(DUP2 o){
+	public void visitDUP2(Instruction o){
 		if (stack().peek().getSize() == 2){
 			return; // Form 2, okay.
 		}
@@ -920,7 +815,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitDUP2_X1(DUP2_X1 o){
+	public void visitDUP2_X1(Instruction o){
 		if (stack().peek().getSize() == 2){
 			if (stack().peek(1).getSize() != 1){
 				constraintViolated(o, "If stack top's size is 2, then stack next-to-top's size must be 1. But it is '"+stack().peek(1)+"' of size '"+stack().peek(1).getSize()+"'.");
@@ -942,7 +837,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitDUP2_X2(DUP2_X2 o){
+	public void visitDUP2_X2(Instruction o){
 
 		if (stack().peek(0).getSize() == 2){
 		 	if (stack().peek(1).getSize() == 2){
@@ -975,37 +870,25 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitF2D(F2D o){
+	public void visitF2D(Instruction o){
 		if (stack().peek() != Type.FLOAT){
 			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitF2I(F2I o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitF2I(Instruction o){
+		checkTop(o,Type.FLOAT);
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitF2L(F2L o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitF2L(Instruction o){
+		checkTop(o,Type.FLOAT);
 	}
 	
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFADD(FADD o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFADD(Instruction o){
+		checkTop(o,Type.FLOAT);
 		if (stack().peek(1) != Type.FLOAT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'float', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1014,7 +897,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFALOAD(FALOAD o){
+	public void visitFALOAD(Instruction o){
 		indexOfInt(o, stack().peek());
 		if (stack().peek(1) == Type.NULL){
 			return;
@@ -1031,10 +914,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFASTORE(FASTORE o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFASTORE(Instruction o){
+		checkTop(o,Type.FLOAT);
 		indexOfInt(o, stack().peek(1));
 		if (stack().peek(2) == Type.NULL){
 			return;
@@ -1051,10 +932,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFCMPG(FCMPG o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFCMPG(Instruction o){
+		checkTop(o,Type.FLOAT);
 		if (stack().peek(1) != Type.FLOAT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'float', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1063,10 +942,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFCMPL(FCMPL o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFCMPL(Instruction o){
+		checkTop(o,Type.FLOAT);
 		if (stack().peek(1) != Type.FLOAT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'float', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1075,17 +952,15 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFCONST(FCONST o){
+	public void visitFCONST(Instruction o){
 		// nothing to do here.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFDIV(FDIV o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFDIV(Instruction o){
+		checkTop(o,Type.FLOAT);
 		if (stack().peek(1) != Type.FLOAT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'float', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1094,7 +969,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFLOAD(FLOAD o){
+	public void visitFLOAD(Instruction o){
 		//visitLoadInstruction(LoadInstruction) is called before.
 		
 		// Nothing else needs to be done here.
@@ -1103,10 +978,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFMUL(FMUL o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFMUL(Instruction o){
+		checkTop(o,Type.FLOAT);
 		if (stack().peek(1) != Type.FLOAT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'float', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1115,19 +988,15 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFNEG(FNEG o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFNEG(Instruction o){
+		checkTop(o,Type.FLOAT);
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFREM(FREM o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFREM(Instruction o){
+		checkTop(o,Type.FLOAT);
 		if (stack().peek(1) != Type.FLOAT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'float', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1136,16 +1005,14 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFRETURN(FRETURN o){
-		if (stack().peek() != Type.FLOAT){
-			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
-		}
+	public void visitFRETURN(Instruction o){
+		checkTop(o,Type.FLOAT);
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFSTORE(FSTORE o){
+	public void visitFSTORE(Instruction o){
 		//visitStoreInstruction(StoreInstruction) is called before.
 		
 		// Nothing else needs to be done here.
@@ -1154,7 +1021,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitFSUB(FSUB o){
+	public void visitFSUB(Instruction o){
 		if (stack().peek() != Type.FLOAT){
 			constraintViolated(o, "The value at the stack top is not of type 'float', but of type '"+stack().peek()+"'.");
 		}
@@ -1166,7 +1033,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitGETFIELD(GETFIELD o){
+	public void visitGETFIELD(FieldInstruction o){
 		Type objectref = stack().peek();
 		if (! ( (objectref instanceof ObjectType) || (objectref == Type.NULL) ) ){
 			constraintViolated(o, "Stack top should be an object reference that's not an array reference, but is '"+objectref+"'.");
@@ -1220,28 +1087,28 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitGETSTATIC(GETSTATIC o){
+	public void visitGETSTATIC(FieldInstruction o){
 		// Field must be static: see Pass 3a.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitGOTO(GOTO o){
+	public void visitGOTO(Instruction o){
 		// nothing to do here.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitGOTO_W(GOTO_W o){
+	public void visitGOTO_W(Instruction o){
 		// nothing to do here.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitI2B(I2B o){
+	public void visitI2B(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1250,7 +1117,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitI2C(I2C o){
+	public void visitI2C(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1259,46 +1126,18 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitI2D(I2D o){
+	public void visitI2D(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitI2F(I2F o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-	}
+	public void visitI2F(Instruction o) { checkTop(o,Type.INT); }
+	public void visitI2L(Instruction o) { checkTop(o,Type.INT); }
+	public void visitI2S(Instruction o) { checkTop(o,Type.INT); }
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitI2L(I2L o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitI2S(I2S o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitIADD(IADD o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
+	public void visitIADD(Instruction o){
+		checkTop(o,Type.INT);
 		if (stack().peek(1) != Type.INT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'int', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1307,7 +1146,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIALOAD(IALOAD o){
+	public void visitIALOAD(Instruction o){
 		indexOfInt(o, stack().peek());
 		if (stack().peek(1) == Type.NULL){
 			return;
@@ -1324,7 +1163,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIAND(IAND o){
+	public void visitIAND(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1336,7 +1175,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIASTORE(IASTORE o){
+	public void visitIASTORE(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1356,17 +1195,15 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitICONST(ICONST o){
+	public void visitICONST(Instruction o){
 		//nothing to do here.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIDIV(IDIV o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
+	public void visitIDIV(Instruction o){
+		checkTop(o,Type.INT);
 		if (stack().peek(1) != Type.INT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'int', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1375,7 +1212,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIF_ACMPEQ(IF_ACMPEQ o){
+	public void visitIF_ACMPEQ(Instruction o){
 		if (!(stack().peek() instanceof ReferenceType)){
 			constraintViolated(o, "The value at the stack top is not of a ReferenceType, but of type '"+stack().peek()+"'.");
 		}
@@ -1391,7 +1228,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIF_ACMPNE(IF_ACMPNE o){
+	public void visitIF_ACMPNE(Instruction o){
 		if (!(stack().peek() instanceof ReferenceType)){
 			constraintViolated(o, "The value at the stack top is not of a ReferenceType, but of type '"+stack().peek()+"'.");
 			referenceTypeIsInitialized(o, (ReferenceType) (stack().peek()) );
@@ -1405,7 +1242,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIF_ICMPEQ(IF_ICMPEQ o){
+	public void visitIF_ICMPEQ(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1417,7 +1254,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIF_ICMPGE(IF_ICMPGE o){
+	public void visitIF_ICMPGE(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1429,7 +1266,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIF_ICMPGT(IF_ICMPGT o){
+	public void visitIF_ICMPGT(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1441,7 +1278,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIF_ICMPLE(IF_ICMPLE o){
+	public void visitIF_ICMPLE(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1453,7 +1290,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIF_ICMPLT(IF_ICMPLT o){
+	public void visitIF_ICMPLT(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1465,7 +1302,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIF_ICMPNE(IF_ICMPNE o){
+	public void visitIF_ICMPNE(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1477,7 +1314,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIFEQ(IFEQ o){
+	public void visitIFEQ(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1486,7 +1323,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIFGE(IFGE o){
+	public void visitIFGE(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1495,7 +1332,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIFGT(IFGT o){
+	public void visitIFGT(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1504,7 +1341,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIFLE(IFLE o){
+	public void visitIFLE(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1513,7 +1350,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIFLT(IFLT o){
+	public void visitIFLT(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1522,7 +1359,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIFNE(IFNE o){
+	public void visitIFNE(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1531,7 +1368,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIFNONNULL(IFNONNULL o){
+	public void visitIFNONNULL(Instruction o){
 		if (!(stack().peek() instanceof ReferenceType)){
 			constraintViolated(o, "The value at the stack top is not of a ReferenceType, but of type '"+stack().peek()+"'.");
 		}
@@ -1541,7 +1378,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIFNULL(IFNULL o){
+	public void visitIFNULL(Instruction o){
 		if (!(stack().peek() instanceof ReferenceType)){
 			constraintViolated(o, "The value at the stack top is not of a ReferenceType, but of type '"+stack().peek()+"'.");
 		}
@@ -1563,28 +1400,28 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitILOAD(ILOAD o){
+	public void visitILOAD(Instruction o){
 		// All done by visitLocalVariableInstruction(), visitLoadInstruction()
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIMPDEP1(IMPDEP1 o){
+	public void visitIMPDEP1(Instruction o){
 		throw new AssertionViolatedException("In this JustIce verification pass there should not occur an illegal instruction such as IMPDEP1.");
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIMPDEP2(IMPDEP2 o){
+	public void visitIMPDEP2(Instruction o){
 		throw new AssertionViolatedException("In this JustIce verification pass there should not occur an illegal instruction such as IMPDEP2.");
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIMUL(IMUL o){
+	public void visitIMUL(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1596,7 +1433,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitINEG(INEG o){
+	public void visitINEG(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1605,7 +1442,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitINSTANCEOF(INSTANCEOF o){
+	public void visitINSTANCEOF(Instruction o){
 		// The objectref must be of type reference.
 		Type objectref = stack().peek(0);
 		if (!(objectref instanceof ReferenceType)){
@@ -1715,7 +1552,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitINVOKESPECIAL(INVOKESPECIAL o){
+	public void visitINVOKESPECIAL(InvokeInstruction o){
 		// Don't init an object twice.
 		if ( (o.getMethodName(cpg).equals(Constants.CONSTRUCTOR_NAME)) && (!(stack().peek(o.getArgumentTypes(cpg).length) instanceof UninitializedObjectType)) ){
 			constraintViolated(o, "Possibly initializing object twice. A valid instruction sequence must not have an uninitialized object on the operand stack or in a local variable during a backwards branch, or in a local variable in code protected by an exception handler. Please see The Java Virtual Machine Specification, Second Edition, 4.9.4 (pages 147 and 148) for details.");
@@ -1801,7 +1638,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitINVOKESTATIC(INVOKESTATIC o){
+	public void visitINVOKESTATIC(InvokeInstruction o){
 		// Method is not native, otherwise pass 3 would not happen.
 		
 		Type t = o.getType(cpg);
@@ -1846,7 +1683,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL o){
+	public void visitINVOKEVIRTUAL(InvokeInstruction o){
 		// the o.getClassType(cpg) type has passed pass 2; see visitLoadClass(o).
 
 		Type t = o.getType(cpg);
@@ -1917,7 +1754,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIOR(IOR o){
+	public void visitIOR(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1929,7 +1766,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIREM(IREM o){
+	public void visitIREM(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1941,7 +1778,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIRETURN(IRETURN o){
+	public void visitIRETURN(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1950,10 +1787,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitISHL(ISHL o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
+	public void visitISHL(Instruction o){
+		checkTop(o,Type.INT);
 		if (stack().peek(1) != Type.INT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'int', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1962,10 +1797,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitISHR(ISHR o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
+	public void visitISHR(Instruction o){
+		checkTop(o,Type.INT);
 		if (stack().peek(1) != Type.INT){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'int', but of type '"+stack().peek(1)+"'.");
 		}
@@ -1974,7 +1807,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitISTORE(ISTORE o){
+	public void visitISTORE(Instruction o){
 		//visitStoreInstruction(StoreInstruction) is called before.
 		
 		// Nothing else needs to be done here.
@@ -1983,7 +1816,27 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitISUB(ISUB o){
+	public void visitISUB(Instruction o){
+		checkTop(o,Type.INT);
+		if (stack().peek(1) != Type.INT){
+			constraintViolated(o, "The value at the stack next-to-top is not of type 'int', but of type '"+stack().peek(1)+"'.");
+		}
+	}
+
+	/**
+	 * Ensures the specific preconditions of the said instruction.
+	 */
+	public void visitIUSHR(Instruction o){
+		checkTop(o,Type.INT);
+		if (stack().peek(1) != Type.INT){
+			constraintViolated(o, "The value at the stack next-to-top is not of type 'int', but of type '"+stack().peek(1)+"'.");
+		}
+	}
+
+	/**
+	 * Ensures the specific preconditions of the said instruction.
+	 */
+	public void visitIXOR(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -1995,45 +1848,21 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitIUSHR(IUSHR o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-		if (stack().peek(1) != Type.INT){
-			constraintViolated(o, "The value at the stack next-to-top is not of type 'int', but of type '"+stack().peek(1)+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitIXOR(IXOR o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-		if (stack().peek(1) != Type.INT){
-			constraintViolated(o, "The value at the stack next-to-top is not of type 'int', but of type '"+stack().peek(1)+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitJSR(JSR o){
+	public void visitJSR(InstructionBranch o){
 		// nothing to do here.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitJSR_W(JSR_W o){
+	public void visitJSR_W(InstructionBranch o){
 		// nothing to do here.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitL2D(L2D o){
+	public void visitL2D(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2042,7 +1871,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitL2F(L2F o){
+	public void visitL2F(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2051,7 +1880,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitL2I(L2I o){
+	public void visitL2I(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2060,7 +1889,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLADD(LADD o){
+	public void visitLADD(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2072,7 +1901,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLALOAD(LALOAD o){
+	public void visitLALOAD(Instruction o){
 		indexOfInt(o, stack().peek());
 		if (stack().peek(1) == Type.NULL){
 			return;
@@ -2089,7 +1918,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLAND(LAND o){
+	public void visitLAND(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2101,7 +1930,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLASTORE(LASTORE o){
+	public void visitLASTORE(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2121,7 +1950,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLCMP(LCMP o){
+	public void visitLCMP(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2133,14 +1962,14 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLCONST(LCONST o){
+	public void visitLCONST(Instruction o){
 		// Nothing to do here.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLDC(LDC o){
+	public void visitLDC(Instruction o){
 		// visitCPInstruction is called first.
 		
 		Constant c = cpg.getConstant(o.getIndex());
@@ -2154,7 +1983,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLDC_W(LDC_W o){
+	public void visitLDC_W(Instruction o){
 		// visitCPInstruction is called first.
 		
 		Constant c = cpg.getConstant(o.getIndex());
@@ -2168,7 +1997,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLDC2_W(LDC2_W o){
+	public void visitLDC2_W(Instruction o){
 		// visitCPInstruction is called first.
 		
 		Constant c = cpg.getConstant(o.getIndex());
@@ -2181,7 +2010,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLDIV(LDIV o){
+	public void visitLDIV(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2193,7 +2022,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLLOAD(LLOAD o){
+	public void visitLLOAD(Instruction o){
 		//visitLoadInstruction(LoadInstruction) is called before.
 		
 		// Nothing else needs to be done here.
@@ -2202,7 +2031,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLMUL(LMUL o){
+	public void visitLMUL(Instruction o){
 		if (stack().peek() != Type.LONG){
 			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
 		}
@@ -2211,86 +2040,55 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}
 	}
 
+	public void visitLNEG(Instruction o){
+		checkTop(o,Type.LONG);
+	}
+	
+	public void visitLOOKUPSWITCH(LOOKUPSWITCH o){
+		checkTop(o,Type.INT);
+		// See also pass 3a.
+	}
+
+	public void visitLOR(Instruction o){
+		if (stack().peek() != Type.LONG){
+			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
+		}
+		if (stack().peek(1) != Type.LONG){
+			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
+		}
+	}
+
+	public void visitLREM(Instruction o){
+		checkTop(o,Type.LONG);
+		if (stack().peek(1) != Type.LONG){
+			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
+		}
+	}
+
+	public void visitLRETURN(Instruction o) { checkTop(o,Type.LONG); }
+	public void visitLSHL(Instruction o){
+		checkTop(o,Type.INT);
+		if (stack().peek(1) != Type.LONG){
+			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
+		}
+	}
+
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLNEG(LNEG o){
-		if (stack().peek() != Type.LONG){
-			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
+	public void visitLSHR(Instruction o){
+		if (stack().peek() != Type.INT){
+			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
+		}
+		if (stack().peek(1) != Type.LONG){
+			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
 		}
 	}
 	
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLOOKUPSWITCH(LOOKUPSWITCH o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-		// See also pass 3a.
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitLOR(LOR o){
-		if (stack().peek() != Type.LONG){
-			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
-		}
-		if (stack().peek(1) != Type.LONG){
-			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitLREM(LREM o){
-		if (stack().peek() != Type.LONG){
-			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
-		}
-		if (stack().peek(1) != Type.LONG){
-			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitLRETURN(LRETURN o){
-		if (stack().peek() != Type.LONG){
-			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitLSHL(LSHL o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-		if (stack().peek(1) != Type.LONG){
-			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitLSHR(LSHR o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-		if (stack().peek(1) != Type.LONG){
-			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
-		}
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitLSTORE(LSTORE o){
+	public void visitLSTORE(Instruction o){
 		//visitStoreInstruction(StoreInstruction) is called before.
 		
 		// Nothing else needs to be done here.
@@ -2299,10 +2097,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLSUB(LSUB o){
-		if (stack().peek() != Type.LONG){
-			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
-		}
+	public void visitLSUB(Instruction o){
+		checkTop(o,Type.LONG);
 		if (stack().peek(1) != Type.LONG){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
 		}
@@ -2311,10 +2107,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLUSHR(LUSHR o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
+	public void visitLUSHR(Instruction o){
+		checkTop(o,Type.INT);
 		if (stack().peek(1) != Type.LONG){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
 		}
@@ -2323,10 +2117,8 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitLXOR(LXOR o){
-		if (stack().peek() != Type.LONG){
-			constraintViolated(o, "The value at the stack top is not of type 'long', but of type '"+stack().peek()+"'.");
-		}
+	public void visitLXOR(Instruction o){
+		checkTop(o,Type.LONG);
 		if (stack().peek(1) != Type.LONG){
 			constraintViolated(o, "The value at the stack next-to-top is not of type 'long', but of type '"+stack().peek(1)+"'.");
 		}
@@ -2335,7 +2127,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitMONITORENTER(MONITORENTER o){
+	public void visitMONITORENTER(Instruction o){
 		if (! ((stack().peek()) instanceof ReferenceType)){
 			constraintViolated(o, "The stack top should be of a ReferenceType, but is '"+stack().peek()+"'.");
 		}
@@ -2345,7 +2137,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitMONITOREXIT(MONITOREXIT o){
+	public void visitMONITOREXIT(Instruction o){
 		if (! ((stack().peek()) instanceof ReferenceType)){
 			constraintViolated(o, "The stack top should be of a ReferenceType, but is '"+stack().peek()+"'.");
 		}
@@ -2370,7 +2162,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitNEW(NEW o){
+	public void visitNEW(Instruction o){
 		//visitCPInstruction(CPInstruction) has been called before.
 		//visitLoadClass(LoadClass) has been called before.
 		
@@ -2389,26 +2181,10 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 		}		
 	}
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitNEWARRAY(NEWARRAY o){
-		if (stack().peek() != Type.INT){
-			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
-		}
-	}
+	public void visitNEWARRAY(Instruction o) { checkTop(o,Type.INT); }
+	public void visitNOP(Instruction o){ /* nothing is to be done here */ }
 
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitNOP(NOP o){
-		// nothing is to be done here.
-	}
-
-	/**
-	 * Ensures the specific preconditions of the said instruction.
-	 */
-	public void visitPOP(POP o){
+	public void visitPOP(Instruction o){
 		if (stack().peek().getSize() != 1){
 			constraintViolated(o, "Stack top size should be 1 but stack top is '"+stack().peek()+"' of size '"+stack().peek().getSize()+"'.");
 		}
@@ -2417,7 +2193,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitPOP2(POP2 o){
+	public void visitPOP2(Instruction o){
 		if (stack().peek().getSize() != 2){
 			constraintViolated(o, "Stack top size should be 2 but stack top is '"+stack().peek()+"' of size '"+stack().peek().getSize()+"'.");
 		}
@@ -2426,7 +2202,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitPUTFIELD(PUTFIELD o){
+	public void visitPUTFIELD(FieldInstruction o){
 
 		Type objectref = stack().peek(1);
 		if (! ( (objectref instanceof ObjectType) || (objectref == Type.NULL) ) ){
@@ -2509,7 +2285,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitPUTSTATIC(PUTSTATIC o){
+	public void visitPUTSTATIC(FieldInstruction o){
 		String field_name = o.getFieldName(cpg);
 		JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
 		Field[] fields = jc.getFields();
@@ -2574,7 +2350,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitRETURN(RETURN o){
+	public void visitRETURN(Instruction o){
 		if (mg.getName().equals(Constants.CONSTRUCTOR_NAME)){// If we leave an <init> method
 			if ((Frame._this != null) && (!(mg.getClassName().equals(Type.OBJECT.getClassName()))) ) {
 				constraintViolated(o, "Leaving a constructor that itself did not call a constructor.");
@@ -2585,7 +2361,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitSALOAD(SALOAD o){
+	public void visitSALOAD(Instruction o){
 		indexOfInt(o, stack().peek());
 		if (stack().peek(1) == Type.NULL){
 			return;
@@ -2602,7 +2378,7 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitSASTORE(SASTORE o){
+	public void visitSASTORE(Instruction o){
 		if (stack().peek() != Type.INT){
 			constraintViolated(o, "The value at the stack top is not of type 'int', but of type '"+stack().peek()+"'.");
 		}
@@ -2622,14 +2398,14 @@ public class InstConstraintVisitor extends EmptyVisitor implements org.aspectj.a
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitSIPUSH(SIPUSH o){
+	public void visitSIPUSH(Instruction o){
 		// nothing to do here. Generic visitXXX() methods did the trick before.
 	}
 
 	/**
 	 * Ensures the specific preconditions of the said instruction.
 	 */
-	public void visitSWAP(SWAP o){
+	public void visitSWAP(Instruction o){
 		if (stack().peek().getSize() != 1){
 			constraintViolated(o, "The value at the stack top is not of size '1', but of size '"+stack().peek().getSize()+"'.");
 		}

@@ -59,13 +59,14 @@ import java.util.ArrayList;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.AccessFlags;
 import org.aspectj.apache.bcel.classfile.Attribute;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 
 /**
  * Super class for FieldGen and MethodGen objects, since they have
  * some methods in common!
  *
- * @version $Id: FieldGenOrMethodGen.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: FieldGenOrMethodGen.java,v 1.3.10.1 2007/02/12 09:34:06 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldGenOrMethodGen extends AccessFlags
@@ -73,7 +74,7 @@ public abstract class FieldGenOrMethodGen extends AccessFlags
 {
   protected String          name;
   protected Type            type;
-  protected ConstantPoolGen cp;
+  protected ConstantPool cp;
   private   ArrayList       attribute_vec = new ArrayList();
   protected ArrayList       annotation_vec= new ArrayList();
 
@@ -92,8 +93,8 @@ public abstract class FieldGenOrMethodGen extends AccessFlags
   public String          getName()            { return name; }
   public void            setName(String name) { this.name = name; }
 
-  public ConstantPoolGen getConstantPool()                   { return cp; }
-  public void            setConstantPool(ConstantPoolGen cp) { this.cp = cp; }    
+  public ConstantPool getConstantPool()                   { return cp; }
+  public void            setConstantPool(ConstantPool cp) { this.cp = cp; }    
 
   /**
    * Add an attribute to this method. Currently, the JVM knows about

@@ -55,11 +55,9 @@ package org.aspectj.apache.bcel.classfile;
  */
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
@@ -69,22 +67,19 @@ import org.aspectj.apache.bcel.generic.Type;
  * for a method in the class. See JVM specification for details.
  * A method has access flags, a name, a signature and a number of attributes.
  *
- * @version $Id: Method.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Method.java,v 1.2.10.1 2007/02/12 09:34:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {
 	
-  private boolean parameterAnnotationsOutOfDate;
-  private RuntimeVisibleParameterAnnotations parameterAnnotationsVis; // annotations on parameters of this method
+  public static final Method[] NoMethods = new Method[0];
+  
+  // annotations on parameters of this method
+  private boolean parameterAnnotationsOutOfDate = true;
+  private RuntimeVisibleParameterAnnotations parameterAnnotationsVis; 
   private RuntimeInvisibleParameterAnnotations parameterAnnotationsInvis;
 
-  /**
-   * Empty constructor, all attributes have to be defined via `setXXX'
-   * methods. Use at your own risk.
-   */
-  public Method() {
-  	parameterAnnotationsOutOfDate = true;
-  }
+  private Method() { }
 
   /**
    * Initialize from another object. Note that both objects use the same
@@ -92,129 +87,74 @@ public final class Method extends FieldOrMethod {
    */
   public Method(Method c) {
     super(c);
-    parameterAnnotationsOutOfDate = true;
   }
 
-  /**
-   * Construct object from file stream.
-   * @param file Input stream
-   * @throws IOException
-   * @throws ClassFormatException
-   */
-  Method(DataInputStream file, ConstantPool constant_pool)
-    throws IOException, ClassFormatException
-  {
+  Method(DataInputStream file, ConstantPool constant_pool) throws IOException {
     super(file, constant_pool);
-    parameterAnnotationsOutOfDate = true;
   }
 
-  /**
-   * @param access_flags Access rights of method
-   * @param name_index Points to field name in constant pool
-   * @param signature_index Points to encoded signature
-   * @param attributes Collection of attributes
-   * @param constant_pool Array of constants
-   */
-  public Method(int access_flags, int name_index, int signature_index,
-		Attribute[] attributes, ConstantPool constant_pool)
-  {
+  public Method(int access_flags, int name_index, int signature_index, Attribute[] attributes, ConstantPool constant_pool) {
     super(access_flags, name_index, signature_index, attributes, constant_pool);
-    parameterAnnotationsOutOfDate = true;
   }
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
   public void accept(Visitor v) {
     v.visitMethod(this);
   }
   
-  public void setAttributes(Attribute[] attributes) { 
-    parameterAnnotationsOutOfDate = true;
-    super.setAttributes(attributes);
-  }
-
-  /**
-   * @return Code attribute of method, if any
-   */   
   public final Code getCode() {
-    for(int i=0; i < attributes_count; i++)
-      if(attributes[i] instanceof Code)
-	return (Code)attributes[i];
-
-    return null;
+	return AttributeUtils.getCodeAttribute(attributes);
   }
 
-  /**
-   * @return ExceptionTable attribute of method, if any, i.e., list all
-   * exceptions the method may throw not exception handlers!
-   */
   public final ExceptionTable getExceptionTable() {
-    for(int i=0; i < attributes_count; i++)
-      if(attributes[i] instanceof ExceptionTable)
-	return (ExceptionTable)attributes[i];
-
-    return null;
+    return AttributeUtils.getExceptionTableAttribute(attributes);
   }
 
-  /** @return LocalVariableTable of code attribute if any, i.e. the call is forwarded
-   * to the Code atribute.
+  /** 
+   * Return LocalVariableTable of code attribute if any (the call is forwarded
+   * to the Code attribute)
    */
   public final LocalVariableTable getLocalVariableTable() {
     Code code = getCode();
-
-    if(code != null)
-      return code.getLocalVariableTable();
-    else
-      return null;
+    if (code != null) return code.getLocalVariableTable();
+    return null;
   }
 
-  /** @return LineNumberTable of code attribute if any, i.e. the call is forwarded
-   * to the Code atribute.
+  /** 
+   * Return LineNumberTable of code attribute if any (the call is forwarded
+   * to the Code attribute)
    */
   public final LineNumberTable getLineNumberTable() {
     Code code = getCode();
-
-    if(code != null)
-      return code.getLineNumberTable();
-    else
-      return null;
+    if (code != null) return code.getLineNumberTable();
+    return null;
   }
 
   /**
-   * Return string representation close to declaration format,
-   * `public static void main(String[] args) throws IOException', e.g.
-   *
-   * @return String representation of the method.
+   * Return string representation close to declaration format, eg:
+   * 'public static void main(String[] args) throws IOException'
    */
   public final String toString() {
     ConstantUtf8  c;
     String        name, signature, access; // Short cuts to constant pool
     StringBuffer  buf;
 
-    access = Utility.accessToString(access_flags);
+    access = Utility.accessToString(accessflags);
 
     // Get name and signature from constant pool
-    c = (ConstantUtf8)constant_pool.getConstant(signature_index, 
+    c = (ConstantUtf8)cpool.getConstant(signatureIndex, 
 						Constants.CONSTANT_Utf8);
     signature = c.getBytes();
 
-    c = (ConstantUtf8)constant_pool.getConstant(name_index, Constants.CONSTANT_Utf8);
+    c = (ConstantUtf8)cpool.getConstant(nameIndex, Constants.CONSTANT_Utf8);
     name = c.getBytes();
 
     signature = Utility.methodSignatureToString(signature, name, access, true,
 						getLocalVariableTable());
     buf = new StringBuffer(signature);
 
-    for(int i=0; i < attributes_count; i++) {
+    for(int i=0; i < attributes.length; i++) {
       Attribute a = attributes[i];
-
-      if(!((a instanceof Code) || (a instanceof ExceptionTable)))
-	buf.append(" [" + a.toString() + "]");
+      if(!((a instanceof Code) || (a instanceof ExceptionTable))) buf.append(" [" + a.toString() + "]");
     }
 
     ExceptionTable e = getExceptionTable();
@@ -228,7 +168,7 @@ public final class Method extends FieldOrMethod {
   }
 
   /**
-   * @return deep copy of this method
+   * Return a deep copy of this method
    */
   public final Method copy(ConstantPool constant_pool) {
     return (Method)copy_(constant_pool);
@@ -251,11 +191,9 @@ public final class Method extends FieldOrMethod {
   private void ensureParameterAnnotationsUnpacked() {
   	if (parameterAnnotationsOutOfDate) { 
   		// Find attributes that contain annotation data
-  		Attribute[] attrs = getAttributes();
-  		List accumulatedAnnotations = new ArrayList();
   		
-  		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
+  		for (int i = 0; i < attributes.length; i++) {
+			Attribute attribute = attributes[i];
 			if (attribute instanceof RuntimeVisibleParameterAnnotations) {				
 				parameterAnnotationsVis = (RuntimeVisibleParameterAnnotations)attribute;
 			}
@@ -267,14 +205,14 @@ public final class Method extends FieldOrMethod {
   	}
   }
 
-  public Annotation[] getAnnotationsOnParameter(int i) {
+  public AnnotationGen[] getAnnotationsOnParameter(int i) {
   	ensureParameterAnnotationsUnpacked();
   	
-  	Annotation[] visibleOnes = new Annotation[0];
+  	AnnotationGen[] visibleOnes = AnnotationGen.NO_ANNOTATIONS;
   	if (parameterAnnotationsVis!=null) visibleOnes = parameterAnnotationsVis.getAnnotationsOnParameter(i);
-  	Annotation[] invisibleOnes = new Annotation[0];
+  	AnnotationGen[] invisibleOnes = AnnotationGen.NO_ANNOTATIONS;
   	if (parameterAnnotationsInvis!=null) invisibleOnes = parameterAnnotationsInvis.getAnnotationsOnParameter(i);
-  	Annotation[] complete = new Annotation[visibleOnes.length+invisibleOnes.length];
+  	AnnotationGen[] complete = new AnnotationGen[visibleOnes.length+invisibleOnes.length];
   	System.arraycopy(visibleOnes,0,complete,0,visibleOnes.length);
   	System.arraycopy(invisibleOnes,0,complete,visibleOnes.length,invisibleOnes.length);
     return complete;

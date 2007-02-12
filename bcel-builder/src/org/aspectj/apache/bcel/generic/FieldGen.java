@@ -54,7 +54,6 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,16 +65,15 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantValue;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 
 /** 
  * Template class for building up a field.  The only extraordinary thing
  * one can do is to add a constant value attribute to a field (which must of
  * course be compatible with to the declared type).
  *
- * @version $Id: FieldGen.java,v 1.4 2005/03/10 12:15:04 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.4.8.1 2007/02/12 09:34:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
@@ -92,7 +90,7 @@ public class FieldGen extends FieldGenOrMethodGen {
    * @param name field name
    * @param cp constant pool
    */
-  public FieldGen(int access_flags, Type type, String name, ConstantPoolGen cp) {
+  public FieldGen(int access_flags, Type type, String name, ConstantPool cp) {
     setAccessFlags(access_flags);
     setType(type);
     setName(name);
@@ -105,7 +103,7 @@ public class FieldGen extends FieldGenOrMethodGen {
    * @param field Field object
    * @param cp constant pool (must contain the same entries as the field's constant pool)
    */
-  public FieldGen(Field field, ConstantPoolGen cp) {
+  public FieldGen(Field field, ConstantPool cp) {
     this(field.getAccessFlags(), Type.getType(field.getSignature()), field.getName(), cp);
 
     Attribute[] attrs = field.getAttributes();
@@ -117,7 +115,7 @@ public class FieldGen extends FieldGenOrMethodGen {
 		RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)attrs[i];
 		List l = runtimeAnnotations.getAnnotations();
 		for (Iterator it = l.iterator(); it.hasNext();) {
-			Annotation element = (Annotation) it.next();
+			AnnotationGen element = (AnnotationGen) it.next();
 			addAnnotation(new AnnotationGen(element,cp,false));
 		}
       } else {
@@ -127,7 +125,7 @@ public class FieldGen extends FieldGenOrMethodGen {
   }
 
   private void setValue(int index) {
-    ConstantPool cp  = this.cp.getConstantPool();
+    ConstantPool cp  = this.cp;
     Constant     c   = cp.getConstant(index);
     value = ((ConstantObject)c).getConstantValue(cp);
   }
@@ -228,16 +226,16 @@ public class FieldGen extends FieldGenOrMethodGen {
       checkType(type);
       int index = addConstant();
       addAttribute(new ConstantValue(cp.addUtf8("ConstantValue"),
-				     2, index, cp.getConstantPool()));
+				     2, index, cp));
     }
     
      addAnnotationsAsAttribute(cp);
 
-    return new Field(access_flags, name_index, signature_index, getAttributes(),
-		     cp.getConstantPool());
+    return new Field(accessflags, name_index, signature_index,getAttributes(),
+		     cp);
   }
   
-  private void addAnnotationsAsAttribute(ConstantPoolGen cp) {
+  private void addAnnotationsAsAttribute(ConstantPool cp) {
   	Attribute[] attrs = Utility.getAnnotationAttributes(cp,annotation_vec);
   	if (attrs!=null) {
       for (int i = 0; i < attrs.length; i++) {
@@ -271,33 +269,6 @@ public class FieldGen extends FieldGenOrMethodGen {
 
   public String  getSignature()  { return type.getSignature(); }
 
-  private ArrayList observers;
-
-  /** Add observer for this object.
-   */
-  public void addObserver(FieldObserver o) {
-    if(observers == null)
-      observers = new ArrayList();
-
-    observers.add(o);
-  }
-
-  /** Remove observer for this object.
-   */
-  public void removeObserver(FieldObserver o) {
-    if(observers != null)
-      observers.remove(o);
-  }
-
-  /** Call notify() method on all observers. This method is not called
-   * automatically whenever the state has changed, but has to be
-   * called by the user after he has finished editing the object.
-   */
-  public void update() {
-    if(observers != null)
-      for(Iterator e = observers.iterator(); e.hasNext(); )
-	((FieldObserver)e.next()).notify(this);
-  }
 
   public String getInitValue() {
     if(value != null) {
@@ -315,7 +286,7 @@ public class FieldGen extends FieldGenOrMethodGen {
   public final String toString() {
     String name, signature, access; // Short cuts to constant pool
 
-    access    = Utility.accessToString(access_flags);
+    access    = Utility.accessToString(accessflags);
     access    = access.equals("")? "" : (access + " ");
     signature = type.toString();
     name      = getName();
@@ -334,7 +305,7 @@ public class FieldGen extends FieldGenOrMethodGen {
 
   /** @return deep copy of this field
    */
-  public FieldGen copy(ConstantPoolGen cp) {
+  public FieldGen copy(ConstantPool cp) {
     FieldGen fg = (FieldGen)clone();
 
     fg.setConstantPool(cp);

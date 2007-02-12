@@ -81,7 +81,7 @@ import org.apache.regexp.*;
       ...
     }
 </pre>
- * @version $Id: InstructionFinder.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: InstructionFinder.java,v 1.2.10.1 2007/02/12 09:34:09 aclement Exp $
  * @author  <A HREF="http://www.berlin.de/~markus.dahm/">M. Dahm</A>
  * @see Instruction
  * @see InstructionList
@@ -388,7 +388,7 @@ public class InstructionFinder {
     StringBuffer buf = new StringBuffer("(");
     
     for(short i=0; i < NO_OPCODES; i++) {
-      if(Constants.NO_OF_OPERANDS[i] != Constants.UNDEFINED) { // Not an invalid opcode
+      if(Constants.iLen[i] != Constants.UNDEFINED_LENGTH) { // Not an invalid opcode
 	buf.append(makeChar(i));
 
 	if(i < NO_OPCODES - 1)

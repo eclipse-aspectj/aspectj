@@ -73,27 +73,25 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
  * Utility functions that do not really belong to any class in particular.
  *
- * @version $Id: Utility.java,v 1.5 2006/07/19 12:06:15 aclement Exp $
+ * @version $Id: Utility.java,v 1.5.4.1 2007/02/12 09:34:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified: Andy Clement  2-mar-05  Removed unnecessary static and optimized
  */
 public abstract class Utility {
 
-  /* The `WIDE' instruction is used in the byte code to allow 16-bit wide indices for local 
+  /* The 'WIDE' instruction is used in the byte code to allow 16-bit wide indices for local 
    * variables. This opcode precedes an 'ILOAD', e.g.. The opcode immediately following takes 
    * an extra byte which is combined with the following byte to form a 16-bit value.
    */
@@ -1068,11 +1066,11 @@ public abstract class Utility {
     return buf.toString();
   }
 
-  public static List getListOfAnnotationNames(Annotation a) {
+  public static List getListOfAnnotationNames(AnnotationGen a) {
   	List l = a.getValues();
     List names = new ArrayList();
     for (Iterator i = l.iterator(); i.hasNext();) {
-		ElementNameValuePair element = (ElementNameValuePair) i.next();
+		ElementNameValuePairGen element = (ElementNameValuePairGen) i.next();
 		names.add(element.getNameString());
 	}
     return names;
@@ -1086,7 +1084,7 @@ public abstract class Utility {
    * @param cp The constant pool gen where we can create the necessary name refs
    * @param vec A list of AnnotationGen objects
    */
-  public static Attribute[] getAnnotationAttributes(ConstantPoolGen cp,List vec) {
+  public static Attribute[] getAnnotationAttributes(ConstantPool cp,List vec) {
   	
   	if (vec.size()==0) return null;
   	
@@ -1131,11 +1129,11 @@ public abstract class Utility {
   	List newAttributes = new ArrayList();
   	if (rvaData.length>2) {
   		newAttributes.add(
-  		  new RuntimeVisibleAnnotations(rvaIndex,rvaData.length,rvaData,cp.getConstantPool()));
+  		  new RuntimeVisibleAnnotations(rvaIndex,rvaData.length,rvaData,cp));
   	}
   	if (riaData.length>2) {
   		newAttributes.add(
-  		  new RuntimeInvisibleAnnotations(riaIndex,riaData.length,riaData,cp.getConstantPool()));
+  		  new RuntimeInvisibleAnnotations(riaIndex,riaData.length,riaData,cp));
   	}
 
   	return (Attribute[])newAttributes.toArray(new Attribute[]{});
@@ -1151,7 +1149,7 @@ public abstract class Utility {
    * - RuntimeVisibleParameterAnnotations
    * - RuntimeInvisibleParameterAnnotations
    */
-  public static Attribute[] getParameterAnnotationAttributes(ConstantPoolGen cp,List[] /*Array of lists, array size depends on #params */ vec) {
+  public static Attribute[] getParameterAnnotationAttributes(ConstantPool cp,List[] /*Array of lists, array size depends on #params */ vec) {
   	
   	int visCount[]   = new int[vec.length]; 
   	int totalVisCount = 0;
@@ -1217,13 +1215,13 @@ public abstract class Utility {
 
   	    if (totalVisCount>0) {
   		    newAttributes.add(
-  		        new RuntimeVisibleParameterAnnotations(rvaIndex,rvaData.length,rvaData,cp.getConstantPool()));
+  		        new RuntimeVisibleParameterAnnotations(rvaIndex,rvaData.length,rvaData,cp));
   	    }
   	
 
   	    if (totalInvisCount>0) {
   	    	newAttributes.add(
-  	    	    new RuntimeInvisibleParameterAnnotations(riaIndex,riaData.length,riaData,cp.getConstantPool()));
+  	    	    new RuntimeInvisibleParameterAnnotations(riaIndex,riaData.length,riaData,cp));
   	    }
 
   	    return (Attribute[])newAttributes.toArray(new Attribute[]{});
@@ -1235,13 +1233,13 @@ public abstract class Utility {
   }
   
 
-  private static final boolean is_digit(char ch) {
-    return (ch >= '0') && (ch <= '9');
-  }    
-  
-  private static final boolean is_space(char ch) {
-    return (ch == ' ') || (ch == '\t') || (ch == '\r') || (ch == '\n');
-  }    
+//  private static final boolean is_digit(char ch) {
+//    return (ch >= '0') && (ch <= '9');
+//  }    
+//  
+//  private static final boolean is_space(char ch) {
+//    return (ch == ' ') || (ch == '\t') || (ch == '\r') || (ch == '\n');
+//  }    
   
   private static class ResultHolder {
   	private String result;
@@ -1629,7 +1627,7 @@ public abstract class Utility {
         break;
 
       default:
-        if (Constants.NO_OF_OPERANDS[opcode] > 0) {
+        if ((Constants.iLen[opcode]-1) > 0) {
 	    for (int i=0; i < Constants.TYPE_OF_OPERANDS[opcode].length; i++) {
 	      buf.append("\t\t");
 	      switch(Constants.TYPE_OF_OPERANDS[opcode][i]) {

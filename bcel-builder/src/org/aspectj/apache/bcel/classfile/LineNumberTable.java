@@ -62,7 +62,7 @@ import  java.io.*;
  * purposes. This attribute is used by the <em>Code</em> attribute. It
  * contains pairs of PCs and line numbers.
  *
- * @version $Id: LineNumberTable.java,v 1.3 2006/02/07 15:15:42 aclement Exp $
+ * @version $Id: LineNumberTable.java,v 1.3.6.1 2007/02/12 09:34:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  *
@@ -268,7 +268,7 @@ public final class LineNumberTable extends Attribute {
     for(int i=0; i < line_number_table_length; i++)
       c.line_number_table[i] = line_number_table[i].copy();
 
-    c.constant_pool = constant_pool;
+    c.constantPool = constant_pool;
     return c;
   }
 

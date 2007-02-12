@@ -54,21 +54,19 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 import java.io.*;
+
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /** 
  * LOOKUPSWITCH - Switch with unordered set of values
  *
- * @version $Id: LOOKUPSWITCH.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: LOOKUPSWITCH.java,v 1.2.10.1 2007/02/12 09:34:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */
-public class LOOKUPSWITCH extends Select {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  LOOKUPSWITCH() {}
+public class LOOKUPSWITCH extends InstructionSelect {
+
 
   public LOOKUPSWITCH(int[] match, InstructionHandle[] targets,
 		      InstructionHandle target) {
@@ -96,9 +94,9 @@ public class LOOKUPSWITCH extends Select {
   /**
    * Read needed data (e.g. index) from file.
    */
-  protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException
+  public LOOKUPSWITCH(ByteSequence bytes) throws IOException
   {
-    super.initFromFile(bytes, wide); // reads padding
+    super(Constants.LOOKUPSWITCH,bytes); // reads padding
 
     match_length = bytes.readInt();
     fixed_length = (short)(9 + match_length * 8);
@@ -114,20 +112,4 @@ public class LOOKUPSWITCH extends Select {
     }
   }
 
-
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitVariableLengthInstruction(this);
-    v.visitStackProducer(this);
-    v.visitBranchInstruction(this);
-    v.visitSelect(this);
-    v.visitLOOKUPSWITCH(this);
-  }
 }

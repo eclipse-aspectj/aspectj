@@ -62,7 +62,7 @@ import  java.io.*;
  * <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class 
  * and represents a reference to a (external) class.
  *
- * @version $Id: ConstantClass.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ConstantClass.java,v 1.2.10.1 2007/02/12 09:34:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Constant
  */
@@ -84,7 +84,9 @@ public final class ConstantClass extends Constant implements ConstantObject {
    */
   ConstantClass(DataInputStream file) throws IOException
   {    
-    this(file.readUnsignedShort());
+      super(Constants.CONSTANT_Class);
+	  this.name_index = file.readUnsignedShort();
+//    this(file.readUnsignedShort());
   }    
 
   /**

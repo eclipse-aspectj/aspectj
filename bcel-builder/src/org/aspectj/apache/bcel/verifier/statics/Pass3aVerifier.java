@@ -78,49 +78,21 @@ import org.aspectj.apache.bcel.classfile.LineNumberTable;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.generic.ALOAD;
-import org.aspectj.apache.bcel.generic.ANEWARRAY;
-import org.aspectj.apache.bcel.generic.ASTORE;
-import org.aspectj.apache.bcel.generic.ATHROW;
 import org.aspectj.apache.bcel.generic.ArrayType;
-import org.aspectj.apache.bcel.generic.BREAKPOINT;
-import org.aspectj.apache.bcel.generic.CHECKCAST;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
-import org.aspectj.apache.bcel.generic.DLOAD;
-import org.aspectj.apache.bcel.generic.DSTORE;
-import org.aspectj.apache.bcel.generic.FLOAD;
-import org.aspectj.apache.bcel.generic.FSTORE;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
-import org.aspectj.apache.bcel.generic.GETSTATIC;
-import org.aspectj.apache.bcel.generic.GotoInstruction;
 import org.aspectj.apache.bcel.generic.IINC;
-import org.aspectj.apache.bcel.generic.ILOAD;
-import org.aspectj.apache.bcel.generic.IMPDEP1;
-import org.aspectj.apache.bcel.generic.IMPDEP2;
-import org.aspectj.apache.bcel.generic.INSTANCEOF;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
-import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
-import org.aspectj.apache.bcel.generic.INVOKESTATIC;
-import org.aspectj.apache.bcel.generic.INVOKEVIRTUAL;
-import org.aspectj.apache.bcel.generic.ISTORE;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
+import org.aspectj.apache.bcel.generic.InstructionByte;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
-import org.aspectj.apache.bcel.generic.JsrInstruction;
-import org.aspectj.apache.bcel.generic.LDC;
-import org.aspectj.apache.bcel.generic.LDC2_W;
-import org.aspectj.apache.bcel.generic.LLOAD;
 import org.aspectj.apache.bcel.generic.LOOKUPSWITCH;
-import org.aspectj.apache.bcel.generic.LSTORE;
-import org.aspectj.apache.bcel.generic.LoadClass;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
-import org.aspectj.apache.bcel.generic.NEW;
-import org.aspectj.apache.bcel.generic.NEWARRAY;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.RET;
-import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.TABLESWITCH;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.verifier.PassVerifier;
@@ -141,7 +113,7 @@ import org.aspectj.apache.bcel.verifier.exc.StaticCodeInstructionOperandConstrai
  * More detailed information is to be found at the do_verify()
  * method's documentation. 
  *
- * @version $Id: Pass3aVerifier.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: Pass3aVerifier.java,v 1.3.10.1 2007/02/12 09:34:12 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
@@ -370,13 +342,13 @@ public final class Pass3aVerifier extends PassVerifier{
 		InstructionHandle ih = instructionList.getStart();
 		while (ih != null){
 			Instruction i = ih.getInstruction();
-			if (i instanceof IMPDEP1){
+			if (i.getOpcode()==Constants.IMPDEP1){
 				throw new StaticCodeInstructionConstraintException("IMPDEP1 must not be in the code, it is an illegal instruction for _internal_ JVM use!");
 			}
-			if (i instanceof IMPDEP2){
+			if (i.getOpcode()==Constants.IMPDEP2){
 				throw new StaticCodeInstructionConstraintException("IMPDEP2 must not be in the code, it is an illegal instruction for _internal_ JVM use!");
 			}
-			if (i instanceof BREAKPOINT){
+			if (i.getOpcode()==Constants.BREAKPOINT){
 				throw new StaticCodeInstructionConstraintException("BREAKPOINT must not be in the code, it is an illegal instruction for _internal_ JVM use!");
 			}
 			ih = ih.getNext();
@@ -387,10 +359,10 @@ public final class Pass3aVerifier extends PassVerifier{
 		// end of the code, which is stupid -- but with the original
 		// verifier's subroutine semantics one cannot predict reachability.
 		Instruction last = instructionList.getEnd().getInstruction();
-		if (! ((last instanceof ReturnInstruction)	||
+		if (! ((last.isReturnInstruction())	||
 					(last instanceof RET)    							||
-					(last instanceof GotoInstruction)			||
-					(last instanceof ATHROW) )) // JSR / JSR_W would possibly RETurn and then fall off the code!
+					(last.getOpcode()==Constants.GOTO || last.getOpcode()==Constants.GOTO_W)			||
+					(last.getOpcode()==Constants.ATHROW))) // JSR / JSR_W would possibly RETurn and then fall off the code!
 			throw new StaticCodeInstructionConstraintException("Execution must not fall off the bottom of the code array. This constraint is enforced statically as some existing verifiers do - so it may be a false alarm if the last instruction is not reachable.");
 	}
 
@@ -415,7 +387,7 @@ public final class Pass3aVerifier extends PassVerifier{
 
 		// TODO: Implement as much as possible here. BCEL does _not_ check everything.
 
-		ConstantPoolGen cpg = new ConstantPoolGen(Repository.lookupClass(myOwner.getClassName()).getConstantPool());
+		ConstantPool cpg = new ConstantPool(Repository.lookupClass(myOwner.getClassName()).getConstantPool().getConstantPool());
 		InstOperandConstraintVisitor v = new InstOperandConstraintVisitor(cpg);
 	
 		// Checks for the things BCEL does _not_ handle itself.
@@ -424,12 +396,12 @@ public final class Pass3aVerifier extends PassVerifier{
 			Instruction i = ih.getInstruction();
 			
 			// An "own" constraint, due to JustIce's new definition of what "subroutine" means.
-			if (i instanceof JsrInstruction){
-				InstructionHandle target = ((JsrInstruction) i).getTarget();
+			if (i.isJsrInstruction()){
+				InstructionHandle target = ((InstructionBranch) i).getTarget();
 				if (target == instructionList.getStart()){
 					throw new StaticCodeInstructionOperandConstraintException("Due to JustIce's clear definition of subroutines, no JSR or JSR_W may have a top-level instruction (such as the very first instruction, which is targeted by instruction '"+ih+"' as its target.");
 				}
-				if (!(target.getInstruction() instanceof ASTORE)){
+				if (!(target.getInstruction().isASTORE())){
 					throw new StaticCodeInstructionOperandConstraintException("Due to JustIce's clear definition of subroutines, no JSR or JSR_W may target anything else than an ASTORE instruction. Instruction '"+ih+"' targets '"+target+"'.");
 				}
 			}
@@ -461,10 +433,10 @@ public final class Pass3aVerifier extends PassVerifier{
 	 */
 	private class InstOperandConstraintVisitor extends org.aspectj.apache.bcel.generic.EmptyVisitor{
 		/** The ConstantPoolGen instance this Visitor operates on. */
-		private ConstantPoolGen cpg;
+		private ConstantPool cpg;
 
 		/** The only Constructor. */
-		InstOperandConstraintVisitor(ConstantPoolGen cpg){
+		InstOperandConstraintVisitor(ConstantPool cpg){
 			this.cpg = cpg;
 		}
 
@@ -500,7 +472,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		 * Assures the generic preconditions of a LoadClass instance.
 		 * The referenced class is loaded and pass2-verified.
 		 */
-		public void visitLoadClass(LoadClass o){
+		public void visitLoadClass(Instruction o){
 			ObjectType t = o.getLoadClassType(cpg);
 			if (t != null){// null means "no class is loaded"
 				Verifier v = VerifierFactory.getVerifier(t.getClassName());
@@ -520,7 +492,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
 		// LDC and LDC_W (LDC_W is a subclass of LDC in BCEL's model)
-		public void visitLDC(LDC o){
+		public void visitLDC(Instruction o){
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
 			if (! ( (c instanceof ConstantInteger)	||
@@ -532,7 +504,7 @@ public final class Pass3aVerifier extends PassVerifier{
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
 		// LDC2_W
-		public void visitLDC2_W(LDC2_W o){
+		public void visitLDC2_W(Instruction o){
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
 			if (! ( (c instanceof ConstantLong)	||
@@ -590,9 +562,9 @@ public final class Pass3aVerifier extends PassVerifier{
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
 		public void visitInvokeInstruction(InvokeInstruction o){
 			indexValid(o, o.getIndex());
-			if (	(o instanceof INVOKEVIRTUAL)	||
-						(o instanceof INVOKESPECIAL)	||
-						(o instanceof INVOKESTATIC)	){
+			if (	(o.getOpcode()==Constants.INVOKEVIRTUAL)	||
+						(o.getOpcode()==Constants.INVOKESPECIAL)	||
+						(o.getOpcode()==Constants.INVOKESTATIC)	){
 				Constant c = cpg.getConstant(o.getIndex());
 				if (! (c instanceof ConstantMethodref)){
 					constraintViolated(o, "Indexing a constant that's not a CONSTANT_Methodref but a '"+c+"'.");
@@ -601,7 +573,7 @@ public final class Pass3aVerifier extends PassVerifier{
 					// Constants are okay due to pass2.
 					ConstantNameAndType cnat = (ConstantNameAndType) (cpg.getConstant(((ConstantMethodref) c).getNameAndTypeIndex()));
 					ConstantUtf8 cutf8 = (ConstantUtf8) (cpg.getConstant(cnat.getNameIndex()));
-					if (cutf8.getBytes().equals(Constants.CONSTRUCTOR_NAME) && (!(o instanceof INVOKESPECIAL)) ){
+					if (cutf8.getBytes().equals(Constants.CONSTRUCTOR_NAME) && (!(o.getOpcode()==Constants.INVOKESPECIAL)) ){
 						constraintViolated(o, "Only INVOKESPECIAL is allowed to invoke instance initialization methods.");
 					}
 					if ( (! (cutf8.getBytes().equals(Constants.CONSTRUCTOR_NAME)) ) && (cutf8.getBytes().startsWith("<")) ){
@@ -662,7 +634,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 		
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitINSTANCEOF(INSTANCEOF o){
+		public void visitINSTANCEOF(Instruction o){
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
 			if (!	(c instanceof ConstantClass)){
@@ -671,7 +643,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitCHECKCAST(CHECKCAST o){
+		public void visitCHECKCAST(Instruction o){
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
 			if (!	(c instanceof ConstantClass)){
@@ -680,7 +652,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitNEW(NEW o){
+		public void visitNEW(Instruction o){
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
 			if (!	(c instanceof ConstantClass)){
@@ -720,7 +692,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitANEWARRAY(ANEWARRAY o){
+		public void visitANEWARRAY(Instruction o){
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
 			if (!	(c instanceof ConstantClass)){
@@ -736,8 +708,8 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitNEWARRAY(NEWARRAY o){
-			byte t = o.getTypecode();
+		public void visitNEWARRAY(Instruction o){
+			byte t = ((InstructionByte)o).getTypecode();
 			if (!	(	(t == Constants.T_BOOLEAN)	||
 							(t == Constants.T_CHAR)			||
 							(t == Constants.T_FLOAT)		||
@@ -751,7 +723,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitILOAD(ILOAD o){
+		public void visitILOAD(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative.");
@@ -765,7 +737,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitFLOAD(FLOAD o){
+		public void visitFLOAD(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative.");
@@ -779,7 +751,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitALOAD(ALOAD o){
+		public void visitALOAD(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative.");
@@ -793,7 +765,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 		
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitISTORE(ISTORE o){
+		public void visitISTORE(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative.");
@@ -807,7 +779,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 		
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitFSTORE(FSTORE o){
+		public void visitFSTORE(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative.");
@@ -821,7 +793,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitASTORE(ASTORE o){
+		public void visitASTORE(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative.");
@@ -863,7 +835,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitLLOAD(LLOAD o){
+		public void visitLLOAD(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative. [Constraint by JustIce as an analogon to the single-slot xLOAD/xSTORE instructions; may not happen anyway.]");
@@ -877,7 +849,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 		
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitDLOAD(DLOAD o){
+		public void visitDLOAD(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative. [Constraint by JustIce as an analogon to the single-slot xLOAD/xSTORE instructions; may not happen anyway.]");
@@ -891,7 +863,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 		
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitLSTORE(LSTORE o){
+		public void visitLSTORE(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative. [Constraint by JustIce as an analogon to the single-slot xLOAD/xSTORE instructions; may not happen anyway.]");
@@ -905,7 +877,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 		
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitDSTORE(DSTORE o){
+		public void visitDSTORE(Instruction o){
 			int idx = o.getIndex();
 			if (idx < 0){
 				constraintViolated(o, "Index '"+idx+"' must be non-negative. [Constraint by JustIce as an analogon to the single-slot xLOAD/xSTORE instructions; may not happen anyway.]");
@@ -942,7 +914,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitPUTSTATIC(PUTSTATIC o){
+		public void visitPUTSTATIC(FieldInstruction o){
 			String field_name = o.getFieldName(cpg);
 			JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
 			Field[] fields = jc.getFields();
@@ -976,7 +948,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitGETSTATIC(GETSTATIC o){
+		public void visitGETSTATIC(FieldInstruction o){
 			String field_name = o.getFieldName(cpg);
 			JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
 			Field[] fields = jc.getFields();
@@ -1033,7 +1005,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitINVOKESPECIAL(INVOKESPECIAL o){
+		public void visitINVOKESPECIAL(InvokeInstruction o){
 			// INVOKESPECIAL is a LoadClass; the Class where the referenced method is declared in,
 			// is therefore resolved/verified.
 			// INVOKESPECIAL is an InvokeInstruction, the argument and return types are resolved/verified,
@@ -1091,7 +1063,7 @@ public final class Pass3aVerifier extends PassVerifier{
 		}
 		
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitINVOKESTATIC(INVOKESTATIC o){
+		public void visitINVOKESTATIC(InvokeInstruction o){
 			// INVOKESTATIC is a LoadClass; the Class where the referenced method is declared in,
 			// is therefore resolved/verified.
 			// INVOKESTATIC is an InvokeInstruction, the argument and return types are resolved/verified,
@@ -1120,7 +1092,7 @@ public final class Pass3aVerifier extends PassVerifier{
 
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
-		public void visitINVOKEVIRTUAL(INVOKEVIRTUAL o){
+		public void visitINVOKEVIRTUAL(InvokeInstruction o){
 			// INVOKEVIRTUAL is a LoadClass; the Class where the referenced method is declared in,
 			// is therefore resolved/verified.
 			// INVOKEVIRTUAL is an InvokeInstruction, the argument and return types are resolved/verified,

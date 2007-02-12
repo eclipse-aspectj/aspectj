@@ -61,7 +61,7 @@ import  java.io.*;
  * This class represents collection of local variables in a
  * method. This attribute is contained in the <em>Code</em> attribute.
  *
- * @version $Id: LocalVariableTable.java,v 1.3 2006/02/15 09:15:34 aclement Exp $
+ * @version $Id: LocalVariableTable.java,v 1.3.6.1 2007/02/12 09:34:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  * @see LocalVariable
@@ -204,7 +204,7 @@ public class LocalVariableTable extends Attribute {
     for(int i=0; i < localVariableTableLength; i++)
       c.localVariableTable[i] = localVariableTable[i].copy();
 
-    c.constant_pool = constant_pool;
+    c.constantPool = constant_pool;
     return c;
   }
 
@@ -223,7 +223,7 @@ public class LocalVariableTable extends Attribute {
 		localVariableTableLength = (dis.readUnsignedShort());
 		localVariableTable = new LocalVariable[localVariableTableLength];
 		for (int i=0; i < localVariableTableLength; i++)
-		  localVariableTable[i] = new LocalVariable(dis,constant_pool);
+		  localVariableTable[i] = new LocalVariable(dis,constantPool);
 	    dis.close();
 	    data = null; // throw it away now
     } catch (IOException e) {

@@ -54,6 +54,7 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * <http://www.apache.org/>.
  */
 
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.*;
 import org.aspectj.apache.bcel.verifier.exc.*;
 import java.awt.Color;
@@ -83,7 +84,7 @@ import java.util.Iterator;
    *
 	 * TODO: refer to the paper.
 	 *
-	 * @version $Id: Subroutines.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+	 * @version $Id: Subroutines.java,v 1.2.10.1 2007/02/12 09:34:12 aclement Exp $
 	 * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
 	 * @see #getTopLevel()
 	 */
@@ -200,7 +201,7 @@ public class Subroutines{
 		 * Adds a new JSR or JSR_W that has this subroutine as its target.
 		 */
 		public void addEnteringJsrInstruction(InstructionHandle jsrInst){
-			if ( (jsrInst == null) || (! (jsrInst.getInstruction() instanceof JsrInstruction))){
+			if ( (jsrInst == null) || (! (jsrInst.getInstruction().isJsrInstruction()))){
 				throw new AssertionViolatedException("Expecting JsrInstruction InstructionHandle.");
 			}
 			if (localVariable == UNSET){
@@ -210,7 +211,7 @@ public class Subroutines{
 				// Something is wrong when an ASTORE is targeted that does not operate on the same local variable than the rest of the
 				// JsrInstruction-targets and the RET.
 				// (We don't know out leader here so we cannot check if we're really targeted!)
-				if (localVariable != ((ASTORE) (((JsrInstruction) jsrInst.getInstruction()).getTarget().getInstruction())).getIndex()){
+				if (localVariable != ( (((InstructionBranch) jsrInst.getInstruction()).getTarget().getInstruction())).getIndex()){
 					throw new AssertionViolatedException("Setting a wrong JsrInstruction.");
 				}
 			}
@@ -294,15 +295,15 @@ public class Subroutines{
 			while (i.hasNext()){
 				InstructionHandle ih = (InstructionHandle) i.next();
 				// RET is not a LocalVariableInstruction in the current version of BCEL.
-				if (ih.getInstruction() instanceof LocalVariableInstruction || ih.getInstruction() instanceof RET){
-					int idx = ((IndexedInstruction) (ih.getInstruction())).getIndex();
+				if (ih.getInstruction() instanceof InstructionLV || ih.getInstruction() instanceof RET){
+					int idx = ((ih.getInstruction())).getIndex();
 					acc.add(new Integer(idx));
 					// LONG? DOUBLE?.
 					try{
 						// LocalVariableInstruction instances are typed without the need to look into
 						// the constant pool.
-						if (ih.getInstruction() instanceof LocalVariableInstruction){
-							int s = ((LocalVariableInstruction) ih.getInstruction()).getType(null).getSize();
+						if (ih.getInstruction() instanceof InstructionLV){
+							int s = ((InstructionLV) ih.getInstruction()).getType(null).getSize();
 							if (s==2) acc.add(new Integer(idx+1));
 						}
 					}
@@ -331,8 +332,8 @@ public class Subroutines{
 			Iterator i = instructions.iterator();
 			while (i.hasNext()){
 				Instruction inst = ((InstructionHandle) i.next()).getInstruction();
-				if (inst instanceof JsrInstruction){
-					InstructionHandle targ = ((JsrInstruction) inst).getTarget();
+				if (inst.isJsrInstruction()){
+					InstructionHandle targ = ((InstructionBranch) inst).getTarget();
 					h.add(getSubroutine(targ));
 				}
 			}
@@ -396,8 +397,8 @@ public class Subroutines{
 		InstructionHandle ih = all[0];
 		for (int i=0; i<all.length; i++){
 			Instruction inst = all[i].getInstruction();
-			if (inst instanceof JsrInstruction){
-				sub_leaders.add(((JsrInstruction) inst).getTarget());
+			if (inst.isJsrInstruction()){
+				sub_leaders.add(((InstructionBranch) inst).getTarget());
 			}
 		}
  
@@ -406,7 +407,7 @@ public class Subroutines{
 		while (iter.hasNext()){
 			SubroutineImpl sr = new SubroutineImpl();
 			InstructionHandle astore = (InstructionHandle) (iter.next());
-			sr.setLocalVariable( ((ASTORE) (astore.getInstruction())).getIndex() );
+			sr.setLocalVariable( ( (astore.getInstruction())).getIndex() );
 			subroutines.put(astore, sr);
 		}
 
@@ -421,8 +422,8 @@ public class Subroutines{
 		// disallowed and checked below, after the BFS.
 		for (int i=0; i<all.length; i++){
 			Instruction inst = all[i].getInstruction();
-			if (inst instanceof JsrInstruction){
-				InstructionHandle leader = ((JsrInstruction) inst).getTarget();
+			if (inst.isJsrInstruction()){
+				InstructionHandle leader = ((InstructionBranch) inst).getTarget();
 				((SubroutineImpl) getSubroutine(leader)).addEnteringJsrInstruction(all[i]);
 			}
 		}
@@ -616,40 +617,40 @@ System.err.println("DEBUG: Please verify '"+any+"' lies in dead code.");
 		}
 		
 		// Terminates method normally.
-		if (inst instanceof ReturnInstruction){
+		if (inst.isReturnInstruction()){
 			return empty;
 		}
 		
 		// Terminates method abnormally, because JustIce mandates
 		// subroutines not to be protected by exception handlers.
-		if (inst instanceof ATHROW){
+		if (inst.getOpcode()==Constants.ATHROW){
 			return empty;
 		}
 		
 		// See method comment.
-		if (inst instanceof JsrInstruction){
+		if (inst.isJsrInstruction()){
 			single[0] = instruction.getNext();
 			return single;
 		}
 
-		if (inst instanceof GotoInstruction){
-			single[0] = ((GotoInstruction) inst).getTarget();
+		if (inst.getOpcode()==Constants.GOTO || inst.getOpcode()==Constants.GOTO_W){
+			single[0] = ((InstructionBranch) inst).getTarget();
 			return single;
 		}
 
-		if (inst instanceof BranchInstruction){
-			if (inst instanceof Select){
+		if (inst instanceof InstructionBranch){
+			if (inst instanceof InstructionSelect){
 				// BCEL's getTargets() returns only the non-default targets,
 				// thanks to Eli Tilevich for reporting.
-				InstructionHandle[] matchTargets = ((Select) inst).getTargets();
+				InstructionHandle[] matchTargets = ((InstructionSelect) inst).getTargets();
 				InstructionHandle[] ret = new InstructionHandle[matchTargets.length+1];
-				ret[0] = ((Select) inst).getTarget();
+				ret[0] = ((InstructionSelect) inst).getTarget();
 				System.arraycopy(matchTargets, 0, ret, 1, matchTargets.length);
 				return ret;
 			}
 			else{
 				pair[0] = instruction.getNext();
-				pair[1] = ((BranchInstruction) inst).getTarget();
+				pair[1] = ((InstructionBranch) inst).getTarget();
 				return pair;
 			}
 		}

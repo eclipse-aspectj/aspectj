@@ -58,23 +58,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-import org.aspectj.apache.bcel.generic.ATHROW;
-import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.GotoInstruction;
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
-import org.aspectj.apache.bcel.generic.JsrInstruction;
+import org.aspectj.apache.bcel.generic.InstructionSelect;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.RET;
-import org.aspectj.apache.bcel.generic.ReturnInstruction;
-import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
 import org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException;
 
 /**
  * This class represents a control flow graph of a method.
  *
- * @version $Id: ControlFlowGraph.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: ControlFlowGraph.java,v 1.4.10.1 2007/02/12 09:34:12 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class ControlFlowGraph{
@@ -318,7 +315,7 @@ public class ControlFlowGraph{
 				InstructionContextImpl current = (InstructionContextImpl) (executionPredecessors.get(i));
 				Instruction currentlast = current.getInstruction().getInstruction();
 				if (currentlast instanceof RET) retcount++;
-				if (currentlast instanceof JsrInstruction){
+				if (currentlast.isJsrInstruction()){
 					retcount--;
 					if (retcount == -1) return current;
 				}
@@ -363,40 +360,40 @@ throw new AssertionViolatedException("DID YOU REALLY WANT TO ASK FOR RET'S SUCCS
 			}
 		
 			// Terminates method normally.
-			if (inst instanceof ReturnInstruction){
+			if (inst.isReturnInstruction()) {
 				return empty;
 			}
 		
 			// Terminates method abnormally, because JustIce mandates
 			// subroutines not to be protected by exception handlers.
-			if (inst instanceof ATHROW){
+			if (inst.getOpcode()==Constants.ATHROW){
 				return empty;
 			}
 		
 			// See method comment.
-			if (inst instanceof JsrInstruction){
-				single[0] = ((JsrInstruction) inst).getTarget();
+			if (inst.isJsrInstruction()){
+				single[0] = ((InstructionBranch) inst).getTarget();
 				return single;
 			}
 
-			if (inst instanceof GotoInstruction){
-				single[0] = ((GotoInstruction) inst).getTarget();
+			if (inst.getOpcode()==Constants.GOTO || inst.getOpcode()==Constants.GOTO_W){
+				single[0] = ((InstructionBranch) inst).getTarget();
 				return single;
 			}
 
-			if (inst instanceof BranchInstruction){
-				if (inst instanceof Select){
+			if (inst instanceof InstructionBranch){
+				if (inst instanceof InstructionSelect){
 					// BCEL's getTargets() returns only the non-default targets,
 					// thanks to Eli Tilevich for reporting.
-					InstructionHandle[] matchTargets = ((Select) inst).getTargets();
+					InstructionHandle[] matchTargets = ((InstructionSelect) inst).getTargets();
 					InstructionHandle[] ret = new InstructionHandle[matchTargets.length+1];
-					ret[0] = ((Select) inst).getTarget();
+					ret[0] = ((InstructionSelect) inst).getTarget();
 					System.arraycopy(matchTargets, 0, ret, 1, matchTargets.length);
 					return ret;
 				}
 				else{
 					pair[0] = getInstruction().getNext();
-					pair[1] = ((BranchInstruction) inst).getTarget();
+					pair[1] = ((InstructionBranch) inst).getTarget();
 					return pair;
 				}
 			}

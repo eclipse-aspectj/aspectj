@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.generic.ArrayType;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.Type;
 
@@ -76,13 +76,13 @@ import org.aspectj.apache.bcel.generic.Type;
  * are done with BCEL. It does not cover all features of BCEL,
  * but tries to mimic hand-written code as close as possible.
  *
- * @version $Id: BCELifier.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: BCELifier.java,v 1.3.10.1 2007/02/12 09:34:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public class BCELifier extends org.aspectj.apache.bcel.classfile.EmptyVisitor {
   private JavaClass         _clazz;
   private PrintWriter       _out;
-  private ConstantPoolGen   _cp;
+  private ConstantPool   _cp;
 
   /** @param clazz Java class to "decompile"
    * @param out where to output Java program
@@ -90,7 +90,7 @@ public class BCELifier extends org.aspectj.apache.bcel.classfile.EmptyVisitor {
   public BCELifier(JavaClass clazz, OutputStream out) {
     _clazz = clazz;
     _out = new PrintWriter(out);
-    _cp = new ConstantPoolGen(_clazz.getConstantPool());
+    _cp = new ConstantPool(_clazz.getConstantPool().getConstantPool());
   }
 
   /** Start Java code generation

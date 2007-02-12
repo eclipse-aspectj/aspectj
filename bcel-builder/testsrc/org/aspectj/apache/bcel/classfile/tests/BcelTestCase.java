@@ -19,13 +19,12 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.generic.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.generic.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.generic.annotation.SimpleElementValueGen;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
@@ -100,17 +99,6 @@ public class BcelTestCase extends TestCase {
 		return (Attribute)chosenAttrsList.get(0);
 	}
 
-	protected String dumpAnnotations(Annotation[] as) {
-		StringBuffer result = new StringBuffer();
-		result.append("[");
-		for (int i = 0; i < as.length; i++) {
-			Annotation annotation = as[i];
-			result.append(annotation.toShortString());
-			if (i+1<as.length) result.append(",");
-		}
-		result.append("]");
-		return result.toString();
-	}
 	
 	protected String dumpAnnotations(AnnotationGen[] as) {
 		StringBuffer result = new StringBuffer();
@@ -136,7 +124,7 @@ public class BcelTestCase extends TestCase {
 		return result.toString();
 	}
 
-	public AnnotationGen createFruitAnnotation(ConstantPoolGen cp, String aFruit, boolean visibility) {
+	public AnnotationGen createFruitAnnotation(ConstantPool cp, String aFruit, boolean visibility) {
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.STRING,cp,aFruit);
 		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("fruit",evg,cp);
 		ObjectType t = new ObjectType("SimpleStringAnnotation");

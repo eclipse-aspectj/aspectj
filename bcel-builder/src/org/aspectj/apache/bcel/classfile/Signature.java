@@ -69,7 +69,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from <em>Attribute</em> and represents a reference
  * to a <href="http://wwwipd.ira.uka.de/~pizza/gj/">GJ</a> attribute.
  *
- * @version $Id: Signature.java,v 1.6 2005/07/12 13:59:06 aclement Exp $
+ * @version $Id: Signature.java,v 1.6.8.1 2007/02/12 09:34:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -151,7 +151,7 @@ public final class Signature extends Attribute {
    * @return GJ signature.
    */ 
   public final String getSignature() {
-    ConstantUtf8 c = (ConstantUtf8)constant_pool.getConstant(signature_index, 
+    ConstantUtf8 c = (ConstantUtf8)constantPool.getConstant(signature_index, 
 							     Constants.CONSTANT_Utf8);
     return c.getBytes();
   }

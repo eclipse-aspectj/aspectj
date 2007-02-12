@@ -62,7 +62,7 @@ import  java.io.*;
  * to a <a href="http://www.inf.fu-berlin.de/~bokowski/pmgjava/index.html">PMG</a>
  * attribute.
  *
- * @version $Id: PMGClass.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: PMGClass.java,v 1.2.10.1 2007/02/12 09:34:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -159,7 +159,7 @@ public final class PMGClass extends Attribute {
    * @return PMG name.
    */ 
   public final String getPMGName() {
-    ConstantUtf8 c = (ConstantUtf8)constant_pool.getConstant(pmg_index, 
+    ConstantUtf8 c = (ConstantUtf8)constantPool.getConstant(pmg_index, 
 							     Constants.CONSTANT_Utf8);
     return c.getBytes();
   }
@@ -168,7 +168,7 @@ public final class PMGClass extends Attribute {
    * @return PMG class name.
    */ 
   public final String getPMGClassName() {
-    ConstantUtf8 c = (ConstantUtf8)constant_pool.getConstant(pmg_class_index, 
+    ConstantUtf8 c = (ConstantUtf8)constantPool.getConstant(pmg_class_index, 
 							     Constants.CONSTANT_Utf8);
     return c.getBytes();
   }

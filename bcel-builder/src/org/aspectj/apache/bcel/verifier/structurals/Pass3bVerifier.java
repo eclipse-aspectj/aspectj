@@ -64,13 +64,12 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
-import org.aspectj.apache.bcel.generic.JsrInstruction;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.RET;
-import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.ReturnaddressType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.verifier.PassVerifier;
@@ -86,7 +85,7 @@ import org.aspectj.apache.bcel.verifier.exc.VerifierConstraintViolatedException;
  * More detailed information is to be found at the do_verify() method's
  * documentation. 
  *
- * @version $Id: Pass3bVerifier.java,v 1.5 2005/02/02 09:11:39 aclement Exp $
+ * @version $Id: Pass3bVerifier.java,v 1.5.8.1 2007/02/12 09:34:12 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
@@ -207,7 +206,7 @@ public final class Pass3bVerifier extends PassVerifier{
 						throw new AssertionViolatedException("More RET than JSR in execution chain?!");
 					}
 //System.err.println("+"+oldchain.get(ss));
-					if (((InstructionContext) oldchain.get(ss)).getInstruction().getInstruction() instanceof JsrInstruction){
+					if (((InstructionContext) oldchain.get(ss)).getInstruction().getInstruction().isJsrInstruction()) {
 						if (skip_jsr == 0){
 							lastJSR = (InstructionContext) oldchain.get(ss);
 							break;
@@ -223,7 +222,7 @@ public final class Pass3bVerifier extends PassVerifier{
 				if (lastJSR == null){
 					throw new AssertionViolatedException("RET without a JSR before in ExecutionChain?! EC: '"+oldchain+"'.");
 				}
-				JsrInstruction jsr = (JsrInstruction) (lastJSR.getInstruction().getInstruction());
+				InstructionBranch jsr = (InstructionBranch) (lastJSR.getInstruction().getInstruction());
 				if ( theSuccessor != (cfg.contextOf(jsr.physicalSuccessor())) ){
 					throw new AssertionViolatedException("RET '"+u.getInstruction()+"' info inconsistent: jump back to '"+theSuccessor+"' or '"+cfg.contextOf(jsr.physicalSuccessor())+"'?");
 				}
@@ -268,7 +267,7 @@ public final class Pass3bVerifier extends PassVerifier{
 		
 		InstructionHandle ih = start.getInstruction();
 		do{
-			if ((ih.getInstruction() instanceof ReturnInstruction) && (!(cfg.isDead(ih)))) {
+			if ((ih.getInstruction().isReturnInstruction()) && (!(cfg.isDead(ih)))) {
 				InstructionContext ic = cfg.contextOf(ih);
 				Frame f = ic.getOutFrame(new ArrayList()); // TODO: This is buggy, we check only the top-level return instructions this way. Maybe some maniac returns from a method when in a subroutine?
 				LocalVariables lvs = f.getLocals();
@@ -307,7 +306,7 @@ public final class Pass3bVerifier extends PassVerifier{
 		// in the BCEL repository.
 		JavaClass jc = Repository.lookupClass(myOwner.getClassName());
 
-		ConstantPoolGen constantPoolGen = new ConstantPoolGen(jc.getConstantPool());
+		ConstantPool constantPoolGen = new ConstantPool(jc.getConstantPool().getConstantPool());
 		// Init Visitors
 		InstConstraintVisitor icv = new InstConstraintVisitor();
 		icv.setConstantPoolGen(constantPoolGen);

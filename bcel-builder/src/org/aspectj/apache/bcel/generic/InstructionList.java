@@ -56,6 +56,7 @@ package org.aspectj.apache.bcel.generic;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Constant;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.util.ByteSequence;
 import java.io.*;
 import java.util.Iterator;
@@ -75,7 +76,7 @@ import java.util.ArrayList;
  * A list is finally dumped to a byte code array with <a
  * href="#getByteCode()">getByteCode</a>.
  *
- * @version $Id: InstructionList.java,v 1.4 2006/05/12 08:17:43 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.4.6.1 2007/02/12 09:34:07 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Instruction
  * @see     InstructionHandle
@@ -103,19 +104,10 @@ public class InstructionList implements Serializable {
    * Create instruction list containing one instruction.
    * @param i initial instruction
    */
-  public InstructionList(BranchInstruction i) {
+  public InstructionList(InstructionBranch i) {
     append(i);
   }
 
-  /**
-   * Initialize list with (nonnull) compound instruction. Consumes argument
-   * list, i.e., it becomes empty.
-   *
-   * @param c compound instruction (list)
-   */
-  public InstructionList(CompoundInstruction c) {
-    append(c.getInstructionList());
-  }
 
   /**
    * Test for empty list.
@@ -132,10 +124,8 @@ public class InstructionList implements Serializable {
    * @param target target position to search for
    * @return target position's instruction handle if available
    */
-  public static InstructionHandle findHandle(InstructionHandle[] ihs,
-					     int[] pos, int count,int target) {
+  public static InstructionHandle findHandle(InstructionHandle[] ihs, int[] pos, int count, int target) {
     int l=0, r = count - 1;
-    
     // Do a binary search since the pos array is ordered
     int i,j;
     do {
@@ -144,8 +134,7 @@ public class InstructionList implements Serializable {
 	  if (j == target)       return ihs[i]; // found it
       else if (target < j)  r=i-1; // else constrain search area
       else                  l=i+1; // target > j
-    } while(l <= r);
-
+    } while (l <= r);
     return null;
   }
 
@@ -195,8 +184,8 @@ public class InstructionList implements Serializable {
 	 */
 	Instruction       i = Instruction.readInstruction(bytes);
 	InstructionHandle ih;
-	if(i instanceof BranchInstruction) // Use proper append() method
-	  ih = append((BranchInstruction)i);
+	if(i instanceof InstructionBranch) // Use proper append() method
+	  ih = append((InstructionBranch)i);
 	else
 	  ih = append(i);
 
@@ -215,8 +204,8 @@ public class InstructionList implements Serializable {
      */
     for(int i=0; i < count; i++) {
       if(ihs[i] instanceof BranchHandle) {
-	BranchInstruction bi = (BranchInstruction)ihs[i].instruction;
-	int target = bi.position + bi.getIndex(); /* Byte code position:
+	InstructionBranch bi = (InstructionBranch)ihs[i].instruction;
+	int target = bi.positionOfThisInstruction + bi.getIndex(); /* Byte code position:
 						   * relative -> absolute. */
 	// Search for target position
 	InstructionHandle ih = findHandle(ihs, pos, count, target);
@@ -227,12 +216,12 @@ public class InstructionList implements Serializable {
 	bi.setTarget(ih); // Update target
 	
 	// If it is a Select instruction, update all branch targets
-	if(bi instanceof Select) { // Either LOOKUPSWITCH or TABLESWITCH
-          Select s       = (Select)bi;
+	if(bi instanceof InstructionSelect) { // Either LOOKUPSWITCH or TABLESWITCH
+		InstructionSelect s       = (InstructionSelect)bi;
           int[]  indices = s.getIndices();
 	  
 	  for(int j=0; j < indices.length; j++) {
-	    target = bi.position + indices[j];
+	    target = bi.positionOfThisInstruction + indices[j];
 	    ih     = findHandle(ihs, pos, count, target);
 	    
 	    if(ih == null) // Search failed
@@ -362,7 +351,7 @@ public class InstructionList implements Serializable {
    * @param i branch instruction to append
    * @return branch instruction handle of the appended instruction
    */
-  public BranchHandle append(BranchInstruction i) {
+  public BranchHandle append(InstructionBranch i) {
     BranchHandle ih = BranchHandle.getBranchHandle(i);
     append(ih);
 
@@ -381,37 +370,6 @@ public class InstructionList implements Serializable {
     return append(i, new InstructionList(j)); 
   }
 
-  /**
-   * Append a compound instruction, after instruction i.
-   *
-   * @param i Instruction in list
-   * @param c The composite instruction (containing an InstructionList)
-   * @return instruction handle of the first appended instruction
-   */
-  public InstructionHandle append(Instruction i, CompoundInstruction c) { 
-    return append(i, c.getInstructionList()); 
-  }
-
-  /**
-   * Append a compound instruction.
-   *
-   * @param c The composite instruction (containing an InstructionList)
-   * @return instruction handle of the first appended instruction
-   */
-  public InstructionHandle append(CompoundInstruction c) {
-    return append(c.getInstructionList()); 
-  }
-
-  /**
-   * Append a compound instruction.
-   *
-   * @param ih where to append the instruction list 
-   * @param c The composite instruction (containing an InstructionList)
-   * @return instruction handle of the first appended instruction
-   */
-  public InstructionHandle append(InstructionHandle ih, CompoundInstruction c) {
-    return append(ih, c.getInstructionList()); 
-  }
 
   /**
    * Append an instruction after instruction (handle) ih contained in this list.
@@ -431,7 +389,7 @@ public class InstructionList implements Serializable {
    * @param i Instruction to append
    * @return instruction handle pointing to the <B>first</B> appended instruction
    */
-  public BranchHandle append(InstructionHandle ih, BranchInstruction i) {
+  public BranchHandle append(InstructionHandle ih, InstructionBranch i) {
     BranchHandle    bh = BranchHandle.getBranchHandle(i);
     InstructionList il = new InstructionList();
     il.append(bh);
@@ -547,7 +505,7 @@ public class InstructionList implements Serializable {
    * @param i branch instruction to insert
    * @return branch instruction handle of the appended instruction
    */
-  public BranchHandle insert(BranchInstruction i) {
+  public BranchHandle insert(InstructionBranch i) {
     BranchHandle ih = BranchHandle.getBranchHandle(i);
     insert(ih);
     return ih;
@@ -565,26 +523,6 @@ public class InstructionList implements Serializable {
     return insert(i, new InstructionList(j));
   }
 
-  /**
-   * Insert a compound instruction before instruction i.
-   *
-   * @param i Instruction in list
-   * @param c The composite instruction (containing an InstructionList)
-   * @return instruction handle of the first inserted instruction
-   */
-  public InstructionHandle insert(Instruction i, CompoundInstruction c) { 
-    return insert(i, c.getInstructionList()); 
-  }
-
-  /**
-   * Insert a compound instruction.
-   *
-   * @param c The composite instruction (containing an InstructionList)
-   * @return instruction handle of the first inserted instruction
-   */
-  public InstructionHandle insert(CompoundInstruction c) {
-    return insert(c.getInstructionList()); 
-  }
 
   /**
    * Insert an instruction before instruction (handle) ih contained in this list.
@@ -598,24 +536,13 @@ public class InstructionList implements Serializable {
   }
 
   /**
-   * Insert a compound instruction.
-   *
-   * @param ih where to insert the instruction list 
-   * @param c The composite instruction (containing an InstructionList)
-   * @return instruction handle of the first inserted instruction
-   */
-  public InstructionHandle insert(InstructionHandle ih, CompoundInstruction c) {
-    return insert(ih, c.getInstructionList()); 
-  }
-
-  /**
    * Insert an instruction before instruction (handle) ih contained in this list.
    *
    * @param ih where to insert to the instruction list 
    * @param i Instruction to insert
    * @return instruction handle of the first inserted instruction
    */
-  public BranchHandle insert(InstructionHandle ih, BranchInstruction i) {
+  public BranchHandle insert(InstructionHandle ih, InstructionBranch i) {
     BranchHandle    bh = BranchHandle.getBranchHandle(i);
     InstructionList il = new InstructionList();
     il.append(bh);
@@ -886,15 +813,15 @@ public class InstructionList implements Serializable {
       for(InstructionHandle ih=start; ih != null; ih = ih.next) {
 	Instruction i = ih.instruction;
 
-	if(i instanceof BranchInstruction) { // target instruction within list?
-	  Instruction inst = ((BranchInstruction)i).getTarget().instruction;
+	if(i instanceof InstructionBranch) { // target instruction within list?
+	  Instruction inst = ((InstructionBranch)i).getTarget().instruction;
 	  if(!contains(inst))
 	    throw new ClassGenException("Branch target of " +
 					Constants.OPCODE_NAMES[i.opcode] + ":" +
 					inst + " not in instruction list");
 
-	  if(i instanceof Select) {
-	    InstructionHandle[] targets = ((Select)i).getTargets();
+	  if(i instanceof InstructionSelect) {
+	    InstructionHandle[] targets = ((InstructionSelect)i).getTargets();
 	    
 	    for(int j=0; j < targets.length; j++) {
 	      inst = targets[j].instruction;
@@ -928,7 +855,7 @@ public class InstructionList implements Serializable {
        * offset (short vs. int) or alignment issues (TABLESWITCH and
        * LOOKUPSWITCH).
        */
-      switch(i.getOpcode()) {
+      switch(i.opcode) {
       case Constants.JSR: case Constants.GOTO:
 	max_additional_bytes += 2;
 	break;
@@ -945,8 +872,10 @@ public class InstructionList implements Serializable {
      * the target offset (short or int) and ensure that branch targets are
      * within this list.
      */
-    for(InstructionHandle ih=start; ih != null; ih = ih.next)
+    for(InstructionHandle ih=start; ih != null; ih = ih.next) {
+     
       additional_bytes += ih.updatePosition(additional_bytes, max_additional_bytes);
+    }
 
     /* Pass 3: Update position numbers (which may have changed due to the
      * preceding expansions), like pass 1.
@@ -1089,8 +1018,8 @@ public class InstructionList implements Serializable {
       Instruction i = ih.instruction;
       Instruction c = i.copy(); // Use clone for shallow copy
 
-      if(c instanceof BranchInstruction)
-	map.put(ih, il.append((BranchInstruction)c));
+      if(c instanceof InstructionBranch)
+	map.put(ih, il.append((InstructionBranch)c));
       else
 	map.put(ih, il.append(c));
     }
@@ -1104,17 +1033,17 @@ public class InstructionList implements Serializable {
       Instruction i = ih.instruction;
       Instruction c = ch.instruction;
 
-      if(i instanceof BranchInstruction) {
-	BranchInstruction bi      = (BranchInstruction)i;
-	BranchInstruction bc      = (BranchInstruction)c;
+      if(i instanceof InstructionBranch) {
+    	  InstructionBranch bi      = (InstructionBranch)i;
+    	  InstructionBranch bc      = (InstructionBranch)c;
 	InstructionHandle itarget = bi.getTarget(); // old target
 
 	// New target is in hash map
 	bc.setTarget((InstructionHandle)map.get(itarget));
 
-	if(bi instanceof Select) { // Either LOOKUPSWITCH or TABLESWITCH
-	  InstructionHandle[] itargets = ((Select)bi).getTargets();
-	  InstructionHandle[] ctargets = ((Select)bc).getTargets();
+	if(bi instanceof InstructionSelect) { // Either LOOKUPSWITCH or TABLESWITCH
+	  InstructionHandle[] itargets = ((InstructionSelect)bi).getTargets();
+	  InstructionHandle[] ctargets = ((InstructionSelect)bc).getTargets();
 	  
 	  for(int j=0; j < itargets.length; j++) { // Update all targets
 	    ctargets[j] = (InstructionHandle)map.get(itargets[j]);
@@ -1132,14 +1061,14 @@ public class InstructionList implements Serializable {
   /** Replace all references to the old constant pool with references to the new
    *  constant pool
    */
-  public void replaceConstantPool(ConstantPoolGen old_cp, ConstantPoolGen new_cp) {
+  public void replaceConstantPool(ConstantPool old_cp, ConstantPool new_cp) {
     for(InstructionHandle ih=start; ih != null; ih = ih.next) {
       Instruction i = ih.instruction;
 
-      if(i instanceof CPInstruction) {
-	CPInstruction ci = (CPInstruction)i;
-	Constant      c  = old_cp.getConstant(ci.getIndex());
-	ci.setIndex(new_cp.addConstant(c, old_cp));
+      if(i.isConstantPoolInstruction()) {
+		InstructionCP ci = (InstructionCP)i;
+		Constant      c  = old_cp.getConstant(ci.getIndex());
+		ci.setIndex(new_cp.addConstant(c, old_cp));
       }
     }    
   }
@@ -1198,19 +1127,19 @@ public class InstructionList implements Serializable {
     for(InstructionHandle ih = start; ih != null; ih = ih.next) {
       Instruction i  = ih.getInstruction();
 
-      if(i instanceof BranchInstruction) {
-	BranchInstruction b      = (BranchInstruction)i;
+      if(i instanceof InstructionBranch) {
+    	  InstructionBranch b      = (InstructionBranch)i;
 	InstructionHandle target = b.getTarget();
 
 	if(target == old_target)
 	  b.setTarget(new_target);
 
-	if(b instanceof Select) { // Either LOOKUPSWITCH or TABLESWITCH
-	  InstructionHandle[] targets = ((Select)b).getTargets();
+	if(b instanceof InstructionSelect) { // Either LOOKUPSWITCH or TABLESWITCH
+	  InstructionHandle[] targets = ((InstructionSelect)b).getTargets();
 	  
 	  for(int j=0; j < targets.length; j++) // Update targets
 	    if(targets[j] == old_target)
-	      ((Select)b).setTarget(j, new_target);
+	      ((InstructionSelect)b).setTarget(j, new_target);
 	}
       }
     }
@@ -1262,32 +1191,6 @@ public class InstructionList implements Serializable {
     }
   }
 
-  private ArrayList observers;
 
-  /** Add observer for this object.
-   */
-  public void addObserver(InstructionListObserver o) {
-    if(observers == null)
-      observers = new ArrayList();
-
-    observers.add(o);
-  }
-
-  /** Remove observer for this object.
-   */
-  public void removeObserver(InstructionListObserver o) {
-    if(observers != null)
-      observers.remove(o);
-  }
-
-  /** Call notify() method on all observers. This method is not called
-   * automatically whenever the state has changed, but has to be
-   * called by the user after he has finished editing the object.
-   */
-  public void update() {
-    if(observers != null)
-      for(Iterator e = observers.iterator(); e.hasNext(); )
-	((InstructionListObserver)e.next()).notify(this);
-  }
 }
 

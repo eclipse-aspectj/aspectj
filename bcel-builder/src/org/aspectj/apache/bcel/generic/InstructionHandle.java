@@ -71,7 +71,7 @@ import java.util.HashMap;
  * can traverse the list via an Enumeration returned by
  * InstructionList.elements().
  *
- * @version $Id: InstructionHandle.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: InstructionHandle.java,v 1.2.10.1 2007/02/12 09:34:07 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
@@ -96,7 +96,7 @@ public class InstructionHandle implements java.io.Serializable {
     if(i == null)
       throw new ClassGenException("Assigning null to handle");
 
-    if((this.getClass() != BranchHandle.class) && (i instanceof BranchInstruction))
+    if((this.getClass() != BranchHandle.class) && (i instanceof InstructionBranch))
       throw new ClassGenException("Assigning branch instruction " + i + " to plain handle");
 
     if(instruction != null)

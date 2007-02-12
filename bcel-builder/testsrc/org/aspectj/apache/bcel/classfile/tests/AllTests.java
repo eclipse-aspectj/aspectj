@@ -31,8 +31,9 @@ import org.aspectj.apache.bcel.classfile.tests.VarargsTest;
 public class AllTests {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Tests for BCEL Java5 support");
+		TestSuite suite = new TestSuite("Tests for BCEL");
 		//$JUnit-BEGIN$
+		suite.addTestSuite(Fundamentals.class);
 		suite.addTestSuite(RuntimeVisibleParameterAnnotationAttributeTest.class);
 		suite.addTestSuite(AnnotationDefaultAttributeTest.class);
 		suite.addTestSuite(EnclosingMethodAttributeTest.class);

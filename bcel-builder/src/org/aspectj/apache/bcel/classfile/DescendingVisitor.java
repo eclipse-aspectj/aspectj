@@ -66,7 +66,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * class supplies the traversal strategy, other classes can make use
  * of it.
  *
- * @version $Id: DescendingVisitor.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: DescendingVisitor.java,v 1.2.10.1 2007/02/12 09:34:02 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public class DescendingVisitor implements Visitor {
@@ -125,10 +125,8 @@ public class DescendingVisitor implements Visitor {
     for(int i=0; i < methods.length; i++)
       methods[i].accept(this);
 
-    Attribute[] attributes = clazz.getAttributes();
-    for(int i=0; i < attributes.length; i++)
-      attributes[i].accept(this);
-
+    AttributeUtils.accept(clazz.getAttributes(),visitor);
+//    clazz.getAttributes().accept(this);
     clazz.getConstantPool().accept(this);
     stack.pop();
   }
@@ -136,10 +134,8 @@ public class DescendingVisitor implements Visitor {
   public void visitField(Field field) {
     stack.push(field);
     field.accept(visitor);
-    
-    Attribute[] attributes = field.getAttributes();
-    for(int i=0; i < attributes.length; i++)
-      attributes[i].accept(this);
+    AttributeUtils.accept(field.getAttributes(),visitor);
+//    field.getAttributes().accept(this);
     stack.pop();
   }
 
@@ -152,11 +148,7 @@ public class DescendingVisitor implements Visitor {
   public void visitMethod(Method method) {
     stack.push(method);
     method.accept(visitor);
-    
-    Attribute[] attributes = method.getAttributes();
-    for(int i=0; i < attributes.length; i++)
-      attributes[i].accept(this);
-
+    AttributeUtils.accept(method.getAttributes(),visitor);
     stack.pop();
   }
 

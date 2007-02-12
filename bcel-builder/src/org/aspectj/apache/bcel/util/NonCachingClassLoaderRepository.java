@@ -56,9 +56,15 @@ package org.aspectj.apache.bcel.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.WeakHashMap;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -72,7 +78,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: NonCachingClassLoaderRepository.java,v 1.1 2006/10/12 19:58:18 aclement Exp $
+ * @version $Id: NonCachingClassLoaderRepository.java,v 1.1.4.1 2007/02/12 09:34:09 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  * 
@@ -83,9 +89,78 @@ public class NonCachingClassLoaderRepository
   private static java.lang.ClassLoader bootClassLoader = null;
 
   private java.lang.ClassLoader loader;
-  private WeakHashMap loadedClasses =
-    new WeakHashMap(); // CLASSNAME X JAVACLASS
+  private Map loadedClasses =
+    new SoftHashMap(); // CLASSNAME X JAVACLASS
+  
+	public static class SoftHashMap extends AbstractMap {
+		  private Map map;
+		  private ReferenceQueue rq = new ReferenceQueue(); 
+		  
+	      public SoftHashMap(Map map) { this.map = map; }
+		  public SoftHashMap() { this(new HashMap()); }
+		  public SoftHashMap(Map map, boolean b) { this(map); }
+		
+		  class SpecialValue extends SoftReference {
+			  private final Object key;
+			  SpecialValue(Object k,Object v) {
+			    super(v,rq);
+			    this.key = k;
+			  }
+		  }  
 
+		  private void processQueue() {
+			SpecialValue sv = null;
+			while ((sv = (SpecialValue)rq.poll())!=null) {
+				map.remove(sv.key);
+			}
+		  }
+		
+		  public Object get(Object key) {
+			SpecialValue value = (SpecialValue)map.get(key);
+			if (value==null) return null;
+			if (value.get()==null) {
+				// it got GC'd
+				map.remove(value.key);
+				return null;
+			} else {
+				return value.get();
+			}
+		  }
+
+		  public Object put(Object k, Object v) {
+			processQueue();
+			return map.put(k, new SpecialValue(k,v));
+		  }
+
+		  public Set entrySet() {
+			return map.entrySet();
+		  }
+		
+		  public void clear() {
+			  System.out.println("Clearing the map for NonCachingClassLoaderRepository");
+			processQueue();
+			Set keys = map.keySet();
+			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+				Object name = (Object) iterator.next();
+				map.remove(name);
+			}
+		  }
+		
+		  public int size() {
+			processQueue();
+			return map.size();
+		  }
+		
+		  public Object remove(Object k) {
+			processQueue();
+			SpecialValue value = (SpecialValue)map.remove(k);
+			if (value==null) return null;
+			if (value.get()!=null) {
+				return value.get();
+			}
+			return null;
+		  }
+	  }
   public NonCachingClassLoaderRepository( java.lang.ClassLoader loader ) {
 	    this.loader = (loader != null) ? loader : getBootClassLoader();
   }

@@ -61,6 +61,7 @@ import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantInteger;
 import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantString;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.*;
 
 /**
@@ -86,7 +87,7 @@ import org.aspectj.apache.bcel.generic.*;
  * If a two-slot type is stored into a local variable, the next variable
  * is given the type Type.UNKNOWN.
  *
- * @version $Id: ExecutionVisitor.java,v 1.5 2005/02/02 09:11:39 aclement Exp $
+ * @version $Id: ExecutionVisitor.java,v 1.5.8.1 2007/02/12 09:34:12 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #visitDSTORE(DSTORE o)
  * @see InstConstraintVisitor
@@ -102,7 +103,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	 * The ConstantPoolGen we're working with.
 	 * @see #setConstantPoolGen(ConstantPoolGen)
 	 */
-	private ConstantPoolGen cpg = null;
+	private ConstantPool cpg = null;
 
 	/**
 	 * Constructor. Constructs a new instance of this class.
@@ -128,7 +129,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	/**
 	 * Sets the ConstantPoolGen needed for symbolic execution.
 	 */
-	public void setConstantPoolGen(ConstantPoolGen cpg){
+	public void setConstantPoolGen(ConstantPool cpg){
 		this.cpg = cpg;
 	}
 	
@@ -153,7 +154,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	//}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitAALOAD(AALOAD o){
+	public void visitAALOAD(Instruction o){
 		stack().pop();														// pop the index int
 //System.out.print(stack().peek());
 		Type t = stack().pop(); // Pop Array type
@@ -166,42 +167,42 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitAASTORE(AASTORE o){
+	public void visitAASTORE(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitACONST_NULL(ACONST_NULL o){
+	public void visitACONST_NULL(Instruction o){
 		stack().push(Type.NULL);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitALOAD(ALOAD o){
+	public void visitALOAD(Instruction o){
 		stack().push(locals().get(o.getIndex()));
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitANEWARRAY(ANEWARRAY o){
+	public void visitANEWARRAY(Instruction o){
 		stack().pop(); //count
 		stack().push( new ArrayType(o.getType(cpg), 1) );
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitARETURN(ARETURN o){
+	public void visitARETURN(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitARRAYLENGTH(ARRAYLENGTH o){
+	public void visitARRAYLENGTH(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitASTORE(ASTORE o){
+	public void visitASTORE(Instruction o){
 		locals().set(o.getIndex(), stack().pop());
 		//System.err.println("TODO-DEBUG:	set LV '"+o.getIndex()+"' to '"+locals().get(o.getIndex())+"'.");
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitATHROW(ATHROW o){
+	public void visitATHROW(Instruction o){
 		Type t = stack().pop();
 		stack().clear();
 		if (t.equals(Type.NULL))
@@ -211,38 +212,38 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitBALOAD(BALOAD o){
+	public void visitBALOAD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitBASTORE(BASTORE o){
+	public void visitBASTORE(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().pop();
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitBIPUSH(BIPUSH o){
+	public void visitBIPUSH(Instruction o){
 		stack().push(Type.INT);
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitCALOAD(CALOAD o){
+	public void visitCALOAD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitCASTORE(CASTORE o){
+	public void visitCASTORE(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitCHECKCAST(CHECKCAST o){
+	public void visitCHECKCAST(Instruction o){
 		// It's possibly wrong to do so, but SUN's
 		// ByteCode verifier seems to do (only) this, too.
 		// TODO: One could use a sophisticated analysis here to check
@@ -253,104 +254,104 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitD2F(D2F o){
+	public void visitD2F(Instruction o){
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitD2I(D2I o){
+	public void visitD2I(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitD2L(D2L o){
+	public void visitD2L(Instruction o){
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDADD(DADD o){
+	public void visitDADD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDALOAD(DALOAD o){
+	public void visitDALOAD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDASTORE(DASTORE o){
+	public void visitDASTORE(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDCMPG(DCMPG o){
+	public void visitDCMPG(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDCMPL(DCMPL o){
+	public void visitDCMPL(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDCONST(DCONST o){
+	public void visitDCONST(Instruction o){
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDDIV(DDIV o){
-		stack().pop();
-		stack().pop();
-		stack().push(Type.DOUBLE);
-	}
-	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDLOAD(DLOAD o){
-		stack().push(Type.DOUBLE);
-	}
-	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDMUL(DMUL o){
+	public void visitDDIV(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDNEG(DNEG o){
+	public void visitDLOAD(Instruction o){
+		stack().push(Type.DOUBLE);
+	}
+	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
+	public void visitDMUL(Instruction o){
+		stack().pop();
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDREM(DREM o){
+	public void visitDNEG(Instruction o){
+		stack().pop();
+		stack().push(Type.DOUBLE);
+	}
+	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
+	public void visitDREM(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDRETURN(DRETURN o){
+	public void visitDRETURN(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDSTORE(DSTORE o){
+	public void visitDSTORE(Instruction o){
 		locals().set(o.getIndex(), stack().pop());
 		locals().set(o.getIndex()+1, Type.UNKNOWN);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDSUB(DSUB o){
+	public void visitDSUB(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDUP(DUP o){
+	public void visitDUP(Instruction o){
 		Type t = stack().pop();
 		stack().push(t);
 		stack().push(t);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDUP_X1(DUP_X1 o){
+	public void visitDUP_X1(Instruction o){
 		Type w1 = stack().pop();
 		Type w2 = stack().pop();
 		stack().push(w1);
@@ -358,7 +359,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		stack().push(w1);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDUP_X2(DUP_X2 o){
+	public void visitDUP_X2(Instruction o){
 		Type w1 = stack().pop();
 		Type w2 = stack().pop();
 		if (w2.getSize() == 2){
@@ -375,7 +376,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDUP2(DUP2 o){
+	public void visitDUP2(Instruction o){
 		Type t = stack().pop();
 		if (t.getSize() == 2){
 			stack().push(t);
@@ -390,7 +391,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDUP2_X1(DUP2_X1 o){
+	public void visitDUP2_X1(Instruction o){
 		Type t = stack().pop();
 		if (t.getSize() == 2){
 			Type u = stack().pop();
@@ -409,7 +410,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitDUP2_X2(DUP2_X2 o){
+	public void visitDUP2_X2(Instruction o){
 		Type t = stack().pop();
 		if (t.getSize() == 2){
 			Type u = stack().pop();
@@ -446,97 +447,97 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitF2D(F2D o){
+	public void visitF2D(Instruction o){
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitF2I(F2I o){
+	public void visitF2I(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitF2L(F2L o){
+	public void visitF2L(Instruction o){
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFADD(FADD o){
+	public void visitFADD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFALOAD(FALOAD o){
+	public void visitFALOAD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFASTORE(FASTORE o){
+	public void visitFASTORE(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFCMPG(FCMPG o){
+	public void visitFCMPG(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFCMPL(FCMPL o){
+	public void visitFCMPL(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFCONST(FCONST o){
+	public void visitFCONST(Instruction o){
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFDIV(FDIV o){
-		stack().pop();
-		stack().pop();
-		stack().push(Type.FLOAT);
-	}
-	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFLOAD(FLOAD o){
-		stack().push(Type.FLOAT);
-	}
-	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFMUL(FMUL o){
+	public void visitFDIV(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFNEG(FNEG o){
+	public void visitFLOAD(Instruction o){
+		stack().push(Type.FLOAT);
+	}
+	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
+	public void visitFMUL(Instruction o){
+		stack().pop();
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFREM(FREM o){
+	public void visitFNEG(Instruction o){
+		stack().pop();
+		stack().push(Type.FLOAT);
+	}
+	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
+	public void visitFREM(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFRETURN(FRETURN o){
+	public void visitFRETURN(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFSTORE(FSTORE o){
+	public void visitFSTORE(Instruction o){
 		locals().set(o.getIndex(), stack().pop());
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitFSUB(FSUB o){
+	public void visitFSUB(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitGETFIELD(GETFIELD o){
+	public void visitGETFIELD(FieldInstruction o){
 		stack().pop();
 		Type t = o.getFieldType(cpg);
 		if (	t.equals(Type.BOOLEAN)	||
@@ -547,7 +548,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		stack().push(t);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitGETSTATIC(GETSTATIC o){
+	public void visitGETSTATIC(FieldInstruction o){
 		Type t = o.getFieldType(cpg);
 		if (	t.equals(Type.BOOLEAN)	||
 					t.equals(Type.CHAR)			||
@@ -557,147 +558,147 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		stack().push(t);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitGOTO(GOTO o){
+	public void visitGOTO(Instruction o){
 		// no stack changes.
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitGOTO_W(GOTO_W o){
+	public void visitGOTO_W(Instruction o){
 		// no stack changes.
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitI2B(I2B o){
+	public void visitI2B(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitI2C(I2C o){
+	public void visitI2C(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitI2D(I2D o){
+	public void visitI2D(Instruction o){
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitI2F(I2F o){
+	public void visitI2F(Instruction o){
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitI2L(I2L o){
+	public void visitI2L(Instruction o){
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitI2S(I2S o){
+	public void visitI2S(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIADD(IADD o){
-		stack().pop();
-		stack().pop();
-		stack().push(Type.INT);
-	}
-	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIALOAD(IALOAD o){
+	public void visitIADD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIAND(IAND o){
+	public void visitIALOAD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIASTORE(IASTORE o){
-		stack().pop();
-		stack().pop();
-		stack().pop();
-	}
-	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitICONST(ICONST o){
-		stack().push(Type.INT);
-	}
-	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIDIV(IDIV o){
+	public void visitIAND(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIF_ACMPEQ(IF_ACMPEQ o){
+	public void visitIASTORE(Instruction o){
 		stack().pop();
-		stack().pop();
-	}
-	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIF_ACMPNE(IF_ACMPNE o){
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIF_ICMPEQ(IF_ICMPEQ o){
+	public void visitICONST(Instruction o){
+		stack().push(Type.INT);
+	}
+	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
+	public void visitIDIV(Instruction o){
+		stack().pop();
+		stack().pop();
+		stack().push(Type.INT);
+	}
+	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
+	public void visitIF_ACMPEQ(Instruction o){
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIF_ICMPGE(IF_ICMPGE o){
+	public void visitIF_ACMPNE(Instruction o){
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIF_ICMPGT(IF_ICMPGT o){
+	public void visitIF_ICMPEQ(Instruction o){
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIF_ICMPLE(IF_ICMPLE o){
+	public void visitIF_ICMPGE(Instruction o){
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIF_ICMPLT(IF_ICMPLT o){
+	public void visitIF_ICMPGT(Instruction o){
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIF_ICMPNE(IF_ICMPNE o){
+	public void visitIF_ICMPLE(Instruction o){
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIFEQ(IFEQ o){
+	public void visitIF_ICMPLT(Instruction o){
+		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIFGE(IFGE o){
+	public void visitIF_ICMPNE(Instruction o){
+		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIFGT(IFGT o){
+	public void visitIFEQ(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIFLE(IFLE o){
+	public void visitIFGE(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIFLT(IFLT o){
+	public void visitIFGT(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIFNE(IFNE o){
+	public void visitIFLE(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIFNONNULL(IFNONNULL o){
+	public void visitIFLT(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIFNULL(IFNULL o){
+	public void visitIFNE(Instruction o){
+		stack().pop();
+	}
+	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
+	public void visitIFNONNULL(Instruction o){
+		stack().pop();
+	}
+	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
+	public void visitIFNULL(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
@@ -705,22 +706,22 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		// stack is not changed.
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitILOAD(ILOAD o){
+	public void visitILOAD(Instruction o){
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIMUL(IMUL o){
+	public void visitIMUL(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitINEG(INEG o){
+	public void visitINEG(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitINSTANCEOF(INSTANCEOF o){
+	public void visitINSTANCEOF(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
@@ -745,7 +746,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitINVOKESPECIAL(INVOKESPECIAL o){
+	public void visitINVOKESPECIAL(InvokeInstruction o){
 		if (o.getMethodName(cpg).equals(Constants.CONSTRUCTOR_NAME)){
 			UninitializedObjectType t = (UninitializedObjectType) stack().peek(o.getArgumentTypes(cpg).length);
 			if (t == Frame._this){	
@@ -773,7 +774,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitINVOKESTATIC(INVOKESTATIC o){
+	public void visitINVOKESTATIC(InvokeInstruction o){
 		for (int i=0; i<o.getArgumentTypes(cpg).length; i++){
 			stack().pop();
 		}
@@ -792,7 +793,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL o){
+	public void visitINVOKEVIRTUAL(InvokeInstruction o){
 		stack().pop(); //objectref
 		for (int i=0; i<o.getArgumentTypes(cpg).length; i++){
 			stack().pop();
@@ -812,118 +813,118 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIOR(IOR o){
+	public void visitIOR(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIREM(IREM o){
+	public void visitIREM(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIRETURN(IRETURN o){
+	public void visitIRETURN(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitISHL(ISHL o){
+	public void visitISHL(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitISHR(ISHR o){
+	public void visitISHR(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitISTORE(ISTORE o){
+	public void visitISTORE(Instruction o){
 		locals().set(o.getIndex(), stack().pop());
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitISUB(ISUB o){
+	public void visitISUB(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIUSHR(IUSHR o){
+	public void visitIUSHR(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitIXOR(IXOR o){
+	public void visitIXOR(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitJSR(JSR o){
+	public void visitJSR(InstructionBranch o){
 		stack().push(new ReturnaddressType(o.physicalSuccessor()));
 //System.err.println("TODO-----------:"+o.physicalSuccessor());
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitJSR_W(JSR_W o){
+	public void visitJSR_W(InstructionBranch o){
 		stack().push(new ReturnaddressType(o.physicalSuccessor()));
 	}
 
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitL2D(L2D o){
+	public void visitL2D(Instruction o){
 		stack().pop();
 		stack().push(Type.DOUBLE);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitL2F(L2F o){
+	public void visitL2F(Instruction o){
 		stack().pop();
 		stack().push(Type.FLOAT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitL2I(L2I o){
+	public void visitL2I(Instruction o){
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLADD(LADD o){
+	public void visitLADD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLALOAD(LALOAD o){
+	public void visitLALOAD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLAND(LAND o){
+	public void visitLAND(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLASTORE(LASTORE o){
+	public void visitLASTORE(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLCMP(LCMP o){
+	public void visitLCMP(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLCONST(LCONST o){
+	public void visitLCONST(Instruction o){
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLDC(LDC o){
+	public void visitLDC(Instruction o){
 		Constant c = cpg.getConstant(o.getIndex());
 		if (c instanceof ConstantInteger){
 			stack().push(Type.INT);
@@ -936,7 +937,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLDC_W(LDC_W o){
+	public void visitLDC_W(Instruction o){
 		Constant c = cpg.getConstant(o.getIndex());
 		if (c instanceof ConstantInteger){
 			stack().push(Type.INT);
@@ -949,7 +950,7 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLDC2_W(LDC2_W o){
+	public void visitLDC2_W(Instruction o){
 		Constant c = cpg.getConstant(o.getIndex());
 		if (c instanceof ConstantLong){
 			stack().push(Type.LONG);
@@ -959,23 +960,23 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		}
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLDIV(LDIV o){
+	public void visitLDIV(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLLOAD(LLOAD o){
+	public void visitLLOAD(Instruction o){
 		stack().push(locals().get(o.getIndex()));
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLMUL(LMUL o){
+	public void visitLMUL(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLNEG(LNEG o){
+	public void visitLNEG(Instruction o){
 		stack().pop();
 		stack().push(Type.LONG);
 	}
@@ -984,62 +985,62 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		stack().pop(); //key
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLOR(LOR o){
+	public void visitLOR(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLREM(LREM o){
+	public void visitLREM(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLRETURN(LRETURN o){
+	public void visitLRETURN(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLSHL(LSHL o){
+	public void visitLSHL(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLSHR(LSHR o){
+	public void visitLSHR(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLSTORE(LSTORE o){
+	public void visitLSTORE(Instruction o){
 		locals().set(o.getIndex(), stack().pop());
 		locals().set(o.getIndex()+1, Type.UNKNOWN);		
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLSUB(LSUB o){
+	public void visitLSUB(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLUSHR(LUSHR o){
+	public void visitLUSHR(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitLXOR(LXOR o){
+	public void visitLXOR(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.LONG);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitMONITORENTER(MONITORENTER o){
+	public void visitMONITORENTER(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitMONITOREXIT(MONITOREXIT o){
+	public void visitMONITOREXIT(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
@@ -1050,35 +1051,35 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		stack().push(o.getType(cpg));
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitNEW(NEW o){
+	public void visitNEW(Instruction o){
 		stack().push(new UninitializedObjectType((ObjectType) (o.getType(cpg))));
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitNEWARRAY(NEWARRAY o){
+	public void visitNEWARRAY(Instruction o){
 		stack().pop();
-		stack().push(o.getType());
+		stack().push(((InstructionByte)o).getType());
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitNOP(NOP o){
+	public void visitNOP(Instruction o){
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitPOP(POP o){
+	public void visitPOP(Instruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitPOP2(POP2 o){
+	public void visitPOP2(Instruction o){
 		Type t = stack().pop();
 		if (t.getSize() == 1){
 			stack().pop();
 		}		
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitPUTFIELD(PUTFIELD o){
+	public void visitPUTFIELD(FieldInstruction o){
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitPUTSTATIC(PUTSTATIC o){
+	public void visitPUTSTATIC(FieldInstruction o){
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
@@ -1087,27 +1088,27 @@ public class ExecutionVisitor extends EmptyVisitor implements Visitor{
 		// is in in the local variables.
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitRETURN(RETURN o){
+	public void visitRETURN(Instruction o){
 		// do nothing.
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitSALOAD(SALOAD o){
+	public void visitSALOAD(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitSASTORE(SASTORE o){
+	public void visitSASTORE(Instruction o){
 		stack().pop();
 		stack().pop();
 		stack().pop();
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitSIPUSH(SIPUSH o){
+	public void visitSIPUSH(Instruction o){
 		stack().push(Type.INT);
 	}
 	/** Symbolically executes the corresponding Java Virtual Machine instruction. */ 
-	public void visitSWAP(SWAP o){
+	public void visitSWAP(Instruction o){
 		Type t = stack().pop();
 		Type u = stack().pop();
 		stack().push(t);

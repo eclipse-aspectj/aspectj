@@ -3,6 +3,7 @@ package org.aspectj.apache.bcel.util;
 import org.aspectj.apache.bcel.generic.*;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -65,13 +66,13 @@ import java.util.*;
  * A helper class for BCELifier.
  *
  * @see BCELifier
- * @version $Id: BCELFactory.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: BCELFactory.java,v 1.2.10.1 2007/02/12 09:34:09 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 class BCELFactory extends EmptyVisitor {
   private MethodGen       _mg;
   private PrintWriter     _out;
-  private ConstantPoolGen _cp;
+  private ConstantPool _cp;
 
   BCELFactory(MethodGen mg, PrintWriter out) {
     _mg  = mg;
@@ -87,12 +88,12 @@ class BCELFactory extends EmptyVisitor {
 	  ih != null; ih = ih.getNext()) {
 	Instruction i = ih.getInstruction();
 
-	if(i instanceof BranchInstruction) {
+	if(i instanceof InstructionBranch) {
 	  branch_map.put(i, ih); // memorize container
 	}
 
 	if(ih.hasTargeters()) {
-	  if(i instanceof BranchInstruction) {
+	  if(i instanceof InstructionBranch) {
 	    _out.println("    InstructionHandle ih_" + ih.getPosition() + ";");
 	  } else {
 	    _out.print("    InstructionHandle ih_" + ih.getPosition() + " = ");
@@ -114,8 +115,8 @@ class BCELFactory extends EmptyVisitor {
     short opcode = i.getOpcode();
     
     if((InstructionConstants.INSTRUCTIONS[opcode] != null) &&
-       !(i instanceof ConstantPushInstruction) &&
-       !(i instanceof ReturnInstruction)) { // Handled below
+       !(i.isConstantInstruction()) &&
+       !(i.isReturnInstruction())) { // Handled below
       _out.println("il.append(InstructionConstants." +
 		   i.getName().toUpperCase() + ");");
       return true;
@@ -124,7 +125,7 @@ class BCELFactory extends EmptyVisitor {
     return false;
   }
 
-  public void visitLocalVariableInstruction(LocalVariableInstruction i) {
+  public void visitLocalVariableInstruction(Instruction i) {
     short  opcode = i.getOpcode();
     Type   type   = i.getType(_cp);
 
@@ -139,7 +140,7 @@ class BCELFactory extends EmptyVisitor {
     }
   }
 
-  public void visitArrayInstruction(ArrayInstruction i) {
+  public void visitArrayInstruction(Instruction i) {
     short  opcode = i.getOpcode();
     Type   type   = i.getType(_cp);
     String kind   = (opcode < Constants.IASTORE)? "Load" : "Store";
@@ -177,13 +178,13 @@ class BCELFactory extends EmptyVisitor {
 		 "));");
   }
 
-  public void visitAllocationInstruction(AllocationInstruction i) {
+  public void visitAllocationInstruction(Instruction i) {
     Type type;
 
-    if(i instanceof CPInstruction) {
-      type = ((CPInstruction)i).getType(_cp);
+    if(i.isConstantPoolInstruction()) {
+      type = ((InstructionCP)i).getType(_cp);
     } else {
-      type = ((NEWARRAY)i).getType();
+      type = ((InstructionByte)i).getType();
     }
 
     short opcode = ((Instruction)i).getOpcode();
@@ -220,33 +221,33 @@ class BCELFactory extends EmptyVisitor {
     _out.println("il.append(new PUSH(_cp, " + embed + "));");
   }
 
-  public void visitLDC(LDC i) {
+  public void visitLDC(Instruction i) {
     createConstant(i.getValue(_cp));
   }
 
-  public void visitLDC2_W(LDC2_W i) {
+  public void visitLDC2_W(Instruction i) {
     createConstant(i.getValue(_cp));
   }
 
-  public void visitConstantPushInstruction(ConstantPushInstruction i) {
+  public void visitConstantPushInstruction(Instruction i) {
     createConstant(i.getValue());
   }
 
-  public void visitINSTANCEOF(INSTANCEOF i) {
+  public void visitINSTANCEOF(Instruction i) {
     Type type = i.getType(_cp);
 
     _out.println("il.append(new INSTANCEOF(_cp.addClass(" +
 		 BCELifier.printType(type) + ")));");
   }
 
-  public void visitCHECKCAST(CHECKCAST i) {
+  public void visitCHECKCAST(Instruction i) {
     Type type = i.getType(_cp);
 
     _out.println("il.append(_factory.createCheckCast(" +
 		 BCELifier.printType(type) + "));");
   }
 
-  public void visitReturnInstruction(ReturnInstruction i) {
+  public void visitReturnInstruction(Instruction i) {
     Type type = i.getType(_cp);
 
     _out.println("il.append(_factory.createReturn(" +
@@ -256,13 +257,13 @@ class BCELFactory extends EmptyVisitor {
   // Memorize BranchInstructions that need an update
   private ArrayList branches = new ArrayList();
 
-  public void visitBranchInstruction(BranchInstruction bi) {
+  public void visitBranchInstruction(InstructionBranch bi) {
     BranchHandle bh   = (BranchHandle)branch_map.get(bi);
     int          pos  = bh.getPosition();
     String       name = bi.getName() + "_" + pos;
 
-    if(bi instanceof Select) {
-      Select s = (Select)bi;
+    if(bi instanceof InstructionSelect) {
+    	InstructionSelect s = (InstructionSelect)bi;
       branches.add(bi);
 
       StringBuffer args   = new StringBuffer("new int[] { ");
@@ -318,7 +319,7 @@ class BCELFactory extends EmptyVisitor {
 
   private void updateBranchTargets() {
     for(Iterator i = branches.iterator(); i.hasNext(); ) {
-      BranchInstruction bi    = (BranchInstruction)i.next();
+    	InstructionBranch bi    = (InstructionBranch)i.next();
       BranchHandle      bh    = (BranchHandle)branch_map.get(bi);
       int               pos   = bh.getPosition();
       String            name  = bi.getName() + "_" + pos;
@@ -326,8 +327,8 @@ class BCELFactory extends EmptyVisitor {
 
       _out.println("    " + name + ".setTarget(ih_" + t_pos + ");");
 
-      if(bi instanceof Select) {
-	InstructionHandle[] ihs = ((Select)bi).getTargets();
+      if(bi instanceof InstructionSelect) {
+	InstructionHandle[] ihs = ((InstructionSelect)bi).getTargets();
 
 	for(int j = 0; j < ihs.length; j++) {
 	  t_pos = ihs[j].getPosition();
