@@ -13,14 +13,14 @@ package org.aspectj.weaver.loadtime;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.generic.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.generic.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.generic.annotation.SimpleElementValueGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.AnnotationX;
@@ -303,24 +303,24 @@ public class ConcreteAspectCodeGen {
                 new ObjectType("org/aspectj/lang/annotation/Aspect"),
                 Collections.EMPTY_LIST,
                 true,
-                cg.getConstantPoolGen()
+                cg.getConstantPool()
         );
-        cg.addAnnotation(ag.getAnnotation());
+        cg.addAnnotation(ag);
         if (m_concreteAspect.precedence != null) {
             SimpleElementValueGen svg = new SimpleElementValueGen(
                     ElementValueGen.STRING,
-                    cg.getConstantPoolGen(),
+                    cg.getConstantPool(),
                     m_concreteAspect.precedence
             );
             List elems = new ArrayList();
-            elems.add(new ElementNameValuePairGen("value", svg, cg.getConstantPoolGen()));
+            elems.add(new ElementNameValuePairGen("value", svg, cg.getConstantPool()));
             AnnotationGen agprec = new AnnotationGen(
                     new ObjectType("org/aspectj/lang/annotation/DeclarePrecedence"),
                     elems,
                     true,
-                    cg.getConstantPoolGen()
+                    cg.getConstantPool()
             );
-            cg.addAnnotation(agprec.getAnnotation());
+            cg.addAnnotation(agprec);
         }
 
         // default constructor
@@ -357,18 +357,18 @@ public class ConcreteAspectCodeGen {
             );
             SimpleElementValueGen svg = new SimpleElementValueGen(
                     ElementValueGen.STRING,
-                    cg.getConstantPoolGen(),
+                    cg.getConstantPool(),
                     abstractPc.expression
             );
             List elems = new ArrayList();
-            elems.add(new ElementNameValuePairGen("value", svg, cg.getConstantPoolGen()));
+            elems.add(new ElementNameValuePairGen("value", svg, cg.getConstantPool()));
             AnnotationGen mag = new AnnotationGen(
                     new ObjectType("org/aspectj/lang/annotation/Pointcut"),
                     elems,
                     true,
-                    cg.getConstantPoolGen()
+                    cg.getConstantPool()
             );
-            AnnotationX max = new AnnotationX(mag.getAnnotation(), m_world);
+            AnnotationX max = new AnnotationX(mag, m_world);
             mg.addAnnotation(max);
 
             InstructionList body = mg.getBody();
