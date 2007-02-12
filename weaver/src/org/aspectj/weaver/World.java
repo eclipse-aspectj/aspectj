@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.WeakHashMap;
+import java.util.Set;
 
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.bridge.IMessageHandler;
@@ -40,6 +40,7 @@ import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegate;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
+import java.util.*;
 
 /**
  * A World is a collection of known types and crosscutting members.
@@ -816,6 +817,7 @@ public abstract class World implements Dump.INode {
 	public boolean isJoinpointArrayConstructionEnabled() {
 		return optionalJoinpoint_ArrayConstruction;
 	}
+
 	public boolean isJoinpointSynchronizationEnabled() {
 		return optionalJoinpoint_Synchronization;
 	}
@@ -848,14 +850,84 @@ public abstract class World implements Dump.INode {
 		public static int USE_SOFT_REFS = 2; // Collected when short on memory
 		
 		// SECRETAPI - Can switch to a policy of choice ;)
-		public static int policy  = USE_SOFT_REFS; 
+		public static int policy  = DONT_USE_REFS; 
 
 		// Map of types that never get thrown away
 		private Map /* String -> ResolvedType */ tMap = new HashMap();
 		
 		// Map of types that may be ejected from the cache if we need space
-		private Map expendableMap = new WeakHashMap();
+		private Map expendableMap = new SoftHashMap();
 		
+		public static class SoftHashMap extends AbstractMap {
+			  private Map map;
+			  private ReferenceQueue rq = new ReferenceQueue(); 
+			  
+		      public SoftHashMap(Map map) { this.map = map; }
+			  public SoftHashMap() { this(new HashMap()); }
+			  public SoftHashMap(Map map, boolean b) { this(map); }
+			
+			  class SpecialValue extends SoftReference {
+				  private final Object key;
+				  SpecialValue(Object k,Object v) {
+				    super(v,rq);
+				    this.key = k;
+				  }
+			  }  
+
+			  private void processQueue() {
+				SpecialValue sv = null;
+				while ((sv = (SpecialValue)rq.poll())!=null) {
+					map.remove(sv.key);
+				}
+			  }
+			
+			  public Object get(Object key) {
+				SpecialValue value = (SpecialValue)map.get(key);
+				if (value==null) return null;
+				if (value.get()==null) {
+					// it got GC'd
+					map.remove(value.key);
+					return null;
+				} else {
+					return value.get();
+				}
+			  }
+
+			  public Object put(Object k, Object v) {
+				processQueue();
+				return map.put(k, new SpecialValue(k,v));
+			  }
+
+			  public Set entrySet() {
+				return map.entrySet();
+			  }
+			
+			  public void clear() {
+				processQueue();
+				Set keys = map.keySet();
+				keys.clear();
+//				for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+//					Object name = (Object) iterator.next();
+//					map.remove(name);
+//				}
+			  }
+			
+			  public int size() {
+				processQueue();
+				return map.size();
+			  }
+			
+			  public Object remove(Object k) {
+				processQueue();
+				SpecialValue value = (SpecialValue)map.remove(k);
+				if (value==null) return null;
+				if (value.get()!=null) {
+					return value.get();
+				}
+				return null;
+			  }
+		  }
+
 		private World w;
 
 		// profiling tools...
@@ -934,10 +1006,36 @@ public abstract class World implements Dump.INode {
 				}
 			    return type;
 			} else {
+				newkeys.add(key);
 				return (ResolvedType) tMap.put(key,type);
 			}
 		}
 		
+		List /*<String> keys*/ newkeys = new ArrayList();
+		
+		public void demote() {
+			// If unaffected by ITDs, get rid of it
+			int count =0;
+			for (Iterator iter = newkeys.iterator(); iter.hasNext();) {
+				String key = (String) iter.next();
+				ResolvedType type = (ResolvedType)tMap.get(key);
+				if (type==null) continue;//throw new RuntimeException("Unexpected!! "+key);
+				if (type.isAspect() ) continue;
+				if (type.equals(UnresolvedType.OBJECT)) continue;
+				if (type.isPrimitiveType()) continue;
+				List typeMungers = type.getInterTypeMungers();
+				if (typeMungers==null || typeMungers.size()==0) {
+					// demote - we can recover this
+					tMap.remove(key);
+					// extreme demotion if you dont use these next two lines!
+//					if (memoryProfiling) expendableMap.put(key,new SoftReference(type,rq));
+//					else                 expendableMap.put(key,new SoftReference(type));
+					count++;
+				}
+			}
+//			System.out.print(count+" ");
+			newkeys.clear();
+		}
 		public void report() {
 			if (!memoryProfiling) return;
 			checkq();
@@ -1044,6 +1142,10 @@ public abstract class World implements Dump.INode {
 	    }
 	}	
 	
+	public void demote() {
+		typeMap.demote();
+	}
+	
 	/** Reference types we don't intend to weave may be ejected from
 	 * the cache if we need the space.
 	 */
@@ -1055,6 +1157,7 @@ public abstract class World implements Dump.INode {
 				  (!type.isPrimitiveType())
 				);
 	}
+	
 
 	/**
 	 * This class is used to compute and store precedence relationships between

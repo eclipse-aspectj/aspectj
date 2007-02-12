@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
@@ -69,12 +69,12 @@ class BcelAttributes {
 		return l;
 	}
 
-	public static Attribute bcelAttribute(AjAttribute a, ConstantPoolGen pool) {
+	public static Attribute bcelAttribute(AjAttribute a, ConstantPool pool) {
 		int nameIndex = pool.addUtf8(a.getNameString());
 		byte[] bytes = a.getBytes();
 		int length = bytes.length;
 
-		return new Unknown(nameIndex, length, bytes, pool.getConstantPool());
+		return new Unknown(nameIndex, length, bytes, pool);
 
 	}
 

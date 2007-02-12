@@ -24,27 +24,20 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.generic.ANEWARRAY;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
-import org.aspectj.apache.bcel.generic.GETSTATIC;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
-import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
-import org.aspectj.apache.bcel.generic.INVOKESTATIC;
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
-import org.aspectj.apache.bcel.generic.MONITORENTER;
-import org.aspectj.apache.bcel.generic.MONITOREXIT;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
-import org.aspectj.apache.bcel.generic.NEWARRAY;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
@@ -112,8 +105,7 @@ public class BcelWorld extends World implements Repository {
 	}
 	
 
-    
-		
+    	
 	private static List getPathEntries(String s) {
 		List ret = new ArrayList();
 		StringTokenizer tok = new StringTokenizer(s, File.pathSeparator);
@@ -143,7 +135,7 @@ public class BcelWorld extends World implements Repository {
         // TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
         // if so, how can that be safe in J2EE ?? (static stuff in Bcel)
 	}
-
+	
     /**
      * Build a World from a ClassLoader, for LTW support
      *
@@ -433,11 +425,11 @@ public class BcelWorld extends World implements Repository {
 	}
 
     public static Member makeFieldJoinPointSignature(LazyClassGen cg, FieldInstruction fi) {
-    	ConstantPoolGen cpg = cg.getConstantPoolGen();
+    	ConstantPool cpg = cg.getConstantPool();
         return            
             	  MemberImpl.field(
             			fi.getClassName(cpg),
-            			(fi instanceof GETSTATIC || fi instanceof PUTSTATIC)
+            			(fi.opcode==Constants.GETSTATIC || fi.opcode==Constants.PUTSTATIC)
             			? Modifier.STATIC: 0, 
             			fi.getName(cpg),
             			fi.getSignature(cpg));
@@ -490,23 +482,23 @@ public class BcelWorld extends World implements Repository {
     }
 	
 	public Member makeJoinPointSignatureForMonitorEnter(LazyClassGen cg,InstructionHandle h) {
-		MONITORENTER i = (MONITORENTER)h.getInstruction();
+		Instruction i = h.getInstruction();
 		return MemberImpl.monitorEnter();
 	}
 
 	public Member makeJoinPointSignatureForMonitorExit(LazyClassGen cg,InstructionHandle h) {
-		MONITOREXIT i = (MONITOREXIT)h.getInstruction();
+		Instruction i = h.getInstruction();
 		return MemberImpl.monitorExit();
 	}
 	
 	public Member makeJoinPointSignatureForArrayConstruction(LazyClassGen cg, InstructionHandle handle) {
 		Instruction i = handle.getInstruction();
-		ConstantPoolGen cpg = cg.getConstantPoolGen();
+		ConstantPool cpg = cg.getConstantPool();
 		Member retval = null;
 
-		if (i instanceof ANEWARRAY) {
-			ANEWARRAY arrayInstruction = (ANEWARRAY)i;
-			Type ot = arrayInstruction.getType(cpg);
+		if (i.opcode==Constants.ANEWARRAY) {
+//			ANEWARRAY arrayInstruction = (ANEWARRAY)i;
+			Type ot = i.getType(cpg);
 			UnresolvedType ut = fromBcel(ot);
 			ut = UnresolvedType.makeArray(ut,1);
 			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[]{ResolvedType.INT});
@@ -526,9 +518,9 @@ public class BcelWorld extends World implements Repository {
 			for (int ii=0;ii<dimensions;ii++) parms[ii] = ResolvedType.INT;
 			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", parms);
 			
-		} else if (i instanceof NEWARRAY) {
-			NEWARRAY arrayInstruction = (NEWARRAY)i;
-			Type ot = arrayInstruction.getType();
+		} else if (i.opcode==Constants.NEWARRAY) {
+//			NEWARRAY arrayInstruction = (NEWARRAY)i;
+			Type ot = i.getType();
 			UnresolvedType ut = fromBcel(ot);
 			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[]{ResolvedType.INT});
 		} else {
@@ -538,7 +530,7 @@ public class BcelWorld extends World implements Repository {
 	}
 
     public Member makeJoinPointSignatureForMethodInvocation(LazyClassGen cg, InvokeInstruction ii) {
-    	ConstantPoolGen cpg = cg.getConstantPoolGen();
+    	ConstantPool cpg = cg.getConstantPool();
     	String name = ii.getName(cpg);
         String declaring = ii.getClassName(cpg);
         UnresolvedType declaringType = null;
@@ -548,16 +540,16 @@ public class BcelWorld extends World implements Repository {
         int modifier = 
             (ii instanceof INVOKEINTERFACE)
             ? Modifier.INTERFACE
-            : (ii instanceof INVOKESTATIC)
+            : (ii.opcode==Constants.INVOKESTATIC)
               ? Modifier.STATIC
-              : (ii instanceof INVOKESPECIAL && ! name.equals("<init>"))
+              : (ii.opcode==Constants.INVOKESPECIAL && ! name.equals("<init>"))
                 ? Modifier.PRIVATE
                 : 0;
 
         // in Java 1.4 and after, static method call of super class within subclass method appears
         // as declared by the subclass in the bytecode - but they are not
         // see #104212
-        if (ii instanceof INVOKESTATIC) {
+        if (ii.opcode==Constants.INVOKESTATIC) {
             ResolvedType appearsDeclaredBy = resolve(declaring);
             // look for the method there
             for (Iterator iterator = appearsDeclaredBy.getMethods(); iterator.hasNext();) {
@@ -678,7 +670,8 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	public void clear() {
-		throw new RuntimeException("Not implemented");
+		delegate.clear();
+//		throw new RuntimeException("Not implemented");
 	}
 
     // @Override
@@ -718,13 +711,13 @@ public class BcelWorld extends World implements Repository {
             if (!jc.isClass()) {
                 return false;
             }
-            Annotation anns[] = jc.getAnnotations();
+            AnnotationGen anns[] = jc.getAnnotations();
             if (anns.length == 0) {
                 return false;
             }
             boolean couldBeAtAspectJStyle = false;
             for (int i = 0; i < anns.length; i++) {
-                Annotation ann = anns[i];
+                AnnotationGen ann = anns[i];
                 if ("Lorg/aspectj/lang/annotation/Aspect;".equals(ann.getTypeSignature())) {
                     couldBeAtAspectJStyle = true;
                 }

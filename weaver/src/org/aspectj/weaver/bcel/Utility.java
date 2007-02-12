@@ -27,30 +27,28 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
 import org.aspectj.apache.bcel.generic.ArrayType;
-import org.aspectj.apache.bcel.generic.BIPUSH;
 import org.aspectj.apache.bcel.generic.BasicType;
-import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.ConstantPushInstruction;
-import org.aspectj.apache.bcel.generic.INSTANCEOF;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
+import org.aspectj.apache.bcel.generic.InstructionByte;
+import org.aspectj.apache.bcel.generic.InstructionCP;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InstructionSelect;
+import org.aspectj.apache.bcel.generic.InstructionShort;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
-import org.aspectj.apache.bcel.generic.LDC;
 import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.ReferenceType;
-import org.aspectj.apache.bcel.generic.SIPUSH;
-import org.aspectj.apache.bcel.generic.SWITCH;
-import org.aspectj.apache.bcel.generic.Select;
+import org.aspectj.apache.bcel.generic.SwitchBuilder;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
@@ -231,7 +229,7 @@ public class Utility {
 			(t instanceof ArrayType)
 			? fact.getConstantPool().addArrayClass((ArrayType)t)
 			: fact.getConstantPool().addClass((ObjectType)t);
-		return new INSTANCEOF(cpoolEntry);
+		return new InstructionCP(Constants.INSTANCEOF,cpoolEntry);
     }
 
     public static Instruction createInvoke(
@@ -384,8 +382,15 @@ public class Utility {
             Type from = BcelWorld.makeBcelType(fromType);
             Type to = BcelWorld.makeBcelType(toType);
             try {
-                il.append(fact.createCast(from, to));
+            	Instruction i = fact.createCast(from, to);
+            	if (i!=null) {
+            		il.append(i);
+            	} else {
+            		il.append(fact.createCast(from, Type.INT));
+                    il.append(fact.createCast(Type.INT, to));
+            	}
             } catch (RuntimeException e) {
+            	e.printStackTrace();
                 il.append(fact.createCast(from, Type.INT));
                 il.append(fact.createCast(Type.INT, to));
             }
@@ -513,11 +518,12 @@ public class Utility {
 			case 5: inst =  InstructionConstants.ICONST_5;	break;	
 		}
 		if (i <= Byte.MAX_VALUE && i >= Byte.MIN_VALUE) {
-	     	inst =  new BIPUSH((byte)i);
+	     	inst =  new InstructionByte(Constants.BIPUSH,(byte)i);
 		} else if (i <= Short.MAX_VALUE && i >= Short.MIN_VALUE) {
-			inst =  new SIPUSH((short)i);
+			inst =  new InstructionShort(Constants.SIPUSH,(short)i);
 		} else {
-			inst =  new LDC(fact.getClassGen().getConstantPool().addInteger(i));
+		      int ii = fact.getClassGen().getConstantPool().addInteger(i);
+		      inst = new InstructionCP(i<=Constants.MAX_BYTE?Constants.LDC:Constants.LDC_W,ii);
 		}
 		return inst;
 	}
@@ -557,7 +563,7 @@ public class Utility {
 	 */
     public static void replaceInstruction(
         InstructionHandle ih,
-        BranchInstruction branchInstruction,
+        InstructionBranch branchInstruction,
         LazyMethodGen enclosingMethod) 
     {
         
@@ -635,8 +641,8 @@ public class Utility {
    	 * </pre>
    	 */
 	public static Instruction copyInstruction(Instruction i) {
-		if (i instanceof Select) {
-			Select freshSelect = (Select)i;
+		if (i instanceof InstructionSelect) {
+			InstructionSelect freshSelect = (InstructionSelect)i;
 				  
 			// Create a new targets array that looks just like the existing one
 			InstructionHandle[] targets = new InstructionHandle[freshSelect.getTargets().length];
@@ -645,9 +651,8 @@ public class Utility {
 			}
 				  
 			// Create a new select statement with the new targets array
-			SWITCH switchStatement =
-				new SWITCH(freshSelect.getMatchs(), targets, freshSelect.getTarget());
-			return (Select)switchStatement.getInstruction();	
+				
+			return new SwitchBuilder(freshSelect.getMatchs(), targets, freshSelect.getTarget()).getInstruction();	
 		} else {
 			return i.copy(); // Use clone for shallow copy...
 		}
@@ -729,7 +734,8 @@ public class Utility {
 	}
 
 	public static boolean isConstantPushInstruction(Instruction i) {
-		return (i instanceof ConstantPushInstruction) || (i instanceof LDC);
+		long ii= Constants.instFlags[i.opcode];
+		return ((ii&Constants.PUSH_INST)!=0 && (ii&Constants.CONSTANT_INST)!=0);
 	}
 	
 	/**
@@ -753,11 +759,11 @@ public class Utility {
                 suppressed = true;
             } else { // (2)
             	// We know the value is an array value
-            	ArrayElementValue array = (ArrayElementValue)((ElementNameValuePair)vals.get(0)).getValue();
-            	ElementValue[] values = array.getElementValuesArray();
+            	ArrayElementValueGen array = (ArrayElementValueGen)((ElementNameValuePairGen)vals.get(0)).getValue();
+            	ElementValueGen[] values = array.getElementValuesArray();
             	for (int j = 0; j < values.length; j++) {
             		// We know values in the array are strings
-					SimpleElementValue value = (SimpleElementValue)values[j];
+					SimpleElementValueGen value = (SimpleElementValueGen)values[j];
 					if (value.getValueString().equals(lintkey)) {
 						suppressed = true;
 					}
@@ -785,11 +791,11 @@ public class Utility {
                suppressedWarnings.addAll(lint.allKinds());
             } else { // (2)
             	// We know the value is an array value
-            	ArrayElementValue array = (ArrayElementValue)((ElementNameValuePair)vals.get(0)).getValue();
-            	ElementValue[] values = array.getElementValuesArray();
+            	ArrayElementValueGen array = (ArrayElementValueGen)((ElementNameValuePairGen)vals.get(0)).getValue();
+            	ElementValueGen[] values = array.getElementValuesArray();
             	for (int j = 0; j < values.length; j++) {
             		// We know values in the array are strings
-					SimpleElementValue value = (SimpleElementValue)values[j];
+					SimpleElementValueGen value = (SimpleElementValueGen)values[j];
 					Lint.Kind lintKind = lint.getLintKind(value.getValueString());
 					if (lintKind != null) suppressedWarnings.add(lintKind);
 				}
@@ -807,12 +813,12 @@ public class Utility {
 		InstructionHandle InstrHandle = instrucs.getStart();
 		while (InstrHandle != null) {                  
 		  Instruction Instr = InstrHandle.getInstruction();
-		  int opCode = Instr.getOpcode();
+		  int opCode = Instr.opcode;
 		  // if current instruction is a branch instruction, see if it's a backward branch.
 		  // if it is return immediately (can't be trivial)
-		  if (Instr instanceof BranchInstruction) {
-		      BranchInstruction BI = (BranchInstruction) Instr;
-		      if (BI.getIndex() < 0) return false;
+		  if (Instr instanceof InstructionBranch) {
+			//  InstructionBranch BI = (InstructionBranch) Instr;
+		      if (Instr.getIndex() < 0) return false;
 		  } else if (Instr instanceof InvokeInstruction) {
 			  // if current instruction is an invocation, indicate that it can't be trivial
 		      return false;

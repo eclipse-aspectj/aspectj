@@ -31,30 +31,61 @@ import org.aspectj.bridge.ISourceLocation;
  * This is the declared member, i.e. it will always correspond to an
  * actual method/... declaration
  */
+
+
+
 public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, AnnotatedElement, TypeVariableDeclaringElement, ResolvedMember {
-    
+
+	// TESTAPI - controlling whether parameter names come out in the debug string (for testing purposes)
+	public static boolean showParameterNames = true;
+
     private String[] parameterNames = null;
     protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;
+//	private boolean isAjSynthetic = false;    
+	protected int start, end;
+	protected ISourceContext sourceContext = null;
+    
+	private int bits;
+	private static final int HAS_BACKING_GENERIC_MEMBER = 0x0001;
+	private static final int IS_ANNOTATED_ELSEWHERE     = 0x0002;
+	private static final int IS_ANNOTATED_ELSEWHERE_INV = 0x0ffd;
+	private static final int HAVE_CALCULATED_MY_ERASURE = 0x0004;
+	private static final int HAS_ERASURE                = 0x0008;
+	private static final int IS_AJ_SYNTHETIC            = 0x0010;
+	private static final int IS_AJ_SYNTHETIC_INV        = 0x0fef;
+	
+	protected RMMetaInfo metaInfo;
+	
+	protected static class RMMetaInfo {
+		public ResolvedMember backingGenericMember;
+		public ResolvedMember myErasure;
+	}
     /**
      * if this member is a parameterized version of a member in a generic type,
      * then this field holds a reference to the member we parameterize.
      */
-    protected ResolvedMember backingGenericMember = null;
+  //   protected ResolvedMember backingGenericMember = null;
         
     protected Set annotationTypes = null;
 	// Some members are 'created' to represent other things (for example ITDs).  These
 	// members have their annotations stored elsewhere, and this flag indicates that is
 	// the case.  It is up to the caller to work out where that is!
 	// Once determined the caller may choose to stash the annotations in this member...
-	private boolean isAnnotatedElsewhere = false; // this field is not serialized.
-	private boolean isAjSynthetic = false;
-    
+//	private boolean isAnnotatedElsewhere = false; // this field is not serialized.
     // generic methods have type variables
 	protected TypeVariable[] typeVariables;
-    
-    // these three fields hold the source location of this member
-	protected int start, end;
-	protected ISourceContext sourceContext = null;
+	/** converts e.g. <T extends Number>.... List<T>  to just Ljava/util/List<T;>;
+	 * whereas the full signature would be Ljava/util/List<T:Ljava/lang/Number;>;
+	 */
+	private String myParameterSignatureWithBoundsRemoved = null;
+	/**
+	 * converts e.g. <T extends Number>.... List<T>  to just Ljava/util/List;
+	 */
+	private String myParameterSignatureErasure = null;
+//	private ResolvedMember myErasure = null;
+//	private boolean calculatedMyErasure = false;
+		
+	
     
     //XXX deprecate this in favor of the constructor below
 	public ResolvedMemberImpl(
@@ -94,8 +125,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			ResolvedMember backingGenericMember) 
 		{
 			this(kind, declaringType, modifiers, returnType, name, parameterTypes,checkedExceptions);
-			this.backingGenericMember = backingGenericMember;
-			this.isAjSynthetic = backingGenericMember.isAjSynthetic();
+			metaInfo= new RMMetaInfo();
+			bits|=HAS_BACKING_GENERIC_MEMBER;
+			metaInfo.backingGenericMember = backingGenericMember;
+			if (backingGenericMember.isAjSynthetic()) bits|=IS_AJ_SYNTHETIC;
+//			this.isAjSynthetic = backingGenericMember.isAjSynthetic();
 		}
 	
 	public ResolvedMemberImpl(
@@ -221,8 +255,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 						ResolvedMember member = foundMember.withSubstituteDeclaringType(declaringType);
 						foundMembers.add(member);
 					}				   	
-					if (toLookIn.isParameterizedType() && (foundMember.backingGenericMember != null)) {
-						foundMembers.add(new JoinPointSignature(foundMember.backingGenericMember,foundMember.declaringType.resolve(toLookIn.getWorld())));
+					if (toLookIn.isParameterizedType() && foundMember.hasBackingGenericMember()) {
+						foundMembers.add(new JoinPointSignature(foundMember.getBackingGenericMember(),foundMember.declaringType.resolve(toLookIn.getWorld())));
 					}
 					accumulateMembersMatching(foundMember,toLookIn.getDirectSupertypes(),typesAlreadyVisited,foundMembers);
 					// if this was a parameterized type, look in the generic type that backs it too
@@ -274,10 +308,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     // ??? true or false?
     public boolean isAjSynthetic() {
-    	return isAjSynthetic;
+    	return (bits&IS_AJ_SYNTHETIC)!=0;
+//    	return isAjSynthetic;
     }
     
-    protected void setAjSynthetic(boolean b) {isAjSynthetic= b;}
+    protected void setAjSynthetic(boolean b) {
+    	if (b) bits|=IS_AJ_SYNTHETIC;
+    	else   bits&=IS_AJ_SYNTHETIC_INV;
+//    	isAjSynthetic= b;
+    }
 	
 	public boolean hasAnnotations() {
 		return  (annotationTypes!=null);
@@ -302,7 +341,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     }
     
     public AnnotationX[] getAnnotations() {
-    	if (backingGenericMember != null) return backingGenericMember.getAnnotations();
+    	if ((bits&HAS_BACKING_GENERIC_MEMBER)!=0 && metaInfo.backingGenericMember!=null) return metaInfo.backingGenericMember.getAnnotations();
+//    	if (backingGenericMember != null) return backingGenericMember.getAnnotations();
     	return super.getAnnotations();
     }
     
@@ -571,11 +611,14 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public void setAnnotatedElsewhere(boolean b) {
-		isAnnotatedElsewhere = b;
+		if (b) bits|=IS_ANNOTATED_ELSEWHERE;
+		else  bits&=IS_ANNOTATED_ELSEWHERE_INV;
+//		isAnnotatedElsewhere = b;
 	}
 
 	public boolean isAnnotatedElsewhere() {
-		return isAnnotatedElsewhere;
+		return (bits&IS_ANNOTATED_ELSEWHERE)!=0;
+//		return isAnnotatedElsewhere;
 	}
 	
 	/**
@@ -710,8 +753,14 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * A type is a supertype of itself.
 	 */
 	public ResolvedMember getErasure() {
-		if (calculatedMyErasure) return myErasure;
-		calculatedMyErasure = true;
+		if ((bits&HAVE_CALCULATED_MY_ERASURE)!=0) {
+			if ((bits&HAS_ERASURE)!=0) return metaInfo.myErasure;
+			return null;
+//			return myErasure;
+		}
+		bits|=HAVE_CALCULATED_MY_ERASURE;
+//		if (calculatedMyErasure) return myErasure;
+//		calculatedMyErasure = true;
 		ResolvedType resolvedDeclaringType = (ResolvedType) getDeclaringType();
 		// this next test is fast, and the result is cached.
 		if (!resolvedDeclaringType.hasParameterizedSuperType()) {
@@ -726,8 +775,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 					// we've found the (a?) parameterized type that defines this member.
 					// now get the erasure of it
 					ResolvedMemberImpl matchingMember = (ResolvedMemberImpl) aDeclaringType.lookupMemberNoSupers(this);
-					if (matchingMember != null && matchingMember.backingGenericMember != null) {
-						myErasure = matchingMember.backingGenericMember;
+					if (matchingMember != null && matchingMember.hasBackingGenericMember()) {
+						ResolvedMember myErasure = matchingMember.getBackingGenericMember();
+						if (myErasure!=null) {
+							bits|=HAS_ERASURE;
+							if (metaInfo == null) metaInfo = new RMMetaInfo();
+							metaInfo.myErasure = myErasure;
+						}
 						return myErasure;
 					}
 				}
@@ -736,15 +790,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return null;
 	}
 	
-	private ResolvedMember myErasure = null;
-	private boolean calculatedMyErasure = false;
 	
 	public boolean hasBackingGenericMember() {
-		return backingGenericMember!=null;
+		if ((bits&HAS_BACKING_GENERIC_MEMBER)==0) return false;
+		return metaInfo.backingGenericMember!=null;
 	}
 	
 	public ResolvedMember getBackingGenericMember() {
-		return backingGenericMember;
+		if ((bits&HAS_BACKING_GENERIC_MEMBER)==0) return null;
+		return metaInfo.backingGenericMember;
 	}
 	
 	/**
@@ -792,14 +846,6 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		}
 	}
 	
-	/** converts e.g. <T extends Number>.... List<T>  to just Ljava/util/List<T;>;
-	 * whereas the full signature would be Ljava/util/List<T:Ljava/lang/Number;>;
-	 */
-	private String myParameterSignatureWithBoundsRemoved = null;
-	/**
-	 * converts e.g. <T extends Number>.... List<T>  to just Ljava/util/List;
-	 */
-	private String myParameterSignatureErasure = null;
 	
 	// does NOT produce a meaningful java signature, but does give a unique string suitable for
 	// comparison.
@@ -898,9 +944,6 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	   return r.toString();
    }
    
-   // SECRETAPI - controlling whether parameter names come out in the debug string (for testing purposes)
-   public static boolean showParameterNames = true;
-	
    public String toGenericString() {
     	StringBuffer buf = new StringBuffer();
     	buf.append(getGenericReturnType().getSimpleName());

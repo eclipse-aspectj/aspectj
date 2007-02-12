@@ -664,7 +664,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
     // ---- helpers
     
-    private static String signatureToName(String signature) {
+    public static String signatureToName(String signature) {
         switch (signature.charAt(0)) {
             case 'B': return "byte";
             case 'C': return "char";

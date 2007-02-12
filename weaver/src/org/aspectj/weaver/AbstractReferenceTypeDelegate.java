@@ -258,6 +258,9 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 				this.sourcefilename = pname.replace('.', '/') + '/' + sourceFileName;
 			}
 		}
+		if (this.sourcefilename!=null && sourceContext instanceof SourceContextImpl) {
+			((SourceContextImpl)sourceContext).setSourceFileName(this.sourcefilename);
+		}
     }
     
 	public ISourceLocation getSourceLocation() {

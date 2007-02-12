@@ -13,17 +13,15 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.IndexedInstruction;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InstructionSelect;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
-import org.aspectj.apache.bcel.generic.LocalVariableInstruction;
 import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.RET;
-import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IntMap;
@@ -76,17 +74,17 @@ final class ShadowRange extends Range {
 
 			// Now we add it to the new instruction list.
             InstructionHandle freshIh;
-            if (freshI instanceof BranchInstruction) {
+            if (freshI instanceof InstructionBranch) {
 				//If it's a targeting instruction,
 	    		// update the target(s) to point to the new copy instead of the old copy.
-            	BranchInstruction oldBranch = (BranchInstruction) oldI;
-            	BranchInstruction freshBranch = (BranchInstruction) freshI;
+            	InstructionBranch oldBranch = (InstructionBranch) oldI;
+            	InstructionBranch freshBranch = (InstructionBranch) freshI;
 				InstructionHandle oldTarget = oldBranch.getTarget();
 				oldTarget.removeTargeter(oldBranch);
 				oldTarget.addTargeter(freshBranch);
-				if (freshBranch instanceof Select) {
-					Select oldSelect = (Select) oldI;
-					Select freshSelect = (Select) freshI;
+				if (freshBranch instanceof InstructionSelect) {
+					InstructionSelect oldSelect = (InstructionSelect) oldI;
+					InstructionSelect freshSelect = (InstructionSelect) freshI;
 					InstructionHandle[] oldTargets = freshSelect.getTargets();
 					for (int k = oldTargets.length - 1; k >= 0; k--) {
 						oldTargets[k].removeTargeter(oldSelect);
@@ -161,9 +159,9 @@ final class ShadowRange extends Range {
 			// do compaction/expansion: allocate a new local variable, and modify the remap
 			// to handle it.  XXX We're doing the safe thing and allocating ALL these local variables
 			// as double-wides, in case the location is found to hold a double-wide later.
-            if (freshI instanceof LocalVariableInstruction || freshI instanceof RET) {
-            	IndexedInstruction indexedI = (IndexedInstruction) freshI;
-                int oldIndex = indexedI.getIndex();
+            if (freshI.isLocalVariableInstruction() || freshI instanceof RET) {
+//            	IndexedInstruction indexedI = (IndexedInstruction) freshI;
+                int oldIndex = freshI.getIndex();
             	int freshIndex;
                 if (! remap.hasKey(oldIndex)) {
                     freshIndex = freshMethod.allocateLocal(2);
@@ -171,7 +169,7 @@ final class ShadowRange extends Range {
                 } else {
                     freshIndex = remap.get(oldIndex);
                 }
-                indexedI.setIndex(freshIndex);
+                freshI.setIndex(freshIndex);
             }
 //            System.err.println("JUST COPIED: " + oldIh.getInstruction().toString(freshMethod.getEnclosingClass().getConstantPoolGen().getConstantPool()) 
 //            	+ " INTO " + freshIh.getInstruction().toString(freshMethod.getEnclosingClass().getConstantPoolGen().getConstantPool()));

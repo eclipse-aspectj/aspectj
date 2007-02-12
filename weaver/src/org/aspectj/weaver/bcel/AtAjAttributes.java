@@ -27,9 +27,9 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ClassElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
@@ -486,7 +486,7 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handleAspectAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeStruct struct) {
-        Annotation aspect = getAnnotation(runtimeAnnotations, AjcMemberMaker.ASPECT_ANNOTATION);
+        AnnotationGen aspect = getAnnotation(runtimeAnnotations, AjcMemberMaker.ASPECT_ANNOTATION);
         if (aspect != null) {
             // semantic check for inheritance (only one level up)
             boolean extendsAspect = false;
@@ -498,7 +498,7 @@ public class AtAjAttributes {
                 extendsAspect = struct.enclosingType.getSuperclass().isAspect();
             }
 
-            ElementNameValuePair aspectPerClause = getAnnotationElement(aspect, VALUE);
+            ElementNameValuePairGen aspectPerClause = getAnnotationElement(aspect, VALUE);
             final PerClause perClause;
             if (aspectPerClause == null) {
                 // empty value means singleton unless inherited
@@ -606,9 +606,9 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handlePrecedenceAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeStruct struct) {
-        Annotation aspect = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREPRECEDENCE_ANNOTATION);
+        AnnotationGen aspect = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREPRECEDENCE_ANNOTATION);
         if (aspect != null) {
-            ElementNameValuePair precedence = getAnnotationElement(aspect, VALUE);
+            ElementNameValuePairGen precedence = getAnnotationElement(aspect, VALUE);
             if (precedence != null) {
                 String precedencePattern = precedence.getValue().stringifyValue();
                 PatternParser parser = new PatternParser(precedencePattern);
@@ -630,7 +630,7 @@ public class AtAjAttributes {
 //    private static boolean handleDeclareImplementsAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct struct) {//, ResolvedPointcutDefinition preResolvedPointcut) {
 //        Annotation deci = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREIMPLEMENTS_ANNOTATION);
 //        if (deci != null) {
-//            ElementNameValuePair deciPatternNVP = getAnnotationElement(deci, VALUE);
+//            ElementNameValuePairGen deciPatternNVP = getAnnotationElement(deci, VALUE);
 //            String deciPattern = deciPatternNVP.getValue().stringifyValue();
 //            if (deciPattern != null) {
 //                TypePattern typePattern = parseTypePattern(deciPattern, struct);
@@ -670,9 +670,9 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handleDeclareParentsAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct struct) {//, ResolvedPointcutDefinition preResolvedPointcut) {
-        Annotation decp = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREPARENTS_ANNOTATION);
+        AnnotationGen decp = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREPARENTS_ANNOTATION);
         if (decp != null) {
-            ElementNameValuePair decpPatternNVP = getAnnotationElement(decp, VALUE);
+            ElementNameValuePairGen decpPatternNVP = getAnnotationElement(decp, VALUE);
             String decpPattern = decpPatternNVP.getValue().stringifyValue();
             if (decpPattern != null) {
                 TypePattern typePattern = parseTypePattern(decpPattern, struct);
@@ -697,9 +697,9 @@ public class AtAjAttributes {
 
                     // do we have a defaultImpl=xxx.class (ie implementation)
                     String defaultImplClassName = null;
-                    ElementNameValuePair defaultImplNVP = getAnnotationElement(decp, "defaultImpl");
+                    ElementNameValuePairGen defaultImplNVP = getAnnotationElement(decp, "defaultImpl");
                     if (defaultImplNVP != null) {
-                        ClassElementValue defaultImpl = (ClassElementValue) defaultImplNVP.getValue();
+                        ClassElementValueGen defaultImpl = (ClassElementValueGen) defaultImplNVP.getValue();
                         defaultImplClassName = UnresolvedType.forSignature(defaultImpl.getClassString()).getName();
                         if (defaultImplClassName.equals("org.aspectj.lang.annotation.DeclareParents")) {
                             defaultImplClassName = null;
@@ -797,9 +797,9 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handleBeforeAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
-        Annotation before = getAnnotation(runtimeAnnotations, AjcMemberMaker.BEFORE_ANNOTATION);
+        AnnotationGen before = getAnnotation(runtimeAnnotations, AjcMemberMaker.BEFORE_ANNOTATION);
         if (before != null) {
-            ElementNameValuePair beforeAdvice = getAnnotationElement(before, VALUE);
+            ElementNameValuePairGen beforeAdvice = getAnnotationElement(before, VALUE);
             if (beforeAdvice != null) {
                 // this/target/args binding
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
@@ -853,9 +853,9 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handleAfterAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
-        Annotation after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTER_ANNOTATION);
+        AnnotationGen after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTER_ANNOTATION);
         if (after != null) {
-            ElementNameValuePair afterAdvice = getAnnotationElement(after, VALUE);
+            ElementNameValuePairGen afterAdvice = getAnnotationElement(after, VALUE);
             if (afterAdvice != null) {
                 // this/target/args binding
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
@@ -914,11 +914,11 @@ public class AtAjAttributes {
             BcelMethod owningMethod)
     throws ReturningFormalNotDeclaredInAdviceSignatureException
     {
-        Annotation after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTERRETURNING_ANNOTATION);
+        AnnotationGen after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTERRETURNING_ANNOTATION);
         if (after != null) {
-            ElementNameValuePair annValue = getAnnotationElement(after, VALUE);
-            ElementNameValuePair annPointcut = getAnnotationElement(after, POINTCUT);
-            ElementNameValuePair annReturned = getAnnotationElement(after, RETURNING);
+            ElementNameValuePairGen annValue = getAnnotationElement(after, VALUE);
+            ElementNameValuePairGen annPointcut = getAnnotationElement(after, POINTCUT);
+            ElementNameValuePairGen annReturned = getAnnotationElement(after, RETURNING);
 
             // extract the pointcut and returned type/binding - do some checks
             String pointcut = null;
@@ -1011,11 +1011,11 @@ public class AtAjAttributes {
             BcelMethod owningMethod)
     throws ThrownFormalNotDeclaredInAdviceSignatureException
     {
-        Annotation after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTERTHROWING_ANNOTATION);
+        AnnotationGen after = getAnnotation(runtimeAnnotations, AjcMemberMaker.AFTERTHROWING_ANNOTATION);
         if (after != null) {
-            ElementNameValuePair annValue = getAnnotationElement(after, VALUE);
-            ElementNameValuePair annPointcut = getAnnotationElement(after, POINTCUT);
-            ElementNameValuePair annThrown = getAnnotationElement(after, THROWING);
+            ElementNameValuePairGen annValue = getAnnotationElement(after, VALUE);
+            ElementNameValuePairGen annPointcut = getAnnotationElement(after, POINTCUT);
+            ElementNameValuePairGen annThrown = getAnnotationElement(after, THROWING);
 
             // extract the pointcut and throwned type/binding - do some checks
             String pointcut = null;
@@ -1102,9 +1102,9 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handleAroundAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct, ResolvedPointcutDefinition preResolvedPointcut) {
-        Annotation around = getAnnotation(runtimeAnnotations, AjcMemberMaker.AROUND_ANNOTATION);
+        AnnotationGen around = getAnnotation(runtimeAnnotations, AjcMemberMaker.AROUND_ANNOTATION);
         if (around != null) {
-            ElementNameValuePair aroundAdvice = getAnnotationElement(around, VALUE);
+            ElementNameValuePairGen aroundAdvice = getAnnotationElement(around, VALUE);
             if (aroundAdvice != null) {
                 // this/target/args binding
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
@@ -1156,9 +1156,9 @@ public class AtAjAttributes {
      * @param struct
      */
     private static void handlePointcutAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
-        Annotation pointcut = getAnnotation(runtimeAnnotations, AjcMemberMaker.POINTCUT_ANNOTATION);
+        AnnotationGen pointcut = getAnnotation(runtimeAnnotations, AjcMemberMaker.POINTCUT_ANNOTATION);
         if (pointcut != null) {
-            ElementNameValuePair pointcutExpr = getAnnotationElement(pointcut, VALUE);
+            ElementNameValuePairGen pointcutExpr = getAnnotationElement(pointcut, VALUE);
 
             // semantic check: the method must return void, or be "public static boolean" for if() support
             if (!(Type.VOID.equals(struct.method.getReturnType())
@@ -1241,10 +1241,10 @@ public class AtAjAttributes {
      * @return true if found
      */
     private static boolean handleDeclareErrorOrWarningAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct struct) {
-        Annotation error = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREERROR_ANNOTATION);
+        AnnotationGen error = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREERROR_ANNOTATION);
         boolean hasError = false;
         if (error != null) {
-            ElementNameValuePair declareError = getAnnotationElement(error, VALUE);
+            ElementNameValuePairGen declareError = getAnnotationElement(error, VALUE);
             if (declareError != null) {
                 if (!STRING_DESC.equals(struct.field.getSignature()) || struct.field.getConstantValue() == null) {
                     reportError("@DeclareError used on a non String constant field", struct);
@@ -1261,10 +1261,10 @@ public class AtAjAttributes {
                 }
             }
         }
-        Annotation warning = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREWARNING_ANNOTATION);
+        AnnotationGen warning = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREWARNING_ANNOTATION);
         boolean hasWarning = false;
         if (warning != null) {
-            ElementNameValuePair declareWarning = getAnnotationElement(warning, VALUE);
+            ElementNameValuePairGen declareWarning = getAnnotationElement(warning, VALUE);
             if (declareWarning != null) {
                 if (!STRING_DESC.equals(struct.field.getSignature()) || struct.field.getConstantValue() == null) {
                     reportError("@DeclareWarning used on a non String constant field", struct);
@@ -1464,10 +1464,10 @@ public class AtAjAttributes {
      * @param annotationType
      * @return annotation
      */
-    private static Annotation getAnnotation(RuntimeAnnotations rvs, UnresolvedType annotationType) {
+    private static AnnotationGen getAnnotation(RuntimeAnnotations rvs, UnresolvedType annotationType) {
         final String annotationTypeName = annotationType.getName();
         for (Iterator iterator = rvs.getAnnotations().iterator(); iterator.hasNext();) {
-            Annotation rv = (Annotation) iterator.next();
+            AnnotationGen rv = (AnnotationGen) iterator.next();
             if (annotationTypeName.equals(rv.getTypeName())) {
                 return rv;
             }
@@ -1483,9 +1483,9 @@ public class AtAjAttributes {
      * @param elementName
      * @return annotation NVP
      */
-    private static ElementNameValuePair getAnnotationElement(Annotation annotation, String elementName) {
+    private static ElementNameValuePairGen getAnnotationElement(AnnotationGen annotation, String elementName) {
         for (Iterator iterator1 = annotation.getValues().iterator(); iterator1.hasNext();) {
-            ElementNameValuePair element = (ElementNameValuePair) iterator1.next();
+            ElementNameValuePairGen element = (ElementNameValuePairGen) iterator1.next();
             if (elementName.equals(element.getNameString())) {
                 return element;
             }

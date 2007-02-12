@@ -148,4 +148,6 @@ public interface Member {
 
 	public String[] getParameterNames(World world);
 
+	public Member slimline();
+
 }

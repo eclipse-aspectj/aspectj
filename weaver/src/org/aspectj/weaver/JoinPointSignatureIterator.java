@@ -189,8 +189,8 @@ public class JoinPointSignatureIterator implements Iterator {
 						additionalSignatures.add(member);  // for this time
 					}				   	
 					// if this was a parameterized type, look in the generic type that backs it too
-					if (superType.isParameterizedType() && (foundMember.backingGenericMember != null)) {
-						ResolvedMember member =new JoinPointSignature(foundMember.backingGenericMember,foundMember.declaringType.resolve(world)); 
+					if (superType.isParameterizedType() && foundMember.hasBackingGenericMember()) {
+						ResolvedMember member =new JoinPointSignature(foundMember.getBackingGenericMember(),foundMember.declaringType.resolve(world)); 
 						discoveredSignatures.add(member);  // for next time we are reset
 						if (additionalSignatures==Collections.EMPTY_LIST) additionalSignatures=new ArrayList();
 						additionalSignatures.add(member);  // for this time

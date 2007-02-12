@@ -21,20 +21,28 @@ import org.aspectj.bridge.SourceLocation;
 
 public class SourceContextImpl implements ISourceContext {
 	
-	private AbstractReferenceTypeDelegate delegate;
+//	private AbstractReferenceTypeDelegate delegate;
 	private int[] lineBreaks;
+	String sfname;
 	
 	public SourceContextImpl(AbstractReferenceTypeDelegate delegate) {
-		this.delegate = delegate;		
+//		this.delegate = delegate;
+		sfname = delegate.getSourcefilename();
 	}
 	
 	public void configureFromAttribute(String name,int []linebreaks) { 
-		this.delegate.setSourcefilename(name);
+//		this.delegate.setSourcefilename(name);
+		sfname = name;
 		this.lineBreaks = linebreaks;
 	}
 	
+	public void setSourceFileName(String name) {
+		sfname = name;
+	}
+	
 	private File getSourceFile() {
-		return new File(delegate.getSourcefilename());
+		return new File(sfname);
+//		return new File(delegate.getSourcefilename());
 	}
 	
 	public void tidy() {}

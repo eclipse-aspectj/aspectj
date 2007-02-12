@@ -192,6 +192,8 @@ public class BcelWeaver implements IWeaver {
 				  wsi.getUnwovenClassFileData(wovenJavaClass.getBytes()));
 				world.storeClass(unwovenJavaClass);
 				classType.setJavaClass(unwovenJavaClass);
+				if (world.isRunMinimalMemory() && world.isXnoInline())
+					classType.evictWeavingState();  // CUSTARD	
 //				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
 			}
 			

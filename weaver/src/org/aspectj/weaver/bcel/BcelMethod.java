@@ -30,13 +30,14 @@ import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Signature.TypeVariableSignature;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
@@ -45,31 +46,62 @@ import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
+import java.util.*;
 
 public final class BcelMethod extends ResolvedMemberImpl {
 
 	private Method method;
-	private boolean isAjSynthetic;
-	private boolean isSynthetic;
-	private boolean knowIfSynthetic = false;
-	private ShadowMunger associatedShadowMunger;
-	private ResolvedPointcutDefinition preResolvedPointcut;  // used when ajc has pre-resolved the pointcut of some @Advice
-	
-//    private ResolvedType[] annotationTypes = null;
-    private AnnotationX[] annotations = null;
-	
-	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
-	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
-	private World world;
+//	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
+//	private World world;
 	private BcelObjectType bcelObjectType;
-	
-	private boolean parameterNamesInitialized = false;
 
-	 private boolean canBeParameterized = false;
-	 // genericized version of return and parameter types
-	 private boolean unpackedGenericSignature = false;
-	 private UnresolvedType genericReturnType = null;
-	 private UnresolvedType[] genericParameterTypes = null;
+	public Member slimline() {
+		if (!bcelObjectType.getWorld().isXnoInline()) return this;
+		ResolvedMemberImpl mi = new ResolvedMemberImpl(kind,declaringType,modifiers,returnType,name,parameterTypes);
+		mi.setParameterNames(getParameterNames());
+		return mi;
+	}
+
+//    private AnnotationX[] annotations = null;
+//	private UnresolvedType genericReturnType = null;
+//	private UnresolvedType[] genericParameterTypes = null;
+	
+	private Map metaData = null;
+	// keys into the meta data
+	private static final String MAPKEY_EFFECTIVE_SIGNATURE     ="effectiveSignature";
+	private static final String MAPKEY_PRERESOLVED_POINTCUT    ="preresolvedPointcut";
+	private static final String MAPKEY_ASSOCIATED_SHADOWMUNGER ="associatedShadowmunger";
+	private static final String MAPKEY_GENERIC_RETURN_TYPE     ="genericReturnType";
+	private static final String MAPKEY_GENERIC_PARAM_TYPES     ="genericParameterTypes";
+	private static final String MAPKEY_ANNOTATIONS             ="annotations";
+	private static final String MAPKEY_MD_LINE_NUMBER_ATTRIBUTE="mdLineNumberAttribute";
+
+//	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
+//	private ShadowMunger associatedShadowMunger;
+//	private ResolvedPointcutDefinition preResolvedPointcut;  // used when ajc has pre-resolved the pointcut of some @Advice	
+
+	private int bitflags;
+	private static final int KNOW_IF_SYNTHETIC           = 0x0001;
+	private static final int PARAMETER_NAMES_INITIALIZED = 0x0002;
+	private static final int CAN_BE_PARAMETERIZED        = 0x0004;
+	private static final int UNPACKED_GENERIC_SIGNATURE  = 0x0008;
+	private static final int HAS_EFFECTIVE_SIGNATURE     = 0x0010;
+	private static final int HAS_PRERESOLVED_POINTCUT    = 0x0020;
+	private static final int IS_AJ_SYNTHETIC             = 0x0040;
+	private static final int IS_SYNTHETIC                = 0x0080;
+	private static final int IS_SYNTHETIC_INVERSE        = 0x7f7f; // all bits but IS_SYNTHETIC (and topmost bit)
+	private static final int HAS_ASSOCIATED_SHADOWMUNGER = 0x0100;
+	private static final int HAS_GENERIC_RETPARAM_TYPES  = 0x0200;
+	private static final int HAS_ANNOTATIONS             = 0x0400;
+	private static final int HAVE_DETERMINED_ANNOTATIONS = 0x0800;
+	private static final int HAS_MD_LINE_NUMBER_ATTRIBUTE= 0x1000;
+	
+//	private boolean isAjSynthetic;
+//	private boolean isSynthetic;
+//	private boolean knowIfSynthetic = false;
+//	private boolean parameterNamesInitialized = false;
+//  private boolean canBeParameterized = false; 
+//	private boolean unpackedGenericSignature = false;
 
 	BcelMethod(BcelObjectType declaringType, Method method) {
 		super(
@@ -83,10 +115,10 @@ public final class BcelMethod extends ResolvedMemberImpl {
 			method.getSignature());
 		this.method = method;
 		this.sourceContext = declaringType.getResolvedTypeX().getSourceContext();
-		this.world = declaringType.getResolvedTypeX().getWorld();
+		//this.world = declaringType.getResolvedTypeX().getWorld();
 		this.bcelObjectType = declaringType;
 		unpackJavaAttributes();
-		unpackAjAttributes(world);
+		unpackAjAttributes(bcelObjectType.getWorld());
 	}
 
 	// ----
@@ -113,8 +145,10 @@ public final class BcelMethod extends ResolvedMemberImpl {
     }
 	
 	public void determineParameterNames() {
-		if (parameterNamesInitialized) return;
-		parameterNamesInitialized=true;
+		if ((bitflags&PARAMETER_NAMES_INITIALIZED)!=0) return;
+		bitflags|=PARAMETER_NAMES_INITIALIZED;
+//		if (parameterNamesInitialized) return;
+//		parameterNamesInitialized=true;
 		LocalVariableTable varTable = method.getLocalVariableTable();
 		int len = getArity();
 		if (varTable == null) {
@@ -137,10 +171,10 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	private void unpackAjAttributes(World world) {
-		associatedShadowMunger = null;
+//		associatedShadowMunger = null;
         List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world,bcelObjectType.getWeaverVersionAttribute());
 		processAttributes(world, as);
-		as = AtAjAttributes.readAj5MethodAttributes(method, this, world.resolve(getDeclaringType()), preResolvedPointcut,getSourceContext(world), world.getMessageHandler());
+		as = AtAjAttributes.readAj5MethodAttributes(method, this, world.resolve(getDeclaringType()), getPreResolvedPointcutDefinition(),getSourceContext(world), world.getMessageHandler());
 		processAttributes(world,as);
 	}
 
@@ -148,28 +182,42 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		for (Iterator iter = as.iterator(); iter.hasNext();) {
 			AjAttribute a = (AjAttribute) iter.next();
 			if (a instanceof AjAttribute.MethodDeclarationLineNumberAttribute) {
-				declarationLineNumber = (AjAttribute.MethodDeclarationLineNumberAttribute)a;
+				addMetaData(MAPKEY_MD_LINE_NUMBER_ATTRIBUTE,a);
+				bitflags|=HAS_MD_LINE_NUMBER_ATTRIBUTE;
+//				declarationLineNumber = (AjAttribute.MethodDeclarationLineNumberAttribute)a;
 			} else if (a instanceof AjAttribute.AdviceAttribute) {
-				associatedShadowMunger = ((AjAttribute.AdviceAttribute)a).reify(this, world);
+				bitflags|=HAS_ASSOCIATED_SHADOWMUNGER;
+				addMetaData(MAPKEY_ASSOCIATED_SHADOWMUNGER,((AjAttribute.AdviceAttribute)a).reify(this, world));
+//				associatedShadowMunger = ((AjAttribute.AdviceAttribute)a).reify(this, world);
 				// return;
 			} else if (a instanceof AjAttribute.AjSynthetic) {
-				isAjSynthetic = true;
+				bitflags|=IS_AJ_SYNTHETIC;
+//				isAjSynthetic = true;
 			} else if (a instanceof AjAttribute.EffectiveSignatureAttribute) {
-				//System.out.println("found effective: " + this);
-				effectiveSignature = (AjAttribute.EffectiveSignatureAttribute)a;
+				// System.out.println("found effective: " + this);
+				bitflags|=HAS_EFFECTIVE_SIGNATURE;
+				addMetaData(MAPKEY_EFFECTIVE_SIGNATURE,a);
+//				effectiveSignature = (AjAttribute.EffectiveSignatureAttribute)a;
 			} else if (a instanceof AjAttribute.PointcutDeclarationAttribute) {
 				// this is an @AspectJ annotated advice method, with pointcut pre-resolved by ajc
-				preResolvedPointcut = ((AjAttribute.PointcutDeclarationAttribute)a).reify();
+				bitflags|=HAS_PRERESOLVED_POINTCUT;
+				addMetaData(MAPKEY_PRERESOLVED_POINTCUT,((AjAttribute.PointcutDeclarationAttribute)a).reify());
+//				preResolvedPointcut = ((AjAttribute.PointcutDeclarationAttribute)a).reify();
 			} else {
 				throw new BCException("weird method attribute " + a);
 			}
 		}
 	}
 	
+	private void addMetaData(String k,Object v) {
+		if (metaData==null) { metaData = new HashMap();}
+		metaData.put(k,v);
+	}
+	
 	// for testing - if we have this attribute, return it - will return null if it doesnt know anything 
 	public AjAttribute[] getAttributes(String name) {
 		List results = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world,bcelObjectType.getWeaverVersionAttribute());
+		List l = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(bcelObjectType.getWorld()),bcelObjectType.getWorld(),bcelObjectType.getWeaverVersionAttribute());
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute element = (AjAttribute) iter.next();		
 			if (element.getNameString().equals(name)) results.add(element);
@@ -193,37 +241,56 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	public boolean isAjSynthetic() {
-		return isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
+		return (bitflags&IS_AJ_SYNTHETIC)!=0;//isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
 	}
 	
 	//FIXME ??? needs an isSynthetic method
 	
 	public ShadowMunger getAssociatedShadowMunger() {
-		return associatedShadowMunger;
+		if ((bitflags&HAS_ASSOCIATED_SHADOWMUNGER)==0) return null;
+		return (ShadowMunger)metaData.get(MAPKEY_ASSOCIATED_SHADOWMUNGER);
+//		return associatedShadowMunger;
 	}
 	
 	public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature() {
-		return effectiveSignature;
+		if ((bitflags&HAS_EFFECTIVE_SIGNATURE)==0) return null;
+		return (AjAttribute.EffectiveSignatureAttribute)metaData.get(MAPKEY_EFFECTIVE_SIGNATURE);//effectiveSignature;
+	}
+
+	public ResolvedPointcutDefinition getPreResolvedPointcutDefinition() {
+		if ((bitflags&HAS_PRERESOLVED_POINTCUT)==0) return null;
+		return (ResolvedPointcutDefinition)metaData.get(MAPKEY_PRERESOLVED_POINTCUT);//effectiveSignature;
 	}
 	
 	public boolean hasDeclarationLineNumberInfo() {
-		return declarationLineNumber != null;
+		return ((bitflags&HAS_MD_LINE_NUMBER_ATTRIBUTE)!=0);
+//		return declarationLineNumber != null;
 	}
 	
 	public int getDeclarationLineNumber() {
-		if (declarationLineNumber != null) {
-			return declarationLineNumber.getLineNumber();
-		} else {
-			return -1;
+		if ((bitflags&HAS_MD_LINE_NUMBER_ATTRIBUTE)!=0) {
+			AjAttribute.MethodDeclarationLineNumberAttribute mdlna = (AjAttribute.MethodDeclarationLineNumberAttribute)metaData.get(MAPKEY_MD_LINE_NUMBER_ATTRIBUTE);
+			return mdlna.getLineNumber();
 		}
+		return -1;
+//		if (declarationLineNumber != null) {
+//			return declarationLineNumber.getLineNumber();
+//		} else {
+//			return -1;
+//		}
 	}
 
     public int getDeclarationOffset() {
-        if (declarationLineNumber != null) {
-            return declarationLineNumber.getOffset();
-        } else {
-            return -1;
-        }
+    	if ((bitflags&HAS_MD_LINE_NUMBER_ATTRIBUTE)!=0) {
+			AjAttribute.MethodDeclarationLineNumberAttribute mdlna = (AjAttribute.MethodDeclarationLineNumberAttribute)metaData.get(MAPKEY_MD_LINE_NUMBER_ATTRIBUTE);
+			return mdlna.getOffset();
+		}
+		return -1;
+//        if (declarationLineNumber != null) {
+//            return declarationLineNumber.getOffset();
+//        } else {
+//            return -1;
+//        }
     }
 
     public ISourceLocation getSourceLocation() {
@@ -238,7 +305,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
     }
 	
 	public Kind getKind() {
-		if (associatedShadowMunger != null) {
+		if ((bitflags&HAS_ASSOCIATED_SHADOWMUNGER)!=0) {
 			return ADVICE;
 		} else {
 			return super.getKind();
@@ -256,7 +323,12 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	
 	public AnnotationX[] getAnnotations() {
 		ensureAnnotationTypesRetrieved();
-		return annotations;
+		if ((bitflags&HAS_ANNOTATIONS)!=0) {
+			return (AnnotationX[])metaData.get(MAPKEY_ANNOTATIONS);
+		} else {
+			return AnnotationX.NONE;
+		}
+//		return annotations;
 	}
 	
 	 public ResolvedType[] getAnnotationTypes() {
@@ -268,32 +340,51 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	 
 	 public void addAnnotation(AnnotationX annotation) {
 	    ensureAnnotationTypesRetrieved();	
-		// Add it to the set of annotations
-		int len = annotations.length;
-		AnnotationX[] ret = new AnnotationX[len+1];
-		System.arraycopy(annotations, 0, ret, 0, len);
-		ret[len] = annotation;
-		annotations = ret;
+	    if ((bitflags&HAS_ANNOTATIONS)==0) {
+			AnnotationX[] ret = new AnnotationX[1];
+			ret[0]=annotation;
+			addMetaData(MAPKEY_ANNOTATIONS,ret);
+	    } else {
+			// Add it to the set of annotations
+	    	AnnotationX[] annotations = (AnnotationX[])metaData.get(MAPKEY_ANNOTATIONS);
+			int len = annotations.length;
+			AnnotationX[] ret = new AnnotationX[len+1];
+			System.arraycopy(annotations, 0, ret, 0, len);
+			ret[len] = annotation;
+			addMetaData(MAPKEY_ANNOTATIONS,ret);
+//			annotations = ret;
+	    }
+	    bitflags|=HAS_ANNOTATIONS;
 		
 		// Add it to the set of annotation types
-		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(world));
+	    if (annotationTypes==Collections.EMPTY_SET) annotationTypes = new HashSet();
+		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(bcelObjectType.getWorld()));
 		// FIXME asc looks like we are managing two 'bunches' of annotations, one
 		// here and one in the real 'method' - should we reduce it to one layer?
-		method.addAnnotation(annotation.getBcelAnnotation());
+//		method.addAnnotation(annotation.getBcelAnnotation());
+		// FIXME CUSTARD
 	 }
 	 
 	 private void ensureAnnotationTypesRetrieved() {
 		if (method == null) return; // must be ok, we have evicted it
-		if (annotationTypes == null || method.getAnnotations().length!=annotations.length) { // sometimes the list changes underneath us!
-    		Annotation annos[] = method.getAnnotations();
-    		annotationTypes = new HashSet();
-    		annotations = new AnnotationX[annos.length];
-    		for (int i = 0; i < annos.length; i++) {
-				Annotation annotation = annos[i];
-				annotationTypes.add(world.resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
-				annotations[i] = new AnnotationX(annotation,world);
-			}
+		if ((bitflags&HAVE_DETERMINED_ANNOTATIONS)!=0) return;
+		bitflags|=HAVE_DETERMINED_ANNOTATIONS;
+//		if (annotationTypes == null) {// || method.getAnnotations().length!=annotations.length) { // sometimes the list changes underneath us!
+    		AnnotationGen annos[] = method.getAnnotations();
+    		if (annos.length!=0) {
+	    		annotationTypes = new HashSet();
+	    		AnnotationX[] annotations = new AnnotationX[annos.length];
+	    		for (int i = 0; i < annos.length; i++) {
+					AnnotationGen annotation = annos[i];
+					annotationTypes.add(bcelObjectType.getWorld().resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
+					annotations[i] = new AnnotationX(annotation,bcelObjectType.getWorld());
+				}
+	    		addMetaData(MAPKEY_ANNOTATIONS,annotations);
+	    		bitflags|=HAS_ANNOTATIONS;
+    		} else {
+    			annotationTypes=Collections.EMPTY_SET;
     		}
+//    		}
 	}
 	 
 
@@ -304,29 +395,36 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	  */
 	 public boolean canBeParameterized() {
 		 unpackGenericSignature();
-		return canBeParameterized;
+		return (bitflags&CAN_BE_PARAMETERIZED)!=0;//canBeParameterized;
 	}
 	 
 	 
 	 public UnresolvedType[] getGenericParameterTypes() {
 		 unpackGenericSignature();
-		 return genericParameterTypes;
+		 if ((bitflags&HAS_GENERIC_RETPARAM_TYPES)==0) return getParameterTypes();
+		 return (UnresolvedType[])metaData.get(MAPKEY_GENERIC_PARAM_TYPES);
+//		 return genericParameterTypes;
 	 }
 	 
 	 public UnresolvedType getGenericReturnType() {
 		 unpackGenericSignature();
-		 return genericReturnType;
+		 if ((bitflags&HAS_GENERIC_RETPARAM_TYPES)==0) return getReturnType();
+		 return (UnresolvedType)metaData.get(MAPKEY_GENERIC_RETURN_TYPE);
+//		 return genericReturnType;
 	 }
 	 
 	 /** For testing only */
 	 public Method getMethod() { return method; }
 	 
 	 private void unpackGenericSignature() {
-		 if (unpackedGenericSignature) return;
-		 unpackedGenericSignature = true;
- 		 if (!world.isInJava5Mode()) { 
- 			 this.genericReturnType = getReturnType();
- 			 this.genericParameterTypes = getParameterTypes();
+		if ((bitflags&UNPACKED_GENERIC_SIGNATURE)!=0) return;
+		bitflags|=UNPACKED_GENERIC_SIGNATURE;
+//		 if (unpackedGenericSignature) return;
+//		 unpackedGenericSignature = true;
+ 		 if (!bcelObjectType.getWorld().isInJava5Mode()) { 
+ 			 
+// 			 this.genericReturnType = getReturnType();
+// 			 this.genericParameterTypes = getParameterTypes();
  			 return;
  		 }
 		 String gSig = method.getGenericSignature();
@@ -334,7 +432,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 			 Signature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(gSig);//method.getGenericSignature());
  			 if (mSig.formalTypeParameters.length > 0) {
 				// generic method declaration
-				canBeParameterized = true;
+ 				bitflags|=CAN_BE_PARAMETERIZED;
+//				canBeParameterized = true;
 			 }
  			 
  			typeVariables = new TypeVariable[mSig.formalTypeParameters.length];
@@ -344,7 +443,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 					typeVariables[i] = BcelGenericSignatureToTypeXConverter.formalTypeParameter2TypeVariable(
 							methodFtp, 
 							mSig.formalTypeParameters,
-							world);
+							bcelObjectType.getWorld());
 				} catch (GenericSignatureFormatException e) {
 					// this is a development bug, so fail fast with good info
 					throw new IllegalStateException(
@@ -361,10 +460,13 @@ public final class BcelMethod extends ResolvedMemberImpl {
  			 System.arraycopy(mSig.formalTypeParameters,0,formals,0,mSig.formalTypeParameters.length);
  			 System.arraycopy(parentFormals,0,formals,mSig.formalTypeParameters.length,parentFormals.length);
  			 Signature.TypeSignature returnTypeSignature = mSig.returnType;
+			 bitflags|=HAS_GENERIC_RETPARAM_TYPES;
+			 UnresolvedType genericReturnType = null;
+			 UnresolvedType[] genericParameterTypes = null;
 			 try {
 				genericReturnType = BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
 						 returnTypeSignature, formals,
-						 world);
+						 bcelObjectType.getWorld());
 			} catch (GenericSignatureFormatException e) {
 //				 development bug, fail fast with good info
 				throw new IllegalStateException(
@@ -378,7 +480,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				try {
 					genericParameterTypes[i] = 
 						BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
-								paramTypeSigs[i],formals,world);
+								paramTypeSigs[i],formals,bcelObjectType.getWorld());
 				} catch (GenericSignatureFormatException e) {
 //					 development bug, fail fast with good info
 					throw new IllegalStateException(
@@ -387,13 +489,18 @@ public final class BcelMethod extends ResolvedMemberImpl {
 							+ e.getMessage());
 				}
 				if (paramTypeSigs[i] instanceof TypeVariableSignature) {
-					canBeParameterized = true;
+					bitflags|=CAN_BE_PARAMETERIZED;
+//					canBeParameterized = true;
 				}
 			 }
-		 } else {
-			 genericReturnType = getReturnType();
-			 genericParameterTypes = getParameterTypes();
-		 }
+			 addMetaData(MAPKEY_GENERIC_PARAM_TYPES, genericParameterTypes);
+			 addMetaData(MAPKEY_GENERIC_RETURN_TYPE, genericReturnType);
+			 bitflags|=HAS_GENERIC_RETPARAM_TYPES;
+		 } 
+//		 else {
+//			 genericReturnType = getReturnType();
+//			 genericParameterTypes = getParameterTypes();
+//		 }
 	 }
 	 
 	 public void evictWeavingState() {
@@ -408,27 +515,38 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	 }
 
 	public boolean isSynthetic() {
-		if (!knowIfSynthetic) workOutIfSynthetic();
-		return isSynthetic;
+		if ((bitflags&KNOW_IF_SYNTHETIC)==0) {
+			workOutIfSynthetic();
+		}
+		return (bitflags&IS_SYNTHETIC)!=0;//isSynthetic;
 	}
 
 	// Pre Java5 synthetic is an attribute 'Synthetic', post Java5 it is a modifier (4096 or 0x1000)
 	private void workOutIfSynthetic() {
-		knowIfSynthetic=true;
+		if ((bitflags&KNOW_IF_SYNTHETIC)!=0) return;
+		bitflags|=KNOW_IF_SYNTHETIC;
+//		knowIfSynthetic=true;
 		JavaClass jc = bcelObjectType.getJavaClass();
-		isSynthetic=false;
+	    bitflags&=IS_SYNTHETIC_INVERSE; // unset the bit
+//		isSynthetic=false;
 		if (jc==null) return; // what the hell has gone wrong?
 		if (jc.getMajor()<49/*Java5*/) {
 			// synthetic is an attribute
 			String[] synthetics =  getAttributeNames(false);
 			if (synthetics!=null) {
 				for (int i = 0; i < synthetics.length; i++) {
-					if (synthetics[i].equals("Synthetic")) {isSynthetic=true;break;}
+					if (synthetics[i].equals("Synthetic")) {
+						bitflags|=IS_SYNTHETIC;
+//						isSynthetic=true;
+						break;}
 				}
 			}
 		} else {
 			// synthetic is a modifier (4096)
-			isSynthetic = (modifiers&4096)!=0;
+			if ((modifiers&4096)!=0) {
+				bitflags|=IS_SYNTHETIC;
+			}
+//			isSynthetic = (modifiers&4096)!=0;
 		}
 	}
 

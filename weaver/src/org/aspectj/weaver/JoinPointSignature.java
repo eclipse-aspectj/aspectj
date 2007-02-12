@@ -406,4 +406,8 @@ public class JoinPointSignature implements ResolvedMember {
 	}
 
 	public void evictWeavingState() { realMember.evictWeavingState(); }
+
+	public Member slimline() {
+		return this;
+	}
 }

@@ -20,17 +20,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
-import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -65,6 +64,7 @@ import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
+
 
 //XXX addLazyMethodGen is probably bad everywhere
 public class BcelTypeMunger extends ConcreteTypeMunger {
@@ -409,9 +409,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
         		InstructionList insList = aMethod.getBody();
         		InstructionHandle handle = insList.getStart();
         		while (handle!= null) {
-        			if (handle.getInstruction() instanceof INVOKESPECIAL) {
-        				ConstantPoolGen cpg = newParentTarget.getConstantPoolGen();
-        				INVOKESPECIAL invokeSpecial = (INVOKESPECIAL)handle.getInstruction();
+        			if (handle.getInstruction().opcode==Constants.INVOKESPECIAL) {
+        				ConstantPool cpg = newParentTarget.getConstantPool();
+        				InvokeInstruction invokeSpecial = (InvokeInstruction)handle.getInstruction();
         				if (invokeSpecial.getClassName(cpg).equals(currentParent) && invokeSpecial.getMethodName(cpg).equals("<init>")) {
         					// System.err.println("Transforming super call '<init>"+sp.getSignature(cpg)+"'");
                      
@@ -455,7 +455,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	/**
      * Creates a nice signature for the ctor, something like "(int,Integer,String)"
 	 */
-	private String createReadableCtorSig(ResolvedType newParent, ConstantPoolGen cpg, INVOKESPECIAL invokeSpecial) {
+	private String createReadableCtorSig(ResolvedType newParent, ConstantPool cpg, InvokeInstruction invokeSpecial) {
         StringBuffer sb = new StringBuffer();
 		Type[] ctorArgs = invokeSpecial.getArgumentTypes(cpg);
 		  sb.append(newParent.getClassName());
@@ -637,7 +637,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			member.getModifiers(),
 			BcelWorld.makeBcelType(member.getReturnType()),
 			member.getName(),
-			gen.getConstantPoolGen());
+			gen.getConstantPool());
 	}
 
 
@@ -654,7 +654,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			FieldGen fg = makeFieldGen(gen, 
 				AjcMemberMaker.perObjectField(gen.getType(), aspectType));
 
-	    	gen.addField(fg.getField(),getSourceLocation());
+	    	gen.addField(fg,getSourceLocation());
 	    	
 	    	
 	    	Type fieldType = BcelWorld.makeBcelType(aspectType);
@@ -712,7 +712,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// Add (to the target type) the field that will hold the aspect instance
 			// e.g ajc$com_blah_SecurityAspect$ptwAspectInstance
 			FieldGen fg = makeFieldGen(gen, AjcMemberMaker.perTypeWithinField(gen.getType(), aspectType));
-		    gen.addField(fg.getField(),getSourceLocation());
+		    gen.addField(fg,getSourceLocation());
 		    	
 		    // Add an accessor for this new field, the ajc$<aspectname>$localAspectOf() method
 		    // e.g. "public com_blah_SecurityAspect ajc$com_blah_SecurityAspect$localAspectOf()"
@@ -806,9 +806,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				if (annotationsOnRealMember!=null) {
 					for (int i = 0; i < annotationsOnRealMember.length; i++) {
 						AnnotationX annotationX = annotationsOnRealMember[i];
-						Annotation a = annotationX.getBcelAnnotation();
-						AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
-						newMethod.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+						AnnotationGen a = annotationX.getBcelAnnotation();
+						AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPool(),true);
+						newMethod.addAnnotation(new AnnotationX(ag,weaver.getWorld()));
 					}
 				}
 				// the below loop fixes the very special (and very stupid)
@@ -901,9 +901,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					if (annotationsOnRealMember!=null) {
 						for (int i = 0; i < annotationsOnRealMember.length; i++) {
 							AnnotationX annotationX = annotationsOnRealMember[i];
-							Annotation a = annotationX.getBcelAnnotation();
-							AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
-							mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+							AnnotationGen a = annotationX.getBcelAnnotation();
+							AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPool(),true);
+							mg.addAnnotation(new AnnotationX(ag,weaver.getWorld()));
 						}
 					}
 			  }
@@ -1128,9 +1128,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                 if (annotationsOnRealMember!=null) {
                     for (int i = 0; i < annotationsOnRealMember.length; i++) {
                         AnnotationX annotationX = annotationsOnRealMember[i];
-                        Annotation a = annotationX.getBcelAnnotation();
-                        AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
-                        mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+                        AnnotationGen a = annotationX.getBcelAnnotation();
+                        AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPool(),true);
+                        mg.addAnnotation(new AnnotationX(ag,weaver.getWorld()));
                     }
                 }
             }
@@ -1141,7 +1141,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             // getfield
             body.append(InstructionConstants.ALOAD_0);
             body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
-            BranchInstruction ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+            InstructionBranch ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
             body.append(ifNonNull);
             
             // Create and store a new instance
@@ -1196,7 +1196,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                 aspectType);
         weaver.getLazyClassGen().addField(makeFieldGen(
                 weaver.getLazyClassGen(),
-                host).getField(), null);
+                host), null);
         return true;
     }
 
@@ -1336,9 +1336,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (annotationsOnRealMember!=null) {
 				for (int i = 0; i < annotationsOnRealMember.length; i++) {
 					AnnotationX annotationX = annotationsOnRealMember[i];
-					Annotation a = annotationX.getBcelAnnotation();
-					AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);
-					mg.addAnnotation(new AnnotationX(ag.getAnnotation(),weaver.getWorld()));
+					AnnotationGen a = annotationX.getBcelAnnotation();
+					AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPool(),true);
+					mg.addAnnotation(new AnnotationX(ag,weaver.getWorld()));
 				}
 			}
 			// the below loop fixes the very special (and very stupid)
@@ -1527,13 +1527,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				if (annotationsOnRealMember!=null) {
 					for (int i = 0; i < annotationsOnRealMember.length; i++) {
 						AnnotationX annotationX = annotationsOnRealMember[i];
-						Annotation a = annotationX.getBcelAnnotation();
-						AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);	
+						AnnotationGen a = annotationX.getBcelAnnotation();
+						AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPool(),true);	
 						fg.addAnnotation(ag);
 					}
 				}
 				
-				gen.addField(fg.getField(),getSourceLocation());
+				gen.addField(fg,getSourceLocation());
 	    		
 			}
     		return true;
@@ -1551,13 +1551,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				if (annotationsOnRealMember!=null) {
 					for (int i = 0; i < annotationsOnRealMember.length; i++) {
 						AnnotationX annotationX = annotationsOnRealMember[i];
-						Annotation a = annotationX.getBcelAnnotation();
-						AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPoolGen(),true);	
+						AnnotationGen a = annotationX.getBcelAnnotation();
+						AnnotationGen ag = new AnnotationGen(a,weaver.getLazyClassGen().getConstantPool(),true);	
 						fg.addAnnotation(ag);
 					}
 				}
 				
-		    	gen.addField(fg.getField(),getSourceLocation());
+		    	gen.addField(fg,getSourceLocation());
 	    	//this uses a shadow munger to add init method to constructors
 	    	//weaver.getShadowMungers().add(makeInitCallShadowMunger(initMethod));
 	    	

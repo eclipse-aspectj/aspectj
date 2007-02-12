@@ -24,10 +24,10 @@ import java.util.List;
 public class MemberImpl implements Comparable, AnnotatedElement,Member {
     
     protected Kind kind;
-    protected UnresolvedType declaringType;
     protected int modifiers; 
-    protected UnresolvedType returnType;
+    protected UnresolvedType declaringType;
     protected String name;
+    protected UnresolvedType returnType;
     protected UnresolvedType[] parameterTypes;
     private final String signature;
     private String paramSignature;
@@ -981,6 +981,10 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	       	reportedUnresolvableMember = true;						
 		}
     }
+
+	public Member slimline() {
+		return this;
+	}
 
 }
    

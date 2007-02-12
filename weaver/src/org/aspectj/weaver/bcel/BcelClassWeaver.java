@@ -27,44 +27,29 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.generic.ANEWARRAY;
-import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.CPInstruction;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
-import org.aspectj.apache.bcel.generic.GOTO;
-import org.aspectj.apache.bcel.generic.GOTO_W;
-import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
-import org.aspectj.apache.bcel.generic.IndexedInstruction;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
+import org.aspectj.apache.bcel.generic.InstructionCP;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InstructionSelect;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.LineNumberTag;
-import org.aspectj.apache.bcel.generic.LocalVariableInstruction;
 import org.aspectj.apache.bcel.generic.LocalVariableTag;
-import org.aspectj.apache.bcel.generic.MONITORENTER;
-import org.aspectj.apache.bcel.generic.MONITOREXIT;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.MethodGen;
-import org.aspectj.apache.bcel.generic.NEW;
-import org.aspectj.apache.bcel.generic.NEWARRAY;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.PUTFIELD;
-import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.RET;
-import org.aspectj.apache.bcel.generic.ReturnInstruction;
-import org.aspectj.apache.bcel.generic.Select;
 import org.aspectj.apache.bcel.generic.Tag;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -75,6 +60,7 @@ import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
@@ -101,6 +87,10 @@ import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.ExactTypePattern;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
+
+import com.sun.org.apache.bcel.internal.generic.BranchInstruction;
+import com.sun.org.apache.bcel.internal.generic.GOTO;
+import com.sun.org.apache.bcel.internal.generic.GOTO_W;
 
 class BcelClassWeaver implements IClassWeaver {
 
@@ -131,7 +121,7 @@ class BcelClassWeaver implements IClassWeaver {
 
     private final BcelObjectType  ty;    // alias of clazz.getType()
     private final BcelWorld       world; // alias of ty.getWorld()
-    private final ConstantPoolGen cpg;   // alias of clazz.getConstantPoolGen()
+    private final ConstantPool cpg;   // alias of clazz.getConstantPoolGen()
     private final InstructionFactory fact; // alias of clazz.getFactory();
 
     
@@ -174,7 +164,7 @@ class BcelClassWeaver implements IClassWeaver {
 		this.typeMungers = typeMungers;
         this.lateTypeMungers = lateTypeMungers;
 		this.ty = clazz.getBcelObjectType();
-		this.cpg = clazz.getConstantPoolGen();
+		this.cpg = clazz.getConstantPool();
 		this.fact = clazz.getFactory();
 		
 		fastMatchShadowMungers(shadowMungers);
@@ -797,8 +787,8 @@ class BcelClassWeaver implements IClassWeaver {
             			}
 
             			if (annotationsToAdd==null) annotationsToAdd = new ArrayList();
-            			Annotation a = decaM.getAnnotationX().getBcelAnnotation();
-            			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
+            			AnnotationGen a = decaM.getAnnotationX().getBcelAnnotation();
+            			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPool(),true);
             			annotationsToAdd.add(ag);
             			mg.addAnnotation(decaM.getAnnotationX());
             			
@@ -830,8 +820,8 @@ class BcelClassWeaver implements IClassWeaver {
             				}
             				
             				if (annotationsToAdd==null) annotationsToAdd = new ArrayList();
-                			Annotation a = decaM.getAnnotationX().getBcelAnnotation();
-                			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
+                			AnnotationGen a = decaM.getAnnotationX().getBcelAnnotation();
+                			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPool(),true);
                 			annotationsToAdd.add(ag);
                 			
             				mg.addAnnotation(decaM.getAnnotationX());
@@ -847,7 +837,7 @@ class BcelClassWeaver implements IClassWeaver {
             	}
             	if (annotationsToAdd!=null) {
             		Method oldMethod = mg.getMethod();
-        			MethodGen myGen = new MethodGen(oldMethod,clazz.getClassName(),clazz.getConstantPoolGen(),false);// dont use tags, they won't get repaired like for woven methods.
+        			MethodGen myGen = new MethodGen(oldMethod,clazz.getClassName(),clazz.getConstantPool(),false);// dont use tags, they won't get repaired like for woven methods.
             		for (Iterator iter = annotationsToAdd.iterator(); iter.hasNext();) {
 						AnnotationGen a = (AnnotationGen) iter.next();
 						myGen.addAnnotation(a);						
@@ -1084,9 +1074,9 @@ class BcelClassWeaver implements IClassWeaver {
 	      return isChanged;
 	}
 	
-	private boolean dontAddTwice(DeclareAnnotation decaF, Annotation [] dontAddMeTwice){
+	private boolean dontAddTwice(DeclareAnnotation decaF, AnnotationX[] dontAddMeTwice){
 		for (int i = 0; i < dontAddMeTwice.length; i++){
-			Annotation ann = dontAddMeTwice[i];
+			AnnotationX ann = dontAddMeTwice[i];
 			if (ann != null && decaF.getAnnotationX().getTypeName().equals(ann.getTypeName())){
 				//dontAddMeTwice[i] = null; // incase it really has been added twice!
 				return true;
@@ -1128,18 +1118,18 @@ class BcelClassWeaver implements IClassWeaver {
 		
         List decaFs = getMatchingSubset(allDecafs,clazz.getType());
 		if (decaFs.isEmpty()) return false; // nothing more to do
-		Field[] fields = clazz.getFieldGens();
+		List fields = clazz.getFieldGens();
 		if (fields!=null) {
 		  Set unusedDecafs = new HashSet();
 		  unusedDecafs.addAll(decaFs);
-          for (int fieldCounter = 0;fieldCounter<fields.length;fieldCounter++) {
-            BcelField aBcelField = new BcelField(clazz.getBcelObjectType(),fields[fieldCounter]);
+          for (int fieldCounter = 0;fieldCounter<fields.size();fieldCounter++) {
+            BcelField aBcelField = (BcelField)fields.get(fieldCounter);//new BcelField(clazz.getBcelObjectType(),fields[fieldCounter]);
 			if (!aBcelField.getName().startsWith(NameMangler.PREFIX)) {				
             // Single first pass
             List worthRetrying = new ArrayList();
             boolean modificationOccured = false;
             
-            Annotation [] dontAddMeTwice = fields[fieldCounter].getAnnotations();
+            AnnotationX[] dontAddMeTwice = aBcelField.getAnnotations();
             
             // go through all the declare @field statements
             for (Iterator iter = decaFs.iterator(); iter.hasNext();) {
@@ -1157,22 +1147,22 @@ class BcelClassWeaver implements IClassWeaver {
 						if(decaF.getAnnotationX().isRuntimeVisible()){ // isAnnotationWithRuntimeRetention(clazz.getJavaClass(world))){
 						//if(decaF.getAnnotationTypeX().isAnnotationWithRuntimeRetention(world)){						
 							// it should be runtime visible, so put it on the Field
-							Annotation a = decaF.getAnnotationX().getBcelAnnotation();
-							AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
-							FieldGen myGen = new FieldGen(fields[fieldCounter],clazz.getConstantPoolGen());
-							myGen.addAnnotation(ag);
-							Field newField = myGen.getField();
+//							Annotation a = decaF.getAnnotationX().getBcelAnnotation();
+//							AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPoolGen(),true);
+//							FieldGen myGen = new FieldGen(fields[fieldCounter],clazz.getConstantPoolGen());
+//							myGen.addAnnotation(ag);
+//							Field newField = myGen.getField();
 							
 							aBcelField.addAnnotation(decaF.getAnnotationX());
-							clazz.replaceField(fields[fieldCounter],newField);
-							fields[fieldCounter]=newField;
+//							clazz.replaceField(fields[fieldCounter],newField);
+//							fields[fieldCounter]=newField;
 							
 						} else{
 							aBcelField.addAnnotation(decaF.getAnnotationX());
 						}
 					}
 					
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),aBcelField.getName());
 					reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);		
 					isChanged = true;
 					modificationOccured = true;
@@ -1200,7 +1190,7 @@ class BcelClassWeaver implements IClassWeaver {
 						continue; // skip this one...
 					}
 					aBcelField.addAnnotation(decaF.getAnnotationX());
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),fields[fieldCounter]);
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),aBcelField.getName());
 					isChanged = true;
 					modificationOccured = true;
 					forRemoval.add(decaF);
@@ -1268,13 +1258,13 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 	
 	// TAG: WeavingMessage
-	private void reportFieldAnnotationWeavingMessage(LazyClassGen clazz, Field[] fields, int fieldCounter, DeclareAnnotation decaF) {
+	private void reportFieldAnnotationWeavingMessage(LazyClassGen clazz, List fields, int fieldCounter, DeclareAnnotation decaF) {
 		if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)){
-		  Field theField = fields[fieldCounter];
+		  BcelField theField = (BcelField)fields.get(fieldCounter);
 		  world.getMessageHandler().handleMessage(
 		          WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ANNOTATES,
 		              new String[]{
-						  theField.toString() + "' of type '" + clazz.getName(),
+						  theField.getFieldAsIs().toString() + "' of type '" + clazz.getName(),
 						  clazz.getFileName(),
 						  decaF.getAnnotationString(),
 						  "field",
@@ -1387,7 +1377,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private boolean isThisCall(InstructionHandle ih) {
-		INVOKESPECIAL inst = (INVOKESPECIAL) ih.getInstruction();
+		InvokeInstruction inst = (InvokeInstruction) ih.getInstruction();
 		return inst.getClassName(cpg).equals(clazz.getName());
 	}
 
@@ -1518,7 +1508,7 @@ class BcelClassWeaver implements IClassWeaver {
 				InstructionHandle walker = body.getStart();
 				List rets = new ArrayList();
 				while (walker!=null) { 
-					if (walker.getInstruction() instanceof ReturnInstruction) {
+					if (walker.getInstruction().isReturnInstruction()) {
 						rets.add(walker);
 					}
 					walker = walker.getNext();
@@ -1547,7 +1537,7 @@ class BcelClassWeaver implements IClassWeaver {
 									// ignore
 								} else if (targeter instanceof LineNumberTag) {
 									// ignore
-								} else if (targeter instanceof GOTO || targeter instanceof GOTO_W) {
+								} else if (targeter instanceof InstructionBranch && ((InstructionBranch)targeter).isGoto()) {
 									// move it...
 									targeter.updateTarget(element, monitorExitBlockStart);	
 								} else if (targeter instanceof BranchInstruction) {
@@ -1610,8 +1600,8 @@ class BcelClassWeaver implements IClassWeaver {
 			parttwo.append(InstructionFactory.MONITORENTER);
 		
 			String fieldname = synchronizedMethod.getEnclosingClass().allocateField("class$");
-			Field f = new FieldGen(Modifier.STATIC | Modifier.PRIVATE,
-				    Type.getType(Class.class),fieldname,synchronizedMethod.getEnclosingClass().getConstantPoolGen()).getField();
+			FieldGen f = new FieldGen(Modifier.STATIC | Modifier.PRIVATE,
+				    Type.getType(Class.class),fieldname,synchronizedMethod.getEnclosingClass().getConstantPool());
 			synchronizedMethod.getEnclosingClass().addField(f, null);
 			
 //			10:  invokestatic    #44; //Method java/lang/Class.forName:(Ljava/lang/String;)Ljava/lang/Class;
@@ -1697,7 +1687,7 @@ class BcelClassWeaver implements IClassWeaver {
 			InstructionHandle walker = body.getStart();
 			List rets = new ArrayList();
 			while (walker!=null) { //!walker.equals(body.getEnd())) {
-				if (walker.getInstruction() instanceof ReturnInstruction) {
+				if (walker.getInstruction().isReturnInstruction()) {
 					rets.add(walker);
 				}
 				walker = walker.getNext();
@@ -1805,7 +1795,7 @@ class BcelClassWeaver implements IClassWeaver {
 			InstructionHandle walker = body.getStart();
 			List rets = new ArrayList();
 			while (walker!=null) { //!walker.equals(body.getEnd())) {
-				if (walker.getInstruction() instanceof ReturnInstruction) {
+				if (walker.getInstruction().isReturnInstruction()) {
 					rets.add(walker);
 				}
 				walker = walker.getNext();
@@ -1835,10 +1825,10 @@ class BcelClassWeaver implements IClassWeaver {
 								// ignore
 							} else if (targeter instanceof LineNumberTag) {
 								// ignore
-							} else if (targeter instanceof GOTO || targeter instanceof GOTO_W) {
+							} else if (targeter instanceof InstructionBranch && ((InstructionBranch)targeter).isGoto()) {
 								// move it...
 								targeter.updateTarget(element, monitorExitBlockStart);
-							} else if (targeter instanceof BranchInstruction) {
+							} else if (targeter instanceof InstructionBranch) {
 								// move it
 								targeter.updateTarget(element, monitorExitBlockStart);
 							} else {
@@ -1897,8 +1887,8 @@ class BcelClassWeaver implements IClassWeaver {
 		InstructionList sourceList = donor.getBody();
 
 		Map srcToDest  = new HashMap();
-		ConstantPoolGen donorCpg = donor.getEnclosingClass().getConstantPoolGen();
-		ConstantPoolGen recipientCpg = recipient.getEnclosingClass().getConstantPoolGen();
+		ConstantPool donorCpg = donor.getEnclosingClass().getConstantPool();
+		ConstantPool recipientCpg = recipient.getEnclosingClass().getConstantPool();
 		
 		boolean isAcrossClass = donorCpg != recipientCpg;
 		
@@ -1910,11 +1900,11 @@ class BcelClassWeaver implements IClassWeaver {
 		{
 			Instruction fresh = Utility.copyInstruction(src.getInstruction());
 			InstructionHandle dest;
-			if (fresh instanceof CPInstruction) {
+			if (fresh.isConstantPoolInstruction()) {
 				// need to reset index to go to new constant pool.  This is totally
 				// a computation leak... we're testing this LOTS of times.  Sigh.
 				if (isAcrossClass) {
-					CPInstruction cpi = (CPInstruction) fresh;
+					InstructionCP cpi = (InstructionCP) fresh;
 					cpi.setIndex(
 						recipientCpg.addConstant(
 							donorCpg.getConstant(cpi.getIndex()),
@@ -1923,19 +1913,20 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 			if (src.getInstruction() == Range.RANGEINSTRUCTION) {
 				dest = ret.append(Range.RANGEINSTRUCTION);
-			} else if (fresh instanceof ReturnInstruction) {
+			} else if (fresh.isReturnInstruction()) {
 				if (keepReturns) {
 					dest = ret.append(fresh);
 				} else {
 					dest = 
 						ret.append(InstructionFactory.createBranchInstruction(Constants.GOTO, end));
 				}
-			} else if (fresh instanceof BranchInstruction) {
-				dest = ret.append((BranchInstruction) fresh);
+			} else if (fresh instanceof InstructionBranch) {
+				dest = ret.append((InstructionBranch) fresh);
 			} else if (
-				fresh instanceof LocalVariableInstruction || fresh instanceof RET) {
-				IndexedInstruction indexed = (IndexedInstruction) fresh;
-				int oldIndex = indexed.getIndex();
+				fresh.isLocalVariableInstruction() || fresh instanceof RET) {
+				
+//				IndexedInstruction indexed = (IndexedInstruction) fresh;
+				int oldIndex = fresh.getIndex();
 				int freshIndex;
 				if (!frameEnv.hasKey(oldIndex)) {
 					freshIndex = recipient.allocateLocal(2);
@@ -1943,7 +1934,7 @@ class BcelClassWeaver implements IClassWeaver {
 				} else {
 					freshIndex = frameEnv.get(oldIndex);
 				}
-				indexed.setIndex(freshIndex);
+				fresh.setIndex(freshIndex);
 				dest = ret.append(fresh);
 			} else {
 				dest = ret.append(fresh);
@@ -1960,8 +1951,8 @@ class BcelClassWeaver implements IClassWeaver {
 			Instruction inst = dest.getInstruction();
 			
 			// retarget branches
-			if (inst instanceof BranchInstruction) {
-				BranchInstruction branch = (BranchInstruction) inst;
+			if (inst instanceof InstructionBranch) {
+				InstructionBranch branch = (InstructionBranch) inst;
 				InstructionHandle oldTarget = branch.getTarget();
 				InstructionHandle newTarget =
 					(InstructionHandle) srcToDest.get(oldTarget);
@@ -1970,8 +1961,8 @@ class BcelClassWeaver implements IClassWeaver {
 					// this was a return instruction we previously replaced
 				} else {
 					branch.setTarget(newTarget);
-					if (branch instanceof Select) {
-						Select select = (Select) branch;
+					if (branch instanceof InstructionSelect) {
+						InstructionSelect select = (InstructionSelect) branch;
 						InstructionHandle[] oldTargets = select.getTargets();
 						for (int k = oldTargets.length - 1; k >= 0; k--) {
 							select.setTarget(
@@ -2054,7 +2045,7 @@ class BcelClassWeaver implements IClassWeaver {
 				InstructionHandle dest;
 				if (src.getInstruction() == Range.RANGEINSTRUCTION) {
 					dest = newList.append(Range.RANGEINSTRUCTION);
-				} else if (fresh instanceof ReturnInstruction) {
+				} else if (fresh.isReturnInstruction()) {
 					if (keepReturns) {
 						newList.append(InstructionFactory.createLoad(monitorVarType,monitorVarSlot));
 						newList.append(InstructionConstants.MONITOREXIT);
@@ -2063,12 +2054,12 @@ class BcelClassWeaver implements IClassWeaver {
 						dest = 
 							newList.append(InstructionFactory.createBranchInstruction(Constants.GOTO, end));
 					}
-				} else if (fresh instanceof BranchInstruction) {
-					dest = newList.append((BranchInstruction) fresh);
+				} else if (fresh instanceof InstructionBranch) {
+					dest = newList.append((InstructionBranch) fresh);
 				} else if (
-					fresh instanceof LocalVariableInstruction || fresh instanceof RET) {
-					IndexedInstruction indexed = (IndexedInstruction) fresh;
-					int oldIndex = indexed.getIndex();
+					fresh.isLocalVariableInstruction() || fresh instanceof RET) {
+					//IndexedInstruction indexed = (IndexedInstruction) fresh;
+					int oldIndex = fresh.getIndex();
 					int freshIndex;
 //					if (!frameEnv.hasKey(oldIndex)) {
 //						freshIndex = recipient.allocateLocal(2);
@@ -2076,7 +2067,7 @@ class BcelClassWeaver implements IClassWeaver {
 //					} else {
 						freshIndex = oldIndex;//frameEnv.get(oldIndex);
 //					}
-					indexed.setIndex(freshIndex);
+					fresh.setIndex(freshIndex);
 					dest = newList.append(fresh);
 				} else {
 					dest = newList.append(fresh);
@@ -2093,8 +2084,8 @@ class BcelClassWeaver implements IClassWeaver {
 				Instruction inst = dest.getInstruction();
 				
 				// retarget branches
-				if (inst instanceof BranchInstruction) {
-					BranchInstruction branch = (BranchInstruction) inst;
+				if (inst instanceof InstructionBranch) {
+					InstructionBranch branch = (InstructionBranch) inst;
 					InstructionHandle oldTarget = branch.getTarget();
 					InstructionHandle newTarget =
 						(InstructionHandle) srcToDest.get(oldTarget);
@@ -2103,8 +2094,8 @@ class BcelClassWeaver implements IClassWeaver {
 						// this was a return instruction we previously replaced
 					} else {
 						branch.setTarget(newTarget);
-						if (branch instanceof Select) {
-							Select select = (Select) branch;
+						if (branch instanceof InstructionSelect) {
+							InstructionSelect select = (InstructionSelect) branch;
 							InstructionHandle[] oldTargets = select.getTargets();
 							for (int k = oldTargets.length - 1; k >= 0; k--) {
 								select.setTarget(
@@ -2276,11 +2267,11 @@ class BcelClassWeaver implements IClassWeaver {
 			if (start == null) return null;
 			
 			Instruction inst = start.getInstruction();
-			if (inst instanceof INVOKESPECIAL
-				&& ((INVOKESPECIAL) inst).getName(cpg).equals("<init>")) {
+			if (inst.opcode==Constants.INVOKESPECIAL
+				&& ((InvokeInstruction) inst).getName(cpg).equals("<init>")) {
 				depth--;
 				if (depth == 0) return start;
-			} else if (inst instanceof NEW) {
+			} else if (inst.opcode==Constants.NEW) {
 				depth++;
 			} 
 			start = start.getNext();
@@ -2460,7 +2451,7 @@ class BcelClassWeaver implements IClassWeaver {
 		) {
 			FieldInstruction fi = (FieldInstruction) i;
 						
-			if (fi instanceof PUTFIELD || fi instanceof PUTSTATIC) {
+			if (fi.opcode==Constants.PUTFIELD || fi.opcode==Constants.PUTSTATIC) {
 				// check for sets of constant fields.  We first check the previous 
 				// instruction.  If the previous instruction is a LD_WHATEVER (push
 				// constant on the stack) then we must resolve the field to determine
@@ -2489,12 +2480,12 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 		} else if (i instanceof InvokeInstruction) {
 			InvokeInstruction ii = (InvokeInstruction) i;
-			if (ii.getMethodName(clazz.getConstantPoolGen()).equals("<init>")) {
+			if (ii.getMethodName(clazz.getConstantPool()).equals("<init>")) {
 				if (canMatch(Shadow.ConstructorCall))
 					match(
 							BcelShadow.makeConstructorCall(world, mg, ih, enclosingShadow),
 							shadowAccumulator);
-			} else if (ii instanceof INVOKESPECIAL) {
+			} else if (ii.opcode==Constants.INVOKESPECIAL) {
 				String onTypeName = ii.getClassName(cpg);
 				if (onTypeName.equals(mg.getEnclosingClass().getName())) {
 					// we are private
@@ -2505,26 +2496,25 @@ class BcelClassWeaver implements IClassWeaver {
 			} else {
 					matchInvokeInstruction(mg, ih, ii, enclosingShadow, shadowAccumulator);
 			}
-		} else if (world.isJoinpointArrayConstructionEnabled() && 
-				   (i instanceof NEWARRAY || i instanceof ANEWARRAY || i instanceof MULTIANEWARRAY)) {
+		} else if (world.isJoinpointArrayConstructionEnabled() && i.isArrayCreationInstruction()) {
 			if (canMatch(Shadow.ConstructorCall)) {
 				boolean debug = false;
 				if (debug) System.err.println("Found new array instruction: "+i);
-				if (i instanceof ANEWARRAY) {
-					ANEWARRAY arrayInstruction = (ANEWARRAY)i;
-					ObjectType arrayType = arrayInstruction.getLoadClassType(clazz.getConstantPoolGen());
+				if (i.opcode==Constants.ANEWARRAY) {
+//					ANEWARRAY arrayInstruction = (ANEWARRAY)i;
+					ObjectType arrayType = i.getLoadClassType(clazz.getConstantPool());
 					if (debug) System.err.println("Array type is "+arrayType);
 					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world,mg,ih,enclosingShadow);
 					match(ctorCallShadow,shadowAccumulator);
-				} else if (i instanceof NEWARRAY) {
-					NEWARRAY arrayInstruction = (NEWARRAY)i;
-					Type arrayType = arrayInstruction.getType();
+				} else if (i.opcode==Constants.NEWARRAY) {
+//					NEWARRAY arrayInstruction = (NEWARRAY)i;
+					Type arrayType = i.getType();
 					if (debug) System.err.println("Array type is "+arrayType);
 					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world,mg,ih,enclosingShadow);
 					match(ctorCallShadow,shadowAccumulator);
 				} else if (i instanceof MULTIANEWARRAY) {
 					MULTIANEWARRAY arrayInstruction = (MULTIANEWARRAY)i;
-					ObjectType arrayType = arrayInstruction.getLoadClassType(clazz.getConstantPoolGen());
+					ObjectType arrayType = arrayInstruction.getLoadClassType(clazz.getConstantPool());
 					if (debug) System.err.println("Array type is "+arrayType);
 					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world,mg,ih,enclosingShadow);
 					match(ctorCallShadow,shadowAccumulator);
@@ -2539,9 +2529,9 @@ class BcelClassWeaver implements IClassWeaver {
 //		} else if (i instanceof AASTORE) {
 //			// ... magic required
 		} else if ( world.isJoinpointSynchronizationEnabled() &&
-				   ((i instanceof MONITORENTER) || (i instanceof MONITOREXIT))) {
+				   ((i.getOpcode()==Constants.MONITORENTER) || (i.getOpcode()==Constants.MONITOREXIT))) {
 			// if (canMatch(Shadow.Monitoring)) {
-			  if (i instanceof MONITORENTER) {
+			  if (i.getOpcode()==Constants.MONITORENTER) {
 				  BcelShadow monitorEntryShadow = BcelShadow.makeMonitorEnter(world,mg,ih,enclosingShadow);
 				  match(monitorEntryShadow,shadowAccumulator);
 			  } else {
@@ -2582,8 +2572,8 @@ class BcelClassWeaver implements IClassWeaver {
 		// 'putstatic ajc$initFailureCause'.  If it is then we are 
 		// in the handler we created in AspectClinit.generatePostSyntheticCode()
 		InstructionHandle twoInstructionsAway = ih.getNext().getNext();
-		if (twoInstructionsAway.getInstruction() instanceof PUTSTATIC) {
-			String name = ((PUTSTATIC)twoInstructionsAway.getInstruction()).getFieldName(cpg);
+		if (twoInstructionsAway.getInstruction().opcode==Constants.PUTSTATIC) {
+			String name = ((FieldInstruction)twoInstructionsAway.getInstruction()).getFieldName(cpg);
 			if (name.equals(NameMangler.INITFAILURECAUSE_FIELD_NAME)) return true;
 		}
 		return false;

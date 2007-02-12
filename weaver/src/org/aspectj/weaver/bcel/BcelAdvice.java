@@ -35,6 +35,7 @@ import org.aspectj.weaver.IEclipseSourceContext;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -66,7 +67,7 @@ public class BcelAdvice extends Advice {
 		Member signature,
 		ResolvedType concreteAspect) 
 	{
-		super(attribute, pointcut, signature);
+		super(attribute, pointcut, (signature==null?null:signature.slimline()));
 		this.concreteAspect = concreteAspect;
 	}
 
@@ -76,8 +77,33 @@ public class BcelAdvice extends Advice {
         int start, int end, ISourceContext sourceContext, ResolvedType concreteAspect)
     {
 		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), 
-			pointcut, signature, concreteAspect);
+			pointcut, (signature==null?null:signature.slimline()), concreteAspect);
 		thrownExceptions = Collections.EMPTY_LIST;  //!!! interaction with unit tests
+	}
+	
+	/**
+	 * We don't always need to represent the signature with a heavyweight BcelMethod object - only if its around advice
+	 * and inlining is active
+	 * @param concreteAspect 
+	 * @param attribute 
+	 */
+	private static Member shrink(AdviceKind kind, ResolvedType concreteAspect, Member m) {
+		if (m==null) return null;
+		UnresolvedType dType = m.getDeclaringType();
+		// if it isnt around advice or it is but inlining is turned off then shrink it to a ResolvedMemberImpl
+		if (kind!=AdviceKind.Around  || 
+			((dType instanceof ResolvedType) && ((ResolvedType)dType).getWorld().isXnoInline())) {
+			if (m instanceof BcelMethod) {
+				BcelMethod bm = (BcelMethod)m;
+				if (bm.getMethod()!=null && bm.getMethod().getAnnotations()!=null) return m;
+				ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(),bm.getDeclaringType(),
+						                                       bm.getModifiers(),bm.getReturnType(),bm.getName(),
+						                                       bm.getParameterTypes());//,bm.getExceptions(),bm.getBackingGenericMember());
+				simplermember.setParameterNames(bm.getParameterNames());
+				return simplermember;
+			}
+		}
+		return m;
 	}
 
     // ---- implementations of ShadowMunger's methods
@@ -185,6 +211,7 @@ public class BcelAdvice extends Advice {
 
 		if (concreteAspect.getWorld().isXnoInline()) return false;
     	//System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
+	//	if (BcelWorld.getBcelObjectType(concreteAspect).getJavaClass()==null) return true; // been evicted... CUSTARD
     	return BcelWorld.getBcelObjectType(concreteAspect).getLazyClassGen().isWoven();
     }
 
