@@ -17,12 +17,12 @@ import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.ClassGen;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.annotation.ClassElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.annotation.ClassElementValueGen;
-import org.aspectj.apache.bcel.generic.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.generic.annotation.EnumElementValueGen;
-import org.aspectj.apache.bcel.generic.annotation.SimpleElementValueGen;
 
 public class ElementValueGenTest extends BcelTestCase {
 
@@ -40,7 +40,7 @@ public class ElementValueGenTest extends BcelTestCase {
 
 	public void testCreateIntegerElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT,cp,555);
 		// Creation of an element like that should leave a new entry in the cpool
@@ -51,7 +51,7 @@ public class ElementValueGenTest extends BcelTestCase {
 
 	public void testCreateFloatElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_FLOAT,cp,111.222f);
 		// Creation of an element like that should leave a new entry in the cpool
@@ -62,7 +62,7 @@ public class ElementValueGenTest extends BcelTestCase {
 	
 	public void testCreateDoubleElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_DOUBLE,cp,333.44);
 		// Creation of an element like that should leave a new entry in the cpool
@@ -74,7 +74,7 @@ public class ElementValueGenTest extends BcelTestCase {
 	
 	public void testCreateLongElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_LONG,cp,3334455L);
 		// Creation of an element like that should leave a new entry in the cpool
@@ -86,7 +86,7 @@ public class ElementValueGenTest extends BcelTestCase {
 
 	public void testCreateCharElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_CHAR,cp,(char)'t');
 		// Creation of an element like that should leave a new entry in the cpool
@@ -98,7 +98,7 @@ public class ElementValueGenTest extends BcelTestCase {
 	
 	public void testCreateByteElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_CHAR,cp,(byte)'z');
 		// Creation of an element like that should leave a new entry in the cpool
@@ -110,7 +110,7 @@ public class ElementValueGenTest extends BcelTestCase {
 
 	public void testCreateBooleanElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_BOOLEAN,cp,true);
 		// Creation of an element like that should leave a new entry in the cpool
@@ -122,7 +122,7 @@ public class ElementValueGenTest extends BcelTestCase {
 
 	public void testCreateShortElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_SHORT,cp,(short)42);
 		// Creation of an element like that should leave a new entry in the cpool
@@ -139,7 +139,7 @@ public class ElementValueGenTest extends BcelTestCase {
 
 		// Create HelloWorld
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.STRING,cp,"hello");
 		// Creation of an element like that should leave a new entry in the cpool
@@ -153,7 +153,7 @@ public class ElementValueGenTest extends BcelTestCase {
 	
 	public void testCreateEnumElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 
 		ObjectType enumType = new ObjectType("SimpleEnum"); // Supports rainbow :)
@@ -176,7 +176,7 @@ public class ElementValueGenTest extends BcelTestCase {
 	
 	public void testCreateClassElementValue() {
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		ObjectType classType = new ObjectType("java.lang.Integer");
 		
@@ -192,7 +192,7 @@ public class ElementValueGenTest extends BcelTestCase {
 	////
 	// Helper methods
 	
-	private void checkSerialize(ElementValueGen evgBefore,ConstantPoolGen cpg) {
+	private void checkSerialize(ElementValueGen evgBefore,ConstantPool cpg) {
 		try {
 		  String beforeValue = evgBefore.stringifyValue();
 		  ByteArrayOutputStream baos = new ByteArrayOutputStream();
