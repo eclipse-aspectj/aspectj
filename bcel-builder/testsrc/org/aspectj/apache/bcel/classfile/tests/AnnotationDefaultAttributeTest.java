@@ -15,8 +15,8 @@ package org.aspectj.apache.bcel.classfile.tests;
 import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 
 public class AnnotationDefaultAttributeTest extends BcelTestCase {
 
@@ -35,9 +35,9 @@ public class AnnotationDefaultAttributeTest extends BcelTestCase {
 		
 		Method m = getMethod(clazz,"fruit");
 		AnnotationDefault a = (AnnotationDefault) findAttribute("AnnotationDefault",m.getAttributes());
-		SimpleElementValueGen val = (SimpleElementValueGen) a.getElementValue();
+		SimpleElementValue val = (SimpleElementValue) a.getElementValue();
 		assertTrue("Should be STRING but is "+val.getElementValueType(),
-				val.getElementValueType()==ElementValueGen.STRING);
+				val.getElementValueType()==ElementValue.STRING);
 		assertTrue("Should have default of bananas but default is "+val.getValueString(),
 				val.getValueString().equals("bananas"));
 	}

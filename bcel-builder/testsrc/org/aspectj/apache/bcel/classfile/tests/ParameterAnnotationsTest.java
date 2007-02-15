@@ -17,25 +17,28 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.generic.ALOAD;
+import org.aspectj.apache.bcel.generic.ASTORE;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.ClassGen;
-import org.aspectj.apache.bcel.classfile.ConstantPool;
-import org.aspectj.apache.bcel.classfile.annotation.AnnotationElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
-import org.aspectj.apache.bcel.generic.InstructionBranch;
+import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.generic.GOTO;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
-import org.aspectj.apache.bcel.generic.InstructionLV;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.LocalVariableGen;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
+import org.aspectj.apache.bcel.generic.PUSH;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationElementValueGen;
+import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.generic.annotation.ArrayElementValueGen;
+import org.aspectj.apache.bcel.generic.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.generic.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.generic.annotation.SimpleElementValueGen;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
 /**
@@ -63,7 +66,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 	 */
 	public void testParameterAnnotations_builtOK() {
 		ClassGen clg        = createClassGen("HelloWorld");
-		ConstantPool cpg = clg.getConstantPool();
+		ConstantPoolGen cpg = clg.getConstantPool();
 		InstructionList il  = new InstructionList();
 		
 		buildClassContentsWithAnnotatedMethods(clg,cpg,il,true);
@@ -72,7 +75,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		assertTrue("Class should have 2 methods but has "+i,i==2);
 		
 		Method mainMethod = clg.getMethods()[0];
-		AnnotationGen[] annos = mainMethod.getAnnotationsOnParameter(0);
+		Annotation[] annos = mainMethod.getAnnotationsOnParameter(0);
 		assertTrue("Should be two annotation on the 'argv' parameter to main() but there are "+annos.length,annos.length==2);
 		assertTrue("This annotation should contain the string 'fruit=Apples' but it is "+annos[0].toString(),
 				   annos[0].toString().indexOf("fruit=Apples")!=-1);
@@ -87,7 +90,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 	 */
 	public void testParameterAnnotations_savedAndLoadedOK() throws ClassNotFoundException {
 		ClassGen clg        = createClassGen("HelloWorld");
-		ConstantPool cpg = clg.getConstantPool();
+		ConstantPoolGen cpg = clg.getConstantPool();
 		InstructionList il  = new InstructionList();
 		
 		buildClassContentsWithAnnotatedMethods(clg,cpg,il,true);
@@ -102,7 +105,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		assertTrue("Class should have 2 methods but has "+i,i==2);
 		
 		Method mainMethod = clg.getMethods()[0];
-		AnnotationGen[] annos = mainMethod.getAnnotationsOnParameter(0);
+		Annotation[] annos = mainMethod.getAnnotationsOnParameter(0);
 		assertTrue("Should be two annotation on the 'argv' parameter to main() but there are "+annos.length,annos.length==2);
 		assertTrue("This annotation should contain the string 'fruit=Apples' but it is "+annos[0].toString(),
 				   annos[0].toString().indexOf("fruit=Apples")!=-1);
@@ -121,7 +124,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		JavaClass jc = getClassFrom("testcode.jar","AnnotatedParameters");
 		
 		ClassGen clg = new ClassGen(jc);
-		ConstantPool cpg = clg.getConstantPool();
+		ConstantPoolGen cpg = clg.getConstantPool();
 		
 		//
 		// Foo method looks like this:
@@ -168,8 +171,8 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		JavaClass jc2 = getClassFrom("temp2","AnnotatedParameters");
 
 		m = jc2.getMethods()[2];
-		AnnotationGen[] p1annotations = m.getAnnotationsOnParameter(0);
-		AnnotationGen[] p2annotations = m.getAnnotationsOnParameter(1);
+		Annotation[] p1annotations = m.getAnnotationsOnParameter(0);
+		Annotation[] p2annotations = m.getAnnotationsOnParameter(1);
 		
 		assertTrue("Expected two annotations on the first parameter but found "+p1annotations.length,p1annotations.length==2);
 		assertTrue("Expected two annotations on the second parameter but found "+p2annotations.length,p2annotations.length==2);
@@ -190,7 +193,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 	public void testParameterAnnotations_loadedThenModifiedWithInvisibleAnnotationThenSavedAndLoadedOK() throws ClassNotFoundException {
 		JavaClass jc = getClassFrom("testcode.jar","AnnotatedParameters");
 		ClassGen clg = new ClassGen(jc);
-		ConstantPool cpg = clg.getConstantPool();
+		ConstantPoolGen cpg = clg.getConstantPool();
 		
 		//
 		// Foo method looks like this:
@@ -239,8 +242,8 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		JavaClass jc2 = getClassFrom("temp3","AnnotatedParameters");
 
 		m = jc2.getMethods()[2];
-		AnnotationGen[] p1annotations = m.getAnnotationsOnParameter(0);
-		AnnotationGen[] p2annotations = m.getAnnotationsOnParameter(1);
+		Annotation[] p1annotations = m.getAnnotationsOnParameter(0);
+		Annotation[] p2annotations = m.getAnnotationsOnParameter(1);
 		
 		assertTrue("Expected two annotations on the first parameter but found "+p1annotations.length,p1annotations.length==2);
 		assertTrue("Expected two annotations on the second parameter but found "+p2annotations.length,p2annotations.length==2);
@@ -291,7 +294,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		dumpClass(cg,dir+File.separator+fname);
 	}
 
-	private void buildClassContentsWithAnnotatedMethods(ClassGen cg, ConstantPool cp, InstructionList il,boolean addParameterAnnotations) {
+	private void buildClassContentsWithAnnotatedMethods(ClassGen cg, ConstantPoolGen cp, InstructionList il,boolean addParameterAnnotations) {
 		// Create method 'public static void main(String[]argv)'
 		MethodGen mg = createMethodGen("main",il,cp);
 		InstructionFactory factory = new InstructionFactory(cg);
@@ -320,14 +323,14 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		LocalVariableGen lg = mg.addLocalVariable("in", new ObjectType(
 				"java.io.BufferedReader"), null, null);
 		int in = lg.getIndex();
-		lg.setStart(il.append(InstructionFactory.createASTORE(in))); // "in" valid from here
+		lg.setStart(il.append(new ASTORE(in))); // "in" valid from here
 
 		//	Create local variable name and initialize it to null
 
 		lg = mg.addLocalVariable("name", Type.STRING, null, null);
 		int name = lg.getIndex();
 		il.append(InstructionConstants.ACONST_NULL);
-		lg.setStart(il.append(InstructionFactory.createASTORE(name))); // "name" valid from here
+		lg.setStart(il.append(new ASTORE(name))); // "name" valid from here
 
 		//	Create try-catch block: We remember the start of the block, read a
 		// line from the standard input and store it into the variable name .
@@ -342,13 +345,13 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 //		il.append(new ALOAD(in));
 //		il.append(factory.createInvoke("java.io.BufferedReader", "readLine",
 //				Type.STRING, Type.NO_ARGS, Constants.INVOKEVIRTUAL));
-		InstructionHandle try_start = il.append(InstructionFactory.PUSH(cp,"Andy"));
-		il.append(InstructionFactory.createASTORE(name));
+		InstructionHandle try_start = il.append(new PUSH(cp,"Andy"));
+		il.append(new ASTORE(name));
 
 		// Upon normal execution we jump behind exception handler, the target
 		// address is not known yet.
 
-		InstructionBranch g = new InstructionBranch(Constants.GOTO);
+		GOTO g = new GOTO(null);
 		InstructionHandle try_end = il.append(g);
 
 		//	We add the exception handler which simply returns from the method.
@@ -356,7 +359,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		LocalVariableGen var_ex = mg.addLocalVariable("ex",Type.getType("Ljava.io.IOException;"),null,null);
 		int var_ex_slot = var_ex.getIndex();
 		
-		InstructionHandle handler = il.append(InstructionFactory.createASTORE(var_ex_slot));
+		InstructionHandle handler = il.append(new ASTORE(var_ex_slot));
 		var_ex.setStart(handler);
 		var_ex.setEnd(il.append(InstructionConstants.RETURN));
 		
@@ -375,12 +378,12 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 		il.append(factory.createNew(Type.STRINGBUFFER));
 		il.append(InstructionConstants.DUP);
-		il.append(InstructionFactory.PUSH(cp, "Hello, "));
+		il.append(new PUSH(cp, "Hello, "));
 		il
 				.append(factory.createInvoke("java.lang.StringBuffer",
 						"<init>", Type.VOID, new Type[] { Type.STRING },
 						Constants.INVOKESPECIAL));
-		il.append(new InstructionLV(Constants.ALOAD,name));
+		il.append(new ALOAD(name));
 		il.append(factory.createInvoke("java.lang.StringBuffer", "append",
 				Type.STRINGBUFFER, new Type[] { Type.STRING },
 				Constants.INVOKEVIRTUAL));
@@ -405,7 +408,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		cg.addEmptyConstructor(Constants.ACC_PUBLIC);
 	}
 	
-	private void buildClassContents(ClassGen cg, ConstantPool cp, InstructionList il) {
+	private void buildClassContents(ClassGen cg, ConstantPoolGen cp, InstructionList il) {
 		// Create method 'public static void main(String[]argv)'
 		MethodGen mg = createMethodGen("main",il,cp);
 		InstructionFactory factory = new InstructionFactory(cg);
@@ -433,14 +436,14 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		LocalVariableGen lg = mg.addLocalVariable("in", new ObjectType(
 				"java.io.BufferedReader"), null, null);
 		int in = lg.getIndex();
-		lg.setStart(il.append(InstructionFactory.createASTORE(in))); // "in" valid from here
+		lg.setStart(il.append(new ASTORE(in))); // "in" valid from here
 
 		//	Create local variable name and initialize it to null
 
 		lg = mg.addLocalVariable("name", Type.STRING, null, null);
 		int name = lg.getIndex();
 		il.append(InstructionConstants.ACONST_NULL);
-		lg.setStart(il.append(InstructionFactory.createASTORE(name))); // "name" valid from here
+		lg.setStart(il.append(new ASTORE(name))); // "name" valid from here
 
 		//	Create try-catch block: We remember the start of the block, read a
 		// line from the standard input and store it into the variable name .
@@ -455,13 +458,13 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 //		il.append(new ALOAD(in));
 //		il.append(factory.createInvoke("java.io.BufferedReader", "readLine",
 //				Type.STRING, Type.NO_ARGS, Constants.INVOKEVIRTUAL));
-		InstructionHandle try_start = il.append(InstructionFactory.PUSH(cp,"Andy"));
-		il.append(InstructionFactory.createASTORE(name));
+		InstructionHandle try_start = il.append(new PUSH(cp,"Andy"));
+		il.append(new ASTORE(name));
 
 		// Upon normal execution we jump behind exception handler, the target
 		// address is not known yet.
 
-		InstructionBranch g = new InstructionBranch(Constants.GOTO);
+		GOTO g = new GOTO(null);
 		InstructionHandle try_end = il.append(g);
 
 		//	We add the exception handler which simply returns from the method.
@@ -469,7 +472,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		LocalVariableGen var_ex = mg.addLocalVariable("ex",Type.getType("Ljava.io.IOException;"),null,null);
 		int var_ex_slot = var_ex.getIndex();
 		
-		InstructionHandle handler = il.append(InstructionFactory.createASTORE(var_ex_slot));
+		InstructionHandle handler = il.append(new ASTORE(var_ex_slot));
 		var_ex.setStart(handler);
 		var_ex.setEnd(il.append(InstructionConstants.RETURN));
 		
@@ -488,12 +491,12 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 		il.append(factory.createNew(Type.STRINGBUFFER));
 		il.append(InstructionConstants.DUP);
-		il.append(InstructionFactory.PUSH(cp, "Hello, "));
+		il.append(new PUSH(cp, "Hello, "));
 		il
 				.append(factory.createInvoke("java.lang.StringBuffer",
 						"<init>", Type.VOID, new Type[] { Type.STRING },
 						Constants.INVOKESPECIAL));
-		il.append(InstructionFactory.createALOAD(name));
+		il.append(new ALOAD(name));
 		il.append(factory.createInvoke("java.lang.StringBuffer", "append",
 				Type.STRINGBUFFER, new Type[] { Type.STRING },
 				Constants.INVOKEVIRTUAL));
@@ -532,7 +535,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 				"<generated>", Constants.ACC_PUBLIC | Constants.ACC_SUPER, null);
 	}
 	
-	private MethodGen createMethodGen(String methodname,InstructionList il,ConstantPool cp) {
+	private MethodGen createMethodGen(String methodname,InstructionList il,ConstantPoolGen cp) {
 		return new MethodGen(
 				Constants.ACC_STATIC | Constants.ACC_PUBLIC,  // access flags
 				Type.VOID,                                    // return type
@@ -543,7 +546,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 	}
 
 	
-	public AnnotationGen createSimpleVisibleAnnotation(ConstantPool cp) {
+	public AnnotationGen createSimpleVisibleAnnotation(ConstantPoolGen cp) {
 		SimpleElementValueGen evg = new SimpleElementValueGen(
 				ElementValueGen.PRIMITIVE_INT, cp, 4);
 
@@ -558,7 +561,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		return a;
 	}
 		
-	public AnnotationGen createCombinedAnnotation(ConstantPool cp) {
+	public AnnotationGen createCombinedAnnotation(ConstantPoolGen cp) {
 		// Create an annotation instance
 		AnnotationGen a = createSimpleVisibleAnnotation(cp);
 		ArrayElementValueGen array = new ArrayElementValueGen(cp);
@@ -569,7 +572,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		return new AnnotationGen(new ObjectType("CombinedAnnotation"),elements,true,cp);
 	}
 	
-	public AnnotationGen createSimpleInvisibleAnnotation(ConstantPool cp) {
+	public AnnotationGen createSimpleInvisibleAnnotation(ConstantPoolGen cp) {
 		SimpleElementValueGen evg = new SimpleElementValueGen(
 				ElementValueGen.PRIMITIVE_INT, cp, 4);
 
