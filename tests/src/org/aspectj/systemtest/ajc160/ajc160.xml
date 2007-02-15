@@ -5,6 +5,26 @@
 
  <!-- first section - dont need a 1.6 vm but fixed in the 1.6 branch of AspectJ -->
  
+   <ajc-test dir="bugs160/pr171953" title="problem with itd and join point signature collection - bad">
+     <compile options="-1.5 -showWeaveInfo" files="test/AbstractExecutable.java,test/AnotherExecutable.java,test/Executable.java,test/ExecutionAspect.aj,test/SecondTestExecutable.java test/SubTestExecutable.java test/TestExecutable.java">
+       <message kind="weave" text="Join point 'method-execution(void test.SecondTestExecutable.execute())' in Type 'test.SecondTestExecutable' (SecondTestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
+       <message kind="weave" text="Extending interface set for type 'test.AbstractExecutable' (AbstractExecutable.java) to include 'java.io.Serializable' (ExecutionAspect.aj)"/>
+       <message kind="weave" text="Join point 'method-execution(void test.SubTestExecutable.execute())' in Type 'test.SubTestExecutable' (SubTestExecutable.java:6) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
+       <message kind="weave" text="Join point 'method-execution(void test.TestExecutable.execute())' in Type 'test.TestExecutable' (TestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
+     </compile>       
+     <run class="test.SecondTestExecutable"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr171953" title="problem with itd and join point signature collection - ok">
+     <compile options="-1.5 -showWeaveInfo" files="test/SecondTestExecutable.java test/AbstractExecutable.java test/AnotherExecutable.java  test/Executable.java test/ExecutionAspect.aj test/RunnableAspect.aj test/SubTestExecutable.java test/TestExecutable.java">
+       <message kind="weave" text="Join point 'method-execution(void test.SecondTestExecutable.execute())' in Type 'test.SecondTestExecutable' (SecondTestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
+       <message kind="weave" text="Extending interface set for type 'test.AbstractExecutable' (AbstractExecutable.java) to include 'java.io.Serializable' (ExecutionAspect.aj)"/>
+       <message kind="weave" text="Join point 'method-execution(void test.SubTestExecutable.execute())' in Type 'test.SubTestExecutable' (SubTestExecutable.java:6) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
+       <message kind="weave" text="Join point 'method-execution(void test.TestExecutable.execute())' in Type 'test.TestExecutable' (TestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
+     </compile>       
+     <run class="test.SecondTestExecutable"/>
+   </ajc-test>
+
     <ajc-test dir="bugs160/pr171952" title="generic methods and ITDs">
       <compile files="Foo.java,FooAspect.java" options="-1.5"/>
     </ajc-test>

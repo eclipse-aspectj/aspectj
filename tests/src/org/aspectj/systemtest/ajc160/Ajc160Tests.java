@@ -21,6 +21,8 @@ import junit.framework.Test;
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+  public void testItdAndJoinpointSignatureCollection_ok_pr171953() { runTest("problem with itd and join point signature collection - ok");}
+  public void testItdAndJoinpointSignatureCollection_bad_pr171953() { runTest("problem with itd and join point signature collection - bad");}
   public void testGenericMethodsAndItds_pr171952() { runTest("generic methods and ITDs");}
   //public void testUsingDecpAnnotationWithoutAspectAnnotation_pr169428() { runTest("using decp annotation without aspect annotation");}
   public void testItdsParameterizedParameters_pr170467() { runTest("itds and parameterized parameters");}
