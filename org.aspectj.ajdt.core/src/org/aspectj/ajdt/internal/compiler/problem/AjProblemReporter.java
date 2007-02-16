@@ -377,8 +377,12 @@ public class AjProblemReporter extends ProblemReporter {
 	    	for (Iterator i = itMungers.iterator(); i.hasNext(); ) {
 				ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 				ResolvedMember sig = m.getSignature();
+				if (sig==null) continue; // we aren't interested in other kinds of munger
+				UnresolvedType dType = sig.getDeclaringType();
+				if (dType==null) continue;
+				ResolvedType resolvedDeclaringType = dType.resolve(factory.getWorld());
 				ResolvedMember rm = AjcMemberMaker.interMethod(sig,m.getAspectType(),
-						sig.getDeclaringType().resolve(factory.getWorld()).isInterface());
+						resolvedDeclaringType.isInterface());
 				if (ResolvedType.matches(rm,possiblyErroneousRm)) {
 					// match, so dont need to report a problem!
 					return;
