@@ -14,6 +14,7 @@
 package org.aspectj.tools.ant.taskdefs;
 
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 
@@ -34,21 +35,22 @@ public class AjdocTest extends TestCase {
         Ajdoc task = new Ajdoc();
         Project p = new Project();
         task.setProject(p);
-        // XXX restore when ajdoc is restored
-//        task.setSource("1.4");
-//        task.setSourcepath(new Path(p, "testdata"));
-//        task.setIncludes("Ajdoc14Source.java");
-//        task.setDestdir("bin/AjdocTest");
-//        task.setClasspath(new Path(p, "../lib/test/aspectjrt.jar"));
+        task.setSource("1.4");
+        Path ppath = new Path(p,"../taskdefs/testdata");
+        task.setSourcepath(ppath);
+        task.setIncludes("Ajdoc14Source.java");
+        task.setDestdir("bin/AjdocTest");
+        task.setClasspath(new Path(p, "../lib/test/aspectjrt.jar"));
         task.execute();
     }
-//    public void testHelp() {
-//        Ajdoc task = new Ajdoc();
-//        Project p = new Project();
-//        task.setProject(p);
-//        task.setSourcepath(new Path(p, "testdata"));
-//        task.setIncludes("none");
-//        task.setDestdir("bin/AjdocTest");
-//        task.execute();
-//    }
+    
+    public void testHelp() {
+        Ajdoc task = new Ajdoc();
+        Project p = new Project();
+        task.setProject(p);
+        task.setSourcepath(new Path(p, "../taskdefs/testdata"));
+        task.setIncludes("none");
+        task.setDestdir("bin/AjdocTest");
+        task.execute();
+    }
 }
