@@ -567,7 +567,7 @@ public class EclipseFactory {
 		TypeBinding ret = null;
 		
 		// looking up type variables can get us into trouble
-		if (!typeX.isTypeVariableReference()) {
+		if (!typeX.isTypeVariableReference() && !isParameterizedWithTypeVariables(typeX)) {
 			if (typeX.isRawType()) {
 				ret = (TypeBinding)rawTypeXToBinding.get(typeX);
 			} else {
@@ -592,6 +592,19 @@ public class EclipseFactory {
 		}
 		return ret;
 	}
+	
+	// return true if this is type variables are in the type arguments
+	private boolean isParameterizedWithTypeVariables(UnresolvedType typeX) {
+		if (!typeX.isParameterizedType()) return false;
+		UnresolvedType[] typeArguments = typeX.getTypeParameters();
+		if (typeArguments!=null) {
+			for (int i = 0; i < typeArguments.length; i++) {
+				if (typeArguments[i].isTypeVariableReference()) return true;
+			}
+		}
+		return false;
+	}
+
 	// When converting a parameterized type from our world to the eclipse world, these get set so that
 	// resolution of the type parameters may known in what context it is occurring (pr114744)
 	private ReferenceBinding baseTypeForParameterizedType;
