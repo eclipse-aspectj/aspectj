@@ -21,6 +21,8 @@ import junit.framework.Test;
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+  public void testGenericMethodsAndOrdering_ok_pr171953_2() { runTest("problem with generic methods and ordering - ok");}
+  public void testGenericMethodsAndOrdering_bad_pr171953_2() { runTest("problem with generic methods and ordering - bad");}
   public void testItdAndJoinpointSignatureCollection_ok_pr171953() { runTest("problem with itd and join point signature collection - ok");}
   public void testItdAndJoinpointSignatureCollection_bad_pr171953() { runTest("problem with itd and join point signature collection - bad");}
   public void testGenericMethodsAndItds_pr171952() { runTest("generic methods and ITDs");}

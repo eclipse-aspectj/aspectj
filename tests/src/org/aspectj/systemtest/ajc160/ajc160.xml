@@ -5,6 +5,16 @@
 
  <!-- first section - dont need a 1.6 vm but fixed in the 1.6 branch of AspectJ -->
  
+   <ajc-test dir="bugs160/pr171953_2" title="problem with generic methods and ordering - ok">
+	 <compile options="-1.5" files="test/ListFactoryAspect.aj, test/AbstractProcessor.java,test/ListFactory.java,test/ListFactoryConsumer.java,test/Processor.java,test/SimpleListFactoryConsumer.java">
+	 </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr171953_2" title="problem with generic methods and ordering - bad">
+	 <compile options="-1.5" files="test/ListFactory.java,test/ListFactoryConsumer.java,test/SimpleListFactoryConsumer.java,test/Processor.java,test/ListFactoryAspect.aj,test/AbstractProcessor.java">
+	 </compile>
+   </ajc-test>
+
    <ajc-test dir="bugs160/pr171953" title="problem with itd and join point signature collection - bad">
      <compile options="-1.5 -showWeaveInfo" files="test/AbstractExecutable.java,test/AnotherExecutable.java,test/Executable.java,test/ExecutionAspect.aj,test/SecondTestExecutable.java test/SubTestExecutable.java test/TestExecutable.java">
        <message kind="weave" text="Join point 'method-execution(void test.SecondTestExecutable.execute())' in Type 'test.SecondTestExecutable' (SecondTestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
