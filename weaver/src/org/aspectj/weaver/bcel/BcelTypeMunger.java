@@ -520,8 +520,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				return true;
 				//throw new BCException("no match for " + member + " in " + gen);
 			} else if (member.getKind() == Member.STATIC_INITIALIZATION) {
-				gen.forcePublic();
-				return true;
+				return gen.forcePublic();
 			} else {
 				throw new RuntimeException("unimplemented");
 			}

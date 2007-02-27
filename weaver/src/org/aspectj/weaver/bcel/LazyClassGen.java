@@ -1321,8 +1321,10 @@ public final class LazyClassGen {
 	}
 	
 	
-	public void forcePublic() {
+	public boolean forcePublic() {
+		if (myGen.isPublic()) return false;
 		myGen.setAccessFlags(Utility.makePublic(myGen.getAccessFlags()));
+		return true;
 	}
 
 	
