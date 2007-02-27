@@ -2386,7 +2386,17 @@ public class BcelShadow extends Shadow {
 			extraParamOffset += thisJoinPointVar.getType().getSize();
 		}
         
-        Type[] adviceParameterTypes = adviceMethod.getArgumentTypes();
+		// We use the munger signature here because it allows for any parameterization of the mungers pointcut that
+		// may have occurred ie. if the pointcut is p(T t) in the super aspect and that has become p(Foo t) in the sub aspect
+		// then here the munger signature will have 'Foo' as an argument in it whilst the adviceMethod argument type will be 'Object' - since
+		// it represents the advice method in the superaspect which uses the erasure of the type variable p(Object t) - see pr174449.
+		
+        Type[] adviceParameterTypes = 
+          BcelWorld.makeBcelTypes(munger.getSignature().getParameterTypes());
+//        adviceMethod.getArgumentTypes();
+        adviceMethod.getArgumentTypes(); // forces initialization ... dont like this but seems to be required for some tests to pass, I think that means 
+                                         // there is a LazyMethodGen method that is not correctly setup to call initialize() when it is invoked - but I dont have
+                                         // time right now to discover which
         Type[] extractedMethodParameterTypes = extractedMethod.getArgumentTypes();
 		Type[] parameterTypes =
 			new Type[extractedMethodParameterTypes.length
