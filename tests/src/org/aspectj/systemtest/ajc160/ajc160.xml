@@ -5,6 +5,26 @@
 
  <!-- first section - dont need a 1.6 vm but fixed in the 1.6 branch of AspectJ -->
  
+   <ajc-test dir="bugs160/pr174449" title="problem with generic aspect and generic pointcut">
+     <compile options="-1.5" files="Foo.java"/>
+     <run class="Foo">
+       <stderr>
+         <line text="around advice executing: servant class is class Boo"/>
+         <line text="around advice executing: servant class is class Goo"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr174449" title="problem with generic aspect and generic pointcut - noinline">
+     <compile options="-1.5 -XnoInline" files="Foo.java"/>
+     <run class="Foo">
+       <stderr>
+         <line text="around advice executing: servant class is class Boo"/>
+         <line text="around advice executing: servant class is class Goo"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="bugs160/pr171953_2" title="problem with generic methods and ordering - ok">
 	 <compile options="-1.5" files="test/ListFactoryAspect.aj, test/AbstractProcessor.java,test/ListFactory.java,test/ListFactoryConsumer.java,test/Processor.java,test/SimpleListFactoryConsumer.java">
 	 </compile>

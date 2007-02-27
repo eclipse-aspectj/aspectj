@@ -21,6 +21,8 @@ import junit.framework.Test;
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+  public void testGenericAspectGenericPointcut_pr174449() { runTest("problem with generic aspect and generic pointcut");}
+  public void testGenericAspectGenericPointcut_noinline_pr174449() { runTest("problem with generic aspect and generic pointcut - noinline");}
   public void testGenericMethodsAndOrdering_ok_pr171953_2() { runTest("problem with generic methods and ordering - ok");}
   public void testGenericMethodsAndOrdering_bad_pr171953_2() { runTest("problem with generic methods and ordering - bad");}
   public void testItdAndJoinpointSignatureCollection_ok_pr171953() { runTest("problem with itd and join point signature collection - ok");}
