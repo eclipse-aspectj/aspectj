@@ -5,6 +5,10 @@
 
  <!-- first section - dont need a 1.6 vm but fixed in the 1.6 branch of AspectJ -->
  
+   <ajc-test dir="bugs160/pr175806" title="coping with bad tables">
+     <compile options="-1.5" files="A.java"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs160/pr174449" title="problem with generic aspect and generic pointcut">
      <compile options="-1.5" files="Foo.java"/>
      <run class="Foo">
