@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.7 2006/02/21 10:49:15 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.8 2007/02/28 13:10:32 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -275,17 +275,16 @@ public class MethodGen extends FieldGenOrMethodGen {
 							int lnum = l.getLineNumber();
 							if (lnum>highestLineNumber) highestLineNumber=lnum;
 							LineNumberTag lt = new LineNumberTag(lnum);
-							il.findHandle(l.getStartPC(),arrayOfInstructions).addTargeter(lt);
+							il.findHandle(l.getStartPC(),arrayOfInstructions,true).addTargeter(lt);
 						}
 					} else {
 						for (int k = 0; k < ln.length; k++) {
 							LineNumber l = ln[k];
-							addLineNumber(il.findHandle(l.getStartPC(),arrayOfInstructions),
+							addLineNumber(il.findHandle(l.getStartPC(),arrayOfInstructions,true),
 									l.getLineNumber());
 						}
 					}
 				} else if (a instanceof LocalVariableTable) {
-					
 					// Lets have a go at creating Tags directly
 					if (useTags) {
 						LocalVariable[] lv = ((LocalVariableTable) a).getLocalVariableTable();
@@ -294,7 +293,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 							LocalVariable l = lv[k];
 							Type t = Type.getType(l.getSignature());
 							LocalVariableTag lvt = new LocalVariableTag(t,l.getSignature(),l.getName(),l.getIndex(),l.getStartPC());
-							InstructionHandle start = il.findHandle(l.getStartPC(), arrayOfInstructions);
+							InstructionHandle start = il.findHandle(l.getStartPC(), arrayOfInstructions,true);
 							byte b = t.getType();
 							if (b!= Constants.T_ADDRESS) {
 								int increment = t.getSize();
