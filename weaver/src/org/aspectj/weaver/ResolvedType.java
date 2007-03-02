@@ -286,7 +286,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
             boolean shouldSkip = false;
             for (int j = 0; j < rtx.interTypeMungers.size(); j++) {
                 ConcreteTypeMunger munger = (ConcreteTypeMunger) rtx.interTypeMungers.get(j);
-                if (munger.getMunger()!=null && munger.getMunger().getKind() == ResolvedTypeMunger.Parent) {
+                if (munger.getMunger()!=null && munger.getMunger().getKind() == ResolvedTypeMunger.Parent 
+                		&& ((NewParentTypeMunger)munger.getMunger()).getNewParent().equals(iface) // pr171953
+                		) {
                     shouldSkip = true;
                     break;
                 }
