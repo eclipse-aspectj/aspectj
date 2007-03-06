@@ -278,6 +278,7 @@ public class ReferenceType extends ResolvedType {
     
     // true iff the statement "this = other" would compile.
     public final boolean isAssignableFrom(ResolvedType other,boolean allowMissing) {
+    	if (other==null) return false; // not sure this should ever happen
        	if (other.isPrimitiveType()) {
     		if (!world.isInJava5Mode()) return false;
     		if (ResolvedType.validBoxing.contains(this.getSignature()+other.getSignature())) return true;

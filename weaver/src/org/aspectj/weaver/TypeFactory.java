@@ -123,7 +123,7 @@ public class TypeFactory {
 				// the type parameters of interest are only those that apply to the 'last type' in the signature
 				// if the signature is 'PMyInterface<String>$MyOtherType;' then there are none...
 				String lastType = null;
-				int nestedTypePosition = signature.indexOf("$");
+				int nestedTypePosition = signature.indexOf("$", endOfParams); // don't look for $ INSIDE the parameters
 				if (nestedTypePosition!=-1) lastType = signature.substring(nestedTypePosition+1);
 				else                        lastType = new String(signature);
 				startOfParams = lastType.indexOf("<");
