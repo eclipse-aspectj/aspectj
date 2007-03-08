@@ -130,7 +130,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             }
         };
 
-        List definitions = parseDefinitions(classLoader);
+        List definitions = weavingContext.getDefinitions(classLoader,this);
         if (definitions.isEmpty()) {
         	disable(); // TODO maw Needed to ensure messages are flushed
         	if (trace.isTraceEnabled()) trace.exit("initialize",definitions);
@@ -178,7 +178,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @param weaver
      * @param loader
      */
-    private List parseDefinitions(final ClassLoader loader) {
+    List parseDefinitions(final ClassLoader loader) {
         if (trace.isTraceEnabled()) trace.enter("parseDefinitions",this,loader);
 
         List definitions = new ArrayList();
