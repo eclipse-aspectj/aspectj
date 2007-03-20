@@ -34,6 +34,8 @@ import org.aspectj.apache.bcel.generic.DUP;
 import org.aspectj.apache.bcel.generic.DUP_X1;
 import org.aspectj.apache.bcel.generic.DUP_X2;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
+import org.aspectj.apache.bcel.generic.IMPDEP1;
+import org.aspectj.apache.bcel.generic.IMPDEP2;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
 import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
 import org.aspectj.apache.bcel.generic.INVOKESTATIC;
@@ -263,12 +265,32 @@ public class BcelShadow extends Shadow {
 		} else if (endHandle.getInstruction() instanceof DUP_X1) {
 			InstructionHandle dupHandle = endHandle;
 			endHandle = endHandle.getNext();
+
+			// skip any IMPDEP1s
+			int skipped=0;
+			if (!(endHandle.getInstruction() instanceof SWAP)) {
+				// skip impdeps...
+				while (endHandle!=null && ((endHandle.getInstruction() instanceof IMPDEP1) ||
+										    (endHandle.getInstruction() instanceof IMPDEP2))) {
+					endHandle = endHandle.getNext();
+					skipped++;
+				}
+			}	
+			
 			nextHandle = endHandle.getNext();
+			// Brad reported a problem with an IMPDEP being endHandle here, perhaps we should skip
+			// over any of those to the next valid instruction??
+			
 			if (endHandle.getInstruction() instanceof SWAP) {}
 			else {
 				// XXX see next XXX comment
-				throw new RuntimeException("Unhandled kind of new " + endHandle);
+				String extraDebug = "";
+				if (getEnclosingMethod()!=null) {
+					extraDebug = "Class:"+getEnclosingMethod().getClassName()+" Method:"+getEnclosingMethod().toShortString();
+				}
+				throw new RuntimeException("Unhandled kind of new " + endHandle+" after skipping "+skipped+" instructions.  "+extraDebug);
 			}
+			
 			// Now make any jumps to the 'new', the 'dup' or the 'end' now target the nextHandle
 			retargetFrom(newHandle, nextHandle);
 			retargetFrom(dupHandle, nextHandle);
