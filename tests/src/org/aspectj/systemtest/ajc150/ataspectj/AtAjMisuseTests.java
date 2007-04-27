@@ -42,6 +42,7 @@ public class AtAjMisuseTests extends XMLBasedAjcTestCase {
 		runTest("@Pointcut not returning void");
 	}
 
+	// test fails if the pointcut parserexception is allowed to get out...
 	public void testQPointcutWithGarbageString() {
 		runTest("@Pointcut with garbage string");
 	}
