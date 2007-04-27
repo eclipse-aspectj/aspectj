@@ -1731,7 +1731,8 @@ public class AtAjAttributes {
         } catch (ParserException e) {
             reportError("Invalid pointcut '" + pointcutString + "': " + e.toString() +
             		(e.getLocation()==null?"":" at position "+e.getLocation().getStart()), struct);
-            return null;
+            throw e;
+//            return null;
         }
     }
     
