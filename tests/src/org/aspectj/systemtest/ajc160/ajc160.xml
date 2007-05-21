@@ -139,6 +139,11 @@
         </run>
     </ajc-test>
     
+    <ajc-test dir="bugs160/pr172107" title="null returned from getField()"
+		keywords="pr172107">
+        <compile files="ReadWriteAJBug172107.java,Instrumentation.aj"/>
+		<run class="ReadWriteAJBug172107"/>
+    </ajc-test>
     
  <!-- second section - need a 1.6 vm -->
 

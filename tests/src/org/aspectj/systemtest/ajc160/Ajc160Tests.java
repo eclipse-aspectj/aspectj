@@ -143,6 +143,8 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("Suppress warnings2");
 	}
  
+  public void testNullReturnedFromGetField_pr172107() { runTest("null returned from getField()"); }
+	
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc160Tests.class);
