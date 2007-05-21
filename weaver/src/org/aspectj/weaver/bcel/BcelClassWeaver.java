@@ -2615,9 +2615,14 @@ class BcelClassWeaver implements IClassWeaver {
 			// sets of synthetics aren't join points in 1.1
 			return;
 		} else {
-			match(
-				BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow),
-				shadowAccumulator);
+			// Fix for bug 172107 (similar the "get" fix for bug 109728)
+			BcelShadow bs=
+				BcelShadow.makeFieldSet(world, resolvedField, mg, ih, enclosingShadow);
+			String cname = fi.getClassName(cpg);
+			if (!resolvedField.getDeclaringType().getName().equals(cname)) {
+				bs.setActualTargetType(cname);
+			}
+			match(bs, shadowAccumulator);
 		}
 	}
 

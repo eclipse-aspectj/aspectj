@@ -994,6 +994,7 @@ public class BcelShadow extends Shadow {
     
     public static BcelShadow makeFieldSet(
             BcelWorld world,
+            ResolvedMember field,
             LazyMethodGen enclosingMethod,
             InstructionHandle setHandle,
             BcelShadow enclosingShadow) 
@@ -1003,9 +1004,10 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 FieldSet,
-                BcelWorld.makeFieldJoinPointSignature(
-                    enclosingMethod.getEnclosingClass(),
-                    (FieldInstruction) setHandle.getInstruction()),
+                field,
+//                BcelWorld.makeFieldJoinPointSignature(
+//                    enclosingMethod.getEnclosingClass(),
+//                    (FieldInstruction) setHandle.getInstruction()),
                 enclosingMethod,
                 enclosingShadow);
         ShadowRange r = new ShadowRange(body);
