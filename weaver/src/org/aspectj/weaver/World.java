@@ -856,20 +856,15 @@ public abstract class World implements Dump.INode {
 		  private void processQueue() {
 			KeyedValue sv = null;
 			while ((sv = (KeyedValue)rq.poll())!=null) {
-				map.remove(sv.key);
+				Object o = map.get(sv.key);
+				if(o == sv) map.remove(sv.key);
 			}
 		  }
 		
 		  public Object get(Object key) {
 			KeyedValue value = (KeyedValue)map.get(key);
 			if (value==null) return null;
-			if (value.get()==null) {
-				// it got GC'd
-				map.remove(value.key);
-				return null;
-			} else {
-				return value.get();
-			}
+			return value.get();
 		  }
 
 		  public Object put(Object k, Object v) {
