@@ -317,7 +317,6 @@ public class BcelShadow extends Shadow {
 			for (int i = sources.length - 1; i >= 0; i--) {
 				if (sources[i] instanceof ExceptionRange) {
 					ExceptionRange it = (ExceptionRange)sources[i];
-					System.err.println("...");
 					it.updateTarget(old,fresh,it.getBody());
 				} else {
 				  sources[i].updateTarget(old, fresh);
