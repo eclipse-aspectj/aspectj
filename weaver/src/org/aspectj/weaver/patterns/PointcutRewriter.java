@@ -168,8 +168,6 @@ public class PointcutRewriter {
 	
 	// A && (B || C) => (A && B) || (A && C)
 	// (A || B) && C => (A && C) || (B && C)
-	// is this next one optimal??
-	// (A || B) && (C || D) =>  (¬A && B && ¬C && D) || (B && C) || (A && ¬C && D) || (A && ¬B && C)
 	private Pointcut pullUpDisjunctions(Pointcut pc) {
 		if (isNot(pc)) {
 			NotPointcut npc = (NotPointcut)pc;
