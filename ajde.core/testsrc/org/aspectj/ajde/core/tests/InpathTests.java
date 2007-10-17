@@ -254,8 +254,8 @@ public class InpathTests extends AjdeCoreTestCase {
 
 		try {
 			assertTrue(
-				"outjar older than injar",
-				(outjarFile.lastModified() > dirFile.lastModified()));
+				"outjar older than injar: outjarLastMod="+outjarFile.lastModified()+" injarLastMod="+dirFile.lastModified(),
+				(outjarFile.lastModified() >= dirFile.lastModified()));
 
 			// Go through the output jar file, for each element, remove it from
 			// the expectedOutputJarContents - when we finish, the expectedOutputJarContents

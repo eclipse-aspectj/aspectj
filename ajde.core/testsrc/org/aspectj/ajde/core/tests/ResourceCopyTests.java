@@ -201,7 +201,9 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 		HashSet resources = new HashSet();
 	
 		try {	
-			assertTrue("outjar older than injar",(outjarFile.lastModified() > injarFile.lastModified()));
+			assertTrue(
+					"outjar older than injar: outjarLastMod="+outjarFile.lastModified()+" injarLastMod="+injarFile.lastModified(),
+					(outjarFile.lastModified() >= injarFile.lastModified()));			
 			byte[] inManifest = listJarResources(injarFile,resources);
 			listSourceResources(indirName,resources);		
 
