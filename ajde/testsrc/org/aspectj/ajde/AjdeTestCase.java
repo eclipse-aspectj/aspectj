@@ -77,7 +77,7 @@ public class AjdeTestCase extends TestCase {
 				new TestEditorAdapter(), 
 				new TestIdeUIAdapter(), 
 				new IconRegistry(), 
-				new JFrame(), 
+				null, //new JFrame(), 
 				new TestRuntimeProperties(), 
 				true);
 	}
