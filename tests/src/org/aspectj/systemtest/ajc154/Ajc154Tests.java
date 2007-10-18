@@ -8,9 +8,11 @@
  * Contributors:
  *    Andy Clement - initial API and implementation
  *******************************************************************************/
-package org.aspectj.systemtest.ajc160;
+package org.aspectj.systemtest.ajc154;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -21,13 +23,30 @@ import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.tools.ContextBasedMatcher;
+import org.aspectj.weaver.tools.FuzzyBoolean;
+import org.aspectj.weaver.tools.MatchingContext;
+import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 
 import junit.framework.Test;
 
 /**
- * These are tests for AspectJ1.6 - they do not require a 1.6 VM.
+ * These are tests for AspectJ1.5.4
  */
-public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+	
+//	public void testNewDesignatorsReferencePointcuts_pr205907() { 		
+//		BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+//		Set set = new HashSet();
+//		set.add(beanHandler);
+//		PatternParser.setTestDesignators(set);
+//	//parser.registerPointcutDesignatorHandler(beanHandler);
+//		runTest("new pointcut designators in a reference pointcut");
+//	}
+	
+	public void testItdClashForTypesFromAspectPath_pr206732() { runTest("itd clash for types from aspectpath"); } 
+	public void testAnnotationStyleAndMultiplePackages_pr197719() { runTest("annotation style syntax and cross package extension"); }
 	
 	/** Complex test that attempts to damage a class like a badly behaved bytecode transformer would and checks if AspectJ can cope. */
 	 public void testCopingWithGarbage_pr175806_1() throws ClassNotFoundException { 
@@ -147,11 +166,11 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
   /////////////////////////////////////////
   public static Test suite() {
-    return XMLBasedAjcTestCase.loadSuite(Ajc160Tests.class);
+    return XMLBasedAjcTestCase.loadSuite(Ajc154Tests.class);
   }
 
   protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/ajc160/ajc160.xml");
+    return new File("../tests/src/org/aspectj/systemtest/ajc154/ajc154.xml");
   }
   
   public SyntheticRepository createRepos(File cpentry) {
@@ -163,6 +182,81 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	SyntheticRepository repos = createRepos(where);
 	return repos.loadClass(clazzname);
   }
+  // ---
+	private class BeanDesignatorHandler implements PointcutDesignatorHandler {
+
+		private String askedToParse;
+		public boolean simulateDynamicTest = false;
+		
+		public String getDesignatorName() {
+			return "bean";
+		}
+	
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.PointcutDesignatorHandler#parse(java.lang.String)
+		 */
+		public ContextBasedMatcher parse(String expression) {
+			this.askedToParse = expression;
+			return new BeanPointcutExpression(expression,this.simulateDynamicTest);
+		}
+		
+		public String getExpressionLastAskedToParse() {
+			return this.askedToParse;
+		}
+	}
+	
+	private class BeanPointcutExpression implements ContextBasedMatcher {
+
+		private final String beanNamePattern;
+		private final boolean simulateDynamicTest;
+
+		public BeanPointcutExpression(String beanNamePattern, boolean simulateDynamicTest) {
+			this.beanNamePattern = beanNamePattern;
+			this.simulateDynamicTest = simulateDynamicTest;			
+		}
+
+
+		public boolean couldMatchJoinPointsInType(Class aClass) {
+			return true;
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#couldMatchJoinPointsInType(java.lang.Class)
+		 */
+		public boolean couldMatchJoinPointsInType(Class aClass, MatchingContext context) {
+			if (this.beanNamePattern.equals(context.getBinding("beanName"))) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#mayNeedDynamicTest()
+		 */
+		public boolean mayNeedDynamicTest() {
+			return this.simulateDynamicTest;
+		}
+
+
+		public FuzzyBoolean matchesStatically(MatchingContext matchContext) {
+			if (this.simulateDynamicTest) return FuzzyBoolean.MAYBE;
+			if (this.beanNamePattern.equals(matchContext.getBinding("beanName"))) {
+				return FuzzyBoolean.YES;
+			} else {
+				return FuzzyBoolean.NO;
+			}
+		}
+
+
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#matchesDynamically(org.aspectj.weaver.tools.MatchingContext)
+		 */
+		public boolean matchesDynamically(MatchingContext matchContext) {
+			return this.beanNamePattern.equals(matchContext.getBinding("beanName"));
+		}
+	}		
 
   
 }

@@ -8,17 +8,17 @@
  * Contributors:
  *    Andy Clement - initial API and implementation
  *******************************************************************************/
-package org.aspectj.systemtest.ajc160;
+package org.aspectj.systemtest.ajc154;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-public class AllTestsAspectJ160 {
+public class AllTestsAspectJ154 {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("AspectJ 1.6.0 tests");
+		TestSuite suite = new TestSuite("AspectJ 1.5.4 tests");
 		//$JUnit-BEGIN$
-		suite.addTest(Ajc160Tests.suite());
+		suite.addTest(Ajc154Tests.suite());
         //$JUnit-END$
 		return suite;
 	}

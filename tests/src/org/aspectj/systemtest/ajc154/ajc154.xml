@@ -3,13 +3,16 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
- <!-- first section - dont need a 1.6 vm but fixed in the 1.6 branch of AspectJ -->
- 
-   <ajc-test dir="bugs160/pr175806" title="coping with bad tables">
+   <ajc-test dir="bugs154/pr206732" title="itd clash for types from aspectpath">
+     <compile outjar="foo.jar" files="Advised.aj"/>
+     <compile files="Ref.aj" aspectpath="foo.jar"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs154/pr175806" title="coping with bad tables">
      <compile options="-1.5" files="A.java"/>
    </ajc-test>
    
-   <ajc-test dir="bugs160/pr174449" title="problem with generic aspect and generic pointcut">
+   <ajc-test dir="bugs154/pr174449" title="problem with generic aspect and generic pointcut">
      <compile options="-1.5" files="Foo.java"/>
      <run class="Foo">
        <stderr>
@@ -19,7 +22,7 @@
      </run>
    </ajc-test>
    
-   <ajc-test dir="bugs160/pr174449" title="problem with generic aspect and generic pointcut - noinline">
+   <ajc-test dir="bugs154/pr174449" title="problem with generic aspect and generic pointcut - noinline">
      <compile options="-1.5 -XnoInline" files="Foo.java"/>
      <run class="Foo">
        <stderr>
@@ -29,17 +32,17 @@
      </run>
    </ajc-test>
    
-   <ajc-test dir="bugs160/pr171953_2" title="problem with generic methods and ordering - ok">
+   <ajc-test dir="bugs154/pr171953_2" title="problem with generic methods and ordering - ok">
 	 <compile options="-1.5" files="test/ListFactoryAspect.aj, test/AbstractProcessor.java,test/ListFactory.java,test/ListFactoryConsumer.java,test/Processor.java,test/SimpleListFactoryConsumer.java">
 	 </compile>
    </ajc-test>
    
-   <ajc-test dir="bugs160/pr171953_2" title="problem with generic methods and ordering - bad">
+   <ajc-test dir="bugs154/pr171953_2" title="problem with generic methods and ordering - bad">
 	 <compile options="-1.5" files="test/ListFactory.java,test/ListFactoryConsumer.java,test/SimpleListFactoryConsumer.java,test/Processor.java,test/ListFactoryAspect.aj,test/AbstractProcessor.java">
 	 </compile>
    </ajc-test>
 
-   <ajc-test dir="bugs160/pr171953" title="problem with itd and join point signature collection - bad">
+   <ajc-test dir="bugs154/pr171953" title="problem with itd and join point signature collection - bad">
      <compile options="-1.5 -showWeaveInfo" files="test/AbstractExecutable.java,test/AnotherExecutable.java,test/Executable.java,test/ExecutionAspect.aj,test/SecondTestExecutable.java test/SubTestExecutable.java test/TestExecutable.java">
        <message kind="weave" text="Join point 'method-execution(void test.SecondTestExecutable.execute())' in Type 'test.SecondTestExecutable' (SecondTestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
        <message kind="weave" text="Extending interface set for type 'test.AbstractExecutable' (AbstractExecutable.java) to include 'java.io.Serializable' (ExecutionAspect.aj)"/>
@@ -49,7 +52,7 @@
      <run class="test.SecondTestExecutable"/>
    </ajc-test>
 
-   <ajc-test dir="bugs160/pr171953" title="problem with itd and join point signature collection - ok">
+   <ajc-test dir="bugs154/pr171953" title="problem with itd and join point signature collection - ok">
      <compile options="-1.5 -showWeaveInfo" files="test/SecondTestExecutable.java test/AbstractExecutable.java test/AnotherExecutable.java  test/Executable.java test/ExecutionAspect.aj test/RunnableAspect.aj test/SubTestExecutable.java test/TestExecutable.java">
        <message kind="weave" text="Join point 'method-execution(void test.SecondTestExecutable.execute())' in Type 'test.SecondTestExecutable' (SecondTestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
        <message kind="weave" text="Extending interface set for type 'test.AbstractExecutable' (AbstractExecutable.java) to include 'java.io.Serializable' (ExecutionAspect.aj)"/>
@@ -59,39 +62,39 @@
      <run class="test.SecondTestExecutable"/>
    </ajc-test>
 
-    <ajc-test dir="bugs160/pr171952" title="generic methods and ITDs">
+    <ajc-test dir="bugs154/pr171952" title="generic methods and ITDs">
       <compile files="Foo.java,FooAspect.java" options="-1.5"/>
     </ajc-test>
     
-    <ajc-test dir="bugs160/pr169428" title="using decp annotation without aspect annotation">
+    <ajc-test dir="bugs154/pr169428" title="using decp annotation without aspect annotation">
       <compile files="AnAspect.java" options="-1.5">
         <message kind="error" text="Found @AspectJ annotations in a non @Aspect type 'AnAspect'"/>
       </compile>
     </ajc-test>
     
-    <ajc-test dir="bugs160/pr170467" title="itds and parameterized parameters">
+    <ajc-test dir="bugs154/pr170467" title="itds and parameterized parameters">
       <compile files="Bug.aj" options="-1.5"/>
       <compile files="Bug2.aj" options="-1.5"/>
     </ajc-test>
     
-    <ajc-test dir="bugs160/pr169706" title="inherited annotations">
+    <ajc-test dir="bugs154/pr169706" title="inherited annotations">
       <compile files="A.java,B.java,C.java,MyAspect.java,MyAnnotation.java,Test.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'method-call(void C.foo())' in Type 'Test' (Test.java:5) advised by before advice from 'MyAspect' (MyAspect.java:4)"/>
 	  </compile>
     </ajc-test>
     
-    <ajc-test dir="bugs160/pr165885" title="generic field npe">
+    <ajc-test dir="bugs154/pr165885" title="generic field npe">
       <compile files="Concrete.java,Abstract.java,Aspect.java" options="-1.5">
         <message kind="warning" line="8" text="foo"/>
 	  </compile>
     </ajc-test>
     
-    <ajc-test dir="bugs160/pr168044" title="complex generics - 1">
+    <ajc-test dir="bugs154/pr168044" title="complex generics - 1">
       <compile files="AbstractNode.java" options="-1.5">
 	  </compile>
     </ajc-test>
     
-    <ajc-test dir="bugs160/pr168063" title="incorrectly marking field transient">
+    <ajc-test dir="bugs154/pr168063" title="incorrectly marking field transient">
       <compile files="A.java"/>
       <run class="A">
         <stdout>
@@ -100,12 +103,12 @@
       </run>
     </ajc-test>
     
-    <ajc-test dir="bugs160/pr166084" title="incorrect optimization of istore">
+    <ajc-test dir="bugs154/pr166084" title="incorrect optimization of istore">
       <compile files="X.java" inpath="simple.jar"/>
 	  <run class="Simple"/>
     </ajc-test>
        
-    <ajc-test dir="bugs160/pr165631" title="dual parameterizations not allowed">
+    <ajc-test dir="bugs154/pr165631" title="dual parameterizations not allowed">
       <!-- two variations of the same situation, should fail in the same way -->
       <compile files="Bug.java" options="-1.5">
         <message kind="error" line="12" text="Cannot declare parent B"/>
@@ -139,12 +142,19 @@
         </run>
     </ajc-test>
     
-    <ajc-test dir="bugs160/pr172107" title="null returned from getField()"
+    <ajc-test dir="bugs154/pr172107" title="null returned from getField()"
 		keywords="pr172107">
         <compile files="ReadWriteAJBug172107.java,Instrumentation.aj"/>
 		<run class="ReadWriteAJBug172107"/>
     </ajc-test>
     
- <!-- second section - need a 1.6 vm -->
+    <ajc-test dir="bugs154/pr197719" title="annotation style syntax and cross package extension">
+      <compile files="test/aspects/C1.java,test/aspects/C3.java,test/aspects/MyAnn.java,test/aspects/MyAnnAspect.java,test/aspects2/C2.java" options="-1.5"/>
+      <run class="test.aspects2.C2"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs154/pr205907" title="new pointcut designators in a reference pointcut">
+      <compile files="Test.aj"/>
+    </ajc-test>
 
 </suite>
