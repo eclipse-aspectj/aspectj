@@ -1508,12 +1508,34 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					  // FIXME this whole method seems very hokey - unaware of covariance/varargs/bridging - it
 					  // could do with a rewrite !
 					  boolean sameReturnTypes = (existingMember.getReturnType().equals(sig.getReturnType()));
-					  if (sameReturnTypes)
-						  getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT,munger.getAspectType().getName(),
-									existingMember),
-							munger.getSourceLocation())
-						  );
+					  if (sameReturnTypes) {
+						  // pr206732 - if the existingMember is due to a previous application of this same ITD (which can
+						  // happen if this is a binary type being brought in from the aspectpath).  The 'better' fix is
+						  // to recognize it is from the aspectpath at a higher level and dont do this, but that is rather
+						  // more work.
+						  boolean isDuplicateOfPreviousITD = false;
+						  ResolvedType declaringRt = existingMember.getDeclaringType().resolve(world);
+						  WeaverStateInfo wsi = declaringRt.getWeaverState();
+						  if (wsi!=null) {
+							  List mungersAffectingThisType =  wsi.getTypeMungers(declaringRt);
+							  if (mungersAffectingThisType!=null) {
+								  for (Iterator iterator = mungersAffectingThisType.iterator(); iterator.hasNext() && !isDuplicateOfPreviousITD;) {
+									ConcreteTypeMunger ctMunger = (ConcreteTypeMunger) iterator.next();
+									// relatively crude check - is the ITD for the same as the existingmember and does it come from the same aspect
+									if (ctMunger.getSignature().equals(existingMember) &&  ctMunger.aspectType.equals(munger.getAspectType())) {
+										isDuplicateOfPreviousITD=true;
+									}
+								  }
+							  }
+						  }
+						  if (!isDuplicateOfPreviousITD) {
+							  getWorld().getMessageHandler().handleMessage(
+								MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT,munger.getAspectType().getName(),
+										existingMember),
+								munger.getSourceLocation())
+							  );
+						  }
+					  }
 					}
 				} else if (isDuplicateMemberWithinTargetType(existingMember,this,sig)) {
 				    	getWorld().getMessageHandler().handleMessage(
