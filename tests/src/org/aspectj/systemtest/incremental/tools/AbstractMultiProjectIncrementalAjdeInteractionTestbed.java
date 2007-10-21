@@ -123,6 +123,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 	 * copy is recursive.
 	 */
 	protected void copy(File from, File to) {
+		try { Thread.sleep(1100); } catch (Exception e) {}
 		String contents[] = from.list();
 		if (contents==null) return;
 		for (int i = 0; i < contents.length; i++) {
