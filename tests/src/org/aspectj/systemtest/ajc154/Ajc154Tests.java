@@ -46,7 +46,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //	}
 	
 	public void testItdClashForTypesFromAspectPath_pr206732() { runTest("itd clash for types from aspectpath"); } 
-	public void testAnnotationStyleAndMultiplePackages_pr197719() { runTest("annotation style syntax and cross package extension"); }
+//	public void testAnnotationStyleAndMultiplePackages_pr197719() { runTest("annotation style syntax and cross package extension"); }
 	
 	/** Complex test that attempts to damage a class like a badly behaved bytecode transformer would and checks if AspectJ can cope. */
 	 public void testCopingWithGarbage_pr175806_1() throws ClassNotFoundException { 
