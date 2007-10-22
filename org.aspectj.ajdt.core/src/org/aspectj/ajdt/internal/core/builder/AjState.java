@@ -604,7 +604,7 @@ public class AjState {
 		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext(); ) {
 			File inPathElement = (File)i.next();
 			if (inPathElement.isDirectory() && AjBuildManager.COPY_INPATH_DIR_RESOURCES) {
-				deleteResourcesFromDirectory(inPathElement,oldResources);
+				  deleteResourcesFromDirectory(inPathElement,oldResources);
 			}			
 		}	
 		
@@ -657,8 +657,19 @@ public class AjState {
 		for (int i = 0; i < files.length; i++) {
 			// ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
 			// or we are in trouble...
-			String filename = files[i].getAbsolutePath().substring(
+			String filename=null;
+			try {
+				filename = files[i].getCanonicalPath().substring(
+			                    dir.getCanonicalPath().length()+1);
+			} catch (IOException e) {
+			    // we are in trouble if this happens...
+				IMessage msg = new Message("call to getCanonicalPath() failed for file " + files[i]+" with: "+e.getMessage(),
+										   new SourceLocation(files[i],0),false);
+				buildManager.handler.handleMessage(msg);
+				filename = files[i].getAbsolutePath().substring(
 			                    dir.getAbsolutePath().length()+1);
+			}
+
 			maybeDeleteResource(filename, oldResources);
 		}				
 	}
