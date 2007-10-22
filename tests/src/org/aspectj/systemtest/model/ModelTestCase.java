@@ -66,7 +66,7 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 		// report all information - model, relationships delta processing
 		modelFilename = ajc.getSandboxDirectory().getAbsolutePath() + File.separator + "model.txt";
 		AsmManager.setReporting(modelFilename, 
-				true,true,true,false,new TestFilter(ajc.getSandboxDirectory().getAbsolutePath()));
+				true,true,true,false,new TestFilter(ajc.getSandboxDirectory().getCanonicalPath()));
 	}
 	
 	static class TestFilter implements IModelFilter {
