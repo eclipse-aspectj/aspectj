@@ -55,12 +55,12 @@ public class AjdeCoreTestCase extends TestCase {
 	 * Fill in the working directory with the project files and
 	 * creates a compiler instance for this project
 	 */
-	public void initialiseProject(String projectName) {
+	public void initialiseProject(String projectName) throws IOException {
 		File projectSrc=new File(testdataSrcDir + File.separatorChar + projectName);
 		File destination=new File(getWorkingDir(),projectName);
 		if (!destination.exists()) {destination.mkdir();}
 		copy(projectSrc,destination);
-		projectDir = destination.getAbsolutePath();
+		projectDir = destination.getCanonicalPath();//getAbsolutePath();
 		
 		compiler = new AjCompiler(
 				projectDir,

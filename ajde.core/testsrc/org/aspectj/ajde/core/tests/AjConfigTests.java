@@ -11,6 +11,7 @@
 package org.aspectj.ajde.core.tests;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -204,13 +205,13 @@ public class AjConfigTests extends AjdeCoreTestCase {
 		assertTrue( "XserializableAspects", buildConfig.isXserializableAspects() );			                       						
 	}
 	
-	public void testProjectSourceFiles() {
+	public void testProjectSourceFiles() throws IOException {
 		String f = getAbsoluteProjectDir() + File.separator + "C.java";
 		List files = new ArrayList();
 		files.add(f);
 		compilerConfig.setProjectSourceFiles(files);
 		AjBuildConfig buildConfig = genAjBuildConfig();
-		String found = ((File)buildConfig.getFiles().get(0)).getAbsolutePath();
+		String found = ((File)buildConfig.getFiles().get(0)).getCanonicalPath();//AbsolutePath();
 		assertEquals("expected source file " + f + ", but found " +
 				found, f, found);
 	}
