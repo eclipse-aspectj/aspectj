@@ -45,6 +45,15 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		runTest("new pointcut designators in a reference pointcut");
 //	}
 	
+	public void testItdOnGenericInnerInterface_pr203646() { runTest("npe with itd on inner generic interface");}
+	public void testItdOnGenericInnerInterface_pr203646_A() { runTest("npe with itd on inner generic interface - exampleA");}
+	public void testItdOnGenericInnerInterface_pr203646_B() { runTest("npe with itd on inner generic interface - exampleB");}
+	public void testItdOnGenericInnerInterface_pr203646_C() { runTest("npe with itd on inner generic interface - exampleC");}
+	public void testItdOnGenericInnerInterface_pr203646_D() { runTest("npe with itd on inner generic interface - exampleD");}
+//	public void testItdOnGenericInnerInterface_pr203646_E() { runTest("npe with itd on inner generic interface - exampleE");} // needs parser change
+	public void testItdOnGenericInnerInterface_pr203646_F() { runTest("npe with itd on inner generic interface - exampleF");}
+	public void testItdOnGenericInnerInterface_pr203646_G() { runTest("npe with itd on inner generic interface - exampleG");}
+	
 	public void testItdClashForTypesFromAspectPath_pr206732() { runTest("itd clash for types from aspectpath"); } 
 //	public void testAnnotationStyleAndMultiplePackages_pr197719() { runTest("annotation style syntax and cross package extension"); }
 	

@@ -149,9 +149,9 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 					expected, ipe.getSourceSignature());
   }
 
-  public void testNPEWithCustomAgent_pr158005() {
-	  runTest("NPE with custom agent");
-  }
+//  public void testNPEWithCustomAgent_pr158205() {
+//	  runTest("NPE with custom agent");
+//  }
 
   public void testWeaveConcreteSubaspectWithAdvice_pr132080() {
 	  runTest("Weave concrete sub-aspect with advice");

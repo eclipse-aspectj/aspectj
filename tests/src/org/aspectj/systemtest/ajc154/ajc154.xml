@@ -3,6 +3,50 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface">
+     <compile options="-1.5" files="Bang.java"/>
+     <!--compile options="-1.5 -emacssym" files="Bang.java"/-->
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - emacssym">
+     <compile options="-1.5 -emacssym" files="Bang.java"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleA">
+     <compile options="-1.5" files="ExampleA.java"/>
+     <run class="ExampleA"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleB">
+     <compile options="-1.5" files="ExampleB.java">
+       <message kind="error" line="20" text="The method intro(String) in the type I.J&lt;String&gt; is not applicable for the arguments (int)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleC">
+     <compile options="-1.5" files="ExampleC.java"/>
+     <run class="ExampleC"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleD">
+     <compile options="-1.5" files="ExampleD.java"/>
+     <run class="ExampleD"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleE">
+     <compile options="-1.5" files="ExampleE.java"/>
+     <run class="ExampleE"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleF">
+     <compile options="-1.5" files="ExampleF.java"/>
+     <run class="ExampleF"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleG">
+     <compile options="-1.5" files="ExampleG.java"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs154/pr206732" title="itd clash for types from aspectpath">
      <compile outjar="foo.jar" files="Advised.aj"/>
      <compile files="Ref.aj" aspectpath="foo.jar"/>
