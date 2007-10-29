@@ -36,6 +36,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
@@ -216,9 +217,9 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 		// Collapse the parameterized reference to its generic type
 		if (onType instanceof ParameterizedSingleTypeReference) {
-		ParameterizedSingleTypeReference pref = (ParameterizedSingleTypeReference) onType;
-		long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
-		onType = new SingleTypeReference(pref.token,pos);
+			ParameterizedSingleTypeReference pref = (ParameterizedSingleTypeReference) onType;
+			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
+			onType = new SingleTypeReference(pref.token,pos);
 		} else {
 			ParameterizedQualifiedTypeReference pref = (ParameterizedQualifiedTypeReference) onType;
 			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
@@ -230,6 +231,11 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		if (!onTypeBinding.isValidBinding()) {
 			classScope.problemReporter().invalidType(onType, onTypeBinding);
 			ignoreFurtherInvestigation = true;
+		}
+
+ 		
+		if (onTypeBinding.isRawType()) {
+			onTypeBinding = ((RawTypeBinding)onTypeBinding).type;
 		}
 		
 		int aliasCount = (typeVariableAliases==null?0:typeVariableAliases.size());
@@ -270,7 +276,6 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 				}
 			}
 		}
-		
 //		TypeVariableBinding[] tVarsInGenericType = onTypeBinding.typeVariables();
 //		typeVariableAliases = new ArrayList(); /* Name>GenericTypeVariablePosition */ // FIXME ASC DONT THINK WE NEED TO BUILD IT HERE AS WELL...
 //		TypeReference[] targs = pref.typeArguments;
@@ -344,12 +349,24 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	 * type SomeType'
 	 */
 	public void determineTypeVariableAliases() {
-		if (onType!=null && onType instanceof ParameterizedSingleTypeReference) {
-			ParameterizedSingleTypeReference paramRef = (ParameterizedSingleTypeReference) onType;
-			TypeReference[] rb = paramRef.typeArguments;
-			typeVariableAliases = new ArrayList();
-			for (int i = 0; i < rb.length; i++) {
-				typeVariableAliases.add(CharOperation.toString(rb[i].getTypeName()));
+		if (onType!=null) {
+		    // TODO loses distinction about which level the type variables are at... is that a problem?
+			if (onType instanceof ParameterizedSingleTypeReference) {
+				ParameterizedSingleTypeReference paramRef = (ParameterizedSingleTypeReference) onType;
+				TypeReference[] rb = paramRef.typeArguments;
+				typeVariableAliases = new ArrayList();
+				for (int i = 0; i < rb.length; i++) {
+					typeVariableAliases.add(CharOperation.toString(rb[i].getTypeName()));
+				}
+			} else if (onType instanceof ParameterizedQualifiedTypeReference) {
+				ParameterizedQualifiedTypeReference paramRef = (ParameterizedQualifiedTypeReference) onType;
+				typeVariableAliases = new ArrayList();
+				for (int j = 0; j < paramRef.typeArguments.length; j++) {
+					TypeReference[] rb = paramRef.typeArguments[j];
+					for (int i = 0; rb!=null && i < rb.length; i++) {
+						typeVariableAliases.add(CharOperation.toString(rb[i].getTypeName()));
+					}
+				}
 			}
 		}
 	}  
@@ -370,17 +387,32 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		if (ot instanceof ParameterizedQualifiedTypeReference) { // pr132349
 			ParameterizedQualifiedTypeReference pref = (ParameterizedQualifiedTypeReference) ot;
 			if (pref.typeArguments!=null && pref.typeArguments.length!=0) {
-				scope.problemReporter().signalError(sourceStart,sourceEnd,
-				  "Cannot make inter-type declarations on parameterized types");
-				// to prevent disgusting cascading errors after this problem - lets null out what leads to them (pr105038)
-				this.arguments=null;
-				this.returnType=new SingleTypeReference(TypeReference.VOID,0L);
-				
-				this.ignoreFurtherInvestigation=true;
-				ReferenceBinding closestMatch = null;
-				rb = new ProblemReferenceBinding(ot.getParameterizedTypeName(),closestMatch,0);		
-				onType=null;
+				boolean usingNonTypeVariableInITD = false;
+				// Check if any of them are not type variables
+				for (int i = 0; i < pref.typeArguments.length; i++) {
+					TypeReference[] refs = pref.typeArguments[i];
+					for (int j = 0; refs!=null && j < refs.length; j++) {
+						TypeBinding tb = refs[j].getTypeBindingPublic(scope.parent);
+						if (!tb.isTypeVariable() && !(tb instanceof ProblemReferenceBinding)) {
+							usingNonTypeVariableInITD = true;
+						}
+						
+					}
+				}
+				if (usingNonTypeVariableInITD) {
+					scope.problemReporter().signalError(sourceStart,sourceEnd,
+					  "Cannot make inter-type declarations on parameterized types");
+					// to prevent disgusting cascading errors after this problem - lets null out what leads to them (pr105038)
+					this.arguments=null;
+					this.returnType=new SingleTypeReference(TypeReference.VOID,0L);
+					
+					this.ignoreFurtherInvestigation=true;
+					ReferenceBinding closestMatch = null;
+					rb = new ProblemReferenceBinding(ot.getParameterizedTypeName(),closestMatch,0);		
+					onType=null;
+				}
 			}
+		
 		}
 
 		// Work out the real base type
@@ -398,6 +430,13 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		if (rb==null) {
 		  rb = (ReferenceBinding)ot.getTypeBindingPublic(scope.parent);
 		}
+		
+		// pr203646 - if we have ended up with the raw type, get back to the underlying generic one.
+		if (rb.isRawType() && rb.isMemberType()) {
+			// if the real target type used a type variable alias then we can do this OK, but need to switch things around, we want the generic type
+			rb = ((RawTypeBinding)rb).type;
+		}
+		
 		if (rb instanceof TypeVariableBinding) {
 			scope.problemReporter().signalError(sourceStart,sourceEnd,
 					  "Cannot make inter-type declarations on type variables, use an interface and declare parents");
