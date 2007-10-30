@@ -3,6 +3,15 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+   <ajc-test dir="bugs154/pr176991" title="wrong number of type parameters">
+     <compile options="-1.5" files="AspectJBugTestCase.java"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr167197" title="generic type parameterized with array type">
+     <compile options="-1.5" files="AspectBreaker.java"/>
+   </ajc-test>
+   
+   
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface">
      <compile options="-1.5" files="Bang.java"/>
      <!--compile options="-1.5 -emacssym" files="Bang.java"/-->

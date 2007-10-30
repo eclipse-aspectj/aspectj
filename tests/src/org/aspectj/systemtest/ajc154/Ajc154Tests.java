@@ -45,6 +45,10 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		runTest("new pointcut designators in a reference pointcut");
 //	}
 	
+	//public void testGenericTypeParameterizedWithArrayType_pr167197() { runTest("generic type parameterized with array type");}
+	
+	
+	//public void testWrongNumberOfTypeParameters_pr176991() { runTest("wrong number of type parameters");}
 	public void testItdOnGenericInnerInterface_pr203646() { runTest("npe with itd on inner generic interface");}
 	public void testItdOnGenericInnerInterface_pr203646_A() { runTest("npe with itd on inner generic interface - exampleA");}
 	public void testItdOnGenericInnerInterface_pr203646_B() { runTest("npe with itd on inner generic interface - exampleB");}
