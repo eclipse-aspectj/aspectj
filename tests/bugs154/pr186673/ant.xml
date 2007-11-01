@@ -1,0 +1,18 @@
+<project name="ltw with funny libraries" default="default" basedir=".">
+    <target name="default" >
+      <echo> This script builds the AspectJ examples.  </echo>
+      <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+          <classpath> 
+            <pathelement path="${aj.root}/lib/aspectj/aspectjtools.jar"/>
+          </classpath>
+      </taskdef>
+       <iajc destdir="${classes.dir}" argfiles="${list}" 
+       		fork="true"
+       		forkclasspath="${aspectjtools.jar}"
+          classpath="${aspectjrt.jar}"/>
+
+       <antcall target="Ajx-run" >
+         <param name="class" value="${class}"/>
+       </antcall>
+    </target>
+</project>

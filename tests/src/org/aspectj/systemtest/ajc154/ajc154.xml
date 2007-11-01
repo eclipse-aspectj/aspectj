@@ -11,6 +11,17 @@
      <compile options="-1.5" files="AspectBreaker.java"/>
    </ajc-test>
    
+   <ajc-test dir="bugs154/pr186673" title="jars and zips with non-standard suffix">
+     <compile options="-1.5" files="Apple.java" outjar="apple.jar.0"/>
+     <compile options="-1.5" files="Orange.java" outjar="orange.zipfoo"/>
+     <!-- check ant and a standard compile -->
+     <!--ant file="ant.xml" target="default" verbose="true">
+        <stdout>
+   	      <line text="Blah"/>
+       	</stdout>
+     </ant-->
+     <compile options="-1.5" files="Main.java" classpath="orange.zipfoo,apple.jar.0"/>
+   </ajc-test>
    
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface">
      <compile options="-1.5" files="Bang.java"/>

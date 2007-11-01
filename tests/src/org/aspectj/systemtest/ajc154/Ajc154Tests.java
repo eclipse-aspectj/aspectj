@@ -45,6 +45,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		runTest("new pointcut designators in a reference pointcut");
 //	}
 	
+	public void testJarsZipsNonStandardSuffix_pr186673() { runTest("jars and zips with non-standard suffix");}
 	//public void testGenericTypeParameterizedWithArrayType_pr167197() { runTest("generic type parameterized with array type");}
 	
 	
