@@ -1035,6 +1035,17 @@ public class BcelWeaver implements IWeaver {
 	        }
     	   }
 
+    	// Go through the types and ensure any 'damaged' during compile time are repaired prior to weaving
+    	for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
+            UnwovenClassFile classFile = (UnwovenClassFile)i.next();
+            String className = classFile.getClassName();
+            ResolvedType theType = world.resolve(className);
+            if (theType!=null) {
+	            BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+	            if (classType!=null) classType.ensureDelegateConsistent();
+            }
+    	}
+
         // special case for AtAspectJMungerOnly - see #113587
         if (input.isApplyAtAspectJMungersOnly()) {
             ContextToken atAspectJMungersOnly = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_ATASPECTJTYPE_MUNGERS_ONLY, "");
