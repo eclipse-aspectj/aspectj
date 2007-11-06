@@ -62,6 +62,7 @@ import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.FakeAnnotation;
 import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
@@ -69,6 +70,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
@@ -699,7 +701,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	
 	private boolean doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS, sourceType.sourceName);
-		List newParents = declareParents.findMatchingNewParents(factory.fromEclipse(sourceType),false);
+		ResolvedType resolvedSourceType = factory.fromEclipse(sourceType);
+		List newParents = declareParents.findMatchingNewParents(resolvedSourceType,false);
 		if (!newParents.isEmpty()) {
 			for (Iterator i = newParents.iterator(); i.hasNext(); ) {
 				ResolvedType parent = (ResolvedType)i.next();
@@ -712,6 +715,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				if (Modifier.isFinal(parent.getModifiers())) {
 					factory.showMessage(IMessage.ERROR,"cannot extend final class " + parent.getClassName(),declareParents.getSourceLocation(),null);
 				} else {
+				    // do not actually do it if the type isn't exposed - this will correctly reported as a problem elsewhere
+					if (!resolvedSourceType.isExposedToWeaver()) return false;
 					AsmRelationshipProvider.getDefault().addDeclareParentsRelationship(declareParents.getSourceLocation(),factory.fromEclipse(sourceType), newParents);
 					addParent(sourceType, parent);
 				}
@@ -1006,7 +1011,17 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	        // reportDeclareParentsMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,sourceType,parent);
 			
 		}
-		
+        
+        // also add it to the bcel delegate if there is one
+        if (sourceType instanceof BinaryTypeBinding) {
+	        ResolvedType onType = factory.fromEclipse(sourceType);
+	        ReferenceType rt = (ReferenceType)onType;
+	        ReferenceTypeDelegate rtd = rt.getDelegate();
+	        if (rtd instanceof BcelObjectType) {
+		        ((BcelObjectType)rtd).addParent(parent);
+		    }
+        }
+        
 	}
 
 	public void warnOnAddedInterface (ResolvedType type, ResolvedType parent) {
