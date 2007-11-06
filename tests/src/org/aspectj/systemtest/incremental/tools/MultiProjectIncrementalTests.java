@@ -149,6 +149,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 	}
 	
+	public void testIncrementalItdsWithMultipleAspects_pr173729() {
+		initialiseProject("PR173729");
+		build("PR173729");
+		checkWasFullBuild();
+		alter("PR173729","inc1");
+		build("PR173729");
+		checkWasntFullBuild();
+	}
 	
 	// Compile a single simple project
 	public void testTheBasics() {
