@@ -1,0 +1,11 @@
+<aspectj>
+    <aspects>
+        <aspect name="c.d.AbstractDurationMethod"/>
+        <concrete-aspect name="c.d.AtDurationMethod"
+           extends="c.d.AbstractDurationMethod">
+           <pointcut name="methods"
+               expression="within(a.b.*) AND call (public * a..*(..))" />
+        </concrete-aspect> 
+    </aspects>
+    <weaver/>
+</aspectj>
