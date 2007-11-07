@@ -2532,7 +2532,7 @@ public class BcelShadow extends Shadow {
         // call to the extracted method.
 
         // inlining support for code style aspects
-        if (!munger.getConcreteAspect().isAnnotationStyleAspect()) {
+        if (!munger.getDeclaringType().isAnnotationStyleAspect()) {
             String proceedName =
                 NameMangler.proceedMethodName(munger.getSignature().getName());
 
