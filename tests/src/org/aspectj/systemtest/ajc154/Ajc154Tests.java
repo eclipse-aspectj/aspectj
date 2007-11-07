@@ -45,6 +45,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		runTest("new pointcut designators in a reference pointcut");
 //	}
 
+	public void testAbstractAnnotationStylePointcutWithContext_pr202088() { runTest("abstract annotation style pointcut with context");}
 	public void testNoErrorForAtDecpInNormalClass_pr169428() { runTest( "no error for atDecp in normal class");}
 
 	public void testJarsZipsNonStandardSuffix_pr186673() { runTest("jars and zips with non-standard suffix");}

@@ -2,7 +2,16 @@
 
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
-
+ <ajc-test dir="bugs154/pr202088" title="abstract annotation style pointcut with context">
+     <compile options="-1.5" files="Bug.java"/>
+     <compile options="-1.5" files="Bug2.java">
+     </compile>
+     <run class="tracing.Bug2">
+       <stdout>
+         <line text="o is 'instance of C'"/>
+       </stdout>
+     </run>
+   </ajc-test>
 
    <ajc-test dir="bugs154/pr169428" title="no error for atDecp in normal class">
      <compile options="-1.5" files="CorrectError.java">
