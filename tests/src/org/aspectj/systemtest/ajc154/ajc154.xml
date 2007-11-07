@@ -2,7 +2,67 @@
 
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
- <ajc-test dir="bugs154/pr202088" title="abstract annotation style pointcut with context">
+
+   <!-- very basic with all code style, should be fine -->
+   <ajc-test dir="bugs154/pr209019/case1" title="various issues with ltw and around advice - 1">
+     <compile options="-1.5" files="A.java,DurationMethod.java,AbstractDurationMethod.java,Runner.java"/>
+     <run class="Runner">
+       <stdout>
+         <line text="Proceeded at joinpoint call(Object a.b.A.m3())"/>
+         <line text="Proceeded at joinpoint call(Object a.b.A.m2())"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <!-- switch from code style sub-aspect to annotation style sub aspect -->
+   <ajc-test dir="bugs154/pr209019/case2" title="various issues with ltw and around advice - 2">
+     <compile options="-1.5 -XnoInline" files="A.java,AtDurationMethod.java,AbstractDurationMethod.java,Runner.java"/>
+     <run class="Runner">
+       <stdout>
+         <line text="Proceeded at joinpoint call(Object a.b.A.m3())"/>
+         <line text="Proceeded at joinpoint call(Object a.b.A.m2())"/>
+       </stdout>
+       <stderr>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   <!-- same as case2 but without -XnoInline -->
+   <ajc-test dir="bugs154/pr209019/case2" title="various issues with ltw and around advice - 3">
+     <compile options="-1.5" files="A.java,AtDurationMethod.java,AbstractDurationMethod.java,Runner.java"/>
+     <run class="Runner">
+       <stdout>
+         <line text="Proceeded at joinpoint call(Object a.b.A.m3())"/>
+         <line text="Proceeded at joinpoint call(Object a.b.A.m2())"/>
+       </stdout>
+       <stderr>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   <!-- now loadtime weaving -->
+   <ajc-test dir="bugs154/pr209019/case3" title="various issues with ltw and around advice - 4">
+     <compile options="-1.5" files="A.java,AbstractDurationMethod.java,Runner.java"/>
+     <run class="Runner" ltw="aop.xml">
+       <stdout>
+         <line text="Proceeded at joinpoint call(Object a.b.A.m3())"/>
+         <line text="Proceeded at joinpoint call(Object a.b.A.m2())"/>
+       </stdout>
+       <stderr>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   
+
+
+   <ajc-test dir="bugs154/pr169432" title="declare parents problem when target already implements interface">
+     <compile options="-1.5" files="NonMarkerInterface.java,ClassThatAlreadyIncludesRequiredMethods.java,DeclareParentsForNonMarkerInterfaceToAClassThatAlreadyIncludeRequiredMethods.java"/>
+   </ajc-test>
+   
+
+
+   <ajc-test dir="bugs154/pr202088" title="abstract annotation style pointcut with context">
      <compile options="-1.5" files="Bug.java"/>
      <compile options="-1.5" files="Bug2.java">
      </compile>
