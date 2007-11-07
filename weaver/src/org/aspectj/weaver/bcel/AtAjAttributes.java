@@ -1176,11 +1176,15 @@ public class AtAjAttributes {
             // this/target/args binding
             final IScope binding;
             try {
-                binding = new BindingScope(
+            	if (struct.method.isAbstract()) {
+            	    binding = null;
+            	} else {
+                    binding = new BindingScope(
                         struct.enclosingType,
                         struct.context,
                         extractBindings(struct)
-                );
+                    );
+            	}
             } catch (UnreadableDebugInfoException e) {
                 return;
             }
@@ -1226,7 +1230,7 @@ public class AtAjAttributes {
                                     argumentTypes,
                                     UnresolvedType.forSignature(struct.method.getReturnType().getSignature()),
                                     pc,//can be null for abstract pointcut
-                                    binding
+                                    binding // can be null for abstract pointcut
                             )
                     )
             );
