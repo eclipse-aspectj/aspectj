@@ -11,6 +11,7 @@ import org.aspectj.systemtest.ajc150.ataspectj.AtAjAnnotationGenTests;
 import org.aspectj.systemtest.ajc151.AllTestsAspectJ151;
 import org.aspectj.systemtest.ajc152.AllTestsAspectJ152;
 import org.aspectj.systemtest.ajc153.AllTestsAspectJ153;
+import org.aspectj.systemtest.ajc154.AllTestsAspectJ154;
 import org.aspectj.systemtest.incremental.tools.IncrementalOutputLocationManagerTests;
 import org.aspectj.systemtest.incremental.tools.MoreOutputLocationManagerTests;
 import org.aspectj.systemtest.incremental.tools.MultiProjectIncrementalTests;
@@ -27,6 +28,7 @@ public class AllTests15 {
 		suite.addTest(AllTestsAspectJ151.suite());
 		suite.addTest(AllTestsAspectJ152.suite());
 		suite.addTest(AllTestsAspectJ153.suite());
+		suite.addTest(AllTestsAspectJ154.suite());
 		suite.addTest(AtAjAnnotationGenTests.suite());
 		suite.addTest(Model5Tests.suite());
 		/* FIXME maw Many of these tests do not depend on Java 5 but they
