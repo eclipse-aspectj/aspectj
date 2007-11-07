@@ -26,6 +26,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
@@ -37,6 +38,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AdviceKind;
@@ -60,6 +62,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	private static final char[] aroundAdviceSig = "Lorg/aspectj/lang/annotation/Around;".toCharArray();
 	private static final char[] pointcutSig = "Lorg/aspectj/lang/annotation/Pointcut;".toCharArray();
 	private static final char[] aspectSig = "Lorg/aspectj/lang/annotation/Aspect;".toCharArray();
+	private static final char[] declareParentsSig = "Lorg/aspectj/lang/annotation/DeclareParents;".toCharArray();
 	private static final char[] adviceNameSig = "Lorg/aspectj/lang/annotation/AdviceName;".toCharArray();
 	private static final char[] orgAspectJLangAnnotation = "org/aspectj/lang/annotation/".toCharArray();
 	private static final char[] voidType = "void".toCharArray();
@@ -145,7 +148,16 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		}
 		CompilationAndWeavingContext.leavingPhase(tok);
 	}
-	
+
+	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {
+		ajAnnotations = new AspectJAnnotations(fieldDeclaration.annotations);
+		if (ajAnnotations.hasDeclareParents && !insideAspect()) {
+			scope.problemReporter().signalError(fieldDeclaration.sourceStart,
+					  fieldDeclaration.sourceEnd, 
+					  "DeclareParents can only be used inside an aspect type");			
+		}
+		return true;
+	}
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		if (methodDeclaration.hasErrors()) {
 			return false;
@@ -632,7 +644,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		boolean hasPointcutAnnotation = false;
 		boolean hasAspectAnnotation = false;
 		boolean hasAdviceNameAnnotation = false;
-		
+		boolean hasDeclareParents = false;
 		boolean hasMultipleAdviceAnnotations = false;
 		boolean hasMultiplePointcutAnnotations = false;
 		boolean hasMultipleAspectAnnotations = false;
@@ -670,6 +682,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 				} else if (CharOperation.equals(adviceNameSig,sig)) {
 					hasAdviceNameAnnotation = true;
 					adviceNameAnnotation = annotations[i];
+				} else if (CharOperation.equals(declareParentsSig,sig)) {
+					hasDeclareParents = true;
 				} else if (CharOperation.equals(aspectSig,sig)) {
 					if (hasAspectAnnotation) {
 						hasMultipleAspectAnnotations = true;
