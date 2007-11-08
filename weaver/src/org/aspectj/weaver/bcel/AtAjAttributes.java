@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -85,6 +86,7 @@ public class AtAjAttributes {
     private final static List EMPTY_LIST = new ArrayList();
     private final static String[] EMPTY_STRINGS = new String[0];
     private final static String VALUE = "value";
+    private final static String ARGNAMES = "argNames";
     private final static String POINTCUT = "pointcut";
     private final static String THROWING = "throwing";
     private final static String RETURNING = "returning";
@@ -124,11 +126,9 @@ public class AtAjAttributes {
      */
     private static class AjAttributeMethodStruct extends AjAttributeStruct {
 
-        /**
-         * Argument names as they appear in the SOURCE code, ordered, and lazyly populated
-         * Used to do formal binding
-         */
+    	// argument names used for formal binding
         private String[] m_argumentNamesLazy = null;
+        public String unparsedArgumentNames = null; // Set only if discovered as argNames attribute of annotation
 
         final Method method;
         final BcelMethod bMethod;
@@ -141,7 +141,7 @@ public class AtAjAttributes {
 
         public String[] getArgumentNames() {
             if (m_argumentNamesLazy == null) {
-                m_argumentNamesLazy = getMethodArgumentNamesAsInSource(method);
+                m_argumentNamesLazy = getMethodArgumentNames(method,unparsedArgumentNames,this);
             }
             return m_argumentNamesLazy;
         }
@@ -801,6 +801,10 @@ public class AtAjAttributes {
             ElementNameValuePair beforeAdvice = getAnnotationElement(before, VALUE);
             if (beforeAdvice != null) {
                 // this/target/args binding
+            	String argumentNames = getArgNamesValue(before);
+                if (argumentNames!=null) {
+                	struct.unparsedArgumentNames = argumentNames;
+                }
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
                 try {
                     bindings = extractBindings(struct);
@@ -858,6 +862,10 @@ public class AtAjAttributes {
             if (afterAdvice != null) {
                 // this/target/args binding
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+                String argumentNames = getArgNamesValue(after);
+                if (argumentNames!=null) {
+                	struct.unparsedArgumentNames = argumentNames;
+                }
                 try {
                     bindings = extractBindings(struct);
                 } catch (UnreadableDebugInfoException unreadableDebugInfoException) {
@@ -947,7 +955,10 @@ public class AtAjAttributes {
                     }
                 }
             }
-
+            String argumentNames = getArgNamesValue(after);
+            if (argumentNames!=null) {
+            	struct.unparsedArgumentNames = argumentNames;
+            }
             // this/target/args binding
             // exclude the return binding from the pointcut binding since it is an extraArg binding
             FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
@@ -1044,7 +1055,10 @@ public class AtAjAttributes {
                     }
                 }
             }
-
+            String argumentNames = getArgNamesValue(after);
+            if (argumentNames!=null) {
+            	struct.unparsedArgumentNames = argumentNames;
+            }
             // this/target/args binding
             // exclude the throwned binding from the pointcut binding since it is an extraArg binding
             FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
@@ -1105,7 +1119,11 @@ public class AtAjAttributes {
         if (around != null) {
             ElementNameValuePair aroundAdvice = getAnnotationElement(around, VALUE);
             if (aroundAdvice != null) {
-                // this/target/args binding
+                // this/target/args binding 
+            	String argumentNames = getArgNamesValue(around);
+                if (argumentNames!=null) {
+                	struct.unparsedArgumentNames = argumentNames;
+                }
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
                 try {
                     bindings = extractBindings(struct);
@@ -1159,6 +1177,7 @@ public class AtAjAttributes {
         if (pointcut != null) {
             ElementNameValuePair pointcutExpr = getAnnotationElement(pointcut, VALUE);
 
+            
             // semantic check: the method must return void, or be "public static boolean" for if() support
             if (!(Type.VOID.equals(struct.method.getReturnType())
                   || (Type.BOOLEAN.equals(struct.method.getReturnType()) && struct.method.isStatic() && struct.method.isPublic()))) {
@@ -1172,6 +1191,10 @@ public class AtAjAttributes {
                 ;// no need to stop
             }
 
+            String argumentNames = getArgNamesValue(pointcut);
+            if (argumentNames!=null) {
+            	struct.unparsedArgumentNames = argumentNames;
+            }
             // this/target/args binding
             final IScope binding;
             try {
@@ -1495,15 +1518,37 @@ public class AtAjAttributes {
         }
         return null;
     }
+    
+    /**
+     * Return the argNames set for an annotation or null if it is not specified.
+     */
+    private static String getArgNamesValue(Annotation anno) {
+    	 for (Iterator iterator1 = anno.getValues().iterator(); iterator1.hasNext();) {
+             ElementNameValuePair element = (ElementNameValuePair) iterator1.next();
+             if (ARGNAMES.equals(element.getNameString())) {
+                 return element.getValue().stringifyValue();
+             }
+         }
+         return null;
+    }
+    
+    private static String lastbit(String fqname) {
+    	int i = fqname.lastIndexOf(".");
+    	if (i==-1) return fqname; else return fqname.substring(i+1);
+    }
 
     /**
-     * Extract the method argument names as in source from debug info
-     * returns an empty array upon inconsistency
+     * Extract the method argument names.  First we try the debug info attached
+     * to the method (the LocalVariableTable) - if we cannot find that we look
+     * to use the argNames value that may have been supplied on the associated
+     * annotation.  If that fails we just don't know and return an empty string.
      *
      * @param method
-     * @return method arg names as in source
+     * @param argNamesFromAnnotation 
+     * @param methodStruct 
+     * @return method argument names
      */
-    private static String[] getMethodArgumentNamesAsInSource(Method method) {
+    private static String[] getMethodArgumentNames(Method method, String argNamesFromAnnotation, AjAttributeMethodStruct methodStruct) {
         if (method.getArgumentTypes().length == 0) {
             return EMPTY_STRINGS;
         }
@@ -1520,6 +1565,28 @@ public class AtAjAttributes {
                     }
                 }
             }
+        } else {
+        	// No debug info, do we have an annotation value we can rely on?
+        	if (argNamesFromAnnotation!=null) {
+        		StringTokenizer st = new StringTokenizer(argNamesFromAnnotation," ,");
+        		List args = new ArrayList();
+        		while (st.hasMoreTokens()) { args.add(st.nextToken());}
+        		if (args.size()!=method.getArgumentTypes().length) {
+        			StringBuffer shortString = new StringBuffer().append(lastbit(method.getReturnType().toString())).append(" ").append(method.getName());
+        			if (method.getArgumentTypes().length>0) {
+        				shortString.append("(");
+        				for (int i =0; i<method.getArgumentTypes().length;i++) {
+        					shortString.append(lastbit(method.getArgumentTypes()[i].toString()));
+        					if ((i+1)<method.getArgumentTypes().length) shortString.append(",");
+        					
+        				}
+        				shortString.append(")");
+        		    }
+        			reportError("argNames annotation value does not specify the right number of argument names for the method '"+shortString.toString()+"'",methodStruct);
+                    return EMPTY_STRINGS;
+        		}
+        		return (String[])args.toArray(new String[]{});
+        	}
         }
 
         if (arguments.size() != method.getArgumentTypes().length) {

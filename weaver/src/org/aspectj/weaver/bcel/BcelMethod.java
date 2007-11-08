@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
@@ -31,6 +32,7 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Signature.TypeVariableSignature;
 import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
@@ -118,6 +120,41 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		LocalVariableTable varTable = method.getLocalVariableTable();
 		int len = getArity();
 		if (varTable == null) {
+			// do we have an annotation with the argNames value specified...
+			if (hasAnnotations()) {
+				AnnotationX[] axs = getAnnotations();
+			    for (int i = 0; i < axs.length; i++) {
+					AnnotationX annotationX = axs[i];
+					String typename = annotationX.getTypeName();
+					if (typename.equals("org.aspectj.lang.annotation.Pointcut") ||
+						typename.equals("org.aspectj.lang.annotation.Before") ||
+						typename.equals("org.aspectj.lang.annotation.Around") ||
+						typename.startsWith("org.aspectj.lang.annotation.After")) {
+						Annotation a = annotationX.getBcelAnnotation();
+						if (a!=null) {
+							List values = a.getValues();
+							for (Iterator iterator = values.iterator(); iterator
+									.hasNext();) {
+								ElementNameValuePair nvPair = (ElementNameValuePair) iterator.next();
+								if (nvPair.getNameString().equals("argNames")) {
+									String argNames = nvPair.getValue().stringifyValue();
+									StringTokenizer argNameTokenizer = new StringTokenizer(argNames," ,");
+									List argsList = new ArrayList();
+									while (argNameTokenizer.hasMoreTokens()) {
+										argsList.add(argNameTokenizer.nextToken());
+									}
+									int requiredCount = getParameterTypes().length;
+									while (argsList.size()<requiredCount) {
+										argsList.add("arg"+argsList.size());
+									}
+									setParameterNames((String[])argsList.toArray(new String[]{}));
+									return;
+								}
+							}
+						}
+					}
+				}
+			} 
 			setParameterNames(Utility.makeArgNames(len));
 		} else {
 			UnresolvedType[] paramTypes = getParameterTypes();
