@@ -1,0 +1,5 @@
+<aspectj>
+    <aspects>
+         <aspect name="test.Monitor"/> 
+    </aspects>
+</aspectj>

@@ -3,6 +3,64 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+
+   <ajc-test dir="bugs154/pr148381/simple" title="argNames does not work - simple">
+     <!-- this compile is just to get code.jar into the sandbox, all the code is already precompiled in code.jar -->
+     <compile options="-1.5" files="PerformanceMonitor.java" classpath="code.jar"/>
+     <run class="test.Main" classpath="code.jar" ltw="META-INF/aop.xml">
+       <stdout>
+         <line text="This method was intercepted by the advice: Main.foo()"/>
+       </stdout>
+       <stderr/>
+     </run>
+   </ajc-test>
+
+   <ajc-test dir="bugs154/pr148381/error1" title="argNames does not work - error1">
+     <!-- this compile is just to get code.jar into the sandbox, all the code is already precompiled in code.jar -->
+     <compile options="-1.5" files="PerformanceMonitor.java" classpath="code.jar"/>
+     <run class="test.Main" classpath="code.jar" ltw="META-INF/aop.xml">
+       <stderr>
+         <line text="argNames annotation value does not specify the right number of argument names for the method 'Object flagExpectationMismatch(ProceedingJoinPoint,PerformanceMonitor)'"/>
+         <line text="Cannot read debug info for @Aspect to handle formal binding in pointcuts (please compile with 'javac -g' or '&lt;javac debug='true'.../&gt;' in Ant)"/>
+       </stderr>
+       <stdout/>
+     </run>
+   </ajc-test>
+
+   <ajc-test dir="bugs154/pr148381/error2" title="argNames does not work - error2">
+     <!-- this compile is just to get code.jar into the sandbox, all the code is already precompiled in code.jar -->
+     <compile options="-1.5" files="PerformanceMonitor.java" classpath="code.jar"/>
+     <run class="test.Main" classpath="code.jar" ltw="META-INF/aop.xml">
+       <stderr>
+         <line text="argNames annotation value does not specify the right number of argument names for the method 'Object flagExpectationMismatch(ProceedingJoinPoint,PerformanceMonitor)'"/>
+         <line text="Cannot read debug info for @Aspect to handle formal binding in pointcuts (please compile with 'javac -g' or '&lt;javac debug='true'.../&gt;' in Ant)"/>
+       </stderr>
+       <stdout/>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs154/pr148381/error3" title="argNames does not work - error3">
+     <!-- this compile is just to get code.jar into the sandbox, all the code is already precompiled in code.jar -->
+     <compile options="-1.5" files="PerformanceMonitor.java" classpath="code.jar"/>
+     <run class="test.Main" classpath="code.jar" ltw="META-INF/aop.xml">
+       <stderr>
+         <line text="argNames annotation value does not specify the right number of argument names for the method 'void a(Foo)'"/>
+         <line text="Cannot read debug info for @Aspect to handle formal binding in pointcuts (please compile with 'javac -g' or '&lt;javac debug='true'.../&gt;' in Ant)"/>
+         <line text="argNames annotation value does not specify the right number of argument names for the method 'void f(Foo)'"/>
+         <line text="Cannot read debug info for @Aspect to handle formal binding in pointcuts (please compile with 'javac -g' or '&lt;javac debug='true'.../&gt;' in Ant)"/>
+         <line text="argNames annotation value does not specify the right number of argument names for the method 'void e(Foo)'"/>
+         <line text="Cannot read debug info for @Aspect to handle formal binding in pointcuts (please compile with 'javac -g' or '&lt;javac debug='true'.../&gt;' in Ant)"/>
+         <line text="argNames annotation value does not specify the right number of argument names for the method 'void d(Foo)'"/>
+         <line text="Cannot read debug info for @Aspect to handle formal binding in pointcuts (please compile with 'javac -g' or '&lt;javac debug='true'.../&gt;' in Ant)"/>
+         <line text="argNames annotation value does not specify the right number of argument names for the method 'void c(Foo)'"/>
+         <line text="Cannot read debug info for @Aspect to handle formal binding in pointcuts (please compile with 'javac -g' or '&lt;javac debug='true'.../&gt;' in Ant)"/>
+         <line text="argNames annotation value does not specify the right number of argument names for the method 'void b(Foo)'"/>
+         <line text="Cannot read debug info for @Aspect to handle formal binding in pointcuts (please compile with 'javac -g' or '&lt;javac debug='true'.../&gt;' in Ant)"/>
+       </stderr>
+       <stdout/>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="bugs154/pr209051" title="asterisk in at aj pointcut">
      <compile options="-1.5" files="Bug.java"/>
      <run class="Bug">

@@ -1,0 +1,7 @@
+rebuilding code.jar is done with:
+
+javac *.java
+jar -cvMf code.jar test
+
+Basically you need to ensure the classes have no local variable tables - that is the default behaviour for javac
+
