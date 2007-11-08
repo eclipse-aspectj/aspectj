@@ -1087,6 +1087,27 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		clazz.addMethodGen(bridgeMethod);
 	}
 	
+	// Unlike toString() on a member, this does not include the declaring type
+	private String stringifyMember(ResolvedMember member) {
+		StringBuffer buf = new StringBuffer();
+    	buf.append(member.getReturnType().getName());
+    	buf.append(' ');
+   		buf.append(member.getName());
+    	if (member.getKind() != Member.FIELD) {
+    		buf.append("(");
+    		UnresolvedType[] params = member.getParameterTypes();
+            if (params.length != 0) {
+                buf.append(params[0]);
+        		for (int i=1, len = params.length; i < len; i++) {
+                    buf.append(", ");
+        		    buf.append(params[i].getName());
+        		}
+            }
+    		buf.append(")");
+    	}
+    	return buf.toString();
+	}
+	
     private boolean mungeMethodDelegate(BcelClassWeaver weaver, MethodDelegateTypeMunger munger) {
         ResolvedMember introduced = munger.getSignature();
 
@@ -1102,6 +1123,34 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
         boolean shouldApply = munger.matches(weaver.getLazyClassGen().getType(), aspectType);
         if (shouldApply) {
+        	
+        	// If no implementation class was specified, the intention was that the types matching the pattern
+        	// already implemented the interface, let's check that now!
+        	if (munger.getImplClassName()==null) {
+        		boolean isOK = false;
+        		List/*LazyMethodGen*/ existingMethods = gen.getMethodGens();
+        		for (Iterator i = existingMethods.iterator(); i.hasNext() && !isOK;) {
+        		    LazyMethodGen m = (LazyMethodGen) i.next();
+        		    if (m.getName().equals(introduced.getName()) &&  
+        		        m.getParameterSignature().equals(introduced.getParameterSignature()) &&
+        		        m.getReturnType().equals(introduced.getReturnType())) {
+        		    	isOK = true;
+        		    }
+        		}        
+        		if (!isOK) {
+        			// the class does not implement this method, they needed to supply a default impl class
+        			IMessage msg = new Message("@DeclareParents: No defaultImpl was specified but the type '"+gen.getName()+
+        					"' does not implement the method '"+stringifyMember(introduced)+"' defined on the interface '"+introduced.getDeclaringType()+"'",
+        					weaver.getLazyClassGen().getType().getSourceLocation(),true,new ISourceLocation[]{munger.getSourceLocation()});
+        			weaver.getWorld().getMessageHandler().handleMessage(msg);
+        			return false;
+        		}
+        		
+        		return true;
+        	}
+        	
+        	
+        	
             LazyMethodGen mg = new LazyMethodGen(
                     introduced.getModifiers() - Modifier.ABSTRACT,
                     BcelWorld.makeBcelType(introduced.getReturnType()),

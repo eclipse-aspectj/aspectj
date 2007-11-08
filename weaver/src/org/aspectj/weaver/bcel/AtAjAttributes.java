@@ -742,28 +742,27 @@ public class AtAjAttributes {
                     for (int i = 0; i < methods.length; i++) {
                         ResolvedMember method = (ResolvedMember)methods[i];
                         if (method.isAbstract()) {
-                            if (defaultImplClassName == null) {
-                                // non marker interface with no default impl provided
-                                reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided", struct);
-                                return false;
-                            }
+                        // moved to be detected at weave time if the target doesnt implement the methods
+//                            if (defaultImplClassName == null) {
+//                                // non marker interface with no default impl provided
+//                                reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided", struct);
+//                                return false;
+//                            }
                             hasAtLeastOneMethod = true;
-
-                            struct.ajAttributes.add(
-                                    new AjAttribute.TypeMunger(
-                                            new MethodDelegateTypeMunger(
-                                                method,
-                                                struct.enclosingType,
-                                                defaultImplClassName,
-                                                typePattern
-                                            )
-                                    )
-                            );
+                            MethodDelegateTypeMunger mdtm = 
+                                new MethodDelegateTypeMunger(
+                                    method,
+                                    struct.enclosingType,
+                                    defaultImplClassName,
+                                    typePattern
+                                );
+                            mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
+                            struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
                         }
                     }
                     // successfull so far, we thus need a bcel type munger to have
                     // a field hosting the mixin in the target type
-                    if (hasAtLeastOneMethod) {
+                    if (hasAtLeastOneMethod && defaultImplClassName!=null) {
                         struct.ajAttributes.add(
                                 new AjAttribute.TypeMunger(
                                         new MethodDelegateTypeMunger.FieldHostTypeMunger(
