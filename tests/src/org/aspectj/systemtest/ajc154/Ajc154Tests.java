@@ -45,7 +45,10 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		runTest("new pointcut designators in a reference pointcut");
 //	}
 
-	//public void testDecpProblemWhenTargetAlreadyImplements_pr169432() { runTest("declare parents problem when target already implements interface");}
+	//public void testAsteriskInAtPointcut_pr209051() { runTest("asterisk in at aj pointcut");}
+	public void testDecpProblemWhenTargetAlreadyImplements_pr169432_1() { runTest("declare parents problem when target already implements interface - 1");}
+	public void testDecpProblemWhenTargetAlreadyImplements_pr169432_2() { runTest("declare parents problem when target already implements interface - 2");}
+	public void testDecpProblemWhenTargetAlreadyImplements_pr169432_3() { runTest("declare parents problem when target already implements interface - 3");}
 	
 	public void testVariousLtwAroundProblems_pr209019_1() { runTest("various issues with ltw and around advice - 1"); }
 	public void testVariousLtwAroundProblems_pr209019_2() { runTest("various issues with ltw and around advice - 2"); }

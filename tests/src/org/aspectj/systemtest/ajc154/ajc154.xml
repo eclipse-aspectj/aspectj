@@ -3,6 +3,15 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+   <ajc-test dir="bugs154/pr209051" title="asterisk in at aj pointcut">
+     <compile options="-1.5" files="Bug.java"/>
+     <run class="Bug">
+       <stdout>
+         <line text="x"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
    <!-- very basic with all code style, should be fine -->
    <ajc-test dir="bugs154/pr209019/case1" title="various issues with ltw and around advice - 1">
      <compile options="-1.5" files="A.java,DurationMethod.java,AbstractDurationMethod.java,Runner.java"/>
@@ -53,14 +62,29 @@
      </run>
    </ajc-test>
    
-   
-
-
-   <ajc-test dir="bugs154/pr169432" title="declare parents problem when target already implements interface">
+   <!-- just checking the new syntax compiles OK -->
+   <ajc-test dir="bugs154/pr169432/case1" title="declare parents problem when target already implements interface - 1">
      <compile options="-1.5" files="NonMarkerInterface.java,ClassThatAlreadyIncludesRequiredMethods.java,DeclareParentsForNonMarkerInterfaceToAClassThatAlreadyIncludeRequiredMethods.java"/>
    </ajc-test>
    
+   <!-- now violate the rules, the types matching the pattern do not implement the interface -->
+   <ajc-test dir="bugs154/pr169432/case2" title="declare parents problem when target already implements interface - 2">
+    <compile options="-1.5" files="A.java">
+       <message kind="error" line="20" text="@DeclareParents: No defaultImpl was specified but the type 'C1' does not implement the method 'int m()' defined on the interface 'NonMarkerInterface'"/>
+       <message kind="error" line="24" text="@DeclareParents: No defaultImpl was specified but the type 'C2' does not implement the method 'int m()' defined on the interface 'NonMarkerInterface'"/>
+     </compile>
+   </ajc-test>
 
+   <!-- now they do, lets check they behave as expected -->   
+   <ajc-test dir="bugs154/pr169432/case3" title="declare parents problem when target already implements interface - 3">
+     <compile options="-1.5" files="A.java"/>
+     <run class="A">
+        <stdout>
+            <line text="C1.m() returns 1"/>
+            <line text="C2.m() returns 2"/>
+        </stdout>
+     </run>
+   </ajc-test>
 
    <ajc-test dir="bugs154/pr202088" title="abstract annotation style pointcut with context">
      <compile options="-1.5" files="Bug.java"/>
