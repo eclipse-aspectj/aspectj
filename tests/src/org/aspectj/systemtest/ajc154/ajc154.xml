@@ -3,6 +3,9 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+   <ajc-test dir="bugs154/pr194314" title="broken lvt for woven at aspectj around advice">
+     <compile options="-1.5" files="test/IService.java,test/Main.java,test/Service.java,test/ServiceInterceptor.java"/>
+   </ajc-test>
 
    <ajc-test dir="bugs154/pr148381/simple" title="argNames does not work - simple">
      <!-- this compile is just to get code.jar into the sandbox, all the code is already precompiled in code.jar -->
