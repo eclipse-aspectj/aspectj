@@ -187,6 +187,18 @@ public abstract class Shadow {
         return getSignature()
             .getParameterTypes().length;
     }
+    
+    /**
+     * Return name of the argument at position 'i' at this shadow.  This does not
+     * make sense for all shadows - but can be useful in the case of, for example,
+     * method-execution.
+     * @return null if it cannot be determined
+     */
+    public String getArgName(int i,World w) {
+    	String [] names = getSignature().getParameterNames(w);
+    	if (names==null || i>=names.length) return null;
+    	return names[i];
+    }
     	
 	public abstract UnresolvedType getEnclosingType();	
 
