@@ -44,6 +44,10 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //	//parser.registerPointcutDesignatorHandler(beanHandler);
 //		runTest("new pointcut designators in a reference pointcut");
 //	}
+	public void testNPEWithMissingAtAspectAnnotationInPointcutLibrary_pr162539_1() { runTest("NPE with missing @aspect annotation in pointcut library - 1"); }
+	public void testNPEWithMissingAtAspectAnnotationInPointcutLibrary_pr162539_2() { runTest("NPE with missing @aspect annotation in pointcut library - 2"); }
+	 
+	public void testWrongNumberOfTypeParameters_pr176991() { runTest("wrong number of type parameters");}
 
 	public void testArgNamesDoesNotWork_pr148381_1() { runTest("argNames does not work - simple");}
 	public void testArgNamesDoesNotWork_pr148381_2() { runTest("argNames does not work - error1");}
@@ -65,7 +69,6 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	//public void testGenericTypeParameterizedWithArrayType_pr167197() { runTest("generic type parameterized with array type");}
 	
 	
-	//public void testWrongNumberOfTypeParameters_pr176991() { runTest("wrong number of type parameters");}
 	public void testItdOnGenericInnerInterface_pr203646() { runTest("npe with itd on inner generic interface");}
 	public void testItdOnGenericInnerInterface_pr203646_A() { runTest("npe with itd on inner generic interface - exampleA");}
 	public void testItdOnGenericInnerInterface_pr203646_B() { runTest("npe with itd on inner generic interface - exampleB");}

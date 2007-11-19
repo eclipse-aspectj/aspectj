@@ -2,7 +2,6 @@
 
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
-
    <ajc-test dir="bugs154/pr194314" title="broken lvt for woven at aspectj around advice">
      <compile options="-1.5" files="test/IService.java,test/Main.java,test/Service.java,test/ServiceInterceptor.java"/>
    </ajc-test>
@@ -165,6 +164,14 @@
      <compile options="-1.5" files="NoError.java">
        <message kind="error" text="DeclareParents can only be used inside an aspect type"/>
      </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs154/pr162539" title="NPE with missing @aspect annotation in pointcut library - 1">
+   	 <compile files="test/ataspectj/pointcutlibrary/HelloWorld.java, test/ataspectj/pointcutlibrary/AtAspect.java" classpath="lib.jar" options="-1.5"/>
+   </ajc-test>
+    
+   <ajc-test dir="bugs154/pr162539" title="NPE with missing @aspect annotation in pointcut library - 2">
+   	<compile files="test/ataspectj/pointcutlibrary/PointcutLibrary.java, test/ataspectj/pointcutlibrary/HelloWorld.java, test/ataspectj/pointcutlibrary/AtAspect.java" options="-1.5"/>
    </ajc-test>
    
    <ajc-test dir="bugs154/pr176991" title="wrong number of type parameters">
