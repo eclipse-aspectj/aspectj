@@ -31,10 +31,12 @@ import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
@@ -67,6 +69,8 @@ import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.AtAjAttributes.LazyResolvedPointcutDefinition;
+import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.PerClause;
@@ -271,19 +275,51 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			}
 		}
 		
+		FormalBinding[] bindings = buildFormalAdviceBindingsFrom(md);
 		
-		ResolvedPointcutDefinition resolvedPointcutDeclaration = new ResolvedPointcutDefinition(
-            factory.fromBinding(md.binding.declaringClass), 
-            md.modifiers, 
-            new String(md.selector),
-			factory.fromBindings(md.binding.parameters),
-			pc); 
-			
-		resolvedPointcutDeclaration.setPosition(md.sourceStart, md.sourceEnd);
-		resolvedPointcutDeclaration.setSourceContext(eSourceContext);
-		return resolvedPointcutDeclaration;
+		ResolvedPointcutDefinition rpd = new LazyResolvedPointcutDefinition(
+				factory.fromBinding(md.binding.declaringClass), 
+	            md.modifiers, 
+	            new String(md.selector),
+				factory.fromBindings(md.binding.parameters),
+				factory.fromBinding(md.binding.returnType),
+				 pc,new EclipseScope(bindings,md.scope));
+
+		rpd.setPosition(md.sourceStart, md.sourceEnd);
+		rpd.setSourceContext(eSourceContext);
+		return rpd;
 	}
 
+	private static final char[] joinPoint = "Lorg/aspectj/lang/JoinPoint;".toCharArray();
+	private static final char[] joinPointStaticPart = "Lorg/aspectj/lang/JoinPoint$StaticPart;".toCharArray();
+	private static final char[] joinPointEnclosingStaticPart = "Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;".toCharArray();
+	private static final char[] proceedingJoinPoint = "Lorg/aspectj/lang/ProceedingJoinPoint;".toCharArray();
+
+	private FormalBinding[] buildFormalAdviceBindingsFrom(AbstractMethodDeclaration mDecl) {
+		if (mDecl.arguments == null) return new FormalBinding[0];
+		if (mDecl.binding == null) return new FormalBinding[0];
+		EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(mDecl.scope);
+		String extraArgName = null;//maybeGetExtraArgName();
+		if (extraArgName == null) extraArgName = "";
+		FormalBinding[] ret = new FormalBinding[mDecl.arguments.length];
+		for (int i = 0; i < mDecl.arguments.length; i++) {
+            Argument arg = mDecl.arguments[i];
+            String name = new String(arg.name);
+            TypeBinding argTypeBinding = mDecl.binding.parameters[i];
+            UnresolvedType type = factory.fromBinding(argTypeBinding);
+			if  (CharOperation.equals(joinPoint,argTypeBinding.signature()) ||
+				 CharOperation.equals(joinPointStaticPart,argTypeBinding.signature()) ||
+				 CharOperation.equals(joinPointEnclosingStaticPart,argTypeBinding.signature()) ||
+				 CharOperation.equals(proceedingJoinPoint,argTypeBinding.signature()) ||
+				 name.equals(extraArgName)) {
+				ret[i] = new FormalBinding.ImplicitFormalBinding(type,name,i);
+			} else {
+	            ret[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");						
+			}
+		}
+		return ret;
+	}
+	
 	/**
 	 * This method may not return all fields, for example it may
 	 * not include the ajc$initFailureCause or ajc$perSingletonInstance
