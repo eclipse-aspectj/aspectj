@@ -98,7 +98,7 @@ public class Aj implements ClassPreProcessor {
      */
     static class WeaverContainer {
 
-        private static Map weavingAdaptors = new WeakHashMap();
+        private final static Map weavingAdaptors = new WeakHashMap();
 
         static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
             ExplicitlyInitializedClassLoaderWeavingAdaptor adaptor = null;
