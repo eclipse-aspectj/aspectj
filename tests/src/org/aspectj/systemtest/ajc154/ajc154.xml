@@ -2,6 +2,16 @@
 
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
+   <ajc-test dir="bugs154/pr211674" title="after throwing annotation style problem - 1">
+     <compile options="-1.5" files="Test.java"/>
+     <run class="Test"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs154/pr211674" title="after throwing annotation style problem - 2">
+     <compile options="-1.5" files="Test2.java"/>
+     <run class="Test2"/>
+   </ajc-test>
+
    <ajc-test dir="bugs154/pr194314" title="broken lvt for woven at aspectj around advice">
      <compile options="-1.5" files="test/IService.java,test/Main.java,test/Service.java,test/ServiceInterceptor.java"/>
    </ajc-test>

@@ -44,6 +44,9 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //	//parser.registerPointcutDesignatorHandler(beanHandler);
 //		runTest("new pointcut designators in a reference pointcut");
 //	}
+	//public void testAfterThrowingAnnotationStyle_pr211674_1() { runTest("after throwing annotation style problem - 1");}
+	//public void testAfterThrowingAnnotationStyle_pr211674_2() { runTest("after throwing annotation style problem - 2");}
+
 	public void testNPEWithMissingAtAspectAnnotationInPointcutLibrary_pr162539_1() { runTest("NPE with missing @aspect annotation in pointcut library - 1"); }
 	public void testNPEWithMissingAtAspectAnnotationInPointcutLibrary_pr162539_2() { runTest("NPE with missing @aspect annotation in pointcut library - 2"); }
 	 
