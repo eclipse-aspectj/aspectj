@@ -15,6 +15,7 @@ import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.weaver.CustomMungerFactory;
 
 /**
  * The class to be used by tools to drive a build. An AjCompiler is created
@@ -57,6 +58,14 @@ public class AjCompiler {
 		this.compilerId = compilerId;
 
 		buildManager = new AjdeCoreBuildManager(this);
+	}
+	
+	public void setCustomMungerFactory(CustomMungerFactory factory) {
+		buildManager.setCustomMungerFactory(factory);
+	}
+	
+	public CustomMungerFactory getCustomMungerFactory() {
+		return buildManager.getCustomMungerFactory();
 	}
 	
 	/**
