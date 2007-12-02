@@ -84,6 +84,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.World;
@@ -156,6 +157,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	public BcelWorld getBcelWorld() { return state.getBcelWorld();}
 	
 	public CountingMessageHandler handler;
+	private CustomMungerFactory customMungerFactory;
 
 	public AjBuildManager(IMessageHandler holder) {
 		super();
@@ -749,6 +751,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 //    	}
 //    }
     
+    //LTODO delegate to BcelWeaver?
+    public void setCustomMungerFactory(CustomMungerFactory factory) {
+    	customMungerFactory = factory;
+    }
+     
+	public CustomMungerFactory getCustomMungerFactory() {
+		return customMungerFactory;
+	}
+
     /** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
 		List cp = 
@@ -767,6 +778,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		bcelWorld.setPinpointMode(buildConfig.isXdevPinpoint());
 		bcelWorld.setErrorAndWarningThreshold(buildConfig.getOptions().errorThreshold,buildConfig.getOptions().warningThreshold);
 		BcelWeaver bcelWeaver = new BcelWeaver(bcelWorld);
+		bcelWeaver.setCustomMungerFactory(customMungerFactory);
 		state.setWorld(bcelWorld);
 		state.setWeaver(bcelWeaver);
 		state.clearBinarySourceFiles();
@@ -1388,5 +1400,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	public boolean wasFullBuild() {
 		return wasFullBuild;
 	}
+
 }
 
