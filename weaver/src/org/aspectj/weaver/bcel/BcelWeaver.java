@@ -64,6 +64,7 @@ import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
+import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.IWeaver;
@@ -138,6 +139,7 @@ public class BcelWeaver implements IWeaver {
 	private List declareParentsList = null; // setup by prepareForWeave
 
     private ZipOutputStream zipOutputStream;
+	private CustomMungerFactory customMungerFactory;
 
 	// ----
     
@@ -488,6 +490,8 @@ public class BcelWeaver implements IWeaver {
 		typeMungerList = xcutSet.getTypeMungers();
         lateTypeMungerList = xcutSet.getLateTypeMungers();
 		declareParentsList = xcutSet.getDeclareParents();
+		
+		addCustomMungers();
     	
 		// The ordering here used to be based on a string compare on toString() for the two mungers - 
 		// that breaks for the @AJ style where advice names aren't programmatically generated.  So we
@@ -517,6 +521,30 @@ public class BcelWeaver implements IWeaver {
 					null, null);
 		
 		if (trace.isTraceEnabled()) trace.exit("prepareForWeave");
+    }
+    
+    private void addCustomMungers() {
+		if (customMungerFactory != null) {
+			for (Iterator i = addedClasses.iterator(); i.hasNext();) {
+				UnwovenClassFile jc = (UnwovenClassFile) i.next();
+				String name = jc.getClassName();
+				ResolvedType type = world.resolve(name);
+				if (type.isAspect()) {
+					Collection/*ShadowMunger*/ shadowMungers = customMungerFactory.createCustomShadowMungers(type);
+					if (shadowMungers != null) {
+						shadowMungerList.addAll(shadowMungers);
+					}
+					Collection/*ConcreteTypeMunger*/ typeMungers = customMungerFactory
+							.createCustomTypeMungers(type);
+					if (typeMungers != null)
+						typeMungerList.addAll(typeMungers);
+				}
+			}
+		}
+	}
+    
+    public void setCustomMungerFactory(CustomMungerFactory factory) {
+    	customMungerFactory = factory;
     }
     
     /*

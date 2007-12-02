@@ -1042,6 +1042,25 @@ public abstract class World implements Dump.INode {
 	    public int hardSize() {
 	    	return tMap.size();
 	    }
+	    
+		public ResolvedType[] getAllTypes() {
+			List/*ResolvedType*/ results = new ArrayList();
+
+			collectTypes(expendableMap, results);
+			collectTypes(tMap, results);
+			return (ResolvedType[]) results.toArray(new ResolvedType[results.size()]);
+		}
+
+		private void collectTypes(Map map, List/*ResolvedType*/ results) {
+			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				ResolvedType type = get((String)key);
+				if (type!=null) results.add(type);
+				else System.err.println("null!:"+key);
+			}
+		}
+
+
 	}	
 	
 	/** Reference types we don't intend to weave may be ejected from
@@ -1250,4 +1269,9 @@ public abstract class World implements Dump.INode {
 	    public boolean isASMAround() { 
 	    	return isASMAround;
 	    }
+	    
+		public ResolvedType[] getAllTypes() {
+			return typeMap.getAllTypes();
+		}
+
 }
