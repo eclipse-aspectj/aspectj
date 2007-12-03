@@ -2,6 +2,86 @@
 
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
+   <ajc-test dir="bugs154/pr211052" title="declare atType problems - 1">
+     <compile options="-1.5" files="MyPojo.java"/>
+     <run class="MyPojo"/>
+   </ajc-test>
+   
+   <!--  DistantResource is explicitly mentioned as c.d.DistantResource -->
+   <ajc-test dir="bugs154/pr211052" title="declare atType problems - 2">
+     <compile options="-1.5 -showWeaveInfo" files="SimpleAnnotation.java,SimpleAspect1.java,DistantResource.java">
+       <message kind="weave" text="'c.d.DistantResource' (DistantResource.java:5) is annotated with @SimpleAnnotation(classname = &quot;oranges&quot;)"/>
+     </compile>
+     <run class="c.d.DistantResource">
+     <stdout>
+       <line text="Annotation is @a.b.SimpleAnnotation(classname=oranges)"/>
+     </stdout>
+     </run>
+   </ajc-test>
+
+   <!--  DistantResource is imported and refered to as DistantResource -->
+   <ajc-test dir="bugs154/pr211052" title="declare atType problems - 3">
+     <compile options="-1.5 -showWeaveInfo" files="SimpleAnnotation.java,SimpleAspect2.java,DistantResource.java">
+       <message kind="weave" text="'c.d.DistantResource' (DistantResource.java:5) is annotated with @SimpleAnnotation(classname = &quot;oranges&quot;)"/>
+     </compile>
+      <run class="c.d.DistantResource">
+     <stdout>       
+       <line text="Annotation is @a.b.SimpleAnnotation(classname=oranges)"/>
+     </stdout>
+     </run>
+   </ajc-test>
+   
+   <!--  Annotation is in a different package to the aspect and explicitly referenced with a fully qualified name -->
+   <ajc-test dir="bugs154/pr211052" title="declare atType problems - 4">
+     <compile options="-1.5 -showWeaveInfo" files="SimpleAnnotation2.java,SimpleAspect3.java,DistantResource.java">
+       <message kind="weave" text="'c.d.DistantResource' (DistantResource.java:5) is annotated with @e.f.SimpleAnnotation2(classname = &quot;oranges&quot;)"/>
+     </compile>     
+     <run class="c.d.DistantResource">
+     <stdout>
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)"/>
+     </stdout>
+     </run>
+   </ajc-test>
+
+   <!--  Annotation is in a different package to the aspect and imported -->
+   <ajc-test dir="bugs154/pr211052" title="declare atType problems - 5">
+     <compile options="-1.5 -showWeaveInfo" files="SimpleAnnotation2.java,SimpleAspect4.java,DistantResource.java">
+       <message kind="weave" text="'c.d.DistantResource' (DistantResource.java:5) is annotated with @SimpleAnnotation2(classname = &quot;oranges&quot;)"/>
+     </compile>
+     <run class="c.d.DistantResource">
+     <stdout>
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)"/>
+     </stdout>
+     </run>
+   </ajc-test>
+   
+   <!-- target for annotation is from a jar -->
+   <ajc-test dir="bugs154/pr211052" title="declare atType problems - 6">
+     <compile options="-1.5" files="DistantResource.java" outjar="target.jar"/>
+     <compile options="-1.5 -showWeaveInfo" files="SimpleAnnotation2.java,SimpleAspect4.java" inpath="target.jar">
+       <message kind="weave" text="'c.d.DistantResource' (DistantResource.java) is annotated with @SimpleAnnotation2(classname = &quot;oranges&quot;)"/>
+     </compile>
+     <run class="c.d.DistantResource">
+     <stdout>
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)"/>
+     </stdout>
+     </run>
+   </ajc-test>
+
+   <!-- target for annotation is from a jar and annotation and aspect are in a different jar-->
+   <ajc-test dir="bugs154/pr211052" title="declare atType problems - 7">
+     <compile options="-1.5" files="DistantResource.java" outjar="target.jar"/>
+     <compile options="-1.5 -Xlint:ignore" files="SimpleAnnotation2.java,SimpleAspect3.java" outjar="aspect.jar"/>
+     <compile options="-1.5 -showWeaveInfo" aspectpath="aspect.jar" inpath="target.jar">
+       <message kind="weave" text="'c.d.DistantResource' (DistantResource.java) is annotated with @e.f.SimpleAnnotation2(classname = &quot;oranges&quot;)"/>
+     </compile>
+     <run class="c.d.DistantResource">
+     <stdout>
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)"/>
+     </stdout>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="bugs154/pr211674" title="after throwing annotation style problem - 1">
      <compile options="-1.5" files="Test.java"/>
      <run class="Test"/>

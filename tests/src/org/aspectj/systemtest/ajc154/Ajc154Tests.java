@@ -23,7 +23,6 @@ import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.tools.ContextBasedMatcher;
 import org.aspectj.weaver.tools.FuzzyBoolean;
 import org.aspectj.weaver.tools.MatchingContext;
@@ -47,6 +46,17 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	//public void testAfterThrowingAnnotationStyle_pr211674_1() { runTest("after throwing annotation style problem - 1");}
 	//public void testAfterThrowingAnnotationStyle_pr211674_2() { runTest("after throwing annotation style problem - 2");}
 
+	// Testing some issues with declare at type
+	public void testDeclareAtTypeProblems_pr211052_1() { runTest("declare atType problems - 1"); }
+	public void testDeclareAtTypeProblems_pr211052_2() { runTest("declare atType problems - 2"); }
+	public void testDeclareAtTypeProblems_pr211052_3() { runTest("declare atType problems - 3"); }
+	public void testDeclareAtTypeProblems_pr211052_4() { runTest("declare atType problems - 4"); }
+	public void testDeclareAtTypeProblems_pr211052_5() { runTest("declare atType problems - 5"); }
+	// declare at type and binary weaving
+	public void testDeclareAtTypeProblems_pr211052_6() { runTest("declare atType problems - 6"); }
+	public void testDeclareAtTypeProblems_pr211052_7() { runTest("declare atType problems - 7"); }
+	
+	
 	public void testNPEWithMissingAtAspectAnnotationInPointcutLibrary_pr162539_1() { runTest("NPE with missing @aspect annotation in pointcut library - 1"); }
 	public void testNPEWithMissingAtAspectAnnotationInPointcutLibrary_pr162539_2() { runTest("NPE with missing @aspect annotation in pointcut library - 2"); }
 	 
