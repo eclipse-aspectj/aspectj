@@ -65,6 +65,14 @@ public class AjdeCoreBuildManager {
 		AsmManager.attemptIncrementalModelRepairs = true;
 	}
 	
+	public void setCustomMungerFactory(Class factoryClass) {
+		ajBuildManager.setCustomMungerFactory(factoryClass);
+	}
+	
+	public boolean hasCustomMungerFactory() {
+		return ajBuildManager.hasCustomMungerFactory();
+	}
+	
 	/**
 	 * @param buildFresh - true if want to force a full build, false otherwise
 	 */

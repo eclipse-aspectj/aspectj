@@ -59,6 +59,14 @@ public class AjCompiler {
 		buildManager = new AjdeCoreBuildManager(this);
 	}
 	
+	public void setCustomMungerFactory(Class factoryClass) {
+		buildManager.setCustomMungerFactory(factoryClass);
+	}
+	
+	public boolean hasCustomMungerFactory() {
+		return buildManager.hasCustomMungerFactory();
+	}
+	
 	/**
 	 * @return the id for this AjCompiler
 	 */
