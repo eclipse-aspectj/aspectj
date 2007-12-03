@@ -11,8 +11,6 @@
 package org.aspectj.systemtest.ajc154;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
