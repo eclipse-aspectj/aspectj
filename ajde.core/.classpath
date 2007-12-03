@@ -9,6 +9,5 @@
 	<classpathentry exported="true" kind="src" path="/org.aspectj.ajdt.core"/>
 	<classpathentry exported="true" kind="src" path="/org.eclipse.jdt.core"/>
 	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

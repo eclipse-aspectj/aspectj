@@ -40,7 +40,6 @@ import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.util.ConfigParser;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.CustomMungerFactory;
 
 /**
  * Build Manager which drives the build for a given AjCompiler.
@@ -64,14 +63,6 @@ public class AjdeCoreBuildManager {
 		IncrementalStateManager.recordIncrementalStates=true;
 		IncrementalStateManager.debugIncrementalStates=true;
 		AsmManager.attemptIncrementalModelRepairs = true;
-	}
-	
-	public void setCustomMungerFactory(CustomMungerFactory factory) {
-		ajBuildManager.setCustomMungerFactory(factory);
-	}
-	
-	public CustomMungerFactory getCustomMungerFactory() {
-		return ajBuildManager.getCustomMungerFactory();
 	}
 	
 	/**
