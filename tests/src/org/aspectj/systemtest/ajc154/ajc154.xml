@@ -2,6 +2,19 @@
 
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
+
+   <ajc-test dir="bugs154/pr166647" title="ltw and cflow problem">
+     <compile options="-1.5" files="ClassToAdvise.java,ClassWithMain.java" outjar="code.jar"/>
+     <compile options="-1.5 -Xlint:ignore" files="Aspect.java" outjar="aspects.jar"/>
+     <run class="a.ClassWithMain" classpath="aspects.jar;code.jar" ltw="aop1.xml">
+       <stdout>
+         <line text="advice fired"/>
+       </stdout>
+       <stderr>
+       </stderr>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="bugs154/pr211052" title="declare atType problems - 1">
      <compile options="-1.5" files="MyPojo.java"/>
      <run class="MyPojo"/>

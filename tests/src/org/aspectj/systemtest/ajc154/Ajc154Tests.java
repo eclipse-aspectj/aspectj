@@ -44,7 +44,10 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	//public void testAfterThrowingAnnotationStyle_pr211674_1() { runTest("after throwing annotation style problem - 1");}
 	//public void testAfterThrowingAnnotationStyle_pr211674_2() { runTest("after throwing annotation style problem - 2");}
 
-	// Testing some issues with declare at type
+	// crappy solution - see the bug
+//	public void testCflowLtwProblem_pr166647_1() { runTest("ltw and cflow problem"); }
+	
+	// Testing some issues with declare at type	
 	public void testDeclareAtTypeProblems_pr211052_1() { runTest("declare atType problems - 1"); }
 	public void testDeclareAtTypeProblems_pr211052_2() { runTest("declare atType problems - 2"); }
 	public void testDeclareAtTypeProblems_pr211052_3() { runTest("declare atType problems - 3"); }

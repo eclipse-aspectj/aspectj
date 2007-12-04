@@ -1,0 +1,11 @@
+<aspectj>
+  <aspects>
+    <concrete-aspect name="x.Aspect2" extends="x.Aspect">
+      <pointcut name="scope" expression="within(*)"/>
+    </concrete-aspect>
+  </aspects>
+  <!-- weaver options="-verbose -showWeaveInfo -debug"-->
+  <weaver>
+    <include within="a..*"/>
+  </weaver>
+</aspectj>
