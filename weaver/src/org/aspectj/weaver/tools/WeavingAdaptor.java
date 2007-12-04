@@ -52,6 +52,7 @@ import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.weaver.bcel.Utility;
 
+// OPTIMIZE add guards for all the debug/info/etc
 /**
  * This adaptor allows the AspectJ compiler to be embedded in an existing
  * system to facilitate load-time weaving. It provides an interface for a
@@ -235,10 +236,11 @@ public class WeavingAdaptor implements IMessageContext {
 	 * Weave a class using aspects previously supplied to the adaptor.
 	 * @param name the name of the class
 	 * @param bytes the class bytes
+	 * @param mustWeave if true then this class *must* get woven (used for concrete aspects generated from XML)
 	 * @return the woven bytes
      * @exception IOException weave failed
 	 */
-	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
+	public byte[] weaveClass (String name, byte[] bytes,boolean mustWeave) throws IOException {
 		if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name, bytes});
 
 		if (!enabled) {
@@ -259,6 +261,9 @@ public class WeavingAdaptor implements IMessageContext {
 					debug("weaving '" + name + "'");
 					bytes = getWovenBytes(name, bytes);
 				} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
+					if (mustWeave) {
+						error("XML Defined aspects must be woven in cases where cflow pointcuts are involved. Currently the include/exclude patterns exclude '"+name+"'");
+					}
 		            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
 		            debug("weaving '" + name + "'");
 		            bytes = getAtAspectJAspectBytes(name, bytes);
