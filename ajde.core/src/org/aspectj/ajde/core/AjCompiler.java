@@ -63,8 +63,8 @@ public class AjCompiler {
 		buildManager.setCustomMungerFactory(factoryClass);
 	}
 	
-	public boolean hasCustomMungerFactory() {
-		return buildManager.hasCustomMungerFactory();
+	public Object getCustomMungerFactory() {
+		return buildManager.getCustomMungerFactory();
 	}
 	
 	/**

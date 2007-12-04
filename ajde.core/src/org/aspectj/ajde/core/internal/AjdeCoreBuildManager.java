@@ -65,12 +65,13 @@ public class AjdeCoreBuildManager {
 		AsmManager.attemptIncrementalModelRepairs = true;
 	}
 	
-	public void setCustomMungerFactory(Class factoryClass) {
-		ajBuildManager.setCustomMungerFactory(factoryClass);
+	// XXX hideous, should not be Object
+	public void setCustomMungerFactory(Object o) {
+		ajBuildManager.setCustomMungerFactory(o);
 	}
 	
-	public boolean hasCustomMungerFactory() {
-		return ajBuildManager.hasCustomMungerFactory();
+	public Object getCustomMungerFactory() {
+		return ajBuildManager.getCustomMungerFactory();
 	}
 	
 	/**
