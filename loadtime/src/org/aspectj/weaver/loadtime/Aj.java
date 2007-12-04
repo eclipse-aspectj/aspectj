@@ -75,7 +75,7 @@ public class Aj implements ClassPreProcessor {
             		if (trace.isTraceEnabled()) trace.exit("preProcess");
                 	return bytes;
                 }
-                byte[] newBytes = weavingAdaptor.weaveClass(className, bytes);
+                byte[] newBytes = weavingAdaptor.weaveClass(className, bytes,false);
                 Dump.dumpOnExit(weavingAdaptor.getMessageHolder(), true);
         		if (trace.isTraceEnabled()) trace.exit("preProcess",newBytes);
                 return newBytes;

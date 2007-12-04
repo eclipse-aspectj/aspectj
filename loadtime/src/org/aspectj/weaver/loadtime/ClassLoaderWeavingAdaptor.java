@@ -468,7 +468,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         	byte[] bytes = gen.getBytes();
 
         	try {
-        		byte[] newBytes = weaveClass(name, bytes);
+        		byte[] newBytes = weaveClass(name, bytes,true);
                 this.generatedClassHandler.acceptClass(name,newBytes);
         	}
         	catch (IOException ex) {
