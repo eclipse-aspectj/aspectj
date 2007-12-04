@@ -752,16 +752,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 //    }
     
     //LTODO delegate to BcelWeaver?
-    public void setCustomMungerFactory(Class factoryClass) {
-    	try {
-			customMungerFactory = (CustomMungerFactory)factoryClass.newInstance();
-		} catch (Exception e) {
-			customMungerFactory = null;
-		}
+     // XXX hideous, should not be Object
+    public void setCustomMungerFactory(Object o) {
+		customMungerFactory = (CustomMungerFactory)o;
     }
      
-	public boolean hasCustomMungerFactory() {
-		return customMungerFactory!=null;
+	public Object getCustomMungerFactory() {
+		return customMungerFactory;
 	}
 
     /** init only on initial batch compile? no file-specific options */
