@@ -255,6 +255,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	public void testAjStateDeleteResourcesInInputDir() {
 		// temporary problem with this on linux, think it is a filesystem lastmodtime issue
 		if (System.getProperty("os.name","").toLowerCase().equals("linux")) return;
+		if (System.getProperty("os.name","").toLowerCase().indexOf("mac")!=-1) return;
 
 		AjBuildManager.COPY_INPATH_DIR_RESOURCES = true;
 		try {
