@@ -14,8 +14,45 @@ package org.aspectj.weaver;
 
 import java.util.Collection;
 
+/**
+ * <p>
+ * This interface is introduced to support tools like PointcutDoctor.
+ * </p>
+ * <p>
+ * A CustomMungerFactory is used to create ShadowMungers and/or
+ * ConcreteTypeMungers so that an extender can extract extra information during
+ * the weaving process.
+ * </p>
+ * <p>
+ * A CustomMungerFactory is assigned to a weaver through its AjCompiler in
+ * extenders' code, and gets invoked by the weaver right before the weaving
+ * starts. The custom shadow/type mungers being created will be added into the
+ * shadow/type munger list in the weaver and participate the weaving process.
+ * For example, the match method of each custom shadow munger will be called
+ * against each shadow.
+ * </p>
+ * @author lintonye
+ * 
+ */
 public interface CustomMungerFactory {
-	public Collection/*ShadowMunger*/ createCustomShadowMungers(ResolvedType aspectType);
-	public Collection/*ConcreteTypeMunger*/ createCustomTypeMungers(ResolvedType aspectType);
-//	public Collection<Declare> createCustomDeclares(ResolvedType aspectType);
+
+	/**
+	 * @param aspectType
+	 * @return a Collection&lt;ShadowMunger&gt; of custom shadow mungers for the
+	 *         given aspect
+	 */
+	public Collection/* ShadowMunger */createCustomShadowMungers(
+			ResolvedType aspectType);
+
+	/**
+	 * @param aspectType
+	 * @return a Collection&lt;ConcreteTypeMunger&gt; of custom type mungers for the
+	 *         given aspect
+	 */
+	public Collection/* ConcreteTypeMunger */createCustomTypeMungers(
+			ResolvedType aspectType);
+	
+	public Collection/* ShadowMunger */getAllCreatedCustomShadowMungers();
+
+	public Collection/* ConcreteTypeMunger */getAllCreatedCustomTypeMungers();
 }
