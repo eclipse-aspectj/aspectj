@@ -59,10 +59,24 @@ public class AjCompiler {
 		buildManager = new AjdeCoreBuildManager(this);
 	}
 	
-	public void setCustomMungerFactory(Class factoryClass) {
-		buildManager.setCustomMungerFactory(factoryClass);
+	/**
+	 * Set a CustomMungerFactory to the compiler's weaver
+	 * 
+	 * The type of factory should be org.aspectj.weaver.CustomMungerFactory but
+	 * due to dependency problem of project ajde.core, it is Object for now.
+	 * 
+	 * @param factory
+	 */
+	public void setCustomMungerFactory(Object factory) {
+		buildManager.setCustomMungerFactory(factory);
 	}
-	
+
+	/**
+	 * @return the CustomMungerFactory from the compiler's weaver
+	 * 
+	 * The return type should be org.aspectj.weaver.CustomMungerFactory but
+	 * due to dependency problem of project ajde.core, it is Object for now.
+	 */
 	public Object getCustomMungerFactory() {
 		return buildManager.getCustomMungerFactory();
 	}
