@@ -26,6 +26,7 @@ import org.aspectj.weaver.tools.FuzzyBoolean;
 import org.aspectj.weaver.tools.MatchingContext;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 
 /**
@@ -45,7 +46,19 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	//public void testAfterThrowingAnnotationStyle_pr211674_2() { runTest("after throwing annotation style problem - 2");}
 
 	// crappy solution - see the bug
-//	public void testCflowLtwProblem_pr166647_1() { runTest("ltw and cflow problem"); }
+	public void testCflowLtwProblem_pr166647_1() {
+		try {
+			runTest("ltw and cflow problem"); 
+		} catch (AssertionFailedError afe) {
+			// this is OK.... sadly
+			// at least lets check we warned the user it was going to happen:
+			String stderr = (getLastRunResult()==null?"":getLastRunResult().getStdErr());
+			// Expected line:
+			// [WeavingURLClassLoader] warning XML Defined aspects must be woven in cases where cflow pointcuts are involved. Currently the include/exclude patterns exclude 'x.Aspect2' [Xlint:mustWeaveXmlDefinedAspects]
+			assertTrue("Did not see warning about needing to weave xml defined aspects",stderr.indexOf("warning XML Defined aspects must be woven in cases where cflow pointcuts are involved.")!=-1);
+			assertTrue("Xlint warning was expected '[Xlint:mustWeaveXmlDefinedAspects]'",stderr.indexOf("[Xlint:mustWeaveXmlDefinedAspects]")!=-1);
+		}
+	}
 	
 	// Testing some issues with declare at type	
 	public void testDeclareAtTypeProblems_pr211052_1() { runTest("declare atType problems - 1"); }
