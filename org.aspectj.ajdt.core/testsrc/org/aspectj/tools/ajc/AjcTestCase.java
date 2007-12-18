@@ -636,7 +636,6 @@ public class AjcTestCase extends TestCase {
 			Class toRun = sandboxLoader.loadClass(className);
 			Method mainMethod = toRun.getMethod("main",new Class[] {String[].class});
 			mainMethod.invoke(null,new Object[] {args});
-			lastRunResult = new RunResult(command.toString(),new String(baosOut.toByteArray()),new String(baosErr.toByteArray()));
 		} catch(ClassNotFoundException cnf) {
 			fail("Can't find class: " + className);
 		} catch(NoSuchMethodException nsm) {
@@ -649,6 +648,7 @@ public class AjcTestCase extends TestCase {
 		} finally {
 			Thread.currentThread().setContextClassLoader(contexClassLoader);
 			stopCapture(baosErr,baosOut);
+			lastRunResult = new RunResult(command.toString(),new String(baosOut.toByteArray()),new String(baosErr.toByteArray()));
 		}
 		return lastRunResult;
 	}
