@@ -17,32 +17,35 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.aspectj.ajde.core.AjCompiler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.systemtest.incremental.tools.AjdeInteractionTestbed;
-import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CustomMungerFactory;
-import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.AdviceAttribute;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 
 public class CustomMungerExtensionTest extends AjdeInteractionTestbed {
 	
-	protected void setUp() throws Exception {
-		super.setUp();
-		sandboxDir = new File(".");
-	}
+	 File oldSandBoxDir;
+
+	 protected void setUp() throws Exception {
+             super.setUp();
+             oldSandBoxDir = sandboxDir;
+             sandboxDir = new File("../tests");
+     }
+
+     protected void tearDown() throws Exception {
+             super.tearDown();
+             sandboxDir = oldSandBoxDir;
+     }
 	
 	public void testExtension() {
 		String testFileDir = "bugs/pointcutdoctor-bug193065";
