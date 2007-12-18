@@ -262,7 +262,9 @@ public class WeavingAdaptor implements IMessageContext {
 					bytes = getWovenBytes(name, bytes);
 				} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
 					if (mustWeave) {
-						error("XML Defined aspects must be woven in cases where cflow pointcuts are involved. Currently the include/exclude patterns exclude '"+name+"'");
+						if (bcelWorld.getLint().mustWeaveXmlDefinedAspects.isEnabled()) {
+							bcelWorld.getLint().mustWeaveXmlDefinedAspects.signal(name,null);
+						}
 					}
 		            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
 		            debug("weaving '" + name + "'");
