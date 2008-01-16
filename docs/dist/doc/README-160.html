@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 6 Development Kit v1.6.0 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2006 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ v1.6.0 Readme</h1>
+
+<h4>AspectJ v1.6.0M1 - 18 Jan 2008</h4>
+<p>This is the first milestone release of AspectJ 6.  AspectJ 6 is a Java 6 compiler,
+the underlying Eclipse JDT compiler version upon which it is based is 785_R33x - a recent 3.3 version.</p>
+<p>The compiler had changed a lot since version 574_R31x when we last merged! 
+This milestone passes the 3615 automated tests we have defined for AspectJ - but that does not mean it will work perfectly for you, if it does not then
+please <a href="https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">raise a bug in bugzilla</a>.
+
+<p>Issues:</p>
+<ul>
+<li>Open bugs targeted for fix by 1.6.0 final are <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Importance&field0-0-0=noop&type0-0-0=noop&value0-0-0=">listed here</a>.
+<li>Bugs that have been opened upon this milestone are <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&version=1.6.0M1&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">listed here</a>.
+<li>Bugs that have been FIXED throughout 1.6.0 are <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0+M1&target_milestone=1.6.0+M2&target_milestone=1.6.0&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">listed here</a>.  The latest dev builds will include these fixes (the fixes may not be in the most recent milestone).
+</ul>
+<p>Known issues with this milestone:</p>
+<ul>
+<li>StackMapTable attributes not produced for all members, where they would normally be required.
+<li>Distribution may currently contain some 'dead code' that we can remove, dependencies from compiler classes that are never actually used.
+<li>No performance testing done
+<li>No memory usage testing done
+<li>Limited actual Java6 testing done, as I am on a Mac ;)
+<li>Does not default to Java6 compilation (use -1.6 or -source 1.6)
+</ul>
+</p>
+<p>Please test it and open any bugs you find!</p>
+<br>
+
+<hr>
+
+</body> 
+</html>
