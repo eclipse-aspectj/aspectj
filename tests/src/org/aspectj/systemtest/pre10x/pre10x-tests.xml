@@ -406,6 +406,7 @@
       title="Should issue an error for using 'class' instead of 'aspect'"
       keywords="from-errors">
         <compile files="NoAspect.java">
+            <message kind="error" line="1"/>
             <message kind="error" line="12"/>
         </compile>
     </ajc-test>
