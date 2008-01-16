@@ -1,0 +1,2 @@
+public aspect SimpleC {
+}
