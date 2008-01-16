@@ -25,6 +25,7 @@ import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main.Logger;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class BuildArgParser extends Main {
@@ -33,7 +34,8 @@ public class BuildArgParser extends Main {
     private static boolean LOADED_BUNDLE = false;
     
     static {
-		bundle = ResourceBundle.getBundle(BUNDLE_NAME);
+    	Main.bundleName = BUNDLE_NAME;
+		ResourceBundleFactory.getBundle(Locale.getDefault());
 		if (!LOADED_BUNDLE) {
 			LOADED_BUNDLE = true;
 		}
@@ -49,12 +51,12 @@ public class BuildArgParser extends Main {
     }
 
     /** @return multi-line String usage for the compiler */    
-    public static String getUsage() {   
-        return Main.bind("misc.usage",Main.bind("compiler.name"));
+    public static String getUsage() {
+        return _bind("misc.usage",new String[]{_bind("compiler.name",(String[])null)});
     }
     
     public static String getXOptionUsage() {
-    	return Main.bind("xoption.usage",Main.bind("compiler.name"));
+    	return _bind("xoption.usage",new String[]{_bind("compiler.name",(String[])null)});
     }
     
     /** 
@@ -230,11 +232,16 @@ public class BuildArgParser extends Main {
 		return buildConfig;
 	}
 
-
-	// from super...
 	public void printVersion() {
-		System.err.println("AspectJ Compiler " + Version.text + " built on " + Version.time_text);  //$NON-NLS-1$
-		System.err.flush();		
+		final String version = bind("misc.version", //$NON-NLS-1$
+				new String[] {
+					bind("compiler.name"), //$NON-NLS-1$
+					Version.text+" - Built: "+Version.time_text,
+					bind("compiler.version"), //$NON-NLS-1$
+					bind("compiler.copyright") //$NON-NLS-1$
+				}
+			);
+		System.out.println(version);
 	}
 	
 	public void printUsage() {
@@ -658,10 +665,14 @@ public class BuildArgParser extends Main {
             	unparsedArgs.add("-1.5");
 // this would enable the '-source 1.5' to do the same as '-1.5' but doesnt sound quite right as
 // as an option right now as it doesnt mean we support 1.5 source code - people will get confused...
+            } else if (arg.equals("-1.6")) {
+            	buildConfig.setBehaveInJava5Way(true);
+            	unparsedArgs.add("-1.6");
             } else if (arg.equals("-source")) {
             	if (args.size() > nextArgIndex) {
             		String level = ((ConfigParser.Arg)args.get(nextArgIndex)).getValue();
-            		if (level.equals("1.5") || level.equals("5")) {
+            		if (level.equals("1.5") || level.equals("5") ||
+            			level.equals("1.6") || level.equals("6")) {
             			buildConfig.setBehaveInJava5Way(true);
             		}
             		unparsedArgs.add("-source");
