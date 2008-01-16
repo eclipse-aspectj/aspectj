@@ -23,9 +23,12 @@ import org.aspectj.lang.ProceedingJoinPoint;
 public class AroundInlineMungerTest2 extends TestCase {
 
     public static void main(String[] args) {
-        TestHelper.runAndThrowOnFailure(suite());
+    	new AroundInlineMungerTest2().target();
+    	System.out.println("AroundInlineMungerTestAspects2.Open.aroundCount="+AroundInlineMungerTestAspects2.Open.aroundCount);
+    	System.out.println("AroundInlineMungerTestAspects2.Open.beforeCount="+AroundInlineMungerTestAspects2.Open.beforeCount);
+//        TestHelper.runAndThrowOnFailure(suite());
     }
-
+//
     public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(AroundInlineMungerTest2.class);
     }

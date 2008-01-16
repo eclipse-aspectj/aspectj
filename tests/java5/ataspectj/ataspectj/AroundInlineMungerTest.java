@@ -19,7 +19,10 @@ import junit.framework.TestCase;
 public class AroundInlineMungerTest extends TestCase {
 
     public static void main(String[] args) {
-        TestHelper.runAndThrowOnFailure(suite());
+    	new AroundInlineMungerTest().target();
+    	System.out.println("AroundInlineMungerTestAspects.Open.aroundCount="+AroundInlineMungerTestAspects.Open.aroundCount);
+    	System.out.println("AroundInlineMungerTestAspects.Open.beforeCount="+AroundInlineMungerTestAspects.Open.beforeCount);
+//        TestHelper.runAndThrowOnFailure(suite());
     }
 
     public static junit.framework.Test suite() {
