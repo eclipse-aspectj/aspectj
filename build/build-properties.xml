@@ -56,7 +56,7 @@
 	  
 	  <property name="company.name"         value="aspectj.org"/>
 	  <property name="copyright.allRights.from1998"
-               value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2006 Contributors.  All rights reserved." />
+               value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2008 Contributors.  All rights reserved." />
 				
 	  <!-- aj... names are generated, can be mutated/cleaned -->
 	  <!-- these names are known to BuildModule.java and common to all -->
