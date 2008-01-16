@@ -1,4 +1,4 @@
-  public void b()    org.aspectj.weaver.MethodDeclarationLineNumber: 19:312
+  public void b()    org.aspectj.weaver.MethodDeclarationLineNumber: 19:294
 :
                     ALOAD_0     // LInvestigation; this   (line 20)
                     DUP

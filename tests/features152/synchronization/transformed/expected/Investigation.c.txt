@@ -1,4 +1,4 @@
-  public void c()    org.aspectj.weaver.MethodDeclarationLineNumber: 26:439
+  public void c()    org.aspectj.weaver.MethodDeclarationLineNumber: 26:414
 :
                     ALOAD_0     // LInvestigation; this   (line 27)
                     DUP
@@ -16,8 +16,8 @@
     | |             ALOAD_2     // Ljava/io/File; f
     | |             INVOKESPECIAL java.io.FileInputStream.<init> (Ljava/io/File;)V
     | |             POP
-    | |             GOTO L0
     | catch java.io.IOException -> E0
+    |               GOTO L0
     |           E0: POP   (line 31)
     |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 32)
     |               LDC "bang"
