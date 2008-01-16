@@ -197,9 +197,7 @@
        <message kind="error" text="@DeclareParents: defaultImpl=&quot;X$IImpl&quot; has no public no-arg constructor"/>
 	 </compile>
     </ajc-test>  
-    
-    
-
+        
     <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning">
      <compile files="NodeImpl.java,INode.java,ParameterizedDP.java" options="-1.5"/>
      <run class="bugs.ParameterizedDP"/>
@@ -210,6 +208,11 @@
      <run class="bugs.ParameterizedDP"/>
     </ajc-test>  
     
+    <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning - 3">
+     <compile files="SimpleTest.java" options="-1.5"/>
+     <run class="SimpleTest"/>
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr120521" pr="120521" title="named pointcut not resolved in pertarget pointcut">
      <compile files="PerTargetSubaspectError.java"/>
     </ajc-test>  
@@ -508,7 +511,9 @@
     
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 2">
         <compile files="Consts2.java,TestNPE2.java" options="-1.5">
-          <message kind="error" line="2" text="The import a.Consts2.A_CONST cannot be resolved"/>
+          <message kind="error" line="2" text="The field Consts2.a.Consts2.A_CONST is not visible"/>
+          <!--  message has changed with 3.3 compiler upgrade, it used to be this: -->
+          <!-- message kind="error" line="2" text="The import a.Consts2.A_CONST cannot be resolved"/-->
         </compile>
     </ajc-test>
     
