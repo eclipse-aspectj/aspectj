@@ -7,7 +7,7 @@
         <compile files="Basic.java" options="-1.5 -XaddSerialVersionUID"/>
         <run class="Basic">
           <stderr>
-             <line text="SerialVersionUID is 7052682057082172300"/>
+             <line text="SerialVersionUID is -7868414887470674287"/>
           </stderr>
         </run>
     </ajc-test>
@@ -18,7 +18,7 @@
         </compile>
         <run class="Basic">
           <stderr>
-             <line text="SerialVersionUID is 7052682057082172300"/>
+             <line text="SerialVersionUID is -7868414887470674287"/>
           </stderr>
         </run>
     </ajc-test>
@@ -29,7 +29,7 @@
         </compile>
         <run class="BigHorribleClass">
           <stderr>
-             <line text="SerialVersionUID is 6512414869923012873"/>
+             <line text="SerialVersionUID is -3425710461209091702"/>
           </stderr>
         </run>
     </ajc-test>
