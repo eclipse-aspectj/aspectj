@@ -814,26 +814,32 @@
     </ajc-test> 
 
    <ajc-test dir="bugs153/pr164384" title="compliance java 6 throws usage error">
-      <compile files="MainClass.java" options="-1.6">
+      <compile files="MainClass.java,Hello.java,MyAnnotation.java" options="-1.6">
+ 	  <!--        
 		<message kind="error" text="-1.6"/>
 		<message kind="error" text="no sources specified"/>
 		<message kind="abort" text="AspectJ Compiler"/>
+	  -->
 	  </compile>
     </ajc-test>
 
    <ajc-test dir="bugs153/pr164384" title="source level java 6 throws usage error">
-      <compile files="MainClass.java" options="-1.6">
-		<message kind="error" text="-1.6"/>
+      <compile files="MainClass.java,Hello.java,MyAnnotation.java" options="-1.6">
+	  <!-- 
+	    <message kind="error" text="-1.6"/>
 		<message kind="error" text="no sources specified"/>
 		<message kind="abort" text="AspectJ Compiler"/>
-	  </compile>
+	  -->
+	  </compile>	  
     </ajc-test>
 
    <ajc-test dir="bugs153/pr164384" title="target level java 6 throws usage error">
-      <compile files="MainClass.java" options="-1.6">
+      <compile files="MainClass.java,Hello.java,MyAnnotation.java" options="-1.6">
+	  <!-- 
 		<message kind="error" text="-1.6"/>
 		<message kind="error" text="no sources specified"/>
 		<message kind="abort" text="AspectJ Compiler"/>
+	  -->
 	  </compile>
     </ajc-test>
 
