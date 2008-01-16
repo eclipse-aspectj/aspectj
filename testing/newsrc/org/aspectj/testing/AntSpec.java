@@ -88,7 +88,7 @@ public class AntSpec implements ITestStep {
             populatePath(path, DEFAULT_LTW_CLASSPATH_ENTRIES);
             populatePath(path, AjcTestCase.DEFAULT_CLASSPATH_ENTRIES);
             p.addReference("aj.path", path);
-
+            p.setBasedir(buildFile.getAbsoluteFile().getParent());
             ProjectHelper helper = ProjectHelper.getProjectHelper();
             helper.parse(p, buildFile);
 
@@ -143,6 +143,7 @@ public class AntSpec implements ITestStep {
             AjcTestCase.fail(failMessage + "invalid Ant script :" + t.toString());
         }
         try {
+        	p.setProperty("verbose","true");
             p.fireBuildStarted();
             p.executeTarget(m_antTarget);
             p.fireBuildFinished(null);
