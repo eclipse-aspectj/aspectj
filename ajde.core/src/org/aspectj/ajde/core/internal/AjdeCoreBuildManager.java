@@ -273,7 +273,6 @@ public class AjdeCoreBuildManager {
 	 * @param config
 	 */
 	private void configureCompilerOptions(AjBuildConfig config) {
-		checkNotAskedForJava6Compliance();
 		
         String propcp = compiler.getCompilerConfiguration().getClasspath();
         if (!LangUtil.isEmpty(propcp)) {
@@ -318,7 +317,7 @@ public class AjdeCoreBuildManager {
 		Map jom = compiler.getCompilerConfiguration().getJavaOptionsMap();
 		if (jom!=null) {
 			String version = (String)jom.get(CompilerOptions.OPTION_Compliance);
-			if (version!=null && version.equals(CompilerOptions.VERSION_1_5)) {
+			if (version!=null && ( version.equals(CompilerOptions.VERSION_1_5) || version.equals(CompilerOptions.VERSION_1_6))) {
 				config.setBehaveInJava5Way(true);
 			}
 			config.getOptions().set(jom);
