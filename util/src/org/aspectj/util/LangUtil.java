@@ -90,6 +90,7 @@ public class LangUtil {
 	private static boolean is13VMOrGreater = true;
 	private static boolean is14VMOrGreater = true;
 	private static boolean is15VMOrGreater = false;
+	private static boolean is16VMOrGreater = false;
 	
 	static {
         String vm = System.getProperty("java.version"); // JLS 20.18.7
@@ -99,12 +100,14 @@ public class LangUtil {
 			is14VMOrGreater = false;
 		} else if (vm.startsWith("1.5") || vm.startsWith("1.6")) {	
 			is15VMOrGreater = true;
+			is16VMOrGreater = true;
 		}
 	}
 	
 	public static boolean is13VMOrGreater() { return is13VMOrGreater;}
 	public static boolean is14VMOrGreater() { return is14VMOrGreater;}
 	public static boolean is15VMOrGreater() { return is15VMOrGreater;}
+	public static boolean is16VMOrGreater() { return is16VMOrGreater;}
     
     /**
      * Shorthand for "if null, throw IllegalArgumentException"
