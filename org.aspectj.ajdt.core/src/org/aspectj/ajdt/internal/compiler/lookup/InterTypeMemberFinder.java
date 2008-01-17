@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IMemberFinder;
@@ -32,6 +34,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 
 /**
  * The member finder looks after intertype declared members on a type, there is
@@ -71,7 +74,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			if (!retField.canBeSeenBy(sourceTypeBinding, site, scope)) return field;
 		}
 		//XXX need dominates check on aspects
-		return new ProblemFieldBinding(retField.declaringClass, retField.name, ProblemReporter.Ambiguous);
+		return new ProblemFieldBinding(retField.declaringClass, retField.name, IProblem.AmbiguousField);//ProblemReporter.Ambiguous);
 	}
 
 
@@ -264,7 +267,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			}
 		}
 		
-		if (ret.isEmpty()) return SourceTypeBinding.NoMethods;
+		if (ret.isEmpty()) return Binding.NO_METHODS;
 		return (MethodBinding[])ret.toArray(new MethodBinding[ret.size()]);	
 	}
 	
@@ -305,7 +308,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			}
 		}
 		
-		if (ret.isEmpty()) return SourceTypeBinding.NoMethods;
+		if (ret.isEmpty()) return Binding.NO_METHODS;
 		
 //		System.err.println("method: " + ret);
 		

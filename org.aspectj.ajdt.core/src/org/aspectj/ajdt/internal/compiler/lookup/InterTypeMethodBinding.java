@@ -13,7 +13,9 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -21,10 +23,12 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 
 /**
@@ -48,7 +52,7 @@ public class InterTypeMethodBinding extends MethodBinding {
 	public AbstractMethodDeclaration sourceMethod;
 	
 	public InterTypeMethodBinding(EclipseFactory world, ResolvedTypeMunger munger, UnresolvedType withinType,
-									AbstractMethodDeclaration sourceMethod)
+			AbstractMethodDeclaration sourceMethod)
 	{
 		super();
 		ResolvedMember signature = munger.getSignature();
@@ -62,7 +66,29 @@ public class InterTypeMethodBinding extends MethodBinding {
 		this.sourceMethod     = sourceMethod;		
 		this.targetType       = (ReferenceBinding)world.makeTypeBinding(signature.getDeclaringType());
 		this.declaringClass   = (ReferenceBinding)world.makeTypeBinding(withinType);
-		
+
+		// Ok, we need to set the typevariable declaring elements
+		// 1st set:
+		// If the typevariable is one declared on the source method, then we know we are the declaring element
+		for (int i = 0; i < typeVariables.length; i++) {
+			TypeVariableBinding tv = typeVariables[i];
+			String name = new String(tv.sourceName);
+			TypeVariableBinding[] tv2 = sourceMethod.binding.typeVariables;
+			for (int j = 0; j < tv2.length; j++) {
+				TypeVariableBinding typeVariable = tv2[j];
+				if (new String(tv2[j].sourceName).equals(name)) typeVariables[i].declaringElement = this;
+			}
+		}
+		for (int i = 0; i < typeVariables.length; i++) {
+			if (typeVariables[i].declaringElement==null) throw new RuntimeException("Declaring element not set");
+			
+		}
+//		typeVariables[0].declaringElement=this;
+//		 if (tVar.getDeclaringElement() instanceof Member) {
+//				declaringElement = makeMethodBinding((ResolvedMember)tVar.getDeclaringElement());
+//			  } else {
+//				declaringElement = makeTypeBinding((UnresolvedType)tVar.getDeclaringElement());
+//			  }
 		if (signature.getKind() == Member.METHOD) {			
 			syntheticMethod = 
 				world.makeMethodBinding(AjcMemberMaker.interMethodDispatcher(signature, withinType));

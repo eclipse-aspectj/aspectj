@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -81,15 +82,22 @@ public class InterTypeScope extends ClassScope {
 		if (aliased!=-1) {
 			if (aliased>sourceType.typeVariables.length || sourceType.typeVariables.length==0) {
 				TypeVariableBinding tvb = new TypeVariableBinding("fake".toCharArray(),null,0);
+				tvb.fPackage = new PackageBinding(environment());
 				return tvb;
 				// error is going to be reported by someone else!
 			}
 			TypeVariableBinding tvb = sourceType.typeVariables()[aliased];
+			tvb.fPackage = sourceType.fPackage;
 			if (usedAliases==null) usedAliases = new HashMap();
 			usedAliases.put(tvb,variableName);
 			return tvb;
 		} else {
-		    return sourceType.getTypeVariable(name);
+		    TypeVariableBinding variableBinding = sourceType.getTypeVariable(name);
+		    if (variableBinding == null) { // GENERICITDFIX
+		    	// Inside generic aspect, might want the type var attached to us
+		    	variableBinding = parent.findTypeVariable(name,((ClassScope) parent).referenceContext.binding);
+		    }
+		    return variableBinding;
 		}
 	}
 
