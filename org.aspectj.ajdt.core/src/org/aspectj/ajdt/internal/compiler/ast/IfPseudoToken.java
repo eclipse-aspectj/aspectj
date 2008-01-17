@@ -29,6 +29,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
@@ -97,8 +98,8 @@ public class IfPseudoToken extends PseudoToken {
 	//XXX todo: make sure that errors in Arguments only get displayed once
 	private MethodDeclaration makeMethod(CompilationResult result, MethodDeclaration enclosingDec) {
 		MethodDeclaration ret = new IfMethodDeclaration(result, pointcut);
-		ret.modifiers = AccStatic | AccFinal | AccPublic;
-		ret.returnType = AstUtil.makeTypeReference(TypeBinding.BooleanBinding);
+		ret.modifiers = ClassFileConstants.AccStatic | ClassFileConstants.AccFinal | ClassFileConstants.AccPublic;
+		ret.returnType = AstUtil.makeTypeReference(TypeBinding.BOOLEAN);
 		ret.selector = ("ajc$if_" + counter++).toCharArray();
 		ret.arguments = makeArguments(enclosingDec);
 		ret.statements = new Statement[] {
