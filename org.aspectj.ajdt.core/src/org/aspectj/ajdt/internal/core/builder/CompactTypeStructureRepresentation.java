@@ -13,6 +13,7 @@ package org.aspectj.ajdt.internal.core.builder;
 
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryField;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryNestedType;
@@ -44,12 +45,13 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		boolean isLocal, isAnonymous, isMember;
 		char[] sourceFileName;
 		char[] fileName;
-		int kind;
+		char[] sourceName;
 		long tagBits;
 		boolean isBinaryType;
 		IBinaryField[] binFields;
 		IBinaryMethod[] binMethods;
 		IBinaryNestedType[] memberTypes;
+		IBinaryAnnotation[] annotations;
 		
 		public CompactTypeStructureRepresentation(ClassFileReader cfr) {
 			
@@ -59,14 +61,13 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 			this.isMember = cfr.isMember();
 			this.sourceFileName = cfr.sourceFileName();
 			this.fileName = cfr.getFileName();
-			this.kind = cfr.getKind();
 			this.tagBits = cfr.getTagBits();
 			this.isBinaryType = cfr.isBinaryType();
 			this.binFields = cfr.getFields(); if (binFields==null) binFields = NoField;
 			this.binMethods = cfr.getMethods();if (binMethods==null) binMethods = NoMethod;
 			this.memberTypes = cfr.getMemberTypes();
-			
-			
+			this.annotations = cfr.getAnnotations();
+			this.sourceName = cfr.getSourceName();
 			this.className = cfr.getName();  // slashes...
 			this.modifiers = cfr.getModifiers();
 			this.genericSignature = cfr.getGenericSignature();
@@ -113,10 +114,6 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		public char[] getSuperclassName() {
 			return superclassName;
 		}
-
-		public int getKind() {
-			return kind;
-		}
 		
 		public char[] getFileName() {
 			return fileName;
@@ -144,6 +141,14 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		
 		public IBinaryNestedType[] getMemberTypes() {
 			return memberTypes;
+		}
+
+		public IBinaryAnnotation[] getAnnotations() {
+			return annotations;
+		}
+
+		public char[] getSourceName() {
+			return sourceName;
 		}
 
 
