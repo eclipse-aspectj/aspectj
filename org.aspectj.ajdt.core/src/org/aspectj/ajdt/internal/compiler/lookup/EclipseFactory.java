@@ -73,9 +73,6 @@ import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import com.sun.org.apache.xml.internal.utils.UnImplNode;
  
 /**
  * @author Jim Hugunin
