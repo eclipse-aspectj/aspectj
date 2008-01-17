@@ -587,12 +587,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter("PR92837","inc1");
 		build("PR92837");
 	}
-	
-	public void testPr119570() {
-		initialiseProject("PR119570");
-		build("PR119570");
-		assertNoErrors("PR119570");
-	}
+
+// See open generic itd bug mentioning 119570
+//	public void testPr119570() {
+//		initialiseProject("PR119570");
+//		build("PR119570");
+//		assertNoErrors("PR119570");
+//	}
 	
 	public void testPr119570_2() {
 		initialiseProject("PR119570_2");
@@ -1560,7 +1561,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List errors = getErrorMessages("PR164384");
 		
 		if (getCompilerForProjectWithName("PR164384").isJava6Compatible()) {
-			assertTrue("There should be no errros:\n"+errors,errors.isEmpty());	
+			assertTrue("There should be no errors:\n"+errors,errors.isEmpty());	
 		} else {
 			String expectedError = "Java 6.0 compliance level is unsupported";
 			String found = ((IMessage)errors.get(0)).getMessage();
@@ -1591,7 +1592,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR164384");
 		List errors = getErrorMessages("PR164384");
 		if (getCompilerForProjectWithName("PR164384").isJava6Compatible()) {
-			assertTrue("There should be no errros:\n"+errors,errors.isEmpty());	
+			assertTrue("There should be no errors:\n"+errors,errors.isEmpty());	
 		} else {
 			String expectedError = "Java 6.0 compliance level is unsupported";
 			String found = ((IMessage)errors.get(0)).getMessage();

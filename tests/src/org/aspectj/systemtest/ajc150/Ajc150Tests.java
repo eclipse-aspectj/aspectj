@@ -96,8 +96,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testBadDecp_pr110788_2() { runTest("bad generic decp - 2");}
   public void testBadDecp_pr110788_3() { runTest("bad generic decp - 3");}
   public void testBadDecp_pr110788_4() { runTest("bad generic decp - 4");}
-  public void testSpuriousOverrideMethodWarning_pr119570_1() { runTest("spurious override method warning");}
-  public void testSpuriousOverrideMethodWarning_pr119570_2() { runTest("spurious override method warning - 2");}
+  
+//  public void testSimplifiedGenericAspectITDTest() { runTest("spurious override method warning - 3");}
+//  public void testSpuriousOverrideMethodWarning_pr119570_1() { runTest("spurious override method warning");}
+//  public void testSpuriousOverrideMethodWarning_pr119570_2() { runTest("spurious override method warning - 2");}
+
   public void testBrokenSwitch_pr117854() { runTest("broken switch transform");}
   public void testVarargsITD_pr110906() { runTest("ITD varargs problem");}
   public void testBadRenderer_pr86903() { runTest("bcelrenderer bad");}
