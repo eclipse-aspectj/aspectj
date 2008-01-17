@@ -22,10 +22,12 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -66,7 +68,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	}
 	
 	public boolean isFinal() {
-		return  (declaredModifiers & AccFinal) != 0;		
+		return  (declaredModifiers & ClassFileConstants.AccFinal) != 0;		
 	}
 
 	public void analyseCode(
@@ -96,12 +98,12 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	
 	public void resolveStatements() {
 		checkAndSetModifiersForMethod();
-        if ((modifiers & AccSemicolonBody) != 0) {
-            if ((declaredModifiers & AccAbstract) == 0)
+        if ((modifiers & ExtraCompilerModifiers.AccSemicolonBody) != 0) {
+            if ((declaredModifiers & ClassFileConstants.AccAbstract) == 0)
                 scope.problemReporter().methodNeedBody(this);
         } else {
             // the method HAS a body --> abstract native modifiers are forbiden
-            if (((declaredModifiers & AccAbstract) != 0))
+            if (((declaredModifiers & ClassFileConstants.AccAbstract) != 0))
                 scope.problemReporter().methodNeedingNoBody(this);
         }        
 
@@ -118,7 +120,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
         // check @Override annotation - based on MethodDeclaration.resolveStatements() @Override processing
 		checkOverride: {
 			if (this.binding == null) break checkOverride;
-			if (this.scope.compilerOptions().sourceLevel < JDK1_5) break checkOverride;
+			if (this.scope.compilerOptions().sourceLevel < ClassFileConstants.JDK1_5) break checkOverride;
 			boolean hasOverrideAnnotation = (this.binding.tagBits & TagBits.AnnotationOverride) != 0;
 			
 			// Need to verify
@@ -267,7 +269,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		}
 		for (int i = 0; i < length; i++) {
 			codeStream.load(parameters[i], resolvedPosition);
-			if ((parameters[i] == DoubleBinding) || (parameters[i] == LongBinding))
+			if ((parameters[i] == TypeBinding.DOUBLE) || (parameters[i] == TypeBinding.LONG))
 				resolvedPosition += 2;
 			else
 				resolvedPosition++;
@@ -302,39 +304,39 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		this.selector = declaredSelector;
 		
 		final ReferenceBinding declaringClass = this.binding.declaringClass;
-		if ((declaredModifiers & AccAlternateModifierProblem) != 0)
+		if ((declaredModifiers & ExtraCompilerModifiers.AccAlternateModifierProblem) != 0)
 			scope.problemReporter().duplicateModifierForMethod(onTypeBinding, this);
 
 		// after this point, tests on the 16 bits reserved.
-		int realModifiers = declaredModifiers & AccJustFlag;
+		int realModifiers = declaredModifiers & ExtraCompilerModifiers.AccJustFlag;
 
 		// check for abnormal modifiers
-		int unexpectedModifiers = ~(AccPublic | AccPrivate | AccProtected
-			| AccAbstract | AccStatic | AccFinal | AccSynchronized | AccNative | AccStrictfp);
+		int unexpectedModifiers = ~(ClassFileConstants.AccPublic | ClassFileConstants.AccPrivate | ClassFileConstants.AccProtected
+			| ClassFileConstants.AccAbstract | ClassFileConstants.AccStatic | ClassFileConstants.AccFinal | ClassFileConstants.AccSynchronized | ClassFileConstants.AccNative | ClassFileConstants.AccStrictfp);
 		if ((realModifiers & unexpectedModifiers) != 0) {
 			scope.problemReporter().illegalModifierForMethod(this);
-			declaredModifiers &= ~AccJustFlag | ~unexpectedModifiers;
+			declaredModifiers &= ~ExtraCompilerModifiers.AccJustFlag | ~unexpectedModifiers;
 		}
 
 		// check for incompatible modifiers in the visibility bits, isolate the visibility bits
-		int accessorBits = realModifiers & (AccPublic | AccProtected | AccPrivate);
+		int accessorBits = realModifiers & (ClassFileConstants.AccPublic | ClassFileConstants.AccProtected | ClassFileConstants.AccPrivate);
 		if ((accessorBits & (accessorBits - 1)) != 0) {
 			scope.problemReporter().illegalVisibilityModifierCombinationForMethod(onTypeBinding, this);
 
 			// need to keep the less restrictive so disable Protected/Private as necessary
-			if ((accessorBits & AccPublic) != 0) {
-				if ((accessorBits & AccProtected) != 0)
-					declaredModifiers &= ~AccProtected;
-				if ((accessorBits & AccPrivate) != 0)
-					declaredModifiers &= ~AccPrivate;
-			} else if ((accessorBits & AccProtected) != 0 && (accessorBits & AccPrivate) != 0) {
-				declaredModifiers &= ~AccPrivate;
+			if ((accessorBits & ClassFileConstants.AccPublic) != 0) {
+				if ((accessorBits & ClassFileConstants.AccProtected) != 0)
+					declaredModifiers &= ~ClassFileConstants.AccProtected;
+				if ((accessorBits & ClassFileConstants.AccPrivate) != 0)
+					declaredModifiers &= ~ClassFileConstants.AccPrivate;
+			} else if ((accessorBits & ClassFileConstants.AccProtected) != 0 && (accessorBits & ClassFileConstants.AccPrivate) != 0) {
+				declaredModifiers &= ~ClassFileConstants.AccPrivate;
 			}
 		}
 
 		// check for modifiers incompatible with abstract modifier
-		if ((declaredModifiers & AccAbstract) != 0) {
-			int incompatibleWithAbstract = AccStatic | AccFinal | AccSynchronized | AccNative | AccStrictfp;
+		if ((declaredModifiers & ClassFileConstants.AccAbstract) != 0) {
+			int incompatibleWithAbstract = ClassFileConstants.AccStatic | ClassFileConstants.AccFinal | ClassFileConstants.AccSynchronized | ClassFileConstants.AccNative | ClassFileConstants.AccStrictfp;
 			if ((declaredModifiers & incompatibleWithAbstract) != 0)
 				scope.problemReporter().illegalAbstractModifierCombinationForMethod(onTypeBinding, this);
 			if (!onTypeBinding.isAbstract())
@@ -347,11 +349,11 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			modifiers |= AccFinal;
 		*/
 		// native methods cannot also be tagged as strictfp
-		if ((declaredModifiers & AccNative) != 0 && (declaredModifiers & AccStrictfp) != 0)
+		if ((declaredModifiers & ClassFileConstants.AccNative) != 0 && (declaredModifiers & ClassFileConstants.AccStrictfp) != 0)
 			scope.problemReporter().nativeMethodsCannotBeStrictfp(onTypeBinding, this);
 
 		// static members are only authorized in a static member or top level type
-		if (((realModifiers & AccStatic) != 0) && declaringClass.isNestedType() && !declaringClass.isStatic())
+		if (((realModifiers & ClassFileConstants.AccStatic) != 0) && declaringClass.isNestedType() && !declaringClass.isStatic())
 			scope.problemReporter().unexpectedStaticModifierForMethod(onTypeBinding, this);
 
 		// restore the true selector now that any problems have been reported
