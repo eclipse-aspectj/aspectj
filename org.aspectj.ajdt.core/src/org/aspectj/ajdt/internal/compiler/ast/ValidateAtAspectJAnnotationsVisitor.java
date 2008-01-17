@@ -613,13 +613,11 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		to.bodyStart = from.bodyStart;
 		to.declarationSourceEnd = from.declarationSourceEnd;
 		to.declarationSourceStart = from.declarationSourceStart;
-		to.errorInSignature = from.errorInSignature;
 		to.explicitDeclarations = from.explicitDeclarations;
 		to.ignoreFurtherInvestigation = from.ignoreFurtherInvestigation;
 		to.javadoc = from.javadoc;
 		to.modifiers = from.modifiers;
 		to.modifiersSourceStart = from.modifiersSourceStart;
-		to.needFreeReturn = from.needFreeReturn;
 		to.returnType = from.returnType;
 		to.scope = from.scope;
 		to.selector = from.selector;
