@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SuperReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
@@ -27,6 +28,7 @@ public class InterSuperReference extends SuperReference {
 	public InterSuperReference(SuperReference template, TypeBinding myType) {
 		super(template.sourceStart, template.sourceEnd);
 		this.resolvedType = myType;
+		this.constant=Constant.NotAConstant;
 	}
 
 	public TypeBinding resolveType(BlockScope scope) {
