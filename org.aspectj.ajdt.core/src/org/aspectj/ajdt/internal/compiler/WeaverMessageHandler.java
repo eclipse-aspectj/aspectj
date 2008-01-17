@@ -20,6 +20,7 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
@@ -104,7 +105,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 			}
 		}
 		ReferenceContext referenceContext = findReferenceContextFor(problemSource);
-		IProblem problem = compiler.problemReporter.createProblem(
+		CategorizedProblem problem = compiler.problemReporter.createProblem(
 								filename,
 								IProblem.Unclassified,
 								new String[0],
@@ -112,7 +113,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 								severity,
 								startPos,
 								endPos,
-								sLoc != null ? sLoc.getLine() : 0
+								sLoc != null ? sLoc.getLine() : 0,sLoc!=null?sLoc.getColumn():0
 								);
 		IProblem[] seeAlso = buildSeeAlsoProblems(problem,message.getExtraSourceLocations(),
 												  problemSource,	
@@ -225,7 +226,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 										ProblemSeverities.Ignore,
 										getStartPos(loc,null),
 										getEndPos(loc,null),
-										loc.getLine());
+										loc.getLine(),loc.getColumn());
 			  ret.add(dp);
 			} else {
 				System.err.println("About to abort due to null location, dumping state:");
@@ -236,7 +237,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 		if (usedBinarySourceFileName) {
 			DefaultProblem dp = new DefaultProblem(problemSource.fileName,"see also",0,new String[] {},
 													ProblemSeverities.Ignore,0,
-													0,0);
+													0,0,0);
 			ret.add(dp);
 		}
 		IProblem[] retValue = (IProblem[])ret.toArray(new IProblem[]{});
