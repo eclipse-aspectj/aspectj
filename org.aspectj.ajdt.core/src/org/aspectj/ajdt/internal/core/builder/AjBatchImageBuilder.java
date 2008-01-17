@@ -22,7 +22,7 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.SourceFile;
 public class AjBatchImageBuilder extends BatchImageBuilder {
 	
 	public AjBatchImageBuilder(AspectJBuilder builder) {
-		super(builder);
+		super(builder,true);
 	}
 	
 	/* (non-Javadoc)
