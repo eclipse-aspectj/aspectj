@@ -49,6 +49,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
+import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ConcreteTypeMunger;
@@ -292,7 +293,7 @@ public class AjProblemReporter extends ProblemReporter {
 		ReferenceContext referenceContext,
 		CompilationResult unitResult)
 	{
-		if (severity != Ignore && DUMP_STACK) {
+		if (severity != ProblemSeverities.Ignore && DUMP_STACK) {
 			Thread.dumpStack();
 		}
 		super.handle(
@@ -509,7 +510,7 @@ public class AjProblemReporter extends ProblemReporter {
     public IProblem createProblem(char[] fileName, int problemId, String[] problemArguments, String[] messageArguments, int severity, int problemStartPosition, int problemEndPosition, int lineNumber) {
     	IProblem problem = super.createProblem(fileName, problemId, problemArguments,
     			messageArguments, severity, problemStartPosition, problemEndPosition,
-    			lineNumber);
+    			lineNumber,0);
     	if (factory.getWorld().isInPinpointMode()) {
     		MessageIssued ex = new MessageIssued();
     		ex.fillInStackTrace();
