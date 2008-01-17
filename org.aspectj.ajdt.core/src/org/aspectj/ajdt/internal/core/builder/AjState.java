@@ -41,7 +41,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatExcepti
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryField;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
@@ -1073,8 +1073,8 @@ public class AjState {
 
 
 	private boolean modifiersEqual(int eclipseModifiers, int resolvedTypeModifiers) {
-		resolvedTypeModifiers = resolvedTypeModifiers & CompilerModifiers.AccJustFlag;
-		eclipseModifiers = eclipseModifiers & CompilerModifiers.AccJustFlag;
+		resolvedTypeModifiers = resolvedTypeModifiers & ExtraCompilerModifiers.AccJustFlag;
+		eclipseModifiers = eclipseModifiers & ExtraCompilerModifiers.AccJustFlag;
 //		if ((eclipseModifiers & CompilerModifiers.AccSuper) != 0) {
 //			eclipseModifiers -= CompilerModifiers.AccSuper;
 //		}
