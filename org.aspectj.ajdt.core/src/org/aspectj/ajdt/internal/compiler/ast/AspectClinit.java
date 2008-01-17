@@ -16,12 +16,17 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Clinit;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.BranchLabel;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.ExceptionLabel;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Label;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 
 public class AspectClinit extends Clinit {
 	private boolean hasPre, hasPost;
@@ -29,7 +34,9 @@ public class AspectClinit extends Clinit {
 	
 	public AspectClinit(Clinit old, CompilationResult compilationResult, boolean hasPre, boolean hasPost, FieldBinding initFailureField) {
 		super(compilationResult);
-		this.needFreeReturn = old.needFreeReturn;
+		// CHECK do we need all the bits or just the needfreereturn bit?
+	//	if ((old.bits & ASTNode.NeedFreeReturn)!=0) this.bits |= ASTNode.NeedFreeReturn;
+		this.bits = old.bits;
 		this.sourceEnd = old.sourceEnd;
 		this.sourceStart = old.sourceStart;
 		this.declarationSourceEnd = old.declarationSourceEnd;
@@ -47,7 +54,8 @@ public class AspectClinit extends Clinit {
 		CodeStream codeStream) 
 	{
 		if (initFailureField != null) {
-			handlerLabel = new ExceptionLabel(codeStream, classScope.getJavaLangThrowable());		
+			handlerLabel = new ExceptionLabel(codeStream, classScope.getJavaLangThrowable());	
+			handlerLabel.placeStart();
 		}
 		
 		if (hasPre) {
@@ -79,10 +87,12 @@ public class AspectClinit extends Clinit {
 			// Changes to this exception handling code may require changes to
 			// BcelClassWeaver.isInitFailureHandler()
 			handlerLabel.placeEnd();
-			Label endLabel = new Label(codeStream);
+			BranchLabel endLabel = new BranchLabel(codeStream);
 			codeStream.goto_(endLabel);
 			handlerLabel.place();
 			codeStream.astore_0(); // Bug #52394
+			// CHECK THIS...
+			codeStream.addVariable(new LocalVariableBinding("caughtException".toCharArray(),initFailureField.type,ClassFileConstants.AccPrivate,false));
 		    codeStream.aload_0();
 			codeStream.putstatic(initFailureField);
 			endLabel.place();
