@@ -35,6 +35,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 
 
 
@@ -71,6 +72,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		if (baseMethod.isConstructor()) {
 			ret = new MethodBinding(baseMethod, baseMethod.declaringClass);
 			ret.modifiers = AstUtil.makePublic(ret.modifiers); 
+			baseMethod.modifiers = ret.modifiers;
 		} else {
 			ret = inAspect.factory.makeMethodBinding(
 			AjcMemberMaker.privilegedAccessMethodForMethod(inAspect.typeX, key)

@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
@@ -42,7 +43,7 @@ public class PrivilegedFieldBinding extends FieldBinding {
 					inAspect.typeX, inAspect.factory.makeResolvedMember(baseField)
 			)));
 			
-		this.constant = ASTNode.NotAConstant;
+		this.constant = Constant.NotAConstant;
 		this.baseField = baseField;
 	}
 
