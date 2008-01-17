@@ -32,6 +32,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IGenericType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.util.Util;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
@@ -211,9 +212,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		String name = new String(typeDeclaration.name);
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		if (typeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
-		else if (typeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
-		else if (typeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
-		else if (typeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
         //@AJ support
         if (typeDeclaration.annotations != null) {
@@ -251,11 +252,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		String name = new String(memberTypeDeclaration.name);
 		
+        // OPTIMIZE dont call kind 3 times
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		if (memberTypeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
-		else if (memberTypeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
-		else if (memberTypeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
-		else if (memberTypeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers)  == TypeDeclaration.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers)  == TypeDeclaration.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
         //@AJ support
         if (memberTypeDeclaration.annotations != null) {
@@ -305,9 +307,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
-		if (memberTypeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
-		else if (memberTypeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
-		else if (memberTypeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+		if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
         //@AJ support
         if (memberTypeDeclaration.annotations != null) {
@@ -728,8 +730,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 //	}
 
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
-		if (constructorDeclaration.isDefaultConstructor) {
-			stack.push(null); // a little wierd but does the job
+		if ((constructorDeclaration.bits & ASTNode.IsDefaultConstructor)!=0) {
+			stack.push(null); // a little weird but does the job
 			return true;	
 		}
 		StringBuffer argumentsSignature = new StringBuffer();
@@ -865,9 +867,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 //		if (  n instanceof AbstractVariableDeclaration ) return getStartLine( (AbstractVariableDeclaration)n);
 //		if (  n instanceof AbstractMethodDeclaration ) return getStartLine( (AbstractMethodDeclaration)n);
 //		if (  n instanceof TypeDeclaration ) return getStartLine( (TypeDeclaration)n);
-		return ProblemHandler.searchLineNumber(lineseps,
+		return Util.getLineNumber(n.sourceStart,lineseps,0,lineseps.length-1);
+//		return ProblemHandler.searchLineNumber(lineseps,
 //			currCompilationResult.lineSeparatorPositions,
-			n.sourceStart);		
+//			n.sourceStart);		
 	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
@@ -877,9 +880,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (  n instanceof AbstractVariableDeclaration ) return getEndLine( (AbstractVariableDeclaration)n);
 		if (  n instanceof AbstractMethodDeclaration ) return getEndLine( (AbstractMethodDeclaration)n);
 		if (  n instanceof TypeDeclaration ) return getEndLine( (TypeDeclaration)n);	
-		return ProblemHandler.searchLineNumber(lineseps,
+		return Util.getLineNumber(n.sourceEnd,lineseps,0,lineseps.length-1);
+//		return ProblemHandler.searchLineNumber(lineseps,
 //			currCompilationResult.lineSeparatorPositions,
-			n.sourceEnd);
+//			n.sourceEnd);
 	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
@@ -895,9 +899,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( AbstractVariableDeclaration avd ){
-		return ProblemHandler.searchLineNumber(lineseps,
-//			currCompilationResult.lineSeparatorPositions,
-			avd.declarationSourceEnd);		
+		return Util.getLineNumber(avd.declarationSourceEnd,lineseps,0,lineseps.length-1);
 	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
@@ -913,9 +915,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( AbstractMethodDeclaration amd) {
-		return ProblemHandler.searchLineNumber(lineseps,
-//			currCompilationResult.lineSeparatorPositions,
-			amd.declarationSourceEnd);
+		return Util.getLineNumber(amd.declarationSourceEnd,lineseps,0,lineseps.length-1);
 	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
@@ -931,9 +931,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( TypeDeclaration td){
-		return ProblemHandler.searchLineNumber(lineseps,
-//			currCompilationResult.lineSeparatorPositions,
-			td.declarationSourceEnd);
+		return Util.getLineNumber(td.declarationSourceEnd,lineseps,0,lineseps.length-1);
 	}
 
 
