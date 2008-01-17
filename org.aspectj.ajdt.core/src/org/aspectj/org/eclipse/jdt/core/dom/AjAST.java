@@ -13,6 +13,9 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.aspectj.org.eclipse.jdt.core.dom.AST;
+import org.aspectj.org.eclipse.jdt.core.dom.BindingResolver;
+import org.aspectj.org.eclipse.jdt.core.dom.DefaultBindingResolver;
 
 public class AjAST extends AST {
 
@@ -84,13 +87,19 @@ public class AjAST extends AST {
 		AjAST ast = AjAST.newAjAST(level);
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
-		BindingResolver resolver = isResolved ? new DefaultBindingResolver(compilationUnitDeclaration.scope, workingCopy.owner, new DefaultBindingResolver.BindingTables()) : new BindingResolver();
+		BindingResolver resolver = null;
+		if (isResolved) {
+			resolver = new DefaultBindingResolver(compilationUnitDeclaration.scope, workingCopy.owner, new DefaultBindingResolver.BindingTables(), false);
+			ast.setFlag(AST.RESOLVED_BINDINGS);
+		} else {
+			resolver = new BindingResolver();
+		}
 		ast.setBindingResolver(resolver);
 		converter.setAST(ast);
 	
 		CompilationUnit unit = converter.convert(compilationUnitDeclaration, source);
 		unit.setLineEndTable(compilationUnitDeclaration.compilationResult.lineSeparatorPositions);
-		unit.setJavaElement(workingCopy);
+		unit.setTypeRoot(workingCopy);
 		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
 		return unit;
 	}
