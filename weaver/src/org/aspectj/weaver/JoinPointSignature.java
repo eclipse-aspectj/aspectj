@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
@@ -406,4 +407,8 @@ public class JoinPointSignature implements ResolvedMember {
 	}
 
 	public void evictWeavingState() { realMember.evictWeavingState(); }
+
+	public ResolvedMember parameterizedWith(Map m, World w) {
+		return realMember.parameterizedWith(m,w);
+	}
 }

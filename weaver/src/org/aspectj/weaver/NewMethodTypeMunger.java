@@ -16,11 +16,15 @@ package org.aspectj.weaver;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.patterns.DeclareParents;
 
 public class NewMethodTypeMunger extends ResolvedTypeMunger {
+
+
 	public NewMethodTypeMunger(
 		ResolvedMember signature,
 		Set superMethodsCalled,
@@ -128,5 +132,13 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
         result = 37*result + ((typeVariableAliases == null) ? 0 : typeVariableAliases.hashCode());
         return result;
     }
-	
+
+	public ResolvedTypeMunger parameterizeWith(Map m, World w) {
+		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(m,w);
+		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+		nmtm.setDeclaredSignature(getSignature());
+		nmtm.setSourceLocation(getSourceLocation());
+		return nmtm;
+	}
+
 }

@@ -508,7 +508,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		crosscuttingMembers = new CrosscuttingMembers(this,shouldConcretizeIfNeeded);
 		crosscuttingMembers.setPerClause(getPerClause());
 		crosscuttingMembers.addShadowMungers(collectShadowMungers());
-		crosscuttingMembers.addTypeMungers(getTypeMungers());
+		// GENERICITDFIX
+//		crosscuttingMembers.addTypeMungers(collectTypeMungers());
+        crosscuttingMembers.addTypeMungers(getTypeMungers());
         //FIXME AV - skip but needed ?? or  ?? crosscuttingMembers.addLateTypeMungers(getLateTypeMungers());
 		crosscuttingMembers.addDeclares(collectDeclares(!this.doesNotExposeShadowMungers()));
 		crosscuttingMembers.addPrivilegedAccesses(getPrivilegedAccesses());
@@ -517,6 +519,41 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		//System.err.println("collected cc members: " + this + ", " + collectDeclares());
 		return crosscuttingMembers;
 	}
+	
+	public final Collection collectTypeMungers() {
+		if (! this.isAspect() ) return Collections.EMPTY_LIST;
+		
+		ArrayList ret = new ArrayList();
+		//if (this.isAbstract()) {
+//		for (Iterator i = getDeclares().iterator(); i.hasNext();) {
+//			Declare dec = (Declare) i.next();
+//			if (!dec.isAdviceLike()) ret.add(dec);
+//		}
+//        
+//        if (!includeAdviceLike) return ret;
+        
+		if (!this.isAbstract()) {
+			final Iterators.Filter dupFilter = Iterators.dupFilter();
+	        Iterators.Getter typeGetter = new Iterators.Getter() {
+	            public Iterator get(Object o) {
+	                return 
+	                    dupFilter.filter(
+	                        ((ResolvedType)o).getDirectSupertypes());
+	            }
+	        };
+	        Iterator typeIterator = Iterators.recur(this, typeGetter);
+	
+	        while (typeIterator.hasNext()) {
+	        	ResolvedType ty = (ResolvedType) typeIterator.next();
+	        	for (Iterator i = ty.getTypeMungers().iterator(); i.hasNext();) {
+	        		ConcreteTypeMunger dec = (ConcreteTypeMunger) i.next();
+					ret.add(dec);
+				}
+	        }
+		}
+		
+		return ret;
+    }
 	
 	public final Collection collectDeclares(boolean includeAdviceLike) {
 		if (! this.isAspect() ) return Collections.EMPTY_LIST;
@@ -1480,6 +1517,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	//??? returning too soon
 	private boolean compareToExistingMembers(ConcreteTypeMunger munger, Iterator existingMembers) {
 		ResolvedMember sig = munger.getSignature();
+		
+		ResolvedType declaringAspectType = munger.getAspectType();
+//		if (declaringAspectType.isRawType()) declaringAspectType = declaringAspectType.getGenericType();
+//		if (declaringAspectType.isGenericType()) {
+//
+//		       ResolvedType genericOnType =		getWorld().resolve(sig.getDeclaringType()).getGenericType();
+//		       ConcreteTypeMunger ctm =		munger.parameterizedFor(discoverActualOccurrenceOfTypeInHierarchy(genericOnType));
+//		       sig = ctm.getSignature(); // possible sig change when type
+//		}
+//		   if (munger.getMunger().hasTypeVariableAliases()) {
+//		       ResolvedType genericOnType =
+//		getWorld().resolve(sig.getDeclaringType()).getGenericType();
+//		       ConcreteTypeMunger ctm =
+//		munger.parameterizedFor(discoverActualOccurrenceOfTypeInHierarchy(genericOnType));
+//		       sig = ctm.getSignature(); // possible sig change when type parameters filled in
+//		       }
 		while (existingMembers.hasNext()) {
 			
 			ResolvedMember existingMember = (ResolvedMember)existingMembers.next();

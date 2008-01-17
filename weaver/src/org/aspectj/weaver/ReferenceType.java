@@ -65,6 +65,7 @@ public class ReferenceType extends ResolvedType {
 	ResolvedMember[] parameterizedPointcuts = null;
 	ResolvedType[] parameterizedInterfaces = null;
 	Collection parameterizedDeclares = null;
+	Collection parameterizedTypeMungers = null;
 	
 	//??? should set delegate before any use
     public ReferenceType(String signature, World world) {
@@ -596,7 +597,28 @@ public class ReferenceType extends ResolvedType {
 		return declares;
 	}
 	
-	protected Collection getTypeMungers() { return delegate.getTypeMungers(); }
+	protected Collection getTypeMungers() { 
+		return delegate.getTypeMungers();
+	}
+		// GENERICITDFIX
+////		Map parameterizationMap = getAjMemberParameterizationMap();
+//		
+//	//	if (parameterizedTypeMungers != null) return parameterizedTypeMungers;
+//		Collection ret = null;
+//		if (ajMembersNeedParameterization()) {
+//			Collection genericDeclares = delegate.getTypeMungers(); 
+//			parameterizedTypeMungers = new ArrayList();
+//			Map parameterizationMap = getAjMemberParameterizationMap();
+//			for (Iterator iter = genericDeclares.iterator(); iter.hasNext();) {
+//				ConcreteTypeMunger munger = (ConcreteTypeMunger)iter.next();
+//				parameterizedTypeMungers.add(munger.parameterizeWith(parameterizationMap,world));
+//			}
+//			ret = parameterizedTypeMungers;
+//		} else {
+//			ret = delegate.getTypeMungers(); 
+//		}
+//		return ret;
+//	}
 	
 	protected Collection getPrivilegedAccesses() { return delegate.getPrivilegedAccesses(); }
 

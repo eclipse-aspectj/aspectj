@@ -660,6 +660,68 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		ret.setParameterNames(getParameterNames());
 		return ret;
 	}
+	
+
+	/**
+	 * Replace occurrences of type variables in the signature with values contained in the map.  The map is of the form A=String,B=Integer and
+	 * so a signature List<A> Foo.m(B i) {} would become List<String> Foo.m(Integer i) {}
+	 */
+	public ResolvedMember parameterizedWith(Map m, World w) {
+//		if (//isParameterized &&  <-- might need this bit...
+//				!getDeclaringType().isGenericType()) {
+//			throw new IllegalStateException("Can't ask to parameterize a member of non-generic type: "+getDeclaringType()+"  kind("+getDeclaringType().typeKind+")");
+//		}
+        declaringType = declaringType.resolve(w);
+        if (declaringType.isRawType()) declaringType = ((ResolvedType)declaringType).getGenericType();
+		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
+//		if (isParameterized && (typeVariables.length != typeParameters.length)) {
+//			throw new IllegalStateException("Wrong number of type parameters supplied");
+//		}
+//		Map typeMap = new HashMap();
+//		boolean typeParametersSupplied = typeParameters!=null && typeParameters.length>0;
+//		if (typeVariables!=null) {
+//			// If no 'replacements' were supplied in the typeParameters array then collapse
+//			// type variables to their first bound.
+//			for (int i = 0; i < typeVariables.length; i++) {
+//				UnresolvedType ut = (!typeParametersSupplied?typeVariables[i].getFirstBound():typeParameters[i]);
+//				typeMap.put(typeVariables[i].getName(),ut);
+//			}
+//		}
+//		// For ITDs on generic types that use type variables from the target type, the aliases
+//		// record the alternative names used throughout the ITD expression that must map to
+//		// the same value as the type variables real name.
+//		if (aliases!=null) {
+//			int posn = 0;
+//			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
+//				String typeVariableAlias = (String) iter.next();
+//				typeMap.put(typeVariableAlias,(!typeParametersSupplied?typeVariables[posn].getFirstBound():typeParameters[posn]));
+//				posn++;
+//			}
+//		}
+		
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(),m,true,w);
+		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];		
+		UnresolvedType[] genericParameterTypes = getGenericParameterTypes(); 
+		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
+			parameterizedParameterTypes[i] = 
+				parameterize(genericParameterTypes[i], m,true,w);
+		}
+		ResolvedMemberImpl ret = new ResolvedMemberImpl(
+					getKind(),
+					declaringType,
+					getModifiers(),
+					parameterizedReturnType,
+					getName(),
+					parameterizedParameterTypes,
+					getExceptions(),
+					this
+				);
+		ret.setTypeVariables(getTypeVariables());
+		ret.setSourceContext(getSourceContext());
+		ret.setPosition(getStart(),getEnd());
+		ret.setParameterNames(getParameterNames());
+		return ret;
+	}
 		
 	public void setTypeVariables(TypeVariable[] tvars) {
 		typeVariables = tvars;
@@ -668,8 +730,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	public TypeVariable[] getTypeVariables() {
 		return typeVariables;
 	}
-	
+
 	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType) {
+		return parameterize(aType,typeVariableMap,inParameterizedType,null);
+	}
+	
+	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType,World w) {
 		if (aType instanceof TypeVariableReference) {
 			String variableName = ((TypeVariableReference)aType).getTypeVariable().getName();
 			if (!typeVariableMap.containsKey(variableName)) {
@@ -678,7 +744,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			return (UnresolvedType) typeVariableMap.get(variableName);
 		} else if (aType.isParameterizedType()) {
 			if (inParameterizedType) {
-				if (aType instanceof UnresolvedType) aType= aType.resolve(((ResolvedType)getDeclaringType()).getWorld());
+//				if (!(getDeclaringType() instanceof ResolvedType)) {
+//					int stop = 1;
+//				}
+				if (aType instanceof UnresolvedType) {
+					if (w!=null) aType = aType.resolve(w);
+					else {
+						aType= aType.resolve(((ResolvedType)getDeclaringType()).getWorld());
+					}
+				}
 				return aType.parameterize(typeVariableMap);
 			} else {
 				return aType.getRawType();

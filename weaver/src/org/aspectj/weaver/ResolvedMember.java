@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
 
@@ -159,4 +160,6 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
     public void resetReturnTypeToObjectArray();
     
 	public void evictWeavingState();
+
+	public ResolvedMember parameterizedWith(Map m, World w);
 }

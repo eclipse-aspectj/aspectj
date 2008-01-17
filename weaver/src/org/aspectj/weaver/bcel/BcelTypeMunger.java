@@ -17,6 +17,7 @@ package org.aspectj.weaver.bcel;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
@@ -1712,6 +1713,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	
 	public ConcreteTypeMunger parameterizedFor(ResolvedType target) {
 		return new BcelTypeMunger(munger.parameterizedFor(target),aspectType);
+	}
+
+	public ConcreteTypeMunger parameterizeWith(Map m, World w) {
+		return new BcelTypeMunger(munger.parameterizeWith(m,w),aspectType);
 	}
 	
 	/**

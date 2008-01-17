@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -92,6 +93,14 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	    nftm.setDeclaredSignature(getSignature());
 	    nftm.setSourceLocation(getSourceLocation());
 	    return nftm;
+	}
+
+	public ResolvedTypeMunger parameterizeWith(Map m, World w) {
+		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(m,w);
+		NewFieldTypeMunger nftm = new NewFieldTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+		nftm.setDeclaredSignature(getSignature());
+		nftm.setSourceLocation(getSourceLocation());
+		return nftm;
 	}
 
     public boolean equals(Object other) {
