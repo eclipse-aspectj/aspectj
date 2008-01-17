@@ -21,6 +21,7 @@ import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.util.Util;
 
 public class EclipseSourceLocation implements ISourceLocation {
     private static String NO_CONTEXT = "USE_NULL--NO_CONTEXT_AVAILABLE";
@@ -75,7 +76,7 @@ public class EclipseSourceLocation implements ISourceLocation {
 
 	public int getLine() {
 		if (-1 == startLine && result!=null) {
-            startLine = ProblemHandler.searchLineNumber(result.lineSeparatorPositions, startPos);
+            startLine =  Util.getLineNumber(startPos,result.lineSeparatorPositions,0,result.lineSeparatorPositions.length-1);
         }
         return startLine;
 	}
@@ -101,7 +102,7 @@ public class EclipseSourceLocation implements ISourceLocation {
 
 	public int getEndLine() {
         if (-1 == endLine) {
-            endLine = ProblemHandler.searchLineNumber(result.lineSeparatorPositions, endPos);
+            endLine = Util.getLineNumber(endPos,result.lineSeparatorPositions,0,result.lineSeparatorPositions.length-1);
         }
         return endLine;
 	}

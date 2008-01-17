@@ -808,6 +808,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			TypeDeclaration typeDecl = ((SourceTypeBinding)mbs[0].declaringClass).scope.referenceContext;
 			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
 			toAdd = methodDecl.annotations; // this is what to add
+			toAdd[0] = createAnnotationCopy(toAdd[0]);
 			if (toAdd[0].resolvedType!=null) // pr148536
 			  abits = toAdd[0].resolvedType.getAnnotationTagBits();
 		}
@@ -944,6 +945,32 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 //		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
 //		ann.memberValuePairs = mvps;
 		return ann;
+	}
+	
+	/** Create a copy of an annotation, not deep but deep enough so we don't copy across fields that will get us into trouble like 'recipient' */
+	private static Annotation createAnnotationCopy(Annotation ann) {
+		NormalAnnotation ann2 = new NormalAnnotation(ann.type,ann.sourceStart);
+		ann2.memberValuePairs = ann.memberValuePairs();
+		ann2.resolvedType = ann.resolvedType;
+		ann2.bits = ann.bits;
+		return ann2;
+//		String name = annX.getTypeName();
+//		TypeBinding tb = factory.makeTypeBinding(annX.getSignature());
+//		String theName = annX.getSignature().getBaseName();
+//		char[][] typeName = CharOperation.splitOn('.',name.replace('$','.').toCharArray()); //pr149293 - not bulletproof...
+//		long[] positions = new long[typeName.length];
+//		for (int i = 0; i < positions.length; i++) positions[i]=pos;
+//		TypeReference annType = new QualifiedTypeReference(typeName,positions);
+//		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+//		ann.resolvedType=tb; // yuck - is this OK in all cases?
+//		// We don't need membervalues...
+////		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+////		MemberValuePair[] mvps = new MemberValuePair[2];
+////		mvps[0] = new MemberValuePair("value".toCharArray(),pos,pos,pcExpr);
+////		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+////		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
+////		ann.memberValuePairs = mvps;
+//		return ann;
 	}
 
 	private boolean isAnnotationTargettingSomethingOtherThanAnnotationOrNormal(long abits) {

@@ -38,7 +38,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
@@ -49,6 +48,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticFieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
@@ -72,6 +72,10 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import com.sun.org.apache.xml.internal.utils.UnImplNode;
  
 /**
  * @author Jim Hugunin
@@ -612,15 +616,15 @@ public class EclipseFactory {
 	
 	private TypeBinding makeTypeBinding1(UnresolvedType typeX) {
 		if (typeX.isPrimitiveType()) { 
-			if (typeX == ResolvedType.BOOLEAN) return BaseTypes.BooleanBinding;
-			if (typeX == ResolvedType.BYTE) return BaseTypes.ByteBinding;
-			if (typeX == ResolvedType.CHAR) return BaseTypes.CharBinding;
-			if (typeX == ResolvedType.DOUBLE) return BaseTypes.DoubleBinding;
-			if (typeX == ResolvedType.FLOAT) return BaseTypes.FloatBinding;
-			if (typeX == ResolvedType.INT) return BaseTypes.IntBinding;
-			if (typeX == ResolvedType.LONG) return BaseTypes.LongBinding;
-			if (typeX == ResolvedType.SHORT) return BaseTypes.ShortBinding;
-			if (typeX == ResolvedType.VOID) return BaseTypes.VoidBinding;
+			if (typeX == ResolvedType.BOOLEAN) return TypeBinding.BOOLEAN;
+			if (typeX == ResolvedType.BYTE) return TypeBinding.BYTE;
+			if (typeX == ResolvedType.CHAR) return TypeBinding.CHAR;
+			if (typeX == ResolvedType.DOUBLE) return TypeBinding.DOUBLE;
+			if (typeX == ResolvedType.FLOAT) return TypeBinding.FLOAT;
+			if (typeX == ResolvedType.INT) return TypeBinding.INT;
+			if (typeX == ResolvedType.LONG) return TypeBinding.LONG;
+			if (typeX == ResolvedType.SHORT) return TypeBinding.SHORT;
+			if (typeX == ResolvedType.VOID) return TypeBinding.VOID;
 			throw new RuntimeException("weird primitive type " + typeX);
 		} else if (typeX.isArray()) {
 			int dim = 0;
@@ -721,6 +725,21 @@ public class EclipseFactory {
 		return internalMakeFieldBinding(member,null);
 	}
 	
+	// OPTIMIZE tidy this up, must be able to optimize for the synthetic case, if we passed in the binding for the declaring type, that would make things easier
+	/**
+	 * Build a new Eclipse SyntheticFieldBinding for an AspectJ ResolvedMember.
+	 */
+	public SyntheticFieldBinding createSyntheticFieldBinding(SourceTypeBinding owningType,ResolvedMember member) {
+		SyntheticFieldBinding sfb = new SyntheticFieldBinding(member.getName().toCharArray(),
+					makeTypeBinding(member.getReturnType()),
+					member.getModifiers() | Flags.AccSynthetic,
+					owningType,
+					Constant.NotAConstant,
+					-1); // index filled in later	
+		owningType.addSyntheticField(sfb);
+		return sfb;
+	}
+	
 	/**
 	 * Take a normal AJ member and convert it into an eclipse fieldBinding.
 	 * Taking into account any aliases that it may include due to being
@@ -744,11 +763,21 @@ public class EclipseFactory {
 		}
 		
 		currentType = declaringType;
-		FieldBinding fb =  new FieldBinding(member.getName().toCharArray(),
+		
+		FieldBinding fb =  null;
+		if (member.getName().startsWith(NameMangler.PREFIX)) {
+		  fb = new SyntheticFieldBinding(member.getName().toCharArray(),
+				makeTypeBinding(member.getReturnType()),
+				member.getModifiers() | Flags.AccSynthetic,
+				currentType,
+				Constant.NotAConstant,-1); // index filled in later	
+		} else {
+		  fb = new FieldBinding(member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()),
 				member.getModifiers(),
 				currentType,
 				Constant.NotAConstant);
+		}
 		typeVariableToTypeBinding.clear();
 		currentType = null;
 		
@@ -806,7 +835,7 @@ public class EclipseFactory {
 
 		if (member.getTypeVariables()!=null)  {
 			if (member.getTypeVariables().length==0) {
-				tvbs = MethodBinding.NoTypeVariables;
+				tvbs = Binding.NO_TYPE_VARIABLES;
 			} else {
 				tvbs = makeTypeVariableBindingsFromAJTypeVariables(member.getTypeVariables());
 				// QQQ do we need to bother fixing up the declaring element here?
@@ -892,12 +921,14 @@ public class EclipseFactory {
 //		  } else {
 //			declaringElement = makeTypeBinding((UnresolvedType)tVar.getDeclaringElement());
 //		  }
-		  tvBinding = new TypeVariableBinding(tv.getName().toCharArray(),declaringElement,tv.getRank());
+		  
+		  tvBinding = new TypeVariableBinding(tv.getName().toCharArray(),null,tv.getRank());
+		  
 		  typeVariableToTypeBinding.put(tv.getName(),tvBinding);
 		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tv.getUpperBound());
 		  tvBinding.firstBound=(ReferenceBinding)makeTypeBinding(tv.getFirstBound());
 		  if (tv.getAdditionalInterfaceBounds()==null) {
-			tvBinding.superInterfaces=TypeVariableBinding.NoSuperInterfaces;
+			tvBinding.superInterfaces=TypeVariableBinding.NO_SUPERINTERFACES;
 		  } else {
 			TypeBinding tbs[] = makeTypeBindings(tv.getAdditionalInterfaceBounds());
 			ReferenceBinding[] rbs= new ReferenceBinding[tbs.length];
@@ -929,7 +960,7 @@ public class EclipseFactory {
 		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tv.getUpperBound());
 		  tvBinding.firstBound=(ReferenceBinding)makeTypeBinding(tv.getFirstBound());
 		  if (tv.getAdditionalInterfaceBounds()==null) {
-			tvBinding.superInterfaces=TypeVariableBinding.NoSuperInterfaces;
+			tvBinding.superInterfaces=TypeVariableBinding.NO_SUPERINTERFACES;
 		  } else {
 			TypeBinding tbs[] = makeTypeBindings(tv.getAdditionalInterfaceBounds());
 			ReferenceBinding[] rbs= new ReferenceBinding[tbs.length];

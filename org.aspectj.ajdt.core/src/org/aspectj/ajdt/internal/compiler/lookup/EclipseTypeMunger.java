@@ -14,13 +14,15 @@
 package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.lang.reflect.Modifier;
+import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.IConstants;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -28,6 +30,7 @@ import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.World;
 
 
 public class EclipseTypeMunger extends ConcreteTypeMunger {
@@ -127,11 +130,11 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		
 		// retain *only* the visibility modifiers and abstract when putting methods on an interface...
 		if (sourceType.isInterface()) {
-			boolean isAbstract = (binding.modifiers & IConstants.AccAbstract) != 0;
-			binding.modifiers = (binding.modifiers & (IConstants.AccPublic | IConstants.AccProtected | IConstants.AccPrivate));
-			if (isAbstract) binding.modifiers |= IConstants.AccAbstract;
+			boolean isAbstract = (binding.modifiers & ClassFileConstants.AccAbstract) != 0;
+			binding.modifiers = (binding.modifiers & (ClassFileConstants.AccPublic | ClassFileConstants.AccProtected | ClassFileConstants.AccPrivate));
+			if (isAbstract) binding.modifiers |= ClassFileConstants.AccAbstract;
 		}
-		if (munger.getSignature().isVarargsMethod()) binding.modifiers |= IConstants.AccVarargs;
+		if (munger.getSignature().isVarargsMethod()) binding.modifiers |= ClassFileConstants.AccVarargs;
 		findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
 		return true;
 	}
@@ -141,6 +144,20 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		if (shouldTreatAsPublic()) {
 			MethodBinding binding = world.makeMethodBinding(munger.getSignature(),munger.getTypeVariableAliases());
 			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
+			TypeVariableBinding[] typeVariables = binding.typeVariables;
+			for (int i = 0; i < typeVariables.length; i++) {
+				TypeVariableBinding tv = typeVariables[i];
+				String name = new String(tv.sourceName);
+				TypeVariableBinding[] tv2 = sourceMethod.binding.typeVariables;
+				for (int j = 0; j < tv2.length; j++) {
+					TypeVariableBinding typeVariable = tv2[j];
+					if (new String(tv2[j].sourceName).equals(name)) typeVariables[i].declaringElement = binding;
+				}
+			}
+			for (int i = 0; i < typeVariables.length; i++) {
+				if (typeVariables[i].declaringElement==null) throw new RuntimeException("Declaring element not set");
+				
+			}
 			//classScope.referenceContext.binding.addMethod(binding);
 		} else {
 			InterTypeMethodBinding binding =
@@ -200,6 +217,10 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	
 	public ConcreteTypeMunger parameterizedFor(ResolvedType target) {
 		return new EclipseTypeMunger(world,munger.parameterizedFor(target),aspectType,sourceMethod);
+	}
+
+	public ConcreteTypeMunger parameterizeWith(Map m,World w) {
+		return new EclipseTypeMunger(world,munger.parameterizeWith(m,w),aspectType,sourceMethod);
 	}
 
 }
