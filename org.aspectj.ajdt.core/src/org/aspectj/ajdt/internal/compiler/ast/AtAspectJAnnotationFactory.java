@@ -63,7 +63,7 @@ public class AtAspectJAnnotationFactory {
 		NormalAnnotation atAspectAnnotation = new NormalAnnotation(orgAspectJLangAnnotationAspect,pos);
 		if (!perclause.equals("")) {
 			// we have to set the value
-			Expression perclauseExpr = new StringLiteral(perclause.toCharArray(),pos,pos);
+			Expression perclauseExpr = new StringLiteral(perclause.toCharArray(),pos,pos,1);
 			MemberValuePair[] mvps = new MemberValuePair[1];
 			mvps[0] = new MemberValuePair(value,pos,pos,perclauseExpr);
 			atAspectAnnotation.memberValuePairs = mvps;
@@ -84,10 +84,10 @@ public class AtAspectJAnnotationFactory {
 		long[] positions = new long[] {pos,pos,pos,pos,pos};
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[2];
 		mvps[0] = new MemberValuePair("value".toCharArray(),pos,pos,pcExpr);
-		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos,1);
 		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
 		ann.memberValuePairs = mvps;
 		return ann;
@@ -98,10 +98,10 @@ public class AtAspectJAnnotationFactory {
 		long[] positions = new long[] {pos,pos,pos,pos,pos};
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[2];
 		mvps[0] = new MemberValuePair("value".toCharArray(),pos,pos,pcExpr);
-		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos,1);
 		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
 		ann.memberValuePairs = mvps;
 		return ann;
@@ -112,12 +112,12 @@ public class AtAspectJAnnotationFactory {
 		long[] positions = new long[] {pos,pos,pos,pos,pos};
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[3];
 		mvps[0] = new MemberValuePair("pointcut".toCharArray(),pos,pos,pcExpr);
-		Expression argExpr = new StringLiteral(extraArgumentName.toCharArray(),pos,pos);
+		Expression argExpr = new StringLiteral(extraArgumentName.toCharArray(),pos,pos,1);
 		mvps[1] = new MemberValuePair("returning".toCharArray(),pos,pos,argExpr);
-		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos,1);
 		mvps[2] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
 		ann.memberValuePairs = mvps;
 		return ann;
@@ -128,12 +128,12 @@ public class AtAspectJAnnotationFactory {
 		long[] positions = new long[] {pos,pos,pos,pos,pos};
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[3];
 		mvps[0] = new MemberValuePair("pointcut".toCharArray(),pos,pos,pcExpr);
-		Expression argExpr = new StringLiteral(extraArgumentName.toCharArray(),pos,pos);
+		Expression argExpr = new StringLiteral(extraArgumentName.toCharArray(),pos,pos,1);
 		mvps[1] = new MemberValuePair("throwing".toCharArray(),pos,pos,argExpr);
-		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos,1);
 		mvps[2] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
 		ann.memberValuePairs = mvps;
 		return ann;
@@ -144,10 +144,10 @@ public class AtAspectJAnnotationFactory {
 		long[] positions = new long[] {pos,pos,pos,pos,pos};
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[2];
 		mvps[0] = new MemberValuePair("value".toCharArray(),pos,pos,pcExpr);
-		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos,1);
 		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
 		ann.memberValuePairs = mvps;
 		return ann;
@@ -158,10 +158,10 @@ public class AtAspectJAnnotationFactory {
 		long[] positions = new long[] {pos,pos,pos,pos,pos};
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[2];
 		mvps[0] = new MemberValuePair("value".toCharArray(),pos,pos,pcExpr);
-		Expression argExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+		Expression argExpr = new StringLiteral(argNames.toCharArray(),pos,pos,1);
 		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argExpr);
 		ann.memberValuePairs = mvps;
 		return ann;	
@@ -173,8 +173,8 @@ public class AtAspectJAnnotationFactory {
 		for (int i = 0; i < positions.length; i++) positions[i] = pos;
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcutExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
-		Expression msgExpr = new StringLiteral(message.toCharArray(),pos,pos);
+		Expression pcutExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos,1);
+		Expression msgExpr = new StringLiteral(message.toCharArray(),pos,pos,1);
 		Expression isErrorExpr;
 		if (isError) {
 			isErrorExpr = new TrueLiteral(pos,pos);
@@ -195,8 +195,8 @@ public class AtAspectJAnnotationFactory {
 		for (int i = 0; i < positions.length; i++) positions[i] = pos;
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression targetExpression = new StringLiteral(childPattern.toCharArray(),pos,pos);
-		Expression parentsExpression = new StringLiteral(parentPatterns.toCharArray(),pos,pos);
+		Expression targetExpression = new StringLiteral(childPattern.toCharArray(),pos,pos,1);
+		Expression parentsExpression = new StringLiteral(parentPatterns.toCharArray(),pos,pos,1);
 		Expression isExtendsExpression;
 		if (isExtends) {
 			isExtendsExpression = new TrueLiteral(pos,pos);
@@ -217,8 +217,8 @@ public class AtAspectJAnnotationFactory {
 		for (int i = 0; i < positions.length; i++) positions[i] = pos;
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pcutExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
-		Expression exExpr = new StringLiteral(exceptionType.toCharArray(),pos,pos);
+		Expression pcutExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos,1);
+		Expression exExpr = new StringLiteral(exceptionType.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[2];
 		mvps[0] = new MemberValuePair("pointcut".toCharArray(),pos,pos,pcutExpr);
 		mvps[1] = new MemberValuePair("exceptionType".toCharArray(),pos,pos,exExpr);
@@ -232,9 +232,9 @@ public class AtAspectJAnnotationFactory {
 		for (int i = 0; i < positions.length; i++) positions[i] = pos;
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression pattExpr = new StringLiteral(patternString.toCharArray(),pos,pos);
-		Expression annExpr = new StringLiteral(annString.toCharArray(),pos,pos);
-		Expression kindExpr = new StringLiteral(kind.toCharArray(),pos,pos);
+		Expression pattExpr = new StringLiteral(patternString.toCharArray(),pos,pos,1);
+		Expression annExpr = new StringLiteral(annString.toCharArray(),pos,pos,1);
+		Expression kindExpr = new StringLiteral(kind.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[3];
 		mvps[0] = new MemberValuePair("pattern".toCharArray(),pos,pos,pattExpr);
 		mvps[1] = new MemberValuePair("annotation".toCharArray(),pos,pos,annExpr);
@@ -249,8 +249,8 @@ public class AtAspectJAnnotationFactory {
 		for (int i = 0; i < positions.length; i++) positions[i] = pos;
 		TypeReference annType = new QualifiedTypeReference(typeName,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression targetExpr = new StringLiteral(targetTypeName,pos,pos);
-		Expression nameExpr = new StringLiteral(name,pos,pos);
+		Expression targetExpr = new StringLiteral(targetTypeName,pos,pos,1);
+		Expression nameExpr = new StringLiteral(name,pos,pos,1);
 		Expression modsExpr = new IntLiteral(Integer.toString(modifiers).toCharArray(),pos,pos);
 		MemberValuePair[] mvps = new MemberValuePair[3];
 		mvps[0] = new MemberValuePair("targetType".toCharArray(),pos,pos,targetExpr);
@@ -271,7 +271,7 @@ public class AtAspectJAnnotationFactory {
 		for (int i = 0; i < positions.length; i++) positions[i] = pos;
 		TypeReference annType = new QualifiedTypeReference(name,positions);
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
-		Expression valueExpr = new StringLiteral(annValue.toCharArray(),pos,pos);
+		Expression valueExpr = new StringLiteral(annValue.toCharArray(),pos,pos,1);
 		MemberValuePair[] mvps = new MemberValuePair[1];
 		mvps[0] = new MemberValuePair(value,pos,pos,valueExpr);
 		ann.memberValuePairs = mvps;

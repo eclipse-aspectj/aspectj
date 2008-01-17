@@ -26,7 +26,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.AjAttribute;
@@ -193,7 +195,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 
 	public void resolveStatements() {
 		if (isAbstract()) {
-			this.modifiers |= AccSemicolonBody;
+			this.modifiers |= ExtraCompilerModifiers.AccSemicolonBody;
 		}
 		
 		
@@ -250,7 +252,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		addVersionAttributeIfNecessary(classFile);
 		
 		if (generateSyntheticPointcutMethod) {
-			this.binding.modifiers |= AccSynthetic;
+			this.binding.modifiers |= ClassFileConstants.AccSynthetic;
 			super.generateCode(classScope,classFile);
 		}
 		return;

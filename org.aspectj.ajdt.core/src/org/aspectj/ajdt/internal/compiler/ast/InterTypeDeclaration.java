@@ -32,6 +32,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleType
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
@@ -80,7 +81,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	public InterTypeDeclaration(CompilationResult result, TypeReference onType) {
 		super(result);
 		setOnType(onType);
-		modifiers = AccPublic | AccStatic;
+		modifiers = ClassFileConstants.AccPublic | ClassFileConstants.AccStatic;
 	}
 
 	public void setOnType(TypeReference onType) {
@@ -266,7 +267,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 				String array_element = (String)typeVariableAliases.get(i);
 				SingleTypeReference str = new SingleTypeReference(array_element.toCharArray(),0);
 				TypeBinding tb = str.getTypeBindingPublic(classScope);
-				if (tb!=null && !(tb instanceof ProblemReferenceBinding)) {
+				if (tb!=null && !(tb instanceof ProblemReferenceBinding)) {// && !(tb instanceof TypeVariableBinding)) {
 					scope.problemReporter().signalError(sourceStart,sourceEnd,
 							"Intertype declarations can only be made on the generic type, not on a parameterized type. The name '"+
 							array_element+"' cannot be used as a type parameter, since it refers to a real type.");
