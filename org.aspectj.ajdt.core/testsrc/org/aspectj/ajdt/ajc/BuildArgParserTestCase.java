@@ -26,6 +26,7 @@ import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /**
@@ -342,7 +343,7 @@ public class BuildArgParserTestCase extends TestCase {
 		AjBuildConfig config = genBuildConfig(new String[] {  "-Xlint:error", "-target", "1.4"}, messageWriter);
 		assertTrue(
 				"target set",  
-				config.getOptions().targetJDK == CompilerOptions.JDK1_4); 
+				config.getOptions().targetJDK == ClassFileConstants.JDK1_4); 
 
 		assertTrue(
 			"Xlint option set",
@@ -442,10 +443,10 @@ public class BuildArgParserTestCase extends TestCase {
 		assertTrue("should be in 1.5 mode",config.getBehaveInJava5Way());
 		config = genBuildConfig(new String[]{"-source","1.4"},messageWriter);
 		assertTrue("should not be in 1.5 mode",!config.getBehaveInJava5Way());
-		assertTrue("should be in 1.4 mode",config.getOptions().sourceLevel == CompilerOptions.JDK1_4);
+		assertTrue("should be in 1.4 mode",config.getOptions().sourceLevel == ClassFileConstants.JDK1_4);
 		config = genBuildConfig(new String[]{"-source","1.3"},messageWriter);
 		assertTrue("should not be in 1.5 mode",!config.getBehaveInJava5Way());
-		assertTrue("should be in 1.3 mode",config.getOptions().sourceLevel == CompilerOptions.JDK1_3);
+		assertTrue("should be in 1.3 mode",config.getOptions().sourceLevel == ClassFileConstants.JDK1_3);
 	}
 
 	public void testOptions() throws InvalidInputException {
@@ -454,10 +455,10 @@ public class BuildArgParserTestCase extends TestCase {
 		AjBuildConfig config = genBuildConfig(new String[] {"-target", TARGET, "-source", TARGET}, messageWriter);
 		assertTrue(
 			"target set",  
-			config.getOptions().targetJDK == CompilerOptions.JDK1_4);
+			config.getOptions().targetJDK == ClassFileConstants.JDK1_4);
 		assertTrue(
 			"source set",  
-			config.getOptions().sourceLevel == CompilerOptions.JDK1_4);
+			config.getOptions().sourceLevel == ClassFileConstants.JDK1_4);
 	}
 	
 	public void testLstFileExpansion() throws IOException, FileNotFoundException, InvalidInputException {
