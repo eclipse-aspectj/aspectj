@@ -21,11 +21,15 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 
 public class HelperInterfaceBinding extends SourceTypeBinding {
@@ -37,12 +41,12 @@ public class HelperInterfaceBinding extends SourceTypeBinding {
 		super();
 		this.fPackage = enclosingType.fPackage;
 		//this.fileName = scope.referenceCompilationUnit().getFileName();
-		this.modifiers = AccPublic | AccInterface;
+		this.modifiers = ClassFileConstants.AccPublic | ClassFileConstants.AccInterface | ClassFileConstants.AccAbstract;
 		this.sourceName = enclosingType.scope.referenceContext.name;
 		this.enclosingType = enclosingType;
 		this.typeX = typeX;
-		this.typeVariables = NoTypeVariables;
-		this.scope = enclosingType.scope;
+		this.typeVariables = Binding.NO_TYPE_VARIABLES;
+		this.scope =enclosingType.scope;
 		this.superInterfaces = new ReferenceBinding[0];
 	}
 
@@ -77,9 +81,14 @@ public class HelperInterfaceBinding extends SourceTypeBinding {
 	}
 
 	public void generateClass(CompilationResult result, ClassFile enclosingClassFile) {
-		ClassFile classFile = new ClassFile(this, enclosingClassFile, false);
-		classFile.addFieldInfos();
+		ClassFile classFile = new ClassFile(this);
+		classFile.initialize(this, enclosingClassFile, false);
+		classFile.recordInnerClasses(this);
 
+		//classFile.addFieldInfos();
+		classFile.contents[classFile.contentsOffset++] = (byte) 0;
+		classFile.contents[classFile.contentsOffset++] = (byte) 0;
+		
 		classFile.setForMethodInfos();
 		for (Iterator i = methods.iterator(); i.hasNext(); ) {
 			MethodBinding b = (MethodBinding)i.next();
