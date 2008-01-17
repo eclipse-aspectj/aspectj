@@ -22,6 +22,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
@@ -133,7 +135,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		
 		
 		MethodDeclaration pre = new MethodDeclaration(compilationResult);
-		pre.modifiers = AccPublic | AccStatic;
+		pre.modifiers = ClassFileConstants.AccPublic | ClassFileConstants.AccStatic;
 		pre.returnType = AstUtil.makeTypeReference(objectArrayBinding);
 		pre.selector = NameMangler.postIntroducedConstructor(aspectTypeX, targetTypeX).toCharArray();
 		
@@ -233,7 +235,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		newArray.initializer = init;
 		newArray.type = AstUtil.makeTypeReference(scope.getJavaLangObject());
 		newArray.dimensions = new Expression[1];
-		newArray.constant = NotAConstant;
+		newArray.constant = Constant.NotAConstant;
 		
 
 		
@@ -311,7 +313,9 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			if (explicitConstructor.alwaysNeedsAccessMethod()) {
 				explicitConstructor = explicitConstructor.getAccessMethod(true);
 			}
-			
+			if (explicitConstructor instanceof ParameterizedMethodBinding) {
+				explicitConstructor = explicitConstructor.original();
+			}
 			((NewConstructorTypeMunger)munger).setExplicitConstructor(
 				world.makeResolvedMember(explicitConstructor));
 		} else {
@@ -329,7 +333,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(makeAttribute(world)));
 		super.generateCode(classScope, classFile);
-		
+//		classFile.codeStream.generateAttributes &= ~ClassFileConstants.ATTR_VARS;
 		preMethod.generateCode(classScope, classFile);
 	}
 	protected Shadow.Kind getShadowKindForBody() {
