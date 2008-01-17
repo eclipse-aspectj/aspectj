@@ -17,6 +17,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 
 /**
  * Root class for all ConstructorDeclaration objects created by the parser.
@@ -43,7 +44,7 @@ public class AjConstructorDeclaration extends ConstructorDeclaration {
 	}
 	
 	protected void addDeclarationStartLineAttribute(List extraAttributeList, ClassFile classFile) {
-		if (!classFile.codeStream.generateLineNumberAttributes) return;
+		if ((classFile.codeStream.generateAttributes & ClassFileConstants.ATTR_LINES)==0) return;
 		
 		int[] separators = compilationResult().lineSeparatorPositions;
 		int declarationStartLine = 1;

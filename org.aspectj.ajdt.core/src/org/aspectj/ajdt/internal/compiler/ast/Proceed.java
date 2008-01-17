@@ -16,13 +16,21 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.weaver.AdviceKind;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
@@ -70,7 +78,7 @@ public class Proceed extends MessageSend {
 			return super.resolveType(scope);
 		}
 		
-		constant = NotAConstant;
+		constant = Constant.NotAConstant;
 		binding = codegenBinding = aroundDecl.proceedMethodBinding;
 		
 		this.actualReceiverType = binding.declaringClass;
@@ -105,11 +113,57 @@ public class Proceed extends MessageSend {
 		boolean argsContainCast = false;
 		for (int i=0; i<arguments.length;i++) {
 			if (arguments[i] instanceof CastExpression) argsContainCast = true;
+		//	if (arguments[i].constant==null) arguments[i].constant=Constant.NotAConstant;
 		}
+//		TypeBinding[] argumentTypes = Binding.NO_PARAMETERS;
+//		if (this.arguments != null) {
+//			boolean argHasError = false; // typeChecks all arguments 
+//			int length = this.arguments.length;
+//			argumentTypes = new TypeBinding[length];
+//			for (int i = 0; i < length; i++){
+//				Expression argument = this.arguments[i];
+//				if (argument instanceof CastExpression) {
+//					argument.bits |= ASTNode.DisableUnnecessaryCastCheck; // will check later on
+//					argsContainCast = true;
+//				}
+//				if ((argumentTypes[i] = argument.resolveType(scope)) == null){
+//					argHasError = true;
+//				}
+//			}
+//			if (argHasError) {
+//				if (this.actualReceiverType instanceof ReferenceBinding) {
+//					//  record a best guess, for clients who need hint about possible method match
+//					TypeBinding[] pseudoArgs = new TypeBinding[length];
+//					for (int i = length; --i >= 0;)
+//						pseudoArgs[i] = argumentTypes[i] == null ? TypeBinding.NULL : argumentTypes[i]; // replace args with errors with null type
+//					this.binding = 
+//						this.receiver.isImplicitThis()
+//							? scope.getImplicitMethod(this.selector, pseudoArgs, this)
+//							: scope.findMethod((ReferenceBinding) this.actualReceiverType, this.selector, pseudoArgs, this);
+//					if (this.binding != null && !this.binding.isValidBinding()) {
+//						MethodBinding closestMatch = ((ProblemMethodBinding)this.binding).closestMatch;
+//						// record the closest match, for clients who may still need hint about possible method match
+//						if (closestMatch != null) {
+//							if (closestMatch.original().typeVariables != Binding.NO_TYPE_VARIABLES) { // generic method
+//								// shouldn't return generic method outside its context, rather convert it to raw method (175409)
+//								closestMatch = scope.environment().createParameterizedGenericMethod(closestMatch.original(), (RawTypeBinding)null);
+//							}
+//							this.binding = closestMatch;
+//							MethodBinding closestMatchOriginal = closestMatch.original();
+//							if ((closestMatchOriginal.isPrivate() || closestMatchOriginal.declaringClass.isLocalType()) && !scope.isDefinedInMethod(closestMatchOriginal)) {
+//								// ignore cases where method is used from within inside itself (e.g. direct recursions)
+//								closestMatchOriginal.modifiers |= ExtraCompilerModifiers.AccLocallyUsed;
+//							}
+//						}
+//					}
+//				}
+//				return null;
+//			}
+//		}
+//
 
-		checkInvocationArguments(scope,null,this.actualReceiverType,binding,
-				this.arguments,binding.parameters,argsContainCast,this);
 
+	//	checkInvocationArguments(scope, this.receiver, this.actualReceiverType, this.binding, this.arguments, argumentTypes, argsContainCast, this);
 		for (int i=0, len=arguments.length; i < len; i++) {
 			Expression arg = arguments[i];
 			TypeBinding argType = arg.resolveType(scope);
@@ -120,7 +174,8 @@ public class Proceed extends MessageSend {
 				}
 			}
 		}
-	
+		checkInvocationArguments(scope,null,this.actualReceiverType,binding,
+				this.arguments,binding.parameters,argsContainCast,this);
 		
 		return binding.returnType;
 	}
