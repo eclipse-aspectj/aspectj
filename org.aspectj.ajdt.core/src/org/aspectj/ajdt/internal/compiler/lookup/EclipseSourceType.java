@@ -46,7 +46,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilerModifiers;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -133,12 +133,12 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public boolean isAnonymous() {
-		return ((declaration.modifiers & ASTNode.AnonymousAndLocalMask) != 0);
+		return ((declaration.modifiers & (ASTNode.IsAnonymousType | ASTNode.IsLocalType)) != 0);
 	}
 	
 	public boolean isNested() {
 		if (declaration.binding!=null) return (declaration.binding.isMemberType());
-		return ((declaration.modifiers & ASTNode.IsMemberTypeMASK) != 0);
+		return ((declaration.modifiers & ASTNode.IsMemberType) != 0);
 	}
 	
 	public ResolvedType getOuterClass() {
@@ -348,7 +348,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	
 	public int getModifiers() {
 		// only return the real Java modifiers, not the extra eclipse ones
-		return binding.modifiers & CompilerModifiers.AccJustFlag;
+		return binding.modifiers & ExtraCompilerModifiers.AccJustFlag;
 	}
 	
 	public String toString() {
