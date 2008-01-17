@@ -74,6 +74,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicie
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathDirectory;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
@@ -756,7 +757,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
     public void setCustomMungerFactory(Object o) {
 		customMungerFactory = (CustomMungerFactory)o;
     }
-     
+    
 	public Object getCustomMungerFactory() {
 		return customMungerFactory;
 	}
@@ -899,9 +900,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		// element of the classpath is likely to be a directory.  If we ensure every element of the array is set to
 		// only look for BINARY, then we make sure that for any classpath element that is a directory, we won't build
 		// a classpathDirectory object that will attempt to look for source when it can't find binary.
-		int[] classpathModes = new int[classpaths.length];
-		for (int i =0 ;i<classpaths.length;i++) classpathModes[i]=ClasspathDirectory.BINARY;
-		return new FileSystem(classpaths, filenames, defaultEncoding,classpathModes);
+//		int[] classpathModes = new int[classpaths.length];
+//		for (int i =0 ;i<classpaths.length;i++) classpathModes[i]=ClasspathDirectory.BINARY;
+		return new FileSystem(classpaths, filenames, defaultEncoding,ClasspathLocation.BINARY);
 	}
 	
 	public IProblemFactory getProblemFactory() {
@@ -1401,6 +1402,5 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	public boolean wasFullBuild() {
 		return wasFullBuild;
 	}
-
 }
 
