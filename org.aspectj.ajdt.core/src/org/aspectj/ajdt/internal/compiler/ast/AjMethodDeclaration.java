@@ -16,6 +16,7 @@ import java.util.List;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.weaver.AjAttribute;
 
 /**
@@ -60,7 +61,7 @@ public class AjMethodDeclaration extends MethodDeclaration {
 	}
 	
 	protected void addDeclarationStartLineAttribute(List extraAttributeList, ClassFile classFile) {
-		if (!classFile.codeStream.generateLineNumberAttributes) return;
+		if ((classFile.codeStream.generateAttributes & ClassFileConstants.ATTR_LINES)==0) return;
 		
 		int[] separators = compilationResult().lineSeparatorPositions;
 		int declarationStartLine = 1;
