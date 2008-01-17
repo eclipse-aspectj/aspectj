@@ -26,6 +26,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclarati
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ThisReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
@@ -93,7 +94,7 @@ public class SuperFixerVisitor extends ASTVisitor {
 		
 		//??? do we want these to be unique
 		MethodBinding superAccessBinding =
-			new MethodBinding(ASTNode.AccPublic, accessName, 
+			new MethodBinding(ClassFileConstants.AccPublic, accessName, 
 			superBinding.returnType, superBinding.parameters, superBinding.thrownExceptions,
 			targetClass);
 			
