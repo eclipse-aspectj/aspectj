@@ -33,10 +33,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.IConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BaseTypes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
@@ -135,7 +134,7 @@ public class AstUtil {
 		SingleNameReference ret = new SingleNameReference(binding.name, 0);
 		ret.binding = binding;
 		ret.codegenBinding = binding;
-		ret.constant = ASTNode.NotAConstant;
+		ret.constant = Constant.NotAConstant;
 		ret.bits &= ~ASTNode.RestrictiveFlagMASK;  // clear bits
 		ret.bits |= Binding.VARIABLE; 
 		return ret;
@@ -147,18 +146,18 @@ public class AstUtil {
 		SingleNameReference ret = new SingleNameReference(binding.name, 0);
 		ret.binding = binding;
 		ret.codegenBinding = binding;
-		ret.constant = ASTNode.NotAConstant;
+		ret.constant = Constant.NotAConstant;
 		ret.bits &= ~ASTNode.RestrictiveFlagMASK;  // clear bits
 		ret.bits |= Binding.LOCAL; 
 		return ret;
 	}
 	
 	public static int makePublic(int modifiers) {
-		return makePackageVisible(modifiers) | IConstants.AccPublic;
+		return makePackageVisible(modifiers) | ClassFileConstants.AccPublic;
 	}
 
 	public static int makePackageVisible(int modifiers) {
-		modifiers &= ~(IConstants.AccPublic | IConstants.AccPrivate | IConstants.AccProtected);
+		modifiers &= ~(ClassFileConstants.AccPublic | ClassFileConstants.AccPrivate | ClassFileConstants.AccProtected);
 		return modifiers;
 	}
 
@@ -186,20 +185,20 @@ public class AstUtil {
 			codeStream.return_();
 		} else if (returnType.isBaseType()) {
 			switch (returnType.id) {
-				case TypeBinding.T_boolean :
-				case TypeBinding.T_int :
-				case TypeBinding.T_byte :
-				case TypeBinding.T_short :
-				case TypeBinding.T_char :
+				case TypeIds.T_boolean :
+				case TypeIds.T_int:
+				case TypeIds.T_byte :
+				case TypeIds.T_short :
+				case TypeIds.T_char:
 					codeStream.ireturn();
 					break;
-				case TypeBinding.T_float :
+				case TypeIds.T_float :
 					codeStream.freturn();
 					break;
-				case TypeBinding.T_long :
+				case TypeIds.T_long:
 					codeStream.lreturn();
 					break;
-				case TypeBinding.T_double :
+				case TypeIds.T_double :
 					codeStream.dreturn();
 					break;
 				default :
@@ -270,12 +269,22 @@ public class AstUtil {
 		return ret;
 	}
 	public static Argument[] copyArguments(Argument[] inArgs) {
-		if (inArgs == null) return new Argument[] {};
-		int len = inArgs.length;
-		Argument[] outArgs = new Argument[len];
-		//??? we're not sure whether or not copying these is okay
-		System.arraycopy(inArgs, 0, outArgs, 0, len);
+		// Lets do a proper copy
+		if (inArgs == null) return new Argument[]{};
+		Argument[] outArgs = new Argument[inArgs.length];
+		for (int i = 0; i < inArgs.length; i++) {
+			Argument argument = inArgs[i];
+			outArgs[i] = new Argument(argument.name,0,argument.type,argument.modifiers);			
+		}
 		return outArgs;
+
+//		if (inArgs == null) return new Argument[] {};
+//		int len = inArgs.length;
+//		Argument[] outArgs = new Argument[len];
+//		//??? we're not sure whether or not copying these is okay
+//		System.arraycopy(inArgs, 0, outArgs, 0, len);
+//		return outArgs;
+
 	}
 
 	public static Statement[] remove(int i, Statement[] statements) {
@@ -286,7 +295,7 @@ public class AstUtil {
 		return ret;
 	}
 	public static int slotsNeeded(TypeBinding type) {
-		if (type == BaseTypes.DoubleBinding || type == BaseTypes.LongBinding) return 2;
+		if (type == TypeBinding.DOUBLE || type == TypeBinding.LONG) return 2;
 		else return 1;
 	}
 	
