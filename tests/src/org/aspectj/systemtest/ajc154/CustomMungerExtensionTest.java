@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.ajde.core.AjCompiler;
 import org.aspectj.bridge.ISourceLocation;
@@ -122,6 +123,12 @@ public class CustomMungerExtensionTest extends AjdeInteractionTestbed {
 		public boolean matches(ResolvedType onType) {
 			called = true;
 			return false;
+		}
+
+		public ConcreteTypeMunger parameterizeWith(Map parameterizationMap,
+				World world) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 }
