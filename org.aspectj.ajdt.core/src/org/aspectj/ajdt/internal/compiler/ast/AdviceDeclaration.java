@@ -30,12 +30,16 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
@@ -102,7 +106,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		ClassScope upperScope = (ClassScope)scope.parent;  //!!! safety
 		
 		modifiers = checkAndSetModifiers(modifiers, upperScope);
-		int bindingModifiers = (modifiers | (binding.modifiers & AccGenericSignature));
+		int bindingModifiers = (modifiers | (binding.modifiers & ExtraCompilerModifiers.AccGenericSignature));
 		binding.modifiers = bindingModifiers;
 		
 		if (kind == AdviceKind.AfterThrowing && extraArgument != null) {
@@ -206,15 +210,15 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		}
 		
 		
-		codeStream.loadObject(closureIndex);
+		codeStream.aload(closureIndex);
 		
 		// build the Object[]
 
 		codeStream.generateInlinedValue(nargs-1);
 		codeStream.newArray(
 				new ArrayBinding(
-						classScope.getType(TypeBinding.JAVA_LANG_OBJECT, 
-								TypeBinding.JAVA_LANG_OBJECT.length), 
+						classScope.getType(TypeConstants.JAVA_LANG_OBJECT, 
+								TypeConstants.JAVA_LANG_OBJECT.length), 
 								1,
 								classScope.environment()));
 		
