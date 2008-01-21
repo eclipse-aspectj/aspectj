@@ -1,0 +1,6 @@
+<aspectj>
+    <aspects>
+         <aspect name="X"/>
+    </aspects>
+    <weaver options="-verbose"/>
+</aspectj>

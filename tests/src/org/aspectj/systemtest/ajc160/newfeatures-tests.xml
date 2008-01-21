@@ -1,0 +1,27 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.0 Tests -->
+<suite>
+
+    <ajc-test dir="features160/weavingJavaxPackage" title="weave javax classes - no">
+      <compile files="A.java" />
+      <compile files="X.aj" outjar="code.jar"/>
+      <run class="javax.foo.A" classpath="code.jar" ltw="aop1.xml">
+        <stdout>
+           <line text="Method running"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features160/weavingJavaxPackage" title="weave javax classes - yes">
+      <compile files="A.java" />
+      <compile files="X.aj" outjar="code.jar"/>
+      <run class="javax.foo.A" classpath="code.jar" ltw="aop2.xml">
+        <stdout>
+           <line text="advised"/>
+           <line text="Method running"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
+</suite>
