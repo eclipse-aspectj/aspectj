@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -46,6 +47,7 @@ import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -87,6 +89,12 @@ public class WeavingAdaptor implements IMessageContext {
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 	protected BcelObjectType delegateForCurrentClass; // lazily initialized, should be used to prevent parsing bytecode multiple times
 
+	private int weavingSpecialTypes = 0;
+	private static final int INITIALIZED       = 0x1;
+	private static final int WEAVE_JAVA_PACKAGE = 0x2;
+	private static final int WEAVE_JAVAX_PACKAGE= 0x4;
+	
+	
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingAdaptor.class);
 
 	protected WeavingAdaptor () {
@@ -301,10 +309,25 @@ public class WeavingAdaptor implements IMessageContext {
     }
 
 	private boolean shouldWeaveName (String name) {
+		if ((weavingSpecialTypes&INITIALIZED)==0) {
+			weavingSpecialTypes|=INITIALIZED;
+			// initialize it
+			Properties p = weaver.getWorld().getExtraConfiguration();
+			if (p!=null) {
+				boolean b = p.getProperty(World.xsetWEAVE_JAVA_PACKAGES,"false").equalsIgnoreCase("true");
+				if (b) {
+					weavingSpecialTypes|=WEAVE_JAVA_PACKAGE;
+				}
+				b = p.getProperty(World.xsetWEAVE_JAVAX_PACKAGES,"false").equalsIgnoreCase("true");
+				if (b) {
+					weavingSpecialTypes|=WEAVE_JAVAX_PACKAGE;
+				}
+			}
+		}
 		boolean should =
-		       !((name.startsWith("org.aspectj.")
-                || name.startsWith("java.")
-                || name.startsWith("javax."))
+		       !(name.startsWith("org.aspectj.")
+                || (name.startsWith("java.") && (weavingSpecialTypes&WEAVE_JAVA_PACKAGE)==0)
+                || (name.startsWith("javax.") && (weavingSpecialTypes&WEAVE_JAVAX_PACKAGE)==0)
                 //|| name.startsWith("$Proxy")//JDK proxies//FIXME AV is that 1.3 proxy ? fe. ataspect.$Proxy0 is a java5 proxy...
                 || name.startsWith("sun.reflect."));//JDK reflect
 		return should;

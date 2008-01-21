@@ -787,6 +787,8 @@ public abstract class World implements Dump.INode {
 	public Properties getExtraConfiguration() {
 		return extraConfiguration;
 	}
+    public final static String xsetWEAVE_JAVA_PACKAGES = "weaveJavaPackages"; // default false - controls LTW
+    public final static String xsetWEAVE_JAVAX_PACKAGES = "weaveJavaxPackages"; // default false - controls LTW
 	public final static String xsetCAPTURE_ALL_CONTEXT = "captureAllContext"; // default false
 	public final static String xsetACTIVATE_LIGHTWEIGHT_DELEGATES = "activateLightweightDelegates"; // default true
 	public final static String xsetRUN_MINIMAL_MEMORY ="runMinimalMemory"; // default true
