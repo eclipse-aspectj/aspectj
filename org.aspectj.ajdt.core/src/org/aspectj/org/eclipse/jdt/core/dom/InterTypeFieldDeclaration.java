@@ -27,8 +27,18 @@ package org.aspectj.org.eclipse.jdt.core.dom;
  */
 
 public class InterTypeFieldDeclaration extends FieldDeclaration {
+	private String onType;
+
 	InterTypeFieldDeclaration(AST ast) {
 		super(ast);
+	}
+
+	public String getOnType() { 
+		return onType;
+	}
+	
+	public void setOnType(String onType) {
+		this.onType = onType;
 	}
 	
 	ASTNode clone0(AST target) {

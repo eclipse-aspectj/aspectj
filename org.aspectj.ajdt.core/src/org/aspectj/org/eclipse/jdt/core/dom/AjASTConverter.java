@@ -226,8 +226,10 @@ public class AjASTConverter extends ASTConverter {
 			return convert((InterTypeFieldDeclaration) methodDeclaration);
 		} else if (methodDeclaration instanceof InterTypeMethodDeclaration){
 			methodDecl = new org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration(this.ast);
+			((org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration) methodDecl).setOnType(((InterTypeMethodDeclaration) methodDeclaration).getOnType().toString());
 		} else if (methodDeclaration instanceof InterTypeConstructorDeclaration){
 			methodDecl = new org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration(this.ast);
+			((org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration) methodDecl).setOnType(((InterTypeConstructorDeclaration) methodDeclaration).getOnType().toString());
 			methodDecl.setConstructor(true);
 		} else if (methodDeclaration instanceof PointcutDeclaration){
 			return convert((PointcutDeclaration) methodDeclaration);
@@ -507,6 +509,7 @@ public class AjASTConverter extends ASTConverter {
 		if (!(this.resolveBindings && binding == null)) {
 			convert(fieldDecl.javadoc, fieldDeclaration);
 		}
+		fieldDeclaration.setOnType(fieldDecl.getOnType().toString());
 		return fieldDeclaration;
 	}
 	public ASTNode convert(PointcutDeclaration pointcutDeclaration) {

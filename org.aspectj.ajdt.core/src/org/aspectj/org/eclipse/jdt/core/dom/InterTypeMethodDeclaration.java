@@ -28,8 +28,18 @@ import org.aspectj.org.eclipse.jdt.core.dom.Type;
  */
 
 public class InterTypeMethodDeclaration extends MethodDeclaration {
+	private String onType;
+	
 	InterTypeMethodDeclaration(AST ast) {
 		super(ast);
+	}
+
+	public String getOnType() { 
+		return onType;
+	}
+	
+	public void setOnType(String onType) {
+		this.onType = onType;
 	}
 
 	/* (omit javadoc for this method)
