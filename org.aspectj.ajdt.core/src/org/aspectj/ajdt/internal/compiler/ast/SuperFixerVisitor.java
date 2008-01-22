@@ -29,6 +29,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 
@@ -99,8 +100,12 @@ public class SuperFixerVisitor extends ASTVisitor {
 			targetClass);
 			
 		AstUtil.replaceMethodBinding(call, superAccessBinding);
-	
-		ResolvedMember targetMember = factory.makeResolvedMember(superBinding);
+		ResolvedMember targetMember = null;
+		if (superBinding.declaringClass.isParameterizedType()) { //pr206911
+			targetMember = factory.makeResolvedMember(superBinding,((ParameterizedTypeBinding)superBinding.declaringClass).genericType());
+		} else {
+			targetMember = factory.makeResolvedMember(superBinding);
+		}
 		superMethodsCalled.add(targetMember);
 	}
 }
