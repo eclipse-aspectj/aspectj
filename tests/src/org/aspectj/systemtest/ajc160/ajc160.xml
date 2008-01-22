@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.0 Tests -->
+<suite>
+
+   <ajc-test dir="bugs160/pr206911" title="generics super itd">
+     <compile options="-1.5" files="VerifyError.java"/>
+     <run class="bugs.VerifyError"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr206911" title="generics super itd - 2">
+     <compile options="-1.5" files="VerifyError2.java"/>
+     <run class="bugs.VerifyError2"/>
+   </ajc-test>
+   
+</suite>

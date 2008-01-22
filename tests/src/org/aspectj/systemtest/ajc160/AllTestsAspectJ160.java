@@ -21,6 +21,7 @@ public class AllTestsAspectJ160 {
 		//$JUnit-BEGIN$
 		suite.addTest(SanityTests.suite());
 		suite.addTest(NewFeatures.suite());
+		suite.addTest(Ajc160Tests.suite());
         //$JUnit-END$
 		return suite;
 	}

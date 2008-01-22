@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
-<!-- AspectJ v1.6.0 Tests -->
+<!-- AspectJ v1.5.4Tests -->
 <suite>
 
    <ajc-test dir="bugs154/pr166647" title="ltw and cflow problem">
