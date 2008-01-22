@@ -151,7 +151,7 @@
 
             <programlisting><![CDATA[
      @Pointcut("call(* *.*(int)) && args(i) && target(callee)")
-     void someCall(int i, Foo callee) {}
+     void anyCall(int i, Foo callee) {}
          ]]></programlisting>
 
             <para>is equivalent to...</para>
