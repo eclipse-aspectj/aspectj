@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.patterns.DeclareParents;
 
 public class NewMethodTypeMunger extends ResolvedTypeMunger {
 
