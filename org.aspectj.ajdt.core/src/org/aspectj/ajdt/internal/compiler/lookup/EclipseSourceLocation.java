@@ -20,7 +20,6 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.util.Util;
 
 public class EclipseSourceLocation implements ISourceLocation {
