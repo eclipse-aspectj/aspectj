@@ -17,8 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.JFrame;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
