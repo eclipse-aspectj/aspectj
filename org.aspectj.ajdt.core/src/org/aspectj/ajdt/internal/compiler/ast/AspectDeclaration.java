@@ -27,7 +27,6 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.HelperInterfaceBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
-import org.aspectj.apache.bcel.classfile.Signature.BaseTypeSignature;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -39,8 +38,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.BranchLabel;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.ExceptionLabel;
-import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Label;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.IGenericType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -51,7 +48,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBin
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticFieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -67,7 +63,6 @@ import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.TypePattern;
-//import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 
 
 // (we used to...) making all aspects member types avoids a nasty hierarchy pain
