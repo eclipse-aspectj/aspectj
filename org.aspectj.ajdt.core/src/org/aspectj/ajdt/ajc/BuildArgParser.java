@@ -25,7 +25,6 @@ import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
-import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main.Logger;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class BuildArgParser extends Main {
