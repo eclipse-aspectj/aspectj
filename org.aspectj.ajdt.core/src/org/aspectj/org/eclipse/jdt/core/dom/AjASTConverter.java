@@ -45,7 +45,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenat
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.IGenericType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeConstants;

@@ -73,7 +73,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
-import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathDirectory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
