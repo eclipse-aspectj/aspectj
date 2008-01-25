@@ -382,7 +382,9 @@ public class SignaturePattern extends PatternNode {
 		}
 		if (!parameterTypes.canMatchSignatureWithNParameters(aMethod.getParameterTypes().length)) return FuzzyBoolean.NO;
 		ResolvedType[] resolvedParameters = world.resolve(aMethod.getParameterTypes());
-		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
+		ResolvedType[][] parameterAnnotationTypes = aMethod.getParameterAnnotationTypes();
+		if (parameterAnnotationTypes==null || parameterAnnotationTypes.length==0) parameterAnnotationTypes=null;
+		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC,parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
 			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
 				return FuzzyBoolean.MAYBE;
@@ -398,6 +400,8 @@ public class SignaturePattern extends PatternNode {
 		return FuzzyBoolean.YES;
 	}
 	
+
+
 	/**
 	 * match on declaring type, parameter types, throws types
 	 */
@@ -406,7 +410,12 @@ public class SignaturePattern extends PatternNode {
 
 		if (!parameterTypes.canMatchSignatureWithNParameters(aConstructor.getParameterTypes().length)) return FuzzyBoolean.NO;
 		ResolvedType[] resolvedParameters = world.resolve(aConstructor.getParameterTypes());
-		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
+		
+		ResolvedType[][] parameterAnnotationTypes = aConstructor.getParameterAnnotationTypes();
+
+		if (parameterAnnotationTypes==null || parameterAnnotationTypes.length==0) parameterAnnotationTypes=null;
+
+		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC,parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
 			if (!parameterTypes.matches(world.resolve(aConstructor.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
 				return FuzzyBoolean.MAYBE;
