@@ -34,4 +34,6 @@ public interface AnnotationFinder {
 	Object getAnnotationFromClass(ResolvedType annotationType, Class aClass);
 	
 	Set/*ResolvedType*/ getAnnotations(Member onMember);
+	
+	ResolvedType[][] getParameterAnnotationTypes(Member onMember);
 }
