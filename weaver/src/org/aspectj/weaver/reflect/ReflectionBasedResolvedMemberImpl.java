@@ -168,6 +168,13 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 		unpackAnnotations();
 		return super.getAnnotationTypes();
 	}
+
+    public ResolvedType[][] getParameterAnnotationTypes() {
+    	if (parameterAnnotationTypes==null && annotationFinder!=null) {
+    		parameterAnnotationTypes = annotationFinder.getParameterAnnotationTypes(reflectMember);
+    	}
+    	return parameterAnnotationTypes;
+    }
 	
 	private void unpackAnnotations() {
 		if (annotationTypes == null && annotationFinder != null) {
