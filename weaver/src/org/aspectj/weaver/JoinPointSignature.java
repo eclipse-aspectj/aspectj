@@ -263,6 +263,14 @@ public class JoinPointSignature implements ResolvedMember {
 	public UnresolvedType[] getParameterTypes() {
 		return realMember.getParameterTypes();
 	}
+	
+	public AnnotationX[][] getParameterAnnotations() {
+		return realMember.getParameterAnnotations();
+	}
+	
+	public ResolvedType[][] getParameterAnnotationTypes() {
+		return realMember.getParameterAnnotationTypes();
+	}
 
 	public String getSignature() {
 		return realMember.getSignature();

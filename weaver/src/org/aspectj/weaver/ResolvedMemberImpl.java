@@ -42,6 +42,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     protected ResolvedMember backingGenericMember = null;
         
     protected Set annotationTypes = null;
+    protected ResolvedType[][] parameterAnnotationTypes = null;
+    
 	// Some members are 'created' to represent other things (for example ITDs).  These
 	// members have their annotations stored elsewhere, and this flag indicates that is
 	// the case.  It is up to the caller to work out where that is!
@@ -313,6 +315,16 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			annotationTypes.add(typeX);
 		}
 	}
+	
+    public ResolvedType[][] getParameterAnnotationTypes() {
+    	if (parameterAnnotationTypes == null) return null;
+		return parameterAnnotationTypes;
+    }
+    
+    public AnnotationX[][] getParameterAnnotations() {
+    	if (backingGenericMember != null) return backingGenericMember.getParameterAnnotations();
+    	return super.getParameterAnnotations();
+    }
 	
 	public void addAnnotation(AnnotationX annotation) {
    	    // FIXME asc only allows for annotation types, not instances - should it?

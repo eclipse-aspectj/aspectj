@@ -479,6 +479,13 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 * @see org.aspectj.weaver.Member#getParameterTypes()
 	 */
     public UnresolvedType[]  getParameterTypes() { return parameterTypes; }
+    
+    public AnnotationX[][] getParameterAnnotations() {
+		throw new UnsupportedOperationException("You should resolve this member and call getParameterAnnotations() on the result...");
+    }
+    public ResolvedType[][] getParameterAnnotationTypes() { 
+		throw new UnsupportedOperationException("You should resolve this member and call getParameterAnnotationTypes() on the result...");
+    }
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#getSignature()
 	 */

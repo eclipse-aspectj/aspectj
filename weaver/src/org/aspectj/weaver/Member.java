@@ -53,7 +53,9 @@ public interface Member {
 	public static final Kind MONITORENTER = new Kind("MONITORENTER", 8);
 	public static final Kind MONITOREXIT = new Kind("MONITOREXIT", 9);
 
-
+	public static final AnnotationX[][] NO_PARAMETER_ANNOTATIONXS = new AnnotationX[][]{};
+	public static final ResolvedType[][] NO_PARAMETER_ANNOTATION_TYPES = new ResolvedType[][]{};
+	
 	public ResolvedMember resolve(World world);
 
 	public int compareTo(Object other);
@@ -75,6 +77,9 @@ public interface Member {
 
 	public UnresolvedType[] getParameterTypes();
 
+	public AnnotationX[][] getParameterAnnotations();
+	public ResolvedType[][] getParameterAnnotationTypes();
+	
 	/**
 	 * Return full signature, including return type, e.g. "()LFastCar;" for a signature without the return type,
 	 * use getParameterSignature() - it is importnant to choose the right one in the face of covariance.
