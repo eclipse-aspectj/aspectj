@@ -23,6 +23,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 /**
  * @author colyer
@@ -52,17 +53,30 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#matches(org.aspectj.weaver.AnnotatedElement)
 	 */
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
+		return matches(annotated,null);
+	}
+
+	public FuzzyBoolean matches(AnnotatedElement annotated,ResolvedType[] parameterAnnotations) {
 		if (!resolved) {
 			throw new IllegalStateException("Can't match on an unresolved annotation type pattern");
 		}
-		// matches if the type of any of the annotations on the AnnotatedElement is
-		// matched by the typePattern.
-		ResolvedType[] annTypes = annotated.getAnnotationTypes();
-
-		if (annTypes!=null && annTypes.length!=0) {
-			for (int i = 0; i < annTypes.length; i++) {
-				if (typePattern.matches(annTypes[i],TypePattern.STATIC).alwaysTrue()) {
-					return FuzzyBoolean.YES;
+		if (isForParameterAnnotationMatch()) {
+			if (parameterAnnotations!=null && parameterAnnotations.length!=0) {
+				for (int i = 0; i < parameterAnnotations.length; i++) {
+					if (typePattern.matches(parameterAnnotations[i],TypePattern.STATIC).alwaysTrue()) {
+						return FuzzyBoolean.YES;
+					}
+				}
+			}
+		} else {
+			// matches if the type of any of the annotations on the AnnotatedElement is
+			// matched by the typePattern.
+			ResolvedType[] annTypes = annotated.getAnnotationTypes();
+			if (annTypes!=null && annTypes.length!=0) {
+				for (int i = 0; i < annTypes.length; i++) {
+					if (typePattern.matches(annTypes[i],TypePattern.STATIC).alwaysTrue()) {
+						return FuzzyBoolean.YES;
+					}
 				}
 			}
 		}
@@ -102,6 +116,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 			}
     		ExactAnnotationTypePattern eatp =  new ExactAnnotationTypePattern(et.getExactType().resolve(scope.getWorld()));
     		eatp.copyLocationFrom(this);
+    	    if (isForParameterAnnotationMatch()) eatp.setForParameterAnnotationMatch();
     		return eatp;
     	} else {
     		return this;
@@ -124,6 +139,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		s.writeByte(VERSION);
 		typePattern.write(s);
 		writeLocation(s);
+		s.writeBoolean(isForParameterAnnotationMatch());
 	}
 
 	public static AnnotationTypePattern read(VersionedDataInputStream s,ISourceContext context) throws IOException {
@@ -135,6 +151,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		TypePattern t = TypePattern.read(s,context);
 		ret = new WildAnnotationTypePattern(t);
 		ret.readLocation(context,s);
+		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MINOR_AJ160) {
+			if (s.readBoolean()) ret.setForParameterAnnotationMatch();
+		}
 		return ret;		
 	}
 
@@ -144,14 +163,14 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof WildAnnotationTypePattern)) return false;
 		WildAnnotationTypePattern other = (WildAnnotationTypePattern) obj;
-		return other.typePattern.equals(typePattern);
+		return other.typePattern.equals(typePattern) && this.isForParameterAnnotationMatch()==other.isForParameterAnnotationMatch();
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return 17 + 37*typePattern.hashCode();
+		return (17 + 37*typePattern.hashCode())*37+(isForParameterAnnotationMatch()?0:1);
 	}
 	
 	/* (non-Javadoc)
