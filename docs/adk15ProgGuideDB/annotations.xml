@@ -987,14 +987,69 @@
     
   </sect2>
 
+
   <sect2 id="package-and-parameter-annotations" xreflabel="package-and-parameter-annotations">
       <title>Package and Parameter Annotations</title>
 
       <para>
-          <emphasis>Matching on package and parameter annotations is not supported
-          in AspectJ 1.5.0. Support for this capability may be considered in a future
-          release.</emphasis>
-      </para>
+         <emphasis>Matching on package annotations is not supported in AspectJ.  Support for
+         this capability may be considered in a future release.</emphasis>
+         
+       </para>
+       
+       <para>
+         Parameter annotation matching is being added in AspectJ1.6.
+         Initially only matching is supported but binding will be
+         implemented at some point.  Whether the annotation specified in a pointcut should be
+         considered to be an annotation on the parameter type or an annotation on the parameter
+         itself is determined through the use of parentheses around the parameter type.
+         
+         Consider the following:
+       </para>
+       
+         
+    <programlisting><![CDATA[
+    @SomeAnnotation
+    class AnnotatedType {}
+
+    class C {
+      public void foo(AnnotatedType a) {}
+      public void goo(@SomeAnnotation String s) {}
+    }
+    
+	]]></programlisting>
+	
+	<para>
+	The method foo has a parameter of an annotated type, and can be matched by this pointcut:
+	</para>
+    <programlisting><![CDATA[
+    pointcut p(): execution(* *(@SomeAnnotation *));
+	]]></programlisting>
+    <para>
+    When there is a single annotation specified like this, it is considered to be part of the type
+    pattern in the match against the parameter: 'a parameter of any type that has the annotation @SomeAnnotation'.
+    </para>
+    <para>
+    To match the parameter annotation case, the method goo, this is the pointcut:
+    </para>
+    <programlisting><![CDATA[
+    pointcut p(): execution(* *(@SomeAnnotation (*)));
+	]]></programlisting>
+	<para>
+	The use of parentheses around the wildcard is effectively indicating that the annotation should be considered
+	separately to the type pattern for the parameter type: 'a parameter of any type that has a parameter annotation of
+	@SomeAnnotation'.
+	</para>
+	<para>
+    To match when there is a parameter annotation and an annotation on the type as well:
+    </para>
+    <programlisting><![CDATA[
+      pointcut p(): execution(* *(@SomeAnnotation (@SomeOtherAnnotation *)));
+	]]></programlisting>
+	<para>
+	The parentheses are grouping @SomeOtherAnnotation with the * to form the type pattern for the parameter, then
+	the type @SomeAnnotation will be treated as a parameter annotation pattern.
+    </para>
 
 <!-- @withinpackage ??? -->
 
