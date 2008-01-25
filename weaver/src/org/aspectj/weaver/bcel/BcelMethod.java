@@ -50,6 +50,9 @@ import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSigna
 
 public final class BcelMethod extends ResolvedMemberImpl {
 
+
+	
+	
 	private Method method;
 	private boolean isAjSynthetic;
 	private boolean isSynthetic;
@@ -59,6 +62,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	
 //    private ResolvedType[] annotationTypes = null;
     private AnnotationX[] annotations = null;
+    private AnnotationX[][] parameterAnnotations = null;
 	
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
@@ -330,7 +334,40 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				annotationTypes.add(world.resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
 				annotations[i] = new AnnotationX(annotation,world);
 			}
-    		}
+    	}
+    }
+	
+	private void ensureParameterAnnotationsRetrieved() {
+		if (method == null) return; // must be ok, we have evicted it
+		Annotation[][] pAnns = method.getParameterAnnotations();
+		if (parameterAnnotationTypes==null || pAnns.length!=parameterAnnotationTypes.length) {
+			if (pAnns == Method.NO_PARAMETER_ANNOTATIONS) {
+				parameterAnnotationTypes = BcelMethod.NO_PARAMETER_ANNOTATION_TYPES;
+				parameterAnnotations     = BcelMethod.NO_PARAMETER_ANNOTATIONXS;
+			} else {
+				Annotation annos[][] = method.getParameterAnnotations();
+				parameterAnnotations = new AnnotationX[annos.length][];
+				parameterAnnotationTypes = new ResolvedType[annos.length][];
+				for (int i=0;i<annos.length;i++) {
+					parameterAnnotations[i] = new AnnotationX[annos[i].length];
+					parameterAnnotationTypes[i] = new ResolvedType[annos[i].length];
+					for (int j=0;j<annos[i].length;j++) {
+						parameterAnnotations[i][j] = new AnnotationX(annos[i][j],world);
+						parameterAnnotationTypes[i][j] = world.resolve(UnresolvedType.forSignature(annos[i][j].getTypeSignature()));
+					}
+				}
+			}
+		}
+	}
+
+	public AnnotationX[][] getParameterAnnotations() { 
+		ensureParameterAnnotationsRetrieved();
+		return parameterAnnotations;
+	}
+	
+	public ResolvedType[][] getParameterAnnotationTypes() { 
+		ensureParameterAnnotationsRetrieved();
+		return parameterAnnotationTypes;
 	}
 	 
 
@@ -438,6 +475,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 			 unpackGenericSignature();
 			 unpackJavaAttributes();
 			 ensureAnnotationTypesRetrieved();
+			 ensureParameterAnnotationsRetrieved();
 			 determineParameterNames();
 // 			 this.sourceContext = SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
 			 method = null;
