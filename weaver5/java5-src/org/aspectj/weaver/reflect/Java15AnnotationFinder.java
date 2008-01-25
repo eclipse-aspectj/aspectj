@@ -26,7 +26,6 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
-import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
@@ -200,5 +199,65 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			ret[i] = vars[i+1].getName();
 		}
 		return ret;
+	}
+	public static final ResolvedType[][] NO_PARAMETER_ANNOTATIONS = new ResolvedType[][]{};
+	
+	public ResolvedType[][] getParameterAnnotationTypes(Member onMember) {
+		if (!(onMember instanceof AccessibleObject)) return NO_PARAMETER_ANNOTATIONS;
+		// here we really want both the runtime visible AND the class visible annotations
+		// so we bail out to Bcel and then chuck away the JavaClass so that we don't hog
+		// memory.
+		try {
+			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
+			org.aspectj.apache.bcel.classfile.annotation.Annotation[][] anns = null;
+			if (onMember instanceof Method) {
+				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
+				anns = bcelMethod.getParameterAnnotations();
+			} else if (onMember instanceof Constructor) {
+				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor)onMember);
+				anns = bcelCons.getParameterAnnotations();
+			} else if (onMember instanceof Field) {
+				anns = null;
+			}
+			// the answer is cached and we don't want to hold on to memory
+			bcelRepository.clear();
+			if (anns == null) return NO_PARAMETER_ANNOTATIONS;
+			ResolvedType[][] result = new ResolvedType[anns.length][];
+			// CACHING??
+			for (int i=0;i<anns.length;i++) {
+				if (anns[i]!=null) {
+					result[i] = new ResolvedType[anns[i].length];
+					for (int j=0;j<anns[i].length;j++) {
+						result[i][j] = world.resolve(UnresolvedType.forSignature(anns[i][j].getTypeSignature()));
+					}
+				}
+			}
+			return result;
+		} catch (ClassNotFoundException cnfEx) {
+			// just use reflection then
+		}
+		
+		// reflection...
+		AccessibleObject ao = (AccessibleObject) onMember;
+		Annotation[][] anns = null;
+		if (onMember instanceof Method) {
+			anns = ((Method)ao).getParameterAnnotations();
+		} else if (onMember instanceof Constructor) {
+			anns = ((Constructor)ao).getParameterAnnotations();
+		} else if (onMember instanceof Field) {
+			anns = null;
+		}
+		if (anns == null) return NO_PARAMETER_ANNOTATIONS;
+		ResolvedType[][] result = new ResolvedType[anns.length][];
+		// CACHING??
+		for (int i=0;i<anns.length;i++) {
+			if (anns[i]!=null) {
+				result[i] = new ResolvedType[anns[i].length];
+				for (int j=0;j<anns[i].length;j++) {
+					result[i][j] = UnresolvedType.forName(anns[i][j].annotationType().getName()).resolve(world);
+				}
+			}
+		}
+		return result;
 	}
 }
