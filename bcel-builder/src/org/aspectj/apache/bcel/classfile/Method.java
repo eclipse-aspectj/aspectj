@@ -69,14 +69,17 @@ import org.aspectj.apache.bcel.generic.Type;
  * for a method in the class. See JVM specification for details.
  * A method has access flags, a name, a signature and a number of attributes.
  *
- * @version $Id: Method.java,v 1.3 2008/01/25 02:28:23 aclement Exp $
+ * @version $Id: Method.java,v 1.4 2008/01/25 18:33:24 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {
 	
+  public static final Annotation[][] NO_PARAMETER_ANNOTATIONS = new Annotation[][]{};
+  public static final Annotation[] NO_ANNOTATIONS = new Annotation[]{};
+  
   private boolean parameterAnnotationsOutOfDate;
-  private RuntimeVisibleParameterAnnotations parameterAnnotationsVis; // annotations on parameters of this method
-  private RuntimeInvisibleParameterAnnotations parameterAnnotationsInvis;
+  private Annotation[][] unpackedParameterAnnotations;
+  
 
   /**
    * Empty constructor, all attributes have to be defined via `setXXX'
@@ -247,46 +250,76 @@ public final class Method extends FieldOrMethod {
   public Type[] getArgumentTypes() {
     return Type.getArgumentTypes(getSignature());
   }
-  
-  private void ensureParameterAnnotationsUnpacked() {
-  	if (parameterAnnotationsOutOfDate) { 
-  		// Find attributes that contain annotation data
-  		Attribute[] attrs = getAttributes();
-  		List accumulatedAnnotations = new ArrayList();
-  		
-  		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
-			if (attribute instanceof RuntimeVisibleParameterAnnotations) {				
-				parameterAnnotationsVis = (RuntimeVisibleParameterAnnotations)attribute;
-			}
-			if (attribute instanceof RuntimeInvisibleParameterAnnotations) {				
-				parameterAnnotationsInvis = (RuntimeInvisibleParameterAnnotations)attribute;
-			}
-		}
-  		parameterAnnotationsOutOfDate = false;
-  	}
-  }
 
+  private void ensureParameterAnnotationsUnpacked() {
+  	if (!parameterAnnotationsOutOfDate) return;
+	parameterAnnotationsOutOfDate = false;
+
+	int parameterCount = getArgumentTypes().length;
+	if (parameterCount == 0) {
+		unpackedParameterAnnotations = NO_PARAMETER_ANNOTATIONS;
+		return;
+	}
+
+	RuntimeVisibleParameterAnnotations parameterAnnotationsVis = null;
+    RuntimeInvisibleParameterAnnotations parameterAnnotationsInvis = null;
+
+    // Find attributes that contain annotation data
+	Attribute[] attrs = getAttributes();
+	List accumulatedAnnotations = new ArrayList();
+	
+	for (int i = 0; i < attrs.length; i++) {
+		Attribute attribute = attrs[i];
+		if (attribute instanceof RuntimeVisibleParameterAnnotations) {				
+			parameterAnnotationsVis = (RuntimeVisibleParameterAnnotations)attribute;
+		} else if (attribute instanceof RuntimeInvisibleParameterAnnotations) {				
+			parameterAnnotationsInvis = (RuntimeInvisibleParameterAnnotations)attribute;
+		}
+	}
+	
+	// Build a list of annotation arrays, one per argument
+	List annotationsForEachParameter = new ArrayList();
+	Annotation[] visibleOnes = null;
+	Annotation[] invisibleOnes = null;
+	boolean foundSome = false;
+	for (int i=0; i<parameterCount; i++) {
+		int count = 0;
+		visibleOnes = new Annotation[0];
+		invisibleOnes = new Annotation[0];
+	  	if (parameterAnnotationsVis!=null) {
+	  		visibleOnes = parameterAnnotationsVis.getAnnotationsOnParameter(i);
+	  		count+=visibleOnes.length;
+	  	}
+	  	if (parameterAnnotationsInvis!=null){
+	  		invisibleOnes = parameterAnnotationsInvis.getAnnotationsOnParameter(i);
+	  		count+=invisibleOnes.length;
+	  	}
+	  	
+	  	Annotation[] complete = NO_ANNOTATIONS;
+	  	if (count!=0) {
+	  		complete = new Annotation[visibleOnes.length+invisibleOnes.length];
+	  		System.arraycopy(visibleOnes,0,complete,0,visibleOnes.length);
+	  		System.arraycopy(invisibleOnes,0,complete,visibleOnes.length,invisibleOnes.length);
+	  		foundSome = true;
+	  	}
+  		annotationsForEachParameter.add(complete);
+	}
+	if (foundSome) {
+		unpackedParameterAnnotations = (Annotation[][])annotationsForEachParameter.toArray(new Annotation[][]{});
+	} else {
+		unpackedParameterAnnotations=NO_PARAMETER_ANNOTATIONS;
+	}
+  }
+  
   public Annotation[] getAnnotationsOnParameter(int i) {
-  	ensureParameterAnnotationsUnpacked();
-  	
-  	Annotation[] visibleOnes = new Annotation[0];
-  	if (parameterAnnotationsVis!=null) visibleOnes = parameterAnnotationsVis.getAnnotationsOnParameter(i);
-  	Annotation[] invisibleOnes = new Annotation[0];
-  	if (parameterAnnotationsInvis!=null) invisibleOnes = parameterAnnotationsInvis.getAnnotationsOnParameter(i);
-  	Annotation[] complete = new Annotation[visibleOnes.length+invisibleOnes.length];
-  	System.arraycopy(visibleOnes,0,complete,0,visibleOnes.length);
-  	System.arraycopy(invisibleOnes,0,complete,visibleOnes.length,invisibleOnes.length);
-    return complete;
+	  ensureParameterAnnotationsUnpacked();
+	  if (unpackedParameterAnnotations==NO_PARAMETER_ANNOTATIONS) return NO_ANNOTATIONS;
+	  return unpackedParameterAnnotations[i];
   }
     
   public Annotation[][] getParameterAnnotations() {
-	  int numParams = getArgumentTypes().length;
-	  Annotation[][] parameterAnnotations = new Annotation[getArgumentTypes().length][];
-	  for (int i=0; i<numParams; i++) {
-		  parameterAnnotations[i] = getAnnotationsOnParameter(i);
-	  }
-	  return parameterAnnotations;
+	  ensureParameterAnnotationsUnpacked();
+	  return unpackedParameterAnnotations;
   }
   
 }
