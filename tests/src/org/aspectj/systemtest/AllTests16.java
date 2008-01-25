@@ -6,7 +6,6 @@ package org.aspectj.systemtest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.aspectj.systemtest.ajc154.AllTestsAspectJ154;
 import org.aspectj.systemtest.ajc160.AllTestsAspectJ160;
 
 public class AllTests16 {
