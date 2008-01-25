@@ -99,7 +99,7 @@ public class TypePatternListTestCase extends TestCase {
 	}
 
 	private TypePatternList makeArgumentsPattern(String pattern) {
-		return new PatternParser(pattern).parseArgumentsPattern();
+		return new PatternParser(pattern).parseArgumentsPattern(false);
 	}
 
 	private void checkStaticMatch(String pattern, String[] names, 

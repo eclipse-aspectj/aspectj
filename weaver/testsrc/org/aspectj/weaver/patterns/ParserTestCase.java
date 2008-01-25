@@ -301,20 +301,20 @@ public class ParserTestCase extends TestCase {
 	
 	public void testParseAnythingTypeVariable() {
 		PatternParser parser = new PatternParser("?");
-		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true);
+		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true,false);
 		assertEquals("Expected type variable ?","?",tp.maybeGetSimpleName());
 	}
 
 	public void testParseAnythingExtendsTypeVariable() {
 		PatternParser parser = new PatternParser("? extends Number");
-		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true);
+		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true,false);
 		assertEquals("Expected type variable ?","?",tp.maybeGetSimpleName());
 		assertEquals("upper Bound of Number",new PatternParser("Number").parseTypePattern(),tp.getUpperBound());
 	}
 	
 	public void testParseAnythingSuperTypeVariable() {
 		PatternParser parser = new PatternParser("? super Number+");
-		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true);
+		WildTypePattern tp = (WildTypePattern) parser.parseTypePattern(true,false);
 		assertEquals("Expected type variable ?","?",tp.maybeGetSimpleName());
 		assertEquals("lower Bound of Number+",new PatternParser("Number+").parseTypePattern(),tp.getLowerBound());
 	}
@@ -335,7 +335,7 @@ public class ParserTestCase extends TestCase {
 	public void testParameterizedTypePatternsAny() {
 		try {
 			PatternParser parser = new PatternParser("*<T,S extends Number>");
-			WildTypePattern wtp = (WildTypePattern) parser.parseTypePattern(false);
+			WildTypePattern wtp = (WildTypePattern) parser.parseTypePattern(false,false);
 	//		TypePatternList tvs = wtp.getTypeParameters();
 	//		assertEquals("2 type parameters",2,tvs.getTypePatterns().length);
 	//		assertEquals("T",new PatternParser("T").parseTypePattern(),tvs.getTypePatterns()[0]);
@@ -609,7 +609,7 @@ public class ParserTestCase extends TestCase {
 	public void testTypeParamList() {
 		PatternParser parser = new PatternParser("Bar<T,S extends T, R extends S>");
 		try {
-			TypePattern tp = parser.parseTypePattern(false);
+			TypePattern tp = parser.parseTypePattern(false,false);
 //			TypePattern[] tps = tp.getTypeParameters().getTypePatterns();
 //			assertEquals("3 type patterns",3,tps.length);
 //			assertEquals("T",tps[0].toString());

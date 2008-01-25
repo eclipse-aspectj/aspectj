@@ -236,8 +236,8 @@ public class WildTypePattern extends TypePattern {
 		
 		return matchesExactlyByName(targetTypeName,type.isAnonymous(),type.isNested()) &&
 		        matchesParameters(type,STATIC) &&
-		        matchesBounds(type,STATIC) &&
-		       annotationPattern.matches(annotatedType).alwaysTrue();
+		        matchesBounds(type,STATIC) && 
+		       annotationPattern.matches(annotatedType,type.temporaryAnnotationTypes).alwaysTrue();
 	}
 	
 	
@@ -644,7 +644,7 @@ public class WildTypePattern extends TypePattern {
 		  if (dim == 0 && !isVarArgs && upperBound == null && lowerBound == null && (additionalInterfaceBounds == null || additionalInterfaceBounds.length==0)) { // pr72531
 			return TypePattern.ANY;  //??? loses source location
 		  } 
-		} else {
+		} else if (!isVarArgs){
 	    	annotationPattern = annotationPattern.resolveBindings(scope,bindings,allowBinding);
 			AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(annotationPattern); 			
 			ret.setLocation(sourceContext,start,end);

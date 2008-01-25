@@ -39,6 +39,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY  = new ResolvedType[0];
 	public static final String PARAMETERIZED_TYPE_IDENTIFIER = "P";
 	
+	// Set during a type pattern match call - this currently used to hold the annotations
+	// that may be attached to a type when it used as a parameter
+	public ResolvedType[] temporaryAnnotationTypes;
 	private ResolvedType[] resolvedTypeParams;
 	private String binaryPath;
 	

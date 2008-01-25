@@ -26,6 +26,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 /**
  * Matches an annotation of a given type
@@ -72,30 +73,48 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	}
 	
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
-		boolean checkSupers = false;
-		if (getResolvedAnnotationType().hasAnnotation(UnresolvedType.AT_INHERITED)) {
-			if (annotated instanceof ResolvedType) {
-				checkSupers = true;
+		return matches(annotated,null);
+	}
+	
+	public FuzzyBoolean matches(AnnotatedElement annotated,ResolvedType[] parameterAnnotations) {
+		if (!isForParameterAnnotationMatch()) {
+			boolean checkSupers = false;
+			if (getResolvedAnnotationType().hasAnnotation(UnresolvedType.AT_INHERITED)) {
+				if (annotated instanceof ResolvedType) {
+					checkSupers = true;
+				}
+			}
+			
+			if (annotated.hasAnnotation(annotationType)) {
+				if (annotationType instanceof ReferenceType) {
+					ReferenceType rt = (ReferenceType)annotationType;
+					if (rt.getRetentionPolicy()!=null && rt.getRetentionPolicy().equals("SOURCE")) {
+						rt.getWorld().getMessageHandler().handleMessage(
+						  MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,annotationType,annotated),getSourceLocation()));
+						return FuzzyBoolean.NO;
+					}
+				}
+				return FuzzyBoolean.YES;
+			} else if (checkSupers) {
+				ResolvedType toMatchAgainst = ((ResolvedType) annotated).getSuperclass();
+				while (toMatchAgainst != null) {
+					if (toMatchAgainst.hasAnnotation(annotationType)) {
+						return FuzzyBoolean.YES;
+					}
+					toMatchAgainst = toMatchAgainst.getSuperclass();
+				}
+			} 
+		} else {
+			// check parameter annotations
+			if (parameterAnnotations==null) return FuzzyBoolean.NO;
+			for (int i = 0; i < parameterAnnotations.length; i++) {
+				if (annotationType.equals(parameterAnnotations[i])) {
+					return FuzzyBoolean.YES;
+				}
 			}
 		}
 		
-		if (annotated.hasAnnotation(annotationType)) {
-			if (annotationType instanceof ReferenceType) {
-				ReferenceType rt = (ReferenceType)annotationType;
-				if (rt.getRetentionPolicy()!=null && rt.getRetentionPolicy().equals("SOURCE")) {
-					rt.getWorld().getMessageHandler().handleMessage(
-					  MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,annotationType,annotated),getSourceLocation()));
-					return FuzzyBoolean.NO;
-				}
-			}
-			return FuzzyBoolean.YES;
-		} else if (checkSupers) {
-			ResolvedType toMatchAgainst = ((ResolvedType) annotated).getSuperclass();
-			while (toMatchAgainst != null) {
-				if (toMatchAgainst.hasAnnotation(annotationType)) return FuzzyBoolean.YES;
-				toMatchAgainst = toMatchAgainst.getSuperclass();
-			}
-		} 
+		
 		return FuzzyBoolean.NO;
 	}
 	
@@ -144,6 +163,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 				binding.copyLocationFrom(this);
 				bindings.register(binding, scope);
 				binding.resolveBinding(scope.getWorld());
+				if (isForParameterAnnotationMatch()) binding.setForParameterAnnotationMatch();
 				
 				return binding;
 			} 
@@ -183,6 +203,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		ret.formalName = formalName;
 		ret.bindingPattern = bindingPattern;
 		ret.copyLocationFrom(this);
+		if (isForParameterAnnotationMatch()) ret.setForParameterAnnotationMatch();
 		return ret;
 	}
 	
@@ -219,6 +240,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			annotationType.write(s);
 		}
 		writeLocation(s);
+		s.writeBoolean(isForParameterAnnotationMatch());
 	}
 
 	public static AnnotationTypePattern read(VersionedDataInputStream s,ISourceContext context) throws IOException {
@@ -234,6 +256,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			ret = new ExactAnnotationTypePattern(UnresolvedType.read(s));			
 		}
 		ret.readLocation(context,s);
+		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MINOR_AJ160) {
+			if (s.readBoolean()) ret.setForParameterAnnotationMatch();
+		}
 		return ret;
 	}
 	
@@ -243,14 +268,14 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ExactAnnotationTypePattern)) return false;
 		ExactAnnotationTypePattern other = (ExactAnnotationTypePattern) obj;
-		return (other.annotationType.equals(annotationType));
+		return (other.annotationType.equals(annotationType)) && isForParameterAnnotationMatch()==other.isForParameterAnnotationMatch();
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return annotationType.hashCode();
+		return annotationType.hashCode()*37+(isForParameterAnnotationMatch()?0:1);
 	}
 	
 	public String toString() {
