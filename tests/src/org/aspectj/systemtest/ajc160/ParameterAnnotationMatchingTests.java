@@ -50,15 +50,6 @@ import junit.framework.Test;
  * the parentheses associating @B with the type of the parameter leaving @A outside to be
  * treated as a parameter annotation.
  *
-
-TODO BEFORE FIRST UPLOAD:
-2. Don't set the param annos on the type patterns - add new methods and pass them through
-
-doc
-
-
-
- 
  * Testplan:
  * Test cases for the parameter annotation matching:
  * DONE:
@@ -78,12 +69,9 @@ doc
  * . Binding with the new syntax.
  * . complaining about annotations that dont target the right type
  * . itds
- * . visibility tests
+ * . annotation visibility tests
  * . wildcarded @Ann*1 - broken (not my doing)
  * . ltw
- * 
- * to be done:
- * - equals/hashcode where the new flags have been introduced - is it all ok?
  * 
  */
 public class ParameterAnnotationMatchingTests extends XMLBasedAjcTestCase {
