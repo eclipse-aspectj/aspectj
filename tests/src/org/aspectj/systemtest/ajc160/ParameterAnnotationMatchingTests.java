@@ -11,7 +11,7 @@
  * ******************************************************************/
 package org.aspectj.systemtest.ajc160;
 
-
+ 
 import java.io.File;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
