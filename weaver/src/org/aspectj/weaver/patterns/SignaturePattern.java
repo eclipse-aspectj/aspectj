@@ -84,7 +84,7 @@ public class SignaturePattern extends PatternNode {
 		}
 		if (parameterTypes != null) {
 			parameterTypes = parameterTypes.resolveBindings(scope, bindings, false, false);
-			checkForIncorrectTargetKind(parameterTypes,scope,false);
+			checkForIncorrectTargetKind(parameterTypes,scope,false,true);
 		}
 		if (throwsPattern != null) {
 			throwsPattern = throwsPattern.resolveBindings(scope, bindings);
@@ -100,11 +100,15 @@ public class SignaturePattern extends PatternNode {
 		hashcode =-1;
     	return this;
     }
+    private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed) {
+    	checkForIncorrectTargetKind(patternNode, scope, targetsOtherThanTypeAllowed, false);
+    	
+    }
     
     // bug 115252 - adding an xlint warning if the annnotation target type is 
     // wrong. This logic, or similar, may have to be applied elsewhere in the case
     // of pointcuts which don't go through SignaturePattern.resolveBindings(..)
-    private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed) {
+    private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed, boolean parameterTargettingAnnotationsAllowed) {
     	// return if we're not in java5 mode, if the unmatchedTargetKind Xlint
     	// warning has been turned off, or if the patternNode is *
     	if (!scope.getWorld().isInJava5Mode()
@@ -125,7 +129,7 @@ public class SignaturePattern extends PatternNode {
 				reportUnmatchedTargetKindMessage(targetKinds,patternNode,scope,false);
 			}
 		} else {
-			TypePatternVisitor visitor = new TypePatternVisitor(scope,targetsOtherThanTypeAllowed);
+			TypePatternVisitor visitor = new TypePatternVisitor(scope,targetsOtherThanTypeAllowed,parameterTargettingAnnotationsAllowed);
 			patternNode.traverse(visitor,null);
 			if (visitor.containedIncorrectTargetKind()) {
 				Set keys = visitor.getIncorrectTargetKinds().keySet();				
@@ -171,14 +175,17 @@ public class SignaturePattern extends PatternNode {
     	private IScope scope;
     	private Map incorrectTargetKinds /* PatternNode -> AnnotationTargetKind[] */ = new HashMap();
     	private boolean targetsOtherThanTypeAllowed;
+		private boolean parameterTargettingAnnotationsAllowed;
 
     	/**
     	 * @param requiredTarget - the signature pattern Kind
     	 * @param scope
+    	 * @param parameterTargettingAnnotationsAllowed 
     	 */
-    	public TypePatternVisitor(IScope scope, boolean targetsOtherThanTypeAllowed) {
+    	public TypePatternVisitor(IScope scope, boolean targetsOtherThanTypeAllowed, boolean parameterTargettingAnnotationsAllowed) {
     		this.scope = scope;
     		this.targetsOtherThanTypeAllowed = targetsOtherThanTypeAllowed;
+    		this.parameterTargettingAnnotationsAllowed = parameterTargettingAnnotationsAllowed;
     	}
     	
     	public Object visit(WildAnnotationTypePattern node, Object data) {
@@ -196,7 +203,9 @@ public class SignaturePattern extends PatternNode {
 				if (targetKinds == null) return data;
 				List incorrectTargets = new ArrayList();
 				for (int i = 0; i < targetKinds.length; i++) {
-					if (targetKinds[i].getName().equals(kind.getName())) {
+					if (targetKinds[i].getName().equals(kind.getName()) ||
+							(targetKinds[i].getName().equals("PARAMETER") && node.isForParameterAnnotationMatch())
+							) {
 						return data;
 					}
 					incorrectTargets.add(targetKinds[i]);
@@ -207,6 +216,13 @@ public class SignaturePattern extends PatternNode {
 			} else if (!targetsOtherThanTypeAllowed && !resolvedType.canAnnotationTargetType()) {
 				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
 				if (targetKinds == null) return data;
+				// exception here is if parameter annotations are allowed
+				if (parameterTargettingAnnotationsAllowed) {
+					for (int i = 0; i < targetKinds.length; i++) {
+						AnnotationTargetKind annotationTargetKind = targetKinds[i];
+						if (annotationTargetKind.getName().equals("PARAMETER")  && node.isForParameterAnnotationMatch()) return data;
+					}
+				}
 				incorrectTargetKinds.put(node,targetKinds);
 			}
     		return data;
